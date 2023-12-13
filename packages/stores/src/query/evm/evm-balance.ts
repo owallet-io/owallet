@@ -1,11 +1,10 @@
 import { Result } from './types';
-import { KVStore } from '@owallet/common';
+import { KVStore, MyBigInt } from '@owallet/common';
 import { ObservableChainQuery, ObservableChainQueryMap } from '../chain-query';
 import { ChainGetter, QueryResponse } from '../../common';
 import { computed } from 'mobx';
 import { CoinPretty, Int } from '@owallet/unit';
 import { CancelToken } from 'axios';
-import { MyBigInt } from '../../common/utils/';
 
 export class ObservableQueryEvmBalanceInner extends ObservableChainQuery<Result> {
   constructor(

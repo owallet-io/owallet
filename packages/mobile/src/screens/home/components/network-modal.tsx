@@ -1,29 +1,81 @@
-import React, { FunctionComponent, ReactElement, useState } from 'react';
-import { StyleSheet, View, FlatList } from 'react-native';
-import { RectButton } from '../../../components/rect-button';
-import { colors, metrics, spacing, typography } from '../../../themes';
-import { _keyExtract } from '../../../utils/helper';
+import React from 'react';
+import { StyleSheet, View, FlatList, Alert } from 'react-native';
+
+import { metrics, spacing, typography } from '../../../themes';
+import { _keyExtract, delay } from '../../../utils/helper';
 import FastImage from 'react-native-fast-image';
 import { VectorCharacter } from '../../../components/vector-character';
-import { CText as Text } from '../../../components/text';
+import { Text } from '@src/components/text';
+import { TRON_ID, COINTYPE_NETWORK } from '@owallet/common';
+import OWFlatList from '@src/components/page/ow-flat-list';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 
 export const NetworkModal = ({
   profileColor,
   chainStore,
   modalStore,
-  smartNavigation
+  smartNavigation,
+  colors,
+  keyRingStore,
+  bip44Option
 }) => {
+  const styles = styling(colors);
+
+  const handleSwitchNetwork = async (item) => {
+    try {
+      if (keyRingStore.keyRingType === 'ledger') {
+        Alert.alert(
+          'Switch network',
+          `You are switching to ${COINTYPE_NETWORK[item.bip44.coinType]} network. Please confirm that you have ${
+            COINTYPE_NETWORK[item.bip44.coinType]
+          } App opened before switch network`,
+          [
+            {
+              text: 'Cancel',
+              onPress: () => {
+                modalStore.close();
+              },
+              style: 'cancel'
+            },
+            {
+              text: 'Switch',
+              onPress: async () => {
+                chainStore.selectChain(item?.chainId);
+                await chainStore.saveLastViewChainId();
+                if (typeof keyRingStore.setKeyStoreLedgerAddress === 'function') {
+                  await keyRingStore.setKeyStoreLedgerAddress(
+                    `${chainStore.current.networkType === 'bitcoin' ? '84' : '44'}'/${
+                      item.bip44.coinType ?? item.coinType
+                    }'/${bip44Option.bip44HDPath.account}'/${bip44Option.bip44HDPath.change}/${
+                      bip44Option.bip44HDPath.addressIndex
+                    }`,
+                    item?.chainId
+                  );
+                }
+              }
+            }
+          ]
+        );
+      } else {
+        chainStore.selectChain(item?.chainId);
+        await chainStore.saveLastViewChainId();
+      }
+    } catch (error) {
+      console.log('error: ', error);
+    } finally {
+      modalStore.close();
+    }
+  };
+
   const _renderItem = ({ item }) => {
     return (
-      <RectButton
+      <TouchableOpacity
         style={{
           ...styles.containerBtn
         }}
         onPress={() => {
-          chainStore.selectChain(item?.chainId);
-          chainStore.saveLastViewChainId();
-          modalStore.close();
+          handleSwitchNetwork(item);
         }}
       >
         <View
@@ -56,11 +108,7 @@ export const NetworkModal = ({
                 }}
               />
             ) : (
-              <VectorCharacter
-                char={item.chainName[0]}
-                height={15}
-                color={colors['white']}
-              />
+              <VectorCharacter char={item.chainName[0]} height={15} color={colors['white']} />
             )}
           </View>
 
@@ -73,21 +121,13 @@ export const NetworkModal = ({
             <Text
               style={{
                 ...typography.h6,
-                color: colors['gray-900'],
+                color: colors['sub-primary-text'],
                 fontWeight: '900'
               }}
               numberOfLines={1}
             >
               {item.chainName}
             </Text>
-            {/* <Text
-              style={{
-                ...typography.h7,
-                color: colors['gray-300'],
-                fontWeight: '900',
-                fontSize: 12
-              }}
-            >{`$${item.price || 0}`}</Text> */}
           </View>
         </View>
 
@@ -98,9 +138,7 @@ export const NetworkModal = ({
               height: 24,
               borderRadius: spacing['32'],
               backgroundColor:
-                item?.chainId === chainStore.current.chainId
-                  ? colors['purple-900']
-                  : colors['gray-100'],
+                item?.chainId === chainStore.current.chainId ? colors['purple-700'] : colors['bg-circle-select-modal'],
               justifyContent: 'center',
               alignItems: 'center'
             }}
@@ -110,12 +148,12 @@ export const NetworkModal = ({
                 width: 12,
                 height: 12,
                 borderRadius: spacing['32'],
-                backgroundColor: colors['white']
+                backgroundColor: colors['background-item-list']
               }}
             />
           </View>
         </View>
-      </RectButton>
+      </TouchableOpacity>
     );
   };
 
@@ -131,28 +169,32 @@ export const NetworkModal = ({
           width: '100%'
         }}
       >
-        <TouchableOpacity
-          onPress={() => {
-            smartNavigation.navigateSmart('Network.select', {});
-            modalStore.close();
-          }}
-        >
-          <Text
-            style={{
-              fontSize: 12,
-              fontWeight: '700',
-              color: colors['purple-700']
+        {chainStore.current.chainId === TRON_ID ? null : (
+          <TouchableOpacity
+            onPress={() => {
+              smartNavigation.navigateSmart('Network.select', {});
+              modalStore.close();
             }}
           >
-            + Add more
-          </Text>
-        </TouchableOpacity>
+            <Text
+              style={{
+                fontSize: 12,
+                fontWeight: '700',
+                color: colors['purple-700']
+              }}
+            >
+              + Add network
+            </Text>
+          </TouchableOpacity>
+        )}
       </View>
       <Text
         style={{
           ...typography.h6,
           fontWeight: '900',
-          color: colors['gray-900']
+          color: colors['primary-text'],
+          width: '100%',
+          textAlign: 'center'
         }}
       >
         {`Select networks`}
@@ -166,33 +208,34 @@ export const NetworkModal = ({
           height: metrics.screenHeight / 2
         }}
       >
-        <FlatList
-          showsVerticalScrollIndicator={false}
+        <BottomSheetFlatList
           data={chainStore.chainInfosInUI}
           renderItem={_renderItem}
           keyExtractor={_keyExtract}
-          ListFooterComponent={() => (
-            <View
-              style={{
-                height: spacing['10']
-              }}
-            />
-          )}
+
+          // ListFooterComponent={() => (
+          //   <View
+          //     style={{
+          //       height: spacing['10']
+          //     }}
+          //   />
+          // )}
         />
       </View>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  containerBtn: {
-    backgroundColor: colors['gray-10'],
-    paddingVertical: spacing['16'],
-    borderRadius: spacing['8'],
-    paddingHorizontal: spacing['16'],
-    flexDirection: 'row',
-    marginTop: spacing['16'],
-    alignItems: 'center',
-    justifyContent: 'space-between'
-  }
-});
+const styling = (colors) =>
+  StyleSheet.create({
+    containerBtn: {
+      backgroundColor: colors['background-item-list'],
+      paddingVertical: spacing['16'],
+      borderRadius: spacing['8'],
+      paddingHorizontal: spacing['16'],
+      flexDirection: 'row',
+      marginTop: spacing['16'],
+      alignItems: 'center',
+      justifyContent: 'space-between'
+    }
+  });

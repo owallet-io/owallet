@@ -1,121 +1,104 @@
-import React, {
-  FunctionComponent,
-  ReactElement,
-  useEffect,
-  useRef,
-  useState
-} from 'react';
+import React, { FunctionComponent, ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { useStore } from '../../stores';
-import {
-  StyleSheet,
-  View,
-  Image,
-  TouchableOpacity,
-  FlatList
-} from 'react-native';
-import { Text } from '@rneui/base';
-import { useSmartNavigation } from '../../navigation.provider';
+import { StyleSheet, View } from 'react-native';
+import { BuyIcon, DepositIcon, SendDashboardIcon } from '../../components/icon/button';
 import { TokenSymbol } from '../../components/token-symbol';
-import { colors, metrics, spacing, typography } from '../../themes';
+import { useSmartNavigation } from '../../navigation.provider';
+import { useStore } from '../../stores';
+import { metrics, spacing, typography } from '../../themes';
 import { _keyExtract } from '../../utils/helper';
-import { TransactionMinusIcon } from '../../components/icon';
-import LinearGradient from 'react-native-linear-gradient';
-import {
-  BuyIcon,
-  DepositIcon,
-  SendDashboardIcon
-} from '../../components/icon/button';
-import {
-  TransactionItem,
-  TransactionSectionTitle
-} from '../transactions/components';
-import { PageWithScrollViewInBottomTabView } from '../../components/page';
+import { PageWithView } from '../../components/page';
 import { navigate } from '../../router/root';
 import { API } from '../../common/api';
-import { useLoadingScreen } from '../../providers/loading-screen';
 import { AddressQRCodeModal } from '../home/components';
 import { TokenSymbolEVM } from '../../components/token-symbol/token-symbol-evm';
+import { useTheme } from '@src/themes/theme-provider';
+import { OWBox } from '@src/components/card';
+import { OWButton } from '@src/components/button';
+import OWTransactionItem from '../transactions/components/items/transaction-item';
+import OWFlatList from '@src/components/page/ow-flat-list';
+import { Text } from '@src/components/text';
+import { useNavigation } from '@react-navigation/native';
+import { SCREENS } from '@src/common/constants';
 
-export const TokenDetailScreen: FunctionComponent = observer(props => {
-  const { chainStore, queriesStore, accountStore, modalStore } = useStore();
+export const TokenDetailScreen: FunctionComponent = observer((props) => {
+  const { chainStore, modalStore, txsStore, accountStore, keyRingStore, queriesStore } = useStore();
   const smartNavigation = useSmartNavigation();
-
-  const { amountBalance, balanceCoinDenom, priceBalance, balanceCoinFull } =
+  const navigation = useNavigation();
+  const { colors } = useTheme();
+  const [loadMore, setLoadMore] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const styles = styling(colors);
+  const { amountBalance, balanceCoinDenom, priceBalance, balanceCoinFull, balanceCurrency } =
     props?.route?.params ?? {};
+
+  const txs = txsStore(chainStore.current);
   const account = accountStore.getAccount(chainStore.current.chainId);
-  // const queries = queriesStore.get(chainStore.current.chainId);
-
-  // const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(
-  //   account.bech32Address
-  // );
-  // const delegated = queryDelegated.total;
-
-  // const queryUnbonding =
-  //   queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(
-  //     account.bech32Address
-  //   );
-
-  // const unbonding = queryUnbonding.total;
-  // const stakedSum = delegated.add(unbonding);
+  const addressDisplay = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
   const queryBalances = queriesStore
     .get(chainStore.current.chainId)
-    .queryBalances.getQueryBech32Address(
-      chainStore.current.networkType === 'evm'
-        ? account.evmosHexAddress
-        : account.bech32Address
-    );
+    .queryBalances.getQueryBech32Address(addressDisplay);
 
   const tokens = queryBalances.balances
-    .concat(
-      queryBalances.nonNativeBalances,
-      queryBalances.positiveNativeUnstakables
-    )
+    .concat(queryBalances.nonNativeBalances, queryBalances.positiveNativeUnstakables)
     .slice(0, 2);
+
   const page = useRef(1);
   const [data, setData] = useState([]);
-  const offset = useRef(0);
   const hasMore = useRef(true);
-  const fetchData = async (isLoadMore = false) => {
-    const res = await API.getTransactions(
-      {
-        address: account.bech32Address,
-        page: page.current,
-        limit: 10,
-        type: 'native'
-      },
-      // { baseURL: chainStore.current.rest }
-      { baseURL: 'https://api.scan.orai.io' }
-    );
-
-    const value = res.data?.data || [];
-    let newData = isLoadMore ? [...data, ...value] : value;
-    hasMore.current = value?.length === 10;
-    page.current = res.data?.page.page_id + 1;
-    if (page.current === res.data?.page.total_page) {
-      hasMore.current = false;
-    }
-
-    setData(newData);
+  const perPage = 10;
+  const fetchData = useCallback(
+    async (params, isLoadMore = false) => {
+      try {
+        if (hasMore.current) {
+          if (!isLoadMore) {
+            setLoading(true);
+          }
+          const rs = await txs.getTxs(perPage, page.current, params);
+          const newData = isLoadMore ? [...data, ...rs?.result] : rs?.result;
+          hasMore.current = rs?.result?.length === perPage;
+          page.current = rs?.current_page + 1;
+          if (rs?.current_page === rs?.total_page) {
+            hasMore.current = false;
+          }
+          if (rs?.result.length < 1) {
+            hasMore.current = false;
+          }
+          setData(newData);
+          setAllLoading();
+        } else {
+          setAllLoading();
+        }
+      } catch (error) {
+        setAllLoading();
+      }
+    },
+    [data]
+  );
+  const setAllLoading = () => {
+    setLoadMore(false);
+    setLoading(false);
+    setRefreshing(false);
   };
-
   useEffect(() => {
-    offset.current = 0;
-    fetchData();
-  }, [account.bech32Address, chainStore.current.chainId]);
-  const loadingScreen = useLoadingScreen();
-
+    refreshData();
+    return () => {
+      setData([]);
+    };
+  }, [chainStore?.current?.rest, account?.bech32Address]);
   const _onPressReceiveModal = () => {
-    modalStore.setOpen();
+    modalStore.setOptions();
     modalStore.setChildren(
       AddressQRCodeModal({
         account,
-        chainStore: chainStore.current
+        chainStore: chainStore.current,
+        keyRingStore: keyRingStore
       })
     );
   };
 
-  const _onPressBtnMain = name => {
+  const _onPressBtnMain = (name) => {
     if (name === 'Buy') {
       navigate('MainTab', { screen: 'Browser', path: 'https://oraidex.io' });
     }
@@ -123,12 +106,16 @@ export const TokenDetailScreen: FunctionComponent = observer(props => {
       _onPressReceiveModal();
     }
     if (name === 'Send') {
+      if (chainStore.current.networkType === 'bitcoin') {
+        navigate(SCREENS.STACK.Others, {
+          screen: SCREENS.SendBtc
+        });
+        return;
+      }
       smartNavigation.navigateSmart('Send', {
-        currency:
-          balanceCoinFull ??
-          balanceCoinDenom ??
-          chainStore.current.stakeCurrency.coinMinimalDenom
+        currency: balanceCoinFull ?? balanceCoinDenom ?? chainStore.current.stakeCurrency.coinMinimalDenom
       });
+      return;
     }
   };
 
@@ -146,77 +133,75 @@ export const TokenDetailScreen: FunctionComponent = observer(props => {
         break;
     }
     return (
-      <TouchableOpacity
-        style={{
-          backgroundColor: colors['purple-900'],
-          borderWidth: 0.5,
-          borderRadius: spacing['8'],
-          borderColor: colors['purple-900'],
-          marginLeft: 10,
-          marginRight: 10
-        }}
+      <OWButton
+        size="small"
+        type="primary"
         onPress={() => _onPressBtnMain(name)}
-      >
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            paddingTop: spacing['6'],
-            paddingBottom: spacing['6'],
-            paddingLeft: spacing['12'],
-            paddingRight: spacing['12']
-          }}
-        >
-          {icon}
-          <Text
-            style={{
-              ...typography['h7'],
-              lineHeight: spacing['20'],
-              color: colors['white'],
-              paddingLeft: spacing['6'],
-              fontWeight: '700'
-            }}
-          >
-            {name}
-          </Text>
-        </View>
-      </TouchableOpacity>
+        icon={icon}
+        label={name}
+        fullWidth={false}
+      />
     );
   };
+  const onEndReached = useCallback(() => {
+    if (page.current !== 1) {
+      setLoadMore(true);
+      fetchData(
+        {
+          addressAccount: chainStore.current.networkType == 'evm' ? account?.evmosHexAddress : account?.bech32Address,
+          token: balanceCurrency?.contractAddress || balanceCurrency?.coinMinimalDenom
+        },
+        true
+      );
+    }
+  }, [account?.bech32Address, data]);
+  const onTransactionDetail = (item) => {
+    navigation.navigate(SCREENS.STACK.Others, {
+      screen: SCREENS.TransactionDetail,
+      params: {
+        txHash: item?.txHash,
+        item
+      }
+    });
+    return;
+  };
+  const renderItem = ({ item, index }) => {
+    return <OWTransactionItem key={`item-${index}`} onPress={() => onTransactionDetail(item)} item={item} />;
+  };
+  const refreshData = useCallback(() => {
+    page.current = 1;
+    hasMore.current = true;
+    fetchData(
+      {
+        addressAccount: addressDisplay,
+        token: balanceCurrency?.contractAddress || balanceCurrency?.coinMinimalDenom
+      },
+      false
+    );
+  }, [chainStore?.current?.rest, addressDisplay]);
+  const onRefresh = () => {
+    setRefreshing(true);
+    refreshData();
+  };
+  const onTransactions = () => {
+    navigation.navigate(SCREENS.STACK.Others, {
+      screen: SCREENS.Transactions
+    });
+    return;
+  };
+
   return (
-    <PageWithScrollViewInBottomTabView>
-      <View
-        style={{
-          borderWidth: spacing['0.5'],
-          borderColor: colors['gray-100'],
-          borderRadius: spacing['12'],
-          marginHorizontal: spacing['24'],
-          marginVertical: spacing['12']
-        }}
-      >
-        <LinearGradient
-          colors={['#161532', '#5E499A']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={{
-            borderTopLeftRadius: spacing['11'],
-            borderTopRightRadius: spacing['11'],
-            borderBottomLeftRadius: spacing['11'],
-            borderBottomRightRadius: spacing['11']
-          }}
-        >
+    <PageWithView>
+      <View style={styles.containerBox}>
+        <OWBox type="gradient">
           <View
             style={{
-              marginTop: 24,
               justifyContent: 'center',
               alignItems: 'center'
             }}
           >
             {chainStore.current.networkType === 'evm' ? (
               <TokenSymbolEVM
-                style={{
-                  marginRight: spacing['12']
-                }}
                 size={44}
                 chainInfo={{
                   stakeCurrency: chainStore.current.stakeCurrency
@@ -226,9 +211,6 @@ export const TokenDetailScreen: FunctionComponent = observer(props => {
               />
             ) : (
               <TokenSymbol
-                style={{
-                  marginRight: spacing['12']
-                }}
                 size={44}
                 chainInfo={{
                   stakeCurrency: chainStore.current.stakeCurrency
@@ -240,7 +222,7 @@ export const TokenDetailScreen: FunctionComponent = observer(props => {
 
             <View
               style={{
-                justifyContent: 'space-between'
+                alignItems: 'center'
               }}
             >
               <Text
@@ -248,17 +230,15 @@ export const TokenDetailScreen: FunctionComponent = observer(props => {
                   ...typography.h3,
                   color: colors['white'],
                   marginTop: spacing['8'],
-                  fontWeight: '800',
-                  textAlign: 'center'
+                  fontWeight: '800'
                 }}
               >
-                {`${amountBalance} ${balanceCoinDenom}`}
+                {`${amountBalance} `}
               </Text>
               <Text
                 style={{
                   ...typography.h6,
-                  color: colors['purple-400'],
-                  textAlign: 'center'
+                  color: colors['purple-400']
                 }}
               >
                 {`${priceBalance?.toString() ?? '$0'}`}
@@ -271,143 +251,67 @@ export const TokenDetailScreen: FunctionComponent = observer(props => {
               display: 'flex',
               flexDirection: 'row',
               paddingTop: spacing['6'],
-              // paddingLeft: spacing['22'],
-              // paddingRight: spacing['22'],
-              justifyContent: 'space-around',
-              paddingBottom: spacing['24']
+              justifyContent: 'space-around'
             }}
           >
             {['Buy', 'Receive', 'Send'].map((e, i) => (
               <RenderBtnMain key={i} name={e} />
             ))}
           </View>
-        </LinearGradient>
-
-        {/* {queryStakable?.isFetching ? (
-        <View
-          style={{
-            position: 'absolute',
-            bottom: 50,
-            left: '50%'
-          }}
-        >
-          <LoadingSpinner color={colors['gray-150']} size={22} />
+        </OWBox>
+      </View>
+      <OWBox style={styles.containerListTransaction}>
+        <View style={styles.containerTitleList}>
+          <Text>Transaction List</Text>
+          <OWButton type="link" size="medium" fullWidth={false} label="View all" onPress={onTransactions} />
         </View>
-         ) : null}  */}
-      </View>
 
-      <View
-        style={{
-          backgroundColor: colors['white'],
-          borderRadius: spacing['24'],
-          paddingBottom: spacing['24'],
-          height: metrics.screenHeight / 2
-        }}
-      >
-        <TransactionSectionTitle
-          title={'Transaction list'}
-          onPress={async () => {
-            await loadingScreen.openAsync();
-            await fetchData();
-            loadingScreen.setIsLoading(false);
-          }}
-        />
-        <FlatList
+        <OWFlatList
           data={data}
-          renderItem={({ item, index }) => (
-            <TransactionItem
-              type={'native'}
-              item={item}
-              address={account.bech32Address}
-              key={index}
-              onPress={() =>
-                smartNavigation.navigateSmart('Transactions.Detail', {
-                  item: {
-                    ...item,
-                    address: account.bech32Address
-                  }
-                })
-              }
-            />
-          )}
-          keyExtractor={_keyExtract}
-          showsVerticalScrollIndicator={false}
-          ListFooterComponent={() => (
-            <View
-              style={{
-                height: 12
-              }}
-            />
-          )}
-          ListEmptyComponent={
-            <View style={styles.transactionListEmpty}>
-              <Image
-                source={require('../../assets/image/not_found.png')}
-                resizeMode="contain"
-                height={142}
-                width={142}
-              />
-              <Text
-                style={{
-                  ...typography.subtitle2,
-                  color: colors['gray-300'],
-                  marginTop: spacing['8']
-                }}
-              >
-                {`No result found`}
-              </Text>
-            </View>
-          }
+          onEndReached={onEndReached}
+          renderItem={renderItem}
+          loadMore={loadMore}
+          onRefresh={onRefresh}
+          loading={loading}
+          refreshing={refreshing}
         />
-
-        <TouchableOpacity
-          style={{
-            backgroundColor: colors['purple-900'],
-            borderRadius: spacing['8'],
-            marginHorizontal: spacing['24'],
-            paddingVertical: spacing['16'],
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginTop: spacing['12']
-          }}
-          onPress={() => smartNavigation.navigateSmart('Transactions', {})}
-        >
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}
-          >
-            <TransactionMinusIcon size={18} color={colors['white']} />
-            <Text
-              style={{
-                ...typography.h6,
-                color: colors['white'],
-                fontWeight: '700',
-                marginLeft: spacing['10']
-              }}
-            >
-              View all transactions
-            </Text>
-          </View>
-        </TouchableOpacity>
-      </View>
-    </PageWithScrollViewInBottomTabView>
+      </OWBox>
+    </PageWithView>
   );
 });
 
-const styles = StyleSheet.create({
-  containerToken: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginHorizontal: spacing['4'],
-    marginVertical: spacing['8'],
-    paddingTop: spacing['18'],
-    paddingBottom: spacing['18']
-  },
-  transactionListEmpty: {
-    justifyContent: 'center',
-    alignItems: 'center'
-  }
-});
+const styling = (colors) =>
+  StyleSheet.create({
+    containerListTransaction: {
+      flex: 1,
+      paddingTop: 10
+    },
+    containerTitleList: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingTop: 0,
+      marginTop: 0
+    },
+    containerBox: {
+      marginHorizontal: 24
+    },
+    containerToken: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginHorizontal: spacing['4'],
+      marginVertical: spacing['8'],
+      paddingTop: spacing['18'],
+      paddingBottom: spacing['18']
+    },
+    transactionListEmpty: {
+      justifyContent: 'center',
+      alignItems: 'center'
+    },
+    fixedScroll: {
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0
+    }
+  });

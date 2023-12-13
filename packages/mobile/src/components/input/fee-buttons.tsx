@@ -1,3 +1,14 @@
+import {
+  IFeeConfig,
+  IGasConfig,
+  InsufficientFeeError,
+  NotLoadedFeeError
+} from '@owallet/hooks';
+import { CoinPretty, PricePretty } from '@owallet/unit';
+import { Text } from '@src/components/text';
+import { useTheme } from '@src/themes/theme-provider';
+import { action, makeObservable, observable } from 'mobx';
+import { observer } from 'mobx-react-lite';
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import {
   StyleSheet,
@@ -6,30 +17,13 @@ import {
   ViewProps,
   ViewStyle
 } from 'react-native';
-import { CText as Text } from '../text';
-import { useStyle } from '../../styles';
-import { observer } from 'mobx-react-lite';
-import { action, makeObservable, observable } from 'mobx';
-import {
-  IFeeConfig,
-  IGasConfig,
-  InsufficientFeeError,
-  NotLoadedFeeError
-} from '@owallet/hooks';
-import { GasInput } from './gas';
 import { useStore } from '../../stores';
-import { CoinPretty, PricePretty } from '@owallet/unit';
-import { LoadingSpinner } from '../spinner';
+import { useStyle } from '../../styles';
+import { spacing, typography } from '../../themes';
+import { AverageIconFill, FastIconFill, LowIconFill } from '../icon';
 import { RectButton } from '../rect-button';
-import {
-  FastIcon,
-  LowIcon,
-  AverageIcon,
-  LowIconFill,
-  AverageIconFill,
-  FastIconFill
-} from '../icon';
-import { colors, spacing, typography } from '../../themes';
+import { LoadingSpinner } from '../spinner';
+import { GasInput } from './gas';
 export interface FeeButtonsProps {
   labelStyle?: TextStyle;
   containerStyle?: ViewStyle;
@@ -62,7 +56,7 @@ class FeeButtonState {
 }
 
 export const FeeButtons: FunctionComponent<FeeButtonsProps> = observer(
-  props => {
+  (props) => {
     // This may be not the good way to handle the states across the components.
     // But, rather than using the context API with boilerplate code, just use the mobx state to simplify the logic.
     const [feeButtonState] = useState(() => new FeeButtonState());
@@ -97,9 +91,10 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
     label,
     feeConfig
   }) => {
-    const { priceStore } = useStore();
-
+    const { priceStore, chainStore } = useStore();
     const style = useStyle();
+    const { colors } = useTheme();
+    const styles = styling(colors);
 
     useEffect(() => {
       if (feeConfig.feeCurrency && !feeConfig.fee) {
@@ -206,12 +201,12 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
             ...styles.containerBtnFee,
             ...(selected
               ? {
-                  borderColor: colors['purple-900'],
+                  borderColor: colors['purple-700'],
                   borderWidth: 1
                 }
               : {
-                  borderColor: colors['gray-10'],
-                  borderWidth: 1
+                  borderColor: colors['border-purple-100-gray-800'],
+                  borderWidth: 0.5
                 })
           }}
           rippleColor={style.get('color-primary-100').color}
@@ -222,7 +217,8 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
             <Text
               style={{
                 ...typography.h7,
-                fontWeight: '700'
+                fontWeight: '700',
+                color: colors['sub-primary-text']
               }}
             >
               {label}
@@ -231,17 +227,24 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
           <Text
             style={{
               fontSize: 10,
-              fontWeight: '700'
+              fontWeight: '700',
+              color: colors['sub-primary-text']
             }}
           >
-            {amount.maxDecimals(6).trim(true).separator(' ').toString()}
+            {amount
+              .maxDecimals(
+                chainStore?.current?.stakeCurrency?.coinDecimals || 6
+              )
+              .trim(true)
+              .separator(' ')
+              .toString()}
           </Text>
           {price ? (
             <Text
               style={{
                 fontSize: 10,
-                color: '#636366',
-                lineHeight: 16
+                lineHeight: 16,
+                color: colors['sub-primary-text']
               }}
             >
               {price.toString()}
@@ -259,14 +262,17 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
         }}
       >
         <Text
-          style={StyleSheet.flatten([
-            style.flatten([
-              'subtitle3',
-              'color-text-black-medium',
-              'margin-bottom-3'
+          style={[
+            StyleSheet.flatten([
+              style.flatten([
+                'subtitle3',
+                'color-text-black-medium',
+                'margin-bottom-3'
+              ]),
+              labelStyle
             ]),
-            labelStyle
-          ])}
+            { color: colors['sub-primary-text'] }
+          ]}
         >
           {label}
         </Text>
@@ -344,21 +350,22 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
   }
 );
 
-const styles = StyleSheet.create({
-  containerBtnFee: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: spacing['12'],
-    backgroundColor: colors['white'],
-    borderColor: colors['white'],
-    borderRadius: spacing['12'],
-    marginLeft: 5,
-    marginRight: 5
-  },
-  containerIcon: {
-    borderRadius: spacing['8'],
-    padding: spacing['10'],
-    width: 44,
-    alignItems: 'center'
-  }
-});
+const styling = (colors) =>
+  StyleSheet.create({
+    containerBtnFee: {
+      flex: 1,
+      justifyContent: 'center',
+      padding: spacing['12'],
+      backgroundColor: colors['item'],
+      borderColor: colors['white'],
+      borderRadius: spacing['12'],
+      marginLeft: 5,
+      marginRight: 5
+    },
+    containerIcon: {
+      borderRadius: spacing['8'],
+      padding: spacing['10'],
+      width: 44,
+      alignItems: 'center'
+    }
+  });

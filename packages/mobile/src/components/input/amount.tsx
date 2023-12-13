@@ -1,7 +1,3 @@
-import React, { FunctionComponent, useMemo } from 'react';
-import { observer } from 'mobx-react-lite';
-import { TextInput } from './input';
-import { TextStyle, View, ViewStyle } from 'react-native';
 import {
   EmptyAmountError,
   IAmountConfig,
@@ -10,9 +6,12 @@ import {
   NegativeAmountError,
   ZeroAmountError
 } from '@owallet/hooks';
-import { Button } from '../button';
-import { useStyle } from '../../styles';
+import { observer } from 'mobx-react-lite';
+import React, { FunctionComponent, useMemo } from 'react';
+import { TextStyle, View, ViewStyle } from 'react-native';
 import { colors, spacing } from '../../themes';
+import { Button } from '../button';
+import { TextInput } from './input';
 
 export const AmountInput: FunctionComponent<{
   labelStyle?: TextStyle;
@@ -85,7 +84,7 @@ export const AmountInput: FunctionComponent<{
                 containerStyle={{
                   height: 24,
                   borderRadius: spacing['8'],
-                  backgroundColor: colors['purple-900'],
+                  backgroundColor: colors['purple-700'],
                   justifyContent: 'center',
                   alignItems: 'center'
                 }}

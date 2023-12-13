@@ -6,7 +6,7 @@ import {
   AccountStore,
   SignInteractionStore,
   TokensStore,
-  QueriesWithCosmosAndSecretAndCosmwasmAndEvm,
+  QueriesWithCosmosAndSecretAndCosmwasmAndEvmAndBitcoin,
   AccountWithAll,
   LedgerInitStore,
   IBCCurrencyRegsitrar,
@@ -19,24 +19,23 @@ import { RNEnv, RNRouterUI, RNMessageRequesterInternal } from '../router';
 import { ChainStore } from './chain';
 import { DeepLinkStore, BrowserStore, browserStore } from './browser';
 import { AppInit, appInit } from './app_init';
+import { Notification, notification } from './notification';
 import EventEmitter from 'eventemitter3';
-import { OWallet, Ethereum } from '@owallet/provider';
+import { OWallet, Ethereum, Bitcoin, TronWeb } from '@owallet/provider';
 import { KeychainStore } from './keychain';
 import { FeeType } from '@owallet/hooks';
-import {
-  AmplitudeApiKey,
-  EmbedChainInfos,
-  UIConfigStore,
-  FiatCurrencies
-} from '@owallet/common';
+import { AmplitudeApiKey, EmbedChainInfos, UIConfigStore, FiatCurrencies } from '@owallet/common';
 import { AnalyticsStore, NoopAnalyticsClient } from '@owallet/analytics';
 import { Amplitude } from '@amplitude/react-native';
 import { ChainIdHelper } from '@owallet/cosmos';
 import { FiatCurrency } from '@owallet/types';
 import { ModalStore } from './modal';
-
-import { version } from '../../package.json';
+import { version, name } from '../../package.json';
 import { SendStore } from './send';
+import { ChainInfoInner } from '@owallet/stores';
+import { ChainInfo } from '@owallet/types';
+import { TxsStore } from './txs';
+import { UniversalSwapStore } from './universal_swap';
 
 export class RootStore {
   public readonly uiConfigStore: UIConfigStore;
@@ -48,7 +47,7 @@ export class RootStore {
   public readonly ledgerInitStore: LedgerInitStore;
   public readonly signInteractionStore: SignInteractionStore;
 
-  public readonly queriesStore: QueriesStore<QueriesWithCosmosAndSecretAndCosmwasmAndEvm>;
+  public readonly queriesStore: QueriesStore<QueriesWithCosmosAndSecretAndCosmwasmAndEvmAndBitcoin>;
   public readonly accountStore: AccountStore<AccountWithAll>;
   public readonly priceStore: CoinGeckoPriceStore;
   public readonly tokensStore: TokensStore<ChainInfoWithEmbed>;
@@ -84,6 +83,9 @@ export class RootStore {
   public readonly modalStore: ModalStore;
   public readonly sendStore: SendStore;
   public readonly appInitStore: AppInit;
+  public readonly universalSwapStore: UniversalSwapStore;
+  public readonly notificationStore: Notification;
+  public readonly txsStore: (currentChain: ChainInfoInner<ChainInfo>) => TxsStore;
 
   constructor() {
     const router = new RNRouterUI(RNEnv.produceEnv);
@@ -93,18 +95,9 @@ export class RootStore {
     this.uiConfigStore = new UIConfigStore(new AsyncKVStore('store_ui_config'));
 
     // Order is important.
-    this.interactionStore = new InteractionStore(
-      router,
-      new RNMessageRequesterInternal()
-    );
-    this.permissionStore = new PermissionStore(
-      this.interactionStore,
-      new RNMessageRequesterInternal()
-    );
-    this.ledgerInitStore = new LedgerInitStore(
-      this.interactionStore,
-      new RNMessageRequesterInternal()
-    );
+    this.interactionStore = new InteractionStore(router, new RNMessageRequesterInternal());
+    this.permissionStore = new PermissionStore(this.interactionStore, new RNMessageRequesterInternal());
+    this.ledgerInitStore = new LedgerInitStore(this.interactionStore, new RNMessageRequesterInternal());
     this.signInteractionStore = new SignInteractionStore(this.interactionStore);
 
     this.chainStore = new ChainStore(
@@ -132,9 +125,9 @@ export class RootStore {
       new AsyncKVStore('store_queries_fix2'),
       this.chainStore,
       async () => {
-        return new OWallet(version, 'core', new RNMessageRequesterInternal());
+        return new OWallet(`${name}-${version}`, 'core', new RNMessageRequesterInternal());
       },
-      QueriesWithCosmosAndSecretAndCosmwasmAndEvm
+      QueriesWithCosmosAndSecretAndCosmwasmAndEvmAndBitcoin
     );
 
     this.accountStore = new AccountStore<AccountWithAll>(
@@ -155,19 +148,16 @@ export class RootStore {
           suggestChain: false,
           autoInit: true,
           getOWallet: async () => {
-            return new OWallet(
-              version,
-              'core',
-              new RNMessageRequesterInternal()
-            );
+            return new OWallet(`${name}-${version}`, 'core', new RNMessageRequesterInternal());
           },
           getEthereum: async () => {
-            return new Ethereum(
-              version,
-              'core',
-              '0x38',
-              new RNMessageRequesterInternal()
-            );
+            return new Ethereum(version, 'core', '0x38', new RNMessageRequesterInternal());
+          },
+          getBitcoin: async () => {
+            return new Bitcoin(version, 'core', 'bitcoin', new RNMessageRequesterInternal());
+          },
+          getTronWeb: async () => {
+            return new TronWeb(version, 'core', '0x2b6653dc', new RNMessageRequesterInternal());
           }
         },
         chainOpts: this.chainStore.chainInfos.map(chainInfo => {
@@ -220,10 +210,7 @@ export class RootStore {
 
     router.listen(APP_PORT);
 
-    this.keychainStore = new KeychainStore(
-      new AsyncKVStore('store_keychain'),
-      this.keyRingStore
-    );
+    this.keychainStore = new KeychainStore(new AsyncKVStore('store_keychain'), this.keyRingStore);
 
     this.analyticsStore = new AnalyticsStore(
       (() => {
@@ -244,15 +231,11 @@ export class RootStore {
             };
 
             if (eventProperties.chainId) {
-              eventProperties.chainId = ChainIdHelper.parse(
-                eventProperties.chainId
-              ).identifier;
+              eventProperties.chainId = ChainIdHelper.parse(eventProperties.chainId).identifier;
             }
 
             if (eventProperties.toChainId) {
-              eventProperties.toChainId = ChainIdHelper.parse(
-                eventProperties.toChainId
-              ).identifier;
+              eventProperties.toChainId = ChainIdHelper.parse(eventProperties.toChainId).identifier;
             }
           }
 
@@ -265,9 +248,12 @@ export class RootStore {
     );
     this.deepLinkUriStore = new DeepLinkStore();
     this.browserStore = browserStore;
-    this.appInitStore = appInit;
     this.modalStore = new ModalStore();
+    this.appInitStore = appInit;
+    this.universalSwapStore = new UniversalSwapStore();
+    this.notificationStore = notification;
     this.sendStore = new SendStore();
+    this.txsStore = (currentChain: ChainInfoInner<ChainInfo>): TxsStore => new TxsStore(currentChain);
   }
 }
 

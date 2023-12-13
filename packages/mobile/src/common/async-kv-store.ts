@@ -1,14 +1,14 @@
-import { KVStore } from "@owallet/common";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { KVStore, KVStoreType } from '@owallet/common';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // polyfill for common
+globalThis.AsyncStorage = AsyncStorage;
 (global as any).localStorage = AsyncStorage;
-
 export class AsyncKVStore implements KVStore {
   constructor(private readonly _prefix: string) {}
 
   async get<T = unknown>(key: string): Promise<T | undefined> {
-    const k = this.prefix() + "/" + key;
+    const k = this.prefix() + '/' + key;
 
     const data = await AsyncStorage.getItem(k);
     if (data === null) {
@@ -18,7 +18,7 @@ export class AsyncKVStore implements KVStore {
   }
 
   async set<T = unknown>(key: string, data: T | null): Promise<void> {
-    const k = this.prefix() + "/" + key;
+    const k = this.prefix() + '/' + key;
 
     if (data === null) {
       await AsyncStorage.removeItem(k);
@@ -29,5 +29,8 @@ export class AsyncKVStore implements KVStore {
 
   prefix(): string {
     return this._prefix;
+  }
+  type(): KVStoreType {
+    return KVStoreType.mobile;
   }
 }

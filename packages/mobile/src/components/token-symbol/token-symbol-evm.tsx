@@ -1,6 +1,7 @@
-import React, { FunctionComponent, useMemo } from 'react';
-import { View, ViewStyle } from 'react-native';
 import { AppCurrency, Currency } from '@owallet/types';
+import React, { FunctionComponent } from 'react';
+import { View, ViewStyle } from 'react-native';
+import FastImage from 'react-native-fast-image';
 import {
   Circle,
   Defs,
@@ -9,11 +10,8 @@ import {
   Stop,
   Svg
 } from 'react-native-svg';
-import FastImage from 'react-native-fast-image';
-import { Hash } from '@owallet/crypto';
-import { Buffer } from 'buffer';
-import { VectorCharacter } from '../vector-character';
 import { colors, spacing } from '../../themes';
+import { VectorCharacter } from '../vector-character';
 
 export const StakedTokenSymbol: FunctionComponent<{
   size: number;
@@ -63,7 +61,7 @@ export const TokenSymbolEVM: FunctionComponent<{
         ...propStyle
       }}
     >
-      {currency.coinImageUrl ? (
+      {currency?.coinImageUrl ? (
         <FastImage
           style={{
             width: size * imageScale,
@@ -77,7 +75,7 @@ export const TokenSymbolEVM: FunctionComponent<{
         />
       ) : (
         <VectorCharacter
-          char={currency.coinDenom[0]}
+          char={currency?.coinDenom[0] ?? ''}
           height={Math.floor(size * 0.35)}
           color="black"
         />

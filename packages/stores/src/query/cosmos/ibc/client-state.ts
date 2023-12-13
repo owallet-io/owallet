@@ -1,4 +1,4 @@
-import { KVStore } from '@owallet/common';
+import { KVStore, getUrlV1Beta } from '@owallet/common';
 import {
   ObservableChainQuery,
   ObservableChainQueryMap
@@ -19,11 +19,12 @@ export class ObservableChainQueryClientState extends ObservableChainQuery<Client
       kvStore,
       chainId,
       chainGetter,
-      `/ibc/core/channel/v1beta1/channels/${channelId}/ports/${portId}/client_state`
+      `/ibc/core/channel/v1/channels/${channelId}/ports/${portId}/client_state`
     );
 
     autorun(() => {
       const chainInfo = this.chainGetter.getChain(this.chainId);
+
       if (chainInfo.features && chainInfo.features.includes('ibc-go')) {
         this.setUrl(
           `/ibc/core/channel/v1/channels/${channelId}/ports/${portId}/client_state`

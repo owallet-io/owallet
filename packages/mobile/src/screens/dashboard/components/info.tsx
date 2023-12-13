@@ -1,17 +1,20 @@
 import React, { FunctionComponent } from 'react';
 import { observer } from 'mobx-react-lite';
-import { Card } from '../../../components/card';
-import { CText as Text } from '../../../components/text';
+import { Card, OWBox } from '../../../components/card';
+import { Text } from '@src/components/text';
 import { View, ViewStyle, StyleSheet } from 'react-native';
-import { colors, spacing } from '../../../themes';
+import { spacing } from '../../../themes';
 import { useStore } from '../../../stores';
+import { useTheme } from '@src/themes/theme-provider';
 
 export const InfoCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({}) => {
   const { chainStore } = useStore();
+  const { colors } = useTheme();
+  const styles = styling(colors);
   return (
-    <Card style={styles.card}>
+    <OWBox >
       <View style={styles.headerWrapper}>
         <View
           style={{
@@ -31,7 +34,7 @@ export const InfoCard: FunctionComponent<{
           />
           <Text
             style={{
-              color: colors['gray-900'],
+              color: colors['primary-text'],
               fontWeight: '700',
               fontSize: 14
             }}
@@ -41,7 +44,7 @@ export const InfoCard: FunctionComponent<{
         </View>
         <Text
           style={{
-            color: colors['gray-800'],
+            color: colors['primary-text'],
             fontWeight: '400',
             fontSize: 14,
             lineHeight: 20
@@ -50,7 +53,7 @@ export const InfoCard: FunctionComponent<{
           For more details about{' '}
           <Text
             style={{
-              color: colors['gray-800'],
+              color: colors['primary-text'],
               fontWeight: '700',
               fontSize: 14,
               lineHeight: 20
@@ -71,19 +74,20 @@ export const InfoCard: FunctionComponent<{
           </Text>
         </Text>
       </View>
-    </Card>
+    </OWBox>
   );
 });
 
-const styles = StyleSheet.create({
-  headerWrapper: {
-    paddingBottom: 40
-  },
-  card: {
-    padding: spacing['28'],
-    paddingBottom: spacing['14'],
-    marginBottom: spacing['32'],
-    borderRadius: spacing['24'],
-    backgroundColor: colors['white']
-  }
-});
+const styling = colors =>
+  StyleSheet.create({
+    headerWrapper: {
+      paddingBottom: 20
+    },
+    card: {
+      padding: spacing['28'],
+      paddingBottom: spacing['14'],
+      marginBottom: spacing['32'],
+      borderRadius: spacing['24'],
+      backgroundColor: colors['primary']
+    }
+  });

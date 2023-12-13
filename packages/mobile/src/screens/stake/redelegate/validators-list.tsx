@@ -1,24 +1,29 @@
 import React from 'react';
-import { StyleSheet, View, Image } from 'react-native';
-import { CText as Text } from '../../../components/text';
-import { colors, spacing, typography } from '../../../themes';
+import { StyleSheet, View } from 'react-native';
+import { Text } from '@src/components/text';
+import { spacing, typography } from '../../../themes';
 import Validators from './modal-validators';
+import { useTheme } from '@src/themes/theme-provider';
 
-const styles = StyleSheet.create({
-  containerAccount: {
-    backgroundColor: colors['gray-10'],
-    paddingVertical: spacing['16'],
-    borderRadius: spacing['8'],
-    paddingHorizontal: spacing['16'],
-    flexDirection: 'row',
-    marginTop: spacing['16'],
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    width: '100%'
-  }
-});
+const styling = () => {
+  const { colors } = useTheme();
+  return StyleSheet.create({
+    containerAccount: {
+      backgroundColor: colors['background-item-list'],
+      paddingVertical: spacing['16'],
+      borderRadius: spacing['8'],
+      paddingHorizontal: spacing['16'],
+      flexDirection: 'row',
+      marginTop: spacing['16'],
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      width: '100%'
+    }
+  });
+};
 
 const ValidatorsList = ({ onPressSelectValidator, dstValidatorAddress }) => {
+  const styles = styling();
   return (
     <View
       style={{
@@ -29,7 +34,6 @@ const ValidatorsList = ({ onPressSelectValidator, dstValidatorAddress }) => {
         <Text
           style={{
             ...typography.h6,
-            color: colors['gray-900'],
             fontWeight: '800',
             marginBottom: spacing['12']
           }}

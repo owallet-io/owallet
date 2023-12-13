@@ -1,41 +1,34 @@
 import React, { FunctionComponent, useMemo } from 'react';
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
-import {
-  renderFlag,
-  RightArrow,
-  SettingItem,
-  SettingSectionTitle
-} from './components';
-// import { SettingSelectAccountItem } from "./items/select-account";
+import { renderFlag, SettingItem, SettingSectionTitle } from './components';
 import { useSmartNavigation } from '../../navigation.provider';
-// import { SettingFiatCurrencyItem } from "./items/fiat-currency";
-import { SettingBiometricLockItem } from './items/biometric-lock';
+import { OWBox } from '@src/components/card';
+import { Text } from '@src/components/text';
+import { useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
-import { useStore } from '../../stores';
-import { SettingRemoveAccountItem } from './items/remove-account';
-import { canShowPrivateData } from './screens/view-private-data';
-import { SettingViewPrivateDataItem } from './items/view-private-data';
 import {
-  View,
+  ImageBackground,
+  Platform,
   StyleSheet,
   TouchableOpacity,
-  Platform,
-  ImageBackground,
-  StatusBar
+  View
 } from 'react-native';
-import { CText as Text } from '../../components/text';
-import { spacing, typography } from '../../themes';
 import { DownArrowIcon } from '../../components/icon';
+import { useStore } from '../../stores';
+import { spacing, typography } from '../../themes';
 import { CountryModal } from './components/country-modal';
+import { SettingBiometricLockItem } from './items/biometric-lock';
+import { SettingRemoveAccountItem } from './items/remove-account';
 import { SettingSwitchModeItem } from './items/switch-mode';
-import { useTheme } from '@react-navigation/native';
+import { SettingViewPrivateDataItem } from './items/view-private-data';
+import { canShowPrivateData } from './screens/view-private-data';
 
 export const SettingScreen: FunctionComponent = observer(() => {
   const { keychainStore, keyRingStore, priceStore, modalStore } = useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
   const currencyItems = useMemo(() => {
-    return Object.keys(priceStore.supportedVsCurrencies).map(key => {
+    return Object.keys(priceStore.supportedVsCurrencies).map((key) => {
       return {
         key,
         label: key.toUpperCase()
@@ -43,31 +36,30 @@ export const SettingScreen: FunctionComponent = observer(() => {
     });
   }, [priceStore.supportedVsCurrencies]);
   const selected = keyRingStore.multiKeyStoreInfo.find(
-    keyStore => keyStore.selected
+    (keyStore) => keyStore.selected
   );
 
   const smartNavigation = useSmartNavigation();
   const _onPressCountryModal = () => {
-    modalStore.setOpen();
+    modalStore.setOptions({
+      bottomSheetModalConfig: {
+        enablePanDownToClose: false,
+        enableOverDrag: false
+      }
+    });
     modalStore.setChildren(
       CountryModal({
         data: currencyItems,
         current: priceStore.defaultVsCurrency,
         priceStore,
-        modalStore
+        modalStore,
+        colors
       })
     );
   };
 
   return (
-    <PageWithScrollViewInBottomTabView>
-      <StatusBar
-        animated={true}
-        backgroundColor="white"
-        barStyle={Platform.OS == 'ios' ? 'light-content' : 'dark-content'}
-        showHideTransition={'fade'}
-        hidden={false}
-      />
+    <PageWithScrollViewInBottomTabView backgroundColor={colors['background']}>
       <ImageBackground
         style={{
           ...styles.containerScreen
@@ -82,10 +74,10 @@ export const SettingScreen: FunctionComponent = observer(() => {
         >
           Settings
         </Text>
-        <View
+        <OWBox
+          type="shadow"
           style={{
-            ...styles.containerInfo,
-            ...styles.shadowBox
+            ...styles.containerInfo
           }}
         >
           <TouchableOpacity
@@ -102,7 +94,7 @@ export const SettingScreen: FunctionComponent = observer(() => {
               <Text
                 style={{
                   ...typography['text-caption2'],
-                  color: colors['text-black-very-low']
+                  color: colors['primary-text']
                 }}
               >
                 WALLET
@@ -110,16 +102,16 @@ export const SettingScreen: FunctionComponent = observer(() => {
               <Text
                 style={{
                   ...typography['h6'],
-                  color: colors['gray-900'],
+                  color: colors['primary-text'],
                   fontWeight: 'bold'
                 }}
               >
                 {selected
-                  ? selected.meta?.name || 'Keplr Account'
+                  ? selected.meta?.name || 'OWallet Account'
                   : 'No Account'}
               </Text>
             </View>
-            <DownArrowIcon color={colors['black']} height={12} />
+            <DownArrowIcon color={colors['primary-text']} height={12} />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={_onPressCountryModal}
@@ -133,8 +125,8 @@ export const SettingScreen: FunctionComponent = observer(() => {
             <View>
               <Text
                 style={{
-                  ...typography['subtitle2'],
-                  color: colors['text-black-very-low']
+                  ...typography['text-caption2'],
+                  color: colors['primary-text']
                 }}
               >
                 CURRENCY
@@ -150,7 +142,8 @@ export const SettingScreen: FunctionComponent = observer(() => {
                 <Text
                   style={{
                     ...typography['h6'],
-                    color: colors['gray-900'],
+                    color: colors['primary-text'],
+                    fontWeight: 'bold',
                     marginHorizontal: spacing['8']
                   }}
                 >
@@ -158,18 +151,16 @@ export const SettingScreen: FunctionComponent = observer(() => {
                 </Text>
               </View>
             </View>
-            <DownArrowIcon color={colors['black']} height={12} />
+            <DownArrowIcon color={colors['primary-text']} height={12} />
           </TouchableOpacity>
-        </View>
+        </OWBox>
       </ImageBackground>
-      {/* <SettingSelectAccountItem /> */}
-      {/* <SettingFiatCurrencyItem topBorder={true} /> */}
-      {/* <SettingSectionTitle title="General" /> */}
-      <View
+
+      <OWBox
         style={{
-          backgroundColor: colors['white'],
-          borderBottomLeftRadius: Platform.OS === 'ios' ? 32 : 0,
-          borderBottomRightRadius: Platform.OS === 'ios' ? 32 : 0
+          marginTop: 0,
+          marginBottom: 20,
+          paddingHorizontal: 0
         }}
       >
         <SettingSectionTitle title="Security" />
@@ -190,7 +181,7 @@ export const SettingScreen: FunctionComponent = observer(() => {
           />
         ) : null}
         {/* <SettingSectionTitle title="Others" /> */}
-        {/* <SettingSwitchModeItem /> */}
+        <SettingSwitchModeItem />
         <SettingItem
           label="About OWallet"
           onPress={() => {
@@ -198,7 +189,7 @@ export const SettingScreen: FunctionComponent = observer(() => {
           }}
         />
         <SettingRemoveAccountItem />
-      </View>
+      </OWBox>
     </PageWithScrollViewInBottomTabView>
   );
 });
@@ -206,7 +197,7 @@ export const SettingScreen: FunctionComponent = observer(() => {
 const styling = (colors: object) =>
   StyleSheet.create({
     shadowBox: {
-      shadowColor: '#ccc',
+      shadowColor: colors['splash-background'],
       shadowOffset: {
         width: 0,
         height: 3
@@ -232,12 +223,12 @@ const styling = (colors: object) =>
     },
     containerInfo: {
       position: 'absolute',
-      backgroundColor: colors['background'],
       height: 160,
       margin: 24,
       marginTop: 150,
       borderRadius: 12,
       padding: 20,
-      width: '100%'
+      width: '100%',
+      backgroundColor: colors['background-box']
     }
   });

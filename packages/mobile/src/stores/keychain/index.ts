@@ -18,10 +18,7 @@ export class KeychainStore {
     accessControl: Keychain.ACCESS_CONTROL.BIOMETRY_CURRENT_SET
   };
 
-  constructor(
-    protected readonly kvStore: KVStore,
-    protected readonly keyRingStore: KeyRingStore
-  ) {
+  constructor(protected readonly kvStore: KVStore, protected readonly keyRingStore: KeyRingStore) {
     makeObservable(this);
 
     this.init();
@@ -41,11 +38,9 @@ export class KeychainStore {
       throw new Error('Biometry is off');
     }
 
-    const credentials = yield* toGenerator(
-      Keychain.getGenericPassword(KeychainStore.defaultOptions)
-    );
+    const credentials = yield* toGenerator(Keychain.getGenericPassword(KeychainStore.defaultOptions));
     if (credentials) {
-      yield this.keyRingStore.unlock(credentials.password);
+      yield this.keyRingStore.unlock(credentials.password, false);
     } else {
       throw new Error('Failed to get credentials from keychain');
     }
@@ -55,13 +50,7 @@ export class KeychainStore {
   *turnOnBiometry(password: string) {
     const valid = yield* toGenerator(this.keyRingStore.checkPassword(password));
     if (valid) {
-      const result = yield* toGenerator(
-        Keychain.setGenericPassword(
-          'owallet',
-          password,
-          KeychainStore.defaultOptions
-        )
-      );
+      const result = yield* toGenerator(Keychain.setGenericPassword('owallet', password, KeychainStore.defaultOptions));
       if (result) {
         this._isBiometryOn = true;
         yield this.save();
@@ -74,26 +63,16 @@ export class KeychainStore {
   @flow
   *turnOffBiometry() {
     if (this.isBiometryOn) {
-      const credentials = yield* toGenerator(
-        Keychain.getGenericPassword(KeychainStore.defaultOptions)
-      );
+      const credentials = yield* toGenerator(Keychain.getGenericPassword(KeychainStore.defaultOptions));
       if (credentials) {
-        if (
-          yield* toGenerator(
-            this.keyRingStore.checkPassword(credentials.password)
-          )
-        ) {
-          const result = yield* toGenerator(
-            Keychain.resetGenericPassword(KeychainStore.defaultOptions)
-          );
+        if (yield* toGenerator(this.keyRingStore.checkPassword(credentials.password))) {
+          const result = yield* toGenerator(Keychain.resetGenericPassword(KeychainStore.defaultOptions));
           if (result) {
             this._isBiometryOn = false;
             yield this.save();
           }
         } else {
-          throw new Error(
-            'Failed to get valid password from keychain. This may be due to changes of biometry information'
-          );
+          throw new Error('Failed to get valid password from keychain. This may be due to changes of biometry information');
         }
       } else {
         throw new Error('Failed to get credentials from keychain');
@@ -105,9 +84,7 @@ export class KeychainStore {
   *turnOffBiometryWithPassword(password: string) {
     if (this.isBiometryOn) {
       if (yield* toGenerator(this.keyRingStore.checkPassword(password))) {
-        const result = yield* toGenerator(
-          Keychain.resetGenericPassword(KeychainStore.defaultOptions)
-        );
+        const result = yield* toGenerator(Keychain.resetGenericPassword(KeychainStore.defaultOptions));
         if (result) {
           this._isBiometryOn = false;
           yield this.save();
@@ -121,9 +98,7 @@ export class KeychainStore {
   @flow
   *reset() {
     if (this.isBiometryOn) {
-      const result = yield* toGenerator(
-        Keychain.resetGenericPassword(KeychainStore.defaultOptions)
-      );
+      const result = yield* toGenerator(Keychain.resetGenericPassword(KeychainStore.defaultOptions));
       if (result) {
         this._isBiometryOn = false;
         yield this.save();
@@ -136,9 +111,7 @@ export class KeychainStore {
     // No need to await.
     this.restore();
 
-    const type = yield* toGenerator(
-      Keychain.getSupportedBiometryType(KeychainStore.defaultOptions)
-    );
+    const type = yield* toGenerator(Keychain.getSupportedBiometryType(KeychainStore.defaultOptions));
     this._isBiometrySupported = type != null;
   }
 

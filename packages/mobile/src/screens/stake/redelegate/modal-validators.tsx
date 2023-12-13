@@ -1,30 +1,21 @@
-import React, { FunctionComponent, useMemo, useState } from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
-import { CText as Text } from '../../../components/text';
+import { ValidatorThumbnails } from '@owallet/common';
+import { BondStatus } from '@owallet/stores';
+import { CoinPretty, Dec } from '@owallet/unit';
+import { Text } from '@src/components/text';
+import React from 'react';
+import { FlatList, View } from 'react-native';
 import { RectButton } from '../../../components/rect-button';
+import { ValidatorThumbnail } from '../../../components/thumbnail';
 import { useStore } from '../../../stores';
 import { colors, metrics, spacing, typography } from '../../../themes';
 import { _keyExtract } from '../../../utils/helper';
-import { BondStatus } from '@owallet/stores';
-import { ValidatorThumbnail } from '../../../components/thumbnail';
-import { ValidatorThumbnails } from '@owallet/common';
-import { CoinPretty, Dec } from '@owallet/unit';
+import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 
-const Validators = ({
-  onPressSelectValidator,
-  styles,
-  dstValidatorAddress
-}) => {
+const Validators = ({ onPressSelectValidator, styles, dstValidatorAddress }) => {
   const { chainStore, queriesStore, accountStore, modalStore } = useStore();
   const queries = queriesStore.get(chainStore.current.chainId);
-  const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-    BondStatus.Bonded
-  );
-  // const account = accountStore.getAccount(chainStore.current.chainId);
-  // const queryDelegations =
-  //   queries.cosmos.queryDelegations.getQueryBech32Address(
-  //     account.bech32Address
-  //   );
+  const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(BondStatus.Bonded);
+
   const dataAll = bondedValidators.validators;
   const data = [...dataAll];
   const renderItem = ({ item }) => {
@@ -38,9 +29,8 @@ const Validators = ({
         onPress={() =>
           onPressSelectValidator(
             validatorsAddress,
-            ValidatorThumbnails[validatorsAddress] ??
-              bondedValidators.getValidatorThumbnail(validatorsAddress),
-            item.description?.moniker
+            ValidatorThumbnails[validatorsAddress] ?? bondedValidators.getValidatorThumbnail(validatorsAddress),
+            item?.description?.moniker
           )
         }
       >
@@ -55,10 +45,7 @@ const Validators = ({
               marginRight: spacing['8']
             }}
             size={38}
-            url={
-              ValidatorThumbnails[validatorsAddress] ??
-              bondedValidators.getValidatorThumbnail(validatorsAddress)
-            }
+            url={ValidatorThumbnails[validatorsAddress] ?? bondedValidators.getValidatorThumbnail(validatorsAddress)}
           />
           <View
             style={{
@@ -68,12 +55,11 @@ const Validators = ({
             <Text
               style={{
                 ...typography.h6,
-                color: colors['gray-900'],
                 fontWeight: '900'
               }}
               numberOfLines={1}
             >
-              {item.description?.moniker}
+              {item?.description?.moniker}
             </Text>
             {item.tokens && (
               <Text
@@ -85,10 +71,7 @@ const Validators = ({
                 }}
               >
                 {/* Stake {amount.maxDecimals(4).trim(true).shrink(true).toString()} */}
-                {new CoinPretty(
-                  chainStore.current.stakeCurrency,
-                  new Dec(item.tokens)
-                )
+                {new CoinPretty(chainStore.current.stakeCurrency, new Dec(item.tokens))
                   .maxDecimals(0)
                   .hideDenom(true)
                   .toString() + ' staked'}
@@ -104,13 +87,7 @@ const Validators = ({
               height: 24,
               borderRadius: spacing['32'],
               backgroundColor:
-                colors[
-                  `${
-                    item.operator_address == dstValidatorAddress
-                      ? 'purple-700'
-                      : 'gray-100'
-                  }`
-                ],
+                item.operator_address == dstValidatorAddress ? colors['background-btn-primary'] : colors['gray-100'],
               justifyContent: 'center',
               alignItems: 'center'
             }}
@@ -135,7 +112,7 @@ const Validators = ({
         height: metrics.screenHeight / 2
       }}
     >
-      <FlatList
+      <BottomSheetFlatList
         data={[...data]}
         showsVerticalScrollIndicator={false}
         renderItem={renderItem}

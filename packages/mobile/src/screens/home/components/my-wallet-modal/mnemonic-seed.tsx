@@ -1,16 +1,22 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { FlatList, Image, View } from 'react-native';
-import { CText as Text } from '../../../../components/text';
+import { Text } from '@src/components/text';
 import { RectButton } from '../../../../components/rect-button';
 import { useStore } from '../../../../stores';
-import { colors, metrics, spacing, typography } from '../../../../themes';
+import { metrics, spacing, typography } from '../../../../themes';
 import { _keyExtract } from '../../../../utils/helper';
 import { MultiKeyStoreInfoWithSelectedElem } from '@owallet/background';
 import { LoadingSpinner } from '../../../../components/spinner';
+import { useTheme } from '@src/themes/theme-provider';
+import { useStyleMyWallet } from './styles';
+import OWFlatList from '@src/components/page/ow-flat-list';
+import { OWButton } from '@src/components/button';
 
-const MnemonicSeed = ({ styles }) => {
+const MnemonicSeed = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const { keyRingStore, analyticsStore, modalStore } = useStore();
+  const { keyRingStore, analyticsStore, modalStore, chainStore } = useStore();
+  const styles = useStyleMyWallet();
+  const { colors } = useTheme();
   const mnemonicKeyStores = useMemo(() => {
     return keyRingStore.multiKeyStoreInfo.filter(
       (keyStore) => !keyStore.type || keyStore.type === 'mnemonic'
@@ -29,14 +35,15 @@ const MnemonicSeed = ({ styles }) => {
     );
   }, [keyRingStore.multiKeyStoreInfo]);
 
-  const selectKeyStore = async (
-    keyStore: MultiKeyStoreInfoWithSelectedElem
-  ) => {
-    const index = keyRingStore.multiKeyStoreInfo.indexOf(keyStore);
-    if (index >= 0) {
-      await keyRingStore.changeKeyRing(index);
-    }
-  };
+  const selectKeyStore = useCallback(
+    async (keyStore: MultiKeyStoreInfoWithSelectedElem) => {
+      const index = keyRingStore.multiKeyStoreInfo.indexOf(keyStore);
+      if (index >= 0) {
+        await keyRingStore.changeKeyRing(index);
+      }
+    },
+    []
+  );
 
   const renderItem = ({ item }) => {
     return (
@@ -50,7 +57,7 @@ const MnemonicSeed = ({ styles }) => {
             analyticsStore.logEvent('Account changed');
             await selectKeyStore(item);
             await modalStore.close();
-            setIsLoading(false);
+            // setIsLoading(false);
           }}
         >
           <View
@@ -75,7 +82,7 @@ const MnemonicSeed = ({ styles }) => {
               <Text
                 style={{
                   ...typography.h6,
-                  color: colors['gray-900'],
+                  color: colors['text-title-login'],
                   fontWeight: '900'
                 }}
                 numberOfLines={1}
@@ -91,7 +98,9 @@ const MnemonicSeed = ({ styles }) => {
                     fontSize: 12
                   }}
                 >
-                  {item.address}
+                  {chainStore.current.networkType === 'cosmos'
+                    ? null
+                    : item.address}
                 </Text>
               )}
             </View>
@@ -104,7 +113,9 @@ const MnemonicSeed = ({ styles }) => {
                 height: 24,
                 borderRadius: spacing['32'],
                 backgroundColor:
-                  colors[`${item.selected ? 'purple-700' : 'gray-100'}`],
+                  colors[
+                    `${item.selected ? 'purple-700' : 'bg-circle-select-modal'}`
+                  ],
                 justifyContent: 'center',
                 alignItems: 'center'
               }}
@@ -114,7 +125,7 @@ const MnemonicSeed = ({ styles }) => {
                   width: 12,
                   height: 12,
                   borderRadius: spacing['32'],
-                  backgroundColor: colors['white']
+                  backgroundColor: colors['background-item-list']
                 }}
               />
             </View>
@@ -123,30 +134,34 @@ const MnemonicSeed = ({ styles }) => {
       </>
     );
   };
+  const data = [...mnemonicKeyStores, ...privateKeyStores, ...ledgerKeyStores];
   return (
     <View
       style={{
         width: metrics.screenWidth - 36,
-        height: metrics.screenHeight / 4,
+        height:
+          data?.length > 1 ? metrics.screenHeight / 4 : metrics.screenHeight / 7
       }}
     >
-      <View style={{  position: 'relative' }}>
-        <FlatList
-          data={[...mnemonicKeyStores, ...privateKeyStores, ...ledgerKeyStores]}
-          showsVerticalScrollIndicator={false}
-          renderItem={renderItem}
-          keyExtractor={_keyExtract}
-        />
-         <View
+      <OWFlatList
+        data={data}
+        isBottomSheet
+        renderItem={renderItem}
+        keyExtractor={_keyExtract}
+      />
+      <View style={{ position: 'relative' }}>
+        <View
           style={{
             position: 'absolute',
             left: '50%',
             top: '50%',
-            zIndex: 1,
-        }}
-      >
-        {isLoading && <LoadingSpinner size={24} color={colors['purple-700']} />}
-      </View>
+            zIndex: 1
+          }}
+        >
+          {isLoading && (
+            <LoadingSpinner size={24} color={colors['purple-700']} />
+          )}
+        </View>
       </View>
     </View>
   );

@@ -5,7 +5,7 @@ import { CoinUtils, Coin } from '@owallet/unit';
 import { AppCurrency, Currency } from '@owallet/types';
 import yaml from 'js-yaml';
 import { CoinPrimitive } from '@owallet/stores';
-import { CText as Text } from '../../components/text';
+import { Text } from '@src/components/text';
 import { useStyle } from '../../styles';
 import { Bech32Address } from '@owallet/cosmos';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -17,10 +17,10 @@ import english from 'hyphenation.en-us';
 import { useStore } from '../../stores';
 import { Buffer } from 'buffer';
 import { observer } from 'mobx-react-lite';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, IntlShape } from 'react-intl';
 import { Badge } from '../../components/badge';
 import { StyleSheet, View } from 'react-native';
-import { colors, typography } from '../../themes';
+import { typography } from '../../themes';
 
 const h = new Hypher(english);
 
@@ -222,7 +222,7 @@ export function renderMsgSend(
           <Text style={{ fontWeight: 'bold' }}>
             {hyphen(
               receives
-                .map((coin) => {
+                .map(coin => {
                   return `${coin.amount} ${coin.denom}`;
                 })
                 .join(',')
@@ -413,7 +413,6 @@ export function renderMsgUndelegate(
             {hyphen(`${amount.amount} ${amount.denom}`)}
           </Text>
         </View>
-        {/* <Text>{' will receive '}</Text> */}
       </View>
     )
     // content: (
@@ -449,8 +448,6 @@ export function renderMsgDelegate(
     denom: parsed.denom
   };
 
-  // Delegate <b>{amount}</b> to <b>{validator}</b>
-
   return {
     title: 'Stake',
     content: (
@@ -477,21 +474,8 @@ export function renderMsgDelegate(
             {hyphen(`${amount.amount} ${amount.denom}`)}
           </Text>
         </View>
-        {/* <Text>{' will receive '}</Text> */}
       </View>
     )
-    // content: (
-    //   <Text>
-    //     <Text>{'Stake '}</Text>
-    //     <Text style={{ fontWeight: 'bold' }}>
-    //       {hyphen(`${amount.amount} ${amount.denom}`)}
-    //     </Text>
-    //     <Text>{' to '}</Text>
-    //     <Text style={{ fontWeight: 'bold' }}>
-    //       {hyphen(Bech32Address.shortenAddress(validatorAddress, 24))}
-    //     </Text>
-    //   </Text>
-    // )
   };
 }
 
@@ -508,7 +492,28 @@ export function renderMsgWithdrawDelegatorReward(validatorAddress: string) {
         >
           <Text style={{ ...styles.textInfo }}>Claim From </Text>
           <Text style={{ fontWeight: 'bold' }}>
-            {hyphen(Bech32Address.shortenAddress(validatorAddress, 20))}
+            {hyphen(Bech32Address.shortenAddress(validatorAddress ?? '', 20))}
+          </Text>
+        </View>
+      </View>
+    )
+  };
+}
+
+export function renderMsgIBCMsgTransfer(msg: any) {
+  return {
+    title: 'IBC Transfer',
+    content: (
+      <View style={{}}>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between'
+          }}
+        >
+          <Text style={{ ...styles.textInfo }}>IBC Transfer</Text>
+          <Text style={{ fontWeight: 'bold' }}>
+            {/* {hyphen(Bech32Address.shortenAddress(validatorAddress, 20))} */}
           </Text>
         </View>
         {/* <Text>{' will receive '}</Text> */}
@@ -585,6 +590,57 @@ export function renderMsgVote(proposalId: string, option: string | number) {
   };
 }
 
+export function renderMsgInstantiateContract(
+  currencies: Currency[],
+  intl: IntlShape,
+  initFunds: CoinPrimitive[],
+  admin: string | undefined,
+  codeId: string,
+  label: string,
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  initMsg: object
+) {
+  const funds: { amount: string; denom: string }[] = [];
+  for (const coinPrimitive of initFunds) {
+    const coin = new Coin(coinPrimitive.denom, coinPrimitive.amount);
+    const parsed = CoinUtils.parseDecAndDenomFromCoin(currencies, coin);
+    funds.push({
+      amount: clearDecimals(parsed.amount),
+      denom: parsed.denom
+    });
+  }
+  return {
+    icon: 'fas fa-cog',
+    title: intl.formatMessage({
+      id: 'sign.list.message.wasm/MsgInstantiateContract.title'
+    }),
+    content: (
+      <React.Fragment>
+        <FormattedMessage
+          id="sign.list.message.wasm/MsgInstantiateContract.content"
+          values={{
+            b: (...chunks: any[]) => <b>{chunks}</b>,
+            br: <br />,
+            admin: admin ? Bech32Address.shortenAddress(admin, 30) : '',
+            ['only-admin-exist']: (...chunks: any[]) => (admin ? chunks : ''),
+            codeId: codeId,
+            label: label,
+            ['only-funds-exist']: (...chunks: any[]) =>
+              funds.length > 0 ? chunks : '',
+            funds: funds
+              .map(coin => {
+                return `${coin.amount} ${coin.denom}`;
+              })
+              .join(',')
+          }}
+        />
+        <br />
+        <WasmExecutionMsgView msg={initMsg} />
+      </React.Fragment>
+    )
+  };
+}
+
 export function renderMsgExecuteContract(
   currencies: Currency[],
   sentFunds: CoinPrimitive[],
@@ -621,7 +677,7 @@ export function renderMsgExecuteContract(
               <Text> by sending </Text>
               <Text style={{ fontWeight: 'bold' }}>
                 {sent
-                  .map((coin) => {
+                  .map(coin => {
                     return `${coin.amount} ${coin.denom}`;
                   })
                   .join(',')}
@@ -756,7 +812,6 @@ export function clearDecimals(dec: string): string {
 const styles = StyleSheet.create({
   textInfo: {
     ...typography.h5,
-    fontWeight: '400',
-    color: colors['text-black-medium']
+    fontWeight: '400'
   }
 });

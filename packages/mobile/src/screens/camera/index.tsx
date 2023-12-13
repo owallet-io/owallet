@@ -4,7 +4,7 @@ import { PageWithView } from '../../components/page';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 import { useSmartNavigation } from '../../navigation.provider';
-import { Button } from '../../components/button';
+import { Button, OWButton } from '../../components/button';
 import { Share, StyleSheet, View } from 'react-native';
 import { ChainSelectorModal } from '../../components/chain-selector';
 import { registerModal } from '../../modals/base';
@@ -12,14 +12,14 @@ import { CardModal } from '../../modals/card';
 import { AddressCopyable } from '../../components/address-copyable';
 import QRCode from 'react-native-qrcode-svg';
 import { useNavigation } from '@react-navigation/native';
-
 import { Bech32Address } from '@owallet/cosmos';
 import { FullScreenCameraView } from '../../components/camera';
-import { AddressBookConfigMap, useRegisterConfig } from '@owallet/hooks';
-import { AsyncKVStore } from '../../common';
 import { useFocusEffect } from '@react-navigation/native';
-import { checkValidDomain } from '../../utils/helper';
-
+import { BottomSheetProps } from '@gorhom/bottom-sheet';
+import { TRON_ID } from '@owallet/common';
+import { checkValidDomain } from '@src/utils/helper';
+import { navigate } from '@src/router/root';
+import { SCREENS } from '@src/common/constants';
 interface keyable {
   [key: string]: any;
 }
@@ -44,16 +44,14 @@ export const CameraScreen: FunctionComponent = observer((props) => {
   );
 
   const [isSelectChainModalOpen, setIsSelectChainModalOpen] = useState(false);
-  const [isAddressQRCodeModalOpen, setIsAddressQRCodeModalOpen] =
-    useState(false);
-  const [showingAddressQRCodeChainId, setShowingAddressQRCodeChainId] =
-    useState(chainStore.current.chainId);
+  const [isAddressQRCodeModalOpen, setIsAddressQRCodeModalOpen] = useState(false);
+  const [showingAddressQRCodeChainId, setShowingAddressQRCodeChainId] = useState(chainStore.current.chainId);
 
-  const registerConfig = useRegisterConfig(keyRingStore, []);
+  // const registerConfig = useRegisterConfig(keyRingStore, []);
 
-  const [addressBookConfigMap] = useState(
-    () => new AddressBookConfigMap(new AsyncKVStore('address_book'), chainStore)
-  );
+  // const [addressBookConfigMap] = useState(
+  //   () => new AddressBookConfigMap(new AsyncKVStore('address_book'), chainStore)
+  // );
 
   return (
     <PageWithView disableSafeArea={true}>
@@ -65,6 +63,12 @@ export const CameraScreen: FunctionComponent = observer((props) => {
         onBarCodeRead={async ({ data }) => {
           if (!isLoading && !isCompleted) {
             setIsLoading(true);
+
+            if (chainStore.current.chainId === TRON_ID && data) {
+              smartNavigation.pushSmart('SendTron', {
+                recipient: data
+              });
+            }
 
             try {
               if (checkValidDomain(data.toLowerCase())) {
@@ -87,12 +91,10 @@ export const CameraScreen: FunctionComponent = observer((props) => {
               if (isBech32Address) {
                 const prefix = data.slice(0, data.indexOf('1'));
                 const chainInfo = chainStore.chainInfosInUI.find(
-                  (chainInfo) =>
-                    chainInfo.bech32Config.bech32PrefixAccAddr === prefix
+                  (chainInfo) => chainInfo.bech32Config.bech32PrefixAccAddr === prefix
                 );
                 if (chainInfo) {
-                  const routersParam: keyable =
-                    smartNavigation?.getState()?.routes;
+                  const routersParam: keyable = smartNavigation?.getState()?.routes;
                   const isParamAddressBook = routersParam.find(
                     (route) => route?.params?.screenCurrent === 'addressbook'
                   );
@@ -102,6 +104,14 @@ export const CameraScreen: FunctionComponent = observer((props) => {
                       recipient: data,
                       addressBookObj: {
                         name: isParamAddressBook.params.name
+                      }
+                    });
+                  } else if (chainStore.current.networkType === 'bitcoin') {
+                    navigate(SCREENS.STACK.Others, {
+                      screen: SCREENS.SendBtc,
+                      params: {
+                        chainId: chainInfo.chainId,
+                        recipient: data
                       }
                     });
                   } else {
@@ -127,9 +137,7 @@ export const CameraScreen: FunctionComponent = observer((props) => {
       <ChainSelectorModal
         isOpen={isSelectChainModalOpen}
         close={() => setIsSelectChainModalOpen(false)}
-        chainIds={chainStore.chainInfosInUI.map(
-          (chainInfo) => chainInfo.chainId
-        )}
+        chainIds={chainStore.chainInfosInUI.map((chainInfo) => chainInfo.chainId)}
         onSelectChain={(chainId) => {
           setShowingAddressQRCodeChainId(chainId);
           setIsAddressQRCodeModalOpen(true);
@@ -148,6 +156,7 @@ export const CameraScreen: FunctionComponent = observer((props) => {
 export const AddressQRCodeModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
+  bottomSheetModalConfig?: Omit<BottomSheetProps, 'snapPoints' | 'children'>;
   chainId: string;
 }> = registerModal(
   observer(({ chainId }) => {
@@ -189,13 +198,11 @@ export const AddressQRCodeModal: FunctionComponent<{
               flexDirection: 'row'
             }}
           >
-            <Button
-              containerStyle={{
-                flex: 1
-              }}
-              text="Share Address"
-              mode="light"
-              size="large"
+            <OWButton
+              // containerStyle={{
+              //   flex: 1
+              // }}
+              label="Share Address"
               loading={account.bech32Address === ''}
               onPress={() => {
                 Share.share({

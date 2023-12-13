@@ -9,15 +9,22 @@ import {
   InvalidBech32Error,
   IRecipientConfig
 } from '@owallet/hooks';
-import { StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
+import {
+  StyleSheet,
+  TextStyle,
+  View,
+  ViewStyle,
+  TouchableOpacity
+} from 'react-native';
 import { TextInput } from './input';
 import { ObservableEnsFetcher } from '@owallet/ens';
 import { LoadingSpinner } from '../spinner';
 import { useStyle } from '../../styles';
-import { AddressBookIcon, NoteIcon } from '../icon';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useSmartNavigation } from '../../navigation.provider';
 import { colors } from '../../themes';
+import { NoteIcon } from '../icon';
+import { navigate } from '@src/router/root';
+import { SCREENS } from '@src/common/constants';
 
 const styles = StyleSheet.create({
   absolute: {
@@ -149,13 +156,16 @@ export const AddressInput: FunctionComponent<{
                 <TouchableOpacity
                   style={style.flatten(['padding-4'])}
                   onPress={() => {
-                    smartNavigation.navigateSmart('AddressBook', {
-                      recipientConfig,
-                      memoConfig
+                    navigate(SCREENS.STACK.AddressBooks, {
+                      screen: SCREENS.AddressBook,
+                      params: {
+                        recipientConfig,
+                        memoConfig
+                      }
                     });
                   }}
                 >
-                  <NoteIcon color={colors['purple-900']} height={18} />
+                  <NoteIcon color={colors['purple-700']} height={18} />
                 </TouchableOpacity>
               )}
             </View>

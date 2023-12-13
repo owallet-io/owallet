@@ -1,68 +1,58 @@
-import React, {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState
-} from 'react';
-import { observer } from 'mobx-react-lite';
-import { useStyle } from '../../../../styles';
-import { Dimensions, StyleSheet, View } from 'react-native';
-import { CText as Text } from '../../../../components/text';
-import { useSmartNavigation } from '../../../../navigation.provider';
+import { Bech32Address } from '@owallet/cosmos';
 import {
   IMemoConfig,
   IRecipientConfig,
   useAddressBookConfig
 } from '@owallet/hooks';
-import { AsyncKVStore } from '../../../../common';
-import { useStore } from '../../../../stores';
-import { AddIcon, SearchIcon, TrashCanIcon } from '../../../../components/icon';
-import { Bech32Address } from '@owallet/cosmos';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { RectButton } from '../../../../components/rect-button';
-import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
-import {
-  HeaderLeftButton,
-  HeaderRightButton
-} from '../../../../components/header';
-import {
-  HeaderAddIcon,
-  HeaderBackButtonIcon
-} from '../../../../components/header/icon';
-import { AddressBookIcon } from '../../../../components/icon';
-import { useConfirmModal } from '../../../../providers/confirm-modal';
-import { colors, metrics, spacing, typography } from '../../../../themes';
+import { OWButton } from '@src/components/button';
+import { OWBox } from '@src/components/card';
+import { OWEmpty } from '@src/components/empty';
+import OWIcon from '@src/components/ow-icon/ow-icon';
+import { Text } from '@src/components/text';
+import { useTheme } from '@src/themes/theme-provider';
+import { observer } from 'mobx-react-lite';
+import React, { FunctionComponent, useCallback, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { AsyncKVStore } from '../../../../common';
+import { OWSubTitleHeader } from '../../../../components/header';
+import { SearchIcon, TrashCanIcon } from '../../../../components/icon';
 import { TextInput } from '../../../../components/input';
-import { CustomHeader } from '../../../../navigation';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useHeaderHeight } from '@react-navigation/stack';
 import { PageWithScrollView } from '../../../../components/page';
+import { RectButton } from '../../../../components/rect-button';
+import { useSmartNavigation } from '../../../../navigation.provider';
+import { useConfirmModal } from '../../../../providers/confirm-modal';
+import { useStore } from '../../../../stores';
+import { useStyle } from '../../../../styles';
+import { spacing } from '../../../../themes';
 
 const addressBookItemComponent = {
   inTransaction: RectButton,
   inSetting: View
 };
 
-const styles = StyleSheet.create({
-  addressBookRoot: {
-    padding: spacing['22'],
-    backgroundColor: colors['white'],
-    marginTop: spacing['16'],
-    borderRadius: spacing['24']
-  },
-  addressBookItem: {
-    marginTop: spacing['16'],
-    backgroundColor: colors['gray-10'],
-    paddingVertical: spacing['8'],
-    paddingHorizontal: spacing['16'],
-    borderRadius: spacing['8']
-  },
-  addressBookAdd: {
-    flexDirection: 'row',
-    justifyContent: 'space-between'
-  }
-});
+const styling = colors => {
+  return StyleSheet.create({
+    addressBookRoot: {
+      padding: spacing['22'],
+      backgroundColor: colors['primary'],
+      marginTop: spacing['16'],
+      borderRadius: spacing['24']
+    },
+    addressBookItem: {
+      marginTop: spacing['16'],
+      backgroundColor: colors['background-item-list'],
+      paddingVertical: spacing['12'],
+      paddingHorizontal: spacing['16'],
+      borderRadius: spacing['8']
+    },
+    addressBookAdd: {
+      flexDirection: 'row',
+      justifyContent: 'space-between'
+    }
+  });
+};
 
 const debounce = (fn, delay) => {
   let timerId;
@@ -76,8 +66,8 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
   const [nameSearch, setNameSearch] = useState<string>('');
   const [contractList, setContractList] = useState<any[]>([]);
   const { chainStore } = useStore();
-  const { bottom } = useSafeAreaInsets();
-
+  const { colors } = useTheme();
+  const styles = styling(colors);
   const confirmModal = useConfirmModal();
 
   const route = useRoute<
@@ -122,35 +112,16 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
     }
   );
 
-  useEffect(() => {
-    smartNavigation.setOptions({
-      // eslint-disable-next-line react/display-name
-      header: () => <CustomHeader />
-      // headerRight: () => (
-      //   <HeaderRightButton
-      //     onPress={() => {
-      //       smartNavigation.navigateSmart('AddAddressBook', {
-      //         chainId,
-      //         addressBookConfig
-      //       });
-      //     }}
-      //   >
-      //     <HeaderAddIcon />
-      //   </HeaderRightButton>
-      // )
-    });
-  }, [addressBookConfig, chainId, chainStore, smartNavigation, style]);
-
   const isInTransaction = recipientConfig != null || memoConfig != null;
   const AddressBookItem =
     addressBookItemComponent[isInTransaction ? 'inTransaction' : 'inSetting'];
 
-  const onNameSearch = (txt) => {
+  const onNameSearch = txt => {
     const searchWord = txt ?? nameSearch;
     if (searchWord) {
       const addressList = addressBookConfig.addressBookDatas;
       if (addressList.length > 0) {
-        const newAdressList = addressList.filter((address) =>
+        const newAdressList = addressList.filter(address =>
           address.name.toLowerCase().includes(searchWord.toLowerCase())
         );
         return setContractList(newAdressList);
@@ -169,22 +140,14 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
       : addressBookConfig.addressBookDatas;
 
   return (
-    <PageWithScrollView>
-      <View style={{ alignItems: 'center', marginTop: spacing['16'] }}>
-        <Text style={{ ...typography.h3, fontWeight: '700' }}>
-          Address book
-        </Text>
-      </View>
-      <View
-        style={{
-          ...styles.addressBookRoot
-        }}
-      >
+    <PageWithScrollView backgroundColor={colors['background']}>
+      <OWSubTitleHeader title="Address book" />
+      <OWBox>
         <View>
           <TextInput
             inputRight={
               <RectButton onPress={onNameSearch}>
-                <SearchIcon color={colors['purple-900']} size={20} />
+                <SearchIcon color={colors['text-place-holder']} size={20} />
               </RectButton>
             }
             placeholder="Search by address, namespace"
@@ -196,7 +159,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
               borderBottomRightRadius: spacing['8']
             }}
             value={nameSearch}
-            onChangeText={(text) => {
+            onChangeText={text => {
               setNameSearch(text);
               debouncedHandler(text);
             }}
@@ -207,12 +170,12 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
             style={{
               fontWeight: '400',
               fontSize: 16,
-              color: colors['gray-300']
+              color: colors['text-label-list']
             }}
           >
             Contact list
           </Text>
-          <RectButton
+          <OWButton
             onPress={() => {
               smartNavigation.navigateSmart('AddAddressBook', {
                 chainId,
@@ -220,57 +183,50 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
                 recipient: ''
               });
             }}
-          >
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <View style={{ marginTop: 4 }}>
-                <AddIcon color={colors['purple-900']} size={16} />
-              </View>
-              <Text
-                style={{
-                  fontSize: 14,
-                  fontWeight: '400',
-                  lineHeight: 20,
-                  color: colors['purple-900']
-                }}
-              >
-                Add new contract
-              </Text>
-            </View>
-          </RectButton>
+            label="Add new contract"
+            fullWidth={false}
+            type="link"
+            style={{
+              height: 'auto'
+            }}
+            size="medium"
+            icon={<OWIcon name="add" color={colors['purple-700']} size={16} />}
+          />
         </View>
 
-        <View>
-          {contractData.map((data, i) => {
-            return (
-              <React.Fragment key={i.toString()}>
-                <AddressBookItem
-                  style={styles.addressBookItem}
-                  enabled={isInTransaction}
-                  onPress={() => {
-                    if (isInTransaction) {
-                      addressBookConfig.selectAddressAt(i);
-                      smartNavigation.goBack();
-                    }
-                  }}
-                >
-                  <View
-                    style={style.flatten([
-                      'flex-row',
-                      'justify-between',
-                      'items-center'
-                    ])}
+        <View
+          style={
+            {
+              // flex: 1
+            }
+          }
+        >
+          {contractData?.length > 0 ? (
+            contractData.map((data, i) => {
+              return (
+                <React.Fragment key={i.toString()}>
+                  <AddressBookItem
+                    style={styles.addressBookItem}
+                    enabled={isInTransaction}
+                    onPress={() => {
+                      if (isInTransaction) {
+                        addressBookConfig.selectAddressAt(i);
+                        smartNavigation.goBack();
+                      }
+                    }}
                   >
-                    <View>
-                      <Text
-                        style={{
-                          fontSize: 16,
-                          fontWeight: '700',
-                          color: colors['gray-900']
-                        }}
-                      >
-                        {data.name}
-                      </Text>
-                      <Text
+                    <View
+                      style={style.flatten([
+                        'flex-row',
+                        'justify-between',
+                        'items-center'
+                      ])}
+                    >
+                      <View>
+                        <Text variant="body1" typo="bold">
+                          {data.name}
+                        </Text>
+                        {/* <Text
                         style={style.flatten([
                           'body3',
                           'color-text-black-low',
@@ -278,74 +234,67 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
                         ])}
                       >
                         {data.memo}
-                      </Text>
-                      <Text
+                      </Text> */}
+                        <Text
+                          variant="caption"
+                          typo="bold"
+                          color={colors['gray-300']}
+                        >
+                          {Bech32Address.shortenAddress(data.address, 30)}
+                        </Text>
+                      </View>
+                      <TouchableOpacity
                         style={{
-                          fontSize: 12,
-                          fontWeight: '700',
-                          color: colors['gray-300']
+                          alignItems: 'flex-start'
+                        }}
+                        onPress={async () => {
+                          if (
+                            await confirmModal.confirm({
+                              title: 'Remove contact',
+                              paragraph:
+                                'Are you sure you want to remove this address?',
+                              yesButtonText: 'Remove',
+                              noButtonText: 'Cancel',
+                              titleStyleCustom: {
+                                color: colors['orange-800']
+                              },
+                              modalRootCustom: {
+                                alignItems: 'flex-start'
+                              },
+                              contentStyleCustom: {
+                                textAlign: 'left'
+                              },
+                              noBtnStyleCustom: {
+                                backgroundColor: colors['gray-10'],
+                                color: colors['purple-700'],
+                                borderColor: 'transparent'
+                              },
+                              yesBtnStyleCustom: {
+                                backgroundColor: colors['orange-800']
+                              }
+                            })
+                          ) {
+                            await addressBookConfig.removeAddressBook(i);
+                          }
                         }}
                       >
-                        {Bech32Address.shortenAddress(data.address, 30)}
-                      </Text>
+                        <TrashCanIcon
+                          color={
+                            style.get('color-text-black-very-very-low').color
+                          }
+                          size={24}
+                        />
+                      </TouchableOpacity>
                     </View>
-                    <TouchableOpacity
-                      style={{
-                        alignItems: 'flex-start'
-                      }}
-                      onPress={async () => {
-                        if (
-                          await confirmModal.confirm({
-                            title: 'Remove contact',
-                            paragraph:
-                              'Are you sure you want to remove this address?',
-                            yesButtonText: 'Remove',
-                            noButtonText: 'Cancel',
-                            titleStyleCustom: {
-                              color: colors['orange-800']
-                            },
-                            modalRootCustom: {
-                              alignItems: 'flex-start'
-                            },
-                            contentStyleCustom: {
-                              textAlign: 'left'
-                            },
-                            noBtnStyleCustom: {
-                              backgroundColor: colors['gray-10'],
-                              color: colors['purple-900'],
-                              borderColor: 'transparent'
-                            },
-                            yesBtnStyleCustom: {
-                              backgroundColor: colors['orange-800']
-                            }
-                          })
-                        ) {
-                          await addressBookConfig.removeAddressBook(i);
-                        }
-                      }}
-                    >
-                      <TrashCanIcon
-                        color={
-                          style.get('color-text-black-very-very-low').color
-                        }
-                        size={24}
-                      />
-                    </TouchableOpacity>
-                  </View>
-                </AddressBookItem>
-                {addressBookConfig.addressBookDatas.length - 1 !== i ? (
-                  <View
-                    style={style.flatten([
-                      'height-1',
-                      'background-color-border-white'
-                    ])}
-                  />
-                ) : null}
-              </React.Fragment>
-            );
-          })}
+                  </AddressBookItem>
+                </React.Fragment>
+              );
+            })
+          ) : (
+            <OWEmpty />
+          )}
         </View>
-      </View>
+      </OWBox>
     </PageWithScrollView>
   );
 });

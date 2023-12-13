@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { Card } from '../../../components/card';
-import { CText as Text } from '../../../components/text';
+import { Card, OWBox } from '../../../components/card';
+import { Text } from '@src/components/text';
 import { View, ViewStyle, StyleSheet } from 'react-native';
 import { spacing } from '../../../themes';
 import { useStore } from '../../../stores';
@@ -10,7 +10,7 @@ import FastImage from 'react-native-fast-image';
 import { API } from '../../../common/api';
 import { numberWithCommas } from '../../../utils/helper';
 import moment from 'moment';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from '@src/themes/theme-provider';
 
 export const BlockCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -28,10 +28,10 @@ export const BlockCard: FunctionComponent<{
       },
       { baseURL: 'https://api.coingecko.com/api/v3' }
     )
-      .then(res => {
+      .then((res) => {
         setData(res?.data?.[0]);
       })
-      .catch(ex => {
+      .catch((ex) => {
         console.log('exception querying coinGecko', ex);
       });
   }, [chainStore.current.chainId]);
@@ -63,7 +63,7 @@ export const BlockCard: FunctionComponent<{
         </View>
         <View style={{ paddingLeft: 33 }}>
           <View style={{ alignItems: 'center', flexDirection: 'row' }}>
-            <ClockIcon size={18} color={colors['gray-700']} />
+            <ClockIcon size={18} color={colors['primary-text']} />
             <Text style={styles.blockTitle}>
               {'  '}
               {title}
@@ -78,7 +78,7 @@ export const BlockCard: FunctionComponent<{
   };
 
   return (
-    <Card style={styles.card}>
+    <OWBox>
       <View style={styles.headerWrapper}>
         <View style={[styles.blockWrapper, { paddingTop: 0 }]}>
           <View
@@ -99,7 +99,7 @@ export const BlockCard: FunctionComponent<{
               }}
               resizeMode={FastImage.resizeMode.contain}
               source={{
-                uri: chainStore.current.stakeCurrency.coinImageUrl
+                uri: chainStore.current.stakeCurrency?.coinImageUrl
               }}
             />
           </View>
@@ -111,7 +111,7 @@ export const BlockCard: FunctionComponent<{
                 flexDirection: 'row'
               }}
             >
-              <ClockIcon size={18} color={colors['gray-700']} />
+              <ClockIcon size={18} color={colors['primary-text']} />
               <Text style={styles.blockTitle}>{'  '}Coin market info</Text>
             </View>
             <Text style={styles.blockValue}>${data?.current_price}</Text>
@@ -119,7 +119,7 @@ export const BlockCard: FunctionComponent<{
               style={{
                 paddingHorizontal: 12,
                 paddingVertical: 4,
-                backgroundColor: colors['purple-10'],
+                backgroundColor: colors['background-item-list'],
                 borderRadius: 4,
                 marginBottom: 4
               }}
@@ -153,7 +153,13 @@ export const BlockCard: FunctionComponent<{
               <Text style={[styles.blockSub, { lineHeight: 20 }]}>
                 Market Cap
               </Text>
-              <Text style={{ fontWeight: '700', lineHeight: 20 }}>
+              <Text
+                style={{
+                  fontWeight: '700',
+                  lineHeight: 20,
+                  color: colors['primary-text']
+                }}
+              >
                 ${numberWithCommas(data?.market_cap ?? 0)}
               </Text>
             </View>
@@ -167,7 +173,13 @@ export const BlockCard: FunctionComponent<{
               <Text style={[styles.blockSub, { lineHeight: 20 }]}>
                 Trading Vol
               </Text>
-              <Text style={{ fontWeight: '700', lineHeight: 20 }}>
+              <Text
+                style={{
+                  fontWeight: '700',
+                  lineHeight: 20,
+                  color: colors['primary-text']
+                }}
+              >
                 ${numberWithCommas(data?.total_volume ?? 0)}
               </Text>
             </View>
@@ -195,12 +207,13 @@ export const BlockCard: FunctionComponent<{
           true
         )}
       </View>
-    </Card>
+    </OWBox>
   );
 });
 
-const styling = (colors: object) =>
-  StyleSheet.create({
+const styling = () => {
+  const { colors } = useTheme();
+  return StyleSheet.create({
     headerWrapper: {
       alignItems: 'center',
       paddingBottom: 40
@@ -210,11 +223,11 @@ const styling = (colors: object) =>
       paddingBottom: spacing['14'],
       marginBottom: spacing['32'],
       borderRadius: spacing['24'],
-      backgroundColor: colors['white']
+      backgroundColor: colors['primary']
     },
     blockWrapper: {
       flexDirection: 'row',
-      borderBottomColor: colors['gray-100'],
+      borderBottomColor: colors['border-input-login'],
       borderBottomWidth: 1,
       width: '100%',
       padding: 24,
@@ -223,17 +236,18 @@ const styling = (colors: object) =>
     blockTitle: {
       fontSize: 14,
       lineHeight: 20,
-      color: colors['gray-800']
+      color: colors['text-dashboard']
     },
     blockValue: {
       fontSize: 34,
       fontWeight: '500',
       lineHeight: 50,
-      color: colors['gray-900']
+      color: colors['primary-text']
     },
     blockSub: {
       fontSize: 12,
       lineHeight: 16,
-      color: colors['gray-600']
+      color: colors['text-dashboard']
     }
   });
+};

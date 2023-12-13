@@ -8,12 +8,20 @@ export class AppInit {
   protected initApp: {
     status: boolean;
     date_updated: null | number;
-    theme: string;
+    theme: 'dark' | 'light';
+    visibleTabBar?: string;
   };
+  @observable
+  protected notiData: {};
 
   constructor() {
     makeObservable(this);
-    this.initApp = { status: true, date_updated: null, theme: 'light' };
+    this.initApp = {
+      visibleTabBar: null,
+      status: true,
+      date_updated: null,
+      theme: 'light'
+    };
   }
 
   @computed
@@ -34,6 +42,10 @@ export class AppInit {
   @action
   updateTheme(theme) {
     this.initApp = { ...this.initApp, theme };
+  }
+  @action
+  updateVisibleTabBar(visibleTabBar) {
+    this.initApp = { ...this.initApp, visibleTabBar };
   }
 }
 

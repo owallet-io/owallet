@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import { View } from 'react-native';
 import { colors } from '../../themes';
-import { CText as Text } from '../text';
+import { Text } from '@src/components/text';
 
 export const WordChip: FunctionComponent<{
   index: number;
@@ -15,10 +15,7 @@ export const WordChip: FunctionComponent<{
   return (
     <View
       style={{
-        // paddingLeft: 2,
-        // paddingRight: 2,
         borderRadius: 8,
-        backgroundColor: 'white',
         borderWidth: 1,
         margin: 5,
         borderColor: empty ? colors['primary-100'] : colors['purple-700'],
@@ -27,7 +24,7 @@ export const WordChip: FunctionComponent<{
     >
       <Text
         style={{
-          // color: empty ? colors['primary-100'] : colors['gray-900'],
+          color: empty ? colors['primary-100'] : colors['text-gray-900-purple-700'],
           fontSize: 18,
           lineHeight: 22,
           fontWeight: '400',

@@ -1,27 +1,19 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import { OWEmpty } from '@src/components/empty';
+import { Text } from '@src/components/text';
+import { useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
-import { Card } from '../../components/card';
-import { CText as Text } from '../../components/text';
-import { TouchableOpacity, View, ViewStyle, StyleSheet } from 'react-native';
+import moment from 'moment';
+import React, { FunctionComponent, useEffect, useState } from 'react';
+import { StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { BarChart, LineChart } from 'react-native-chart-kit';
-import { colors, metrics, spacing } from '../../themes';
+import { API } from '../../common/api';
+import { OWBox } from '../../components/card';
 import { useSmartNavigation } from '../../navigation.provider';
 import { useStore } from '../../stores';
-import { API } from '../../common/api';
-import moment from 'moment';
+import { metrics, spacing } from '../../themes';
 import { nFormatter } from '../../utils/helper';
+import { colorsCode } from '@src/themes/mode-colors';
 
-const chartConfig = {
-  backgroundColor: '#fff',
-  backgroundGradientFrom: '#fff',
-  backgroundGradientTo: '#fff',
-  color: (opacity = 1) => `rgba(148, 94, 248, ${opacity})`,
-  labelColor: (opacity = 1) => `rgba(142, 142, 147, ${opacity})`,
-  strokeWidth: 3,
-  barPercentage: 0.5,
-  useShadowColorFromDataset: false
-};
-const TWO_HOURS_IN_MINUTES = 24 * 60;
 const DATA_COUNT_DENOM = 4;
 const transformData = data => {
   if (Array.isArray(data)) {
@@ -71,8 +63,8 @@ const formatData = data => {
     datasets: [
       {
         data: dataChart,
-        color: (opacity = 1) => `rgba(148, 94, 248, ${opacity})`,
-        strokeWidth: 2
+        color: (opacity = 1) => colorsCode['purple-700'],
+        strokeWidth: 1.7
       }
     ],
     suffix: suffix
@@ -83,6 +75,19 @@ export const DashboardCard: FunctionComponent<{
   containerStyle?: ViewStyle;
   canView?: boolean;
 }> = observer(({ canView = true }) => {
+  const { colors } = useTheme();
+  const styles = styling(colors);
+  const chartConfig = {
+    backgroundColor: colors['background-box'],
+    backgroundGradientFrom: colors['background-box'],
+    backgroundGradientTo: colors['background-box'],
+    color: (opacity = 1) => `rgba(148, 94, 248, ${opacity})`,
+    labelColor: (opacity = 1) => colors['text-title-login'],
+    strokeWidth: 3,
+    barPercentage: 0.5,
+    useShadowColorFromDataset: false
+  };
+
   const [active, setActive] = useState('price');
   const [chartSuffix, setChartSuffix] = useState('');
   const [isNetworkError, setNetworkError] = useState(false);
@@ -148,21 +153,14 @@ export const DashboardCard: FunctionComponent<{
   }, [chainStore.current.chainId, data]);
 
   return (
-    <Card
-      style={{
-        padding: spacing['28'],
-        paddingBottom: spacing['14'],
-        marginBottom: spacing['32'],
-        borderRadius: spacing['24'],
-        backgroundColor: colors['white']
-      }}
-    >
+    <OWBox>
       <Text
         style={{
           alignSelf: 'center',
           paddingBottom: spacing['16'],
           fontSize: 17,
-          fontWeight: '500'
+          fontWeight: '500',
+          color: colors['primary-text']
         }}
       >
         {chainStore.current.chainName} (
@@ -205,7 +203,7 @@ export const DashboardCard: FunctionComponent<{
           >
             <Text
               style={{
-                color: colors['gray-800']
+                color: colors['label']
               }}
             >
               View detail
@@ -214,17 +212,11 @@ export const DashboardCard: FunctionComponent<{
         ) : null}
       </View>
       {isNetworkError ? (
-        <Text
-          style={{
-            alignSelf: 'center',
-            paddingBottom: spacing['16'],
-            fontSize: 16,
-            fontWeight: '400',
-            color: colors['text-black-low']
-          }}
-        >
-          {'There is no information for this chain yet'}
-        </Text>
+        <OWEmpty
+          style={styles.emptyChart}
+          type="crash"
+          label={`Something went wrong with the chart.\nPlease pull to refresh.`}
+        />
       ) : null}
       {!isNetworkError && active === 'price' ? (
         <LineChart
@@ -233,7 +225,7 @@ export const DashboardCard: FunctionComponent<{
           withInnerLines={false}
           yAxisLabel={'$'}
           yAxisSuffix={chartSuffix}
-          width={metrics.screenWidth - 56}
+          width={metrics.screenWidth - 48}
           height={256}
           chartConfig={chartConfig}
           bezier
@@ -241,55 +233,60 @@ export const DashboardCard: FunctionComponent<{
       ) : !isNetworkError ? (
         <BarChart
           data={dataVolumes}
-          width={metrics.screenWidth - 98}
-          height={220}
+          width={metrics.screenWidth - 48}
+          height={256}
           yAxisLabel="$"
           yAxisSuffix={chartSuffix}
           chartConfig={chartConfig}
         />
       ) : null}
-    </Card>
+    </OWBox>
   );
 });
 
-const styles = StyleSheet.create({
-  headerWrapper: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingBottom: 40
-  },
-  headerLeftWrapper: {
-    flexDirection: 'row',
-    paddingVertical: 4,
-    paddingHorizontal: 7,
-    borderColor: '#EAE9FF',
-    borderWidth: 1,
-    borderRadius: 4
-  },
-  active: {
-    padding: 7,
-    backgroundColor: colors['purple-700'],
-    borderRadius: 4
-  },
-  inActive: {
-    padding: 7,
-    backgroundColor: colors['white'],
-    borderRadius: 4
-  },
-  activeText: {
-    color: colors['white'],
-    fontSize: 14
-  },
-  inActiveText: {
-    color: colors['purple-700'],
-    fontSize: 14
-  },
-  viewDetail: {
-    backgroundColor: '#F2F2F7',
-    opacity: 0.6,
-    paddingVertical: 4,
-    paddingHorizontal: 7,
-    borderRadius: 4
-  }
-});
+const styling = colors =>
+  StyleSheet.create({
+    emptyChart: {
+      height: 256,
+      paddingBottom: 80
+    },
+    headerWrapper: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingBottom: 40
+    },
+    headerLeftWrapper: {
+      flexDirection: 'row',
+      paddingVertical: 4,
+      paddingHorizontal: 7,
+      borderColor: colors['sub-primary'],
+      borderWidth: 1,
+      borderRadius: 4
+    },
+    active: {
+      padding: 7,
+      backgroundColor: colors['purple-700'],
+      borderRadius: 4
+    },
+    inActive: {
+      padding: 7,
+      backgroundColor: colors['background-box'],
+      borderRadius: 4
+    },
+    activeText: {
+      color: colors['white'],
+      fontSize: 14
+    },
+    inActiveText: {
+      color: colors['purple-700'],
+      fontSize: 14
+    },
+    viewDetail: {
+      backgroundColor: colors['sub-primary'],
+      opacity: 0.6,
+      paddingVertical: 4,
+      paddingHorizontal: 7,
+      borderRadius: 4
+    }
+  });

@@ -1,14 +1,11 @@
 import React, { FunctionComponent } from 'react';
-import {
-  PageWithScrollView,
-  PageWithScrollViewInBottomTabView
-} from '../../../components/page';
+import { PageWithScrollView } from '../../../components/page';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { observer } from 'mobx-react-lite';
-import { StyleSheet, View } from 'react-native';
-import { colors, spacing } from '../../../themes';
+import { StyleSheet } from 'react-native';
+import { spacing } from '../../../themes';
 import { ValidatorDetailsCard } from './validator-details-card';
-
+import { useTheme } from '@src/themes/theme-provider';
 export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
   const route = useRoute<
     RouteProp<
@@ -22,12 +19,12 @@ export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
       string
     >
   >();
-
+  const { colors } = useTheme();
   const validatorAddress = route.params.validatorAddress;
   const apr = route.params.apr;
 
   return (
-    <PageWithScrollViewInBottomTabView>
+    <PageWithScrollView backgroundColor={colors['background']}>
       <ValidatorDetailsCard
         containerStyle={{
           ...styles.containerCard
@@ -35,13 +32,12 @@ export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
         validatorAddress={validatorAddress}
         apr={apr}
       />
-    </PageWithScrollViewInBottomTabView>
+    </PageWithScrollView>
   );
 });
 
 const styles = StyleSheet.create({
   containerCard: {
-    backgroundColor: colors['white'],
     borderRadius: spacing['24'],
     paddingVertical: spacing['20'],
     paddingHorizontal: spacing['24'],

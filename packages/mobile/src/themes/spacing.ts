@@ -42,5 +42,7 @@ export const spacing = {
   'card-vertical-half': 10,
   'card-gap': 12,
   'page-pad': 20,
-  'governance-card-body-placeholder': 130
+  'governance-card-body-placeholder': 130,
+  'horizontal-pad':24,
+  'top-pad':24
 }

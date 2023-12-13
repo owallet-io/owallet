@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react'
+import React, { forwardRef } from 'react';
 import {
   Animated,
   SafeAreaView,
@@ -6,42 +6,43 @@ import {
   ScrollView,
   StyleSheet,
   View
-} from 'react-native'
-import { useStyle } from '../../styles'
-import { GradientBackground } from '../svg'
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { usePageRegisterScrollYValue, useSetFocusedScreen } from './utils'
+} from 'react-native';
+import { useStyle } from '../../styles';
+import { GradientBackground } from '../svg';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { usePageRegisterScrollYValue, useSetFocusedScreen } from './utils';
+import { useTheme } from '@src/themes/theme-provider';
 
 const AnimatedKeyboardAwareScrollView = Animated.createAnimatedComponent(
   KeyboardAwareScrollView
-)
+);
 
 // eslint-disable-next-line react/display-name
 export const PageWithScrollView = forwardRef<
   ScrollView,
   React.PropsWithChildren<
     ScrollViewProps & {
-      fixed?: React.ReactNode
-      disableSafeArea?: boolean
-      backgroundColor?: string
+      fixed?: React.ReactNode;
+      disableSafeArea?: boolean;
+      backgroundColor?: string;
     }
   >
 >((props, ref) => {
-  const style = useStyle()
+  const styles = useStyle();
 
-  useSetFocusedScreen()
-  const scrollY = usePageRegisterScrollYValue()
-
+  useSetFocusedScreen();
+  const scrollY = usePageRegisterScrollYValue();
+  const { colors } = useTheme();
   const {
-    style: propStyle,
+    style,
     fixed,
     onScroll,
     disableSafeArea,
-    backgroundColor,
+    backgroundColor = colors['background'],
     ...restProps
-  } = props
+  } = props;
 
-  const ContainerElement = disableSafeArea ? View : SafeAreaView
+  const ContainerElement = disableSafeArea ? View : SafeAreaView;
 
   return (
     <React.Fragment>
@@ -66,21 +67,21 @@ export const PageWithScrollView = forwardRef<
           <GradientBackground />
         )}
       </View>
-      <ContainerElement style={style.get('flex-1')}>
+      <ContainerElement style={styles.get('flex-1')}>
         <AnimatedKeyboardAwareScrollView
-          innerRef={_ref => {
+          innerRef={(_ref) => {
             if (ref) {
               // I don't know why the _ref's type is JSX.Element
               if (typeof ref === 'function') {
-                ref(_ref as any)
+                ref(_ref as any);
               } else {
-                ref.current = _ref as any
+                ref.current = _ref as any;
               }
             }
           }}
           style={StyleSheet.flatten([
-            style.flatten(['flex-1', 'padding-0', 'overflow-visible']),
-            propStyle
+            styles.flatten(['flex-1', 'padding-0', 'overflow-visible']),
+            style
           ])}
           keyboardOpeningTime={0}
           onScroll={Animated.event(
@@ -91,6 +92,7 @@ export const PageWithScrollView = forwardRef<
             ],
             { useNativeDriver: true, listener: onScroll }
           )}
+          keyboardShouldPersistTaps="handled"
           {...restProps}
         />
         <View
@@ -105,5 +107,5 @@ export const PageWithScrollView = forwardRef<
         </View>
       </ContainerElement>
     </React.Fragment>
-  )
-})
+  );
+});

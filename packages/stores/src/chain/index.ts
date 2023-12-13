@@ -229,7 +229,7 @@ export class ChainInfoInner<C extends ChainInfo = ChainInfo>
   get bech32Config(): Bech32Config {
     return this.raw.bech32Config;
   }
-  get beta(): boolean | undefined {
+get beta(): boolean | undefined {
     return this.raw.beta;
   }
 
@@ -256,7 +256,7 @@ export class ChainInfoInner<C extends ChainInfo = ChainInfo>
   get gasPriceStep():
     | { low: number; average: number; high: number }
     | undefined {
-    return this.raw.gasPriceStep;
+    return this.raw.stakeCurrency.gasPriceStep;
   }
 
   get rest(): string {
@@ -303,6 +303,9 @@ export class ChainStore<C extends ChainInfo = ChainInfo>
   }
 
   getChain(chainId: string): ChainInfoInner<C> {
+    if (chainId === '' || !chainId) {
+      chainId = 'Oraichain';
+    }
     const chainIdentifier = ChainIdHelper.parse(chainId);
 
     const find = this.chainInfos.find((info) => {

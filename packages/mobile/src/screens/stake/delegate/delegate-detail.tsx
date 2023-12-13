@@ -1,17 +1,19 @@
 import { ValidatorThumbnails } from '@owallet/common';
 import { BondStatus } from '@owallet/stores';
-import { Dec } from '@owallet/unit';
-import { useRoute, RouteProp } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { OWButton } from '@src/components/button';
+import { OWBox } from '@src/components/card';
+import { OWSubTitleHeader } from '@src/components/header';
+import { PageWithView } from '@src/components/page';
+import { Text } from '@src/components/text';
+import { useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
 import React, { FunctionComponent, useMemo } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import { RectButton } from 'react-native-gesture-handler';
-import { CText as Text } from '../../../components/text';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { ValidatorThumbnail } from '../../../components/thumbnail';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { useStore } from '../../../stores';
-import { typography, colors, spacing } from '../../../themes';
-
+import { spacing, typography } from '../../../themes';
 interface DelegateDetailProps {}
 
 export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
@@ -29,6 +31,8 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
       >
     >();
     const { chainStore, queriesStore, accountStore } = useStore();
+    const { colors } = useTheme();
+    const styles = styling(colors);
     const validatorAddress = route?.params?.validatorAddress;
     const apr = route?.params?.apr;
 
@@ -71,21 +75,9 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
     ]);
 
     return (
-      <View>
-        <View>
-          <Text
-            style={{
-              ...styles.title,
-              marginVertical: spacing['16']
-            }}
-          >{`Staking details`}</Text>
-        </View>
-
-        <View
-          style={{
-            ...styles.containerInfo
-          }}
-        >
+      <PageWithView>
+        <OWSubTitleHeader title="Staking detail" />
+        <OWBox>
           <View
             style={{
               flexDirection: 'row',
@@ -101,10 +93,11 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
               style={{
                 ...styles.textInfo,
                 marginLeft: spacing['12'],
-                flexShrink: 1
+                flexShrink: 1,
+                color: colors['primary-text']
               }}
             >
-              {validator.description.moniker}
+              {validator?.description.moniker ?? '...'}
             </Text>
           </View>
 
@@ -122,12 +115,18 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
               <Text
                 style={{
                   ...styles.textInfo,
-                  marginBottom: spacing['4']
+                  marginBottom: spacing['4'],
+                  color: colors['primary-text']
                 }}
               >
                 Staking
               </Text>
-              <Text style={{ ...styles.textBlock }}>
+              <Text
+                style={{
+                  ...styles.textBlock,
+                  color: colors['sub-primary-text']
+                }}
+              >
                 {staked.trim(true).shrink(true).maxDecimals(6).toString()}
               </Text>
             </View>
@@ -137,10 +136,21 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
                 alignItems: 'flex-end'
               }}
             >
-              <Text style={{ ...styles.textInfo, marginBottom: spacing['4'] }}>
+              <Text
+                style={{
+                  ...styles.textInfo,
+                  marginBottom: spacing['4'],
+                  color: colors['primary-text']
+                }}
+              >
                 APR
               </Text>
-              <Text style={{ ...styles.textBlock }}>
+              <Text
+                style={{
+                  ...styles.textBlock,
+                  color: colors['sub-primary-text']
+                }}
+              >
                 {apr.toFixed(2).toString() + '%'}
               </Text>
             </View>
@@ -160,13 +170,19 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
               <Text
                 style={{
                   ...styles.textInfo,
-                  marginBottom: spacing['4']
+                  marginBottom: spacing['4'],
+                  color: colors['primary-text']
                 }}
               >
                 Rewards
               </Text>
-              <Text style={{ ...styles.textBlock }}>
-                {rewards.trim(true).shrink(true).maxDecimals(6).toString()}
+              <Text
+                style={{
+                  ...styles.textBlock,
+                  color: colors['sub-primary-text']
+                }}
+              >
+                {rewards?.trim(true).shrink(true).maxDecimals(6).toString()}
               </Text>
             </View>
             <TouchableOpacity
@@ -185,97 +201,84 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
               <Text
                 style={{
                   ...typography.h7,
-                  color: colors['purple-900']
+                  color: colors['purple-700']
                 }}
               >{`Validator details`}</Text>
             </TouchableOpacity>
           </View>
-        </View>
-        <RectButton
-          style={{ ...styles.containerBtn }}
-          onPress={() => {
-            smartNavigation.navigateSmart('Delegate', {
-              validatorAddress
-            });
-          }}
-        >
-          <Text
-            style={{
-              ...styles.textBtn,
-              textAlign: 'center',
-              color: colors['white']
+        </OWBox>
+
+        <View style={styles.containerAllBtn}>
+          <OWButton
+            style={styles.containerBtn}
+            label="Stake more"
+            onPress={() => {
+              smartNavigation.navigateSmart('Delegate', {
+                validatorAddress
+              });
             }}
-          >{`Stake more`}</Text>
-        </RectButton>
-        <RectButton
-          style={{
-            ...styles.containerBtn,
-            backgroundColor: colors['purple-50']
-          }}
-          onPress={() => {
-            smartNavigation.navigateSmart('Redelegate', { validatorAddress });
-          }}
-        >
-          <Text
-            style={{
-              ...styles.textBtn,
-              textAlign: 'center',
-              color: colors['purple-900']
+          />
+          <OWButton
+            style={styles.containerBtn}
+            type="secondary"
+            label="Switch validator"
+            onPress={() => {
+              smartNavigation.navigateSmart('Redelegate', { validatorAddress });
             }}
-          >{`Switch validator`}</Text>
-        </RectButton>
-        <RectButton
-          style={{ ...styles.containerBtn, backgroundColor: colors['gray-10'] }}
-          onPress={() => {
-            smartNavigation.navigateSmart('Undelegate', { validatorAddress });
-          }}
-        >
-          <Text
-            style={{
-              ...styles.textBtn,
-              textAlign: 'center',
+          />
+
+          <OWButton
+            style={styles.containerBtn}
+            type="link"
+            label="Unstake"
+            textStyle={{
               color: colors['red-500']
             }}
-          >{`Unstake`}</Text>
-        </RectButton>
-      </View>
+            onPress={() => {
+              smartNavigation.navigateSmart('Undelegate', { validatorAddress });
+            }}
+          />
+        </View>
+      </PageWithView>
     );
   });
 
-const styles = StyleSheet.create({
-  title: {
-    ...typography.h3,
-    fontWeight: '700',
-    color: colors['gray-900'],
-    textAlign: 'center'
-  },
-  containerInfo: {
-    backgroundColor: colors['white'],
-    borderRadius: spacing['24'],
-    padding: spacing['24']
-  },
-  textInfo: {
-    ...typography.h6,
-    fontWeight: '700'
-  },
-  textBlock: {
-    ...typography.h7,
-    fontWeight: '400'
-  },
-  containerBtn: {
-    backgroundColor: colors['purple-900'],
-    marginLeft: spacing['24'],
-    marginRight: spacing['24'],
-    borderRadius: spacing['8'],
-    marginTop: spacing['20'],
-    paddingVertical: spacing['16']
-  },
-  textBtn: {
-    ...typography.h6,
-    color: colors['white'],
-    fontWeight: '700'
-  },
-  validatorThumbnail: {
-    borderRadius: spacing['6']
-  }
-});
+const styling = colors =>
+  StyleSheet.create({
+    containerAllBtn: {
+      paddingHorizontal: 20,
+      paddingTop: 20
+    },
+    containerBtn: {
+      marginBottom: 20
+    },
+    title: {
+      ...typography.h3,
+      fontWeight: '700',
+      color: colors['gray-900'],
+      textAlign: 'center'
+    },
+    containerInfo: {
+      backgroundColor: colors['background-box'],
+      borderRadius: spacing['24'],
+      padding: spacing['24']
+    },
+    textInfo: {
+      ...typography.h6,
+      fontWeight: '700'
+    },
+    textBlock: {
+      ...typography.h7,
+      fontWeight: '400'
+    },
+
+    textBtn: {
+      ...typography.h6,
+      color: colors['white'],
+      fontWeight: '700'
+    },
+    validatorThumbnail: {
+      borderRadius: spacing['6'],
+      backgroundColor: colors['white']
+    }
+  });

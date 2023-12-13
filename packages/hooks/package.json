@@ -10,20 +10,23 @@
   },
   "scripts": {
     "clean": "rimraf node_modules build",
-    "build": "tsc",
-    "dev": "tsc -w",
+    "build": "tsc --project tsconfig.build.json",
+    "rebuild":"rimraf build && yarn build",
+    "dev": "tsc -w --project tsconfig.build.json",
     "test": "jest --passWithNoTests",
     "lint-test": "eslint \"src/**/*\" && prettier --check \"src/**/*\"",
     "lint-fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\""
   },
   "devDependencies": {
-    "@types/react": "^16.14.4"
+    "@types/metro-config": "^0.76.3",
+    "@types/react": "18.0.24"
   },
   "dependencies": {
-    "@cosmjs/launchpad": "^0.24.0-alpha.25",
+    "@cosmjs/launchpad": "^0.27.1",
     "@owallet/background": "^0.9.16",
     "@owallet/common": "^0.9.10",
     "@owallet/cosmos": "^0.9.16",
+    "@oraichain/ethereum-multicall": "^1.0.2",
     "@owallet/crypto": "^0.9.10",
     "@owallet/ens": "^0.9.0",
     "@owallet/popup": "^0.9.6",
@@ -33,9 +36,9 @@
     "long": "^4.0.0",
     "mobx": "^6.1.7",
     "mobx-utils": "^6.0.3",
-    "react": "^16.14.0",
+    "react": "18.2.0",
     "react-router": "^5.1.2",
     "utility-types": "^3.10.0",
-    "web3": "^1.7.4"
+    "web3": "1.7.4"
   }
 }

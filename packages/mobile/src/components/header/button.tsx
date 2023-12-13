@@ -1,15 +1,14 @@
-import React, { FunctionComponent } from 'react'
-import { StackHeaderLeftButtonProps } from '@react-navigation/stack'
-import { StyleSheet, View, ViewStyle } from 'react-native'
-import { useStyle } from '../../styles'
-import { TouchableOpacity } from 'react-native-gesture-handler'
-import { HeaderBackButtonIcon } from './icon'
-import { spacing } from '../../themes'
+import React, { FunctionComponent } from 'react';
+import { StackHeaderLeftButtonProps } from '@react-navigation/stack';
+import { TouchableOpacity, View, ViewStyle } from 'react-native';
+import { useStyle } from '../../styles';
+import { HeaderBackButtonIcon } from './icon';
+import { spacing } from '../../themes';
 
 export const HeaderLeftButton: FunctionComponent<
   StackHeaderLeftButtonProps
 > = ({ children, onPress }) => {
-  const style = useStyle()
+  const style = useStyle();
 
   return (
     <View
@@ -26,14 +25,14 @@ export const HeaderLeftButton: FunctionComponent<
         {children}
       </TouchableOpacity>
     </View>
-  )
-}
+  );
+};
 
 export const HeaderRightButton: FunctionComponent<{
-  onPress?: () => void
-  style?: ViewStyle
+  onPress?: () => void;
+  style?: ViewStyle;
 }> = ({ children, style: propStyle, onPress }) => {
-  const style = useStyle()
+  const style = useStyle();
 
   return (
     <View
@@ -51,8 +50,8 @@ export const HeaderRightButton: FunctionComponent<{
         {children}
       </TouchableOpacity>
     </View>
-  )
-}
+  );
+};
 export const HeaderLeftBackButton: FunctionComponent<
   StackHeaderLeftButtonProps
 > = props => {
@@ -64,5 +63,5 @@ export const HeaderLeftBackButton: FunctionComponent<
         </HeaderLeftButton>
       ) : null}
     </React.Fragment>
-  )
-}
+  );
+};

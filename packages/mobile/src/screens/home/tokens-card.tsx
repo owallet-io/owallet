@@ -1,201 +1,84 @@
-import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
-import { Card, CardBody } from '../../components/card';
-import { SectionList, StyleSheet, View, ViewStyle, Image } from 'react-native';
-import { CText as Text } from '../../components/text';
+import { OWButton } from '@src/components/button';
+import { OWEmpty } from '@src/components/empty';
+import { Text } from '@src/components/text';
+import { useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
-import { useStore } from '../../stores';
-import { TokenItem } from '../tokens/components/token-item';
-import { useSmartNavigation } from '../../navigation.provider';
-import { RectButton } from '../../components/rect-button';
-import { colors, metrics, spacing, typography } from '../../themes';
-import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
-import {
-  capitalizedText,
-  convertAmount,
-  formatContractAddress,
-  _keyExtract
-} from '../../utils/helper';
-import { DownArrowIcon } from '../../components/icon';
+import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
+import { SectionList, StyleSheet, View, ViewStyle } from 'react-native';
+import { FlatList, TouchableOpacity } from 'react-native';
 import { API } from '../../common/api';
+import { CardBody, OWBox } from '../../components/card';
 import ProgressiveImage from '../../components/progessive-image';
-import { useTheme } from '@react-navigation/native';
-
-// hard code data to test UI
-// const nftsData = [
-//   {
-//     title: 'ERC-721',
-//     data: [
-//       {
-//         uri: 'https://picsum.photos/id/1002/200',
-//         title: 'The Empire State Building',
-//         oraiPrice: '49.14 ORAI'
-//       },
-//       {
-//         uri: 'https://picsum.photos/id/1002/200',
-//         title: 'The Empire State Building',
-//         oraiPrice: '49.14 ORAI'
-//       },
-//       {
-//         uri: 'https://picsum.photos/id/1002/200',
-//         title: 'The Empire State Building',
-//         oraiPrice: '49.14 ORAI'
-//       }
-//     ]
-//   },
-//   {
-//     title: 'ERC-1155',
-//     data: [
-//       {
-//         uri: 'https://picsum.photos/id/1002/200',
-//         title: 'The Empire State Building',
-//         oraiPrice: '49.14 ORAI'
-//       },
-//       {
-//         uri: 'https://picsum.photos/id/1002/200',
-//         title: 'The Empire State Building',
-//         oraiPrice: '49.14 ORAI'
-//       },
-//       {
-//         uri: 'https://picsum.photos/id/1002/200',
-//         title: 'The Empire State Building',
-//         oraiPrice: '49.14 ORAI'
-//       }
-//     ]
-//   }
-// ];
+import { useSmartNavigation } from '../../navigation.provider';
+import { useStore } from '../../stores';
+import { metrics, spacing, typography } from '../../themes';
+import { capitalizedText, convertAmount, _keyExtract, delay } from '../../utils/helper';
+import { TokenItem } from '../tokens/components/token-item';
+import { SoulboundNftInfoResponse } from './types';
+import { useSoulbound } from '../nfts/hooks/useSoulboundNft';
+import images from '@src/assets/images';
+import OWFlatList from '@src/components/page/ow-flat-list';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+import { log } from 'console';
 
 export const TokensCard: FunctionComponent<{
   containerStyle?: ViewStyle;
-}> = observer(({ containerStyle }) => {
-  const { chainStore, queriesStore, accountStore, priceStore } = useStore();
+  refreshDate: number;
+}> = observer(({ containerStyle, refreshDate }) => {
+  const { chainStore, queriesStore, accountStore, priceStore, keyRingStore } = useStore();
   const account = accountStore.getAccount(chainStore.current.chainId);
-  const [nfts, setNFTs] = useState([]);
+  const { colors } = useTheme();
 
+  const styles = styling(colors);
   const smartNavigation = useSmartNavigation();
   const [index, setIndex] = useState<number>(0);
-  // const [price, setPrice] = useState<object>({});
-  const queryBalances = queriesStore
-    .get(chainStore.current.chainId)
-    .queryBalances.getQueryBech32Address(
-      chainStore.current.networkType === 'evm'
-        ? account.evmosHexAddress
-        : account.bech32Address
-    );
-
-  const tokens = queryBalances.balances.concat(
-    queryBalances.nonNativeBalances,
-    queryBalances.positiveNativeUnstakables
+  const { tokenIds, soulboundNft, isLoading } = useSoulbound(
+    chainStore.current.chainId,
+    account,
+    chainStore.current.rpc
   );
 
-  const unique = useMemo(() => {
-    const uniqTokens = [];
-    tokens.map(token =>
-      uniqTokens.filter(
-        ut => ut.balance.currency.coinDenom == token.balance.currency.coinDenom
-      ).length > 0
-        ? null
-        : uniqTokens.push(token)
-    );
-    return uniqTokens;
-  }, [chainStore.current.chainId]);
+  const queries = queriesStore.get(chainStore.current.chainId);
+  const address = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
+  const queryBalances = queries.queryBalances.getQueryBech32Address(address);
 
-  // const listTokens = tokens.map((e) => e.balance.currency.coinGeckoId);
+  // TODO: Add sorting rule
+  const tokens = queryBalances.positiveBalances.slice(0, 3);
 
-  // const config = {
-  //   customDomain: 'https://api.coingecko.com/'
-  // };
-  // const getPriceCoinGecko = async () => {
-  //   return await API.get(
-  //     `api/v3/simple/price?ids=${listTokens.join(',')}&vs_currencies=usd`,
-  //     config
-  //   );
-  // };
-  useEffect(() => {
-    (async function get() {
-      try {
-        const res = await API.getNFTs(
-          {
-            address: account.bech32Address
-          },
-          {
-            baseURL: 'https://api.airight.io/'
-          }
-        );
+  const onActiveType = (i) => {
+    setIndex(i);
+  };
 
-        setNFTs(res.data.items);
-      } catch (error) {}
-    })();
-  }, [account.bech32Address]);
-
-  const _renderFlatlistItem = ({ item }) => {
+  const _renderFlatlistOrchai = ({ item, index }: { item: SoulboundNftInfoResponse; index: number }) => {
     return (
       <TouchableOpacity
-        style={styles.flatListItem}
+        style={styles.ContainerBtnNft}
         onPress={() => {
-          smartNavigation.navigateSmart('Nfts.Detail', { item });
+          smartNavigation.navigateSmart('Nfts.Detail', {
+            item: {
+              name: item.extension.name,
+              id: tokenIds[index],
+              picture: item.token_uri
+            }
+          });
+          return;
         }}
       >
-        <View
-          style={{
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}
-        >
+        <View style={[styles.wrapViewNft, { backgroundColor: colors['box-nft'] }]}>
           <ProgressiveImage
             source={{
-              uri: item.picture ?? item.url
+              uri: item.token_uri
             }}
-            style={styles.itemPhoto}
+            style={styles.containerImgNft}
             resizeMode="cover"
+            styleContainer={styles.containerImgNft}
           />
-        </View>
-
-        <View
-          style={{
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            marginTop: spacing['12'],
-            alignItems: 'flex-start'
-          }}
-        >
-          <Text style={styles.itemText}>
-            {item.name.length > 11
-              ? formatContractAddress(item.name)
-              : item.name}
+          <Text weight="700" variant="body2" numberOfLines={1} style={styles.titleNft}>
+            {item?.extension?.name}
           </Text>
-
-          {item.version === 1 ? (
-            <Text
-              style={{
-                ...styles.itemText,
-                color: colors['gray-300']
-              }}
-            >
-              {item.offer
-                ? `${convertAmount(item.offer.amount)} ${item.offer.denom}`
-                : ''}
-            </Text>
-          ) : item.offer ? (
-            <View>
-              <Text
-                style={{
-                  ...styles.itemText,
-                  color: colors['gray-300']
-                }}
-              >
-                From {convertAmount(item.offer?.lowestPrice)}{' '}
-                {item.offer?.denom}
-              </Text>
-              <Text
-                style={{
-                  ...styles.itemText,
-                  color: colors['gray-300']
-                }}
-              >
-                To {convertAmount(item.offer?.highestPrice)} {item.offer?.denom}
-              </Text>
-            </View>
-          ) : null}
+          <Text variant="body2" numberOfLines={2} style={styles.subTextNft}>
+            {item?.extension?.description}
+          </Text>
         </View>
       </TouchableOpacity>
     );
@@ -203,205 +86,200 @@ export const TokensCard: FunctionComponent<{
 
   return (
     <View style={containerStyle}>
-      <Card
+      <OWBox
         style={{
-          paddingTop: spacing['8'],
-          paddingBottom: spacing['14'],
-          borderRadius: spacing['24'],
-          backgroundColor: colors['white']
+          paddingTop: 12
         }}
       >
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-around',
-            alignItems: 'center',
-            width: metrics.screenWidth - 64,
-            marginHorizontal: spacing['32']
-          }}
-        >
+        <View style={styles.wrapHeaderTitle}>
           {['Tokens', 'NFTs'].map((title: string, i: number) => (
             <View key={i}>
-              <TouchableOpacity
-                style={{
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  marginTop: spacing['12']
+              <OWButton
+                type="link"
+                onPress={() => onActiveType(i)}
+                label={title}
+                textStyle={{
+                  color: index === i ? colors['primary-text'] : colors['gray-300'],
+                  fontWeight: '700'
                 }}
-                onPress={() => {
-                  setIndex(i);
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 14,
-                    fontWeight: '700',
-                    color: index === i ? colors['gray-900'] : colors['gray-300']
-                  }}
-                >
-                  {title}
-                </Text>
-              </TouchableOpacity>
-              <View
                 style={{
-                  width: 100,
-                  height: 2,
-                  marginTop: 8,
-                  backgroundColor:
-                    index === i ? colors['black'] : colors['white']
+                  width: '90%',
+                  borderBottomColor: index === i ? colors['primary-text'] : colors['primary'],
+                  borderBottomWidth: 2
                 }}
               />
             </View>
           ))}
         </View>
-
         {index === 0 ? (
           <CardBody>
-            {unique.slice(0, 3).map(token => {
-              const priceBalance = priceStore.calculatePrice(token.balance);
-              return (
-                <TokenItem
-                  key={token.currency?.coinMinimalDenom}
-                  chainInfo={{
-                    stakeCurrency: chainStore.current.stakeCurrency,
-                    networkType: chainStore.current.networkType
-                  }}
-                  balance={token.balance}
-                  priceBalance={priceBalance}
-                />
-              );
-            })}
+            {tokens?.length > 0 ? (
+              tokens.map((token, index) => {
+                const priceBalance = priceStore.calculatePrice(token.balance);
+                return (
+                  <TokenItem
+                    key={index?.toString()}
+                    chainInfo={{
+                      stakeCurrency: chainStore.current.stakeCurrency,
+                      networkType: chainStore.current.networkType,
+                      chainId: chainStore.current.chainId
+                    }}
+                    balance={token.balance}
+                    priceBalance={priceBalance}
+                  />
+                );
+              })
+            ) : (
+              <OWEmpty />
+            )}
           </CardBody>
         ) : (
-          <CardBody>
-            {nfts.length > 0 ? (
-              <SectionList
-                stickySectionHeadersEnabled={false}
-                sections={[
-                  {
-                    title: 'NFTs',
-                    data: nfts
-                  }
-                ]}
-                renderSectionHeader={({ section }) => {
-                  {
-                    return (
-                      <>
-                        <View
-                          style={{
-                            marginTop: spacing['12'],
-                            flexDirection: 'row'
-                          }}
-                        >
-                          <Text style={styles.sectionHeader}>
-                            {section.title}
-                          </Text>
-                          <DownArrowIcon color={colors['black']} height={12} />
-                        </View>
-
-                        <FlatList
-                          horizontal
-                          data={section.data}
-                          renderItem={_renderFlatlistItem}
-                          keyExtractor={_keyExtract}
-                          showsHorizontalScrollIndicator={false}
-                        />
-                      </>
-                    );
-                  }
+          <CardBody
+            style={{
+              padding: 0
+            }}
+          >
+            <View
+              style={{
+                paddingBottom: 10
+              }}
+            >
+              {/* <View
+                style={{
+                  marginTop: spacing['12'],
+                  flexDirection: 'row'
                 }}
-                renderItem={() => <View />}
+              >
+                <Text style={styles.sectionHeader}>{'NFTs'}</Text>
+              </View> */}
+
+              <OWFlatList
+                horizontal
+                contentContainerStyle={
+                  !soulboundNft?.length && {
+                    flex: 1,
+                    justifyContent: 'center'
+                  }
+                }
+                containerSkeletonStyle={{
+                  flexDirection: 'row'
+                }}
+                data={soulboundNft}
+                renderItem={_renderFlatlistOrchai}
+                keyExtractor={_keyExtract}
+                SkeletonComponent={<SkeletonNft />}
+                loading={isLoading}
+                showsHorizontalScrollIndicator={false}
               />
-            ) : (
-              <View style={styles.transactionListEmpty}>
-                <Image
-                  source={require('../../assets/image/not_found.png')}
-                  resizeMode="contain"
-                  height={142}
-                  width={142}
-                />
-                <Text
-                  style={{
-                    ...typography.subtitle2,
-                    color: colors['gray-300'],
-                    marginTop: spacing['8']
-                  }}
-                >
-                  {`No result found`}
-                </Text>
-              </View>
-            )}
+            </View>
           </CardBody>
         )}
 
-        <View
-          style={{
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: colors['white']
+        <OWButton
+          label={capitalizedText('view all')}
+          size="medium"
+          type="secondary"
+          onPress={() => {
+            if (index === 0) {
+              smartNavigation.navigateSmart('Tokens', {});
+            } else {
+              smartNavigation.navigateSmart('Nfts', null);
+            }
           }}
-        >
-          <RectButton
-            style={styles.containerBtn}
-            onPress={() => {
-              if (index === 0) {
-                smartNavigation.navigateSmart('Tokens', {});
-              } else {
-                smartNavigation.navigateSmart('Nfts', { nfts });
-              }
-            }}
-          >
-            <Text style={styles.textLoadMore}>
-              {capitalizedText('view all')}
-            </Text>
-          </RectButton>
-        </View>
-      </Card>
+        />
+      </OWBox>
     </View>
   );
 });
-
-const styles = StyleSheet.create({
-  textLoadMore: {
-    ...typography['h7'],
-    color: colors['purple-700']
-  },
-  containerBtn: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors['gray-50'],
-    width: metrics.screenWidth - 48,
-    height: spacing['40'],
-    paddingVertical: spacing['10'],
-    borderRadius: spacing['12']
-  },
-  sectionHeader: {
-    ...typography.h7,
-    color: colors['gray-800'],
-    marginBottom: spacing['8'],
-    marginRight: spacing['10']
-  },
-  flatListItem: {
-    backgroundColor: colors['gray-50'],
-    borderRadius: spacing['12'],
-    width: (metrics.screenWidth - 60) / 2,
-    marginRight: spacing['12'],
-    padding: spacing['12']
-  },
-  itemPhoto: {
-    // width: (metrics.screenWidth - 84) / 2,
-    height: (metrics.screenWidth - 84) / 2,
-    borderRadius: 10,
-    marginHorizontal: 'auto',
-    width: (metrics.screenWidth - 84) / 2
-  },
-  itemText: {
-    ...typography.h7,
-    color: colors['gray-900'],
-    fontWeight: '700'
-  },
-  transactionListEmpty: {
-    justifyContent: 'center',
-    alignItems: 'center'
-  }
-});
+export const SkeletonNft = () => {
+  const { colors } = useTheme();
+  return (
+    <SkeletonPlaceholder
+      highlightColor={colors['skeleton']}
+      backgroundColor={colors['background-item-list']}
+      borderRadius={12}
+    >
+      <SkeletonPlaceholder.Item
+        width={150}
+        padding={12}
+        height={200}
+        margin={12}
+        marginLeft={0}
+      ></SkeletonPlaceholder.Item>
+    </SkeletonPlaceholder>
+  );
+};
+const styling = (colors) =>
+  StyleSheet.create({
+    titleNft: {
+      paddingTop: 12
+    },
+    subTextNft: {
+      textAlign: 'justify'
+    },
+    containerImgNft: {
+      borderRadius: 6,
+      width: 128,
+      height: 128
+    },
+    itemImg: {
+      width: 128,
+      height: 128
+    },
+    wrapViewNft: {
+      padding: 12,
+      width: 150,
+      height: 222,
+      borderRadius: spacing['12']
+    },
+    ContainerBtnNft: {
+      margin: 12,
+      marginLeft: 0
+    },
+    wrapHeaderTitle: {
+      flexDirection: 'row',
+      marginHorizontal: spacing['page-pad']
+    },
+    textLoadMore: {
+      ...typography['h7'],
+      color: colors['colored-label']
+    },
+    containerBtn: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: colors['primary-background'],
+      width: metrics.screenWidth - 48,
+      height: spacing['40'],
+      paddingVertical: spacing['10'],
+      borderRadius: spacing['12']
+    },
+    sectionHeader: {
+      ...typography.h7,
+      // color: colors['gray-800'],
+      marginBottom: spacing['8'],
+      marginRight: spacing['10']
+    },
+    flatListItem: {
+      backgroundColor: colors['sub-nft'],
+      borderRadius: spacing['12'],
+      width: (metrics.screenWidth - 60) / 2,
+      marginRight: spacing['12'],
+      padding: spacing['12']
+    },
+    itemPhoto: {
+      // width: (metrics.screenWidth - 84) / 2,
+      height: (metrics.screenWidth - 84) / 2,
+      borderRadius: 6,
+      // marginHorizontal: 'auto',
+      width: (metrics.screenWidth - 84) / 2
+    },
+    itemText: {
+      ...typography.h7,
+      // color: colors['gray-900'],
+      fontWeight: '700'
+    },
+    transactionListEmpty: {
+      justifyContent: 'center',
+      alignItems: 'center'
+    }
+  });

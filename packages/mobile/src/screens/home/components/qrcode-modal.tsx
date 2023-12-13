@@ -1,17 +1,20 @@
-import React, { FunctionComponent, useCallback, useState } from 'react';
-import { Button } from '../../../components/button';
+import React, { FunctionComponent, useMemo } from 'react';
+import { Button, OWButton } from '../../../components/button';
 import { Share, StyleSheet, View } from 'react-native';
 import { CardModal } from '../../../modals/card';
 import { AddressCopyable } from '../../../components/address-copyable';
 import QRCode from 'react-native-qrcode-svg';
 import { colors, spacing, typography } from '../../../themes';
-import { AccountWithAll, ChainStore } from '@owallet/stores';
-import { CText as Text } from '../../../components/text';
-
+import { AccountWithAll, KeyRingStore } from '@owallet/stores';
+import { Text } from '@src/components/text';
 export const AddressQRCodeModal: FunctionComponent<{
   account?: AccountWithAll;
   chainStore?: any;
-}> = ({ account, chainStore }) => {
+  keyRingStore?: KeyRingStore;
+}> = ({ account, chainStore, keyRingStore }) => {
+  
+  const addressToShow = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
+
   return (
     <View
       style={{
@@ -21,7 +24,6 @@ export const AddressQRCodeModal: FunctionComponent<{
       <Text
         style={{
           ...typography.h6,
-          color: colors['gray-900'],
           fontWeight: '900'
         }}
       >{`Receive`}</Text>
@@ -34,24 +36,10 @@ export const AddressQRCodeModal: FunctionComponent<{
             marginVertical: spacing['16']
           }}
         >{`Scan QR Code or copy below address`}</Text>
-        <AddressCopyable
-          address={
-            chainStore.networkType === 'cosmos'
-              ? account.bech32Address
-              : account.evmosHexAddress
-          }
-          maxCharacters={22}
-        />
+        <AddressCopyable address={addressToShow} maxCharacters={22} />
         <View style={{ marginVertical: spacing['32'] }}>
-          {account.bech32Address ? (
-            <QRCode
-              size={200}
-              value={
-                chainStore.networkType === 'cosmos'
-                  ? account.bech32Address
-                  : account.evmosHexAddress
-              }
-            />
+          {!!addressToShow ? (
+            <QRCode size={200} value={addressToShow} />
           ) : (
             <View
               style={{
@@ -63,23 +51,14 @@ export const AddressQRCodeModal: FunctionComponent<{
           )}
         </View>
         <View style={{ flexDirection: 'row' }}>
-          <Button
-            containerStyle={{ flex: 1, backgroundColor: colors['purple-900'] }}
-            textStyle={{
-              color: colors['white']
-            }}
-            text="Share Address"
-            mode="light"
-            size="large"
-            loading={account.bech32Address === ''}
-            disabled={account.bech32Address === ''}
+          <OWButton
+            label="Share Address"
+            loading={addressToShow === ''}
+            disabled={addressToShow === ''}
             onPress={() => {
               Share.share({
-                message:
-                  chainStore.networkType === 'cosmos'
-                    ? account.bech32Address
-                    : account.evmosHexAddress
-              }).catch(e => {
+                message: addressToShow
+              }).catch((e) => {
                 console.log(e);
               });
             }}

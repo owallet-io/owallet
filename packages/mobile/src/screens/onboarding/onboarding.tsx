@@ -1,13 +1,13 @@
-import React, { FunctionComponent, useState } from 'react';
+import React, { FunctionComponent } from 'react';
 import { observer } from 'mobx-react-lite';
 import GatewayIntroScreen from './gateway_intro';
 import ManageIntroScreen from './manage_intro';
 import WelcomeIntroScreen from './welcome_intro';
 import AppIntroSlider from 'react-native-app-intro-slider';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Image, StyleSheet, Platform } from 'react-native';
 import { colors, metrics } from '../../themes';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { PageWithScrollView } from '../../components/page';
+import { useGetHeightHeader } from '@src/hooks/use-height-header';
 
 const slides = [
   {
@@ -24,41 +24,40 @@ const slides = [
   }
 ];
 
-const styles = StyleSheet.create({
-  onBoardingRoot: {
-    position: 'relative',
-    height: metrics.screenHeight - 120,
-  },
-  onBoardingImgFooter: {
-    position: 'absolute',
-    bottom: -50,
-    zIndex: -1,
-    alignItems: 'flex-end'
-  }
-});
-
+const styling = () => {
+  const height = useGetHeightHeader();
+  return StyleSheet.create({
+    onBoardingRoot: {
+      position: 'relative',
+      height:
+        Platform.OS == 'ios'
+          ? metrics.screenHeight - (height + 20)
+          : metrics.screenHeight
+    },
+    onBoardingImgFooter: {
+      position: 'absolute',
+      bottom: -50,
+      zIndex: -1,
+      alignItems: 'flex-end'
+    }
+  });
+};
 
 export const OnboardingIntroScreen: FunctionComponent = observer(() => {
-  // const [showRealApp, setShowRealApp] = useState(false)
-
-  // const onDone = () => {
-  //   setShowRealApp(true)
-  // }
-
   const renderItem = ({ item }) => {
     return <View>{item.component}</View>;
   };
-
+  const styles = styling();
   return (
     <PageWithScrollView backgroundColor="white">
-      <View style={{ ...styles.onBoardingRoot }}>
+      <View style={[{ ...styles.onBoardingRoot }, { paddingTop: 50 }]}>
         <AppIntroSlider
           renderItem={renderItem}
           data={slides}
           showNextButton={false}
           dotStyle={{ backgroundColor: colors['purple-100'], marginTop: 60 }}
           activeDotStyle={{
-            backgroundColor: colors['purple-900'],
+            backgroundColor: colors['purple-700'],
             marginTop: 60
           }}
           showDoneButton={false}

@@ -1,24 +1,26 @@
-import React, { FunctionComponent, useMemo } from 'react';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../../stores';
 import { BondStatus } from '@owallet/stores';
-import { StyleSheet, View, ViewStyle, TouchableOpacity } from 'react-native';
-import { CText as Text } from '../../../components/text';
 import { CoinPretty, Dec, IntPretty } from '@owallet/unit';
-import { Button } from '../../../components/button';
-import { useSmartNavigation } from '../../../navigation.provider';
-import { ValidatorThumbnail } from '../../../components/thumbnail';
-import { colors, metrics, spacing, typography } from '../../../themes';
+import { Text } from '@src/components/text';
+import { useTheme } from '@src/themes/theme-provider';
+import { observer } from 'mobx-react-lite';
+import React, { FunctionComponent, useMemo } from 'react';
+import { StyleSheet, View, ViewStyle } from 'react-native';
+import { useStore } from '../../../stores';
+import { ValidatorThumbnails } from '@owallet/common';
+import { OWButton } from '@src/components/button';
+import { OWBox } from '@src/components/card';
+import { OWSubTitleHeader } from '@src/components/header';
 import {
   ValidatorAPYIcon,
   ValidatorBlockIcon,
   ValidatorCommissionIcon,
   ValidatorVotingIcon
 } from '../../../components/icon';
-import { ValidatorThumbnails } from '@owallet/common';
-import { DelegatedCard } from './delegated-card';
+import { ValidatorThumbnail } from '../../../components/thumbnail';
+import { useSmartNavigation } from '../../../navigation.provider';
+import { metrics, spacing, typography } from '../../../themes';
 
-const renderIconValidator = (label: string, size?: number) => {
+const renderIconValidator = (label: string, size?: number, styles?: any) => {
   switch (label) {
     case 'Website':
       return (
@@ -69,6 +71,8 @@ export const ValidatorDetailsCard: FunctionComponent<{
   apr?: number;
 }> = observer(({ containerStyle, validatorAddress, apr }) => {
   const { chainStore, queriesStore } = useStore();
+  const { colors } = useTheme();
+  const styles = styling(colors);
   const queries = queriesStore.get(chainStore.current.chainId);
   const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
     BondStatus.Bonded
@@ -102,7 +106,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
       case 'Website':
         return (
           <Text style={{ ...styles.textDetail }}>
-            {validator.description.website}
+            {validator?.description.website}
           </Text>
         );
       case 'APR':
@@ -138,20 +142,10 @@ export const ValidatorDetailsCard: FunctionComponent<{
   };
 
   return (
-    <>
-      <Text
-        style={{
-          ...typography.h3,
-          fontWeight: '700',
-          color: colors['gray-900'],
-          textAlign: 'center',
-          marginTop: spacing['16']
-        }}
-      >
-        Validator details
-      </Text>
+    <View>
+      <OWSubTitleHeader title="Validator detail" />
       {validator ? (
-        <View style={containerStyle}>
+        <OWBox>
           <View
             style={{
               flexDirection: 'row',
@@ -163,10 +157,11 @@ export const ValidatorDetailsCard: FunctionComponent<{
             <Text
               style={{
                 ...styles.textInfo,
-                fontWeight: '700'
+                fontWeight: '700',
+                color: colors['primary-text']
               }}
             >
-              {validator.description.moniker}
+              {validator?.description.moniker}
             </Text>
           </View>
 
@@ -184,13 +179,14 @@ export const ValidatorDetailsCard: FunctionComponent<{
                     ...styles.containerItem
                   }}
                 >
-                  {renderIconValidator(label, 24)}
+                  {renderIconValidator(label, 24, styles)}
                   <Text
                     style={{
                       ...typography.h7,
                       fontWeight: '700',
                       textAlign: 'center',
-                      marginTop: spacing['6']
+                      marginTop: spacing['6'],
+                      color: colors['primary-text']
                     }}
                   >
                     {label}
@@ -208,10 +204,10 @@ export const ValidatorDetailsCard: FunctionComponent<{
             <Text
               style={{
                 ...typography.h7,
-                color: colors['gray-900'],
                 fontWeight: '700',
                 marginTop: spacing['24'],
-                marginBottom: spacing['4']
+                marginBottom: spacing['4'],
+                color: colors['sub-primary-text']
               }}
             >
               Description
@@ -225,72 +221,55 @@ export const ValidatorDetailsCard: FunctionComponent<{
               }}
               selectable={true}
             >
-              {validator.description.details}
+              {validator?.description.details}
             </Text>
           </View>
-          {/* <DelegatedCard
-            containerStyle={{
-              backgroundColor: colors['white'],
-              width: '100%'
-            }}
-            validatorAddress={validatorAddress}
-          /> */}
-          <TouchableOpacity
-            style={{
-              marginBottom: 16,
-              backgroundColor: colors['purple-900'],
-              borderRadius: 8
-            }}
-            onPress={() => {
-              smartNavigation.navigateSmart('Delegate', {
-                validatorAddress
-              });
-            }}
-          >
-            <Text
-              style={{
-                color: colors['white'],
-                textAlign: 'center',
-                fontWeight: '700',
-                fontSize: 16,
-                padding: 16
-              }}
-            >
-              Stake now
-            </Text>
-          </TouchableOpacity>
-        </View>
+        </OWBox>
       ) : null}
-    </>
+      <OWButton
+        label="Stake now"
+        onPress={() => {
+          smartNavigation.navigateSmart('Delegate', {
+            validatorAddress
+          });
+        }}
+        style={{
+          marginTop: 20,
+          marginHorizontal: 24
+        }}
+        fullWidth={false}
+      />
+    </View>
   );
 });
 
-const styles = StyleSheet.create({
-  containerIcon: {
-    borderRadius: spacing['8'],
-    padding: spacing['10'],
-    alignItems: 'center',
-    backgroundColor: colors['gray-10']
-  },
-  textInfo: {
-    ...typography.h5,
-    fontWeight: '400',
-    marginLeft: spacing['12']
-  },
-  containerItem: {
-    borderWidth: 1,
-    borderColor: colors['purple-50'],
-    borderRadius: spacing['8'],
-    width: (metrics.screenWidth - 60) / 2,
-    marginVertical: spacing['6'],
-    paddingVertical: spacing['16'],
-    paddingHorizontal: spacing['16'],
-    alignItems: 'center'
-  },
-  textDetail: {
-    ...typography.h7,
-    fontWeight: '700',
-    color: colors['gray-300'],
-    textAlign: 'center'
-  }
-});
+const styling = colors =>
+  StyleSheet.create({
+    containerIcon: {
+      borderRadius: spacing['8'],
+      padding: spacing['10'],
+      alignItems: 'center',
+      backgroundColor: colors['gray-10']
+    },
+    textInfo: {
+      ...typography.h5,
+      fontWeight: '400',
+      marginLeft: spacing['12']
+    },
+    containerItem: {
+      borderWidth: 1,
+      borderColor: colors['border-input-login'],
+      borderRadius: spacing['8'],
+      width: (metrics.screenWidth - 60) / 2,
+      marginVertical: spacing['6'],
+      paddingVertical: spacing['16'],
+      paddingHorizontal: spacing['16'],
+      alignItems: 'center'
+    },
+    textDetail: {
+      ...typography.h7,
+      fontWeight: '700',
+      color: colors['sub-text'],
+      textAlign: 'center'
+    }
+  });

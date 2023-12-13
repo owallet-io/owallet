@@ -1,10 +1,9 @@
 import { Erc20ContractTokenInfo, Result } from './types';
-import { KVStore } from '@owallet/common';
+import { KVStore, MyBigInt } from '@owallet/common';
 import { ObservableChainQueryMap } from '../chain-query';
 import { ChainGetter } from '../../common';
 import { computed } from 'mobx';
 import { ObservableEvmContractChainQuery } from './contract-query';
-import { MyBigInt } from '../../common/utils/';
 
 export class ObservableQueryErc20ContactInfoInner extends ObservableEvmContractChainQuery<Result> {
   constructor(
@@ -38,14 +37,14 @@ export class ObservableQueryErc20ContactInfoInner extends ObservableEvmContractC
 
       const chainInfo = this.chainGetter.getChain(this._chainId);
       const currency = chainInfo.currencies.find(curency =>
-        curency.coinMinimalDenom.startsWith(`erc20:${this.contractAddress}`)
+        curency.coinMinimalDenom?.startsWith(`erc20:${this.contractAddress}`)
       );
 
       return {
         decimals: currency?.coinDecimals || fetchInfo.decimals,
         name: currency?.coinMinimalDenom?.split(':')?.pop() || fetchInfo.name,
         symbol: currency?.coinDenom || fetchInfo.symbol,
-        total_supply: new MyBigInt(fetchData.result).toString()
+        total_supply: new MyBigInt(fetchData.result)?.toString()
       };
     } catch (error) {
       console.log('Error on getting token info: ', error);

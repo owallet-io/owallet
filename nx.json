@@ -1,0 +1,10 @@
+{
+  "tasksRunnerOptions": {
+    "default": {
+      "options": {
+        "cacheableOperations": ["build", "test"],
+        "cacheDirectory": "node_modules/.cache"
+      }
+    }
+  }
+}

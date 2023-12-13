@@ -1,6 +1,7 @@
-import { Buffer } from 'buffer';
+import { Buffer } from "buffer/";
+import { Any } from "@owallet/proto-types/google/protobuf/any";
 
-export class UnknownMessage {
+export class UnknownMessage implements Any {
   constructor(
     /** Any type_url. */
     protected readonly _typeUrl: string,
@@ -18,8 +19,8 @@ export class UnknownMessage {
 
   toJSON() {
     return {
-      type_url: this._typeUrl,
-      value: Buffer.from(this._value).toString('base64')
+      typeUrl: this._typeUrl,
+      value: Buffer.from(this._value).toString("base64"),
     };
   }
 }

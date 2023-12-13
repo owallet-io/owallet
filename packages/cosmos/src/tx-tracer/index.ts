@@ -222,14 +222,14 @@ export class TendermintTxTracer {
   //  Subscribe the msg
   async subscribeMsgByAddress(msg: string): Promise<any> {
     const result = await this.subscribeMsg(msg);
-    return new Promise(resolve => {
+
+    return new Promise((resolve) => {
       setTimeout(() => resolve(result), 100);
     });
   }
 
   subscribeMsg(address: string): Promise<any> {
     const id = this.createRandomId();
-
     return new Promise<unknown>((resolve, reject) => {
       this.txSubscribes.set(id, {
         address,
@@ -251,6 +251,14 @@ export class TendermintTxTracer {
           id
         })
       );
+      this.ws.send(
+        JSON.stringify({
+          jsonrpc: '2.0',
+          method: 'subscribe',
+          params: [`tm.event='Tx' AND message.sender = '${address}'`],
+          id
+        })
+      );
     }
   }
 
@@ -258,7 +266,7 @@ export class TendermintTxTracer {
   async traceTx(hash: Uint8Array): Promise<any> {
     const result = await this.subscribeTx(hash);
     this.queryTx(hash);
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       setTimeout(() => resolve(result), 100);
     });
     // return new Promise<any>(resolve => {

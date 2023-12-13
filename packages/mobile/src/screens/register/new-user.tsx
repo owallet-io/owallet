@@ -1,21 +1,23 @@
-import React, { FunctionComponent } from 'react';
-import { useHeaderHeight } from '@react-navigation/stack';
-import { PageWithScrollView } from '../../components/page';
-import { GoogleIcon, AppleIcon } from '../../components/icon';
-import { useStyle } from '../../styles';
-import { View, Text, Dimensions, Platform, StyleSheet } from 'react-native';
-import { Button } from '../../components/button';
-import { useSmartNavigation } from '../../navigation.provider';
 import { useRegisterConfig } from '@owallet/hooks';
+import { useHeaderHeight } from '@react-navigation/elements';
+import { useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
-import { useStore } from '../../stores';
+import React, { FunctionComponent } from 'react';
+import { Dimensions, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Button } from '../../components/button';
+import { PageWithScrollView } from '../../components/page';
+import { useSmartNavigation } from '../../navigation.provider';
+import { useStore } from '../../stores';
+import { useStyle } from '../../styles';
 import { OWalletLogo } from './owallet-logo';
 
 export const RegisterNewUserScreen: FunctionComponent = observer(() => {
   const { keyRingStore, analyticsStore } = useStore();
 
   const style = useStyle();
+
+  const { colors } = useTheme();
 
   const smartNavigation = useSmartNavigation();
 
@@ -36,6 +38,7 @@ export const RegisterNewUserScreen: FunctionComponent = observer(() => {
           paddingBottom: Dimensions.get('window').height * 0.11
         }
       ])}
+      backgroundColor={colors['plain-background']}
     >
       <View
         style={style.flatten(['flex-grow-1', 'items-center', 'padding-x-18'])}

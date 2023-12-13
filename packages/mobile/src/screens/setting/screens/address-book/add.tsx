@@ -1,60 +1,54 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
-import { PageWithScrollView } from '../../../../components/page';
-import { useStyle } from '../../../../styles';
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import { EthereumEndpoint } from '@owallet/common';
 import {
   AddressBookConfig,
-  RecipientConfig,
   useAddressBookConfig,
   useMemoConfig,
   useRecipientConfig
 } from '@owallet/hooks';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { OWBox } from '@src/components/card';
+import { useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
-import {
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
-  View
-} from 'react-native';
-import { useStore } from '../../../../stores';
-import { EthereumEndpoint } from '@owallet/common';
+import React, { FunctionComponent, useEffect, useState } from 'react';
+import { StyleSheet } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { AsyncKVStore } from '../../../../common';
+import { OWButton } from '../../../../components/button';
+import { Scanner } from '../../../../components/icon';
 import {
   AddressInput,
   MemoInput,
   TextInput
 } from '../../../../components/input';
-import { Button } from '../../../../components/button';
+import { PageWithScrollView } from '../../../../components/page';
 import { useSmartNavigation } from '../../../../navigation.provider';
-import { colors, spacing } from '../../../../themes';
-import { Scanner } from '../../../../components/icon';
-import {
-  TouchableOpacity,
-  TouchableWithoutFeedback
-} from 'react-native-gesture-handler';
-import { AsyncKVStore } from '../../../../common';
+import { useStore } from '../../../../stores';
+import { spacing } from '../../../../themes';
 
-const styles = StyleSheet.create({
-  addNewBookRoot: {
-    backgroundColor: colors['white'],
-    // marginTop: spacing['24'],
-    paddingHorizontal: spacing['20'],
-    paddingVertical: spacing['24'],
-    borderRadius: spacing['24']
-  },
-  addNewBookLabel: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: colors['gray-900'],
-    lineHeight: 22
-  },
-  addNewBookInput: {
-    borderTopLeftRadius: spacing['8'],
-    borderTopRightRadius: spacing['8'],
-    borderBottomLeftRadius: spacing['8'],
-    borderBottomRightRadius: spacing['8'],
-  }
-});
+const styling = colors =>
+  StyleSheet.create({
+    addNewBookRoot: {
+      backgroundColor: colors['background'],
+      // marginTop: spacing['24'],
+      paddingHorizontal: spacing['20'],
+      paddingVertical: spacing['24'],
+      borderRadius: spacing['24']
+    },
+    addNewBookLabel: {
+      fontSize: 16,
+      fontWeight: '700',
+      color: colors['label'],
+      lineHeight: 22
+    },
+    addNewBookInput: {
+      borderTopLeftRadius: spacing['8'],
+      borderTopRightRadius: spacing['8'],
+      borderBottomLeftRadius: spacing['8'],
+      borderBottomRightRadius: spacing['8'],
+      color: colors['sub-text'],
+      backgroundColor: colors['background-box']
+    }
+  });
 
 export const AddAddressBookScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -65,7 +59,7 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
           chainId: string;
           addressBookConfig: AddressBookConfig;
           recipient: string;
-          addressBookObj: Object;
+          addressBookObj?: Object;
         }
       >,
       string
@@ -73,6 +67,8 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
   >();
 
   const { chainStore } = useStore();
+  const { colors } = useTheme();
+  const styles = styling(colors);
 
   const recipientConfig = useRecipientConfig(
     chainStore,
@@ -118,82 +114,77 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
 
   return (
     // <PageWithScrollView behavior='position' keyboardVerticalOffset={keyboardVerticalOffset}>
-    <PageWithScrollView style={{ marginTop: spacing['24'] }}>
-      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-        <View style={styles.addNewBookRoot}>
-          <TextInput
-            label="User name"
-            value={name}
-            onChangeText={(text) => setName(text)}
-            labelStyle={styles.addNewBookLabel}
-            inputContainerStyle={styles.addNewBookInput}
-            placeholder="Type your user name"
-          />
-          <AddressInput
-            label="Wallet address"
-            recipientConfig={recipientConfig}
-            memoConfig={memoConfig}
-            disableAddressBook={false}
-            labelStyle={styles.addNewBookLabel}
-            inputContainerStyle={styles.addNewBookInput}
-            placeholder="Tap to paste"
-            inputRight={
-              <TouchableOpacity
-                onPress={() => {
-                  smartNavigation.navigateSmart('Camera', {
-                    screenCurrent: 'addressbook',
-                    name
-                  });
-                }}
-              >
-                <Scanner color={colors['purple-900']} />
-              </TouchableOpacity>
-            }
-            placeholderTextColor={colors['gray-300']}
-          />
-          <MemoInput
-            label="Memo (optional)"
-            memoConfig={memoConfig}
-            labelStyle={styles.addNewBookLabel}
-            inputContainerStyle={{
-              ...styles.addNewBookInput,
-              height: 190
-            }}
-            multiline={false}
-            placeholder="Type memo here"
-            placeholderTextColor={colors['gray-300']}
-          />
-          <Button
-            text="Save"
-            size="large"
-            style={
-              name && {
-                backgroundColor: colors['purple-900']
-              }
-            }
-            disabled={
-              !name ||
-              recipientConfig.getError() != null ||
-              memoConfig.getError() != null
-            }
-            onPress={async () => {
-              if (
-                name &&
-                recipientConfig.getError() == null &&
-                memoConfig.getError() == null
-              ) {
-                await addressBookConfig.addAddressBook({
-                  name,
-                  address: recipientConfig.rawRecipient,
-                  memo: memoConfig.memo
+    <PageWithScrollView
+      backgroundColor={colors['background']}
+      style={{ marginTop: spacing['24'] }}
+    >
+      <OWBox>
+        <TextInput
+          label="User name"
+          value={name}
+          onChangeText={text => setName(text)}
+          labelStyle={styles.addNewBookLabel}
+          inputContainerStyle={styles.addNewBookInput}
+          placeholder="Type your user name"
+        />
+        <AddressInput
+          label="Wallet address"
+          recipientConfig={recipientConfig}
+          memoConfig={memoConfig}
+          disableAddressBook={false}
+          labelStyle={styles.addNewBookLabel}
+          inputContainerStyle={styles.addNewBookInput}
+          placeholder="Tap to paste"
+          inputRight={
+            <TouchableOpacity
+              onPress={() => {
+                smartNavigation.navigateSmart('Camera', {
+                  screenCurrent: 'addressbook',
+                  name
                 });
-                // smartNavigation.goBack();
-                smartNavigation.navigateSmart('AddressBook', {});
-              }
-            }}
-          />
-        </View>
-      </TouchableWithoutFeedback>
+              }}
+            >
+              <Scanner color={colors['purple-700']} />
+            </TouchableOpacity>
+          }
+        />
+        <MemoInput
+          label="Memo (optional)"
+          memoConfig={memoConfig}
+          labelStyle={styles.addNewBookLabel}
+          inputContainerStyle={{
+            ...styles.addNewBookInput,
+            height: 190
+          }}
+          multiline={false}
+          placeholder="Type memo here"
+        />
+        <OWButton
+          label="Save"
+          size="large"
+          type="primary"
+          disabled={
+            !name ||
+            recipientConfig.getError() != null ||
+            memoConfig.getError() != null
+          }
+          onPress={async () => {
+            if (
+              name &&
+              recipientConfig.getError() == null &&
+              memoConfig.getError() == null
+            ) {
+              await addressBookConfig.addAddressBook({
+                name,
+                address: recipientConfig.rawRecipient,
+                memo: memoConfig.memo
+              });
+              smartNavigation.goBack();
+              // smartNavigation.navigateSmart('AddressBook', {});
+            }
+          }}
+        />
+      </OWBox>
     </PageWithScrollView>
   );
 });

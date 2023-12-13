@@ -15,7 +15,7 @@ export const RefreshIcon: FunctionComponent<{
       viewBox="0 0 24 24"
       style={{
         width: size,
-        height: size,
+        height: size
       }}
     >
       <Path

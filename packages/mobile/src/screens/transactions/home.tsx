@@ -5,7 +5,7 @@ import React, {
   useRef,
   useState
 } from 'react';
-import { CText as Text } from '../../components/text';
+import { Text } from '@src/components/text';
 import {
   ActivityIndicator,
   FlatList,
@@ -14,7 +14,7 @@ import {
   View
 } from 'react-native';
 import { TransactionSectionTitle, TransactionItem } from './components';
-import { colors, metrics, spacing, typography } from '../../themes';
+import { metrics, spacing, typography } from '../../themes';
 import { _keyExtract } from '../../utils/helper';
 import { useSmartNavigation } from '../../navigation.provider';
 import { useStore } from '../../stores';
@@ -23,8 +23,13 @@ import crashlytics from '@react-native-firebase/crashlytics';
 import { NewsTab } from './news';
 import { useIsFocused } from '@react-navigation/core';
 import { TendermintTxTracer } from '@owallet/cosmos';
+import { useTheme } from '@src/themes/theme-provider';
+import { OWBox } from '@src/components/card';
+
 export const Transactions: FunctionComponent = () => {
   const { chainStore, accountStore } = useStore();
+  const { colors } = useTheme();
+  const styles = styling(colors);
   const account = accountStore.getAccount(chainStore.current.chainId);
   const [indexParent, setIndexParent] = useState<number>(0);
   const [indexChildren, setIndexChildren] = useState<number>(0);
@@ -36,30 +41,39 @@ export const Transactions: FunctionComponent = () => {
   const hasMore = useRef(true);
   const fetchData = async (isLoadMore = false) => {
     crashlytics().log('transactions - home - fetchData');
-    // const isRecipient = indexChildren === 1;
-    // const isAll = indexChildren === 0;
-    try {
-      const res = await API.getTransactions(
-        {
-          address: account.bech32Address,
-          page: page.current,
-          limit: 10,
-          type: indexChildren === 0 ? 'native' : 'cw20'
-        },
-        // { baseURL: chainStore.current.rest }
-        { baseURL: 'https://api.scan.orai.io' }
-      );
 
-      const value = res.data?.data || [];
-      let newData = isLoadMore ? [...data, ...value] : value;
-      hasMore.current = value?.length === 10;
-      page.current = res.data?.page.page_id + 1;
-      if (page.current === res.data?.page.total_page) {
-        hasMore.current = false;
+    try {
+      if (hasMore.current) {
+        const res = await API.getTransactions(
+          {
+            address: account.bech32Address,
+            page: page.current,
+            limit: 10,
+            type: indexChildren === 0 ? 'native' : 'cw20'
+          },
+          // { baseURL: chainStore.current.rest }
+          { baseURL: 'https://api.scan.orai.io' }
+        );
+
+        const value = res.data?.data || [];
+        let newData = isLoadMore ? [...data, ...value] : value;
+        hasMore.current = value?.length === 10;
+        page.current = res.data?.page?.page_id + 1;
+        if (page.current === res.data?.page.total_page) {
+          hasMore.current = false;
+        }
+
+        if (res.data?.data.length < 1) {
+          hasMore.current = false;
+        }
+
+        setData(newData);
+        setLoading(false);
+        setLoadMore(false);
+      } else {
+        setLoading(false);
+        setLoadMore(false);
       }
-      setData(newData);
-      setLoading(false);
-      setLoadMore(false);
     } catch (error) {
       crashlytics().recordError(error);
       setLoading(false);
@@ -75,16 +89,19 @@ export const Transactions: FunctionComponent = () => {
     let msgTracer: TendermintTxTracer | undefined;
 
     if (isFocused) {
-      msgTracer = new TendermintTxTracer(chainInfo.rpc, '/websocket');
+      msgTracer = new TendermintTxTracer(
+        chainInfo?.rpc ?? chainInfo?.rest,
+        '/websocket'
+      );
       msgTracer
         .subscribeMsgByAddress(account.bech32Address)
-        .then(tx => {
+        .then((tx) => {
           page.current = 1;
           setTimeout(() => {
             fetchData();
           }, 1500);
         })
-        .catch(e => {
+        .catch((e) => {
           console.log(`Failed to trace the tx ()`, e);
         });
     }
@@ -98,6 +115,7 @@ export const Transactions: FunctionComponent = () => {
 
   useEffect(() => {
     page.current = 1;
+    hasMore.current = true;
     fetchData();
   }, [indexChildren]);
 
@@ -120,7 +138,7 @@ export const Transactions: FunctionComponent = () => {
             })
           }
           containerStyle={{
-            backgroundColor: colors['gray-10']
+            backgroundColor: colors['background-item-list']
           }} // customize item transaction
         />
       );
@@ -135,7 +153,7 @@ export const Transactions: FunctionComponent = () => {
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: colors['white'],
+          backgroundColor: colors['background-box'],
           borderRadius: spacing['12'],
           height: 56,
           marginVertical: spacing['12'],
@@ -152,13 +170,12 @@ export const Transactions: FunctionComponent = () => {
               alignItems: 'center',
               paddingVertical: spacing['12'],
               backgroundColor:
-                indexParent === i
-                  ? colors['purple-900']
-                  : colors['transparent'],
+                indexParent === i ? colors['purple-700'] : colors['background-box'],
               borderRadius: spacing['12']
             }}
             onPress={() => {
               setIndexParent(i);
+              hasMore.current = true;
             }}
           >
             <Text
@@ -174,10 +191,10 @@ export const Transactions: FunctionComponent = () => {
         ))}
       </View>
       {indexParent == 0 && (
-        <View
+        <OWBox
           style={{
-            backgroundColor: colors['white'],
-            borderRadius: spacing['24']
+            marginTop: 0,
+            padding: 0
           }}
         >
           <View
@@ -201,6 +218,7 @@ export const Transactions: FunctionComponent = () => {
                   setData([]);
                   setLoading(true);
                   setIndexChildren(i);
+                  hasMore.current = true;
                 }}
               >
                 <Text
@@ -209,8 +227,8 @@ export const Transactions: FunctionComponent = () => {
                     fontWeight: '700',
                     color:
                       indexChildren === i
-                        ? colors['gray-900']
-                        : colors['gray-300']
+                        ? colors['primary-text']
+                        : colors['blue-300']
                   }}
                 >
                   {title}
@@ -225,6 +243,7 @@ export const Transactions: FunctionComponent = () => {
             }}
             onPress={() => {
               page.current = 1;
+              hasMore.current = true;
               setLoading(true);
               fetchData();
             }}
@@ -266,37 +285,38 @@ export const Transactions: FunctionComponent = () => {
               </View>
             ) : null}
           </View>
-        </View>
+        </OWBox>
       )}
       {indexParent == 1 && <NewsTab />}
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: colors['gray-50'],
-    marginBottom: spacing['20']
-  },
-  tabBarHeader: {
-    backgroundColor: colors['white'],
-    display: 'flex',
-    flexDirection: 'row',
-    width: metrics.screenWidth,
-    justifyContent: 'space-around',
-    height: spacing['44']
-  },
-  tabText: {
-    ...typography.body2,
-    fontWeight: 'normal'
-  },
-  tabSelected: {},
-  transactionList: {
-    height: metrics.screenHeight / 1.5
-  },
-  transactionListEmpty: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: metrics.screenHeight / 4
-  }
-});
+const styling = (colors) =>
+  StyleSheet.create({
+    container: {
+      backgroundColor: colors['background'],
+      marginBottom: spacing['20']
+    },
+    tabBarHeader: {
+      backgroundColor: colors['background'],
+      display: 'flex',
+      flexDirection: 'row',
+      width: metrics.screenWidth,
+      justifyContent: 'space-around',
+      height: spacing['44']
+    },
+    tabText: {
+      ...typography.body2,
+      fontWeight: 'normal'
+    },
+    tabSelected: {},
+    transactionList: {
+      height: metrics.screenHeight / 1.5
+    },
+    transactionListEmpty: {
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginTop: metrics.screenHeight / 4
+    }
+  });

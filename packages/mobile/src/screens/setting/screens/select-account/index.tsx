@@ -1,10 +1,9 @@
-import React, { FunctionComponent, useMemo } from 'react';
+import React, { FunctionComponent, useCallback, useMemo } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../../../stores';
 import { PageWithScrollViewInBottomTabView } from '../../../../components/page';
 import { KeyStoreItem, KeyStoreSectionTitle } from '../../components';
 import Svg, { Path } from 'react-native-svg';
-import { useStyle } from '../../../../styles';
 import { useLoadingScreen } from '../../../../providers/loading-screen';
 import {
   MultiKeyStoreInfoElem,
@@ -12,30 +11,7 @@ import {
 } from '@owallet/background';
 import { View } from 'react-native';
 import { useSmartNavigation } from '../../../../navigation.provider';
-
-const CheckIcon: FunctionComponent<{
-  color: string;
-  height: number;
-}> = ({ color, height }) => {
-  return (
-    <Svg
-      fill="none"
-      viewBox="0 0 19 17"
-      style={{
-        height,
-        aspectRatio: 19 / 17
-      }}
-    >
-      <Path
-        stroke={color}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="3"
-        d="M18 1L7.448 16 1 7.923"
-      />
-    </Svg>
-  );
-};
+import { useTheme } from '@src/themes/theme-provider';
 
 export const getKeyStoreParagraph = (keyStore: MultiKeyStoreInfoElem) => {
   const bip44HDPath = keyStore.bip44HDPath
@@ -49,7 +25,7 @@ export const getKeyStoreParagraph = (keyStore: MultiKeyStoreInfoElem) => {
 
   switch (keyStore.type) {
     case 'ledger':
-      return `Ledger - m/44'/118'/${bip44HDPath.account}'${
+      return `Ledger - m/44'/${bip44HDPath.coinType}'/${bip44HDPath.account}'${
         bip44HDPath.change !== 0 || bip44HDPath.addressIndex !== 0
           ? `/${bip44HDPath.change}/${bip44HDPath.addressIndex}`
           : ''
@@ -79,25 +55,25 @@ export const getKeyStoreParagraph = (keyStore: MultiKeyStoreInfoElem) => {
 export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
   const { keyRingStore, analyticsStore } = useStore();
 
-  const style = useStyle();
+  const { colors } = useTheme();
 
   const smartNavigation = useSmartNavigation();
 
   const mnemonicKeyStores = useMemo(() => {
     return keyRingStore.multiKeyStoreInfo.filter(
-      keyStore => !keyStore.type || keyStore.type === 'mnemonic'
+      (keyStore) => !keyStore.type || keyStore.type === 'mnemonic'
     );
   }, [keyRingStore.multiKeyStoreInfo]);
 
   const ledgerKeyStores = useMemo(() => {
     return keyRingStore.multiKeyStoreInfo.filter(
-      keyStore => keyStore.type === 'ledger'
+      (keyStore) => keyStore.type === 'ledger'
     );
   }, [keyRingStore.multiKeyStoreInfo]);
 
   const privateKeyStores = useMemo(() => {
     return keyRingStore.multiKeyStoreInfo.filter(
-      keyStore => keyStore.type === 'privateKey'
+      (keyStore) => keyStore.type === 'privateKey'
     );
   }, [keyRingStore.multiKeyStoreInfo]);
 
@@ -108,14 +84,16 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
   ) => {
     const index = keyRingStore.multiKeyStoreInfo.indexOf(keyStore);
     if (index >= 0) {
-      await loadingScreen.openAsync();
       await keyRingStore.changeKeyRing(index);
-      loadingScreen.setIsLoading(false);
-
       smartNavigation.navigateSmart('Home', {});
     }
   };
-
+  const handleOnKeyStore = useCallback(async (keyStore) => {
+    loadingScreen.setIsLoading(true);
+    analyticsStore.logEvent('Account changed');
+    await selectKeyStore(keyStore);
+    loadingScreen.setIsLoading(false);
+  }, []);
   const renderKeyStores = (
     title: string,
     keyStores: MultiKeyStoreInfoWithSelectedElem[]
@@ -129,15 +107,13 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
               return (
                 <KeyStoreItem
                   key={i.toString()}
+                  colors={colors}
                   label={keyStore.meta?.name || 'OWallet Account'}
                   paragraph={getKeyStoreParagraph(keyStore)}
                   topBorder={i === 0}
                   bottomBorder={keyStores.length - 1 !== i}
                   active={keyStore.selected}
-                  onPress={async () => {
-                    analyticsStore.logEvent('Account changed');
-                    await selectKeyStore(keyStore);
-                  }}
+                  onPress={() => handleOnKeyStore(keyStore)}
                 />
               );
             })}
@@ -148,12 +124,12 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
   };
 
   return (
-    <PageWithScrollViewInBottomTabView>
+    <PageWithScrollViewInBottomTabView backgroundColor={colors['background']}>
       {renderKeyStores('mnemonic seed', mnemonicKeyStores)}
       {renderKeyStores('hardware wallet', ledgerKeyStores)}
       {renderKeyStores('private key', privateKeyStores)}
       {/* Margin bottom for last */}
-      <View style={style.get('height-16')} />
+      <View style={{ height: 16 }} />
     </PageWithScrollViewInBottomTabView>
   );
 });

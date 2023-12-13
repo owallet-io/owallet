@@ -1,8 +1,9 @@
 import React, { FunctionComponent } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
-import { CText as Text } from '../../../../components/text';
+import { Text } from '@src/components/text';
 import { RefreshIcon } from '../../../../components/icon/refresh';
-import { colors, spacing, typography } from '../../../../themes';
+import { spacing, typography } from '../../../../themes';
+import { useTheme } from '@src/themes/theme-provider';
 
 export const TransactionSectionTitle: FunctionComponent<{
   title: string;
@@ -11,6 +12,7 @@ export const TransactionSectionTitle: FunctionComponent<{
 
   onPress?: () => void;
 }> = ({ title, right, onPress, containerStyle }) => {
+  const { colors } = useTheme();
   return (
     <View
       style={{
@@ -18,11 +20,15 @@ export const TransactionSectionTitle: FunctionComponent<{
         ...containerStyle
       }}
     >
-      <Text style={styles.textTitle}>
+      <Text style={[styles.textTitle, { color: colors['text-label-list'] }]}>
         {title &&
-          title.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase())}
+          title.replace(/(^\w{1})|(\s+\w{1})/g, (letter) =>
+            letter.toUpperCase()
+          )}
       </Text>
-      {right ?? <RefreshIcon onPress={onPress} color={colors['purple-700']} size={24} />}
+      {right ?? (
+        <RefreshIcon onPress={onPress} color={colors['purple-700']} size={24} />
+      )}
     </View>
   );
 };
@@ -38,7 +44,6 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   textTitle: {
-    color: colors['gray-300'],
     ...typography.body2
   }
 });

@@ -7,42 +7,42 @@ import { PageWithScrollView } from '../../components/page';
 import { StyleSheet, View } from 'react-native';
 import { Dec, DecUtils } from '@owallet/unit';
 
-import {
-  AddressInput,
-  AmountInput,
-  MemoInput,
-  CurrencySelector,
-  FeeButtons,
-  TextInput
-} from '../../components/input';
-import { Button } from '../../components/button';
+import { AddressInput, AmountInput, MemoInput, CurrencySelector, FeeButtons, TextInput } from '../../components/input';
+import { OWButton } from '../../components/button';
 import { RouteProp, useRoute } from '@react-navigation/native';
+import { useTheme } from '@src/themes/theme-provider';
 import { useSmartNavigation } from '../../navigation.provider';
 import { Buffer } from 'buffer';
-import { colors, spacing } from '../../themes';
-import { CText as Text } from '../../components/text';
+import { spacing } from '../../themes';
+import { Text } from '@src/components/text';
 import { Toggle } from '../../components/toggle';
+import { OWBox } from '@src/components/card';
+import { OWSubTitleHeader } from '@src/components/header';
 
-const styles = StyleSheet.create({
-  sendInputRoot: {
-    paddingHorizontal: spacing['20'],
-    paddingVertical: spacing['24'],
-    backgroundColor: colors['white'],
-    borderRadius: 24
-  },
-  sendlabelInput: {
-    fontSize: 16,
-    fontWeight: '700',
-    lineHeight: 22,
-    color: colors['gray-900'],
-    marginBottom: spacing['8']
-  }
-});
+const styling = (colors) =>
+  StyleSheet.create({
+    sendInputRoot: {
+      paddingHorizontal: spacing['20'],
+      paddingVertical: spacing['24'],
+      backgroundColor: colors['primary'],
+      borderRadius: 24
+    },
+    sendlabelInput: {
+      fontSize: 16,
+      fontWeight: '700',
+      lineHeight: 22,
+      color: colors['sub-primary-text'],
+      marginBottom: spacing['8']
+    },
+    containerStyle: {
+      backgroundColor: colors['background-box']
+    }
+  });
 
 export const SendScreen: FunctionComponent = observer(() => {
-  const { chainStore, accountStore, queriesStore, analyticsStore, sendStore } =
-    useStore();
-
+  const { chainStore, accountStore, queriesStore, analyticsStore, sendStore } = useStore();
+  const { colors } = useTheme();
+  const styles = styling(colors);
   const [customFee, setCustomFee] = useState(false);
 
   const route = useRoute<
@@ -61,9 +61,7 @@ export const SendScreen: FunctionComponent = observer(() => {
 
   const smartNavigation = useSmartNavigation();
 
-  const chainId = route?.params?.chainId
-    ? route?.params?.chainId
-    : chainStore?.current?.chainId;
+  const chainId = route?.params?.chainId ? route?.params?.chainId : chainStore?.current?.chainId;
 
   const account = accountStore.getAccount(chainId);
   const queries = queriesStore.get(chainId);
@@ -79,8 +77,8 @@ export const SendScreen: FunctionComponent = observer(() => {
 
   useEffect(() => {
     if (route?.params?.currency) {
-      const currency = sendConfigs.amountConfig.sendableCurrencies.find(cur => {
-        if (cur.type === 'cw20') {
+      const currency = sendConfigs.amountConfig.sendableCurrencies.find((cur) => {
+        if (cur?.type === 'cw20') {
           return cur.coinDenom == route.params.currency;
         }
         if (cur.coinDenom === route.params.currency) {
@@ -110,25 +108,19 @@ export const SendScreen: FunctionComponent = observer(() => {
   const txStateIsValid = sendConfigError == null;
 
   return (
-    <PageWithScrollView>
+    <PageWithScrollView backgroundColor={colors['background']}>
       <View style={{ marginBottom: 99 }}>
-        <View style={{ alignItems: 'center', marginVertical: spacing['16'] }}>
-          <Text
-            style={{
-              fontWeight: '700',
-              fontSize: 24,
-              lineHeight: 34
-            }}
-          >
-            Send
-          </Text>
-        </View>
-        <View style={styles.sendInputRoot}>
+        <OWSubTitleHeader title="Send" />
+        <OWBox>
           <CurrencySelector
             label="Select a token"
             placeHolder="Select Token"
             amountConfig={sendConfigs.amountConfig}
             labelStyle={styles.sendlabelInput}
+            containerStyle={styles.containerStyle}
+            selectorContainerStyle={{
+              backgroundColor: colors['background-box']
+            }}
           />
           <AddressInput
             placeholder="Enter receiving address"
@@ -136,6 +128,9 @@ export const SendScreen: FunctionComponent = observer(() => {
             recipientConfig={sendConfigs.recipientConfig}
             memoConfig={sendConfigs.memoConfig}
             labelStyle={styles.sendlabelInput}
+            inputContainerStyle={{
+              backgroundColor: colors['background-box']
+            }}
           />
           <AmountInput
             placeholder="ex. 1000 ORAI"
@@ -143,6 +138,9 @@ export const SendScreen: FunctionComponent = observer(() => {
             allowMax={chainStore.current.networkType !== 'evm' ? true : false}
             amountConfig={sendConfigs.amountConfig}
             labelStyle={styles.sendlabelInput}
+            inputContainerStyle={{
+              backgroundColor: colors['background-box']
+            }}
           />
 
           {chainStore.current.networkType !== 'evm' ? (
@@ -155,13 +153,10 @@ export const SendScreen: FunctionComponent = observer(() => {
             >
               <Toggle
                 on={customFee}
-                onChange={value => {
+                onChange={(value) => {
                   setCustomFee(value);
                   if (!value) {
-                    if (
-                      sendConfigs.feeConfig.feeCurrency &&
-                      !sendConfigs.feeConfig.fee
-                    ) {
+                    if (sendConfigs.feeConfig.feeCurrency && !sendConfigs.feeConfig.fee) {
                       sendConfigs.feeConfig.setFeeType('average');
                     }
                   }
@@ -172,7 +167,8 @@ export const SendScreen: FunctionComponent = observer(() => {
                   fontWeight: '700',
                   fontSize: 16,
                   lineHeight: 34,
-                  paddingHorizontal: 8
+                  paddingHorizontal: 8,
+                  color: colors['primary-text']
                 }}
               >
                 Custom Fee
@@ -183,13 +179,14 @@ export const SendScreen: FunctionComponent = observer(() => {
           {customFee && chainStore.current.networkType !== 'evm' ? (
             <TextInput
               label="Fee"
+              inputContainerStyle={{
+                backgroundColor: colors['background-box']
+              }}
               placeholder="Type your Fee here"
               keyboardType={'numeric'}
               labelStyle={styles.sendlabelInput}
-              onChangeText={text => {
-                const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(
-                  DecUtils.getTenExponentNInPrecisionRange(6)
-                );
+              onChangeText={(text) => {
+                const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(DecUtils.getTenExponentNInPrecisionRange(6));
 
                 sendConfigs.feeConfig.setManualFee({
                   amount: fee.roundUp().toString(),
@@ -210,33 +207,24 @@ export const SendScreen: FunctionComponent = observer(() => {
           <MemoInput
             label="Memo (Optional)"
             placeholder="Type your memo here"
+            inputContainerStyle={{
+              backgroundColor: colors['background-box']
+            }}
             memoConfig={sendConfigs.memoConfig}
             labelStyle={styles.sendlabelInput}
           />
-          <Button
-            text="Send"
-            size="large"
+          <OWButton
+            label="Send"
             disabled={!account.isReadyToSendMsgs || !txStateIsValid}
             loading={account.isSendingMsg === 'send'}
-            style={{
-              backgroundColor: colors['purple-900'],
-              borderRadius: 8
-            }}
             onPress={async () => {
               if (account.isReadyToSendMsgs && txStateIsValid) {
                 try {
-                  if (
-                    sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.startsWith(
-                      'erc20'
-                    )
-                  ) {
+                  if (sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.startsWith('erc20')) {
                     sendStore.updateSendObject({
                       type: 'erc20',
                       from: account.evmosHexAddress,
-                      contract_addr:
-                        sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.split(
-                          ':'
-                        )[1],
+                      contract_addr: sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.split(':')[1],
                       recipient: sendConfigs.recipientConfig.recipient,
                       amount: sendConfigs.amountConfig.amount
                     });
@@ -250,16 +238,13 @@ export const SendScreen: FunctionComponent = observer(() => {
                     {
                       preferNoSetFee: true,
                       preferNoSetMemo: true,
-                      networkType: chainStore.current.networkType
+                      networkType: chainStore.current.networkType,
+                      chainId: chainStore.current.chainId
                     },
+
                     {
-                      onFulfill: tx => {
-                        console.log(
-                          tx,
-                          'TX INFO ON SEND PAGE!!!!!!!!!!!!!!!!!!!!!'
-                        );
-                      },
-                      onBroadcasted: txHash => {
+                      onFulfill: (tx) => {},
+                      onBroadcasted: (txHash) => {
                         analyticsStore.logEvent('Send token tx broadcasted', {
                           chainId: chainStore.current.chainId,
                           chainName: chainStore.current.chainName,
@@ -271,16 +256,11 @@ export const SendScreen: FunctionComponent = observer(() => {
                       }
                     },
                     // In case send erc20 in evm network
-                    sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.startsWith(
-                      'erc20'
-                    )
+                    sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.startsWith('erc20')
                       ? {
                           type: 'erc20',
                           from: account.evmosHexAddress,
-                          contract_addr:
-                            sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.split(
-                              ':'
-                            )[1],
+                          contract_addr: sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.split(':')[1],
                           recipient: sendConfigs.recipientConfig.recipient,
                           amount: sendConfigs.amountConfig.amount
                         }
@@ -290,13 +270,14 @@ export const SendScreen: FunctionComponent = observer(() => {
                   if (e?.message === 'Request rejected') {
                     return;
                   }
-                  if (
-                    e?.message.includes('Cannot read properties of undefined')
-                  ) {
-                    return;
-                  }
-                  console.log('send error', e);
-                  alert(e.message);
+
+                  // if (
+                  //   e?.message?.includes('Cannot read properties of undefined')
+                  // ) {
+                  //   return;
+                  // }
+
+                  // alert(e.message);
                   if (smartNavigation.canGoBack) {
                     smartNavigation.goBack();
                   } else {
@@ -306,7 +287,7 @@ export const SendScreen: FunctionComponent = observer(() => {
               }
             }}
           />
-        </View>
+        </OWBox>
       </View>
     </PageWithScrollView>
   );

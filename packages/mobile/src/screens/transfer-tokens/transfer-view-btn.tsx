@@ -1,14 +1,21 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { CText as Text } from '../../components/text';
+import { Text } from '@src/components/text';
 import { NoteIcon, TransactionMinusIcon } from '../../components/icon';
 import { RectButton } from '../../components/rect-button';
 import { colors, spacing } from '../../themes';
 import { useSmartNavigation } from '../../navigation.provider';
-
+import {OWButton} from '@src/components/button';
+import OWIcon from '@src/components/ow-icon/ow-icon';
 const styles = StyleSheet.create({
+btnViewAllTrans: {
+        marginTop:50
+      },
+styleBtnAddress: {
+          marginTop:20
+        },
   viewBtn: {
-    backgroundColor: colors['purple-900'],
+    backgroundColor: colors['purple-700'],
     borderRadius: spacing['8'],
     display: 'flex',
     flexDirection: 'row',
@@ -30,35 +37,23 @@ const TransferViewBtn = () => {
   const smartNavigation = useSmartNavigation();
   return (
     <>
-      <View>
-        <RectButton
-          style={styles.viewBtn}
+      <View style={styles.btnViewAllTrans}>
+        <OWButton 
           onPress={() => {
             smartNavigation.navigateSmart('Transactions', {});
           }}
-        >
-          <TransactionMinusIcon />
-          <Text style={styles.textBtn}>View all transactions</Text>
-        </RectButton>
-        <RectButton
-          style={{
-            ...styles.viewBtn,
-            backgroundColor: colors['gray-10']
-          }}
+          label='View all transactions'
+          icon={<OWIcon name='transactions' size={20} color={colors['white']} />}
+        />
+        <OWButton 
+          style={styles.styleBtnAddress}
           onPress={() => {
             smartNavigation.navigateSmart('AddressBook', {});
           }}
-        >
-          <NoteIcon color={colors['purple-900']} height={19} />
-          <Text
-            style={{
-              ...styles.textBtn,
-              color: colors['purple-900']
-            }}
-          >
-            Manage address book
-          </Text>
-        </RectButton>
+          type='secondary'
+          label='Manage address book'
+          icon={<OWIcon name='note' size={20} color={colors['purple-700']} />}
+        />
       </View>
     </>
   );

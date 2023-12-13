@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useMemo } from 'react';
-import { View, ViewStyle } from 'react-native';
+import { View, ViewStyle, Image } from 'react-native';
 import { AppCurrency, Currency } from '@owallet/types';
 import {
   Circle,
@@ -81,18 +81,31 @@ export const TokenSymbol: FunctionComponent<{
         ...propStyle
       }}
     >
-      {currency.coinImageUrl ? (
-        <FastImage
-          style={{
-            width: size * imageScale,
-            height: size * imageScale,
-            backgroundColor: colors['gray-10']
-          }}
-          resizeMode={FastImage.resizeMode.contain}
-          source={{
-            uri: currency.coinImageUrl
-          }}
-        />
+      {currency?.coinImageUrl ? (
+        currency?.coinImageUrl?.includes('white') ? (
+          <Image
+            style={{
+              width: size * imageScale,
+              height: size * imageScale,
+              tintColor:colors['black']
+            }}
+            resizeMode={'contain'}
+            source={{
+              uri: currency.coinImageUrl
+            }}
+          />
+        ) : (
+          <FastImage
+            style={{
+              width: size * imageScale,
+              height: size * imageScale
+            }}
+            resizeMode={FastImage.resizeMode.contain}
+            source={{
+              uri: currency.coinImageUrl
+            }}
+          />
+        )
       ) : (
         <VectorCharacter
           char={currency.coinDenom[0]}

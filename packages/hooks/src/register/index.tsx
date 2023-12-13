@@ -2,7 +2,7 @@ import React, { FunctionComponent, useState } from 'react';
 import { KeyRingStore } from '@owallet/stores';
 import { action, computed, flow, makeObservable, observable } from 'mobx';
 import { Mnemonic, RNG } from '@owallet/crypto';
-import { BIP44HDPath } from '@owallet/background';
+import { BIP44HDPath } from '@owallet/types';
 
 export type RegisterMode = 'create' | 'add';
 
@@ -133,9 +133,8 @@ export class RegisterConfig {
   *createLedger(name: string, password: string, bip44HDPath: BIP44HDPath) {
     this._isLoading = true;
     try {
-      console.log('create ledger 1')
       if (this.mode === 'create') {
-        console.log('create ledger 2')
+        
         yield this.keyRingStore.createLedgerKey(
           password,
           {
@@ -143,21 +142,18 @@ export class RegisterConfig {
           },
           bip44HDPath
         );
-        console.log('create ledger 3')
       } else {
-        console.log('create ledger 4')
         yield this.keyRingStore.addLedgerKey(
           {
             name
           },
           bip44HDPath
         );
-        console.log('create ledger 5')
       }
-      console.log('create ledger 6')
+
       this._isFinalized = true;
     } catch (error) {
-      console.log("ERROR ON CREATE LEDGER IN REGISTER CONFIG: ", error);
+      console.log('ERROR ON CREATE LEDGER IN REGISTER CONFIG: ', error);
     } finally {
       this._isLoading = false;
     }

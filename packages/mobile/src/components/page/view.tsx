@@ -1,39 +1,56 @@
-import React, { FunctionComponent } from "react";
-import { SafeAreaView, ViewProps, StyleSheet, View } from "react-native";
-import { useStyle } from "../../styles";
-import { GradientBackground } from "../svg";
-import { useSetFocusedScreen } from "./utils";
+import { useTheme } from '@src/themes/theme-provider';
+import React, { FunctionComponent } from 'react';
+import { SafeAreaView, ViewProps, StyleSheet, View } from 'react-native';
+import { useStyle } from '../../styles';
+import { GradientBackground } from '../svg';
+import { useSetFocusedScreen } from './utils';
 
 export const PageWithView: FunctionComponent<
   ViewProps & {
     disableSafeArea?: boolean;
+    backgroundColor?: string;
   }
-> = (props) => {
+> = props => {
   const style = useStyle();
 
   useSetFocusedScreen();
-
-  const { style: propStyle, disableSafeArea, ...restProps } = props;
+  const { colors } = useTheme();
+  const {
+    style: propStyle,
+    disableSafeArea,
+    backgroundColor=colors['background'],
+    ...restProps
+  } = props;
 
   return (
     <React.Fragment>
       <View
         style={{
-          position: "absolute",
+          position: 'absolute',
           left: 0,
           right: 0,
           top: -100,
-          bottom: -100,
+          bottom: -100
         }}
       >
-        <GradientBackground />
+        {backgroundColor ? (
+          <View
+            style={{
+              width: '100%',
+              height: '100%',
+              backgroundColor
+            }}
+          />
+        ) : (
+          <GradientBackground />
+        )}
       </View>
       {!disableSafeArea ? (
-        <SafeAreaView style={style.get("flex-1")}>
+        <SafeAreaView style={style.get('flex-1')}>
           <View
             style={StyleSheet.flatten([
-              style.flatten(["flex-1", "padding-0", "overflow-visible"]),
-              propStyle,
+              style.flatten(['flex-1', 'padding-0', 'overflow-visible']),
+              propStyle
             ])}
             {...restProps}
           />
@@ -41,8 +58,8 @@ export const PageWithView: FunctionComponent<
       ) : (
         <View
           style={StyleSheet.flatten([
-            style.flatten(["flex-1", "padding-0", "overflow-visible"]),
-            propStyle,
+            style.flatten(['flex-1', 'padding-0', 'overflow-visible']),
+            propStyle
           ])}
           {...restProps}
         />

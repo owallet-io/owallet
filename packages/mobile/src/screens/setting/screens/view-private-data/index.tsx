@@ -1,25 +1,21 @@
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import { OWBox } from '@src/components/card';
+import { Text } from '@src/components/text';
+import { useTheme } from '@src/themes/theme-provider';
 import React, { FunctionComponent, useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { CText as Text } from '../../../../components/text';
-import { useStyle } from '../../../../styles';
+import { StyleSheet, View, Clipboard } from 'react-native';
+import { OWButton } from '../../../../components/button';
 import { CheckIcon, CopyFillIcon } from '../../../../components/icon';
-import { Button } from '../../../../components/button';
 import { WordChip } from '../../../../components/mnemonic';
-import Clipboard from 'expo-clipboard';
 import { PageWithScrollViewInBottomTabView } from '../../../../components/page';
 import { useSimpleTimer } from '../../../../hooks';
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
-import { colors, spacing, typography } from '../../../../themes';
-import { RectButton } from 'react-native-gesture-handler';
+import { useStyle } from '../../../../styles';
+import { spacing, typography } from '../../../../themes';
+import { LRRedact } from '@logrocket/react-native';
 
-export const getPrivateDataTitle = (
-  keyRingType: string,
-  capitalize?: boolean
-) => {
+export const getPrivateDataTitle = (keyRingType: string, capitalize?: boolean) => {
   if (capitalize) {
-    return `View ${
-      keyRingType === 'mnemonic' ? 'Mnemonic Seed' : 'Private Key'
-    }`;
+    return `View ${keyRingType === 'mnemonic' ? 'Mnemonic Seed' : 'Private Key'}`;
   }
 
   return `View ${keyRingType === 'mnemonic' ? 'mnemonic seed' : 'private key'}`;
@@ -58,73 +54,61 @@ export const ViewPrivateDataScreen: FunctionComponent = () => {
   const privateDataType = route.params.privateDataType;
 
   const words = privateData.split(' ');
-
+  const { colors } = useTheme();
   return (
     <PageWithScrollViewInBottomTabView>
-      <View
-        style={{
-          backgroundColor: colors['white'],
-          borderRadius: spacing['24'],
-          paddingHorizontal: 20,
-          paddingVertical: spacing['24'],
-          marginTop: spacing['24']
-        }}
-      >
-        <View
-          style={{
-            flexDirection: 'row',
-            backgroundColor: colors['gray-10'],
-            borderRadius: spacing['24'],
-            padding: spacing['20'],
-            marginBottom: spacing['20'],
-            flexWrap: 'wrap'
-          }}
-        >
-          {privateDataType === 'mnemonic' ? (
-            words.map((word, i) => {
-              return <WordChip key={i.toString()} index={i + 1} word={word} />;
-            })
-          ) : (
-            <Text
-              style={{
-                ...typography['h6'],
-                marginBottom: spacing['30']
-              }}
-            >
-              {words}
-            </Text>
-          )}
-        </View>
-        <View
-          style={{
-            width: '100%'
-          }}
-        >
-          <RectButton
-            style={{ ...styles.containerBtn }}
+      <LRRedact>
+        <OWBox>
+          <View
+            style={[
+              styles.containerMnemonicWord
+              // { backgroundColor: colors['background-item-list'] }
+            ]}
+          >
+            {privateDataType === 'mnemonic' ? (
+              words.map((word, i) => {
+                return <WordChip key={i.toString()} index={i + 1} word={word} />;
+              })
+            ) : (
+              <Text
+                style={{
+                  ...typography['h6'],
+                  marginBottom: spacing['30']
+                }}
+              >
+                {words}
+              </Text>
+            )}
+          </View>
+          <OWButton
+            size="medium"
             onPress={() => {
               Clipboard.setString(words.join(' ').trim());
               setTimer(2000);
             }}
-          >
-            {isTimedOut ? (
-              <CheckIcon />
-            ) : (
-              <CopyFillIcon color={colors['white']} />
-            )}
-            <Text
-              style={{ ...styles.textBtn, textAlign: 'center' }}
-            >{`Copy to Clipboard`}</Text>
-          </RectButton>
-        </View>
-      </View>
+            label="Copy to Clipboard"
+            textStyle={styles.textStyle}
+            icon={isTimedOut ? <CheckIcon /> : <CopyFillIcon color={colors['white']} />}
+          />
+        </OWBox>
+      </LRRedact>
     </PageWithScrollViewInBottomTabView>
   );
 };
 
 const styles = StyleSheet.create({
+  containerMnemonicWord: {
+    flexDirection: 'row',
+
+    borderRadius: spacing['24'],
+    padding: spacing['20'],
+    marginBottom: spacing['20'],
+    flexWrap: 'wrap'
+  },
+  textStyle: {
+    paddingLeft: 10
+  },
   containerBtn: {
-    backgroundColor: colors['purple-900'],
     borderRadius: spacing['8'],
     paddingVertical: spacing['16'],
     flexDirection: 'row',
@@ -133,7 +117,6 @@ const styles = StyleSheet.create({
   },
   textBtn: {
     ...typography.h6,
-    color: colors['white'],
     fontWeight: '700',
     marginLeft: spacing['8']
   }

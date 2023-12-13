@@ -1,18 +1,23 @@
 import React, { FunctionComponent, useEffect } from 'react';
 import { StoreProvider, useStore } from './stores';
+import SplashScreen from 'react-native-splash-screen';
 import { StyleProvider } from './styles';
 import { AppNavigation } from './navigation';
 import { ModalsProvider } from './modals/base';
-import { Platform, StatusBar, LogBox, Text } from 'react-native';
+import { Platform, LogBox, Text, View } from 'react-native';
 import { AdditonalIntlMessages, LanguageToFiatCurrency } from '@owallet/common';
 import { InteractionModalsProivder } from './providers/interaction-modals-provider';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { LoadingScreenProvider } from './providers/loading-screen';
-import * as SplashScreen from 'expo-splash-screen';
 import { ConfirmModalProvider } from './providers/confirm-modal';
 import { AppIntlProvider } from '@owallet/common/src/languages';
 import { IntlProvider } from 'react-intl';
-import crashlytics from '@react-native-firebase/crashlytics';
+import ThemeProvider from './themes/theme-provider';
+import analytics from '@react-native-firebase/analytics';
+import FlashMessage from 'react-native-flash-message';
+
+import { colorsCode } from './themes/mode-colors';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 if (Platform.OS === 'android' || typeof HermesInternal !== 'undefined') {
   // https://github.com/web-ridge/react-native-paper-dates/releases/tag/v0.2.15
@@ -56,12 +61,6 @@ if (Platform.OS === 'android' || typeof HermesInternal !== 'undefined') {
 }
 
 // Prevent native splash screen from autohiding.
-// UnlockScreen will hide the splash screen
-SplashScreen.preventAutoHideAsync()
-  .then(result =>
-    console.log(`SplashScreen.preventAutoHideAsync() succeeded: ${result}`)
-  )
-  .catch(console.warn);
 
 // we already log in debugging tools
 LogBox.ignoreAllLogs();
@@ -105,28 +104,46 @@ const AppIntlProviderWithStorage = ({ children }) => {
 };
 
 export const App = () => {
+  useEffect(() => {
+    SplashScreen.hide();
+    return () => {};
+  }, []);
+
+  const enableAnalytics = async () => {
+    await analytics().setAnalyticsCollectionEnabled(true);
+  };
+
+  useEffect(() => {
+    enableAnalytics();
+  }, []);
+
   return (
-    <StyleProvider>
-      <StoreProvider>
-        <AppIntlProviderWithStorage>
-          <StatusBar
-            translucent={true}
-            backgroundColor="#FFFFFF00"
-            barStyle="dark-content"
-          />
-          <SafeAreaProvider>
-            <ModalsProvider>
-              <LoadingScreenProvider>
-                <ConfirmModalProvider>
-                  <InteractionModalsProivder>
-                    <AppNavigation />
-                  </InteractionModalsProivder>
-                </ConfirmModalProvider>
-              </LoadingScreenProvider>
-            </ModalsProvider>
-          </SafeAreaProvider>
-        </AppIntlProviderWithStorage>
-      </StoreProvider>
-    </StyleProvider>
+    <GestureHandlerRootView
+      style={{
+        flex: 1
+      }}
+    >
+      <StyleProvider>
+        <StoreProvider>
+          <ThemeProvider>
+            <AppIntlProviderWithStorage>
+              <SafeAreaProvider>
+                <ModalsProvider>
+                  <LoadingScreenProvider>
+                    <ConfirmModalProvider>
+                      <InteractionModalsProivder>
+                        <AppNavigation />
+                      </InteractionModalsProivder>
+                    </ConfirmModalProvider>
+                  </LoadingScreenProvider>
+                </ModalsProvider>
+              </SafeAreaProvider>
+            </AppIntlProviderWithStorage>
+
+            <FlashMessage position="top" />
+          </ThemeProvider>
+        </StoreProvider>
+      </StyleProvider>
+    </GestureHandlerRootView>
   );
 };

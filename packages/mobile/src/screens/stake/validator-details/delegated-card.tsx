@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '../../../stores';
 import { Card, CardBody } from '../../../components/card';
 import { View, ViewStyle } from 'react-native';
-import { CText as Text } from '../../../components/text';
+import { Text } from '@src/components/text';
 import { useStyle } from '../../../styles';
 import { Button } from '../../../components/button';
 import { useSmartNavigation } from '../../../navigation.provider';
@@ -24,11 +24,6 @@ export const DelegatedCard: FunctionComponent<{
   const staked = queries.cosmos.queryDelegations
     .getQueryBech32Address(account.bech32Address)
     .getDelegationTo(validatorAddress);
-
-  const unbonding =
-    queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(
-      account.bech32Address
-    ).unbondings;
 
   const rewards = queries.cosmos.queryRewards
     .getQueryBech32Address(account.bech32Address)
@@ -102,7 +97,7 @@ export const DelegatedCard: FunctionComponent<{
           </Text>
           <View style={style.get('flex-1')} />
           <Text style={style.flatten(['body2', 'color-text-black-very-low'])}>
-            {rewards.trim(true).shrink(true).maxDecimals(6).toString()}
+            {rewards?.trim(true).shrink(true).maxDecimals(6).toString()}
           </Text>
         </View>
         <View style={style.flatten(['flex-row', 'items-center'])}>

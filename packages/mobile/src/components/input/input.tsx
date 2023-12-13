@@ -7,10 +7,11 @@ import {
   View,
   ViewStyle
 } from 'react-native';
-import { CText as Text } from '../text';
+import { Text } from '@src/components/text';
 import { useStyle } from '../../styles';
-import { colors, spacing, typography } from '../../themes';
-
+import { spacing, typography } from '../../themes';
+import { useTheme } from '@src/themes/theme-provider';
+import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 // eslint-disable-next-line react/display-name
 export const TextInput = React.forwardRef<
   NativeTextInput,
@@ -34,12 +35,16 @@ export const TextInput = React.forwardRef<
     inputRight?: React.ReactNode;
 
     multiline?: boolean;
+    isBottomSheet?: boolean;
   }
 >((props, ref) => {
   const { style: propsStyle, ...restProps } = props;
 
   const style = useStyle();
-
+  const { colors } = useTheme();
+  const ElementTextInput = restProps.isBottomSheet
+    ? BottomSheetTextInput
+    : NativeTextInput;
   return (
     <View
       style={StyleSheet.flatten([
@@ -58,7 +63,7 @@ export const TextInput = React.forwardRef<
             <Text
               style={{
                 ...typography.h7,
-                color: colors['gray-900'],
+                color: colors['primary-text'],
                 marginBottom: spacing['3'],
                 ...props.labelStyle
               }}
@@ -69,72 +74,58 @@ export const TextInput = React.forwardRef<
         ) : null}
       </View>
       <View
-        style={StyleSheet.flatten(
-          props.inputStyle
-            ? [
-                style.flatten(
-                  [
-                    'background-color-white',
-                    'padding-x-11',
-                    'padding-y-12',
-                    'border-radius-4',
-                    'border-width-1',
-                    'border-color-border-white'
-                  ],
-                  [
-                    props.error ? 'border-color-error' : undefined,
-                    !(props.editable ?? true) && 'background-color-disabled'
-                  ]
-                ),
-                props.inputStyle,
-                props.inputContainerStyle
-              ]
-            : [
-                style.flatten(
-                  [
-                    'background-color-white',
-                    'padding-x-11',
-                    'padding-y-12',
-                    'border-radius-4',
-                    'border-width-1',
-                    'border-color-border-white'
-                  ],
-                  [
-                    props.error ? 'border-color-error' : undefined,
-                    !(props.editable ?? true) && 'background-color-disabled'
-                  ]
-                ),
-                props.inputContainerStyle
-              ]
-        )}
+        style={StyleSheet.flatten([
+          style.flatten(
+            [
+              'background-color-white',
+              'padding-x-11',
+              'padding-y-12',
+              'border-radius-4',
+              'border-width-1',
+              'border-color-border-white'
+            ],
+            [
+              props.error ? 'border-color-error' : undefined,
+              !(props.editable ?? true) && 'background-color-disabled'
+            ]
+          ),
+          {
+            backgroundColor: 'transparent',
+            borderColor: colors['border-input-login']
+          },
+          props.inputStyle,
+          props.inputContainerStyle
+        ])}
       >
         {props.topInInputContainer}
         <View style={style.flatten(['flex-row', 'items-center'])}>
           {props.inputLeft}
-          <NativeTextInput
+          <ElementTextInput
             multiline={props.multiline}
-            placeholderTextColor={
-              props.placeholderTextColor ??
-              style.get('color-text-gray-300').color
-            }
-            style={StyleSheet.flatten([
-              style.flatten([
-                'padding-0',
-                'body2-in-text-input',
-                'color-text-black-medium',
-                'flex-1'
+            style={[
+              StyleSheet.flatten([
+                style.flatten([
+                  'padding-0',
+                  'body2-in-text-input',
+                  'color-text-black-medium',
+                  'flex-1'
+                ]),
+                Platform.select({
+                  ios: {},
+                  android: {
+                    // On android, the text input's height does not equals to the line height by strange.
+                    // To fix this problem, set the height explicitly.
+                    height: style.get('body2-in-text-input')?.lineHeight
+                  }
+                }),
+                propsStyle
               ]),
-              Platform.select({
-                ios: {},
-                android: {
-                  // On android, the text input's height does not equals to the line height by strange.
-                  // To fix this problem, set the height explicitly.
-                  height: style.get('body2-in-text-input')?.lineHeight
-                }
-              }),
-              propsStyle
-            ])}
+              { color: colors['sub-primary-text'] }
+            ]}
             {...restProps}
+            placeholderTextColor={
+              props.placeholderTextColor ?? colors['text-place-holder']
+            }
             ref={ref}
           />
           {props.inputRight}
@@ -159,6 +150,8 @@ export const TextInput = React.forwardRef<
               {props.paragraph}
             </Text>
           </View>
+        ) : typeof props.paragraph == 'function' ? (
+          props.paragraph()
         ) : (
           props.paragraph
         )

@@ -1,39 +1,41 @@
-import React, {
-  FunctionComponent,
-  ReactElement,
-  useMemo,
-  useState
-} from 'react';
-import { StyleSheet, View, FlatList } from 'react-native';
-import { colors, metrics, spacing, typography } from '../../../themes';
+import React, { FunctionComponent } from 'react';
+import { View, FlatList } from 'react-native';
+import { metrics, spacing, typography } from '../../../themes';
 import { _keyExtract } from '../../../utils/helper';
-import { CText as Text } from '../../../components/text';
+import { Text } from '@src/components/text';
 import { KeyStoreItem } from '.';
 import { CoinGeckoPriceStore } from '@owallet/stores';
 import { ModalStore } from '../../../stores/modal';
+import OWFlatList from '@src/components/page/ow-flat-list';
 
 interface CountryModalProps {
   data: any;
   current: any;
   priceStore: CoinGeckoPriceStore;
-  modalStore: ModalStore
+  modalStore: ModalStore;
+  colors: object;
 }
 
 export const CountryModal: FunctionComponent<CountryModalProps> = ({
   data,
   current,
   priceStore,
-  modalStore
+  modalStore,
+  colors
 }) => {
   const _renderItem = ({ item, index }) => {
     return (
       <KeyStoreItem
+        colors={colors}
         key={index.toString()}
+        containerStyle={{
+          backgroundColor: colors['background-item-list']
+        }}
         label={item.label || 'USD'}
         active={current === item.key ? true : false}
         onPress={() => {
           priceStore.setDefaultVsCurrency(item.key || 'usd');
-          modalStore.close()
+          modalStore.close();
         }}
       />
     );
@@ -44,6 +46,7 @@ export const CountryModal: FunctionComponent<CountryModalProps> = ({
     <View
       style={{
         alignItems: 'center'
+        // backgroundColor: colors['primary']
       }}
     >
       <View
@@ -55,7 +58,7 @@ export const CountryModal: FunctionComponent<CountryModalProps> = ({
           style={{
             ...typography.h6,
             fontWeight: '900',
-            color: colors['gray-900']
+            color: colors['primary-text']
           }}
         >
           {`Select Currency`}
@@ -68,33 +71,21 @@ export const CountryModal: FunctionComponent<CountryModalProps> = ({
           height: metrics.screenHeight / 2
         }}
       >
-        <FlatList
-          showsVerticalScrollIndicator={false}
+        <OWFlatList
+          isBottomSheet
+          // showsVerticalScrollIndicator={false}
           data={data}
           renderItem={_renderItem}
           keyExtractor={_keyExtract}
-          ListFooterComponent={() => (
-            <View
-              style={{
-                height: spacing['10']
-              }}
-            />
-          )}
+          // ListFooterComponent={() => (
+          //   <View
+          //     style={{
+          //       height: spacing['10']
+          //     }}
+          //   />
+          // )}
         />
       </View>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  containerBtn: {
-    backgroundColor: colors['gray-10'],
-    paddingVertical: spacing['16'],
-    borderRadius: spacing['8'],
-    paddingHorizontal: spacing['16'],
-    flexDirection: 'row',
-    marginTop: spacing['16'],
-    alignItems: 'center',
-    justifyContent: 'space-between'
-  }
-});

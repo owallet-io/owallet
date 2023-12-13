@@ -1,3 +1,5 @@
+import images from '@src/assets/images';
+import { useTheme } from '@src/themes/theme-provider';
 import React from 'react';
 import { View, StyleSheet, Animated, ActivityIndicator } from 'react-native';
 
@@ -15,6 +17,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   }
 });
+const withProgressiveImage = (WrappedComponent) => {
+  return function (props) {
+    const { colors } = useTheme();
+
+    return <WrappedComponent colors={colors} {...props} />;
+  };
+};
 
 class ProgressiveImage extends React.Component {
   thumbnailAnimated = new Animated.Value(0);
@@ -41,40 +50,51 @@ class ProgressiveImage extends React.Component {
   };
 
   render() {
-    const { thumbnailSource, source, style, ...props } = this.props;
-
+    const {
+      thumbnailSource = images.empty_img,
+      source,
+      style,
+      colors,
+      styleContainer,
+      ...props
+    } = this.props;
     return (
       <View
         style={[
           styles.container,
-          { backgroundColor: this.state.loading ? '#e1e4e8' : '#fff' }
+          {
+            backgroundColor: colors['background-box']
+          },
+          styleContainer
         ]}
       >
-        {this.state.loading ? (
-          <ActivityIndicator style={{ marginTop: 20 }} />
-        ) : null}
+        <View style={{
+          position:"absolute"
+        }}>
+        {this.state.loading ? <ActivityIndicator /> : null}
+        </View>
         <Animated.Image
           {...props}
           source={thumbnailSource}
           style={[
-            style,
             {
               opacity: this.thumbnailAnimated
-            }
+            },
+            style
           ]}
           onLoad={this.handleThumbnailLoad}
           blurRadius={1}
         />
-
         <Animated.Image
           {...props}
           source={source}
           style={[styles.imageOverlay, { opacity: this.imageAnimated }, style]}
           onLoad={this.onImageLoad}
+          onError={this.onImageLoad}
         />
       </View>
     );
   }
 }
 
-export default ProgressiveImage;
+export default withProgressiveImage(ProgressiveImage);

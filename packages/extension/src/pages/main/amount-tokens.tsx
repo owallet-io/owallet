@@ -13,7 +13,7 @@ export const AmountTokenCosmos: FunctionComponent = observer(() => {
   const balanceStakableQuery = queries.queryBalances.getQueryBech32Address(
     accountInfo.bech32Address
   ).stakable;
-  console.log("🚀 ~ file: amount-tokens.tsx ~ line 17 ~ constAmountTokenCosmos:FunctionComponent=observer ~ balanceStakableQuery", balanceStakableQuery)
+  
 
   // const delegated = queries.cosmos.queryDelegations
   //   .getQueryBech32Address(accountInfo.bech32Address)

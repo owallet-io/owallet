@@ -1,20 +1,20 @@
-import React, { FunctionComponent, useMemo, useState } from 'react';
-import { TouchableOpacity, View } from 'react-native';
-import { CText as Text } from '../../../../components/text';
+import { useNavigation } from '@react-navigation/core';
+import React, { FunctionComponent } from 'react';
+import { Platform, TouchableOpacity, View } from 'react-native';
+import { Text } from '@src/components/text';
 import { useStyle } from '../../../../styles';
 import { useWebViewState } from '../context';
-import { useNavigation } from '@react-navigation/core';
-
-import {
-  RightArrowIcon,
-  HomeIcon,
-  ThreeDotsIcon,
-  TabIcon,
-  BrowserIcon
-} from '../../../../components/icon';
-import { BrowserSectionModal } from '../section-title';
-import { useStore } from '../../../../stores';
 import { observer } from 'mobx-react-lite';
+import {
+  BrowserIcon,
+  HomeLightIcon,
+  LeftLightIcon,
+  RefreshIcon,
+  RightLightIcon
+} from '../../../../components/icon';
+import { useStore } from '../../../../stores';
+import { colors, metrics } from '../../../../themes';
+import { useTheme } from '@src/themes/theme-provider';
 
 export const BrowserFooterSection: FunctionComponent<{
   isSwitchTab: boolean;
@@ -23,43 +23,29 @@ export const BrowserFooterSection: FunctionComponent<{
   typeOf: string;
 }> = observer(({ isSwitchTab, setIsSwitchTab, onHandleUrl, typeOf }) => {
   const style = useStyle();
-  const { browserStore, modalStore } = useStore();
-  // const [isOpenSetting, setIsOpenSetting] = useState(false);
+  const { colors } = useTheme();
+  const { browserStore } = useStore();
   const navigation = useNavigation();
   const webViewState = useWebViewState();
-
-  const oraiLogo = require('../../../../assets/image/webpage/orai_logo.png');
-
-  const onPressBookmark = () => {
-    // setIsOpenSetting(false);
-    modalStore.close();
-    if (webViewState.webView) {
-      browserStore.addBoorkmark({
-        id: Date.now(),
-        name: webViewState.name,
-        logo: oraiLogo,
-        uri: webViewState.url
-      });
-    }
-  };
 
   const onPress = (type: any) => {
     try {
       switch (type) {
-        case 'settings':
+        case 'reload':
           if (typeOf === 'webview') {
-            modalStore.setOpen();
-            modalStore.setChildren(
-              <BrowserSectionModal
-                onPress={onPressBookmark}
-                // onClose={() => setIsOpenSetting(false)}
-              />
-            );
+            if (webViewState.webView) {
+              if (Platform.OS === 'android') {
+                webViewState.webView.clearCache(true);
+              }
+              webViewState.webView.reload();
+            }
           }
-
           return;
-        // return setIsOpenSetting(!isOpenSetting);
         case 'back':
+          if (isSwitchTab) {
+            setIsSwitchTab(false);
+            return;
+          }
           if (typeOf === 'browser') {
             return navigation.navigate('Home', {});
           }
@@ -78,7 +64,11 @@ export const BrowserFooterSection: FunctionComponent<{
           }
           return;
         case 'tabs':
-          setIsSwitchTab(!isSwitchTab);
+          if (browserStore.getTabs.length === 0) {
+            setIsSwitchTab(false);
+          } else {
+            setIsSwitchTab(!isSwitchTab);
+          }
           return;
         case 'home':
           if (typeOf === 'browser') {
@@ -90,36 +80,54 @@ export const BrowserFooterSection: FunctionComponent<{
       console.log({ error });
     }
   };
-  const arrayIcon = ['back', 'next', 'tabs', 'home', 'settings'];
-  const renderIcon = (type, tabNum = 0) => {
+  const arrayIcon = ['back', 'next', 'tabs', 'home', 'reload'];
+  const renderIcon = type => {
     switch (type) {
       case 'back':
         return (
-          <TouchableOpacity onPress={() => onPress(type)}>
-            <RightArrowIcon type={'left'} color={'white'} height={18} />
+          <TouchableOpacity
+            style={{
+              width: metrics.screenWidth / 5,
+              alignItems: 'center'
+            }}
+            onPress={() => onPress(type)}
+          >
+            <LeftLightIcon color={colors['icon']} />
           </TouchableOpacity>
         );
       case 'next':
         return (
-          <TouchableOpacity onPress={() => onPress(type)}>
-            <RightArrowIcon type={'right'} color={'white'} height={18} />
+          <TouchableOpacity
+            style={{
+              width: metrics.screenWidth / 5,
+              alignItems: 'center'
+            }}
+            onPress={() => onPress(type)}
+          >
+            <RightLightIcon color={colors['icon']} />
           </TouchableOpacity>
         );
       case 'tabs':
         return (
-          <TouchableOpacity onPress={() => onPress(type)}>
+          <TouchableOpacity
+            style={{
+              width: metrics.screenWidth / 5,
+              alignItems: 'center'
+            }}
+            onPress={() => onPress(type)}
+          >
             <View
               style={{
-                padding: 3,
-                borderColor: '#fff',
-                borderWidth: 1,
+                padding: 1.5,
+                borderWidth: 0.5,
                 borderRadius: 4,
                 alignItems: 'center',
-                width: 24,
-                height: 24
+                borderColor: colors['icon'],
+                width: 22,
+                height: 22
               }}
             >
-              <Text style={{ color: '#fff' }}>
+              <Text style={{ color: colors['icon'] }}>
                 {browserStore.getTabs.length > 9
                   ? '9+'
                   : browserStore.getTabs.length}
@@ -129,18 +137,30 @@ export const BrowserFooterSection: FunctionComponent<{
         );
       case 'home':
         return (
-          <TouchableOpacity onPress={() => onPress(type)}>
+          <TouchableOpacity
+            style={{
+              width: metrics.screenWidth / 5,
+              alignItems: 'center'
+            }}
+            onPress={() => onPress(type)}
+          >
             {typeOf === 'browser' ? (
-              <HomeIcon color={'white'} size={22} />
+              <HomeLightIcon color={colors['icon']} size={22} />
             ) : (
-              <BrowserIcon color={'white'} size={22} />
+              <BrowserIcon color={colors['icon']} size={22} />
             )}
           </TouchableOpacity>
         );
-      case 'settings':
+      case 'reload':
         return (
-          <TouchableOpacity onPress={() => onPress(type)}>
-            <ThreeDotsIcon color={'white'} size={18} />
+          <TouchableOpacity
+            style={{
+              width: metrics.screenWidth / 5,
+              alignItems: 'center'
+            }}
+            onPress={() => onPress(type)}
+          >
+            <RefreshIcon color={colors['icon']} size={22} />
           </TouchableOpacity>
         );
     }
@@ -150,41 +170,20 @@ export const BrowserFooterSection: FunctionComponent<{
     <View
       style={[
         {
-          bottom: 0
+          bottom: 0,
+          borderTopColor: colors['gray-300'],
+          borderTopWidth: 0.2,
+          backgroundColor: colors['background']
         },
         style.flatten([
           'width-full',
           'height-80',
-          'background-color-text-black-high',
           'flex-row',
           'items-center',
-          'padding-40',
           'absolute'
         ])
       ]}
     >
-      {/* {isOpenSetting && (
-        <View
-          style={{
-            backgroundColor: '#132340',
-            height: 200,
-            width: 200,
-            position: 'absolute',
-            right: 0,
-            bottom: 80,
-            borderTopLeftRadius: 4,
-            borderTopRightRadius: 4,
-            zIndex: 1,
-            padding: 10
-          }}
-        >
-          <BrowserSectionModal
-            onPress={onPressBookmark}
-            onClose={() => setIsOpenSetting(false)}
-          />
-        </View>
-      )} */}
-
       <View
         style={style.flatten([
           'width-full',
@@ -194,11 +193,7 @@ export const BrowserFooterSection: FunctionComponent<{
         ])}
       >
         {arrayIcon.map((e, i) => {
-          return (
-            <View key={i} style={{ width: '24%' }}>
-              {renderIcon(e)}
-            </View>
-          );
+          return <View key={i}>{renderIcon(e)}</View>;
         })}
       </View>
     </View>

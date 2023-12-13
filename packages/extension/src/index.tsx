@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect } from 'react';
+import React, { FunctionComponent } from 'react';
 import ReactDOM from 'react-dom';
 
 import './styles/global.scss';
@@ -6,84 +6,98 @@ import './styles/global.scss';
 import { HashRouter, Route } from 'react-router-dom';
 
 import { AccessPage, Secret20ViewingKeyAccessPage } from './pages/access';
-import { RegisterPage } from './pages/register';
-import { MainPage } from './pages/main';
-import { LockPage } from './pages/lock';
-import { SendPage } from './pages/send';
 import { IBCTransferPage } from './pages/ibc-transfer';
+import { LockPage } from './pages/lock';
+import { MainPage } from './pages/main';
+import { RegisterPage } from './pages/register';
+import { ConfirmLedgerPage } from './pages/register/ledger/confirm';
+import { SendPage } from './pages/send';
+import { SendTronEvmPage } from './pages/send-tron';
 import { SetKeyRingPage } from './pages/setting/keyring';
 
 import { Banner } from './components/banner';
 
-import {
-  NotificationProvider,
-  NotificationStoreProvider
-} from './components/notification';
 import { ConfirmProvider } from './components/confirm';
 import { LoadingIndicatorProvider } from './components/loading-indicator';
+import { NotificationProvider, NotificationStoreProvider } from './components/notification';
 
 import { configure } from 'mobx';
 import { observer } from 'mobx-react-lite';
 
-import { StoreProvider, useStore } from './stores';
 import { KeyRingStatus } from '@owallet/background';
-import { SignPage } from './pages/sign';
-import { ChainSuggestedPage } from './pages/chain/suggest';
 import Modal from 'react-modal';
-import { SettingPage } from './pages/setting';
-import { SettingLanguagePage } from './pages/setting/language';
-import { SettingFiatPage } from './pages/setting/fiat';
-import {
-  SettingConnectionsPage,
-  SettingSecret20ViewingKeyConnectionsPage
-} from './pages/setting/connections';
-import { AddressBookPage } from './pages/setting/address-book';
-import { CreditPage } from './pages/setting/credit';
-import { ChangeNamePage } from './pages/setting/keyring/change';
-import { ClearPage } from './pages/setting/clear';
-import { ExportPage } from './pages/setting/export';
+import { ChainSuggestedPage } from './pages/chain/suggest';
 import { LedgerGrantPage } from './pages/ledger';
-import { AddTokenPage } from './pages/setting/token/add';
+import { SettingPage } from './pages/setting';
+import { AddressBookPage } from './pages/setting/address-book';
+import { ClearPage } from './pages/setting/clear';
+import { SettingConnectionsPage, SettingSecret20ViewingKeyConnectionsPage } from './pages/setting/connections';
+import { CreditPage } from './pages/setting/credit';
+import { ExportPage } from './pages/setting/export';
+import { SettingFiatPage } from './pages/setting/fiat';
+import { ChangeNamePage } from './pages/setting/keyring/change';
+import { SettingLanguagePage } from './pages/setting/language';
 import { AddEvmTokenPage } from './pages/setting/token-evm/add';
+import { AddTokenPage } from './pages/setting/token/add';
 import { ManageTokenPage } from './pages/setting/token/manage';
+import { SignPage } from './pages/sign';
+import { StoreProvider, useStore } from './stores';
+
+import { NftDetailsPage } from './pages/nft/nft-details';
 
 // import * as BackgroundTxResult from "../../background/tx/foreground";
-import {
-  AppIntlProvider,
-  AdditonalIntlMessages,
-  LanguageToFiatCurrency
-} from '@owallet/common';
+import { AdditonalIntlMessages, AppIntlProvider, LanguageToFiatCurrency } from '@owallet/common';
 
-import manifest from './manifest.json';
-import { Ethereum, OWallet } from '@owallet/provider';
+import { Ethereum, OWallet, TronWeb, Bitcoin } from '@owallet/provider';
 import { InExtensionMessageRequester } from '@owallet/router-extension';
-import { ExportToMobilePage } from './pages/setting/export-to-mobile';
-import { LogPageViewWrapper } from './components/analytics';
-import { ValidatorListPage } from './pages/stake/validator-list';
+import * as Sentry from '@sentry/react';
+import { BrowserTracing } from '@sentry/tracing';
 import { IntlProvider } from 'react-intl';
-import { SignEthereumPage } from './pages/sign/sign-ethereum';
-import { SendEvmPage } from './pages/send-evm';
+import { LogPageViewWrapper } from './components/analytics';
 import './ledger';
-import { TokenPage } from './pages/token';
+import manifest from './manifest.json';
 import { Menu } from './pages/main/menu';
+import { SendEvmPage } from './pages/send-evm';
+import { ExportToMobilePage } from './pages/setting/export-to-mobile';
+import { SignEthereumPage } from './pages/sign/sign-ethereum';
+import { SignTronPage } from './pages/sign/sign-tron';
+import { SignBtcPage } from './pages/sign/sign-btc';
+import { ValidatorListPage } from './pages/stake/validator-list';
+import { TokenPage } from './pages/token';
+import { SendBtcPage } from './pages/send-btc';
 
-const owallet = new OWallet(
-  manifest.version,
-  'core',
-  new InExtensionMessageRequester()
-);
+const owallet = new OWallet(manifest.version, 'core', new InExtensionMessageRequester());
 
-const ethereum = new Ethereum(
-  manifest.version,
-  'core',
-  '',
-  new InExtensionMessageRequester()
-);
+const ethereum = new Ethereum(manifest.version, 'core', '', new InExtensionMessageRequester());
+
+const tronWeb = new TronWeb(manifest.version, 'core', '0x2b6653dc', new InExtensionMessageRequester());
+
+const bitcoin = new Bitcoin(manifest.version, 'core', 'bitcoinTestnet', new InExtensionMessageRequester());
+Sentry.init({
+  dsn: 'https://4ce54db1095b48ab8688e701d7cc8301@o1323226.ingest.sentry.io/4504615445725184',
+  integrations: [new BrowserTracing()],
+
+  // We recommend adjusting this value in production, or using tracesSampler
+  // for finer control
+  tracesSampleRate: 1.0
+});
 
 //@ts-ignore
 window.owallet = owallet;
 //@ts-ignore
+window.eth_owallet = ethereum;
+//@ts-ignore
 window.ethereum = ethereum;
+//@ts-ignore
+window.tronWeb = tronWeb;
+//@ts-ignore
+window.tronLink = tronWeb;
+//@ts-ignore
+window.tronWeb_owallet = tronWeb;
+//@ts-ignore
+window.tronLink_owallet = tronWeb;
+//@ts-ignore
+window.bitcoin = bitcoin;
 
 // Make sure that icon file will be included in bundle
 require('./public/assets/orai_wallet_logo.png');
@@ -120,8 +134,7 @@ Modal.defaultStyles = {
 
 const StateRenderer: FunctionComponent = observer(() => {
   const { keyRingStore } = useStore();
-
-  if (keyRingStore.status === KeyRingStatus.UNLOCKED) {
+  if (keyRingStore.persistent || keyRingStore.status === KeyRingStatus.UNLOCKED) {
     return <MainPage />;
   } else if (keyRingStore.status === KeyRingStatus.LOCKED) {
     return <LockPage />;
@@ -156,7 +169,6 @@ const StateRenderer: FunctionComponent = observer(() => {
 
 const AppIntlProviderWithStorage = ({ children }) => {
   const store = useStore();
-
   return (
     <AppIntlProvider
       additionalMessages={AdditonalIntlMessages}
@@ -166,11 +178,7 @@ const AppIntlProviderWithStorage = ({ children }) => {
       storage={store.uiConfigStore.Storage}
     >
       {({ language, messages, automatic }) => (
-        <IntlProvider
-          locale={language}
-          messages={messages}
-          key={`${language}${automatic ? '-auto' : ''}`}
-        >
+        <IntlProvider locale={language} messages={messages} key={`${language}${automatic ? '-auto' : ''}`}>
           {children}
         </IntlProvider>
       )}
@@ -191,99 +199,41 @@ ReactDOM.render(
                   <Route exact path="/unlock" component={LockPage} />
                   <Route exact path="/access" component={AccessPage} />
                   <Route exact path="/token" component={TokenPage} />
+                  <Route exact path="/token/:nftId" component={NftDetailsPage} />
                   <Route exact path="/menu" component={Menu} />
-                  <Route
-                    exact
-                    path="/access/viewing-key"
-                    component={Secret20ViewingKeyAccessPage}
-                  />
+                  <Route exact path="/access/viewing-key" component={Secret20ViewingKeyAccessPage} />
                   <Route exact path="/register" component={RegisterPage} />
+                  <Route exact path="/confirm-ledger/:chain" component={ConfirmLedgerPage} />
                   <Route exact path="/send" component={SendPage} />
                   <Route exact path="/send-evm" component={SendEvmPage} />
-                  <Route
-                    exact
-                    path="/ibc-transfer"
-                    component={IBCTransferPage}
-                  />
+                  <Route exact path="/send-tron" component={SendTronEvmPage} />
+                  <Route exact path="/send-btc" component={SendBtcPage} />
+                  <Route exact path="/ibc-transfer" component={IBCTransferPage} />
                   <Route exact path="/setting" component={SettingPage} />
-                  <Route
-                    exact
-                    path="/ledger-grant"
-                    component={LedgerGrantPage}
-                  />
-                  <Route
-                    exact
-                    path="/setting/language"
-                    component={SettingLanguagePage}
-                  />
-                  <Route
-                    exact
-                    path="/setting/fiat"
-                    component={SettingFiatPage}
-                  />
-                  <Route
-                    exact
-                    path="/setting/connections"
-                    component={SettingConnectionsPage}
-                  />
+                  <Route exact path="/ledger-grant" component={LedgerGrantPage} />
+                  <Route exact path="/setting/language" component={SettingLanguagePage} />
+                  <Route exact path="/setting/fiat" component={SettingFiatPage} />
+                  <Route exact path="/setting/connections" component={SettingConnectionsPage} />
                   <Route
                     exact
                     path="/setting/connections/viewing-key/:contractAddress"
                     component={SettingSecret20ViewingKeyConnectionsPage}
                   />
-                  <Route
-                    exact
-                    path="/setting/address-book"
-                    component={AddressBookPage}
-                  />
-                  <Route
-                    exact
-                    path="/setting/export-to-mobile"
-                    component={ExportToMobilePage}
-                  />
+                  <Route exact path="/setting/address-book" component={AddressBookPage} />
+                  <Route exact path="/setting/export-to-mobile" component={ExportToMobilePage} />
                   <Route exact path="/setting/credit" component={CreditPage} />
-                  <Route
-                    exact
-                    path="/setting/set-keyring"
-                    component={SetKeyRingPage}
-                  />
-                  <Route
-                    exact
-                    path="/setting/export/:index"
-                    component={ExportPage}
-                  />
-                  <Route
-                    exact
-                    path="/setting/clear/:index"
-                    component={ClearPage}
-                  />
-                  <Route
-                    exact
-                    path="/setting/keyring/change/name/:index"
-                    component={ChangeNamePage}
-                  />
-                  <Route
-                    exact
-                    path="/setting/token/add"
-                    component={AddTokenPage}
-                  />
-                  <Route
-                    exact
-                    path="/setting/token-evm/add"
-                    component={AddEvmTokenPage}
-                  />
-                  <Route
-                    exact
-                    path="/setting/token/manage"
-                    component={ManageTokenPage}
-                  />
-                  <Route
-                    exact
-                    path="/stake/validator-list"
-                    component={ValidatorListPage}
-                  />
+                  <Route exact path="/setting/set-keyring" component={SetKeyRingPage} />
+                  <Route exact path="/setting/export/:index" component={ExportPage} />
+                  <Route exact path="/setting/clear/:index" component={ClearPage} />
+                  <Route exact path="/setting/keyring/change/name/:index" component={ChangeNamePage} />
+                  <Route exact path="/setting/token/add" component={AddTokenPage} />
+                  <Route exact path="/setting/token-evm/add" component={AddEvmTokenPage} />
+                  <Route exact path="/setting/token/manage" component={ManageTokenPage} />
+                  <Route exact path="/stake/validator-list" component={ValidatorListPage} />
                   <Route path="/sign" component={SignPage} />
+                  <Route path="/sign-bitcoin" component={SignBtcPage} />
                   <Route path="/sign-ethereum" component={SignEthereumPage} />
+                  <Route path="/sign-tron" component={SignTronPage} />
                   <Route path="/suggest-chain" component={ChainSuggestedPage} />
                 </LogPageViewWrapper>
               </HashRouter>

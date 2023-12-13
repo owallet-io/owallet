@@ -6,6 +6,7 @@ import { useFocusedScreen } from "../../providers/focused-screen";
 
 export const usePageRegisterScrollYValue = () => {
   const route = useRoute();
+  
 
   const pageScrollPosition = usePageScrollPosition();
 

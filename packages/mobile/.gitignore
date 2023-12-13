@@ -51,6 +51,15 @@ buck-out/
 # CocoaPods
 /ios/Pods/
 
+# env
+/ios/fastlane/.env.default
+/ios/fastlane/Matchfile
+/android/fastlane/.env.default
+/android/fastlane/OWalletKeystore
+
+/ios/sentry.properties
+/android/sentry.properties
+
 index.android.bundle
 *.hprof
 

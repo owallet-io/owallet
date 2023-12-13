@@ -1,20 +1,20 @@
-import React, { FunctionComponent } from 'react'
-import Svg, { Path } from 'react-native-svg'
+import React, { FunctionComponent } from 'react';
+import Svg, { Path } from 'react-native-svg';
 
 export interface IconProps {
-  size?: number
-  color?: string
+  size?: number;
+  color?: string;
 }
 
 export const RightArrowIcon: FunctionComponent<
   IconProps & {
-    height: number
-    type?: string
-    onPress?: () => void
+    height: number;
+    type?: string;
+    onPress?: () => void;
   }
 > = ({ color, height, type, onPress }) => {
   let transfromCss =
-    type === 'left' ? { transform: [{ rotate: '180deg' }] } : {}
+    type === 'left' ? { transform: [{ rotate: '180deg' }] } : {};
   return (
     <Svg
       onPress={onPress}
@@ -38,8 +38,8 @@ export const RightArrowIcon: FunctionComponent<
         transform="translate(-.139 -.243) scale(1.03469)"
       />
     </Svg>
-  )
-}
+  );
+};
 
 export const DoubleRightArrowIcon: FunctionComponent<
   IconProps & { height: number }
@@ -67,11 +67,11 @@ export const DoubleRightArrowIcon: FunctionComponent<
         d="M1.833 1.833l7.875 7.875-7.875 7.875"
       />
     </Svg>
-  )
-}
+  );
+};
 
 export const LeftArrowIcon: FunctionComponent<IconProps> = ({
-  color = 'none',
+  color = '#5F5E77',
   size = 24
 }) => {
   return (
@@ -93,8 +93,8 @@ export const LeftArrowIcon: FunctionComponent<IconProps> = ({
         stroke-linejoin="round"
       />
     </Svg>
-  )
-}
+  );
+};
 
 export const ArrowOpsiteUpDownIcon: FunctionComponent<IconProps> = ({
   size = 24,
@@ -111,5 +111,41 @@ export const ArrowOpsiteUpDownIcon: FunctionComponent<IconProps> = ({
         fill={color}
       />
     </Svg>
-  )
-}
+  );
+};
+
+export const RightLightIcon: FunctionComponent<IconProps> = ({
+  size = 24,
+  color = '#5F5E77'
+}) => {
+  return (
+    <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <Path
+        d="M8.90991 19.9201L15.4299 13.4001C16.1999 12.6301 16.1999 11.3701 15.4299 10.6001L8.90991 4.08008"
+        stroke={color}
+        stroke-width="1.5"
+        stroke-miterlimit="10"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </Svg>
+  );
+};
+
+export const LeftLightIcon: FunctionComponent<IconProps> = ({
+  size = 24,
+  color = '#5F5E77'
+}) => {
+  return (
+    <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <Path
+        d="M15.0901 19.9201L8.57009 13.4001C7.80009 12.6301 7.80009 11.3701 8.57009 10.6001L15.0901 4.08008"
+        stroke={color}
+        stroke-width="1.5"
+        stroke-miterlimit="10"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </Svg>
+  );
+};

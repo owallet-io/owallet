@@ -2,7 +2,7 @@ import React, { FunctionComponent, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { PageWithScrollView } from '../../components/page';
 import { Platform, StyleSheet, View, ViewStyle } from 'react-native';
-import { CText as Text } from '../../components/text';
+import { Text } from '@src/components/text';
 import { Card, CardBody, CardDivider } from '../../components/card';
 import { useStyle } from '../../styles';
 import { Button } from '../../components/button';
@@ -17,7 +17,7 @@ import { dateToLocalString } from './utils';
 import { registerModal } from '../../modals/base';
 import { RectButton } from '../../components/rect-button';
 import { useSmartNavigation } from '../../navigation.provider';
-
+import { BottomSheetProps } from '@gorhom/bottom-sheet';
 export const TallyVoteInfoView: FunctionComponent<{
   vote: 'yes' | 'no' | 'abstain' | 'noWithVeto';
   percentage: IntPretty;
@@ -242,7 +242,7 @@ export const GovernanceDetailsCardBody: FunctionComponent<{
             // In IOS, the whole text would be selected, this process is somewhat strange, so it is disabled in IOS.
             selectable={Platform.OS === 'android'}
           >
-            {proposal.description}
+            {proposal?.description ?? ''}
           </Text>
         </View>
       ) : (
@@ -258,6 +258,10 @@ export const GovernanceDetailsCardBody: FunctionComponent<{
 export const GovernanceVoteModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
+  bottomSheetModalConfig?: Omit<
+    BottomSheetProps,
+    'snapPoints' | 'children'
+  >;
   proposalId: string;
 
   // Modal can't use the `useSmartNavigation` hook directly.
@@ -437,7 +441,7 @@ export const GovernanceVoteModal: FunctionComponent<{
                   {},
                   {},
                   {
-                    onBroadcasted: (txHash) => {
+                    onBroadcasted: txHash => {
                       analyticsStore.logEvent('Vote tx broadcasted', {
                         chainId: chainStore.current.chainId,
                         chainName: chainStore.current.chainName,

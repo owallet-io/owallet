@@ -1,4 +1,4 @@
-import { KVStore } from '@owallet/common';
+import { KVStore, getUrlV1Beta } from '@owallet/common';
 import {
   ObservableChainQuery,
   ObservableChainQueryMap
@@ -18,13 +18,15 @@ export class ObservableChainQueryDenomTrace extends ObservableChainQuery<DenomTr
       kvStore,
       chainId,
       chainGetter,
-      `/ibc/applications/transfer/v1beta1/denom_traces/${hash}`
+      `/ibc/apps/transfer/v1/denom_traces/${hash}`
     );
 
     autorun(() => {
       const chainInfo = this.chainGetter.getChain(this.chainId);
       if (chainInfo.features && chainInfo.features.includes('ibc-go')) {
-        this.setUrl(`/ibc/apps/transfer/v1/denom_traces/${hash}`);
+        this.setUrl(
+          `/ibc/apps/transfer/v1/denom_traces/${hash}`
+        );
       }
     });
   }
@@ -41,7 +43,7 @@ export class ObservableChainQueryDenomTrace extends ObservableChainQuery<DenomTr
     const rawPaths = this.response.data.denom_trace.path.split('/');
 
     if (rawPaths.length % 2 !== 0) {
-      console.log('Failed to parse paths', rawPaths);
+      
       return [];
     }
 

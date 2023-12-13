@@ -18,28 +18,32 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { useSmartNavigation } from '../../navigation.provider';
 import { Buffer } from 'buffer';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, metrics, spacing, typography } from '../../themes';
-import { CText as Text } from '../../components/text';
+import { spacing, typography } from '../../themes';
+import { Text } from '@src/components/text';
 import ProgressiveImage from '../../components/progessive-image';
-
-const styles = StyleSheet.create({
-  sendInputRoot: {
-    paddingHorizontal: spacing['20'],
-    paddingVertical: spacing['24'],
-    backgroundColor: colors['white'],
-    borderRadius: 24
-  },
-  sendlabelInput: {
-    fontSize: 16,
-    fontWeight: '700',
-    lineHeight: 22,
-    color: colors['gray-900'],
-    marginBottom: spacing['8']
-  }
-});
+import { useTheme } from '@src/themes/theme-provider';
+import { OWSubTitleHeader } from '@src/components/header';
+import { OWBox } from '@src/components/card';
+const styling = (colors) =>
+  StyleSheet.create({
+    sendInputRoot: {
+      paddingHorizontal: spacing['20'],
+      paddingVertical: spacing['24'],
+      backgroundColor: colors['background-box'],
+      borderRadius: 24
+    },
+    sendlabelInput: {
+      fontSize: 16,
+      fontWeight: '700',
+      lineHeight: 22,
+      marginBottom: spacing['8']
+    }
+  });
 
 export const TransferNFTScreen: FunctionComponent = observer(() => {
-  const { chainStore, accountStore, queriesStore, analyticsStore } = useStore();
+  const { chainStore, accountStore, queriesStore } = useStore();
+  const { colors } = useTheme();
+  const styles = styling(colors);
   const route = useRoute<
     RouteProp<
       Record<
@@ -106,25 +110,14 @@ export const TransferNFTScreen: FunctionComponent = observer(() => {
   const txStateIsValid = sendConfigError == null;
 
   return (
-    <PageWithScrollView>
+    <PageWithScrollView backgroundColor={colors['background']}>
       <View style={{ marginBottom: 99 }}>
-        <View style={{ alignItems: 'center', marginVertical: spacing['16'] }}>
-          <Text
-            style={{
-              fontWeight: '700',
-              fontSize: 24,
-              lineHeight: 34
-            }}
-          >
-            Transfer NFT
-          </Text>
-        </View>
-        <View style={styles.sendInputRoot}>
+        <OWSubTitleHeader title="Transfer NFT" />
+        <OWBox style={styles.sendInputRoot}>
           <Text
             style={{
               ...typography.h6,
               fontWeight: '700',
-              color: colors['gray-900'],
               marginBottom: spacing['3']
             }}
           >
@@ -135,7 +128,7 @@ export const TransferNFTScreen: FunctionComponent = observer(() => {
               marginVertical: spacing['8'],
               padding: spacing['8'],
               flexDirection: 'row',
-              backgroundColor: colors['red-50'],
+              backgroundColor: colors['item'],
               borderRadius: spacing['8']
             }}
           >
@@ -177,10 +170,16 @@ export const TransferNFTScreen: FunctionComponent = observer(() => {
             recipientConfig={sendConfigs.recipientConfig}
             memoConfig={sendConfigs.memoConfig}
             labelStyle={styles.sendlabelInput}
+            inputContainerStyle={{
+              backgroundColor: colors['background-box']
+            }}
           />
           <TextInput
             placeholder={`Max: ${nft.quantity}`}
             label="Quantity"
+            inputContainerStyle={{
+              backgroundColor: colors['background-box']
+            }}
             error={
               !quantity || quantity > nft.quantity
                 ? 'Please enter valid quantity'
@@ -202,7 +201,7 @@ export const TransferNFTScreen: FunctionComponent = observer(() => {
                   containerStyle={{
                     height: 24,
                     borderRadius: spacing['8'],
-                    backgroundColor: colors['purple-900'],
+                    backgroundColor: colors['purple-700'],
                     justifyContent: 'center',
                     alignItems: 'center'
                   }}
@@ -218,7 +217,7 @@ export const TransferNFTScreen: FunctionComponent = observer(() => {
             }
             labelStyle={styles.sendlabelInput}
             value={quantity?.toString() ?? ''}
-            onChangeText={txt => {
+            onChangeText={(txt) => {
               if (Number(txt) > nft.quantity) {
                 setQuantity(nft.quantity);
               } else {
@@ -235,6 +234,9 @@ export const TransferNFTScreen: FunctionComponent = observer(() => {
           />
           <MemoInput
             label="Memo (Optional)"
+            inputContainerStyle={{
+              backgroundColor: colors['background-box']
+            }}
             placeholder="Type your memo here"
             memoConfig={sendConfigs.memoConfig}
             labelStyle={styles.sendlabelInput}
@@ -242,7 +244,7 @@ export const TransferNFTScreen: FunctionComponent = observer(() => {
           <TouchableOpacity
             style={{
               marginBottom: 24,
-              backgroundColor: colors['purple-900'],
+              backgroundColor: colors['purple-700'],
               borderRadius: 8
             }}
             onPress={async () => {
@@ -264,7 +266,7 @@ export const TransferNFTScreen: FunctionComponent = observer(() => {
                       networkType: chainStore.current.networkType
                     },
                     {
-                      onBroadcasted: txHash => {
+                      onBroadcasted: (txHash) => {
                         smartNavigation.pushSmart('TxPendingResult', {
                           txHash: Buffer.from(txHash).toString('hex')
                         });
@@ -312,7 +314,7 @@ export const TransferNFTScreen: FunctionComponent = observer(() => {
               Submit
             </Text>
           </TouchableOpacity>
-        </View>
+        </OWBox>
       </View>
     </PageWithScrollView>
   );

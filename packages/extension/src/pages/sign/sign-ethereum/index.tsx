@@ -1,10 +1,4 @@
-import React, {
-  FunctionComponent,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react';
+import React, { FunctionComponent, useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from 'reactstrap';
 
 import { HeaderLayout } from '../../../layouts';
@@ -46,13 +40,7 @@ export const SignEthereumPage: FunctionComponent = observer(() => {
 
   const intl = useIntl();
 
-  const {
-    chainStore,
-    keyRingStore,
-    signInteractionStore,
-    accountStore,
-    queriesStore
-  } = useStore();
+  const { chainStore, keyRingStore, signInteractionStore } = useStore();
 
   useEffect(() => {
     return () => {
@@ -62,9 +50,7 @@ export const SignEthereumPage: FunctionComponent = observer(() => {
 
   const [signer, setSigner] = useState('');
   const [origin, setOrigin] = useState<string | undefined>();
-  const [isADR36WithString, setIsADR36WithString] = useState<
-    boolean | undefined
-  >();
+  const [isADR36WithString, setIsADR36WithString] = useState<boolean | undefined>();
 
   const current = chainStore.current;
   // Make the gas config with 1 gas initially to prevent the temporary 0 gas error at the beginning.
@@ -79,44 +65,30 @@ export const SignEthereumPage: FunctionComponent = observer(() => {
   const decimals = useRef(chainStore.current.feeCurrencies[0].coinDecimals);
 
   useEffect(() => {
-    console.log('dataSign: ', dataSign);
     try {
       if (dataSign) {
         decimals.current = dataSign?.data?.data?.data?.decimals;
         let chainIdSign = dataSign?.data?.chainId;
-        if (!chainIdSign?.toString()?.startsWith('0x'))
-          chainIdSign = '0x' + Number(chainIdSign).toString(16);
+        // if (!chainIdSign?.toString()?.startsWith('0x'))
+        //   chainIdSign = '0x' + Number(chainIdSign).toString(16);
+
         chainStore.selectChain(chainIdSign);
 
-        const estimatedGasLimit = parseInt(
-          dataSign?.data?.data?.data?.estimatedGasLimit,
-          16
-        );
-        const estimatedGasPrice = new Big(
-          parseInt(dataSign?.data?.data?.data?.estimatedGasPrice, 16)
-        )
+        const estimatedGasLimit = parseInt(dataSign?.data?.data?.data?.estimatedGasLimit, 16);
+        const estimatedGasPrice = new Big(parseInt(dataSign?.data?.data?.data?.estimatedGasPrice, 16))
           .div(new Big(10).pow(decimals.current))
           .toFixed(decimals.current);
-
-        console.log(estimatedGasPrice, '');
 
         if (!isNaN(estimatedGasLimit) && estimatedGasPrice !== 'NaN') {
           setGasPrice(estimatedGasPrice);
           gasConfig.setGas(estimatedGasLimit);
-          feeConfig.setFee(
-            new Big(estimatedGasLimit)
-              .mul(estimatedGasPrice)
-              .toFixed(decimals.current)
-          );
+          feeConfig.setFee(new Big(estimatedGasLimit).mul(estimatedGasPrice).toFixed(decimals.current));
         }
       }
     } catch (error) {
       console.log(error);
     }
   }, [dataSign]);
-
-  console.log(gasPrice, 'GAS PRICE!!!!!!!!!!!');
-  console.log(feeConfig.feeRaw, 'FEE RAWWWWWWWWW!!!!!!!!!!!');
 
   const memoConfig = useMemoConfig(chainStore, current.chainId);
 
@@ -292,10 +264,7 @@ export const SignEthereumPage: FunctionComponent = observer(() => {
                     memoConfig={memoConfig}
                     feeConfig={feeConfig}
                     gasConfig={gasConfig}
-                    isInternal={
-                      interactionInfo.interaction &&
-                      interactionInfo.interactionInternal
-                    }
+                    isInternal={interactionInfo.interaction && interactionInfo.interactionInternal}
                     preferNoSetFee={preferNoSetFee}
                     preferNoSetMemo={preferNoSetMemo}
                   />
@@ -305,11 +274,9 @@ export const SignEthereumPage: FunctionComponent = observer(() => {
             </div>
             <div style={{ flex: 1 }} />
             <div className={style.buttons}>
-              {keyRingStore.keyRingType === 'ledger' &&
-              signInteractionStore.isLoading ? (
+              {keyRingStore.keyRingType === 'ledger' && signInteractionStore.isLoading ? (
                 <Button className={style.button} disabled={true} outline>
-                  <FormattedMessage id="sign.button.confirm-ledger" />{' '}
-                  <i className="fa fa-spinner fa-spin fa-fw" />
+                  <FormattedMessage id="sign.button.confirm-ledger" /> <i className="fa fa-spinner fa-spin fa-fw" />
                 </Button>
               ) : (
                 <React.Fragment>
@@ -318,20 +285,17 @@ export const SignEthereumPage: FunctionComponent = observer(() => {
                     color=""
                     // disabled={}
                     // data-loading={signInteractionStore.isLoading}
-                    onClick={async (e) => {
+                    onClick={async e => {
                       e.preventDefault();
 
                       if (needSetIsProcessing) {
                         setIsProcessing(true);
                       }
                       await signInteractionStore.reject();
-                      if (
-                        interactionInfo.interaction &&
-                        !interactionInfo.interactionInternal
-                      ) {
+                      if (interactionInfo.interaction && !interactionInfo.interactionInternal) {
                         window.close();
                       }
-                      history.goBack()
+                      history.goBack();
                     }}
                     outline
                   >
@@ -344,7 +308,7 @@ export const SignEthereumPage: FunctionComponent = observer(() => {
                     color=""
                     disabled={approveIsDisabled}
                     data-loading={signInteractionStore.isLoading}
-                    onClick={async (e) => {
+                    onClick={async e => {
                       e.preventDefault();
 
                       if (needSetIsProcessing) {
@@ -362,18 +326,15 @@ export const SignEthereumPage: FunctionComponent = observer(() => {
                         ).toString(16);
                       await signInteractionStore.approveEthereumAndWaitEnd({
                         gasPrice,
-                        gasLimit: `0x${parseFloat(gasConfig.gasRaw).toString(
-                          16
-                        )}`
+                        gasLimit: `0x${parseFloat(gasConfig.gasRaw).toString(16)}`
                         // fees: `0x${parseFloat(feeConfig.feeRaw).toString(16)}`
                       });
                       // }
 
-                      if (
-                        interactionInfo.interaction &&
-                        !interactionInfo.interactionInternal
-                      ) {
+                      if (interactionInfo.interaction && !interactionInfo.interactionInternal) {
                         window.close();
+                      } else {
+                        history.goBack();
                       }
                     }}
                   >

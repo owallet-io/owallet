@@ -1,21 +1,22 @@
-import React, { FunctionComponent } from 'react';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../../stores';
-import { Card, CardBody } from '../../../components/card';
-import { ViewStyle, View, StyleSheet } from 'react-native';
-import { CText as Text } from '../../../components/text';
-import { useStyle } from '../../../styles';
-import { useIntl } from 'react-intl';
-import { ValidatorThumbnail } from '../../../components/thumbnail';
-import { ProgressBar } from '../../../components/progress-bar';
 import { BondStatus } from '@owallet/stores';
-import { colors, spacing } from '../../../themes';
+import { OWEmpty } from '@src/components/empty';
+import { Text } from '@src/components/text';
+import { useTheme } from '@src/themes/theme-provider';
+import { observer } from 'mobx-react-lite';
+import React, { FunctionComponent } from 'react';
+import { useIntl } from 'react-intl';
+import { View, ViewStyle } from 'react-native';
+import { CardBody, OWBox } from '../../../components/card';
+import { ProgressBar } from '../../../components/progress-bar';
+import { ValidatorThumbnail } from '../../../components/thumbnail';
+import { useStore } from '../../../stores';
+import { useStyle } from '../../../styles';
 
 export const UndelegationsCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
   const { chainStore, accountStore, queriesStore } = useStore();
-
+  const { colors } = useTheme();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
 
@@ -33,53 +34,35 @@ export const UndelegationsCard: FunctionComponent<{
   const unbondedValidators = queries.cosmos.queryValidators.getQueryStatus(
     BondStatus.Unbonded
   );
-  const stakingParams = queries.cosmos.queryStakingParams.response;
+  const stakingParams = queries.cosmos.queryStakingParams;
 
   const style = useStyle();
 
   const intl = useIntl();
 
   return (
-    <Card
+    <OWBox
       style={{
-        padding: spacing['28'],
-        paddingBottom: spacing['14'],
-        paddingTop: spacing['14'],
-        marginTop: spacing['32'],
-        borderRadius: spacing['24'],
-        backgroundColor: colors['white']
+        paddingTop: 0
       }}
     >
-      <CardBody
-        style={{
-          backgroundColor: 'white'
-        }}
-      >
+      <CardBody>
         <Text
-          style={style.flatten([
-            'h6',
-            'color-text-black-very-high',
-            'self-center'
-          ])}
+          style={[
+            { color: colors['primary-text'] },
+            style.flatten(['h6', 'self-center'])
+          ]}
         >
           My Unstaking
         </Text>
         {unbondings.length > 0 ? null : (
-          <Text
-            style={style.flatten([
-              'body2',
-              'color-text-black-low',
-              'padding-top-18'
-            ])}
-          >
-            {"You don't have any unbonding assets yet"}
-          </Text>
+          <OWEmpty style={{ paddingBottom: 20 }} />
         )}
         {unbondings.map((unbonding, unbondingIndex) => {
           const validator = bondedValidators.validators
             .concat(unbondingValidators.validators)
             .concat(unbondedValidators.validators)
-            .find(val => val.operator_address === unbonding.validatorAddress);
+            .find((val) => val.operator_address === unbonding.validatorAddress);
           const thumbnail =
             bondedValidators.getValidatorThumbnail(
               unbonding.validatorAddress
@@ -112,11 +95,10 @@ export const UndelegationsCard: FunctionComponent<{
                     }}
                   />
                   <Text
-                    style={style.flatten([
-                      'margin-left-16',
-                      'h7',
-                      'color-text-black-medium'
-                    ])}
+                    style={[
+                      { color: colors['primary-text'] },
+                      style.flatten(['margin-left-16', 'h7'])
+                    ]}
                   >
                     {validator?.description.moniker ?? '...'}
                   </Text>
@@ -163,8 +145,7 @@ export const UndelegationsCard: FunctionComponent<{
                       (endTime - currentTime) / 1000
                     );
                     const unbondingTime = stakingParams
-                      ? parseFloat(stakingParams.data.result.unbonding_time) /
-                        10 ** 9
+                      ? stakingParams.unbondingTimeSec
                       : 3600 * 24 * 21;
 
                     return 100 - (remainingTime / unbondingTime) * 100;
@@ -173,7 +154,7 @@ export const UndelegationsCard: FunctionComponent<{
                   return (
                     <View
                       key={i.toString()}
-                      style={style.flatten(['padding-top-24'])}
+                      style={style.flatten(['padding-top-12'])}
                     >
                       <View
                         style={style.flatten([
@@ -183,10 +164,11 @@ export const UndelegationsCard: FunctionComponent<{
                         ])}
                       >
                         <Text
-                          style={style.flatten([
-                            'subtitle2',
-                            'color-text-black-medium'
-                          ])}
+                          style={[
+                            { color: colors['primary-text'] },
+                            ,
+                            style.flatten(['subtitle2'])
+                          ]}
                         >
                           {entry.balance
                             .shrink(true)
@@ -213,15 +195,18 @@ export const UndelegationsCard: FunctionComponent<{
               </View>
               {!isLastUnbondingIndex && (
                 <View
-                  style={StyleSheet.flatten([
-                    style.flatten(['height-1', 'background-color-divider'])
-                  ])}
+                  style={[
+                    style.flatten(['height-1']),
+                    {
+                      backgroundColor: colors['border-input-login']
+                    }
+                  ]}
                 />
               )}
             </React.Fragment>
           );
         })}
       </CardBody>
-    </Card>
+    </OWBox>
   );
 });

@@ -1,10 +1,5 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
-import {
-  AddressInput,
-  FeeButtons,
-  CoinInput,
-  MemoInput
-} from '../../components/form';
+import { AddressInput, FeeButtons, CoinInput, MemoInput } from '../../components/form';
 import { useStore } from '../../stores';
 
 import { HeaderLayout, LayoutSpace, LayoutHidePage } from '../../layouts';
@@ -57,12 +52,10 @@ export const SendPage: FunctionComponent<{
 
   const notification = useNotification();
 
-  const { chainStore, accountStore, priceStore, queriesStore, analyticsStore } =
-    useStore();
+  const { chainStore, accountStore, priceStore, queriesStore, analyticsStore } = useStore();
   const current = chainStore.current;
 
   const accountInfo = accountStore.getAccount(current.chainId);
-  const accountEthInfo = accountStore.getAccount(current.chainId);
 
   const sendConfigs = useSendTxConfig(
     chainStore,
@@ -71,16 +64,13 @@ export const SendPage: FunctionComponent<{
     accountInfo.bech32Address,
     queriesStore.get(current.chainId).queryBalances,
     EthereumEndpoint,
-    chainStore.current.networkType === 'evm' &&
-      queriesStore.get(current.chainId).evm.queryEvmBalance,
+    chainStore.current.networkType === 'evm' && queriesStore.get(current.chainId).evm.queryEvmBalance,
     chainStore.current.networkType === 'evm' && accountInfo.evmosHexAddress
   );
 
   useEffect(() => {
     if (query.defaultDenom) {
-      const currency = current.currencies.find(
-        (cur) => cur.coinMinimalDenom === query.defaultDenom
-      );
+      const currency = current.currencies.find((cur) => cur.coinMinimalDenom === query.defaultDenom);
 
       if (currency) {
         sendConfigs.amountConfig.setSendCurrency(currency);
@@ -118,75 +108,11 @@ export const SendPage: FunctionComponent<{
   const txStateIsValid = sendConfigError == null;
 
   return (
-    // <HeaderLayout
-    //   showChainName={false}
-    //   canChangeChainInfo={false}
-    //   onBackButton={
-    //     isDetachedPage
-    //       ? undefined
-    //       : () => {
-    //           history.goBack();
-    //         }
-    //   }
-    //   rightRenderer={
-    //     isDetachedPage ? undefined : (
-    //       <div
-    //         style={{
-    //           height: '64px',
-    //           display: 'flex',
-    //           flexDirection: 'row',
-    //           alignItems: 'center',
-    //           paddingRight: '20px'
-    //         }}
-    //       >
-    //         <i
-    //           className="fas fa-external-link-alt"
-    //           style={{
-    //             cursor: 'pointer',
-    //             padding: '4px',
-    //             color: '#ffffff'
-    //           }}
-    //           onClick={async (e) => {
-    //             e.preventDefault();
-
-    //             const windowInfo = await browser.windows.getCurrent();
-
-    //             let queryString = `?detached=true&defaultDenom=${sendConfigs.amountConfig.sendCurrency.coinMinimalDenom}`;
-    //             if (sendConfigs.recipientConfig.rawRecipient) {
-    //               queryString += `&defaultRecipient=${sendConfigs.recipientConfig.rawRecipient}`;
-    //             }
-    //             if (sendConfigs.amountConfig.amount) {
-    //               queryString += `&defaultAmount=${sendConfigs.amountConfig.amount}`;
-    //             }
-    //             if (sendConfigs.memoConfig.memo) {
-    //               queryString += `&defaultMemo=${sendConfigs.memoConfig.memo}`;
-    //             }
-
-    //             await openPopupWindow(
-    //               browser.runtime.getURL(`/popup.html#/send${queryString}`),
-    //               undefined,
-    //               {
-    //                 top: (windowInfo.top || 0) + 80,
-    //                 left:
-    //                   (windowInfo.left || 0) +
-    //                   (windowInfo.width || 0) -
-    //                   PopupSize.width -
-    //                   20
-    //               }
-    //             );
-    //             window.close();
-    //           }}
-    //         />
-    //       </div>
-    //     )
-    //   }
-    // >
     <>
       <form
         className={style.formContainer}
         onSubmit={async (e: any) => {
           e.preventDefault();
-
           if (accountInfo.isReadyToSendMsgs && txStateIsValid) {
             try {
               const stdFee = sendConfigs.feeConfig.toStdFee();
@@ -201,7 +127,8 @@ export const SendPage: FunctionComponent<{
                 {
                   preferNoSetFee: true,
                   preferNoSetMemo: true,
-                  networkType: chainStore.current.networkType
+                  networkType: chainStore.current.networkType,
+                  chainId: chainStore.current.chainId
                 },
                 {
                   onBroadcasted: () => {
@@ -212,10 +139,6 @@ export const SendPage: FunctionComponent<{
                     });
                   },
                   onFulfill: (tx) => {
-                    console.log(
-                      tx,
-                      'TX INFO ON SEND PAGE!!!!!!!!!!!!!!!!!!!!!'
-                    );
                     notification.push({
                       placement: 'top-center',
                       type: tx?.data ? 'success' : 'danger',
@@ -314,10 +237,7 @@ export const SendPage: FunctionComponent<{
             disabled={!accountInfo.isReadyToSendMsgs || !txStateIsValid}
             className={style.sendBtn}
             style={{
-              cursor:
-                accountInfo.isReadyToSendMsgs || !txStateIsValid
-                  ? ''
-                  : 'pointer'
+              cursor: accountInfo.isReadyToSendMsgs || !txStateIsValid ? '' : 'pointer'
             }}
           >
             <span className={style.sendBtnText}>
@@ -329,6 +249,5 @@ export const SendPage: FunctionComponent<{
         </div>
       </form>
     </>
-    // {/* </HeaderLayout> */}
   );
 });

@@ -50,9 +50,12 @@ export const FeeInput: FunctionComponent<GasInputProps> = observer(
           feeConfig.setFee(
             new Big(parseInt(gasConfig.gasRaw)).mul(gasPrice).toFixed(decimals)
           );
+        } else {
+          feeConfig.setFee(parseFloat(feeConfig.feeRaw).toString());
         }
       } catch (error) {
-        console.log(error);
+        feeConfig.setFee(parseFloat(feeConfig.feeRaw).toString());
+       
       }
     }, [gasConfig.gasRaw, gasPrice]);
 
@@ -84,7 +87,7 @@ export const FeeInput: FunctionComponent<GasInputProps> = observer(
                 textTransform: 'uppercase'
               }}
             >
-              {denom?.feeCurrency?.coinDenom || 'ORAI'}
+              {denom?.feeCurrency?.coinDenom ?? denom ?? 'ORAI'}
             </span>
           }
         />

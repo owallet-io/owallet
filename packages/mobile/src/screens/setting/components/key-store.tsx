@@ -1,51 +1,41 @@
+import { Text } from '@src/components/text';
+import { useTheme } from '@src/themes/theme-provider';
 import React, { FunctionComponent } from 'react';
-import { useStyle } from '../../../styles';
-import { Image, StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
-import { CText as Text } from '../../../components/text';
-import { RectButton } from '../../../components/rect-button';
+import { StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import Svg, { Path } from 'react-native-svg';
 import {
-  USAIcon,
+  AUDIcon,
+  CADIcon,
+  CNYIcon,
   EURIcon,
   GBPIcon,
-  CADIcon,
-  AUDIcon,
-  RUBIcon,
-  KRWIcon,
   HKDIcon,
-  CNYIcon,
-  JPYIcon,
   INRIcon,
-  NoteIcon
+  JPYIcon,
+  KRWIcon,
+  NoteIcon,
+  RUBIcon,
+  USAIcon
 } from '../../../components/icon';
-import { colors, spacing, typography } from '../../../themes';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { spacing, typography } from '../../../themes';
 
 export const KeyStoreSectionTitle: FunctionComponent<{
   title: string;
 }> = ({ title }) => {
-  const style = useStyle();
-
+  const { colors } = useTheme();
+  const styles = styling(colors);
   return (
     <View
       style={{
         ...styles.containerSectionTitle
       }}
     >
-      {/* <Image
-        style={{
-          width: 20,
-          height: 20,
-          marginRight: 8
-        }}
-        source={require('../../../assets/image/webpage/note-icon.png')}
-        fadeDuration={0}
-      /> */}
-      <NoteIcon color={colors['purple-900']} height={20}/>
+      <NoteIcon color={colors['purple-700']} height={20} />
       <Text
         style={{
           ...typography['subtitle1'],
-          color: colors['text-black-low'],
+          color: colors['sub-primary-text'],
           marginLeft: spacing['6']
         }}
       >
@@ -116,13 +106,17 @@ export const KeyStoreItem: FunctionComponent<{
   labelStyle?: TextStyle;
   label: string;
   active?: boolean;
+  colors: any;
   onPress?: () => void;
-}> = ({ containerStyle, labelStyle, label, onPress, active }) => {
+}> = ({ containerStyle, labelStyle, label, onPress, active, colors }) => {
+  const styles = styling(colors);
   const renderChildren = () => {
     return (
       <View
         style={{
-          ...styles.containerItem
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between'
         }}
       >
         <View
@@ -136,7 +130,7 @@ export const KeyStoreItem: FunctionComponent<{
           <Text
             style={{
               ...typography.h5,
-              color: colors['text-black-high'],
+              color: colors['sub-primary-text'],
               fontWeight: '700',
               marginLeft: spacing['12'],
               ...labelStyle
@@ -159,8 +153,8 @@ export const KeyStoreItem: FunctionComponent<{
               height: 24,
               borderRadius: spacing['32'],
               backgroundColor: active
-                ? colors['purple-900']
-                : colors['gray-100'],
+                ? colors['purple-700']
+                : colors['bg-circle-select-modal'],
               justifyContent: 'center',
               alignItems: 'center'
             }}
@@ -170,7 +164,7 @@ export const KeyStoreItem: FunctionComponent<{
                 width: 12,
                 height: 12,
                 borderRadius: spacing['32'],
-                backgroundColor: colors['white']
+                backgroundColor: colors['background-item-list']
               }}
             />
           </View>
@@ -183,7 +177,8 @@ export const KeyStoreItem: FunctionComponent<{
   return (
     <TouchableOpacity
       style={{
-        ...styles.containerItem
+        ...styles.containerItem,
+        ...containerStyle
       }}
       onPress={onPress}
     >
@@ -192,28 +187,30 @@ export const KeyStoreItem: FunctionComponent<{
   );
 };
 
-const styles = StyleSheet.create({
-  selectBtn: {
-    height: 54,
-    flexDirection: 'row',
-    alignItems: 'center'
-  },
-  containerItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: colors['gray-10'],
-    borderRadius: spacing['12'],
-    marginVertical: spacing['8'],
-    marginHorizontal: spacing['20'],
-    paddingVertical: spacing['4']
-  },
-  containerSectionTitle: {
-    marginHorizontal: spacing['20'],
-    paddingTop: spacing['16'],
-    paddingBottom: spacing['12'],
-    marginTop: spacing['16'],
-    flexDirection: 'row',
-    alignItems: 'center',
-  }
-});
+const styling = colors =>
+  StyleSheet.create({
+    selectBtn: {
+      height: 54,
+      flexDirection: 'row',
+      alignItems: 'center'
+    },
+    containerItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      backgroundColor: colors['background-box'],
+      borderRadius: spacing['12'],
+      marginVertical: spacing['8'],
+      paddingHorizontal: spacing['20'],
+      paddingVertical: spacing['20'],
+      marginHorizontal: spacing['24']
+    },
+    containerSectionTitle: {
+      marginHorizontal: spacing['20'],
+      paddingTop: spacing['16'],
+      paddingBottom: spacing['12'],
+      marginTop: spacing['16'],
+      flexDirection: 'row',
+      alignItems: 'center'
+    }
+  });

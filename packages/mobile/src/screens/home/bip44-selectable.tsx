@@ -5,7 +5,7 @@ import { KeyRingStatus } from '@owallet/background';
 import { LoadingScreenModal } from '../../providers/loading-screen/modal';
 import { Dec } from '@owallet/unit';
 import { View } from 'react-native';
-import { CText as Text} from "../../components/text";
+import { Text } from '@src/components/text';
 import { registerModal } from '../../modals/base';
 import { CardModal } from '../../modals/card';
 import { useStyle } from '../../styles';
@@ -13,6 +13,8 @@ import { RectButton } from '../../components/rect-button';
 import { Button } from '../../components/button';
 import { Bech32Address } from '@owallet/cosmos';
 import { WalletIcon } from '../setting/components';
+import LoadingScreenOverlay from '@src/providers/loading-screen/loading-screen-overlay';
+import { BottomSheetProps } from '@gorhom/bottom-sheet';
 
 export const BIP44Selectable: FunctionComponent = observer(() => {
   const { chainStore, keyRingStore, queriesStore } = useStore();
@@ -113,12 +115,7 @@ export const BIP44Selectable: FunctionComponent = observer(() => {
 
   return (
     <React.Fragment>
-      <LoadingScreenModal
-        isOpen={needSelectBIP44 && !isSelectorModalShow}
-        close={() => {
-          // noop
-        }}
-      />
+      <LoadingScreenOverlay isOpen={needSelectBIP44 && !isSelectorModalShow} />
       <BIP44SelectableModal
         isOpen={needSelectBIP44 && isSelectorModalShow}
         close={() => {
@@ -132,6 +129,10 @@ export const BIP44Selectable: FunctionComponent = observer(() => {
 export const BIP44SelectableModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
+  bottomSheetModalConfig?: Omit<
+    BottomSheetProps,
+    'snapPoints' | 'children'
+  >;
 }> = registerModal(
   observer(() => {
     const { chainStore, keyRingStore, queriesStore } = useStore();

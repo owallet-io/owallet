@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react'
 import { Image, StyleSheet, View, ViewStyle } from 'react-native'
 import { colors, spacing, typography } from '../../../themes'
-import { CText as Text } from '../../../components/text'
+import { Text } from '@src/components/text';
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { useSmartNavigation } from '../../../navigation.provider'
 

@@ -1,22 +1,22 @@
 import React, { FunctionComponent } from 'react';
-import { View, Image } from 'react-native';
+import { View, Image, StyleSheet } from 'react-native';
 
-export const OWalletLogo = ({ size }) => {
+export const OWalletLogo = ({
+  size,
+  theme
+}: {
+  size?: number;
+  theme?: 'dark' | 'light';
+}) => {
   return (
-    <View
-      style={{
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}
-    >
+    <View style={styles.container}>
       <Image
         style={{
           width: size || 120,
           height: size || 120
         }}
-        source={require('../../assets/logo/splash-background-owallet.png')}
+        source={require('../../assets/logo/logo_transparent.png')
+        }
         resizeMode="contain"
         fadeDuration={0}
       />
@@ -24,22 +24,15 @@ export const OWalletLogo = ({ size }) => {
   );
 };
 
-export const OWalletUnion: FunctionComponent = () => {
+export const OWalletUnion: FunctionComponent = ({theme}) => {
   return (
-    <View
-      style={{
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}
-    >
+    <View style={styles.container}>
       <Image
         style={{
           width: 28,
           height: 16
         }}
-        source={require('../../assets/logo/splash-union.png')}
+        source={require('../../assets/logo/Union.png')}
         resizeMode="contain"
         fadeDuration={0}
       />
@@ -49,14 +42,7 @@ export const OWalletUnion: FunctionComponent = () => {
 
 export const OWalletStar: FunctionComponent = () => {
   return (
-    <View
-      style={{
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}
-    >
+    <View style={styles.container}>
       <Image
         style={{
           width: 20,
@@ -69,3 +55,11 @@ export const OWalletStar: FunctionComponent = () => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center'
+  }
+});

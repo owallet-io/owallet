@@ -1,24 +1,25 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
-import { PageWithScrollViewInBottomTabView } from '../../../components/page';
-import { StyleSheet, View, Image } from 'react-native';
-import { colors, typography, spacing, metrics } from '../../../themes';
-import { CText as Text } from '../../../components/text';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { _keyExtract } from '../../../utils/helper';
-import { useSmartNavigation } from '../../../navigation.provider';
-import { MyRewardCard } from './reward-card';
-import { DelegationsCard } from './delegations-card';
-import { useStore } from '../../../stores';
+import { OWButton } from '@src/components/button';
+import { OWBox } from '@src/components/card';
+import { OWEmpty } from '@src/components/empty';
+import { OWSubTitleHeader } from '@src/components/header';
+import { Text } from '@src/components/text';
+import { useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
+import React, { FunctionComponent, useEffect, useState } from 'react';
+import { Image, StyleSheet, View } from 'react-native';
 import { API } from '../../../common/api';
-
+import { PageWithScrollViewInBottomTabView } from '../../../components/page';
+import { useSmartNavigation } from '../../../navigation.provider';
+import { useStore } from '../../../stores';
+import { metrics, spacing, typography } from '../../../themes';
+import { DelegationsCard } from './delegations-card';
+import { MyRewardCard } from './reward-card';
 export const StakingDashboardScreen: FunctionComponent = observer(() => {
   const smartNavigation = useSmartNavigation();
-  const safeAreaInsets = useSafeAreaInsets();
   const { chainStore, accountStore, queriesStore } = useStore();
   const [validators, setValidators] = useState([]);
-
+  const { colors } = useTheme();
+  const styles = styling(colors);
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
 
@@ -44,43 +45,14 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
       : null;
 
   return (
-    <PageWithScrollViewInBottomTabView>
-      <View
-        style={{
-          marginTop: safeAreaInsets.top
-        }}
-      >
-        <Text
-          style={{
-            ...styles.title
-          }}
-        >
-          {`My staking`}
-        </Text>
-
-        <View
-          style={{
-            ...styles.containerMyStaking
-          }}
-        >
+    <PageWithScrollViewInBottomTabView backgroundColor={colors['background']}>
+      <View>
+        <OWSubTitleHeader title="My staking" />
+        <OWBox>
           {chainStore.current.networkType === 'cosmos' ? (
             <MyRewardCard />
           ) : (
-            <View style={{ alignItems: 'center' }}>
-              <Image
-                source={require('../../../assets/image/not_found.png')}
-                resizeMode="contain"
-                height={142}
-                width={142}
-              />
-              <Text
-                style={{
-                  ...typography.h4,
-                  fontWeight: '400',
-                  marginVertical: spacing['52']
-                }}
-              >{`No result found`}</Text>
-            </View>
+            <OWEmpty />
           )}
 
           {chainStore.current.networkType === 'cosmos' ? (
@@ -88,26 +60,17 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
               style={{
                 alignItems: 'flex-start',
                 justifyContent: 'center',
-                marginTop: spacing['32']
+                marginTop: spacing['12']
               }}
             >
-              <TouchableOpacity
-                style={{
-                  ...styles.containerBtnClaim,
-                  height: 40
-                }}
+              <OWButton
+                label="Stake now"
                 onPress={() => {
                   smartNavigation.navigate('Validator.List', {});
                 }}
-              >
-                <Text
-                  style={{
-                    ...typography.h7,
-                    fontWeight: '700',
-                    color: colors['white']
-                  }}
-                >{`Stake now`}</Text>
-              </TouchableOpacity>
+                size="small"
+                fullWidth={false}
+              />
             </View>
           ) : null}
 
@@ -130,7 +93,7 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
               />
             ) : null}
           </View>
-        </View>
+        </OWBox>
 
         <View>
           {chainStore.current.networkType === 'cosmos' ? (
@@ -166,37 +129,38 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
   );
 });
 
-const styles = StyleSheet.create({
-  container: {},
-  title: {
-    ...typography.h3,
-    fontWeight: '700',
-    textAlign: 'center',
-    color: colors['gray-900'],
-    marginTop: spacing['12'],
-    marginBottom: spacing['12']
-  },
-  containerMyStaking: {
-    marginTop: spacing['32'],
-    backgroundColor: colors['white'],
-    borderRadius: spacing['24'],
-    width: metrics.screenWidth,
-    paddingVertical: spacing['20'],
-    paddingHorizontal: spacing['24']
-  },
-  containerBtnClaim: {
-    justifyContent: 'center',
-    paddingHorizontal: spacing['24'],
-    paddingVertical: spacing['10'],
-    borderRadius: spacing['8'],
-    backgroundColor: colors['purple-900']
-  },
-  containerTitle: {
-    marginHorizontal: spacing['24'],
-    marginTop: spacing['32'],
-    marginBottom: spacing['16'],
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center'
-  }
-});
+const styling = colors =>
+  StyleSheet.create({
+    container: {},
+    title: {
+      ...typography.h3,
+      fontWeight: '700',
+      textAlign: 'center',
+      color: colors['gray-900'],
+      marginTop: spacing['12'],
+      marginBottom: spacing['12']
+    },
+    containerMyStaking: {
+      marginTop: spacing['32'],
+      backgroundColor: colors['background-box'],
+      borderRadius: spacing['24'],
+      width: metrics.screenWidth,
+      paddingVertical: spacing['20'],
+      paddingHorizontal: spacing['24']
+    },
+    containerBtnClaim: {
+      justifyContent: 'center',
+      paddingHorizontal: spacing['24'],
+      paddingVertical: spacing['10'],
+      borderRadius: spacing['8'],
+      backgroundColor: colors['purple-700']
+    },
+    containerTitle: {
+      marginHorizontal: spacing['24'],
+      marginTop: spacing['32'],
+      marginBottom: spacing['16'],
+      flexDirection: 'row',
+      justifyContent: 'flex-start',
+      alignItems: 'center'
+    }
+  });

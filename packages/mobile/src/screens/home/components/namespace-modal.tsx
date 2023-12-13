@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react'
 import { StyleSheet, View, Image } from 'react-native'
-import { CText as Text} from "../../../components/text";
+import { Text } from '@src/components/text';
 import { RectButton } from '../../../components/rect-button'
 import { colors, metrics, spacing, typography } from '../../../themes'
 import {
@@ -57,7 +57,7 @@ export const NamespaceModal = (account): ReactElement => {
         <RectButton
           style={{
             ...styles.containerBtn,
-            backgroundColor: colors['purple-900']
+            backgroundColor: colors['purple-700']
           }}
         >
           <NamespaceBuyIcon color={colors['white']} size={24} />
@@ -78,11 +78,11 @@ export const NamespaceModal = (account): ReactElement => {
             marginBottom: spacing['16']
           }}
         >
-          <NamespaceRelinkIcon color={colors['purple-900']} size={24} />
+          <NamespaceRelinkIcon color={colors['purple-700']} size={24} />
           <Text
             style={{
               ...typography.h6,
-              color: colors['purple-900'],
+              color: colors['purple-700'],
               fontWeight: '900',
               marginLeft: spacing['12']
             }}

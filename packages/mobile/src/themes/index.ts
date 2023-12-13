@@ -1,14 +1,17 @@
-import { colors } from './colors'
-import { fonts } from './fonts'
-import { typography } from './typography'
-import { spacing } from './spacing'
-import { metrics } from './metrics'
+import { colors } from './colors';
+import { fonts } from './fonts';
+import { typography } from './typography';
+import { spacing } from './spacing';
+import { metrics } from './metrics';
 
-import { createTheme, FullTheme, UpdateTheme } from '@rneui/themed'
+// import { createTheme, FullTheme, UpdateTheme } from '@rneui/themed'
 
-const theme = createTheme({
+// const theme = createTheme({
+//   lightColors: {},
+//   darkColors: {}
+// })
+const theme = {
   lightColors: {},
   darkColors: {}
-})
-
-export { theme, colors, fonts, typography, spacing, metrics }
+};
+export { theme, colors, fonts, typography, spacing, metrics };

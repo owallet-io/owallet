@@ -1,13 +1,13 @@
 import React, { FunctionComponent, ReactElement, useState } from 'react';
 import { useStyle } from '../../styles';
 import { StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
-import { CText as Text } from '../text';
+import { Text } from '@src/components/text';
 import { LoadingSpinner } from '../spinner';
 import { RectButton } from '../rect-button';
 import { colors } from '../../themes';
 
 export const Button: FunctionComponent<{
-  color?: 'primary' | 'secondary' | 'danger' ;
+  color?: 'primary' | 'secondary' | 'danger';
   mode?: 'fill' | 'light' | 'outline' | 'text';
   size?: 'default' | 'small' | 'large';
   text: string;
@@ -215,11 +215,6 @@ export const Button: FunctionComponent<{
                 mode === 'fill' || (mode === 'light' && disabled)
                   ? style.get('color-white').color
                   : colors['purple-700']
-                  //  style.get(
-                  //     `color-button-${color}${
-                  //       disabled ? '-disabled' : ''
-                  //     }` as any
-                  //   ).color
               }
               size={20}
             />

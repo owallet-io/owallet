@@ -1,56 +1,46 @@
 import React, { FunctionComponent } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { CText as Text } from '../../components/text';
+import { Text } from '@src/components/text';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import {
-  SendBridgeIcon,
-  SendCrossChainIcon,
-  SendQRCodeIcon,
-  SendWithinNetworkIcon
-} from '../../components/icon';
-import { colors, spacing } from '../../themes';
+import { SendBridgeIcon, SendCrossChainIcon, SendQRCodeIcon, SendWithinNetworkIcon } from '../../components/icon';
+import { spacing } from '../../themes';
 import { useSmartNavigation } from '../../navigation.provider';
 import { useStore } from '../../stores';
+import { useTheme } from '@src/themes/theme-provider';
+import { OWBox } from '@src/components/card';
+import { TRON_ID } from '@owallet/common';
 
-const styles = StyleSheet.create({
-  sendTokenCard: {
-    borderRadius: spacing['24']
-  },
-  sendTokenCardbody: {
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginHorizontal: spacing['-6'],
-    justifyContent: 'space-between'
-  },
-  sendTokenCardContent: {
-    paddingHorizontal: spacing['6'],
-    width: '50%'
-  },
-  sendTokenCardText: {
-    marginBottom: spacing['12'],
-    borderRadius: spacing['12'],
-    height: 130,
-    alignItems: 'center',
-    paddingTop: spacing['16'],
-    paddingHorizontal: spacing['8'],
-    backgroundColor: colors['white'],
-    shadowColor: '#18274B',
-    shadowOffset: {
-      width: 0,
-      height: 12
+const styling = colors =>
+  StyleSheet.create({
+    sendTokenCard: {
+      borderRadius: spacing['24']
     },
-    shadowOpacity: 0.12,
-    shadowRadius: 16.0
-  },
-  iconSendToken: {
-    marginBottom: spacing['6']
-  },
-  textSendToken: {
-    fontWeight: '800',
-    fontSize: 14
-  }
-});
+    sendTokenCardbody: {
+      display: 'flex',
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      marginHorizontal: spacing['-6'],
+      justifyContent: 'space-between'
+    },
+    sendTokenCardContent: {
+      width: '47%',
+      padding: 0,
+      marginTop: 12
+    },
+    sendTokenCardText: {
+      height: 130,
+      alignItems: 'center',
+      justifyContent: 'center'
+    },
+    iconSendToken: {
+      marginBottom: spacing['6']
+    },
+    textSendToken: {
+      fontWeight: '800',
+      fontSize: 14,
+      color: colors['label']
+    }
+  });
 
 const tokenTransferInfo = [
   {
@@ -59,12 +49,11 @@ const tokenTransferInfo = [
     type: 'send',
     titleLine2: 'within network'
   },
-  // {
-  //   icon: <SendCrossChainIcon />,
-  //   titleLine1: 'Send cross-chain',
-  //   type: 'send_cross',
-  //   titleLine2: '(IBC Transfer)'
-  // },
+  {
+    icon: <SendCrossChainIcon />,
+    titleLine1: 'Universal Swap',
+    type: 'send_cross'
+  },
   // {
   //   icon: <SendBridgeIcon />,
   //   titleLine1: 'Bridge',
@@ -82,18 +71,29 @@ const tokenTransferInfo = [
 const TransferTokensOptions: FunctionComponent = () => {
   const smartNavigation = useSmartNavigation();
   const { chainStore } = useStore();
-
-  const onPress = (type) => {
+  const { colors } = useTheme();
+  const styles = styling(colors);
+  const onPress = type => {
     switch (type) {
       case 'send':
-        smartNavigation.navigateSmart('Send', {
-          currency: chainStore.current.stakeCurrency.coinMinimalDenom
-        });
+        if (chainStore.current.chainId === TRON_ID) {
+          smartNavigation.navigateSmart('SendTron', {
+            currency: chainStore.current.stakeCurrency.coinMinimalDenom
+          });
+        } else {
+          smartNavigation.navigateSmart('Send', {
+            currency: chainStore.current.stakeCurrency.coinMinimalDenom
+          });
+        }
+
         break;
       case 'send_qr':
         smartNavigation.navigateSmart('Camera', {
           currency: chainStore.current.stakeCurrency.coinMinimalDenom
         });
+        break;
+      case 'send_cross':
+        smartNavigation.navigateSmart('UniversalSwapScreen', {});
         break;
       default:
         alert('Coming soon!');
@@ -105,21 +105,15 @@ const TransferTokensOptions: FunctionComponent = () => {
     <>
       <View style={styles.sendTokenCardbody}>
         {tokenTransferInfo.map((val, i) => (
-          <View style={styles.sendTokenCardContent} key={i} >
-            <TouchableOpacity
-              style={styles.sendTokenCardText}
-              onPress={() => onPress(val.type)}
-            >
+          <OWBox type="shadow" style={styles.sendTokenCardContent} key={i}>
+            <TouchableOpacity style={styles.sendTokenCardText} onPress={() => onPress(val.type)}>
               <View style={styles.iconSendToken}>{val.icon}</View>
               <Text style={styles.textSendToken}>{val.titleLine1}</Text>
               <Text style={styles.textSendToken}>{val.titleLine2}</Text>
             </TouchableOpacity>
-          </View>
+          </OWBox>
         ))}
       </View>
-      {/* <View style={{ marginTop: spacing['20'], alignItems: 'center' }}>
-        <Text style={{ color: colors['gray-150'] }}>View lists</Text>
-      </View> */}
     </>
   );
 };

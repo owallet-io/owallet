@@ -1,8 +1,8 @@
-import Clipboard from 'expo-clipboard';
+
 import React, { FunctionComponent, useCallback } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { Divider } from '@rneui/base';
-import { CText as Text } from '../../components/text';
+import { StyleSheet, TouchableOpacity, View, Clipboard } from 'react-native';
+// import { Divider } from '@rneui/base';
+import { Text } from '@src/components/text';
 import { RectButton } from 'react-native-gesture-handler';
 import { CheckIcon, CopyTransactionIcon } from '../../components/icon';
 import { PageWithScrollView } from '../../components/page';
@@ -12,9 +12,9 @@ import { colors, metrics, spacing, typography } from '../../themes';
 import {
   formatContractAddress,
   formatOrai,
-  getTxTypeNew,
-  parseIbcMsgTransfer
+  getTxTypeNew
 } from '../../utils/helper';
+import { useTheme } from '@src/themes/theme-provider';
 import { useRoute, RouteProp } from '@react-navigation/native';
 import moment from 'moment';
 import { useSimpleTimer } from '../../hooks';
@@ -36,13 +36,14 @@ const bindStyleTxInfo = (
   label: string,
   value: string
 ): { color?: string; textTransform?: string; fontWeight?: string } => {
+  const { colors } = useTheme();
   switch (label) {
     case 'Transaction hash':
       return { color: colors['purple-700'], textTransform: 'uppercase' };
     case 'Fee':
       return { color: colors['purple-700'], textTransform: 'uppercase' };
     case 'Amount':
-      return value.includes('-')
+      return value?.includes('-')
         ? {
             color: colors['red-500'],
             fontWeight: '800',
@@ -54,7 +55,7 @@ const bindStyleTxInfo = (
             textTransform: 'uppercase'
           };
     default:
-      return { color: colors['gray-900'] };
+      return { color: colors['text-title-login'] };
   }
 };
 
@@ -78,6 +79,8 @@ const InfoItems: FunctionComponent<{
   onPress?: () => void;
 }> = ({ label, value, topBorder, title }) => {
   const style = useStyle();
+  const { colors } = useTheme();
+  const styles = styling(colors);
   const { isTimedOut, setTimer } = useSimpleTimer();
   const renderChildren = () => {
     return (
@@ -89,7 +92,7 @@ const InfoItems: FunctionComponent<{
         >
           <Text
             style={{
-              color: colors['gray-600'],
+              color: colors['primary-text'],
               ...typography.h7
             }}
           >
@@ -102,7 +105,11 @@ const InfoItems: FunctionComponent<{
               ...typography.body2
             }}
           >
-            {value}
+            {value
+              ? value?.length > 20
+                ? formatContractAddress(value)
+                : value
+              : 0}
             {/* {label !== 'Amount'
               ? bindValueTxInfo(label, value)
               : (title === 'Received Token' ? '+' : '-') +
@@ -117,15 +124,19 @@ const InfoItems: FunctionComponent<{
             }}
           >
             {isTimedOut ? (
-              <CheckIcon />
+              <View style={{ width: 30, height: 30 }}>
+                <CheckIcon />
+              </View>
             ) : (
-              <CopyTransactionIcon
-                size={20}
+              <TouchableOpacity
+                style={{ width: 30, height: 30 }}
                 onPress={() => {
-                  Clipboard.setString(value.trim());
+                  Clipboard.setString(value?.trim());
                   setTimer(2000);
                 }}
-              />
+              >
+                <CopyTransactionIcon size={20} />
+              </TouchableOpacity>
             )}
           </View>
         )}
@@ -141,19 +152,24 @@ const InfoItems: FunctionComponent<{
       }}
     >
       <View
-        style={StyleSheet.flatten([
-          style.flatten([
-            'height-62',
-            'flex-row',
-            'items-center',
-            'padding-x-20',
-            'background-color-white'
-          ])
-        ])}
+        style={[
+          StyleSheet.flatten([
+            style.flatten([
+              'height-62',
+              'flex-row',
+              'items-center',
+              'padding-x-20',
+              'background-color-white'
+            ])
+          ]),
+          {
+            backgroundColor: colors['background-box']
+          }
+        ]}
       >
         {renderChildren()}
       </View>
-      <Divider />
+      {/* <Divider /> */}
     </View>
   );
 };
@@ -165,14 +181,23 @@ const DetailItems: FunctionComponent<{
   onPress?: () => void;
 }> = ({ label, onPress, value, topBorder }) => {
   const style = useStyle();
+  const { colors } = useTheme();
+  const styles = styling(colors);
   const renderChildren = () => {
     return (
       <>
-        <View style={styles.containerDetailHorizontal}>
+        <View
+          style={[
+            styles.containerDetailHorizontal,
+            {
+              backgroundColor: colors['background-box']
+            }
+          ]}
+        >
           <View style={{ flex: 1 }}>
             <Text
               style={{
-                color: colors['gray-600'],
+                color: colors['primary-text'],
                 ...typography.h7
               }}
             >
@@ -190,7 +215,7 @@ const DetailItems: FunctionComponent<{
                     ? colors['green-500']
                     : value === 'Failed'
                     ? colors['red-500']
-                    : colors['black']
+                    : colors['text-title-login']
               }}
             >
               {bindValueTxInfo(label, value)}
@@ -209,26 +234,33 @@ const DetailItems: FunctionComponent<{
       }}
     >
       <RectButton
-        style={StyleSheet.flatten([
-          style.flatten([
-            'height-62',
-            'flex-row',
-            'items-center',
-            'padding-x-20',
-            'background-color-white'
-          ])
-        ])}
+        style={[
+          StyleSheet.flatten([
+            style.flatten([
+              'height-62',
+              'flex-row',
+              'items-center',
+              'padding-x-20',
+              'background-color-white'
+            ])
+          ]),
+          {
+            backgroundColor: colors['background-box']
+          }
+        ]}
         onPress={onPress}
       >
         {renderChildren()}
       </RectButton>
-      <Divider />
+      {/* <Divider /> */}
     </View>
   );
 };
 
 export const TransactionDetail: FunctionComponent<any> = () => {
   const style = useStyle();
+  const { colors } = useTheme();
+  const styles = styling(colors);
   const route = useRoute<
     RouteProp<
       Record<
@@ -248,9 +280,9 @@ export const TransactionDetail: FunctionComponent<any> = () => {
     item || {};
 
   const amountDataCell = useCallback(() => {
-    let amount;
+    let amount = { amount: 0, denom: 'ORAI' };
     let msg = item?.messages?.find(
-      msg => getTxTypeNew(msg['@type']) === 'MsgRecvPacket'
+      (msg) => getTxTypeNew(msg?.['@type']) === 'MsgRecvPacket'
     );
     if (msg) {
       const msgRec = JSON.parse(
@@ -260,28 +292,33 @@ export const TransactionDetail: FunctionComponent<any> = () => {
       // const port = item?.message?.packet?.destination_port;
       // const channel = item?.message?.packet?.destination_channel;
     } else if (
-      item?.messages?.find(msg => getTxTypeNew(msg['@type']) === 'MsgTransfer')
+      item?.messages?.find(
+        (msg) => getTxTypeNew(msg?.['@type']) === 'MsgTransfer'
+      )
     ) {
-      const rawLog = JSON.parse(item?.raw_log);
+      if (!item?.raw_log?.startsWith('{') || !item?.raw_log?.startsWith('[')) {
+        return;
+      }
+      const rawLog = JSON.parse(item?.raw_log ?? {});
       // const rawLogParse = parseIbcMsgTransfer(rawLog);
       // const rawLogDenomSplit = rawLogParse?.denom?.split('/');
       amount = rawLog;
     } else {
       const type = getTxTypeNew(
-        item.messages[item?.messages?.length - 1]['@type'],
+        item.messages?.[item?.messages?.length - 1]?.['@type'],
         item?.raw_log,
         item?.result
       );
       const msg = item?.messages?.find(
-        msg => getTxTypeNew(msg['@type']) === type
+        (msg) => getTxTypeNew(msg?.['@type']) === type
       );
 
       amount = msg?.amount?.length > 0 ? msg?.amount[0] : msg?.amount ?? {};
     }
     const prefix =
-      getTxTypeNew(item?.messages?.[0]['@type']) === 'MsgSend' &&
+      getTxTypeNew(item?.messages?.[0]?.['@type']) === 'MsgSend' &&
       item?.messages?.[0]?.from_address &&
-      item.address === item.messages[0].from_address
+      item.address === item.messages?.[0]?.from_address
         ? '-'
         : '+';
 
@@ -298,7 +335,7 @@ export const TransactionDetail: FunctionComponent<any> = () => {
     type === 'cw20'
       ? item.name
       : getTxTypeNew(
-          item?.messages[item?.messages?.length - 1]['@type'],
+          item?.messages?.[item?.messages?.length - 1]?.['@type'],
           item?.raw_log,
           item?.result
         );
@@ -317,15 +354,15 @@ export const TransactionDetail: FunctionComponent<any> = () => {
       return [
         {
           label: 'Contract',
-          value: formatContractAddress(item?.contract_address)
+          value: item?.contract_address
         },
         {
           label: 'Sender',
-          value: formatContractAddress(item?.sender)
+          value: item?.sender
         },
         {
           label: 'Receiver',
-          value: formatContractAddress(item?.receiver)
+          value: item?.receiver
         }
       ];
     }
@@ -333,11 +370,11 @@ export const TransactionDetail: FunctionComponent<any> = () => {
       return [
         {
           label: 'Contract',
-          value: formatContractAddress(item?.messages?.[0]?.contract)
+          value: item?.messages?.[0]?.contract
         },
         {
           label: 'Sender',
-          value: formatContractAddress(item?.messages?.[0]?.sender)
+          value: item?.messages?.[0]?.sender
         }
       ];
     }
@@ -346,11 +383,11 @@ export const TransactionDetail: FunctionComponent<any> = () => {
         return [
           {
             label: 'From',
-            value: formatContractAddress(item?.messages?.[0]?.from_address)
+            value: item?.messages?.[0]?.from_address
           },
           {
             label: 'To',
-            value: formatContractAddress(item?.messages?.[0]?.to_address)
+            value: item?.messages?.[0]?.to_address
           }
         ];
 
@@ -358,32 +395,32 @@ export const TransactionDetail: FunctionComponent<any> = () => {
         return [
           {
             label: 'Signer',
-            value: formatContractAddress(item?.messages?.[0]?.signer)
+            value: item?.messages?.[0]?.signer
           }
         ];
       case 'MsgVote':
         return [
           {
             label: 'Voter',
-            value: formatContractAddress(item?.messages?.[0]?.voter)
+            value: item?.messages?.[0]?.voter
           }
         ];
       case 'MsgSubmitProposal':
         return [
           {
             label: 'Proposer',
-            value: formatContractAddress(item?.messages?.[0]?.proposer)
+            value: item?.messages?.[0]?.proposer
           }
         ];
       default:
         return [
           {
             label: 'Delegator address',
-            value: formatContractAddress(item?.messages?.[0]?.delegator_address)
+            value: item?.messages?.[0]?.delegator_address
           },
           {
             label: 'Validator address',
-            value: formatContractAddress(item?.messages?.[0]?.validator_address)
+            value: item?.messages?.[0]?.validator_address
           }
         ];
     }
@@ -393,13 +430,15 @@ export const TransactionDetail: FunctionComponent<any> = () => {
     ...txAddresses(),
     {
       label: 'Transaction hash',
-      value: formatContractAddress(tx_hash)
+      value: tx_hash
     },
     {
       label: 'Amount',
       value:
         type === 'cw20'
-          ? `${formatOrai(item.amount ?? 0, item.decimal)} ${item.symbol ?? ''}`
+          ? `${formatOrai(item?.amount ?? 0, item?.decimal ?? 6)} ${
+              item.symbol ?? ''
+            }`
           : amountDataCell()
     }
   ];
@@ -420,8 +459,8 @@ export const TransactionDetail: FunctionComponent<any> = () => {
     {
       label: 'Fee',
       value: item?.fee?.amount
-        ? `${formatOrai(item.fee.amount[0].amount || 0)} ${
-            item.fee.amount[0].denom
+        ? `${formatOrai(item.fee.amount?.[0]?.amount || 0)} ${
+            item.fee.amount?.[0]?.denom
           }`
         : 0
     },
@@ -433,16 +472,16 @@ export const TransactionDetail: FunctionComponent<any> = () => {
       label: 'Time',
       value:
         type === 'cw20'
-          ? moment(item.transaction_time).format('MMM DD, YYYY [at] HH:mm')
+          ? moment(item?.transaction_time).format('MMM DD, YYYY [at] HH:mm')
           : date
     }
   ];
 
   return (
-    <PageWithScrollView>
-      <View style={styles.containerTitle}>
+    <PageWithScrollView backgroundColor={colors['background']}>
+      {/* <View style={styles.containerTitle}>
         <Text style={styles.textTitle}>Transaction Detail</Text>
-      </View>
+      </View> */}
       <TransactionSectionTitle title={title} right={<></>} />
       <View>
         {txInfos.map((item, index) => (
@@ -473,32 +512,33 @@ export const TransactionDetail: FunctionComponent<any> = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {},
-  containerTitle: {
-    paddingHorizontal: spacing['20'],
-    paddingVertical: spacing['16'],
-    backgroundColor: colors['white']
-  },
-  textTitle: {
-    ...typography.h3,
-    color: colors['black'],
-    lineHeight: 34,
-    fontWeight: 'bold'
-  },
-  containerDetailVertical: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: metrics.screenWidth - 40
-  },
-  containerDetailHorizontal: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: metrics.screenWidth - 40
-  },
-  textParagraph: {}
-});
+const styling = (colors) =>
+  StyleSheet.create({
+    container: {},
+    containerTitle: {
+      paddingHorizontal: spacing['20'],
+      paddingVertical: spacing['16'],
+      backgroundColor: colors['primary']
+    },
+    textTitle: {
+      ...typography.h3,
+      color: colors['primary-text'],
+      lineHeight: 34,
+      fontWeight: 'bold'
+    },
+    containerDetailVertical: {
+      flex: 1,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      width: metrics.screenWidth - 40
+    },
+    containerDetailHorizontal: {
+      flex: 1,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      width: metrics.screenWidth - 40
+    },
+    textParagraph: {}
+  });

@@ -1,17 +1,11 @@
 import { computed, makeObservable, override } from 'mobx';
-import { DenomHelper, KVStore } from '@owallet/common';
+import { DenomHelper, KVStore, MyBigInt } from '@owallet/common';
 import { ChainGetter } from '../../common';
 import { CoinPretty, Int } from '@owallet/unit';
-import {
-  BalanceRegistry,
-  BalanceRegistryType,
-  ObservableQueryBalanceInner
-} from '../balances';
+import { BalanceRegistry, BalanceRegistryType, ObservableQueryBalanceInner } from '../balances';
 import { Result } from './types';
 import { ObservableEvmContractChainQuery } from './contract-query';
-import { evmosToEth } from '@hanchon/ethermint-address-converter';
-import { AppCurrency, ERC20Currency } from '@owallet/types';
-import { MyBigInt } from '../../common/utils/';
+import { ERC20Currency } from '@owallet/types';
 
 export class ObservableQueryErc20Balance extends ObservableEvmContractChainQuery<Result> {
   constructor(
@@ -86,11 +80,7 @@ export class ObservableQueryErc20BalanceInner extends ObservableQueryBalanceInne
       const denom = this.denomHelper.denom;
 
       const chainInfo = this.chainGetter.getChain(this.chainId);
-      const currency = chainInfo.currencies.find(
-        cur => cur.coinMinimalDenom === denom
-      );
-
-      console.log(currency, 'CURRENCY QUERY');
+      const currency = chainInfo.currencies.find((cur) => cur.coinMinimalDenom === denom);
 
       // TODO: Infer the currency according to its denom (such if denom is `uatom` -> `Atom` with decimal 6)?
       if (!currency) {
@@ -101,17 +91,7 @@ export class ObservableQueryErc20BalanceInner extends ObservableQueryBalanceInne
         return new CoinPretty(currency, new Int(0)).ready(false);
       }
 
-      console.log(
-        this.queryErc20Balance.response?.data?.result,
-        'RESULT QUERY ERC20 BALANCE!!!!!!!!'
-      );
-
-      return new CoinPretty(
-        currency,
-        new Int(
-          new MyBigInt(this.queryErc20Balance.response.data.result).toString()
-        )
-      );
+      return new CoinPretty(currency, new Int(new MyBigInt(this.queryErc20Balance.response.data.result).toString()));
     } catch (error) {
       console.log('Error when query erc20 balance: ', error);
     }
@@ -132,10 +112,7 @@ export class ObservableQueryErc20BalanceRegistry implements BalanceRegistry {
   ): ObservableQueryBalanceInner | undefined {
     try {
       const denomHelper = new DenomHelper(minimalDenom);
-      if (
-        bech32Address &&
-        (denomHelper.type === 'erc20' || currency?.type === 'erc20')
-      ) {
+      if (bech32Address && (denomHelper.type === 'erc20' || currency?.type === 'erc20')) {
         const result = new ObservableQueryErc20BalanceInner(
           this.kvStore,
           chainId,

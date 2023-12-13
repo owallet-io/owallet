@@ -62,7 +62,7 @@ export class ObservableQueryBalanceNative extends ObservableQueryBalanceInner {
 
     return StoreUtils.getBalanceFromCurrency(
       currency,
-      this.nativeBalances.response.data.result
+      this.nativeBalances.response.data.balances
     );
   }
 }
@@ -78,7 +78,12 @@ export class ObservableQueryCosmosBalances extends ObservableChainQuery<Balances
     chainGetter: ChainGetter,
     bech32Address: string
   ) {
-    super(kvStore, chainId, chainGetter, `bank/balances/${bech32Address}`);
+    super(
+      kvStore,
+      chainId,
+      chainGetter,
+      `/cosmos/bank/v1beta1/balances/${bech32Address}?pagination.limit=1000`
+    );
 
     this.bech32Address = bech32Address;
 
@@ -112,7 +117,7 @@ export class ObservableQueryCosmosBalances extends ObservableChainQuery<Balances
     // Attempt to register the denom in the returned response.
     // If it's already registered anyway, it's okay because the method below doesn't do anything.
     // Better to set it as an array all at once to reduce computed.
-    const denoms = response.data.result.map((coin) => coin.denom);
+    const denoms = response.data.balances.map((coin) => coin.denom);
     chainInfo.addUnknownCurrencies(...denoms);
   }
 }
@@ -132,7 +137,6 @@ export class ObservableQueryCosmosBalanceRegistry implements BalanceRegistry {
     minimalDenom: string
   ): ObservableQueryBalanceInner | undefined {
     const denomHelper = new DenomHelper(minimalDenom);
-
     if (denomHelper.type !== 'native') {
       return;
     }

@@ -1,9 +1,8 @@
 import React, { FunctionComponent } from 'react';
 import { RNCamera } from 'react-native-camera';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { StyleSheet, View } from 'react-native';
-import { CText as Text } from '../text';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import { Text } from '@src/components/text';
 import { CloseIcon } from '../icon';
 import Svg, { Path } from 'react-native-svg';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -15,7 +14,7 @@ export const FullScreenCameraView: FunctionComponent<
     containerBottom?: React.ReactElement;
     isLoading?: boolean;
   }
-> = (props) => {
+> = props => {
   const navigation = useNavigation();
 
   const isFocused = useIsFocused();
@@ -90,9 +89,11 @@ export const FullScreenCameraView: FunctionComponent<
             </TouchableOpacity>
           ) : null}
         </View>
-        <View style={{
-          flex: 1
-        }} />
+        <View
+          style={{
+            flex: 1
+          }}
+        />
         <View>
           <Svg width="217" height="217" fill="none" viewBox="0 0 217 217">
             <Path
@@ -140,9 +141,11 @@ export const FullScreenCameraView: FunctionComponent<
           ) : null}
         </View>
         {containerBottom}
-        <View style={{
-          flex:1
-        }} />
+        <View
+          style={{
+            flex: 1
+          }}
+        />
       </SafeAreaView>
       {children}
     </React.Fragment>

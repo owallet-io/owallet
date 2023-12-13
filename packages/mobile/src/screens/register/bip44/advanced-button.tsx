@@ -1,118 +1,41 @@
+import { OWButton } from '@src/components/button';
+import { Text } from '@src/components/text';
+import { useTheme } from '@src/themes/theme-provider';
+import { observer } from 'mobx-react-lite';
 import React, {
   FunctionComponent,
   useCallback,
   useMemo,
   useState
 } from 'react';
-import { observer } from 'mobx-react-lite';
-import { BIP44Option } from './bip44-option';
+import { StyleSheet, View } from 'react-native';
+import { TextInput } from '../../../components/input';
 import { registerModal } from '../../../modals/base';
 import { CardModal } from '../../../modals/card';
-import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
-import { TextInput } from '../../../components/input';
-import { colors, typography } from '../../../themes';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { CText as Text } from '../../../components/text';
 import { useStore } from '../../../stores';
-const keyboardVerticalOffset = Platform.OS === 'ios' ? 40 : 0;
-
+import { typography } from '../../../themes';
+import { BIP44Option } from './bip44-option';
+import { BottomSheetProps } from '@gorhom/bottom-sheet';
 export const BIP44AdvancedButton: FunctionComponent<{
   bip44Option: BIP44Option;
 }> = observer(({ bip44Option }) => {
+  const { appInitStore } = useStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  // const isChangeZeroOrOne =
-  //   change.isValid && (change.number === 0 || change.number === 1);
-
   return (
-    <KeyboardAvoidingView
-      behavior="padding"
-      style={{ flex: 1 }}
-      keyboardVerticalOffset={keyboardVerticalOffset}
-    >
+    <View>
       <BIP44SelectModal
         isOpen={isModalOpen}
         close={() => setIsModalOpen(false)}
         bip44Option={bip44Option}
       />
-      <Text onPress={() => setIsModalOpen(true)}>Advanced Option</Text>
-      {/* <View
-        style={{
-          marginBottom: 16,
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center'
-        }}
-      >
-        <Text
-          style={{
-            ...typography['body2'],
-            color: colors['text-black-medium']
-          }}
-        >{`m/44’/`}</Text>
-        <TextInput
-          value={coinType.value}
-          containerStyle={{
-            minWidth: 58,
-            paddingBottom: 0
-          }}
-          inputStyle={styles.borderInput}
-          style={{ textAlign: 'right' }}
-          keyboardType="number-pad"
-          onChangeText={text => {
-            bip44Option.setCoinType(coinType.number);
-
-            coinType.setValue(text);
-          }}
-        />
-        <Text>’/</Text>
-        <TextInput
-          value={account.value}
-          containerStyle={{
-            minWidth: 58,
-            paddingBottom: 0
-          }}
-          inputStyle={styles.borderInput}
-          style={{ textAlign: 'right' }}
-          keyboardType="number-pad"
-          onChangeText={text => {
-            account.setValue(text);
-            bip44Option.setAccount(account.number);
-          }}
-        />
-        <Text>’/</Text>
-        <TextInput
-          inputStyle={styles.borderInput}
-          value={change.value}
-          containerStyle={{
-            minWidth: 58,
-            paddingBottom: 0
-          }}
-          style={{ textAlign: 'right' }}
-          keyboardType="number-pad"
-          onChangeText={text => {
-            change.setValue(text);
-            bip44Option.setChange(change.number);
-          }}
-        />
-        <Text>/</Text>
-        <TextInput
-          inputStyle={styles.borderInput}
-          value={index.value}
-          containerStyle={{
-            minWidth: 58,
-            paddingBottom: 0
-          }}
-          style={{ textAlign: 'right' }}
-          keyboardType="number-pad"
-          onChangeText={text => {
-            index.setValue(text);
-            bip44Option.setIndex(index.number);
-          }}
-        />
-      </View> */}
-    </KeyboardAvoidingView>
+      <OWButton
+        label="Advanced Option"
+        type="link"
+        size="medium"
+        contentAlign="left"
+        onPress={() => setIsModalOpen(true)}
+      />
+    </View>
   );
 });
 
@@ -149,10 +72,15 @@ const useZeroOrPositiveIntegerString = (initialValue: string) => {
 export const BIP44SelectModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
+  bottomSheetModalConfig?: Omit<BottomSheetProps, 'snapPoints' | 'children'>;
   bip44Option: BIP44Option;
 }> = registerModal(
   observer(({ bip44Option, close }) => {
-    const { chainStore } = useStore();
+    const { chainStore, appInitStore } = useStore();
+
+    const scheme = appInitStore.getInitApp.theme;
+
+    const styles = styling(scheme);
 
     const account = useZeroOrPositiveIntegerString(
       bip44Option.account.toString()
@@ -170,14 +98,14 @@ export const BIP44SelectModal: FunctionComponent<{
 
     const isChangeZeroOrOne =
       change.isValid && (change.number === 0 || change.number === 1);
-
+    const { colors } = useTheme();
     return (
       <CardModal title="HD Derivation Path">
         <Text
           style={{
             ...typography['body2'],
             marginBottom: 18,
-            color: colors['text-black-medium']
+            color: scheme === 'dark' ? colors['label'] : colors['sub-text']
           }}
         >
           Set custom address derivation path by modifying the indexes below:
@@ -193,11 +121,33 @@ export const BIP44SelectModal: FunctionComponent<{
           <Text
             style={{
               ...typography['body2'],
-              color: colors['text-black-medium']
+              color: scheme === 'dark' ? colors['label'] : colors['sub-text']
             }}
-          >{`m/44’/`}</Text>
+          >{`m/${
+            chainStore.current.networkType === 'bitcoin' ? '84' : '44'
+          }’/`}</Text>
           <TextInput
             value={coinType.value}
+            containerStyle={{
+              minWidth: 58,
+              paddingBottom: 0
+            }}
+            isBottomSheet
+            inputStyle={styles.borderInput}
+            style={{ textAlign: 'right', color: 'red' }}
+            keyboardType="number-pad"
+            onChangeText={coinType.setValue}
+          />
+          <Text
+            style={{
+              color: scheme === 'dark' ? colors['label'] : colors['sub-text']
+            }}
+          >
+            ’/
+          </Text>
+          <TextInput
+            isBottomSheet
+            value={account.value}
             containerStyle={{
               minWidth: 58,
               paddingBottom: 0
@@ -205,37 +155,42 @@ export const BIP44SelectModal: FunctionComponent<{
             inputStyle={styles.borderInput}
             style={{ textAlign: 'right' }}
             keyboardType="number-pad"
-            onChangeText={coinType.setValue}
-          />
-          <Text>’/</Text>
-          <TextInput
-            value={account.value}
-            containerStyle={{
-              minWidth: 58,
-              paddingBottom: 0
-            }}
-            style={{ textAlign: 'right' }}
-            keyboardType="number-pad"
             onChangeText={account.setValue}
           />
-          <Text>’/</Text>
+          <Text
+            style={{
+              color: scheme === 'dark' ? colors['label'] : colors['sub-text']
+            }}
+          >
+            ’/
+          </Text>
           <TextInput
+            isBottomSheet
             value={change.value}
             containerStyle={{
               minWidth: 58,
               paddingBottom: 0
             }}
-            style={{ textAlign: 'right' }}
+            inputStyle={styles.borderInput}
+            style={{ textAlign: 'right', color: 'red' }}
             keyboardType="number-pad"
             onChangeText={change.setValue}
           />
-          <Text>/</Text>
+          <Text
+            style={{
+              color: scheme === 'dark' ? colors['label'] : colors['sub-text']
+            }}
+          >
+            /
+          </Text>
           <TextInput
+            isBottomSheet
             value={index.value}
             containerStyle={{
               minWidth: 58,
               paddingBottom: 0
             }}
+            inputStyle={styles.borderInput}
             style={{ textAlign: 'right' }}
             keyboardType="number-pad"
             onChangeText={index.setValue}
@@ -244,27 +199,22 @@ export const BIP44SelectModal: FunctionComponent<{
         {change.isValid && !isChangeZeroOrOne ? (
           <Text
             style={{
-              color: colors['color-danger'],
               paddingBottom: 8,
-              ...typography['text-caption2']
+              ...typography['text-caption2'],
+              color: colors['color-danger']
             }}
           >
             Change should be 0 or 1
           </Text>
         ) : null}
-        <TouchableOpacity
+        <OWButton
+          label="Confirm"
           disabled={
             !account.isValid ||
             !change.isValid ||
             !index.isValid ||
             !isChangeZeroOrOne
           }
-          style={{
-            marginBottom: 240,
-            marginTop: 32,
-            backgroundColor: colors['purple-900'],
-            borderRadius: 8
-          }}
           onPress={() => {
             bip44Option.setCoinType(coinType.number);
             bip44Option.setAccount(account.number);
@@ -272,36 +222,7 @@ export const BIP44SelectModal: FunctionComponent<{
             bip44Option.setIndex(index.number);
             close();
           }}
-        >
-          <Text
-            style={{
-              color: 'white',
-              textAlign: 'center',
-              fontWeight: '700',
-              fontSize: 16,
-              padding: 16
-            }}
-          >
-            Confirm
-          </Text>
-        </TouchableOpacity>
-        {/* <Button
-          text="Confirm"
-          size="large"
-          disabled={
-            !account.isValid ||
-            !change.isValid ||
-            !index.isValid ||
-            !isChangeZeroOrOne
-          }
-          onPress={() => {
-            bip44Option.setAccount(account.number);
-            bip44Option.setChange(change.number);
-            bip44Option.setIndex(index.number);
-
-            close();
-          }}
-        /> */}
+        />
       </CardModal>
     );
   }),
@@ -310,15 +231,20 @@ export const BIP44SelectModal: FunctionComponent<{
   }
 );
 
-const styles = StyleSheet.create({
-  borderInput: {
-    borderColor: colors['purple-100'],
-    borderWidth: 1,
-    backgroundColor: colors['white'],
-    paddingLeft: 11,
-    paddingRight: 11,
-    paddingTop: 12,
-    paddingBottom: 12,
-    borderRadius: 8
-  }
-});
+const styling = (scheme) => {
+  const { colors } = useTheme();
+  return StyleSheet.create({
+    borderInput: {
+      borderColor: scheme === 'dark' ? colors['border'] : colors['gray-300'],
+      borderWidth: 1,
+      backgroundColor:
+        scheme === 'dark' ? colors['input-background'] : colors['white'],
+      paddingLeft: 11,
+      paddingRight: 11,
+      paddingTop: 12,
+      paddingBottom: 12,
+      borderRadius: 8,
+      color: 'red'
+    }
+  });
+};

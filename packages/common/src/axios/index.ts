@@ -1,6 +1,5 @@
 import { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 import settle from 'axios/lib/core/settle';
-import AxiosErrorFn from 'axios/lib/core/AxiosError';
 import buildURL from 'axios/lib/helpers/buildURL';
 import buildFullPath from 'axios/lib/core/buildFullPath';
 import { isUndefined } from 'axios/lib/utils';
@@ -10,15 +9,13 @@ import { isUndefined } from 'axios/lib/utils';
  * - Get response body
  * - Check if timeout
  */
-export const fetchAdapter = async (
-  config: AxiosRequestConfig
-): Promise<AxiosResponse> => {
+export const fetchAdapter = async (config: AxiosRequestConfig): Promise<AxiosResponse> => {
   const request = createRequest(config);
   const promiseChain = [getResponse(request, config)];
 
   if (config.timeout && config.timeout > 0) {
     promiseChain.push(
-      new Promise((res) => {
+      new Promise(res => {
         setTimeout(() => {
           const message = config.timeoutErrorMessage
             ? config.timeoutErrorMessage
@@ -43,10 +40,7 @@ export const fetchAdapter = async (
  * Fetch API stage two is to get response body. This funtion tries to retrieve
  * response body based on response's type
  */
-async function getResponse(
-  request: Request,
-  config: AxiosRequestConfig
-): Promise<AxiosResponse> {
+async function getResponse(request: Request, config: AxiosRequestConfig): Promise<AxiosResponse> {
   let stageOne: Response;
   try {
     stageOne = await fetch(request);
@@ -57,7 +51,7 @@ async function getResponse(
   const response: AxiosResponse = {
     status: stageOne.status,
     statusText: stageOne.statusText,
-    headers: new Headers(stageOne.headers), // Make a copy of headers
+    headers: Object.fromEntries(stageOne.headers.entries()), // Make a copy of headers
     config: config,
     request,
     data: null
@@ -87,15 +81,13 @@ async function getResponse(
  * This function will create a Request object based on configuration's axios
  */
 function createRequest(config: AxiosRequestConfig): Request {
-  const headers = new Headers(config.headers);
+  const headers = config.headers as Record<string, string>;
 
   // HTTP basic authentication
   if (config.auth) {
     const username = config.auth.username || '';
-    const password = config.auth.password
-      ? decodeURI(encodeURIComponent(config.auth.password))
-      : '';
-    headers.set('Authorization', `Basic ${btoa(username + ':' + password)}`);
+    const password = config.auth.password ? decodeURI(encodeURIComponent(config.auth.password)) : '';
+    headers['Authorization'] = `Basic ${btoa(username + ':' + password)}`;
   }
 
   const method = config.method.toUpperCase();
@@ -140,8 +132,18 @@ function createError(
   message: string,
   config: AxiosRequestConfig,
   code: string,
-  request: Request,
-  response?: any
+  request: Request
 ): AxiosResponse<AxiosError> {
-  return AxiosErrorFn(message, AxiosErrorFn[code], config, request, response);
+  const err = new AxiosError(message ?? 'Unknown error', code, config, request);
+
+  const response: AxiosResponse = {
+    status: Number(err.code),
+    statusText: err.status,
+    headers: Object.fromEntries(request.headers),
+    config,
+    request,
+    data: err
+  };
+
+  return response;
 }

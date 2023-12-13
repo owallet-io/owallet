@@ -5,27 +5,27 @@ import {
   ExtensionRouter,
   InExtensionMessageRequester
 } from '@owallet/router-extension';
-import { OWallet, InjectedOWallet, Ethereum, InjectedEthereum } from '@owallet/provider';
+import {
+  OWallet,
+  InjectedOWallet,
+  Ethereum,
+  InjectedEthereum,
+  InjectedTronWebOWallet,
+  TronWeb,
+  InjectedBitcoin,
+  Bitcoin
+} from '@owallet/provider';
 import { initEvents } from './events';
 
 import manifest from '../manifest.json';
 
-// keep service_worker alive at content_script injected
-function keepAlive() {
-  const port = chrome.runtime.connect({ name: 'keepAlive' });
-  port.onDisconnect.addListener(keepAlive);
-  port.onMessage.addListener((msg) => {
-    console.log('received', msg, 'from bg');
-  });
-}
-keepAlive();
+InjectedOWallet.startProxy(new OWallet(manifest.version, 'core', new InExtensionMessageRequester()));
 
-InjectedOWallet.startProxy(
-  new OWallet(manifest.version, 'core', new InExtensionMessageRequester())
-);
+InjectedEthereum.startProxy(new Ethereum(manifest.version, 'core', '0x38', new InExtensionMessageRequester()));
+InjectedBitcoin.startProxy(new Bitcoin(manifest.version, 'core', 'bitcoin', new InExtensionMessageRequester()));
 
-InjectedEthereum.startProxy(
-  new Ethereum(manifest.version, 'core', "0x38", new InExtensionMessageRequester())
+InjectedTronWebOWallet.startProxy(
+  new TronWeb(manifest.version, 'core', '0x2b6653dc', new InExtensionMessageRequester())
 );
 
 const router = new ExtensionRouter(ContentScriptEnv.produceEnv);

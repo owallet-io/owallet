@@ -1,13 +1,20 @@
 import React, { FunctionComponent } from 'react';
-import { ActivityIndicator, Image, StyleSheet, View } from 'react-native';
-import { colors, spacing, typography } from '../../themes';
-import { CText as Text } from '../../components/text';
+import { Image, StyleSheet, View } from 'react-native';
+import { colors, metrics, spacing } from '../../themes';
 import { useStore } from '../../stores';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useSmartNavigation } from '../../navigation.provider';
 import { useSimpleTimer } from '../../hooks';
+import OWText from '@src/components/text/ow-text';
+import OWButton from '@src/components/button/OWButton';
 
 const styles = StyleSheet.create({
+  img: {
+    width: '100%',
+    height: metrics.screenHeight * 0.45
+  },
+  container: {
+    paddingHorizontal: spacing['32']
+  },
   boardingRoot: {
     padding: spacing['32'],
     marginTop: spacing['15']
@@ -15,21 +22,6 @@ const styles = StyleSheet.create({
   boardingTitleContainer: {
     flexDirection: 'row',
     marginBottom: spacing['12']
-  },
-  boardingIcon: {},
-  boardingTitle: {
-    ...typography['h1'],
-    color: colors['purple-h1'],
-    fontWeight: '700',
-    fontSize: 28,
-    lineHeight: spacing['40']
-  },
-  boardingContent: {
-    ...typography['h6'],
-    color: colors['gray-150'],
-    fontWeight: '400',
-    fontSize: 14,
-    lineHeight: spacing['20']
   }
 });
 
@@ -37,80 +29,40 @@ const GatewayIntroScreen: FunctionComponent = () => {
   const { appInitStore } = useStore();
   const smartNavigation = useSmartNavigation();
   const { isTimedOut, setTimer } = useSimpleTimer();
+  const onGetStarted = async () => {
+    await appInitStore.updateInitApp();
+    setTimer(1000);
+    setTimeout(() => {
+      smartNavigation.navigateSmart('Register.Intro', {});
+    }, 1000);
+  };
   return (
-    <View
-      style={{
-        paddingHorizontal: spacing['32']
-      }}
-    >
+    <View style={styles.container}>
       <View style={styles.boardingTitleContainer}>
         <View>
-          <Text
-            style={{
-              ...styles.boardingTitle,
-              fontSize: 34
-            }}
-          >
+          <OWText variant="h1" typo="bold" color={colors['purple-h1']}>
             Gateway to
-          </Text>
-          <Text
-            style={{
-              ...styles.boardingTitle,
-              color: colors['black']
-            }}
-          >
+          </OWText>
+          <OWText variant="h2" typo="bold" color={colors['black']}>
             Oraichain Ecosystem
-          </Text>
+          </OWText>
         </View>
       </View>
-
-      <View>
-        <Text style={styles.boardingContent}>
-          OWallet brings the richness of Oraichain to your hand.
-        </Text>
-      </View>
-
-      <View>
-        <Image
-          source={require('../../assets/image/onboarding-gateway.png')}
-          fadeDuration={0}
-          resizeMode="contain"
-          style={{
-            width: '100%'
-          }}
-        />
-      </View>
-      <TouchableOpacity
-        style={{
-          backgroundColor: colors['purple-900'],
-          paddingHorizontal: spacing['8'],
-          paddingVertical: spacing['16'],
-          borderRadius: spacing['8'],
-          alignItems: 'center'
-        }}
+      <OWText variant="body2" typo="regular" color={colors['gray-150']}>
+        OWallet brings the richness of Oraichain to your hand.
+      </OWText>
+      <Image
+        source={require('../../assets/image/onboarding-gateway.png')}
+        fadeDuration={0}
+        resizeMode="contain"
+        style={styles.img}
+      />
+      <OWButton
+        label="Get started!"
+        onPress={onGetStarted}
         disabled={isTimedOut}
-        onPress={async () => {
-          await appInitStore.updateInitApp();
-          setTimer(1000);
-          setTimeout(() => {
-            smartNavigation.navigateSmart('Register.Intro', {});
-          }, 1000);
-        }}
-      >
-        {isTimedOut ? (
-          <ActivityIndicator />
-        ) : (
-          <Text
-            style={{
-              color: colors['white'],
-              fontWeight: '700',
-              fontSize: 16
-            }}
-          >
-            Get started!
-          </Text>
-        )}
-      </TouchableOpacity>
+        loading={isTimedOut}
+      />
     </View>
   );
 };

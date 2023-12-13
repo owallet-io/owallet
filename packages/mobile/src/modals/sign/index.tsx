@@ -1,18 +1,13 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { registerModal } from '../base';
 import { CardModal } from '../card';
-import { ScrollView, View } from 'react-native';
-import { CText as Text } from '../../components/text';
+import { View } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
+import { Text } from '@src/components/text';
 import { useStyle } from '../../styles';
 import { useStore } from '../../stores';
 import { AmountInput, MemoInput } from '../../components/input';
-import {
-  useFeeConfig,
-  useGasConfig,
-  useMemoConfig,
-  useSignDocAmountConfig,
-  useSignDocHelper
-} from '@owallet/hooks';
+import { useFeeConfig, useGasConfig, useMemoConfig, useSignDocAmountConfig, useSignDocHelper } from '@owallet/hooks';
 import { Button } from '../../components/button';
 import { Msg as AminoMsg } from '@cosmjs/launchpad';
 import { observer } from 'mobx-react-lite';
@@ -20,19 +15,20 @@ import { useUnmount } from '../../hooks';
 import { FeeInSign } from './fee';
 import { renderAminoMessage } from './amino';
 import { renderDirectMessage } from './direct';
-import { colors } from '../../themes';
 import crashlytics from '@react-native-firebase/crashlytics';
-
+import { colors } from '../../themes';
+import { BottomSheetProps } from '@gorhom/bottom-sheet';
 export const SignModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
+  bottomSheetModalConfig?: Omit<BottomSheetProps, 'snapPoints' | 'children'>;
 }> = registerModal(
-  observer(() => {
-    const { chainStore, accountStore, queriesStore, signInteractionStore } =
-      useStore();
+  observer(({}) => {
+    const { chainStore, accountStore, queriesStore, signInteractionStore, appInitStore } = useStore();
     useUnmount(() => {
       signInteractionStore.rejectAll();
     });
+    const scheme = appInitStore.getInitApp.theme;
 
     const style = useStyle();
 
@@ -42,12 +38,7 @@ export const SignModal: FunctionComponent<{
 
     // Make the gas config with 1 gas initially to prevent the temporary 0 gas error at the beginning.
     const gasConfig = useGasConfig(chainStore, chainId, 1);
-    const amountConfig = useSignDocAmountConfig(
-      chainStore,
-      chainId,
-      accountStore.getAccount(chainId).msgOpts,
-      signer
-    );
+    const amountConfig = useSignDocAmountConfig(chainStore, chainId, accountStore.getAccount(chainId).msgOpts, signer);
     const feeConfig = useFeeConfig(
       chainStore,
       chainId,
@@ -74,10 +65,7 @@ export const SignModal: FunctionComponent<{
         setChainId(data.data.signDocWrapper.chainId);
         gasConfig.setGas(data.data.signDocWrapper.gas);
         memoConfig.setMemo(data.data.signDocWrapper.memo);
-        if (
-          data.data.signOptions.preferNoSetFee &&
-          data.data.signDocWrapper.fees[0]
-        ) {
+        if (data.data.signOptions.preferNoSetFee && data.data.signDocWrapper.fees[0]) {
           feeConfig.setManualFee(data.data.signDocWrapper.fees[0]);
         } else {
           feeConfig.setFeeType('average');
@@ -88,17 +76,9 @@ export const SignModal: FunctionComponent<{
       if (signInteractionStore.waitingEthereumData) {
         const data = signInteractionStore.waitingEthereumData;
       }
-    }, [
-      feeConfig,
-      gasConfig,
-      memoConfig,
-      signDocHelper,
-      signInteractionStore.waitingData
-    ]);
+    }, [feeConfig, gasConfig, memoConfig, signDocHelper, signInteractionStore.waitingData]);
 
-    const mode = signDocHelper.signDocWrapper
-      ? signDocHelper.signDocWrapper.mode
-      : 'none';
+    const mode = signDocHelper.signDocWrapper ? signDocHelper.signDocWrapper.mode : 'none';
     const msgs = signDocHelper.signDocWrapper
       ? signDocHelper.signDocWrapper.mode === 'amino'
         ? signDocHelper.signDocWrapper.aminoSignDoc.msgs
@@ -115,9 +95,7 @@ export const SignModal: FunctionComponent<{
       try {
         if (signDocHelper.signDocWrapper) {
           //
-          await signInteractionStore.approveAndWaitEnd(
-            signDocHelper.signDocWrapper
-          );
+          await signInteractionStore.approveAndWaitEnd(signDocHelper.signDocWrapper);
         }
       } catch (error) {
         crashlytics().recordError(error);
@@ -142,65 +120,27 @@ export const SignModal: FunctionComponent<{
         return (msgs as readonly AminoMsg[]).map((msg, i) => {
           const account = accountStore.getAccount(chainId);
           const chainInfo = chainStore.getChain(chainId);
-          const { title, content, scrollViewHorizontal } = renderAminoMessage(
-            account.msgOpts,
-            msg,
-            chainInfo.currencies
-          );
+          const { content, scrollViewHorizontal } = renderAminoMessage(account.msgOpts, msg, chainInfo.currencies);
 
           return (
             <View key={i.toString()}>
-              {/* <Msg title={title}> */}
               {scrollViewHorizontal ? (
                 <ScrollView horizontal={true}>
-                  <Text
-                    style={style.flatten(['body3', 'color-text-black-low'])}
-                  >
-                    {content}
-                  </Text>
+                  <Text style={style.flatten(['body3'])}>{content}</Text>
                 </ScrollView>
               ) : (
                 <View>{content}</View>
               )}
-              {/* </Msg> */}
-              {/* {msgs.length - 1 !== i ? (
-                <View
-                  style={style.flatten([
-                    'height-1',
-                    'background-color-border-white',
-                    'margin-x-16'
-                  ])}
-                />
-              ) : null} */}
             </View>
           );
         });
       } else if (mode === 'direct') {
         return (msgs as any[]).map((msg, i) => {
+          
           const chainInfo = chainStore.getChain(chainId);
-          const { title, content } = renderDirectMessage(
-            msg,
-            chainInfo.currencies
-          );
+          const { title, content } = renderDirectMessage(msg, chainInfo.currencies);
 
-          return (
-            <View key={i.toString()}>
-              {content}
-              {/* <Msg title={title}> */}
-              {/* <Text style={style.flatten(['body3', 'color-text-black-low'])}> */}
-              {/* </Text> */}
-              {/* </Msg> */}
-              {/* {msgs.length - 1 !== i ? (
-                <View
-                  style={style.flatten([
-                    'height-1',
-                    'background-color-border-white',
-                    'margin-x-16'
-                  ])}
-                />
-              ) : null} */}
-            </View>
-          );
+          return <View key={i.toString()}>{content}</View>;
         });
       } else {
         return null;
@@ -210,16 +150,7 @@ export const SignModal: FunctionComponent<{
     return (
       <CardModal title="Confirm Transaction">
         <View style={style.flatten(['margin-bottom-16'])}>
-          {/* <Text style={style.flatten(['margin-bottom-3'])}>
-            <Text style={style.flatten(['subtitle3', 'color-primary'])}>
-              {`${msgs.length.toString()} `}
-            </Text>
-            <Text
-              style={style.flatten(['subtitle3', 'color-text-black-medium'])}
-            >
-              Messages
-            </Text>
-          </Text> */}
+       
           <View
             style={style.flatten([
               'border-radius-8',
@@ -227,12 +158,9 @@ export const SignModal: FunctionComponent<{
               // 'overflow-hidden'
             ])}
           >
-            <View
-            // style={style.flatten(['max-height-214'])}
-            // persistentScrollbar={true}
-            >
+            <ScrollView style={style.flatten(['max-height-214'])} persistentScrollbar={true}>
               {renderedMsgs}
-            </View>
+            </ScrollView>
           </View>
         </View>
         {/* <MemoInput label="To" memoConfig={memoConfig} /> */}
@@ -242,26 +170,7 @@ export const SignModal: FunctionComponent<{
           signOptions={signInteractionStore.waitingData?.data.signOptions}
           isInternal={isInternal}
         />
-        {/* <Button
-          text="Approve"
-          size="large"
-          disabled={
-            signDocWapper == null ||
-            signDocHelper.signDocWrapper == null ||
-            memoConfig.getError() != null ||
-            feeConfig.getError() != null
-          }
-          loading={signInteractionStore.isLoading}
-          onPress={async () => {
-            try {
-              if (signDocHelper.signDocWrapper) {
-                await signInteractionStore.approveAndWaitEnd(
-                  signDocHelper.signDocWrapper
-                );
-              }
-            } catch (error) {
-              console.log(error);
-            } */}
+
         <View
           style={{
             flexDirection: 'row',
@@ -290,12 +199,10 @@ export const SignModal: FunctionComponent<{
               width: '40%'
             }}
             style={{
-              backgroundColor: isDisable
-                ? colors['gray-400']
-                : colors['purple-900']
+              backgroundColor: isDisable ? colors['gray-400'] : colors['purple-700']
             }}
             textStyle={{
-              color: !isDisable ? colors['gray-400'] : colors['white']
+              color: isDisable ? colors['gray-10'] : colors['white']
             }}
             underlayColor={colors['purple-400']}
             size="large"
@@ -308,7 +215,6 @@ export const SignModal: FunctionComponent<{
     );
   }),
   {
-    disableSafeArea: true,
-    blurBackdropOnIOS: true
+    disableSafeArea: true
   }
 );
