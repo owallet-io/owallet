@@ -141,18 +141,14 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
     return coinPrices[vsCurrency];
   }
 
-  calculatePrice(
-    coin: CoinPretty,
-    vsCurrrency?: string
-  ): PricePretty | undefined {
-    if (!coin.currency.coinGeckoId) {
+  calculatePrice(coin: CoinPretty, vsCurrrency?: string): PricePretty | undefined {
+    if (!coin?.currency?.coinGeckoId) {
       return undefined;
     }
     if (!vsCurrrency) {
       vsCurrrency = this.defaultVsCurrency;
     }
-    const fiatCurrency =
-      this.supportedVsCurrencies[vsCurrrency.toLocaleLowerCase()];
+    const fiatCurrency = this.supportedVsCurrencies[vsCurrrency.toLocaleLowerCase()];
     if (!fiatCurrency) {
       return undefined;
     }

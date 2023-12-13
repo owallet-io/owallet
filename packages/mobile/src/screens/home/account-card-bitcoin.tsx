@@ -21,10 +21,10 @@ export const AccountCardBitcoin: FunctionComponent<{
   const selected = keyRingStore?.multiKeyStoreInfo.find((keyStore) => keyStore?.selected);
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
-  const [exchangeRate, setExchangeRate] = useState<number>(0);
+
   const address = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
   const balanceBtc = queries.bitcoin.queryBitcoinBalance.getQueryBalance(address)?.balance;
-
+  const priceBalance = balanceBtc && priceStore.calculatePrice(balanceBtc);
   const totalAmount = useMemo(() => {
     const amount = formatBalance({
       balance: Number(balanceBtc?.toCoin().amount),
@@ -33,41 +33,6 @@ export const AccountCardBitcoin: FunctionComponent<{
     });
     return amount;
   }, [chainStore.current.chainId, address, chainStore.current.networkType, balanceBtc]);
-  useEffect(() => {
-    const getExchange = async () => {
-      const exchange = (await getExchangeRate({
-        selectedCurrency: priceStore.defaultVsCurrency
-      })) as { data: number };
-      if (Number(exchange?.data)) {
-        setExchangeRate(Number(exchange?.data));
-      }
-    };
-    getExchange();
-    return () => {};
-  }, [priceStore.defaultVsCurrency]);
-
-  const handleBalanceBtc = (balanceBtc: CoinPretty, exchangeRate: number) => {
-    const balanceValueParams = {
-      balance: Number(balanceBtc?.toCoin().amount),
-      cryptoUnit: 'BTC'
-    };
-
-    const amountData = getBalanceValue(balanceValueParams);
-
-    const currencyFiat = priceStore.defaultVsCurrency;
-    const fiat = btcToFiat({
-      amount: amountData as number,
-      exchangeRate: exchangeRate,
-      currencyFiat
-    });
-    return `$${fiat}`;
-  };
-  const totalBalance = useMemo(() => {
-    if (!!exchangeRate && exchangeRate > 0) {
-      return handleBalanceBtc(balanceBtc, exchangeRate);
-    }
-    return '';
-  }, [chainStore.current.stakeCurrency.coinDecimals, chainStore.current.chainId, address, exchangeRate, balanceBtc]);
 
   const onPressBtnMain = (name) => {
     if (name === 'Buy') {
@@ -104,7 +69,7 @@ export const AccountCardBitcoin: FunctionComponent<{
           ? chainStore?.current?.bip44?.coinType
           : selected?.bip44HDPath?.coinType ?? chainStore?.current?.bip44?.coinType
       }`}
-      totalAmount={totalBalance}
+      totalAmount={priceBalance?.toString() || '$0'}
       // networkType={'cosmos'}
       onPressBtnMain={onPressBtnMain}
     />

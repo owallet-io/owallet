@@ -27,7 +27,7 @@ export const TokensBitcoinCard: FunctionComponent<{
   const { chainStore, queriesStore, accountStore, priceStore, keyRingStore } = useStore();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const { colors } = useTheme();
-  const [exchangeRate, setExchangeRate] = useState<number>(0);
+
   const styles = styling(colors);
   const smartNavigation = useSmartNavigation();
   const [index, setIndex] = useState<number>(0);
@@ -50,18 +50,6 @@ export const TokensBitcoinCard: FunctionComponent<{
   const onActiveType = (i) => {
     setIndex(i);
   };
-  useEffect(() => {
-    const getExchange = async () => {
-      const exchange = (await getExchangeRate({
-        selectedCurrency: priceStore.defaultVsCurrency
-      })) as { data: number };
-      if (Number(exchange?.data)) {
-        setExchangeRate(Number(exchange?.data));
-      }
-    };
-    getExchange();
-    return () => {};
-  }, [priceStore.defaultVsCurrency]);
 
   const _renderFlatlistOrchai = ({ item, index }: { item: SoulboundNftInfoResponse; index: number }) => {
     return (
@@ -129,22 +117,7 @@ export const TokensBitcoinCard: FunctionComponent<{
           <CardBody>
             {tokens?.length > 0 ? (
               tokens.slice(0, 3).map((token, index) => {
-                const balanceValueParams = {
-                  balance: Number(token?.balance?.toCoin().amount),
-                  cryptoUnit: 'BTC'
-                };
-
-                const amountData = getBalanceValue(balanceValueParams);
-                const currencyFiat = priceStore.defaultVsCurrency;
-                const fiat =
-                  exchangeRate > 0
-                    ? btcToFiat({
-                        amount: amountData as number,
-                        exchangeRate: exchangeRate,
-                        currencyFiat
-                      })
-                    : '0';
-                // const priceBalance = priceStore.calculatePrice(token.balance);
+                const priceBalance = priceStore.calculatePrice(token?.balance);
                 return (
                   <TokenItemBitcoin
                     key={index?.toString()}
@@ -153,8 +126,8 @@ export const TokensBitcoinCard: FunctionComponent<{
                       networkType: chainStore.current.networkType,
                       chainId: chainStore.current.chainId
                     }}
-                    balance={token.balance}
-                    priceBalance={`$${fiat}`}
+                    balance={token?.balance}
+                    priceBalance={priceBalance}
                   />
                 );
               })
@@ -173,15 +146,6 @@ export const TokensBitcoinCard: FunctionComponent<{
                 paddingBottom: 10
               }}
             >
-              {/* <View
-                style={{
-                  marginTop: spacing['12'],
-                  flexDirection: 'row'
-                }}
-              >
-                <Text style={styles.sectionHeader}>{'NFTs'}</Text>
-              </View> */}
-
               <OWFlatList
                 horizontal
                 contentContainerStyle={

@@ -57,6 +57,7 @@ export const TokensScreen: FunctionComponent = observer(() => {
           showsVerticalScrollIndicator={false}
           renderItem={({ item }) => {
             const priceBalance = priceStore.calculatePrice(item.balance);
+
             return (
               <TokenItem
                 key={item.currency.coinMinimalDenom}
