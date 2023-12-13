@@ -425,9 +425,9 @@ export class TxsHelper {
       coin: currentChain.chainId
     });
     item.denomFee = '';
-    item.time = this.formatTimeBitcoin(data?.status?.block_time * 1000);
+    item.time = data?.status?.confirmed ? this.formatTimeBitcoin(data?.status?.block_time * 1000) : null;
     item.txHash = data?.txid;
-    item.height = this.formatNumberSeparateThousand(data?.status?.block_height);
+    item.height = data?.status?.confirmed ? this.formatNumberSeparateThousand(data?.status?.block_height) : '--';
     item.status = data?.status?.confirmed ? 'success' : 'pending';
     item.memo = null;
     item.confirmations = 0;
