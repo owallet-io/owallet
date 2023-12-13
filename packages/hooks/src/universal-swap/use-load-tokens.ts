@@ -62,7 +62,6 @@ async function loadTokens(
   if (oraiAddress) {
     clearTimeout(timer[oraiAddress]);
     // case get address when keplr ledger not support kawaii
-
     timer[oraiAddress] = setTimeout(async () => {
       await Promise.all([
         loadTokensCosmos(universalSwapStore, kwtAddress, oraiAddress),
@@ -70,14 +69,14 @@ async function loadTokens(
         // different cointype but also require keplr connected by checking oraiAddress
         loadKawaiiSubnetAmount(universalSwapStore, kwtAddress)
       ]);
-    }, 2000);
+    }, 1000);
   }
 
   if (metamaskAddress) {
     clearTimeout(timer[metamaskAddress]);
     timer[metamaskAddress] = setTimeout(() => {
       loadEvmAmounts(universalSwapStore, metamaskAddress, evmChains);
-    }, 2000);
+    }, 1000);
   }
 
   if (tronAddress) {
@@ -88,7 +87,7 @@ async function loadTokens(
         tronToEthAddress(tronAddress),
         chainInfos.filter(c => c.chainId == '0x2b6653dc')
       );
-    }, 4000);
+    }, 2000);
   }
 }
 

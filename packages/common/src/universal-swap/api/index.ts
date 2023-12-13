@@ -1,10 +1,8 @@
 import { MulticallQueryClient } from '@oraichain/common-contracts-sdk';
 import { fromBinary, toBinary } from '@cosmjs/cosmwasm-stargate';
 import { TokenItemType, TokenInfo, toTokenInfo, network } from '@oraichain/oraidex-common';
-import { AssetInfo, OraiswapTokenQueryClient, OraiswapTokenTypes } from '@oraichain/oraidex-contracts-sdk';
-import { ORAI_INFO, swapEvmRoutes } from '../config/constants';
-import isEqual from 'lodash/isEqual';
-import { Coin } from '@cosmjs/stargate';
+import { OraiswapTokenQueryClient, OraiswapTokenTypes } from '@oraichain/oraidex-contracts-sdk';
+import { swapEvmRoutes } from '../config/constants';
 
 async function fetchTokenInfo(token: TokenItemType, client): Promise<TokenInfo> {
   let data: OraiswapTokenTypes.TokenInfoResponse;
@@ -88,16 +86,6 @@ function parseTokenInfo(tokenInfo: TokenItemType, amount?: string | number) {
   }
   return { info: { token: { contract_addr: tokenInfo?.contractAddress } } };
 }
-
-const handleSentFunds = (...funds: (Coin | undefined)[]): Coin[] | null => {
-  let sent_funds = [];
-  for (let fund of funds) {
-    if (fund) sent_funds.push(fund);
-  }
-  if (sent_funds.length === 0) return null;
-  sent_funds.sort((a, b) => a.denom.localeCompare(b.denom));
-  return sent_funds;
-};
 
 export enum Type {
   'TRANSFER' = 'Transfer',
