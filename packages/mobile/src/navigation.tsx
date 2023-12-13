@@ -16,6 +16,7 @@ import { SmartNavigatorProvider } from './navigation.provider';
 import { SCREENS } from './common/constants';
 import { AddressBookStackScreen, MainTabNavigation, OtherNavigation, RegisterNavigation } from './navigations';
 import { useTheme } from './themes/theme-provider';
+import { PincodeScreen } from './screens/unlock/pincode';
 
 const Stack = createStackNavigator();
 export const AppNavigation: FunctionComponent = observer(() => {
@@ -61,7 +62,8 @@ export const AppNavigation: FunctionComponent = observer(() => {
           >
             <Stack.Navigator
               initialRouteName={
-                keyRingStore.status !== KeyRingStatus.UNLOCKED ? SCREENS.STACK.Unlock : SCREENS.STACK.MainTab
+                SCREENS.STACK.Pincode
+                // keyRingStore.status !== KeyRingStatus.UNLOCKED ? SCREENS.STACK.Unlock : SCREENS.STACK.MainTab
               }
               screenOptions={{
                 headerShown: false,
@@ -69,6 +71,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
               }}
               // headerMode="screen"
             >
+              <Stack.Screen name={SCREENS.STACK.Pincode} component={PincodeScreen} />
               <Stack.Screen name={SCREENS.STACK.Unlock} component={UnlockScreen} />
               <Stack.Screen name={SCREENS.STACK.MainTab} component={MainTabNavigation} />
               <Stack.Screen name={SCREENS.STACK.Register} component={RegisterNavigation} />

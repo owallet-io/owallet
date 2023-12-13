@@ -144,6 +144,7 @@ export const PincodeScreen: FunctionComponent = observer(() => {
 
     if (code != '1234') {
       if (pinRef?.current) {
+        //@ts-ignore
         pinRef.current.shake().then(() => setCode(''));
       }
     }
@@ -151,6 +152,7 @@ export const PincodeScreen: FunctionComponent = observer(() => {
 
   useEffect(() => {
     if (pinRef?.current) {
+      //@ts-ignore
       pinRef.current.focus();
     }
   }, []);
@@ -179,6 +181,36 @@ export const PincodeScreen: FunctionComponent = observer(() => {
           <SmoothPinCodeInput
             ref={pinRef}
             value={code}
+            cellStyle={{
+              borderBottomWidth: 2,
+              borderColor: colors['text-primary']
+            }}
+            cellStyleFocused={{
+              borderColor: colors['sub-text']
+            }}
+            placeholder={
+              <View
+                style={{
+                  width: 10,
+                  height: 10,
+                  borderRadius: 25,
+                  opacity: 0.3,
+                  backgroundColor: 'blue'
+                }}
+              ></View>
+            }
+            mask={
+              <View
+                style={{
+                  width: 10,
+                  height: 10,
+                  borderRadius: 25,
+                  backgroundColor: 'blue'
+                }}
+              ></View>
+            }
+            maskDelay={1000}
+            password={true}
             onFulfill={_checkCode}
             onBackspace={code => console.log(code)}
           />
@@ -193,6 +225,8 @@ export const PincodeScreen: FunctionComponent = observer(() => {
             // style={{ backgroundColor: 'black', paddingVertical: 12 }}
             // buttonAreaStyle={{ backgroundColor: 'gray' }}
             // buttonItemStyle={{ backgroundColor: 'red' }}
+            buttonTextStyle={{ fontSize: 22, color: colors['sub-text'] }}
+            //@ts-ignore
             rightBottomButton={<OWIcon name="contact-outline" />}
             onRightBottomButtonPress={() => {
               numpadRef.current.clear();
