@@ -9,11 +9,10 @@ import { TypeTheme, useTheme } from '@src/themes/theme-provider';
 import { metrics } from '@src/themes';
 import { TokenItemType, tokenMap, toDisplay, AmountDetails } from '@oraichain/oraidex-common';
 import { useStore } from '@src/stores';
-import { ChainIdEnum, getTotalUsd } from '@owallet/common';
+import { ChainIdEnum } from '@owallet/common';
 import { CoinGeckoPrices } from '@owallet/hooks';
 import { tokenImg } from '../helpers';
 import { find } from 'lodash';
-import images from '@src/assets/images';
 
 export const SelectTokenModal: FunctionComponent<{
   onNetworkModal?: () => void;
@@ -70,7 +69,7 @@ export const SelectTokenModal: FunctionComponent<{
 
         const tokenIcon = find(tokenImg, tk => tk.coinGeckoId === item.coinGeckoId);
 
-        const totalUsd = getTotalUsd(subAmounts, prices, item);
+        // const totalUsd = getTotalUsd(subAmounts, prices);
         return (
           <TouchableOpacity
             onPress={() => {
@@ -106,9 +105,9 @@ export const SelectTokenModal: FunctionComponent<{
               <Text color={colors['text-title']}>
                 {toDisplay(universalSwapStore?.getAmount?.[item.denom], item.decimals)}
               </Text>
-              <Text weight="500" color={colors['blue-400']}>
+              {/* <Text weight="500" color={colors['blue-400']}>
                 ${totalUsd.toFixed(2) ?? 0}
-              </Text>
+              </Text> */}
             </View>
           </TouchableOpacity>
         );

@@ -21,12 +21,13 @@ import {
   network,
   Networks,
   TRON_DENOM,
-  BigDecimal
+  BigDecimal,
+  toSubAmount
 } from '@oraichain/oraidex-common';
 import { openLink } from '../../utils/helper';
 import { SwapDirection, feeEstimate, getTransferTokenFee } from '@owallet/common';
 import { handleSimulateSwap, filterNonPoolEvmTokens } from '@oraichain/oraidex-universal-swap';
-import { fetchTokenInfos, toSubAmount, ChainIdEnum } from '@owallet/common';
+import { fetchTokenInfos, ChainIdEnum } from '@owallet/common';
 import { calculateMinReceive, getTokenOnOraichain } from '@oraichain/oraidex-common';
 import {
   isEvmNetworkNativeSwapSupported,

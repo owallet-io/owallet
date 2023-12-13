@@ -4463,6 +4463,14 @@
     ts-results "^3.3.0"
     tslib "^2.6.1"
 
+"@oraichain/ethereum-multicall@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@oraichain/ethereum-multicall/-/ethereum-multicall-1.0.2.tgz#49907c7ac66db40e2d0eef08704525e33cbb6b9f"
+  integrity sha512-c33ueU/CjCII8YVdNnGclmaEGAXl9kOZtqBD/gAVjYwjj5Q2bZ0IMXdHlFiCa7Ks19drSfvCbKfq5ZPXYG/n7w==
+  dependencies:
+    "@ethersproject/providers" "^5.0.10"
+    ethers "^5.0.15"
+
 "@oraichain/immutable@^4.3.9":
   version "4.3.9"
   resolved "https://registry.yarnpkg.com/@oraichain/immutable/-/immutable-4.3.9.tgz#ff8d5a7b39b5b01f3f72a902cffbfea32ccb20c3"
