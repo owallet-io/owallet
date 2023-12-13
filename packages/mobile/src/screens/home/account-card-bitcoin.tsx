@@ -24,7 +24,7 @@ export const AccountCardBitcoin: FunctionComponent<{
 
   const address = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
   const balanceBtc = queries.bitcoin.queryBitcoinBalance.getQueryBalance(address)?.balance;
-  const priceBalance = balanceBtc && priceStore.calculatePrice(balanceBtc);
+  const priceBalance = priceStore.calculatePrice(balanceBtc);
   const totalAmount = useMemo(() => {
     const amount = formatBalance({
       balance: Number(balanceBtc?.toCoin().amount),
