@@ -12,7 +12,6 @@ import { BalanceText } from './components/BalanceText';
 import { SelectNetworkModal, SelectTokenModal, SlippageModal } from './modals/';
 import { showToast } from '@src/utils/helper';
 import { DEFAULT_SLIPPAGE, GAS_ESTIMATION_SWAP_DEFAULT, ORAI, toDisplay, getBase58Address } from '@owallet/common';
-import { evmTokens, filterNonPoolEvmTokens } from '@owallet/common';
 import {
   TokenItemType,
   NetworkChainId,
@@ -21,11 +20,14 @@ import {
   toAmount,
   network,
   Networks,
-  TRON_DENOM
+  TRON_DENOM,
+  BigDecimal,
+  toSubAmount
 } from '@oraichain/oraidex-common';
-import { SwapDirection, feeEstimate, getTokenOnSpecificChainId, getTransferTokenFee } from '@owallet/common';
-import { handleSimulateSwap } from '@oraichain/oraidex-universal-swap';
-import { fetchTokenInfos, toSubAmount, ChainIdEnum } from '@owallet/common';
+import { openLink } from '../../utils/helper';
+import { SwapDirection, feeEstimate, getTransferTokenFee } from '@owallet/common';
+import { handleSimulateSwap, filterNonPoolEvmTokens } from '@oraichain/oraidex-universal-swap';
+import { fetchTokenInfos, ChainIdEnum } from '@owallet/common';
 import { calculateMinReceive, getTokenOnOraichain } from '@oraichain/oraidex-common';
 import {
   isEvmNetworkNativeSwapSupported,
@@ -39,12 +41,15 @@ import { styling } from './styles';
 import { BalanceType, MAX, balances } from './types';
 import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import { useLoadTokens, useCoinGeckoPrices, useClient, useRelayerFee, useTaxRate } from '@owallet/hooks';
+import { getTransactionUrl, handleErrorSwap } from './helpers';
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
 
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
-  const { accountStore, universalSwapStore } = useStore();
+  const { accountStore, universalSwapStore, chainStore } = useStore();
   const { colors } = useTheme();
   const { data: prices } = useCoinGeckoPrices();
+
+  const chainInfo = chainStore.getChain(ChainIdEnum.Oraichain);
 
   const accountEvm = accountStore.getAccount(ChainIdEnum.Ethereum);
   const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
@@ -216,10 +221,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       loadTokenAmounts(loadTokenParams);
     } catch (error) {
       console.log('error loadTokenAmounts', error);
-      showToast({
-        message: error?.message ?? error?.ex?.message,
-        type: 'danger'
-      });
+      handleErrorSwap(error?.message ?? error?.ex?.message);
     }
   };
 
@@ -261,16 +263,31 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     // TODO: need to automatically update from / to token to the correct swappable one when clicking the swap button
   }, [fromToken, toToken, toTokenDenom, fromTokenDenom]);
 
+  // TODO: use this constant so we can temporary simulate for all pair (specifically AIRI/USDC, ORAIX/USDC), update later after migrate contract
+  const isFromAiriToUsdc = originalFromToken.coinGeckoId === 'airight' && originalToToken.coinGeckoId === 'usd-coin';
+  const isFromOraixToUsdc = originalFromToken.coinGeckoId === 'oraidex' && originalToToken.coinGeckoId === 'usd-coin';
+  const isFromUsdc = originalFromToken.coinGeckoId === 'usd-coin';
+
+  const INIT_SIMULATE_AIRI_TO_USDC = 1000;
+  const INIT_SIMULATE_FROM_USDC = 10;
+  const INIT_AMOUNT =
+    isFromAiriToUsdc || isFromOraixToUsdc ? INIT_SIMULATE_AIRI_TO_USDC : isFromUsdc ? INIT_SIMULATE_FROM_USDC : 1;
+
   const getSimulateSwap = async (initAmount?) => {
     if (client) {
       const routerClient = new OraiswapRouterQueryClient(client, network.router);
+      let simulateAmount = INIT_AMOUNT;
+      if (fromAmountToken > 0) {
+        simulateAmount = fromAmountToken;
+      }
 
       const data = await handleSimulateSwap({
         originalFromInfo: originalFromToken,
         originalToInfo: originalToToken,
-        originalAmount: initAmount ?? fromAmountToken,
+        originalAmount: initAmount ?? simulateAmount,
         routerClient
       });
+
       setAmountLoading(false);
 
       return data;
@@ -278,7 +295,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   };
 
   const estimateAverageRatio = async () => {
-    const data = await getSimulateSwap(1);
+    const data = await getSimulateSwap(INIT_AMOUNT);
     setRatio(data);
   };
 
@@ -286,18 +303,23 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setAmountLoading(true);
     try {
       const data = await getSimulateSwap();
-      const minimumReceive = ratio?.amount
-        ? calculateMinReceive(
-            ratio.amount,
-            toAmount(fromAmountToken, fromTokenInfoData!.decimals).toString(),
-            userSlippage,
-            toTokenInfoData?.decimals
-          )
-        : '0';
+      const minimumReceive = Number(data.displayAmount - (data.displayAmount * userSlippage) / 100);
 
-      setMininumReceive(toDisplay(minimumReceive, toTokenInfoData?.decimals));
+      const fromAmountTokenBalance = fromTokenInfoData && toAmount(fromAmountToken, fromTokenInfoData!.decimals);
+      const warningMinimumReceive =
+        ratio && ratio.amount
+          ? calculateMinReceive(
+              // @ts-ignore
+              Math.trunc(new BigDecimal(ratio.amount) / INIT_AMOUNT).toString(),
+              fromAmountTokenBalance.toString(),
+              userSlippage,
+              originalFromToken.decimals
+            )
+          : '0';
+
+      setMininumReceive(Number(minimumReceive.toFixed(6)));
       if (data) {
-        const isWarningSlippage = +minimumReceive > +data.amount;
+        const isWarningSlippage = +warningMinimumReceive > +data.amount;
         setIsWarningSlippage(isWarningSlippage);
         setSwapAmount([fromAmountBalance, Number(data.amount)]);
       }
@@ -306,34 +328,19 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       console.log('error', error);
 
       setAmountLoading(false);
-      showToast({
-        message: error?.message ?? error?.ex?.message ?? 'Something went wrong',
-        type: 'danger'
-      });
+      handleErrorSwap(error?.message ?? error?.ex?.message);
     }
   };
 
   useEffect(() => {
-    estimateSwapAmount(fromAmountToken);
+    if (fromAmountToken > 0) {
+      estimateSwapAmount(fromAmountToken);
+    }
   }, [originalFromToken, toTokenInfoData, fromTokenInfoData, originalToToken, fromAmountToken]);
 
   useEffect(() => {
     estimateAverageRatio();
   }, [originalFromToken, toTokenInfoData, fromTokenInfoData, originalToToken, client]);
-
-  useEffect(() => {
-    // special case for tokens having no pools on Oraichain. When original from token is not swappable, then we switch to an alternative token on the same chain as to token
-    if (isSupportedNoPoolSwapEvm(toToken.coinGeckoId) && !isSupportedNoPoolSwapEvm(fromToken.coinGeckoId)) {
-      const fromTokenSameToChainId = getTokenOnSpecificChainId(fromToken.coinGeckoId, toToken.chainId);
-      if (!fromTokenSameToChainId) {
-        const sameChainIdTokens = evmTokens.find(t => t.chainId === toToken.chainId);
-        if (!sameChainIdTokens) throw Error('Impossible case! An EVM chain should at least have one token');
-        setSwapTokens([sameChainIdTokens.denom, toToken.denom]);
-        return;
-      }
-      setSwapTokens([fromTokenSameToChainId.denom, toToken.denom]);
-    }
-  }, [fromToken]);
 
   const handleBalanceActive = (item: BalanceType) => {
     setBalanceActive(item);
@@ -391,20 +398,23 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       const result = await universalSwapHandler.processUniversalSwap();
 
       if (result) {
+        const { transactionHash } = result;
         setSwapLoading(false);
         showToast({
-          message: 'Success',
-          type: 'success'
+          message: 'Successful transaction. View on scan',
+          type: 'success',
+          onPress: async () => {
+            if (chainInfo.raw.txExplorer && transactionHash) {
+              await openLink(getTransactionUrl(originalFromToken.chainId, transactionHash));
+            }
+          }
         });
         await handleFetchAmounts();
       }
     } catch (error) {
       setSwapLoading(false);
       console.log('error', error);
-      showToast({
-        message: error?.message ?? error?.ex?.message ?? 'Something went wrong',
-        type: 'danger'
-      });
+      handleErrorSwap(error?.message ?? error?.ex?.message);
     } finally {
       setSwapLoading(false);
     }
@@ -536,7 +546,13 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               tokenFee={fromTokenFee}
             />
             <SwapBox
-              amount={toDisplay(toAmountToken.toString(), originalToToken?.decimals).toString() ?? '0'}
+              amount={
+                toDisplay(
+                  toAmountToken?.toString(),
+                  fromTokenInfoData?.decimals,
+                  toTokenInfoData?.decimals
+                ).toString() ?? '0'
+              }
               balanceValue={toDisplay(toTokenBalance, originalToToken?.decimals)}
               tokenActive={originalToToken}
               onOpenTokenModal={() => setIsSelectToTokenModal(true)}

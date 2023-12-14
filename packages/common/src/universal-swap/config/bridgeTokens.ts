@@ -3,9 +3,7 @@ import uniqBy from 'lodash/uniqBy';
 import {
   CustomChainInfo,
   CoinGeckoId,
-  CoinIcon,
   chainInfos,
-  EvmChainId,
   NetworkChainId,
   NetworkName,
   oraichainNetwork
@@ -99,8 +97,6 @@ export const cw20Tokens = uniqBy(
   c => c.denom
 );
 
-export const cw20TokenMap = Object.fromEntries(cw20Tokens.map(c => [c.contractAddress, c]));
-
 export const evmTokens = uniqBy(
   flattenTokens.filter(
     token =>
@@ -108,33 +104,4 @@ export const evmTokens = uniqBy(
       token.denom && !token.cosmosBased && token.coinGeckoId && token.chainId !== 'kawaii_6886-1'
   ),
   c => c.denom
-);
-
-export const kawaiiTokens = uniqBy(
-  cosmosTokens.filter(token => token.chainId === 'kawaii_6886-1'),
-  c => c.denom
-);
-
-export const gravityContracts: Omit<Record<EvmChainId, string>, '0x1ae6'> = {
-  '0x38': process.env.REACT_APP_GRAVITY_BSC_CONTRACT,
-  '0x01': process.env.REACT_APP_GRAVITY_ETH_CONTRACT,
-  '0x2b6653dc': process.env.REACT_APP_GRAVITY_TRON_CONTRACT
-};
-
-// universal swap. Currently we dont support from tokens that are not using the ibc wasm channel
-export const swapFromTokens = flattenTokens.filter(
-  token =>
-    token.coinGeckoId !== 'kawaii-islands' &&
-    token.coinGeckoId !== 'milky-token' &&
-    token.chainId !== 'oraibridge-subnet-2' &&
-    token.chainId !== 'cosmoshub-4' &&
-    token.chainId !== 'osmosis-1' &&
-    token.chainId !== 'kawaii_6886-1'
-);
-// universal swap. We dont support kwt & milky for simplicity. We also skip OraiBridge tokens because users dont care about them
-export const swapToTokens = flattenTokens.filter(
-  token =>
-    token.coinGeckoId !== 'kawaii-islands' &&
-    token.coinGeckoId !== 'milky-token' &&
-    token.chainId !== 'oraibridge-subnet-2'
 );

@@ -9,11 +9,10 @@ import { TypeTheme, useTheme } from '@src/themes/theme-provider';
 import { metrics } from '@src/themes';
 import { TokenItemType, tokenMap, toDisplay, AmountDetails } from '@oraichain/oraidex-common';
 import { useStore } from '@src/stores';
-import { getTotalUsd } from '@owallet/common';
-import { CoinGeckoPrices } from '@src/hooks/use-coingecko';
+import { ChainIdEnum } from '@owallet/common';
+import { CoinGeckoPrices } from '@owallet/hooks';
 import { tokenImg } from '../helpers';
 import { find } from 'lodash';
-import images from '@src/assets/images';
 
 export const SelectTokenModal: FunctionComponent<{
   onNetworkModal?: () => void;
@@ -32,33 +31,25 @@ export const SelectTokenModal: FunctionComponent<{
   const [keyword, setKeyword] = useState('');
 
   useEffect(() => {
-    if (keyword === '' || keyword === null || keyword === undefined || !keyword) {
+    if (keyword === '' || !keyword) {
       setTokens(data);
     } else {
-      const tmpData = data.filter(
-        d =>
-          d.chainId.toString().includes(keyword) ||
-          d.denom.toString().includes(keyword) ||
-          d.name.toString().includes(keyword) ||
-          d.org.toString().includes(keyword) ||
-          d.coinGeckoId.toString().includes(keyword)
-      );
+      const tmpData = data.filter(d => {
+        return (d.chainId + d.denom + d.name + d.org + d.coinGeckoId)
+          .toString()
+          .toLowerCase()
+          .includes(keyword.toLowerCase());
+      });
 
       setTokens(tmpData);
     }
   }, [data, keyword]);
 
   useEffect(() => {
-    if (
-      selectedChainFilter === '' ||
-      selectedChainFilter === null ||
-      selectedChainFilter === undefined ||
-      !selectedChainFilter
-    ) {
+    if (selectedChainFilter === '' || !selectedChainFilter) {
       setTokens(data);
     } else {
-      const tmpData = data.filter(d => d.chainId.toString().includes(selectedChainFilter));
-
+      const tmpData = data.filter(d => d.chainId.toString().toLowerCase().includes(selectedChainFilter.toLowerCase()));
       setTokens(tmpData);
     }
   }, [data, selectedChainFilter]);
@@ -78,7 +69,7 @@ export const SelectTokenModal: FunctionComponent<{
 
         const tokenIcon = find(tokenImg, tk => tk.coinGeckoId === item.coinGeckoId);
 
-        const totalUsd = getTotalUsd(subAmounts, prices, item);
+        // const totalUsd = getTotalUsd(subAmounts, prices);
         return (
           <TouchableOpacity
             onPress={() => {
@@ -114,9 +105,9 @@ export const SelectTokenModal: FunctionComponent<{
               <Text color={colors['text-title']}>
                 {toDisplay(universalSwapStore?.getAmount?.[item.denom], item.decimals)}
               </Text>
-              <Text weight="500" color={colors['blue-400']}>
+              {/* <Text weight="500" color={colors['blue-400']}>
                 ${totalUsd.toFixed(2) ?? 0}
-              </Text>
+              </Text> */}
             </View>
           </TouchableOpacity>
         );
@@ -150,9 +141,9 @@ export const SelectTokenModal: FunctionComponent<{
           }}
           style={styles.btnNetwork}
         >
-          <OWIcon type="images" source={images.push} size={16} />
+          <OWIcon name="browser-bold" size={16} />
           <Text style={styles.txtNetwork} color={colors['blue-400']} weight="500">
-            Network
+            {Object.keys(ChainIdEnum).find(key => ChainIdEnum[key] === selectedChainFilter) ?? 'Network'}
           </Text>
           <OWIcon size={16} color={colors['blue-400']} name="down" />
         </TouchableOpacity>
