@@ -205,7 +205,7 @@ export const convertBip44ToHDPath = (bip44HDPath: BIP44HDPath, keyDerivation: nu
     change: bip44HDPath.change
   };
 };
-export const MIN_FEE_RATE = 10;
+export const MIN_FEE_RATE = 5;
 export const formatAddress = (address: string, limitFirst = 10) => {
   if (!address || address?.length < 10) return null;
   const fristLetter = address?.slice(0, limitFirst) ?? '';
