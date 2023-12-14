@@ -16,15 +16,18 @@ import { useStore } from '../../../stores';
 
 import AppTrx from '@ledgerhq/hw-app-trx';
 import AppEth from '@ledgerhq/hw-app-eth';
+import AppBtc from '@ledgerhq/hw-app-btc';
 import AppCosmos from '@ledgerhq/hw-app-cosmos';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import { useNotification } from '../../../components/notification';
+import { AddressBtcType } from '@owallet/types';
 
 export const ConfirmLedgerPage: FunctionComponent = observer(() => {
   const notification = useNotification();
   const [disable, setDisable] = useState(false);
-  const { ledgerInitStore } = useStore();
+  const { ledgerInitStore, chainStore, accountStore } = useStore();
+  const account = accountStore.getAccount(chainStore.current.chainId);
   const params: { chain: string } = useParams();
   useEffect(() => {
     document.body.setAttribute('data-centered', 'true');
@@ -62,6 +65,13 @@ export const ConfirmLedgerPage: FunctionComponent = observer(() => {
         content = 'Evm Ledger Connect Success. Address:';
         address = await app.getAddress("44'/60'/0'/0/0");
       }
+      if (type === 'btc') {
+        app = new AppBtc(transport);
+        content = 'Btc Ledger Connect Success. Address:';
+        const keyDerivation = account.addressType === AddressBtcType.Bech32 ? 84 : 44;
+        address = await app.getAddress(`${keyDerivation}'/0'/0'/0/0`);
+      }
+
       notification.push({
         placement: 'top-center',
         type: 'success',
@@ -73,7 +83,6 @@ export const ConfirmLedgerPage: FunctionComponent = observer(() => {
         }
       });
     } catch (error) {
-      
       notification.push({
         placement: 'top-center',
         type: 'danger',
@@ -101,18 +110,10 @@ export const ConfirmLedgerPage: FunctionComponent = observer(() => {
     >
       <div className={style.logoContainer}>
         <div>
-          <img
-            className={style.icon}
-            src={require('../../../public/assets/orai_wallet_logo.png')}
-            alt="logo"
-          />
+          <img className={style.icon} src={require('../../../public/assets/orai_wallet_logo.png')} alt="logo" />
         </div>
         <div className={style.logoInnerContainer}>
-          <img
-            className={style.logo}
-            src={require('../../../public/assets/logo.svg')}
-            alt="logo"
-          />
+          <img className={style.logo} src={require('../../../public/assets/logo.svg')} alt="logo" />
           <div className={style.paragraph}>Cosmos x EVM in one Wallet</div>
         </div>
       </div>
@@ -162,6 +163,15 @@ export const ConfirmLedgerPage: FunctionComponent = observer(() => {
           onClick={() => handleConfirmLedger('eth')}
         >
           <FormattedMessage id="register.button.eth-ledger" />
+        </Button>
+        <Button
+          color=""
+          disabled={disable}
+          data-loading={disable}
+          className={style.nextBtn}
+          onClick={() => handleConfirmLedger('btc')}
+        >
+          <FormattedMessage id="register.button.btc-ledger" />
         </Button>
       </div>
     </EmptyLayout>

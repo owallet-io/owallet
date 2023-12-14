@@ -8,12 +8,13 @@ import style from './chain-list.module.scss';
 import { ChainInfoWithEmbed } from '@owallet/background';
 import { useConfirm } from '../../components/confirm';
 import { useIntl } from 'react-intl';
-import { COINTYPE_NETWORK } from '@owallet/common';
+import { COINTYPE_NETWORK, getKeyDerivationFromAddressType } from '@owallet/common';
 import { useNotification } from '../../components/notification';
+
 const ChainElement: FunctionComponent<{
   chainInfo: ChainInfoWithEmbed;
 }> = observer(({ chainInfo }) => {
-  const { chainStore, analyticsStore, keyRingStore } = useStore();
+  const { chainStore, analyticsStore, keyRingStore, accountStore } = useStore();
   const selected = keyRingStore?.multiKeyStoreInfo?.find((keyStore) => keyStore?.selected);
   const intl = useIntl();
   const confirm = useConfirm();
@@ -36,6 +37,7 @@ const ChainElement: FunctionComponent<{
     chainStore.selectChain(chainInfo.chainId);
     chainStore.saveLastViewChainId();
   };
+  const account = accountStore.getAccount(chainStore.current.chainId);
   return (
     <div
       className={classnames({
@@ -52,7 +54,9 @@ const ChainElement: FunctionComponent<{
             if (getDevicesHID.length) {
               if (
                 await confirm.confirm({
-                  paragraph: `You are switching to ${COINTYPE_NETWORK[chainInfo.coinType ?? chainInfo.bip44.coinType]} network. Please confirm that you have ${
+                  paragraph: `You are switching to ${
+                    COINTYPE_NETWORK[chainInfo.coinType ?? chainInfo.bip44.coinType]
+                  } network. Please confirm that you have ${
                     COINTYPE_NETWORK[chainInfo.coinType ?? chainInfo.bip44.coinType]
                   } App opened before switch network`,
                   styleParagraph: {
@@ -71,7 +75,9 @@ const ChainElement: FunctionComponent<{
                   placement: 'top-center',
                   type: 'warning',
                   duration: 5,
-                  content: `You are switching to ${COINTYPE_NETWORK[chainInfo.coinType ?? chainInfo.bip44.coinType]} network. Please confirm that you have ${
+                  content: `You are switching to ${
+                    COINTYPE_NETWORK[chainInfo.coinType ?? chainInfo.bip44.coinType]
+                  } network. Please confirm that you have ${
                     COINTYPE_NETWORK[chainInfo.coinType ?? chainInfo.bip44.coinType]
                   } App opened before switch network`,
                   canDelete: true,
@@ -79,10 +85,18 @@ const ChainElement: FunctionComponent<{
                     duration: 0.25
                   }
                 });
+                const { networkType } = chainStore.getChain(chainInfo?.chainId);
+                const keyDerivation = (() => {
+                  const keyMain = getKeyDerivationFromAddressType(account.addressType);
+                  if (networkType === 'bitcoin') {
+                    return keyMain;
+                  }
+                  return '44';
+                })();
                 await keyRingStore.setKeyStoreLedgerAddress(
-                  `44'/${chainInfo.bip44.coinType ?? chainInfo.coinType}'/${selected.bip44HDPath.account}'/${selected.bip44HDPath.change}/${
-                    selected.bip44HDPath.addressIndex
-                  }`,
+                  `${keyDerivation}'/${chainInfo.bip44.coinType ?? chainInfo.coinType}'/${
+                    selected.bip44HDPath.account
+                  }'/${selected.bip44HDPath.change}/${selected.bip44HDPath.addressIndex}`,
                   chainInfo.chainId
                 );
                 await handleUpdateChain();
@@ -172,7 +186,10 @@ export const ChainList: FunctionComponent = observer(() => {
           }}
         />
       </div>
-      {mainChainList.map((chainInfo) => chainInfo.networkType === 'evm' && <ChainElement key={chainInfo.chainId} chainInfo={chainInfo.raw} />)}
+      {mainChainList.map(
+        (chainInfo) =>
+          chainInfo.networkType === 'evm' && <ChainElement key={chainInfo.chainId} chainInfo={chainInfo.raw} />
+      )}
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <hr
           className="my-3"
@@ -199,7 +216,9 @@ export const ChainList: FunctionComponent = observer(() => {
         />
       </div>
       {mainChainList.map(
-        (chainInfo) => chainInfo.networkType !== 'evm' && !chainInfo.beta && <ChainElement key={chainInfo.chainId} chainInfo={chainInfo.raw} />
+        (chainInfo) =>
+          chainInfo.networkType !== 'evm' &&
+          !chainInfo.beta && <ChainElement key={chainInfo.chainId} chainInfo={chainInfo.raw} />
       )}
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <hr

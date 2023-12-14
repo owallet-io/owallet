@@ -9,17 +9,19 @@ import { useStore } from '../../stores';
 import { useNotification } from '../../components/notification';
 import { useIntl } from 'react-intl';
 import { WalletStatus } from '@owallet/stores';
-import { ChainIdEnum, TRON_ID, getBase58Address } from '@owallet/common';
+import { ChainIdEnum, TRON_ID, getBase58Address, getKeyDerivationFromAddressType } from '@owallet/common';
 import { FormGroup, Input, Label } from 'reactstrap';
 import { AddressBtcType } from '@owallet/types';
+import { useBIP44Option } from '../register/advanced-bip44';
 
 export const AccountView: FunctionComponent = observer(() => {
   const { accountStore, chainStore, keyRingStore } = useStore();
   const chainId = chainStore.current.chainId;
-  const networkType = chainStore.current.networkType;
+  const { networkType, bip44, coinType } = chainStore.current;
   const accountInfo = accountStore.getAccount(chainId);
   const selected = keyRingStore?.multiKeyStoreInfo?.find((keyStore) => keyStore?.selected);
   const intl = useIntl();
+  const bip44Option = useBIP44Option();
   const checkTronNetwork = chainId === TRON_ID;
   const addressDisplay = accountInfo.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
   const ledgerAddress =
@@ -57,7 +59,21 @@ export const AccountView: FunctionComponent = observer(() => {
     },
     [accountInfo.walletStatus, addressDisplay, notification, intl]
   );
+  const onSwitchAddressType = (type: AddressBtcType) => {
+    accountInfo.setAddressTypeBtc(type);
+    const keyDerivation = (() => {
+      const keyMain = getKeyDerivationFromAddressType(type);
+      return keyMain;
+    })();
 
+    if (accountInfo.isNanoLedger) {
+      const path = `${keyDerivation}'/${bip44.coinType ?? coinType}'/${bip44Option.bip44HDPath.account}'/${
+        bip44Option.bip44HDPath.change
+      }/${bip44Option.bip44HDPath.addressIndex}`;
+
+      keyRingStore.setKeyStoreLedgerAddress(path, chainId);
+    }
+  };
   return (
     <div>
       <div className={styleAccount.containerName}>
@@ -165,7 +181,7 @@ export const AccountView: FunctionComponent = observer(() => {
           <Label check>
             <Input
               onClick={() => {
-                accountInfo.setAddressTypeBtc(AddressBtcType.Bech32);
+                onSwitchAddressType(AddressBtcType.Bech32);
               }}
               type="radio"
               name="bech32"
@@ -176,7 +192,7 @@ export const AccountView: FunctionComponent = observer(() => {
           <Label check>
             <Input
               onClick={() => {
-                accountInfo.setAddressTypeBtc(AddressBtcType.Legacy);
+                onSwitchAddressType(AddressBtcType.Legacy);
               }}
               type="radio"
               name="legacy"

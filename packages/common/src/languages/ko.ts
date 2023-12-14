@@ -108,7 +108,8 @@ export default {
   'setting.token.add.secret20.checkbox.use-suggested-viewing-key': '웹페이지가 제안한 뷰잉키를 사용하시겠습니까?',
   'setting.token.add.secret20.viewing-key': '뷰잉 키',
 
-  'setting.token.manage.confirm.remove-token': '토큰을 비활성화 하시겠습니까? 다시 등록할 때까지 잔고를 보거나 토큰을 전송할 수 없습니다.',
+  'setting.token.manage.confirm.remove-token':
+    '토큰을 비활성화 하시겠습니까? 다시 등록할 때까지 잔고를 보거나 토큰을 전송할 수 없습니다.',
   'setting.token.manage.notification.viewing-key.copy': '뷰잉키가 복사되었습니다',
 
   'register.name': '계정 이름',
@@ -118,7 +119,7 @@ export default {
   'register.button.trx-ledger': 'Tron Ledger',
   'register.button.cosmos-ledger': 'Cosmos Ledger',
   'register.button.eth-ledger': 'Eth Ledger',
-
+  'register.button.btc-ledger': 'Btc Ledger',
   'register.bip44.button.advanced': '고급',
   'register.bip44.input.hd-path': 'BIP44 HD 경로',
   'register.bip44.confirm.clear': '고급 옵션을 닫으면 HD 경로가 초기화됩니다. 계속 진행하시겠습니까?',
@@ -224,15 +225,19 @@ export default {
   'sign.list.message.cosmos-sdk/MsgSend.title': '보내기',
   'sign.list.message.cosmos-sdk/MsgSend.content': '<b>{recipient}</b>가 <b>{amount}</b>를 받을 것입니다',
   'sign.list.message.cosmos-sdk/MsgTransfer.title': 'IBC 전송',
-  'sign.list.message.cosmos-sdk/MsgTransfer.content': '채널 <b>{channel}</b>의 <b>{receiver}</b>가 <b>{amount}</b>를 받을 것입니다',
+  'sign.list.message.cosmos-sdk/MsgTransfer.content':
+    '채널 <b>{channel}</b>의 <b>{receiver}</b>가 <b>{amount}</b>를 받을 것입니다',
   'sign.list.message.cosmos-sdk/MsgDelegate.title': '위임',
   'sign.list.message.cosmos-sdk/MsgDelegate.content': '<b>{validator}</b>에게 <b>{amount}</b>를 위임합니다',
   'sign.list.message.cosmos-sdk/MsgUndelegate.title': '위임 해제',
-  'sign.list.message.cosmos-sdk/MsgUndelegate.content': '<b>{validator}</b>로부터 <b>{amount}</b>를 위임해제합니다{br}자산은 언본딩 기간 이후 지급됩니다',
+  'sign.list.message.cosmos-sdk/MsgUndelegate.content':
+    '<b>{validator}</b>로부터 <b>{amount}</b>를 위임해제합니다{br}자산은 언본딩 기간 이후 지급됩니다',
   'sign.list.message.cosmos-sdk/MsgBeginRedelegate.title': '재위임',
-  'sign.list.message.cosmos-sdk/MsgBeginRedelegate.content': '<b>{fromValidator}</b>로부터 <b>{toValidator}</b>에게 <b>{amount}</b>를 재위임합니다',
+  'sign.list.message.cosmos-sdk/MsgBeginRedelegate.content':
+    '<b>{fromValidator}</b>로부터 <b>{toValidator}</b>에게 <b>{amount}</b>를 재위임합니다',
   'sign.list.message.cosmos-sdk/MsgWithdrawDelegatorReward.title': '스테이킹 보상 요청',
-  'sign.list.message.cosmos-sdk/MsgWithdrawDelegatorReward.content': '<b>{validator}</b>에게 위임된 스테이킹 보상을 요청합니다',
+  'sign.list.message.cosmos-sdk/MsgWithdrawDelegatorReward.content':
+    '<b>{validator}</b>에게 위임된 스테이킹 보상을 요청합니다',
   'sign.list.message.cosmos-sdk/MsgVote.title': '투표',
   'sign.list.message.cosmos-sdk/MsgVote.content': '<b>제안 {id}</b>에 <b>{option}</b>를 투표합니다',
 
@@ -242,7 +247,8 @@ export default {
   'sign.list.message.wasm/MsgInstantiateContract.content':
     '<only-funds-exist><b>{funds}</b>를 전송하여 </only-funds-exist><only-admin-exist><b>{admin}</b>을 관리자 계정으로 가지는 </only-admin-exist><b>{label}</b> 라벨의 Code ID <b>{codeId}</b> 컨트랙트를 활성화합니다',
   'sign.list.message.wasm/MsgExecuteContract.title': 'Wasm 컨트랙트 실행 요청',
-  'sign.list.message.wasm/MsgExecuteContract.content': '<only-sent-exist><b>{sent}</b>를 전송하며 </only-sent-exist><b>{address}</b> 컨트랙트를 실행합니다',
+  'sign.list.message.wasm/MsgExecuteContract.content':
+    '<only-sent-exist><b>{sent}</b>를 전송하며 </only-sent-exist><b>{address}</b> 컨트랙트를 실행합니다',
   'sign.list.message.wasm/MsgExecuteContract.content.badge.secret-wasm': '암호화됨',
   'sign.list.message.wasm/MsgExecuteContract.content.warning.secret-wasm.failed-decryption':
     '메세지를 복호화하지 못 했습니다. 케플러를 통하지 않고 암호화되었을 수 있습니다.',
