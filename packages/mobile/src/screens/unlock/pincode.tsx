@@ -148,21 +148,25 @@ export const PincodeScreen: FunctionComponent = observer(() => {
 
   const [code, setCode] = useState('');
 
-  const _checkCode = code => {
-    if (code != '1234') {
-      if (pinRef?.current) {
-        //@ts-ignore
-        pinRef.current.shake().then(() => setCode(''));
-      }
-    }
-  };
-
   useEffect(() => {
     if (pinRef?.current) {
       //@ts-ignore
       pinRef.current.focus();
     }
   }, []);
+
+  useEffect(() => {
+    if (code.length >= 6) {
+      if (code !== '123456') {
+        if (pinRef?.current) {
+          //@ts-ignore
+          pinRef.current.shake();
+          setCode('');
+          numpadRef.current.clearAll();
+        }
+      }
+    }
+  }, [code]);
 
   return !routeToRegisterOnce.current && keyRingStore.status === KeyRingStatus.EMPTY ? (
     <View />
@@ -214,7 +218,7 @@ export const PincodeScreen: FunctionComponent = observer(() => {
               }
               maskDelay={1000}
               password={true}
-              onFulfill={_checkCode}
+              //   onFulfill={}
               onBackspace={code => console.log(code)}
             />
           ) : (
@@ -262,10 +266,12 @@ export const PincodeScreen: FunctionComponent = observer(() => {
         {isNumericPad ? (
           <NumericPad
             ref={numpadRef}
-            numLength={8}
+            numLength={6}
             buttonSize={60}
             activeOpacity={0.1}
-            onValueChange={value => setCode(value)}
+            onValueChange={value => {
+              setCode(value);
+            }}
             allowDecimal={false}
             // style={{ backgroundColor: 'black', paddingVertical: 12 }}
             // buttonAreaStyle={{ backgroundColor: 'gray' }}
