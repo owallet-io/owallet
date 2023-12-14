@@ -186,7 +186,7 @@ export const AccountView: FunctionComponent = observer(() => {
               name="legacy"
               checked={accountInfo.addressType === AddressBtcType.Legacy}
             />{' '}
-            Legacy
+            Bitcoin(LEGACY)
           </Label>
         </div>
       )}

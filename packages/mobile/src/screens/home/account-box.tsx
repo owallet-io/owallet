@@ -88,7 +88,7 @@ export const AccountBox: FunctionComponent<{
     },
     {
       id: AddressBtcType.Legacy,
-      label: 'Bitcoin',
+      label: 'Bitcoin(LEGACY)',
       value: AddressBtcType.Legacy,
       borderColor: colors['primary-text'],
       labelStyle: {

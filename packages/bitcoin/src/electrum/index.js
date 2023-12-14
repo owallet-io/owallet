@@ -271,7 +271,7 @@ export const subscribeHeader = async ({ id = 'subscribeHeader', coin = '', onRec
       clients.mainClient[coin].subscribe.on('blockchain.headers.subscribe', onReceive)
     );
     if (res.error) return { ...res, id, method: 'subscribeHeader' };
-    const response = await promiseTimeout(10000, clients.mainClient[coin].blockchainHeaders_subscribe());
+    const response = await promiseTimeout(10000, clients.mainClient[coin].blockchain_headers_subscribe());
     if (!response.error) clients.subscribedHeaders[coin] = true;
     return { ...response, id, method: 'subscribeHeader' };
   } catch (e) {
@@ -704,7 +704,7 @@ export const getNewBlockHeadersSubscribe = ({ id = Math.random(), coin = '', upd
     try {
       //if (coin !== coin) await clients.mainClient[coin].connect();
       if (clients.mainClient[coin] === false) await connectToRandomPeer(coin, clients.peers[coin]);
-      const response = await clients.mainClient[coin].blockchainHeaders_subscribe();
+      const response = await clients.mainClient[coin].blockchain_headers_subscribe();
       let blockHeight = 0;
       try {
         if ('height' in response) {
