@@ -79,18 +79,14 @@ export const OnScreenWebpageScreenHeader: FunctionComponent = observer(() => {
   const [currentUrl, setURL] = useState(webViewState.name);
 
   useEffect(() => {
-    const rIndex = browserStore.getBookmarks.findIndex(
-      b => b.uri === webViewState.url
-    );
+    const rIndex = browserStore.getBookmarks.findIndex(b => b.uri === webViewState.url);
     if (rIndex > -1) {
       setIsBookmark(true);
     }
   }, [browserStore]);
 
   const onBookmark = () => {
-    const rIndex = browserStore.getBookmarks.findIndex(
-      b => b.uri === webViewState.url
-    );
+    const rIndex = browserStore.getBookmarks.findIndex(b => b.uri === webViewState.url);
 
     if (rIndex > -1) {
       // case found
@@ -117,9 +113,7 @@ export const OnScreenWebpageScreenHeader: FunctionComponent = observer(() => {
           height: headerHeight,
           // If the iPhone has notch, add the extra bottom space for header.
           // Because of the lack of space, it slightly invades the notch, giving it a bit more space.
-          paddingTop:
-            safeAreaInsets.top -
-            (Platform.OS === 'ios' && safeAreaInsets.top > 44 ? 6 : 0)
+          paddingTop: safeAreaInsets.top - (Platform.OS === 'ios' && safeAreaInsets.top > 44 ? 6 : 0)
         }
       ])}
     >
@@ -152,7 +146,7 @@ export const OnScreenWebpageScreenHeader: FunctionComponent = observer(() => {
           <TextInput
             style={{
               width: metrics.screenWidth * 0.7,
-              fontFamily: 'DMSans-Regular',
+              fontFamily: 'SpaceGrotesk-Regular',
               color: colors['label'],
               fontWeight: '500'
             }}
@@ -177,9 +171,7 @@ export const OnScreenWebpageScreenHeader: FunctionComponent = observer(() => {
                   browserStore.addTab(tab);
                   navigation.navigate('Web.dApp', tab);
                 } else {
-                  let uri = `https://www.google.com/search?q=${
-                    currentUrl ?? ''
-                  }`;
+                  let uri = `https://www.google.com/search?q=${currentUrl ?? ''}`;
                   browserStore.addTab({
                     id: Date.now(),
                     name: 'Google',
@@ -197,12 +189,7 @@ export const OnScreenWebpageScreenHeader: FunctionComponent = observer(() => {
         ) : (
           <RectButton
             style={StyleSheet.flatten([
-              style.flatten([
-                'flex-row',
-                'items-center',
-                'padding-y-5',
-                'justify-between'
-              ]),
+              style.flatten(['flex-row', 'items-center', 'padding-y-5', 'justify-between']),
               {
                 borderBottomWidth: 0.4,
                 borderBottomColor: colors['border'],
@@ -225,11 +212,7 @@ export const OnScreenWebpageScreenHeader: FunctionComponent = observer(() => {
           </RectButton>
         )}
         <RectButton onPress={onBookmark}>
-          {isBookmark ? (
-            <BookmarkedIcon size={20} />
-          ) : (
-            <BookmarkIcon size={20} />
-          )}
+          {isBookmark ? <BookmarkedIcon size={20} /> : <BookmarkIcon size={20} />}
         </RectButton>
       </View>
 

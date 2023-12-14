@@ -140,8 +140,6 @@ export const PincodeScreen: FunctionComponent = observer(() => {
   const [code, setCode] = useState('');
 
   const _checkCode = code => {
-    console.log('on fill');
-
     if (code != '1234') {
       if (pinRef?.current) {
         //@ts-ignore
@@ -221,7 +219,6 @@ export const PincodeScreen: FunctionComponent = observer(() => {
             activeOpacity={0.1}
             onValueChange={value => setCode(value)}
             allowDecimal={true}
-            // Try them to understand each area :)
             // style={{ backgroundColor: 'black', paddingVertical: 12 }}
             // buttonAreaStyle={{ backgroundColor: 'gray' }}
             // buttonItemStyle={{ backgroundColor: 'red' }}
