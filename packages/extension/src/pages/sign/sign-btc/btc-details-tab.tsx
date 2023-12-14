@@ -32,7 +32,7 @@ export const BtcDetailsTab: FunctionComponent<{ dataSign; intl }> = observer(({ 
               coin: msgs?.selectedCrypto
             }) || '0 BTC'}
           </b>{' '}
-          to <b>{msgs?.address && Bech32Address.shortenAddress(msgs?.address, 20)}</b> on <b>Bitcoin Testnet</b>
+          to <b>{msgs?.address && Bech32Address.shortenAddress(msgs?.address, 20)}</b> on <b>{msgs?.selectedCrypto}</b>
         </MsgRender>
 
         <hr />
