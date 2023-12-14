@@ -894,12 +894,7 @@ const getFeeFromUtxos = (utxos, feeRate, data) => {
   if (data) {
     sum += TX_OUTPUT_BASE + data.length;
   }
-  console.log('🚀 ~ file: helpers.js:988 ~ getFeeFromUtxos ~ sum:', sum);
-  console.log('🚀 ~ file: helpers.js:991 ~ getFeeFromUtxos ~ feeRate:', feeRate);
   const fee = sum * feeRate;
-
-  console.log('🚀 ~ file: helpers.js:991 ~ getFeeFromUtxos ~ fee:', fee);
-
   return fee > MIN_TX_FEE ? fee : MIN_TX_FEE;
 };
 
