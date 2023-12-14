@@ -178,7 +178,6 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
   }
   @computed
   get feeRate(): IFeeRate {
-    console.log('🚀 ~ file: fee.ts:161 ~ FeeConfig ~ getfeeRate ~ this._feeRate:', this._feeRate);
     return this._feeRate;
   }
 

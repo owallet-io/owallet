@@ -22,10 +22,6 @@ export const AccountView: FunctionComponent = observer(() => {
   const intl = useIntl();
   const checkTronNetwork = chainId === TRON_ID;
   const addressDisplay = accountInfo.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
-  console.log(
-    '🚀 ~ file: account.tsx:25 ~ constAccountView:FunctionComponent=observer ~ addressDisplay:',
-    addressDisplay
-  );
   const ledgerAddress =
     keyRingStore.keyRingType == 'ledger'
       ? checkTronNetwork

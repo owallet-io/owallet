@@ -107,7 +107,7 @@ export const AccountBox: FunctionComponent<{
       const path = `${keyDerivation}'/${bip44.coinType ?? coinType}'/${bip44Option.bip44HDPath.account}'/${
         bip44Option.bip44HDPath.change
       }/${bip44Option.bip44HDPath.addressIndex}`;
-      console.log('🚀 ~ file: account-box.tsx:110 ~ onPressRadioButton ~ path:', path);
+
       keyRingStore.setKeyStoreLedgerAddress(path, chainId);
     }
   };
@@ -117,50 +117,16 @@ export const AccountBox: FunctionComponent<{
         marginHorizontal: 24
       }}
     >
-      <OWBox
-        style={{
-          borderBottomLeftRadius: 0,
-          borderBottomRightRadius: 0
-        }}
-        type="gradient"
-      >
-        <View
-          style={{
-            // marginTop: 28,
-            marginBottom: 16
-          }}
-        >
-          <Text
-            style={{
-              textAlign: 'center',
-              color: colors['purple-400'],
-              fontSize: 14,
-              lineHeight: 20
-            }}
-          >
-            Total Balance
-          </Text>
+      <OWBox style={styles.containerOWBox} type="gradient">
+        <View style={styles.overview}>
+          <Text style={styles.titleTotalBalance}>Total Balance</Text>
           {!!totalBalance ? (
-            <Text
-              variant="h1"
-              style={{
-                textAlign: 'center'
-              }}
-              color={colors['white']}
-            >
+            <Text variant="h1" style={styles.textCenter} color={colors['white']}>
               {totalBalance || 0}
             </Text>
           ) : null}
           {!!totalAmount && typeof totalAmount == 'string' && (
-            <Text
-              style={{
-                textAlign: 'center',
-                color: colors['gray-400'],
-                fontSize: 16
-              }}
-            >
-              {totalAmount}
-            </Text>
+            <Text style={styles.labelTotalAmount}>{totalAmount}</Text>
           )}
         </View>
         <View style={styles.containerBtnHeader}>
@@ -245,6 +211,27 @@ export const AccountBox: FunctionComponent<{
 
 const styling = (colors) =>
   StyleSheet.create({
+    labelTotalAmount: {
+      textAlign: 'center',
+      color: colors['gray-400'],
+      fontSize: 16
+    },
+    textCenter: {
+      textAlign: 'center'
+    },
+    titleTotalBalance: {
+      textAlign: 'center',
+      color: colors['purple-400'],
+      fontSize: 14,
+      lineHeight: 20
+    },
+    overview: {
+      marginBottom: 16
+    },
+    containerOWBox: {
+      borderBottomLeftRadius: 0,
+      borderBottomRightRadius: 0
+    },
     containerBox: {
       marginTop: 0,
       paddingHorizontal: 12,
