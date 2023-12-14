@@ -339,9 +339,6 @@ export class TxsHelper {
     currentChain: ChainInfoInner<ChainInfo>,
     addressAccount: string
   ): Partial<TransferDetail>[] {
-    let transferItem: Partial<TransferDetail> = {};
-    transferItem.transferInfo = [];
-    transferItem.typeEvent = 'Transaction';
     let transferItemIn: Partial<TransferDetail> = {};
     transferItemIn.transferInfo = [];
     if (data?.vin?.length > 0) {
@@ -357,23 +354,12 @@ export class TxsHelper {
         });
       }
     }
-    transferItemIn.typeEvent = 'From';
+    transferItemIn.typeEvent = 'Transaction input';
     let transferItemOut: Partial<TransferDetail> = {};
     transferItemOut.transferInfo = [];
     if (data?.vout?.length > 0) {
       for (let i = 0; i < data?.vout.length; i++) {
         const element = data?.vout[i];
-        if (element?.scriptpubkey_address?.toLowerCase() !== addressAccount?.toLowerCase()) {
-          transferItem.transferInfo.unshift({
-            address: element?.scriptpubkey_address,
-            amount: formatBalance({
-              balance: Number(element?.value),
-              cryptoUnit: 'BTC',
-              coin: currentChain.chainId
-            }),
-            isMinus: true
-          });
-        }
         transferItemOut.transferInfo.push({
           address: element?.scriptpubkey_address,
           amount: formatBalance({
@@ -385,8 +371,8 @@ export class TxsHelper {
         });
       }
     }
-    transferItemOut.typeEvent = 'To';
-    return [transferItem, transferItemIn, transferItemOut];
+    transferItemOut.typeEvent = 'Transaction output';
+    return [transferItemIn, transferItemOut];
   }
   handleItemTxsEthAndBsc(
     data: InfoTxEthAndBsc,
