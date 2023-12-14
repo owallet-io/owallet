@@ -75,6 +75,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const [toTokenFee, setToTokenFee] = useState<number>(0);
 
   const [[fromAmountToken, toAmountToken], setSwapAmount] = useState([0, 0]);
+  const [toAmountTokenString, setToAmountToken] = useState('0');
 
   const [ratio, setRatio] = useState(null);
 
@@ -87,6 +88,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const onChangeFromAmount = (amount: string | undefined) => {
     if (!amount) return setSwapAmount([0, toAmountToken]);
     setSwapAmount([parseFloat(amount), toAmountToken]);
+    setBalanceActive(null);
   };
 
   const onMaxFromAmount = (amount: bigint, type: string) => {
@@ -321,7 +323,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       if (data) {
         const isWarningSlippage = +warningMinimumReceive > +data.amount;
         setIsWarningSlippage(isWarningSlippage);
-        setSwapAmount([fromAmountBalance, Number(data.amount)]);
+        setToAmountToken(data.amount);
+        setSwapAmount([fromAmountBalance, Number(data.displayAmount)]);
       }
       setAmountLoading(false);
     } catch (error) {
@@ -377,7 +380,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         },
         originalFromToken: originalFromToken,
         originalToToken: originalToToken,
-        simulateAmount: toAmountToken.toString(),
+        simulateAmount: toAmountTokenString,
         simulatePrice: ratio.amount,
         userSlippage: userSlippage,
         fromAmount: fromAmountToken,
@@ -546,13 +549,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               tokenFee={fromTokenFee}
             />
             <SwapBox
-              amount={
-                toDisplay(
-                  toAmountToken?.toString(),
-                  fromTokenInfoData?.decimals,
-                  toTokenInfoData?.decimals
-                ).toString() ?? '0'
-              }
+              amount={toAmountToken.toString() ?? '0'}
               balanceValue={toDisplay(toTokenBalance, originalToToken?.decimals)}
               tokenActive={originalToToken}
               onOpenTokenModal={() => setIsSelectToTokenModal(true)}
@@ -601,11 +598,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           <View style={styles.itemBottom}>
             <BalanceText>Quote</BalanceText>
             <BalanceText>
-              {`1 ${originalFromToken?.name} ≈ ${toDisplay(
-                ratio?.amount,
-                fromTokenInfoData?.decimals,
-                toTokenInfoData?.decimals
-              )} ${originalToToken?.name}`}
+              {`1 ${originalFromToken.name} ≈ ${ratio ? Number((ratio.displayAmount / INIT_AMOUNT).toFixed(6)) : '0'} ${
+                originalToToken.name
+              }`}
             </BalanceText>
           </View>
           {!swapLoading && (!fromAmountToken || !toAmountToken) && fromToken.denom === TRON_DENOM ? (
