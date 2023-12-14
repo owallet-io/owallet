@@ -19,11 +19,7 @@ export const AccountCard: FunctionComponent<{
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
   const addressDisplay = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
-  console.log(
-    '🚀 ~ file: account-card.tsx:22 ~ keyRingStore.keyRingLedgerAddresses:',
-    keyRingStore.keyRingLedgerAddresses
-  );
-  console.log('🚀 ~ file: account-card.tsx:22 ~ addressDisplay:', addressDisplay);
+
   const queryBalances = queries.queryBalances.getQueryBech32Address(addressDisplay);
   const queryStakable = queryBalances.stakable;
 
