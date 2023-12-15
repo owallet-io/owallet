@@ -22,7 +22,8 @@ import {
   Networks,
   TRON_DENOM,
   BigDecimal,
-  toSubAmount
+  toSubAmount,
+  oraichainTokens
 } from '@oraichain/oraidex-common';
 import { openLink } from '../../utils/helper';
 import { SwapDirection, feeEstimate, getTransferTokenFee } from '@owallet/common';
@@ -73,6 +74,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const [fromTokenFee, setFromTokenFee] = useState<number>(0);
   const [toTokenFee, setToTokenFee] = useState<number>(0);
+  const [relayerFeeAmount, setRelayerFeeAmount] = useState<number>(0);
 
   const [[fromAmountToken, toAmountToken], setSwapAmount] = useState([0, 0]);
   const [toAmountTokenString, setToAmountToken] = useState('0');
@@ -296,6 +298,28 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     }
   };
 
+  const convertRelayerFee = async () => {
+    if (client && relayerFeeToken) {
+      const routerClient = new OraiswapRouterQueryClient(client, network.router);
+      const oraiToken = oraichainTokens.find(token => token.coinGeckoId === 'oraichain-token');
+
+      const data = await handleSimulateSwap({
+        originalFromInfo: oraiToken,
+        originalToInfo: originalToToken,
+        originalAmount: toDisplay(relayerFeeToken.toString()),
+        routerClient
+      });
+
+      setRelayerFeeAmount(data.displayAmount);
+    } else {
+      setRelayerFeeAmount(0);
+    }
+  };
+
+  useEffect(() => {
+    convertRelayerFee();
+  }, [relayerFeeToken, originalFromToken, originalToToken]);
+
   const estimateAverageRatio = async () => {
     const data = await getSimulateSwap(INIT_AMOUNT);
     setRatio(data);
@@ -305,7 +329,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setAmountLoading(true);
     try {
       const data = await getSimulateSwap();
-      const minimumReceive = Number(data.displayAmount - (data.displayAmount * userSlippage) / 100);
+      const minimumReceive = Number(data.displayAmount - (data.displayAmount * userSlippage) / 100 - relayerFeeAmount);
 
       const fromAmountTokenBalance = fromTokenInfoData && toAmount(fromAmountToken, fromTokenInfoData!.decimals);
       const warningMinimumReceive =
@@ -322,6 +346,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       setMininumReceive(Number(minimumReceive.toFixed(6)));
       if (data) {
         const isWarningSlippage = +warningMinimumReceive > +data.amount;
+
         setIsWarningSlippage(isWarningSlippage);
         setToAmountToken(data.amount);
         setSwapAmount([fromAmountBalance, Number(data.displayAmount)]);
@@ -329,7 +354,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       setAmountLoading(false);
     } catch (error) {
       console.log('error', error);
-
+      setMininumReceive(0);
       setAmountLoading(false);
       handleErrorSwap(error?.message ?? error?.ex?.message);
     }
@@ -623,7 +648,15 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           {!!relayerFeeToken && (
             <View style={styles.itemBottom}>
               <BalanceText>Relayer Fee</BalanceText>
-              <BalanceText>{toDisplay(relayerFeeToken.toString(), RELAYER_DECIMAL)} ORAI</BalanceText>
+              <BalanceText>
+                {toDisplay(relayerFeeToken.toString(), RELAYER_DECIMAL)} ORAI ≈ {relayerFeeAmount}{' '}
+                {originalToToken.name}
+              </BalanceText>
+            </View>
+          )}
+          {minimumReceive < 0 && (
+            <View style={styles.itemBottom}>
+              <BalanceText color={colors['danger']}>Current swap amount is too small</BalanceText>
             </View>
           )}
           {!fromTokenFee && !toTokenFee && isWarningSlippage && (
