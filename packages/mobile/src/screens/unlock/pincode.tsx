@@ -157,13 +157,11 @@ export const PincodeScreen: FunctionComponent = observer(() => {
 
   useEffect(() => {
     if (code.length >= 6) {
-      if (code !== '123456') {
-        if (pinRef?.current) {
-          //@ts-ignore
-          pinRef.current.shake();
-          setCode('');
-          numpadRef.current.clearAll();
-        }
+      if (pinRef?.current) {
+        //@ts-ignore
+        pinRef.current.shake();
+        setCode('');
+        numpadRef.current.clearAll();
       }
     }
   }, [code]);
