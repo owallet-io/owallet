@@ -65,12 +65,10 @@ export const AccountView: FunctionComponent = observer(() => {
       const keyMain = getKeyDerivationFromAddressType(type);
       return keyMain;
     })();
-
     if (accountInfo.isNanoLedger) {
       const path = `${keyDerivation}'/${bip44.coinType ?? coinType}'/${bip44Option.bip44HDPath.account}'/${
         bip44Option.bip44HDPath.change
       }/${bip44Option.bip44HDPath.addressIndex}`;
-
       keyRingStore.setKeyStoreLedgerAddress(path, chainId);
     }
   };

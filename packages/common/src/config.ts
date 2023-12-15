@@ -787,8 +787,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     features: ['isBtc'],
     txExplorer: {
       name: 'Blockcypher',
-      txUrl: 'https://live.blockcypher.com/btc-testnet/tx/{txHash}',
-      accountUrl: 'https://live.blockcypher.com/btc-testnet/address/{address}'
+      txUrl: 'https://blockstream.info/testnet/tx/{txHash}',
+      accountUrl: 'https://blockstream.info/testnet/address/{address}'
     }
   },
   {
@@ -829,8 +829,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     features: ['isBtc'],
     txExplorer: {
       name: 'Bitcoin',
-      txUrl: 'https://live.blockcypher.com/btc/tx/{txHash}',
-      accountUrl: 'https://live.blockcypher.com/btc/address/{address}'
+      txUrl: 'https://blockstream.info/tx/{txHash}',
+      accountUrl: 'https://blockstream.info/address/{address}'
     }
   },
 

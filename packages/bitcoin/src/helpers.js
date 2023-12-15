@@ -567,6 +567,7 @@ const buildTx = async ({
   if (compiledMemo) {
     targetOutputs.push({ script: compiledMemo, value: 0 });
   }
+
   const { inputs, outputs, fee } = accumulative(utxosData, targetOutputs, feeRateWhole);
   if (fee > totalFee) throw new Error('Fee not match');
 
