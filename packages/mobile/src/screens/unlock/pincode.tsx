@@ -156,10 +156,8 @@ export const PincodeScreen: FunctionComponent = observer(() => {
 
   useEffect(() => {
     if (code.length >= 6) {
-      if (pinRef?.current) {
-        pinRef.current.shake().then(() => setCode(''));
-        numpadRef.current.clearAll();
-      }
+      pinRef?.current?.shake().then(() => setCode(''));
+      numpadRef?.current?.clearAll();
     }
   }, [code]);
 
