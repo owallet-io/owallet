@@ -1,11 +1,12 @@
 import { Dec } from '@owallet/unit';
-import crashlytics from '@react-native-firebase/crashlytics';
+// import crashlytics from '@react-native-firebase/crashlytics';
 import { SCREENS } from '@src/common/constants';
 import { OWButton } from '@src/components/button';
-import OWButtonIcon from '@src/components/button/ow-button-icon';
+// import OWButtonIcon from '@src/components/button/ow-button-icon';
 import OWIcon from '@src/components/ow-icon/ow-icon';
 import { Text } from '@src/components/text';
 import { useTheme } from '@src/themes/theme-provider';
+import { showToast } from '@src/utils/helper';
 import { observer } from 'mobx-react-lite';
 import React, { FunctionComponent } from 'react';
 import { Image, StyleSheet, View, ViewStyle } from 'react-native';
@@ -35,7 +36,7 @@ export const EarningCard: FunctionComponent<{
   const totalStakingReward = priceStore.calculatePrice(stakingReward);
 
   const _onPressClaim = async () => {
-    crashlytics().log('earning_card _onPressClaim');
+    // crashlytics().log('earning_card _onPressClaim');
     try {
       await account.cosmos.sendWithdrawDelegationRewardMsgs(
         queryReward.getDescendingPendingRewardValidatorAddresses(8),
@@ -43,7 +44,7 @@ export const EarningCard: FunctionComponent<{
         {},
         {},
         {
-          onBroadcasted: (txHash) => {
+          onBroadcasted: txHash => {
             analyticsStore.logEvent('Claim reward tx broadcasted', {
               chainId: chainId,
               chainName: chainStore.current.chainName
@@ -56,15 +57,19 @@ export const EarningCard: FunctionComponent<{
         stakingReward.currency.coinMinimalDenom
       );
     } catch (e) {
-      crashlytics().recordError(e);
+      // crashlytics().recordError(e);
       console.error({ errorClaim: e });
 
-      if (e?.message === 'Request rejected') {
-        return;
-      }
-      if (e?.message.includes('Cannot read properties of undefined' || 'undefined is not an object')) {
-        return;
-      }
+      // if (e?.message === 'Request rejected') {
+      //   return;
+      // }
+      // if (e?.message.includes('Cannot read properties of undefined' || 'undefined is not an object')) {
+      //   return;
+      // }
+      showToast({
+        message: e?.message ?? 'Something went wrong! Please try again later.',
+        type: 'danger'
+      });
     }
   };
   const decimalChain = chainStore?.current?.stakeCurrency?.coinDecimals;
@@ -98,14 +103,20 @@ export const EarningCard: FunctionComponent<{
             ? stakingReward.shrink(true).maxDecimals(6).trim(true).upperCase(true).toString()
             : `< 0.001 ${stakingReward.toCoin().denom.toUpperCase()}`}
         </Text>
-        <Text style={[styles['amount']]}>{totalStakingReward ? totalStakingReward.toString() : stakingReward.shrink(true).maxDecimals(6).toString()}</Text>
+        <Text style={[styles['amount']]}>
+          {totalStakingReward ? totalStakingReward.toString() : stakingReward.shrink(true).maxDecimals(6).toString()}
+        </Text>
 
         <OWButton
           label="Claim Rewards"
           size="medium"
           onPress={_onPressClaim}
           textStyle={styles.btnTextClaimStyle}
-          disabled={!account.isReadyToSendMsgs || stakingReward.toDec().equals(new Dec(0)) || queryReward.pendingRewardValidatorAddresses.length === 0}
+          disabled={
+            !account.isReadyToSendMsgs ||
+            stakingReward.toDec().equals(new Dec(0)) ||
+            queryReward.pendingRewardValidatorAddresses.length === 0
+          }
           loading={account.isSendingMsg === 'withdrawRewards'}
           style={styles.btnClaimStyle}
           icon={
@@ -113,7 +124,9 @@ export const EarningCard: FunctionComponent<{
               name="rewards"
               size={20}
               color={
-                !account.isReadyToSendMsgs || stakingReward.toDec().equals(new Dec(0)) || queryReward.pendingRewardValidatorAddresses.length === 0
+                !account.isReadyToSendMsgs ||
+                stakingReward.toDec().equals(new Dec(0)) ||
+                queryReward.pendingRewardValidatorAddresses.length === 0
                   ? colors['text-btn-disable-color']
                   : colors['white']
               }
@@ -199,7 +212,7 @@ export const EarningCard: FunctionComponent<{
   );
 });
 
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     btnClaimStyle: {
       marginTop: 10

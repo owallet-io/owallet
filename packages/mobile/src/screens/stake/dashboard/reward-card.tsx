@@ -11,6 +11,7 @@ import { useSmartNavigation } from '../../../navigation.provider';
 import { useStore } from '../../../stores';
 import { spacing, typography } from '../../../themes';
 import OWIcon from '@src/components/ow-icon/ow-icon';
+import { showToast } from '@src/utils/helper';
 export const MyRewardCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
@@ -26,11 +27,13 @@ export const MyRewardCard: FunctionComponent<{
   const pendingStakableReward = queries.cosmos.queryRewards.getQueryBech32Address(account.bech32Address).stakableReward;
   const stakingReward = queryReward.stakableReward;
   const apy = queries.cosmos.queryInflation.inflation;
-  
 
   const smartNavigation = useSmartNavigation();
 
-  const isDisable = !account.isReadyToSendMsgs || pendingStakableReward.toDec().equals(new Dec(0)) || queryReward.pendingRewardValidatorAddresses.length === 0;
+  const isDisable =
+    !account.isReadyToSendMsgs ||
+    pendingStakableReward.toDec().equals(new Dec(0)) ||
+    queryReward.pendingRewardValidatorAddresses.length === 0;
   const decimalChain = chainStore?.current?.stakeCurrency?.coinDecimals;
   return (
     <OWBox
@@ -93,10 +96,10 @@ export const MyRewardCard: FunctionComponent<{
                     {},
                     {},
                     {
-                      onFulfill: (tx) => {
+                      onFulfill: tx => {
                         console.log(tx, 'TX INFO ON SEND PAGE!!!!!!!!!!!!!!!!!!!!!');
                       },
-                      onBroadcasted: (txHash) => {
+                      onBroadcasted: txHash => {
                         analyticsStore.logEvent('Claim reward tx broadcasted', {
                           chainId: chainStore.current.chainId,
                           chainName: chainStore.current.chainName
@@ -111,12 +114,18 @@ export const MyRewardCard: FunctionComponent<{
                 } catch (e) {
                   console.log({ errorClaim: e });
 
-                  if (e?.message === 'Request rejected') {
-                    return;
-                  }
-                  if (e?.message.includes('Cannot read properties of undefined')) {
-                    return;
-                  }
+                  // if (e?.message === 'Request rejected') {
+                  //   return;
+                  // }
+                  // if (e?.message.includes('Cannot read properties of undefined')) {
+                  //   return;
+                  // }
+                  showToast({
+                    message: e?.message ?? 'Something went wrong! Please try again later.',
+                    type: 'danger'
+                  });
+
+                  return;
 
                   // if (smartNavigation.canGoBack) {
                   //   smartNavigation.goBack();
@@ -140,7 +149,7 @@ export const MyRewardCard: FunctionComponent<{
   );
 });
 
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     textInfo: {
       ...typography.h6,
