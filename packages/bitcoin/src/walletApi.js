@@ -395,6 +395,7 @@ const electrumUtxoHelper = async ({
       addresses: allAddresses,
       coin: selectedCrypto
     });
+    console.log('🚀 ~ file: walletApi.js:398 ~ allUtxos:', allUtxos);
 
     allUtxos.error === false &&
       allUtxos.data &&

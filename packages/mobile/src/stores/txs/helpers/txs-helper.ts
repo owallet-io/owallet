@@ -339,31 +339,34 @@ export class TxsHelper {
     currentChain: ChainInfoInner<ChainInfo>,
     addressAccount: string
   ): Partial<TransferDetail>[] {
+    let transferItem: Partial<TransferDetail> = {};
+    transferItem.transferInfo = [];
+
     let transferItemIn: Partial<TransferDetail> = {};
     transferItemIn.transferInfo = [];
-    if (data?.vin?.length > 0) {
-      for (let i = 0; i < data?.vin.length; i++) {
-        const element = data?.vin[i];
-        transferItemIn.transferInfo.push({
-          address: element?.prevout.scriptpubkey_address,
+    if (data?.vin?.length > 0 && data?.vout?.length > 0) {
+      const found = data.vin.some((item) => item.prevout.scriptpubkey_address === addressAccount);
+      if (found) {
+        let arrVoutFilter = data.vout.filter((item) => item.scriptpubkey_address !== addressAccount);
+        const totalBalance = arrVoutFilter.reduce((total, data) => {
+          return total + data.value;
+        }, 0);
+        transferItem.transferInfo.push({
           amount: formatBalance({
-            balance: Number(element?.prevout.value),
+            balance: Number(totalBalance),
             cryptoUnit: 'BTC',
             coin: currentChain.chainId
-          })
+          }),
+          isMinus: true
         });
-      }
-    }
-    transferItemIn.typeEvent = 'Transaction input';
-    let transferItemOut: Partial<TransferDetail> = {};
-    transferItemOut.transferInfo = [];
-    if (data?.vout?.length > 0) {
-      for (let i = 0; i < data?.vout.length; i++) {
-        const element = data?.vout[i];
-        transferItemOut.transferInfo.push({
-          address: element?.scriptpubkey_address,
+      } else {
+        let arrVoutFilter = data.vout.filter((item) => item.scriptpubkey_address === addressAccount);
+        const totalBalance = arrVoutFilter.reduce((total, data) => {
+          return total + data.value;
+        }, 0);
+        transferItem.transferInfo.push({
           amount: formatBalance({
-            balance: Number(element?.value),
+            balance: Number(totalBalance),
             cryptoUnit: 'BTC',
             coin: currentChain.chainId
           }),
@@ -371,8 +374,8 @@ export class TxsHelper {
         });
       }
     }
-    transferItemOut.typeEvent = 'Transaction output';
-    return [transferItemIn, transferItemOut];
+    transferItem.typeEvent = 'Transaction';
+    return [transferItem];
   }
   handleItemTxsEthAndBsc(
     data: InfoTxEthAndBsc,
@@ -450,7 +453,7 @@ export class TxsHelper {
     return dataConverted;
   }
   cleanDataBtcResToStandFormat(
-    data: TxBitcoin[],
+    data: txBitcoinResult[],
     currentChain: ChainInfoInner<ChainInfo>,
     addressAccount: string
   ): Partial<ResTxsInfo>[] {
