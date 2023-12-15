@@ -4,7 +4,7 @@ import { BIP44HDPath } from '@owallet/types';
 describe('utils', () => {
   it('getChainInfoOrThrow', () => {
     const expected = {
-      rpc: 'https://sentry.tm.injective.network',
+      rpc: 'https://injective-rpc-global.orai.io',
       rest: 'https://sentry.lcd.injective.network',
       chainId: 'injective-1',
       chainName: 'Injective',

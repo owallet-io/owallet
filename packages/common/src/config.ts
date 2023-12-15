@@ -751,9 +751,9 @@ export const EmbedChainInfos: AppChainInfo[] = [
     }
   },
   {
-    rest: 'https://api.blockcypher.com/v1/btc/test3',
+    rest: 'https://blockstream.info/testnet/api',
     chainId: 'bitcoinTestnet',
-    chainName: 'Bitcoin-Segwit Testnet',
+    chainName: 'Bitcoin Testnet',
     bip44: {
       coinType: 1
     },
@@ -765,9 +765,9 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinGeckoId: 'bitcoin',
       coinImageUrl: 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png',
       gasPriceStep: {
-        low: 1,
-        average: 15,
-        high: 22
+        low: 144,
+        average: 18,
+        high: 1
       }
     },
     bech32Config: Bech32Address.defaultBech32Config('tb'),
@@ -787,52 +787,52 @@ export const EmbedChainInfos: AppChainInfo[] = [
     features: ['isBtc'],
     txExplorer: {
       name: 'Blockcypher',
-      txUrl: 'https://live.blockcypher.com/btc-testnet/tx/{txHash}',
-      accountUrl: 'https://live.blockcypher.com/btc-testnet/address/{address}'
+      txUrl: 'https://blockstream.info/testnet/tx/{txHash}',
+      accountUrl: 'https://blockstream.info/testnet/address/{address}'
     }
   },
-  // {
-  //   rest: 'https://api.blockcypher.com/v1/btc/main',
-  //   chainId: 'bitcoin',
-  //   chainName: 'Bitcoin',
-  //   bip44: {
-  //     coinType: 0
-  //   },
-  //   coinType: 0,
-  //   stakeCurrency: {
-  //     coinDenom: 'BTC',
-  //     coinMinimalDenom: 'btc',
-  //     coinDecimals: 8,
-  //     coinGeckoId: 'bitcoin',
-  //     coinImageUrl: 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png',
-  //     gasPriceStep: {
-  //       low: 1,
-  //       average: 15,
-  //       high: 22
-  //     }
-  //   },
-  //   bech32Config: Bech32Address.defaultBech32Config('bc'),
-  //   networkType: 'bitcoin',
-  //   currencies: [
-  //     {
-  //       coinDenom: 'BTC',
-  //       coinMinimalDenom: 'btc',
-  //       coinDecimals: 8,
-  //       coinGeckoId: 'bitcoin',
-  //       coinImageUrl: 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png'
-  //     }
-  //   ],
-  //   get feeCurrencies() {
-  //     return this.currencies;
-  //   },
+  {
+    rest: 'https://blockstream.info/api',
+    chainId: 'bitcoin',
+    chainName: 'Bitcoin',
+    bip44: {
+      coinType: 0
+    },
+    coinType: 0,
+    stakeCurrency: {
+      coinDenom: 'BTC',
+      coinMinimalDenom: 'btc',
+      coinDecimals: 8,
+      coinGeckoId: 'bitcoin',
+      coinImageUrl: 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png',
+      gasPriceStep: {
+        low: 144,
+        average: 18,
+        high: 1
+      }
+    },
+    bech32Config: Bech32Address.defaultBech32Config('bc'),
+    networkType: 'bitcoin',
+    currencies: [
+      {
+        coinDenom: 'BTC',
+        coinMinimalDenom: 'btc',
+        coinDecimals: 8,
+        coinGeckoId: 'bitcoin',
+        coinImageUrl: 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png'
+      }
+    ],
+    get feeCurrencies() {
+      return this.currencies;
+    },
 
-  //   features: ['isBtc'],
-  //   txExplorer: {
-  //     name: 'Bitcoin',
-  //     txUrl: 'https://live.blockcypher.com/btc/tx/{txHash}',
-  //     accountUrl: 'https://live.blockcypher.com/btc/address/{address}'
-  //   }
-  // },
+    features: ['isBtc'],
+    txExplorer: {
+      name: 'Bitcoin',
+      txUrl: 'https://blockstream.info/tx/{txHash}',
+      accountUrl: 'https://blockstream.info/address/{address}'
+    }
+  },
 
   {
     rest: 'https://data-seed-prebsc-1-s1.binance.org:8545/',

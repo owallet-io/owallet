@@ -64,7 +64,7 @@ export const SendBtcPage: FunctionComponent<{
     chainStore,
     chainId,
     accountInfo.msgOpts['send'],
-    accountInfo.bech32Address,
+    address,
     queries.queryBalances,
     null,
     null,
@@ -184,7 +184,7 @@ export const SendBtcPage: FunctionComponent<{
                   utxos: utxos,
                   blacklistedUtxos: [],
                   amount: BtcToSats(Number(sendConfigs.amountConfig.amount)),
-                  gasPriceStep: stakeCurrency.gasPriceStep[sendConfigs.feeConfig.feeType]
+                  feeRate: sendConfigs.feeConfig.feeRate[sendConfigs.feeConfig.feeType]
                 } as any
               );
               if (!isDetachedPage) {

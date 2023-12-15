@@ -13,6 +13,7 @@ import { useIntl } from 'react-intl';
 import { GasInput } from '../gas-input';
 import { action, makeObservable, observable } from 'mobx';
 import classNames from 'classnames';
+import { useStore } from '../../../stores';
 
 export interface FeeButtonsProps {
   feeConfig: IFeeConfig;
@@ -93,6 +94,7 @@ export const FeeButtonsInner: FunctionComponent<
     feeSelectLabels = { low: 'Low', average: 'Average', high: 'High' },
     feeButtonState
   }) => {
+    const { chainStore } = useStore();
     useEffect(() => {
       if (feeConfig.feeCurrency && !feeConfig.fee) {
         feeConfig.setFeeType('average');
@@ -196,6 +198,7 @@ export const FeeButtonsInner: FunctionComponent<
                     'text-muted': feeConfig.feeType !== fee
                   })}
                 >
+                  {chainStore.current.networkType === 'bitcoin' ? '≤' : null}{' '}
                   {[lowFee, averageFee, highFee][i].trim(true).toString() || 0}
                 </div>
                 {[lowFeePrice, averageFeePrice, highFeePrice][i] ? (
@@ -204,6 +207,7 @@ export const FeeButtonsInner: FunctionComponent<
                       'text-muted': feeConfig.feeType !== fee
                     })}
                   >
+                    {chainStore.current.networkType === 'bitcoin' ? '≤ ' : null}
                     {[lowFeePrice, averageFeePrice, highFeePrice][i].toString()}
                   </div>
                 ) : null}
@@ -211,91 +215,7 @@ export const FeeButtonsInner: FunctionComponent<
             );
           })}
         </div>
-        {/* <ButtonGroup id={inputId} className={styleFeeButtons.buttons}>
-          <Button
-            type="button"
-            className={styleFeeButtons.button}
-            color={feeConfig.feeType === 'low' ? 'primary' : undefined}
-            onClick={(e: MouseEvent) => {
-              feeConfig.setFeeType('low');
-              e.preventDefault();
-            }}
-          >
-            <div className={styleFeeButtons.title}>{feeSelectLabels.low}</div>
-            {lowFeePrice ? (
-              <div
-                className={classnames(styleFeeButtons.fiat, {
-                  'text-muted': feeConfig.feeType !== 'low'
-                })}
-              >
-                {lowFeePrice.toString()}
-              </div>
-            ) : null}
-            <div
-              className={classnames(styleFeeButtons.coin, {
-                'text-muted': feeConfig.feeType !== 'low'
-              })}
-            >
-              {lowFee.trim(true).toString()}
-            </div>
-          </Button>
-          <Button
-            type="button"
-            className={styleFeeButtons.button}
-            color={feeConfig.feeType === 'average' ? 'primary' : undefined}
-            onClick={(e: MouseEvent) => {
-              feeConfig.setFeeType('average');
-              e.preventDefault();
-            }}
-          >
-            <div className={styleFeeButtons.title}>
-              {feeSelectLabels.average}
-            </div>
-            {averageFeePrice ? (
-              <div
-                className={classnames(styleFeeButtons.fiat, {
-                  'text-muted': feeConfig.feeType !== 'average'
-                })}
-              >
-                {averageFeePrice.toString()}
-              </div>
-            ) : null}
-            <div
-              className={classnames(styleFeeButtons.coin, {
-                'text-muted': feeConfig.feeType !== 'average'
-              })}
-            >
-              {feeConfig.getFeeTypePretty('average').trim(true).toString()}
-            </div>
-          </Button>
-          <Button
-            type="button"
-            className={styleFeeButtons.button}
-            color={feeConfig.feeType === 'high' ? 'primary' : undefined}
-            onClick={(e: MouseEvent) => {
-              feeConfig.setFeeType('high');
-              e.preventDefault();
-            }}
-          >
-            <div className={styleFeeButtons.title}>{feeSelectLabels.high}</div>
-            {highFeePrice ? (
-              <div
-                className={classnames(styleFeeButtons.fiat, {
-                  'text-muted': feeConfig.feeType !== 'high'
-                })}
-              >
-                {highFeePrice.toString()}
-              </div>
-            ) : null}
-            <div
-              className={classnames(styleFeeButtons.coin, {
-                'text-muted': feeConfig.feeType !== 'high'
-              })}
-            >
-              {feeConfig.getFeeTypePretty('high').trim(true).toString()}
-            </div>
-          </Button>
-        </ButtonGroup> */}
+
         {isFeeLoading ? (
           <FormText>
             <i className="fa fa-spinner fa-spin fa-fw" />
@@ -305,49 +225,6 @@ export const FeeButtonsInner: FunctionComponent<
         {errorText != null ? (
           <FormFeedback style={{ display: 'block', marginTop: -15 }}>{errorText}</FormFeedback>
         ) : null}
-        {/* <div className={styleFeeButtons.gasWrap}>
-          // <span className={styleFeeButtons.gasBtn}>
-          //   {intl.formatMessage({
-          //     id: 'input.fee.toggle.set-gas'
-          //   })}
-          // </span>
-          <Button
-            size="sm"
-            color="link"
-            onClick={(e) => {
-              e.preventDefault();
-              feeButtonState.setIsGasInputOpen(!feeButtonState.isGasInputOpen);
-            }}
-          >
-            <label
-              key="toggle"
-              className={classNames('custom-toggle', styleFeeButtons.toggleBtn)}
-            >
-              <input
-                type="checkbox"
-                checked={feeButtonState.isGasInputOpen}
-                onChange={() => {
-                  feeButtonState.setIsGasInputOpen(
-                    !feeButtonState.isGasInputOpen
-                  );
-                }}
-              />
-              <span
-                className={classNames(
-                  'custom-toggle-slider rounded-circle',
-                  styleFeeButtons.toggleSlider
-                )}
-              />
-            </label>
-            // {!feeButtonState.isGasInputOpen
-            //   ? intl.formatMessage({
-            //       id: 'input.fee.toggle.set-gas'
-            //     })
-            //   : intl.formatMessage({
-            //       id: 'input.fee.toggle.set-gas.close'
-            //     })}
-          </Button>
-        </div> */}
       </FormGroup>
     );
   }

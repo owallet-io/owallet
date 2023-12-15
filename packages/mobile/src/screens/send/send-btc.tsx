@@ -20,7 +20,7 @@ import { Toggle } from '@src/components/toggle';
 import { RouteProp, useRoute } from '@react-navigation/native';
 
 export const SendBtcScreen: FunctionComponent = observer(({}) => {
-  const { chainStore, accountStore, queriesStore, analyticsStore, sendStore } = useStore();
+  const { chainStore, accountStore, keyRingStore, queriesStore, analyticsStore, sendStore } = useStore();
   const route = useRoute<
     RouteProp<
       Record<
@@ -36,18 +36,21 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
   const chainId = route?.params?.chainId ? route?.params?.chainId : chainStore.current.chainId;
   const queries = queriesStore.get(chainId);
   const account = accountStore.getAccount(chainId);
+  const address = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
+
   const sendConfigs = useSendTxConfig(
     chainStore,
     chainId,
     account.msgOpts['send'],
-    account.bech32Address,
+    address,
     queries.queryBalances,
     null,
     null,
     null,
     queries.bitcoin.queryBitcoinBalance
   );
-  const data = queries.bitcoin.queryBitcoinBalance.getQueryBalance(account.bech32Address)?.response?.data;
+
+  const data = queries.bitcoin.queryBitcoinBalance.getQueryBalance(address)?.response?.data;
   const utxos = data?.utxos;
   const confirmedBalance = data?.balance;
   const sendConfigError =
@@ -58,7 +61,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
 
   const txStateIsValid = sendConfigError == null;
   const { colors } = useTheme();
-  const refreshBalance = async address => {
+  const refreshBalance = async (address) => {
     try {
       await queries.bitcoin.queryBitcoinBalance.getQueryBalance(address)?.waitFreshResponse();
     } catch (error) {
@@ -66,13 +69,13 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
     }
   };
   useEffect(() => {
-    if (account.bech32Address) {
-      refreshBalance(account.bech32Address);
+    if (address) {
+      refreshBalance(address);
       return;
     }
 
     return () => {};
-  }, [account.bech32Address]);
+  }, [address]);
   useEffect(() => {
     if (route?.params?.recipient) {
       sendConfigs.recipientConfig.setRawRecipient(route.params.recipient);
@@ -94,7 +97,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
         },
 
         {
-          onFulfill: async tx => {
+          onFulfill: async (tx) => {
             console.log('🚀 ~ file: send-btc.tsx:109 ~ onSend ~ tx:', tx);
 
             if (tx) {
@@ -109,7 +112,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
 
             return;
           },
-          onBroadcasted: async txHash => {
+          onBroadcasted: async (txHash) => {
             try {
               analyticsStore.logEvent('Send Btc tx broadcasted', {
                 chainId: chainId,
@@ -128,7 +131,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
           utxos: utxos,
           blacklistedUtxos: [],
           amount: BtcToSats(Number(sendConfigs.amountConfig.amount)),
-          gasPriceStep: chainStore.current.stakeCurrency.gasPriceStep[sendConfigs.feeConfig.feeType]
+          feeRate: sendConfigs.feeConfig.feeRate[sendConfigs.feeConfig.feeType]
         }
       );
     } catch (error) {
@@ -145,7 +148,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
       });
       console.log('🚀 ~ file: send-btc.tsx:146 ~ onSend ~ error:', error);
     }
-  }, [chainStore.current.networkType, chainId, utxos, account.bech32Address, confirmedBalance]);
+  }, [chainStore.current.networkType, chainId, utxos, address, confirmedBalance]);
 
   const styles = styling(colors);
   return (

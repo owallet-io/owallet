@@ -233,60 +233,73 @@ interface txsEthAndBscResult {
   result: InfoTxEthAndBsc[];
   status: string;
 }
+//info bitcoin
+
+interface InfoAddressBtc {
+  address: string;
+  chain_stats: ChainStats;
+  mempool_stats: MempoolStats;
+}
+
+interface ChainStats {
+  funded_txo_count: number;
+  funded_txo_sum: number;
+  spent_txo_count: number;
+  spent_txo_sum: number;
+  tx_count: number;
+}
+
+interface MempoolStats {
+  funded_txo_count: number;
+  funded_txo_sum: number;
+  spent_txo_count: number;
+  spent_txo_sum: number;
+  tx_count: number;
+}
 
 interface txBitcoinResult {
-  address: string;
-  total_received: number;
-  total_sent: number;
-  balance: number;
-  unconfirmed_balance: number;
-  final_balance: number;
-  n_tx: number;
-  unconfirmed_n_tx: number;
-  final_n_tx: number;
-  txs: TxBitcoin[];
-}
-
-interface TxBitcoin {
-  block_hash: string;
-  block_height: number;
-  block_index: number;
-  hash: string;
-  addresses: string[];
-  total: number;
-  fees: number;
+  txid: string;
+  version: number;
+  locktime: number;
+  vin: Vin[];
+  vout: Vout[];
   size: number;
-  vsize: number;
-  preference: string;
-  relayed_by: string;
-  confirmed: string;
-  received: string;
-  ver: number;
-  double_spend: boolean;
-  vin_sz: number;
-  vout_sz: number;
-  confirmations: number;
-  confidence: number;
-  inputs: Input[];
-  outputs: Output[];
+  weight: number;
+  fee: number;
+  status: Status;
 }
 
-interface Input {
-  prev_hash: string;
-  output_index: number;
-  output_value: number;
+interface Vin {
+  txid: string;
+  vout: number;
+  prevout: Prevout;
+  scriptsig: string;
+  scriptsig_asm: string;
+  is_coinbase: boolean;
   sequence: number;
-  addresses: string[];
-  script_type: string;
-  age: number;
-  witness: string[];
 }
 
-interface Output {
+interface Prevout {
+  scriptpubkey: string;
+  scriptpubkey_asm: string;
+  scriptpubkey_type: string;
+  scriptpubkey_address: string;
   value: number;
-  script: string;
-  addresses: string[];
-  script_type: string;
+}
+
+interface Vout {
+  scriptpubkey: string;
+  scriptpubkey_asm: string;
+  scriptpubkey_type: string;
+  scriptpubkey_address: string;
+  value: number;
+}
+
+interface Status {
+  confirmed: boolean;
+  block_height: number;
+  block_hash: string;
+  block_time: number;
 }
 
 //Cosmos type////////////////////////

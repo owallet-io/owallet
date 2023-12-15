@@ -2,69 +2,87 @@ import React from 'react';
 import { StyleSheet, View, FlatList, Alert } from 'react-native';
 
 import { metrics, spacing, typography } from '../../../themes';
-import { _keyExtract, delay } from '../../../utils/helper';
+import { _keyExtract, delay, showToast } from '../../../utils/helper';
 import FastImage from 'react-native-fast-image';
 import { VectorCharacter } from '../../../components/vector-character';
 import { Text } from '@src/components/text';
-import { TRON_ID, COINTYPE_NETWORK } from '@owallet/common';
+import { TRON_ID, COINTYPE_NETWORK, getKeyDerivationFromAddressType } from '@owallet/common';
 import OWFlatList from '@src/components/page/ow-flat-list';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
+import { useBIP44Option } from '@src/screens/register/bip44';
+import { useStore } from '@src/stores';
 
-export const NetworkModal = ({
-  profileColor,
-  chainStore,
-  modalStore,
-  smartNavigation,
-  colors,
-  keyRingStore,
-  bip44Option
-}) => {
+import { useTheme } from '@src/themes/theme-provider';
+import { navigate } from '@src/router/root';
+import { SCREENS } from '@src/common/constants';
+import { Popup } from 'react-native-popup-confirm-toast';
+
+export const NetworkModal = ({ profileColor }) => {
+  const { colors } = useTheme();
+
+  const bip44Option = useBIP44Option();
+  // const smartNavigation = useSmartNavigation();
+  const { modalStore, chainStore, keyRingStore, accountStore } = useStore();
+
+  const account = accountStore.getAccount(chainStore.current.chainId);
   const styles = styling(colors);
+  const onConfirm = async (item: any) => {
+    const { networkType } = chainStore.getChain(item?.chainId);
+    const keyDerivation = (() => {
+      const keyMain = getKeyDerivationFromAddressType(account.addressType);
+      if (networkType === 'bitcoin') {
+        return keyMain;
+      }
+      return '44';
+    })();
+    chainStore.selectChain(item?.chainId);
+    await chainStore.saveLastViewChainId();
+    Popup.hide();
 
+    await keyRingStore.setKeyStoreLedgerAddress(
+      `${keyDerivation}'/${item.bip44.coinType ?? item.coinType}'/${bip44Option.bip44HDPath.account}'/${
+        bip44Option.bip44HDPath.change
+      }/${bip44Option.bip44HDPath.addressIndex}`,
+      item?.chainId
+    );
+  };
   const handleSwitchNetwork = async (item) => {
+    // alert('ok');
     try {
-      if (keyRingStore.keyRingType === 'ledger') {
-        Alert.alert(
-          'Switch network',
-          `You are switching to ${COINTYPE_NETWORK[item.bip44.coinType]} network. Please confirm that you have ${
+      if (account.isNanoLedger) {
+        modalStore.close();
+        Popup.show({
+          type: 'confirm',
+          title: 'Switch network!',
+          textBody: `You are switching to ${
+            COINTYPE_NETWORK[item.bip44.coinType]
+          } network. Please confirm that you have ${
             COINTYPE_NETWORK[item.bip44.coinType]
           } App opened before switch network`,
-          [
-            {
-              text: 'Cancel',
-              onPress: () => {
-                modalStore.close();
-              },
-              style: 'cancel'
-            },
-            {
-              text: 'Switch',
-              onPress: async () => {
-                chainStore.selectChain(item?.chainId);
-                await chainStore.saveLastViewChainId();
-                if (typeof keyRingStore.setKeyStoreLedgerAddress === 'function') {
-                  await keyRingStore.setKeyStoreLedgerAddress(
-                    `${chainStore.current.networkType === 'bitcoin' ? '84' : '44'}'/${
-                      item.bip44.coinType ?? item.coinType
-                    }'/${bip44Option.bip44HDPath.account}'/${bip44Option.bip44HDPath.change}/${
-                      bip44Option.bip44HDPath.addressIndex
-                    }`,
-                    item?.chainId
-                  );
-                }
-              }
-            }
-          ]
-        );
+          buttonText: `I have switched ${COINTYPE_NETWORK[item.bip44.coinType]} App`,
+          confirmText: 'Cancel',
+          okButtonStyle: {
+            backgroundColor: colors['orange-800']
+          },
+          callback: () => onConfirm(item),
+          cancelCallback: () => {
+            Popup.hide();
+          },
+          bounciness: 0,
+          duration: 10
+        });
+        return;
       } else {
         chainStore.selectChain(item?.chainId);
         await chainStore.saveLastViewChainId();
+        modalStore.close();
       }
     } catch (error) {
-      console.log('error: ', error);
-    } finally {
-      modalStore.close();
+      showToast({
+        type: 'danger',
+        message: JSON.stringify(error)
+      });
     }
   };
 
@@ -172,7 +190,9 @@ export const NetworkModal = ({
         {chainStore.current.chainId === TRON_ID ? null : (
           <TouchableOpacity
             onPress={() => {
-              smartNavigation.navigateSmart('Network.select', {});
+              navigate(SCREENS.STACK.Others, {
+                screen: SCREENS.NetworkSelect
+              });
               modalStore.close();
             }}
           >

@@ -254,6 +254,13 @@ export class ElectrumClient extends SocketClient {
   mempool_getFeeHistogram() {
     return this.request('mempool.get_fee_histogram', []);
   }
+  blockchainTransaction_get(tx_hash, verbose = false, merkle = false) {
+    try {
+      return this.request('blockchain.transaction.get', [tx_hash, verbose]);
+    } catch (e) {
+      return { error: true, data: e };
+    }
+  }
   async blockchainTransactions_get(tx_hashes, verbose = false, merkle = false) {
     try {
       const result = [];

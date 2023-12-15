@@ -32,11 +32,11 @@ export class TxsHelper {
   };
   public readonly INFO_API_BITCOIN = {
     [ChainIdEnum.BitcoinTestnet]: {
-      BASE_URL: 'https://api.blockcypher.com/v1/btc/test3',
+      BASE_URL: 'https://blockstream.info/testnet/api',
       API_KEY: ''
     },
     [ChainIdEnum.Bitcoin]: {
-      BASE_URL: 'https://api.blockcypher.com/v1/btc/main',
+      BASE_URL: 'https://blockstream.info/api',
       API_KEY: ''
     }
   };
@@ -335,90 +335,47 @@ export class TxsHelper {
     return [transferItem];
   }
   handleTransferDetailBtc(
-    data: TxBitcoin,
+    data: txBitcoinResult,
     currentChain: ChainInfoInner<ChainInfo>,
     addressAccount: string
   ): Partial<TransferDetail>[] {
     let transferItem: Partial<TransferDetail> = {};
     transferItem.transferInfo = [];
-    if (data?.inputs?.length > 0) {
-      console.log('🚀 ~ file: txs-helper.ts:345 ~ TxsHelper ~ data:', data);
-      for (let i = 0; i < data?.inputs.length; i++) {
-        const element = data?.inputs[i];
-        if (element?.addresses?.length > 0 && element?.addresses[0]?.toLowerCase() === addressAccount?.toLowerCase()) {
-          transferItem.transferInfo.push({
-            txId: data?.hash,
-            amount: formatBalance({
-              balance: Number(element?.output_value),
-              cryptoUnit: 'BTC',
-              coin: currentChain.chainId
-            }),
-            isMinus: true
-          });
-          break;
-        }
-      }
-    }
-    if (data?.outputs?.length > 0) {
-      console.log('🚀 ~ file: txs-helper.ts:345 ~ TxsHelper ~ data:', data);
-      for (let i = 0; i < data?.outputs.length; i++) {
-        const element = data?.outputs[i];
-        if (element?.addresses?.length > 0 && element?.addresses[0]?.toLowerCase() === addressAccount?.toLowerCase()) {
-          transferItem.transferInfo.push({
-            txId: data?.hash,
-            amount: formatBalance({
-              balance: Number(element?.value),
-              cryptoUnit: 'BTC',
-              coin: currentChain.chainId
-            }),
-            isPlus: true
-          });
-          break;
-        }
-      }
-    }
-
-    transferItem.typeEvent = 'Transaction';
 
     let transferItemIn: Partial<TransferDetail> = {};
     transferItemIn.transferInfo = [];
-    if (data?.inputs?.length > 0) {
-      for (let i = 0; i < data?.inputs.length; i++) {
-        const element = data?.inputs[i];
-        if (element?.addresses?.length > 0) {
-          transferItemIn.transferInfo.push({
-            address: element?.addresses[0],
-            amount: formatBalance({
-              balance: Number(element?.output_value),
-              cryptoUnit: 'BTC',
-              coin: currentChain.chainId
-            }),
-            isMinus: true
-          });
-        }
+    if (data?.vin?.length > 0 && data?.vout?.length > 0) {
+      const found = data.vin.some((item) => item.prevout.scriptpubkey_address === addressAccount);
+      if (found) {
+        let arrVoutFilter = data.vout.filter((item) => item.scriptpubkey_address !== addressAccount);
+        const totalBalance = arrVoutFilter.reduce((total, data) => {
+          return total + data.value;
+        }, 0);
+        transferItem.transferInfo.push({
+          amount: formatBalance({
+            balance: Number(totalBalance),
+            cryptoUnit: 'BTC',
+            coin: currentChain.chainId
+          }),
+          isMinus: true
+        });
+      } else {
+        let arrVoutFilter = data.vout.filter((item) => item.scriptpubkey_address === addressAccount);
+        const totalBalance = arrVoutFilter.reduce((total, data) => {
+          return total + data.value;
+        }, 0);
+        transferItem.transferInfo.push({
+          amount: formatBalance({
+            balance: Number(totalBalance),
+            cryptoUnit: 'BTC',
+            coin: currentChain.chainId
+          }),
+          isPlus: true
+        });
       }
     }
-    transferItemIn.typeEvent = 'From';
-    let transferItemOut: Partial<TransferDetail> = {};
-    transferItemOut.transferInfo = [];
-    if (data?.outputs?.length > 0) {
-      for (let i = 0; i < data?.outputs.length; i++) {
-        const element = data?.outputs[i];
-        if (element?.addresses?.length > 0) {
-          transferItemOut.transferInfo.push({
-            address: element?.addresses[0],
-            amount: formatBalance({
-              balance: Number(element?.value),
-              cryptoUnit: 'BTC',
-              coin: currentChain.chainId
-            }),
-            isPlus: true
-          });
-        }
-      }
-    }
-    transferItemOut.typeEvent = 'To';
-    return [transferItem, transferItemIn, transferItemOut];
+    transferItem.typeEvent = 'Transaction';
+    return [transferItem];
   }
   handleItemTxsEthAndBsc(
     data: InfoTxEthAndBsc,
@@ -446,23 +403,23 @@ export class TxsHelper {
   }
 
   handleItemTxsBtc(
-    data: TxBitcoin,
+    data: txBitcoinResult,
     currentChain: ChainInfoInner<ChainInfo>,
     addressAccount: string
   ): Partial<ResTxsInfo> {
     let item: Partial<ResTxsInfo> = {};
     item.fee = formatBalance({
-      balance: Number(data.fees),
+      balance: Number(data.fee),
       cryptoUnit: 'BTC',
       coin: currentChain.chainId
     });
     item.denomFee = '';
-    item.time = this.formatTimeBitcoin(data?.received);
-    item.txHash = data?.hash;
-    item.height = this.formatNumberSeparateThousand(data?.block_height);
-    item.status = data?.confirmations > 0 ? 'success' : 'pending';
+    item.time = data?.status?.confirmed ? this.formatTimeBitcoin(data?.status?.block_time * 1000) : null;
+    item.txHash = data?.txid;
+    item.height = data?.status?.confirmed ? this.formatNumberSeparateThousand(data?.status?.block_height) : '--';
+    item.status = data?.status?.confirmed ? 'success' : 'pending';
     item.memo = null;
-    item.confirmations = data?.confirmations;
+    item.confirmations = 0;
     item.countTypeEvent = 0;
     item.gasUsed = null;
     item.gasWanted = null;
@@ -496,7 +453,7 @@ export class TxsHelper {
     return dataConverted;
   }
   cleanDataBtcResToStandFormat(
-    data: TxBitcoin[],
+    data: txBitcoinResult[],
     currentChain: ChainInfoInner<ChainInfo>,
     addressAccount: string
   ): Partial<ResTxsInfo>[] {

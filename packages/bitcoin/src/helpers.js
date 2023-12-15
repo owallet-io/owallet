@@ -8,7 +8,11 @@ const moment = require('moment');
 const bip21 = require('bip21');
 const Url = require('url-parse');
 const { networks, availableCoins, defaultWalletShape, getCoinData } = require('./networks');
-const { getTransaction } = require('./electrum');
+const { getTransaction, getTransactionHex } = require('./electrum');
+const { validate, getAddressInfo } = require('bitcoin-address-validation');
+const BigNumber = require('bignumber.js');
+const accumulative = require('coinselect/accumulative');
+const { MIN_FEE_RATE } = require('@owallet/common');
 /*
 This batch sends addresses and returns the balance of utxos from them
  */
@@ -27,6 +31,18 @@ const getBalanceFromUtxos = async ({ addresses = [], changeAddresses = [], selec
   }
 };
 
+const getFeeRate = async ({ selectedCrypto, blocksWillingToWait = 2 }) => {
+  const res = await walletHelpers.feeEstimate.default({
+    selectedCrypto,
+    blocksWillingToWait
+  });
+
+  if (!res.error && res.data) {
+    const data = Math.round(new BigNumber(res.data).dividedBy(1024).multipliedBy(100000000).toNumber());
+    return data > MIN_FEE_RATE ? data : MIN_FEE_RATE;
+  }
+  return MIN_FEE_RATE;
+};
 //Returns: { error: bool, isPrivateKey: bool, network: Object }
 const validatePrivateKey = (privateKey = '') => {
   try {
@@ -71,7 +87,7 @@ const validateAddress = (address = '', selectedCrypto = '') => {
     }
     return { isValid: true, coin: selectedCrypto };
   } catch (e) {
-    console.log('🚀 ~ file: helpers.js:83 ~ validateAddress ~ e:', e);
+    // console.log('🚀 ~ file: helpers.js:83 ~ validateAddress ~ e:', e);
     return { isValid: false, coin: selectedCrypto };
   }
 };
@@ -335,19 +351,15 @@ const convertStringToMessage = (str) => {
   const textHex = Buffer.from(text, 'hex');
   return textHex;
 };
-const calculatorFee = ({
-  changeAddress = '',
-  utxos = [],
-  addressType = 'bech32',
-  transactionFee = 1,
-  message = ''
-}) => {
-  if (message && typeof message === 'string') {
-    message = convertStringToMessage(message);
+const calculatorFee = ({ utxos = [], transactionFee = 1, message = '' }) => {
+  if (message && message.length > 80) {
+    throw new Error('message too long, must not be longer than 80 chars.');
   }
-  const totalFee =
-    getByteCount({ [addressType]: utxos.length }, { [addressType]: changeAddress ? 2 : 1 }, message) * transactionFee;
-  return totalFee;
+  if (utxos.length === 0) return 0;
+  const feeRateWhole = Math.ceil(transactionFee);
+  const compiledMemo = message ? compileMemo(message) : null;
+  const fee = getFeeFromUtxos(utxos, feeRateWhole, compiledMemo);
+  return fee;
 };
 const createMsg = ({ address, amount, totalFee, changeAddress, confirmedBalance, message = '', selectedCrypto }) => {
   const network = networks[selectedCrypto];
@@ -463,150 +475,32 @@ const signAndCreateTransaction = async ({ selectedCrypto, mnemonic, utxos, black
 //amount = Amount to send to recipient.
 //transactionFee = fee per byte.
 const createTransaction = async ({
-  address = '',
-  transactionFee = 1,
+  recipient = '',
+  transactionFee = MIN_FEE_RATE,
   amount = 0,
-  confirmedBalance = 0,
   utxos = [],
-  blacklistedUtxos = [],
-  changeAddress = '',
+  sender = '',
   keyPair,
   selectedCrypto = 'bitcoin',
   message = '',
-  addressType = 'bech32'
+  totalFee = 0
 } = {}) => {
   try {
-    if (message && typeof message === 'string') {
-      message = convertStringToMessage(message);
-    }
-
-    const network = networks[selectedCrypto];
-    const totalFee =
-      BigInt(getByteCount({ [addressType]: utxos.length }, { [addressType]: changeAddress ? 2 : 1 }, message)) *
-      BigInt(transactionFee);
-    addressType = addressType.toLowerCase();
-    let targets = [];
-    if (amount > 0) {
-      targets.push({ address, value: Number(amount.toString()) });
-    }
-
-    //Change address and amount to send back to wallet.
-    if (changeAddress) {
-      const totalBack = BigInt(confirmedBalance) - (BigInt(amount) + totalFee);
-      targets.push({
-        address: changeAddress,
-        value: Number(totalBack.toString())
-      });
-    }
-
-    //Embed any OP_RETURN messages.
-    if (message !== '') {
-      const messageLength = message.length;
-      const lengthMin = 5;
-      //This is a patch for the following: https://github.com/coreyphillips/moonshine/issues/52
-      const buffers = [message];
-      if (messageLength > 0 && messageLength < lengthMin)
-        buffers.push(Buffer.from(' '.repeat(lengthMin - messageLength), 'utf8'));
-      const data = Buffer.concat(buffers);
-      const embed = bitcoin.payments.embed({ data: [data], network });
-      targets.push({ script: embed.output, value: 0 });
-    }
-
-    const psbt = new bitcoin.Psbt({ network });
-
-    //Add Inputs
-    const utxosLength = utxos.length;
-    for (let i = 0; i < utxosLength; i++) {
-      try {
-        const utxo = utxos[i];
-        if (blacklistedUtxos.includes(utxo.tx_hash)) continue;
-        if (addressType === 'bech32') {
-          const p2wpkh = bitcoin.payments.p2wpkh({
-            pubkey: keyPair.publicKey,
-            network
-          });
-          psbt.addInput({
-            hash: utxo.txid,
-            index: utxo.vout,
-            witnessUtxo: {
-              script: p2wpkh.output,
-              value: utxo.value
-            }
-          });
-        }
-
-        if (addressType === 'segwit') {
-          const p2wpkh = bitcoin.payments.p2wpkh({
-            pubkey: keyPair.publicKey,
-            network
-          });
-          const p2sh = bitcoin.payments.p2sh({ redeem: p2wpkh, network });
-          psbt.addInput({
-            hash: utxo.txid,
-            index: utxo.vout,
-            witnessUtxo: {
-              script: p2sh.output,
-              value: utxo.value
-            },
-            redeemScript: p2sh.redeem.output
-          });
-        }
-
-        if (addressType === 'legacy') {
-          const transaction = await getTransaction({
-            txHash: utxo.txid,
-            coin: selectedCrypto
-          });
-
-          const nonWitnessUtxo = Buffer.from(transaction.data.hex, 'hex');
-          psbt.addInput({
-            hash: utxo.txid,
-            index: utxo.vout,
-            nonWitnessUtxo
-          });
-        }
-      } catch (e) {
-        console.log(e);
-      }
-    }
-
-    //Shuffle and add outputs.
-    try {
-      targets = shuffleArray(targets);
-    } catch (e) {}
-
-    targets.forEach((target) => {
-      //Check if OP_RETURN
-      let isOpReturn = false;
-      try {
-        isOpReturn = !!target.script;
-      } catch (e) {}
-      if (isOpReturn) {
-        psbt.addOutput({
-          script: target.script,
-          value: target.value
-        });
-      } else {
-        psbt.addOutput({
-          address: target.address,
-          value: target.value
-        });
-      }
+    const { psbt } = await buildTx({
+      recipient: recipient,
+      amount: amount,
+      utxos: utxos,
+      sender: sender,
+      memo: message,
+      selectedCrypto,
+      totalFee,
+      transactionFee,
+      keyPair,
+      isLedger: false
     });
+    psbt.signAllInputs(keyPair); // Sign all inputs
+    psbt.finalizeAllInputs(); // Finalise inputs
 
-    //Loop through and sign
-    let index = 0;
-    for (let i = 0; i < utxosLength; i++) {
-      try {
-        const utxo = utxos[i];
-        if (blacklistedUtxos.includes(utxo.tx_hash)) continue;
-        psbt.signInput(index, keyPair);
-        index++;
-      } catch (e) {
-        console.log(e);
-      }
-    }
-    psbt.finalizeAllInputs();
     const rawTx = psbt.extractTransaction(true).toHex();
     const data = { error: false, data: rawTx };
 
@@ -616,7 +510,116 @@ const createTransaction = async ({
     return { error: true, data: e };
   }
 };
+/**
+ * Compile memo.
+ *
+ * @param {string} memo The memo to be compiled.
+ * @returns {Buffer} The compiled memo.
+ */
+const compileMemo = (memo) => {
+  const data = Buffer.from(memo, 'utf8'); // converts MEMO to buffer
+  return bitcoin.script.compile([bitcoin.opcodes.OP_RETURN, data]); // Compile OP_RETURN script
+};
 
+const buildTx = async ({
+  recipient = '',
+  transactionFee = 1,
+  amount = 0,
+  utxos = [],
+  sender = '',
+  selectedCrypto = 'bitcoin',
+  memo = '',
+  totalFee,
+  keyPair,
+  isLedger = false
+}) => {
+  if (memo && memo.length > 80) {
+    throw new Error('message too long, must not be longer than 80 chars.');
+  }
+  if (!validateAddress(recipient, selectedCrypto).isValid) throw new Error('Invalid address');
+  if (utxos.length === 0) throw new Error('Insufficient Balance for transaction');
+  var utxosWithHex = [];
+  for (let i = 0; i < utxos.length; i++) {
+    const utxo = utxos[i];
+    const transaction = await getTransactionHex({
+      txId: utxo.txid,
+      coin: selectedCrypto
+    });
+    if (!transaction.error) {
+      utxosWithHex.push({
+        hex: transaction.data,
+        ...utxo
+      });
+    }
+  }
+  const addressType = getAddressTypeByAddress(sender);
+  const utxosData = addressType === 'bech32' && !isLedger ? utxos : utxosWithHex;
+  const feeRateWhole = Math.ceil(transactionFee);
+  const compiledMemo = memo ? compileMemo(memo) : null;
+  const targetOutputs = [];
+
+  //1. add output amount and recipient to targets
+  targetOutputs.push({
+    address: recipient,
+    value: amount
+  });
+  //2. add output memo to targets (optional)
+  if (compiledMemo) {
+    targetOutputs.push({ script: compiledMemo, value: 0 });
+  }
+
+  const { inputs, outputs, fee } = accumulative(utxosData, targetOutputs, feeRateWhole);
+  if (fee > totalFee) throw new Error('Fee not match');
+
+  // .inputs and .outputs will be undefined if no solution was found
+  if (!inputs || !outputs) throw new Error('Insufficient Balance for transaction');
+
+  const psbt = new bitcoin.Psbt({ network: networks[selectedCrypto] }); // Network-specific
+
+  // psbt add input from accumulative inputs
+  inputs.forEach((utxo) => {
+    const extraData = (() => {
+      if (addressType === 'legacy') {
+        return { nonWitnessUtxo: Buffer.from(utxo.hex, 'hex') };
+      } else if (addressType === 'bech32') {
+        const p2wpkh = bitcoin.payments.p2wpkh({
+          pubkey: keyPair.publicKey,
+          network: networks[selectedCrypto]
+        });
+        return {
+          witnessUtxo: {
+            script: p2wpkh.output,
+            value: utxo.value
+          }
+        };
+      }
+    })();
+
+    psbt.addInput({
+      hash: utxo.txid,
+      index: utxo.vout,
+      ...extraData
+    });
+  });
+
+  // psbt add outputs from accumulative outputs
+  outputs.forEach((output) => {
+    if (!output.address) {
+      //an empty address means this is the  change ddress
+      output.address = sender;
+    }
+    if (!output.script) {
+      psbt.addOutput(output);
+    } else {
+      //we need to add the compiled memo this way to
+      //avoid dust error tx when accumulating memo output with 0 value
+      if (compiledMemo) {
+        psbt.addOutput({ script: compiledMemo, value: 0 });
+      }
+    }
+  });
+  return { psbt, utxos: utxosData, inputs, fee };
+};
 const fetchData = (type, params) => {
   switch (type.toLowerCase()) {
     case 'post':
@@ -866,6 +869,34 @@ const getInfoFromAddressPath = async (path = '') => {
     console.log(e);
     return { error: true, isChangeAddress: false, addressIndex: 0 };
   }
+};
+const TX_EMPTY_SIZE = 4 + 1 + 1 + 4; //10
+const TX_INPUT_BASE = 32 + 4 + 1 + 4; // 41
+const TX_INPUT_PUBKEYHASH = 107;
+const TX_OUTPUT_BASE = 8 + 1; //9
+const TX_OUTPUT_PUBKEYHASH = 25;
+const inputBytes = (input) => {
+  return TX_INPUT_BASE + (input.witnessUtxo?.script ? input.witnessUtxo?.script.length : TX_INPUT_PUBKEYHASH);
+};
+const MIN_TX_FEE = 1000;
+const getFeeFromUtxos = (utxos, feeRate, data) => {
+  const inputSizeBasedOnInputs =
+    utxos.length > 0
+      ? utxos.reduce((a, x) => a + inputBytes(x), 0) + utxos.length // +1 byte for each input signature
+      : 0;
+  let sum =
+    TX_EMPTY_SIZE +
+    inputSizeBasedOnInputs +
+    TX_OUTPUT_BASE +
+    TX_OUTPUT_PUBKEYHASH +
+    TX_OUTPUT_BASE +
+    TX_OUTPUT_PUBKEYHASH;
+
+  if (data) {
+    sum += TX_OUTPUT_BASE + data.length;
+  }
+  const fee = sum * feeRate;
+  return fee > MIN_TX_FEE ? fee : MIN_TX_FEE;
 };
 
 //Solution located here: https://stackoverflow.com/questions/3753483/javascript-thousand-separator-string-format/19840881
@@ -1239,8 +1270,19 @@ function toBufferLE(num, width) {
   buffer.reverse();
   return buffer;
 }
+const getAddressTypeByAddress = (address) => {
+  const isValid = validate(address);
+  if (!isValid) return null;
+  const infoAdd = getAddressInfo(address);
+  if (!infoAdd.bech32) {
+    return 'legacy';
+  }
+  return 'bech32';
+};
+
 module.exports = {
   toBufferLE,
+  getAddressTypeByAddress,
   validatePrivateKey,
   validateAddress,
   parsePaymentRequest,
@@ -1295,5 +1337,7 @@ module.exports = {
   signAndCreateTransaction,
   BtcToSats,
   convertStringToMessage,
-  btcToFiat
+  btcToFiat,
+  buildTx,
+  getFeeRate
 };

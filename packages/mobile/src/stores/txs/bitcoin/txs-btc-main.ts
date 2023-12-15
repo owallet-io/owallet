@@ -14,17 +14,17 @@ export class TxsBtc extends Txs {
   async getTxs(page: number, current_page: number, params: ParamsFilterReqTxs): Promise<Partial<ResTxs>> {
     try {
       const data = await API.getTxsBitcoin(this.infoApi.BASE_URL, params?.addressAccount);
-
-      if (data?.txs?.length > 0) {
+      const countData = await API.getCountTxsBitcoin(this.infoApi.BASE_URL, params?.addressAccount);
+      if (data?.length > 0) {
         const rsConverted = this.txsHelper.cleanDataBtcResToStandFormat(
-          data?.txs,
+          data,
           this.currentChain,
           params?.addressAccount
         );
         return Promise.resolve({
           result: rsConverted,
           current_page: 0,
-          total_page: data?.txs?.length
+          total_page: countData?.chain_stats?.tx_count
         });
       }
       return Promise.resolve({

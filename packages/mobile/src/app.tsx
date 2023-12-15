@@ -15,7 +15,7 @@ import { IntlProvider } from 'react-intl';
 import ThemeProvider from './themes/theme-provider';
 import analytics from '@react-native-firebase/analytics';
 import FlashMessage from 'react-native-flash-message';
-
+import { Root as PopupRootProvider } from 'react-native-popup-confirm-toast';
 import { colorsCode } from './themes/mode-colors';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
@@ -129,17 +129,18 @@ export const App = () => {
             <AppIntlProviderWithStorage>
               <SafeAreaProvider>
                 <ModalsProvider>
-                  <LoadingScreenProvider>
-                    <ConfirmModalProvider>
-                      <InteractionModalsProivder>
-                        <AppNavigation />
-                      </InteractionModalsProivder>
-                    </ConfirmModalProvider>
-                  </LoadingScreenProvider>
+                  <PopupRootProvider>
+                    <LoadingScreenProvider>
+                      <ConfirmModalProvider>
+                        <InteractionModalsProivder>
+                          <AppNavigation />
+                        </InteractionModalsProivder>
+                      </ConfirmModalProvider>
+                    </LoadingScreenProvider>
+                  </PopupRootProvider>
                 </ModalsProvider>
               </SafeAreaProvider>
             </AppIntlProviderWithStorage>
-
             <FlashMessage position="top" />
           </ThemeProvider>
         </StoreProvider>

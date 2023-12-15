@@ -79,13 +79,13 @@ export class BitcoinAccount {
         case 'native':
           const msg: any = {
             address: recipient,
-            changeAddress: this.base.bech32Address,
+            changeAddress: this.base.btcAddress,
             amount: Number(extraOptions.amount),
             message: memo,
             totalFee: Number(stdFee.amount[0].amount),
             selectedCrypto: signOptions.chainId,
             confirmedBalance: extraOptions.confirmedBalance,
-            gasPriceStep: extraOptions.gasPriceStep
+            feeRate: extraOptions.feeRate
           };
 
           await this.base.sendBtcMsgs(
@@ -97,9 +97,7 @@ export class BitcoinAccount {
             this.txEventsWithPreOnFulfill(onTxEvents, (tx) => {
               if (tx) {
                 // After succeeding to send token, refresh the balance.
-                const queryBtcBalance = this.queries.bitcoin.queryBitcoinBalance.getQueryBalance(
-                  this.base.bech32Address
-                );
+                const queryBtcBalance = this.queries.bitcoin.queryBitcoinBalance.getQueryBalance(this.base.btcAddress);
                 if (queryBtcBalance) {
                   queryBtcBalance.fetch();
                 }

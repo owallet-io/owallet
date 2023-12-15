@@ -9,17 +9,21 @@ import { useStore } from '../../stores';
 import { useNotification } from '../../components/notification';
 import { useIntl } from 'react-intl';
 import { WalletStatus } from '@owallet/stores';
-import { ChainIdEnum, TRON_ID, getBase58Address } from '@owallet/common';
+import { ChainIdEnum, TRON_ID, getBase58Address, getKeyDerivationFromAddressType } from '@owallet/common';
+import { FormGroup, Input, Label } from 'reactstrap';
+import { AddressBtcType } from '@owallet/types';
+import { useBIP44Option } from '../register/advanced-bip44';
 
 export const AccountView: FunctionComponent = observer(() => {
   const { accountStore, chainStore, keyRingStore } = useStore();
   const chainId = chainStore.current.chainId;
-  const networkType = chainStore.current.networkType;
+  const { networkType, bip44, coinType } = chainStore.current;
   const accountInfo = accountStore.getAccount(chainId);
   const selected = keyRingStore?.multiKeyStoreInfo?.find((keyStore) => keyStore?.selected);
   const intl = useIntl();
+  const bip44Option = useBIP44Option();
   const checkTronNetwork = chainId === TRON_ID;
-
+  const addressDisplay = accountInfo.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
   const ledgerAddress =
     keyRingStore.keyRingType == 'ledger'
       ? checkTronNetwork
@@ -53,9 +57,21 @@ export const AccountView: FunctionComponent = observer(() => {
         });
       }
     },
-    [accountInfo.walletStatus, accountInfo.bech32Address, notification, intl]
+    [accountInfo.walletStatus, addressDisplay, notification, intl]
   );
-
+  const onSwitchAddressType = (type: AddressBtcType) => {
+    accountInfo.setAddressTypeBtc(type);
+    const keyDerivation = (() => {
+      const keyMain = getKeyDerivationFromAddressType(type);
+      return keyMain;
+    })();
+    if (accountInfo.isNanoLedger) {
+      const path = `${keyDerivation}'/${bip44.coinType ?? coinType}'/${bip44Option.bip44HDPath.account}'/${
+        bip44Option.bip44HDPath.change
+      }/${bip44Option.bip44HDPath.addressIndex}`;
+      keyRingStore.setKeyStoreLedgerAddress(path, chainId);
+    }
+  };
   return (
     <div>
       <div className={styleAccount.containerName}>
@@ -73,12 +89,10 @@ export const AccountView: FunctionComponent = observer(() => {
       {(networkType === 'cosmos' || networkType === 'bitcoin') && (
         <div className={styleAccount.containerAccount}>
           <div style={{ flex: 1 }} />
-          <div className={styleAccount.address} onClick={() => copyAddress(accountInfo.bech32Address)}>
+          <div className={styleAccount.address} onClick={() => copyAddress(addressDisplay)}>
             <span className={styleAccount.addressText}>
               <Address maxCharacters={22} lineBreakBeforePrefix={false}>
-                {accountInfo.walletStatus === WalletStatus.Loaded && accountInfo.bech32Address
-                  ? accountInfo.bech32Address
-                  : '...'}
+                {accountInfo.walletStatus === WalletStatus.Loaded && addressDisplay ? addressDisplay : '...'}
               </Address>
             </span>
             <div style={{ width: 6 }} />
@@ -153,20 +167,39 @@ export const AccountView: FunctionComponent = observer(() => {
           <div style={{ flex: 1 }} />
         </div>
       )}
-      <div className={styleAccount.coinType}>
-        {' '}
-        {`Coin type: m/${networkType === 'bitcoin' ? '84' : '44'}'/${
-          (keyRingStore.keyRingType == 'ledger'
-            ? chainStore?.current?.bip44?.coinType
-            : selected?.bip44HDPath?.coinType ?? chainStore?.current?.bip44?.coinType) +
-          "'/" +
-          (selected?.bip44HDPath?.account ?? '0') +
-          "'/" +
-          (selected?.bip44HDPath?.change ?? '0') +
-          '/' +
-          (selected?.bip44HDPath?.addressIndex ?? '0')
-        }`}
-      </div>
+      {networkType === 'bitcoin' && (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-around',
+            alignItems: 'center',
+            padding: '10px 0px'
+          }}
+        >
+          <Label check>
+            <Input
+              onClick={() => {
+                onSwitchAddressType(AddressBtcType.Bech32);
+              }}
+              type="radio"
+              name="bech32"
+              checked={accountInfo.addressType === AddressBtcType.Bech32}
+            />{' '}
+            Segwit(Bech32)
+          </Label>
+          <Label check>
+            <Input
+              onClick={() => {
+                onSwitchAddressType(AddressBtcType.Legacy);
+              }}
+              type="radio"
+              name="legacy"
+              checked={accountInfo.addressType === AddressBtcType.Legacy}
+            />{' '}
+            Bitcoin(LEGACY)
+          </Label>
+        </div>
+      )}
       {chainId === ChainIdEnum.BitcoinTestnet && (
         <div className={styleAccount.coinType}>
           <a target="_blank" href="https://bitcoinfaucet.uo1.net/">

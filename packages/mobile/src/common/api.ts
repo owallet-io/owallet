@@ -18,10 +18,7 @@ export const API = {
   delete: (path: string, config: AxiosRequestConfig) => {
     return axios.delete(path, config);
   },
-  requestRpc: async (
-    { method, params, url },
-    config: AxiosRequestConfig = null
-  ) => {
+  requestRpc: async ({ method, params, url }, config: AxiosRequestConfig = null) => {
     try {
       let rpcConfig = {
         method,
@@ -54,12 +51,7 @@ export const API = {
       return Promise.reject(error);
     }
   },
-  getTxsByLCD: async <T>({
-    url,
-    params = null,
-    prefix = '/cosmos/tx/v1beta1',
-    method = '/txs'
-  }): Promise<T> => {
+  getTxsByLCD: async <T>({ url, params = null, prefix = '/cosmos/tx/v1beta1', method = '/txs' }): Promise<T> => {
     try {
       const rs = await API.getByLCD({
         lcdUrl: url,
@@ -84,12 +76,7 @@ export const API = {
       return Promise.reject(error);
     }
   },
-  getTxsLcdCosmos: async (
-    url,
-    query,
-    perPage = 10,
-    currentPage = 1
-  ): Promise<ResLcdCosmos> => {
+  getTxsLcdCosmos: async (url, query, perPage = 10, currentPage = 1): Promise<ResLcdCosmos> => {
     try {
       const rs = await API.getTxsByLCD<ResLcdCosmos>({
         url,
@@ -124,12 +111,7 @@ export const API = {
       return Promise.reject(error);
     }
   },
-  getTxsRpcCosmos: async (
-    url,
-    query,
-    perPage = 10,
-    currentPage = 1
-  ): Promise<ResTxsRpcCosmos> => {
+  getTxsRpcCosmos: async (url, query, perPage = 10, currentPage = 1): Promise<ResTxsRpcCosmos> => {
     try {
       const rs = await API.getTxsByRPC({
         url,
@@ -147,10 +129,9 @@ export const API = {
   },
   getTotalTxsEthAndBscPage: async (url, addressAcc, apiKey) => {
     try {
-      const rs = await API.get(
-        `/api?module=account&action=txlist&address=${addressAcc}&sort=desc&apikey=${apiKey}`,
-        { baseURL: url }
-      );
+      const rs = await API.get(`/api?module=account&action=txlist&address=${addressAcc}&sort=desc&apikey=${apiKey}`, {
+        baseURL: url
+      });
       const data: txsEthAndBscResult = rs.data;
       if (data?.status === '1') {
         return Promise.resolve(data);
@@ -215,33 +196,38 @@ export const API = {
       const rs = await API.get(`/api/tx/${txHash}/status`, {
         baseURL: url
       });
-      
+
       return Promise.reject(rs?.data);
     } catch (error) {
-      handleError(
-        error,
-        `${url}/api/tx/${txHash}/status`,
-        'checkStatusBitcoinTestNet'
-      );
+      handleError(error, `${url}/api/tx/${txHash}/status`, 'checkStatusBitcoinTestNet');
       return Promise.reject(error);
     }
   },
   getTxsBitcoin: async (url, addressAccount) => {
     try {
-      const rs = await API.get(`/addrs/${addressAccount}/full`, {
+      const rs = await API.get(`/address/${addressAccount}/txs`, {
         baseURL: url
       });
-      const data: txBitcoinResult = rs.data;
+      const data: txBitcoinResult[] = rs.data;
       return Promise.resolve(data);
     } catch (error) {
-      handleError(
-        error,
-        `${url}/api?module=account&action=txlist&address=${addressAccount}`,
-        'getTxsEthAndBsc'
-      );
+      handleError(error, `/address/${addressAccount}/txs`, 'getTxsBitcoin');
       return Promise.reject(error);
     }
   },
+  getCountTxsBitcoin: async (url, addressAccount) => {
+    try {
+      const rs = await API.get(`/address/${addressAccount}`, {
+        baseURL: url
+      });
+      const data: InfoAddressBtc = rs.data;
+      return Promise.resolve(data);
+    } catch (error) {
+      handleError(error, `/address/${addressAccount}`, 'getCountTxsBitcoin');
+      return Promise.reject(error);
+    }
+  },
+
   getTxsTron: async (url, addressAccount, current_page, page) => {
     try {
       const rs = await API.get(
@@ -262,29 +248,20 @@ export const API = {
       return Promise.reject(error);
     }
   },
-  getHistory: (
-    { address, offset = 0, limit = 10, isRecipient, isAll = false },
-    config: AxiosRequestConfig
-  ) => {
+  getHistory: ({ address, offset = 0, limit = 10, isRecipient, isAll = false }, config: AxiosRequestConfig) => {
     let url = `cosmos/tx/v1beta1/txs?events=message.sender%3D%27${address}%27&pagination.offset=${offset}&pagination.limit=${limit}&orderBy=2`;
     if (isAll) {
       return API.get(url, config);
     }
     if (isRecipient) {
-      url = url.replace(
-        `events=message.sender`,
-        `events=message.action%3D'send'&events=transfer.recipient`
-      );
+      url = url.replace(`events=message.sender`, `events=message.action%3D'send'&events=transfer.recipient`);
     } else {
       url += `&events=message.action%3D%27send%27`;
     }
     return API.get(url, config);
   },
 
-  getTransactions: (
-    { address, page = 1, limit = 10, type = 'native' },
-    config: AxiosRequestConfig
-  ) => {
+  getTransactions: ({ address, page = 1, limit = 10, type = 'native' }, config: AxiosRequestConfig) => {
     let url = `/v1/txs-account/${address}?limit=${limit}&page_id=${page}`;
     if (type === 'cw20') {
       url = `/v1/ow20_smart_contracts/${address}?limit=${limit}&page_id=${page}`;
@@ -306,10 +283,7 @@ export const API = {
     return API.get(url, config);
   },
 
-  getMarketChartRange: (
-    { id, from, to }: { id: string; from?: number; to?: number },
-    config: AxiosRequestConfig
-  ) => {
+  getMarketChartRange: ({ id, from, to }: { id: string; from?: number; to?: number }, config: AxiosRequestConfig) => {
     if (!to) {
       to = moment().unix();
     }

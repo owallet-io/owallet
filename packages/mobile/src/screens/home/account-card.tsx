@@ -19,6 +19,7 @@ export const AccountCard: FunctionComponent<{
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
   const addressDisplay = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
+
   const queryBalances = queries.queryBalances.getQueryBech32Address(addressDisplay);
   const queryStakable = queryBalances.stakable;
 
@@ -104,7 +105,7 @@ export const AccountCard: FunctionComponent<{
           ? chainStore?.current?.bip44?.coinType
           : selected?.bip44HDPath?.coinType ?? chainStore?.current?.bip44?.coinType
       }`}
-      networkType={'cosmos'}
+      // networkType={'cosmos'}
       onPressBtnMain={onPressBtnMain}
     />
   );

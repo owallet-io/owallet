@@ -9,7 +9,8 @@ import {
   Ethereum,
   TronWeb,
   Bitcoin,
-  AminoSignResponse
+  AminoSignResponse,
+  AddressBtcType
 } from '@owallet/types';
 import { DeepReadonly, Mutable } from 'utility-types';
 import bech32, { fromWords } from 'bech32';
@@ -24,7 +25,7 @@ import {
   OwalletEvent,
   sortObjectByKey,
   escapeHTML,
-  findLedgerAddressWithChainId,
+  findLedgerAddress,
   ChainIdEnum,
   isBase58,
   getBase58Address,
@@ -72,7 +73,7 @@ export type ExtraOptionSendToken = {
   confirmedBalance?: number;
   utxos?: any[];
   blacklistedUtxos?: any[];
-  gasPriceStep?: number;
+  feeRate?: number;
 };
 
 export interface MsgOpt {
@@ -131,6 +132,8 @@ export class AccountSetBase<MsgOpts, Queries> {
   protected _bech32Address: string = '';
   @observable
   protected _legacyAddress: string = '';
+  @observable
+  protected _addressType: AddressBtcType = AddressBtcType.Bech32;
   @observable
   protected _address: Uint8Array = null;
 
@@ -279,6 +282,7 @@ export class AccountSetBase<MsgOpts, Queries> {
     }
 
     const key = yield* toGenerator(owallet.getKey(this.chainId));
+
     this._bech32Address = key.bech32Address;
     this._address = key.address;
     this._isNanoLedger = key.isNanoLedger;
@@ -297,10 +301,14 @@ export class AccountSetBase<MsgOpts, Queries> {
     this._bech32Address = '';
     this._name = '';
     this._legacyAddress = '';
+    this._addressType = AddressBtcType.Bech32;
     this._address = null;
     this.pubKey = new Uint8Array(0);
   }
-
+  @action
+  public setAddressTypeBtc(type: AddressBtcType): void {
+    this._addressType = type;
+  }
   get walletVersion(): string | undefined {
     return this._walletVersion;
   }
@@ -315,9 +323,9 @@ export class AccountSetBase<MsgOpts, Queries> {
   getAddressDisplay(keyRingLedgerAddresses: AddressesLedger, toDisplay: boolean = true): string {
     const chainInfo = this.chainGetter.getChain(this.chainId);
     const { networkType } = chainInfo;
-    if (!!this._isNanoLedger) {
+    if (this._isNanoLedger) {
       if (networkType !== 'cosmos') {
-        const address = findLedgerAddressWithChainId(keyRingLedgerAddresses, this.chainId);
+        const address = findLedgerAddress(keyRingLedgerAddresses, chainInfo, this.addressType);
         if (this.chainId === ChainIdEnum.TRON && isBase58(address) && !toDisplay) {
           return getEvmAddress(address);
         }
@@ -329,6 +337,8 @@ export class AccountSetBase<MsgOpts, Queries> {
         return getBase58Address(this.evmosHexAddress);
       }
       return this.evmosHexAddress;
+    } else if (networkType === 'bitcoin') {
+      return this.btcAddress;
     }
     return this._bech32Address;
   }
@@ -928,7 +938,7 @@ export class AccountSetBase<MsgOpts, Queries> {
       const signResponse = await bitcoin.signAndBroadcast(this.chainId, {
         memo,
         fee,
-        address: this.bech32Address,
+        address: this.btcAddress,
         msgs,
         ...extraOptions
       });
@@ -1041,6 +1051,17 @@ export class AccountSetBase<MsgOpts, Queries> {
   }
   get legacyAddress(): string {
     return this._legacyAddress;
+  }
+  @computed
+  get addressType(): AddressBtcType {
+    return this._addressType;
+  }
+  @computed
+  get btcAddress(): string {
+    if (this._addressType === AddressBtcType.Legacy) {
+      return this.legacyAddress;
+    }
+    return this._bech32Address;
   }
   get isNanoLedger(): boolean {
     return this._isNanoLedger;
