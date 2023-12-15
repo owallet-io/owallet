@@ -68,6 +68,7 @@ export const SCREENS = {
     SendNavigation: 'SendNavigation'
   },
   STACK: {
+    Pincode: 'Pincode',
     Unlock: 'Unlock',
     MainTab: 'MainTab',
     Register: 'Register',
@@ -264,6 +265,9 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: HEADER_KEY.showNetworkHeader
   },
   [SCREENS.STACK.Unlock]: {
+    title: ''
+  },
+  [SCREENS.STACK.Pincode]: {
     title: ''
   },
   [SCREENS.STACK.MainTab]: {

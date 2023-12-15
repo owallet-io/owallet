@@ -22,7 +22,8 @@ import {
   Networks,
   TRON_DENOM,
   BigDecimal,
-  toSubAmount
+  toSubAmount,
+  oraichainTokens
 } from '@oraichain/oraidex-common';
 import { openLink } from '../../utils/helper';
 import { SwapDirection, feeEstimate, getTransferTokenFee } from '@owallet/common';
@@ -73,8 +74,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const [fromTokenFee, setFromTokenFee] = useState<number>(0);
   const [toTokenFee, setToTokenFee] = useState<number>(0);
+  const [relayerFeeAmount, setRelayerFeeAmount] = useState<number>(0);
 
   const [[fromAmountToken, toAmountToken], setSwapAmount] = useState([0, 0]);
+  const [toAmountTokenString, setToAmountToken] = useState('0');
 
   const [ratio, setRatio] = useState(null);
 
@@ -87,6 +90,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const onChangeFromAmount = (amount: string | undefined) => {
     if (!amount) return setSwapAmount([0, toAmountToken]);
     setSwapAmount([parseFloat(amount), toAmountToken]);
+    setBalanceActive(null);
   };
 
   const onMaxFromAmount = (amount: bigint, type: string) => {
@@ -294,6 +298,28 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     }
   };
 
+  const convertRelayerFee = async () => {
+    if (client && relayerFeeToken) {
+      const routerClient = new OraiswapRouterQueryClient(client, network.router);
+      const oraiToken = oraichainTokens.find(token => token.coinGeckoId === 'oraichain-token');
+
+      const data = await handleSimulateSwap({
+        originalFromInfo: oraiToken,
+        originalToInfo: originalToToken,
+        originalAmount: toDisplay(relayerFeeToken.toString()),
+        routerClient
+      });
+
+      setRelayerFeeAmount(data.displayAmount);
+    } else {
+      setRelayerFeeAmount(0);
+    }
+  };
+
+  useEffect(() => {
+    convertRelayerFee();
+  }, [relayerFeeToken, originalFromToken, originalToToken]);
+
   const estimateAverageRatio = async () => {
     const data = await getSimulateSwap(INIT_AMOUNT);
     setRatio(data);
@@ -303,7 +329,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setAmountLoading(true);
     try {
       const data = await getSimulateSwap();
-      const minimumReceive = Number(data.displayAmount - (data.displayAmount * userSlippage) / 100);
+      const minimumReceive = Number(data.displayAmount - (data.displayAmount * userSlippage) / 100 - relayerFeeAmount);
 
       const fromAmountTokenBalance = fromTokenInfoData && toAmount(fromAmountToken, fromTokenInfoData!.decimals);
       const warningMinimumReceive =
@@ -320,13 +346,15 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       setMininumReceive(Number(minimumReceive.toFixed(6)));
       if (data) {
         const isWarningSlippage = +warningMinimumReceive > +data.amount;
+
         setIsWarningSlippage(isWarningSlippage);
-        setSwapAmount([fromAmountBalance, Number(data.amount)]);
+        setToAmountToken(data.amount);
+        setSwapAmount([fromAmountBalance, Number(data.displayAmount)]);
       }
       setAmountLoading(false);
     } catch (error) {
       console.log('error', error);
-
+      setMininumReceive(0);
       setAmountLoading(false);
       handleErrorSwap(error?.message ?? error?.ex?.message);
     }
@@ -377,7 +405,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         },
         originalFromToken: originalFromToken,
         originalToToken: originalToToken,
-        simulateAmount: toAmountToken.toString(),
+        simulateAmount: toAmountTokenString,
         simulatePrice: ratio.amount,
         userSlippage: userSlippage,
         fromAmount: fromAmountToken,
@@ -546,13 +574,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               tokenFee={fromTokenFee}
             />
             <SwapBox
-              amount={
-                toDisplay(
-                  toAmountToken?.toString(),
-                  fromTokenInfoData?.decimals,
-                  toTokenInfoData?.decimals
-                ).toString() ?? '0'
-              }
+              amount={toAmountToken.toString() ?? '0'}
               balanceValue={toDisplay(toTokenBalance, originalToToken?.decimals)}
               tokenActive={originalToToken}
               onOpenTokenModal={() => setIsSelectToTokenModal(true)}
@@ -601,11 +623,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           <View style={styles.itemBottom}>
             <BalanceText>Quote</BalanceText>
             <BalanceText>
-              {`1 ${originalFromToken?.name} ≈ ${toDisplay(
-                ratio?.amount,
-                fromTokenInfoData?.decimals,
-                toTokenInfoData?.decimals
-              )} ${originalToToken?.name}`}
+              {`1 ${originalFromToken.name} ≈ ${ratio ? Number((ratio.displayAmount / INIT_AMOUNT).toFixed(6)) : '0'} ${
+                originalToToken.name
+              }`}
             </BalanceText>
           </View>
           {!swapLoading && (!fromAmountToken || !toAmountToken) && fromToken.denom === TRON_DENOM ? (
@@ -628,7 +648,15 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           {!!relayerFeeToken && (
             <View style={styles.itemBottom}>
               <BalanceText>Relayer Fee</BalanceText>
-              <BalanceText>{toDisplay(relayerFeeToken.toString(), RELAYER_DECIMAL)} ORAI</BalanceText>
+              <BalanceText>
+                {toDisplay(relayerFeeToken.toString(), RELAYER_DECIMAL)} ORAI ≈ {relayerFeeAmount}{' '}
+                {originalToToken.name}
+              </BalanceText>
+            </View>
+          )}
+          {minimumReceive < 0 && (
+            <View style={styles.itemBottom}>
+              <BalanceText color={colors['danger']}>Current swap amount is too small</BalanceText>
             </View>
           )}
           {!fromTokenFee && !toTokenFee && isWarningSlippage && (
