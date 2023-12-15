@@ -143,14 +143,13 @@ export const PincodeScreen: FunctionComponent = observer(() => {
 
   const showPass = () => setStatusPass(!statusPass);
 
-  const pinRef = useRef();
+  const pinRef = useRef(null);
   const numpadRef = useRef(null);
 
   const [code, setCode] = useState('');
 
   useEffect(() => {
     if (pinRef?.current) {
-      //@ts-ignore
       pinRef.current.focus();
     }
   }, []);
@@ -158,9 +157,7 @@ export const PincodeScreen: FunctionComponent = observer(() => {
   useEffect(() => {
     if (code.length >= 6) {
       if (pinRef?.current) {
-        //@ts-ignore
-        pinRef.current.shake();
-        setCode('');
+        pinRef.current.shake().then(() => setCode(''));
         numpadRef.current.clearAll();
       }
     }
@@ -255,12 +252,15 @@ export const PincodeScreen: FunctionComponent = observer(() => {
             Switch
           </OWText>
         </TouchableOpacity>
-        <View style={styles.rc}>
-          <OWIcon size={14} name="bridge" color={colors['purple-900']} />
-          <OWText style={{ paddingLeft: 8 }} variant="h2" weight="600" size={14} color={colors['purple-900']}>
-            Sign in with Face ID
-          </OWText>
-        </View>
+
+        <TouchableOpacity onPress={() => tryBiometric()}>
+          <View style={styles.rc}>
+            <OWIcon size={14} name="bridge" color={colors['purple-900']} />
+            <OWText style={{ paddingLeft: 8 }} variant="h2" weight="600" size={14} color={colors['purple-900']}>
+              Sign in with Face ID
+            </OWText>
+          </View>
+        </TouchableOpacity>
         {isNumericPad ? (
           <NumericPad
             ref={numpadRef}
