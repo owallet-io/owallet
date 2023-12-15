@@ -78,6 +78,7 @@ export const colorsCode = {
   // gray
   'gray-10': '#F3F1F5',
   'gray-50': '#F2F2F7',
+  'gray-80': '#F5F5F7',
   'gray-100': '#F2F6FA',
   'gray-150': '#5F5E77',
   'gray-200': '#D1D1D6',
@@ -130,6 +131,7 @@ const modeColors = {
   background: ['#01040D', '#F5F5F5'],
   'box-nft': ['#2B2D3B', '#F6F6F9'],
   'sub-background': ['#2B2D3B', '#F8EFFF'],
+  'background-light-gray': ['#EBEDF2', '#EBEDF2'],
   'card-background': ['#0E121D', '#fff'],
   'input-background': ['#2B2D3B', '#fff'],
   'primary-background': ['#945EF8', '#F3F1F5'],

@@ -3,48 +3,17 @@ import React from 'react';
 import { useTheme } from '@src/themes/theme-provider';
 
 export interface OWTextProps extends TextProps {
-  variant?:
-    | 'h1'
-    | 'h2'
-    | 'h3'
-    | 'h4'
-    | 'h5'
-    | 'subtitle'
-    | 'body1'
-    | 'body2'
-    | 'button'
-    | 'caption'
-    | 'overline';
+  variant?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'subtitle' | 'body1' | 'body2' | 'button' | 'caption' | 'overline';
   typo?: 'bold' | 'regular' | 'medium';
   color?: string;
   size?: number;
-  weight?:
-    | '0'
-    | '100'
-    | '200'
-    | '300'
-    | '400'
-    | '500'
-    | '600'
-    | '700'
-    | '800'
-    | '900';
+  weight?: '100' | '200' | '300' | '400' | '500' | '600' | '700' | '800' | '900';
 }
 const OWText = ({ ...props }: OWTextProps) => {
   const { colors } = useTheme();
-  const {
-    color = colors['primary-text'],
-    variant,
-    typo = 'regular',
-    size,
-    style,
-    weight
-  } = props;
+  const { color = colors['primary-text'], variant, typo = 'regular', size, style, weight } = props;
   return (
-    <Text
-      {...props}
-      style={[useStyle({ variant, color, typo, size, weight }), style]}
-    >
+    <Text {...props} style={[useStyle({ variant, color, typo, size, weight }), style]}>
       {props.children}
     </Text>
   );
@@ -98,15 +67,15 @@ const useStyle = ({ variant, typo, color, size, weight }: OWTextProps) => {
   switch (typo) {
     case 'bold':
       textStyle.fontWeight = '700';
-      textStyle.fontFamily = 'DMSans-Bold';
+      textStyle.fontFamily = 'SpaceGrotesk-Bold';
       break;
     case 'regular':
       textStyle.fontWeight = '400';
-      textStyle.fontFamily = 'DMSans-Regular';
+      textStyle.fontFamily = 'SpaceGrotesk-Regular';
       break;
     case 'medium':
       textStyle.fontWeight = '500';
-      textStyle.fontFamily = 'DMSans-Medium';
+      textStyle.fontFamily = 'SpaceGrotesk-Medium';
       break;
   }
   if (color) textStyle.color = color;

@@ -21,6 +21,11 @@
 		177E368B2A56CE2D003072B1 /* AppCenter-Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = 177E368A2A56CE2C003072B1 /* AppCenter-Config.plist */; };
 		17FC937C7DD19E8C218F61ED /* libPods-mobile-mobileTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4531CE77F5B7A735D9ACDB73 /* libPods-mobile-mobileTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		CE3280C32B2ABE5300172006 /* SpaceGrotesk-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CE3280C02B2ABD9100172006 /* SpaceGrotesk-Bold.ttf */; };
+		CE3280C42B2ABE5300172006 /* SpaceGrotesk-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CE3280C12B2ABD9100172006 /* SpaceGrotesk-Light.ttf */; };
+		CE3280C52B2ABE5300172006 /* SpaceGrotesk-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CE3280C22B2ABD9100172006 /* SpaceGrotesk-Medium.ttf */; };
+		CE3280C62B2ABE5300172006 /* SpaceGrotesk-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CE3280BE2B2ABD9100172006 /* SpaceGrotesk-Regular.ttf */; };
+		CE3280C72B2ABE5300172006 /* SpaceGrotesk-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CE3280BF2B2ABD9100172006 /* SpaceGrotesk-SemiBold.ttf */; };
 		FB566D94A088B2DC59492949 /* libPods-mobile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 09C8BC07455E264378C5A715 /* libPods-mobile.a */; };
 /* End PBXBuildFile section */
 
@@ -60,6 +65,11 @@
 		A3F0DD332B63CCD3DE5F9BAE /* Pods-mobile-mobileTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mobile-mobileTests.release.xcconfig"; path = "Target Support Files/Pods-mobile-mobileTests/Pods-mobile-mobileTests.release.xcconfig"; sourceTree = "<group>"; };
 		A80FFC3DE0AA4298AB47092C /* Pods-mobile.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mobile.debug.xcconfig"; path = "Target Support Files/Pods-mobile/Pods-mobile.debug.xcconfig"; sourceTree = "<group>"; };
 		BC3DA39EFF4DCC3E759B9673 /* Pods-mobile-mobileTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mobile-mobileTests.debug.xcconfig"; path = "Target Support Files/Pods-mobile-mobileTests/Pods-mobile-mobileTests.debug.xcconfig"; sourceTree = "<group>"; };
+		CE3280BE2B2ABD9100172006 /* SpaceGrotesk-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SpaceGrotesk-Regular.ttf"; sourceTree = "<group>"; };
+		CE3280BF2B2ABD9100172006 /* SpaceGrotesk-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SpaceGrotesk-SemiBold.ttf"; sourceTree = "<group>"; };
+		CE3280C02B2ABD9100172006 /* SpaceGrotesk-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SpaceGrotesk-Bold.ttf"; sourceTree = "<group>"; };
+		CE3280C12B2ABD9100172006 /* SpaceGrotesk-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SpaceGrotesk-Light.ttf"; sourceTree = "<group>"; };
+		CE3280C22B2ABD9100172006 /* SpaceGrotesk-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SpaceGrotesk-Medium.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -117,6 +127,11 @@
 		177E367D2A56CBF6003072B1 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				CE3280C02B2ABD9100172006 /* SpaceGrotesk-Bold.ttf */,
+				CE3280C12B2ABD9100172006 /* SpaceGrotesk-Light.ttf */,
+				CE3280C22B2ABD9100172006 /* SpaceGrotesk-Medium.ttf */,
+				CE3280BE2B2ABD9100172006 /* SpaceGrotesk-Regular.ttf */,
+				CE3280BF2B2ABD9100172006 /* SpaceGrotesk-SemiBold.ttf */,
 				177E36802A56CC0E003072B1 /* DMSans-Bold.ttf */,
 				177E367F2A56CC0E003072B1 /* DMSans-BoldItalic.ttf */,
 				177E367E2A56CC0E003072B1 /* DMSans-Italic.ttf */,
@@ -279,6 +294,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE3280C32B2ABE5300172006 /* SpaceGrotesk-Bold.ttf in Resources */,
+				CE3280C42B2ABE5300172006 /* SpaceGrotesk-Light.ttf in Resources */,
+				CE3280C52B2ABE5300172006 /* SpaceGrotesk-Medium.ttf in Resources */,
+				CE3280C62B2ABE5300172006 /* SpaceGrotesk-Regular.ttf in Resources */,
+				CE3280C72B2ABE5300172006 /* SpaceGrotesk-SemiBold.ttf in Resources */,
 				177E36852A56CC0F003072B1 /* DMSans-BoldItalic.ttf in Resources */,
 				177E368B2A56CE2D003072B1 /* AppCenter-Config.plist in Resources */,
 				177E36872A56CC0F003072B1 /* DMSans-Medium.ttf in Resources */,
@@ -584,7 +604,7 @@
 				CODE_SIGN_ENTITLEMENTS = mobile/mobile.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 46P8362P8Z;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 46P8362P8Z;
 				ENABLE_BITCODE = NO;
@@ -593,7 +613,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.2;
+				MARKETING_VERSION = 1.2.3;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -618,7 +638,7 @@
 				CODE_SIGN_ENTITLEMENTS = mobile/mobile.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 46P8362P8Z;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 46P8362P8Z;
 				INFOPLIST_FILE = mobile/Info.plist;
@@ -626,7 +646,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.2;
+				MARKETING_VERSION = 1.2.3;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",

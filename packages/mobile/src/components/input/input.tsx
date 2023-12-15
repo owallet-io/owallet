@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  Platform,
-  StyleSheet,
-  TextInput as NativeTextInput,
-  TextStyle,
-  View,
-  ViewStyle
-} from 'react-native';
+import { Platform, StyleSheet, TextInput as NativeTextInput, TextStyle, View, ViewStyle } from 'react-native';
 import { Text } from '@src/components/text';
 import { useStyle } from '../../styles';
 import { spacing, typography } from '../../themes';
@@ -42,16 +35,9 @@ export const TextInput = React.forwardRef<
 
   const style = useStyle();
   const { colors } = useTheme();
-  const ElementTextInput = restProps.isBottomSheet
-    ? BottomSheetTextInput
-    : NativeTextInput;
+  const ElementTextInput = restProps.isBottomSheet ? BottomSheetTextInput : NativeTextInput;
   return (
-    <View
-      style={StyleSheet.flatten([
-        style.flatten(['padding-bottom-28']),
-        props.containerStyle
-      ])}
-    >
+    <View style={StyleSheet.flatten([style.flatten(['padding-bottom-28']), props.containerStyle])}>
       <View
         style={{
           flexDirection: 'row',
@@ -84,10 +70,7 @@ export const TextInput = React.forwardRef<
               'border-width-1',
               'border-color-border-white'
             ],
-            [
-              props.error ? 'border-color-error' : undefined,
-              !(props.editable ?? true) && 'background-color-disabled'
-            ]
+            [props.error ? 'border-color-error' : undefined, !(props.editable ?? true) && 'background-color-disabled']
           ),
           {
             backgroundColor: 'transparent',
@@ -104,12 +87,8 @@ export const TextInput = React.forwardRef<
             multiline={props.multiline}
             style={[
               StyleSheet.flatten([
-                style.flatten([
-                  'padding-0',
-                  'body2-in-text-input',
-                  'color-text-black-medium',
-                  'flex-1'
-                ]),
+                style.flatten(['padding-0', 'body2-in-text-input', 'color-text-black-medium', 'flex-1']),
+                { fontFamily: 'SpaceGrotesk-Regular' },
                 Platform.select({
                   ios: {},
                   android: {
@@ -123,9 +102,7 @@ export const TextInput = React.forwardRef<
               { color: colors['sub-primary-text'] }
             ]}
             {...restProps}
-            placeholderTextColor={
-              props.placeholderTextColor ?? colors['text-place-holder']
-            }
+            placeholderTextColor={props.placeholderTextColor ?? colors['text-place-holder']}
             ref={ref}
           />
           {props.inputRight}
@@ -137,13 +114,7 @@ export const TextInput = React.forwardRef<
           <View>
             <Text
               style={StyleSheet.flatten([
-                style.flatten([
-                  'absolute',
-                  'text-caption2',
-                  'color-primary',
-                  'margin-top-2',
-                  'margin-left-4'
-                ]),
+                style.flatten(['absolute', 'text-caption2', 'color-primary', 'margin-top-2', 'margin-left-4']),
                 props.errorLabelStyle
               ])}
             >
@@ -160,13 +131,7 @@ export const TextInput = React.forwardRef<
         <View>
           <Text
             style={StyleSheet.flatten([
-              style.flatten([
-                'absolute',
-                'text-caption2',
-                'color-error',
-                'margin-top-2',
-                'margin-left-4'
-              ]),
+              style.flatten(['absolute', 'text-caption2', 'color-error', 'margin-top-2', 'margin-left-4']),
               props.errorLabelStyle
             ])}
           >
