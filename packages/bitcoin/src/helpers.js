@@ -16,7 +16,32 @@ const { MIN_FEE_RATE } = require('@owallet/common');
 /*
 This batch sends addresses and returns the balance of utxos from them
  */
+const processBalanceFromUtxos = ({ utxos, address, path, currentBlockHeight = 0 }) => {
+  let balance = 0;
+  if (!utxos) return 0;
+  let utxosData = [];
 
+  utxos.forEach((utxo) => {
+    balance = balance + Number(utxo.value);
+    const data = {
+      address: address, //Required
+      path: path, //Required
+      value: utxo.value, //Required
+      confirmations: currentBlockHeight - Number(utxo.status.block_height), //Required
+      blockHeight: utxo.status.block_height,
+      txid: utxo.txid, //Required (Same as tx_hash_big_endian)
+      vout: utxo.vout, //Required (Same as tx_output_n)
+      tx_hash: utxo.txid,
+      tx_hash_big_endian: utxo.txid,
+      tx_output_n: utxo.vout
+    };
+    utxosData.push(data);
+  });
+  return {
+    balance,
+    utxos: utxosData
+  };
+};
 const getBalanceFromUtxos = async ({ addresses = [], changeAddresses = [], selectedCrypto } = {}) => {
   try {
     const result = await walletHelpers.utxos.default({
@@ -1338,5 +1363,6 @@ module.exports = {
   convertStringToMessage,
   btcToFiat,
   buildTx,
-  getFeeRate
+  getFeeRate,
+  processBalanceFromUtxos
 };

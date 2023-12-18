@@ -6,11 +6,11 @@ import { computed } from 'mobx';
 import { CoinPretty, Int } from '@owallet/unit';
 import { CancelToken } from 'axios';
 import { getAddressTypeByAddress, getBaseDerivationPath } from '@owallet/bitcoin';
-import { getScriptHash, getBalanceFromUtxos, getCoinNetwork } from '@owallet/bitcoin';
+import { processBalanceFromUtxos } from '@owallet/bitcoin';
 import { AddressBtcType } from '@owallet/types';
 export class ObservableQueryBitcoinBalanceInner extends ObservableChainQuery<Result> {
   constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter, protected readonly address: string) {
-    super(kvStore, chainId, chainGetter, `/address/${address}/txs`);
+    super(kvStore, chainId, chainGetter, `/address/${address}/utxo`);
   }
 
   @computed
@@ -28,28 +28,20 @@ export class ObservableQueryBitcoinBalanceInner extends ObservableChainQuery<Res
   }
   protected async fetchResponse(cancelToken: CancelToken): Promise<QueryResponse<Result>> {
     const resApi = await super.fetchResponse(cancelToken);
-
     const addressType = getAddressTypeByAddress(this.address) as AddressBtcType;
     const keyDerivation = getKeyDerivationFromAddressType(addressType);
     const path = getBaseDerivationPath({
       selectedCrypto: this.chainId as string,
       keyDerivationPath: keyDerivation
     }) as string;
-
-    const scriptHash = getScriptHash(this.address, getCoinNetwork(this.chainId));
-
-    const response = await getBalanceFromUtxos({
-      addresses: [{ address: this.address, path, scriptHash }],
-      changeAddresses: [],
-      selectedCrypto: this.chainId
+    const btcResult = processBalanceFromUtxos({
+      address: this.address,
+      utxos: resApi.data,
+      path
     });
-
-    const btcResult = response.data;
-
     if (!btcResult) {
       throw new Error('Failed to get the response from bitcoin');
     }
-
     return {
       data: btcResult,
       status: 1,
