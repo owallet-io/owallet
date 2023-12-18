@@ -626,8 +626,10 @@ export const getTransactionHexByBlockStream = ({ txId = '', coin = '', id = Math
   const method = 'getTransactionHex';
   return new Promise(async (resolve) => {
     try {
-      const { data, status } = await Axios.get(`${restBtc[coin]}/tx/${txId}/hex`);
-      resolve({ id, error: status !== 200 ? true : false, method, data, coin });
+      const rs = await fetch(`${restBtc[coin]}/tx/${txId}/hex`);
+      const rsText = await rs.text();
+
+      resolve({ id, error: rs.status !== 200 ? true : false, method, data: rsText, coin });
     } catch (e) {
       console.log(e);
       resolve({ id, error: true, method, data: e, coin });

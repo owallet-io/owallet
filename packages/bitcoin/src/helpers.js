@@ -27,8 +27,8 @@ const processBalanceFromUtxos = ({ utxos, address, path, currentBlockHeight = 0 
       address: address, //Required
       path: path, //Required
       value: utxo.value, //Required
-      confirmations: currentBlockHeight - Number(utxo.status.block_height), //Required
-      blockHeight: utxo.status.block_height,
+      confirmations: currentBlockHeight - Number(utxo.status.block_height ?? 0), //Required
+      blockHeight: utxo.status.block_height ?? 0,
       txid: utxo.txid, //Required (Same as tx_hash_big_endian)
       vout: utxo.vout, //Required (Same as tx_output_n)
       tx_hash: utxo.txid,
@@ -566,13 +566,14 @@ const buildTx = async ({
         txId: item.txid,
         coin: selectedCrypto
       });
+      console.log('🚀 ~ file: helpers.js:569 ~ utxos.map ~ transaction:', transaction);
       if (!transaction.error) {
         return {
           hex: transaction.data,
           ...item
         };
       }
-      throw Error('Not get transactionHex By TxId');
+      throw Error(`Not get transactionHex By TxId + ${item.txid}`);
     })
   );
 
