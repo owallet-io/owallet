@@ -9,6 +9,7 @@ export enum NetworkEnum {
   Evm = 'evm',
   Bitcoin = 'bitcoin'
 }
+
 export enum ChainIdEnum {
   Oraichain = 'Oraichain',
   OraichainTestnet = 'Oraichain-testnet',
@@ -26,7 +27,10 @@ export enum ChainIdEnum {
   Bitcoin = 'bitcoin',
   Injective = 'injective-1'
 }
-
+export const restBtc = {
+  [ChainIdEnum.Bitcoin]: 'https://blockstream.info/api',
+  [ChainIdEnum.BitcoinTestnet]: 'https://blockstream.info/testnet/api'
+};
 export const TRC20_LIST = [
   {
     contractAddress: 'TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8',
