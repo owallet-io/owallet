@@ -31,17 +31,13 @@ const getBalanceFromUtxos = async ({ addresses = [], changeAddresses = [], selec
   }
 };
 
-const getFeeRate = async ({ selectedCrypto, blocksWillingToWait = 2 }) => {
-  const res = await walletHelpers.feeEstimate.default({
-    selectedCrypto,
-    blocksWillingToWait
-  });
-
-  if (!res.error && res.data) {
-    const data = Math.round(new BigNumber(res.data).dividedBy(1024).multipliedBy(100000000).toNumber());
-    return data > MIN_FEE_RATE ? data : MIN_FEE_RATE;
+const getFeeRate = async ({ blocksWillingToWait = 2, url }) => {
+  const feeRate = await (await fetch(`${url}/fee-estimates`)).json();
+  const feeRateByBlock = feeRate?.[blocksWillingToWait];
+  if (!feeRateByBlock) {
+    throw Error('Not found Fee rate');
   }
-  return MIN_FEE_RATE;
+  return feeRateByBlock > MIN_FEE_RATE ? feeRateByBlock : MIN_FEE_RATE;
 };
 //Returns: { error: bool, isPrivateKey: bool, network: Object }
 const validatePrivateKey = (privateKey = '') => {
