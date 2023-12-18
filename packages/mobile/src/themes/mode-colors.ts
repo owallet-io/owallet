@@ -93,6 +93,7 @@ export const colorsCode = {
 
   //green
   'green-500': '#4BB10C',
+  'green-active': '#90B51B',
 
   // purple
   'purple-10': '#F3F1F5',
@@ -132,6 +133,7 @@ const modeColors = {
   'box-nft': ['#2B2D3B', '#F6F6F9'],
   'sub-background': ['#2B2D3B', '#F8EFFF'],
   'background-light-gray': ['#EBEDF2', '#EBEDF2'],
+  'background-light': ['#F5F5F7', '#F5F5F7'],
   'card-background': ['#0E121D', '#fff'],
   'input-background': ['#2B2D3B', '#fff'],
   'primary-background': ['#945EF8', '#F3F1F5'],
