@@ -684,36 +684,36 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinImageUrl: 'https://i.ibb.co/hKSvPvJ/hermit-network.png'
       },
       {
-		type: 'cw20',
+	type: 'cw20',
         coinDenom: 'GHB',
         coinMinimalDenom: 'cw20:ghm1hqj3tnclwstk827mw8le9gxuq2rrcjpf0vpjg4',
-		contractAddress: 'ghm1hqj3tnclwstk827mw8le9gxuq2rrcjpf0vpjg4'
+	contractAddress: 'ghm1hqj3tnclwstk827mw8le9gxuq2rrcjpf0vpjg4',
         coinDecimals: 8,
         coinImageUrl: 'https://i.ibb.co/S6qvW3X/ghb.png'
       },
       {
-		type: 'cw20',
+	type: 'cw20',
         coinDenom: 'CHB',
         coinMinimalDenom: 'cw20:ghm1kj8wwjctlxkglqxarzrsw83em7s7j936qh3vc7',
-		contractAddress: 'ghm1kj8wwjctlxkglqxarzrsw83em7s7j936qh3vc7'
+	contractAddress: 'ghm1kj8wwjctlxkglqxarzrsw83em7s7j936qh3vc7',
         coinDecimals: 8,
         coinImageUrl: 'https://i.ibb.co/S6qvW3X/chb.png'
       },
       {
         type: 'cw20',
-		coinDenom: 'USDT',
+	coinDenom: 'USDT',
         coinMinimalDenom: 'cw20:ghm1gd4wse7v6rq6myptxuv9mpgq8gqy85yw6dcym4',
-        contractAddress: 'ghm1gd4wse7v6rq6myptxuv9mpgq8gqy85yw6dcym4'
-		coinDecimals: 8,
+        contractAddress: 'ghm1gd4wse7v6rq6myptxuv9mpgq8gqy85yw6dcym4',
+	coinDecimals: 8,
         coinImageUrl: 'https://i.ibb.co/S6qvW3X/usdt.png'
       },
 	  {
-	    type: 'cw20',
-		coinDenom: 'USDC',
-	    coinMinimalDenom: 'cw20:ghm19f3vzxucvtjrv7venq8x3w0vqsyztc6n97jj97',
-	    contractAddress: 'ghm19f3vzxucvtjrv7venq8x3w0vqsyztc6n97jj97'
-	  		coinDecimals: 8,
-	    coinImageUrl: 'https://i.ibb.co/S6qvW3X/usdc.png'
+	type: 'cw20',
+	coinDenom: 'USDC',
+	coinMinimalDenom: 'cw20:ghm19f3vzxucvtjrv7venq8x3w0vqsyztc6n97jj97',
+	contractAddress: 'ghm19f3vzxucvtjrv7venq8x3w0vqsyztc6n97jj97',
+	coinDecimals: 8,
+	coinImageUrl: 'https://i.ibb.co/S6qvW3X/usdc.png'
 	  },
     ],
     get feeCurrencies() {
