@@ -645,6 +645,90 @@ export const EmbedChainInfos: AppChainInfo[] = [
   //   features: ['stargate'],
   //   beta: true
   // },
+  
+  //Hermit Info
+  {
+    rpc: 'https://rpc1.hermit.network:26657',
+    rest: 'https://rpc1.hermit.network:1317',
+    chainId: 'Hermit',
+    chainName: 'Hermit Network',
+    networkType: 'cosmos',
+    stakeCurrency: {
+      coinDenom: 'GHM',
+      coinMinimalDenom: 'ughm',
+      coinDecimals: 6,
+      coinGeckoId: 'osmosis',
+      coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/osmo.png',
+      gasPriceStep: {
+        low: 0.0125,
+        average: 0.015,
+        high: 0.02
+      }
+    },
+    bip44: {
+      coinType: 928
+    },
+    bech32Config: {
+      bech32PrefixAccAddr: 'ghmd',
+      bech32PrefixAccPub: 'ghmdpub',
+      bech32PrefixValAddr: 'ghmdvaloper',
+      bech32PrefixValPub: 'ghmdvaloperpub',
+      bech32PrefixConsAddr: 'ghmdvalcons',
+      bech32PrefixConsPub: 'ghmdvalconspub'
+    },
+    currencies: [
+      {
+        coinDenom: 'GHM',
+        coinMinimalDenom: 'ughm',
+        coinDecimals: 6,
+        coinImageUrl: 'https://i.ibb.co/hKSvPvJ/hermit-network.png'
+      },
+      {
+		type: 'cw20',
+        coinDenom: 'GHB',
+        coinMinimalDenom: 'cw20:ghm1hqj3tnclwstk827mw8le9gxuq2rrcjpf0vpjg4',
+		contractAddress: 'ghm1hqj3tnclwstk827mw8le9gxuq2rrcjpf0vpjg4'
+        coinDecimals: 8,
+        coinImageUrl: 'https://i.ibb.co/S6qvW3X/ghb.png'
+      },
+      {
+		type: 'cw20',
+        coinDenom: 'CHB',
+        coinMinimalDenom: 'cw20:ghm1kj8wwjctlxkglqxarzrsw83em7s7j936qh3vc7',
+		contractAddress: 'ghm1kj8wwjctlxkglqxarzrsw83em7s7j936qh3vc7'
+        coinDecimals: 8,
+        coinImageUrl: 'https://i.ibb.co/S6qvW3X/chb.png'
+      },
+      {
+        type: 'cw20',
+		coinDenom: 'USDT',
+        coinMinimalDenom: 'cw20:ghm1gd4wse7v6rq6myptxuv9mpgq8gqy85yw6dcym4',
+        contractAddress: 'ghm1gd4wse7v6rq6myptxuv9mpgq8gqy85yw6dcym4'
+		coinDecimals: 8,
+        coinImageUrl: 'https://i.ibb.co/S6qvW3X/usdt.png'
+      },
+	  {
+	    type: 'cw20',
+		coinDenom: 'USDC',
+	    coinMinimalDenom: 'cw20:ghm19f3vzxucvtjrv7venq8x3w0vqsyztc6n97jj97',
+	    contractAddress: 'ghm19f3vzxucvtjrv7venq8x3w0vqsyztc6n97jj97'
+	  		coinDecimals: 8,
+	    coinImageUrl: 'https://i.ibb.co/S6qvW3X/usdc.png'
+	  },
+    ],
+    get feeCurrencies() {
+      return [this.stakeCurrency];
+    },
+    coinType: 928,
+    features: ['stargate', 'secretwasm','cosmwasm', 'no-legacy-stdTx', 'ibc-go',],
+    chainSymbolImageUrl: 'https://i.ibb.co/hKSvPvJ/hermit-network.png',
+    txExplorer: {
+      name: 'pingpub',
+      txUrl: 'https://ping.pub/hermit/txs/{txHash}'
+    }
+  },
+  
+  
   {
     rpc: 'https://rpc-juno.keplr.app',
     rest: 'https://lcd-juno.keplr.app',
