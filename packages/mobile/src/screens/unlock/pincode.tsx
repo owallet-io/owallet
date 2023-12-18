@@ -15,7 +15,7 @@ import { metrics } from '@src/themes';
 import { TextInput } from '../../components/input';
 import delay from 'delay';
 import { useStore } from '../../stores';
-import { StackActions, useNavigation } from '@react-navigation/native';
+import { RouteProp, StackActions, useNavigation, useRoute } from '@react-navigation/native';
 import { KeyRingStatus } from '@owallet/background';
 import { AccountStore } from '@owallet/stores';
 import { autorun } from 'mobx';
@@ -25,7 +25,6 @@ import SmoothPinCodeInput from 'react-native-smooth-pincode-input';
 import NumericPad from 'react-native-numeric-pad';
 import OWIcon from '@src/components/ow-icon/ow-icon';
 import OWText from '@src/components/text/ow-text';
-import images from '@src/assets/images';
 import OWButtonIcon from '@src/components/button/ow-button-icon';
 
 async function waitAccountLoad(accountStore: AccountStore<any, any, any, any>, chainId: string): Promise<void> {
@@ -48,11 +47,28 @@ async function waitAccountLoad(accountStore: AccountStore<any, any, any, any>, c
 export const PincodeScreen: FunctionComponent = observer(() => {
   const { keyRingStore, keychainStore, accountStore, chainStore, appInitStore, notificationStore } = useStore();
   const navigation = useNavigation();
+  const route = useRoute<
+    RouteProp<
+      Record<
+        string,
+        {
+          isNewWallet?: boolean;
+        }
+      >,
+      string
+    >
+  >();
+  // const isNewWallet = route?.params?.isNewWallet;
+  const isNewWallet = true;
+
   const { colors } = useTheme();
   const styles = styling(colors);
 
   const [downloading, setDownloading] = useState(false);
   const [isNumericPad, setNumericPad] = useState(true);
+  const [confirmCode, setConfirmCode] = useState(null);
+  const [prevPad, setPrevPad] = useState(null);
+  const [counter, setCounter] = useState(0);
   const [installing, setInstalling] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -154,10 +170,52 @@ export const PincodeScreen: FunctionComponent = observer(() => {
     }
   }, []);
 
+  const handleSetPassword = () => {
+    setConfirmCode(code);
+    setCode('');
+    numpadRef?.current?.clearAll();
+    setPrevPad('numeric');
+  };
+
+  const handleContinue = () => {
+    setPrevPad('alphabet');
+  };
+
+  const handleConfirm = () => {
+    if (confirmCode === code && counter < 3) {
+      alert('true');
+      numpadRef?.current?.clearAll();
+    } else {
+      setCounter(counter + 1);
+      alert(`${counter}`);
+      if (counter > 3) {
+        setConfirmCode(null);
+        pinRef?.current?.shake().then(() => setCode(''));
+        numpadRef?.current?.clearAll();
+        setCounter(0);
+      } else {
+        pinRef?.current?.shake().then(() => setCode(''));
+        numpadRef?.current?.clearAll();
+      }
+    }
+  };
+
+  const handleLogin = () => {
+    pinRef?.current?.shake().then(() => setCode(''));
+    numpadRef?.current?.clearAll();
+  };
+
   useEffect(() => {
     if (code.length >= 6) {
-      pinRef?.current?.shake().then(() => setCode(''));
-      numpadRef?.current?.clearAll();
+      if (!isNewWallet) {
+        handleLogin();
+      } else {
+        if (confirmCode) {
+          handleConfirm();
+        } else {
+          handleSetPassword();
+        }
+      }
     }
   }, [code]);
 
@@ -170,7 +228,7 @@ export const PincodeScreen: FunctionComponent = observer(() => {
       </TouchableOpacity>
       <View style={styles.aic}>
         <OWText variant="h2" typo="bold">
-          Set passcode
+          {confirmCode ? 'Confirm your' : 'Set'} passcode
         </OWText>
         <OWText>Secure your wallet by setting a passcode</OWText>
         <View
@@ -266,15 +324,18 @@ export const PincodeScreen: FunctionComponent = observer(() => {
           </TouchableOpacity>
         </View>
       </View>
+
       <View style={styles.aic}>
-        <TouchableOpacity onPress={() => tryBiometric()}>
-          <View style={styles.rc}>
-            <OWIcon size={14} name="bridge" color={colors['purple-900']} />
-            <OWText style={{ paddingLeft: 8 }} variant="h2" weight="600" size={14} color={colors['purple-900']}>
-              Sign in with Face ID
-            </OWText>
-          </View>
-        </TouchableOpacity>
+        {isNewWallet ? null : (
+          <TouchableOpacity onPress={() => tryBiometric()}>
+            <View style={styles.rc}>
+              <OWIcon size={14} name="bridge" color={colors['purple-900']} />
+              <OWText style={{ paddingLeft: 8 }} variant="h2" weight="600" size={14} color={colors['purple-900']}>
+                Sign in with Face ID
+              </OWText>
+            </View>
+          </TouchableOpacity>
+        )}
         {isNumericPad ? (
           <NumericPad
             ref={numpadRef}
