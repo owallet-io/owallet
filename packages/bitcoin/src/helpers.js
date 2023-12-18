@@ -8,7 +8,7 @@ const moment = require('moment');
 const bip21 = require('bip21');
 const Url = require('url-parse');
 const { networks, availableCoins, defaultWalletShape, getCoinData } = require('./networks');
-const { getTransaction, getTransactionHex } = require('./electrum');
+const { getTransaction, getTransactionHex, getTransactionHexByBlockStream } = require('./electrum');
 const { validate, getAddressInfo } = require('bitcoin-address-validation');
 const BigNumber = require('bignumber.js');
 const accumulative = require('coinselect/accumulative');
@@ -534,20 +534,23 @@ const buildTx = async ({
   }
   if (!validateAddress(recipient, selectedCrypto).isValid) throw new Error('Invalid address');
   if (utxos.length === 0) throw new Error('Insufficient Balance for transaction');
-  var utxosWithHex = [];
-  for (let i = 0; i < utxos.length; i++) {
-    const utxo = utxos[i];
-    const transaction = await getTransactionHex({
-      txId: utxo.txid,
-      coin: selectedCrypto
-    });
-    if (!transaction.error) {
-      utxosWithHex.push({
-        hex: transaction.data,
-        ...utxo
+
+  const utxosWithHex = await Promise.all(
+    utxos.map(async (item, index) => {
+      const transaction = await getTransactionHexByBlockStream({
+        txId: item.txid,
+        coin: selectedCrypto
       });
-    }
-  }
+      if (!transaction.error) {
+        return {
+          hex: transaction.data,
+          ...item
+        };
+      }
+      throw Error('Not get transactionHex By TxId');
+    })
+  );
+
   const addressType = getAddressTypeByAddress(sender);
   const utxosData = addressType === 'bech32' && !isLedger ? utxos : utxosWithHex;
   const feeRateWhole = Math.ceil(transactionFee);

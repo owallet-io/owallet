@@ -2,6 +2,9 @@ import bitcoin from 'bitcoinjs-lib';
 import { clients } from './clients';
 import { ElectrumClient } from './electrum-client/electrum/client';
 import { networks } from '../networks';
+import { restBtc } from '@owallet/common';
+import Axios from 'axios';
+const fetch = require('node-fetch').default;
 import peersJson from './peers.json';
 
 let electrumKeepAlive = () => null;
@@ -613,6 +616,18 @@ export const getTransactionHex = ({ txId = '', id = Math.random(), coin = '' } =
         clients.mainClient[coin].blockchain_transaction_get(txId)
       );
       resolve({ id, error, method, data, coin });
+    } catch (e) {
+      console.log(e);
+      resolve({ id, error: true, method, data: e, coin });
+    }
+  });
+};
+export const getTransactionHexByBlockStream = ({ txId = '', coin = '', id = Math.random() } = {}) => {
+  const method = 'getTransactionHex';
+  return new Promise(async (resolve) => {
+    try {
+      const { data, status } = await Axios.get(`${restBtc[coin]}/tx/${txId}/hex`);
+      resolve({ id, error: status !== 200 ? true : false, method, data, coin });
     } catch (e) {
       console.log(e);
       resolve({ id, error: true, method, data: e, coin });
