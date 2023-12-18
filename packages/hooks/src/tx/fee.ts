@@ -84,11 +84,16 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
     try {
       await Promise.all(
         Object.keys(this.chainInfo.gasPriceStep).map(async (item) => {
-          const feeRate = await getFeeRate({
-            selectedCrypto: this.chainInfo.chainId,
-            blocksWillingToWait: this.chainInfo.gasPriceStep[item]
-          });
-          this._feeRate[item] = feeRate;
+          try {
+            console.log('🚀 ~ file: fee.ts:90 ~ FeeConfig ~ Object.keys ~ this.chainInfo.rest:', this.chainInfo.rest);
+            const feeRate = await getFeeRate({
+              url: this.chainInfo.rest,
+              blocksWillingToWait: this.chainInfo.gasPriceStep[item]
+            });
+            this._feeRate[item] = feeRate;
+          } catch (error) {
+            console.log('🚀 ~ file: fee.ts:94 ~ FeeConfig ~ Object.keys ~ error:', error);
+          }
         })
       );
     } catch (error) {
