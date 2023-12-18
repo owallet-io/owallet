@@ -22,7 +22,7 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
   const [tokenIcon, setTokenIcon] = useState(null);
 
   useEffect(() => {
-    setText(amount);
+    setText(Number(amount).toFixed(6).toString());
   }, [amount]);
 
   const handleChangeAmount = amount => {

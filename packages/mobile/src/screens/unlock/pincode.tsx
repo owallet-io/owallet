@@ -179,6 +179,7 @@ export const PincodeScreen: FunctionComponent = observer(() => {
 
   const handleContinue = () => {
     setPrevPad('alphabet');
+    setConfirmCode(code);
   };
 
   const handleConfirm = () => {
