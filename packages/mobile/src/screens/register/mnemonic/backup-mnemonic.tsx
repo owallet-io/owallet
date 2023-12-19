@@ -44,7 +44,7 @@ export const BackupMnemonicScreen: FunctionComponent = observer(props => {
   const { colors } = useTheme();
   const smartNavigation = useSmartNavigation();
 
-  const words = 'wheat notable caution job office hire canvas trick stomach initial cricket into'.split(' ');
+  const words = 'test test'.split(' ');
 
   const styles = useStyles();
 
