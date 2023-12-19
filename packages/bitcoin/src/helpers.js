@@ -8,7 +8,7 @@ const moment = require('moment');
 const bip21 = require('bip21');
 const Url = require('url-parse');
 const { networks, availableCoins, defaultWalletShape, getCoinData } = require('./networks');
-const { getTransaction, getTransactionHex } = require('./electrum');
+const { getTransaction, getTransactionHex, getTransactionHexByBlockStream } = require('./electrum');
 const { validate, getAddressInfo } = require('bitcoin-address-validation');
 const BigNumber = require('bignumber.js');
 const accumulative = require('coinselect/accumulative');
@@ -16,7 +16,36 @@ const { MIN_FEE_RATE } = require('@owallet/common');
 /*
 This batch sends addresses and returns the balance of utxos from them
  */
-
+const processBalanceFromUtxos = ({ utxos, address, path, currentBlockHeight = 0 }) => {
+  let balance = 0;
+  let utxosData = [];
+  if (!utxos || utxos?.length === 0) {
+    return {
+      balance,
+      utxos: utxosData
+    };
+  }
+  utxos.forEach((utxo) => {
+    balance = balance + Number(utxo.value);
+    const data = {
+      address: address, //Required
+      path: path, //Required
+      value: utxo.value, //Required
+      confirmations: currentBlockHeight - Number(utxo.status.block_height ?? 0), //Required
+      blockHeight: utxo.status.block_height ?? 0,
+      txid: utxo.txid, //Required (Same as tx_hash_big_endian)
+      vout: utxo.vout, //Required (Same as tx_output_n)
+      tx_hash: utxo.txid,
+      tx_hash_big_endian: utxo.txid,
+      tx_output_n: utxo.vout
+    };
+    utxosData.push(data);
+  });
+  return {
+    balance,
+    utxos: utxosData
+  };
+};
 const getBalanceFromUtxos = async ({ addresses = [], changeAddresses = [], selectedCrypto } = {}) => {
   try {
     const result = await walletHelpers.utxos.default({
@@ -31,17 +60,13 @@ const getBalanceFromUtxos = async ({ addresses = [], changeAddresses = [], selec
   }
 };
 
-const getFeeRate = async ({ selectedCrypto, blocksWillingToWait = 2 }) => {
-  const res = await walletHelpers.feeEstimate.default({
-    selectedCrypto,
-    blocksWillingToWait
-  });
-
-  if (!res.error && res.data) {
-    const data = Math.round(new BigNumber(res.data).dividedBy(1024).multipliedBy(100000000).toNumber());
-    return data > MIN_FEE_RATE ? data : MIN_FEE_RATE;
+const getFeeRate = async ({ blocksWillingToWait = 2, url }) => {
+  const feeRate = await (await fetch(`${url}/fee-estimates`)).json();
+  const feeRateByBlock = feeRate?.[blocksWillingToWait];
+  if (!feeRateByBlock) {
+    throw Error('Not found Fee rate');
   }
-  return MIN_FEE_RATE;
+  return feeRateByBlock > MIN_FEE_RATE ? feeRateByBlock : MIN_FEE_RATE;
 };
 //Returns: { error: bool, isPrivateKey: bool, network: Object }
 const validatePrivateKey = (privateKey = '') => {
@@ -538,20 +563,23 @@ const buildTx = async ({
   }
   if (!validateAddress(recipient, selectedCrypto).isValid) throw new Error('Invalid address');
   if (utxos.length === 0) throw new Error('Insufficient Balance for transaction');
-  var utxosWithHex = [];
-  for (let i = 0; i < utxos.length; i++) {
-    const utxo = utxos[i];
-    const transaction = await getTransactionHex({
-      txId: utxo.txid,
-      coin: selectedCrypto
-    });
-    if (!transaction.error) {
-      utxosWithHex.push({
-        hex: transaction.data,
-        ...utxo
+
+  const utxosWithHex = await Promise.all(
+    utxos.map(async (item, index) => {
+      const transaction = await getTransactionHexByBlockStream({
+        txId: item.txid,
+        coin: selectedCrypto
       });
-    }
-  }
+      if (!transaction.error) {
+        return {
+          hex: transaction.data,
+          ...item
+        };
+      }
+      throw Error(`Not get transactionHex By TxId + ${item.txid}`);
+    })
+  );
+
   const addressType = getAddressTypeByAddress(sender);
   const utxosData = addressType === 'bech32' && !isLedger ? utxos : utxosWithHex;
   const feeRateWhole = Math.ceil(transactionFee);
@@ -1339,5 +1367,6 @@ module.exports = {
   convertStringToMessage,
   btcToFiat,
   buildTx,
-  getFeeRate
+  getFeeRate,
+  processBalanceFromUtxos
 };

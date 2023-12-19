@@ -765,7 +765,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinGeckoId: 'bitcoin',
       coinImageUrl: 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png',
       gasPriceStep: {
-        low: 144,
+        low: 25,
         average: 18,
         high: 1
       }
