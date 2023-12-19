@@ -67,7 +67,15 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
   }, [isOpen]);
 
   const renderBackdrop = useCallback(
-    (props) => <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} pressBehavior={'close'} />,
+    (props) => (
+      <BottomSheetBackdrop
+        {...props}
+        disappearsOnIndex={-1}
+        appearsOnIndex={0}
+        pressBehavior={'close'}
+        onPress={handleDismiss}
+      />
+    ),
     []
   );
   const handleDismiss = useCallback(() => {
@@ -114,7 +122,6 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
             contentHeight={animatedContentHeight}
             onChange={handleSheetChanges}
             keyboardBlurBehavior={'restore'}
-            onClose={handleDismiss}
             android_keyboardInputMode="adjustResize"
           >
             <View
@@ -167,7 +174,6 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
             contentHeight={animatedContentHeight}
             onChange={handleSheetChanges}
             keyboardBlurBehavior={'restore'}
-            onClose={handleDismiss}
             android_keyboardInputMode="adjustResize"
           >
             <View

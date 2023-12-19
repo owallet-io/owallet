@@ -1,4 +1,4 @@
-export * from "./ethermint";
+export * from './ethermint';
 export class ChainIdHelper {
   // VersionFormatRegExp checks if a chainID is in the format required for parsing versions
   // The chainID should be in the form: `{identifier}-{version}`
@@ -8,10 +8,8 @@ export class ChainIdHelper {
     identifier: string;
     version: number;
   } {
-    const split = chainId
-      .toString()
-      .split(ChainIdHelper.VersionFormatRegExp)
-      .filter(Boolean);
+    if (!chainId) throw Error('ChainId is not found');
+    const split = chainId.toString().split(ChainIdHelper.VersionFormatRegExp).filter(Boolean);
     if (split.length !== 2) {
       return {
         identifier: chainId.toString(),
