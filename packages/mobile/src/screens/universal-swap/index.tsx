@@ -361,6 +361,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   };
 
   useEffect(() => {
+    setMininumReceive(0);
     if (fromAmountToken > 0) {
       estimateSwapAmount(fromAmountToken);
     }

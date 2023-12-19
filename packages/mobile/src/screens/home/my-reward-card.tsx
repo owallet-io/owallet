@@ -7,6 +7,7 @@ import { View, ViewStyle } from 'react-native';
 import { useStore } from '../../stores';
 import { useSmartNavigation } from '../../navigation.provider';
 import { MoneybagIcon } from '../../components/icon/money-bag';
+import { showToast } from '@src/utils/helper';
 
 export const MyRewardCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -19,21 +20,14 @@ export const MyRewardCard: FunctionComponent<{
   const style = useStyle();
   const smartNavigation = useSmartNavigation();
 
-  const queryReward = queries.cosmos.queryRewards.getQueryBech32Address(
-    account.bech32Address
-  );
+  const queryReward = queries.cosmos.queryRewards.getQueryBech32Address(account.bech32Address);
   const stakingReward = queryReward.stakableReward;
 
   return (
     <Card style={containerStyle}>
       <CardHeaderWithButton
         title="My rewards"
-        paragraph={stakingReward
-          .shrink(true)
-          .maxDecimals(6)
-          .trim(true)
-          .upperCase(true)
-          .toString()}
+        paragraph={stakingReward.shrink(true).maxDecimals(6).trim(true).upperCase(true).toString()}
         onPress={async () => {
           try {
             await account.cosmos.sendWithdrawDelegationRewardMsgs(
@@ -58,12 +52,17 @@ export const MyRewardCard: FunctionComponent<{
               stakingReward.currency.coinMinimalDenom
             );
           } catch (e) {
-            if (e?.message === 'Request rejected') {
-              return;
-            }
-            if (e?.message.includes('Cannot read properties of undefined')) {
-              return;
-            }
+            // if (e?.message === 'Request rejected') {
+            //   return;
+            // }
+            // if (e?.message.includes('Cannot read properties of undefined')) {
+            //   return;
+            // }
+            showToast({
+              message: e?.message ?? 'Something went wrong! Please try again later.',
+              type: 'danger'
+            });
+
             if (smartNavigation.canGoBack) {
               smartNavigation.goBack();
             } else {
