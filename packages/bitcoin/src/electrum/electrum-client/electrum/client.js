@@ -215,8 +215,6 @@ export class ElectrumClient extends SocketClient {
           try {
             const { scriptHash, address, path } = scripthashData;
             const response = await this.request('blockchain.scripthash.listunspent', [scriptHash]);
-            console.log('🚀 ~ file: client.js:218 ~ ElectrumClient ~ scripthashes.map ~ response:', response);
-
             const responseLength = response.length;
 
             if (responseLength > 0) {

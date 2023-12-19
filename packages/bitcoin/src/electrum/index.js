@@ -3,7 +3,6 @@ import { clients } from './clients';
 import { ElectrumClient } from './electrum-client/electrum/client';
 import { networks } from '../networks';
 import { restBtc } from '@owallet/common';
-import Axios from 'axios';
 const fetch = require('node-fetch').default;
 import peersJson from './peers.json';
 
