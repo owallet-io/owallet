@@ -34,17 +34,17 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
     analyticsStore.logEvent('Create account started', {
       registerType: 'seed'
     });
-    smartNavigation.navigateSmart('Register.NewMnemonic', {
+    // smartNavigation.navigateSmart('Register.NewMnemonic', {
+    //   registerConfig
+    // });
+    smartNavigation.navigateSmart('Register.NewPincode', {
       registerConfig
     });
   };
   const styles = useStyles();
 
   return (
-    <PageWithScrollView
-      backgroundColor={colors['plain-background']}
-      style={[styles.container]}
-    >
+    <PageWithScrollView backgroundColor={colors['plain-background']} style={[styles.container]}>
       <View style={styles.containerHeader}>
         <View>
           <OWalletLogo />
@@ -56,17 +56,8 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
           Sign in to OWallet
         </OWText>
       </View>
-      <OWButton
-        style={styles.btnOW}
-        label="Create a new wallet"
-        onPress={handleCreateANewWallet}
-      />
-      <OWButton
-        style={styles.btnOW}
-        label="Import Ledger Nano X"
-        onPress={handleImportLedgerNanoX}
-        type="secondary"
-      />
+      <OWButton style={styles.btnOW} label="Create a new wallet" onPress={handleCreateANewWallet} />
+      <OWButton style={styles.btnOW} label="Import Ledger Nano X" onPress={handleImportLedgerNanoX} type="secondary" />
       <OWButton
         style={styles.btnOW}
         label="Import from Mnemonic / Private key"
@@ -74,7 +65,6 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
         type="secondary"
       />
     </PageWithScrollView>
-    
   );
 });
 

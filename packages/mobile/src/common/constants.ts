@@ -14,6 +14,7 @@ export const SCREENS = {
   BtcFaucet: 'BtcFaucet',
   RegisterVerifyMnemonicMain: 'RegisterVerifyMnemonicMain',
   RegisterEnd: 'Register.End',
+  RegisterDone: 'Register.Done',
   RegisterRecoverMnemonicMain: 'RegisterRecoverMnemonicMain',
   RegisterNewLedgerMain: 'RegisterNewLedgerMain',
   Tokens: 'Tokens',
@@ -26,6 +27,7 @@ export const SCREENS = {
   RegisterNewUser: 'Register.NewUser',
   RegisterNotNewUser: 'Register.NotNewUser',
   RegisterNewMnemonic: 'Register.NewMnemonic',
+  RegisterNewPincode: 'Register.NewPincode',
   RegisterVerifyMnemonic: 'Register.VerifyMnemonic',
   RegisterRecoverMnemonic: 'Register.RecoverMnemonic',
   RegisterNewLedger: 'Register.NewLedger',
@@ -121,6 +123,9 @@ export const SCREENS_OPTIONS: IScreenOption = {
   [SCREENS.RegisterEnd]: {
     title: HEADER_KEY.notShowHeader
   },
+  [SCREENS.RegisterDone]: {
+    title: HEADER_KEY.notShowHeader
+  },
   [SCREENS.RegisterRecoverMnemonicMain]: {
     title: HEADER_KEY.notShowHeader
   },
@@ -157,6 +162,9 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: HEADER_KEY.notShowHeader
   },
   [SCREENS.RegisterNewMnemonic]: {
+    title: HEADER_KEY.notShowHeader
+  },
+  [SCREENS.RegisterNewPincode]: {
     title: HEADER_KEY.notShowHeader
   },
   [SCREENS.RegisterVerifyMnemonic]: {
