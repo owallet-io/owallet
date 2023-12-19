@@ -566,7 +566,6 @@ const buildTx = async ({
         txId: item.txid,
         coin: selectedCrypto
       });
-      console.log('🚀 ~ file: helpers.js:569 ~ utxos.map ~ transaction:', transaction);
       if (!transaction.error) {
         return {
           hex: transaction.data,
