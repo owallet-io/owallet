@@ -18,9 +18,13 @@ This batch sends addresses and returns the balance of utxos from them
  */
 const processBalanceFromUtxos = ({ utxos, address, path, currentBlockHeight = 0 }) => {
   let balance = 0;
-  if (!utxos) return 0;
   let utxosData = [];
-
+  if (!utxos || utxos?.length === 0) {
+    return {
+      balance,
+      utxos: utxosData
+    };
+  }
   utxos.forEach((utxo) => {
     balance = balance + Number(utxo.value);
     const data = {
