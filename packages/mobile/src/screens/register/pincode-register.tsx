@@ -1,15 +1,5 @@
 import React, { FunctionComponent, useCallback, useEffect, useRef, useState } from 'react';
-import {
-  Alert,
-  AppState,
-  AppStateStatus,
-  Image,
-  KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
-  TouchableOpacity,
-  View
-} from 'react-native';
+import { KeyboardAvoidingView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { metrics } from '@src/themes';
 import { TextInput } from '../../components/input';
@@ -64,14 +54,11 @@ export const PincodeRegisterScreen: FunctionComponent = observer(() => {
   const { colors } = useTheme();
   const styles = styling(colors);
 
-  const [downloading, setDownloading] = useState(false);
   const [isNumericPad, setNumericPad] = useState(true);
   const [confirmCode, setConfirmCode] = useState(null);
   const [prevPad, setPrevPad] = useState(null);
   const [counter, setCounter] = useState(0);
-  const [installing, setInstalling] = useState(false);
-  const [loaded, setLoaded] = useState(false);
-  const [progress, setProgress] = useState(0);
+
   const [statusPass, setStatusPass] = useState(true);
   const navigateToHomeOnce = useRef(false);
   const navigateToHome = useCallback(async () => {
@@ -92,20 +79,6 @@ export const PincodeRegisterScreen: FunctionComponent = observer(() => {
   const [isLoading, setIsLoading] = useState(false);
   const [isBiometricLoading, setIsBiometricLoading] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
-
-  const tryBiometric = useCallback(async () => {
-    try {
-      setIsBiometricLoading(true);
-      setIsLoading(true);
-      await delay(10);
-      await keychainStore.tryUnlockWithBiometry();
-      setIsLoading(false);
-    } catch (e) {
-      console.log(e);
-      setIsLoading(false);
-      setIsBiometricLoading(false);
-    }
-  }, [keychainStore]);
 
   const tryUnlock = async () => {
     try {
@@ -132,30 +105,6 @@ export const PincodeRegisterScreen: FunctionComponent = observer(() => {
       })();
     }
   }, [keyRingStore.status, navigation]);
-
-  useEffect(() => {
-    const appStateHandler = (state: AppStateStatus) => {
-      if (state !== 'active') {
-        setDownloading(false);
-        setInstalling(false);
-      }
-    };
-    const subscription = AppState.addEventListener('change', appStateHandler);
-
-    return () => {
-      subscription.remove();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (keyRingStore.status === KeyRingStatus.UNLOCKED) {
-      (async () => {
-        if (!downloading) {
-          navigateToHome();
-        }
-      })();
-    }
-  }, [keyRingStore.status, navigateToHome, downloading]);
 
   const showPass = () => setStatusPass(!statusPass);
 

@@ -8,6 +8,7 @@ export const defaultAll = { label: 'All', value: 'All', image: images.crypto };
 export const SCREENS = {
   Home: 'Home',
   TransactionDetail: 'Transactions.Detail',
+  BackupMnemonic: 'BackupMnemonic',
   RegisterMain: 'RegisterMain',
   BtcFaucet: 'BtcFaucet',
   RegisterVerifyMnemonicMain: 'RegisterVerifyMnemonicMain',
@@ -106,6 +107,9 @@ export const SCREENS_OPTIONS: IScreenOption = {
   },
   [SCREENS.TransactionDetail]: {
     title: 'Transaction Detail'
+  },
+  [SCREENS.BackupMnemonic]: {
+    showTabBar: false
   },
   [SCREENS.RegisterMain]: {
     title: HEADER_KEY.notShowHeader
