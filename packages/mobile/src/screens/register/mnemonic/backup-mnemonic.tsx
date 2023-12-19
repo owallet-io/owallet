@@ -1,33 +1,16 @@
 import React, { FunctionComponent, useCallback, useEffect, useState } from 'react';
-import { View, StyleSheet, Platform, Clipboard, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Clipboard, TouchableOpacity } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
 import { useTheme } from '@src/themes/theme-provider';
 import { RegisterConfig } from '@owallet/hooks';
-import { useNewMnemonicConfig } from './hook';
-import { PageWithScrollView } from '../../../components/page';
-import { CheckIcon } from '../../../components/icon';
-import { WordChip } from '../../../components/mnemonic';
-import { Text } from '@src/components/text';
-import { TextInput } from '../../../components/input';
-import { Controller, useForm } from 'react-hook-form';
+import { BackupWordChip } from '../../../components/mnemonic';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { useSimpleTimer } from '../../../hooks';
-import { BIP44AdvancedButton, useBIP44Option } from '../bip44';
-import { navigate, checkRouter } from '../../../router/root';
-import { OWalletLogo } from '../owallet-logo';
 import OWButton from '../../../components/button/OWButton';
 import OWIcon from '../../../components/ow-icon/ow-icon';
-import { metrics, spacing } from '../../../themes';
-import OWButtonIcon from '@src/components/button/ow-button-icon';
-import { LRRedact } from '@logrocket/react-native';
+import { metrics } from '../../../themes';
 import OWText from '@src/components/text/ow-text';
-
-interface FormData {
-  name: string;
-  password: string;
-  confirmPassword: string;
-}
 
 export const BackupMnemonicScreen: FunctionComponent = observer(props => {
   const route = useRoute<
@@ -44,30 +27,40 @@ export const BackupMnemonicScreen: FunctionComponent = observer(props => {
   const { colors } = useTheme();
   const smartNavigation = useSmartNavigation();
 
-  const words = 'test test'.split(' ');
+  const words = 'test test test test test test test test test test test test test test test test test test'.split(' ');
 
   const styles = useStyles();
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.goBack}>
-        <OWIcon size={16} name="arrow-left" />
-      </TouchableOpacity>
-      <View style={[styles.aic, styles.title]}>
-        <OWText variant="h2" typo="bold">
-          Secure your wallet
-        </OWText>
-        <OWText style={{ textAlign: 'center', paddingTop: 4 }}>
-          Write down this recovery phrase in the exact order and keep it in a safe place
-        </OWText>
-        <View
-          style={{
-            paddingLeft: 20,
-            paddingRight: 20,
-            paddingTop: 32
-          }}
-        ></View>
-        <WordsCard words={words} />
+      <View>
+        <TouchableOpacity style={styles.goBack}>
+          <OWIcon size={16} name="arrow-left" />
+        </TouchableOpacity>
+        <View style={[styles.aic, styles.title]}>
+          <OWText variant="h2" typo="bold">
+            Secure your wallet
+          </OWText>
+          <OWText style={{ textAlign: 'center', paddingTop: 4 }}>
+            Write down this recovery phrase in the exact order and keep it in a safe place
+          </OWText>
+          <View
+            style={{
+              paddingLeft: 20,
+              paddingRight: 20,
+              paddingTop: 32
+            }}
+          ></View>
+          <WordsCard words={words} />
+          <TouchableOpacity onPress={() => {}}>
+            <View style={styles.rc}>
+              <OWIcon size={14} name="copy" color={colors['purple-900']} />
+              <OWText style={{ paddingLeft: 8 }} variant="h2" weight="600" size={14} color={colors['purple-900']}>
+                Copy to clipboard
+              </OWText>
+            </View>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <View style={styles.aic}>
@@ -76,7 +69,7 @@ export const BackupMnemonicScreen: FunctionComponent = observer(props => {
             style={{
               borderRadius: 32
             }}
-            label="Continue"
+            label="Ok, I saved it!"
             disabled={false}
             onPress={() => {}}
             loading={false}
@@ -118,7 +111,7 @@ const WordsCard: FunctionComponent<{
   return (
     <View style={styles.containerWord}>
       {words.map((word, i) => {
-        return <WordChip key={i.toString()} index={i + 1} word={word} hideWord={hideWord} />;
+        return <BackupWordChip key={i.toString()} index={i + 1} word={word} hideWord={hideWord} />;
       })}
 
       <View style={styles.containerBtnCopy}>
@@ -126,12 +119,6 @@ const WordsCard: FunctionComponent<{
           style={{
             flex: 1
           }}
-        />
-        <OWButton
-          style={styles.padIcon}
-          onPress={onCopy}
-          icon={isTimedOut ? <CheckIcon /> : <OWIcon name="copy" color={colors['icon-purple-700-gray']} size={20} />}
-          type="link"
         />
       </View>
     </View>
@@ -156,11 +143,8 @@ const useStyles = () => {
     containerWord: {
       marginTop: 14,
       marginBottom: 16,
-      paddingTop: 16,
-      paddingLeft: 16,
-      paddingRight: 16,
-      paddingBottom: 10,
-      borderColor: colors['border-purple-100-gray-800'],
+      padding: 16,
+      borderColor: colors['primary-default'],
       borderWidth: 1,
       borderRadius: 8,
       display: 'flex',
@@ -198,7 +182,8 @@ const useStyles = () => {
       marginLeft: 16
     },
     title: {
-      paddingHorizontal: 16
+      paddingHorizontal: 16,
+      paddingTop: 24
     }
   });
 };

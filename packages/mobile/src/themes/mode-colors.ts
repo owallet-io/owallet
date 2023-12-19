@@ -103,6 +103,8 @@ export const colorsCode = {
   'purple-700': '#945EF8',
   'purple-900': '#8B1BFB',
   'purple-h1': '#7E58EA',
+  'primary-default': '#5C00A3',
+  'primary-subtitle': '#F4E5FF',
   // yellow
   'yellow-10': '#FFF6E9',
   //orange
