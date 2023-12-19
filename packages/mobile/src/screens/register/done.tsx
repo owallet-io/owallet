@@ -11,7 +11,7 @@ import { useStore } from '../../stores';
 // @ts-ignore
 import OWButton from '@src/components/button/OWButton';
 import { useTheme } from '@src/themes/theme-provider';
-import { typography } from '../../themes';
+import { metrics, typography } from '../../themes';
 import { OWalletLogo, OWalletStar } from './owallet-logo';
 
 export const RegisterDoneScreen: FunctionComponent = observer(() => {
@@ -63,8 +63,8 @@ export const RegisterDoneScreen: FunctionComponent = observer(() => {
           <View style={styles.container}>
             <Image
               style={{
-                width: 470,
-                height: 470
+                width: metrics.screenWidth,
+                height: metrics.screenWidth
               }}
               source={require('../../assets/image/img-bg.png')}
               resizeMode="contain"
@@ -74,8 +74,8 @@ export const RegisterDoneScreen: FunctionComponent = observer(() => {
           <View style={styles.containerCheck}>
             <Image
               style={{
-                width: 400,
-                height: 400
+                width: metrics.screenWidth,
+                height: metrics.screenWidth
               }}
               source={require('../../assets/image/img-all-done.png')}
               resizeMode="contain"
