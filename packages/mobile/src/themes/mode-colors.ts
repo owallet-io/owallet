@@ -90,6 +90,7 @@ export const colorsCode = {
   'gray-700': '#5F5E77',
   'gray-800': '#3A3A3C',
   'gray-900': '#1C1C1E',
+  'text-body': '#6A6B71',
 
   //green
   'green-500': '#4BB10C',

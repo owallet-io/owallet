@@ -27,7 +27,10 @@ export const BackupMnemonicScreen: FunctionComponent = observer(props => {
   const { colors } = useTheme();
   const smartNavigation = useSmartNavigation();
 
-  const words = 'test test test test test test test test test test test test test test test test test test'.split(' ');
+  const words =
+    'test test test test test test test test test test test test test test test test test test test test testtest'.split(
+      ' '
+    );
 
   const styles = useStyles();
 
@@ -41,7 +44,7 @@ export const BackupMnemonicScreen: FunctionComponent = observer(props => {
           <OWText variant="h2" typo="bold">
             Secure your wallet
           </OWText>
-          <OWText style={{ textAlign: 'center', paddingTop: 4 }}>
+          <OWText color={colors['text-body']} weight={'500'} style={{ textAlign: 'center', paddingTop: 4 }}>
             Write down this recovery phrase in the exact order and keep it in a safe place
           </OWText>
           <View

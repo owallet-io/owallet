@@ -9,6 +9,7 @@ export const SCREENS = {
   Home: 'Home',
   TransactionDetail: 'Transactions.Detail',
   BackupMnemonic: 'BackupMnemonic',
+  RecoveryPhrase: 'RecoveryPhrase',
   RegisterMain: 'RegisterMain',
   BtcFaucet: 'BtcFaucet',
   RegisterVerifyMnemonicMain: 'RegisterVerifyMnemonicMain',
@@ -162,6 +163,9 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: HEADER_KEY.notShowHeader
   },
   [SCREENS.RegisterRecoverMnemonic]: {
+    title: HEADER_KEY.notShowHeader
+  },
+  [SCREENS.RecoveryPhrase]: {
     title: HEADER_KEY.notShowHeader
   },
   [SCREENS.RegisterNewLedger]: {

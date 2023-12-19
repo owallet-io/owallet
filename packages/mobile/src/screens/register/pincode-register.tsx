@@ -201,7 +201,9 @@ export const PincodeRegisterScreen: FunctionComponent = observer(() => {
         <OWText variant="h2" typo="bold">
           {confirmCode ? 'Confirm your' : 'Set'} passcode
         </OWText>
-        <OWText>Secure your wallet by setting a passcode</OWText>
+        <OWText color={colors['text-body']} weight={'500'}>
+          Secure your wallet by setting a passcode
+        </OWText>
         <View
           style={{
             paddingLeft: 20,
@@ -259,6 +261,9 @@ export const PincodeRegisterScreen: FunctionComponent = observer(() => {
                 returnKeyType="done"
                 secureTextEntry={statusPass}
                 value={password}
+                containerStyle={{
+                  paddingBottom: 8
+                }}
                 error={isFailed ? 'Invalid password' : undefined}
                 onChangeText={txt => {
                   setPassword(txt);
@@ -275,6 +280,9 @@ export const PincodeRegisterScreen: FunctionComponent = observer(() => {
                   />
                 }
               />
+              <OWText size={13} color={colors['text-body']} weight={'400'}>
+                *The password must be at least 6 characters
+              </OWText>
             </View>
           )}
         </View>
