@@ -44,7 +44,7 @@ async function waitAccountLoad(accountStore: AccountStore<any, any, any, any>, c
   });
 }
 
-export const PincodeUnlockScreen: FunctionComponent = observer(() => {
+export const PincodeRegisterScreen: FunctionComponent = observer(() => {
   const { keyRingStore, keychainStore, accountStore, chainStore, appInitStore, notificationStore } = useStore();
   const navigation = useNavigation();
   const route = useRoute<
@@ -179,8 +179,12 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
 
   const handleContinue = () => {
     setPrevPad('alphabet');
-    setConfirmCode(password);
-    setPassword('');
+    if (!confirmCode) {
+      setConfirmCode(password);
+      setPassword('');
+    } else {
+      handleCheckConfirm(password);
+    }
   };
 
   const onSwitchPad = type => {
@@ -194,16 +198,15 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
 
   const handleCheckConfirm = confirmPass => {
     if (confirmCode === confirmPass && counter < 3) {
-      alert('true');
       numpadRef?.current?.clearAll();
     } else {
       setCounter(counter + 1);
-      alert(`${counter}`);
       if (counter > 3) {
         setConfirmCode(null);
         pinRef?.current?.shake().then(() => setCode(''));
         numpadRef?.current?.clearAll();
         setCounter(0);
+        setPassword('');
       } else {
         pinRef?.current?.shake().then(() => setCode(''));
         numpadRef?.current?.clearAll();
@@ -347,16 +350,6 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
       </View>
 
       <View style={styles.aic}>
-        {isNewWallet ? null : (
-          <TouchableOpacity onPress={() => tryBiometric()}>
-            <View style={styles.rc}>
-              <OWIcon size={14} name="bridge" color={colors['purple-900']} />
-              <OWText style={{ paddingLeft: 8 }} variant="h2" weight="600" size={14} color={colors['purple-900']}>
-                Sign in with Face ID
-              </OWText>
-            </View>
-          </TouchableOpacity>
-        )}
         {isNumericPad ? (
           <NumericPad
             ref={numpadRef}
