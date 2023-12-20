@@ -38,8 +38,8 @@ export const RegisterNavigation: FC = () => {
     >
       <Stack.Screen
         name={SCREENS.RegisterIntro}
-        // component={appInitStore.getInitApp.status ? OnboardingIntroScreen : RegisterIntroScreen}
-        component={appInitStore.getInitApp.status ? OnboardingIntroScreen : RegisterDoneScreen}
+        component={appInitStore.getInitApp.status ? OnboardingIntroScreen : RegisterIntroScreen}
+        // component={appInitStore.getInitApp.status ? OnboardingIntroScreen : RegisterDoneScreen}
       />
 
       {/* <Stack.Screen
