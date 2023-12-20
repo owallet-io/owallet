@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useCallback, useEffect, useRef, useState } from 'react';
 import { View, StyleSheet, Platform, Clipboard, KeyboardAvoidingView, TouchableOpacity } from 'react-native';
 import { observer } from 'mobx-react-lite';
-import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
+import { RouteProp, useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
 import { useTheme } from '@src/themes/theme-provider';
 import { RegisterConfig } from '@owallet/hooks';
 
@@ -14,12 +14,13 @@ import SmoothPinCodeInput from 'react-native-smooth-pincode-input';
 import { useSmartNavigation } from '@src/navigation.provider';
 import { useBIP44Option } from './bip44';
 import { useNewMnemonicConfig } from './mnemonic';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { checkRouter, navigate } from '@src/router/root';
 import { TextInput } from '@src/components/input';
 import { OWButton } from '@src/components/button';
 import OWIcon from '@src/components/ow-icon/ow-icon';
 import { CheckIcon } from '@src/components/icon';
+import { SCREENS } from '@src/common/constants';
 
 interface FormData {
   name: string;
@@ -59,7 +60,42 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
   const [isBiometricLoading, setIsBiometricLoading] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
   const words = newMnemonicConfig.mnemonic.split(' ');
+  console.log('words', words);
 
+  const navigation = useNavigation();
+
+  const [isCreating, setIsCreating] = useState(false);
+
+  const onVerifyMnemonic = useCallback(async () => {
+    if (isCreating) return;
+    setIsCreating(true);
+    await registerConfig.createMnemonic(
+      newMnemonicConfig.name,
+      newMnemonicConfig.mnemonic,
+      newMnemonicConfig.password,
+      bip44Option.bip44HDPath
+    );
+
+    if (checkRouter(props?.route?.name, 'RegisterVerifyMnemonicMain')) {
+      navigate(SCREENS.RegisterEnd, {
+        password: newMnemonicConfig.password,
+        type: 'new'
+      });
+    } else {
+      navigation.reset({
+        index: 0,
+        routes: [
+          {
+            name: 'Register.End',
+            params: {
+              password: newMnemonicConfig.password,
+              type: 'new'
+            }
+          }
+        ]
+      });
+    }
+  }, [newMnemonicConfig, isCreating]);
   const {
     control,
     handleSubmit,
@@ -93,6 +129,7 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
       smartNavigation.navigateSmart('Register.Intro', {});
     }
   };
+
   const onSubmitEditingUserName = () => {
     if (mode === 'add') {
       submit();
@@ -101,26 +138,7 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
       setFocus('password');
     }
   };
-  const renderUserName = ({ field: { onChange, onBlur, value, ref } }) => {
-    return (
-      <TextInput
-        label="Username"
-        inputStyle={{
-          ...styles.borderInput
-        }}
-        returnKeyType={mode === 'add' ? 'done' : 'next'}
-        onSubmitEditing={onSubmitEditingUserName}
-        error={errors.name?.message}
-        onBlur={onBlur}
-        onChangeText={onChange}
-        value={value}
-        ref={ref}
-      />
-    );
-  };
-  const onSubmitEditingPassword = () => {
-    setFocus('confirmPassword');
-  };
+
   const showPass = () => setStatusPass(!statusPass);
 
   const pinRef = useRef(null);
@@ -136,6 +154,7 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
 
   const handleSetPassword = () => {
     setConfirmCode(code);
+    newMnemonicConfig.setPassword(code);
     setCode('');
     numpadRef?.current?.clearAll();
     setPrevPad('numeric');
@@ -143,11 +162,16 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
 
   const handleContinue = () => {
     setPrevPad('alphabet');
-    if (!confirmCode) {
-      setConfirmCode(password);
-      setPassword('');
+    if (password.length >= 6) {
+      if (!confirmCode) {
+        setConfirmCode(password);
+        newMnemonicConfig.setPassword(password);
+        setPassword('');
+      } else {
+        handleCheckConfirm(password);
+      }
     } else {
-      handleCheckConfirm(password);
+      alert('6');
     }
   };
 
@@ -160,20 +184,36 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
     }
   };
 
+  const onHandeCreateMnemonic = () => {
+    alert('true');
+    numpadRef?.current?.clearAll();
+  };
+
+  const onHandleConfirmPincodeError = () => {
+    alert(`${counter} times false. Please try again`);
+    setConfirmCode(null);
+    pinRef?.current?.shake().then(() => setCode(''));
+    numpadRef?.current?.clearAll();
+    setCounter(0);
+    setPassword('');
+  };
+
+  const onHandleResetPincode = () => {
+    alert(`Password doesn't match`);
+    pinRef?.current?.shake().then(() => setCode(''));
+    setPassword('');
+    numpadRef?.current?.clearAll();
+  };
+
   const handleCheckConfirm = confirmPass => {
     if (confirmCode === confirmPass && counter < 3) {
-      numpadRef?.current?.clearAll();
+      onHandeCreateMnemonic();
     } else {
       setCounter(counter + 1);
       if (counter > 3) {
-        setConfirmCode(null);
-        pinRef?.current?.shake().then(() => setCode(''));
-        numpadRef?.current?.clearAll();
-        setCounter(0);
-        setPassword('');
+        onHandleConfirmPincodeError();
       } else {
-        pinRef?.current?.shake().then(() => setCode(''));
-        numpadRef?.current?.clearAll();
+        onHandleResetPincode();
       }
     }
   };
@@ -186,11 +226,6 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
     }
   };
 
-  const handleLogin = () => {
-    pinRef?.current?.shake().then(() => setCode(''));
-    numpadRef?.current?.clearAll();
-  };
-
   useEffect(() => {
     if (code.length >= 6) {
       if (confirmCode) {
@@ -200,73 +235,42 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
       }
     }
   }, [code]);
+
   const renderPassword = ({ field: { onChange, onBlur, value, ref } }) => {
     return (
       <TextInput
-        label="Password"
-        returnKeyType="next"
-        inputStyle={{
-          ...styles.borderInput
+        accessibilityLabel="password"
+        returnKeyType="done"
+        secureTextEntry={statusPass}
+        value={password}
+        containerStyle={{
+          paddingBottom: 8
         }}
-        secureTextEntry={true}
-        onSubmitEditing={onSubmitEditingPassword}
+        error={isFailed ? 'Invalid password' : undefined}
+        onChangeText={txt => {
+          setPassword(txt);
+        }}
+        onSubmitEditing={() => {}}
+        placeholder="Enter your passcode"
         inputRight={
           <OWButtonIcon
             style={styles.padIcon}
             onPress={showPass}
-            name={!statusPass ? 'eye' : 'eye-slash'}
+            name={statusPass ? 'eye' : 'eye-slash'}
             colorIcon={colors['icon-purple-700-gray']}
             sizeIcon={22}
           />
         }
-        secureTextEntry={!statusPass}
-        error={errors.password?.message}
-        onBlur={onBlur}
-        onChangeText={onChange}
-        value={value}
-        ref={ref}
       />
     );
   };
   const validatePassword = (value: string) => {
-    if (value.length < 8) {
-      return 'Password must be longer than 8 characters';
+    if (value.length < 6) {
+      return 'Password must be longer than 6 characters';
     }
   };
   const showConfirmPass = useCallback(() => setStatusConfirmPass(!statusConfirmPass), [statusConfirmPass]);
 
-  const renderConfirmPassword = ({ field: { onChange, onBlur, value, ref } }) => {
-    return (
-      <TextInput
-        label="Confirm password"
-        returnKeyType="done"
-        inputRight={
-          <OWButton
-            style={styles.padIcon}
-            type="link"
-            onPress={showConfirmPass}
-            icon={
-              <OWIcon
-                name={!statusConfirmPass ? 'eye' : 'eye-slash'}
-                color={colors['icon-purple-700-gray']}
-                size={22}
-              />
-            }
-          />
-        }
-        secureTextEntry={!statusConfirmPass}
-        onSubmitEditing={submit}
-        inputStyle={{
-          ...styles.borderInput
-        }}
-        error={errors.confirmPassword?.message}
-        onBlur={onBlur}
-        onChangeText={onChange}
-        value={value}
-        ref={ref}
-      />
-    );
-  };
   const validateConfirmPassword = (value: string) => {
     if (value.length < 8) {
       return 'Password must be longer than 8 characters';
@@ -341,29 +345,15 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
                 paddingHorizontal: 20
               }}
             >
-              <TextInput
-                accessibilityLabel="password"
-                returnKeyType="done"
-                secureTextEntry={statusPass}
-                value={password}
-                containerStyle={{
-                  paddingBottom: 8
+              <Controller
+                control={control}
+                rules={{
+                  required: 'Password is required',
+                  validate: validatePassword
                 }}
-                error={isFailed ? 'Invalid password' : undefined}
-                onChangeText={txt => {
-                  setPassword(txt);
-                }}
-                onSubmitEditing={() => {}}
-                placeholder="Enter your passcode"
-                inputRight={
-                  <OWButtonIcon
-                    style={styles.padIcon}
-                    onPress={showPass}
-                    name={statusPass ? 'eye' : 'eye-slash'}
-                    colorIcon={colors['icon-purple-700-gray']}
-                    sizeIcon={22}
-                  />
-                }
+                render={renderPassword}
+                name="password"
+                defaultValue=""
               />
               <OWText size={13} color={colors['text-body']} weight={'400'}>
                 *The password must be at least 6 characters
