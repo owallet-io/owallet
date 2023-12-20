@@ -58,7 +58,6 @@ export const RegisterDoneScreen: FunctionComponent = observer(() => {
           alignItems: 'center'
         }}
       >
-        {/* <WelcomeRocket width={358} height={254} /> */}
         <View>
           <View style={styles.container}>
             <Image

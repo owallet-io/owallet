@@ -75,6 +75,9 @@ export const colorsCode = {
   'red-700': '#FF0000',
   'red-900': '#E53A3A',
 
+  // black
+  'nertural-text-title': '#232125',
+
   // gray
   'gray-10': '#F3F1F5',
   'gray-50': '#F2F2F7',
@@ -82,6 +85,7 @@ export const colorsCode = {
   'gray-100': '#F2F6FA',
   'gray-150': '#5F5E77',
   'gray-200': '#D1D1D6',
+  'gray-250': '#EBEDF2',
   'gray-300': '#C7C7CC',
   'gray-301': '#C7C7CC',
   'gray-400': '#AEAEB2',

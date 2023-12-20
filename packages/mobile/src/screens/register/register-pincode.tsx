@@ -90,9 +90,6 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
   }, [newMnemonicConfig, isCreating]);
   const {
     control,
-    handleSubmit,
-    setFocus,
-    getValues,
     formState: { errors }
   } = useForm<FormData>();
 
@@ -160,12 +157,8 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
   };
 
   const onHandeCreateMnemonic = () => {
-    showToast({
-      message: 'All Done!',
-      type: 'success'
-    });
-    onVerifyMnemonic();
     numpadRef?.current?.clearAll();
+    onVerifyMnemonic();
   };
 
   const onHandleConfirmPincodeError = () => {
