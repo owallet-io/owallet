@@ -8,7 +8,6 @@ export class ChainIdHelper {
     identifier: string;
     version: number;
   } {
-    if (!chainId) throw Error('ChainId is not found');
     const split = chainId.toString().split(ChainIdHelper.VersionFormatRegExp).filter(Boolean);
     if (split.length !== 2) {
       return {
