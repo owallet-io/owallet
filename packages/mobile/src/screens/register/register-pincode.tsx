@@ -21,6 +21,7 @@ import { OWButton } from '@src/components/button';
 import OWIcon from '@src/components/ow-icon/ow-icon';
 import { CheckIcon } from '@src/components/icon';
 import { SCREENS } from '@src/common/constants';
+import { showToast } from '@src/utils/helper';
 
 interface FormData {
   name: string;
@@ -60,7 +61,6 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
   const [isBiometricLoading, setIsBiometricLoading] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
   const words = newMnemonicConfig.mnemonic.split(' ');
-  console.log('words', words);
 
   const navigation = useNavigation();
 
@@ -70,31 +70,23 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
     if (isCreating) return;
     setIsCreating(true);
     await registerConfig.createMnemonic(
-      newMnemonicConfig.name,
+      `OWallet-${Math.floor(Math.random() * (100 - 1)) + 1}`,
       newMnemonicConfig.mnemonic,
       newMnemonicConfig.password,
       bip44Option.bip44HDPath
     );
-
-    if (checkRouter(props?.route?.name, 'RegisterVerifyMnemonicMain')) {
-      navigate(SCREENS.RegisterEnd, {
-        password: newMnemonicConfig.password,
-        type: 'new'
-      });
-    } else {
-      navigation.reset({
-        index: 0,
-        routes: [
-          {
-            name: 'Register.End',
-            params: {
-              password: newMnemonicConfig.password,
-              type: 'new'
-            }
+    navigation.reset({
+      index: 0,
+      routes: [
+        {
+          name: 'Register.Done',
+          params: {
+            password: newMnemonicConfig.password,
+            type: 'new'
           }
-        ]
-      });
-    }
+        }
+      ]
+    });
   }, [newMnemonicConfig, isCreating]);
   const {
     control,
@@ -104,24 +96,6 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
     formState: { errors }
   } = useForm<FormData>();
 
-  const submit = handleSubmit(() => {
-    newMnemonicConfig.setName(getValues('name'));
-    newMnemonicConfig.setPassword(getValues('password'));
-
-    if (checkRouter(props?.route?.name, 'RegisterMain')) {
-      navigate('RegisterVerifyMnemonicMain', {
-        registerConfig,
-        newMnemonicConfig,
-        bip44HDPath: bip44Option.bip44HDPath
-      });
-    } else {
-      smartNavigation.navigateSmart('Register.VerifyMnemonic', {
-        registerConfig,
-        newMnemonicConfig,
-        bip44HDPath: bip44Option.bip44HDPath
-      });
-    }
-  });
   const onGoBack = () => {
     if (checkRouter(props?.route?.name, 'RegisterMain')) {
       smartNavigation.goBack();
@@ -132,10 +106,8 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
 
   const onSubmitEditingUserName = () => {
     if (mode === 'add') {
-      submit();
     }
     if (mode === 'create') {
-      setFocus('password');
     }
   };
 
@@ -171,7 +143,10 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
         handleCheckConfirm(password);
       }
     } else {
-      alert('6');
+      showToast({
+        message: '*The password must be at least 6 characters',
+        type: 'danger'
+      });
     }
   };
 
@@ -185,12 +160,19 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
   };
 
   const onHandeCreateMnemonic = () => {
-    alert('true');
+    showToast({
+      message: 'All Done!',
+      type: 'success'
+    });
+    onVerifyMnemonic();
     numpadRef?.current?.clearAll();
   };
 
   const onHandleConfirmPincodeError = () => {
-    alert(`${counter} times false. Please try again`);
+    showToast({
+      message: `${counter} times false. Please try again`,
+      type: 'danger'
+    });
     setConfirmCode(null);
     pinRef?.current?.shake().then(() => setCode(''));
     numpadRef?.current?.clearAll();
@@ -199,7 +181,10 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
   };
 
   const onHandleResetPincode = () => {
-    alert(`Password doesn't match`);
+    showToast({
+      message: `Password doesn't match`,
+      type: 'danger'
+    });
     pinRef?.current?.shake().then(() => setCode(''));
     setPassword('');
     numpadRef?.current?.clearAll();
@@ -269,16 +254,7 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
       return 'Password must be longer than 6 characters';
     }
   };
-  const showConfirmPass = useCallback(() => setStatusConfirmPass(!statusConfirmPass), [statusConfirmPass]);
 
-  const validateConfirmPassword = (value: string) => {
-    if (value.length < 8) {
-      return 'Password must be longer than 8 characters';
-    }
-    if (getValues('password') !== value) {
-      return "Password doesn't match";
-    }
-  };
   const styles = useStyles();
 
   return (
