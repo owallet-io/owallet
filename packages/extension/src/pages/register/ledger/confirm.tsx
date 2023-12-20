@@ -65,12 +65,12 @@ export const ConfirmLedgerPage: FunctionComponent = observer(() => {
         content = 'Evm Ledger Connect Success. Address:';
         address = await app.getAddress("44'/60'/0'/0/0");
       }
-      if (type === 'btc') {
-        app = new AppBtc(transport);
-        content = 'Btc Ledger Connect Success. Address:';
-        const keyDerivation = account.addressType === AddressBtcType.Bech32 ? 84 : 44;
-        address = await app.getAddress(`${keyDerivation}'/0'/0'/0/0`);
-      }
+      // if (type === 'btc') {
+      //   app = new AppBtc(transport);
+      //   content = 'Btc Ledger Connect Success. Address:';
+      //   const keyDerivation = account.addressType === AddressBtcType.Bech32 ? 84 : 44;
+      //   address = await app.getAddress(`${keyDerivation}'/0'/0'/0/0`);
+      // }
 
       notification.push({
         placement: 'top-center',
@@ -164,7 +164,7 @@ export const ConfirmLedgerPage: FunctionComponent = observer(() => {
         >
           <FormattedMessage id="register.button.eth-ledger" />
         </Button>
-        <Button
+        {/* <Button
           color=""
           disabled={disable}
           data-loading={disable}
@@ -172,7 +172,7 @@ export const ConfirmLedgerPage: FunctionComponent = observer(() => {
           onClick={() => handleConfirmLedger('btc')}
         >
           <FormattedMessage id="register.button.btc-ledger" />
-        </Button>
+        </Button> */}
       </div>
     </EmptyLayout>
   );
