@@ -43,6 +43,7 @@ import { BalanceType, MAX, balances } from './types';
 import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import { useLoadTokens, useCoinGeckoPrices, useClient, useRelayerFee, useTaxRate } from '@owallet/hooks';
 import { getTransactionUrl, handleErrorSwap } from './helpers';
+import { useIsFocused } from '@react-navigation/native';
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
 
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
@@ -185,6 +186,14 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   useEffect(() => {
     getTokenInfos();
   }, [toTokenDenom, fromTokenDenom, client]);
+
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    if (isFocused) {
+      handleFetchAmounts();
+    }
+  }, [isFocused]);
 
   const [isSelectFromTokenModal, setIsSelectFromTokenModal] = useState(false);
   const [isSelectToTokenModal, setIsSelectToTokenModal] = useState(false);
