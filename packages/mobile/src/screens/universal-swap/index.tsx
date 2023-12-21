@@ -55,6 +55,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const accountEvm = accountStore.getAccount(ChainIdEnum.Ethereum);
   const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
+  const accountCosmos = accountStore.getAccount(ChainIdEnum.CosmosHub);
 
   const [isSlippageModal, setIsSlippageModal] = useState(false);
   const [minimumReceive, setMininumReceive] = useState(0);
@@ -395,7 +396,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
     setSwapLoading(true);
     try {
-      const cosmosWallet = new SwapCosmosWallet(client);
+      const cosmosWallet = new SwapCosmosWallet(client, originalFromToken.chainId);
+      const cosmosAddress =
+        originalFromToken.chainId === ChainIdEnum.CosmosHub ? accountCosmos.bech32Address : accountOrai.bech32Address;
 
       const isTron = Number(originalFromToken.chainId) === Networks.tron;
 
@@ -406,9 +409,12 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         relayerDecimals: RELAYER_DECIMAL
       };
 
+      console.log('originalFromToken', originalFromToken);
+      console.log('originalToToken', originalToToken);
+
       const universalSwapData: UniversalSwapData = {
         sender: {
-          cosmos: accountOrai.bech32Address,
+          cosmos: cosmosAddress,
           evm: accountEvm.evmosHexAddress,
           tron: getBase58Address(accountTron.evmosHexAddress)
         },
@@ -420,6 +426,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         fromAmount: fromAmountToken,
         relayerFee
       };
+
+      console.log('universalSwapData', universalSwapData);
 
       const universalSwapHandler = new UniversalSwapHandler(
         {

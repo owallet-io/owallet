@@ -8,9 +8,9 @@ import { CustomChainInfo, EVM_BALANCE_RETRY_COUNT, ERC20__factory, evmChains } f
 import flatten from 'lodash/flatten';
 import { ContractCallResults, Multicall } from '@oraichain/ethereum-multicall';
 import { evmTokens, isEvmNetworkNativeSwapSupported, getEvmAddress, tronToEthAddress } from '@owallet/common';
-import { network } from '@oraichain/oraidex-common';
+import { network, chainInfos } from '@oraichain/oraidex-common';
 import { cosmosTokens, oraichainTokens, tokenMap } from '@oraichain/oraidex-common';
-import { CWStargate, chainInfos } from '@owallet/common';
+import { CWStargate } from '@owallet/common';
 import { AccountWithAll } from '@owallet/stores';
 
 export type CWStargateType = {

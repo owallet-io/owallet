@@ -20,16 +20,20 @@ import { ethers } from 'ethers';
 export class SwapCosmosWallet extends CosmosWallet {
   private client: SigningCosmWasmClient;
   private owallet: OWallet;
-  constructor(client: SigningCosmWasmClient) {
+  private chainId: string;
+  constructor(client: SigningCosmWasmClient, chainId: string) {
     super();
     this.client = client;
+    this.chainId = chainId;
     //@ts-ignore
     this.owallet = window.owallet;
   }
 
   async getKeplrAddr(chainId?: NetworkChainId | undefined): Promise<string> {
+    const currentChainId = this.chainId ?? chainId;
+
     try {
-      const key = await this.owallet.getKey(chainId);
+      const key = await this.owallet.getKey(currentChainId);
       return key?.bech32Address;
     } catch (ex) {
       console.log(ex, chainId);
@@ -57,7 +61,12 @@ export class SwapCosmosWallet extends CosmosWallet {
     stargateClient: SigningStargateClient;
   }> {
     const { chainId, signer, rpc } = config;
+
     const wallet = signer ?? (await this.createCosmosSigner(chainId));
+
+    console.log('signer', signer);
+    console.log('wallet', wallet);
+
     // const defaultAddress = (await wallet.getAccounts())[0];
     const stargateClient = await SigningStargateClient.connectWithSigner(rpc, wallet, options);
 
