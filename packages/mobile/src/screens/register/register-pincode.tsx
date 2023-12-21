@@ -118,12 +118,6 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
 
   const [code, setCode] = useState('');
 
-  useEffect(() => {
-    if (pinRef?.current) {
-      pinRef.current.focus();
-    }
-  }, []);
-
   const handleSetPassword = () => {
     setConfirmCode(code);
     newMnemonicConfig.setPassword(code);
@@ -371,7 +365,7 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
             buttonItemStyle={styles.buttonItemStyle}
             buttonTextStyle={styles.buttonTextStyle}
             //@ts-ignore
-            rightBottomButton={<OWIcon size={22} name="arrow-left" />}
+            rightBottomButton={<OWIcon size={30} name="backspace-outline" />}
             onRightBottomButtonPress={() => {
               numpadRef.current.clear();
             }}

@@ -202,7 +202,7 @@ const modeColors = {
   'text-label-list': [colorsCode['gray-300'], colorsCode['blue-300']],
   'label-bottom-bar': ['#E2DEEB', '#5F5E77'],
   'border-bottom-tab': ['#3B2368', '#F0F0F0'],
-  'on-background-toggle': ['#9AE796', '#A0F29B'],
+  'on-background-toggle': ['#90B51B', '#90B51B'],
   'off-background-toggle': ['#6F6F76', '#E9E9EA'],
   'bg-icon-token': ['#E5E5EA', '#F3F1F5'],
   'bg-circle-select-modal': [colorsCode['gray-400'], colorsCode['purple-100']],

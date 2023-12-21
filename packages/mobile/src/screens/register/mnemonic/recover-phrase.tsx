@@ -108,7 +108,7 @@ export const RecoverPhraseScreen: FunctionComponent = observer(props => {
       });
     }
     if (checkRouter(props?.route?.name, 'RegisterRecoverMnemonicMain')) {
-      navigate(SCREENS.RegisterEnd, {
+      navigate(SCREENS.RegisterDone, {
         password: getValues('password'),
         type: 'recover'
       });

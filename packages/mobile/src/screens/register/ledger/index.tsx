@@ -27,7 +27,7 @@ interface FormData {
   confirmPassword: string;
 }
 
-export const NewLedgerScreen: FunctionComponent = observer((props) => {
+export const NewLedgerScreen: FunctionComponent = observer(props => {
   const route = useRoute<
     RouteProp<
       Record<
@@ -69,15 +69,10 @@ export const NewLedgerScreen: FunctionComponent = observer((props) => {
 
     try {
       // Re-create ledger when change network
-      await registerConfig.createLedger(
-        getValues('name'),
-        getValues('password'),
-        {
-          ...bip44Option.bip44HDPath,
-          coinType:
-            bip44Option.bip44HDPath?.coinType ?? chainStore.current.coinType
-        }
-      );
+      await registerConfig.createLedger(getValues('name'), getValues('password'), {
+        ...bip44Option.bip44HDPath,
+        coinType: bip44Option.bip44HDPath?.coinType ?? chainStore.current.coinType
+      });
       analyticsStore.setUserProperties({
         registerType: 'ledger',
         accountType: 'ledger'
@@ -87,7 +82,7 @@ export const NewLedgerScreen: FunctionComponent = observer((props) => {
         return false;
       }
       if (checkRouter(props?.route?.name, 'RegisterNewLedgerMain')) {
-        navigate(SCREENS.RegisterEnd, {
+        navigate(SCREENS.RegisterDone, {
           password: getValues('password')
         });
       } else {
@@ -95,7 +90,7 @@ export const NewLedgerScreen: FunctionComponent = observer((props) => {
           index: 0,
           routes: [
             {
-              name: SCREENS.RegisterEnd,
+              name: SCREENS.RegisterDone,
               params: {
                 password: getValues('password')
               }
@@ -155,13 +150,7 @@ export const NewLedgerScreen: FunctionComponent = observer((props) => {
             style={styles.padIcon}
             type="link"
             onPress={() => setStatusPass(!statusPass)}
-            icon={
-              <OWIcon
-                name={!statusPass ? 'eye' : 'eye-slash'}
-                color={colors['icon-purple-700-gray']}
-                size={22}
-              />
-            }
+            icon={<OWIcon name={!statusPass ? 'eye' : 'eye-slash'} color={colors['icon-purple-700-gray']} size={22} />}
           />
         }
         secureTextEntry={!statusPass}
@@ -182,10 +171,8 @@ export const NewLedgerScreen: FunctionComponent = observer((props) => {
           PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT
         ]);
         if (
-          granted['android.permission.BLUETOOTH_CONNECT'] ===
-            PermissionsAndroid.RESULTS.GRANTED &&
-          granted['android.permission.BLUETOOTH_SCAN'] ===
-            PermissionsAndroid.RESULTS.GRANTED
+          granted['android.permission.BLUETOOTH_CONNECT'] === PermissionsAndroid.RESULTS.GRANTED &&
+          granted['android.permission.BLUETOOTH_SCAN'] === PermissionsAndroid.RESULTS.GRANTED
         ) {
           // alert('ok');
         } else {
@@ -298,12 +285,7 @@ export const NewLedgerScreen: FunctionComponent = observer((props) => {
       ) : null}
       <BIP44AdvancedButton bip44Option={bip44Option} />
       <View style={styles.heightView} />
-      <OWButton
-        loading={isCreating}
-        disabled={isCreating}
-        onPress={submit}
-        label={'Next'}
-      />
+      <OWButton loading={isCreating} disabled={isCreating} onPress={submit} label={'Next'} />
       <OWButton type="link" onPress={onGoBack} label={'Go back'} />
 
       {/* Mock element for bottom padding */}

@@ -7,12 +7,10 @@ import { PageWithView } from '../../components/page';
 import { Toggle } from '../../components/toggle';
 import { useSmartNavigation } from '../../navigation.provider';
 import { useStore } from '../../stores';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import OWButton from '@src/components/button/OWButton';
 import { useTheme } from '@src/themes/theme-provider';
 import { metrics, typography } from '../../themes';
-import { OWalletLogo, OWalletStar } from './owallet-logo';
+import OWIcon from '@src/components/ow-icon/ow-icon';
 
 export const RegisterDoneScreen: FunctionComponent = observer(() => {
   const { keychainStore, keyRingStore } = useStore();
@@ -108,32 +106,25 @@ export const RegisterDoneScreen: FunctionComponent = observer(() => {
         </Text>
       </View>
       <View>
-        {password && keychainStore.isBiometrySupported ? (
-          <View
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              marginTop: 58,
-              alignItems: 'center'
-            }}
-          >
-            <Text
-              style={{
-                ...typography['subtitle1'],
-                color: colors['text-black-medium']
-              }}
-            >
-              Enable Biometric
-            </Text>
-            <View
-              style={{
-                flex: 1
-              }}
-            />
-            <Toggle on={isBiometricOn} onChange={value => setIsBiometricOn(value)} />
-          </View>
-        ) : null}
         <View style={styles.btnDone}>
+          {password && keychainStore.isBiometrySupported ? (
+            <View style={styles.biometrics}>
+              <View style={styles.rc}>
+                <OWIcon size={22} name="maximize" color={colors['nertural-text-title']} />
+                <Text
+                  size={16}
+                  weight={'500'}
+                  style={{
+                    color: colors['nertural-text-title'],
+                    paddingLeft: 4
+                  }}
+                >
+                  Sign in with Biometrics
+                </Text>
+              </View>
+              <Toggle on={isBiometricOn} onChange={value => setIsBiometricOn(value)} />
+            </View>
+          ) : null}
           <OWButton
             label="Continue"
             loading={isLoading}
@@ -190,5 +181,16 @@ const styling = colors =>
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center'
+    },
+    rc: {
+      flexDirection: 'row',
+      alignItems: 'center'
+    },
+    biometrics: {
+      flexDirection: 'row',
+      marginBottom: 36,
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      width: metrics.screenWidth - 44
     }
   });
