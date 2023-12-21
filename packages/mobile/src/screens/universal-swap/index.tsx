@@ -16,7 +16,6 @@ import {
   TokenItemType,
   NetworkChainId,
   oraichainNetwork,
-  tokenMap,
   toAmount,
   network,
   Networks,
@@ -28,7 +27,7 @@ import {
 import { openLink } from '../../utils/helper';
 import { SwapDirection, feeEstimate, getTransferTokenFee } from '@owallet/common';
 import { handleSimulateSwap, filterNonPoolEvmTokens } from '@oraichain/oraidex-universal-swap';
-import { fetchTokenInfos, ChainIdEnum } from '@owallet/common';
+import { fetchTokenInfos, ChainIdEnum, tokenMap } from '@owallet/common';
 import { calculateMinReceive, getTokenOnOraichain } from '@oraichain/oraidex-common';
 import {
   isEvmNetworkNativeSwapSupported,
