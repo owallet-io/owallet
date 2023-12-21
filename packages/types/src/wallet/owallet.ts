@@ -8,8 +8,10 @@ export type AddressesLedger = {
   cosmos?: string;
   eth?: string;
   trx?: string;
-  btc?: string;
-  tbtc?: string;
+  btc44?: string;
+  btc84?: string;
+  tbtc44?: string;
+  tbtc84?: string;
 };
 export interface Key {
   // Name of the selected key store.
