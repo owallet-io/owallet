@@ -8,10 +8,13 @@ export const defaultAll = { label: 'All', value: 'All', image: images.crypto };
 export const SCREENS = {
   Home: 'Home',
   TransactionDetail: 'Transactions.Detail',
+  BackupMnemonic: 'BackupMnemonic',
+  RecoveryPhrase: 'RecoveryPhrase',
   RegisterMain: 'RegisterMain',
   BtcFaucet: 'BtcFaucet',
   RegisterVerifyMnemonicMain: 'RegisterVerifyMnemonicMain',
   RegisterEnd: 'Register.End',
+  RegisterDone: 'Register.Done',
   RegisterRecoverMnemonicMain: 'RegisterRecoverMnemonicMain',
   RegisterNewLedgerMain: 'RegisterNewLedgerMain',
   Tokens: 'Tokens',
@@ -24,6 +27,7 @@ export const SCREENS = {
   RegisterNewUser: 'Register.NewUser',
   RegisterNotNewUser: 'Register.NotNewUser',
   RegisterNewMnemonic: 'Register.NewMnemonic',
+  RegisterNewPincode: 'Register.NewPincode',
   RegisterVerifyMnemonic: 'Register.VerifyMnemonic',
   RegisterRecoverMnemonic: 'Register.RecoverMnemonic',
   RegisterNewLedger: 'Register.NewLedger',
@@ -107,6 +111,9 @@ export const SCREENS_OPTIONS: IScreenOption = {
   [SCREENS.TransactionDetail]: {
     title: 'Transaction Detail'
   },
+  [SCREENS.BackupMnemonic]: {
+    showTabBar: false
+  },
   [SCREENS.RegisterMain]: {
     title: HEADER_KEY.notShowHeader
   },
@@ -114,6 +121,9 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: HEADER_KEY.notShowHeader
   },
   [SCREENS.RegisterEnd]: {
+    title: HEADER_KEY.notShowHeader
+  },
+  [SCREENS.RegisterDone]: {
     title: HEADER_KEY.notShowHeader
   },
   [SCREENS.RegisterRecoverMnemonicMain]: {
@@ -154,10 +164,16 @@ export const SCREENS_OPTIONS: IScreenOption = {
   [SCREENS.RegisterNewMnemonic]: {
     title: HEADER_KEY.notShowHeader
   },
+  [SCREENS.RegisterNewPincode]: {
+    title: HEADER_KEY.notShowHeader
+  },
   [SCREENS.RegisterVerifyMnemonic]: {
     title: HEADER_KEY.notShowHeader
   },
   [SCREENS.RegisterRecoverMnemonic]: {
+    title: HEADER_KEY.notShowHeader
+  },
+  [SCREENS.RecoveryPhrase]: {
     title: HEADER_KEY.notShowHeader
   },
   [SCREENS.RegisterNewLedger]: {

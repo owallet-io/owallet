@@ -44,7 +44,7 @@ async function waitAccountLoad(accountStore: AccountStore<any, any, any, any>, c
   });
 }
 
-export const PincodeScreen: FunctionComponent = observer(() => {
+export const PincodeUnlockScreen: FunctionComponent = observer(() => {
   const { keyRingStore, keychainStore, accountStore, chainStore, appInitStore, notificationStore } = useStore();
   const navigation = useNavigation();
   const route = useRoute<
@@ -179,10 +179,21 @@ export const PincodeScreen: FunctionComponent = observer(() => {
 
   const handleContinue = () => {
     setPrevPad('alphabet');
+    setConfirmCode(password);
+    setPassword('');
   };
 
-  const handleConfirm = () => {
-    if (confirmCode === code && counter < 3) {
+  const onSwitchPad = type => {
+    setCode('');
+    if (type === 'numeric') {
+      setNumericPad(true);
+    } else {
+      setNumericPad(false);
+    }
+  };
+
+  const handleCheckConfirm = confirmPass => {
+    if (confirmCode === confirmPass && counter < 3) {
       alert('true');
       numpadRef?.current?.clearAll();
     } else {
@@ -197,6 +208,14 @@ export const PincodeScreen: FunctionComponent = observer(() => {
         pinRef?.current?.shake().then(() => setCode(''));
         numpadRef?.current?.clearAll();
       }
+    }
+  };
+
+  const handleConfirm = () => {
+    if (prevPad === 'numeric') {
+      handleCheckConfirm(code);
+    } else {
+      handleCheckConfirm(password);
     }
   };
 
@@ -289,7 +308,9 @@ export const PincodeScreen: FunctionComponent = observer(() => {
                 secureTextEntry={statusPass}
                 value={password}
                 error={isFailed ? 'Invalid password' : undefined}
-                onChangeText={setPassword}
+                onChangeText={txt => {
+                  setPassword(txt);
+                }}
                 onSubmitEditing={tryUnlock}
                 placeholder="Enter your passcode"
                 inputRight={
@@ -308,7 +329,7 @@ export const PincodeScreen: FunctionComponent = observer(() => {
         <View style={[styles.rc, styles.switch]}>
           <TouchableOpacity
             style={[styles.switchText, isNumericPad ? styles.switchTextActive : { marginRight: 9 }]}
-            onPress={() => setNumericPad(true)}
+            onPress={() => onSwitchPad('numeric')}
           >
             <OWText weight="500" size={16}>
               123
@@ -316,7 +337,7 @@ export const PincodeScreen: FunctionComponent = observer(() => {
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.switchText, !isNumericPad ? styles.switchTextActive : { marginLeft: 9 }]}
-            onPress={() => setNumericPad(false)}
+            onPress={() => onSwitchPad('alphabet')}
           >
             <OWText weight="500" size={16}>
               Aa
@@ -329,7 +350,7 @@ export const PincodeScreen: FunctionComponent = observer(() => {
         {isNewWallet ? null : (
           <TouchableOpacity onPress={() => tryBiometric()}>
             <View style={styles.rc}>
-              <OWIcon size={14} name="bridge" color={colors['purple-900']} />
+              <OWIcon size={14} name="maximize" color={colors['purple-900']} />
               <OWText style={{ paddingLeft: 8 }} variant="h2" weight="600" size={14} color={colors['purple-900']}>
                 Sign in with Face ID
               </OWText>
@@ -364,7 +385,10 @@ export const PincodeScreen: FunctionComponent = observer(() => {
               }}
               label="Continue"
               disabled={isLoading || !password}
-              onPress={tryUnlock}
+              onPress={() => {
+                // tryUnlock();
+                handleContinue();
+              }}
               loading={isLoading || isBiometricLoading}
             />
           </View>

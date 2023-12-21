@@ -28,7 +28,7 @@ interface FormData {
   confirmPassword: string;
 }
 
-export const NewMnemonicScreen: FunctionComponent = observer((props) => {
+export const NewMnemonicScreen: FunctionComponent = observer(props => {
   const route = useRoute<
     RouteProp<
       Record<
@@ -210,7 +210,7 @@ export const NewMnemonicScreen: FunctionComponent = observer((props) => {
           }}
           render={renderUserName}
           name="name"
-          defaultValue=""
+          defaultValue={`OWallet-${Math.floor(Math.random() * 100)}`}
         />
         {mode === 'create' ? (
           <React.Fragment>

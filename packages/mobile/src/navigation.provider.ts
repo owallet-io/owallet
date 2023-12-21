@@ -22,6 +22,9 @@ const { SmartNavigatorProvider, useSmartNavigation } = createSmartNavigatorProvi
     'Register.NewMnemonic': {
       upperScreenName: 'Register'
     },
+    'Register.NewPincode': {
+      upperScreenName: 'Register'
+    },
     'Register.VerifyMnemonic': {
       upperScreenName: 'Register'
     },
@@ -160,6 +163,9 @@ const { SmartNavigatorProvider, useSmartNavigation } = createSmartNavigatorProvi
     }
   }).withParams<{
     'Register.NewMnemonic': {
+      registerConfig: RegisterConfig;
+    };
+    'Register.NewPincode': {
       registerConfig: RegisterConfig;
     };
     'Register.VerifyMnemonic': {

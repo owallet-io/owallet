@@ -75,6 +75,9 @@ export const colorsCode = {
   'red-700': '#FF0000',
   'red-900': '#E53A3A',
 
+  // black
+  'nertural-text-title': '#232125',
+
   // gray
   'gray-10': '#F3F1F5',
   'gray-50': '#F2F2F7',
@@ -82,6 +85,7 @@ export const colorsCode = {
   'gray-100': '#F2F6FA',
   'gray-150': '#5F5E77',
   'gray-200': '#D1D1D6',
+  'gray-250': '#EBEDF2',
   'gray-300': '#C7C7CC',
   'gray-301': '#C7C7CC',
   'gray-400': '#AEAEB2',
@@ -90,6 +94,7 @@ export const colorsCode = {
   'gray-700': '#5F5E77',
   'gray-800': '#3A3A3C',
   'gray-900': '#1C1C1E',
+  'text-body': '#6A6B71',
 
   //green
   'green-500': '#4BB10C',
@@ -103,6 +108,8 @@ export const colorsCode = {
   'purple-700': '#945EF8',
   'purple-900': '#8B1BFB',
   'purple-h1': '#7E58EA',
+  'primary-default': '#5C00A3',
+  'primary-subtitle': '#F4E5FF',
   // yellow
   'yellow-10': '#FFF6E9',
   //orange
@@ -195,7 +202,7 @@ const modeColors = {
   'text-label-list': [colorsCode['gray-300'], colorsCode['blue-300']],
   'label-bottom-bar': ['#E2DEEB', '#5F5E77'],
   'border-bottom-tab': ['#3B2368', '#F0F0F0'],
-  'on-background-toggle': ['#9AE796', '#A0F29B'],
+  'on-background-toggle': ['#90B51B', '#90B51B'],
   'off-background-toggle': ['#6F6F76', '#E9E9EA'],
   'bg-icon-token': ['#E5E5EA', '#F3F1F5'],
   'bg-circle-select-modal': [colorsCode['gray-400'], colorsCode['purple-100']],

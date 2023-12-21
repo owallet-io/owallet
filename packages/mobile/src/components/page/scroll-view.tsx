@@ -1,21 +1,12 @@
 import React, { forwardRef } from 'react';
-import {
-  Animated,
-  SafeAreaView,
-  ScrollViewProps,
-  ScrollView,
-  StyleSheet,
-  View
-} from 'react-native';
+import { Animated, SafeAreaView, ScrollViewProps, ScrollView, StyleSheet, View } from 'react-native';
 import { useStyle } from '../../styles';
 import { GradientBackground } from '../svg';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { usePageRegisterScrollYValue, useSetFocusedScreen } from './utils';
 import { useTheme } from '@src/themes/theme-provider';
 
-const AnimatedKeyboardAwareScrollView = Animated.createAnimatedComponent(
-  KeyboardAwareScrollView
-);
+const AnimatedKeyboardAwareScrollView = Animated.createAnimatedComponent(KeyboardAwareScrollView);
 
 // eslint-disable-next-line react/display-name
 export const PageWithScrollView = forwardRef<
@@ -33,14 +24,7 @@ export const PageWithScrollView = forwardRef<
   useSetFocusedScreen();
   const scrollY = usePageRegisterScrollYValue();
   const { colors } = useTheme();
-  const {
-    style,
-    fixed,
-    onScroll,
-    disableSafeArea,
-    backgroundColor = colors['background'],
-    ...restProps
-  } = props;
+  const { style, fixed, onScroll, disableSafeArea, backgroundColor = colors['background'], ...restProps } = props;
 
   const ContainerElement = disableSafeArea ? View : SafeAreaView;
 
@@ -69,7 +53,7 @@ export const PageWithScrollView = forwardRef<
       </View>
       <ContainerElement style={styles.get('flex-1')}>
         <AnimatedKeyboardAwareScrollView
-          innerRef={(_ref) => {
+          innerRef={_ref => {
             if (ref) {
               // I don't know why the _ref's type is JSX.Element
               if (typeof ref === 'function') {
@@ -79,10 +63,7 @@ export const PageWithScrollView = forwardRef<
               }
             }
           }}
-          style={StyleSheet.flatten([
-            styles.flatten(['flex-1', 'padding-0', 'overflow-visible']),
-            style
-          ])}
+          style={StyleSheet.flatten([styles.flatten(['flex-1', 'padding-0', 'overflow-visible']), style])}
           keyboardOpeningTime={0}
           onScroll={Animated.event(
             [

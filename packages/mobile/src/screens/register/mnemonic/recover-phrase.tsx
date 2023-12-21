@@ -14,12 +14,13 @@ import { BIP44AdvancedButton, useBIP44Option } from '../bip44';
 import { Buffer } from 'buffer';
 import { checkRouter, checkRouterPaddingBottomBar, navigate } from '../../../router/root';
 import { OWalletLogo } from '../owallet-logo';
-import { spacing, typography } from '../../../themes';
+import { metrics, spacing, typography } from '../../../themes';
 import { LoadingSpinner } from '../../../components/spinner';
 import OWButton from '../../../components/button/OWButton';
 import OWIcon from '../../../components/ow-icon/ow-icon';
 import { SCREENS } from '@src/common/constants';
 import { LRRedact } from '@logrocket/react-native';
+import OWText from '@src/components/text/ow-text';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require('bip39');
 
@@ -53,7 +54,7 @@ interface FormData {
   confirmPassword: string;
 }
 
-export const RecoverMnemonicScreen: FunctionComponent = observer(props => {
+export const RecoverPhraseScreen: FunctionComponent = observer(props => {
   const route = useRoute<
     RouteProp<
       Record<
@@ -304,70 +305,58 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(props => {
     );
   };
   return (
-    <PageWithScrollView contentContainerStyle={styles.container} backgroundColor={colors['plain-background']}>
-      <LRRedact>
-        <View style={styles.headerView}>
-          <Text style={styles.titleHeader}>Import wallet</Text>
-          <View>
-            <OWalletLogo size={72} />
-          </View>
+    <View style={styles.container}>
+      <View>
+        <TouchableOpacity style={styles.goBack}>
+          <OWIcon size={16} name="arrow-left" />
+        </TouchableOpacity>
+        <View style={[styles.aic, styles.title]}>
+          <OWText variant="h2" style={{ textAlign: 'center' }} typo="bold">
+            Enter recovery phrase or private key
+          </OWText>
+
+          <View
+            style={{
+              paddingLeft: 20,
+              paddingRight: 20,
+              paddingTop: 32
+            }}
+          ></View>
+          <Controller
+            control={control}
+            rules={{
+              required: 'Mnemonic is required',
+              validate: validateMnemonic
+            }}
+            render={renderMnemonic}
+            name="mnemonic"
+            defaultValue=""
+          />
+          <TouchableOpacity onPress={() => {}}>
+            <View style={styles.rc}>
+              <OWIcon size={14} name="copy" color={colors['purple-900']} />
+              <OWText style={{ paddingLeft: 8 }} variant="h2" weight="600" size={14} color={colors['purple-900']}>
+                Paste from clipboard
+              </OWText>
+            </View>
+          </TouchableOpacity>
         </View>
-        <Controller
-          control={control}
-          rules={{
-            required: 'Mnemonic is required',
-            validate: validateMnemonic
-          }}
-          render={renderMnemonic}
-          name="mnemonic"
-          defaultValue=""
-        />
-        <Controller
-          control={control}
-          rules={{
-            required: 'Name is required'
-          }}
-          render={renderName}
-          name="name"
-          defaultValue=""
-        />
+      </View>
 
-        {mode === 'create' ? (
-          <React.Fragment>
-            <Controller
-              control={control}
-              rules={{
-                required: 'Password is required',
-                validate: validatePass
-              }}
-              render={renderPass}
-              name="password"
-              defaultValue=""
-            />
-            <Controller
-              control={control}
-              rules={{
-                required: 'Confirm password is required',
-                validate: validateConfirmPass
-              }}
-              render={renderConfirmPass}
-              name="confirmPassword"
-              defaultValue=""
-            />
-          </React.Fragment>
-        ) : null}
-
-        <BIP44AdvancedButton bip44Option={bip44Option} />
-        <OWButton loading={isCreating} disabled={isCreating} onPress={submit} label={'Next'} />
-        <OWButton type="link" onPress={onGoBack} label={'Go back'} />
-        {/* Mock element for bottom padding */}
-        <View
-          style={{
-            height: 20
-          }}
-        />
-      </LRRedact>
-    </PageWithScrollView>
+      <View style={styles.aic}>
+        <View style={styles.signIn}>
+          <OWButton
+            style={{
+              borderRadius: 32
+            }}
+            label="Import"
+            disabled={false}
+            onPress={() => {}}
+            loading={false}
+          />
+        </View>
+      </View>
+    </View>
   );
 });
 
@@ -401,11 +390,7 @@ const useStyle = () => {
       alignItems: 'center',
       justifyContent: 'space-between'
     },
-    container: {
-      flexGrow: 1,
-      paddingTop: Platform.OS == 'android' ? 50 : 0,
-      paddingHorizontal: spacing['page-pad']
-    },
+
     borderInput: {
       borderColor: colors['border-purple-100-gray-800'],
       borderWidth: 1,
@@ -415,6 +400,58 @@ const useStyle = () => {
       paddingTop: 12,
       paddingBottom: 12,
       borderRadius: 8
+    },
+    containerBtnCopy: {
+      width: '100%',
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+      alignItems: 'center'
+    },
+    containerWord: {
+      marginTop: 14,
+      marginBottom: 16,
+      padding: 16,
+      borderColor: colors['primary-default'],
+      borderWidth: 1,
+      borderRadius: 8,
+      display: 'flex',
+      flexDirection: 'row',
+      flexWrap: 'wrap'
+    },
+    container: {
+      paddingTop: metrics.screenHeight / 14,
+      justifyContent: 'space-between',
+      height: '100%'
+    },
+    signIn: {
+      width: '100%',
+      alignItems: 'center',
+      borderTopWidth: 1,
+      borderTopColor: colors['gray-300'],
+      padding: 16
+    },
+
+    aic: {
+      alignItems: 'center',
+      paddingBottom: 20
+    },
+    rc: {
+      flexDirection: 'row',
+      alignItems: 'center'
+    },
+    goBack: {
+      backgroundColor: colors['background-light-gray'],
+      borderRadius: 999,
+      width: 44,
+      height: 44,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginLeft: 16
+    },
+    title: {
+      paddingHorizontal: 16,
+      paddingTop: 24
     }
   });
 };
