@@ -22,6 +22,7 @@ import OWIcon from '@src/components/ow-icon/ow-icon';
 import { CheckIcon } from '@src/components/icon';
 import { SCREENS } from '@src/common/constants';
 import { showToast } from '@src/utils/helper';
+import { LoadingWalletScreen } from './loading-wallet';
 
 interface FormData {
   name: string;
@@ -49,6 +50,8 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
 
   const newMnemonicConfig = useNewMnemonicConfig(registerConfig);
   const [mode] = useState(registerConfig.mode);
+  console.log('mode', mode);
+
   const [statusPass, setStatusPass] = useState(false);
   const [statusConfirmPass, setStatusConfirmPass] = useState(false);
   const [isNumericPad, setNumericPad] = useState(true);
@@ -250,7 +253,9 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
 
   const styles = useStyles();
 
-  return (
+  return mode === 'add' ? (
+    <LoadingWalletScreen mode={mode} />
+  ) : (
     <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
       <TouchableOpacity style={styles.goBack} onPress={onGoBack}>
         <OWIcon size={16} name="arrow-left" />
