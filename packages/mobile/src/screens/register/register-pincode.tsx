@@ -1,12 +1,10 @@
 import React, { FunctionComponent, useCallback, useEffect, useRef, useState } from 'react';
-import { View, StyleSheet, Platform, Clipboard, KeyboardAvoidingView, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, KeyboardAvoidingView, TouchableOpacity } from 'react-native';
 import { observer } from 'mobx-react-lite';
-import { RouteProp, useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { useTheme } from '@src/themes/theme-provider';
 import { RegisterConfig } from '@owallet/hooks';
-
 import OWButtonIcon from '@src/components/button/ow-button-icon';
-import { LRRedact } from '@logrocket/react-native';
 import OWText from '@src/components/text/ow-text';
 import { metrics } from '@src/themes';
 import NumericPad from 'react-native-numeric-pad';
@@ -15,13 +13,10 @@ import { useSmartNavigation } from '@src/navigation.provider';
 import { useBIP44Option } from './bip44';
 import { useNewMnemonicConfig } from './mnemonic';
 import { Controller, useForm } from 'react-hook-form';
-import { checkRouter, navigate } from '@src/router/root';
+import { checkRouter } from '@src/router/root';
 import { TextInput } from '@src/components/input';
 import { OWButton } from '@src/components/button';
 import OWIcon from '@src/components/ow-icon/ow-icon';
-import { CheckIcon } from '@src/components/icon';
-import { SCREENS } from '@src/common/constants';
-import { showToast } from '@src/utils/helper';
 import { LoadingWalletScreen } from './loading-wallet';
 
 interface FormData {
@@ -50,7 +45,6 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
 
   const newMnemonicConfig = useNewMnemonicConfig(registerConfig);
   const [mode] = useState(registerConfig.mode);
-  console.log('mode', mode);
 
   const [statusPass, setStatusPass] = useState(false);
   const [isNumericPad, setNumericPad] = useState(true);
@@ -106,14 +100,10 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
     }
   };
 
-  const onSubmitEditingUserName = () => {
-    if (mode === 'add') {
-    }
-    if (mode === 'create') {
-    }
-  };
-
   useEffect(() => {
+    // mode : add | create
+    // add is for user that have wallet existed
+    // create is for new user
     if (mode === 'add' && newMnemonicConfig.mnemonic) {
       setTimeout(() => {
         onVerifyMnemonic();
