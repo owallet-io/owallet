@@ -47,38 +47,42 @@ export class SwapCosmosWallet extends CosmosWallet {
     return await this.owallet.getOfflineSignerAuto(chainId);
   }
 
-  async getCosmWasmClient(
-    config: {
-      signer?: OfflineSigner;
-      rpc?: string;
-      chainId: CosmosChainId;
-    },
-    options?: SigningStargateClientOptions
-  ): Promise<{
-    wallet: OfflineSigner;
-    client: SigningCosmWasmClient;
-    // defaultAddress: AccountData;
-    stargateClient: SigningStargateClient;
-  }> {
-    const { chainId, signer, rpc } = config;
+  // async getCosmWasmClient(
+  //   config: {
+  //     signer?: OfflineSigner;
+  //     rpc?: string;
+  //     chainId: CosmosChainId;
+  //   },
+  //   options?: SigningStargateClientOptions
+  // ): Promise<{
+  //   wallet: OfflineSigner;
+  //   client: SigningCosmWasmClient;
+  //   // defaultAddress: AccountData;
+  //   stargateClient: SigningStargateClient;
+  // }> {
+  //   const { chainId, signer, rpc } = config;
 
-    const wallet = signer ?? (await this.createCosmosSigner(chainId));
+  //   console.log('chainId', chainId);
 
-    console.log('signer', signer);
-    console.log('wallet', wallet);
+  //   const wallet = signer ?? (await this.createCosmosSigner(chainId));
 
-    // const defaultAddress = (await wallet.getAccounts())[0];
-    const stargateClient = await SigningStargateClient.connectWithSigner(rpc, wallet, options);
+  //   console.log('signer', signer);
+  //   console.log('wallet', wallet);
 
-    return new Promise(resolve =>
-      resolve({
-        client: this.client,
-        wallet: wallet ?? config.signer!,
-        // defaultAddress,
-        stargateClient: stargateClient
-      })
-    );
-  }
+  //   // const defaultAddress = (await wallet.getAccounts())[0];
+  //   const stargateClient = await SigningStargateClient.connectWithSigner(rpc, wallet, options);
+
+  //   console.log('stargateClient', stargateClient);
+
+  //   return new Promise(resolve =>
+  //     resolve({
+  //       client: this.client,
+  //       wallet: wallet ?? config.signer!,
+  //       // defaultAddress,
+  //       stargateClient: stargateClient
+  //     })
+  //   );
+  // }
 }
 
 export class SwapEvmWallet extends EvmWallet {
