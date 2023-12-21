@@ -53,7 +53,6 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
   console.log('mode', mode);
 
   const [statusPass, setStatusPass] = useState(false);
-  const [statusConfirmPass, setStatusConfirmPass] = useState(false);
   const [isNumericPad, setNumericPad] = useState(true);
   const [confirmCode, setConfirmCode] = useState(null);
   const [prevPad, setPrevPad] = useState(null);
@@ -63,7 +62,6 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
   const [isLoading, setIsLoading] = useState(false);
   const [isBiometricLoading, setIsBiometricLoading] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
-  const words = newMnemonicConfig.mnemonic.split(' ');
 
   const navigation = useNavigation();
 
@@ -72,24 +70,28 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
   const onVerifyMnemonic = useCallback(async () => {
     if (isCreating) return;
     setIsCreating(true);
-    await registerConfig.createMnemonic(
-      `OWallet-${Math.floor(Math.random() * (100 - 1)) + 1}`,
-      newMnemonicConfig.mnemonic,
-      newMnemonicConfig.password,
-      bip44Option.bip44HDPath
-    );
-    navigation.reset({
-      index: 0,
-      routes: [
-        {
-          name: 'Register.Done',
-          params: {
-            password: newMnemonicConfig.password,
-            type: 'new'
+    try {
+      await registerConfig.createMnemonic(
+        `OWallet-${Math.floor(Math.random() * (100 - 1)) + 1}`,
+        newMnemonicConfig.mnemonic,
+        newMnemonicConfig.password,
+        bip44Option.bip44HDPath
+      );
+      navigation.reset({
+        index: 0,
+        routes: [
+          {
+            name: 'Register.Done',
+            params: {
+              password: newMnemonicConfig.password,
+              type: 'new'
+            }
           }
-        }
-      ]
-    });
+        ]
+      });
+    } catch (err) {
+      console.log('errrr,', err);
+    }
   }, [newMnemonicConfig, isCreating]);
   const {
     control,
@@ -110,6 +112,14 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
     if (mode === 'create') {
     }
   };
+
+  useEffect(() => {
+    if (mode === 'add' && newMnemonicConfig.mnemonic) {
+      setTimeout(() => {
+        onVerifyMnemonic();
+      }, 2000);
+    }
+  }, [newMnemonicConfig.mnemonic]);
 
   const showPass = () => setStatusPass(!statusPass);
 
