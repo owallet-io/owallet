@@ -435,13 +435,14 @@ export class Bitcoin implements IBitcoin {
   constructor(
     public readonly version: string,
     public readonly mode: BitcoinMode,
-    public initChainId: string,
     protected readonly requester: MessageRequester
-  ) {
-    this.initChainId = initChainId;
-  }
+  ) {}
   async signAndBroadcast(chainId: string, data: object): Promise<{ rawTxHex: string }> {
     const msg = new RequestSignBitcoinMsg(chainId, data);
+    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  }
+  async getKey(chainId: string): Promise<Key> {
+    const msg = new GetKeyMsg(chainId);
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 }

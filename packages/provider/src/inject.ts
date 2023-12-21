@@ -14,6 +14,7 @@ import {
   ChainInfoWithoutEndpoints,
   TronWebMode,
   Bitcoin,
+  Bitcoin as IBitcoin,
   BitcoinMode
 } from '@owallet/types';
 import { Result, JSONUint8Array } from '@owallet/router';
@@ -691,17 +692,8 @@ export class InjectedEthereum implements Ethereum {
   // }
 }
 export class InjectedBitcoin implements Bitcoin {
-  // we use this chain id for chain id switching from user
-  // get chainId() {
-  //   return localStore.get('ethereum.chainId');
-  // }
-
-  // set chainId(chainId: string) {
-  //   localStore.set('ethereum.chainId', chainId);
-  // }
-
   static startProxy(
-    bitcoin: Bitcoin,
+    owallet: IBitcoin,
     eventListener: {
       addMessageListener: (fn: (e: any) => void) => void;
       postMessage: (message: any) => void;
@@ -715,8 +707,12 @@ export class InjectedBitcoin implements Bitcoin {
     eventListener.addMessageListener(async (e: MessageEvent) => {
       const message: ProxyRequest = parseMessage ? parseMessage(e.data) : e.data;
 
+      //TO DO: this version got from packages/mobile/package.json
+      const isReactNative = owallet.version.includes('mobile');
+      // TO DO: Check type proxy for duplicate popup sign with keplr wallet on extension
+      const typeProxy: any = !isReactNative ? `${NAMESPACE}-proxy-request` : 'proxy-request';
       // filter proxy-request by namespace
-      if (!message || message.type !== NAMESPACE_BITCOIN + 'proxy-request' || message.namespace !== NAMESPACE_BITCOIN) {
+      if (!message || message.type !== typeProxy || message.namespace !== NAMESPACE) {
         return;
       }
 
@@ -733,13 +729,70 @@ export class InjectedBitcoin implements Bitcoin {
           throw new Error('Mode is not function');
         }
 
-        if (message.method === 'chainId') {
-          throw new Error('chain id is not function');
+        if (
+          !owallet[message.method as keyof Bitcoin] ||
+          typeof owallet[message.method as keyof Bitcoin] !== 'function'
+        ) {
+          throw new Error(`Invalid method: ${message.method}`);
         }
+
+        // const result =
+        //   message.method === 'signDirect'
+        //     ? await (async () => {
+        //         const receivedSignDoc: {
+        //           bodyBytes?: Uint8Array | null;
+        //           authInfoBytes?: Uint8Array | null;
+        //           chainId?: string | null;
+        //           accountNumber?: string | null;
+        //         } = message.args[2];
+
+        //         const result = await owallet.signDirect(
+        //           message.args[0],
+        //           message.args[1],
+        //           {
+        //             bodyBytes: receivedSignDoc.bodyBytes,
+        //             authInfoBytes: receivedSignDoc.authInfoBytes,
+        //             chainId: receivedSignDoc.chainId,
+        //             accountNumber: receivedSignDoc.accountNumber ? Long.fromString(receivedSignDoc.accountNumber) : null
+        //           },
+        //           message.args[3]
+        //         );
+
+        //         return {
+        //           signed: {
+        //             bodyBytes: result.signed.bodyBytes,
+        //             authInfoBytes: result.signed.authInfoBytes,
+        //             chainId: result.signed.chainId,
+        //             accountNumber: result.signed.accountNumber.toString()
+        //           },
+        //           signature: result.signature
+        //         };
+        //       })()
+        //     : await owallet[message.method as any](
+        //         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //         // @ts-ignore
+        //         ...JSONUint8Array.unwrap(message.args)
+        //       );
+        const result = await owallet[message.method as any](
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          ...JSONUint8Array.unwrap(message.args)
+        );
+
+        const proxyResponse: ProxyRequestResponse = {
+          type: 'proxy-request-response',
+          namespace: NAMESPACE,
+          id: message.id,
+          result: {
+            return: JSONUint8Array.wrap(result)
+          }
+        };
+
+        eventListener.postMessage(proxyResponse);
       } catch (e) {
         const proxyResponse: ProxyRequestResponse = {
           type: 'proxy-request-response',
-          namespace: NAMESPACE_BITCOIN,
+          namespace: NAMESPACE,
           id: message.id,
           result: {
             error: e.message || e.toString()
@@ -751,7 +804,7 @@ export class InjectedBitcoin implements Bitcoin {
     });
   }
 
-  protected requestMethod(method: keyof IEthereum | string, args: any[]): Promise<any> {
+  protected requestMethod(method: keyof IBitcoin, args: any[]): Promise<any> {
     const bytes = new Uint8Array(8);
     const id: string = Array.from(crypto.getRandomValues(bytes))
       .map((value) => {
@@ -759,9 +812,11 @@ export class InjectedBitcoin implements Bitcoin {
       })
       .join('');
 
+    // TO DO: Mode 'extension' got from params InjectOwallet extension
+    const typeProxy: any = this.mode === 'extension' ? `${NAMESPACE}-proxy-request` : 'proxy-request';
     const proxyMessage: ProxyRequest = {
-      type: (NAMESPACE_BITCOIN + 'proxy-request') as any,
-      namespace: NAMESPACE_BITCOIN,
+      type: typeProxy,
+      namespace: NAMESPACE,
       id,
       method,
       args: JSONUint8Array.wrap(args)
@@ -781,6 +836,7 @@ export class InjectedBitcoin implements Bitcoin {
 
         this.eventListener.removeMessageListener(receiveResponse);
         const result = JSONUint8Array.unwrap(proxyResponse.result);
+        console.log('🚀 ~ file: inject.ts:839 ~ InjectedBitcoin ~ receiveResponse ~ result:', result);
 
         if (!result) {
           reject(new Error('Result is null'));
@@ -800,7 +856,6 @@ export class InjectedBitcoin implements Bitcoin {
     });
   }
 
-  public initChainId: string;
   public isOwallet: boolean = true;
 
   constructor(
@@ -818,6 +873,9 @@ export class InjectedBitcoin implements Bitcoin {
     protected readonly parseMessage?: (message: any) => any
   ) {}
 
+  async getKey(chainId: string): Promise<Key> {
+    return await this.requestMethod('getKey', [chainId]);
+  }
   async enable() {
     // return await this.requestMethod('eth_requestAccounts', [[]]);
     return;

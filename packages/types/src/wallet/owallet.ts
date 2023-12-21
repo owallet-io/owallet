@@ -203,6 +203,7 @@ export interface Bitcoin {
    * If the connected Ethereum is on the mobile app with the embeded web browser, the mode should be "mobile-web".
    */
   readonly mode: BitcoinMode;
-  initChainId: string;
+
   signAndBroadcast(chainId: string, data: object): Promise<{ rawTxHex: string }>;
+  getKey(chainId: string): Promise<Key>;
 }

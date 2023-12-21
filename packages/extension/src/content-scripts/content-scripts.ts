@@ -22,7 +22,7 @@ import manifest from '../manifest.json';
 InjectedOWallet.startProxy(new OWallet(manifest.version, 'core', new InExtensionMessageRequester()));
 
 InjectedEthereum.startProxy(new Ethereum(manifest.version, 'core', '0x38', new InExtensionMessageRequester()));
-InjectedBitcoin.startProxy(new Bitcoin(manifest.version, 'core', 'bitcoin', new InExtensionMessageRequester()));
+InjectedBitcoin.startProxy(new Bitcoin(manifest.version, 'core', new InExtensionMessageRequester()));
 
 InjectedTronWebOWallet.startProxy(
   new TronWeb(manifest.version, 'core', '0x2b6653dc', new InExtensionMessageRequester())
