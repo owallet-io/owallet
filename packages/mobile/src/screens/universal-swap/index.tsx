@@ -409,9 +409,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         relayerDecimals: RELAYER_DECIMAL
       };
 
-      console.log('originalFromToken', originalFromToken);
-      console.log('originalToToken', originalToToken);
-
       const universalSwapData: UniversalSwapData = {
         sender: {
           cosmos: cosmosAddress,

@@ -4,6 +4,7 @@ import {
   AppState,
   AppStateStatus,
   Image,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
@@ -11,21 +12,28 @@ import {
   View
 } from 'react-native';
 import { observer } from 'mobx-react-lite';
-import { metrics } from '@src/themes';
 import { TextInput } from '../../components/input';
 import delay from 'delay';
 import { useStore } from '../../stores';
-import { RouteProp, StackActions, useNavigation, useRoute } from '@react-navigation/native';
+import { StackActions, useNavigation } from '@react-navigation/native';
 import { KeyRingStatus } from '@owallet/background';
+import { KeychainStore } from '../../stores/keychain';
 import { AccountStore } from '@owallet/stores';
 import { autorun } from 'mobx';
+import { metrics, spacing } from '../../themes';
+import { ProgressBar } from '../../components/progress-bar';
+import CodePush from 'react-native-code-push';
+import messaging from '@react-native-firebase/messaging';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from '@src/themes/theme-provider';
 import OWButton from '@src/components/button/OWButton';
+import OWButtonIcon from '@src/components/button/ow-button-icon';
+import { Text } from '@src/components/text';
+import OWIcon from '@src/components/ow-icon/ow-icon';
+import { showToast } from '@src/utils/helper';
 import SmoothPinCodeInput from 'react-native-smooth-pincode-input';
 import NumericPad from 'react-native-numeric-pad';
-import OWIcon from '@src/components/ow-icon/ow-icon';
 import OWText from '@src/components/text/ow-text';
-import OWButtonIcon from '@src/components/button/ow-button-icon';
 
 async function waitAccountLoad(accountStore: AccountStore<any, any, any, any>, chainId: string): Promise<void> {
   if (accountStore.getAccount(chainId).bech32Address) {
@@ -44,31 +52,32 @@ async function waitAccountLoad(accountStore: AccountStore<any, any, any, any>, c
   });
 }
 
+enum AutoBiomtricStatus {
+  NO_NEED,
+  NEED,
+  FAILED,
+  SUCCESS
+}
+
+const useAutoBiomtric = (keychainStore: KeychainStore, tryEnabled: boolean) => {
+  const [status, setStatus] = useState(AutoBiomtricStatus.NO_NEED);
+  // const tryBiometricAutoOnce = useRef(false);
+
+  useEffect(() => {
+    if (keychainStore.isBiometryOn && status === AutoBiomtricStatus.NO_NEED) {
+      setStatus(AutoBiomtricStatus.NEED);
+    }
+  }, [keychainStore.isBiometryOn, status]);
+
+  return status;
+};
+
 export const PincodeUnlockScreen: FunctionComponent = observer(() => {
   const { keyRingStore, keychainStore, accountStore, chainStore, appInitStore, notificationStore } = useStore();
   const navigation = useNavigation();
-  const route = useRoute<
-    RouteProp<
-      Record<
-        string,
-        {
-          isNewWallet?: boolean;
-        }
-      >,
-      string
-    >
-  >();
-  // const isNewWallet = route?.params?.isNewWallet;
-  const isNewWallet = true;
-
   const { colors } = useTheme();
   const styles = styling(colors);
-
   const [downloading, setDownloading] = useState(false);
-  const [isNumericPad, setNumericPad] = useState(true);
-  const [confirmCode, setConfirmCode] = useState(null);
-  const [prevPad, setPrevPad] = useState(null);
-  const [counter, setCounter] = useState(0);
   const [installing, setInstalling] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -88,10 +97,65 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
     navigateToHomeOnce.current = true;
   }, [accountStore, chainStore, navigation]);
 
+  // const autoBiometryStatus = useAutoBiomtric(
+  //   keychainStore,
+  //   keyRingStore.status === KeyRingStatus.LOCKED && loaded
+  // );
+  useEffect(() => {
+    if (__DEV__) {
+      return;
+    }
+    CodePush.sync(
+      {
+        // updateDialog: {
+        //   appendReleaseDescription: true,
+        //   title: 'Update available'
+        // },
+        installMode: CodePush.InstallMode.IMMEDIATE
+      },
+      status => {
+        switch (status) {
+          case CodePush.SyncStatus.UP_TO_DATE:
+            // Show "downloading" modal
+            // modal.open();
+            setLoaded(true);
+            break;
+          case CodePush.SyncStatus.DOWNLOADING_PACKAGE:
+            // Show "downloading" modal
+            // modal.open();
+            appInitStore?.updateDate(Date.now());
+            setDownloading(true);
+            break;
+          case CodePush.SyncStatus.INSTALLING_UPDATE:
+            // show installing
+            setInstalling(true);
+            break;
+          case CodePush.SyncStatus.UPDATE_INSTALLED:
+            setDownloading(false);
+            setInstalling(false);
+            setLoaded(true);
+            appInitStore?.updateDate(Date.now());
+            // Hide loading modal
+            break;
+        }
+      },
+      ({ receivedBytes, totalBytes }) => {
+        /* Update download modal progress */
+        setProgress(Math.ceil((receivedBytes / totalBytes) * 100));
+      }
+    );
+  }, []);
+
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isBiometricLoading, setIsBiometricLoading] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
+  const [isNumericPad, setNumericPad] = useState(true);
+
+  const pinRef = useRef(null);
+  const numpadRef = useRef(null);
+
+  const [code, setCode] = useState('');
 
   const tryBiometric = useCallback(async () => {
     try {
@@ -157,31 +221,90 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
     }
   }, [keyRingStore.status, navigateToHome, downloading]);
 
-  const showPass = () => setStatusPass(!statusPass);
-
-  const pinRef = useRef(null);
-  const numpadRef = useRef(null);
-
-  const [code, setCode] = useState('');
-
-  useEffect(() => {
-    if (pinRef?.current) {
-      pinRef.current.focus();
-    }
+  // Notification setup section
+  const regisFcmToken = useCallback(async FCMToken => {
+    await AsyncStorage.setItem('FCM_TOKEN', FCMToken);
   }, []);
 
-  const handleSetPassword = () => {
-    setConfirmCode(code);
-    setCode('');
-    numpadRef?.current?.clearAll();
-    setPrevPad('numeric');
-  };
+  const getToken = useCallback(async () => {
+    const fcmToken = await AsyncStorage.getItem('FCM_TOKEN');
 
-  const handleContinue = () => {
-    setPrevPad('alphabet');
-    setConfirmCode(password);
-    setPassword('');
-  };
+    if (!fcmToken) {
+      messaging()
+        .getToken()
+        .then(async FCMToken => {
+          if (FCMToken) {
+            regisFcmToken(FCMToken);
+          } else {
+            // Alert.alert('[FCMService] User does not have a device token');
+          }
+        })
+        .catch(error => {
+          // let err = `FCM token get error: ${error}`;
+          // Alert.alert(err);
+          console.log('[FCMService] getToken rejected ', error);
+        });
+    } else {
+      // regisFcmToken(fcmToken);
+    }
+  }, [regisFcmToken]);
+
+  const registerAppWithFCM = useCallback(() => {
+    if (Platform.OS === 'ios') {
+      messaging()
+        .registerDeviceForRemoteMessages()
+        .then(register => {
+          getToken();
+        });
+      //await messaging().setAutoInitEnabled(true);
+    } else {
+      getToken();
+    }
+  }, [getToken]);
+
+  const requestPermission = useCallback(() => {
+    messaging()
+      .requestPermission()
+      .then(() => {
+        registerAppWithFCM();
+      })
+      .catch(error => {
+        console.log('[FCMService] Requested persmission rejected ', error);
+      });
+  }, [registerAppWithFCM]);
+
+  const checkPermission = useCallback(() => {
+    messaging()
+      .hasPermission()
+      .then(enabled => {
+        if (enabled) {
+          //user has permission
+          registerAppWithFCM();
+        } else {
+          //user don't have permission
+          requestPermission();
+        }
+      })
+      .catch(error => {
+        requestPermission();
+        let err = `check permission error${error}`;
+        Alert.alert(err);
+        // console.log("[FCMService] Permission rejected", error)
+      });
+  }, [registerAppWithFCM, requestPermission]);
+
+  useEffect(() => {
+    checkPermission();
+  }, [checkPermission]);
+
+  useEffect(() => {
+    requestPermission();
+  }, [requestPermission]);
+
+  useEffect(() => {
+    const unsubscribe = messaging().onMessage(async remoteMessage => {});
+    return unsubscribe;
+  }, []);
 
   const onSwitchPad = type => {
     setCode('');
@@ -192,64 +315,92 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
     }
   };
 
-  const handleCheckConfirm = confirmPass => {
-    if (confirmCode === confirmPass && counter < 3) {
-      alert('true');
-      numpadRef?.current?.clearAll();
-    } else {
-      setCounter(counter + 1);
-      alert(`${counter}`);
-      if (counter > 3) {
-        setConfirmCode(null);
-        pinRef?.current?.shake().then(() => setCode(''));
-        numpadRef?.current?.clearAll();
-        setCounter(0);
-      } else {
-        pinRef?.current?.shake().then(() => setCode(''));
-        numpadRef?.current?.clearAll();
-      }
-    }
-  };
-
-  const handleConfirm = () => {
-    if (prevPad === 'numeric') {
-      handleCheckConfirm(code);
-    } else {
-      handleCheckConfirm(password);
-    }
-  };
-
-  const handleLogin = () => {
-    pinRef?.current?.shake().then(() => setCode(''));
-    numpadRef?.current?.clearAll();
-  };
-
   useEffect(() => {
-    if (code.length >= 6) {
-      if (!isNewWallet) {
-        handleLogin();
-      } else {
-        if (confirmCode) {
-          handleConfirm();
-        } else {
-          handleSetPassword();
-        }
-      }
-    }
-  }, [code]);
+    pinRef?.current?.focus();
+    Keyboard.dismiss();
+  }, []);
 
+  // return <MaintainScreen />;
+  const showPass = () => setStatusPass(!statusPass);
   return !routeToRegisterOnce.current && keyRingStore.status === KeyRingStatus.EMPTY ? (
     <View />
+  ) : downloading || installing ? (
+    <View
+      style={{
+        width: '100%',
+        height: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: colors['background-container']
+      }}
+    >
+      <View
+        style={{
+          marginBottom: spacing['24']
+        }}
+      >
+        <Image
+          style={{
+            height: 70,
+            width: 70
+          }}
+          fadeDuration={0}
+          resizeMode="contain"
+          source={require('../../assets/logo/splash-image.png')}
+        />
+      </View>
+      <Text
+        style={{
+          color: colors['purple-700'],
+          textAlign: 'center',
+          fontWeight: '600',
+          fontSize: 16,
+          lineHeight: 22,
+          opacity: isLoading ? 0.5 : 1
+        }}
+      >
+        {installing ? `Installing` : `Checking for`} update
+      </Text>
+      <View style={{ marginVertical: 12 }}>
+        <Text
+          style={{
+            color: colors['purple-700'],
+            textAlign: 'center',
+            fontSize: 13,
+            lineHeight: 22
+          }}
+        >
+          {progress}%
+        </Text>
+        <ProgressBar progress={progress} styles={{ width: 260 }} />
+      </View>
+      <TouchableOpacity
+        onPress={() => {
+          setDownloading(false);
+          setInstalling(false);
+        }}
+      >
+        <Text
+          style={{
+            color: colors['purple-700'],
+            textAlign: 'center',
+            fontWeight: '600',
+            fontSize: 16,
+            lineHeight: 22,
+            opacity: isLoading ? 0.5 : 1
+          }}
+        >
+          Cancel
+        </Text>
+      </TouchableOpacity>
+    </View>
   ) : (
     <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
-      <TouchableOpacity style={styles.goBack}>
-        <OWIcon size={16} name="arrow-left" />
-      </TouchableOpacity>
+      <View />
       <View style={styles.aic}>
         <OWText variant="h2" typo="bold">
-          {confirmCode ? 'Confirm your' : 'Set'} passcode
+          Enter your passcode
         </OWText>
-        <OWText>Secure your wallet by setting a passcode</OWText>
         <View
           style={{
             paddingLeft: 20,
@@ -347,7 +498,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
       </View>
 
       <View style={styles.aic}>
-        {isNewWallet ? null : (
+        {keychainStore.isBiometryOn && (
           <TouchableOpacity onPress={() => tryBiometric()}>
             <View style={styles.rc}>
               <OWIcon size={14} name="maximize" color={colors['purple-900']} />
@@ -372,7 +523,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
             buttonItemStyle={styles.buttonItemStyle}
             buttonTextStyle={styles.buttonTextStyle}
             //@ts-ignore
-            rightBottomButton={<OWIcon size={22} name="arrow-left" />}
+            rightBottomButton={<OWIcon size={30} name="backspace-outline" />}
             onRightBottomButtonPress={() => {
               numpadRef.current.clear();
             }}
@@ -386,8 +537,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
               label="Continue"
               disabled={isLoading || !password}
               onPress={() => {
-                // tryUnlock();
-                handleContinue();
+                tryUnlock();
               }}
               loading={isLoading || isBiometricLoading}
             />

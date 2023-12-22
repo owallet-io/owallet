@@ -73,6 +73,7 @@ export const SCREENS = {
   },
   STACK: {
     Pincode: 'Pincode',
+    PincodeUnlock: 'PincodeUnlock',
     Unlock: 'Unlock',
     MainTab: 'MainTab',
     Register: 'Register',
@@ -281,6 +282,12 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: HEADER_KEY.showNetworkHeader
   },
   [SCREENS.STACK.Unlock]: {
+    title: ''
+  },
+  [SCREENS.STACK.PincodeUnlock]: {
+    title: ''
+  },
+  [SCREENS.STACK.Pincode]: {
     title: ''
   },
   [SCREENS.STACK.Pincode]: {
