@@ -97,10 +97,10 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
     navigateToHomeOnce.current = true;
   }, [accountStore, chainStore, navigation]);
 
-  // const autoBiometryStatus = useAutoBiomtric(
-  //   keychainStore,
-  //   keyRingStore.status === KeyRingStatus.LOCKED && loaded
-  // );
+  const autoBiometryStatus = useAutoBiomtric(keychainStore, keyRingStore.status === KeyRingStatus.LOCKED && loaded);
+
+  console.log('autoBiometryStatus', autoBiometryStatus);
+
   useEffect(() => {
     if (__DEV__) {
       return;
@@ -569,9 +569,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
 
 const styling = colors =>
   StyleSheet.create({
-    useBiometric: {
-      // marginTop: 44
-    },
+    useBiometric: {},
     container: {
       paddingTop: metrics.screenHeight / 14,
       justifyContent: 'space-between',

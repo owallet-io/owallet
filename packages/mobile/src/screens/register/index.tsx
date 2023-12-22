@@ -109,7 +109,8 @@ const useStyles = () => {
   const { colors } = useTheme();
   return StyleSheet.create({
     btnOW: {
-      marginBottom: 16
+      marginBottom: 16,
+      borderRadius: 999
     },
     containerUnion: { paddingTop: 20, paddingBottom: 16 },
     title: {
