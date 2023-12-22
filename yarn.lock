@@ -4874,10 +4874,19 @@
   resolved "https://registry.yarnpkg.com/@oraichain/immutable/-/immutable-4.3.9.tgz#ff8d5a7b39b5b01f3f72a902cffbfea32ccb20c3"
   integrity sha512-INpHnhL970OCkR7I71Kssb2aLl2l4Y/x8W6FlyRO0KmC8GHjxc/hlNB1t44BiI7lkOYmcWMRQoC8dwParsp1RQ==
 
-"@oraichain/oraidex-common@^1.0.45", "@oraichain/oraidex-common@^1.0.48":
+"@oraichain/oraidex-common@^1.0.45":
   version "1.0.48"
   resolved "https://registry.yarnpkg.com/@oraichain/oraidex-common/-/oraidex-common-1.0.48.tgz#12d03e9e2bc970853975a45d0ae2b0c2e044467c"
   integrity sha512-zn2+Qgbahy28mRgBNpqR30Y/174dX4IEGlFv64uNAhGS9C1FPZsIFs/ndpUoon1rWGUMw3Ra+6q1nBryjZg+Pw==
+  dependencies:
+    "@ethersproject/providers" "^5.0.10"
+    "@keplr-wallet/types" "^0.11.38"
+    ethers "^5.0.15"
+
+"@oraichain/oraidex-common@^1.0.50":
+  version "1.0.50"
+  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-common/-/oraidex-common-1.0.50.tgz#e9c273834c71ced049af05f9b83ec3de0e616788"
+  integrity sha512-Uo17OTbgEHOaJM4necO77gpkaPatMWvbLqBtgjJN9zEHe3YzQP8rQ7wlxkF4Ooy8zojEaY+Xwq7Eja0Ri9PYSg==
   dependencies:
     "@ethersproject/providers" "^5.0.10"
     "@keplr-wallet/types" "^0.11.38"
@@ -4893,10 +4902,10 @@
   resolved "https://registry.yarnpkg.com/@oraichain/oraidex-contracts-sdk/-/oraidex-contracts-sdk-1.0.27.tgz#eabd36671e619d00f50a0fd56bed9c9d618594b6"
   integrity sha512-Icn++t+BX4xdxUsoMdKKO8wL659lmNLdyQpAKCfwrtUdS4DFpRsrmZVw7S1g+Wl7QZUBJOG1fW+3m/YRS2q37Q==
 
-"@oraichain/oraidex-universal-swap@^1.0.36":
-  version "1.0.36"
-  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-universal-swap/-/oraidex-universal-swap-1.0.36.tgz#ae43e9b91033954c98f740f8fb53daa9f8855cb2"
-  integrity sha512-l8yEpR7bg9wYfgw6N4CuYwf0bul007XUt4oyMXLJ084yAjl6NXq+lYvWdMtqjjbV0k6DKRkp7EdqSFm6ldtlOQ==
+"@oraichain/oraidex-universal-swap@^1.0.40":
+  version "1.0.40"
+  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-universal-swap/-/oraidex-universal-swap-1.0.40.tgz#7669a957a1be9786b7a786b9a9b9d30e16de1941"
+  integrity sha512-M9QGY0CJTl5qjTf2CMGtan5Rkh+1y/1se7hvoDMhmZor5pxQ6ub5IgWRP1HkU8g0Bg+dmLsqhx22wzh+zL/eHQ==
   dependencies:
     "@oraichain/oraidex-common" "^1.0.45"
     "@oraichain/oraidex-contracts-sdk" "^1.0.24"
