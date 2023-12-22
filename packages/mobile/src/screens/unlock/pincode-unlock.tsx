@@ -522,7 +522,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
             <View style={styles.rc}>
               <OWIcon size={14} name="maximize" color={colors['purple-900']} />
               <OWText style={{ paddingLeft: 8 }} variant="h2" weight="600" size={14} color={colors['purple-900']}>
-                Sign in with Face ID
+                Sign in with Biometrics
               </OWText>
             </View>
           </TouchableOpacity>
@@ -537,8 +537,6 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
               setCode(value);
             }}
             allowDecimal={false}
-            // style={{ backgroundColor: 'black', paddingVertical: 12 }}
-            // buttonAreaStyle={{ backgroundColor: 'gray' }}
             buttonItemStyle={styles.buttonItemStyle}
             buttonTextStyle={styles.buttonTextStyle}
             //@ts-ignore

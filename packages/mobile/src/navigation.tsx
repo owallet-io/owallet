@@ -63,8 +63,8 @@ export const AppNavigation: FunctionComponent = observer(() => {
           >
             <Stack.Navigator
               initialRouteName={
-                SCREENS.STACK.PincodeUnlock
-                // keyRingStore.status !== KeyRingStatus.UNLOCKED ? SCREENS.STACK.Unlock : SCREENS.STACK.MainTab
+                // SCREENS.STACK.PincodeUnlock
+                keyRingStore.status !== KeyRingStatus.UNLOCKED ? SCREENS.STACK.PincodeUnlock : SCREENS.STACK.MainTab
               }
               screenOptions={{
                 headerShown: false,

@@ -40,6 +40,7 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
     >
   >();
   const { appInitStore } = useStore();
+
   const { colors } = useTheme();
   const smartNavigation = useSmartNavigation();
 
