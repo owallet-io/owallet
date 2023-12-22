@@ -18,6 +18,8 @@ import { TextInput } from '@src/components/input';
 import { OWButton } from '@src/components/button';
 import OWIcon from '@src/components/ow-icon/ow-icon';
 import { LoadingWalletScreen } from './loading-wallet';
+import { showToast } from '@src/utils/helper';
+import { useStore } from '@src/stores';
 
 interface FormData {
   name: string;
@@ -37,6 +39,7 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
       string
     >
   >();
+  const { appInitStore } = useStore();
   const { colors } = useTheme();
   const smartNavigation = useSmartNavigation();
 
@@ -71,6 +74,9 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
         newMnemonicConfig.password,
         bip44Option.bip44HDPath
       );
+
+      appInitStore.updateKeyboardType(prevPad);
+
       navigation.reset({
         index: 0,
         routes: [

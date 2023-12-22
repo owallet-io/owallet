@@ -73,7 +73,7 @@ const useAutoBiomtric = (keychainStore: KeychainStore, tryEnabled: boolean) => {
 };
 
 export const PincodeUnlockScreen: FunctionComponent = observer(() => {
-  const { keyRingStore, keychainStore, accountStore, chainStore, appInitStore, notificationStore } = useStore();
+  const { keyRingStore, keychainStore, accountStore, chainStore, appInitStore } = useStore();
   const navigation = useNavigation();
   const { colors } = useTheme();
   const styles = styling(colors);
@@ -332,6 +332,12 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
       tryUnlock();
     }
   }, [code]);
+
+  useEffect(() => {
+    if (appInitStore.getInitApp.passcodeType === 'alphabet') {
+      setNumericPad(false);
+    }
+  }, [appInitStore.getInitApp.passcodeType]);
 
   // return <MaintainScreen />;
   const showPass = () => setStatusPass(!statusPass);
