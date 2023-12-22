@@ -173,13 +173,20 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
 
   const tryUnlock = async () => {
     try {
+      const passcode = isNumericPad ? code : password;
       setIsLoading(true);
       await delay(10);
-      await keyRingStore.unlock(password, false);
+      await keyRingStore.unlock(passcode, false);
     } catch (e) {
       console.log(e);
       setIsLoading(false);
+      pinRef?.current?.shake().then(() => setCode(''));
+      numpadRef?.current?.clearAll();
       setIsFailed(true);
+      showToast({
+        type: 'danger',
+        message: 'Invalid password'
+      });
     }
   };
 
@@ -319,6 +326,12 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
     pinRef?.current?.focus();
     Keyboard.dismiss();
   }, []);
+
+  useEffect(() => {
+    if (code.length >= 6) {
+      tryUnlock();
+    }
+  }, [code]);
 
   // return <MaintainScreen />;
   const showPass = () => setStatusPass(!statusPass);
