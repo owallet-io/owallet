@@ -13,6 +13,7 @@ import { NftDetailScreen, NftsScreen } from '@src/screens/nfts';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@src/stores';
 import { BackupMnemonicScreen } from '@src/screens/register/mnemonic/backup-mnemonic';
+import { RecoverPhraseScreen } from '@src/screens/register/mnemonic/recover-phrase';
 
 const Stack = createStackNavigator();
 

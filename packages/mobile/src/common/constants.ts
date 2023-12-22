@@ -30,6 +30,7 @@ export const SCREENS = {
   RegisterNewPincode: 'Register.NewPincode',
   RegisterVerifyMnemonic: 'Register.VerifyMnemonic',
   RegisterRecoverMnemonic: 'Register.RecoverMnemonic',
+  RegisterRecoverPhrase: 'Register.RecoverPhrase',
   RegisterNewLedger: 'Register.NewLedger',
   Send: 'Send',
   TransferNFT: 'TransferNFT',
@@ -75,6 +76,7 @@ export const SCREENS = {
     Pincode: 'Pincode',
     PincodeUnlock: 'PincodeUnlock',
     Unlock: 'Unlock',
+    RecoverPhraseScreen: 'RecoverPhraseScreen',
     MainTab: 'MainTab',
     Register: 'Register',
     Others: 'Others',
@@ -282,6 +284,9 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: HEADER_KEY.showNetworkHeader
   },
   [SCREENS.STACK.Unlock]: {
+    title: ''
+  },
+  [SCREENS.STACK.RecoverPhraseScreen]: {
     title: ''
   },
   [SCREENS.STACK.PincodeUnlock]: {

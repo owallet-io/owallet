@@ -143,9 +143,9 @@ const modeColors = {
   'background-light': ['#F5F5F7', '#F5F5F7'],
   'card-background': ['#0E121D', '#fff'],
   'input-background': ['#2B2D3B', '#fff'],
-  'primary-background': ['#945EF8', '#F3F1F5'],
+  'primary-background': ['#5C00A3', '#F3F1F5'],
   'plain-background': ['#01040D', '#fff'],
-  'btn-primary-background': ['#945EF8', '#945EF8'],
+  'btn-primary-background': ['#5C00A3', '#5C00A3'],
   'btn-disable-background': [colorsCode['blue-600'], colorsCode['gray-300']],
   // border
   'border-purple-100-gray-800': [colorsCode['gray-800'], colorsCode['purple-100']],

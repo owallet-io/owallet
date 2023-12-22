@@ -19,7 +19,6 @@ import { LoadingSpinner } from '../../../components/spinner';
 import OWButton from '../../../components/button/OWButton';
 import OWIcon from '../../../components/ow-icon/ow-icon';
 import { SCREENS } from '@src/common/constants';
-import { LRRedact } from '@logrocket/react-native';
 import OWText from '@src/components/text/ow-text';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require('bip39');
@@ -72,6 +71,7 @@ export const RecoverPhraseScreen: FunctionComponent = observer(props => {
   const smartNavigation = useSmartNavigation();
 
   const registerConfig: RegisterConfig = route.params.registerConfig;
+
   const bip44Option = useBIP44Option();
   const [mode] = useState(registerConfig.mode);
 
@@ -171,27 +171,19 @@ export const RecoverPhraseScreen: FunctionComponent = observer(props => {
   const renderMnemonic = ({ field: { onChange, onBlur, value, ref } }) => {
     return (
       <TextInput
-        label="Mnemonic / Private key"
+        label=""
         returnKeyType="next"
         multiline={true}
         numberOfLines={4}
         inputContainerStyle={styles.mnemonicInput}
-        bottomInInputContainer={
-          <View style={styles.containerInputMnemonic}>
-            <View />
-
-            <OWButton type="secondary" label="Paste" size="small" fullWidth={false} onPress={onPaste} />
-          </View>
-        }
+        bottomInInputContainer={<View />}
         style={{
           minHeight: 20 * 4,
           textAlignVertical: 'top',
           ...typography['h6'],
           color: colors['text-black-medium']
         }}
-        onSubmitEditing={() => {
-          setFocus('name');
-        }}
+        onSubmitEditing={() => {}}
         inputStyle={{
           ...styles.borderInput
         }}
@@ -203,111 +195,11 @@ export const RecoverPhraseScreen: FunctionComponent = observer(props => {
       />
     );
   };
-  const renderName = ({ field: { onChange, onBlur, value, ref } }) => {
-    return (
-      <TextInput
-        label="Username"
-        returnKeyType={mode === 'add' ? 'done' : 'next'}
-        onSubmitEditing={() => {
-          if (mode === 'add') {
-            submit();
-          }
-          if (mode === 'create') {
-            setFocus('password');
-          }
-        }}
-        inputStyle={{
-          ...styles.borderInput
-        }}
-        error={errors.name?.message}
-        onBlur={onBlur}
-        onChangeText={onChange}
-        value={value}
-        ref={ref}
-      />
-    );
-  };
-  const validatePass = (value: string) => {
-    if (value.length < 8) {
-      return 'Password must be longer than 8 characters';
-    }
-  };
-  const renderPass = ({ field: { onChange, onBlur, value, ref } }) => {
-    return (
-      <TextInput
-        label="New password"
-        returnKeyType="next"
-        secureTextEntry={true}
-        onSubmitEditing={() => {
-          setFocus('confirmPassword');
-        }}
-        inputStyle={{
-          ...styles.borderInput
-        }}
-        inputRight={
-          <OWButton
-            style={styles.padIcon}
-            type="link"
-            onPress={() => setStatusPass(!statusPass)}
-            icon={<OWIcon name={!statusPass ? 'eye' : 'eye-slash'} color={colors['icon-purple-700-gray']} size={22} />}
-          />
-        }
-        secureTextEntry={!statusPass}
-        error={errors.password?.message}
-        onBlur={onBlur}
-        onChangeText={onChange}
-        value={value}
-        ref={ref}
-      />
-    );
-  };
-  const validateConfirmPass = (value: string) => {
-    if (value.length < 8) {
-      return 'Password must be longer than 8 characters';
-    }
 
-    if (getValues('password') !== value) {
-      return "Password doesn't match";
-    }
-  };
-  const renderConfirmPass = ({ field: { onChange, onBlur, value, ref } }) => {
-    return (
-      <TextInput
-        label="Confirm password"
-        returnKeyType="done"
-        onSubmitEditing={() => {
-          submit();
-        }}
-        inputRight={
-          <OWButton
-            style={styles.padIcon}
-            type="link"
-            onPress={() => setStatusConfirmPass(!statusConfirmPass)}
-            icon={
-              <OWIcon
-                name={!statusConfirmPass ? 'eye' : 'eye-slash'}
-                color={colors['icon-purple-700-gray']}
-                size={22}
-              />
-            }
-          />
-        }
-        secureTextEntry={!statusConfirmPass}
-        inputStyle={{
-          ...styles.borderInput
-        }}
-        error={errors.confirmPassword?.message}
-        onBlur={onBlur}
-        onChangeText={onChange}
-        value={value}
-        ref={ref}
-      />
-    );
-  };
   return (
     <View style={styles.container}>
       <View>
-        <TouchableOpacity style={styles.goBack}>
+        <TouchableOpacity onPress={onGoBack} style={styles.goBack}>
           <OWIcon size={16} name="arrow-left" />
         </TouchableOpacity>
         <View style={[styles.aic, styles.title]}>
@@ -321,7 +213,7 @@ export const RecoverPhraseScreen: FunctionComponent = observer(props => {
               paddingRight: 20,
               paddingTop: 32
             }}
-          ></View>
+          />
           <Controller
             control={control}
             rules={{
@@ -332,7 +224,11 @@ export const RecoverPhraseScreen: FunctionComponent = observer(props => {
             name="mnemonic"
             defaultValue=""
           />
-          <TouchableOpacity onPress={() => {}}>
+          <TouchableOpacity
+            onPress={() => {
+              onPaste();
+            }}
+          >
             <View style={styles.rc}>
               <OWIcon size={14} name="copy" color={colors['purple-900']} />
               <OWText style={{ paddingLeft: 8 }} variant="h2" weight="600" size={14} color={colors['purple-900']}>
@@ -350,7 +246,7 @@ export const RecoverPhraseScreen: FunctionComponent = observer(props => {
               borderRadius: 32
             }}
             label="Import"
-            disabled={false}
+            disabled={true}
             onPress={() => {}}
             loading={false}
           />
@@ -368,6 +264,7 @@ const useStyle = () => {
       justifyContent: 'space-between'
     },
     mnemonicInput: {
+      width: metrics.screenWidth - 40,
       paddingLeft: 20,
       paddingRight: 20,
       paddingVertical: 10,
@@ -392,14 +289,14 @@ const useStyle = () => {
     },
 
     borderInput: {
-      borderColor: colors['border-purple-100-gray-800'],
+      borderColor: colors['primary-default'],
       borderWidth: 1,
       backgroundColor: 'transparent',
       paddingLeft: 11,
       paddingRight: 11,
       paddingTop: 12,
       paddingBottom: 12,
-      borderRadius: 8
+      borderRadius: 16
     },
     containerBtnCopy: {
       width: '100%',

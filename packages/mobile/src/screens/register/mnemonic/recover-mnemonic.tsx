@@ -71,6 +71,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(props => {
   const smartNavigation = useSmartNavigation();
 
   const registerConfig: RegisterConfig = route.params.registerConfig;
+
   const bip44Option = useBIP44Option();
   const [mode] = useState(registerConfig.mode);
 

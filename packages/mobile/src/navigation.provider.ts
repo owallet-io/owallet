@@ -31,6 +31,9 @@ const { SmartNavigatorProvider, useSmartNavigation } = createSmartNavigatorProvi
     'Register.RecoverMnemonic': {
       upperScreenName: 'Register'
     },
+    'Register.RecoverPhrase': {
+      upperScreenName: 'Register'
+    },
     'Register.NewLedger': {
       upperScreenName: 'Register'
     },
@@ -174,6 +177,12 @@ const { SmartNavigatorProvider, useSmartNavigation } = createSmartNavigatorProvi
       bip44HDPath: BIP44HDPath;
     };
     'Register.RecoverMnemonic': {
+      registerConfig: RegisterConfig;
+    };
+    'Register.RecoverPhrase': {
+      registerConfig: RegisterConfig;
+    };
+    'Register.Register.': {
       registerConfig: RegisterConfig;
     };
     'Register.NewLedger': {

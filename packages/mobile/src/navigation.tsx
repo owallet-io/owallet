@@ -18,6 +18,7 @@ import { AddressBookStackScreen, MainTabNavigation, OtherNavigation, RegisterNav
 import { useTheme } from './themes/theme-provider';
 import { NewPincodeScreen } from './screens/register/register-pincode';
 import { PincodeUnlockScreen } from './screens/unlock/pincode-unlock';
+import { RecoverPhraseScreen } from './screens/register/mnemonic/recover-phrase';
 
 const Stack = createStackNavigator();
 export const AppNavigation: FunctionComponent = observer(() => {
@@ -76,6 +77,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
               <Stack.Screen name={SCREENS.STACK.PincodeUnlock} component={PincodeUnlockScreen} />
               <Stack.Screen name={SCREENS.STACK.Unlock} component={UnlockScreen} />
               <Stack.Screen name={SCREENS.STACK.MainTab} component={MainTabNavigation} />
+              <Stack.Screen name={SCREENS.RegisterRecoverPhrase} component={RecoverPhraseScreen} />
               <Stack.Screen name={SCREENS.STACK.Register} component={RegisterNavigation} />
               <Stack.Screen name={SCREENS.STACK.Others} component={OtherNavigation} />
               <Stack.Screen name={SCREENS.STACK.AddressBooks} component={AddressBookStackScreen} />
