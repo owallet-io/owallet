@@ -43,7 +43,7 @@ import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import { useLoadTokens, useCoinGeckoPrices, useClient, useRelayerFee, useTaxRate } from '@owallet/hooks';
 import { getTransactionUrl, handleErrorSwap } from './helpers';
 import { useIsFocused } from '@react-navigation/native';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
 
@@ -191,8 +191,12 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const {
     data: [fromTokenInfoData, toTokenInfoData]
-  } = useQuery(['token-infos', fromToken, toToken], () => fetchTokenInfos([fromToken!, toToken!], client), {
-    initialData: []
+  } = useQuery({
+    queryKey: ['token-infos', fromToken, toToken],
+    queryFn: () => fetchTokenInfos([fromToken!, toToken!], client),
+    ...{
+      initialData: []
+    }
   });
 
   const isFocused = useIsFocused();

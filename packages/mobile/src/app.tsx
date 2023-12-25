@@ -18,6 +18,9 @@ import FlashMessage from 'react-native-flash-message';
 import { Root as PopupRootProvider } from 'react-native-popup-confirm-toast';
 import { colorsCode } from './themes/mode-colors';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient();
 
 if (Platform.OS === 'android' || typeof HermesInternal !== 'undefined') {
   // https://github.com/web-ridge/react-native-paper-dates/releases/tag/v0.2.15
@@ -133,7 +136,9 @@ export const App = () => {
                     <LoadingScreenProvider>
                       <ConfirmModalProvider>
                         <InteractionModalsProivder>
-                          <AppNavigation />
+                          <QueryClientProvider client={queryClient}>
+                            <AppNavigation />
+                          </QueryClientProvider>
                         </InteractionModalsProivder>
                       </ConfirmModalProvider>
                     </LoadingScreenProvider>
