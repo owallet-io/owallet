@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useCallback, useEffect, useRef, useState } from 'react';
-import { View, StyleSheet, KeyboardAvoidingView, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, KeyboardAvoidingView, TouchableOpacity, Keyboard } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { useTheme } from '@src/themes/theme-provider';
@@ -199,6 +199,11 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
       }
     }
   };
+
+  useEffect(() => {
+    pinRef?.current?.focus();
+    Keyboard.dismiss();
+  }, []);
 
   const handleConfirm = () => {
     if (prevPad === 'numeric') {
