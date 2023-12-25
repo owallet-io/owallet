@@ -43,6 +43,8 @@ import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import { useLoadTokens, useCoinGeckoPrices, useClient, useRelayerFee, useTaxRate } from '@owallet/hooks';
 import { getTransactionUrl, handleErrorSwap } from './helpers';
 import { useIsFocused } from '@react-navigation/native';
+import { useQuery } from 'react-query';
+
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
 
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
@@ -70,8 +72,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const [selectedChainFilter, setChainFilter] = useState(null);
 
   const [[fromTokenDenom, toTokenDenom], setSwapTokens] = useState<[string, string]>(['orai', 'usdt']);
-
-  const [[fromTokenInfoData, toTokenInfoData], setTokenInfoData] = useState<TokenItemType[]>([]);
 
   const [fromTokenFee, setFromTokenFee] = useState<number>(0);
   const [toTokenFee, setToTokenFee] = useState<number>(0);
@@ -178,14 +178,22 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     );
   }, [originalToToken, fromToken, toToken, originalToToken, client]);
 
-  const getTokenInfos = async () => {
-    const data = await fetchTokenInfos([fromToken!, toToken!], client);
-    setTokenInfoData(data);
-  };
+  // const [[fromTokenInfoData, toTokenInfoData], setTokenInfoData] = useState<TokenItemType[]>([]);
 
-  useEffect(() => {
-    getTokenInfos();
-  }, [toTokenDenom, fromTokenDenom, client]);
+  // const getTokenInfos = async () => {
+  //   const data = await fetchTokenInfos([fromToken!, toToken!], client);
+  //   setTokenInfoData(data);
+  // };
+
+  // useEffect(() => {
+  //   getTokenInfos();
+  // }, [toTokenDenom, fromTokenDenom, client]);
+
+  const {
+    data: [fromTokenInfoData, toTokenInfoData]
+  } = useQuery(['token-infos', fromToken, toToken], () => fetchTokenInfos([fromToken!, toToken!], client), {
+    initialData: []
+  });
 
   const isFocused = useIsFocused();
 
