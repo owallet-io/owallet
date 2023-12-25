@@ -47,7 +47,10 @@ export const RegisterNotNewUserScreen: FunctionComponent = observer(() => {
           analyticsStore.logEvent('Import account started', {
             registerType: 'seed'
           });
-          smartNavigation.navigateSmart('Register.RecoverPhrase', {
+          // smartNavigation.navigateSmart('Register.RecoverPhrase', {
+          //   registerConfig
+          // });
+          smartNavigation.navigateSmart('Register.RecoverMnemonic', {
             registerConfig
           });
         }}

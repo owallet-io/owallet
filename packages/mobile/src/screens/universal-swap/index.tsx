@@ -396,7 +396,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
     setSwapLoading(true);
     try {
-      const cosmosWallet = new SwapCosmosWallet(client, originalFromToken.chainId);
+      const cosmosWallet = new SwapCosmosWallet(client);
       const cosmosAddress =
         originalFromToken.chainId === ChainIdEnum.CosmosHub ? accountCosmos.bech32Address : accountOrai.bech32Address;
 
@@ -423,8 +423,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         fromAmount: fromAmountToken,
         relayerFee
       };
-
-      console.log('universalSwapData', universalSwapData);
 
       const universalSwapHandler = new UniversalSwapHandler(
         {
