@@ -323,7 +323,6 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
   };
 
   useEffect(() => {
-    pinRef?.current?.focus();
     Keyboard.dismiss();
   }, []);
 

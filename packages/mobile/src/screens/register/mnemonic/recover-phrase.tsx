@@ -107,7 +107,7 @@ export const RecoverPhraseScreen: FunctionComponent = observer(props => {
         accountType: 'privateKey'
       });
     }
-    if (checkRouter(props?.route?.name, 'RegisterRecoverPhraseMain')) {
+    if (checkRouter(route?.name, 'RegisterRecoverPhraseMain')) {
       navigate(SCREENS.RegisterDone, {
         password: getValues('password'),
         type: 'recover'
@@ -148,7 +148,7 @@ export const RecoverPhraseScreen: FunctionComponent = observer(props => {
     }
   };
   const onGoBack = () => {
-    if (checkRouter(props?.route?.name, 'RegisterRecoverMnemonicMain')) {
+    if (checkRouter(route?.name, 'RegisterRecoverMnemonicMain')) {
       smartNavigation.goBack();
     } else {
       smartNavigation.navigateSmart('Register.Intro', {});
