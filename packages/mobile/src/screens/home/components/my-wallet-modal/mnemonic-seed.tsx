@@ -18,32 +18,23 @@ const MnemonicSeed = () => {
   const styles = useStyleMyWallet();
   const { colors } = useTheme();
   const mnemonicKeyStores = useMemo(() => {
-    return keyRingStore.multiKeyStoreInfo.filter(
-      (keyStore) => !keyStore.type || keyStore.type === 'mnemonic'
-    );
+    return keyRingStore.multiKeyStoreInfo.filter(keyStore => !keyStore.type || keyStore.type === 'mnemonic');
   }, [keyRingStore.multiKeyStoreInfo]);
 
   const privateKeyStores = useMemo(() => {
-    return keyRingStore.multiKeyStoreInfo.filter(
-      (keyStore) => keyStore.type === 'privateKey' && !keyStore.meta?.email
-    );
+    return keyRingStore.multiKeyStoreInfo.filter(keyStore => keyStore.type === 'privateKey' && !keyStore.meta?.email);
   }, [keyRingStore.multiKeyStoreInfo]);
 
   const ledgerKeyStores = useMemo(() => {
-    return keyRingStore.multiKeyStoreInfo.filter(
-      (keyStore) => keyStore.type === 'ledger'
-    );
+    return keyRingStore.multiKeyStoreInfo.filter(keyStore => keyStore.type === 'ledger');
   }, [keyRingStore.multiKeyStoreInfo]);
 
-  const selectKeyStore = useCallback(
-    async (keyStore: MultiKeyStoreInfoWithSelectedElem) => {
-      const index = keyRingStore.multiKeyStoreInfo.indexOf(keyStore);
-      if (index >= 0) {
-        await keyRingStore.changeKeyRing(index);
-      }
-    },
-    []
-  );
+  const selectKeyStore = useCallback(async (keyStore: MultiKeyStoreInfoWithSelectedElem) => {
+    const index = keyRingStore.multiKeyStoreInfo.indexOf(keyStore);
+    if (index >= 0) {
+      await keyRingStore.changeKeyRing(index);
+    }
+  }, []);
 
   const renderItem = ({ item }) => {
     return (
@@ -71,7 +62,7 @@ const MnemonicSeed = () => {
                 width: spacing['38'],
                 height: spacing['38']
               }}
-              source={require('../../../../assets/image/address_default.png')}
+              source={require('../../../../assets/image/img_owallet.png')}
               fadeDuration={0}
             />
             <View
@@ -98,9 +89,7 @@ const MnemonicSeed = () => {
                     fontSize: 12
                   }}
                 >
-                  {chainStore.current.networkType === 'cosmos'
-                    ? null
-                    : item.address}
+                  {chainStore.current.networkType === 'cosmos' ? null : item.address}
                 </Text>
               )}
             </View>
@@ -112,10 +101,7 @@ const MnemonicSeed = () => {
                 width: 24,
                 height: 24,
                 borderRadius: spacing['32'],
-                backgroundColor:
-                  colors[
-                    `${item.selected ? 'purple-700' : 'bg-circle-select-modal'}`
-                  ],
+                backgroundColor: colors[`${item.selected ? 'purple-700' : 'bg-circle-select-modal'}`],
                 justifyContent: 'center',
                 alignItems: 'center'
               }}
@@ -139,16 +125,10 @@ const MnemonicSeed = () => {
     <View
       style={{
         width: metrics.screenWidth - 36,
-        height:
-          data?.length > 1 ? metrics.screenHeight / 4 : metrics.screenHeight / 7
+        height: data?.length > 1 ? metrics.screenHeight / 4 : metrics.screenHeight / 7
       }}
     >
-      <OWFlatList
-        data={data}
-        isBottomSheet
-        renderItem={renderItem}
-        keyExtractor={_keyExtract}
-      />
+      <OWFlatList data={data} isBottomSheet renderItem={renderItem} keyExtractor={_keyExtract} />
       <View style={{ position: 'relative' }}>
         <View
           style={{
@@ -158,9 +138,7 @@ const MnemonicSeed = () => {
             zIndex: 1
           }}
         >
-          {isLoading && (
-            <LoadingSpinner size={24} color={colors['purple-700']} />
-          )}
+          {isLoading && <LoadingSpinner size={24} color={colors['purple-700']} />}
         </View>
       </View>
     </View>
