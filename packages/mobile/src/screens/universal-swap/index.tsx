@@ -480,6 +480,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       handleErrorSwap(error?.message ?? error?.ex?.message);
     } finally {
       setSwapLoading(false);
+      setSwapAmount([0, 0]);
     }
   };
 

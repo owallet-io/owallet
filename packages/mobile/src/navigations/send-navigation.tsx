@@ -1,6 +1,4 @@
-import { View, Text } from 'react-native';
 import React, { FC } from 'react';
-
 import { createStackNavigator } from '@react-navigation/stack';
 import useHeaderOptions from '@src/hooks/use-header';
 import { SCREENS, SCREENS_OPTIONS } from '@src/common/constants';
