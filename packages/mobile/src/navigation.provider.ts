@@ -170,6 +170,7 @@ const { SmartNavigatorProvider, useSmartNavigation } = createSmartNavigatorProvi
     };
     'Register.NewPincode': {
       registerConfig: RegisterConfig;
+      words?: string;
     };
     'Register.VerifyMnemonic': {
       registerConfig: RegisterConfig;

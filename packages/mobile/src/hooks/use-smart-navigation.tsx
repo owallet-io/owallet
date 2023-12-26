@@ -122,6 +122,7 @@ export const createSmartNavigatorProvider = <
       params: Params[ScreenName] extends void ? undefined : Params[ScreenName]
     ) => void;
     goBack: () => void;
+    reset: (any) => void;
     pushSmart: <ScreenName extends keyof Config>(
       screenName: ScreenName,
       params: Params[ScreenName] extends void ? undefined : Params[ScreenName]

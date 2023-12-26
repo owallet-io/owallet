@@ -9,7 +9,7 @@ import { UniversalSwapScreen } from '@src/screens/universal-swap';
 const Stack = createStackNavigator();
 export const SendNavigation: FC = () => {
   const handleScreenOptions = ({ route, navigation }) => {
-    const headerOptions = useHeaderOptions({ title: SCREENS_OPTIONS[route?.name].title }, navigation);
+    const headerOptions = useHeaderOptions({ title: SCREENS_OPTIONS[route?.name]?.title }, navigation);
     return headerOptions;
   };
   return (

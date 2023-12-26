@@ -19,12 +19,12 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
     analyticsStore.logEvent('Import account started', {
       registerType: 'seed'
     });
-    smartNavigation.navigateSmart('Register.RecoverMnemonic', {
-      registerConfig
-    });
-    // smartNavigation.navigateSmart('Register.RecoverPhrase', {
+    // smartNavigation.navigateSmart('Register.RecoverMnemonic', {
     //   registerConfig
     // });
+    smartNavigation.navigateSmart('Register.RecoverPhrase', {
+      registerConfig
+    });
   };
   const handleImportLedgerNanoX = () => {
     smartNavigation.navigateSmart('Register.NewLedger', {

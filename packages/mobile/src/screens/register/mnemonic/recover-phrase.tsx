@@ -92,9 +92,16 @@ export const RecoverPhraseScreen: FunctionComponent = observer(props => {
   const submit = handleSubmit(async () => {
     setIsCreating(true);
 
+    // check if the mode is create or add
+    // add - do the flowing process below
     const mnemonic = trimWordsStr(getValues('mnemonic'));
     if (!isPrivateKey(mnemonic)) {
-      await registerConfig.createMnemonic(getValues('name'), mnemonic, getValues('password'), bip44Option.bip44HDPath);
+      await registerConfig.createMnemonic(
+        `OWallet-${Math.floor(Math.random() * (100 - 1)) + 1}`,
+        mnemonic,
+        getValues('password'),
+        bip44Option.bip44HDPath
+      );
       analyticsStore.setUserProperties({
         registerType: 'seed',
         accountType: 'mnemonic'
@@ -107,7 +114,7 @@ export const RecoverPhraseScreen: FunctionComponent = observer(props => {
         accountType: 'privateKey'
       });
     }
-    if (checkRouter(props?.route?.name, 'RegisterRecoverMnemonicMain')) {
+    if (checkRouter(props?.route?.name, 'RegisterRecoverPhraseMain')) {
       navigate(SCREENS.RegisterDone, {
         password: getValues('password'),
         type: 'recover'
@@ -117,7 +124,7 @@ export const RecoverPhraseScreen: FunctionComponent = observer(props => {
         index: 0,
         routes: [
           {
-            name: 'Register.End',
+            name: SCREENS.RegisterDone,
             params: {
               password: getValues('password'),
               type: 'recover'
@@ -127,13 +134,24 @@ export const RecoverPhraseScreen: FunctionComponent = observer(props => {
       });
     }
   });
+
+  const handleCreateWithMnemonic = () => {
+    // check if the mode is create or add
+    // create - do the flowing process below
+    const mnemonic = trimWordsStr(getValues('mnemonic'));
+
+    smartNavigation.navigateSmart('Register.NewPincode', {
+      registerConfig,
+      words: mnemonic
+    });
+  };
+
   const onPaste = async () => {
     const text = await Clipboard.getString();
     if (text) {
       setValue('mnemonic', text, {
         shouldValidate: true
       });
-      setFocus('name');
     }
   };
   const onGoBack = () => {
@@ -245,10 +263,16 @@ export const RecoverPhraseScreen: FunctionComponent = observer(props => {
             style={{
               borderRadius: 32
             }}
-            label="Import"
-            disabled={true}
-            onPress={() => {}}
-            loading={false}
+            label={mode === 'add' ? 'Import' : ' Next'}
+            loading={isCreating}
+            disabled={isCreating}
+            onPress={() => {
+              if (mode === 'add') {
+                submit();
+              } else {
+                handleCreateWithMnemonic();
+              }
+            }}
           />
         </View>
       </View>

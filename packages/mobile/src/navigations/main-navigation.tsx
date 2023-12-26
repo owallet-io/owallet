@@ -1,8 +1,8 @@
-import { StyleSheet, Text, View } from 'react-native';
-import React, { FC, useEffect } from 'react';
+import { StyleSheet } from 'react-native';
+import React, { FC } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import useHeaderOptions from '@src/hooks/use-header';
-import { EVENTS, SCREENS, SCREENS_OPTIONS } from '@src/common/constants';
+import { SCREENS, SCREENS_OPTIONS } from '@src/common/constants';
 import { HomeScreen } from '@src/screens/home';
 import { TransactionDetail } from '@src/screens/transactions';
 import { NewMnemonicScreen, RecoverMnemonicScreen, VerifyMnemonicScreen } from '@src/screens/register/mnemonic';
@@ -21,7 +21,7 @@ export const MainNavigation: FC = observer(() => {
   const { appInitStore } = useStore();
   const handleScreenOptions = ({ route, navigation }) => {
     appInitStore.updateVisibleTabBar(route?.name);
-    const headerOptions = useHeaderOptions({ title: SCREENS_OPTIONS[route?.name].title }, navigation);
+    const headerOptions = useHeaderOptions({ title: SCREENS_OPTIONS[route?.name]?.title }, navigation);
     return headerOptions;
   };
   return (
@@ -51,6 +51,7 @@ export const MainNavigation: FC = observer(() => {
       <Stack.Screen name={SCREENS.RegisterVerifyMnemonicMain} component={VerifyMnemonicScreen} />
       <Stack.Screen name={SCREENS.RegisterEnd} component={RegisterEndScreen} />
       <Stack.Screen name={SCREENS.RegisterRecoverMnemonicMain} component={RecoverMnemonicScreen} />
+      <Stack.Screen name={SCREENS.RegisterRecoverPhraseMain} component={RecoverPhraseScreen} />
       <Stack.Screen name={SCREENS.RegisterNewLedgerMain} component={NewLedgerScreen} />
       <Stack.Screen name={SCREENS.Tokens} component={TokensScreen} />
       <Stack.Screen name={SCREENS.Nfts} component={NftsScreen} />

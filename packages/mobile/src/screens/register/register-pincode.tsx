@@ -34,6 +34,7 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
         string,
         {
           registerConfig: RegisterConfig;
+          words?: string;
         }
       >,
       string
@@ -45,6 +46,7 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
   const smartNavigation = useSmartNavigation();
 
   const registerConfig: RegisterConfig = route.params.registerConfig;
+  const words: string = route.params?.words;
   const bip44Option = useBIP44Option();
 
   const newMnemonicConfig = useNewMnemonicConfig(registerConfig);
@@ -71,7 +73,7 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
     try {
       await registerConfig.createMnemonic(
         `OWallet-${Math.floor(Math.random() * (100 - 1)) + 1}`,
-        newMnemonicConfig.mnemonic,
+        words ?? newMnemonicConfig.mnemonic,
         newMnemonicConfig.password,
         bip44Option.bip44HDPath
       );

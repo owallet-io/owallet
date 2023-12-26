@@ -16,6 +16,7 @@ export const SCREENS = {
   RegisterEnd: 'Register.End',
   RegisterDone: 'Register.Done',
   RegisterRecoverMnemonicMain: 'RegisterRecoverMnemonicMain',
+  RegisterRecoverPhraseMain: 'RegisterRecoverPhraseMain',
   RegisterNewLedgerMain: 'RegisterNewLedgerMain',
   Tokens: 'Tokens',
   Nfts: 'Nfts',
