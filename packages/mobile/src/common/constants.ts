@@ -86,19 +86,19 @@ export const SCREENS = {
   }
 };
 export const ICONS_TITLE = {
-  [SCREENS.TABS.Invest]: 'invest',
-  [SCREENS.TABS.Main]: 'home',
-  [SCREENS.TABS.Browser]: 'browser',
+  [SCREENS.TABS.Invest]: 'trending',
+  [SCREENS.TABS.Main]: 'pie',
+  [SCREENS.TABS.Browser]: 'internet',
   [SCREENS.TABS.Settings]: 'setting',
   [SCREENS.TABS.SendNavigation]: ''
 };
 
 export const SCREENS_OPTIONS: IScreenOption = {
   [SCREENS.TABS.Invest]: {
-    title: 'Invest'
+    title: 'Stake'
   },
   [SCREENS.TABS.Main]: {
-    title: 'Home'
+    title: 'Assets'
   },
   [SCREENS.TABS.Browser]: {
     title: 'Browser'

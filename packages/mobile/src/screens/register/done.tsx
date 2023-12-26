@@ -151,7 +151,7 @@ export const RegisterDoneScreen: FunctionComponent = observer(() => {
           {password && keychainStore.isBiometrySupported ? (
             <View style={styles.biometrics}>
               <View style={styles.rc}>
-                <OWIcon size={22} name="maximize" color={colors['nertural-text-title']} />
+                <OWIcon size={22} name="face" color={colors['nertural-text-title']} />
                 <Text
                   size={16}
                   weight={'500'}

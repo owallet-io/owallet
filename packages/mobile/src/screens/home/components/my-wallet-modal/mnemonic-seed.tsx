@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { FlatList, Image, View } from 'react-native';
+import { Image, View } from 'react-native';
 import { Text } from '@src/components/text';
 import { RectButton } from '../../../../components/rect-button';
 import { useStore } from '../../../../stores';
@@ -10,7 +10,6 @@ import { LoadingSpinner } from '../../../../components/spinner';
 import { useTheme } from '@src/themes/theme-provider';
 import { useStyleMyWallet } from './styles';
 import OWFlatList from '@src/components/page/ow-flat-list';
-import { OWButton } from '@src/components/button';
 
 const MnemonicSeed = () => {
   const [isLoading, setIsLoading] = useState(false);
