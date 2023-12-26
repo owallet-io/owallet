@@ -1,5 +1,4 @@
 import React, { FunctionComponent, useState } from 'react';
-import { PageWithScrollView } from '../../../components/page';
 import { observer } from 'mobx-react-lite';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { useTheme } from '@src/themes/theme-provider';
@@ -7,15 +6,12 @@ import { RegisterConfig } from '@owallet/hooks';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { Controller, useForm } from 'react-hook-form';
 import { TextInput } from '../../../components/input';
-import { Image, Platform, StyleSheet, Text, TouchableOpacity, View, Clipboard } from 'react-native';
-import { Button } from '../../../components/button';
+import { StyleSheet, TouchableOpacity, View, Clipboard } from 'react-native';
 import { useStore } from '../../../stores';
-import { BIP44AdvancedButton, useBIP44Option } from '../bip44';
+import { useBIP44Option } from '../bip44';
 import { Buffer } from 'buffer';
-import { checkRouter, checkRouterPaddingBottomBar, navigate } from '../../../router/root';
-import { OWalletLogo } from '../owallet-logo';
-import { metrics, spacing, typography } from '../../../themes';
-import { LoadingSpinner } from '../../../components/spinner';
+import { checkRouter, navigate } from '../../../router/root';
+import { metrics, typography } from '../../../themes';
 import OWButton from '../../../components/button/OWButton';
 import OWIcon from '../../../components/ow-icon/ow-icon';
 import { SCREENS } from '@src/common/constants';
@@ -78,7 +74,6 @@ export const RecoverPhraseScreen: FunctionComponent = observer(props => {
   const {
     control,
     handleSubmit,
-    setFocus,
     setValue,
     getValues,
     formState: { errors }
@@ -87,8 +82,6 @@ export const RecoverPhraseScreen: FunctionComponent = observer(props => {
   const styles = useStyle();
 
   const [isCreating, setIsCreating] = useState(false);
-  const [statusPass, setStatusPass] = useState(false);
-  const [statusConfirmPass, setStatusConfirmPass] = useState(false);
   const submit = handleSubmit(async () => {
     setIsCreating(true);
 
