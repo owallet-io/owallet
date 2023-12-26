@@ -97,7 +97,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(props => {
         index: 0,
         routes: [
           {
-            name: 'Register.End',
+            name: 'Register.Done',
             params: {
               password: newMnemonicConfig.password,
               type: 'new'

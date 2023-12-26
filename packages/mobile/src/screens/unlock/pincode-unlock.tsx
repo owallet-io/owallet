@@ -359,12 +359,12 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
       >
         <Image
           style={{
-            height: 70,
-            width: 70
+            height: metrics.screenWidth / 1.4,
+            width: metrics.screenWidth / 1.4
           }}
           fadeDuration={0}
           resizeMode="contain"
-          source={require('../../assets/logo/splash-image.png')}
+          source={require('../../assets/image/img_planet.png')}
         />
       </View>
       <Text
@@ -372,7 +372,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
           color: colors['purple-700'],
           textAlign: 'center',
           fontWeight: '600',
-          fontSize: 16,
+          fontSize: 18,
           lineHeight: 22,
           opacity: isLoading ? 0.5 : 1
         }}

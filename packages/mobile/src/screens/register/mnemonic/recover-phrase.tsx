@@ -88,13 +88,9 @@ export const RecoverPhraseScreen: FunctionComponent = observer(props => {
     // check if the mode is create or add
     // add - do the flowing process below
     const mnemonic = trimWordsStr(getValues('mnemonic'));
+    const walletName = `OWallet-${Math.floor(Math.random() * (100 - 1)) + 1}`;
     if (!isPrivateKey(mnemonic)) {
-      await registerConfig.createMnemonic(
-        `OWallet-${Math.floor(Math.random() * (100 - 1)) + 1}`,
-        mnemonic,
-        getValues('password'),
-        bip44Option.bip44HDPath
-      );
+      await registerConfig.createMnemonic(walletName, mnemonic, getValues('password'), bip44Option.bip44HDPath);
       analyticsStore.setUserProperties({
         registerType: 'seed',
         accountType: 'mnemonic'
@@ -110,7 +106,8 @@ export const RecoverPhraseScreen: FunctionComponent = observer(props => {
     if (checkRouter(route?.name, 'RegisterRecoverPhraseMain')) {
       navigate(SCREENS.RegisterDone, {
         password: getValues('password'),
-        type: 'recover'
+        type: 'recover',
+        walletName: walletName
       });
     } else {
       smartNavigation.reset({
@@ -120,7 +117,8 @@ export const RecoverPhraseScreen: FunctionComponent = observer(props => {
             name: SCREENS.RegisterDone,
             params: {
               password: getValues('password'),
-              type: 'recover'
+              type: 'recover',
+              walletName: walletName
             }
           }
         ]

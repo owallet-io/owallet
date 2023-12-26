@@ -83,7 +83,8 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
       }
       if (checkRouter(props?.route?.name, 'RegisterNewLedgerMain')) {
         navigate(SCREENS.RegisterDone, {
-          password: getValues('password')
+          password: getValues('password'),
+          walletName: getValues('name')
         });
       } else {
         smartNavigation.reset({
@@ -92,7 +93,8 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
             {
               name: SCREENS.RegisterDone,
               params: {
-                password: getValues('password')
+                password: getValues('password'),
+                walletName: getValues('name')
               }
             }
           ]

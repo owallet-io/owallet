@@ -71,8 +71,9 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
     if (isCreating) return;
     setIsCreating(true);
     try {
+      const walletName = `OWallet-${Math.floor(Math.random() * (100 - 1)) + 1}`;
       await registerConfig.createMnemonic(
-        `OWallet-${Math.floor(Math.random() * (100 - 1)) + 1}`,
+        walletName,
         words ?? newMnemonicConfig.mnemonic,
         newMnemonicConfig.password,
         bip44Option.bip44HDPath
@@ -87,7 +88,8 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
             name: 'Register.Done',
             params: {
               password: newMnemonicConfig.password,
-              type: 'new'
+              type: 'new',
+              walletName
             }
           }
         ]

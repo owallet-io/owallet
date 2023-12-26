@@ -24,6 +24,7 @@ export const RegisterDoneScreen: FunctionComponent = observer(() => {
         string,
         {
           password?: string;
+          walletName?: string;
           type?: string;
         }
       >,
@@ -32,6 +33,7 @@ export const RegisterDoneScreen: FunctionComponent = observer(() => {
   >();
 
   const password = route.params?.password;
+  const walletName = route.params?.walletName;
 
   const [isBiometricOn, setIsBiometricOn] = useState(false);
 
@@ -105,6 +107,45 @@ export const RegisterDoneScreen: FunctionComponent = observer(() => {
           {route?.params?.type === 'recover' ? ' imported' : ' created'}!
         </Text>
       </View>
+      {walletName ? (
+        <View
+          style={{
+            backgroundColor: colors['background-light-gray'],
+            margin: 16,
+            borderRadius: 8
+          }}
+        >
+          <View
+            style={[
+              styles.rc,
+              {
+                padding: 16
+              }
+            ]}
+          >
+            <Image
+              style={{
+                width: 32,
+                height: 32
+              }}
+              source={require('../../assets/image/img_owallet.png')}
+              resizeMode="contain"
+              fadeDuration={0}
+            />
+            <Text
+              size={16}
+              weight={'500'}
+              style={{
+                color: colors['nertural-text-title'],
+                paddingLeft: 6
+              }}
+            >
+              {walletName ?? 'OWallet Account'}
+            </Text>
+          </View>
+        </View>
+      ) : null}
+
       <View>
         <View style={styles.btnDone}>
           {password && keychainStore.isBiometrySupported ? (
