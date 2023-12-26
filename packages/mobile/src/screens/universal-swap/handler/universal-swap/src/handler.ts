@@ -501,6 +501,7 @@ export class UniversalSwapHandler {
   // TODO: write test cases
   async swapCosmosToCosmos() {
     const { originalFromToken, originalToToken, sender } = this.swapData;
+
     // guard check to see if from token has a pool on Oraichain or not. If not then return error
     const fromTokenOnOrai = this.getTokenOnOraichain(originalFromToken.coinGeckoId);
     const { client } = await this.config.cosmosWallet.getCosmWasmClient(
@@ -535,7 +536,11 @@ export class UniversalSwapHandler {
     };
     // hardcode fix bug fee osmosis
     let fee: 'auto' | number = 'auto';
-    if (originalFromToken.chainId === COSMOS_CHAIN_ID_COMMON.OSMOSIS_CHAIN_ID) fee = MULTIPLIER_ESTIMATE_OSMOSIS;
+    if (originalFromToken.chainId === COSMOS_CHAIN_ID_COMMON.OSMOSIS_CHAIN_ID) fee = 3;
+    console.log('sender.cosmos', sender.cosmos);
+
+    console.log('fee', fee);
+
     // it means the user just wants to transfer ibc to Oraichain with same token, nothing more, then we can purely call send ibc tokens
     if (
       fromTokenOnOrai.chainId === originalToToken.chainId &&
@@ -566,6 +571,8 @@ export class UniversalSwapHandler {
       this.swapData.originalToToken,
       toAddress
     );
+    console.log('universalSwapType', universalSwapType);
+
     if (universalSwapType === 'oraichain-to-oraichain') return this.swap();
     if (universalSwapType === 'oraichain-to-cosmos' || universalSwapType === 'oraichain-to-evm')
       return this.swapAndTransferToOtherNetworks(universalSwapType);

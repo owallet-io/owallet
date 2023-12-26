@@ -33,8 +33,8 @@ import {
   isEvmNetworkNativeSwapSupported,
   isEvmSwappable,
   isSupportedNoPoolSwapEvm,
-  UniversalSwapData,
-  UniversalSwapHandler
+  UniversalSwapData
+  // UniversalSwapHandler
 } from '@oraichain/oraidex-universal-swap';
 import { SwapCosmosWallet, SwapEvmWallet } from './wallet';
 import { styling } from './styles';
@@ -44,6 +44,7 @@ import { useLoadTokens, useCoinGeckoPrices, useClient, useRelayerFee, useTaxRate
 import { getTransactionUrl, handleErrorSwap } from './helpers';
 import { useIsFocused } from '@react-navigation/native';
 import { useQuery } from '@tanstack/react-query';
+import { UniversalSwapHandler } from './handler/universal-swap/src';
 
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
 
@@ -58,6 +59,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const accountCosmos = accountStore.getAccount(ChainIdEnum.CosmosHub);
+  const accountOsmo = accountStore.getAccount(ChainIdEnum.Osmosis);
 
   const [isSlippageModal, setIsSlippageModal] = useState(false);
   const [minimumReceive, setMininumReceive] = useState(0);
@@ -85,6 +87,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const [balanceActive, setBalanceActive] = useState<BalanceType>(null);
 
   const client = useClient(accountOrai);
+
+  console.log('client', client);
+
   const relayerFee = useRelayerFee(accountOrai);
   const taxRate = useTaxRate(accountOrai);
 
@@ -410,7 +415,13 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     try {
       const cosmosWallet = new SwapCosmosWallet(client);
       const cosmosAddress =
-        originalFromToken.chainId === ChainIdEnum.CosmosHub ? accountCosmos.bech32Address : accountOrai.bech32Address;
+        originalFromToken.chainId === ChainIdEnum.Osmosis
+          ? accountOsmo.bech32Address
+          : originalFromToken.chainId === ChainIdEnum.CosmosHub
+          ? accountCosmos.bech32Address
+          : accountOrai.bech32Address;
+
+      console.log('cosmosAddress', cosmosAddress, originalFromToken);
 
       const isTron = Number(originalFromToken.chainId) === Networks.tron;
 
