@@ -116,6 +116,9 @@ const { SmartNavigatorProvider, useSmartNavigation } = createSmartNavigatorProvi
     'Setting.ViewPrivateData': {
       upperScreenName: 'Settings'
     },
+    'Setting.BackupMnemonic': {
+      upperScreenName: 'Settings'
+    },
     'Setting.Version': {
       upperScreenName: 'Settings'
     },
@@ -228,6 +231,10 @@ const { SmartNavigatorProvider, useSmartNavigation } = createSmartNavigatorProvi
       proposalId: string;
     };
     'Setting.ViewPrivateData': {
+      privateData: string;
+      privateDataType: string;
+    };
+    'Setting.BackupMnemonic': {
       privateData: string;
       privateDataType: string;
     };

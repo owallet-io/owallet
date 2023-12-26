@@ -18,6 +18,7 @@ import { ViewPrivateDataScreen } from '@src/screens/setting/screens/view-private
 import { SettingSelectAccountScreen } from '@src/screens/setting/screens/select-account';
 import { HeaderAddIcon } from '@src/components/header/icon';
 import useHeaderOptions from '@src/hooks/use-header';
+import { BackupMnemonicScreen } from '@src/screens/register/mnemonic/backup-mnemonic';
 const Stack = createStackNavigator();
 export const SettingStackScreen: FC = () => {
   const style = useStyle();
@@ -68,6 +69,7 @@ export const SettingStackScreen: FC = () => {
       />
 
       <Stack.Screen name={SCREENS.SettingViewPrivateData} component={ViewPrivateDataScreen} />
+      <Stack.Screen name={SCREENS.SettingBackupMnemonic} component={BackupMnemonicScreen} />
       <Stack.Screen name={SCREENS.SettingVersion} component={OWalletVersionScreen} />
     </Stack.Navigator>
   );

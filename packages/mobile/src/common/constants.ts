@@ -50,6 +50,7 @@ export const SCREENS = {
   Setting: 'Setting',
   SettingSelectAccount: 'SettingSelectAccount',
   SettingViewPrivateData: 'Setting.ViewPrivateData',
+  SettingBackupMnemonic: 'Setting.BackupMnemonic',
   SettingVersion: 'Setting.Version',
   AddressBook: 'AddressBook',
   AddAddressBook: 'AddAddressBook',

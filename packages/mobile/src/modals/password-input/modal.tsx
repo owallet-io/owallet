@@ -25,10 +25,7 @@ import { delay } from '@src/utils/helper';
 export const PasswordInputModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
-  bottomSheetModalConfig?: Omit<
-    BottomSheetProps,
-    'snapPoints' | 'children'
-  >;
+  bottomSheetModalConfig?: Omit<BottomSheetProps, 'snapPoints' | 'children'>;
   title: string;
   paragraph?: string;
   labelStyle?: TextStyle;
@@ -85,8 +82,7 @@ export const PasswordInputModal: FunctionComponent<{
       Keyboard.dismiss();
       setIsLoading(true);
     };
-    const keyboardVerticalOffset =
-      Platform.OS === 'ios' ? metrics.screenHeight / 2.1 : 0;
+    const keyboardVerticalOffset = Platform.OS === 'ios' ? metrics.screenHeight / 2.1 : 0;
 
     return (
       <CardModal title={title} labelStyle={labelStyle}>
@@ -95,10 +91,7 @@ export const PasswordInputModal: FunctionComponent<{
             style={{
               ...typography['body2'],
               marginBottom: 32,
-              color:
-                scheme === 'dark'
-                  ? colors['sub-text']
-                  : colors['text-black-medium']
+              color: scheme === 'dark' ? colors['sub-text'] : colors['text-black-medium']
             }}
           >
             {paragraph || 'Do not reveal your mnemonic to anyone'}
@@ -108,14 +101,13 @@ export const PasswordInputModal: FunctionComponent<{
         )}
         <TextInput
           isBottomSheet
-          label="Enter your password to continue"
-          error={isInvalidPassword ? 'Invalid password' : undefined}
-          onChangeText={(text) => {
+          label="Enter your passcode to continue"
+          error={isInvalidPassword ? 'Invalid passcode' : undefined}
+          onChangeText={text => {
             setPassword(text);
           }}
           labelStyle={{
-            color:
-              scheme === 'dark' ? colors['white'] : colors['text-black-high']
+            color: scheme === 'dark' ? colors['white'] : colors['text-black-high']
           }}
           inputStyle={{
             borderWidth: 1,
@@ -124,8 +116,7 @@ export const PasswordInputModal: FunctionComponent<{
             paddingRight: 11,
             paddingTop: 12,
             borderRadius: 8,
-            color:
-              scheme === 'dark' ? colors['white'] : colors['text-black-high']
+            color: scheme === 'dark' ? colors['white'] : colors['text-black-high']
           }}
           value={password}
           returnKeyType="done"
