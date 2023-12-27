@@ -150,7 +150,13 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
   const [isLoading, setIsLoading] = useState(false);
   const [isBiometricLoading, setIsBiometricLoading] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
-  const [isNumericPad, setNumericPad] = useState(true);
+  const [isNumericPad, setNumericPad] = useState(false);
+
+  useEffect(() => {
+    if (appInitStore.getInitApp.passcodeType === 'numeric') {
+      setNumericPad(true);
+    }
+  }, [appInitStore.getInitApp.passcodeType]);
 
   const pinRef = useRef(null);
   const numpadRef = useRef(null);

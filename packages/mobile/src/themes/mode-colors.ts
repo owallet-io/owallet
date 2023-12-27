@@ -179,6 +179,7 @@ const modeColors = {
   'text-btn-disable-danger': ['#8E8E93', '#FFFFFF'],
   'text-btn-disabled-primary': ['#8E8E93', colorsCode['white']],
   'border-input-login': ['#3A3A3C', '#E2DEEB'],
+  'on-bg': ['#232125', '#232125'],
   'background-input-modal': ['#0E121D', '#FFFFFF'],
   'text-value-input-login': ['#E2DEEB', '#1C1C1E'], //icon input eyes
   'text-label-input': ['#C7C7CC', '#48484A'], //note under input

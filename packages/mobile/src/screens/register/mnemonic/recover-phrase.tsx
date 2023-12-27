@@ -88,7 +88,7 @@ export const RecoverPhraseScreen: FunctionComponent = observer(props => {
     // check if the mode is create or add
     // add - do the flowing process below
     const mnemonic = trimWordsStr(getValues('mnemonic'));
-    const walletName = `OWallet-${Math.floor(Math.random() * (100 - 1)) + 1}`;
+    const walletName = getValues('name');
     if (!isPrivateKey(mnemonic)) {
       await registerConfig.createMnemonic(walletName, mnemonic, getValues('password'), bip44Option.bip44HDPath);
       analyticsStore.setUserProperties({
@@ -205,6 +205,31 @@ export const RecoverPhraseScreen: FunctionComponent = observer(props => {
     );
   };
 
+  const renderWalletName = ({ field: { onChange, onBlur, value, ref } }) => {
+    return (
+      <TextInput
+        label=""
+        topInInputContainer={
+          <View style={{ paddingBottom: 4 }}>
+            <OWText>Wallet Name</OWText>
+          </View>
+        }
+        returnKeyType="next"
+        inputStyle={{
+          width: metrics.screenWidth - 32,
+          borderColor: colors['on-bg']
+        }}
+        style={{ fontWeight: '500', paddingLeft: 4, fontSize: 15 }}
+        inputLeft={<OWIcon size={20} name="wallet-outline" />}
+        error={errors.name?.message}
+        onBlur={onBlur}
+        onChangeText={onChange}
+        value={value}
+        ref={ref}
+      />
+    );
+  };
+
   return (
     <View style={styles.container}>
       <View>
@@ -238,13 +263,22 @@ export const RecoverPhraseScreen: FunctionComponent = observer(props => {
               onPaste();
             }}
           >
-            <View style={styles.rc}>
-              <OWIcon size={14} name="copy" color={colors['purple-900']} />
-              <OWText style={{ paddingLeft: 8 }} variant="h2" weight="600" size={14} color={colors['purple-900']}>
+            <View style={styles.paste}>
+              <OWIcon size={20} name="mnemo" color={colors['purple-900']} />
+              <OWText style={{ paddingLeft: 4 }} variant="h2" weight="600" size={14} color={colors['purple-900']}>
                 Paste from clipboard
               </OWText>
             </View>
           </TouchableOpacity>
+          <Controller
+            control={control}
+            rules={{
+              required: 'Wallet name is required'
+            }}
+            render={renderWalletName}
+            name="name"
+            defaultValue={`OWallet-${Math.floor(Math.random() * (100 - 1)) + 1}`}
+          />
         </View>
       </View>
 
@@ -305,13 +339,13 @@ const useStyle = () => {
 
     borderInput: {
       borderColor: colors['primary-default'],
-      borderWidth: 1,
+      borderWidth: 2,
       backgroundColor: 'transparent',
       paddingLeft: 11,
       paddingRight: 11,
       paddingTop: 12,
       paddingBottom: 12,
-      borderRadius: 16
+      borderRadius: 8
     },
     containerBtnCopy: {
       width: '100%',
@@ -364,6 +398,13 @@ const useStyle = () => {
     title: {
       paddingHorizontal: 16,
       paddingTop: 24
+    },
+    paste: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'flex-end',
+      width: metrics.screenWidth,
+      paddingHorizontal: 16
     }
   });
 };
