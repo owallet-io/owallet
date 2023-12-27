@@ -184,6 +184,7 @@ export const RecoverPhraseScreen: FunctionComponent = observer(props => {
         returnKeyType="next"
         multiline={true}
         numberOfLines={4}
+        placeholder={'Enter your recovery phrase or private key...'}
         inputContainerStyle={styles.mnemonicInput}
         bottomInInputContainer={<View />}
         style={{
@@ -220,7 +221,7 @@ export const RecoverPhraseScreen: FunctionComponent = observer(props => {
           borderColor: colors['on-bg']
         }}
         style={{ fontWeight: '500', paddingLeft: 4, fontSize: 15 }}
-        inputLeft={<OWIcon size={20} name="wallet-outline" />}
+        inputLeft={<OWIcon size={20} name="wallet-outline" color={colors['primary-default']} />}
         error={errors.name?.message}
         onBlur={onBlur}
         onChangeText={onChange}
@@ -365,7 +366,8 @@ const useStyle = () => {
       alignItems: 'center',
       justifyContent: 'flex-end',
       width: metrics.screenWidth,
-      paddingHorizontal: 16
+      paddingHorizontal: 16,
+      paddingBottom: 24
     }
   });
 };
