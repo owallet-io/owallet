@@ -308,10 +308,6 @@ export const RecoverPhraseScreen: FunctionComponent = observer(props => {
 const useStyle = () => {
   const { colors } = useTheme();
   return StyleSheet.create({
-    containerInputMnemonic: {
-      flexDirection: 'row',
-      justifyContent: 'space-between'
-    },
     mnemonicInput: {
       width: metrics.screenWidth - 40,
       paddingLeft: 20,
@@ -319,24 +315,6 @@ const useStyle = () => {
       paddingVertical: 10,
       backgroundColor: 'transparent'
     },
-    padIcon: {
-      width: 22,
-      height: 22
-    },
-    titleHeader: {
-      fontSize: 24,
-      lineHeight: 34,
-      fontWeight: '700',
-      color: colors['label']
-    },
-    headerView: {
-      height: 72,
-      display: 'flex',
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between'
-    },
-
     borderInput: {
       borderColor: colors['primary-default'],
       borderWidth: 2,
@@ -347,24 +325,7 @@ const useStyle = () => {
       paddingBottom: 12,
       borderRadius: 8
     },
-    containerBtnCopy: {
-      width: '100%',
-      display: 'flex',
-      flexDirection: 'row',
-      justifyContent: 'flex-end',
-      alignItems: 'center'
-    },
-    containerWord: {
-      marginTop: 14,
-      marginBottom: 16,
-      padding: 16,
-      borderColor: colors['primary-default'],
-      borderWidth: 1,
-      borderRadius: 8,
-      display: 'flex',
-      flexDirection: 'row',
-      flexWrap: 'wrap'
-    },
+
     container: {
       paddingTop: metrics.screenHeight / 14,
       justifyContent: 'space-between',
