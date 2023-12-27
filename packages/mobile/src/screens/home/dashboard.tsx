@@ -18,12 +18,7 @@ const DATA_COUNT_DENOM = 4;
 const transformData = data => {
   if (Array.isArray(data)) {
     return data
-      .filter(
-        (item, index, arr) =>
-          index % DATA_COUNT_DENOM === 0 ||
-          index === 0 ||
-          index === arr.length - 1
-      )
+      .filter((item, index, arr) => index % DATA_COUNT_DENOM === 0 || index === 0 || index === arr.length - 1)
       .map(item => [item[0], Math.round(item[1] * 100) / 100]);
   }
 
@@ -163,8 +158,7 @@ export const DashboardCard: FunctionComponent<{
           color: colors['primary-text']
         }}
       >
-        {chainStore.current.chainName} (
-        {chainStore.current.stakeCurrency.coinDenom})
+        {chainStore.current.chainName} ({chainStore.current.stakeCurrency.coinDenom})
       </Text>
       <View style={styles.headerWrapper}>
         <View style={styles.headerLeftWrapper}>
@@ -172,25 +166,13 @@ export const DashboardCard: FunctionComponent<{
             onPress={() => handleChartState('price')}
             style={[active === 'price' ? styles.active : styles.inActive]}
           >
-            <Text
-              style={[
-                active === 'price' ? styles.activeText : styles.inActiveText
-              ]}
-            >
-              Price
-            </Text>
+            <Text style={[active === 'price' ? styles.activeText : styles.inActiveText]}>Price</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => handleChartState('volume')}
             style={[active === 'volume' ? styles.active : styles.inActive]}
           >
-            <Text
-              style={[
-                active === 'volume' ? styles.activeText : styles.inActiveText
-              ]}
-            >
-              Volume
-            </Text>
+            <Text style={[active === 'volume' ? styles.activeText : styles.inActiveText]}>Volume</Text>
           </TouchableOpacity>
         </View>
 
@@ -266,7 +248,7 @@ const styling = colors =>
     },
     active: {
       padding: 7,
-      backgroundColor: colors['purple-700'],
+      backgroundColor: colors['primary-default'],
       borderRadius: 4
     },
     inActive: {
