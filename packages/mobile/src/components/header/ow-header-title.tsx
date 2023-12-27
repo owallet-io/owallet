@@ -21,14 +21,14 @@ const OWHeaderTitle = observer(({ title, ...props }: IOWHeaderTitle) => {
   const bip44Option = useBIP44Option();
   const { colors } = useTheme();
   const smartNavigation = useSmartNavigation();
-  const deterministicNumber = useCallback((chainInfo) => {
+  const deterministicNumber = useCallback(chainInfo => {
     const bytes = Hash.sha256(Buffer.from(chainInfo.stakeCurrency.coinMinimalDenom));
     return (bytes[0] | (bytes[1] << 8) | (bytes[2] << 16) | (bytes[3] << 24)) >>> 0;
   }, []);
 
   const profileColor = useCallback(
-    (chainInfo) => {
-      const random = [colors['purple-400']];
+    chainInfo => {
+      const random = [colors['primary-default']];
 
       return random[deterministicNumber(chainInfo) % random.length];
     },

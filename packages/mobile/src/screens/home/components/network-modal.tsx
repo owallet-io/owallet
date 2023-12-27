@@ -47,7 +47,7 @@ export const NetworkModal = ({ profileColor }) => {
       item?.chainId
     );
   };
-  const handleSwitchNetwork = async (item) => {
+  const handleSwitchNetwork = async item => {
     // alert('ok');
     try {
       if (account.isNanoLedger) {
@@ -111,7 +111,7 @@ export const NetworkModal = ({ profileColor }) => {
               borderRadius: spacing['12'],
               justifyContent: 'center',
               alignItems: 'center',
-              backgroundColor: profileColor?.(item) ?? colors['purple-400']
+              backgroundColor: profileColor?.(item) ?? colors['primary-default']
             }}
           >
             {item.raw.chainSymbolImageUrl ? (
@@ -200,7 +200,7 @@ export const NetworkModal = ({ profileColor }) => {
               style={{
                 fontSize: 12,
                 fontWeight: '700',
-                color: colors['purple-700']
+                color: colors['primary-default']
               }}
             >
               + Add network
@@ -246,7 +246,7 @@ export const NetworkModal = ({ profileColor }) => {
   );
 };
 
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     containerBtn: {
       backgroundColor: colors['background-item-list'],
