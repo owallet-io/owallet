@@ -48,7 +48,7 @@ const OWHeaderTitle = observer(({ title, ...props }: IOWHeaderTitle) => {
     return (
       <TouchableWithoutFeedback onPress={_onPressNetworkModal} {...props}>
         <View style={styles.containerTitle}>
-          <OWIcon name="dot" color={colors['purple-700']} size={10} />
+          <OWIcon name="dot" color={colors['primary-default']} size={10} />
           <Text style={styles.textHeader} color={colors['primary-text']} variant="body1" typo="regular">
             {chainStore.current.chainName}
           </Text>

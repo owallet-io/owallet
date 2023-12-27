@@ -105,7 +105,7 @@ export const colorsCode = {
   'purple-50': '#EAE9FF',
   'purple-100': '#E2DEEB',
   'purple-400': '#AE94DE',
-  'purple-700': '#945EF8',
+  'primary-default': '#945EF8',
   'purple-900': '#8B1BFB',
   'purple-h1': '#7E58EA',
   'primary-default': '#5C00A3',
@@ -152,14 +152,14 @@ const modeColors = {
   // item
   item: ['#2B2D3B', '#fff'],
   icon: ['#E2DEEB', '#5F5E77'],
-  'icon-purple-700-gray': ['#717177', colorsCode['purple-700']],
+  'icon-primary-default-gray': ['#717177', colorsCode['primary-default']],
   // text
   label: ['#fff', '#3A3A3C'],
   'colored-label': ['#fff', '#945EF8'],
   'sub-text': ['#8C93A7', '#5F5E77'],
   'text-title': [colorsCode['white'], colorsCode['gray-900']],
   'text-btn-disable-color': [colorsCode['gray-500'], colorsCode['white']],
-  'text-gray-900-purple-700': [colorsCode['purple-700'], colorsCode['gray-900']],
+  'text-gray-900-primary-default': [colorsCode['primary-default'], colorsCode['gray-900']],
 
   //onBoarding page
   'background-container': ['#01040D', '#FFFFFF'], //

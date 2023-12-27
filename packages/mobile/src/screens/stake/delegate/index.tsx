@@ -150,11 +150,11 @@ export const DelegateScreen: FunctionComponent = observer(() => {
           <Text
             style={{
               ...typography.h7,
-              color: colors['purple-700'],
+              color: colors['primary-default'],
               marginRight: 4
             }}
           >{`Advance options`}</Text>
-          <DownArrowIcon color={colors['purple-700']} height={10} />
+          <DownArrowIcon color={colors['primary-default']} height={10} />
         </TouchableOpacity> */}
 
         <View

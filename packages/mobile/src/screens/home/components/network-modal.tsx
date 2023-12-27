@@ -156,7 +156,9 @@ export const NetworkModal = ({ profileColor }) => {
               height: 24,
               borderRadius: spacing['32'],
               backgroundColor:
-                item?.chainId === chainStore.current.chainId ? colors['purple-700'] : colors['bg-circle-select-modal'],
+                item?.chainId === chainStore.current.chainId
+                  ? colors['primary-default']
+                  : colors['bg-circle-select-modal'],
               justifyContent: 'center',
               alignItems: 'center'
             }}
