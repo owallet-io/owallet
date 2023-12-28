@@ -16,6 +16,7 @@ import OWButton from '../../../components/button/OWButton';
 import OWIcon from '../../../components/ow-icon/ow-icon';
 import { SCREENS } from '@src/common/constants';
 import OWText from '@src/components/text/ow-text';
+import { showToast } from '@src/utils/helper';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require('bip39');
 
@@ -45,8 +46,6 @@ function trimWordsStr(str: string): string {
 interface FormData {
   mnemonic: string;
   name: string;
-  password: string;
-  confirmPassword: string;
 }
 
 export const RecoverPhraseScreen: FunctionComponent = observer(props => {
@@ -177,6 +176,25 @@ export const RecoverPhraseScreen: FunctionComponent = observer(props => {
       }
     }
   };
+
+  const handleValidate = () => {
+    if (validateMnemonic(getValues('mnemonic')).length > 0) {
+      showToast({
+        type: 'danger',
+        message: validateMnemonic(getValues('mnemonic'))
+      });
+      return false;
+    }
+    if (getValues('name').length <= 0) {
+      showToast({
+        type: 'danger',
+        message: 'Wallet name is required'
+      });
+      return false;
+    }
+    return true;
+  };
+
   const renderMnemonic = ({ field: { onChange, onBlur, value, ref } }) => {
     return (
       <TextInput
@@ -191,7 +209,7 @@ export const RecoverPhraseScreen: FunctionComponent = observer(props => {
           minHeight: 20 * 4,
           textAlignVertical: 'top',
           ...typography['h6'],
-          color: colors['text-black-medium']
+          color: colors['neutral-text-body']
         }}
         onSubmitEditing={() => {}}
         inputStyle={{
@@ -218,10 +236,10 @@ export const RecoverPhraseScreen: FunctionComponent = observer(props => {
         returnKeyType="next"
         inputStyle={{
           width: metrics.screenWidth - 32,
-          borderColor: colors['on-bg']
+          borderColor: colors['neutral-border-strong']
         }}
-        style={{ fontWeight: '500', paddingLeft: 4, fontSize: 15 }}
-        inputLeft={<OWIcon size={20} name="wallet-outline" color={colors['primary-surface-default']} />}
+        style={{ fontWeight: '600', paddingLeft: 4, fontSize: 15 }}
+        inputLeft={<OWIcon size={20} name="wallet-outline" color={colors['primary-text-action']} />}
         error={errors.name?.message}
         onBlur={onBlur}
         onChangeText={onChange}
@@ -235,10 +253,10 @@ export const RecoverPhraseScreen: FunctionComponent = observer(props => {
     <View style={styles.container}>
       <View>
         <TouchableOpacity onPress={onGoBack} style={styles.goBack}>
-          <OWIcon size={16} name="arrow-left" />
+          <OWIcon size={16} color={colors['neutral-icon-on-light']} name="arrow-left" />
         </TouchableOpacity>
         <View style={[styles.aic, styles.title]}>
-          <OWText variant="h2" style={{ textAlign: 'center' }} typo="bold">
+          <OWText variant="heading" style={{ textAlign: 'center' }} typo="bold">
             Enter recovery phrase or private key
           </OWText>
 
@@ -265,8 +283,14 @@ export const RecoverPhraseScreen: FunctionComponent = observer(props => {
             }}
           >
             <View style={styles.paste}>
-              <OWIcon size={20} name="mnemo" color={colors['purple-900']} />
-              <OWText style={{ paddingLeft: 4 }} variant="h2" weight="600" size={14} color={colors['purple-900']}>
+              <OWIcon size={20} name="mnemo" color={colors['primary-text-action']} />
+              <OWText
+                style={{ paddingLeft: 4 }}
+                variant="h2"
+                weight="600"
+                size={14}
+                color={colors['primary-text-action']}
+              >
                 Paste from clipboard
               </OWText>
             </View>
@@ -293,6 +317,9 @@ export const RecoverPhraseScreen: FunctionComponent = observer(props => {
             loading={isCreating}
             disabled={isCreating}
             onPress={() => {
+              if (!handleValidate()) {
+                return;
+              }
               if (mode === 'add') {
                 submit();
               } else {
@@ -336,10 +363,9 @@ const useStyle = () => {
       width: '100%',
       alignItems: 'center',
       borderTopWidth: 1,
-      borderTopColor: colors['gray-300'],
+      borderTopColor: colors['neutral-border-default'],
       padding: 16
     },
-
     aic: {
       alignItems: 'center',
       paddingBottom: 20
@@ -348,18 +374,18 @@ const useStyle = () => {
       flexDirection: 'row',
       alignItems: 'center'
     },
+    title: {
+      paddingHorizontal: 16,
+      paddingTop: 24
+    },
     goBack: {
-      backgroundColor: colors['background-light-gray'],
+      backgroundColor: colors['neutral-surface-action3'],
       borderRadius: 999,
       width: 44,
       height: 44,
       alignItems: 'center',
       justifyContent: 'center',
       marginLeft: 16
-    },
-    title: {
-      paddingHorizontal: 16,
-      paddingTop: 24
     },
     paste: {
       flexDirection: 'row',

@@ -399,7 +399,6 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
               label="Continue"
               disabled={isLoading || !password}
               onPress={() => {
-                // tryUnlock();
                 handleContinue();
               }}
               loading={isLoading || isBiometricLoading}
