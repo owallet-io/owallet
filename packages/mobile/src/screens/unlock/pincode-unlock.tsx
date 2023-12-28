@@ -441,8 +441,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
                 borderWidth: 0
               }}
               cellStyleFocused={{
-                // borderColor: colors['neutral-surface-action']
-                borderColor: 'red'
+                borderColor: colors['neutral-surface-action']
               }}
               placeholder={
                 <View

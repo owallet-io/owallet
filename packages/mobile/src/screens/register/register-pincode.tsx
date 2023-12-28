@@ -234,21 +234,26 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
         returnKeyType="done"
         secureTextEntry={statusPass}
         value={password}
-        containerStyle={{
-          paddingBottom: 8
-        }}
         error={isFailed ? 'Invalid password' : undefined}
         onChangeText={txt => {
           setPassword(txt);
         }}
-        onSubmitEditing={() => {}}
+        inputContainerStyle={{
+          width: metrics.screenWidth - 32,
+          borderWidth: 2,
+          borderColor: colors['primary-surface-default'],
+          borderRadius: 8,
+          minHeight: 56,
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
         placeholder="Enter your passcode"
         inputRight={
           <OWButtonIcon
             style={styles.padIcon}
             onPress={showPass}
             name={statusPass ? 'eye' : 'eye-slash'}
-            colorIcon={colors['icon-primary-surface-default-gray']}
+            colorIcon={colors['neutral-text-title']}
             sizeIcon={22}
           />
         }
@@ -268,13 +273,13 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
   ) : (
     <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
       <TouchableOpacity style={styles.goBack} onPress={onGoBack}>
-        <OWIcon size={16} name="arrow-left" />
+        <OWIcon size={16} color={colors['neutral-icon-on-light']} name="arrow-left" />
       </TouchableOpacity>
       <View style={styles.aic}>
-        <OWText variant="h2" typo="bold">
+        <OWText color={colors['neutral-text-title']} variant="h2" typo="bold">
           {confirmCode ? 'Confirm your' : 'Set'} passcode
         </OWText>
-        <OWText color={colors['text-body']} weight={'500'}>
+        <OWText color={colors['neutral-text-body']} weight={'500'}>
           Secure your wallet by setting a passcode
         </OWText>
         <View
@@ -293,7 +298,7 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
                 borderWidth: 0
               }}
               cellStyleFocused={{
-                borderColor: colors['sub-text']
+                borderColor: colors['neutral-surface-action']
               }}
               placeholder={
                 <View
@@ -301,8 +306,7 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
                     width: 24,
                     height: 24,
                     borderRadius: 48,
-                    opacity: 0.1,
-                    backgroundColor: colors['text-black-high']
+                    backgroundColor: colors['neutral-surface-action']
                   }}
                 />
               }
@@ -313,7 +317,7 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
                     height: 24,
                     borderRadius: 48,
                     opacity: 0.7,
-                    backgroundColor: colors['green-active']
+                    backgroundColor: colors['hightlight-surface-active']
                   }}
                 />
               }
@@ -339,7 +343,7 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
                 name="password"
                 defaultValue=""
               />
-              <OWText size={13} color={colors['text-body']} weight={'400'}>
+              <OWText size={13} color={colors['neutral-text-body']} weight={'400'}>
                 *The password must be at least 6 characters
               </OWText>
             </View>
@@ -350,7 +354,7 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
             style={[styles.switchText, isNumericPad ? styles.switchTextActive : { marginRight: 9 }]}
             onPress={() => onSwitchPad('numeric')}
           >
-            <OWText weight="500" size={16}>
+            <OWText color={colors['neutral-text-action-on-light-bg']} weight="500" size={16}>
               123
             </OWText>
           </TouchableOpacity>
@@ -410,9 +414,6 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
 const useStyles = () => {
   const { colors } = useTheme();
   return StyleSheet.create({
-    mockView: {
-      height: 20
-    },
     padIcon: {
       paddingLeft: 10,
       width: 'auto'
@@ -422,27 +423,7 @@ const useStyles = () => {
       height: 22,
       tintColor: colors['icon-primary-surface-default-gray']
     },
-    containerBtnCopy: {
-      width: '100%',
-      display: 'flex',
-      flexDirection: 'row',
-      justifyContent: 'flex-end',
-      alignItems: 'center'
-    },
-    containerWord: {
-      marginTop: 14,
-      marginBottom: 16,
-      paddingTop: 16,
-      paddingLeft: 16,
-      paddingRight: 16,
-      paddingBottom: 10,
-      borderColor: colors['border-purple-100-gray-800'],
-      borderWidth: 1,
-      borderRadius: 8,
-      display: 'flex',
-      flexDirection: 'row',
-      flexWrap: 'wrap'
-    },
+
     title: {
       fontSize: 24,
       lineHeight: 34,
@@ -456,29 +437,19 @@ const useStyles = () => {
       justifyContent: 'space-between'
     },
 
-    borderInput: {
-      borderColor: colors['border-purple-100-gray-800'],
-      backgroundColor: 'transparent',
-      borderWidth: 1,
-      paddingLeft: 11,
-      paddingRight: 11,
-      paddingTop: 12,
-      paddingBottom: 12,
-      borderRadius: 8
-    },
     container: {
       paddingTop: metrics.screenHeight / 14,
       justifyContent: 'space-between',
-      height: '100%'
+      height: '100%',
+      backgroundColor: colors['neutral-surface-card']
     },
     signIn: {
       width: '100%',
       alignItems: 'center',
       borderTopWidth: 1,
-      borderTopColor: colors['gray-300'],
+      borderTopColor: colors['neutral-border-default'],
       padding: 16
     },
-
     aic: {
       alignItems: 'center',
       paddingBottom: 20
@@ -487,15 +458,15 @@ const useStyles = () => {
       flexDirection: 'row',
       alignItems: 'center'
     },
-    buttonTextStyle: { fontSize: 22, color: colors['text-black-high'], fontFamily: 'SpaceGrotesk-SemiBold' },
+    buttonTextStyle: { fontSize: 22, color: colors['neutral-text-title'], fontFamily: 'SpaceGrotesk-SemiBold' },
     buttonItemStyle: {
-      backgroundColor: colors['background-light-gray'],
+      backgroundColor: colors['neutral-surface-action3'],
       width: 110,
       height: 80,
       borderRadius: 8
     },
     switch: {
-      backgroundColor: colors['background-light-gray'],
+      backgroundColor: colors['neutral-surface-action3'],
       padding: 4,
       borderRadius: 999,
       marginTop: 32
@@ -505,11 +476,11 @@ const useStyles = () => {
       paddingVertical: 6
     },
     switchTextActive: {
-      backgroundColor: colors['background-light'],
+      backgroundColor: colors['neutral-surface-toggle-active'],
       borderRadius: 999
     },
     goBack: {
-      backgroundColor: colors['background-light-gray'],
+      backgroundColor: colors['neutral-surface-action3'],
       borderRadius: 999,
       width: 44,
       height: 44,
