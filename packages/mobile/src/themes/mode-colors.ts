@@ -267,7 +267,7 @@ const modeColors = {
   'warning-border-pressed': ['#FFC35C', '#F29900'],
   'warning-text-action': ['#F29900', '#F29900'],
   'warning-text-body': ['#F29900', '#F29900'],
-  //VI.Success
+  // VI.Success
   'success-surface-subtle': ['#007018', '#ECFEEE'],
   'success-surface-active': ['#007018', '#D3FDD7'],
   'success-surface-default': ['#00AD26', '#007018'],

@@ -1,13 +1,4 @@
-import {
-  View,
-  Text,
-  TouchableOpacityProps,
-  TouchableOpacity,
-  StyleSheet,
-  StyleProp,
-  TextStyle,
-  ViewStyle
-} from 'react-native';
+import { TouchableOpacityProps, TouchableOpacity, StyleSheet, StyleProp, TextStyle, ViewStyle } from 'react-native';
 import React, { FunctionComponent } from 'react';
 import { useMapStyles } from './hooks';
 import { LoadingSpinner } from '../spinner';
@@ -20,7 +11,7 @@ export interface IOWButtonProps extends TouchableOpacityProps {
   textVariant?: OWTextProps['variant'];
   textTypo?: OWTextProps['typo'];
   label?: string;
-  style?: StyleProp<ViewStyle>;
+  style?: StyleProp<ViewStyle | any>;
   textStyle?: StyleProp<TextStyle>;
   fullWidth?: boolean;
   circle?: boolean;
