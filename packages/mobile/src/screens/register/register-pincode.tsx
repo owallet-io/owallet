@@ -385,7 +385,7 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
             buttonItemStyle={styles.buttonItemStyle}
             buttonTextStyle={styles.buttonTextStyle}
             //@ts-ignore
-            rightBottomButton={<OWIcon size={30} name="backspace-outline" />}
+            rightBottomButton={<OWIcon size={30} color={colors['neutral-text-title']} name="backspace-outline" />}
             onRightBottomButtonPress={() => {
               numpadRef.current.clear();
             }}
