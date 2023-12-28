@@ -357,7 +357,8 @@ const useStyle = () => {
     container: {
       paddingTop: metrics.screenHeight / 14,
       justifyContent: 'space-between',
-      height: '100%'
+      height: '100%',
+      backgroundColor: colors['neutral-surface-card']
     },
     signIn: {
       width: '100%',
