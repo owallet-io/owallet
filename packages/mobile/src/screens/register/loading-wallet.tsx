@@ -3,7 +3,6 @@ import { observer } from 'mobx-react-lite';
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import { PageWithView } from '../../components/page';
-
 import { useTheme } from '@src/themes/theme-provider';
 import { metrics } from '../../themes';
 
@@ -33,7 +32,7 @@ export const LoadingWalletScreen: FunctionComponent = observer(props => {
     <PageWithView
       disableSafeArea
       style={{
-        backgroundColor: colors['background-container'],
+        backgroundColor: colors['neutral-surface-card'],
         justifyContent: 'space-between'
       }}
     >
@@ -57,44 +56,19 @@ export const LoadingWalletScreen: FunctionComponent = observer(props => {
           </View>
           <View style={styles.containerCheck}>
             <Image
-              style={{
-                width: metrics.screenWidth / 1.6,
-                height: metrics.screenWidth / 1.6
-              }}
+              style={styles.img}
               source={require('../../assets/image/logo_group.png')}
               resizeMode="contain"
               fadeDuration={0}
             />
-            <Text
-              size={28}
-              weight={'700'}
-              style={{
-                color: colors['text-title-login'],
-                lineHeight: 34,
-                paddingTop: 32
-              }}
-            >
+            <Text size={28} weight={'700'} style={styles.text}>
               {props?.mode === 'add' ? 'CREATING' : 'IMPORTING'}
             </Text>
-            <Text
-              size={28}
-              weight={'700'}
-              style={{
-                color: colors['text-title-login'],
-                lineHeight: 34
-              }}
-            >
+            <Text size={28} weight={'700'} style={styles.text}>
               YOUR WALLET
               {Array.from({ length: count }, (_, index) => '.').map(d => {
                 return (
-                  <Text
-                    size={28}
-                    weight={'700'}
-                    style={{
-                      color: colors['text-title-login'],
-                      lineHeight: 34
-                    }}
-                  >
+                  <Text size={28} weight={'700'} style={styles.text}>
                     {d}
                   </Text>
                 );
@@ -127,5 +101,14 @@ const styling = colors =>
       justifyContent: 'center',
       width: metrics.screenWidth,
       height: metrics.screenHeight
+    },
+    text: {
+      color: colors['neutral-text-title'],
+      lineHeight: 34
+    },
+    img: {
+      width: metrics.screenWidth / 1.6,
+      height: metrics.screenWidth / 1.6,
+      marginBottom: 32
     }
   });

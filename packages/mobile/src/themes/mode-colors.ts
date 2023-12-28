@@ -212,6 +212,7 @@ const modeColors = {
   'bg-tonner': ['#191B21', '#F6EDFF'],
   'bg-swap-box': ['#1E1E21', '#F6F9FF'],
   'bg-btn-select-token': ['#333339', '#EAF1FF'],
+  'icon-primary-surface-default-gray': ['#A22DFF', '#5C00A3'],
   // New UI Colors(28.12.2023)
   // We gonna use this colors from now on
   // I.Neutral
