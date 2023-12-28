@@ -61,7 +61,7 @@ export const NftItem = ({ item }) => {
 const styles = StyleSheet.create({
   textLoadMore: {
     ...typography['h7'],
-    color: colors['purple-700']
+    color: colors['primary-surface-default']
   },
   containerBtn: {
     alignItems: 'center',

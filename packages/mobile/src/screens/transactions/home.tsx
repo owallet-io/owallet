@@ -154,7 +154,7 @@ export const Transactions: FunctionComponent = () => {
               width: (metrics.screenWidth - 60) / 2,
               alignItems: 'center',
               paddingVertical: spacing['12'],
-              backgroundColor: indexParent === i ? colors['purple-700'] : colors['background-box'],
+              backgroundColor: indexParent === i ? colors['primary-surface-default'] : colors['background-box'],
               borderRadius: spacing['12']
             }}
             onPress={() => {

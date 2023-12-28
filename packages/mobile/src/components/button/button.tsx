@@ -184,7 +184,7 @@ export const Button: FunctionComponent<{
               color={
                 mode === 'fill' || (mode === 'light' && disabled)
                   ? style.get('color-white').color
-                  : colors['purple-700']
+                  : colors['primary-surface-default']
               }
               size={20}
             />

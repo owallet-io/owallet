@@ -320,7 +320,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       </View>
       <Text
         style={{
-          color: colors['purple-700'],
+          color: colors['primary-surface-default'],
           textAlign: 'center',
           fontWeight: '600',
           fontSize: 16,
@@ -333,7 +333,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       <View style={{ marginVertical: 12 }}>
         <Text
           style={{
-            color: colors['purple-700'],
+            color: colors['primary-surface-default'],
             textAlign: 'center',
             fontSize: 13,
             lineHeight: 22
@@ -351,7 +351,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       >
         <Text
           style={{
-            color: colors['purple-700'],
+            color: colors['primary-surface-default'],
             textAlign: 'center',
             fontWeight: '600',
             fontSize: 16,
@@ -406,7 +406,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
                 style={styles.padIcon}
                 onPress={showPass}
                 name={statusPass ? 'eye' : 'eye-slash'}
-                colorIcon={colors['icon-purple-700-gray']}
+                colorIcon={colors['icon-primary-surface-default-gray']}
                 sizeIcon={22}
               />
             }

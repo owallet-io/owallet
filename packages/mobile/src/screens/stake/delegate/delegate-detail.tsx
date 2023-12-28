@@ -185,7 +185,7 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> = obse
             <Text
               style={{
                 ...typography.h7,
-                color: colors['purple-700']
+                color: colors['primary-surface-default']
               }}
             >{`Validator details`}</Text>
           </TouchableOpacity>

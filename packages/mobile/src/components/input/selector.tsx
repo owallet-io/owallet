@@ -29,7 +29,7 @@ export const SelectorModal: FunctionComponent<{
         <View
           style={{
             ...styles.ball,
-            backgroundColor: colors['purple-700']
+            backgroundColor: colors['primary-surface-default']
           }}
         >
           <View

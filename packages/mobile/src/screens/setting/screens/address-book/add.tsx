@@ -123,7 +123,7 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
                 });
               }}
             >
-              <Scanner color={colors['purple-700']} />
+              <Scanner color={colors['primary-surface-default']} />
             </TouchableOpacity>
           }
         />

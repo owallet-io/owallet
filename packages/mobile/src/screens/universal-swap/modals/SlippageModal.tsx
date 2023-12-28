@@ -150,14 +150,14 @@ const styling = (colors: TypeTheme['colors']) =>
       height: 40
     },
     txtSlippgaePercentActive: {
-      color: colors['purple-700']
+      color: colors['primary-surface-default']
     },
     btnSlippgaePercentActive: {
       width: metrics.screenWidth / 4 - 20,
       backgroundColor: colors['background-item-list'],
       height: 40,
       borderWidth: 1,
-      borderColor: colors['purple-700']
+      borderColor: colors['primary-surface-default']
     },
     containerSlippagePercent: {
       flexDirection: 'row',

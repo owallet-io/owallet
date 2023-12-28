@@ -20,7 +20,7 @@ export const ProgressBar: FunctionComponent<{
       <View
         style={{
           height: spacing['8'],
-          backgroundColor: progressColor ?? colors['purple-700'],
+          backgroundColor: progressColor ?? colors['primary-surface-default'],
           borderRadius: spacing['32'],
           width: `${progress}%`
         }}

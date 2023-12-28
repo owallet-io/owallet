@@ -244,7 +244,7 @@ const HistoryTransactionsScreen = observer(() => {
                 width: (metrics.screenWidth - 60) / 2,
                 alignItems: 'center',
                 paddingVertical: spacing['12'],
-                backgroundColor: activePage === i ? colors['purple-700'] : colors['background-box'],
+                backgroundColor: activePage === i ? colors['primary-surface-default'] : colors['background-box'],
                 borderRadius: spacing['12']
               }}
               onPress={() => {

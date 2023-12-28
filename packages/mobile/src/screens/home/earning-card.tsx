@@ -264,7 +264,7 @@ const styling = colors =>
       color: colors['gray-300']
     },
     'btn-claim': {
-      backgroundColor: colors['purple-700'],
+      backgroundColor: colors['primary-surface-default'],
       borderWidth: 0.5,
       marginTop: 16,
       width: metrics.screenWidth - 48,

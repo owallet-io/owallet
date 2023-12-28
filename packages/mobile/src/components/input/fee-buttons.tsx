@@ -177,7 +177,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
             ...styles.containerBtnFee,
             ...(selected
               ? {
-                  borderColor: colors['purple-700'],
+                  borderColor: colors['primary-surface-default'],
                   borderWidth: 1
                 }
               : {

@@ -167,7 +167,7 @@ const useStyles = () => {
       marginTop: 14,
       marginBottom: 16,
       padding: 16,
-      borderColor: colors['purple-700'],
+      borderColor: colors['primary-surface-default'],
       borderWidth: 1,
       borderRadius: 8,
       display: 'flex',

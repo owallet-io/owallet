@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
     marginTop: 20
   },
   viewBtn: {
-    backgroundColor: colors['purple-700'],
+    backgroundColor: colors['primary-surface-default'],
     borderRadius: spacing['8'],
     display: 'flex',
     flexDirection: 'row',
@@ -52,7 +52,7 @@ const TransferViewBtn = () => {
           }}
           type="secondary"
           label="Manage address book"
-          icon={<OWIcon name="note" size={20} color={colors['purple-700']} />}
+          icon={<OWIcon name="note" size={20} color={colors['primary-surface-default']} />}
         />
       </View>
     </>

@@ -104,7 +104,7 @@ export const ItemModal = ({ item, active, onPress, iconComponent, label, value, 
         style={[
           styles.iconCircle,
           {
-            backgroundColor: value === active ? colors['purple-700'] : colors['bg-circle-select-modal']
+            backgroundColor: value === active ? colors['primary-surface-default'] : colors['bg-circle-select-modal']
           }
         ]}
       >

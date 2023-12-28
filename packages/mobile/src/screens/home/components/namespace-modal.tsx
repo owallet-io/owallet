@@ -53,7 +53,7 @@ export const NamespaceModal = (account): ReactElement => {
         <RectButton
           style={{
             ...styles.containerBtn,
-            backgroundColor: colors['purple-700']
+            backgroundColor: colors['primary-surface-default']
           }}
         >
           <NamespaceBuyIcon color={colors['white']} size={24} />
@@ -74,11 +74,11 @@ export const NamespaceModal = (account): ReactElement => {
             marginBottom: spacing['16']
           }}
         >
-          <NamespaceRelinkIcon color={colors['purple-700']} size={24} />
+          <NamespaceRelinkIcon color={colors['primary-surface-default']} size={24} />
           <Text
             style={{
               ...typography.h6,
-              color: colors['purple-700'],
+              color: colors['primary-surface-default'],
               fontWeight: '900',
               marginLeft: spacing['12']
             }}

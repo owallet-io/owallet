@@ -145,7 +145,7 @@ export const NotificationScreen: FunctionComponent = () => {
               width: (metrics.screenWidth - 60) / 2,
               alignItems: 'center',
               paddingVertical: spacing['12'],
-              backgroundColor: indexParent === i ? colors['purple-700'] : colors['transparent'],
+              backgroundColor: indexParent === i ? colors['primary-surface-default'] : colors['transparent'],
               borderRadius: spacing['12']
             }}
             onPress={() => {

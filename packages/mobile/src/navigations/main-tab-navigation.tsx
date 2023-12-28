@@ -51,7 +51,7 @@ export const MainTabNavigation: FC = observer(() => {
             paddingRight: 10,
             position: 'absolute'
           },
-          tabBarActiveTintColor: colors['purple-700'],
+          tabBarActiveTintColor: colors['primary-surface-default'],
           tabBarLabelStyle: {
             fontSize: 12,
             textAlign: 'center',
