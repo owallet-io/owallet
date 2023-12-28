@@ -3,7 +3,19 @@ import React from 'react';
 import { useTheme } from '@src/themes/theme-provider';
 
 export interface OWTextProps extends TextProps {
-  variant?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'subtitle' | 'body1' | 'body2' | 'button' | 'caption' | 'overline';
+  variant?:
+    | 'h1'
+    | 'h2'
+    | 'h3'
+    | 'h4'
+    | 'h5'
+    | 'subtitle'
+    | 'body1'
+    | 'body2'
+    | 'button'
+    | 'caption'
+    | 'overline'
+    | 'heading';
   typo?: 'bold' | 'regular' | 'medium';
   color?: string;
   size?: number;
@@ -57,6 +69,10 @@ const useStyle = ({ variant, typo, color, size, weight }: OWTextProps) => {
     case 'caption':
       textStyle.fontSize = 12;
       textStyle.lineHeight = 12;
+      break;
+    case 'heading':
+      textStyle.fontSize = 28;
+      textStyle.lineHeight = 34;
       break;
     case 'overline':
       textStyle.fontSize = 11;

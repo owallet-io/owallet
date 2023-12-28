@@ -75,9 +75,6 @@ export const colorsCode = {
   'red-700': '#FF0000',
   'red-900': '#E53A3A',
 
-  // black
-  'nertural-text-title': '#232125',
-
   // gray
   'gray-10': '#F3F1F5',
   'gray-50': '#F2F2F7',
@@ -250,7 +247,7 @@ const modeColors = {
   'hightlight-surface-subtle': ['#46580B', '#E4F5B0'],
   'hightlight-surface-active': ['#A3CE1A', '#90B51B'],
   'hightlight-text-title': ['#CAEB60', '#46580B'],
-  //IV.Error
+  // IV.Error
   'error-surface-subtle': ['#700B00', '#FFEDEB'],
   'error-surface-active': ['#A81100', '#FFACA3'],
   'error-surface-default': ['#E01600', '#A81100'],
@@ -260,7 +257,7 @@ const modeColors = {
   'error-border-pressed': ['#FF5947', '#E01600'],
   'error-text-action': ['#FF5947', '#E01600'],
   'error-text-body': ['#FF5947', '#E01600'],
-  //V.Warning
+  // V.Warning
   'warning-surface-subtle': ['#7A4D00', '#FFF8EB'],
   'warning-surface-active': ['#B87500', '#FFE1AD'],
   'warning-surface-default': ['#F29900', '#B87500'],

@@ -355,7 +355,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
         height: '100%',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: colors['background-container']
+        backgroundColor: colors['neutral-surface-card']
       }}
     >
       <View
@@ -422,7 +422,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
     <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
       <View />
       <View style={styles.aic}>
-        <OWText variant="h2" typo="bold">
+        <OWText variant="heading" color={colors['nertral-text-title']} typo="bold">
           Enter your passcode
         </OWText>
         <View
@@ -441,7 +441,8 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
                 borderWidth: 0
               }}
               cellStyleFocused={{
-                borderColor: colors['sub-text']
+                // borderColor: colors['neutral-surface-action']
+                borderColor: 'red'
               }}
               placeholder={
                 <View
@@ -449,8 +450,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
                     width: 24,
                     height: 24,
                     borderRadius: 48,
-                    opacity: 0.1,
-                    backgroundColor: colors['text-black-high']
+                    backgroundColor: colors['neutral-surface-action']
                   }}
                 />
               }
@@ -461,7 +461,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
                     height: 24,
                     borderRadius: 48,
                     opacity: 0.7,
-                    backgroundColor: colors['green-active']
+                    backgroundColor: colors['hightlight-surface-active']
                   }}
                 />
               }
@@ -474,7 +474,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
             <View
               style={{
                 width: metrics.screenWidth,
-                paddingHorizontal: 20
+                paddingHorizontal: 16
               }}
             >
               <TextInput
@@ -486,6 +486,15 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
                 onChangeText={txt => {
                   setPassword(txt);
                 }}
+                inputContainerStyle={{
+                  width: metrics.screenWidth - 32,
+                  borderWidth: 2,
+                  borderColor: colors['primary-surface-default'],
+                  borderRadius: 8,
+                  minHeight: 56,
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
                 onSubmitEditing={tryUnlock}
                 placeholder="Enter your passcode"
                 inputRight={
@@ -493,7 +502,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
                     style={styles.padIcon}
                     onPress={showPass}
                     name={statusPass ? 'eye' : 'eye-slash'}
-                    colorIcon={colors['icon-primary-surface-default-gray']}
+                    colorIcon={colors['neutral-text-title']}
                     sizeIcon={22}
                   />
                 }
@@ -506,7 +515,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
             style={[styles.switchText, isNumericPad ? styles.switchTextActive : { marginRight: 9 }]}
             onPress={() => onSwitchPad('numeric')}
           >
-            <OWText weight="500" size={16}>
+            <OWText color={colors['neutral-text-action-on-light-bg']} weight="500" size={16}>
               123
             </OWText>
           </TouchableOpacity>
@@ -545,7 +554,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
             buttonItemStyle={styles.buttonItemStyle}
             buttonTextStyle={styles.buttonTextStyle}
             //@ts-ignore
-            rightBottomButton={<OWIcon size={30} name="backspace-outline" />}
+            rightBottomButton={<OWIcon size={30} color={colors['neutral-text-title']} name="backspace-outline" />}
             onRightBottomButtonPress={() => {
               numpadRef.current.clear();
             }}
@@ -576,13 +585,14 @@ const styling = colors =>
     container: {
       paddingTop: metrics.screenHeight / 14,
       justifyContent: 'space-between',
-      height: '100%'
+      height: '100%',
+      backgroundColor: colors['neutral-surface-card']
     },
     signIn: {
       width: '100%',
       alignItems: 'center',
       borderTopWidth: 1,
-      borderTopColor: colors['gray-300'],
+      borderTopColor: colors['neutral-border-default'],
       padding: 16
     },
     padIcon: {
@@ -597,15 +607,15 @@ const styling = colors =>
       flexDirection: 'row',
       alignItems: 'center'
     },
-    buttonTextStyle: { fontSize: 22, color: colors['text-black-high'], fontFamily: 'SpaceGrotesk-SemiBold' },
+    buttonTextStyle: { fontSize: 22, color: colors['neutral-text-title'], fontFamily: 'SpaceGrotesk-SemiBold' },
     buttonItemStyle: {
-      backgroundColor: colors['background-light-gray'],
+      backgroundColor: colors['neutral-surface-action3'],
       width: 110,
       height: 80,
       borderRadius: 8
     },
     switch: {
-      backgroundColor: colors['background-light-gray'],
+      backgroundColor: colors['neutral-surface-action3'],
       padding: 4,
       borderRadius: 999,
       marginTop: 32
@@ -615,11 +625,11 @@ const styling = colors =>
       paddingVertical: 6
     },
     switchTextActive: {
-      backgroundColor: colors['background-light'],
+      backgroundColor: colors['neutral-surface-toggle-active'],
       borderRadius: 999
     },
     goBack: {
-      backgroundColor: colors['background-light-gray'],
+      backgroundColor: colors['neutral-surface-action3'],
       borderRadius: 999,
       width: 44,
       height: 44,

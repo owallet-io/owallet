@@ -50,7 +50,6 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
   ...props
 }) => {
   const styleMapped = useMapStyles({ type, disabled, size, contentAlign });
-  const { colors } = useTheme();
   const styles = styling();
   return (
     <TouchableOpacity
