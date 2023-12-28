@@ -112,7 +112,6 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
           </View>
         }
         returnKeyType="next"
-        inputStyle={styles.input}
         onSubmitEditing={() => {
           if (mode === 'add') {
             submit();
@@ -121,7 +120,8 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
             setFocus('password');
           }
         }}
-        style={{ fontWeight: '500', paddingLeft: 4, fontSize: 15 }}
+        inputStyle={styles.input}
+        style={styles.textInput}
         inputLeft={<OWIcon size={22} name="wallet-outline" color={colors['primary-surface-default']} />}
         error={errors.name?.message}
         onBlur={onBlur}
@@ -133,8 +133,8 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
   };
 
   const validatePass = (value: string) => {
-    if (value.length < 8) {
-      return 'Password must be longer than 8 characters';
+    if (value.length < 6) {
+      return 'Password must be longer than 6 characters';
     }
   };
   const renderPass = ({ field: { onChange, onBlur, value, ref } }) => {
@@ -151,6 +151,7 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
         }
         returnKeyType="next"
         inputStyle={styles.input}
+        style={styles.textInput}
         inputRight={
           <OWButton
             style={styles.padIcon}
@@ -198,8 +199,8 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
   }, []);
 
   const validateConfirmPass = (value: string) => {
-    if (value.length < 8) {
-      return 'Password must be longer than 8 characters';
+    if (value.length < 6) {
+      return 'Password must be longer than 6 characters';
     }
 
     if (getValues('password') !== value) {
@@ -226,6 +227,7 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
         }
         placeholder={'Enter your confirm passcode'}
         inputStyle={styles.input}
+        style={styles.textInput}
         inputRight={
           <OWButton
             style={styles.padIcon}
@@ -256,10 +258,10 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
     <View style={styles.container}>
       <View>
         <TouchableOpacity onPress={onGoBack} style={styles.goBack}>
-          <OWIcon size={16} name="arrow-left" />
+          <OWIcon size={16} color={colors['neutral-icon-on-light']} name="arrow-left" />
         </TouchableOpacity>
         <View style={[styles.aic, styles.title]}>
-          <OWText variant="h2" style={{ textAlign: 'center' }} typo="bold">
+          <OWText variant="heading" style={{ textAlign: 'center' }} typo="bold">
             Import Ledger Nano X
           </OWText>
 
@@ -340,10 +342,9 @@ const useStyles = () => {
       width: '100%',
       alignItems: 'center',
       borderTopWidth: 1,
-      borderTopColor: colors['gray-300'],
+      borderTopColor: colors['neutral-border-default'],
       padding: 16
     },
-
     aic: {
       alignItems: 'center',
       paddingBottom: 20
@@ -353,7 +354,7 @@ const useStyles = () => {
       alignItems: 'center'
     },
     goBack: {
-      backgroundColor: colors['background-light-gray'],
+      backgroundColor: colors['neutral-surface-action3'],
       borderRadius: 999,
       width: 44,
       height: 44,
@@ -367,7 +368,8 @@ const useStyles = () => {
     },
     input: {
       width: metrics.screenWidth - 32,
-      borderColor: colors['on-bg']
-    }
+      borderColor: colors['neutral-border-strong']
+    },
+    textInput: { fontWeight: '600', paddingLeft: 4, fontSize: 15 }
   });
 };
