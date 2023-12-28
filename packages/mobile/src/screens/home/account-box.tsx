@@ -148,7 +148,8 @@ export const AccountBox: FunctionComponent<{
             <TouchableOpacity onPress={_onPressMyWallet} style={styles.btnAcc}>
               <Image
                 style={styles.infoIcon}
-                source={require('../../assets/image/address_default.png')}
+                source={require('../../assets/images/default-avatar.png')}
+                resizeMode="contain"
                 fadeDuration={0}
               />
               <Text style={styles.labelName}>{name}</Text>
@@ -249,6 +250,7 @@ const styling = colors =>
     },
     infoIcon: {
       width: spacing['26'],
+      borderRadius: spacing['26'],
       height: spacing['26']
     },
     btnAcc: {

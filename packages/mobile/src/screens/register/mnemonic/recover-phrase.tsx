@@ -178,7 +178,7 @@ export const RecoverPhraseScreen: FunctionComponent = observer(props => {
   };
 
   const handleValidate = () => {
-    if (validateMnemonic(getValues('mnemonic')).length > 0) {
+    if (validateMnemonic(getValues('mnemonic'))?.length > 0) {
       showToast({
         type: 'danger',
         message: validateMnemonic(getValues('mnemonic'))

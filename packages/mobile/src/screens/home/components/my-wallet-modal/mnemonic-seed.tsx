@@ -59,9 +59,10 @@ const MnemonicSeed = () => {
             <Image
               style={{
                 width: spacing['38'],
-                height: spacing['38']
+                height: spacing['38'],
+                borderRadius: spacing['38']
               }}
-              source={require('../../../../assets/image/img_owallet.png')}
+              source={require('../../../../assets/images/default-avatar.png')}
               fadeDuration={0}
             />
             <View

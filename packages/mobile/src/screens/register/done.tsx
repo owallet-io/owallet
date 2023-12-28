@@ -48,7 +48,7 @@ export const RegisterDoneScreen: FunctionComponent = observer(() => {
     <PageWithView
       disableSafeArea
       style={{
-        backgroundColor: colors['background-container'],
+        backgroundColor: colors['neutral-surface-card'],
         justifyContent: 'space-between'
       }}
     >
@@ -87,7 +87,7 @@ export const RegisterDoneScreen: FunctionComponent = observer(() => {
           size={28}
           weight={'700'}
           style={{
-            color: colors['text-title-login'],
+            color: colors['neutral-text-title'],
             lineHeight: 34
           }}
         >
@@ -96,7 +96,7 @@ export const RegisterDoneScreen: FunctionComponent = observer(() => {
         <Text
           style={{
             ...typography['subtitle1'],
-            color: colors['text-content-success'],
+            color: colors['neutral-text-body'],
             textAlign: 'center',
             paddingTop: 20,
             paddingLeft: 8,
@@ -110,7 +110,7 @@ export const RegisterDoneScreen: FunctionComponent = observer(() => {
       {walletName ? (
         <View
           style={{
-            backgroundColor: colors['background-light-gray'],
+            backgroundColor: colors['neutral-surface-action3'],
             margin: 16,
             borderRadius: 8
           }}
@@ -126,9 +126,10 @@ export const RegisterDoneScreen: FunctionComponent = observer(() => {
             <Image
               style={{
                 width: 32,
-                height: 32
+                height: 32,
+                borderRadius: 32
               }}
-              source={require('../../assets/image/img_owallet.png')}
+              source={require('../../assets/images/default-avatar.png')}
               resizeMode="contain"
               fadeDuration={0}
             />
@@ -136,7 +137,7 @@ export const RegisterDoneScreen: FunctionComponent = observer(() => {
               size={16}
               weight={'500'}
               style={{
-                color: colors['nertural-text-title'],
+                color: colors['neutral-text-title'],
                 paddingLeft: 6
               }}
             >
@@ -151,12 +152,12 @@ export const RegisterDoneScreen: FunctionComponent = observer(() => {
           {password && keychainStore.isBiometrySupported ? (
             <View style={styles.biometrics}>
               <View style={styles.rc}>
-                <OWIcon size={22} name="face" color={colors['nertural-text-title']} />
+                <OWIcon size={22} name="face" color={colors['neutral-text-title']} />
                 <Text
                   size={16}
                   weight={'500'}
                   style={{
-                    color: colors['nertural-text-title'],
+                    color: colors['neutral-text-title'],
                     paddingLeft: 4
                   }}
                 >
