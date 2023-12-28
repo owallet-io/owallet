@@ -46,6 +46,7 @@ function trimWordsStr(str: string): string {
 interface FormData {
   mnemonic: string;
   name: string;
+  password: string;
 }
 
 export const RecoverPhraseScreen: FunctionComponent = observer(props => {

@@ -138,6 +138,7 @@ export const PasswordInputModal: FunctionComponent<{
             labelClose={textButtonLeft}
             onPressClose={close}
             styleApprove={{ backgroundColor: colors['primary-surface-default'] }}
+            textStyleApprove={{ color: colors['neutral-text-action-on-dark-bg'] }}
           />
         </View>
       </CardModal>

@@ -70,7 +70,7 @@ export const SlippageModal = registerModal(
                     defaultValue={currentSlippage?.toString() ?? '0'}
                     value={slippage.toString()}
                     textAlign="right"
-                    placeholderTextColor={colors['text-place-holder']}
+                    placeholderTextColor={colors['neutral-text-action-on-dark-bg']}
                     onSubmitEditing={txt => {
                       if (Number(txt) > 0 && Number(txt) < 100) {
                         setSlippage(Number(txt));
@@ -150,14 +150,14 @@ const styling = (colors: TypeTheme['colors']) =>
       height: 40
     },
     txtSlippgaePercentActive: {
-      color: colors['primary-surface-default']
+      color: colors['primary-text-action']
     },
     btnSlippgaePercentActive: {
       width: metrics.screenWidth / 4 - 20,
       backgroundColor: colors['background-item-list'],
       height: 40,
       borderWidth: 1,
-      borderColor: colors['primary-surface-default']
+      borderColor: colors['primary-text-action']
     },
     containerSlippagePercent: {
       flexDirection: 'row',

@@ -104,7 +104,7 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
   } = useForm<FormData>();
 
   const onGoBack = () => {
-    if (checkRouter(props?.route?.name, 'RegisterMain')) {
+    if (checkRouter(route?.name, 'RegisterMain')) {
       smartNavigation.goBack();
     } else {
       smartNavigation.navigateSmart('Register.Intro', {});
