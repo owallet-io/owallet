@@ -375,7 +375,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
       </View>
       <Text
         style={{
-          color: colors['primary-default'],
+          color: colors['purple-700'],
           textAlign: 'center',
           fontWeight: '600',
           fontSize: 18,
@@ -388,7 +388,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
       <View style={{ marginVertical: 12 }}>
         <Text
           style={{
-            color: colors['primary-default'],
+            color: colors['purple-700'],
             textAlign: 'center',
             fontSize: 13,
             lineHeight: 22
@@ -406,7 +406,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
       >
         <Text
           style={{
-            color: colors['primary-default'],
+            color: colors['purple-700'],
             textAlign: 'center',
             fontWeight: '600',
             fontSize: 16,
@@ -493,7 +493,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
                     style={styles.padIcon}
                     onPress={showPass}
                     name={statusPass ? 'eye' : 'eye-slash'}
-                    colorIcon={colors['icon-primary-default-gray']}
+                    colorIcon={colors['icon-purple-700-gray']}
                     sizeIcon={22}
                   />
                 }

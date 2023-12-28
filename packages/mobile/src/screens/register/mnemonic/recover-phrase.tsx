@@ -221,7 +221,7 @@ export const RecoverPhraseScreen: FunctionComponent = observer(props => {
           borderColor: colors['on-bg']
         }}
         style={{ fontWeight: '500', paddingLeft: 4, fontSize: 15 }}
-        inputLeft={<OWIcon size={20} name="wallet-outline" color={colors['primary-default']} />}
+        inputLeft={<OWIcon size={20} name="wallet-outline" color={colors['purple-700']} />}
         error={errors.name?.message}
         onBlur={onBlur}
         onChangeText={onChange}
@@ -317,7 +317,7 @@ const useStyle = () => {
       backgroundColor: 'transparent'
     },
     borderInput: {
-      borderColor: colors['primary-default'],
+      borderColor: colors['purple-700'],
       borderWidth: 2,
       backgroundColor: 'transparent',
       paddingLeft: 11,

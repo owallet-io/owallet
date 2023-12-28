@@ -45,7 +45,7 @@ export const TokensScreen: FunctionComponent = observer(() => {
               style={{
                 fontSize: 12,
                 fontWeight: '700',
-                color: colors['primary-default']
+                color: colors['purple-700']
               }}
             >
               + Add token

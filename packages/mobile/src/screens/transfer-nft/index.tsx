@@ -187,7 +187,7 @@ export const TransferNFTScreen: FunctionComponent = observer(() => {
                   containerStyle={{
                     height: 24,
                     borderRadius: spacing['8'],
-                    backgroundColor: colors['primary-default'],
+                    backgroundColor: colors['purple-700'],
                     justifyContent: 'center',
                     alignItems: 'center'
                   }}
@@ -230,7 +230,7 @@ export const TransferNFTScreen: FunctionComponent = observer(() => {
           <TouchableOpacity
             style={{
               marginBottom: 24,
-              backgroundColor: colors['primary-default'],
+              backgroundColor: colors['purple-700'],
               borderRadius: 8
             }}
             onPress={async () => {

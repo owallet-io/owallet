@@ -86,7 +86,7 @@ export const SignBitcoinModal: FunctionComponent<{
             <Text
               style={{
                 ...style.flatten(['subtitle2']),
-                color: colors['primary-default']
+                color: colors['purple-700']
               }}
             >
               {formatBalance({
@@ -108,7 +108,7 @@ export const SignBitcoinModal: FunctionComponent<{
             <Text
               style={{
                 ...style.flatten(['subtitle2']),
-                color: colors['primary-default']
+                color: colors['purple-700']
               }}
             >
               {formatBalance({

@@ -12,7 +12,7 @@ export const stylesUniversalSwap = StyleSheet.create({
 export const styling = (colors: TypeTheme['colors']) =>
   StyleSheet.create({
     textBtnBalanceAtive: {
-      color: colors['primary-default']
+      color: colors['purple-700']
     },
     textBtnBalanceInActive: {
       color: '#7C8397'
@@ -28,7 +28,7 @@ export const styling = (colors: TypeTheme['colors']) =>
       backgroundColor: colors['bg-swap-box'],
       height: 40,
       borderWidth: 1,
-      borderColor: colors['primary-default']
+      borderColor: colors['purple-700']
     },
     btnBalanceInactive: {
       width: metrics.screenWidth / 4 - 16,

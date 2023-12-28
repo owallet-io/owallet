@@ -58,7 +58,7 @@ const formatData = data => {
     datasets: [
       {
         data: dataChart,
-        color: (opacity = 1) => colorsCode['primary-default'],
+        color: (opacity = 1) => colorsCode['purple-700'],
         strokeWidth: 1.7
       }
     ],
@@ -248,7 +248,7 @@ const styling = colors =>
     },
     active: {
       padding: 7,
-      backgroundColor: colors['primary-default'],
+      backgroundColor: colors['purple-700'],
       borderRadius: 4
     },
     inActive: {
@@ -261,7 +261,7 @@ const styling = colors =>
       fontSize: 14
     },
     inActiveText: {
-      color: colors['primary-default'],
+      color: colors['purple-700'],
       fontSize: 14
     },
     viewDetail: {

@@ -185,7 +185,7 @@ export const AccountBox: FunctionComponent<{
           style={{
             marginTop: 16
           }}
-          icon={<OWIcon color={colors['primary-default']} size={18} name="history" />}
+          icon={<OWIcon color={colors['purple-700']} size={18} name="history" />}
         />
         {chainStore.current.chainId == 'bitcoinTestnet' && (
           <OWButton

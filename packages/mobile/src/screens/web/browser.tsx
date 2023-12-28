@@ -51,7 +51,7 @@ export const BrowserBookmark: FunctionComponent<{}> = ({}) => {
           </Text>
         </Text>
         <TouchableOpacity onPress={() => navigation.navigate('BookMarks')}>
-          <Text weight="400" size={14} color={colors['primary-default']}>
+          <Text weight="400" size={14} color={colors['purple-700']}>
             View all
           </Text>
         </TouchableOpacity>

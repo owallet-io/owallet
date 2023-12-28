@@ -111,7 +111,7 @@ export const NetworkModal = ({ profileColor }) => {
               borderRadius: spacing['12'],
               justifyContent: 'center',
               alignItems: 'center',
-              backgroundColor: profileColor?.(item) ?? colors['primary-default']
+              backgroundColor: profileColor?.(item) ?? colors['purple-700']
             }}
           >
             {item.raw.chainSymbolImageUrl ? (
@@ -156,9 +156,7 @@ export const NetworkModal = ({ profileColor }) => {
               height: 24,
               borderRadius: spacing['32'],
               backgroundColor:
-                item?.chainId === chainStore.current.chainId
-                  ? colors['primary-default']
-                  : colors['bg-circle-select-modal'],
+                item?.chainId === chainStore.current.chainId ? colors['purple-700'] : colors['bg-circle-select-modal'],
               justifyContent: 'center',
               alignItems: 'center'
             }}
@@ -202,7 +200,7 @@ export const NetworkModal = ({ profileColor }) => {
               style={{
                 fontSize: 12,
                 fontWeight: '700',
-                color: colors['primary-default']
+                color: colors['purple-700']
               }}
             >
               + Add network

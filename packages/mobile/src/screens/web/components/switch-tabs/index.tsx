@@ -10,7 +10,7 @@ import { XIcon } from '../../../../components/icon';
 import { useNavigation } from '@react-navigation/native';
 
 // const oraiLogo = require('../../../../assets/image/webpage/orai_logo.png');
-const COLOR_PRIMARY = colors['primary-default'];
+const COLOR_PRIMARY = colors['purple-700'];
 const COLOR_PRIMARY_LIGHT = colors['primary-100'];
 const DEVICE_WIDTH = Dimensions.get('window').width;
 const DIMENSION_PADDING_MEDIUM = 16;
@@ -142,7 +142,7 @@ export const SwtichTab: FunctionComponent<{
         >
           <TouchableOpacity
             style={{
-              backgroundColor: colors['primary-default'],
+              backgroundColor: colors['purple-700'],
               borderRadius: spacing['8'],
               marginLeft: 8,
               marginRight: 8

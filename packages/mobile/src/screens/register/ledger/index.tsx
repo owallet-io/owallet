@@ -122,7 +122,7 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
           }
         }}
         style={{ fontWeight: '500', paddingLeft: 4, fontSize: 15 }}
-        inputLeft={<OWIcon size={22} name="wallet-outline" color={colors['primary-default']} />}
+        inputLeft={<OWIcon size={22} name="wallet-outline" color={colors['purple-700']} />}
         error={errors.name?.message}
         onBlur={onBlur}
         onChangeText={onChange}
@@ -156,7 +156,7 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
             style={styles.padIcon}
             type="link"
             onPress={() => setStatusPass(!statusPass)}
-            icon={<OWIcon name={!statusPass ? 'eye' : 'eye-slash'} color={colors['primary-default']} size={22} />}
+            icon={<OWIcon name={!statusPass ? 'eye' : 'eye-slash'} color={colors['purple-700']} size={22} />}
           />
         }
         placeholder={'Enter your passcode'}
@@ -229,9 +229,7 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
             style={styles.padIcon}
             type="link"
             onPress={() => setStatusConfirmPass(!statusConfirmPass)}
-            icon={
-              <OWIcon name={!statusConfirmPass ? 'eye' : 'eye-slash'} color={colors['primary-default']} size={22} />
-            }
+            icon={<OWIcon name={!statusConfirmPass ? 'eye' : 'eye-slash'} color={colors['purple-700']} size={22} />}
           />
         }
         secureTextEntry={!statusConfirmPass}

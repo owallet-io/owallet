@@ -49,7 +49,7 @@ const ItemReceivedToken: FC<{
                 sizeIcon={20}
                 fullWidth={false}
                 onPress={onCopy}
-                colorIcon={colors['primary-default']}
+                colorIcon={colors['purple-700']}
               />
             )}
           </View>

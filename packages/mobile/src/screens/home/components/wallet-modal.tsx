@@ -52,7 +52,7 @@ export const WalletModal = (account): ReactElement => {
         <RectButton
           style={{
             ...styles.containerBtn,
-            backgroundColor: colors['primary-default']
+            backgroundColor: colors['purple-700']
           }}
         >
           <ScanIcon color={colors['white']} size={24} />
@@ -67,11 +67,11 @@ export const WalletModal = (account): ReactElement => {
         </RectButton>
 
         <RectButton style={styles.containerBtn}>
-          <ScanIcon color={colors['primary-default']} size={24} />
+          <ScanIcon color={colors['purple-700']} size={24} />
           <Text
             style={{
               ...typography.h6,
-              color: colors['primary-default'],
+              color: colors['purple-700'],
               fontWeight: '900',
               marginLeft: spacing['12']
             }}

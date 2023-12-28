@@ -30,7 +30,7 @@ const OWTransactionItem = observer(({ item, time, ...props }: IOWTransactionItem
                     item?.status === 'success'
                       ? colors['green-500']
                       : item?.status === 'pending'
-                      ? colors['primary-default']
+                      ? colors['purple-700']
                       : colors['orange-800']
                   }
                   name={

@@ -214,7 +214,7 @@ const styling = () => {
       // paddingBottom: spacing['24']
     },
     btn: {
-      backgroundColor: colors['primary-default'],
+      backgroundColor: colors['purple-700'],
       borderRadius: spacing['8'],
       marginLeft: 10,
       marginRight: 10

@@ -30,7 +30,7 @@ export const MaintainScreen: FunctionComponent<{}> = () => {
       </View>
       <Text
         style={{
-          color: colors['primary-default'],
+          color: colors['purple-700'],
           textAlign: 'center',
           fontSize: 14,
           lineHeight: 22,

@@ -78,7 +78,7 @@ export const FullScreenCameraView: FunctionComponent<
                   justifyContent: 'center'
                 }}
               >
-                <CloseIcon size={28} color={colors['primary-default']} />
+                <CloseIcon size={28} color={colors['purple-700']} />
               </View>
             </TouchableOpacity>
           ) : null}
@@ -91,7 +91,7 @@ export const FullScreenCameraView: FunctionComponent<
         <View>
           <Svg width="217" height="217" fill="none" viewBox="0 0 217 217">
             <Path
-              stroke={colors['primary-default']}
+              stroke={colors['purple-700']}
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeWidth="6"
@@ -120,12 +120,12 @@ export const FullScreenCameraView: FunctionComponent<
                   backgroundColor: colors['camera-loading-background']
                 }}
               >
-                <LoadingSpinner size={42} color={colors['primary-default']} />
+                <LoadingSpinner size={42} color={colors['purple-700']} />
                 <Text
                   style={{
                     ...typography['subtitle1'],
                     marginTop: 34,
-                    color: colors['primary-default']
+                    color: colors['purple-700']
                   }}
                 >
                   Loading...

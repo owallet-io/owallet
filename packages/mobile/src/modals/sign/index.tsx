@@ -197,7 +197,7 @@ export const SignModal: FunctionComponent<{
               width: '40%'
             }}
             style={{
-              backgroundColor: isDisable ? colors['gray-400'] : colors['primary-default']
+              backgroundColor: isDisable ? colors['gray-400'] : colors['purple-700']
             }}
             textStyle={{
               color: isDisable ? colors['gray-10'] : colors['white']

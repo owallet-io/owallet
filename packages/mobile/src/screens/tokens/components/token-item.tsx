@@ -146,7 +146,7 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({ containerStyle, c
           size={56}
           width={6}
           fill={amountBalance ? +amountBalance / totalBalance : 0}
-          tintColor={colors['primary-default']}
+          tintColor={colors['purple-700']}
           backgroundColor={colors['gray-50']}
           rotation={0}
         >

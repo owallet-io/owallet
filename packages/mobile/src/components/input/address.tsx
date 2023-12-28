@@ -151,7 +151,7 @@ export const AddressInput: FunctionComponent<{
                     });
                   }}
                 >
-                  <NoteIcon color={colors['primary-default']} height={18} />
+                  <NoteIcon color={colors['purple-700']} height={18} />
                 </TouchableOpacity>
               )}
             </View>

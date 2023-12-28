@@ -79,7 +79,7 @@ export const AccountCardBitcoin: FunctionComponent<{
 const styles = StyleSheet.create({
   textLoadMore: {
     ...typography['h7'],
-    color: colors['primary-default']
+    color: colors['purple-700']
   },
   containerBtn: {
     alignItems: 'center',

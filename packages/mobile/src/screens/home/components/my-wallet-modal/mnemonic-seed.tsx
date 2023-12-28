@@ -100,7 +100,7 @@ const MnemonicSeed = () => {
                 width: 24,
                 height: 24,
                 borderRadius: spacing['32'],
-                backgroundColor: colors[`${item.selected ? 'primary-default' : 'bg-circle-select-modal'}`],
+                backgroundColor: colors[`${item.selected ? 'purple-700' : 'bg-circle-select-modal'}`],
                 justifyContent: 'center',
                 alignItems: 'center'
               }}
@@ -137,7 +137,7 @@ const MnemonicSeed = () => {
             zIndex: 1
           }}
         >
-          {isLoading && <LoadingSpinner size={24} color={colors['primary-default']} />}
+          {isLoading && <LoadingSpinner size={24} color={colors['purple-700']} />}
         </View>
       </View>
     </View>

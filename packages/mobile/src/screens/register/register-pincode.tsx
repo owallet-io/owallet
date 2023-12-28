@@ -248,7 +248,7 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
             style={styles.padIcon}
             onPress={showPass}
             name={statusPass ? 'eye' : 'eye-slash'}
-            colorIcon={colors['icon-primary-default-gray']}
+            colorIcon={colors['icon-purple-700-gray']}
             sizeIcon={22}
           />
         }
@@ -420,7 +420,7 @@ const useStyles = () => {
     icon: {
       width: 22,
       height: 22,
-      tintColor: colors['icon-primary-default-gray']
+      tintColor: colors['icon-purple-700-gray']
     },
     containerBtnCopy: {
       width: '100%',

@@ -130,7 +130,7 @@ export const NewMnemonicScreen: FunctionComponent = observer(props => {
             style={styles.padIcon}
             onPress={showPass}
             name={!statusPass ? 'eye' : 'eye-slash'}
-            colorIcon={colors['icon-primary-default-gray']}
+            colorIcon={colors['icon-purple-700-gray']}
             sizeIcon={22}
           />
         }
@@ -163,7 +163,7 @@ export const NewMnemonicScreen: FunctionComponent = observer(props => {
             icon={
               <OWIcon
                 name={!statusConfirmPass ? 'eye' : 'eye-slash'}
-                color={colors['icon-primary-default-gray']}
+                color={colors['icon-purple-700-gray']}
                 size={22}
               />
             }
@@ -287,9 +287,7 @@ const WordsCard: FunctionComponent<{
         <OWButton
           style={styles.padIcon}
           onPress={onCopy}
-          icon={
-            isTimedOut ? <CheckIcon /> : <OWIcon name="copy" color={colors['icon-primary-default-gray']} size={20} />
-          }
+          icon={isTimedOut ? <CheckIcon /> : <OWIcon name="copy" color={colors['icon-purple-700-gray']} size={20} />}
           type="link"
         />
       </View>
@@ -310,7 +308,7 @@ const useStyles = () => {
     icon: {
       width: 22,
       height: 22,
-      tintColor: colors['icon-primary-default-gray']
+      tintColor: colors['icon-purple-700-gray']
     },
     containerBtnCopy: {
       width: '100%',

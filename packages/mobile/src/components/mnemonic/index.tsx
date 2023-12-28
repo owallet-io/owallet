@@ -18,13 +18,13 @@ export const WordChip: FunctionComponent<{
         borderRadius: 8,
         borderWidth: 1,
         margin: 5,
-        borderColor: empty ? colors['primary-100'] : colors['primary-default'],
+        borderColor: empty ? colors['primary-100'] : colors['purple-700'],
         borderStyle: dashedBorder ? 'dashed' : 'dotted'
       }}
     >
       <Text
         style={{
-          color: empty ? colors['primary-100'] : colors['text-gray-900-primary-default'],
+          color: empty ? colors['primary-100'] : colors['text-gray-900-purple-700'],
           fontSize: 18,
           lineHeight: 22,
           fontWeight: '400',
@@ -74,7 +74,7 @@ export const BackupWordChip: FunctionComponent<{
             fontSize: 12,
             fontWeight: '600',
             padding: 4,
-            color: empty ? colors['primary-100'] : colors['primary-default']
+            color: empty ? colors['primary-100'] : colors['purple-700']
           }}
         >
           {index}

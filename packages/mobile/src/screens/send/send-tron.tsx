@@ -211,7 +211,7 @@ export const SendTronScreen: FunctionComponent = observer(props => {
             label="Send"
             size="large"
             style={{
-              backgroundColor: colors['primary-default'],
+              backgroundColor: colors['purple-700'],
               borderRadius: 8
             }}
             loading={account.isSendingMsg === 'send'}

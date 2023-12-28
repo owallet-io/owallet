@@ -249,9 +249,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(props => {
             style={styles.padIcon}
             type="link"
             onPress={() => setStatusPass(!statusPass)}
-            icon={
-              <OWIcon name={!statusPass ? 'eye' : 'eye-slash'} color={colors['icon-primary-default-gray']} size={22} />
-            }
+            icon={<OWIcon name={!statusPass ? 'eye' : 'eye-slash'} color={colors['icon-purple-700-gray']} size={22} />}
           />
         }
         secureTextEntry={!statusPass}
@@ -288,7 +286,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(props => {
             icon={
               <OWIcon
                 name={!statusConfirmPass ? 'eye' : 'eye-slash'}
-                color={colors['icon-primary-default-gray']}
+                color={colors['icon-purple-700-gray']}
                 size={22}
               />
             }

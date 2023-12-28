@@ -90,7 +90,7 @@ const FeeButtonsModal: FunctionComponent<{
           style={{
             marginBottom: customFee ? 264 : 14,
             marginTop: 32,
-            backgroundColor: colors['primary-default'],
+            backgroundColor: colors['purple-700'],
             borderRadius: 8
           }}
         >
@@ -177,7 +177,7 @@ export const FeeInSign: FunctionComponent<{
             <Text
               style={{
                 ...typography['subtitle1'],
-                color: canFeeEditable ? colors['primary-default'] : colors['primary-text']
+                color: canFeeEditable ? colors['purple-700'] : colors['primary-text']
               }}
             >
               {fee.trim(true).toString()}

@@ -726,7 +726,7 @@ export const SelectNetworkScreen = () => {
         style={{
           marginBottom: 24,
           marginTop: 20,
-          backgroundColor: colors['primary-default'],
+          backgroundColor: colors['purple-700'],
           borderRadius: 8
         }}
       >
@@ -756,7 +756,7 @@ export const SelectNetworkScreen = () => {
       >
         <Text
           style={{
-            color: colors['primary-default'],
+            color: colors['purple-700'],
             textAlign: 'center',
             fontWeight: '700',
             fontSize: 16

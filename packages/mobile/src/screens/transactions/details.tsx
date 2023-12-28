@@ -34,9 +34,9 @@ const bindStyleTxInfo = (
   const { colors } = useTheme();
   switch (label) {
     case 'Transaction hash':
-      return { color: colors['primary-default'], textTransform: 'uppercase' };
+      return { color: colors['purple-700'], textTransform: 'uppercase' };
     case 'Fee':
-      return { color: colors['primary-default'], textTransform: 'uppercase' };
+      return { color: colors['purple-700'], textTransform: 'uppercase' };
     case 'Amount':
       return value?.includes('-')
         ? {

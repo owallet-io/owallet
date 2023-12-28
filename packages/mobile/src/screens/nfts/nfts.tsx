@@ -122,7 +122,7 @@ const styling = colors =>
       marginBottom: spacing['12']
     },
     containerBtn: {
-      backgroundColor: colors['primary-default'],
+      backgroundColor: colors['purple-700'],
       borderRadius: spacing['8'],
       marginHorizontal: spacing['24'],
       paddingVertical: spacing['16'],

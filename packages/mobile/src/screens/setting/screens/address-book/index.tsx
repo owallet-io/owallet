@@ -178,7 +178,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
               height: 'auto'
             }}
             size="medium"
-            icon={<OWIcon name="add" color={colors['primary-default']} size={16} />}
+            icon={<OWIcon name="add" color={colors['purple-700']} size={16} />}
           />
         </View>
 
@@ -243,7 +243,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
                               },
                               noBtnStyleCustom: {
                                 backgroundColor: colors['gray-10'],
-                                color: colors['primary-default'],
+                                color: colors['purple-700'],
                                 borderColor: 'transparent'
                               },
                               yesBtnStyleCustom: {
