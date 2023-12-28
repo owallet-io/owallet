@@ -1,4 +1,13 @@
-import { View, Text, TouchableOpacityProps, TouchableOpacity, StyleSheet, StyleProp, TextStyle, ViewStyle } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacityProps,
+  TouchableOpacity,
+  StyleSheet,
+  StyleProp,
+  TextStyle,
+  ViewStyle
+} from 'react-native';
 import React, { FunctionComponent } from 'react';
 import { useMapStyles } from './hooks';
 import { LoadingSpinner } from '../spinner';
@@ -7,7 +16,7 @@ import OWText, { OWTextProps } from '../text/ow-text';
 
 export interface IOWButtonProps extends TouchableOpacityProps {
   type?: 'primary' | 'secondary' | 'link' | 'modal' | 'danger';
-  size?: 'medium' | 'small' | 'large';
+  size?: 'medium' | 'small' | 'large' | 'default';
   textVariant?: OWTextProps['variant'];
   textTypo?: OWTextProps['typo'];
   label?: string;
@@ -63,7 +72,11 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
         <>
           {!!icon && icon}
           {!!label && (
-            <OWText variant={textVariant} typo={textTypo} style={[styles.textBtn, !!icon && styles.iconInBtn, styleMapped.text, textStyle]}>
+            <OWText
+              variant={textVariant}
+              typo={textTypo}
+              style={[styles.textBtn, !!icon && styles.iconInBtn, styleMapped.text, textStyle]}
+            >
               {label}
             </OWText>
           )}

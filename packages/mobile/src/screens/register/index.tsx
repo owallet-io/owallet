@@ -64,7 +64,7 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
           </View>
 
           <View>
-            <OWText size={18} weight={'800'} color={colors['nertural-text-title']}>
+            <OWText size={18} weight={'800'} color={colors['neutral-text-title']}>
               OWallet
             </OWText>
           </View>
@@ -79,29 +79,31 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
         </View>
         <View style={styles.containerHeader}>
           <View style={styles.desscription}>
-            <OWText style={styles.label} weight="800" color={colors['nertural-text-title']}>
+            <OWText style={styles.label} weight="800" color={colors['neutral-text-title']}>
               UNIVERSAL
             </OWText>
-            <OWText style={styles.label} weight="800" color={colors['nertural-text-title']}>
+            <OWText style={styles.label} weight="800" color={colors['neutral-text-title']}>
               CRYPTO WALLET
             </OWText>
-            <OWText style={styles.subtitle} variant="body2" typo="regular" color={colors['gray-150']}>
+            <OWText style={styles.subtitle} variant="body2" typo="regular" color={colors['neutral-text-body']}>
               Connecting people to crypto world
             </OWText>
           </View>
         </View>
-        <OWButton style={styles.btnOW} label="Create a new wallet" onPress={handleCreateANewWallet} />
+        <OWButton style={styles.btnOW} size="default" label="Create a new wallet" onPress={handleCreateANewWallet} />
         <OWButton
           style={styles.btnOW}
           label="Import Ledger Nano X"
           onPress={handleImportLedgerNanoX}
           type="secondary"
+          size="default"
         />
         <OWButton
           style={styles.btnOW}
           label="Import from Mnemonic / Private key"
           onPress={handleImportFromMnemonic}
           type="secondary"
+          size="default"
         />
       </ScrollView>
     </View>
@@ -112,7 +114,7 @@ const useStyles = () => {
   const { colors } = useTheme();
   return StyleSheet.create({
     btnOW: {
-      marginBottom: 16,
+      marginBottom: 8,
       borderRadius: 999
     },
     containerUnion: { paddingTop: 20, paddingBottom: 16 },
@@ -139,7 +141,7 @@ const useStyles = () => {
     container: {
       paddingLeft: 42,
       paddingRight: 42,
-      backgroundColor: colors['plain-background'],
+      backgroundColor: colors['neutral-surface-card'],
       height: metrics.screenHeight
     },
     containerCheck: {
