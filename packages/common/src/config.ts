@@ -795,7 +795,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
     features: ['isBtc'],
     txExplorer: {
-      name: 'Blockcypher',
+      name: 'BlockStream',
       txUrl: 'https://blockstream.info/testnet/tx/{txHash}',
       accountUrl: 'https://blockstream.info/testnet/address/{address}'
     }
@@ -837,7 +837,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
 
     features: ['isBtc'],
     txExplorer: {
-      name: 'Bitcoin',
+      name: 'BlockStream',
       txUrl: 'https://blockstream.info/tx/{txHash}',
       accountUrl: 'https://blockstream.info/address/{address}'
     }

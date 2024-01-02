@@ -889,7 +889,8 @@ export class InjectedBitcoin implements Bitcoin {
   }
 
   async signAndBroadcast(chainId: string, data: object): Promise<{ rawTxHex: string }> {
-    return { rawTxHex: '' };
+    return await this.requestMethod('signAndBroadcast', [chainId, data]);
+    // return { rawTxHex: '' };
   }
 }
 
