@@ -123,6 +123,7 @@ const WordsCard: FunctionComponent<{
    */
   const [hideWord, setHideWord] = useState(false);
   const isFocused = useIsFocused();
+  const { colors } = useTheme();
 
   useEffect(() => {
     if (isFocused) {
@@ -140,7 +141,7 @@ const WordsCard: FunctionComponent<{
   return (
     <View style={styles.containerWord}>
       {words.map((word, i) => {
-        return <BackupWordChip key={i.toString()} index={i + 1} word={word} hideWord={hideWord} />;
+        return <BackupWordChip key={i.toString()} index={i + 1} word={word} hideWord={hideWord} colors={colors} />;
       })}
 
       <View style={styles.containerBtnCopy}>

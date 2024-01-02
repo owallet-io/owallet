@@ -272,7 +272,14 @@ const WordsCard: FunctionComponent<{
     >
       {wordSet.map((word, i) => {
         return (
-          <WordChip key={i.toString()} index={i + 1} word={word.word} empty={word.empty} dashedBorder={word.dashed} />
+          <WordChip
+            key={i.toString()}
+            index={i + 1}
+            word={word.word}
+            empty={word.empty}
+            dashedBorder={word.dashed}
+            colors={colors}
+          />
         );
       })}
     </View>

@@ -35,6 +35,7 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
         {
           registerConfig: RegisterConfig;
           words?: string;
+          walletName?: string;
         }
       >,
       string
@@ -47,6 +48,7 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
 
   const registerConfig: RegisterConfig = route.params.registerConfig;
   const words: string = route.params?.words;
+  const walletName: string = route.params?.walletName;
   const bip44Option = useBIP44Option();
 
   const newMnemonicConfig = useNewMnemonicConfig(registerConfig);
@@ -71,9 +73,9 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
     if (isCreating) return;
     setIsCreating(true);
     try {
-      const walletName = `OWallet-${Math.floor(Math.random() * (100 - 1)) + 1}`;
+      const newWalletName = walletName ?? `OWallet-${Math.floor(Math.random() * (100 - 1)) + 1}`;
       await registerConfig.createMnemonic(
-        walletName,
+        newWalletName,
         words ?? newMnemonicConfig.mnemonic,
         newMnemonicConfig.password,
         bip44Option.bip44HDPath
@@ -204,11 +206,6 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
     }
   };
 
-  useEffect(() => {
-    pinRef?.current?.focus();
-    Keyboard.dismiss();
-  }, []);
-
   const handleConfirm = () => {
     if (prevPad === 'numeric') {
       handleCheckConfirm(code);
@@ -292,6 +289,7 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
           {isNumericPad ? (
             <SmoothPinCodeInput
               ref={pinRef}
+              keyboardType={'email-address'}
               value={code}
               codeLength={6}
               cellStyle={{
@@ -349,6 +347,7 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
             </View>
           )}
         </View>
+
         <View style={[styles.rc, styles.switch]}>
           <TouchableOpacity
             style={[styles.switchText, isNumericPad ? styles.switchTextActive : { marginRight: 9 }]}

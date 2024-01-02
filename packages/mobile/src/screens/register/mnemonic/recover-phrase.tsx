@@ -133,7 +133,8 @@ export const RecoverPhraseScreen: FunctionComponent = observer(props => {
 
     smartNavigation.navigateSmart('Register.NewPincode', {
       registerConfig,
-      words: mnemonic
+      words: mnemonic,
+      walletName: getValues('name')
     });
   };
 

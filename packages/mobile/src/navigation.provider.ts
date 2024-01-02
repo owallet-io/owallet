@@ -174,6 +174,7 @@ const { SmartNavigatorProvider, useSmartNavigation } = createSmartNavigatorProvi
     'Register.NewPincode': {
       registerConfig: RegisterConfig;
       words?: string;
+      walletName?: string;
     };
     'Register.VerifyMnemonic': {
       registerConfig: RegisterConfig;

@@ -67,7 +67,7 @@ export const ViewPrivateDataScreen: FunctionComponent = () => {
           >
             {privateDataType === 'mnemonic' ? (
               words.map((word, i) => {
-                return <WordChip key={i.toString()} index={i + 1} word={word} />;
+                return <WordChip key={i.toString()} index={i + 1} word={word} colors={colors} />;
               })
             ) : (
               <Text

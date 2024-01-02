@@ -1,17 +1,16 @@
 import React, { FunctionComponent } from 'react';
 import { View } from 'react-native';
-import { colors } from '../../themes';
 import { Text } from '@src/components/text';
 
 export const WordChip: FunctionComponent<{
   index: number;
   word: string;
-
+  colors: any;
   hideWord?: boolean;
 
   empty?: boolean;
   dashedBorder?: boolean;
-}> = ({ index, word, hideWord, empty, dashedBorder }) => {
+}> = ({ index, word, hideWord, empty, colors, dashedBorder }) => {
   return (
     <View
       style={{
@@ -41,12 +40,11 @@ export const WordChip: FunctionComponent<{
 export const BackupWordChip: FunctionComponent<{
   index: number;
   word: string;
-
   hideWord?: boolean;
-
+  colors: any;
   empty?: boolean;
   dashedBorder?: boolean;
-}> = ({ index, word, hideWord, empty, dashedBorder }) => {
+}> = ({ index, word, hideWord, empty, colors }) => {
   return (
     <View
       style={{
