@@ -1,5 +1,6 @@
 import React, { FunctionComponent, useCallback, useEffect, useRef, useState } from 'react';
 import {
+  ActivityIndicator,
   Alert,
   AppState,
   AppStateStatus,
@@ -420,159 +421,176 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
     </View>
   ) : (
     <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
-      <View />
-      <View style={styles.aic}>
-        <OWText variant="heading" color={colors['nertral-text-title']} typo="bold">
-          Enter your passcode
-        </OWText>
+      {isLoading || isBiometricLoading ? (
         <View
           style={{
-            paddingLeft: 20,
-            paddingRight: 20,
-            paddingTop: 32
+            backgroundColor: colors['neutral-surface-bg'],
+            width: metrics.screenWidth,
+            height: metrics.screenHeight,
+            opacity: 0.8,
+            position: 'absolute',
+            zIndex: 999,
+            justifyContent: 'center',
+            alignItems: 'center'
           }}
         >
-          {isNumericPad ? (
-            <SmoothPinCodeInput
-              ref={pinRef}
-              value={code}
-              codeLength={6}
-              cellStyle={{
-                borderWidth: 0
-              }}
-              cellStyleFocused={{
-                borderColor: colors['neutral-surface-action']
-              }}
-              placeholder={
-                <View
-                  style={{
-                    width: 24,
-                    height: 24,
-                    borderRadius: 48,
-                    backgroundColor: colors['neutral-surface-action']
-                  }}
-                />
-              }
-              mask={
-                <View
-                  style={{
-                    width: 24,
-                    height: 24,
-                    borderRadius: 48,
-                    opacity: 0.7,
-                    backgroundColor: colors['hightlight-surface-active']
-                  }}
-                />
-              }
-              maskDelay={1000}
-              password={true}
-              //   onFulfill={}
-              onBackspace={code => console.log(code)}
-            />
-          ) : (
-            <View
-              style={{
-                width: metrics.screenWidth,
-                paddingHorizontal: 16
-              }}
-            >
-              <TextInput
-                accessibilityLabel="password"
-                returnKeyType="done"
-                secureTextEntry={statusPass}
-                value={password}
-                error={isFailed ? 'Invalid password' : undefined}
-                onChangeText={txt => {
-                  setPassword(txt);
+          <ActivityIndicator size={'large'} />
+        </View>
+      ) : null}
+      <View>
+        <View style={styles.aic}>
+          <OWText variant="heading" color={colors['nertral-text-title']} typo="bold">
+            Enter your passcode
+          </OWText>
+          <View
+            style={{
+              paddingLeft: 20,
+              paddingRight: 20,
+              paddingTop: 32
+            }}
+          >
+            {isNumericPad ? (
+              <SmoothPinCodeInput
+                ref={pinRef}
+                value={code}
+                codeLength={6}
+                cellStyle={{
+                  borderWidth: 0
                 }}
-                inputContainerStyle={{
-                  width: metrics.screenWidth - 32,
-                  borderWidth: 2,
-                  borderColor: colors['primary-surface-default'],
-                  borderRadius: 8,
-                  minHeight: 56,
-                  alignItems: 'center',
-                  justifyContent: 'center'
+                cellStyleFocused={{
+                  borderColor: colors['neutral-surface-action']
                 }}
-                onSubmitEditing={tryUnlock}
-                placeholder="Enter your passcode"
-                inputRight={
-                  <OWButtonIcon
-                    style={styles.padIcon}
-                    onPress={showPass}
-                    name={statusPass ? 'eye' : 'eye-slash'}
-                    colorIcon={colors['neutral-text-title']}
-                    sizeIcon={22}
+                placeholder={
+                  <View
+                    style={{
+                      width: 24,
+                      height: 24,
+                      borderRadius: 48,
+                      backgroundColor: colors['neutral-surface-action']
+                    }}
                   />
                 }
+                mask={
+                  <View
+                    style={{
+                      width: 24,
+                      height: 24,
+                      borderRadius: 48,
+                      opacity: 0.7,
+                      backgroundColor: colors['hightlight-surface-active']
+                    }}
+                  />
+                }
+                maskDelay={1000}
+                password={true}
+                //   onFulfill={}
+                onBackspace={code => console.log(code)}
+              />
+            ) : (
+              <View
+                style={{
+                  width: metrics.screenWidth,
+                  paddingHorizontal: 16
+                }}
+              >
+                <TextInput
+                  accessibilityLabel="password"
+                  returnKeyType="done"
+                  secureTextEntry={statusPass}
+                  value={password}
+                  error={isFailed ? 'Invalid password' : undefined}
+                  onChangeText={txt => {
+                    setPassword(txt);
+                  }}
+                  inputContainerStyle={{
+                    width: metrics.screenWidth - 32,
+                    borderWidth: 2,
+                    borderColor: colors['primary-surface-default'],
+                    borderRadius: 8,
+                    minHeight: 56,
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                  onSubmitEditing={tryUnlock}
+                  placeholder="Enter your passcode"
+                  inputRight={
+                    <OWButtonIcon
+                      style={styles.padIcon}
+                      onPress={showPass}
+                      name={statusPass ? 'eye' : 'eye-slash'}
+                      colorIcon={colors['neutral-text-title']}
+                      sizeIcon={22}
+                    />
+                  }
+                />
+              </View>
+            )}
+          </View>
+          <View style={[styles.rc, styles.switch]}>
+            <TouchableOpacity
+              style={[styles.switchText, isNumericPad ? styles.switchTextActive : { marginRight: 9 }]}
+              onPress={() => onSwitchPad('numeric')}
+            >
+              <OWText color={colors['neutral-text-action-on-light-bg']} weight="500" size={16}>
+                123
+              </OWText>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.switchText, !isNumericPad ? styles.switchTextActive : { marginLeft: 9 }]}
+              onPress={() => onSwitchPad('alphabet')}
+            >
+              <OWText weight="500" size={16}>
+                Aa
+              </OWText>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <View style={styles.aic}>
+          {keychainStore.isBiometryOn && (
+            <TouchableOpacity onPress={() => tryBiometric()}>
+              <View style={styles.rc}>
+                <OWIcon size={14} name="face" color={colors['purple-900']} />
+                <OWText style={{ paddingLeft: 8 }} variant="h2" weight="600" size={14} color={colors['purple-900']}>
+                  Sign in with Biometrics
+                </OWText>
+              </View>
+            </TouchableOpacity>
+          )}
+          {isNumericPad ? (
+            <NumericPad
+              ref={numpadRef}
+              numLength={6}
+              buttonSize={60}
+              activeOpacity={0.1}
+              onValueChange={value => {
+                setCode(value);
+              }}
+              allowDecimal={false}
+              buttonItemStyle={styles.buttonItemStyle}
+              buttonTextStyle={styles.buttonTextStyle}
+              //@ts-ignore
+              rightBottomButton={<OWIcon size={30} color={colors['neutral-text-title']} name="backspace-outline" />}
+              onRightBottomButtonPress={() => {
+                numpadRef.current.clear();
+              }}
+            />
+          ) : (
+            <View style={styles.signIn}>
+              <OWButton
+                style={{
+                  borderRadius: 32
+                }}
+                label="Continue"
+                disabled={isLoading || !password}
+                onPress={() => {
+                  tryUnlock();
+                }}
+                loading={isLoading || isBiometricLoading}
               />
             </View>
           )}
         </View>
-        <View style={[styles.rc, styles.switch]}>
-          <TouchableOpacity
-            style={[styles.switchText, isNumericPad ? styles.switchTextActive : { marginRight: 9 }]}
-            onPress={() => onSwitchPad('numeric')}
-          >
-            <OWText color={colors['neutral-text-action-on-light-bg']} weight="500" size={16}>
-              123
-            </OWText>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.switchText, !isNumericPad ? styles.switchTextActive : { marginLeft: 9 }]}
-            onPress={() => onSwitchPad('alphabet')}
-          >
-            <OWText weight="500" size={16}>
-              Aa
-            </OWText>
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      <View style={styles.aic}>
-        {keychainStore.isBiometryOn && (
-          <TouchableOpacity onPress={() => tryBiometric()}>
-            <View style={styles.rc}>
-              <OWIcon size={14} name="face" color={colors['purple-900']} />
-              <OWText style={{ paddingLeft: 8 }} variant="h2" weight="600" size={14} color={colors['purple-900']}>
-                Sign in with Biometrics
-              </OWText>
-            </View>
-          </TouchableOpacity>
-        )}
-        {isNumericPad ? (
-          <NumericPad
-            ref={numpadRef}
-            numLength={6}
-            buttonSize={60}
-            activeOpacity={0.1}
-            onValueChange={value => {
-              setCode(value);
-            }}
-            allowDecimal={false}
-            buttonItemStyle={styles.buttonItemStyle}
-            buttonTextStyle={styles.buttonTextStyle}
-            //@ts-ignore
-            rightBottomButton={<OWIcon size={30} color={colors['neutral-text-title']} name="backspace-outline" />}
-            onRightBottomButtonPress={() => {
-              numpadRef.current.clear();
-            }}
-          />
-        ) : (
-          <View style={styles.signIn}>
-            <OWButton
-              style={{
-                borderRadius: 32
-              }}
-              label="Continue"
-              disabled={isLoading || !password}
-              onPress={() => {
-                tryUnlock();
-              }}
-              loading={isLoading || isBiometricLoading}
-            />
-          </View>
-        )}
       </View>
     </KeyboardAvoidingView>
   );
