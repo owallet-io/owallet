@@ -398,7 +398,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   };
 
   const handleSubmit = async () => {
-    // account.handleUniversalSwap(chainId, { key: 'value' });
     if (fromAmountToken <= 0) {
       showToast({
         message: 'From amount should be higher than 0!',
