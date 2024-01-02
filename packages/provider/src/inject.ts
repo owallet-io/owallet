@@ -710,9 +710,9 @@ export class InjectedBitcoin implements Bitcoin {
       //TO DO: this version got from packages/mobile/package.json
       const isReactNative = owallet.version.includes('mobile');
       // TO DO: Check type proxy for duplicate popup sign with keplr wallet on extension
-      const typeProxy: any = !isReactNative ? `${NAMESPACE}-proxy-request` : 'proxy-request';
+      const typeProxy: any = !isReactNative ? `${NAMESPACE_BITCOIN}-proxy-request` : 'proxy-request';
       // filter proxy-request by namespace
-      if (!message || message.type !== typeProxy || message.namespace !== NAMESPACE) {
+      if (!message || message.type !== typeProxy || message.namespace !== NAMESPACE_BITCOIN) {
         return;
       }
 
@@ -781,7 +781,7 @@ export class InjectedBitcoin implements Bitcoin {
 
         const proxyResponse: ProxyRequestResponse = {
           type: 'proxy-request-response',
-          namespace: NAMESPACE,
+          namespace: NAMESPACE_BITCOIN,
           id: message.id,
           result: {
             return: JSONUint8Array.wrap(result)
@@ -792,7 +792,7 @@ export class InjectedBitcoin implements Bitcoin {
       } catch (e) {
         const proxyResponse: ProxyRequestResponse = {
           type: 'proxy-request-response',
-          namespace: NAMESPACE,
+          namespace: NAMESPACE_BITCOIN,
           id: message.id,
           result: {
             error: e.message || e.toString()
@@ -813,10 +813,10 @@ export class InjectedBitcoin implements Bitcoin {
       .join('');
 
     // TO DO: Mode 'extension' got from params InjectOwallet extension
-    const typeProxy: any = this.mode === 'extension' ? `${NAMESPACE}-proxy-request` : 'proxy-request';
+    const typeProxy: any = this.mode === 'extension' ? `${NAMESPACE_BITCOIN}-proxy-request` : 'proxy-request';
     const proxyMessage: ProxyRequest = {
       type: typeProxy,
-      namespace: NAMESPACE,
+      namespace: NAMESPACE_BITCOIN,
       id,
       method,
       args: JSONUint8Array.wrap(args)
