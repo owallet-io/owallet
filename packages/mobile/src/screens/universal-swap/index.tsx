@@ -409,7 +409,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setSwapLoading(true);
     try {
       const cosmosWallet = new SwapCosmosWallet(client);
-      const cosmosAddress = accounts[originalFromToken.chainId];
+      const cosmosAddress = originalFromToken.cosmosBased
+        ? accounts[originalFromToken.chainId]
+        : accountOrai.bech32Address;
 
       const isTron = Number(originalFromToken.chainId) === Networks.tron;
 
