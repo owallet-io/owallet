@@ -81,8 +81,6 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
         bip44Option.bip44HDPath
       );
 
-      appInitStore.updateKeyboardType(prevPad);
-
       navigation.reset({
         index: 0,
         routes: [
@@ -137,10 +135,12 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
     setCode('');
     numpadRef?.current?.clearAll();
     setPrevPad('numeric');
+    appInitStore.updateKeyboardType('numeric');
   };
 
   const handleContinue = () => {
-    setPrevPad('alphabet');
+    setPrevPad('numeric');
+    appInitStore.updateKeyboardType('numeric');
     if (password.length >= 6) {
       if (!confirmCode) {
         setConfirmCode(password);
@@ -285,7 +285,7 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
           <ActivityIndicator size={'large'} />
         </View>
       ) : null}
-      <View>
+      <View style={styles.container}>
         <TouchableOpacity style={styles.goBack} onPress={onGoBack}>
           <OWIcon size={16} color={colors['neutral-icon-on-light']} name="arrow-left" />
         </TouchableOpacity>

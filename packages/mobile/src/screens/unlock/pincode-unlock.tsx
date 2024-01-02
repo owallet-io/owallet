@@ -437,7 +437,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
           <ActivityIndicator size={'large'} />
         </View>
       ) : null}
-      <View>
+      <View style={styles.container}>
         <View style={styles.aic}>
           <OWText variant="heading" color={colors['nertral-text-title']} typo="bold">
             Enter your passcode
