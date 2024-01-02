@@ -55,11 +55,20 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const chainInfo = chainStore.getChain(ChainIdEnum.Oraichain);
 
-  const accountEvm = accountStore.getAccount(ChainIdEnum.Ethereum);
-  const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
+  let accounts = {};
+
+  Object.keys(ChainIdEnum).map(key => {
+    let defaultAddress = accountStore.getAccount(ChainIdEnum[key]).bech32Address;
+    if (ChainIdEnum[key] === ChainIdEnum.TRON) {
+      accounts[ChainIdEnum[key]] = getBase58Address(accountStore.getAccount(ChainIdEnum[key]).evmosHexAddress);
+    } else if (defaultAddress.startsWith('evmos')) {
+      accounts[ChainIdEnum[key]] = accountStore.getAccount(ChainIdEnum[key]).evmosHexAddress;
+    } else {
+      accounts[ChainIdEnum[key]] = defaultAddress;
+    }
+  });
+
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
-  const accountCosmos = accountStore.getAccount(ChainIdEnum.CosmosHub);
-  const accountOsmo = accountStore.getAccount(ChainIdEnum.Osmosis);
 
   const [isSlippageModal, setIsSlippageModal] = useState(false);
   const [minimumReceive, setMininumReceive] = useState(0);
@@ -181,17 +190,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     );
   }, [originalToToken, fromToken, toToken, originalToToken, client]);
 
-  // const [[fromTokenInfoData, toTokenInfoData], setTokenInfoData] = useState<TokenItemType[]>([]);
-
-  // const getTokenInfos = async () => {
-  //   const data = await fetchTokenInfos([fromToken!, toToken!], client);
-  //   setTokenInfoData(data);
-  // };
-
-  // useEffect(() => {
-  //   getTokenInfos();
-  // }, [toTokenDenom, fromTokenDenom, client]);
-
   const {
     data: [fromTokenInfoData, toTokenInfoData]
   } = useQuery({
@@ -233,16 +231,16 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       };
       loadTokenParams = {
         ...loadTokenParams,
-        metamaskAddress: accountEvm.evmosHexAddress
+        metamaskAddress: accounts[ChainIdEnum.Ethereum]
       };
       loadTokenParams = {
         ...loadTokenParams,
         kwtAddress: accountOrai.bech32Address
       };
-      if (accountTron) {
+      if (accounts[ChainIdEnum.TRON]) {
         loadTokenParams = {
           ...loadTokenParams,
-          tronAddress: getBase58Address(accountTron.evmosHexAddress)
+          tronAddress: accounts[ChainIdEnum.TRON]
         };
       }
 
@@ -412,12 +410,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setSwapLoading(true);
     try {
       const cosmosWallet = new SwapCosmosWallet(client);
-      const cosmosAddress =
-        originalFromToken.chainId === ChainIdEnum.Osmosis
-          ? accountOsmo.bech32Address
-          : originalFromToken.chainId === ChainIdEnum.CosmosHub
-          ? accountCosmos.bech32Address
-          : accountOrai.bech32Address;
+      const cosmosAddress = accounts[originalFromToken.chainId];
 
       const isTron = Number(originalFromToken.chainId) === Networks.tron;
 
@@ -431,8 +424,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       const universalSwapData: UniversalSwapData = {
         sender: {
           cosmos: cosmosAddress,
-          evm: accountEvm.evmosHexAddress,
-          tron: getBase58Address(accountTron.evmosHexAddress)
+          evm: accounts[ChainIdEnum.Ethereum],
+          tron: accounts[ChainIdEnum.TRON]
         },
         originalFromToken: originalFromToken,
         originalToToken: originalToToken,
