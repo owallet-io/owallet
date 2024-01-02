@@ -269,6 +269,22 @@ export const NewPincodeScreen: FunctionComponent = observer(props => {
     <LoadingWalletScreen mode={mode} />
   ) : (
     <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
+      {isCreating ? (
+        <View
+          style={{
+            backgroundColor: colors['neutral-surface-bg'],
+            width: metrics.screenWidth,
+            height: metrics.screenHeight,
+            opacity: 0.8,
+            position: 'absolute',
+            zIndex: 999,
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+        >
+          <ActivityIndicator size={'large'} />
+        </View>
+      ) : null}
       <View>
         <TouchableOpacity style={styles.goBack} onPress={onGoBack}>
           <OWIcon size={16} color={colors['neutral-icon-on-light']} name="arrow-left" />
