@@ -193,7 +193,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const {
     data: [fromTokenInfoData, toTokenInfoData]
   } = useQuery({
-    queryKey: ['token-infos', fromToken, toToken, client],
+    queryKey: ['token-infos', fromToken, toToken],
     queryFn: () => fetchTokenInfos([fromToken!, toToken!], client),
     ...{
       initialData: []
