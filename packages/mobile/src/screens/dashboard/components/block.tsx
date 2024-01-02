@@ -25,7 +25,7 @@ export const BlockCard: FunctionComponent<{
   const { data: res } = useQuery({
     queryKey: ['chart-dashboard', chainStore.current.stakeCurrency.coinGeckoId],
     queryFn: () =>
-      API.getMarketChartRange(
+      API.getCoinInfo(
         {
           id: chainStore.current.stakeCurrency.coinGeckoId
         },
@@ -37,7 +37,7 @@ export const BlockCard: FunctionComponent<{
   });
 
   useEffect(() => {
-    if (res?.status === 200 && typeof res?.data === 'object' && res.data.length > 0) {
+    if (res?.status === 200 && typeof res?.data === 'object') {
       setData(res.data?.[0]);
     }
   }, [res]);

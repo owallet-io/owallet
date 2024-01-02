@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useCallback, useEffect, useRef, useState } from 'react';
-import { View, StyleSheet, KeyboardAvoidingView, TouchableOpacity, Keyboard, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, KeyboardAvoidingView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { useTheme } from '@src/themes/theme-provider';
