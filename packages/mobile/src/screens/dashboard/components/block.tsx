@@ -1,6 +1,6 @@
-import React, { FunctionComponent, useState } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { Card, OWBox } from '../../../components/card';
+import { OWBox } from '../../../components/card';
 import { Text } from '@src/components/text';
 import { View, ViewStyle, StyleSheet } from 'react-native';
 import { spacing } from '../../../themes';
@@ -11,30 +11,36 @@ import { API } from '../../../common/api';
 import { numberWithCommas } from '../../../utils/helper';
 import moment from 'moment';
 import { useTheme } from '@src/themes/theme-provider';
+import { useQuery } from '@tanstack/react-query';
 
 export const BlockCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({}) => {
   const { chainStore } = useStore();
   const { colors } = useTheme();
-  const styles = styling(colors);
+  const styles = styling();
 
   const [data, setData] = useState(null);
 
-  React.useEffect(() => {
-    API.getCoinInfo(
-      {
-        id: chainStore.current.stakeCurrency.coinGeckoId
-      },
-      { baseURL: 'https://api.coingecko.com/api/v3' }
-    )
-      .then((res) => {
-        setData(res?.data?.[0]);
-      })
-      .catch((ex) => {
-        console.log('exception querying coinGecko', ex);
-      });
-  }, [chainStore.current.chainId]);
+  const { data: res } = useQuery({
+    queryKey: ['chart-dashboard', chainStore.current.stakeCurrency.coinGeckoId],
+    queryFn: () =>
+      API.getMarketChartRange(
+        {
+          id: chainStore.current.stakeCurrency.coinGeckoId
+        },
+        { baseURL: 'https://api.coingecko.com/api/v3' }
+      ),
+    ...{
+      initialData: null
+    }
+  });
+
+  useEffect(() => {
+    if (res?.status === 200 && typeof res?.data === 'object' && res.data.length > 0) {
+      setData(res.data?.[0]);
+    }
+  }, [res]);
 
   const renderBlockInfo = (title, value, sub, color, isBottom) => {
     return (
@@ -131,10 +137,7 @@ export const BlockCard: FunctionComponent<{
                     styles.blockSub,
                     {
                       lineHeight: 20,
-                      color:
-                        data?.market_cap_change_percentage_24h > 0
-                          ? colors['green-500']
-                          : colors['danger-300']
+                      color: data?.market_cap_change_percentage_24h > 0 ? colors['green-500'] : colors['danger-300']
                     }
                   ]}
                 >
@@ -150,9 +153,7 @@ export const BlockCard: FunctionComponent<{
                 alignItems: 'center'
               }}
             >
-              <Text style={[styles.blockSub, { lineHeight: 20 }]}>
-                Market Cap
-              </Text>
+              <Text style={[styles.blockSub, { lineHeight: 20 }]}>Market Cap</Text>
               <Text
                 style={{
                   fontWeight: '700',
@@ -170,9 +171,7 @@ export const BlockCard: FunctionComponent<{
                 alignItems: 'center'
               }}
             >
-              <Text style={[styles.blockSub, { lineHeight: 20 }]}>
-                Trading Vol
-              </Text>
+              <Text style={[styles.blockSub, { lineHeight: 20 }]}>Trading Vol</Text>
               <Text
                 style={{
                   fontWeight: '700',

@@ -13,6 +13,7 @@ import { useStore } from '../../stores';
 import { metrics, spacing } from '../../themes';
 import { nFormatter } from '../../utils/helper';
 import { colorsCode } from '@src/themes/mode-colors';
+import { useQuery } from '@tanstack/react-query';
 
 const DATA_COUNT_DENOM = 4;
 const transformData = data => {
@@ -85,7 +86,7 @@ export const DashboardCard: FunctionComponent<{
 
   const [active, setActive] = useState('price');
   const [chartSuffix, setChartSuffix] = useState('');
-  const [isNetworkError, setNetworkError] = useState(false);
+  const [isNetworkError, setNetworkError] = useState(true);
   const { chainStore } = useStore();
   const [data, setData] = useState({
     labels: ['12:00'],
@@ -113,25 +114,27 @@ export const DashboardCard: FunctionComponent<{
 
   const smartNavigation = useSmartNavigation();
 
-  React.useEffect(() => {
-    API.getMarketChartRange(
-      {
-        id: chainStore.current.stakeCurrency.coinGeckoId
-      },
-      { baseURL: 'https://api.coingecko.com/api/v3' }
-    )
-      .then(res => {
-        if (typeof res.data === 'object') {
-          setNetworkError(false);
-          setData(formatData(transformData(res?.data?.prices)));
-          setDataVolumes(formatData(transformData(res?.data?.total_volumes)));
-        }
-      })
-      .catch(ex => {
-        setNetworkError(true);
-        console.log('exception querying coinGecko', ex);
-      });
-  }, [chainStore.current.chainId]);
+  const { data: res } = useQuery({
+    queryKey: ['chart-range', chainStore.current.stakeCurrency.coinGeckoId],
+    queryFn: () =>
+      API.getMarketChartRange(
+        {
+          id: chainStore.current.stakeCurrency.coinGeckoId
+        },
+        { baseURL: 'https://api.coingecko.com/api/v3' }
+      ),
+    ...{
+      initialData: null
+    }
+  });
+
+  useEffect(() => {
+    if (res?.status === 200 && typeof res?.data === 'object') {
+      setNetworkError(false);
+      setData(formatData(transformData(res.data?.prices)));
+      setDataVolumes(formatData(transformData(res.data?.total_volumes)));
+    }
+  }, [res]);
 
   const handleChartState = type => {
     setActive(type);
