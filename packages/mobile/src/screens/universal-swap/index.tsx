@@ -88,8 +88,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const client = useClient(accountOrai);
 
-  console.log('client', client);
-
   const relayerFee = useRelayerFee(accountOrai);
   const taxRate = useTaxRate(accountOrai);
 
@@ -420,8 +418,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           : originalFromToken.chainId === ChainIdEnum.CosmosHub
           ? accountCosmos.bech32Address
           : accountOrai.bech32Address;
-
-      console.log('cosmosAddress', cosmosAddress, originalFromToken);
 
       const isTron = Number(originalFromToken.chainId) === Networks.tron;
 
