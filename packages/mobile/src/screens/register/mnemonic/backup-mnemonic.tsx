@@ -48,13 +48,13 @@ export const BackupMnemonicScreen: FunctionComponent = observer(props => {
     <View style={styles.container}>
       <View>
         <TouchableOpacity onPress={onGoBack} style={styles.goBack}>
-          <OWIcon size={16} name="arrow-left" />
+          <OWIcon size={16} color={colors['neutral-icon-on-light']} name="arrow-left" />
         </TouchableOpacity>
         <View style={[styles.aic, styles.title]}>
-          <OWText variant="h2" typo="bold">
+          <OWText variant="heading" style={{ textAlign: 'center' }} typo="bold">
             Secure your wallet
           </OWText>
-          <OWText color={colors['text-body']} weight={'500'} style={{ textAlign: 'center', paddingTop: 4 }}>
+          <OWText color={colors['neutral-text-body']} weight={'500'} style={{ textAlign: 'center', paddingTop: 4 }}>
             Write down this recovery phrase in the exact order and keep it in a safe place
           </OWText>
           <View
@@ -68,7 +68,7 @@ export const BackupMnemonicScreen: FunctionComponent = observer(props => {
             <WordsCard words={words} />
           ) : (
             <View style={styles.containerWord}>
-              <OWText color={colors['text-body']} weight={'500'} style={{ textAlign: 'center', paddingTop: 4 }}>
+              <OWText color={colors['neutral-text-body']} weight={'500'} style={{ textAlign: 'center', paddingTop: 4 }}>
                 {words}
               </OWText>
             </View>
@@ -80,8 +80,14 @@ export const BackupMnemonicScreen: FunctionComponent = observer(props => {
             }}
           >
             <View style={styles.rc}>
-              {isTimedOut ? <CheckIcon /> : <CopyFillIcon color={colors['purple-900']} />}
-              <OWText style={{ paddingLeft: 8 }} variant="h2" weight="600" size={14} color={colors['purple-900']}>
+              {isTimedOut ? <CheckIcon /> : <CopyFillIcon color={colors['primary-text-action']} />}
+              <OWText
+                style={{ paddingLeft: 8 }}
+                variant="h2"
+                weight="600"
+                size={14}
+                color={colors['primary-text-action']}
+              >
                 Copy to clipboard
               </OWText>
             </View>
@@ -177,16 +183,16 @@ const useStyles = () => {
     container: {
       paddingTop: metrics.screenHeight / 14,
       justifyContent: 'space-between',
-      height: '100%'
+      height: '100%',
+      backgroundColor: colors['neutral-surface-card']
     },
     signIn: {
       width: '100%',
       alignItems: 'center',
       borderTopWidth: 1,
-      borderTopColor: colors['gray-300'],
+      borderTopColor: colors['neutral-border-default'],
       padding: 16
     },
-
     aic: {
       alignItems: 'center',
       paddingBottom: 20
@@ -195,18 +201,18 @@ const useStyles = () => {
       flexDirection: 'row',
       alignItems: 'center'
     },
+    title: {
+      paddingHorizontal: 16,
+      paddingTop: 24
+    },
     goBack: {
-      backgroundColor: colors['background-light-gray'],
+      backgroundColor: colors['neutral-surface-action3'],
       borderRadius: 999,
       width: 44,
       height: 44,
       alignItems: 'center',
       justifyContent: 'center',
       marginLeft: 16
-    },
-    title: {
-      paddingHorizontal: 16,
-      paddingTop: 24
     }
   });
 };

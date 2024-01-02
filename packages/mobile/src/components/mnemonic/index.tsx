@@ -52,7 +52,7 @@ export const BackupWordChip: FunctionComponent<{
       style={{
         borderRadius: 999,
         margin: 5,
-        backgroundColor: colors['background-light-gray'],
+        backgroundColor: colors['neutral-surface-action3'],
         justifyContent: 'center',
         flexDirection: 'row',
         alignItems: 'center',
@@ -64,7 +64,7 @@ export const BackupWordChip: FunctionComponent<{
           borderRadius: 999,
           width: 20,
           height: 20,
-          backgroundColor: colors['primary-subtitle'],
+          backgroundColor: colors['primary-surface-subtle'],
           justifyContent: 'center',
           alignItems: 'center'
         }}
@@ -74,7 +74,7 @@ export const BackupWordChip: FunctionComponent<{
             fontSize: 12,
             fontWeight: '600',
             padding: 4,
-            color: empty ? colors['primary-100'] : colors['primary-surface-default']
+            color: empty ? colors['primary-surface-default'] : colors['primary-surface-default']
           }}
         >
           {index}
@@ -87,7 +87,8 @@ export const BackupWordChip: FunctionComponent<{
           fontWeight: '500',
           padding: 4,
           paddingHorizontal: 6,
-          opacity: 1
+          opacity: 1,
+          color: empty ? colors['primary-surface-default'] : colors['neutral-text-title']
         }}
       >
         {empty ? `         ` : `${word}`}
