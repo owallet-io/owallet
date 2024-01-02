@@ -9,9 +9,9 @@ import { ActivityIcon, ClockIcon } from '../../../components/icon';
 import FastImage from 'react-native-fast-image';
 import { API } from '../../../common/api';
 import { numberWithCommas } from '../../../utils/helper';
-import moment from 'moment';
 import { useTheme } from '@src/themes/theme-provider';
 import { useQuery } from '@tanstack/react-query';
+import moment from 'moment';
 
 export const BlockCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -187,21 +187,21 @@ export const BlockCard: FunctionComponent<{
         {renderBlockInfo(
           '24h Low / 24h High',
           `$${data?.low_24h ?? 0} / $${data?.high_24h ?? 0}`,
-          moment(data?.last_updated).fromNow(),
+          `Date updated: ${moment(data?.last_updated).format('hh:mm DD/MM/YY')}`,
           colors['profile-green'],
           false
         )}
         {renderBlockInfo(
           'Total Volume',
           '$' + numberWithCommas(data?.total_volume ?? 0),
-          moment(data?.last_updated).fromNow(),
+          `Date updated: ${moment(data?.last_updated).format('hh:mm DD/MM/YY')}`,
           colors['purple-400'],
           false
         )}
         {renderBlockInfo(
           'Market Cap Rank',
           `#${data?.market_cap_rank ?? 0}`,
-          moment(data?.last_updated).fromNow(),
+          `Date updated: ${moment(data?.last_updated).format('hh:mm DD/MM/YY')}`,
           colors['blue-300'],
           true
         )}
