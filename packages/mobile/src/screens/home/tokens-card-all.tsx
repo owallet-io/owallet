@@ -3,7 +3,7 @@ import { OWEmpty } from '@src/components/empty';
 import { Text } from '@src/components/text';
 import { useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
-import React, { FunctionComponent, useState } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { TouchableOpacity } from 'react-native';
 import { CardBody, OWBox } from '../../components/card';
@@ -11,20 +11,86 @@ import ProgressiveImage from '../../components/progessive-image';
 import { useSmartNavigation } from '../../navigation.provider';
 import { useStore } from '../../stores';
 import { metrics, spacing, typography } from '../../themes';
-import { capitalizedText, _keyExtract } from '../../utils/helper';
+import { capitalizedText, showToast, _keyExtract } from '../../utils/helper';
 import { TokenItem } from '../tokens/components/token-item';
 import { SoulboundNftInfoResponse } from './types';
 import { useSoulbound } from '../nfts/hooks/useSoulboundNft';
 import OWFlatList from '@src/components/page/ow-flat-list';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+import { ChainIdEnum, getBase58Address } from '@owallet/common';
+import { useLoadTokens } from '@owallet/hooks';
+import { oraichainNetwork } from '@oraichain/oraidex-common';
 
-export const TokensCard: FunctionComponent<{
+export const TokensCardAll: FunctionComponent<{
   containerStyle?: ViewStyle;
-  refreshDate: number;
-}> = observer(({ containerStyle, refreshDate }) => {
-  const { chainStore, queriesStore, accountStore, priceStore, keyRingStore } = useStore();
+}> = observer(({ containerStyle }) => {
+  const { chainStore, queriesStore, accountStore, priceStore, keyRingStore, universalSwapStore } = useStore();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const { colors } = useTheme();
+
+  let accounts = {};
+
+  Object.keys(ChainIdEnum).map(key => {
+    let defaultAddress = accountStore.getAccount(ChainIdEnum[key]).bech32Address;
+    if (ChainIdEnum[key] === ChainIdEnum.TRON) {
+      accounts[ChainIdEnum[key]] = getBase58Address(accountStore.getAccount(ChainIdEnum[key]).evmosHexAddress);
+    } else if (defaultAddress.startsWith('evmos')) {
+      accounts[ChainIdEnum[key]] = accountStore.getAccount(ChainIdEnum[key]).evmosHexAddress;
+    } else {
+      accounts[ChainIdEnum[key]] = defaultAddress;
+    }
+  });
+
+  const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
+
+  const loadTokenAmounts = useLoadTokens(universalSwapStore);
+  // handle fetch all tokens of all chains
+  const handleFetchAmounts = async () => {
+    let loadTokenParams = {};
+    try {
+      const cwStargate = {
+        account: accountOrai,
+        chainId: ChainIdEnum.Oraichain,
+        rpc: oraichainNetwork.rpc
+      };
+
+      loadTokenParams = {
+        ...loadTokenParams,
+        oraiAddress: accountOrai.bech32Address,
+        cwStargate
+      };
+      loadTokenParams = {
+        ...loadTokenParams,
+        metamaskAddress: accounts[ChainIdEnum.Ethereum]
+      };
+      loadTokenParams = {
+        ...loadTokenParams,
+        kwtAddress: accountOrai.bech32Address
+      };
+      if (accounts[ChainIdEnum.TRON]) {
+        loadTokenParams = {
+          ...loadTokenParams,
+          tronAddress: accounts[ChainIdEnum.TRON]
+        };
+      }
+
+      loadTokenAmounts(loadTokenParams);
+    } catch (error) {
+      console.log('error loadTokenAmounts', error);
+      showToast({
+        message: error?.message ?? error?.ex?.message,
+        type: 'danger'
+      });
+    }
+  };
+
+  useEffect(() => {
+    setTimeout(() => {
+      handleFetchAmounts();
+    }, 2000);
+  }, []);
+
+  console.log('universalSwapStore', universalSwapStore.getAmount);
 
   const styles = styling(colors);
   const smartNavigation = useSmartNavigation();

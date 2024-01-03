@@ -19,7 +19,7 @@ export const NetworkModal = () => {
   const { colors } = useTheme();
 
   const bip44Option = useBIP44Option();
-  const { modalStore, chainStore, keyRingStore, accountStore } = useStore();
+  const { modalStore, chainStore, keyRingStore, accountStore, appInitStore } = useStore();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const styles = styling(colors);
@@ -72,9 +72,9 @@ export const NetworkModal = () => {
         if (!item.isAll) {
           chainStore.selectChain(item?.chainId);
           await chainStore.saveLastViewChainId();
-          chainStore.selectAllNetworks(false);
+          appInitStore.selectAllNetworks(false);
         } else {
-          chainStore.selectAllNetworks(true);
+          appInitStore.selectAllNetworks(true);
         }
 
         modalStore.close();
@@ -89,10 +89,10 @@ export const NetworkModal = () => {
 
   const _renderItem = ({ item }) => {
     let isSelectedColor =
-      item?.chainId === chainStore.current.chainId && !chainStore.isAll
+      item?.chainId === chainStore.current.chainId && !appInitStore.getInitApp.isAllNetworks
         ? colors['primary-surface-default']
         : colors['bg-circle-select-modal'];
-    if (item.isAll && chainStore.isAll) {
+    if (item.isAll && appInitStore.getInitApp.isAllNetworks) {
       isSelectedColor = colors['primary-surface-default'];
     }
     return (

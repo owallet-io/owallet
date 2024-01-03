@@ -8,6 +8,7 @@ export class AppInit {
   protected initApp: {
     status: boolean;
     passcodeType: 'numeric' | 'alphabet';
+    isAllNetworks: boolean;
     date_updated: null | number;
     theme: 'dark' | 'light';
     visibleTabBar?: string;
@@ -22,7 +23,8 @@ export class AppInit {
       status: true,
       passcodeType: 'alphabet',
       date_updated: null,
-      theme: 'light'
+      theme: 'light',
+      isAllNetworks: false
     };
   }
 
@@ -54,6 +56,11 @@ export class AppInit {
   @action
   updateKeyboardType(passcodeType) {
     this.initApp = { ...this.initApp, passcodeType };
+  }
+
+  @action
+  selectAllNetworks(isAllNetworks) {
+    this.initApp = { ...this.initApp, isAllNetworks };
   }
 }
 

@@ -9,7 +9,7 @@ import { TokensCard } from './tokens-card';
 import { usePrevious } from '../../hooks';
 import { BIP44Selectable } from './bip44-selectable';
 import { useTheme } from '@src/themes/theme-provider';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 import { ChainUpdaterService } from '@owallet/background';
 import { AccountCardEVM } from './account-card-evm';
 import { DashboardCard } from './dashboard';
@@ -18,14 +18,15 @@ import { TronTokensCard } from './tron-tokens-card';
 import { AccountCardBitcoin } from './account-card-bitcoin';
 import { TokensBitcoinCard } from './tokens-bitcoin-card';
 import { TRON_ID } from '@owallet/common';
+import { TokensCardAll } from './tokens-card-all';
 
-export const HomeScreen: FunctionComponent = observer((props) => {
+export const HomeScreen: FunctionComponent = observer(props => {
   const [refreshing, setRefreshing] = React.useState(false);
   const [refreshDate, setRefreshDate] = React.useState(Date.now());
   const { colors } = useTheme();
 
   const styles = styling(colors);
-  const { chainStore, accountStore, queriesStore, priceStore, keyRingStore } = useStore();
+  const { chainStore, accountStore, queriesStore, priceStore, keyRingStore, appInitStore } = useStore();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
 
@@ -48,6 +49,11 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       })();
     }
   }, [chainStore, chainStoreIsInitializing, currentChain, currentChainId]);
+
+  useEffect(() => {
+    if (appInitStore.getInitApp.isAllNetworks) {
+    }
+  }, [appInitStore.getInitApp.isAllNetworks]);
 
   useEffect(() => {
     const appStateHandler = (state: AppStateStatus) => {
@@ -102,7 +108,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     } else {
       await Promise.all([
         priceStore.waitFreshResponse(),
-        ...queries.queryBalances.getQueryBech32Address(address).balances.map((bal) => {
+        ...queries.queryBalances.getQueryBech32Address(address).balances.map(bal => {
           return bal.waitFreshResponse();
         }),
         queries.cosmos.queryRewards.getQueryBech32Address(address).waitFreshResponse(),
@@ -122,14 +128,17 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     }
     return <AccountCard containerStyle={styles.containerStyle} />;
   })();
-  const renderTokenCard = useMemo(() => {
-    if (chainStore.current.networkType === 'bitcoin') {
+  const renderTokenCard = () => {
+    if (appInitStore.getInitApp.isAllNetworks) {
+      return <TokensCardAll />;
+    } else if (chainStore.current.networkType === 'bitcoin') {
       return <TokensBitcoinCard refreshDate={refreshDate} />;
     } else if (chainStore.current.chainId === TRON_ID) {
       return <TronTokensCard />;
     }
     return <TokensCard refreshDate={refreshDate} />;
-  }, [chainStore.current.networkType, chainStore.current.chainId]);
+  };
+
   return (
     <PageWithScrollViewInBottomTabView
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
@@ -140,14 +149,14 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       <BIP44Selectable />
       {renderAccountCard}
       <DashboardCard />
-      {renderTokenCard}
+      {renderTokenCard()}
       {chainStore.current.networkType === 'cosmos' ? <UndelegationsCard /> : null}
       {chainStore.current.networkType === 'cosmos' ? <EarningCard containerStyle={styles.containerEarnStyle} /> : null}
     </PageWithScrollViewInBottomTabView>
   );
 });
 
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     containerStyle: {
       paddingBottom: 12,

@@ -13,7 +13,7 @@ interface IOWHeaderTitle extends TouchableWithoutFeedbackProps {
   title?: string;
 }
 const OWHeaderTitle = observer(({ title, ...props }: IOWHeaderTitle) => {
-  const { chainStore, modalStore } = useStore();
+  const { chainStore, modalStore, appInitStore } = useStore();
   const { colors } = useTheme();
 
   const _onPressNetworkModal = () => {
@@ -31,7 +31,7 @@ const OWHeaderTitle = observer(({ title, ...props }: IOWHeaderTitle) => {
         <View style={styles.containerTitle}>
           <OWIcon name="dot" color={colors['primary-surface-default']} size={10} />
           <Text style={styles.textHeader} color={colors['primary-text']} variant="body1" typo="regular">
-            {chainStore.isAll ? 'All networks' : chainStore.current.chainName}
+            {appInitStore.getInitApp.isAllNetworks ? 'All networks' : chainStore.current.chainName}
           </Text>
           <DownArrowIcon height={10} color={colors['primary-text']} />
         </View>
