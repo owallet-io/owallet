@@ -1,28 +1,24 @@
 import React from 'react';
-import { StyleSheet, View, FlatList, Alert } from 'react-native';
-
+import { StyleSheet, View } from 'react-native';
 import { metrics, spacing, typography } from '../../../themes';
-import { _keyExtract, delay, showToast } from '../../../utils/helper';
+import { _keyExtract, showToast } from '../../../utils/helper';
 import FastImage from 'react-native-fast-image';
 import { VectorCharacter } from '../../../components/vector-character';
 import { Text } from '@src/components/text';
 import { TRON_ID, COINTYPE_NETWORK, getKeyDerivationFromAddressType } from '@owallet/common';
-import OWFlatList from '@src/components/page/ow-flat-list';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { useBIP44Option } from '@src/screens/register/bip44';
 import { useStore } from '@src/stores';
-
 import { useTheme } from '@src/themes/theme-provider';
 import { navigate } from '@src/router/root';
 import { SCREENS } from '@src/common/constants';
 import { Popup } from 'react-native-popup-confirm-toast';
 
-export const NetworkModal = ({ profileColor }) => {
+export const NetworkModal = () => {
   const { colors } = useTheme();
 
   const bip44Option = useBIP44Option();
-  // const smartNavigation = useSmartNavigation();
   const { modalStore, chainStore, keyRingStore, accountStore } = useStore();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
@@ -48,7 +44,6 @@ export const NetworkModal = ({ profileColor }) => {
     );
   };
   const handleSwitchNetwork = async item => {
-    // alert('ok');
     try {
       if (account.isNanoLedger) {
         modalStore.close();
@@ -74,8 +69,14 @@ export const NetworkModal = ({ profileColor }) => {
         });
         return;
       } else {
-        chainStore.selectChain(item?.chainId);
-        await chainStore.saveLastViewChainId();
+        if (!item.isAll) {
+          chainStore.selectChain(item?.chainId);
+          await chainStore.saveLastViewChainId();
+          chainStore.selectAllNetworks(false);
+        } else {
+          chainStore.selectAllNetworks(true);
+        }
+
         modalStore.close();
       }
     } catch (error) {
@@ -87,6 +88,13 @@ export const NetworkModal = ({ profileColor }) => {
   };
 
   const _renderItem = ({ item }) => {
+    let isSelectedColor =
+      item?.chainId === chainStore.current.chainId && !chainStore.isAll
+        ? colors['primary-surface-default']
+        : colors['bg-circle-select-modal'];
+    if (item.isAll && chainStore.isAll) {
+      isSelectedColor = colors['primary-surface-default'];
+    }
     return (
       <TouchableOpacity
         style={{
@@ -111,10 +119,10 @@ export const NetworkModal = ({ profileColor }) => {
               borderRadius: spacing['12'],
               justifyContent: 'center',
               alignItems: 'center',
-              backgroundColor: profileColor?.(item) ?? colors['primary-surface-default']
+              backgroundColor: colors['primary-surface-default']
             }}
           >
-            {item.raw.chainSymbolImageUrl ? (
+            {item?.raw?.chainSymbolImageUrl ? (
               <FastImage
                 style={{
                   width: 24,
@@ -155,10 +163,7 @@ export const NetworkModal = ({ profileColor }) => {
               width: 24,
               height: 24,
               borderRadius: spacing['32'],
-              backgroundColor:
-                item?.chainId === chainStore.current.chainId
-                  ? colors['primary-surface-default']
-                  : colors['bg-circle-select-modal'],
+              backgroundColor: isSelectedColor,
               justifyContent: 'center',
               alignItems: 'center'
             }}
@@ -230,19 +235,8 @@ export const NetworkModal = ({ profileColor }) => {
           height: metrics.screenHeight / 2
         }}
       >
-        <BottomSheetFlatList
-          data={chainStore.chainInfosInUI}
-          renderItem={_renderItem}
-          keyExtractor={_keyExtract}
-
-          // ListFooterComponent={() => (
-          //   <View
-          //     style={{
-          //       height: spacing['10']
-          //     }}
-          //   />
-          // )}
-        />
+        {account.isNanoLedger ? null : _renderItem({ item: { chainName: 'All networks', isAll: true } })}
+        <BottomSheetFlatList data={chainStore.chainInfosInUI} renderItem={_renderItem} keyExtractor={_keyExtract} />
       </View>
     </View>
   );
