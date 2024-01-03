@@ -143,44 +143,25 @@ export const Button: FunctionComponent<{
     <View
       style={StyleSheet.flatten([
         style.flatten(
-          [
-            backgroundColorDefinition as any,
-            `height-button-${size}` as any,
-            'border-radius-8',
-            'overflow-hidden'
-          ],
-          [
-            mode === 'outline' && 'border-width-1',
-            outlineBorderDefinition as any
-          ]
+          [backgroundColorDefinition as any, `height-button-${size}` as any, 'border-radius-8', 'overflow-hidden'],
+          [mode === 'outline' && 'border-width-1', outlineBorderDefinition as any]
         ),
         containerStyle
       ])}
     >
       <RectButton
         style={StyleSheet.flatten([
-          style.flatten([
-            'flex-row',
-            'justify-center',
-            'items-center',
-            'height-full',
-            'padding-x-8'
-          ]),
+          style.flatten(['flex-row', 'justify-center', 'items-center', 'height-full', 'padding-x-8']),
           buttonStyle
         ])}
         onPress={onPress}
-        onActiveStateChange={(active) => setIsPressed(active)}
+        onActiveStateChange={active => setIsPressed(active)}
         enabled={!loading && !disabled}
         rippleColor={rippleColor}
         underlayColor={underlayColor}
         activeOpacity={0.1}
       >
-        <View
-          style={style.flatten(
-            ['height-1', 'justify-center'],
-            [loading && 'opacity-transparent']
-          )}
-        >
+        <View style={style.flatten(['height-1', 'justify-center'], [loading && 'opacity-transparent'])}>
           <View>{leftIcon}</View>
         </View>
         <Text
@@ -194,27 +175,16 @@ export const Button: FunctionComponent<{
         >
           {text}
         </Text>
-        <View
-          style={style.flatten(
-            ['height-1', 'justify-center'],
-            [loading && 'opacity-transparent']
-          )}
-        >
+        <View style={style.flatten(['height-1', 'justify-center'], [loading && 'opacity-transparent'])}>
           <View>{rightIcon}</View>
         </View>
         {loading ? (
-          <View
-            style={style.flatten([
-              'absolute-fill',
-              'justify-center',
-              'items-center'
-            ])}
-          >
+          <View style={style.flatten(['absolute-fill', 'justify-center', 'items-center'])}>
             <LoadingSpinner
               color={
                 mode === 'fill' || (mode === 'light' && disabled)
                   ? style.get('color-white').color
-                  : colors['purple-700']
+                  : colors['primary-surface-default']
               }
               size={20}
             />

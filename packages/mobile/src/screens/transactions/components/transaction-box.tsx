@@ -6,10 +6,10 @@ import { useTheme } from '@src/themes/theme-provider';
 
 const TransactionBox: FC<{
   label?: string;
-  style?:ViewStyle;
-  styleBox?:ViewStyle;
+  style?: ViewStyle;
+  styleBox?: ViewStyle;
   subLabel?: string;
-}> = ({ label, children, subLabel,style,styleBox }) => {
+}> = ({ label, children, subLabel, style, styleBox }) => {
   const { colors } = useTheme();
   return (
     <View
@@ -24,14 +24,14 @@ const TransactionBox: FC<{
           <>
             {' '}
             (
-            <Text weight="400" size={14.5} color={colors['purple-700']}>
+            <Text weight="400" size={14.5} color={colors['primary-surface-default']}>
               {subLabel}
             </Text>
             )
           </>
         ) : null}
       </Text>
-      <OWBox style={[styles.containerBox,styleBox]}>{children}</OWBox>
+      <OWBox style={[styles.containerBox, styleBox]}>{children}</OWBox>
     </View>
   );
 };

@@ -9,21 +9,20 @@ import { OnboardingIntroScreen } from '@src/screens/onboarding';
 import { RegisterIntroScreen } from '@src/screens/register';
 import { RegisterNewUserScreen } from '@src/screens/register/new-user';
 import { RegisterNotNewUserScreen } from '@src/screens/register/not-new-user';
-import {
-  NewMnemonicScreen,
-  RecoverMnemonicScreen,
-  VerifyMnemonicScreen
-} from '@src/screens/register/mnemonic';
+import { NewMnemonicScreen, RecoverMnemonicScreen, VerifyMnemonicScreen } from '@src/screens/register/mnemonic';
 import { NewLedgerScreen } from '@src/screens/register/ledger';
 import { RegisterEndScreen } from '@src/screens/register/end';
 import { colors } from '@src/themes';
+import { NewPincodeScreen } from '@src/screens/register/register-pincode';
+import { RegisterDoneScreen } from '@src/screens/register/done';
+import { RecoverPhraseScreen } from '@src/screens/register/mnemonic/recover-phrase';
 const Stack = createStackNavigator();
 export const RegisterNavigation: FC = () => {
   const { appInitStore } = useStore();
   const handleScreenOptions = ({ route, navigation }) => {
     const headerOptions = useHeaderOptions(
       {
-        title: SCREENS_OPTIONS[route?.name].title,
+        title: SCREENS_OPTIONS[route?.name]?.title,
         headerStyle: {
           backgroundColor: colors['plain-background']
         }
@@ -35,16 +34,12 @@ export const RegisterNavigation: FC = () => {
   return (
     <Stack.Navigator
       screenOptions={handleScreenOptions}
-      initialRouteName={SCREENS.RegisterIntro}
+      // initialRouteName={SCREENS.RegisterIntro}
       headerMode="float"
     >
       <Stack.Screen
         name={SCREENS.RegisterIntro}
-        component={
-          appInitStore.getInitApp.status
-            ? OnboardingIntroScreen
-            : RegisterIntroScreen
-        }
+        component={appInitStore.getInitApp.status ? OnboardingIntroScreen : RegisterIntroScreen}
       />
 
       {/* <Stack.Screen
@@ -55,28 +50,25 @@ export const RegisterNavigation: FC = () => {
         name={SCREENS.RegisterNotNewUser}
         component={RegisterNotNewUserScreen}
       /> */}
-      <Stack.Screen
-        name={SCREENS.RegisterNewMnemonic}
-        component={NewMnemonicScreen}
-      />
-      <Stack.Screen
-        name={SCREENS.RegisterVerifyMnemonic}
-        component={VerifyMnemonicScreen}
-      />
-      <Stack.Screen
-        name={SCREENS.RegisterRecoverMnemonic}
-        component={RecoverMnemonicScreen}
-      />
-      <Stack.Screen
-        name={SCREENS.RegisterNewLedger}
-        component={NewLedgerScreen}
-      />
+      <Stack.Screen name={SCREENS.RegisterNewMnemonic} component={NewMnemonicScreen} />
+      <Stack.Screen name={SCREENS.RegisterNewPincode} component={NewPincodeScreen} />
+      <Stack.Screen name={SCREENS.RegisterVerifyMnemonic} component={VerifyMnemonicScreen} />
+      <Stack.Screen name={SCREENS.RegisterRecoverMnemonic} component={RecoverMnemonicScreen} />
+      <Stack.Screen name={SCREENS.RegisterRecoverPhrase} component={RecoverPhraseScreen} />
+      <Stack.Screen name={SCREENS.RegisterNewLedger} component={NewLedgerScreen} />
       <Stack.Screen
         options={{
           headerShown: false
         }}
         name={SCREENS.RegisterEnd}
         component={RegisterEndScreen}
+      />
+      <Stack.Screen
+        options={{
+          headerShown: false
+        }}
+        name={SCREENS.RegisterDone}
+        component={RegisterDoneScreen}
       />
     </Stack.Navigator>
   );

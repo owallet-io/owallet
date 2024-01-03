@@ -40,7 +40,7 @@ const LoadingScreenOverlay = ({ isOpen }: { isOpen: boolean }) => {
   if (doneFadeOut) return null;
   return (
     <Animated.View style={[styles.container, fadeAnimStyle]}>
-      <LoadingSpinner color={colors['purple-700']} size={25} />
+      <LoadingSpinner color={colors['primary-surface-default']} size={25} />
     </Animated.View>
   );
 };

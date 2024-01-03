@@ -81,7 +81,7 @@ export const AddTokenEVMScreen = observer(() => {
     });
   };
 
-  const submit = handleSubmit(async (data) => {
+  const submit = handleSubmit(async data => {
     try {
       if (tokenInfo?.decimals != null && tokenInfo.name && tokenInfo.symbol) {
         setLoading(true);
@@ -136,7 +136,6 @@ export const AddTokenEVMScreen = observer(() => {
       setLoading(false);
       smartNavigation.navigateSmart('Home', {});
       showToast({
-        
         message: JSON.stringify(err.message),
         type: 'danger',
         onPress: () => {}
@@ -270,7 +269,7 @@ export const AddTokenEVMScreen = observer(() => {
             checkBoxColor={colors['primary-text']}
             checkedCheckBoxColor={colors['primary-text']}
             onClick={() => {
-              setIsOpenSecret20ViewingKey((value) => !value);
+              setIsOpenSecret20ViewingKey(value => !value);
             }}
             isChecked={isOpenSecret20ViewingKey}
           />
@@ -284,7 +283,7 @@ export const AddTokenEVMScreen = observer(() => {
         style={{
           marginBottom: 24,
           marginTop: 20,
-          backgroundColor: colors['purple-700'],
+          backgroundColor: colors['primary-surface-default'],
           borderRadius: 8
         }}
       >
@@ -314,7 +313,7 @@ export const AddTokenEVMScreen = observer(() => {
       >
         <Text
           style={{
-            color: colors['purple-700'],
+            color: colors['primary-surface-default'],
             textAlign: 'center',
             fontWeight: '700',
             fontSize: 16

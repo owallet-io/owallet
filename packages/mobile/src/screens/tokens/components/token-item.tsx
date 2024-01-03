@@ -25,12 +25,7 @@ interface TokenItemProps {
   priceBalance: PricePretty;
 }
 
-export const TokenItem: FunctionComponent<TokenItemProps> = ({
-  containerStyle,
-  chainInfo,
-  balance,
-  priceBalance
-}) => {
+export const TokenItem: FunctionComponent<TokenItemProps> = ({ containerStyle, chainInfo, balance, priceBalance }) => {
   const { colors } = useTheme();
   const smartNavigation = useSmartNavigation();
 
@@ -47,8 +42,6 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
 
     if (denomHelper?.contractAddress && denomHelper?.contractAddress !== '') {
       name += ` (${formatContractAddress(denomHelper.contractAddress, 34)})`;
-
-      
     }
   }
 
@@ -61,13 +54,7 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
       });
       return amount;
     }
-    const amount = balance
-      .trim(true)
-      .shrink(true)
-      .maxDecimals(6)
-      .upperCase(true)
-      .hideDenom(true)
-      .toString();
+    const amount = balance.trim(true).shrink(true).maxDecimals(6).upperCase(true).hideDenom(true).toString();
     return `${amount} ${balanceCoinDenom}`;
   }, [chainInfo.networkType, chainInfo.chainId, balance, balanceCoinDenom]);
   return (
@@ -159,7 +146,7 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
           size={56}
           width={6}
           fill={amountBalance ? +amountBalance / totalBalance : 0}
-          tintColor={colors['purple-700']}
+          tintColor={colors['primary-surface-default']}
           backgroundColor={colors['gray-50']}
           rotation={0}
         >

@@ -49,8 +49,8 @@ export const TronTokensCard: FunctionComponent<{
         if (res.data?.data.length > 0) {
           if (res.data?.data[0].trc20) {
             const tokenArr = [];
-            TRC20_LIST.map((tk) => {
-              let token = res.data?.data[0].trc20.find((t) => tk.contractAddress in t);
+            TRC20_LIST.map(tk => {
+              let token = res.data?.data[0].trc20.find(t => tk.contractAddress in t);
               if (token) {
                 tokenArr.push({ ...tk, amount: token[tk.contractAddress] });
               }
@@ -216,11 +216,11 @@ export const TronTokensCard: FunctionComponent<{
   );
 });
 
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     textLoadMore: {
       ...typography['h7'],
-      color: colors['purple-700']
+      color: colors['primary-surface-default']
     },
     containerBtn: {
       alignItems: 'center',

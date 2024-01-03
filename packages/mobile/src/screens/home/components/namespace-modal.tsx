@@ -1,13 +1,9 @@
-import React, { ReactElement } from 'react'
-import { StyleSheet, View, Image } from 'react-native'
+import React, { ReactElement } from 'react';
+import { StyleSheet, View, Image } from 'react-native';
 import { Text } from '@src/components/text';
-import { RectButton } from '../../../components/rect-button'
-import { colors, metrics, spacing, typography } from '../../../themes'
-import {
-  NamespaceBuyIcon,
-  NamespaceRelinkIcon,
-  NamespaceUnlinkIcon
-} from '../../../components/icon'
+import { RectButton } from '../../../components/rect-button';
+import { colors, metrics, spacing, typography } from '../../../themes';
+import { NamespaceBuyIcon, NamespaceRelinkIcon, NamespaceUnlinkIcon } from '../../../components/icon';
 
 export const NamespaceModal = (account): ReactElement => {
   return (
@@ -57,7 +53,7 @@ export const NamespaceModal = (account): ReactElement => {
         <RectButton
           style={{
             ...styles.containerBtn,
-            backgroundColor: colors['purple-700']
+            backgroundColor: colors['primary-surface-default']
           }}
         >
           <NamespaceBuyIcon color={colors['white']} size={24} />
@@ -78,11 +74,11 @@ export const NamespaceModal = (account): ReactElement => {
             marginBottom: spacing['16']
           }}
         >
-          <NamespaceRelinkIcon color={colors['purple-700']} size={24} />
+          <NamespaceRelinkIcon color={colors['primary-surface-default']} size={24} />
           <Text
             style={{
               ...typography.h6,
-              color: colors['purple-700'],
+              color: colors['primary-surface-default'],
               fontWeight: '900',
               marginLeft: spacing['12']
             }}
@@ -102,8 +98,8 @@ export const NamespaceModal = (account): ReactElement => {
         </RectButton>
       </View>
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   containerToken: {
@@ -138,4 +134,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center'
   }
-})
+});

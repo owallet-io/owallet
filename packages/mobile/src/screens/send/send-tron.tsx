@@ -16,7 +16,7 @@ import { Text } from '@src/components/text';
 import { Toggle } from '../../components/toggle';
 import { useTheme } from '@src/themes/theme-provider';
 
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     sendInputRoot: {
       paddingHorizontal: spacing['20'],
@@ -36,7 +36,7 @@ const styling = (colors) =>
     }
   });
 
-export const SendTronScreen: FunctionComponent = observer((props) => {
+export const SendTronScreen: FunctionComponent = observer(props => {
   const {
     chainStore,
     accountStore,
@@ -91,7 +91,7 @@ export const SendTronScreen: FunctionComponent = observer((props) => {
 
   useEffect(() => {
     if (route?.params?.currency) {
-      const currency = sendConfigs.amountConfig.sendableCurrencies.find((cur) => {
+      const currency = sendConfigs.amountConfig.sendableCurrencies.find(cur => {
         if (cur.coinDenom === route.params.currency) {
           return cur.coinDenom === route.params.currency;
         }
@@ -160,7 +160,7 @@ export const SendTronScreen: FunctionComponent = observer((props) => {
             >
               <Toggle
                 on={customFee}
-                onChange={(value) => {
+                onChange={value => {
                   setCustomFee(value);
                   if (!value) {
                     if (sendConfigs.feeConfig.feeCurrency && !sendConfigs.feeConfig.fee) {
@@ -188,7 +188,7 @@ export const SendTronScreen: FunctionComponent = observer((props) => {
               placeholder="Type your Fee here"
               keyboardType={'numeric'}
               labelStyle={styles.sendlabelInput}
-              onChangeText={(text) => {
+              onChangeText={text => {
                 const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(DecUtils.getTenExponentNInPrecisionRange(6));
 
                 sendConfigs.feeConfig.setManualFee({
@@ -211,7 +211,7 @@ export const SendTronScreen: FunctionComponent = observer((props) => {
             label="Send"
             size="large"
             style={{
-              backgroundColor: colors['purple-900'],
+              backgroundColor: colors['primary-surface-default'],
               borderRadius: 8
             }}
             loading={account.isSendingMsg === 'send'}
@@ -231,7 +231,7 @@ export const SendTronScreen: FunctionComponent = observer((props) => {
                   receiveAddress,
                   address,
                   {
-                    onBroadcasted: (txHash) => {
+                    onBroadcasted: txHash => {
                       smartNavigation.pushSmart('TxPendingResult', {
                         txHash: Buffer.from(txHash).toString('hex')
                       });

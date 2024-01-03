@@ -136,7 +136,6 @@ export const SignModal: FunctionComponent<{
         });
       } else if (mode === 'direct') {
         return (msgs as any[]).map((msg, i) => {
-          
           const chainInfo = chainStore.getChain(chainId);
           const { title, content } = renderDirectMessage(msg, chainInfo.currencies);
 
@@ -150,7 +149,6 @@ export const SignModal: FunctionComponent<{
     return (
       <CardModal title="Confirm Transaction">
         <View style={style.flatten(['margin-bottom-16'])}>
-       
           <View
             style={style.flatten([
               'border-radius-8',
@@ -199,7 +197,7 @@ export const SignModal: FunctionComponent<{
               width: '40%'
             }}
             style={{
-              backgroundColor: isDisable ? colors['gray-400'] : colors['purple-700']
+              backgroundColor: isDisable ? colors['gray-400'] : colors['primary-surface-default']
             }}
             textStyle={{
               color: isDisable ? colors['gray-10'] : colors['white']

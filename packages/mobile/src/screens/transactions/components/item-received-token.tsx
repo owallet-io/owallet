@@ -15,14 +15,7 @@ const ItemReceivedToken: FC<{
   btnCopy?: boolean;
   valueProps?: OWTextProps;
   valueDisplay?: string | ReactNode;
-}> = ({
-  label = '--',
-  value = '',
-  valueDisplay = '--',
-  borderBottom = true,
-  btnCopy = true,
-  valueProps
-}) => {
+}> = ({ label = '--', value = '', valueDisplay = '--', borderBottom = true, btnCopy = true, valueProps }) => {
   const { colors } = useTheme();
   const styles = styling();
   const { isTimedOut, setTimer } = useSimpleTimer();
@@ -38,11 +31,7 @@ const ItemReceivedToken: FC<{
             {label}
           </Text>
           {typeof valueDisplay == 'string' ? (
-            <Text
-              color={colors['text-title-login']}
-              variant="body1"
-              {...valueProps}
-            >
+            <Text color={colors['text-title-login']} variant="body1" {...valueProps}>
               {valueDisplay}
             </Text>
           ) : (
@@ -52,11 +41,7 @@ const ItemReceivedToken: FC<{
         {btnCopy && (
           <View>
             {isTimedOut ? (
-              <OWIcon
-                name="check_stroke"
-                size={20}
-                color={colors['green-500']}
-              />
+              <OWIcon name="check_stroke" size={20} color={colors['green-500']} />
             ) : (
               <OWButtonIcon
                 name="copy"
@@ -64,7 +49,7 @@ const ItemReceivedToken: FC<{
                 sizeIcon={20}
                 fullWidth={false}
                 onPress={onCopy}
-                colorIcon={colors['purple-700']}
+                colorIcon={colors['primary-surface-default']}
               />
             )}
           </View>

@@ -1,18 +1,6 @@
-import React, {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useRef,
-  useState
-} from 'react';
+import React, { FunctionComponent, useCallback, useEffect, useRef, useState } from 'react';
 import { Text } from '@src/components/text';
-import {
-  ActivityIndicator,
-  FlatList,
-  StyleSheet,
-  TouchableOpacity,
-  View
-} from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { TransactionSectionTitle, TransactionItem } from './components';
 import { metrics, spacing, typography } from '../../themes';
 import { _keyExtract } from '../../utils/helper';
@@ -89,19 +77,16 @@ export const Transactions: FunctionComponent = () => {
     let msgTracer: TendermintTxTracer | undefined;
 
     if (isFocused) {
-      msgTracer = new TendermintTxTracer(
-        chainInfo?.rpc ?? chainInfo?.rest,
-        '/websocket'
-      );
+      msgTracer = new TendermintTxTracer(chainInfo?.rpc ?? chainInfo?.rest, '/websocket');
       msgTracer
         .subscribeMsgByAddress(account.bech32Address)
-        .then((tx) => {
+        .then(tx => {
           page.current = 1;
           setTimeout(() => {
             fetchData();
           }, 1500);
         })
-        .catch((e) => {
+        .catch(e => {
           console.log(`Failed to trace the tx ()`, e);
         });
     }
@@ -169,8 +154,7 @@ export const Transactions: FunctionComponent = () => {
               width: (metrics.screenWidth - 60) / 2,
               alignItems: 'center',
               paddingVertical: spacing['12'],
-              backgroundColor:
-                indexParent === i ? colors['purple-700'] : colors['background-box'],
+              backgroundColor: indexParent === i ? colors['primary-surface-default'] : colors['background-box'],
               borderRadius: spacing['12']
             }}
             onPress={() => {
@@ -225,10 +209,7 @@ export const Transactions: FunctionComponent = () => {
                   style={{
                     fontSize: 16,
                     fontWeight: '700',
-                    color:
-                      indexChildren === i
-                        ? colors['primary-text']
-                        : colors['blue-300']
+                    color: indexChildren === i ? colors['primary-text'] : colors['blue-300']
                   }}
                 >
                   {title}
@@ -292,7 +273,7 @@ export const Transactions: FunctionComponent = () => {
   );
 };
 
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     container: {
       backgroundColor: colors['background'],

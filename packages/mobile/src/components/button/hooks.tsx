@@ -44,6 +44,18 @@ const useSize = ({ size }): IMapStyle => {
         }
       };
       break;
+    case 'default':
+      sizeStyle = {
+        btn: {
+          borderRadius: 8,
+          height: 48
+        },
+        text: {
+          fontSize: 14,
+          fontWeight: '600'
+        }
+      };
+      break;
     default:
       sizeStyle = {
         btn: {
@@ -60,12 +72,7 @@ const useSize = ({ size }): IMapStyle => {
   return sizeStyle;
 };
 
-export const useMapStyles = ({
-  type,
-  disabled,
-  size,
-  contentAlign
-}): IMapStyle => {
+export const useMapStyles = ({ type, disabled, size, contentAlign }): IMapStyle => {
   const { colors } = useTheme();
   const formatSize = useSize({ size });
   let typeStyleBtn: IMapStyle;
@@ -75,9 +82,7 @@ export const useMapStyles = ({
         btn: {
           borderRadius: formatSize.btn.borderRadius,
           height: formatSize.btn.height,
-          backgroundColor: disabled
-            ? colors['background-btn-disable-danger']
-            : colors['orange-800']
+          backgroundColor: disabled ? colors['background-btn-disable-danger'] : colors['orange-800']
         },
         text: {
           color: disabled ? colors['text-btn-disable-danger'] : colors['white'],
@@ -91,12 +96,10 @@ export const useMapStyles = ({
         btn: {
           borderRadius: formatSize.btn.borderRadius,
           height: formatSize.btn.height,
-          backgroundColor: disabled
-            ? colors['btn-disable-background']
-            : colors['btn-primary-background']
+          backgroundColor: disabled ? colors['btn-disable-background'] : colors['primary-surface-default']
         },
         text: {
-          color: disabled ? colors['text-btn-disable-color'] : colors['white'],
+          color: disabled ? colors['neutral-text-action-on-dark-bg'] : colors['white'],
           fontSize: formatSize.text.fontSize,
           fontWeight: formatSize.text.fontWeight
         }
@@ -107,16 +110,10 @@ export const useMapStyles = ({
         btn: {
           borderRadius: formatSize.btn.borderRadius,
           height: formatSize.btn.height,
-          backgroundColor: disabled
-            ? colors['btn-disable-background']
-            : 'transparent',
-            borderColor:colors['purple-700'],
-            borderWidth:0.5
+          backgroundColor: disabled ? colors['btn-disable-background'] : colors['neutral-surface-action3']
         },
         text: {
-          color: disabled
-            ? colors['text-btn-disable-color']
-            : colors['purple-700'],
+          color: disabled ? colors['text-btn-disable-color'] : colors['neutral-text-action-on-light-bg'],
           fontSize: formatSize.text.fontSize,
           fontWeight: formatSize.text.fontWeight
         }
@@ -130,9 +127,7 @@ export const useMapStyles = ({
           backgroundColor: 'transparent'
         },
         text: {
-          color: disabled
-            ? colors['text-btn-disable-color']
-            : colors['btn-primary-background'],
+          color: disabled ? colors['text-btn-disable-color'] : colors['btn-primary-background'],
           fontSize: formatSize.text.fontSize,
           fontWeight: formatSize.text.fontWeight
         }
@@ -144,12 +139,10 @@ export const useMapStyles = ({
         btn: {
           borderRadius: formatSize.btn.borderRadius,
           height: formatSize.btn.height,
-          backgroundColor: disabled
-            ? colors['btn-disable-background']
-            : colors['btn-primary-background']
+          backgroundColor: disabled ? colors['primary-surface-disable'] : colors['primary-surface-default']
         },
         text: {
-          color: disabled ? colors['text-btn-disable-color'] : colors['white'],
+          color: disabled ? colors['neutral-text-disable'] : colors['white'],
           fontSize: formatSize.text.fontSize,
           fontWeight: formatSize.text.fontWeight
         }

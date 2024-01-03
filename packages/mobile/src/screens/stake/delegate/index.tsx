@@ -99,7 +99,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
         >
           <Toggle
             on={customFee}
-            onChange={(value) => {
+            onChange={value => {
               setCustomFee(value);
               if (!value) {
                 if (sendConfigs.feeConfig.feeCurrency && !sendConfigs.feeConfig.fee) {
@@ -127,7 +127,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
             placeholder="Type your Fee here"
             keyboardType={'numeric'}
             labelStyle={styles.sendlabelInput}
-            onChangeText={(text) => {
+            onChangeText={text => {
               const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(DecUtils.getTenExponentNInPrecisionRange(6));
 
               sendConfigs.feeConfig.setManualFee({
@@ -150,11 +150,11 @@ export const DelegateScreen: FunctionComponent = observer(() => {
           <Text
             style={{
               ...typography.h7,
-              color: colors['purple-700'],
+              color: colors['primary-surface-default'],
               marginRight: 4
             }}
           >{`Advance options`}</Text>
-          <DownArrowIcon color={colors['purple-700']} height={10} />
+          <DownArrowIcon color={colors['primary-surface-default']} height={10} />
         </TouchableOpacity> */}
 
         <View
@@ -204,7 +204,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                     preferNoSetFee: true
                   },
                   {
-                    onBroadcasted: (txHash) => {
+                    onBroadcasted: txHash => {
                       analyticsStore.logEvent('Delegate tx broadcasted', {
                         chainId: chainStore.current.chainId,
                         chainName: chainStore.current.chainName,
@@ -235,7 +235,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   );
 });
 
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     page: {
       padding: spacing['page']
@@ -246,7 +246,7 @@ const styling = (colors) =>
       marginBottom: spacing['24']
     },
     containerBtn: {
-      backgroundColor: colors['purple-700'],
+      backgroundColor: colors['primary-surface-default'],
       marginLeft: spacing['24'],
       marginRight: spacing['24'],
       borderRadius: spacing['8'],

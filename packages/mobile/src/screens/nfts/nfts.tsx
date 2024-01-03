@@ -1,23 +1,10 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import {
-  FlatList,
-  TouchableOpacity,
-  StyleSheet,
-  View,
-  SectionList
-} from 'react-native';
+import { FlatList, TouchableOpacity, StyleSheet, View, SectionList } from 'react-native';
 import { metrics, spacing, typography } from '../../themes';
-import {
-  convertAmount,
-  formatContractAddress,
-  _keyExtract
-} from '../../utils/helper';
+import { convertAmount, formatContractAddress, _keyExtract } from '../../utils/helper';
 import { DownArrowIcon } from '../../components/icon';
-import {
-  PageWithViewInBottomTabView,
-  PageWithView
-} from '../../components/page';
+import { PageWithViewInBottomTabView, PageWithView } from '../../components/page';
 import Accordion from 'react-native-collapsible/Accordion';
 import { useSmartNavigation } from '../../navigation.provider';
 import ProgressiveImage from '../../components/progessive-image';
@@ -31,7 +18,7 @@ import images from '@src/assets/images';
 import { useSoulbound } from './hooks/useSoulboundNft';
 import OWFlatList from '@src/components/page/ow-flat-list';
 import { SkeletonNft } from '../home/tokens-card';
-export const NftsScreen: FunctionComponent = observer((props) => {
+export const NftsScreen: FunctionComponent = observer(props => {
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getAccount(chainStore.current.chainId);
 
@@ -44,17 +31,11 @@ export const NftsScreen: FunctionComponent = observer((props) => {
     chainStore.current.rpc
   );
 
-  const onDetail = (item) => {
+  const onDetail = item => {
     smartNavigation.navigateSmart('Nfts.Detail', { item });
   };
 
-  const _renderFlatlistOrchai = ({
-    item,
-    index
-  }: {
-    item: SoulboundNftInfoResponse;
-    index: number;
-  }) => {
+  const _renderFlatlistOrchai = ({ item, index }: { item: SoulboundNftInfoResponse; index: number }) => {
     return (
       <TouchableOpacity
         style={styles.ContainerBtnNft}
@@ -66,9 +47,7 @@ export const NftsScreen: FunctionComponent = observer((props) => {
           })
         }
       >
-        <View
-          style={[styles.wrapViewNft, { backgroundColor: colors['box-nft'] }]}
-        >
+        <View style={[styles.wrapViewNft, { backgroundColor: colors['box-nft'] }]}>
           <ProgressiveImage
             source={{
               uri: item.token_uri
@@ -77,12 +56,7 @@ export const NftsScreen: FunctionComponent = observer((props) => {
             resizeMode="cover"
             styleContainer={styles.containerImgNft}
           />
-          <Text
-            weight="700"
-            variant="body2"
-            numberOfLines={1}
-            style={styles.titleNft}
-          >
+          <Text weight="700" variant="body2" numberOfLines={1} style={styles.titleNft}>
             {item?.extension?.name}
           </Text>
           <Text variant="body2" numberOfLines={2} style={styles.subTextNft}>
@@ -122,7 +96,7 @@ export const NftsScreen: FunctionComponent = observer((props) => {
   );
 });
 
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     wrapFlatlist: {
       flex: 1,
@@ -148,7 +122,7 @@ const styling = (colors) =>
       marginBottom: spacing['12']
     },
     containerBtn: {
-      backgroundColor: colors['purple-700'],
+      backgroundColor: colors['primary-surface-default'],
       borderRadius: spacing['8'],
       marginHorizontal: spacing['24'],
       paddingVertical: spacing['16'],

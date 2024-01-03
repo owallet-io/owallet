@@ -29,7 +29,7 @@ export const SelectorModal: FunctionComponent<{
         <View
           style={{
             ...styles.ball,
-            backgroundColor: colors['purple-700']
+            backgroundColor: colors['primary-surface-default']
           }}
         >
           <View
@@ -72,7 +72,7 @@ export const SelectorModal: FunctionComponent<{
         scrollViewRef.current.flashScrollIndicators();
 
         if (maxItemsToShow) {
-          const selectedIndex = items.findIndex((item) => item.key === selectedKey);
+          const selectedIndex = items.findIndex(item => item.key === selectedKey);
 
           if (selectedIndex) {
             const scrollViewHeight = maxItemsToShow * 64;
@@ -107,7 +107,7 @@ export const SelectorModal: FunctionComponent<{
         persistentScrollbar={true}
         onLayout={onInit}
       >
-        {items.map((item) => {
+        {items.map(item => {
           return (
             <View
               style={{
@@ -177,7 +177,7 @@ export const Selector: FunctionComponent<{
   modalPersistent
 }) => {
   const selected = useMemo(() => {
-    return items.find((item) => item.key === selectedKey);
+    return items.find(item => item.key === selectedKey);
   }, [items, selectedKey]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);

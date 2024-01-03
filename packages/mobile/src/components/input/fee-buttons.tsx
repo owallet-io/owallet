@@ -44,7 +44,7 @@ class FeeButtonState {
   }
 }
 
-export const FeeButtons: FunctionComponent<FeeButtonsProps> = observer((props) => {
+export const FeeButtons: FunctionComponent<FeeButtonsProps> = observer(props => {
   // This may be not the good way to handle the states across the components.
   // But, rather than using the context API with boilerplate code, just use the mobx state to simplify the logic.
   const [feeButtonState] = useState(() => new FeeButtonState());
@@ -177,7 +177,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
             ...styles.containerBtnFee,
             ...(selected
               ? {
-                  borderColor: colors['purple-700'],
+                  borderColor: colors['primary-surface-default'],
                   borderWidth: 1
                 }
               : {
@@ -286,7 +286,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
   }
 );
 
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     containerBtnFee: {
       flex: 1,

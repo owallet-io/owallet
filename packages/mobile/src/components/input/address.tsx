@@ -9,13 +9,7 @@ import {
   InvalidBech32Error,
   IRecipientConfig
 } from '@owallet/hooks';
-import {
-  StyleSheet,
-  TextStyle,
-  View,
-  ViewStyle,
-  TouchableOpacity
-} from 'react-native';
+import { StyleSheet, TextStyle, View, ViewStyle, TouchableOpacity } from 'react-native';
 import { TextInput } from './input';
 import { ObservableEnsFetcher } from '@owallet/ens';
 import { LoadingSpinner } from '../spinner';
@@ -79,9 +73,7 @@ export const AddressInput: FunctionComponent<{
 
     const style = useStyle();
 
-    const isENSAddress = ObservableEnsFetcher.isValidENS(
-      recipientConfig.rawRecipient
-    );
+    const isENSAddress = ObservableEnsFetcher.isValidENS(recipientConfig.rawRecipient);
 
     const error = recipientConfig.getError();
     const errorText: string | undefined = useMemo(() => {
@@ -115,7 +107,7 @@ export const AddressInput: FunctionComponent<{
         errorLabelStyle={errorLabelStyle}
         error={errorText}
         value={recipientConfig.rawRecipient}
-        onChangeText={(text) => {
+        onChangeText={text => {
           recipientConfig.setRawRecipient(text);
         }}
         placeholder={placeholder}
@@ -143,13 +135,7 @@ export const AddressInput: FunctionComponent<{
         }
         inputRight={
           disableAddressBook ? null : (
-            <View
-              style={style.flatten([
-                'height-1',
-                'overflow-visible',
-                'justify-center'
-              ])}
-            >
+            <View style={style.flatten(['height-1', 'overflow-visible', 'justify-center'])}>
               {inputRight ? (
                 inputRight
               ) : (
@@ -165,7 +151,7 @@ export const AddressInput: FunctionComponent<{
                     });
                   }}
                 >
-                  <NoteIcon color={colors['purple-700']} height={18} />
+                  <NoteIcon color={colors['primary-surface-default']} height={18} />
                 </TouchableOpacity>
               )}
             </View>

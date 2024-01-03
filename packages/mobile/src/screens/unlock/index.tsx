@@ -30,7 +30,7 @@ async function waitAccountLoad(accountStore: AccountStore<any, any, any, any>, c
     return;
   }
 
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     const disposer = autorun(() => {
       if (accountStore.getAccount(chainId).bech32Address) {
         resolve();
@@ -102,7 +102,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
         // },
         installMode: CodePush.InstallMode.IMMEDIATE
       },
-      (status) => {
+      status => {
         switch (status) {
           case CodePush.SyncStatus.UP_TO_DATE:
             // Show "downloading" modal
@@ -205,7 +205,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
   }, [keyRingStore.status, navigateToHome, downloading]);
 
   // Notification setup section
-  const regisFcmToken = useCallback(async (FCMToken) => {
+  const regisFcmToken = useCallback(async FCMToken => {
     await AsyncStorage.setItem('FCM_TOKEN', FCMToken);
   }, []);
 
@@ -215,14 +215,14 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     if (!fcmToken) {
       messaging()
         .getToken()
-        .then(async (FCMToken) => {
+        .then(async FCMToken => {
           if (FCMToken) {
             regisFcmToken(FCMToken);
           } else {
             // Alert.alert('[FCMService] User does not have a device token');
           }
         })
-        .catch((error) => {
+        .catch(error => {
           // let err = `FCM token get error: ${error}`;
           // Alert.alert(err);
           console.log('[FCMService] getToken rejected ', error);
@@ -236,7 +236,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     if (Platform.OS === 'ios') {
       messaging()
         .registerDeviceForRemoteMessages()
-        .then((register) => {
+        .then(register => {
           getToken();
         });
       //await messaging().setAutoInitEnabled(true);
@@ -251,7 +251,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       .then(() => {
         registerAppWithFCM();
       })
-      .catch((error) => {
+      .catch(error => {
         console.log('[FCMService] Requested persmission rejected ', error);
       });
   }, [registerAppWithFCM]);
@@ -259,7 +259,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
   const checkPermission = useCallback(() => {
     messaging()
       .hasPermission()
-      .then((enabled) => {
+      .then(enabled => {
         if (enabled) {
           //user has permission
           registerAppWithFCM();
@@ -268,7 +268,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
           requestPermission();
         }
       })
-      .catch((error) => {
+      .catch(error => {
         requestPermission();
         let err = `check permission error${error}`;
         Alert.alert(err);
@@ -285,7 +285,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
   }, [requestPermission]);
 
   useEffect(() => {
-    const unsubscribe = messaging().onMessage(async (remoteMessage) => {});
+    const unsubscribe = messaging().onMessage(async remoteMessage => {});
     return unsubscribe;
   }, []);
 
@@ -320,7 +320,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       </View>
       <Text
         style={{
-          color: colors['purple-700'],
+          color: colors['primary-surface-default'],
           textAlign: 'center',
           fontWeight: '600',
           fontSize: 16,
@@ -333,7 +333,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       <View style={{ marginVertical: 12 }}>
         <Text
           style={{
-            color: colors['purple-700'],
+            color: colors['primary-surface-default'],
             textAlign: 'center',
             fontSize: 13,
             lineHeight: 22
@@ -351,7 +351,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       >
         <Text
           style={{
-            color: colors['purple-700'],
+            color: colors['primary-surface-default'],
             textAlign: 'center',
             fontWeight: '600',
             fontSize: 16,
@@ -406,7 +406,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
                 style={styles.padIcon}
                 onPress={showPass}
                 name={statusPass ? 'eye' : 'eye-slash'}
-                colorIcon={colors['icon-purple-700-gray']}
+                colorIcon={colors['icon-primary-surface-default-gray']}
                 sizeIcon={22}
               />
             }

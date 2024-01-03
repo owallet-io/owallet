@@ -7,24 +7,12 @@ import { RegisterConfig } from '@owallet/hooks';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { Controller, useForm } from 'react-hook-form';
 import { TextInput } from '../../../components/input';
-import {
-  Image,
-  Platform,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  Clipboard
-} from 'react-native';
+import { Image, Platform, StyleSheet, Text, TouchableOpacity, View, Clipboard } from 'react-native';
 import { Button } from '../../../components/button';
 import { useStore } from '../../../stores';
 import { BIP44AdvancedButton, useBIP44Option } from '../bip44';
 import { Buffer } from 'buffer';
-import {
-  checkRouter,
-  checkRouterPaddingBottomBar,
-  navigate
-} from '../../../router/root';
+import { checkRouter, checkRouterPaddingBottomBar, navigate } from '../../../router/root';
 import { OWalletLogo } from '../owallet-logo';
 import { spacing, typography } from '../../../themes';
 import { LoadingSpinner } from '../../../components/spinner';
@@ -54,9 +42,7 @@ function trimWordsStr(str: string): string {
   str = str.trim();
   // Split on the whitespace or new line.
   const splited = str.split(/\s+/);
-  const words = splited
-    .map((word) => word.trim())
-    .filter((word) => word.trim().length > 0);
+  const words = splited.map(word => word.trim()).filter(word => word.trim().length > 0);
   return words.join(' ');
 }
 
@@ -67,7 +53,7 @@ interface FormData {
   confirmPassword: string;
 }
 
-export const RecoverMnemonicScreen: FunctionComponent = observer((props) => {
+export const RecoverMnemonicScreen: FunctionComponent = observer(props => {
   const route = useRoute<
     RouteProp<
       Record<
@@ -85,6 +71,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer((props) => {
   const smartNavigation = useSmartNavigation();
 
   const registerConfig: RegisterConfig = route.params.registerConfig;
+
   const bip44Option = useBIP44Option();
   const [mode] = useState(registerConfig.mode);
 
@@ -107,30 +94,21 @@ export const RecoverMnemonicScreen: FunctionComponent = observer((props) => {
 
     const mnemonic = trimWordsStr(getValues('mnemonic'));
     if (!isPrivateKey(mnemonic)) {
-      await registerConfig.createMnemonic(
-        getValues('name'),
-        mnemonic,
-        getValues('password'),
-        bip44Option.bip44HDPath
-      );
+      await registerConfig.createMnemonic(getValues('name'), mnemonic, getValues('password'), bip44Option.bip44HDPath);
       analyticsStore.setUserProperties({
         registerType: 'seed',
         accountType: 'mnemonic'
       });
     } else {
       const privateKey = Buffer.from(mnemonic.trim().replace('0x', ''), 'hex');
-      await registerConfig.createPrivateKey(
-        getValues('name'),
-        privateKey,
-        getValues('password')
-      );
+      await registerConfig.createPrivateKey(getValues('name'), privateKey, getValues('password'));
       analyticsStore.setUserProperties({
         registerType: 'seed',
         accountType: 'privateKey'
       });
     }
     if (checkRouter(props?.route?.name, 'RegisterRecoverMnemonicMain')) {
-      navigate(SCREENS.RegisterEnd, {
+      navigate(SCREENS.RegisterDone, {
         password: getValues('password'),
         type: 'recover'
       });
@@ -182,10 +160,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer((props) => {
       }
 
       try {
-        if (
-          Buffer.from(value, 'hex').toString('hex').toLowerCase() !==
-          value.toLowerCase()
-        ) {
+        if (Buffer.from(value, 'hex').toString('hex').toLowerCase() !== value.toLowerCase()) {
           return 'Invalid private key';
         }
       } catch {
@@ -205,13 +180,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer((props) => {
           <View style={styles.containerInputMnemonic}>
             <View />
 
-            <OWButton
-              type="secondary"
-              label="Paste"
-              size="small"
-              fullWidth={false}
-              onPress={onPaste}
-            />
+            <OWButton type="secondary" label="Paste" size="small" fullWidth={false} onPress={onPaste} />
           </View>
         }
         style={{
@@ -283,7 +252,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer((props) => {
             icon={
               <OWIcon
                 name={!statusPass ? 'eye' : 'eye-slash'}
-                color={colors['icon-purple-700-gray']}
+                color={colors['icon-primary-surface-default-gray']}
                 size={22}
               />
             }
@@ -323,7 +292,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer((props) => {
             icon={
               <OWIcon
                 name={!statusConfirmPass ? 'eye' : 'eye-slash'}
-                color={colors['icon-purple-700-gray']}
+                color={colors['icon-primary-surface-default-gray']}
                 size={22}
               />
             }
@@ -342,76 +311,68 @@ export const RecoverMnemonicScreen: FunctionComponent = observer((props) => {
     );
   };
   return (
-    <PageWithScrollView
-      contentContainerStyle={styles.container}
-      backgroundColor={colors['plain-background']}
-    >
+    <PageWithScrollView contentContainerStyle={styles.container} backgroundColor={colors['plain-background']}>
       <LRRedact>
-      <View style={styles.headerView}>
-        <Text style={styles.titleHeader}>Import wallet</Text>
-        <View>
-          <OWalletLogo size={72} />
+        <View style={styles.headerView}>
+          <Text style={styles.titleHeader}>Import wallet</Text>
+          <View>
+            <OWalletLogo size={72} />
+          </View>
         </View>
-      </View>
-      <Controller
-        control={control}
-        rules={{
-          required: 'Mnemonic is required',
-          validate: validateMnemonic
-        }}
-        render={renderMnemonic}
-        name="mnemonic"
-        defaultValue=""
-      />
-      <Controller
-        control={control}
-        rules={{
-          required: 'Name is required'
-        }}
-        render={renderName}
-        name="name"
-        defaultValue=""
-      />
+        <Controller
+          control={control}
+          rules={{
+            required: 'Mnemonic is required',
+            validate: validateMnemonic
+          }}
+          render={renderMnemonic}
+          name="mnemonic"
+          defaultValue=""
+        />
+        <Controller
+          control={control}
+          rules={{
+            required: 'Name is required'
+          }}
+          render={renderName}
+          name="name"
+          defaultValue=""
+        />
 
-      {mode === 'create' ? (
-        <React.Fragment>
-          <Controller
-            control={control}
-            rules={{
-              required: 'Password is required',
-              validate: validatePass
-            }}
-            render={renderPass}
-            name="password"
-            defaultValue=""
-          />
-          <Controller
-            control={control}
-            rules={{
-              required: 'Confirm password is required',
-              validate: validateConfirmPass
-            }}
-            render={renderConfirmPass}
-            name="confirmPassword"
-            defaultValue=""
-          />
-        </React.Fragment>
-      ) : null}
+        {mode === 'create' ? (
+          <React.Fragment>
+            <Controller
+              control={control}
+              rules={{
+                required: 'Password is required',
+                validate: validatePass
+              }}
+              render={renderPass}
+              name="password"
+              defaultValue=""
+            />
+            <Controller
+              control={control}
+              rules={{
+                required: 'Confirm password is required',
+                validate: validateConfirmPass
+              }}
+              render={renderConfirmPass}
+              name="confirmPassword"
+              defaultValue=""
+            />
+          </React.Fragment>
+        ) : null}
 
-      <BIP44AdvancedButton bip44Option={bip44Option} />
-      <OWButton
-        loading={isCreating}
-        disabled={isCreating}
-        onPress={submit}
-        label={'Next'}
-      />
-      <OWButton type="link" onPress={onGoBack} label={'Go back'} />
-      {/* Mock element for bottom padding */}
-      <View
-        style={{
-          height: 20
-        }}
-      />
+        <BIP44AdvancedButton bip44Option={bip44Option} />
+        <OWButton loading={isCreating} disabled={isCreating} onPress={submit} label={'Next'} />
+        <OWButton type="link" onPress={onGoBack} label={'Go back'} />
+        {/* Mock element for bottom padding */}
+        <View
+          style={{
+            height: 20
+          }}
+        />
       </LRRedact>
     </PageWithScrollView>
   );

@@ -85,8 +85,8 @@ export const LanguageToFiatCurrency: TypeLanguageToFiatCurrency = {
 export const AdditonalIntlMessages: IntlMessages = {};
 
 // coingecko api for both evm and cosmos based networks
-// export const CoinGeckoAPIEndPoint = 'https://api.coingecko.com/api/v3';
-export const CoinGeckoAPIEndPoint = 'https://price.market.orai.io';
+export const CoinGeckoAPIEndPoint = 'https://api.coingecko.com/api/v3';
+export const MarketAPIEndPoint = 'https://price.market.orai.io';
 
 export const EthereumEndpoint = 'https://mainnet.infura.io/v3/eeb00e81cdb2410098d5a270eff9b341';
 

@@ -18,6 +18,7 @@ import { ViewPrivateDataScreen } from '@src/screens/setting/screens/view-private
 import { SettingSelectAccountScreen } from '@src/screens/setting/screens/select-account';
 import { HeaderAddIcon } from '@src/components/header/icon';
 import useHeaderOptions from '@src/hooks/use-header';
+import { BackupMnemonicScreen } from '@src/screens/register/mnemonic/backup-mnemonic';
 const Stack = createStackNavigator();
 export const SettingStackScreen: FC = () => {
   const style = useStyle();
@@ -27,10 +28,7 @@ export const SettingStackScreen: FC = () => {
   const { analyticsStore, appInitStore } = useStore();
   const handleScreenOptions = ({ route, navigation }) => {
     appInitStore.updateVisibleTabBar(route?.name);
-    const headerOptions = useHeaderOptions(
-      { title: SCREENS_OPTIONS[route?.name].title },
-      navigation
-    );
+    const headerOptions = useHeaderOptions({ title: SCREENS_OPTIONS[route?.name]?.title }, navigation);
     return headerOptions;
   };
   return (
@@ -39,9 +37,7 @@ export const SettingStackScreen: FC = () => {
         options={{
           headerShown: false,
           title: 'Settings',
-          ...getPlainHeaderScreenOptionsPresetWithBackgroundColor(
-            style.get('color-setting-screen-background').color
-          ),
+          ...getPlainHeaderScreenOptionsPresetWithBackgroundColor(style.get('color-setting-screen-background').color),
           headerTitleStyle: style.flatten(['h3', 'color-text-black-high'])
         }}
         name={SCREENS.Setting}
@@ -72,14 +68,9 @@ export const SettingStackScreen: FC = () => {
         component={SettingSelectAccountScreen}
       />
 
-      <Stack.Screen
-        name={SCREENS.SettingViewPrivateData}
-        component={ViewPrivateDataScreen}
-      />
-      <Stack.Screen
-        name={SCREENS.SettingVersion}
-        component={OWalletVersionScreen}
-      />
+      <Stack.Screen name={SCREENS.SettingViewPrivateData} component={ViewPrivateDataScreen} />
+      <Stack.Screen name={SCREENS.SettingBackupMnemonic} component={BackupMnemonicScreen} />
+      <Stack.Screen name={SCREENS.SettingVersion} component={OWalletVersionScreen} />
     </Stack.Navigator>
   );
 };

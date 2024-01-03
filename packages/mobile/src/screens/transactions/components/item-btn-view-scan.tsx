@@ -1,9 +1,4 @@
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  TouchableOpacityProps
-} from 'react-native';
+import { View, StyleSheet, TouchableOpacity, TouchableOpacityProps } from 'react-native';
 import React from 'react';
 import { Text } from '@src/components/text';
 import { colors } from '@src/themes';
@@ -13,8 +8,8 @@ const ItemBtnViewOnScan = (props: TouchableOpacityProps) => {
   return (
     <TouchableOpacity {...props}>
       <View style={styles.container}>
-        <OWIcon color={colors['purple-700']} size={20} name="eye" />
-        <Text size={16} style={styles.txtView} weight='400' color={colors['purple-700']}>
+        <OWIcon color={colors['primary-surface-default']} size={20} name="eye" />
+        <Text size={16} style={styles.txtView} weight="400" color={colors['primary-surface-default']}>
           View on scan
         </Text>
       </View>

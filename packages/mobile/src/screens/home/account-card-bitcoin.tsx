@@ -18,7 +18,7 @@ export const AccountCardBitcoin: FunctionComponent<{
 }> = observer(({ containerStyle }) => {
   const { chainStore, accountStore, queriesStore, priceStore, modalStore, keyRingStore } = useStore();
 
-  const selected = keyRingStore?.multiKeyStoreInfo.find((keyStore) => keyStore?.selected);
+  const selected = keyRingStore?.multiKeyStoreInfo.find(keyStore => keyStore?.selected);
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
 
@@ -34,7 +34,7 @@ export const AccountCardBitcoin: FunctionComponent<{
     return amount;
   }, [chainStore.current.chainId, address, chainStore.current.networkType, balanceBtc]);
 
-  const onPressBtnMain = (name) => {
+  const onPressBtnMain = name => {
     if (name === 'Buy') {
       navigate('MainTab', { screen: 'Browser', path: 'https://oraidex.io' });
     }
@@ -79,7 +79,7 @@ export const AccountCardBitcoin: FunctionComponent<{
 const styles = StyleSheet.create({
   textLoadMore: {
     ...typography['h7'],
-    color: colors['purple-700']
+    color: colors['primary-surface-default']
   },
   containerBtn: {
     alignItems: 'center',

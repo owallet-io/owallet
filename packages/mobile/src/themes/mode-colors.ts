@@ -82,6 +82,7 @@ export const colorsCode = {
   'gray-100': '#F2F6FA',
   'gray-150': '#5F5E77',
   'gray-200': '#D1D1D6',
+  'gray-250': '#EBEDF2',
   'gray-300': '#C7C7CC',
   'gray-301': '#C7C7CC',
   'gray-400': '#AEAEB2',
@@ -90,6 +91,7 @@ export const colorsCode = {
   'gray-700': '#5F5E77',
   'gray-800': '#3A3A3C',
   'gray-900': '#1C1C1E',
+  'text-body': '#6A6B71',
 
   //green
   'green-500': '#4BB10C',
@@ -103,6 +105,8 @@ export const colorsCode = {
   'purple-700': '#945EF8',
   'purple-900': '#8B1BFB',
   'purple-h1': '#7E58EA',
+  'primary-default': '#5C00A3',
+  'primary-subtitle': '#F4E5FF',
   // yellow
   'yellow-10': '#FFF6E9',
   //orange
@@ -136,23 +140,23 @@ const modeColors = {
   'background-light': ['#F5F5F7', '#F5F5F7'],
   'card-background': ['#0E121D', '#fff'],
   'input-background': ['#2B2D3B', '#fff'],
-  'primary-background': ['#945EF8', '#F3F1F5'],
+  'primary-background': ['#5C00A3', '#F3F1F5'],
   'plain-background': ['#01040D', '#fff'],
-  'btn-primary-background': ['#945EF8', '#945EF8'],
+  'btn-primary-background': ['#5C00A3', '#5C00A3'],
   'btn-disable-background': [colorsCode['blue-600'], colorsCode['gray-300']],
   // border
   'border-purple-100-gray-800': [colorsCode['gray-800'], colorsCode['purple-100']],
   // item
   item: ['#2B2D3B', '#fff'],
   icon: ['#E2DEEB', '#5F5E77'],
-  'icon-purple-700-gray': ['#717177', colorsCode['purple-700']],
+  'icon-primary-default-gray': ['#717177', colorsCode['primary-default']],
   // text
   label: ['#fff', '#3A3A3C'],
   'colored-label': ['#fff', '#945EF8'],
   'sub-text': ['#8C93A7', '#5F5E77'],
   'text-title': [colorsCode['white'], colorsCode['gray-900']],
   'text-btn-disable-color': [colorsCode['gray-500'], colorsCode['white']],
-  'text-gray-900-purple-700': [colorsCode['purple-700'], colorsCode['gray-900']],
+  'text-gray-900-primary-default': [colorsCode['primary-default'], colorsCode['gray-900']],
 
   //onBoarding page
   'background-container': ['#01040D', '#FFFFFF'], //
@@ -172,6 +176,7 @@ const modeColors = {
   'text-btn-disable-danger': ['#8E8E93', '#FFFFFF'],
   'text-btn-disabled-primary': ['#8E8E93', colorsCode['white']],
   'border-input-login': ['#3A3A3C', '#E2DEEB'],
+  'on-bg': ['#232125', '#232125'],
   'background-input-modal': ['#0E121D', '#FFFFFF'],
   'text-value-input-login': ['#E2DEEB', '#1C1C1E'], //icon input eyes
   'text-label-input': ['#C7C7CC', '#48484A'], //note under input
@@ -195,7 +200,7 @@ const modeColors = {
   'text-label-list': [colorsCode['gray-300'], colorsCode['blue-300']],
   'label-bottom-bar': ['#E2DEEB', '#5F5E77'],
   'border-bottom-tab': ['#3B2368', '#F0F0F0'],
-  'on-background-toggle': ['#9AE796', '#A0F29B'],
+  'on-background-toggle': ['#90B51B', '#90B51B'],
   'off-background-toggle': ['#6F6F76', '#E9E9EA'],
   'bg-icon-token': ['#E5E5EA', '#F3F1F5'],
   'bg-circle-select-modal': [colorsCode['gray-400'], colorsCode['purple-100']],
@@ -203,7 +208,76 @@ const modeColors = {
   skeleton: ['#36384a', '#f3f2f2'],
   'bg-tonner': ['#191B21', '#F6EDFF'],
   'bg-swap-box': ['#1E1E21', '#F6F9FF'],
-  'bg-btn-select-token': ['#333339', '#EAF1FF']
+  'bg-btn-select-token': ['#333339', '#EAF1FF'],
+  'icon-primary-surface-default-gray': ['#A22DFF', '#5C00A3'],
+  // New UI Colors(28.12.2023)
+  // We gonna use this colors from now on
+  // I.Neutral
+  'neutral-surface-bg': [, '#121511', '#F5F5F7'],
+  'neutral-surface-bg2': ['#323133', '#F5F5F7'],
+  'neutral-surface-card': ['#242325', '#FFFFFF'],
+  'neutral-surface-action': ['#323133', '#EBEDF2'],
+  'neutral-surface-action2': ['#323133', '#EBEDF2'],
+  'neutral-surface-action3': ['#323133', '#F5F5F7'],
+  'neutral-surface-toggle-active': ['#494949', '#fff'],
+  'neutral-surface-pressed': ['#6A6B71', '#D4D7E1'],
+  'neutral-surface-disable': ['#323133', '#EBEDF2'],
+  'neutral-border-default': ['#323133', '#EBEDF2'],
+  'neutral-border-strong': ['#6A6B71', '#242325'],
+  'neutral-border-bold': ['#6A6B71', '#242325'],
+  'neutral-border-disable': ['#242325', '#F5F5F7'],
+  'neutral-text-heading': ['#EBEDF2', '#242325'],
+  'neutral-text-title': ['#F5F5F7', '#242325'],
+  'neutral-text-body': ['#909298', '#6A6B71'],
+  'neutral-text-body2': ['#909298', '#494949'],
+  'neutral-text-action-on-dark-bg': ['#FBFBFB', '#FBFBFB'],
+  'neutral-text-action-on-light-bg': ['#FBFBFB', '#242325'],
+  'neutral-text-disable': ['#494949', '#C6C8CE'],
+  'neutral-icon-on-dark': ['#FBFBFB', '#FBFBFB'],
+  'neutral-icon-on-light': ['#FBFBFB', '#242325'],
+  'neutral-icon-disable': ['#494949', '#C6C8CE'],
+  // II.Primary
+  'primary-surface-disable': ['#5C00A3', '#EBD1FF'],
+  'primary-surface-subtle': ['#3D006B', '#F4E5FF'],
+  'primary-surface-active': ['#5C00A3', '#C170FF'],
+  'primary-surface-default': ['#A22DFF', '#5C00A3'],
+  'primary-surface-pressed': ['#A22DFF', '#7C00DB'],
+  'primary-text-action': ['#C170FF', '#7C00DB'],
+  'primary-text-pressed': ['#AD42FF', '#A22DFF'],
+  // III.Hightlight
+  'hightlight-surface-subtle': ['#46580B', '#E4F5B0'],
+  'hightlight-surface-active': ['#A3CE1A', '#90B51B'],
+  'hightlight-text-title': ['#CAEB60', '#46580B'],
+  // IV.Error
+  'error-surface-subtle': ['#700B00', '#FFEDEB'],
+  'error-surface-active': ['#A81100', '#FFACA3'],
+  'error-surface-default': ['#E01600', '#A81100'],
+  'error-surface-pressed': ['#FF5947', '#E01600'],
+  'error-border-disable': ['#700B00', '#FFD6D1'],
+  'error-border-default': ['#E01600', '#A81100'],
+  'error-border-pressed': ['#FF5947', '#E01600'],
+  'error-text-action': ['#FF5947', '#E01600'],
+  'error-text-body': ['#FF5947', '#E01600'],
+  // V.Warning
+  'warning-surface-subtle': ['#7A4D00', '#FFF8EB'],
+  'warning-surface-active': ['#B87500', '#FFE1AD'],
+  'warning-surface-default': ['#F29900', '#B87500'],
+  'warning-surface-pressed': ['#FFC35C', '#F29900'],
+  'warning-border-disable': ['#7A4D00', '#FFF0D6'],
+  'warning-border-default': ['#F29900', '#B87500'],
+  'warning-border-pressed': ['#FFC35C', '#F29900'],
+  'warning-text-action': ['#F29900', '#F29900'],
+  'warning-text-body': ['#F29900', '#F29900'],
+  // VI.Success
+  'success-surface-subtle': ['#007018', '#ECFEEE'],
+  'success-surface-active': ['#007018', '#D3FDD7'],
+  'success-surface-default': ['#00AD26', '#007018'],
+  'success-surface-pressed': ['#39DD47', '#00AD26'],
+  'success-border-disable': ['#007018', '#D3FDD7'],
+  'success-border-default': ['#00AD26', '#007018'],
+  'success-border-pressed': ['#39DD47', '#00AD26'],
+  'success-text-action': ['#00AD26', '#00AD26'],
+  'success-text-body': ['#00AD26', '#00AD26']
 };
 const typeColorsTheme = () => modeColors;
 type TypeTheme = { [P in keyof ReturnType<typeof typeColorsTheme>]: string };

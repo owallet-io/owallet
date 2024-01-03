@@ -19,13 +19,7 @@ export const FullScreenCameraView: FunctionComponent<
 
   const isFocused = useIsFocused();
 
-  const {
-    children,
-    containerBottom,
-    isLoading,
-    style: propStyle,
-    ...rest
-  } = props;
+  const { children, containerBottom, isLoading, style: propStyle, ...rest } = props;
 
   return (
     <React.Fragment>
@@ -84,7 +78,7 @@ export const FullScreenCameraView: FunctionComponent<
                   justifyContent: 'center'
                 }}
               >
-                <CloseIcon size={28} color={colors['purple-700']} />
+                <CloseIcon size={28} color={colors['primary-surface-default']} />
               </View>
             </TouchableOpacity>
           ) : null}
@@ -97,7 +91,7 @@ export const FullScreenCameraView: FunctionComponent<
         <View>
           <Svg width="217" height="217" fill="none" viewBox="0 0 217 217">
             <Path
-              stroke={colors['purple-700']}
+              stroke={colors['primary-surface-default']}
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeWidth="6"
@@ -126,12 +120,12 @@ export const FullScreenCameraView: FunctionComponent<
                   backgroundColor: colors['camera-loading-background']
                 }}
               >
-                <LoadingSpinner size={42} color={colors['purple-700']} />
+                <LoadingSpinner size={42} color={colors['primary-surface-default']} />
                 <Text
                   style={{
                     ...typography['subtitle1'],
                     marginTop: 34,
-                    color: colors['purple-700']
+                    color: colors['primary-surface-default']
                   }}
                 >
                   Loading...

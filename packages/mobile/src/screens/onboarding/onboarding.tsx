@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import GatewayIntroScreen from './gateway_intro';
 import ManageIntroScreen from './manage_intro';
@@ -8,6 +8,11 @@ import { View, Image, StyleSheet, Platform } from 'react-native';
 import { colors, metrics } from '../../themes';
 import { PageWithScrollView } from '../../components/page';
 import { useGetHeightHeader } from '@src/hooks/use-height-header';
+import { useStore } from '@src/stores';
+import { useSmartNavigation } from '@src/navigation.provider';
+import { useSimpleTimer } from '@src/hooks';
+import { OWButton } from '@src/components/button';
+import { ProgressBar } from '@src/components/progress-bar';
 
 const slides = [
   {
@@ -17,58 +22,90 @@ const slides = [
   {
     key: 2,
     component: <ManageIntroScreen />
-  },
-  {
-    key: 3,
-    component: <GatewayIntroScreen />
   }
+  // {
+  //   key: 3,
+  //   component: <GatewayIntroScreen />
+  // }
 ];
 
 const styling = () => {
-  const height = useGetHeightHeader();
   return StyleSheet.create({
     onBoardingRoot: {
-      position: 'relative',
-      height:
-        Platform.OS == 'ios'
-          ? metrics.screenHeight - (height + 20)
-          : metrics.screenHeight
+      height: metrics.screenHeight,
+      backgroundColor: colors['white']
     },
-    onBoardingImgFooter: {
+    getStarted: {
       position: 'absolute',
-      bottom: -50,
-      zIndex: -1,
-      alignItems: 'flex-end'
+      bottom: 40,
+      width: metrics.screenWidth - 32,
+      marginHorizontal: 16,
+      borderRadius: 999
+    },
+    progress: {
+      position: 'absolute',
+      top: 60,
+      zIndex: 9,
+      marginHorizontal: 16
     }
   });
 };
 
 export const OnboardingIntroScreen: FunctionComponent = observer(() => {
+  const { appInitStore } = useStore();
+  const [slide, setSlide] = useState(0);
+  const smartNavigation = useSmartNavigation();
+  const { isTimedOut, setTimer } = useSimpleTimer();
+  const onGetStarted = async () => {
+    await appInitStore.updateInitApp();
+    setTimer(1000);
+    setTimeout(() => {
+      smartNavigation.navigateSmart('Register.Intro', {});
+    }, 1000);
+  };
   const renderItem = ({ item }) => {
     return <View>{item.component}</View>;
   };
+
   const styles = styling();
   return (
-    <PageWithScrollView backgroundColor="white">
-      <View style={[{ ...styles.onBoardingRoot }, { paddingTop: 50 }]}>
+    <View>
+      <View style={[{ ...styles.onBoardingRoot }]}>
+        <View style={styles.progress}>
+          <ProgressBar
+            progress={(slide + 1) * 50}
+            styles={{
+              width: metrics.screenWidth - 32,
+              height: 6,
+              backgroundColor: colors['gray-250']
+            }}
+            progressColor={colors['green-active']}
+          />
+        </View>
+
         <AppIntroSlider
           renderItem={renderItem}
           data={slides}
           showNextButton={false}
-          dotStyle={{ backgroundColor: colors['purple-100'], marginTop: 60 }}
-          activeDotStyle={{
-            backgroundColor: colors['purple-700'],
-            marginTop: 60
+          dotStyle={{ display: 'none' }}
+          onSlideChange={s => {
+            setSlide(s);
           }}
+          // dotStyle={{ backgroundColor: colors['purple-100'], marginTop: 60 }}
+          // activeDotStyle={{
+          //   backgroundColor: colors['primary-surface-default'],
+          //   marginTop: 60
+          // }}
           showDoneButton={false}
         />
-        <Image
-          source={require('../../assets/image/onboarding-footer-img.png')}
-          fadeDuration={0}
-          style={styles.onBoardingImgFooter}
-          width={metrics.screenWidth}
+        <OWButton
+          style={styles.getStarted}
+          label="Get started!"
+          onPress={onGetStarted}
+          disabled={isTimedOut}
+          loading={isTimedOut}
         />
       </View>
-    </PageWithScrollView>
+    </View>
   );
 });

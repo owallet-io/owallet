@@ -30,16 +30,13 @@ export const RegisterNotNewUserScreen: FunctionComponent = observer(() => {
       style={StyleSheet.flatten([
         style.flatten(['padding-x-42']),
         {
-          paddingTop:
-            Dimensions.get('window').height * 0.22 - actualHeightHeight,
+          paddingTop: Dimensions.get('window').height * 0.22 - actualHeightHeight,
           paddingBottom: Dimensions.get('window').height * 0.11
         }
       ])}
       backgroundColor={colors['plain-background']}
     >
-      <View
-        style={style.flatten(['flex-grow-1', 'items-center', 'padding-x-18'])}
-      >
+      <View style={style.flatten(['flex-grow-1', 'items-center', 'padding-x-18'])}>
         <OWalletLogo />
       </View>
       <Button
@@ -50,6 +47,9 @@ export const RegisterNotNewUserScreen: FunctionComponent = observer(() => {
           analyticsStore.logEvent('Import account started', {
             registerType: 'seed'
           });
+          // smartNavigation.navigateSmart('Register.RecoverPhrase', {
+          //   registerConfig
+          // });
           smartNavigation.navigateSmart('Register.RecoverMnemonic', {
             registerConfig
           });

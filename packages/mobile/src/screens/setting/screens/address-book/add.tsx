@@ -1,10 +1,5 @@
 import { EthereumEndpoint } from '@owallet/common';
-import {
-  AddressBookConfig,
-  useAddressBookConfig,
-  useMemoConfig,
-  useRecipientConfig
-} from '@owallet/hooks';
+import { AddressBookConfig, useAddressBookConfig, useMemoConfig, useRecipientConfig } from '@owallet/hooks';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { OWBox } from '@src/components/card';
 import { useTheme } from '@src/themes/theme-provider';
@@ -15,11 +10,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { AsyncKVStore } from '../../../../common';
 import { OWButton } from '../../../../components/button';
 import { Scanner } from '../../../../components/icon';
-import {
-  AddressInput,
-  MemoInput,
-  TextInput
-} from '../../../../components/input';
+import { AddressInput, MemoInput, TextInput } from '../../../../components/input';
 import { PageWithScrollView } from '../../../../components/page';
 import { useSmartNavigation } from '../../../../navigation.provider';
 import { useStore } from '../../../../stores';
@@ -70,34 +61,25 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
   const { colors } = useTheme();
   const styles = styling(colors);
 
-  const recipientConfig = useRecipientConfig(
-    chainStore,
-    route.params.chainId,
-    EthereumEndpoint
-  );
+  const recipientConfig = useRecipientConfig(chainStore, route.params.chainId, EthereumEndpoint);
 
   const smartNavigation = useSmartNavigation();
   // const addressBookConfig = route.params.addressBookConfig;
 
   const addressBookConfig = route.params.addressBookConfig
     ? route.params.addressBookConfig
-    : useAddressBookConfig(
-        new AsyncKVStore('address_book'),
-        chainStore,
-        chainStore.current.chainId,
-        {
-          setRecipient: (recipient: string) => {
-            if (recipientConfig) {
-              recipientConfig.setRawRecipient(recipient);
-            }
-          },
-          setMemo: (memo: string) => {
-            if (memoConfig) {
-              memoConfig.setMemo(memo);
-            }
+    : useAddressBookConfig(new AsyncKVStore('address_book'), chainStore, chainStore.current.chainId, {
+        setRecipient: (recipient: string) => {
+          if (recipientConfig) {
+            recipientConfig.setRawRecipient(recipient);
+          }
+        },
+        setMemo: (memo: string) => {
+          if (memoConfig) {
+            memoConfig.setMemo(memo);
           }
         }
-      );
+      });
 
   const [name, setName] = useState('');
   useEffect(() => {
@@ -114,10 +96,7 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
 
   return (
     // <PageWithScrollView behavior='position' keyboardVerticalOffset={keyboardVerticalOffset}>
-    <PageWithScrollView
-      backgroundColor={colors['background']}
-      style={{ marginTop: spacing['24'] }}
-    >
+    <PageWithScrollView backgroundColor={colors['background']} style={{ marginTop: spacing['24'] }}>
       <OWBox>
         <TextInput
           label="User name"
@@ -144,7 +123,7 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
                 });
               }}
             >
-              <Scanner color={colors['purple-700']} />
+              <Scanner color={colors['primary-surface-default']} />
             </TouchableOpacity>
           }
         />
@@ -163,17 +142,9 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
           label="Save"
           size="large"
           type="primary"
-          disabled={
-            !name ||
-            recipientConfig.getError() != null ||
-            memoConfig.getError() != null
-          }
+          disabled={!name || recipientConfig.getError() != null || memoConfig.getError() != null}
           onPress={async () => {
-            if (
-              name &&
-              recipientConfig.getError() == null &&
-              memoConfig.getError() == null
-            ) {
+            if (name && recipientConfig.getError() == null && memoConfig.getError() == null) {
               await addressBookConfig.addAddressBook({
                 name,
                 address: recipientConfig.rawRecipient,

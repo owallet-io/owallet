@@ -5,7 +5,8 @@ import { colors, spacing } from '../../themes';
 export const ProgressBar: FunctionComponent<{
   progress: number;
   styles?: object;
-}> = ({ progress = 0, styles = [] }) => {
+  progressColor?: string;
+}> = ({ progress = 0, styles = [], progressColor }) => {
   return (
     <View
       style={{
@@ -19,7 +20,7 @@ export const ProgressBar: FunctionComponent<{
       <View
         style={{
           height: spacing['8'],
-          backgroundColor: colors['purple-700'],
+          backgroundColor: progressColor ?? colors['primary-surface-default'],
           borderRadius: spacing['32'],
           width: `${progress}%`
         }}

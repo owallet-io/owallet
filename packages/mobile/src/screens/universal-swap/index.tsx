@@ -16,7 +16,6 @@ import {
   TokenItemType,
   NetworkChainId,
   oraichainNetwork,
-  tokenMap,
   toAmount,
   network,
   Networks,
@@ -28,7 +27,7 @@ import {
 import { openLink } from '../../utils/helper';
 import { SwapDirection, feeEstimate, getTransferTokenFee } from '@owallet/common';
 import { handleSimulateSwap, filterNonPoolEvmTokens } from '@oraichain/oraidex-universal-swap';
-import { fetchTokenInfos, ChainIdEnum } from '@owallet/common';
+import { fetchTokenInfos, ChainIdEnum, tokenMap } from '@owallet/common';
 import { calculateMinReceive, getTokenOnOraichain } from '@oraichain/oraidex-common';
 import {
   isEvmNetworkNativeSwapSupported,
@@ -44,6 +43,8 @@ import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import { useLoadTokens, useCoinGeckoPrices, useClient, useRelayerFee, useTaxRate } from '@owallet/hooks';
 import { getTransactionUrl, handleErrorSwap } from './helpers';
 import { useIsFocused } from '@react-navigation/native';
+import { useQuery } from '@tanstack/react-query';
+
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
 
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
@@ -53,8 +54,19 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const chainInfo = chainStore.getChain(ChainIdEnum.Oraichain);
 
-  const accountEvm = accountStore.getAccount(ChainIdEnum.Ethereum);
-  const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
+  let accounts = {};
+
+  Object.keys(ChainIdEnum).map(key => {
+    let defaultAddress = accountStore.getAccount(ChainIdEnum[key]).bech32Address;
+    if (ChainIdEnum[key] === ChainIdEnum.TRON) {
+      accounts[ChainIdEnum[key]] = getBase58Address(accountStore.getAccount(ChainIdEnum[key]).evmosHexAddress);
+    } else if (defaultAddress.startsWith('evmos')) {
+      accounts[ChainIdEnum[key]] = accountStore.getAccount(ChainIdEnum[key]).evmosHexAddress;
+    } else {
+      accounts[ChainIdEnum[key]] = defaultAddress;
+    }
+  });
+
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
 
   const [isSlippageModal, setIsSlippageModal] = useState(false);
@@ -71,8 +83,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const [[fromTokenDenom, toTokenDenom], setSwapTokens] = useState<[string, string]>(['orai', 'usdt']);
 
-  const [[fromTokenInfoData, toTokenInfoData], setTokenInfoData] = useState<TokenItemType[]>([]);
-
   const [fromTokenFee, setFromTokenFee] = useState<number>(0);
   const [toTokenFee, setToTokenFee] = useState<number>(0);
   const [relayerFeeAmount, setRelayerFeeAmount] = useState<number>(0);
@@ -85,6 +95,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const [balanceActive, setBalanceActive] = useState<BalanceType>(null);
 
   const client = useClient(accountOrai);
+
   const relayerFee = useRelayerFee(accountOrai);
   const taxRate = useTaxRate(accountOrai);
 
@@ -178,14 +189,15 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     );
   }, [originalToToken, fromToken, toToken, originalToToken, client]);
 
-  const getTokenInfos = async () => {
-    const data = await fetchTokenInfos([fromToken!, toToken!], client);
-    setTokenInfoData(data);
-  };
-
-  useEffect(() => {
-    getTokenInfos();
-  }, [toTokenDenom, fromTokenDenom, client]);
+  const {
+    data: [fromTokenInfoData, toTokenInfoData]
+  } = useQuery({
+    queryKey: ['token-infos', fromToken, toToken],
+    queryFn: () => fetchTokenInfos([fromToken!, toToken!], client),
+    ...{
+      initialData: []
+    }
+  });
 
   const isFocused = useIsFocused();
 
@@ -218,16 +230,16 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       };
       loadTokenParams = {
         ...loadTokenParams,
-        metamaskAddress: accountEvm.evmosHexAddress
+        metamaskAddress: accounts[ChainIdEnum.Ethereum]
       };
       loadTokenParams = {
         ...loadTokenParams,
         kwtAddress: accountOrai.bech32Address
       };
-      if (accountTron) {
+      if (accounts[ChainIdEnum.TRON]) {
         loadTokenParams = {
           ...loadTokenParams,
-          tronAddress: getBase58Address(accountTron.evmosHexAddress)
+          tronAddress: accounts[ChainIdEnum.TRON]
         };
       }
 
@@ -385,7 +397,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   };
 
   const handleSubmit = async () => {
-    // account.handleUniversalSwap(chainId, { key: 'value' });
     if (fromAmountToken <= 0) {
       showToast({
         message: 'From amount should be higher than 0!',
@@ -397,6 +408,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setSwapLoading(true);
     try {
       const cosmosWallet = new SwapCosmosWallet(client);
+      const cosmosAddress = originalFromToken.cosmosBased
+        ? accounts[originalFromToken.chainId]
+        : accountOrai.bech32Address;
 
       const isTron = Number(originalFromToken.chainId) === Networks.tron;
 
@@ -409,9 +423,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
       const universalSwapData: UniversalSwapData = {
         sender: {
-          cosmos: accountOrai.bech32Address,
-          evm: accountEvm.evmosHexAddress,
-          tron: getBase58Address(accountTron.evmosHexAddress)
+          cosmos: cosmosAddress,
+          evm: accounts[ChainIdEnum.Ethereum],
+          tron: accounts[ChainIdEnum.TRON]
         },
         originalFromToken: originalFromToken,
         originalToToken: originalToToken,
@@ -455,6 +469,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       handleErrorSwap(error?.message ?? error?.ex?.message);
     } finally {
       setSwapLoading(false);
+      setSwapAmount([0, 0]);
     }
   };
 
