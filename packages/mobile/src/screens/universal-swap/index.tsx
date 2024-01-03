@@ -33,8 +33,8 @@ import {
   isEvmNetworkNativeSwapSupported,
   isEvmSwappable,
   isSupportedNoPoolSwapEvm,
-  UniversalSwapData
-  // UniversalSwapHandler
+  UniversalSwapData,
+  UniversalSwapHandler
 } from '@oraichain/oraidex-universal-swap';
 import { SwapCosmosWallet, SwapEvmWallet } from './wallet';
 import { styling } from './styles';
@@ -44,7 +44,6 @@ import { useLoadTokens, useCoinGeckoPrices, useClient, useRelayerFee, useTaxRate
 import { getTransactionUrl, handleErrorSwap } from './helpers';
 import { useIsFocused } from '@react-navigation/native';
 import { useQuery } from '@tanstack/react-query';
-import { UniversalSwapHandler } from './handler/universal-swap/src';
 
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
 
