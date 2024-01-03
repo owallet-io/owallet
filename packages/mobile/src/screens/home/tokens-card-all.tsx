@@ -85,7 +85,7 @@ export const TokensCardAll: FunctionComponent<{
     }, 2000);
   }, []);
 
-  const styles = styling(colors);
+  const styles = styling();
   const smartNavigation = useSmartNavigation();
   const [index, setIndex] = useState<number>(0);
 
@@ -167,7 +167,7 @@ export const TokensCardAll: FunctionComponent<{
   );
 });
 
-const styling = colors =>
+const styling = () =>
   StyleSheet.create({
     wrapHeaderTitle: {
       flexDirection: 'row',
