@@ -12,6 +12,7 @@ import { numberWithCommas } from '../../../utils/helper';
 import { useTheme } from '@src/themes/theme-provider';
 import { useQuery } from '@tanstack/react-query';
 import moment from 'moment';
+import { CoinGeckoAPIEndPoint } from '@owallet/common';
 
 export const BlockCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -29,7 +30,7 @@ export const BlockCard: FunctionComponent<{
         {
           id: chainStore.current.stakeCurrency.coinGeckoId
         },
-        { baseURL: 'https://api.coingecko.com/api/v3' }
+        { baseURL: CoinGeckoAPIEndPoint }
       ),
     ...{
       initialData: null

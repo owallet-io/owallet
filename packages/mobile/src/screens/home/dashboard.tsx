@@ -14,6 +14,7 @@ import { metrics, spacing } from '../../themes';
 import { nFormatter } from '../../utils/helper';
 import { colorsCode } from '@src/themes/mode-colors';
 import { useQuery } from '@tanstack/react-query';
+import { CoinGeckoAPIEndPoint } from '@owallet/common';
 
 const DATA_COUNT_DENOM = 4;
 const transformData = data => {
@@ -121,7 +122,7 @@ export const DashboardCard: FunctionComponent<{
         {
           id: chainStore.current.stakeCurrency.coinGeckoId
         },
-        { baseURL: 'https://api.coingecko.com/api/v3' }
+        { baseURL: CoinGeckoAPIEndPoint }
       ),
     ...{
       initialData: null
