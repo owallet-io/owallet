@@ -2,8 +2,8 @@ import { OWButton } from '@src/components/button';
 import { OWEmpty } from '@src/components/empty';
 import { useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
-import React, { FunctionComponent, useEffect, useState } from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
+import React, { FunctionComponent, useCallback, useEffect, useState } from 'react';
+import { StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { CardBody, OWBox } from '../../components/card';
 import { useSmartNavigation } from '../../navigation.provider';
 import { useStore } from '../../stores';
@@ -21,6 +21,8 @@ import {
   toDisplay,
   toSumDisplay
 } from '@oraichain/oraidex-common';
+import OWIcon from '@src/components/ow-icon/ow-icon';
+import { Text } from '@src/components/text';
 
 export const TokensCardAll: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -92,14 +94,14 @@ export const TokensCardAll: FunctionComponent<{
     handleFetchAmounts();
     counter++;
 
-    if (counter === 3) {
+    if (counter === 2) {
       clearTimeout(intervalId);
       console.log('Execution stopped.');
     }
   };
 
   const callFunctionRepeatedly = () => {
-    intervalId = setInterval(fetchAmounts, 3000);
+    intervalId = setInterval(fetchAmounts, 5000);
   };
 
   useEffect(() => {
@@ -159,12 +161,49 @@ export const TokensCardAll: FunctionComponent<{
   console.log('dataTokens', dataTokens);
 
   const styles = styling();
-  const smartNavigation = useSmartNavigation();
-  const [index, setIndex] = useState<number>(0);
 
-  const onActiveType = i => {
-    setIndex(i);
-  };
+  const renderTokenItem = useCallback(
+    item => {
+      if (item) {
+        return (
+          <TouchableOpacity onPress={() => {}} style={styles.btnItem}>
+            <View style={styles.leftBoxItem}>
+              <View
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 12,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  overflow: 'hidden',
+                  backgroundColor: colors['gray-10']
+                }}
+              >
+                <OWIcon type="images" source={{ uri: item.icon }} size={35} />
+              </View>
+              <View style={styles.pl10}>
+                <Text size={16} color={colors['text-title']} weight="500">
+                  {item.asset}
+                </Text>
+                <Text weight="500" color={colors['blue-400']}>
+                  {item.chain}
+                </Text>
+              </View>
+            </View>
+            <View style={styles.rightBoxItem}>
+              <Text color={colors['text-title']}>
+                {item.balance} {item.asset}
+              </Text>
+              <Text weight="500" color={colors['blue-400']}>
+                ${item.value}
+              </Text>
+            </View>
+          </TouchableOpacity>
+        );
+      }
+    },
+    [universalSwapStore?.getAmount]
+  );
 
   return (
     <View style={containerStyle}>
@@ -190,25 +229,13 @@ export const TokensCardAll: FunctionComponent<{
         </View>
 
         <CardBody>
-          {/* {tokens?.length > 0 ? (
-            tokens.map((token, index) => {
-              const priceBalance = priceStore.calculatePrice(token.balance);
-              return (
-                <TokenItem
-                  key={index?.toString()}
-                  chainInfo={{
-                    stakeCurrency: chainStore.current.stakeCurrency,
-                    networkType: chainStore.current.networkType,
-                    chainId: chainStore.current.chainId
-                  }}
-                  balance={token.balance}
-                  priceBalance={priceBalance}
-                />
-              );
+          {dataTokens?.length > 0 ? (
+            dataTokens.map(token => {
+              return renderTokenItem(token);
             })
           ) : (
             <OWEmpty />
-          )} */}
+          )}
         </CardBody>
       </OWBox>
     </View>
@@ -220,5 +247,21 @@ const styling = () =>
     wrapHeaderTitle: {
       flexDirection: 'row',
       marginHorizontal: spacing['page-pad']
+    },
+    pl10: {
+      paddingLeft: 10
+    },
+    leftBoxItem: {
+      flexDirection: 'row',
+      alignItems: 'center'
+    },
+    rightBoxItem: {
+      alignItems: 'flex-end'
+    },
+    btnItem: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginVertical: 10
     }
   });
