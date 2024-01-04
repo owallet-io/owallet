@@ -22,7 +22,7 @@ export type CoinGeckoPrices<T extends string> = {
  * @returns The CoinGecko prices.
  */
 export const useCoinGeckoPrices = () => {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<CoinGeckoPrices<string>>({});
   const tokens = [...new Set([...cosmosTokens, ...evmTokens].map(t => t.coinGeckoId))];
   tokens.sort();
 
@@ -49,5 +49,4 @@ export const useCoinGeckoPrices = () => {
     getCoingeckoPrices();
   }, []);
   return { data };
-  // use cached first then update by query, if is limited then return cached version
 };

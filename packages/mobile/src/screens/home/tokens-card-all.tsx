@@ -16,6 +16,7 @@ import {
   AmountDetails,
   flattenTokens,
   getSubAmountDetails,
+  getTotalUsd,
   oraichainNetwork,
   toAmount,
   toDisplay,
@@ -147,6 +148,10 @@ export const TokensCardAll: FunctionComponent<{
       return result;
     }, [])
     .sort((a, b) => b.value - a.value);
+
+  let totalUsd: number = getTotalUsd(universalSwapStore.getAmount, prices);
+
+  console.log('totalUsd', totalUsd);
 
   console.log('dataTokens', dataTokens);
 
