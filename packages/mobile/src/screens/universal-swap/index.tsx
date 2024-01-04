@@ -343,6 +343,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const estimateAverageRatio = async () => {
     const data = await getSimulateSwap(INIT_AMOUNT);
+
     setRatio(data);
   };
 
@@ -430,7 +431,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         originalFromToken: originalFromToken,
         originalToToken: originalToToken,
         simulateAmount: toAmountTokenString,
-        simulatePrice: ratio.amount,
+        // @ts-ignore
+        simulatePrice: ratio?.amount && Math.trunc(new BigDecimal(ratio.amount) / INIT_AMOUNT).toString(),
         userSlippage: userSlippage,
         fromAmount: fromAmountToken,
         relayerFee
