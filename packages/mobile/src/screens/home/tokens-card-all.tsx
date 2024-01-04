@@ -132,8 +132,10 @@ export const TokensCardAll: FunctionComponent<{
             asset: token.name,
             chain: token.org,
             chainId: token.chainId,
-            decimals: token.decimals,
+            cosmosBased: token.cosmosBased,
             contractAddress: token.contractAddress,
+            decimals: token.decimals,
+            coinType: token.coinType,
             coinGeckoId: token.coinGeckoId,
             icon: tokenIcon?.Icon,
             iconLight: tokenIcon?.IconLight,
@@ -172,24 +174,19 @@ export const TokensCardAll: FunctionComponent<{
         }}
       >
         <View style={styles.wrapHeaderTitle}>
-          {['Tokens'].map((title: string, i: number) => (
-            <View key={i}>
-              <OWButton
-                type="link"
-                onPress={() => onActiveType(i)}
-                label={title}
-                textStyle={{
-                  color: index === i ? colors['primary-text'] : colors['gray-300'],
-                  fontWeight: '700'
-                }}
-                style={{
-                  width: '90%',
-                  borderBottomColor: index === i ? colors['primary-text'] : colors['primary'],
-                  borderBottomWidth: 2
-                }}
-              />
-            </View>
-          ))}
+          <OWButton
+            type="link"
+            label={'Tokens'}
+            textStyle={{
+              color: colors['primary-text'],
+              fontWeight: '700'
+            }}
+            style={{
+              width: '100%',
+              borderBottomColor: colors['primary-text'],
+              borderBottomWidth: 2
+            }}
+          />
         </View>
 
         <CardBody>
@@ -213,19 +210,6 @@ export const TokensCardAll: FunctionComponent<{
             <OWEmpty />
           )} */}
         </CardBody>
-
-        <OWButton
-          label={capitalizedText('view all')}
-          size="medium"
-          type="secondary"
-          onPress={() => {
-            if (index === 0) {
-              smartNavigation.navigateSmart('Tokens', {});
-            } else {
-              smartNavigation.navigateSmart('Nfts', null);
-            }
-          }}
-        />
       </OWBox>
     </View>
   );

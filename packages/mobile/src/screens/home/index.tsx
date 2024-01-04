@@ -51,11 +51,6 @@ export const HomeScreen: FunctionComponent = observer(props => {
   }, [chainStore, chainStoreIsInitializing, currentChain, currentChainId]);
 
   useEffect(() => {
-    if (appInitStore.getInitApp.isAllNetworks) {
-    }
-  }, [appInitStore.getInitApp.isAllNetworks]);
-
-  useEffect(() => {
     const appStateHandler = (state: AppStateStatus) => {
       if (state === 'active') {
         checkAndUpdateChainInfo();
