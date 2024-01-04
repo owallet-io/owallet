@@ -22,7 +22,7 @@ export type CoinGeckoPrices<T extends string> = {
  * @returns The CoinGecko prices.
  */
 export const useCoinGeckoPrices = () => {
-  const [data, setData] = useState();
+  const [data, setData] = useState([]);
   const tokens = [...new Set([...cosmosTokens, ...evmTokens].map(t => t.coinGeckoId))];
   tokens.sort();
 

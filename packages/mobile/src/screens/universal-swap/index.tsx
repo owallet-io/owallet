@@ -276,6 +276,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     );
     setFilteredToTokens(filteredToTokens);
 
+    console.log('filteredToTokens', filteredToTokens);
+
     const filteredFromTokens = filterNonPoolEvmTokens(
       originalToToken.chainId,
       originalToToken.coinGeckoId,

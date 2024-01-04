@@ -10,9 +10,18 @@ import { useStore } from '../../stores';
 import { spacing } from '../../themes';
 import { capitalizedText, delay, showToast, _keyExtract } from '../../utils/helper';
 import { TokenItem } from '../tokens/components/token-item';
-import { ChainIdEnum, getBase58Address } from '@owallet/common';
-import { useLoadTokens } from '@owallet/hooks';
-import { oraichainNetwork } from '@oraichain/oraidex-common';
+import { ChainIdEnum, getBase58Address, tokensIcon } from '@owallet/common';
+import { useCoinGeckoPrices, useLoadTokens } from '@owallet/hooks';
+import {
+  AmountDetails,
+  flattenTokens,
+  getSubAmountDetails,
+  oraichainNetwork,
+  toAmount,
+  toDisplay,
+  TokenItemType,
+  toSumDisplay
+} from '@oraichain/oraidex-common';
 
 export const TokensCardAll: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -20,8 +29,6 @@ export const TokensCardAll: FunctionComponent<{
   const { chainStore, queriesStore, accountStore, priceStore, keyRingStore, universalSwapStore } = useStore();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const { colors } = useTheme();
-
-  console.log('amounts', universalSwapStore.getAmount);
 
   let accounts = {};
 
@@ -100,6 +107,48 @@ export const TokensCardAll: FunctionComponent<{
   useEffect(() => {
     callFunctionRepeatedly();
   }, []);
+
+  let networkFilter;
+
+  const { data: prices } = useCoinGeckoPrices();
+
+  const dataTokens = flattenTokens
+    .reduce((result, token) => {
+      // not display because it is evm map and no bridge to option, also no smart contract and is ibc native
+      if (token.bridgeTo || token.contractAddress) {
+        const isValidNetwork = !networkFilter || token.chainId === networkFilter;
+        if (isValidNetwork) {
+          const amount = BigInt(universalSwapStore.getAmount?.[token.denom] ?? 0);
+
+          const isHaveSubAmounts = token.contractAddress && token.evmDenoms;
+          const subAmounts = isHaveSubAmounts ? getSubAmountDetails(universalSwapStore.getAmount, token) : {};
+          const totalAmount = amount + (isHaveSubAmounts ? toAmount(toSumDisplay(subAmounts), token.decimals) : 0n);
+          const value = toDisplay(totalAmount.toString(), token.decimals) * (prices?.[token.coinGeckoId] || 0);
+
+          const SMALL_BALANCE = 0.01;
+          const isHide = value < SMALL_BALANCE;
+          if (isHide) return result;
+
+          const tokenIcon = tokensIcon.find(tIcon => tIcon.coinGeckoId === token.coinGeckoId);
+          result.push({
+            asset: token.name,
+            chain: token.org,
+            icon: tokenIcon?.Icon,
+            iconLight: tokenIcon?.IconLight,
+            price: prices[token.coinGeckoId] || 0,
+            balance: toDisplay(totalAmount.toString(), token.decimals),
+            denom: token.denom,
+            value,
+            coeff: 0,
+            coeffType: 'increase'
+          });
+        }
+      }
+      return result;
+    }, [])
+    .sort((a, b) => b.value - a.value);
+
+  console.log('dataTokens', dataTokens);
 
   const styles = styling();
   const smartNavigation = useSmartNavigation();
