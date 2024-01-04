@@ -4990,10 +4990,10 @@
     "@keplr-wallet/types" "^0.11.38"
     ethers "^5.0.15"
 
-"@oraichain/oraidex-common@^1.0.53":
-  version "1.0.53"
-  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-common/-/oraidex-common-1.0.53.tgz#b5cf4f2710c74a71f492dc8d38a30fe8a86e1983"
-  integrity sha512-F6dE7JRYrxsjZE8vyUu6vgyxBB9u7zmy8+7E17U3WB38/dIlHWYzEOCwhQTEKjVPkp9j1kRfoQARS4x+5N2ZLA==
+"@oraichain/oraidex-common@^1.0.54":
+  version "1.0.54"
+  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-common/-/oraidex-common-1.0.54.tgz#f62470888568d9e7f06048eaa1174e55b05dde5d"
+  integrity sha512-F+e/ve/XPLPPgnKm2PrqmfFs/tDu9b4oNrmQgu1xnioIYIOtsoT9eNSFbhumGYsjYStEds2bTZhZylkR3Xg+gA==
   dependencies:
     "@ethersproject/providers" "^5.0.10"
     "@keplr-wallet/types" "^0.11.38"

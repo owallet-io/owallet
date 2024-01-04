@@ -38,7 +38,7 @@
     "@cosmjs/proto-signing": "^0.29.3",
     "@cosmjs/stargate": "^0.31.0",
     "@oraichain/common-contracts-sdk": "^1.0.31",
-    "@oraichain/oraidex-common": "^1.0.53",
+    "@oraichain/oraidex-common": "^1.0.54",
     "@oraichain/oraidex-contracts-sdk": "^1.0.28",
     "@oraichain/cw-simulate": "^2.8.75",
     "@oraichain/oraidex-universal-swap": "^1.0.42",

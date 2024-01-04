@@ -134,6 +134,10 @@ export const TokensCardAll: FunctionComponent<{
           result.push({
             asset: token.name,
             chain: token.org,
+            chainId: token.chainId,
+            decimals: token.decimals,
+            contractAddress: token.contractAddress,
+            coinGeckoId: token.coinGeckoId,
             icon: tokenIcon?.Icon,
             iconLight: tokenIcon?.IconLight,
             price: prices[token.coinGeckoId] || 0,
