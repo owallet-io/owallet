@@ -171,7 +171,8 @@ export const TokensCardAll: FunctionComponent<{
         return;
       }
       smartNavigation.navigateSmart('Send', {
-        currency: item.denom
+        currency: item.denom,
+        contractAddress: item.contractAddress
       });
     }
   };

@@ -143,7 +143,7 @@ export const SendTronScreen: FunctionComponent = observer(props => {
             autoCompleteType="off"
           />
           <AmountInput
-            placeholder="ex. 1000 ORAI"
+            placeholder="ex. 1000 TRX"
             label="Amount"
             allowMax={chainStore.current.networkType !== 'evm' ? true : false}
             amountConfig={sendConfigs.amountConfig}

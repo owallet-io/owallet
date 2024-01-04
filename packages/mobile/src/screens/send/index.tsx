@@ -19,7 +19,7 @@ import { Toggle } from '../../components/toggle';
 import { OWBox } from '@src/components/card';
 import { OWSubTitleHeader } from '@src/components/header';
 
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     sendInputRoot: {
       paddingHorizontal: spacing['20'],
@@ -53,6 +53,7 @@ export const SendScreen: FunctionComponent = observer(() => {
           chainId?: string;
           currency?: string;
           recipient?: string;
+          contractAddress?: string;
         }
       >,
       string
@@ -77,7 +78,13 @@ export const SendScreen: FunctionComponent = observer(() => {
 
   useEffect(() => {
     if (route?.params?.currency) {
-      const currency = sendConfigs.amountConfig.sendableCurrencies.find((cur) => {
+      const currency = sendConfigs.amountConfig.sendableCurrencies.find(cur => {
+        if (cur?.contractAddress?.includes(route?.params?.contractAddress)) {
+          return cur?.contractAddress?.includes(route?.params?.contractAddress);
+        }
+        if (cur?.coinMinimalDenom.includes(route?.params?.contractAddress)) {
+          return cur?.coinMinimalDenom.includes(route?.params?.contractAddress);
+        }
         if (cur?.type === 'cw20') {
           return cur.coinDenom == route.params.currency;
         }
@@ -86,6 +93,8 @@ export const SendScreen: FunctionComponent = observer(() => {
         }
         return cur.coinMinimalDenom == route.params.currency;
       });
+
+      console.log('currency', currency);
 
       if (currency) {
         sendConfigs.amountConfig.setSendCurrency(currency);
@@ -133,7 +142,7 @@ export const SendScreen: FunctionComponent = observer(() => {
             }}
           />
           <AmountInput
-            placeholder="ex. 1000 ORAI"
+            placeholder={`ex. 1000 ${chainStore.current.stakeCurrency.coinDenom}`}
             label="Amount"
             allowMax={chainStore.current.networkType !== 'evm' ? true : false}
             amountConfig={sendConfigs.amountConfig}
@@ -153,7 +162,7 @@ export const SendScreen: FunctionComponent = observer(() => {
             >
               <Toggle
                 on={customFee}
-                onChange={(value) => {
+                onChange={value => {
                   setCustomFee(value);
                   if (!value) {
                     if (sendConfigs.feeConfig.feeCurrency && !sendConfigs.feeConfig.fee) {
@@ -185,7 +194,7 @@ export const SendScreen: FunctionComponent = observer(() => {
               placeholder="Type your Fee here"
               keyboardType={'numeric'}
               labelStyle={styles.sendlabelInput}
-              onChangeText={(text) => {
+              onChangeText={text => {
                 const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(DecUtils.getTenExponentNInPrecisionRange(6));
 
                 sendConfigs.feeConfig.setManualFee({
@@ -243,8 +252,8 @@ export const SendScreen: FunctionComponent = observer(() => {
                     },
 
                     {
-                      onFulfill: (tx) => {},
-                      onBroadcasted: (txHash) => {
+                      onFulfill: tx => {},
+                      onBroadcasted: txHash => {
                         analyticsStore.logEvent('Send token tx broadcasted', {
                           chainId: chainStore.current.chainId,
                           chainName: chainStore.current.chainName,
