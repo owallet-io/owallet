@@ -8,7 +8,7 @@ import { CardBody, OWBox } from '../../components/card';
 import { useSmartNavigation } from '../../navigation.provider';
 import { useStore } from '../../stores';
 import { spacing } from '../../themes';
-import { capitalizedText, showToast, _keyExtract } from '../../utils/helper';
+import { capitalizedText, delay, showToast, _keyExtract } from '../../utils/helper';
 import { TokenItem } from '../tokens/components/token-item';
 import { ChainIdEnum, getBase58Address } from '@owallet/common';
 import { useLoadTokens } from '@owallet/hooks';
@@ -79,10 +79,26 @@ export const TokensCardAll: FunctionComponent<{
     }
   };
 
+  let intervalId;
+  let counter = 0;
+
+  const fetchAmounts = () => {
+    console.log('Function called:', counter);
+    handleFetchAmounts();
+    counter++;
+
+    if (counter === 3) {
+      clearTimeout(intervalId);
+      console.log('Execution stopped.');
+    }
+  };
+
+  const callFunctionRepeatedly = () => {
+    intervalId = setInterval(fetchAmounts, 3000);
+  };
+
   useEffect(() => {
-    setTimeout(() => {
-      handleFetchAmounts();
-    }, 2000);
+    callFunctionRepeatedly();
   }, []);
 
   const styles = styling();
