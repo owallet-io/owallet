@@ -19,6 +19,7 @@ import { AccountCardBitcoin } from './account-card-bitcoin';
 import { TokensBitcoinCard } from './tokens-bitcoin-card';
 import { TRON_ID } from '@owallet/common';
 import { TokensCardAll } from './tokens-card-all';
+import { AccountBoxAll } from './account-box-all';
 
 export const HomeScreen: FunctionComponent = observer(props => {
   const [refreshing, setRefreshing] = React.useState(false);
@@ -116,7 +117,9 @@ export const HomeScreen: FunctionComponent = observer(props => {
     setRefreshDate(Date.now());
   }, [address, chainStore.current.chainId]);
   const renderAccountCard = (() => {
-    if (chainStore.current.networkType === 'bitcoin') {
+    if (appInitStore.getInitApp.isAllNetworks) {
+      return <AccountBoxAll />;
+    } else if (chainStore.current.networkType === 'bitcoin') {
       return <AccountCardBitcoin containerStyle={styles.containerStyle} />;
     } else if (chainStore.current.networkType === 'evm') {
       return <AccountCardEVM containerStyle={styles.containerStyle} />;

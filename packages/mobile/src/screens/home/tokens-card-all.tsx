@@ -2,14 +2,12 @@ import { OWButton } from '@src/components/button';
 import { OWEmpty } from '@src/components/empty';
 import { useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
-import React, { FunctionComponent, useCallback, useEffect, useState } from 'react';
+import React, { FunctionComponent, useCallback, useEffect } from 'react';
 import { StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { CardBody, OWBox } from '../../components/card';
-import { useSmartNavigation } from '../../navigation.provider';
 import { useStore } from '../../stores';
 import { spacing } from '../../themes';
-import { capitalizedText, showToast, _keyExtract } from '../../utils/helper';
-import { TokenItem } from '../tokens/components/token-item';
+import { showToast, _keyExtract } from '../../utils/helper';
 import { ChainIdEnum, getBase58Address, tokensIcon } from '@owallet/common';
 import { useCoinGeckoPrices, useLoadTokens } from '@owallet/hooks';
 import {
@@ -154,12 +152,6 @@ export const TokensCardAll: FunctionComponent<{
     }, [])
     .sort((a, b) => b.value - a.value);
 
-  let totalUsd: number = getTotalUsd(universalSwapStore.getAmount, prices);
-
-  console.log('totalUsd', totalUsd);
-
-  console.log('dataTokens', dataTokens);
-
   const styles = styling();
 
   const renderTokenItem = useCallback(
@@ -191,11 +183,9 @@ export const TokensCardAll: FunctionComponent<{
               </View>
             </View>
             <View style={styles.rightBoxItem}>
-              <Text color={colors['text-title']}>
-                {item.balance} {item.asset}
-              </Text>
+              <Text color={colors['text-title']}>{item.balance}</Text>
               <Text weight="500" color={colors['blue-400']}>
-                ${item.value}
+                ${item.value.toFixed(6)}
               </Text>
             </View>
           </TouchableOpacity>
