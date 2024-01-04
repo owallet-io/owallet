@@ -13,7 +13,6 @@ import { useCoinGeckoPrices, useLoadTokens } from '@owallet/hooks';
 import {
   flattenTokens,
   getSubAmountDetails,
-  getTotalUsd,
   oraichainNetwork,
   toAmount,
   toDisplay,
@@ -21,11 +20,15 @@ import {
 } from '@oraichain/oraidex-common';
 import OWIcon from '@src/components/ow-icon/ow-icon';
 import { Text } from '@src/components/text';
+import { useSmartNavigation } from '@src/navigation.provider';
+import { useNavigation } from '@react-navigation/native';
+import { SCREENS } from '@src/common/constants';
+import { navigate } from '@src/router/root';
 
 export const TokensCardAll: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
-  const { accountStore, universalSwapStore } = useStore();
+  const { accountStore, universalSwapStore, chainStore } = useStore();
   const { colors } = useTheme();
 
   let accounts = {};
@@ -41,6 +44,7 @@ export const TokensCardAll: FunctionComponent<{
     }
   });
 
+  const account = accountStore.getAccount(chainStore.current.chainId);
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
 
   const loadTokenAmounts = useLoadTokens(universalSwapStore);
@@ -154,11 +158,34 @@ export const TokensCardAll: FunctionComponent<{
 
   const styles = styling();
 
+  const smartNavigation = useSmartNavigation();
+
+  const onPressToken = async item => {
+    chainStore.selectChain(item?.chainId);
+    await chainStore.saveLastViewChainId();
+    if (!account.isNanoLedger) {
+      if (chainStore.current.networkType === 'bitcoin') {
+        navigate(SCREENS.STACK.Others, {
+          screen: SCREENS.SendBtc
+        });
+        return;
+      }
+      smartNavigation.navigateSmart('Send', {
+        currency: item.denom
+      });
+    }
+  };
+
   const renderTokenItem = useCallback(
     item => {
       if (item) {
         return (
-          <TouchableOpacity onPress={() => {}} style={styles.btnItem}>
+          <TouchableOpacity
+            onPress={() => {
+              onPressToken(item);
+            }}
+            style={styles.btnItem}
+          >
             <View style={styles.leftBoxItem}>
               <View
                 style={{

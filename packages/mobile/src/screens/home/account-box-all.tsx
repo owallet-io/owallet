@@ -24,7 +24,7 @@ export const AccountBoxAll: FunctionComponent<{
         marginHorizontal: 24
       }}
     >
-      <OWBox style={styles.containerOWBox} type="gradient">
+      <OWBox type="gradient">
         <View style={styles.overview}>
           <Text style={styles.titleTotalBalance}>Total Balance</Text>
           {!!totalBalance ? (
@@ -44,10 +44,7 @@ const styling = colors =>
     overview: {
       marginBottom: 16
     },
-    containerOWBox: {
-      borderBottomLeftRadius: 0,
-      borderBottomRightRadius: 0
-    },
+
     titleTotalBalance: {
       textAlign: 'center',
       color: colors['purple-400'],
@@ -56,8 +53,8 @@ const styling = colors =>
     },
     labelTotalAmount: {
       textAlign: 'center',
-      color: colors['gray-400'],
-      fontSize: 16
+      color: colors['neutral-surface-card'],
+      fontSize: 28
     },
     textCenter: {
       textAlign: 'center'
