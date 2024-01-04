@@ -8,27 +8,24 @@ import { CardBody, OWBox } from '../../components/card';
 import { useSmartNavigation } from '../../navigation.provider';
 import { useStore } from '../../stores';
 import { spacing } from '../../themes';
-import { capitalizedText, delay, showToast, _keyExtract } from '../../utils/helper';
+import { capitalizedText, showToast, _keyExtract } from '../../utils/helper';
 import { TokenItem } from '../tokens/components/token-item';
 import { ChainIdEnum, getBase58Address, tokensIcon } from '@owallet/common';
 import { useCoinGeckoPrices, useLoadTokens } from '@owallet/hooks';
 import {
-  AmountDetails,
   flattenTokens,
   getSubAmountDetails,
   getTotalUsd,
   oraichainNetwork,
   toAmount,
   toDisplay,
-  TokenItemType,
   toSumDisplay
 } from '@oraichain/oraidex-common';
 
 export const TokensCardAll: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
-  const { chainStore, queriesStore, accountStore, priceStore, keyRingStore, universalSwapStore } = useStore();
-  const account = accountStore.getAccount(chainStore.current.chainId);
+  const { accountStore, universalSwapStore } = useStore();
   const { colors } = useTheme();
 
   let accounts = {};
@@ -163,13 +160,6 @@ export const TokensCardAll: FunctionComponent<{
   const smartNavigation = useSmartNavigation();
   const [index, setIndex] = useState<number>(0);
 
-  const queries = queriesStore.get(chainStore.current.chainId);
-  const address = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
-  const queryBalances = queries.queryBalances.getQueryBech32Address(address);
-
-  // TODO: Add sorting rule
-  const tokens = queryBalances.positiveBalances.slice(0, 3);
-
   const onActiveType = i => {
     setIndex(i);
   };
@@ -203,7 +193,7 @@ export const TokensCardAll: FunctionComponent<{
         </View>
 
         <CardBody>
-          {tokens?.length > 0 ? (
+          {/* {tokens?.length > 0 ? (
             tokens.map((token, index) => {
               const priceBalance = priceStore.calculatePrice(token.balance);
               return (
@@ -221,7 +211,7 @@ export const TokensCardAll: FunctionComponent<{
             })
           ) : (
             <OWEmpty />
-          )}
+          )} */}
         </CardBody>
 
         <OWButton
