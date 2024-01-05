@@ -27,6 +27,22 @@ export enum ChainIdEnum {
   Bitcoin = 'bitcoin',
   Injective = 'injective-1'
 }
+
+export enum ChainNameEnum {
+  Oraichain = 'Oraichain',
+  OraichainTestnet = 'Oraichain-testnet',
+  OraiBridge = 'Orai Bride',
+  KawaiiCosmos = 'Kawaii Cosmos',
+  KawaiiEvm = 'Kawaii EVM',
+  Ethereum = 'Ethereum',
+  CosmosHub = 'Cosmos Hub',
+  Osmosis = 'Osmosis',
+  Juno = 'Juno',
+  BNBChain = 'BNB Chain',
+  TRON = 'Tron Network',
+  Injective = 'Injective'
+}
+
 export const restBtc = {
   [ChainIdEnum.Bitcoin]: 'https://blockstream.info/api',
   [ChainIdEnum.BitcoinTestnet]: 'https://blockstream.info/testnet/api'

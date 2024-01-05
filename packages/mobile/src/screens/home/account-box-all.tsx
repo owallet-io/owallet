@@ -11,7 +11,7 @@ import { DownArrowIcon } from '@src/components/icon';
 import { AddressCopyable } from '@src/components/address-copyable';
 import { spacing } from '@src/themes';
 import MyWalletModal from './components/my-wallet-modal/my-wallet-modal';
-import { ChainIdEnum, getBase58Address } from '@owallet/common';
+import { ChainIdEnum, ChainNameEnum, getBase58Address } from '@owallet/common';
 import { OWButton } from '@src/components/button';
 
 export const AccountBoxAll: FunctionComponent<{
@@ -31,11 +31,11 @@ export const AccountBoxAll: FunctionComponent<{
   Object.keys(ChainIdEnum).map(key => {
     let defaultAddress = accountStore.getAccount(ChainIdEnum[key]).bech32Address;
     if (ChainIdEnum[key] === ChainIdEnum.TRON) {
-      accounts[key] = getBase58Address(accountStore.getAccount(ChainIdEnum[key]).evmosHexAddress);
+      accounts[ChainNameEnum[key]] = getBase58Address(accountStore.getAccount(ChainIdEnum[key]).evmosHexAddress);
     } else if (defaultAddress.startsWith('evmos')) {
-      accounts[key] = accountStore.getAccount(ChainIdEnum[key]).evmosHexAddress;
+      accounts[ChainNameEnum[key]] = accountStore.getAccount(ChainIdEnum[key]).evmosHexAddress;
     } else {
-      accounts[key] = defaultAddress;
+      accounts[ChainNameEnum[key]] = defaultAddress;
     }
   });
 
@@ -80,12 +80,12 @@ export const AccountBoxAll: FunctionComponent<{
           </TouchableOpacity>
           <View style={styles.addressBox}>
             {Object.keys(accounts).map((k, index) => {
-              if (more) {
-                if (accounts[k] && index < 3) {
+              if (accounts[k]) {
+                if (more) {
+                  if (index < 3) return <AddressCopyable chain={k} address={accounts[k]} maxCharacters={22} />;
+                } else {
                   return <AddressCopyable chain={k} address={accounts[k]} maxCharacters={22} />;
                 }
-              } else {
-                return <AddressCopyable chain={k} address={accounts[k]} maxCharacters={22} />;
               }
             })}
           </View>
