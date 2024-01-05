@@ -11,7 +11,14 @@ import OWButtonIcon from '@src/components/button/ow-button-icon';
 import { BalanceText } from './components/BalanceText';
 import { SelectNetworkModal, SelectTokenModal, SlippageModal } from './modals/';
 import { showToast } from '@src/utils/helper';
-import { DEFAULT_SLIPPAGE, GAS_ESTIMATION_SWAP_DEFAULT, ORAI, toDisplay, getBase58Address } from '@owallet/common';
+import {
+  DEFAULT_SLIPPAGE,
+  GAS_ESTIMATION_SWAP_DEFAULT,
+  ORAI,
+  toDisplay,
+  getBase58Address,
+  getAddress
+} from '@owallet/common';
 import {
   TokenItemType,
   NetworkChainId,
@@ -201,12 +208,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const isFocused = useIsFocused();
 
-  useEffect(() => {
-    if (isFocused) {
-      handleFetchAmounts();
-    }
-  }, [isFocused]);
-
   const [isSelectFromTokenModal, setIsSelectFromTokenModal] = useState(false);
   const [isSelectToTokenModal, setIsSelectToTokenModal] = useState(false);
   const [isNetworkModal, setIsNetworkModal] = useState(false);
@@ -223,7 +224,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         accounts?.[ChainIdEnum.TRON] &&
         accounts?.[ChainIdEnum.Ethereum] &&
         accountOrai.bech32Address &&
-        accounts?.[ChainIdEnum.Oraichain]
+        accounts?.[ChainIdEnum.Oraichain] &&
+        accounts?.[ChainIdEnum.Injective]
       ) {
         const cwStargate = {
           account: accountOrai,
@@ -232,7 +234,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         };
         loadTokenParams = {
           ...loadTokenParams,
-          oraiAddress: accountOrai.bech32Address,
+          oraiAddress: accounts[ChainIdEnum.Oraichain],
           cwStargate
         };
         loadTokenParams = {
@@ -241,7 +243,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         };
         loadTokenParams = {
           ...loadTokenParams,
-          kwtAddress: accountOrai.bech32Address
+          kwtAddress: getAddress(accounts[ChainIdEnum.Injective], 'oraie')
         };
         loadTokenParams = {
           ...loadTokenParams,
@@ -266,7 +268,19 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
     // Clean up the timer when the component unmounts
     return () => clearTimeout(timer);
-  }, [accounts[ChainIdEnum.Ethereum], accounts[ChainIdEnum.TRON]]);
+  }, [
+    accounts[ChainIdEnum.Ethereum],
+    accounts[ChainIdEnum.Injective],
+    accounts[ChainIdEnum.TRON],
+    accounts[ChainIdEnum.CosmosHub]
+  ]);
+
+  useEffect(() => {
+    if (isFocused) {
+      handleFetchAmounts(accounts);
+    }
+  }, [isFocused]);
+
   const subAmountFrom = toSubAmount(universalSwapStore.getAmount, originalFromToken);
   const subAmountTo = toSubAmount(universalSwapStore.getAmount, originalToToken);
   const fromTokenBalance = originalFromToken
@@ -474,7 +488,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             }
           }
         });
-        await handleFetchAmounts();
+        await handleFetchAmounts(accounts);
       }
     } catch (error) {
       setSwapLoading(false);
@@ -488,7 +502,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const onRefresh = async () => {
     setLoadingRefresh(true);
-    await handleFetchAmounts();
+    await handleFetchAmounts(accounts);
     setLoadingRefresh(false);
   };
 

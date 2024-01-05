@@ -8,7 +8,7 @@ import { CardBody, OWBox } from '../../components/card';
 import { useStore } from '../../stores';
 import { spacing } from '../../themes';
 import { showToast, _keyExtract } from '../../utils/helper';
-import { ChainIdEnum, getBase58Address, tokensIcon } from '@owallet/common';
+import { ChainIdEnum, getAddress, getBase58Address, tokensIcon } from '@owallet/common';
 import { useCoinGeckoPrices, useLoadTokens } from '@owallet/hooks';
 import {
   flattenTokens,
@@ -57,7 +57,8 @@ export const TokensCardAll: FunctionComponent<{
         accounts?.[ChainIdEnum.TRON] &&
         accounts?.[ChainIdEnum.Ethereum] &&
         accountOrai.bech32Address &&
-        accounts?.[ChainIdEnum.Oraichain]
+        accounts?.[ChainIdEnum.Oraichain] &&
+        accounts?.[ChainIdEnum.Injective]
       ) {
         const cwStargate = {
           account: accountOrai,
@@ -66,7 +67,7 @@ export const TokensCardAll: FunctionComponent<{
         };
         loadTokenParams = {
           ...loadTokenParams,
-          oraiAddress: accountOrai.bech32Address,
+          oraiAddress: accounts[ChainIdEnum.Oraichain],
           cwStargate
         };
         loadTokenParams = {
@@ -75,7 +76,7 @@ export const TokensCardAll: FunctionComponent<{
         };
         loadTokenParams = {
           ...loadTokenParams,
-          kwtAddress: accountOrai.bech32Address
+          kwtAddress: getAddress(accounts[ChainIdEnum.Injective], 'oraie')
         };
         loadTokenParams = {
           ...loadTokenParams,
@@ -100,7 +101,12 @@ export const TokensCardAll: FunctionComponent<{
 
     // Clean up the timer when the component unmounts
     return () => clearTimeout(timer);
-  }, [accounts[ChainIdEnum.Ethereum], accounts[ChainIdEnum.TRON]]);
+  }, [
+    accounts[ChainIdEnum.Ethereum],
+    accounts[ChainIdEnum.Injective],
+    accounts[ChainIdEnum.TRON],
+    accounts[ChainIdEnum.CosmosHub]
+  ]);
 
   let networkFilter;
 
