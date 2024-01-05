@@ -2,12 +2,12 @@ import { OWButton } from '@src/components/button';
 import { OWEmpty } from '@src/components/empty';
 import { useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
-import React, { FunctionComponent, useCallback, useEffect } from 'react';
+import React, { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { CardBody, OWBox } from '../../components/card';
 import { useStore } from '../../stores';
 import { spacing } from '../../themes';
-import { showToast, _keyExtract } from '../../utils/helper';
+import { capitalizedText, showToast, _keyExtract } from '../../utils/helper';
 import { ChainIdEnum, getBase58Address, tokensIcon } from '@owallet/common';
 import { useCoinGeckoPrices, useLoadTokens } from '@owallet/hooks';
 import {
@@ -30,6 +30,7 @@ export const TokensCardAll: FunctionComponent<{
 }> = observer(({ containerStyle }) => {
   const { accountStore, universalSwapStore, chainStore } = useStore();
   const { colors } = useTheme();
+  const [more, setMore] = useState(true);
 
   let accounts = {};
 
@@ -96,18 +97,20 @@ export const TokensCardAll: FunctionComponent<{
     handleFetchAmounts();
     counter++;
 
-    if (counter === 2) {
+    if (counter === 3) {
       clearTimeout(intervalId);
       console.log('Execution stopped.');
     }
   };
 
   const callFunctionRepeatedly = () => {
-    intervalId = setInterval(fetchAmounts, 5000);
+    intervalId = setInterval(fetchAmounts, 3000);
   };
 
   useEffect(() => {
-    callFunctionRepeatedly();
+    setTimeout(() => {
+      handleFetchAmounts();
+    }, 2000);
   }, []);
 
   let networkFilter;
@@ -248,13 +251,26 @@ export const TokensCardAll: FunctionComponent<{
 
         <CardBody>
           {dataTokens?.length > 0 ? (
-            dataTokens.map(token => {
-              return renderTokenItem(token);
+            dataTokens.map((token, index) => {
+              if (more) {
+                if (index < 3) return renderTokenItem(token);
+              } else {
+                return renderTokenItem(token);
+              }
             })
           ) : (
             <OWEmpty />
           )}
         </CardBody>
+        <OWButton
+          label={more ? 'View all' : 'Hide'}
+          size="medium"
+          type="secondary"
+          onPress={() => {
+            handleFetchAmounts();
+            setMore(!more);
+          }}
+        />
       </OWBox>
     </View>
   );

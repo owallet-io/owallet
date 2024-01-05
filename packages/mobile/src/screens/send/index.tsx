@@ -94,8 +94,6 @@ export const SendScreen: FunctionComponent = observer(() => {
         return cur.coinMinimalDenom == route.params.currency;
       });
 
-      console.log('currency', currency);
-
       if (currency) {
         sendConfigs.amountConfig.setSendCurrency(currency);
       }
