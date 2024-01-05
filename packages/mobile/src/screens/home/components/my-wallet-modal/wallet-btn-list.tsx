@@ -43,7 +43,7 @@ const WalletBtnList = () => {
   const { colors } = useTheme();
   const styles = useStyleMyWallet();
   const registerConfig = useRegisterConfig(keyRingStore, []);
-  const onPressElementWallet = async (type) => {
+  const onPressElementWallet = async type => {
     await modalStore.close();
     switch (type) {
       case objTypeWallet.CREATE_WALLET:
@@ -56,7 +56,8 @@ const WalletBtnList = () => {
         analyticsStore.logEvent('Import account started', {
           registerType: 'seed'
         });
-        navigate('RegisterRecoverMnemonicMain', { registerConfig });
+        // navigate('RegisterRecoverMnemonicMain', { registerConfig });
+        navigate('RegisterRecoverPhrase', { registerConfig });
         break;
       case objTypeWallet.IMPORT_LEDGER_WALLET:
         navigate('RegisterNewLedgerMain', { registerConfig });
@@ -113,9 +114,7 @@ const WalletBtnList = () => {
           Don’t see your wallet on the list?
         </Text>
       </View>
-      <View style={{ width: '100%' }}>
-        {walletBtnList.map((item, index) => renderWalletBtn(item, index))}
-      </View>
+      <View style={{ width: '100%' }}>{walletBtnList.map((item, index) => renderWalletBtn(item, index))}</View>
     </>
   );
 };

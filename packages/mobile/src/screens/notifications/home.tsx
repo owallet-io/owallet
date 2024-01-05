@@ -1,18 +1,5 @@
-import React, {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useRef,
-  useState
-} from 'react';
-import {
-  ActivityIndicator,
-  FlatList,
-  RefreshControl,
-  StyleSheet,
-  TouchableOpacity,
-  View
-} from 'react-native';
+import React, { FunctionComponent, useCallback, useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { colors, metrics, spacing, typography } from '../../themes';
 import { _keyExtract } from '../../utils/helper';
 import { useSmartNavigation } from '../../navigation.provider';
@@ -76,10 +63,7 @@ export const NotificationScreen: FunctionComponent = () => {
     let msgTracer: TendermintTxTracer | undefined;
 
     if (isFocused) {
-      msgTracer = new TendermintTxTracer(
-        chainInfo?.rpc ?? chainInfo?.rest,
-        '/websocket'
-      );
+      msgTracer = new TendermintTxTracer(chainInfo?.rpc ?? chainInfo?.rest, '/websocket');
       msgTracer
         .subscribeMsgByAddress(account.bech32Address)
         .then(tx => {
@@ -161,10 +145,7 @@ export const NotificationScreen: FunctionComponent = () => {
               width: (metrics.screenWidth - 60) / 2,
               alignItems: 'center',
               paddingVertical: spacing['12'],
-              backgroundColor:
-                indexParent === i
-                  ? colors['purple-700']
-                  : colors['transparent'],
+              backgroundColor: indexParent === i ? colors['primary-surface-default'] : colors['transparent'],
               borderRadius: spacing['12']
             }}
             onPress={() => {
@@ -248,12 +229,7 @@ export const NotificationScreen: FunctionComponent = () => {
                 showsVerticalScrollIndicator={false}
                 keyExtractor={_keyExtract}
                 data={data}
-                refreshControl={
-                  <RefreshControl
-                    refreshing={loading}
-                    onRefresh={_handleRefresh}
-                  />
-                }
+                refreshControl={<RefreshControl refreshing={loading} onRefresh={_handleRefresh} />}
                 renderItem={_renderItem}
                 onEndReached={() => {
                   setLoadMore(true);

@@ -1,13 +1,6 @@
 import { useTheme } from '@src/themes/theme-provider';
 import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
-import {
-  Animated,
-  Easing,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  Platform,
-  View
-} from 'react-native';
+import { Animated, Easing, StyleSheet, TouchableWithoutFeedback, Platform, View } from 'react-native';
 import { spacing } from '../../themes';
 
 export const Toggle: FunctionComponent<{

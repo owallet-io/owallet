@@ -30,7 +30,6 @@ export const SignBitcoinModal: FunctionComponent<{
     });
 
     const [dataSign, setDataSign] = useState(null);
-    
 
     useEffect(() => {
       if (signInteractionStore.waitingBitcoinData) {
@@ -87,7 +86,7 @@ export const SignBitcoinModal: FunctionComponent<{
             <Text
               style={{
                 ...style.flatten(['subtitle2']),
-                color: colors['purple-700']
+                color: colors['primary-surface-default']
               }}
             >
               {formatBalance({
@@ -109,7 +108,7 @@ export const SignBitcoinModal: FunctionComponent<{
             <Text
               style={{
                 ...style.flatten(['subtitle2']),
-                color: colors['purple-700']
+                color: colors['primary-surface-default']
               }}
             >
               {formatBalance({

@@ -1,13 +1,11 @@
-import React from 'react'
-import { StyleSheet, View, Image } from 'react-native'
+import React from 'react';
+import { StyleSheet, View, Image } from 'react-native';
 import { Text } from '@src/components/text';
-import { colors, spacing, typography } from '../../../../themes'
-import { _keyExtract } from '../../../../utils/helper'
-import { BookMnemonicSeedIcon } from '../../../../components/icon/new-wallet'
-import MnemonicSeed from './mnemonic-seed'
-import WalletBtnList from './wallet-btn-list'
-
-
+import { colors, spacing, typography } from '../../../../themes';
+import { _keyExtract } from '../../../../utils/helper';
+import { BookMnemonicSeedIcon } from '../../../../components/icon/new-wallet';
+import MnemonicSeed from './mnemonic-seed';
+import WalletBtnList from './wallet-btn-list';
 
 const MyWalletModal = () => {
   return (
@@ -24,13 +22,13 @@ const MyWalletModal = () => {
             marginBottom: spacing['12']
           }}
         >
-          My Wallet
+          Set Default Wallet
         </Text>
       </View>
-      <MnemonicSeed  />
-      <WalletBtnList  />
+      <MnemonicSeed />
+      {/* <WalletBtnList  /> */}
     </View>
-  )
-}
+  );
+};
 
-export default MyWalletModal
+export default MyWalletModal;

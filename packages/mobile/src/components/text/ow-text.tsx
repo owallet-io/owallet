@@ -3,7 +3,33 @@ import React from 'react';
 import { useTheme } from '@src/themes/theme-provider';
 
 export interface OWTextProps extends TextProps {
-  variant?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'subtitle' | 'body1' | 'body2' | 'button' | 'caption' | 'overline';
+  variant?:
+    | 'h1'
+    | 'h2'
+    | 'h3'
+    | 'h4'
+    | 'h5'
+    | 'subtitle'
+    | 'body1'
+    | 'body2'
+    | 'button'
+    | 'caption'
+    | 'overline'
+    | 'heading'
+    | 'bigText'
+    | 'largeTitleScreen'
+    | 'normalTitleScreen'
+    | 'titleSection'
+    | 'bodyLarge'
+    | 'bodyLargeMedium'
+    | 'bodyLargeSemiBold'
+    | 'bodyRegular'
+    | 'bodyDefaultMedium'
+    | 'bodySemiBold'
+    | 'linkDefault'
+    | 'caption'
+    | 'navRegular'
+    | 'navSemibold';
   typo?: 'bold' | 'regular' | 'medium';
   color?: string;
   size?: number;
@@ -57,6 +83,82 @@ const useStyle = ({ variant, typo, color, size, weight }: OWTextProps) => {
     case 'caption':
       textStyle.fontSize = 12;
       textStyle.lineHeight = 12;
+      break;
+    case 'bigText':
+      textStyle.fontSize = 28;
+      textStyle.lineHeight = 34;
+      textStyle.fontWeight = '700';
+      break;
+    case 'heading':
+      textStyle.fontSize = 28;
+      textStyle.lineHeight = 34;
+      textStyle.fontWeight = '700';
+      break;
+    case 'largeTitleScreen':
+      textStyle.fontSize = 22;
+      textStyle.lineHeight = 28;
+      textStyle.fontWeight = '700';
+      break;
+    case 'normalTitleScreen':
+      textStyle.fontSize = 16;
+      textStyle.lineHeight = 24;
+      textStyle.fontWeight = '700';
+      break;
+    case 'titleSection':
+      textStyle.fontSize = 18;
+      textStyle.lineHeight = 26;
+      textStyle.fontWeight = '600';
+      break;
+    case 'bodyLarge':
+      textStyle.fontSize = 16;
+      textStyle.lineHeight = 24;
+      textStyle.fontWeight = '400';
+      break;
+    case 'bodyLargeMedium':
+      textStyle.fontSize = 16;
+      textStyle.lineHeight = 24;
+      textStyle.fontWeight = '500';
+      break;
+    case 'bodyLargeSemiBold':
+      textStyle.fontSize = 16;
+      textStyle.lineHeight = 24;
+      textStyle.fontWeight = '600';
+      break;
+    case 'bodyRegular':
+      textStyle.fontSize = 14;
+      textStyle.lineHeight = 20;
+      textStyle.fontWeight = '400';
+      break;
+    case 'bodyDefaultMedium':
+      textStyle.fontSize = 14;
+      textStyle.lineHeight = 20;
+      textStyle.fontWeight = '500';
+      break;
+    case 'bodySemiBold':
+      textStyle.fontSize = 14;
+      textStyle.lineHeight = 20;
+      textStyle.fontWeight = '600';
+      break;
+    case 'linkDefault':
+      textStyle.fontSize = 14;
+      textStyle.lineHeight = 20;
+      textStyle.fontWeight = '600';
+      textStyle.textDecorationLine = 'underline';
+      break;
+    case 'caption':
+      textStyle.fontSize = 13;
+      textStyle.lineHeight = 18;
+      textStyle.fontWeight = '400';
+      break;
+    case 'navRegular':
+      textStyle.fontSize = 12;
+      textStyle.lineHeight = 16;
+      textStyle.fontWeight = '400';
+      break;
+    case 'navSemibold':
+      textStyle.fontSize = 12;
+      textStyle.lineHeight = 16;
+      textStyle.fontWeight = '600';
       break;
     case 'overline':
       textStyle.fontSize = 11;

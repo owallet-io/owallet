@@ -14,7 +14,7 @@ export const AccountCard: FunctionComponent<{
 }> = observer(({ containerStyle }) => {
   const { chainStore, accountStore, queriesStore, priceStore, modalStore, keyRingStore } = useStore();
 
-  const selected = keyRingStore?.multiKeyStoreInfo.find((keyStore) => keyStore?.selected);
+  const selected = keyRingStore?.multiKeyStoreInfo.find(keyStore => keyStore?.selected);
   const smartNavigation = useSmartNavigation();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
@@ -70,7 +70,7 @@ export const AccountCard: FunctionComponent<{
     addressDisplay
   ]);
 
-  const onPressBtnMain = (name) => {
+  const onPressBtnMain = name => {
     if (name === 'Buy') {
       navigate('MainTab', { screen: 'Browser', path: 'https://oraidex.io' });
     }
@@ -114,7 +114,7 @@ export const AccountCard: FunctionComponent<{
 const styles = StyleSheet.create({
   textLoadMore: {
     ...typography['h7'],
-    color: colors['purple-700']
+    color: colors['primary-surface-default']
   },
   containerBtn: {
     alignItems: 'center',

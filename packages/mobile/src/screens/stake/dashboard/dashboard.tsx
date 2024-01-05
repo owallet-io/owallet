@@ -39,9 +39,7 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
 
   const staked =
     chainStore.current.networkType === 'cosmos'
-      ? queries.cosmos.queryDelegations.getQueryBech32Address(
-          account.bech32Address
-        ).total
+      ? queries.cosmos.queryDelegations.getQueryBech32Address(account.bech32Address).total
       : null;
 
   return (
@@ -49,11 +47,7 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
       <View>
         <OWSubTitleHeader title="My staking" />
         <OWBox>
-          {chainStore.current.networkType === 'cosmos' ? (
-            <MyRewardCard />
-          ) : (
-            <OWEmpty />
-          )}
+          {chainStore.current.networkType === 'cosmos' ? <MyRewardCard /> : <OWEmpty />}
 
           {chainStore.current.networkType === 'cosmos' ? (
             <View
@@ -120,9 +114,7 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
             </View>
           ) : null}
 
-          {chainStore.current.networkType === 'cosmos' ? (
-            <DelegationsCard validatorList={validators} />
-          ) : null}
+          {chainStore.current.networkType === 'cosmos' ? <DelegationsCard validatorList={validators} /> : null}
         </View>
       </View>
     </PageWithScrollViewInBottomTabView>
@@ -153,7 +145,7 @@ const styling = colors =>
       paddingHorizontal: spacing['24'],
       paddingVertical: spacing['10'],
       borderRadius: spacing['8'],
-      backgroundColor: colors['purple-700']
+      backgroundColor: colors['primary-surface-default']
     },
     containerTitle: {
       marginHorizontal: spacing['24'],

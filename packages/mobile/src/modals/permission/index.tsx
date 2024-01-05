@@ -89,7 +89,7 @@ export const AccessModal: FunctionComponent<{
                 color: colors['white']
               }}
               style={{
-                backgroundColor: permissionStore.isLoading ? colors['gray-400'] : colors['purple-700']
+                backgroundColor: permissionStore.isLoading ? colors['gray-400'] : colors['primary-surface-default']
               }}
               loading={permissionStore.isLoading}
               onPress={async () => {

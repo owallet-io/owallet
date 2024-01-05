@@ -10,20 +10,18 @@ import { TxsHelper } from '@src/stores/txs/helpers/txs-helper';
 import { IItemModal } from '../types';
 const txsHelper = new TxsHelper();
 const TypeModal = ({ transactions, active, actionType }) => {
-  const getUniqueActions = (dataAction) => {
+  const getUniqueActions = dataAction => {
     const actions = new Set();
     actions.add('All');
     const uniqueActions = [];
-    dataAction?.map((log) => {
+    dataAction?.map(log => {
       if (log?.code == 0) {
         const logObj = get(log, 'logs');
         const events = logObj[0].events;
-        events.forEach((event) => {
+        events.forEach(event => {
           if (event.type === 'message') {
             const attributes = event.attributes;
-            const actionAttribute = attributes.find(
-              (attr) => attr.key === 'action'
-            );
+            const actionAttribute = attributes.find(attr => attr.key === 'action');
             if (actionAttribute) {
               const action = actionAttribute.value;
               actions.add(action);
@@ -32,7 +30,7 @@ const TypeModal = ({ transactions, active, actionType }) => {
         });
       }
     });
-    actions.forEach((action) =>
+    actions.forEach(action =>
       uniqueActions.push({
         label: txsHelper.convertTypeEvent(action),
         value: action,
@@ -45,7 +43,7 @@ const TypeModal = ({ transactions, active, actionType }) => {
     const rs = getUniqueActions(transactions);
     return rs;
   }, [transactions]);
-  const onActionType = (item) => {
+  const onActionType = item => {
     actionType(item);
   };
   const renderItem = ({ item }) => (
@@ -58,19 +56,9 @@ const TypeModal = ({ transactions, active, actionType }) => {
       active={active}
     />
   );
-  return (
-    <ContainerModal
-      title={'Transaction Type'}
-      renderItem={renderItem}
-      data={data}
-    />
-  );
+  return <ContainerModal title={'Transaction Type'} renderItem={renderItem} data={data} />;
 };
-export const ContainerModal = ({
-  data,
-  renderItem,
-  title
-}: IContainerModal) => {
+export const ContainerModal = ({ data, renderItem, title }: IContainerModal) => {
   const styles = styling();
   return (
     <View style={styles.container}>
@@ -87,22 +75,11 @@ export const ContainerModal = ({
     </View>
   );
 };
-export const ItemModal = ({
-  item,
-  active,
-  onPress,
-  iconComponent,
-  label,
-  value,
-  subLabel
-}: IItemModal) => {
+export const ItemModal = ({ item, active, onPress, iconComponent, label, value, subLabel }: IItemModal) => {
   const { colors } = useTheme();
   const styles = styling();
   return (
-    <TouchableOpacity
-      style={styles.containerItem}
-      onPress={() => onPress(item)}
-    >
+    <TouchableOpacity style={styles.containerItem} onPress={() => onPress(item)}>
       <View
         style={{
           flexDirection: 'row',
@@ -116,11 +93,7 @@ export const ItemModal = ({
             {label}
           </Text>
           {subLabel && (
-            <Text
-              style={{ paddingTop: 2 }}
-              color={colors['text-place-holder']}
-              variant="caption"
-            >
+            <Text style={{ paddingTop: 2 }} color={colors['text-place-holder']} variant="caption">
               {' '}
               ({subLabel})
             </Text>
@@ -131,10 +104,7 @@ export const ItemModal = ({
         style={[
           styles.iconCircle,
           {
-            backgroundColor:
-              value === active
-                ? colors['purple-700']
-                : colors['bg-circle-select-modal']
+            backgroundColor: value === active ? colors['primary-surface-default'] : colors['bg-circle-select-modal']
           }
         ]}
       >

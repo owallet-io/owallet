@@ -84,7 +84,6 @@ export class OWallet implements IOWallet {
   }
 
   async experimentalSuggestChain(chainInfo: ChainInfo): Promise<void> {
-    console.log('🚀 ~ file: core.ts:87 ~ OWallet ~ experimentalSuggestChain ~ chainInfo:', chainInfo);
     const msg = new SuggestChainInfoMsg(chainInfo);
     await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }

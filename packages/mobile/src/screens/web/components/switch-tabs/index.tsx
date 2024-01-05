@@ -1,11 +1,5 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
-import {
-  View,
-  Image,
-  StyleSheet,
-  Dimensions,
-  TouchableWithoutFeedback
-} from 'react-native';
+import { View, Image, StyleSheet, Dimensions, TouchableWithoutFeedback } from 'react-native';
 import { Text } from '@src/components/text';
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
 import { useStore } from '../../../../stores';
@@ -16,7 +10,7 @@ import { XIcon } from '../../../../components/icon';
 import { useNavigation } from '@react-navigation/native';
 
 // const oraiLogo = require('../../../../assets/image/webpage/orai_logo.png');
-const COLOR_PRIMARY = colors['purple-700'];
+const COLOR_PRIMARY = colors['primary-surface-default'];
 const COLOR_PRIMARY_LIGHT = colors['primary-100'];
 const DEVICE_WIDTH = Dimensions.get('window').width;
 const DIMENSION_PADDING_MEDIUM = 16;
@@ -50,13 +44,13 @@ export const SwtichTab: FunctionComponent<{
   useEffect(() => {
     setTabs(browserStore.getTabs);
     navigation.setOptions({
-      headerShown: false,
-    })
-    return ()=>{
+      headerShown: false
+    });
+    return () => {
       navigation.setOptions({
-        headerShown: true,
-      })
-    }
+        headerShown: true
+      });
+    };
   }, []);
 
   const renderItem = ({ item, index }) => {
@@ -81,10 +75,7 @@ export const SwtichTab: FunctionComponent<{
               }
             ]}
           >
-            <Text
-              style={{ flex: 1, fontWeight: 'bold', color: '#fff' }}
-              numberOfLines={1}
-            >
+            <Text style={{ flex: 1, fontWeight: 'bold', color: '#fff' }} numberOfLines={1}>
               {item?.name ?? (item?.uri || 'New tab')}
             </Text>
             <TouchableOpacity onPress={onPressDelete(item)}>
@@ -95,9 +86,7 @@ export const SwtichTab: FunctionComponent<{
             <View style={[styles.webview]}>
               <Image
                 source={{
-                  uri: `https://www.google.com/s2/favicons?sz=64&domain_url=${getDomainFromUrl(
-                    item.uri
-                  )}`
+                  uri: `https://www.google.com/s2/favicons?sz=64&domain_url=${getDomainFromUrl(item.uri)}`
                 }}
                 style={{
                   width: DEVICE_WIDTH / 5,
@@ -116,9 +105,7 @@ export const SwtichTab: FunctionComponent<{
       return (
         <View style={styles.emptyTab}>
           <Text style={{ fontSize: 18, fontWeight: 'bold' }}>No Open Tabs</Text>
-          <Text style={{ marginTop: DIMENSION_PADDING_SMALL }}>
-            To browse the decentralized web, add a new tab
-          </Text>
+          <Text style={{ marginTop: DIMENSION_PADDING_SMALL }}>To browse the decentralized web, add a new tab</Text>
         </View>
       );
     }
@@ -155,7 +142,7 @@ export const SwtichTab: FunctionComponent<{
         >
           <TouchableOpacity
             style={{
-              backgroundColor: colors['purple-700'],
+              backgroundColor: colors['primary-surface-default'],
               borderRadius: spacing['8'],
               marginLeft: 8,
               marginRight: 8

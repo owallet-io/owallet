@@ -1,17 +1,8 @@
 import React, { FunctionComponent, useMemo } from 'react';
 import { View, ViewStyle, Image } from 'react-native';
 import { AppCurrency, Currency } from '@owallet/types';
-import {
-  Circle,
-  Defs,
-  LinearGradient,
-  Path,
-  Stop,
-  Svg
-} from 'react-native-svg';
+import { Circle, Defs, LinearGradient, Path, Stop, Svg } from 'react-native-svg';
 import FastImage from 'react-native-fast-image';
-import { Hash } from '@owallet/crypto';
-import { Buffer } from 'buffer';
 import { VectorCharacter } from '../vector-character';
 import { colors, spacing } from '../../themes';
 
@@ -43,28 +34,12 @@ export const TokenSymbol: FunctionComponent<{
   };
   size?: number;
   imageScale?: number;
-}> = ({
-  style: propStyle,
-  size,
-  currency,
-  chainInfo,
-  imageScale = 32 / 44
-}) => {
-  const isStakeCurrency =
-    currency.coinMinimalDenom === chainInfo.stakeCurrency.coinMinimalDenom;
-
-  const deterministicNumber = useMemo(() => {
-    const bytes = Hash.sha256(Buffer.from(currency.coinMinimalDenom));
-    return (
-      (bytes[0] | (bytes[1] << 8) | (bytes[2] << 16) | (bytes[3] << 24)) >>> 0
-    );
-  }, [currency.coinMinimalDenom]);
+}> = ({ style: propStyle, size, currency, chainInfo, imageScale = 32 / 44 }) => {
+  const isStakeCurrency = currency.coinMinimalDenom === chainInfo.stakeCurrency.coinMinimalDenom;
 
   const profileColor = useMemo(() => {
-    const colors = ['red-10', 'yellow-10', 'gray-10'];
-
-    return colors[deterministicNumber % colors.length];
-  }, [deterministicNumber]);
+    return 'red-10';
+  }, []);
 
   return (
     <View
@@ -75,9 +50,7 @@ export const TokenSymbol: FunctionComponent<{
         alignItems: 'center',
         justifyContent: 'center',
         overflow: 'hidden',
-        backgroundColor: isStakeCurrency
-          ? colors['red-10']
-          : colors[`${profileColor}`],
+        backgroundColor: isStakeCurrency ? colors['red-10'] : colors[`${profileColor}`],
         ...propStyle
       }}
     >
@@ -87,7 +60,7 @@ export const TokenSymbol: FunctionComponent<{
             style={{
               width: size * imageScale,
               height: size * imageScale,
-              tintColor:colors['black']
+              tintColor: colors['black']
             }}
             resizeMode={'contain'}
             source={{
@@ -107,11 +80,7 @@ export const TokenSymbol: FunctionComponent<{
           />
         )
       ) : (
-        <VectorCharacter
-          char={currency.coinDenom[0]}
-          height={Math.floor(size * 0.35)}
-          color="black"
-        />
+        <VectorCharacter char={currency.coinDenom[0]} height={Math.floor(size * 0.35)} color="black" />
       )}
     </View>
   );

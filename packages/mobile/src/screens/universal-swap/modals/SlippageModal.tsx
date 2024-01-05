@@ -70,7 +70,7 @@ export const SlippageModal = registerModal(
                     defaultValue={currentSlippage?.toString() ?? '0'}
                     value={slippage.toString()}
                     textAlign="right"
-                    placeholderTextColor={colors['text-place-holder']}
+                    placeholderTextColor={colors['neutral-text-action-on-dark-bg']}
                     onSubmitEditing={txt => {
                       if (Number(txt) > 0 && Number(txt) < 100) {
                         setSlippage(Number(txt));
@@ -100,14 +100,10 @@ export const SlippageModal = registerModal(
                   key={item}
                   size="medium"
                   style={
-                    slippage === Number(item)
-                      ? styles.btnSlippgaePercentActive
-                      : styles.btnSlippgaePercentInActive
+                    slippage === Number(item) ? styles.btnSlippgaePercentActive : styles.btnSlippgaePercentInActive
                   }
                   textStyle={
-                    slippage === Number(item)
-                      ? styles.txtSlippgaePercentActive
-                      : styles.txtSlippgaePercentInActive
+                    slippage === Number(item) ? styles.txtSlippgaePercentActive : styles.txtSlippgaePercentInActive
                   }
                   label={`${item}%`}
                   fullWidth={false}
@@ -154,14 +150,14 @@ const styling = (colors: TypeTheme['colors']) =>
       height: 40
     },
     txtSlippgaePercentActive: {
-      color: colors['purple-700']
+      color: colors['primary-text-action']
     },
     btnSlippgaePercentActive: {
       width: metrics.screenWidth / 4 - 20,
       backgroundColor: colors['background-item-list'],
       height: 40,
       borderWidth: 1,
-      borderColor: colors['purple-700']
+      borderColor: colors['primary-text-action']
     },
     containerSlippagePercent: {
       flexDirection: 'row',

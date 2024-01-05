@@ -22,10 +22,16 @@ const { SmartNavigatorProvider, useSmartNavigation } = createSmartNavigatorProvi
     'Register.NewMnemonic': {
       upperScreenName: 'Register'
     },
+    'Register.NewPincode': {
+      upperScreenName: 'Register'
+    },
     'Register.VerifyMnemonic': {
       upperScreenName: 'Register'
     },
     'Register.RecoverMnemonic': {
+      upperScreenName: 'Register'
+    },
+    'Register.RecoverPhrase': {
       upperScreenName: 'Register'
     },
     'Register.NewLedger': {
@@ -110,6 +116,9 @@ const { SmartNavigatorProvider, useSmartNavigation } = createSmartNavigatorProvi
     'Setting.ViewPrivateData': {
       upperScreenName: 'Settings'
     },
+    'Setting.BackupMnemonic': {
+      upperScreenName: 'Settings'
+    },
     'Setting.Version': {
       upperScreenName: 'Settings'
     },
@@ -162,12 +171,23 @@ const { SmartNavigatorProvider, useSmartNavigation } = createSmartNavigatorProvi
     'Register.NewMnemonic': {
       registerConfig: RegisterConfig;
     };
+    'Register.NewPincode': {
+      registerConfig: RegisterConfig;
+      words?: string;
+      walletName?: string;
+    };
     'Register.VerifyMnemonic': {
       registerConfig: RegisterConfig;
       newMnemonicConfig: NewMnemonicConfig;
       bip44HDPath: BIP44HDPath;
     };
     'Register.RecoverMnemonic': {
+      registerConfig: RegisterConfig;
+    };
+    'Register.RecoverPhrase': {
+      registerConfig: RegisterConfig;
+    };
+    'Register.Register.': {
       registerConfig: RegisterConfig;
     };
     'Register.NewLedger': {
@@ -212,6 +232,10 @@ const { SmartNavigatorProvider, useSmartNavigation } = createSmartNavigatorProvi
       proposalId: string;
     };
     'Setting.ViewPrivateData': {
+      privateData: string;
+      privateDataType: string;
+    };
+    'Setting.BackupMnemonic': {
       privateData: string;
       privateDataType: string;
     };

@@ -7,6 +7,7 @@ export class AppInit {
   @observable
   protected initApp: {
     status: boolean;
+    passcodeType: 'numeric' | 'alphabet';
     date_updated: null | number;
     theme: 'dark' | 'light';
     visibleTabBar?: string;
@@ -19,6 +20,7 @@ export class AppInit {
     this.initApp = {
       visibleTabBar: null,
       status: true,
+      passcodeType: 'alphabet',
       date_updated: null,
       theme: 'light'
     };
@@ -43,9 +45,15 @@ export class AppInit {
   updateTheme(theme) {
     this.initApp = { ...this.initApp, theme };
   }
+
   @action
   updateVisibleTabBar(visibleTabBar) {
     this.initApp = { ...this.initApp, visibleTabBar };
+  }
+
+  @action
+  updateKeyboardType(passcodeType) {
+    this.initApp = { ...this.initApp, passcodeType };
   }
 }
 

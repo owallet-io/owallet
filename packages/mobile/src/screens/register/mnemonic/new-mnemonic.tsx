@@ -28,7 +28,7 @@ interface FormData {
   confirmPassword: string;
 }
 
-export const NewMnemonicScreen: FunctionComponent = observer((props) => {
+export const NewMnemonicScreen: FunctionComponent = observer(props => {
   const route = useRoute<
     RouteProp<
       Record<
@@ -130,7 +130,7 @@ export const NewMnemonicScreen: FunctionComponent = observer((props) => {
             style={styles.padIcon}
             onPress={showPass}
             name={!statusPass ? 'eye' : 'eye-slash'}
-            colorIcon={colors['icon-purple-700-gray']}
+            colorIcon={colors['icon-primary-surface-default-gray']}
             sizeIcon={22}
           />
         }
@@ -163,7 +163,7 @@ export const NewMnemonicScreen: FunctionComponent = observer((props) => {
             icon={
               <OWIcon
                 name={!statusConfirmPass ? 'eye' : 'eye-slash'}
-                color={colors['icon-purple-700-gray']}
+                color={colors['icon-primary-surface-default-gray']}
                 size={22}
               />
             }
@@ -210,7 +210,7 @@ export const NewMnemonicScreen: FunctionComponent = observer((props) => {
           }}
           render={renderUserName}
           name="name"
-          defaultValue=""
+          defaultValue={`OWallet-${Math.floor(Math.random() * 100)}`}
         />
         {mode === 'create' ? (
           <React.Fragment>
@@ -287,7 +287,13 @@ const WordsCard: FunctionComponent<{
         <OWButton
           style={styles.padIcon}
           onPress={onCopy}
-          icon={isTimedOut ? <CheckIcon /> : <OWIcon name="copy" color={colors['icon-purple-700-gray']} size={20} />}
+          icon={
+            isTimedOut ? (
+              <CheckIcon />
+            ) : (
+              <OWIcon name="copy" color={colors['icon-primary-surface-default-gray']} size={20} />
+            )
+          }
           type="link"
         />
       </View>
@@ -308,7 +314,7 @@ const useStyles = () => {
     icon: {
       width: 22,
       height: 22,
-      tintColor: colors['icon-purple-700-gray']
+      tintColor: colors['icon-primary-surface-default-gray']
     },
     containerBtnCopy: {
       width: '100%',

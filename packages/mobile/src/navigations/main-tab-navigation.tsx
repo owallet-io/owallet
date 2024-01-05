@@ -1,18 +1,9 @@
-import { Image, Platform, StyleSheet, Text, View } from 'react-native';
-import React, { FC, useEffect, useMemo, useState } from 'react';
+import { Platform, StyleSheet, View } from 'react-native';
+import React, { FC, useMemo } from 'react';
 import { useStore } from '@src/stores';
 import { useTheme } from '@src/themes/theme-provider';
-import {
-  EVENTS,
-  ICONS_TITLE,
-  SCREENS,
-  SCREENS_OPTIONS
-} from '@src/common/constants';
-import { BlurredBottomTabBar } from '@src/components/bottom-tabbar';
-import {
-  BottomTabBar,
-  createBottomTabNavigator
-} from '@react-navigation/bottom-tabs';
+import { ICONS_TITLE, SCREENS, SCREENS_OPTIONS } from '@src/common/constants';
+import { BottomTabBar, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MainNavigation } from './main-navigation';
 import { WebNavigation } from './web-navigation';
 import { SendNavigation } from './send-navigation';
@@ -31,9 +22,7 @@ export const MainTabNavigation: FC = observer(() => {
   const insets = useSafeAreaInsets();
   const isNorthSafe = insets.bottom > 0;
   const checkTabbarVisible = useMemo(() => {
-    return visibleTabBar
-      ? SCREENS_OPTIONS[visibleTabBar]?.showTabBar || false
-      : false;
+    return visibleTabBar ? SCREENS_OPTIONS[visibleTabBar]?.showTabBar || false : false;
   }, [visibleTabBar]);
   return (
     <Tab.Navigator
@@ -43,24 +32,12 @@ export const MainTabNavigation: FC = observer(() => {
             if (route?.name === SCREENS.TABS.SendNavigation) {
               return (
                 <View style={styles.paddingIcon}>
-                  <OWIcon
-                    type="images"
-                    source={
-                      focused ? imagesGlobal.push : images.btn_center_bottom_tab
-                    }
-                    size={44}
-                  />
+                  <OWIcon type="images" source={imagesGlobal.swap} size={54} />
                 </View>
               );
             }
             return (
-              <OWIcon
-                name={`${ICONS_TITLE[route.name]}-${
-                  focused ? 'bold' : 'outline'
-                }`}
-                size={22}
-                color={color}
-              />
+              <OWIcon name={`${ICONS_TITLE[route.name]}-${focused ? 'bold' : 'outline'}`} size={22} color={color} />
             );
           },
           headerShown: false,
@@ -74,10 +51,11 @@ export const MainTabNavigation: FC = observer(() => {
             paddingRight: 10,
             position: 'absolute'
           },
-          tabBarActiveTintColor: colors['purple-700'],
+          tabBarActiveTintColor: colors['primary-surface-default'],
           tabBarLabelStyle: {
             fontSize: 12,
-            textAlign: 'center'
+            textAlign: 'center',
+            fontFamily: 'SpaceGrotesk-Regular'
           },
           tabBarInactiveTintColor: colors['label-bottom-bar'],
           tabBarItemStyle: {
@@ -107,12 +85,10 @@ export const MainTabNavigation: FC = observer(() => {
           )
         };
       }}
-      tabBar={props =>
-        checkTabbarVisible ? <BottomTabBar {...props} /> : null
-      }
+      tabBar={props => (checkTabbarVisible ? <BottomTabBar {...props} /> : null)}
     >
       <Tab.Screen name={SCREENS.TABS.Main} component={MainNavigation} />
-      <Tab.Screen name={SCREENS.TABS.Browser} component={WebNavigation} />
+      <Tab.Screen name={SCREENS.TABS.Invest} component={InvestNavigation} />
       <Tab.Screen
         name={SCREENS.TABS.SendNavigation}
         component={SendNavigation}
@@ -121,7 +97,7 @@ export const MainTabNavigation: FC = observer(() => {
           chainId: chainStore.current.chainId
         }}
       />
-      <Tab.Screen name={SCREENS.TABS.Invest} component={InvestNavigation} />
+      <Tab.Screen name={SCREENS.TABS.Browser} component={WebNavigation} />
       <Tab.Screen
         name={SCREENS.TABS.Settings}
         component={SettingStackScreen}

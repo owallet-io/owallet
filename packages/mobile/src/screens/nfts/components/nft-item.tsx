@@ -1,14 +1,16 @@
-import React from 'react'
-import { TouchableOpacity, Image, View, Text, StyleSheet } from 'react-native'
-import { spacing, typography, colors, metrics } from '../../../themes'
-import { formatContractAddress } from '../../../utils/helper'
+import React from 'react';
+import { TouchableOpacity, Image, View, Text, StyleSheet } from 'react-native';
+import { spacing, typography, colors, metrics } from '../../../themes';
+import { formatContractAddress } from '../../../utils/helper';
 
-
-export const NftItem = ({item}) => {
+export const NftItem = ({ item }) => {
   return (
-    <TouchableOpacity style={styles.flatListItem} onPress={() => {
-      // smartNavigation.navigateSmart('Nfts',{})
-    }}>
+    <TouchableOpacity
+      style={styles.flatListItem}
+      onPress={() => {
+        // smartNavigation.navigateSmart('Nfts',{})
+      }}
+    >
       <Image
         source={{
           uri: item.uri
@@ -33,7 +35,7 @@ export const NftItem = ({item}) => {
         >
           {formatContractAddress(item.title)}
         </Text>
-  
+
         <Text
           style={{
             ...typography.h5,
@@ -43,7 +45,7 @@ export const NftItem = ({item}) => {
         >
           {item.oraiPrice}
         </Text>
-  
+
         <Text
           style={{
             ...typography.h5,
@@ -53,13 +55,13 @@ export const NftItem = ({item}) => {
         >{`$ ${58.23}`}</Text>
       </View>
     </TouchableOpacity>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   textLoadMore: {
     ...typography['h7'],
-    color: colors['purple-700']
+    color: colors['primary-surface-default']
   },
   containerBtn: {
     alignItems: 'center',
@@ -91,4 +93,4 @@ const styles = StyleSheet.create({
   itemText: {
     color: colors['gray-800']
   }
-})
+});

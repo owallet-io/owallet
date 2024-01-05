@@ -59,29 +59,14 @@ export const SelectNetworkType = ({ onChange }) => {
   const [selectedId, setSelectedId] = useState('cosmos');
   function onPressRadioButton(idRadio) {
     setSelectedId(idRadio);
-    const selected = radioButtons.find((rb) => rb.id == idRadio);
+    const selected = radioButtons.find(rb => rb.id == idRadio);
     onChange && onChange(selected);
   }
 
-  return (
-    <RadioGroup
-      layout={'row'}
-      radioButtons={radioButtons}
-      onPress={onPressRadioButton}
-      selectedId={selectedId}
-    />
-  );
+  return <RadioGroup layout={'row'} radioButtons={radioButtons} onPress={onPressRadioButton} selectedId={selectedId} />;
 };
 
-const features = [
-  'stargate',
-  'ibc-transfer',
-  'cosmwasm',
-  'secretwasm',
-  'ibc-go',
-  'isEvm',
-  'no-legacy-stdTx'
-];
+const features = ['stargate', 'ibc-transfer', 'cosmwasm', 'secretwasm', 'ibc-go', 'isEvm', 'no-legacy-stdTx'];
 
 export const SelectFeatures = ({ onChange, networkType }) => {
   const [selected, setSelected] = useState([]);
@@ -90,13 +75,7 @@ export const SelectFeatures = ({ onChange, networkType }) => {
     if (networkType === 'evm') {
       setSelected(['ibc-go', 'stargate', 'isEvm']);
     } else {
-      setSelected([
-        'stargate',
-        'ibc-go',
-        'ibc-transfer',
-        'cosmwasm',
-        'no-legacy-stdTx'
-      ]);
+      setSelected(['stargate', 'ibc-go', 'ibc-transfer', 'cosmwasm', 'no-legacy-stdTx']);
     }
   }, [networkType]);
 
@@ -108,13 +87,12 @@ export const SelectFeatures = ({ onChange, networkType }) => {
         maxHeight: 150
       }}
     >
-      {features.map((f) => {
+      {features.map(f => {
         return (
           <View key={f} style={{ flexDirection: 'row', alignItems: 'center' }}>
             <CheckBox
               disabled={
-                (networkType === 'cosmos' &&
-                  (f === 'isEvm' || f === 'secretwasm')) ||
+                (networkType === 'cosmos' && (f === 'isEvm' || f === 'secretwasm')) ||
                 (networkType === 'evm' && f === 'cosmwasm')
               }
               style={{ flex: 1, padding: 14 }}
@@ -184,38 +162,24 @@ export const SelectNetworkScreen = () => {
     try {
       chainInfo = {
         rpc: url_rpc.endsWith('/') ? `${url_rpc.slice(0, -1)}` : `${url_rpc}`,
-        rest: url_rest.endsWith('/')
-          ? `${url_rest.slice(0, -1)}`
-          : `${url_rest}`,
-        chainId:
-          chainId.split(' ').join('-').toLocaleLowerCase() ??
-          `${name.split(' ').join('-')}`,
+        rest: url_rest.endsWith('/') ? `${url_rest.slice(0, -1)}` : `${url_rest}`,
+        chainId: chainId.split(' ').join('-').toLocaleLowerCase() ?? `${name.split(' ').join('-')}`,
         chainName: `${name}`,
         networkType: networkType?.toLocaleLowerCase() ?? 'cosmos',
         stakeCurrency: {
           coinDenom: `${code.split(' ').join('').toLocaleUpperCase()}`,
-          coinMinimalDenom: `${coinMinimal
-            .split(' ')
-            .join('')
-            .toLocaleLowerCase()}`,
+          coinMinimalDenom: `${coinMinimal.split(' ').join('').toLocaleLowerCase()}`,
           coinDecimals: 6,
           coinGeckoId: `${
-            coingecko?.split(' ').join('-').toLocaleLowerCase() ??
-            code.split(' ').join('-').toLocaleLowerCase()
+            coingecko?.split(' ').join('-').toLocaleLowerCase() ?? code.split(' ').join('-').toLocaleLowerCase()
           }`,
-          coinImageUrl:
-            symbol !== ''
-              ? symbol
-              : 'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
+          coinImageUrl: symbol !== '' ? symbol : 'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
         },
         bip44: {
           coinType: 118
         },
         bech32Config: Bech32Address.defaultBech32Config(
-          `${
-            bech32Config.split(' ').join('').toLocaleLowerCase() ??
-            code.split(' ').join('').toLocaleLowerCase()
-          }`
+          `${bech32Config.split(' ').join('').toLocaleLowerCase() ?? code.split(' ').join('').toLocaleLowerCase()}`
         ),
         get currencies() {
           return [this.stakeCurrency];
@@ -229,10 +193,7 @@ export const SelectNetworkScreen = () => {
           high: feeHigh ?? 0
         },
         features: features?.length > 0 ? features : ['stargate'],
-        chainSymbolImageUrl:
-          symbol !== ''
-            ? symbol
-            : 'https://orai.io/images/logos/logomark-dark.png',
+        chainSymbolImageUrl: symbol !== '' ? symbol : 'https://orai.io/images/logos/logomark-dark.png',
         txExplorer: {
           name: 'Scan',
           txUrl: `${block}/txs/{txHash}`,
@@ -250,13 +211,13 @@ export const SelectNetworkScreen = () => {
     }
   });
 
-  const handleChangeNetwork = (selected) => {
+  const handleChangeNetwork = selected => {
     setValue('networkType', selected.value);
-    
+
     setNetworkType(selected.value);
   };
 
-  const handleSelectFeatures = (features) => {
+  const handleSelectFeatures = features => {
     setValue('features', features);
   };
 
@@ -290,8 +251,7 @@ export const SelectNetworkScreen = () => {
         </View>
       </View>
       <Text style={{ paddingTop: 10 }}>
-        Use a custom network that supports RPC via URL instead of some of the
-        networks provided
+        Use a custom network that supports RPC via URL instead of some of the networks provided
       </Text>
       <View style={{ height: 20 }} />
       <Text
@@ -493,10 +453,7 @@ export const SelectNetworkScreen = () => {
         >
           {`Features`}
         </Text>
-        <SelectFeatures
-          onChange={handleSelectFeatures}
-          networkType={networkType}
-        />
+        <SelectFeatures onChange={handleSelectFeatures} networkType={networkType} />
       </View>
       <Text
         style={{
@@ -526,7 +483,7 @@ export const SelectNetworkScreen = () => {
               }}
               error={errors.feeLow?.message}
               onBlur={onBlur}
-              onChangeText={(txt) => onChange(txt.replace(/,/g, '.'))}
+              onChangeText={txt => onChange(txt.replace(/,/g, '.'))}
               value={value.toString()}
               ref={ref}
             />
@@ -554,7 +511,7 @@ export const SelectNetworkScreen = () => {
               }}
               error={errors.feeMedium?.message}
               onBlur={onBlur}
-              onChangeText={(txt) => onChange(txt.replace(/,/g, '.'))}
+              onChangeText={txt => onChange(txt.replace(/,/g, '.'))}
               value={value.toString()}
               ref={ref}
             />
@@ -582,7 +539,7 @@ export const SelectNetworkScreen = () => {
               }}
               error={errors.feeHigh?.message}
               onBlur={onBlur}
-              onChangeText={(txt) => onChange(txt.replace(/,/g, '.'))}
+              onChangeText={txt => onChange(txt.replace(/,/g, '.'))}
               value={value.toString()}
               ref={ref}
             />
@@ -769,7 +726,7 @@ export const SelectNetworkScreen = () => {
         style={{
           marginBottom: 24,
           marginTop: 20,
-          backgroundColor: colors['purple-700'],
+          backgroundColor: colors['primary-surface-default'],
           borderRadius: 8
         }}
       >
@@ -799,7 +756,7 @@ export const SelectNetworkScreen = () => {
       >
         <Text
           style={{
-            color: colors['purple-700'],
+            color: colors['primary-surface-default'],
             textAlign: 'center',
             fontWeight: '700',
             fontSize: 16

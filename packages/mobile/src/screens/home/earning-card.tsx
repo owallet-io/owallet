@@ -15,6 +15,7 @@ import { useSmartNavigation } from '../../navigation.provider';
 import { navigate } from '../../router/root';
 import { useStore } from '../../stores';
 import { metrics, spacing, typography } from '../../themes';
+import { WarningView } from './warning-view';
 
 export const EarningCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -133,6 +134,8 @@ export const EarningCard: FunctionComponent<{
             />
           }
         />
+        <WarningView />
+
         <OWBox type="shadow" style={styles['view-box-staking']}>
           <Text style={{ marginBottom: 20, color: colors['gray-300'] }}>Total staked</Text>
           <View
@@ -264,7 +267,7 @@ const styling = colors =>
       color: colors['gray-300']
     },
     'btn-claim': {
-      backgroundColor: colors['purple-700'],
+      backgroundColor: colors['primary-surface-default'],
       borderWidth: 0.5,
       marginTop: 16,
       width: metrics.screenWidth - 48,

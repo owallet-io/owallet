@@ -54,7 +54,7 @@ export const AddTokenCosmosScreen = observer(() => {
     }
   }, [chainStore, contractAddress, form, tokensStore.waitingSuggestedToken]);
 
-  const isSecret20 = (chainStore.current.features ?? []).find((feature) => feature === 'secretwasm') != null;
+  const isSecret20 = (chainStore.current.features ?? []).find(feature => feature === 'secretwasm') != null;
 
   const queries = queriesStore.get(chainStore.current.chainId);
   const query = isSecret20 ? queries.secret.querySecret20ContractInfo : queries.cosmwasm.querycw20ContractInfo;
@@ -83,7 +83,7 @@ export const AddTokenCosmosScreen = observer(() => {
     });
   };
 
-  const submit = handleSubmit(async (data) => {
+  const submit = handleSubmit(async data => {
     try {
       if (tokenInfo?.decimals != null && tokenInfo.name && tokenInfo.symbol) {
         setLoading(true);
@@ -270,7 +270,7 @@ export const AddTokenCosmosScreen = observer(() => {
             checkBoxColor={colors['primary-text']}
             checkedCheckBoxColor={colors['primary-text']}
             onClick={() => {
-              setIsOpenSecret20ViewingKey((value) => !value);
+              setIsOpenSecret20ViewingKey(value => !value);
             }}
             isChecked={isOpenSecret20ViewingKey}
           />
@@ -284,7 +284,7 @@ export const AddTokenCosmosScreen = observer(() => {
         style={{
           marginBottom: 24,
           marginTop: 20,
-          backgroundColor: colors['purple-700'],
+          backgroundColor: colors['primary-surface-default'],
           borderRadius: 8
         }}
       >
@@ -313,7 +313,7 @@ export const AddTokenCosmosScreen = observer(() => {
       >
         <Text
           style={{
-            color: colors['purple-700'],
+            color: colors['primary-surface-default'],
             textAlign: 'center',
             fontWeight: '700',
             fontSize: 16

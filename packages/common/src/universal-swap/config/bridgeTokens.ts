@@ -2,43 +2,18 @@ import flatten from 'lodash/flatten';
 import uniqBy from 'lodash/uniqBy';
 import {
   CustomChainInfo,
-  CoinGeckoId,
-  chainInfos,
-  NetworkChainId,
-  NetworkName,
+  INJECTIVE_ORAICHAIN_DENOM,
+  KWTBSC_ORAICHAIN_DENOM,
+  MILKYBSC_ORAICHAIN_DENOM,
+  TokenItemType,
   oraichainNetwork
 } from '@oraichain/oraidex-common';
+import { chainInfos } from './chainInfos';
 
-export type EvmDenom = 'bep20_orai' | 'bep20_airi' | 'erc20_orai' | 'kawaii_orai';
-
-export type UniversalSwapType =
-  | 'other-networks-to-oraichain'
-  | 'oraichain-to-oraichain'
-  | 'oraichain-to-other-networks';
-
-export type TokenItemType = {
-  name: string;
-  org: NetworkName;
-  denom: string;
-  prefix?: string;
-  contractAddress?: string;
-  evmDenoms?: string[];
-  bridgeNetworkIdentifier?: NetworkChainId;
-  bridgeTo?: NetworkChainId[];
-  Icon: Function;
-  IconLight?: Function;
-  chainId: NetworkChainId;
-  coinType?: number;
-  rpc: string;
-  decimals: number;
-  maxGas?: number;
-  coinGeckoId: CoinGeckoId;
-  cosmosBased: Boolean;
-  minAmountSwap?: number;
-};
 const evmDenomsMap = {
-  kwt: [process.env.REACT_APP_KWTBSC_ORAICHAIN_DENOM],
-  milky: [process.env.REACT_APP_MILKYBSC_ORAICHAIN_DENOM]
+  kwt: [KWTBSC_ORAICHAIN_DENOM],
+  milky: [MILKYBSC_ORAICHAIN_DENOM],
+  injective: [INJECTIVE_ORAICHAIN_DENOM]
 };
 const minAmountSwapMap = {
   trx: 10
@@ -61,6 +36,8 @@ export const getTokensFromNetwork = (network: CustomChainInfo): TokenItemType[] 
     lcd: network.rest,
     cosmosBased: network.networkType === 'cosmos',
     maxGas: (network.feeCurrencies?.[0].gasPriceStep?.high ?? 0) * 20000,
+    gasPriceStep: currency.gasPriceStep,
+    feeCurrencies: network.feeCurrencies,
     minAmountSwap: minAmountSwapMap[currency.coinMinimalDenom],
     evmDenoms: evmDenomsMap[currency.coinMinimalDenom],
     Icon: currency.Icon,
@@ -97,6 +74,8 @@ export const cw20Tokens = uniqBy(
   c => c.denom
 );
 
+export const cw20TokenMap = Object.fromEntries(cw20Tokens.map(c => [c.contractAddress, c]));
+
 export const evmTokens = uniqBy(
   flattenTokens.filter(
     token =>
@@ -104,4 +83,28 @@ export const evmTokens = uniqBy(
       token.denom && !token.cosmosBased && token.coinGeckoId && token.chainId !== 'kawaii_6886-1'
   ),
   c => c.denom
+);
+
+export const kawaiiTokens = uniqBy(
+  cosmosTokens.filter(token => token.chainId === 'kawaii_6886-1'),
+  c => c.denom
+);
+
+const notAllowSwapCoingeckoIds = ['kawaii-islands', 'milky-token', 'injective-protocol'];
+// universal swap. Currently we dont support from tokens that are not using the ibc wasm channel
+const notAllowSwapFromChainIds = [
+  'kawaii_6886-1',
+  'osmosis-1',
+  'cosmoshub-4',
+  'oraibridge-subnet-2',
+  'injective-1',
+  'noble-1'
+];
+export const swapFromTokens = flattenTokens.filter(
+  token => !notAllowSwapCoingeckoIds.includes(token.coinGeckoId) && !notAllowSwapFromChainIds.includes(token.chainId)
+);
+// universal swap. We dont support kwt & milky & injective for simplicity. We also skip OraiBridge tokens because users dont care about them
+const notAllowSwapToChainIds = ['oraibridge-subnet-2', 'injective-1', 'noble-1'];
+export const swapToTokens = flattenTokens.filter(
+  token => !notAllowSwapCoingeckoIds.includes(token.coinGeckoId) && !notAllowSwapToChainIds.includes(token.chainId)
 );

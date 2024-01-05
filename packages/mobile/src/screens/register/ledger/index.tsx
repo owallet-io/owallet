@@ -2,24 +2,21 @@ import React, { FunctionComponent, useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { useTheme } from '@src/themes/theme-provider';
-import { RegisterConfig, useRegisterConfig } from '@owallet/hooks';
+import { RegisterConfig } from '@owallet/hooks';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { Controller, useForm } from 'react-hook-form';
-import { PageWithScrollView } from '../../../components/page';
 import { TextInput } from '../../../components/input';
-import { Platform, PermissionsAndroid, StyleSheet, View } from 'react-native';
-import { Text } from '@src/components/text';
+import { Platform, PermissionsAndroid, StyleSheet, View, TouchableOpacity } from 'react-native';
 import { useStore } from '../../../stores';
 import { BIP44AdvancedButton, useBIP44Option } from '../bip44';
 import { checkRouter, navigate } from '../../../router/root';
-import { OWalletLogo } from '../owallet-logo';
-import { spacing } from '../../../themes';
+import { metrics } from '../../../themes';
 import OWButton from '../../../components/button/OWButton';
 import OWIcon from '../../../components/ow-icon/ow-icon';
 import { SCREENS } from '@src/common/constants';
 import { delay } from '@src/utils/helper';
 import { KeyRingStatus } from '@owallet/background';
-// import { PERMISSIONS, requestMultiple } from 'react-native-permissions';
+import OWText from '@src/components/text/ow-text';
 
 interface FormData {
   name: string;
@@ -27,7 +24,7 @@ interface FormData {
   confirmPassword: string;
 }
 
-export const NewLedgerScreen: FunctionComponent = observer((props) => {
+export const NewLedgerScreen: FunctionComponent = observer(props => {
   const route = useRoute<
     RouteProp<
       Record<
@@ -48,7 +45,6 @@ export const NewLedgerScreen: FunctionComponent = observer((props) => {
   const smartNavigation = useSmartNavigation();
 
   const registerConfig: RegisterConfig = route.params.registerConfig;
-  // const registerConfig = useRegisterConfig(keyRingStore, []);
   const bip44Option = useBIP44Option(chainStore.current.coinType ?? 118);
   const [mode] = useState(registerConfig.mode);
 
@@ -69,15 +65,10 @@ export const NewLedgerScreen: FunctionComponent = observer((props) => {
 
     try {
       // Re-create ledger when change network
-      await registerConfig.createLedger(
-        getValues('name'),
-        getValues('password'),
-        {
-          ...bip44Option.bip44HDPath,
-          coinType:
-            bip44Option.bip44HDPath?.coinType ?? chainStore.current.coinType
-        }
-      );
+      await registerConfig.createLedger(getValues('name'), getValues('password'), {
+        ...bip44Option.bip44HDPath,
+        coinType: bip44Option.bip44HDPath?.coinType ?? chainStore.current.coinType
+      });
       analyticsStore.setUserProperties({
         registerType: 'ledger',
         accountType: 'ledger'
@@ -86,18 +77,20 @@ export const NewLedgerScreen: FunctionComponent = observer((props) => {
       if (keyRingStore.status !== KeyRingStatus.UNLOCKED) {
         return false;
       }
-      if (checkRouter(props?.route?.name, 'RegisterNewLedgerMain')) {
-        navigate(SCREENS.RegisterEnd, {
-          password: getValues('password')
+      if (checkRouter(route?.name, 'RegisterNewLedgerMain')) {
+        navigate(SCREENS.RegisterDone, {
+          password: getValues('password'),
+          walletName: getValues('name')
         });
       } else {
         smartNavigation.reset({
           index: 0,
           routes: [
             {
-              name: SCREENS.RegisterEnd,
+              name: SCREENS.RegisterDone,
               params: {
-                password: getValues('password')
+                password: getValues('password'),
+                walletName: getValues('name')
               }
             }
           ]
@@ -109,11 +102,16 @@ export const NewLedgerScreen: FunctionComponent = observer((props) => {
       setIsCreating(false);
     }
   });
-  const renderName = ({ field: { onChange, onBlur, value, ref } }) => {
+  const renderWalletName = ({ field: { onChange, onBlur, value, ref } }) => {
     return (
       <TextInput
-        label="Username"
-        returnKeyType={mode === 'add' ? 'done' : 'next'}
+        label=""
+        topInInputContainer={
+          <View style={{ paddingBottom: 4 }}>
+            <OWText>Wallet Name</OWText>
+          </View>
+        }
+        returnKeyType="next"
         onSubmitEditing={() => {
           if (mode === 'add') {
             submit();
@@ -122,9 +120,9 @@ export const NewLedgerScreen: FunctionComponent = observer((props) => {
             setFocus('password');
           }
         }}
-        inputStyle={{
-          ...styles.borderInput
-        }}
+        inputStyle={styles.input}
+        style={styles.textInput}
+        inputLeft={<OWIcon size={22} name="wallet-outline" color={colors['primary-surface-default']} />}
         error={errors.name?.message}
         onBlur={onBlur}
         onChangeText={onChange}
@@ -133,37 +131,38 @@ export const NewLedgerScreen: FunctionComponent = observer((props) => {
       />
     );
   };
+
   const validatePass = (value: string) => {
-    if (value.length < 8) {
-      return 'Password must be longer than 8 characters';
+    if (value.length < 6) {
+      return 'Password must be longer than 6 characters';
     }
   };
   const renderPass = ({ field: { onChange, onBlur, value, ref } }) => {
     return (
       <TextInput
-        label="Password"
-        returnKeyType="next"
-        secureTextEntry={true}
+        label=""
         onSubmitEditing={() => {
           setFocus('confirmPassword');
         }}
-        inputStyle={{
-          ...styles.borderInput
-        }}
+        topInInputContainer={
+          <View style={{ paddingBottom: 4 }}>
+            <OWText>Passcode</OWText>
+          </View>
+        }
+        returnKeyType="next"
+        inputStyle={styles.input}
+        style={styles.textInput}
         inputRight={
           <OWButton
             style={styles.padIcon}
             type="link"
             onPress={() => setStatusPass(!statusPass)}
             icon={
-              <OWIcon
-                name={!statusPass ? 'eye' : 'eye-slash'}
-                color={colors['icon-purple-700-gray']}
-                size={22}
-              />
+              <OWIcon name={!statusPass ? 'eye' : 'eye-slash'} color={colors['primary-surface-default']} size={22} />
             }
           />
         }
+        placeholder={'Enter your passcode'}
         secureTextEntry={!statusPass}
         error={errors.password?.message}
         onBlur={onBlur}
@@ -182,10 +181,8 @@ export const NewLedgerScreen: FunctionComponent = observer((props) => {
           PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT
         ]);
         if (
-          granted['android.permission.BLUETOOTH_CONNECT'] ===
-            PermissionsAndroid.RESULTS.GRANTED &&
-          granted['android.permission.BLUETOOTH_SCAN'] ===
-            PermissionsAndroid.RESULTS.GRANTED
+          granted['android.permission.BLUETOOTH_CONNECT'] === PermissionsAndroid.RESULTS.GRANTED &&
+          granted['android.permission.BLUETOOTH_SCAN'] === PermissionsAndroid.RESULTS.GRANTED
         ) {
           // alert('ok');
         } else {
@@ -202,8 +199,8 @@ export const NewLedgerScreen: FunctionComponent = observer((props) => {
   }, []);
 
   const validateConfirmPass = (value: string) => {
-    if (value.length < 8) {
-      return 'Password must be longer than 8 characters';
+    if (value.length < 6) {
+      return 'Password must be longer than 6 characters';
     }
 
     if (getValues('password') !== value) {
@@ -211,7 +208,7 @@ export const NewLedgerScreen: FunctionComponent = observer((props) => {
     }
   };
   const onGoBack = () => {
-    if (checkRouter(props?.route?.name, 'RegisterNewLedgerMain')) {
+    if (checkRouter(route?.name, 'RegisterNewLedgerMain')) {
       smartNavigation.goBack();
     } else {
       smartNavigation.navigateSmart('Register.Intro', {});
@@ -221,8 +218,16 @@ export const NewLedgerScreen: FunctionComponent = observer((props) => {
   const renderConfirmPass = ({ field: { onChange, onBlur, value, ref } }) => {
     return (
       <TextInput
-        label="Confirm password"
+        label=""
         returnKeyType="done"
+        topInInputContainer={
+          <View style={{ paddingBottom: 4 }}>
+            <OWText>Confirn Passcode</OWText>
+          </View>
+        }
+        placeholder={'Enter your confirm passcode'}
+        inputStyle={styles.input}
+        style={styles.textInput}
         inputRight={
           <OWButton
             style={styles.padIcon}
@@ -231,7 +236,7 @@ export const NewLedgerScreen: FunctionComponent = observer((props) => {
             icon={
               <OWIcon
                 name={!statusConfirmPass ? 'eye' : 'eye-slash'}
-                color={colors['icon-purple-700-gray']}
+                color={colors['primary-surface-default']}
                 size={22}
               />
             }
@@ -240,9 +245,6 @@ export const NewLedgerScreen: FunctionComponent = observer((props) => {
         secureTextEntry={!statusConfirmPass}
         onSubmitEditing={() => {
           submit();
-        }}
-        inputStyle={{
-          ...styles.borderInput
         }}
         error={errors.confirmPassword?.message}
         onBlur={onBlur}
@@ -253,66 +255,73 @@ export const NewLedgerScreen: FunctionComponent = observer((props) => {
     );
   };
   return (
-    <PageWithScrollView
-      contentContainerStyle={styles.containerContentStyle}
-      backgroundColor={colors['plain-background']}
-    >
-      <View style={styles.viewHeader}>
-        <Text style={styles.titleHeader}>Import ledger Nano X</Text>
-        <View>
-          <OWalletLogo size={72} />
+    <View style={styles.container}>
+      <View>
+        <TouchableOpacity onPress={onGoBack} style={styles.goBack}>
+          <OWIcon size={16} color={colors['neutral-icon-on-light']} name="arrow-left" />
+        </TouchableOpacity>
+        <View style={[styles.aic, styles.title]}>
+          <OWText variant="heading" style={{ textAlign: 'center' }} typo="bold">
+            Import Ledger Nano X
+          </OWText>
+
+          <View
+            style={{
+              paddingLeft: 20,
+              paddingRight: 20,
+              paddingTop: 32
+            }}
+          />
+          <Controller
+            control={control}
+            rules={{
+              required: 'Wallet name is required'
+            }}
+            render={renderWalletName}
+            name="name"
+            defaultValue={`OWallet-${Math.floor(Math.random() * (100 - 1)) + 1}`}
+          />
+          {mode === 'create' ? (
+            <React.Fragment>
+              <Controller
+                control={control}
+                rules={{
+                  required: 'Password is required',
+                  validate: validatePass
+                }}
+                render={renderPass}
+                name="password"
+                defaultValue=""
+              />
+              <Controller
+                control={control}
+                rules={{
+                  required: 'Confirm password is required',
+                  validate: validateConfirmPass
+                }}
+                render={renderConfirmPass}
+                name="confirmPassword"
+                defaultValue=""
+              />
+            </React.Fragment>
+          ) : null}
         </View>
       </View>
-      <Controller
-        control={control}
-        rules={{
-          required: 'Name is required'
-        }}
-        render={renderName}
-        name="name"
-        defaultValue=""
-      />
-      {mode === 'create' ? (
-        <React.Fragment>
-          <Controller
-            control={control}
-            rules={{
-              required: 'Password is required',
-              validate: validatePass
-            }}
-            render={renderPass}
-            name="password"
-            defaultValue=""
-          />
-          <Controller
-            control={control}
-            rules={{
-              required: 'Confirm password is required',
-              validate: validateConfirmPass
-            }}
-            render={renderConfirmPass}
-            name="confirmPassword"
-            defaultValue=""
-          />
-        </React.Fragment>
-      ) : null}
-      <BIP44AdvancedButton bip44Option={bip44Option} />
-      <View style={styles.heightView} />
-      <OWButton
-        loading={isCreating}
-        disabled={isCreating}
-        onPress={submit}
-        label={'Next'}
-      />
-      <OWButton type="link" onPress={onGoBack} label={'Go back'} />
 
-      {/* Mock element for bottom padding */}
-      <View
-        style={{
-          height: 20
-        }}
-      />
-    </PageWithScrollView>
+      <View style={styles.aic}>
+        <View style={styles.signIn}>
+          <OWButton
+            style={{
+              borderRadius: 32
+            }}
+            label={mode === 'add' ? 'Import' : ' Next'}
+            loading={isCreating}
+            disabled={isCreating}
+            onPress={submit}
+          />
+        </View>
+      </View>
+    </View>
   );
 });
 
@@ -323,34 +332,45 @@ const useStyles = () => {
       width: 22,
       height: 22
     },
-    heightView: { height: 20 },
-    titleHeader: {
-      fontSize: 24,
-      lineHeight: 34,
-      fontWeight: '700',
-      color: colors['label']
+
+    container: {
+      paddingTop: metrics.screenHeight / 14,
+      justifyContent: 'space-between',
+      height: '100%',
+      backgroundColor: colors['neutral-surface-card']
     },
-    viewHeader: {
-      height: 72,
-      display: 'flex',
-      flexDirection: 'row',
+    signIn: {
+      width: '100%',
       alignItems: 'center',
-      justifyContent: 'space-between'
+      borderTopWidth: 1,
+      borderTopColor: colors['neutral-border-default'],
+      padding: 16
     },
-    containerContentStyle: {
-      flexGrow: 1,
-      paddingHorizontal: spacing['page-pad'],
-      paddingTop: Platform.OS == 'android' ? 50 : 0
+    aic: {
+      alignItems: 'center',
+      paddingBottom: 20
     },
-    borderInput: {
-      borderColor: colors['border-purple-100-gray-800'],
-      backgroundColor: 'transparent',
-      borderWidth: 1,
-      paddingLeft: 11,
-      paddingRight: 11,
-      paddingTop: 12,
-      paddingBottom: 12,
-      borderRadius: 8
-    }
+    rc: {
+      flexDirection: 'row',
+      alignItems: 'center'
+    },
+    goBack: {
+      backgroundColor: colors['neutral-surface-action3'],
+      borderRadius: 999,
+      width: 44,
+      height: 44,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginLeft: 16
+    },
+    title: {
+      paddingHorizontal: 16,
+      paddingTop: 24
+    },
+    input: {
+      width: metrics.screenWidth - 32,
+      borderColor: colors['neutral-border-strong']
+    },
+    textInput: { fontWeight: '600', paddingLeft: 4, fontSize: 15 }
   });
 };

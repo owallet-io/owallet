@@ -20,10 +20,7 @@ import { BottomSheetProps } from '@gorhom/bottom-sheet';
 const FeeButtonsModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
-  bottomSheetModalConfig?: Omit<
-    BottomSheetProps,
-    'snapPoints' | 'children'
-  >;
+  bottomSheetModalConfig?: Omit<BottomSheetProps, 'snapPoints' | 'children'>;
   feeConfig: IFeeConfig;
   gasConfig: IGasConfig;
 }> = registerModal(
@@ -41,7 +38,7 @@ const FeeButtonsModal: FunctionComponent<{
         >
           <Toggle
             on={customFee}
-            onChange={(value) => {
+            onChange={value => {
               setCustomFee(value);
               if (!value) {
                 if (feeConfig.feeCurrency && !feeConfig.fee) {
@@ -74,10 +71,8 @@ const FeeButtonsModal: FunctionComponent<{
                 color: colors['gray-900'],
                 marginBottom: 8
               }}
-              onChangeText={(text) => {
-                const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(
-                  DecUtils.getTenExponentNInPrecisionRange(6)
-                );
+              onChangeText={text => {
+                const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(DecUtils.getTenExponentNInPrecisionRange(6));
 
                 feeConfig.setManualFee({
                   amount: fee.roundUp().toString(),
@@ -86,12 +81,7 @@ const FeeButtonsModal: FunctionComponent<{
               }}
             />
           ) : (
-            <FeeButtons
-              label="Fee"
-              gasLabel="Gas"
-              feeConfig={feeConfig}
-              gasConfig={gasConfig}
-            />
+            <FeeButtons label="Fee" gasLabel="Gas" feeConfig={feeConfig} gasConfig={gasConfig} />
           )}
         </TouchableWithoutFeedback>
 
@@ -100,7 +90,7 @@ const FeeButtonsModal: FunctionComponent<{
           style={{
             marginBottom: customFee ? 264 : 14,
             marginTop: 32,
-            backgroundColor: colors['purple-700'],
+            backgroundColor: colors['primary-surface-default'],
             borderRadius: 8
           }}
         >
@@ -138,12 +128,7 @@ export const FeeInSign: FunctionComponent<{
 
   const preferNoSetFee = signOptions?.preferNoSetFee ?? false;
 
-  const fee =
-    feeConfig.fee ??
-    new CoinPretty(
-      chainStore.getChain(feeConfig.chainId).stakeCurrency,
-      new Dec('0')
-    );
+  const fee = feeConfig.fee ?? new CoinPretty(chainStore.getChain(feeConfig.chainId).stakeCurrency, new Dec('0'));
 
   const feePrice = priceStore.calculatePrice(fee);
 
@@ -175,14 +160,10 @@ export const FeeInSign: FunctionComponent<{
         gasConfig={gasConfig}
       />
       <View style={style.flatten(['padding-bottom-28'])}>
-        <View
-          style={style.flatten(['flex-row', 'items-center', 'margin-bottom-4'])}
-        >
+        <View style={style.flatten(['flex-row', 'items-center', 'margin-bottom-4'])}>
           <Text style={style.flatten(['subtitle3'])}>Fee</Text>
           <View style={style.get('flex-1')} />
-          <Text style={style.flatten(['body3'])}>
-            {feePrice ? feePrice.toString() : '-'}
-          </Text>
+          <Text style={style.flatten(['body3'])}>{feePrice ? feePrice.toString() : '-'}</Text>
         </View>
         <View style={style.flatten(['flex-row'])}>
           <View style={style.get('flex-1')} />
@@ -196,52 +177,28 @@ export const FeeInSign: FunctionComponent<{
             <Text
               style={{
                 ...typography['subtitle1'],
-                color: canFeeEditable
-                  ? colors['purple-700']
-                  : colors['primary-text']
+                color: canFeeEditable ? colors['primary-surface-default'] : colors['primary-text']
               }}
             >
               {fee.trim(true).toString()}
             </Text>
             {canFeeEditable ? (
               <View style={style.flatten(['margin-left-6'])}>
-                <RightArrowIcon
-                  color={style.get('color-primary').color}
-                  height={12}
-                />
+                <RightArrowIcon color={style.get('color-primary').color} height={12} />
               </View>
             ) : null}
           </TouchableOpacity>
         </View>
         {isFeeLoading ? (
           <View>
-            <View
-              style={style.flatten([
-                'absolute',
-                'height-16',
-                'justify-center',
-                'margin-top-2',
-                'margin-left-4'
-              ])}
-            >
-              <LoadingSpinner
-                size={14}
-                color={style.get('color-loading-spinner').color}
-              />
+            <View style={style.flatten(['absolute', 'height-16', 'justify-center', 'margin-top-2', 'margin-left-4'])}>
+              <LoadingSpinner size={14} color={style.get('color-loading-spinner').color} />
             </View>
           </View>
         ) : null}
         {!isFeeLoading && errorText ? (
           <View>
-            <Text
-              style={style.flatten([
-                'absolute',
-                'text-caption1',
-                'color-error',
-                'margin-top-2',
-                'margin-left-4'
-              ])}
-            >
+            <Text style={style.flatten(['absolute', 'text-caption1', 'color-error', 'margin-top-2', 'margin-left-4'])}>
               {errorText}
             </Text>
           </View>

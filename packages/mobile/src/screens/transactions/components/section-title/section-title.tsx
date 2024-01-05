@@ -21,14 +21,9 @@ export const TransactionSectionTitle: FunctionComponent<{
       }}
     >
       <Text style={[styles.textTitle, { color: colors['text-label-list'] }]}>
-        {title &&
-          title.replace(/(^\w{1})|(\s+\w{1})/g, (letter) =>
-            letter.toUpperCase()
-          )}
+        {title && title.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase())}
       </Text>
-      {right ?? (
-        <RefreshIcon onPress={onPress} color={colors['purple-700']} size={24} />
-      )}
+      {right ?? <RefreshIcon onPress={onPress} color={colors['primary-surface-default']} size={24} />}
     </View>
   );
 };

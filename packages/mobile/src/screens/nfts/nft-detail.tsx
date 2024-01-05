@@ -7,10 +7,7 @@ import { EthereumEndpoint } from '@owallet/common';
 import { metrics, spacing, typography } from '../../themes';
 import { convertAmount, _keyExtract, checkImageURL } from '../../utils/helper';
 import { QuantityIcon } from '../../components/icon';
-import {
-  TransactionItem,
-  TransactionSectionTitle
-} from '../transactions/components';
+import { TransactionItem, TransactionSectionTitle } from '../transactions/components';
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
 import { API } from '../../common/api';
 import { RouteProp, useRoute } from '@react-navigation/native';
@@ -29,7 +26,7 @@ const AIRI = 'airight';
 
 const commonDenom = { ORAI, AIRI };
 
-export const NftDetailScreen: FunctionComponent = observer((props) => {
+export const NftDetailScreen: FunctionComponent = observer(props => {
   const smartNavigation = useSmartNavigation();
   // const { chainStore, accountStore, queriesStore, modalStore } = useStore();
   const { colors } = useTheme();
@@ -217,7 +214,7 @@ const styling = () => {
       // paddingBottom: spacing['24']
     },
     btn: {
-      backgroundColor: colors['purple-700'],
+      backgroundColor: colors['primary-surface-default'],
       borderRadius: spacing['8'],
       marginLeft: 10,
       marginRight: 10

@@ -6,6 +6,7 @@ import { useStore } from '../../../stores';
 import { getPrivateDataTitle } from '../screens/view-private-data';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { LRRedact } from '@logrocket/react-native';
+import { SCREENS } from '@src/common/constants';
 
 export const SettingViewPrivateDataItem: FunctionComponent<{
   topBorder?: boolean;
@@ -18,37 +19,35 @@ export const SettingViewPrivateDataItem: FunctionComponent<{
 
   return (
     <React.Fragment>
-     <LRRedact>
-     <SettingItem
-        label={'Mnemonic'}
-        onPress={() => {
-          setIsOpenModal(true);
-        }}
-        right={<RightArrow />}
-        topBorder={topBorder}
-      />
-      <PasswordInputModal
-        isOpen={isOpenModal}
-        paragraph={'Do not reveal your mnemonic to anyone'}
-        close={() => {
-          setIsOpenModal(false);
-        }}
-        title={getPrivateDataTitle(keyRingStore.keyRingType, true)}
-        onEnterPassword={async (password) => {
-          const index = keyRingStore.multiKeyStoreInfo.findIndex(
-            (keyStore) => keyStore.selected
-          );
+      <LRRedact>
+        <SettingItem
+          label={'Mnemonic'}
+          onPress={() => {
+            setIsOpenModal(true);
+          }}
+          right={<RightArrow />}
+          topBorder={topBorder}
+        />
+        <PasswordInputModal
+          isOpen={isOpenModal}
+          paragraph={'Do not reveal your mnemonic to anyone'}
+          close={() => {
+            setIsOpenModal(false);
+          }}
+          title={getPrivateDataTitle(keyRingStore.keyRingType, true)}
+          onEnterPassword={async password => {
+            const index = keyRingStore.multiKeyStoreInfo.findIndex(keyStore => keyStore.selected);
 
-          if (index >= 0) {
-            const privateData = await keyRingStore.showKeyRing(index, password);
-            smartNavigation.navigateSmart('Setting.ViewPrivateData', {
-              privateData,
-              privateDataType: keyRingStore.keyRingType
-            });
-          }
-        }}
-      />
-     </LRRedact>
+            if (index >= 0) {
+              const privateData = await keyRingStore.showKeyRing(index, password);
+              smartNavigation.navigateSmart('Setting.BackupMnemonic', {
+                privateData,
+                privateDataType: keyRingStore.keyRingType
+              });
+            }
+          }}
+        />
+      </LRRedact>
     </React.Fragment>
   );
 });

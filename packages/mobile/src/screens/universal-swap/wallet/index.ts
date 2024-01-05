@@ -9,13 +9,15 @@ import {
   Networks,
   IERC20Upgradeable__factory,
   ethToTronAddress,
-  tronToEthAddress
+  tronToEthAddress,
+  network
 } from '@oraichain/oraidex-common';
 import { OfflineSigner } from '@cosmjs/proto-signing';
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate';
 import { OWallet, Ethereum, TronWeb } from '@owallet/types';
 import { SigningStargateClient, SigningStargateClientOptions } from '@cosmjs/stargate';
 import { ethers } from 'ethers';
+import { Tendermint37Client } from '@cosmjs/tendermint-rpc';
 
 export class SwapCosmosWallet extends CosmosWallet {
   private client: SigningCosmWasmClient;
@@ -43,33 +45,87 @@ export class SwapCosmosWallet extends CosmosWallet {
     return await this.owallet.getOfflineSignerAuto(chainId);
   }
 
-  async getCosmWasmClient(
-    config: {
-      signer?: OfflineSigner;
-      rpc?: string;
-      chainId: CosmosChainId;
-    },
-    options?: SigningStargateClientOptions
-  ): Promise<{
-    wallet: OfflineSigner;
-    client: SigningCosmWasmClient;
-    // defaultAddress: AccountData;
-    stargateClient: SigningStargateClient;
-  }> {
-    const { chainId, signer, rpc } = config;
-    const wallet = signer ?? (await this.createCosmosSigner(chainId));
-    // const defaultAddress = (await wallet.getAccounts())[0];
-    const stargateClient = await SigningStargateClient.connectWithSigner(rpc, wallet, options);
+  //   async getCosmWasmClient(
+  //     config: { signer?: OfflineSigner; rpc: string; chainId: CosmosChainId },
+  //     options: SigningStargateClientOptions
+  //   ): Promise<{
+  //     wallet: OfflineSigner;
+  //     client: SigningCosmWasmClient;
+  //     stargateClient: SigningStargateClient;
+  //   }> {
+  //     const { chainId, rpc, signer } = config;
+  //     console.log('chainId', chainId);
 
-    return new Promise(resolve =>
-      resolve({
-        client: this.client,
-        wallet: wallet ?? config.signer!,
-        // defaultAddress,
-        stargateClient: stargateClient
-      })
-    );
-  }
+  //     const wallet = signer ?? (await this.createCosmosSigner(chainId));
+  //     const tmClient = await Tendermint37Client.connect(rpc);
+  //     // const client = await SigningCosmWasmClient.createWithSigner(tmClient, wallet, options);
+  //     const stargateClient = await SigningStargateClient.createWithSigner(tmClient, wallet, options);
+  //     console.log('stargateClient', stargateClient);
+
+  //     return new Promise(resolve =>
+  //       resolve({
+  //         client: this.client,
+  //         wallet: wallet,
+  //         // defaultAddress,
+  //         stargateClient: stargateClient
+  //       })
+  //     );
+  //   }
+  // }
+
+  // const getCosmWasmClient = async (
+  //   config: { signer?: OfflineSigner; chainId?: string; rpc?: string },
+  //   options?: SigningStargateClientOptions
+  // ) => {
+  //   const { chainId, rpc, signer } = config;
+  //   const wallet = signer ?? (await this.createCosmosSigner(chainId));
+  //   const defaultAddress = (await wallet.getAccounts())[0];
+  //   const client = await SigningCosmWasmClient.connectWithSigner(
+  //     rpc ?? (network.rpc as string),
+  //     wallet,
+  //     options ?? {
+  //       gasPrice: GasPrice.fromString(network.fee.gasPrice + network.denom)
+  //     }
+  //   );
+  //   return { wallet, client, defaultAddress };
+  // };
+
+  // async getCosmWasmClient(
+  //   config: {
+  //     signer?: OfflineSigner;
+  //     rpc?: string;
+  //     chainId: CosmosChainId;
+  //   },
+  //   options?: SigningStargateClientOptions
+  // ): Promise<{
+  //   wallet: OfflineSigner;
+  //   client: SigningCosmWasmClient;
+  //   // defaultAddress: AccountData;
+  //   stargateClient: SigningStargateClient;
+  // }> {
+  //   const { chainId, signer, rpc } = config;
+
+  //   console.log('chainId', chainId);
+
+  //   const wallet = signer ?? (await this.createCosmosSigner(chainId));
+
+  //   console.log('signer', signer);
+  //   console.log('wallet', wallet);
+
+  //   // const defaultAddress = (await wallet.getAccounts())[0];
+  //   const stargateClient = await SigningStargateClient.connectWithSigner(rpc, wallet, options);
+
+  //   console.log('stargateClient', stargateClient);
+
+  //   return new Promise(resolve =>
+  //     resolve({
+  //       client: this.client,
+  //       wallet: wallet ?? config.signer!,
+  //       // defaultAddress,
+  //       stargateClient: stargateClient
+  //     })
+  //   );
+  // }
 }
 
 export class SwapEvmWallet extends EvmWallet {

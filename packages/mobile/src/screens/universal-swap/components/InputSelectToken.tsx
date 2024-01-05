@@ -22,11 +22,11 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
   const [tokenIcon, setTokenIcon] = useState(null);
 
   useEffect(() => {
-    setText(amount);
+    setText(Number(Number(amount).toFixed(6)).toString());
   }, [amount]);
 
   const handleChangeAmount = amount => {
-    onChangeAmount(Number(amount).toFixed(6).toString());
+    onChangeAmount(Number(Number(amount).toFixed(6)).toString());
   };
 
   const debounceFn = useCallback(_debounce(handleChangeAmount, 500), []);

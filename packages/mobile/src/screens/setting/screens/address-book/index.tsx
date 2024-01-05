@@ -1,9 +1,5 @@
 import { Bech32Address } from '@owallet/cosmos';
-import {
-  IMemoConfig,
-  IRecipientConfig,
-  useAddressBookConfig
-} from '@owallet/hooks';
+import { IMemoConfig, IRecipientConfig, useAddressBookConfig } from '@owallet/hooks';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { OWButton } from '@src/components/button';
 import { OWBox } from '@src/components/card';
@@ -90,31 +86,23 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
 
   const smartNavigation = useSmartNavigation();
 
-  const chainId = recipientConfig
-    ? recipientConfig.chainId
-    : chainStore.current.chainId;
+  const chainId = recipientConfig ? recipientConfig.chainId : chainStore.current.chainId;
 
-  const addressBookConfig = useAddressBookConfig(
-    new AsyncKVStore('address_book'),
-    chainStore,
-    chainId,
-    {
-      setRecipient: (recipient: string) => {
-        if (recipientConfig) {
-          recipientConfig.setRawRecipient(recipient);
-        }
-      },
-      setMemo: (memo: string) => {
-        if (memoConfig) {
-          memoConfig.setMemo(memo);
-        }
+  const addressBookConfig = useAddressBookConfig(new AsyncKVStore('address_book'), chainStore, chainId, {
+    setRecipient: (recipient: string) => {
+      if (recipientConfig) {
+        recipientConfig.setRawRecipient(recipient);
+      }
+    },
+    setMemo: (memo: string) => {
+      if (memoConfig) {
+        memoConfig.setMemo(memo);
       }
     }
-  );
+  });
 
   const isInTransaction = recipientConfig != null || memoConfig != null;
-  const AddressBookItem =
-    addressBookItemComponent[isInTransaction ? 'inTransaction' : 'inSetting'];
+  const AddressBookItem = addressBookItemComponent[isInTransaction ? 'inTransaction' : 'inSetting'];
 
   const onNameSearch = txt => {
     const searchWord = txt ?? nameSearch;
@@ -190,7 +178,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
               height: 'auto'
             }}
             size="medium"
-            icon={<OWIcon name="add" color={colors['purple-700']} size={16} />}
+            icon={<OWIcon name="add" color={colors['primary-surface-default']} size={16} />}
           />
         </View>
 
@@ -215,13 +203,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
                       }
                     }}
                   >
-                    <View
-                      style={style.flatten([
-                        'flex-row',
-                        'justify-between',
-                        'items-center'
-                      ])}
-                    >
+                    <View style={style.flatten(['flex-row', 'justify-between', 'items-center'])}>
                       <View>
                         <Text variant="body1" typo="bold">
                           {data.name}
@@ -235,11 +217,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
                       >
                         {data.memo}
                       </Text> */}
-                        <Text
-                          variant="caption"
-                          typo="bold"
-                          color={colors['gray-300']}
-                        >
+                        <Text variant="caption" typo="bold" color={colors['gray-300']}>
                           {Bech32Address.shortenAddress(data.address, 30)}
                         </Text>
                       </View>
@@ -251,8 +229,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
                           if (
                             await confirmModal.confirm({
                               title: 'Remove contact',
-                              paragraph:
-                                'Are you sure you want to remove this address?',
+                              paragraph: 'Are you sure you want to remove this address?',
                               yesButtonText: 'Remove',
                               noButtonText: 'Cancel',
                               titleStyleCustom: {
@@ -266,7 +243,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
                               },
                               noBtnStyleCustom: {
                                 backgroundColor: colors['gray-10'],
-                                color: colors['purple-700'],
+                                color: colors['primary-surface-default'],
                                 borderColor: 'transparent'
                               },
                               yesBtnStyleCustom: {
@@ -278,12 +255,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
                           }
                         }}
                       >
-                        <TrashCanIcon
-                          color={
-                            style.get('color-text-black-very-very-low').color
-                          }
-                          size={24}
-                        />
+                        <TrashCanIcon color={style.get('color-text-black-very-very-low').color} size={24} />
                       </TouchableOpacity>
                     </View>
                   </AddressBookItem>

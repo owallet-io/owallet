@@ -5,14 +5,7 @@ import { useStore } from '../../stores';
 import { EthereumEndpoint } from '@owallet/common';
 import { PageWithScrollView } from '../../components/page';
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
-import {
-  AddressInput,
-  AmountInput,
-  MemoInput,
-  CurrencySelector,
-  FeeButtons,
-  TextInput
-} from '../../components/input';
+import { AddressInput, AmountInput, MemoInput, CurrencySelector, FeeButtons, TextInput } from '../../components/input';
 import { Button } from '../../components/button';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { useSmartNavigation } from '../../navigation.provider';
@@ -24,7 +17,7 @@ import ProgressiveImage from '../../components/progessive-image';
 import { useTheme } from '@src/themes/theme-provider';
 import { OWSubTitleHeader } from '@src/components/header';
 import { OWBox } from '@src/components/card';
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     sendInputRoot: {
       paddingHorizontal: spacing['20'],
@@ -63,9 +56,7 @@ export const TransferNFTScreen: FunctionComponent = observer(() => {
 
   const smartNavigation = useSmartNavigation();
 
-  const chainId = route?.params?.chainId
-    ? route?.params?.chainId
-    : chainStore?.current?.chainId;
+  const chainId = route?.params?.chainId ? route?.params?.chainId : chainStore?.current?.chainId;
 
   const nft = route?.params?.nft ? route?.params?.nft : null;
 
@@ -86,8 +77,7 @@ export const TransferNFTScreen: FunctionComponent = observer(() => {
     sendConfigs.amountConfig.setSendCurrency({
       coinDecimals: 6,
       type: 'cw20',
-      coinMinimalDenom:
-        'cw20:orai10ldgzued6zjp0mkqwsv2mux3ml50l97c74x8sg:aiRight Token',
+      coinMinimalDenom: 'cw20:orai10ldgzued6zjp0mkqwsv2mux3ml50l97c74x8sg:aiRight Token',
       coinDenom: 'AIRI',
       coinGeckoId: 'airight',
       contractAddress: 'orai10ldgzued6zjp0mkqwsv2mux3ml50l97c74x8sg',
@@ -180,11 +170,7 @@ export const TransferNFTScreen: FunctionComponent = observer(() => {
             inputContainerStyle={{
               backgroundColor: colors['background-box']
             }}
-            error={
-              !quantity || quantity > nft.quantity
-                ? 'Please enter valid quantity'
-                : ''
-            }
+            error={!quantity || quantity > nft.quantity ? 'Please enter valid quantity' : ''}
             keyboardType={'number-pad'}
             inputRight={
               <View
@@ -201,7 +187,7 @@ export const TransferNFTScreen: FunctionComponent = observer(() => {
                   containerStyle={{
                     height: 24,
                     borderRadius: spacing['8'],
-                    backgroundColor: colors['purple-700'],
+                    backgroundColor: colors['primary-surface-default'],
                     justifyContent: 'center',
                     alignItems: 'center'
                   }}
@@ -217,7 +203,7 @@ export const TransferNFTScreen: FunctionComponent = observer(() => {
             }
             labelStyle={styles.sendlabelInput}
             value={quantity?.toString() ?? ''}
-            onChangeText={(txt) => {
+            onChangeText={txt => {
               if (Number(txt) > nft.quantity) {
                 setQuantity(nft.quantity);
               } else {
@@ -244,7 +230,7 @@ export const TransferNFTScreen: FunctionComponent = observer(() => {
           <TouchableOpacity
             style={{
               marginBottom: 24,
-              backgroundColor: colors['purple-700'],
+              backgroundColor: colors['primary-surface-default'],
               borderRadius: 8
             }}
             onPress={async () => {
@@ -266,7 +252,7 @@ export const TransferNFTScreen: FunctionComponent = observer(() => {
                       networkType: chainStore.current.networkType
                     },
                     {
-                      onBroadcasted: (txHash) => {
+                      onBroadcasted: txHash => {
                         smartNavigation.pushSmart('TxPendingResult', {
                           txHash: Buffer.from(txHash).toString('hex')
                         });
@@ -288,9 +274,7 @@ export const TransferNFTScreen: FunctionComponent = observer(() => {
                   if (e?.message === 'Request rejected') {
                     return;
                   }
-                  if (
-                    e?.message.includes('Cannot read properties of undefined')
-                  ) {
+                  if (e?.message.includes('Cannot read properties of undefined')) {
                     return;
                   }
                   if (smartNavigation.canGoBack) {

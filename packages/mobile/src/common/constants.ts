@@ -8,11 +8,15 @@ export const defaultAll = { label: 'All', value: 'All', image: images.crypto };
 export const SCREENS = {
   Home: 'Home',
   TransactionDetail: 'Transactions.Detail',
+  BackupMnemonic: 'BackupMnemonic',
+  RecoveryPhrase: 'RecoveryPhrase',
   RegisterMain: 'RegisterMain',
   BtcFaucet: 'BtcFaucet',
   RegisterVerifyMnemonicMain: 'RegisterVerifyMnemonicMain',
   RegisterEnd: 'Register.End',
+  RegisterDone: 'Register.Done',
   RegisterRecoverMnemonicMain: 'RegisterRecoverMnemonicMain',
+  RegisterRecoverPhraseMain: 'RegisterRecoverPhraseMain',
   RegisterNewLedgerMain: 'RegisterNewLedgerMain',
   Tokens: 'Tokens',
   Nfts: 'Nfts',
@@ -24,8 +28,10 @@ export const SCREENS = {
   RegisterNewUser: 'Register.NewUser',
   RegisterNotNewUser: 'Register.NotNewUser',
   RegisterNewMnemonic: 'Register.NewMnemonic',
+  RegisterNewPincode: 'Register.NewPincode',
   RegisterVerifyMnemonic: 'Register.VerifyMnemonic',
   RegisterRecoverMnemonic: 'Register.RecoverMnemonic',
+  RegisterRecoverPhrase: 'Register.RecoverPhrase',
   RegisterNewLedger: 'Register.NewLedger',
   Send: 'Send',
   TransferNFT: 'TransferNFT',
@@ -44,6 +50,7 @@ export const SCREENS = {
   Setting: 'Setting',
   SettingSelectAccount: 'SettingSelectAccount',
   SettingViewPrivateData: 'Setting.ViewPrivateData',
+  SettingBackupMnemonic: 'Setting.BackupMnemonic',
   SettingVersion: 'Setting.Version',
   AddressBook: 'AddressBook',
   AddAddressBook: 'AddAddressBook',
@@ -69,7 +76,9 @@ export const SCREENS = {
   },
   STACK: {
     Pincode: 'Pincode',
+    PincodeUnlock: 'PincodeUnlock',
     Unlock: 'Unlock',
+    RecoverPhraseScreen: 'RecoverPhraseScreen',
     MainTab: 'MainTab',
     Register: 'Register',
     Others: 'Others',
@@ -77,19 +86,19 @@ export const SCREENS = {
   }
 };
 export const ICONS_TITLE = {
-  [SCREENS.TABS.Invest]: 'invest',
-  [SCREENS.TABS.Main]: 'home',
-  [SCREENS.TABS.Browser]: 'browser',
+  [SCREENS.TABS.Invest]: 'trending',
+  [SCREENS.TABS.Main]: 'pie',
+  [SCREENS.TABS.Browser]: 'internet',
   [SCREENS.TABS.Settings]: 'setting',
   [SCREENS.TABS.SendNavigation]: ''
 };
 
 export const SCREENS_OPTIONS: IScreenOption = {
   [SCREENS.TABS.Invest]: {
-    title: 'Invest'
+    title: 'Stake'
   },
   [SCREENS.TABS.Main]: {
-    title: 'Home'
+    title: 'Assets'
   },
   [SCREENS.TABS.Browser]: {
     title: 'Browser'
@@ -107,6 +116,9 @@ export const SCREENS_OPTIONS: IScreenOption = {
   [SCREENS.TransactionDetail]: {
     title: 'Transaction Detail'
   },
+  [SCREENS.BackupMnemonic]: {
+    showTabBar: false
+  },
   [SCREENS.RegisterMain]: {
     title: HEADER_KEY.notShowHeader
   },
@@ -114,6 +126,9 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: HEADER_KEY.notShowHeader
   },
   [SCREENS.RegisterEnd]: {
+    title: HEADER_KEY.notShowHeader
+  },
+  [SCREENS.RegisterDone]: {
     title: HEADER_KEY.notShowHeader
   },
   [SCREENS.RegisterRecoverMnemonicMain]: {
@@ -154,10 +169,16 @@ export const SCREENS_OPTIONS: IScreenOption = {
   [SCREENS.RegisterNewMnemonic]: {
     title: HEADER_KEY.notShowHeader
   },
+  [SCREENS.RegisterNewPincode]: {
+    title: HEADER_KEY.notShowHeader
+  },
   [SCREENS.RegisterVerifyMnemonic]: {
     title: HEADER_KEY.notShowHeader
   },
   [SCREENS.RegisterRecoverMnemonic]: {
+    title: HEADER_KEY.notShowHeader
+  },
+  [SCREENS.RecoveryPhrase]: {
     title: HEADER_KEY.notShowHeader
   },
   [SCREENS.RegisterNewLedger]: {
@@ -265,6 +286,15 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: HEADER_KEY.showNetworkHeader
   },
   [SCREENS.STACK.Unlock]: {
+    title: ''
+  },
+  [SCREENS.STACK.RecoverPhraseScreen]: {
+    title: ''
+  },
+  [SCREENS.STACK.PincodeUnlock]: {
+    title: ''
+  },
+  [SCREENS.STACK.Pincode]: {
     title: ''
   },
   [SCREENS.STACK.Pincode]: {

@@ -133,10 +133,10 @@ const HistoryTransactionsScreen = observer(() => {
       msgTracer = new TendermintTxTracer(chainInfo?.rpc, '/websocket');
       msgTracer
         .subscribeMsgByAddress(addressDisplay)
-        .then((tx) => {
+        .then(tx => {
           onRefresh();
         })
-        .catch((e) => {
+        .catch(e => {
           console.log(`Failed to trace the tx ()`, e);
         });
     }
@@ -165,7 +165,7 @@ const HistoryTransactionsScreen = observer(() => {
   );
   const styles = styling();
   const onActionType = useCallback(
-    (item) => {
+    item => {
       setActiveType(item);
       modalStore.close();
       refreshData({
@@ -182,7 +182,7 @@ const HistoryTransactionsScreen = observer(() => {
     modalStore.setChildren(<TypeModal actionType={onActionType} active={activeType?.value} transactions={dataType} />);
   }, [activeType, dataType]);
   const onEndReached = useCallback(() => {
-    if (page.current !== 0) {
+    if (page.current !== 0 && data.length > 0) {
       setLoadMore(true);
       fetchData(
         {
@@ -244,7 +244,7 @@ const HistoryTransactionsScreen = observer(() => {
                 width: (metrics.screenWidth - 60) / 2,
                 alignItems: 'center',
                 paddingVertical: spacing['12'],
-                backgroundColor: activePage === i ? colors['purple-700'] : colors['background-box'],
+                backgroundColor: activePage === i ? colors['primary-surface-default'] : colors['background-box'],
                 borderRadius: spacing['12']
               }}
               onPress={() => {

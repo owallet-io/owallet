@@ -54,7 +54,7 @@ export const MyRewardCard: FunctionComponent<{
           <Text
             style={{
               ...typography['h7'],
-              color: colors['purple-700']
+              color: colors['primary-surface-default']
             }}
           >
             {`(${apy.maxDecimals(2).trim(true).toString()}% per year)`}
@@ -86,7 +86,7 @@ export const MyRewardCard: FunctionComponent<{
               label="Claim"
               size="small"
               disabled={isDisable}
-              colorLoading={colors['purple-700']}
+              colorLoading={colors['primary-surface-default']}
               loading={account.isSendingMsg === 'withdrawRewards'}
               onPress={async () => {
                 try {
@@ -135,7 +135,13 @@ export const MyRewardCard: FunctionComponent<{
                 }
               }}
               type="secondary"
-              icon={<OWIcon name="rewards" size={20} color={isDisable ? colors['white'] : colors['purple-700']} />}
+              icon={
+                <OWIcon
+                  name="rewards"
+                  size={20}
+                  color={isDisable ? colors['white'] : colors['primary-surface-default']}
+                />
+              }
               fullWidth={false}
               style={{
                 width: 100,

@@ -67,7 +67,7 @@ const TransactionDetailScreen = observer(() => {
       getDetailByHash(txHash);
     }
   };
-  const getDetailByHash = async (txHash) => {
+  const getDetailByHash = async txHash => {
     try {
       const tx = await txs.getTxsByHash(
         txHash,
@@ -188,7 +188,7 @@ const TransactionDetailScreen = observer(() => {
           label="Transaction hash"
           valueDisplay={
             <TouchableOpacity onPress={onViewScan}>
-              <Text color={colors['purple-700']} variant="body1">
+              <Text color={colors['primary-surface-default']} variant="body1">
                 {formatContractAddress(txHash)}
               </Text>
             </TouchableOpacity>
@@ -205,7 +205,7 @@ const TransactionDetailScreen = observer(() => {
                 data?.status === 'success'
                   ? colors['green-500']
                   : data?.status === 'pending'
-                  ? colors['purple-700']
+                  ? colors['primary-surface-default']
                   : colors['orange-800']
               }
               name={
@@ -218,7 +218,7 @@ const TransactionDetailScreen = observer(() => {
               data?.status === 'success'
                 ? colors['green-500']
                 : data?.status === 'pending'
-                ? colors['purple-700']
+                ? colors['primary-surface-default']
                 : colors['orange-800']
           }}
         />
@@ -296,7 +296,7 @@ const TransactionDetailScreen = observer(() => {
                           valueProps={{
                             numberOfLines: 4,
                             color: txsHelper.isAddress(attr?.value, chainStore?.current?.networkType)
-                              ? colors['purple-700']
+                              ? colors['primary-surface-default']
                               : colors['text-title-login']
                           }}
                           btnCopy={txsHelper.isAddress(attr?.value, chainStore?.current?.networkType)}

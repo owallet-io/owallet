@@ -18,7 +18,7 @@ import OWButton from '@src/components/button/OWButton';
 import { SCREENS } from '@src/common/constants';
 import { LRRedact } from '@logrocket/react-native';
 
-export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
+export const VerifyMnemonicScreen: FunctionComponent = observer(props => {
   const route = useRoute<
     RouteProp<
       Record<
@@ -55,7 +55,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
       return Math.random() > 0.5 ? 1 : -1;
     });
     setCandidateWords(
-      randomSortedWords.map((word) => {
+      randomSortedWords.map(word => {
         return {
           word,
           usedIndex: -1
@@ -69,7 +69,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
     );
   }, [newMnemonicConfig.mnemonic]);
 
-  const firstEmptyWordSetIndex = wordSet.findIndex((word) => word === undefined);
+  const firstEmptyWordSetIndex = wordSet.findIndex(word => word === undefined);
 
   const [isCreating, setIsCreating] = useState(false);
   const styles = useStyles();
@@ -82,12 +82,13 @@ export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
       newMnemonicConfig.password,
       route.params.bip44HDPath
     );
+
     analyticsStore.setUserProperties({
       registerType: 'seed',
       accountType: 'mnemonic'
     });
     if (checkRouter(props?.route?.name, 'RegisterVerifyMnemonicMain')) {
-      navigate(SCREENS.RegisterEnd, {
+      navigate(SCREENS.RegisterDone, {
         password: newMnemonicConfig.password,
         type: 'new'
       });
@@ -96,7 +97,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
         index: 0,
         routes: [
           {
-            name: 'Register.End',
+            name: 'Register.Done',
             params: {
               password: newMnemonicConfig.password,
               type: 'new'
@@ -271,7 +272,14 @@ const WordsCard: FunctionComponent<{
     >
       {wordSet.map((word, i) => {
         return (
-          <WordChip key={i.toString()} index={i + 1} word={word.word} empty={word.empty} dashedBorder={word.dashed} />
+          <WordChip
+            key={i.toString()}
+            index={i + 1}
+            word={word.word}
+            empty={word.empty}
+            dashedBorder={word.dashed}
+            colors={colors}
+          />
         );
       })}
     </View>

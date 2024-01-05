@@ -18,7 +18,8 @@ import { KVStore, toGenerator } from '@owallet/common';
 export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
   @observable
   protected selectedChainId: string;
-
+  @observable
+  protected isAllNetworks: boolean;
   @observable
   protected _isInitializing: boolean = false;
   protected deferChainIdSelect: string = '';
@@ -40,6 +41,7 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
     );
 
     this.selectedChainId = embedChainInfos[0].chainId;
+    this.isAllNetworks = false;
     makeObservable(this);
 
     this.init();
@@ -63,6 +65,11 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
     this.selectedChainId = chainId;
   }
 
+  @action
+  selectAllNetworks(isAll: boolean) {
+    this.isAllNetworks = isAll;
+  }
+
   @computed
   get current(): ChainInfoInner<ChainInfoWithEmbed> {
     if (this.hasChain(this.selectedChainId)) {
@@ -70,6 +77,11 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
     }
 
     return this.chainInfos[0];
+  }
+
+  @computed
+  get isAll(): boolean {
+    return this.isAllNetworks;
   }
 
   async saveLastViewChainId() {
@@ -83,9 +95,7 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
     yield this.getChainInfosFromBackground();
 
     // Get last view chain id from kv store
-    const lastViewChainId = yield* toGenerator(
-      this.kvStore.get<string>('last_view_chain_id')
-    );
+    const lastViewChainId = yield* toGenerator(this.kvStore.get<string>('last_view_chain_id'));
 
     if (!this.deferChainIdSelect) {
       if (lastViewChainId) {
@@ -103,18 +113,14 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
   @flow
   protected *getChainInfosFromBackground() {
     const msg = new GetChainInfosMsg();
-    const result = yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, msg)
-    );
+    const result = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
     this.setChainInfos(result.chainInfos);
   }
 
   @flow
   *removeChainInfo(chainId: string) {
     const msg = new RemoveSuggestedChainInfoMsg(chainId);
-    const chainInfos = yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, msg)
-    );
+    const chainInfos = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
 
     this.setChainInfos(chainInfos);
   }
@@ -122,9 +128,7 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
   @flow
   *addChain(chainInfo) {
     const msg = new GetChainInfosMsg();
-    const result = yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, msg)
-    );
+    const result = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
     const msgAddchain = new SuggestChainInfoMsg(chainInfo);
     yield this.requester.sendMessage(BACKGROUND_PORT, msgAddchain);
     yield this.setChainInfos([...result.chainInfos, chainInfo]);

@@ -1,4 +1,3 @@
-
 import React, { FunctionComponent, useCallback } from 'react';
 import { StyleSheet, TouchableOpacity, View, Clipboard } from 'react-native';
 // import { Divider } from '@rneui/base';
@@ -9,11 +8,7 @@ import { PageWithScrollView } from '../../components/page';
 import { useStyle } from '../../styles';
 import { TransactionSectionTitle } from './components';
 import { colors, metrics, spacing, typography } from '../../themes';
-import {
-  formatContractAddress,
-  formatOrai,
-  getTxTypeNew
-} from '../../utils/helper';
+import { formatContractAddress, formatOrai, getTxTypeNew } from '../../utils/helper';
 import { useTheme } from '@src/themes/theme-provider';
 import { useRoute, RouteProp } from '@react-navigation/native';
 import moment from 'moment';
@@ -39,9 +34,9 @@ const bindStyleTxInfo = (
   const { colors } = useTheme();
   switch (label) {
     case 'Transaction hash':
-      return { color: colors['purple-700'], textTransform: 'uppercase' };
+      return { color: colors['primary-surface-default'], textTransform: 'uppercase' };
     case 'Fee':
-      return { color: colors['purple-700'], textTransform: 'uppercase' };
+      return { color: colors['primary-surface-default'], textTransform: 'uppercase' };
     case 'Amount':
       return value?.includes('-')
         ? {
@@ -105,11 +100,7 @@ const InfoItems: FunctionComponent<{
               ...typography.body2
             }}
           >
-            {value
-              ? value?.length > 20
-                ? formatContractAddress(value)
-                : value
-              : 0}
+            {value ? (value?.length > 20 ? formatContractAddress(value) : value) : 0}
             {/* {label !== 'Amount'
               ? bindValueTxInfo(label, value)
               : (title === 'Received Token' ? '+' : '-') +
@@ -154,13 +145,7 @@ const InfoItems: FunctionComponent<{
       <View
         style={[
           StyleSheet.flatten([
-            style.flatten([
-              'height-62',
-              'flex-row',
-              'items-center',
-              'padding-x-20',
-              'background-color-white'
-            ])
+            style.flatten(['height-62', 'flex-row', 'items-center', 'padding-x-20', 'background-color-white'])
           ]),
           {
             backgroundColor: colors['background-box']
@@ -236,13 +221,7 @@ const DetailItems: FunctionComponent<{
       <RectButton
         style={[
           StyleSheet.flatten([
-            style.flatten([
-              'height-62',
-              'flex-row',
-              'items-center',
-              'padding-x-20',
-              'background-color-white'
-            ])
+            style.flatten(['height-62', 'flex-row', 'items-center', 'padding-x-20', 'background-color-white'])
           ]),
           {
             backgroundColor: colors['background-box']
@@ -276,26 +255,17 @@ export const TransactionDetail: FunctionComponent<any> = () => {
 
   const { item, type } = route.params || {};
 
-  const { tx_hash, tx, timestamp, gas_used, gas_wanted, height, code }: any =
-    item || {};
+  const { tx_hash, tx, timestamp, gas_used, gas_wanted, height, code }: any = item || {};
 
   const amountDataCell = useCallback(() => {
     let amount = { amount: 0, denom: 'ORAI' };
-    let msg = item?.messages?.find(
-      (msg) => getTxTypeNew(msg?.['@type']) === 'MsgRecvPacket'
-    );
+    let msg = item?.messages?.find(msg => getTxTypeNew(msg?.['@type']) === 'MsgRecvPacket');
     if (msg) {
-      const msgRec = JSON.parse(
-        Buffer.from(msg?.packet?.data, 'base64').toString('ascii')
-      );
+      const msgRec = JSON.parse(Buffer.from(msg?.packet?.data, 'base64').toString('ascii'));
       amount = msgRec;
       // const port = item?.message?.packet?.destination_port;
       // const channel = item?.message?.packet?.destination_channel;
-    } else if (
-      item?.messages?.find(
-        (msg) => getTxTypeNew(msg?.['@type']) === 'MsgTransfer'
-      )
-    ) {
+    } else if (item?.messages?.find(msg => getTxTypeNew(msg?.['@type']) === 'MsgTransfer')) {
       if (!item?.raw_log?.startsWith('{') || !item?.raw_log?.startsWith('[')) {
         return;
       }
@@ -304,14 +274,8 @@ export const TransactionDetail: FunctionComponent<any> = () => {
       // const rawLogDenomSplit = rawLogParse?.denom?.split('/');
       amount = rawLog;
     } else {
-      const type = getTxTypeNew(
-        item.messages?.[item?.messages?.length - 1]?.['@type'],
-        item?.raw_log,
-        item?.result
-      );
-      const msg = item?.messages?.find(
-        (msg) => getTxTypeNew(msg?.['@type']) === type
-      );
+      const type = getTxTypeNew(item.messages?.[item?.messages?.length - 1]?.['@type'], item?.raw_log, item?.result);
+      const msg = item?.messages?.find(msg => getTxTypeNew(msg?.['@type']) === type);
 
       amount = msg?.amount?.length > 0 ? msg?.amount[0] : msg?.amount ?? {};
     }
@@ -324,9 +288,7 @@ export const TransactionDetail: FunctionComponent<any> = () => {
 
     return amount && !amount?.denom?.startsWith('u')
       ? `${prefix} ${formatOrai(amount.amount ?? 0)} ${amount.denom ?? ''}`
-      : `${prefix} ${formatOrai(amount.amount ?? 0)} ${
-          amount.denom ? amount.denom?.substring(1) : ''
-        }`;
+      : `${prefix} ${formatOrai(amount.amount ?? 0)} ${amount.denom ? amount.denom?.substring(1) : ''}`;
   }, [item]);
 
   const date = moment(timestamp).format('MMM DD, YYYY [at] HH:mm');
@@ -334,11 +296,7 @@ export const TransactionDetail: FunctionComponent<any> = () => {
   const title =
     type === 'cw20'
       ? item.name
-      : getTxTypeNew(
-          item?.messages?.[item?.messages?.length - 1]?.['@type'],
-          item?.raw_log,
-          item?.result
-        );
+      : getTxTypeNew(item?.messages?.[item?.messages?.length - 1]?.['@type'], item?.raw_log, item?.result);
   // const { title, isPlus, amount, denom, unbond } = getTransactionValue({
   //   data: [
   //     {
@@ -435,11 +393,7 @@ export const TransactionDetail: FunctionComponent<any> = () => {
     {
       label: 'Amount',
       value:
-        type === 'cw20'
-          ? `${formatOrai(item?.amount ?? 0, item?.decimal ?? 6)} ${
-              item.symbol ?? ''
-            }`
-          : amountDataCell()
+        type === 'cw20' ? `${formatOrai(item?.amount ?? 0, item?.decimal ?? 6)} ${item.symbol ?? ''}` : amountDataCell()
     }
   ];
 
@@ -458,11 +412,7 @@ export const TransactionDetail: FunctionComponent<any> = () => {
     },
     {
       label: 'Fee',
-      value: item?.fee?.amount
-        ? `${formatOrai(item.fee.amount?.[0]?.amount || 0)} ${
-            item.fee.amount?.[0]?.denom
-          }`
-        : 0
+      value: item?.fee?.amount ? `${formatOrai(item.fee.amount?.[0]?.amount || 0)} ${item.fee.amount?.[0]?.denom}` : 0
     },
     // {
     //   label: 'Amount',
@@ -470,10 +420,7 @@ export const TransactionDetail: FunctionComponent<any> = () => {
     // },
     {
       label: 'Time',
-      value:
-        type === 'cw20'
-          ? moment(item?.transaction_time).format('MMM DD, YYYY [at] HH:mm')
-          : date
+      value: type === 'cw20' ? moment(item?.transaction_time).format('MMM DD, YYYY [at] HH:mm') : date
     }
   ];
 
@@ -485,25 +432,14 @@ export const TransactionDetail: FunctionComponent<any> = () => {
       <TransactionSectionTitle title={title} right={<></>} />
       <View>
         {txInfos.map((item, index) => (
-          <InfoItems
-            key={index}
-            label={item.label}
-            topBorder={true}
-            value={item.value}
-            title={title}
-          />
+          <InfoItems key={index} label={item.label} topBorder={true} value={item.value} title={title} />
         ))}
       </View>
       <TransactionSectionTitle title={'Detail'} right={<></>} />
 
       <View>
         {txDetail.map(({ label, value }: TransactionInfo, index: number) => (
-          <DetailItems
-            key={index}
-            label={label}
-            topBorder={true}
-            value={value}
-          />
+          <DetailItems key={index} label={label} topBorder={true} value={value} />
         ))}
       </View>
 
@@ -512,7 +448,7 @@ export const TransactionDetail: FunctionComponent<any> = () => {
   );
 };
 
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     container: {},
     containerTitle: {
