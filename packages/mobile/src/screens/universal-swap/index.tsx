@@ -217,8 +217,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   // handle fetch all tokens of all chains
   const handleFetchAmounts = async accounts => {
     let loadTokenParams = {};
-    console.log('being call', accounts);
-
     try {
       if (
         accounts?.[ChainIdEnum.TRON] &&

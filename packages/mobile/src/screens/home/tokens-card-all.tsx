@@ -50,7 +50,6 @@ export const TokensCardAll: FunctionComponent<{
   // handle fetch all tokens of all chains
   const handleFetchAmounts = async accounts => {
     let loadTokenParams = {};
-    console.log('being call', accounts);
 
     try {
       if (

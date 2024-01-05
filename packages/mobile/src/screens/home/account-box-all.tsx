@@ -14,9 +14,7 @@ import MyWalletModal from './components/my-wallet-modal/my-wallet-modal';
 import { ChainIdEnum, ChainNameEnum, getBase58Address } from '@owallet/common';
 import { OWButton } from '@src/components/button';
 
-export const AccountBoxAll: FunctionComponent<{
-  totalBalance?: string | React.ReactNode;
-}> = observer(({ totalBalance }) => {
+export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
   const { colors } = useTheme();
   const { universalSwapStore, accountStore, modalStore, chainStore } = useStore();
 
@@ -24,8 +22,9 @@ export const AccountBoxAll: FunctionComponent<{
   const { data: prices } = useCoinGeckoPrices();
   let totalUsd: number = getTotalUsd(universalSwapStore.getAmount, prices);
   const account = accountStore.getAccount(chainStore.current.chainId);
-  let accounts = {};
   const [more, setMore] = useState(true);
+
+  let accounts = {};
 
   Object.keys(ChainIdEnum).map(key => {
     let defaultAddress = accountStore.getAccount(ChainIdEnum[key]).bech32Address;

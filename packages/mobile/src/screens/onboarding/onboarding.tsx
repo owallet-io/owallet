@@ -37,7 +37,7 @@ const styling = () => {
     },
     getStarted: {
       position: 'absolute',
-      bottom: 40,
+      bottom: 20,
       width: metrics.screenWidth - 32,
       marginHorizontal: 16,
       borderRadius: 999
