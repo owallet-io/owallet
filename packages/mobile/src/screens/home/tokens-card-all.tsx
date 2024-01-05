@@ -7,7 +7,7 @@ import { StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { CardBody, OWBox } from '../../components/card';
 import { useStore } from '../../stores';
 import { spacing } from '../../themes';
-import { capitalizedText, showToast, _keyExtract } from '../../utils/helper';
+import { showToast, _keyExtract } from '../../utils/helper';
 import { ChainIdEnum, getBase58Address, tokensIcon } from '@owallet/common';
 import { useCoinGeckoPrices, useLoadTokens } from '@owallet/hooks';
 import {
@@ -21,7 +21,6 @@ import {
 import OWIcon from '@src/components/ow-icon/ow-icon';
 import { Text } from '@src/components/text';
 import { useSmartNavigation } from '@src/navigation.provider';
-import { useNavigation } from '@react-navigation/native';
 import { SCREENS } from '@src/common/constants';
 import { navigate } from '@src/router/root';
 
@@ -45,41 +44,45 @@ export const TokensCardAll: FunctionComponent<{
     }
   });
 
-  const account = accountStore.getAccount(chainStore.current.chainId);
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
 
   const loadTokenAmounts = useLoadTokens(universalSwapStore);
   // handle fetch all tokens of all chains
-  const handleFetchAmounts = async () => {
+  const handleFetchAmounts = async accounts => {
     let loadTokenParams = {};
-    try {
-      const cwStargate = {
-        account: accountOrai,
-        chainId: ChainIdEnum.Oraichain,
-        rpc: oraichainNetwork.rpc
-      };
+    console.log('being call', accounts);
 
-      loadTokenParams = {
-        ...loadTokenParams,
-        oraiAddress: accountOrai.bech32Address,
-        cwStargate
-      };
-      loadTokenParams = {
-        ...loadTokenParams,
-        metamaskAddress: accounts[ChainIdEnum.Ethereum]
-      };
-      loadTokenParams = {
-        ...loadTokenParams,
-        kwtAddress: accountOrai.bech32Address
-      };
-      if (accounts[ChainIdEnum.TRON]) {
+    try {
+      if (
+        accounts?.[ChainIdEnum.TRON] &&
+        accounts?.[ChainIdEnum.Ethereum] &&
+        accountOrai.bech32Address &&
+        accounts?.[ChainIdEnum.Oraichain]
+      ) {
+        const cwStargate = {
+          account: accountOrai,
+          chainId: ChainIdEnum.Oraichain,
+          rpc: oraichainNetwork.rpc
+        };
+        loadTokenParams = {
+          ...loadTokenParams,
+          oraiAddress: accountOrai.bech32Address,
+          cwStargate
+        };
+        loadTokenParams = {
+          ...loadTokenParams,
+          metamaskAddress: accounts[ChainIdEnum.Ethereum]
+        };
+        loadTokenParams = {
+          ...loadTokenParams,
+          kwtAddress: accountOrai.bech32Address
+        };
         loadTokenParams = {
           ...loadTokenParams,
           tronAddress: accounts[ChainIdEnum.TRON]
         };
+        loadTokenAmounts(loadTokenParams);
       }
-
-      loadTokenAmounts(loadTokenParams);
     } catch (error) {
       console.log('error loadTokenAmounts', error);
       showToast({
@@ -89,29 +92,15 @@ export const TokensCardAll: FunctionComponent<{
     }
   };
 
-  let intervalId;
-  let counter = 0;
-
-  const fetchAmounts = () => {
-    console.log('Function called:', counter);
-    handleFetchAmounts();
-    counter++;
-
-    if (counter === 3) {
-      clearTimeout(intervalId);
-      console.log('Execution stopped.');
-    }
-  };
-
-  const callFunctionRepeatedly = () => {
-    intervalId = setInterval(fetchAmounts, 3000);
-  };
-
   useEffect(() => {
-    setTimeout(() => {
-      handleFetchAmounts();
-    }, 2000);
-  }, []);
+    const timer = setTimeout(() => {
+      // Call your function here
+      handleFetchAmounts(accounts);
+    }, 1000);
+
+    // Clean up the timer when the component unmounts
+    return () => clearTimeout(timer);
+  }, [accounts[ChainIdEnum.Ethereum], accounts[ChainIdEnum.TRON]]);
 
   let networkFilter;
 
@@ -166,7 +155,7 @@ export const TokensCardAll: FunctionComponent<{
   const onPressToken = async item => {
     chainStore.selectChain(item?.chainId);
     await chainStore.saveLastViewChainId();
-    if (!account.isNanoLedger) {
+    if (!accountOrai.isNanoLedger) {
       if (chainStore.current.networkType === 'bitcoin') {
         navigate(SCREENS.STACK.Others, {
           screen: SCREENS.SendBtc
@@ -267,7 +256,6 @@ export const TokensCardAll: FunctionComponent<{
           size="medium"
           type="secondary"
           onPress={() => {
-            handleFetchAmounts();
             setMore(!more);
           }}
         />

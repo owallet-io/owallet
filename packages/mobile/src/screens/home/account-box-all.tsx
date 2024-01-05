@@ -25,7 +25,6 @@ export const AccountBoxAll: FunctionComponent<{
   let totalUsd: number = getTotalUsd(universalSwapStore.getAmount, prices);
   const account = accountStore.getAccount(chainStore.current.chainId);
   let accounts = {};
-
   const [more, setMore] = useState(true);
 
   Object.keys(ChainIdEnum).map(key => {
@@ -58,12 +57,7 @@ export const AccountBoxAll: FunctionComponent<{
       <OWBox style={styles.containerOWBox} type="gradient">
         <View style={styles.overview}>
           <Text style={styles.titleTotalBalance}>Total Balance</Text>
-          {!!totalBalance ? (
-            <Text variant="h1" style={styles.textCenter} color={colors['white']}>
-              {totalBalance || 0}
-            </Text>
-          ) : null}
-          {!!totalUsd && <Text style={styles.labelTotalAmount}>${totalUsd.toFixed(6)}</Text>}
+          <Text style={styles.labelTotalAmount}>${totalUsd.toFixed(6) ?? 0}</Text>
         </View>
       </OWBox>
       <OWBox style={styles.containerBox} type="shadow">
