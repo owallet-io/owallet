@@ -4952,11 +4952,7 @@
     elliptic "^6.5.4"
     secp256k1 "^4.0.3"
 
-<<<<<<< HEAD
-"@oraichain/cw-simulate@^2.8.68":
-=======
 "@oraichain/cw-simulate@^2.8.75":
->>>>>>> 8103540c7f59173a9c17aba00ac3122b6cfa4583
   version "2.8.75"
   resolved "https://registry.yarnpkg.com/@oraichain/cw-simulate/-/cw-simulate-2.8.75.tgz#29c00f2cf76b88f8a80284e9b7ca236f1246387b"
   integrity sha512-a4NATLUeoZsqL7EVRtzHyLQ8Pb1nebeBqJL46sWmyUZbT2v77nuBfgiaGYyBxLk7+T71gGPhhgwGzAe1uw7TjA==
@@ -4985,11 +4981,7 @@
   resolved "https://registry.yarnpkg.com/@oraichain/immutable/-/immutable-4.3.9.tgz#ff8d5a7b39b5b01f3f72a902cffbfea32ccb20c3"
   integrity sha512-INpHnhL970OCkR7I71Kssb2aLl2l4Y/x8W6FlyRO0KmC8GHjxc/hlNB1t44BiI7lkOYmcWMRQoC8dwParsp1RQ==
 
-<<<<<<< HEAD
-"@oraichain/oraidex-common@^1.0.24", "@oraichain/oraidex-common@^1.0.45":
-=======
 "@oraichain/oraidex-common@^1.0.45", "@oraichain/oraidex-common@^1.0.51":
->>>>>>> 8103540c7f59173a9c17aba00ac3122b6cfa4583
   version "1.0.51"
   resolved "https://registry.yarnpkg.com/@oraichain/oraidex-common/-/oraidex-common-1.0.51.tgz#e68f0795ca3cc0a88f758bc95a8bc4ae36849663"
   integrity sha512-fw0wzpz62g/fwgGbOkWxGzpozzCHNXD0A8GwKovZby5HSjVz328SeU6SZs93R2kZGRy9pvO1BfTIOTZdveMDxQ==
@@ -5008,11 +5000,7 @@
   resolved "https://registry.yarnpkg.com/@oraichain/oraidex-contracts-sdk/-/oraidex-contracts-sdk-1.0.27.tgz#eabd36671e619d00f50a0fd56bed9c9d618594b6"
   integrity sha512-Icn++t+BX4xdxUsoMdKKO8wL659lmNLdyQpAKCfwrtUdS4DFpRsrmZVw7S1g+Wl7QZUBJOG1fW+3m/YRS2q37Q==
 
-<<<<<<< HEAD
-"@oraichain/oraidex-universal-swap@^1.0.20":
-=======
 "@oraichain/oraidex-universal-swap@^1.0.40":
->>>>>>> 8103540c7f59173a9c17aba00ac3122b6cfa4583
   version "1.0.40"
   resolved "https://registry.yarnpkg.com/@oraichain/oraidex-universal-swap/-/oraidex-universal-swap-1.0.40.tgz#7669a957a1be9786b7a786b9a9b9d30e16de1941"
   integrity sha512-M9QGY0CJTl5qjTf2CMGtan5Rkh+1y/1se7hvoDMhmZor5pxQ6ub5IgWRP1HkU8g0Bg+dmLsqhx22wzh+zL/eHQ==

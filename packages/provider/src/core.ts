@@ -438,12 +438,8 @@ export class Bitcoin implements IBitcoin {
     protected readonly requester: MessageRequester
   ) {}
   async signAndBroadcast(chainId: string, data: object): Promise<{ rawTxHex: string }> {
-    console.log('🚀 ~ file: core.ts:441 ~ Bitcoin ~ signAndBroadcast ~ chainId:', chainId);
-    console.log('🚀 ~ file: core.ts:441 ~ Bitcoin ~ signAndBroadcast ~ data:', data);
     const msg = new RequestSignBitcoinMsg(chainId, data);
-
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
-    // return;
   }
   async getKey(chainId: string): Promise<Key> {
     const msg = new GetKeyMsg(chainId);

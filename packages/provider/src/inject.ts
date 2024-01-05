@@ -736,43 +736,6 @@ export class InjectedBitcoin implements Bitcoin {
           throw new Error(`Invalid method: ${message.method}`);
         }
 
-        // const result =
-        //   message.method === 'signDirect'
-        //     ? await (async () => {
-        //         const receivedSignDoc: {
-        //           bodyBytes?: Uint8Array | null;
-        //           authInfoBytes?: Uint8Array | null;
-        //           chainId?: string | null;
-        //           accountNumber?: string | null;
-        //         } = message.args[2];
-
-        //         const result = await owallet.signDirect(
-        //           message.args[0],
-        //           message.args[1],
-        //           {
-        //             bodyBytes: receivedSignDoc.bodyBytes,
-        //             authInfoBytes: receivedSignDoc.authInfoBytes,
-        //             chainId: receivedSignDoc.chainId,
-        //             accountNumber: receivedSignDoc.accountNumber ? Long.fromString(receivedSignDoc.accountNumber) : null
-        //           },
-        //           message.args[3]
-        //         );
-
-        //         return {
-        //           signed: {
-        //             bodyBytes: result.signed.bodyBytes,
-        //             authInfoBytes: result.signed.authInfoBytes,
-        //             chainId: result.signed.chainId,
-        //             accountNumber: result.signed.accountNumber.toString()
-        //           },
-        //           signature: result.signature
-        //         };
-        //       })()
-        //     : await owallet[message.method as any](
-        //         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        //         // @ts-ignore
-        //         ...JSONUint8Array.unwrap(message.args)
-        //       );
         const result = await owallet[message.method as any](
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
@@ -836,7 +799,6 @@ export class InjectedBitcoin implements Bitcoin {
 
         this.eventListener.removeMessageListener(receiveResponse);
         const result = JSONUint8Array.unwrap(proxyResponse.result);
-        console.log('🚀 ~ file: inject.ts:839 ~ InjectedBitcoin ~ receiveResponse ~ result:', result);
 
         if (!result) {
           reject(new Error('Result is null'));
@@ -890,7 +852,6 @@ export class InjectedBitcoin implements Bitcoin {
 
   async signAndBroadcast(chainId: string, data: object): Promise<{ rawTxHex: string }> {
     return await this.requestMethod('signAndBroadcast', [chainId, data]);
-    // return { rawTxHex: '' };
   }
 }
 
