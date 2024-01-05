@@ -693,7 +693,7 @@ export class InjectedEthereum implements Ethereum {
 }
 export class InjectedBitcoin implements Bitcoin {
   static startProxy(
-    owallet: IBitcoin,
+    bitcoin: IBitcoin,
     eventListener: {
       addMessageListener: (fn: (e: any) => void) => void;
       postMessage: (message: any) => void;
@@ -707,12 +707,10 @@ export class InjectedBitcoin implements Bitcoin {
     eventListener.addMessageListener(async (e: MessageEvent) => {
       const message: ProxyRequest = parseMessage ? parseMessage(e.data) : e.data;
 
-      //TO DO: this version got from packages/mobile/package.json
-      const isReactNative = owallet.version.includes('mobile');
       // TO DO: Check type proxy for duplicate popup sign with keplr wallet on extension
-      const typeProxy: any = !isReactNative ? `${NAMESPACE_BITCOIN}-proxy-request` : 'proxy-request';
+       
       // filter proxy-request by namespace
-      if (!message || message.type !== typeProxy || message.namespace !== NAMESPACE_BITCOIN) {
+      if (!message || message.type !== 'proxy-request' || message.namespace !== NAMESPACE_BITCOIN) {
         return;
       }
 
@@ -730,13 +728,13 @@ export class InjectedBitcoin implements Bitcoin {
         }
 
         if (
-          !owallet[message.method as keyof Bitcoin] ||
-          typeof owallet[message.method as keyof Bitcoin] !== 'function'
+          !bitcoin[message.method as keyof Bitcoin] ||
+          typeof bitcoin[message.method as keyof Bitcoin] !== 'function'
         ) {
           throw new Error(`Invalid method: ${message.method}`);
         }
 
-        const result = await owallet[message.method as any](
+        const result = await bitcoin[message.method as any](
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           ...JSONUint8Array.unwrap(message.args)
@@ -775,10 +773,9 @@ export class InjectedBitcoin implements Bitcoin {
       })
       .join('');
 
-    // TO DO: Mode 'extension' got from params InjectOwallet extension
-    const typeProxy: any = this.mode === 'extension' ? `${NAMESPACE_BITCOIN}-proxy-request` : 'proxy-request';
+    
     const proxyMessage: ProxyRequest = {
-      type: typeProxy,
+      type: 'proxy-request',
       namespace: NAMESPACE_BITCOIN,
       id,
       method,
