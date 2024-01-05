@@ -214,48 +214,59 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const loadTokenAmounts = useLoadTokens(universalSwapStore);
   // handle fetch all tokens of all chains
-  const handleFetchAmounts = async () => {
+  const handleFetchAmounts = async accounts => {
     let loadTokenParams = {};
-    try {
-      const cwStargate = {
-        account: accountOrai,
-        chainId: ChainIdEnum.Oraichain,
-        rpc: oraichainNetwork.rpc
-      };
+    console.log('being call', accounts);
 
-      loadTokenParams = {
-        ...loadTokenParams,
-        oraiAddress: accountOrai.bech32Address,
-        cwStargate
-      };
-      loadTokenParams = {
-        ...loadTokenParams,
-        metamaskAddress: accounts[ChainIdEnum.Ethereum]
-      };
-      loadTokenParams = {
-        ...loadTokenParams,
-        kwtAddress: accountOrai.bech32Address
-      };
-      if (accounts[ChainIdEnum.TRON]) {
+    try {
+      if (
+        accounts?.[ChainIdEnum.TRON] &&
+        accounts?.[ChainIdEnum.Ethereum] &&
+        accountOrai.bech32Address &&
+        accounts?.[ChainIdEnum.Oraichain]
+      ) {
+        const cwStargate = {
+          account: accountOrai,
+          chainId: ChainIdEnum.Oraichain,
+          rpc: oraichainNetwork.rpc
+        };
+        loadTokenParams = {
+          ...loadTokenParams,
+          oraiAddress: accountOrai.bech32Address,
+          cwStargate
+        };
+        loadTokenParams = {
+          ...loadTokenParams,
+          metamaskAddress: accounts[ChainIdEnum.Ethereum]
+        };
+        loadTokenParams = {
+          ...loadTokenParams,
+          kwtAddress: accountOrai.bech32Address
+        };
         loadTokenParams = {
           ...loadTokenParams,
           tronAddress: accounts[ChainIdEnum.TRON]
         };
+        loadTokenAmounts(loadTokenParams);
       }
-
-      loadTokenAmounts(loadTokenParams);
     } catch (error) {
       console.log('error loadTokenAmounts', error);
-      handleErrorSwap(error?.message ?? error?.ex?.message);
+      showToast({
+        message: error?.message ?? error?.ex?.message,
+        type: 'danger'
+      });
     }
   };
 
   useEffect(() => {
-    setTimeout(() => {
-      handleFetchAmounts();
-    }, 2000);
-  }, []);
+    const timer = setTimeout(() => {
+      // Call your function here
+      handleFetchAmounts(accounts);
+    }, 1000);
 
+    // Clean up the timer when the component unmounts
+    return () => clearTimeout(timer);
+  }, [accounts[ChainIdEnum.Ethereum], accounts[ChainIdEnum.TRON]]);
   const subAmountFrom = toSubAmount(universalSwapStore.getAmount, originalFromToken);
   const subAmountTo = toSubAmount(universalSwapStore.getAmount, originalToToken);
   const fromTokenBalance = originalFromToken
@@ -275,8 +286,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       SwapDirection.To
     );
     setFilteredToTokens(filteredToTokens);
-
-    console.log('filteredToTokens', filteredToTokens);
 
     const filteredFromTokens = filterNonPoolEvmTokens(
       originalToToken.chainId,
