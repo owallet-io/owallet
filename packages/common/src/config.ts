@@ -704,7 +704,12 @@ export const EmbedChainInfos: AppChainInfo[] = [
     stakeCurrency: {
       coinDenom: 'STAKE',
       coinMinimalDenom: 'ustake',
-      coinDecimals: 6
+      coinDecimals: 6,
+      gasPriceStep: {
+        low: 1,
+        average: 1.5,
+        high: 2
+      }
     },
     bip44: {
       coinType: 118
@@ -752,6 +757,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         }
       }
     ],
+
     features: ['stargate', 'ibc-transfer', 'cosmwasm', 'no-legacy-stdTx'],
     txExplorer: {
       name: 'Mintscan',
