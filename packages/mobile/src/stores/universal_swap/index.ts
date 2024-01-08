@@ -1,8 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { observable, action, makeAutoObservable, computed } from 'mobx';
-import { create } from 'mobx-persist';
+import { create, persist } from 'mobx-persist';
 
 export class UniversalSwapStore {
+  @persist('object')
   @observable
   protected amounts: any;
 
