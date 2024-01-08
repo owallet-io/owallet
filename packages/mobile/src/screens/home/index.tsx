@@ -185,14 +185,25 @@ export const HomeScreen: FunctionComponent = observer(props => {
     }
   };
 
-  async function delayedFunction() {
+  const delayedFunction = useCallback(async () => {
     await delay(3000);
+    Object.keys(ChainIdEnum).map(key => {
+      let defaultAddress = accountStore.getAccount(ChainIdEnum[key]).bech32Address;
+      if (ChainIdEnum[key] === ChainIdEnum.TRON) {
+        accounts[ChainIdEnum[key]] = getBase58Address(accountStore.getAccount(ChainIdEnum[key]).evmosHexAddress);
+      } else if (defaultAddress.startsWith('evmos')) {
+        accounts[ChainIdEnum[key]] = accountStore.getAccount(ChainIdEnum[key]).evmosHexAddress;
+      } else {
+        accounts[ChainIdEnum[key]] = defaultAddress;
+      }
+    });
+
     handleFetchAmounts(accounts);
-  }
+  }, []);
 
   useEffect(() => {
     delayedFunction();
-  }, []);
+  }, [accountOrai.bech32Address]);
 
   useEffect(() => {
     if (Object.keys(universalSwapStore.getAmount).length > 0) {
