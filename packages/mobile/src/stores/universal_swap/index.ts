@@ -5,10 +5,11 @@ import { create, persist } from 'mobx-persist';
 export class UniversalSwapStore {
   @persist('object')
   @observable
-  protected amounts: any;
+  protected amounts: { string: string } | {};
 
   constructor() {
     makeAutoObservable(this);
+    this.amounts = {};
   }
 
   @computed
