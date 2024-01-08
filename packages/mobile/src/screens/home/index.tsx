@@ -205,7 +205,9 @@ export const HomeScreen: FunctionComponent = observer(props => {
     // Save the assets of the day
     // Them compare it with asset of yesterday to show PnL
     // First we save the tokens with balance of the day
-    appInitStore.updatePriceFeed(getTokenInfos({ tokens: universalSwapStore.getAmount, prices }));
+    if (Object.keys(universalSwapStore.getAmount).length > 0) {
+      appInitStore.updatePriceFeed(getTokenInfos({ tokens: universalSwapStore.getAmount, prices }));
+    }
   }, [universalSwapStore.getAmount]);
 
   const renderAccountCard = (() => {

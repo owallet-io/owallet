@@ -67,15 +67,19 @@ export class AppInit {
     if (Object.keys(this.initApp.priceFeed).length === 0) {
       // Pricefeed is empty, we never call to get balances before
       tmpPrice = {
-        [new Date().getTime()]: balances,
-        [new Date().getTime() + 1]: balances
+        [Math.floor(Date.now() / 1000)]: balances,
+        [Math.floor(Date.now() / 1000) + 1]: balances
       };
       console.log('first time?', tmpPrice);
       this.initApp = { ...this.initApp, ...{ priceFeed: tmpPrice } };
     } else {
-      const today = moment(new Date().getTime());
-      const yesterday = moment(Object.keys(tmpPrice)[0]);
-      if (today.isSame(yesterday)) {
+      const today = moment.unix(Math.floor(Date.now() / 1000));
+      const yesterday = moment.unix(Number(Object.keys(tmpPrice)[0]));
+      console.log('today,', Math.floor(Date.now() / 1000), today.format('DD/MM/YYYY hh:mm:ss'));
+      console.log('yesterday,', Object.keys(tmpPrice)[0], yesterday.format('DD/MM/YYYY hh:mm:ss'));
+      console.log('isSame', today.isSame(yesterday, 'day'));
+
+      if (today.isSame(yesterday, 'day')) {
         // Today is the same day as the day when the last balances were called
         // Replace the today balances with the new one
         tmpPrice[Object.keys(tmpPrice)[1]] = balances;
@@ -86,7 +90,7 @@ export class AppInit {
         delete tmpPrice[Object.keys(tmpPrice)[0]];
         // The second element now become first, which is yesterday data
         // Push new element into object, become today data
-        tmpPrice[new Date().getTime()] = balances;
+        tmpPrice[Math.floor(Date.now() / 1000)] = balances;
         console.log('next day?', tmpPrice);
       }
     }
