@@ -19,7 +19,7 @@ export class UniversalSwapStore {
 
   @action
   updateAmounts(amounts) {
-    this.amounts = { ...this?.amounts, ...amounts };
+    this.amounts = { ...this.amounts, ...amounts };
   }
 }
 

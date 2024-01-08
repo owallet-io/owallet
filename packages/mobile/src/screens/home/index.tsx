@@ -21,8 +21,8 @@ import { getAddress, getBase58Address, ChainIdEnum } from '@owallet/common';
 import { TokensCardAll } from './tokens-card-all';
 import { AccountBoxAll } from './account-box-all';
 import { oraichainNetwork } from '@oraichain/oraidex-common';
-import { useLoadTokens } from '@owallet/hooks';
-import { showToast } from '@src/utils/helper';
+import { useCoinGeckoPrices, useLoadTokens } from '@owallet/hooks';
+import { getTokenInfos, showToast } from '@src/utils/helper';
 
 export const HomeScreen: FunctionComponent = observer(props => {
   const [refreshing, setRefreshing] = React.useState(false);
@@ -124,6 +124,8 @@ export const HomeScreen: FunctionComponent = observer(props => {
   }, [address, chainStore.current.chainId]);
 
   // This section for getting all tokens of all chains
+  const { data: prices } = useCoinGeckoPrices();
+
   let accounts = {};
 
   Object.keys(ChainIdEnum).map(key => {
@@ -197,6 +199,14 @@ export const HomeScreen: FunctionComponent = observer(props => {
     accounts[ChainIdEnum.TRON],
     accounts[ChainIdEnum.CosmosHub]
   ]);
+
+  useEffect(() => {
+    // TODO:
+    // Save the assets of the day
+    // Them compare it with asset of yesterday to show PnL
+    // First we save the tokens with balance of the day
+    appInitStore.updatePriceFeed(getTokenInfos({ tokens: universalSwapStore.getAmount, prices }));
+  }, [universalSwapStore.getAmount]);
 
   const renderAccountCard = (() => {
     if (appInitStore.getInitApp.isAllNetworks) {
