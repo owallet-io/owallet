@@ -62,28 +62,23 @@ export class AppInit {
   }
 
   @action
-  updatePriceFeed(balances) {
-    let tmpPrice = { ...this.initApp.priceFeed };
-    if (Object.keys(this.initApp.priceFeed).length === 0) {
-      // Pricefeed is empty, we never call to get balances before
+  updatePriceFeed(address, balances) {
+    // TODO: save balances with address
+    let tmpPrice = { ...this.initApp.priceFeed[address] };
+    if (Object.keys(tmpPrice).length === 0) {
+      // Pricefeed is empty, we never call to get balances of this address before
       tmpPrice = {
         [Math.floor(Date.now() / 1000)]: balances,
         [Math.floor(Date.now() / 1000) + 1]: balances
       };
-      console.log('first time?', tmpPrice);
-      this.initApp = { ...this.initApp, ...{ priceFeed: tmpPrice } };
     } else {
       const today = moment.unix(Math.floor(Date.now() / 1000));
       const yesterday = moment.unix(Number(Object.keys(tmpPrice)[0]));
-      console.log('today,', Math.floor(Date.now() / 1000), today.format('DD/MM/YYYY hh:mm:ss'));
-      console.log('yesterday,', Object.keys(tmpPrice)[0], yesterday.format('DD/MM/YYYY hh:mm:ss'));
-      console.log('isSame', today.isSame(yesterday, 'day'));
 
       if (today.isSame(yesterday, 'day')) {
         // Today is the same day as the day when the last balances were called
         // Replace the today balances with the new one
         tmpPrice[Object.keys(tmpPrice)[1]] = balances;
-        console.log('today again?', tmpPrice);
       } else {
         // Today is not the same day as the day when the last balances were called
         // Remove the first element of object, which is the outdated data
@@ -91,9 +86,12 @@ export class AppInit {
         // The second element now become first, which is yesterday data
         // Push new element into object, become today data
         tmpPrice[Math.floor(Date.now() / 1000)] = balances;
-        console.log('next day?', tmpPrice);
       }
     }
+    // Assign new balances into address
+    const newPriceFeed = { ...this.getInitApp.priceFeed };
+    newPriceFeed[address] = tmpPrice;
+    this.initApp = { ...this.initApp, ...{ priceFeed: newPriceFeed } };
   }
 
   @action

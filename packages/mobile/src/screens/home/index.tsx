@@ -201,12 +201,11 @@ export const HomeScreen: FunctionComponent = observer(props => {
   ]);
 
   useEffect(() => {
-    // TODO:
-    // Save the assets of the day
-    // Them compare it with asset of yesterday to show PnL
-    // First we save the tokens with balance of the day
     if (Object.keys(universalSwapStore.getAmount).length > 0) {
-      appInitStore.updatePriceFeed(getTokenInfos({ tokens: universalSwapStore.getAmount, prices }));
+      appInitStore.updatePriceFeed(
+        accountOrai.bech32Address,
+        getTokenInfos({ tokens: universalSwapStore.getAmount, prices })
+      );
     }
   }, [universalSwapStore.getAmount]);
 
