@@ -17,7 +17,7 @@ import { UndelegationsCard } from '../stake/dashboard/undelegations-card';
 import { TronTokensCard } from './tron-tokens-card';
 import { AccountCardBitcoin } from './account-card-bitcoin';
 import { TokensBitcoinCard } from './tokens-bitcoin-card';
-import { getAddress, getBase58Address, ChainIdEnum } from '@owallet/common';
+import { getAddress, getBase58Address, ChainIdEnum, delay } from '@owallet/common';
 import { TokensCardAll } from './tokens-card-all';
 import { AccountBoxAll } from './account-box-all';
 import { oraichainNetwork } from '@oraichain/oraidex-common';
@@ -185,20 +185,14 @@ export const HomeScreen: FunctionComponent = observer(props => {
     }
   };
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      // Call your function here
-      handleFetchAmounts(accounts);
-    }, 1000);
+  async function delayedFunction() {
+    await delay(3000);
+    handleFetchAmounts(accounts);
+  }
 
-    // Clean up the timer when the component unmounts
-    return () => clearTimeout(timer);
-  }, [
-    accounts[ChainIdEnum.Ethereum],
-    accounts[ChainIdEnum.Injective],
-    accounts[ChainIdEnum.TRON],
-    accounts[ChainIdEnum.CosmosHub]
-  ]);
+  useEffect(() => {
+    delayedFunction();
+  }, []);
 
   useEffect(() => {
     if (Object.keys(universalSwapStore.getAmount).length > 0) {
@@ -207,7 +201,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
         getTokenInfos({ tokens: universalSwapStore.getAmount, prices })
       );
     }
-  }, [universalSwapStore.getAmount]);
+  }, [universalSwapStore.getAmount, accountOrai.bech32Address, prices]);
 
   const renderAccountCard = (() => {
     if (appInitStore.getInitApp.isAllNetworks) {

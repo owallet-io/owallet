@@ -17,7 +17,8 @@ import {
   ORAI,
   toDisplay,
   getBase58Address,
-  getAddress
+  getAddress,
+  delay
 } from '@owallet/common';
 import {
   TokenItemType,
@@ -258,20 +259,14 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     }
   };
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      // Call your function here
-      handleFetchAmounts(accounts);
-    }, 1000);
+  async function delayedFunction() {
+    await delay(3000);
+    handleFetchAmounts(accounts);
+  }
 
-    // Clean up the timer when the component unmounts
-    return () => clearTimeout(timer);
-  }, [
-    accounts[ChainIdEnum.Ethereum],
-    accounts[ChainIdEnum.Injective],
-    accounts[ChainIdEnum.TRON],
-    accounts[ChainIdEnum.CosmosHub]
-  ]);
+  useEffect(() => {
+    delayedFunction();
+  }, []);
 
   useEffect(() => {
     if (isFocused) {

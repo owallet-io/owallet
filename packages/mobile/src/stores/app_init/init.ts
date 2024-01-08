@@ -63,6 +63,8 @@ export class AppInit {
 
   @action
   updatePriceFeed(address, balances) {
+    console.log('address', address, balances);
+
     // TODO: save balances with address
     let tmpPrice = { ...this.initApp.priceFeed[address] };
     if (Object.keys(tmpPrice).length === 0) {
@@ -91,6 +93,9 @@ export class AppInit {
     // Assign new balances into address
     const newPriceFeed = { ...this.getInitApp.priceFeed };
     newPriceFeed[address] = tmpPrice;
+
+    console.log('newPriceFeed', newPriceFeed);
+
     this.initApp = { ...this.initApp, ...{ priceFeed: newPriceFeed } };
   }
 
