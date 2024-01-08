@@ -12,6 +12,7 @@ export class AppInit {
     date_updated: null | number;
     theme: 'dark' | 'light';
     visibleTabBar?: string;
+    priceFeed: { string: object } | null;
   };
   @observable
   protected notiData: {};
@@ -24,7 +25,8 @@ export class AppInit {
       passcodeType: 'alphabet',
       date_updated: null,
       theme: 'light',
-      isAllNetworks: false
+      isAllNetworks: false,
+      priceFeed: null
     };
   }
 

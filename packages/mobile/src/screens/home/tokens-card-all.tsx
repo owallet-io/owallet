@@ -2,22 +2,13 @@ import { OWButton } from '@src/components/button';
 import { OWEmpty } from '@src/components/empty';
 import { useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
-import React, { FunctionComponent, useCallback, useEffect, useState } from 'react';
+import React, { FunctionComponent, useCallback, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { CardBody, OWBox } from '../../components/card';
 import { useStore } from '../../stores';
 import { spacing } from '../../themes';
-import { showToast, _keyExtract } from '../../utils/helper';
-import { ChainIdEnum, getAddress, getBase58Address, tokensIcon } from '@owallet/common';
-import { useCoinGeckoPrices, useLoadTokens } from '@owallet/hooks';
-import {
-  flattenTokens,
-  getSubAmountDetails,
-  oraichainNetwork,
-  toAmount,
-  toDisplay,
-  toSumDisplay
-} from '@oraichain/oraidex-common';
+import { getTokenInfos, _keyExtract } from '../../utils/helper';
+import { useCoinGeckoPrices } from '@owallet/hooks';
 import OWIcon from '@src/components/ow-icon/ow-icon';
 import { Text } from '@src/components/text';
 import { useSmartNavigation } from '@src/navigation.provider';
@@ -30,128 +21,9 @@ export const TokensCardAll: FunctionComponent<{
   const { accountStore, universalSwapStore, chainStore } = useStore();
   const { colors } = useTheme();
   const [more, setMore] = useState(true);
-
-  let accounts = {};
-
-  Object.keys(ChainIdEnum).map(key => {
-    let defaultAddress = accountStore.getAccount(ChainIdEnum[key]).bech32Address;
-    if (ChainIdEnum[key] === ChainIdEnum.TRON) {
-      accounts[ChainIdEnum[key]] = getBase58Address(accountStore.getAccount(ChainIdEnum[key]).evmosHexAddress);
-    } else if (defaultAddress.startsWith('evmos')) {
-      accounts[ChainIdEnum[key]] = accountStore.getAccount(ChainIdEnum[key]).evmosHexAddress;
-    } else {
-      accounts[ChainIdEnum[key]] = defaultAddress;
-    }
-  });
-
-  const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
-
-  const loadTokenAmounts = useLoadTokens(universalSwapStore);
-  // handle fetch all tokens of all chains
-  const handleFetchAmounts = async accounts => {
-    let loadTokenParams = {};
-
-    try {
-      if (
-        accounts?.[ChainIdEnum.TRON] &&
-        accounts?.[ChainIdEnum.Ethereum] &&
-        accountOrai.bech32Address &&
-        accounts?.[ChainIdEnum.Oraichain] &&
-        accounts?.[ChainIdEnum.Injective]
-      ) {
-        const cwStargate = {
-          account: accountOrai,
-          chainId: ChainIdEnum.Oraichain,
-          rpc: oraichainNetwork.rpc
-        };
-        loadTokenParams = {
-          ...loadTokenParams,
-          oraiAddress: accounts[ChainIdEnum.Oraichain],
-          cwStargate
-        };
-        loadTokenParams = {
-          ...loadTokenParams,
-          metamaskAddress: accounts[ChainIdEnum.Ethereum]
-        };
-        loadTokenParams = {
-          ...loadTokenParams,
-          kwtAddress: getAddress(accounts[ChainIdEnum.Injective], 'oraie')
-        };
-        loadTokenParams = {
-          ...loadTokenParams,
-          tronAddress: accounts[ChainIdEnum.TRON]
-        };
-        loadTokenAmounts(loadTokenParams);
-      }
-    } catch (error) {
-      console.log('error loadTokenAmounts', error);
-      showToast({
-        message: error?.message ?? error?.ex?.message,
-        type: 'danger'
-      });
-    }
-  };
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      // Call your function here
-      handleFetchAmounts(accounts);
-    }, 1000);
-
-    // Clean up the timer when the component unmounts
-    return () => clearTimeout(timer);
-  }, [
-    accounts[ChainIdEnum.Ethereum],
-    accounts[ChainIdEnum.Injective],
-    accounts[ChainIdEnum.TRON],
-    accounts[ChainIdEnum.CosmosHub]
-  ]);
-
-  let networkFilter;
+  const account = accountStore.getAccount(chainStore.current.chainId);
 
   const { data: prices } = useCoinGeckoPrices();
-
-  const dataTokens = flattenTokens
-    .reduce((result, token) => {
-      // not display because it is evm map and no bridge to option, also no smart contract and is ibc native
-      if (token.bridgeTo || token.contractAddress) {
-        const isValidNetwork = !networkFilter || token.chainId === networkFilter;
-        if (isValidNetwork) {
-          const amount = BigInt(universalSwapStore.getAmount?.[token.denom] ?? 0);
-
-          const isHaveSubAmounts = token.contractAddress && token.evmDenoms;
-          const subAmounts = isHaveSubAmounts ? getSubAmountDetails(universalSwapStore.getAmount, token) : {};
-          const totalAmount = amount + (isHaveSubAmounts ? toAmount(toSumDisplay(subAmounts), token.decimals) : 0n);
-          const value = toDisplay(totalAmount.toString(), token.decimals) * (prices?.[token.coinGeckoId] || 0);
-
-          const SMALL_BALANCE = 0.01;
-          const isHide = value < SMALL_BALANCE;
-          if (isHide) return result;
-
-          const tokenIcon = tokensIcon.find(tIcon => tIcon.coinGeckoId === token.coinGeckoId);
-          result.push({
-            asset: token.name,
-            chain: token.org,
-            chainId: token.chainId,
-            cosmosBased: token.cosmosBased,
-            contractAddress: token.contractAddress,
-            decimals: token.decimals,
-            coinType: token.coinType,
-            coinGeckoId: token.coinGeckoId,
-            icon: tokenIcon?.Icon,
-            iconLight: tokenIcon?.IconLight,
-            price: prices[token.coinGeckoId] || 0,
-            balance: toDisplay(totalAmount.toString(), token.decimals),
-            denom: token.denom,
-            value,
-            coeff: 0,
-            coeffType: 'increase'
-          });
-        }
-      }
-      return result;
-    }, [])
-    .sort((a, b) => b.value - a.value);
 
   const styles = styling();
 
@@ -160,7 +32,7 @@ export const TokensCardAll: FunctionComponent<{
   const onPressToken = async item => {
     chainStore.selectChain(item?.chainId);
     await chainStore.saveLastViewChainId();
-    if (!accountOrai.isNanoLedger) {
+    if (!account.isNanoLedger) {
       if (chainStore.current.networkType === 'bitcoin') {
         navigate(SCREENS.STACK.Others, {
           screen: SCREENS.SendBtc
@@ -244,8 +116,8 @@ export const TokensCardAll: FunctionComponent<{
         </View>
 
         <CardBody>
-          {dataTokens?.length > 0 ? (
-            dataTokens.map((token, index) => {
+          {getTokenInfos({ tokens: universalSwapStore.getAmount, prices }).length > 0 ? (
+            getTokenInfos({ tokens: universalSwapStore.getAmount, prices }).map((token, index) => {
               if (more) {
                 if (index < 3) return renderTokenItem(token);
               } else {
