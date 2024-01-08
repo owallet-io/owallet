@@ -207,7 +207,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     }
   });
 
-  const isFocused = useIsFocused();
+  // const isFocused = useIsFocused();
 
   const [isSelectFromTokenModal, setIsSelectFromTokenModal] = useState(false);
   const [isSelectToTokenModal, setIsSelectToTokenModal] = useState(false);
@@ -279,11 +279,11 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     delayedFunction();
   }, []);
 
-  useEffect(() => {
-    if (isFocused) {
-      handleFetchAmounts(accounts);
-    }
-  }, [isFocused]);
+  // useEffect(() => {
+  //   if (isFocused) {
+  //     handleFetchAmounts(accounts);
+  //   }
+  // }, [isFocused]);
 
   const subAmountFrom = toSubAmount(universalSwapStore.getAmount, originalFromToken);
   const subAmountTo = toSubAmount(universalSwapStore.getAmount, originalToToken);

@@ -21,6 +21,11 @@ export class UniversalSwapStore {
   updateAmounts(amounts) {
     this.amounts = { ...this.amounts, ...amounts };
   }
+
+  @action
+  clearAmounts() {
+    this.amounts = {};
+  }
 }
 
 const hydrate = create({
