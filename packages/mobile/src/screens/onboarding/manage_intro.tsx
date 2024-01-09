@@ -37,7 +37,10 @@ const styles = StyleSheet.create({
     zIndex: -1
   },
   content: {
-    alignItems: 'center'
+    alignItems: 'center',
+    position: 'absolute',
+    bottom: metrics.screenHeight > 800 ? 0.1 * -metrics.screenHeight : 0,
+    alignSelf: 'center'
   },
   label: {
     fontSize: 28

@@ -91,21 +91,16 @@ export const OnboardingIntroScreen: FunctionComponent = observer(() => {
           onSlideChange={s => {
             setSlide(s);
           }}
-          // dotStyle={{ backgroundColor: colors['purple-100'], marginTop: 60 }}
-          // activeDotStyle={{
-          //   backgroundColor: colors['primary-surface-default'],
-          //   marginTop: 60
-          // }}
           showDoneButton={false}
         />
-        <OWButton
-          style={styles.getStarted}
-          label="Get started!"
-          onPress={onGetStarted}
-          disabled={isTimedOut}
-          loading={isTimedOut}
-        />
       </View>
+      <OWButton
+        style={styles.getStarted}
+        label="Get started!"
+        onPress={onGetStarted}
+        disabled={isTimedOut}
+        loading={isTimedOut}
+      />
     </View>
   );
 });
