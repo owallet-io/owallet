@@ -50,7 +50,6 @@ import { BalanceType, MAX, balances } from './types';
 import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import { useLoadTokens, useCoinGeckoPrices, useClient, useRelayerFee, useTaxRate } from '@owallet/hooks';
 import { getTransactionUrl, handleErrorSwap } from './helpers';
-import { useIsFocused } from '@react-navigation/native';
 import { useQuery } from '@tanstack/react-query';
 
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
@@ -290,14 +289,14 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   // }, [isFocused]);
 
   // This section is for PnL display
-  useEffect(() => {
-    if (Object.keys(universalSwapStore.getAmount).length > 0) {
-      appInitStore.updatePriceFeed(
-        accountOrai.bech32Address,
-        getTokenInfos({ tokens: universalSwapStore.getAmount, prices })
-      );
-    }
-  }, [universalSwapStore.getAmount, accountOrai.bech32Address, prices]);
+  // useEffect(() => {
+  //   if (Object.keys(universalSwapStore.getAmount).length > 0) {
+  //     appInitStore.updatePriceFeed(
+  //       accountOrai.bech32Address,
+  //       getTokenInfos({ tokens: universalSwapStore.getAmount, prices })
+  //     );
+  //   }
+  // }, [universalSwapStore.getAmount, accountOrai.bech32Address, prices]);
 
   const subAmountFrom = toSubAmount(universalSwapStore.getAmount, originalFromToken);
   const subAmountTo = toSubAmount(universalSwapStore.getAmount, originalToToken);

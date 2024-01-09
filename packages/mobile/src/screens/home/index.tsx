@@ -213,14 +213,14 @@ export const HomeScreen: FunctionComponent = observer(props => {
     appInitStore.updatePrices(prices);
   }, [prices]);
 
-  useEffect(() => {
-    if (Object.keys(universalSwapStore.getAmount).length > 0) {
-      appInitStore.updatePriceFeed(
-        accountOrai.bech32Address,
-        getTokenInfos({ tokens: universalSwapStore.getAmount, prices })
-      );
-    }
-  }, [universalSwapStore.getAmount, accountOrai.bech32Address, prices]);
+  // useEffect(() => {
+  //   if (Object.keys(universalSwapStore.getAmount).length > 0) {
+  //     appInitStore.updatePriceFeed(
+  //       accountOrai.bech32Address,
+  //       getTokenInfos({ tokens: universalSwapStore.getAmount, prices })
+  //     );
+  //   }
+  // }, [universalSwapStore.getAmount, accountOrai.bech32Address, prices]);
 
   const renderAccountCard = (() => {
     if (appInitStore.getInitApp.isAllNetworks) {
