@@ -17,8 +17,8 @@ import { OWButton } from '@src/components/button';
 export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
   const { colors } = useTheme();
   const { universalSwapStore, accountStore, modalStore, chainStore, appInitStore } = useStore();
-  let totalUsd: number;
   const styles = styling(colors);
+  let totalUsd: number;
   if (appInitStore.getInitApp.prices) {
     totalUsd = getTotalUsd(universalSwapStore.getAmount, appInitStore.getInitApp.prices);
   }

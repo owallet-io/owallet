@@ -14,16 +14,22 @@ import { useTheme } from '@src/themes/theme-provider';
 import { navigate } from '@src/router/root';
 import { SCREENS } from '@src/common/constants';
 import { Popup } from 'react-native-popup-confirm-toast';
+import { getTotalUsd } from '@oraichain/oraidex-common';
 
 export const NetworkModal = () => {
   const { colors } = useTheme();
 
   const bip44Option = useBIP44Option();
-  const { modalStore, chainStore, keyRingStore, accountStore, appInitStore } = useStore();
+  const { modalStore, chainStore, keyRingStore, accountStore, appInitStore, universalSwapStore } = useStore();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const styles = styling(colors);
+  let totalUsd: number;
+  if (appInitStore.getInitApp.prices) {
+    totalUsd = getTotalUsd(universalSwapStore.getAmount, appInitStore.getInitApp.prices);
+  }
+
   const onConfirm = async (item: any) => {
     const { networkType } = chainStore.getChain(item?.chainId);
     const keyDerivation = (() => {
@@ -183,7 +189,7 @@ export const NetworkModal = () => {
               }}
               numberOfLines={1}
             >
-              ${Number(groupedData[item.chainId]?.sum ?? 0).toFixed(6)}
+              ${!item.chainId ? totalUsd?.toFixed(6) : Number(groupedData[item.chainId]?.sum ?? 0).toFixed(6)}
             </Text>
           </View>
         </View>
