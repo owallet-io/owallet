@@ -8,7 +8,6 @@ import { CardBody, OWBox } from '../../components/card';
 import { useStore } from '../../stores';
 import { spacing } from '../../themes';
 import { getTokenInfos, _keyExtract } from '../../utils/helper';
-import { useCoinGeckoPrices } from '@owallet/hooks';
 import OWIcon from '@src/components/ow-icon/ow-icon';
 import { Text } from '@src/components/text';
 import { useSmartNavigation } from '@src/navigation.provider';
@@ -72,10 +71,10 @@ export const TokensCardAll: FunctionComponent<{
                 <OWIcon type="images" source={{ uri: item.icon }} size={35} />
               </View>
               <View style={styles.pl10}>
-                <Text size={16} color={colors['text-title']} weight="500">
+                <Text size={16} color={colors['neutral-text-title']} weight="500">
                   {item.asset}
                 </Text>
-                <Text weight="500" color={colors['blue-400']}>
+                <Text weight="500" color={colors['neutral-text-body']}>
                   {item.chain}
                 </Text>
               </View>
@@ -83,8 +82,8 @@ export const TokensCardAll: FunctionComponent<{
             <View style={styles.rightBoxItem}>
               <View style={{ flexDirection: 'row' }}>
                 <View style={{ alignItems: 'flex-end' }}>
-                  <Text color={colors['text-title']}>{item.balance}</Text>
-                  <Text weight="500" color={colors['blue-400']}>
+                  <Text color={colors['neutral-text-title']}>{item.balance}</Text>
+                  <Text weight="500" color={colors['neutral-text-body']}>
                     ${item.value.toFixed(6)}
                   </Text>
                 </View>

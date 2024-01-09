@@ -105,13 +105,13 @@ const styling = colors =>
 
     titleTotalBalance: {
       textAlign: 'center',
-      color: colors['purple-400'],
+      color: colors['neutral-text-action-on-dark-bg'],
       fontSize: 14,
       lineHeight: 20
     },
     labelTotalAmount: {
       textAlign: 'center',
-      color: colors['neutral-surface-card'],
+      color: colors['neutral-text-action-on-dark-bg'],
       fontSize: 28
     },
     containerOWBox: {
