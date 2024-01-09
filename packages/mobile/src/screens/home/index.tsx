@@ -124,7 +124,6 @@ export const HomeScreen: FunctionComponent = observer(props => {
   }, [address, chainStore.current.chainId]);
 
   // This section for getting all tokens of all chains
-  const { data: prices } = useCoinGeckoPrices();
 
   let accounts = {};
 
@@ -206,6 +205,9 @@ export const HomeScreen: FunctionComponent = observer(props => {
     delayedFunction();
   }, [accountOrai.bech32Address]);
 
+  // const { data: prices } = useCoinGeckoPrices();
+
+  // This section is for PnL display
   // useEffect(() => {
   //   if (Object.keys(universalSwapStore.getAmount).length > 0) {
   //     appInitStore.updatePriceFeed(

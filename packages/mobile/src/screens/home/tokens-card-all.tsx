@@ -14,6 +14,7 @@ import { Text } from '@src/components/text';
 import { useSmartNavigation } from '@src/navigation.provider';
 import { SCREENS } from '@src/common/constants';
 import { navigate } from '@src/router/root';
+import { RightArrowIcon } from '@src/components/icon';
 
 export const TokensCardAll: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -80,10 +81,23 @@ export const TokensCardAll: FunctionComponent<{
               </View>
             </View>
             <View style={styles.rightBoxItem}>
-              <Text color={colors['text-title']}>{item.balance}</Text>
-              <Text weight="500" color={colors['blue-400']}>
-                ${item.value.toFixed(6)}
-              </Text>
+              <View style={{ flexDirection: 'row' }}>
+                <View>
+                  <Text color={colors['text-title']}>{item.balance}</Text>
+                  <Text weight="500" color={colors['blue-400']}>
+                    ${item.value.toFixed(6)}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    flex: 0.5,
+                    justifyContent: 'center',
+                    paddingLeft: 20
+                  }}
+                >
+                  <RightArrowIcon height={12} color={colors['primary-text']} />
+                </View>
+              </View>
             </View>
           </TouchableOpacity>
         );
