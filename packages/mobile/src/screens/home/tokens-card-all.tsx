@@ -19,12 +19,12 @@ import { RightArrowIcon } from '@src/components/icon';
 export const TokensCardAll: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
-  const { accountStore, universalSwapStore, chainStore } = useStore();
+  const { accountStore, universalSwapStore, chainStore, appInitStore } = useStore();
   const { colors } = useTheme();
   const [more, setMore] = useState(true);
   const account = accountStore.getAccount(chainStore.current.chainId);
 
-  const { data: prices } = useCoinGeckoPrices();
+  const tokenInfos = getTokenInfos({ tokens: universalSwapStore.getAmount, prices: appInitStore.getInitApp.prices });
 
   const styles = styling();
 
@@ -130,8 +130,8 @@ export const TokensCardAll: FunctionComponent<{
         </View>
 
         <CardBody>
-          {getTokenInfos({ tokens: universalSwapStore.getAmount, prices }).length > 0 ? (
-            getTokenInfos({ tokens: universalSwapStore.getAmount, prices }).map((token, index) => {
+          {tokenInfos.length > 0 ? (
+            tokenInfos.map((token, index) => {
               if (more) {
                 if (index < 3) return renderTokenItem(token);
               } else {

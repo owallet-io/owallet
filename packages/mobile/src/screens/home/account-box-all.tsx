@@ -16,11 +16,12 @@ import { OWButton } from '@src/components/button';
 
 export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
   const { colors } = useTheme();
-  const { universalSwapStore, accountStore, modalStore, chainStore } = useStore();
-
+  const { universalSwapStore, accountStore, modalStore, chainStore, appInitStore } = useStore();
+  let totalUsd: number;
   const styles = styling(colors);
-  const { data: prices } = useCoinGeckoPrices();
-  let totalUsd: number = getTotalUsd(universalSwapStore.getAmount, prices);
+  if (appInitStore.getInitApp.prices) {
+    totalUsd = getTotalUsd(universalSwapStore.getAmount, appInitStore.getInitApp.prices);
+  }
   const account = accountStore.getAccount(chainStore.current.chainId);
   const [more, setMore] = useState(true);
 
@@ -56,7 +57,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
       <OWBox style={styles.containerOWBox} type="gradient">
         <View style={styles.overview}>
           <Text style={styles.titleTotalBalance}>Total Balance</Text>
-          <Text style={styles.labelTotalAmount}>${totalUsd.toFixed(6) ?? 0}</Text>
+          <Text style={styles.labelTotalAmount}>${totalUsd?.toFixed(6) ?? 0}</Text>
         </View>
       </OWBox>
       <OWBox style={styles.containerBox} type="shadow">

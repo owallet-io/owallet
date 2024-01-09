@@ -205,17 +205,22 @@ export const HomeScreen: FunctionComponent = observer(props => {
     delayedFunction();
   }, [accountOrai.bech32Address]);
 
-  // const { data: prices } = useCoinGeckoPrices();
-
   // This section is for PnL display
-  // useEffect(() => {
-  //   if (Object.keys(universalSwapStore.getAmount).length > 0) {
-  //     appInitStore.updatePriceFeed(
-  //       accountOrai.bech32Address,
-  //       getTokenInfos({ tokens: universalSwapStore.getAmount, prices })
-  //     );
-  //   }
-  // }, [universalSwapStore.getAmount, accountOrai.bech32Address, prices]);
+
+  const { data: prices } = useCoinGeckoPrices();
+
+  useEffect(() => {
+    appInitStore.updatePrices(prices);
+  }, [prices]);
+
+  useEffect(() => {
+    if (Object.keys(universalSwapStore.getAmount).length > 0) {
+      appInitStore.updatePriceFeed(
+        accountOrai.bech32Address,
+        getTokenInfos({ tokens: universalSwapStore.getAmount, prices })
+      );
+    }
+  }, [universalSwapStore.getAmount, accountOrai.bech32Address, prices]);
 
   const renderAccountCard = (() => {
     if (appInitStore.getInitApp.isAllNetworks) {

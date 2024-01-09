@@ -2,6 +2,7 @@ import { observable, action, makeObservable, computed } from 'mobx';
 import { create, persist } from 'mobx-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from 'moment';
+import { CoinGeckoPrices } from '@oraichain/oraidex-common';
 
 export class AppInit {
   @persist('object')
@@ -14,6 +15,7 @@ export class AppInit {
     theme: 'dark' | 'light';
     visibleTabBar?: string;
     priceFeed: object;
+    prices: CoinGeckoPrices<string>;
   };
   @observable
   protected notiData: {};
@@ -27,7 +29,8 @@ export class AppInit {
       date_updated: null,
       theme: 'light',
       isAllNetworks: false,
-      priceFeed: {}
+      priceFeed: {},
+      prices: {}
     };
   }
 
@@ -59,6 +62,12 @@ export class AppInit {
   @action
   updateKeyboardType(passcodeType) {
     this.initApp = { ...this.initApp, passcodeType };
+  }
+
+  @action
+  updatePrices(prices) {
+    const tmpPrices = { ...this.initApp.prices, ...prices };
+    this.initApp = { ...this.initApp, prices: tmpPrices };
   }
 
   @action

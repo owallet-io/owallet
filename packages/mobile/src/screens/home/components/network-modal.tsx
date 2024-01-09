@@ -5,7 +5,7 @@ import { _keyExtract, showToast } from '../../../utils/helper';
 import FastImage from 'react-native-fast-image';
 import { VectorCharacter } from '../../../components/vector-character';
 import { Text } from '@src/components/text';
-import { TRON_ID, COINTYPE_NETWORK, getKeyDerivationFromAddressType } from '@owallet/common';
+import { TRON_ID, COINTYPE_NETWORK, getKeyDerivationFromAddressType, ChainIdEnum } from '@owallet/common';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { useBIP44Option } from '@src/screens/register/bip44';
@@ -22,6 +22,7 @@ export const NetworkModal = () => {
   const { modalStore, chainStore, keyRingStore, accountStore, appInitStore } = useStore();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
+  const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const styles = styling(colors);
   const onConfirm = async (item: any) => {
     const { networkType } = chainStore.getChain(item?.chainId);
@@ -43,6 +44,28 @@ export const NetworkModal = () => {
       item?.chainId
     );
   };
+
+  const todayAssets =
+    appInitStore.getInitApp.priceFeed[accountOrai.bech32Address]?.[
+      Object.keys(appInitStore.getInitApp.priceFeed[accountOrai.bech32Address])[1]
+    ];
+
+  const groupedData = todayAssets.reduce((result, element) => {
+    const key = element.chainId;
+
+    if (!result[key]) {
+      result[key] = {
+        sum: 0
+      };
+    }
+
+    result[key].sum += element.value;
+
+    return result;
+  }, {});
+
+  console.log(groupedData);
+
   const handleSwitchNetwork = async item => {
     try {
       if (account.isNanoLedger) {
@@ -154,6 +177,14 @@ export const NetworkModal = () => {
             >
               {item.chainName}
             </Text>
+            <Text
+              style={{
+                color: colors['neutral-text-body']
+              }}
+              numberOfLines={1}
+            >
+              ${Number(groupedData[item.chainId]?.sum ?? 0).toFixed(6)}
+            </Text>
           </View>
         </View>
 
@@ -235,7 +266,7 @@ export const NetworkModal = () => {
           height: metrics.screenHeight / 2
         }}
       >
-        {/* {account.isNanoLedger ? null : _renderItem({ item: { chainName: 'All networks', isAll: true } })} */}
+        {account.isNanoLedger ? null : _renderItem({ item: { chainName: 'All networks', isAll: true } })}
         <BottomSheetFlatList data={chainStore.chainInfosInUI} renderItem={_renderItem} keyExtractor={_keyExtract} />
       </View>
     </View>

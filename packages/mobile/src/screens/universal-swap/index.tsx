@@ -10,7 +10,7 @@ import { OWButton } from '@src/components/button';
 import OWButtonIcon from '@src/components/button/ow-button-icon';
 import { BalanceText } from './components/BalanceText';
 import { SelectNetworkModal, SelectTokenModal, SlippageModal } from './modals/';
-import { showToast } from '@src/utils/helper';
+import { getTokenInfos, showToast } from '@src/utils/helper';
 import {
   DEFAULT_SLIPPAGE,
   GAS_ESTIMATION_SWAP_DEFAULT,
@@ -56,9 +56,13 @@ import { useQuery } from '@tanstack/react-query';
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
 
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
-  const { accountStore, universalSwapStore, chainStore } = useStore();
+  const { accountStore, universalSwapStore, chainStore, appInitStore } = useStore();
   const { colors } = useTheme();
   const { data: prices } = useCoinGeckoPrices();
+
+  useEffect(() => {
+    appInitStore.updatePrices(prices);
+  }, [prices]);
 
   const chainInfo = chainStore.getChain(ChainIdEnum.Oraichain);
 
@@ -286,14 +290,14 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   // }, [isFocused]);
 
   // This section is for PnL display
-  // useEffect(() => {
-  //   if (Object.keys(universalSwapStore.getAmount).length > 0) {
-  //     appInitStore.updatePriceFeed(
-  //       accountOrai.bech32Address,
-  //       getTokenInfos({ tokens: universalSwapStore.getAmount, prices })
-  //     );
-  //   }
-  // }, [universalSwapStore.getAmount, accountOrai.bech32Address, prices]);
+  useEffect(() => {
+    if (Object.keys(universalSwapStore.getAmount).length > 0) {
+      appInitStore.updatePriceFeed(
+        accountOrai.bech32Address,
+        getTokenInfos({ tokens: universalSwapStore.getAmount, prices })
+      );
+    }
+  }, [universalSwapStore.getAmount, accountOrai.bech32Address, prices]);
 
   const subAmountFrom = toSubAmount(universalSwapStore.getAmount, originalFromToken);
   const subAmountTo = toSubAmount(universalSwapStore.getAmount, originalToToken);
