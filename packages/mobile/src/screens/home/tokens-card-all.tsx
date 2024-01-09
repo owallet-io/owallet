@@ -27,7 +27,7 @@ export const TokensCardAll: FunctionComponent<{
 
   const tokenInfos = getTokenInfos({ tokens: universalSwapStore.getAmount, prices: appInitStore.getInitApp.prices });
 
-  let yesterdayAssets = {};
+  let yesterdayAssets = [];
   if (accountOrai.bech32Address) {
     yesterdayAssets = appInitStore.getPriceFeedByAddress(accountOrai.bech32Address, 'yesterday');
   }
@@ -56,11 +56,7 @@ export const TokensCardAll: FunctionComponent<{
   const renderTokenItem = useCallback(
     item => {
       if (item) {
-        const yesterday = Object.keys(yesterdayAssets).find(key => {
-          return yesterdayAssets[key].chainId === item.chainId;
-        });
-
-        console.log('yesterday', yesterday);
+        const yesterday = yesterdayAssets.find(obj => obj['denom'] === item.denom);
 
         return (
           <TouchableOpacity
@@ -97,7 +93,7 @@ export const TokensCardAll: FunctionComponent<{
                 <View style={{ alignItems: 'flex-end' }}>
                   <Text color={colors['neutral-text-title']}>{item.balance}</Text>
                   <Text weight="500" color={colors['neutral-text-body']}>
-                    ${item.value.toFixed(6)}
+                    ${item.value.toFixed(6)}({Number(item.value - yesterday.value)})
                   </Text>
                 </View>
                 <View
