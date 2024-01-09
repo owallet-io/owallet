@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { metrics, spacing, typography } from '../../../themes';
-import { _keyExtract, showToast } from '../../../utils/helper';
+import { _keyExtract, showToast, getTokenInfos } from '../../../utils/helper';
 import FastImage from 'react-native-fast-image';
 import { VectorCharacter } from '../../../components/vector-character';
 import { Text } from '@src/components/text';
@@ -23,11 +23,12 @@ export const NetworkModal = () => {
   const { modalStore, chainStore, keyRingStore, accountStore, appInitStore, universalSwapStore } = useStore();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
-  const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const styles = styling(colors);
-  let totalUsd: number;
-  if (appInitStore.getInitApp.prices) {
+  let totalUsd: number = 0;
+  let todayAssets;
+  if (Object.keys(appInitStore.getInitApp.prices).length > 0 && Object.keys(universalSwapStore.getAmount).length > 0) {
     totalUsd = getTotalUsd(universalSwapStore.getAmount, appInitStore.getInitApp.prices);
+    todayAssets = getTokenInfos({ tokens: universalSwapStore.getAmount, prices: appInitStore.getInitApp.prices });
   }
 
   const onConfirm = async (item: any) => {
@@ -51,12 +52,7 @@ export const NetworkModal = () => {
     );
   };
 
-  const todayAssets =
-    appInitStore.getInitApp.priceFeed[accountOrai.bech32Address]?.[
-      Object.keys(appInitStore.getInitApp.priceFeed[accountOrai.bech32Address])[1]
-    ];
-
-  const groupedData = todayAssets.reduce((result, element) => {
+  const groupedData = todayAssets?.reduce((result, element) => {
     const key = element.chainId;
 
     if (!result[key]) {
@@ -69,8 +65,6 @@ export const NetworkModal = () => {
 
     return result;
   }, {});
-
-  console.log(groupedData);
 
   const handleSwitchNetwork = async item => {
     try {
@@ -189,7 +183,7 @@ export const NetworkModal = () => {
               }}
               numberOfLines={1}
             >
-              ${!item.chainId ? totalUsd?.toFixed(6) : Number(groupedData[item.chainId]?.sum ?? 0).toFixed(6)}
+              ${!item.chainId ? totalUsd?.toFixed(6) : Number(groupedData?.[item.chainId]?.sum ?? 0).toFixed(6)}
             </Text>
           </View>
         </View>

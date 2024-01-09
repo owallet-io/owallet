@@ -1,13 +1,10 @@
 import React, { FunctionComponent, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import GatewayIntroScreen from './gateway_intro';
 import ManageIntroScreen from './manage_intro';
 import WelcomeIntroScreen from './welcome_intro';
 import AppIntroSlider from 'react-native-app-intro-slider';
-import { View, Image, StyleSheet, Platform } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { colors, metrics } from '../../themes';
-import { PageWithScrollView } from '../../components/page';
-import { useGetHeightHeader } from '@src/hooks/use-height-header';
 import { useStore } from '@src/stores';
 import { useSmartNavigation } from '@src/navigation.provider';
 import { useSimpleTimer } from '@src/hooks';

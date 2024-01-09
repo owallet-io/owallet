@@ -1,9 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
-import { ShootingStarIcon } from '../../components/icon/shooting-star';
 import { colors, metrics, spacing } from '../../themes';
 import OWText from '@src/components/text/ow-text';
-import { ProgressBar } from '@src/components/progress-bar';
 
 const styles = StyleSheet.create({
   img: {

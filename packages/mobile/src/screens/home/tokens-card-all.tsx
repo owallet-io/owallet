@@ -82,7 +82,7 @@ export const TokensCardAll: FunctionComponent<{
             </View>
             <View style={styles.rightBoxItem}>
               <View style={{ flexDirection: 'row' }}>
-                <View>
+                <View style={{ alignItems: 'flex-end' }}>
                   <Text color={colors['text-title']}>{item.balance}</Text>
                   <Text weight="500" color={colors['blue-400']}>
                     ${item.value.toFixed(6)}
