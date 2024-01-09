@@ -263,7 +263,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   };
 
   const delayedFunction = useCallback(async () => {
-    await delay(1200);
+    await delay(1900);
     Object.keys(ChainIdEnum).map(key => {
       let defaultAddress = accountStore.getAccount(ChainIdEnum[key]).bech32Address;
       if (ChainIdEnum[key] === ChainIdEnum.TRON) {
