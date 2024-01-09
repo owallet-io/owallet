@@ -43,7 +43,7 @@ export const NetworkModal = () => {
       item?.chainId
     );
   };
-  const handleSwitchNetwork = async item => {
+  const handleSwitchNetwork = async (item) => {
     try {
       if (account.isNanoLedger) {
         modalStore.close();
@@ -235,14 +235,14 @@ export const NetworkModal = () => {
           height: metrics.screenHeight / 2
         }}
       >
-        {account.isNanoLedger ? null : _renderItem({ item: { chainName: 'All networks', isAll: true } })}
+        {/* {account.isNanoLedger ? null : _renderItem({ item: { chainName: 'All networks', isAll: true } })} */}
         <BottomSheetFlatList data={chainStore.chainInfosInUI} renderItem={_renderItem} keyExtractor={_keyExtract} />
       </View>
     </View>
   );
 };
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     containerBtn: {
       backgroundColor: colors['background-item-list'],

@@ -267,6 +267,7 @@ export const SendScreen: FunctionComponent = observer(() => {
                       : null
                   );
                 } catch (e) {
+                  console.log('🚀 ~ file: index.tsx:270 ~ onPress={ ~ e:', e);
                   if (e?.message === 'Request rejected') {
                     return;
                   }
@@ -278,11 +279,11 @@ export const SendScreen: FunctionComponent = observer(() => {
                   // }
 
                   // alert(e.message);
-                  if (smartNavigation.canGoBack) {
-                    smartNavigation.goBack();
-                  } else {
-                    smartNavigation.navigateSmart('Home', {});
-                  }
+                  // if (smartNavigation.canGoBack) {
+                  //   smartNavigation.goBack();
+                  // } else {
+                  //   smartNavigation.navigateSmart('Home', {});
+                  // }
                 }
               }
             }}
