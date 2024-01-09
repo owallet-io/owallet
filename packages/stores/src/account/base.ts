@@ -737,10 +737,7 @@ export class AccountSetBase<MsgOpts, Queries> {
   ) {
     const isDirectSign = !msgs.aminoMsgs || msgs.aminoMsgs.length === 0;
     const aminoMsgs: Msg[] = msgs.aminoMsgs || [];
-    console.log('🚀 ~ file: base.ts:740 ~ AccountSetBase<MsgOpts, ~ aminoMsgs:', aminoMsgs);
     const protoMsgs: Any[] = msgs.protoMsgs;
-    console.log('🚀 ~ file: base.ts:741 ~ AccountSetBase<MsgOpts, ~ protoMsgs:', protoMsgs);
-
     if (!protoMsgs || protoMsgs.length === 0) {
       throw new Error('There is no msg to send');
     }
