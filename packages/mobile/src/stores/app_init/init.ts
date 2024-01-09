@@ -73,7 +73,6 @@ export class AppInit {
   @action
   getPriceFeedByAddress(address, day: 'today' | 'yesterday' = 'today') {
     const priceFeed = this.initApp.priceFeed[address];
-    console.log('priceFeed', priceFeed, address, day);
 
     if ((day = 'today')) {
       return priceFeed[Object.keys(priceFeed)[1]];
