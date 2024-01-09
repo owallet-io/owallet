@@ -14,6 +14,7 @@ import { useSmartNavigation } from '@src/navigation.provider';
 import { SCREENS } from '@src/common/constants';
 import { navigate } from '@src/router/root';
 import { RightArrowIcon } from '@src/components/icon';
+import { ChainIdEnum } from '@owallet/common';
 
 export const TokensCardAll: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -22,8 +23,14 @@ export const TokensCardAll: FunctionComponent<{
   const { colors } = useTheme();
   const [more, setMore] = useState(true);
   const account = accountStore.getAccount(chainStore.current.chainId);
+  const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
 
   const tokenInfos = getTokenInfos({ tokens: universalSwapStore.getAmount, prices: appInitStore.getInitApp.prices });
+
+  let yesterdayAssets = {};
+  if (accountOrai.bech32Address) {
+    yesterdayAssets = appInitStore.getPriceFeedByAddress(accountOrai.bech32Address, 'yesterday');
+  }
 
   const styles = styling();
 
@@ -49,6 +56,12 @@ export const TokensCardAll: FunctionComponent<{
   const renderTokenItem = useCallback(
     item => {
       if (item) {
+        const yesterday = Object.keys(yesterdayAssets).find(key => {
+          return yesterdayAssets[key].chainId === item.chainId;
+        });
+
+        console.log('yesterday', yesterday);
+
         return (
           <TouchableOpacity
             onPress={() => {
@@ -102,7 +115,7 @@ export const TokensCardAll: FunctionComponent<{
         );
       }
     },
-    [universalSwapStore?.getAmount]
+    [universalSwapStore?.getAmount, yesterdayAssets]
   );
 
   return (

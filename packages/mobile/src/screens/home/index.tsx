@@ -185,7 +185,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
   };
 
   const delayedFunction = useCallback(async () => {
-    await delay(2200);
+    await delay(1100);
     Object.keys(ChainIdEnum).map(key => {
       let defaultAddress = accountStore.getAccount(ChainIdEnum[key]).bech32Address;
       if (ChainIdEnum[key] === ChainIdEnum.TRON) {
@@ -226,8 +226,6 @@ export const HomeScreen: FunctionComponent = observer(props => {
   useEffect(() => {
     updatePriceFeed();
   }, [universalSwapStore.getAmount, accountOrai.bech32Address, prices]);
-
-  console.log('appInitStore', appInitStore.getInitApp.priceFeed);
 
   const renderAccountCard = (() => {
     if (appInitStore.getInitApp.isAllNetworks) {

@@ -71,6 +71,19 @@ export class AppInit {
   }
 
   @action
+  getPriceFeedByAddress(address, day: 'today' | 'yesterday' = 'today') {
+    const priceFeed = this.initApp.priceFeed[address];
+    console.log('priceFeed', priceFeed, address, day);
+
+    if ((day = 'today')) {
+      return priceFeed[Object.keys(priceFeed)[1]];
+    } else {
+      // yesterday
+      return priceFeed[Object.keys(priceFeed)[0]];
+    }
+  }
+
+  @action
   updatePriceFeed(address, balances) {
     // TODO: save balances with address
     let tmpPrice = { ...this.initApp.priceFeed[address] };
