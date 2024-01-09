@@ -185,7 +185,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
   };
 
   const delayedFunction = useCallback(async () => {
-    await delay(3000);
+    await delay(2200);
     Object.keys(ChainIdEnum).map(key => {
       let defaultAddress = accountStore.getAccount(ChainIdEnum[key]).bech32Address;
       if (ChainIdEnum[key] === ChainIdEnum.TRON) {
