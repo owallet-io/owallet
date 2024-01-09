@@ -290,13 +290,18 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   // }, [isFocused]);
 
   // This section is for PnL display
-  useEffect(() => {
+  const updatePriceFeed = async () => {
+    await delay(4000);
     if (Object.keys(universalSwapStore.getAmount).length > 0) {
       appInitStore.updatePriceFeed(
         accountOrai.bech32Address,
         getTokenInfos({ tokens: universalSwapStore.getAmount, prices })
       );
     }
+  };
+
+  useEffect(() => {
+    updatePriceFeed();
   }, [universalSwapStore.getAmount, accountOrai.bech32Address, prices]);
 
   const subAmountFrom = toSubAmount(universalSwapStore.getAmount, originalFromToken);
