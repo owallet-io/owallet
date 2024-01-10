@@ -51,6 +51,7 @@ import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import { useLoadTokens, useCoinGeckoPrices, useClient, useRelayerFee, useTaxRate } from '@owallet/hooks';
 import { getTransactionUrl, handleErrorSwap } from './helpers';
 import { useQuery } from '@tanstack/react-query';
+import analytics from '@react-native-firebase/analytics';
 
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
 
@@ -438,6 +439,14 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     }
 
     setSwapLoading(true);
+    await analytics().logEvent('uniswap-native-mobile', {
+      address: accountOrai.bech32Address,
+      fromToken: `${originalFromToken.name} - ${originalFromToken.chainId}`,
+      fromAmount: `${fromAmountToken}`,
+      toToken: `${originalToToken.name} - ${originalToToken.chainId}`,
+      toAmount: `${toAmountToken}`
+    });
+
     try {
       const cosmosWallet = new SwapCosmosWallet(client);
       const cosmosAddress = originalFromToken.cosmosBased
