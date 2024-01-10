@@ -450,6 +450,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     }
 
     setSwapLoading(true);
+
     const logEvent = {
       address: accountOrai.bech32Address,
       fromToken: `${originalFromToken.name} - ${originalFromToken.chainId}`,
