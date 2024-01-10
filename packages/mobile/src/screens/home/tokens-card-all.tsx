@@ -2,7 +2,7 @@ import { OWButton } from '@src/components/button';
 import { OWEmpty } from '@src/components/empty';
 import { useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
-import React, { FunctionComponent, useCallback, useState } from 'react';
+import React, { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { CardBody, OWBox } from '../../components/card';
 import { useStore } from '../../stores';
@@ -14,7 +14,8 @@ import { useSmartNavigation } from '@src/navigation.provider';
 import { SCREENS } from '@src/common/constants';
 import { navigate } from '@src/router/root';
 import { RightArrowIcon } from '@src/components/icon';
-import { ChainIdEnum } from '@owallet/common';
+import { ChainIdEnum, getBase58Address, TRC20_LIST } from '@owallet/common';
+import { API } from '@src/common/api';
 
 export const TokensCardAll: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -22,8 +23,10 @@ export const TokensCardAll: FunctionComponent<{
   const { accountStore, universalSwapStore, chainStore, appInitStore } = useStore();
   const { colors } = useTheme();
   const [more, setMore] = useState(true);
+
   const account = accountStore.getAccount(chainStore.current.chainId);
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
+  const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
 
   const tokenInfos = getTokenInfos({ tokens: universalSwapStore.getAmount, prices: appInitStore.getInitApp.prices });
 
@@ -31,6 +34,40 @@ export const TokensCardAll: FunctionComponent<{
   if (accountOrai.bech32Address) {
     yesterdayAssets = appInitStore.getPriceFeedByAddress(accountOrai.bech32Address, 'yesterday');
   }
+
+  const [tronTokens, setTronTokens] = useState([]);
+
+  useEffect(() => {
+    (async function get() {
+      try {
+        if (accountTron.evmosHexAddress) {
+          const res = await API.getTronAccountInfo(
+            {
+              address: getBase58Address(accountTron.evmosHexAddress)
+            },
+            {
+              baseURL: chainStore.current.rpc
+              // baseURL: 'https://nile.trongrid.io/' // TRON testnet
+            }
+          );
+
+          if (res.data?.data.length > 0) {
+            if (res.data?.data[0].trc20) {
+              const tokenArr = [];
+              TRC20_LIST.map(tk => {
+                let token = res.data?.data[0].trc20.find(t => tk.contractAddress in t);
+                if (token) {
+                  tokenArr.push({ ...tk, amount: token[tk.contractAddress] });
+                }
+              });
+
+              setTronTokens(tokenArr);
+            }
+          }
+        }
+      } catch (error) {}
+    })();
+  }, [accountTron.evmosHexAddress]);
 
   const styles = styling();
 
@@ -44,6 +81,14 @@ export const TokensCardAll: FunctionComponent<{
         navigate(SCREENS.STACK.Others, {
           screen: SCREENS.SendBtc
         });
+        return;
+      }
+      if (item.chainId === ChainIdEnum.TRON) {
+        const itemTron = tronTokens.find(t => {
+          return t.coinGeckoId === item.coinGeckoId;
+        });
+
+        smartNavigation.navigateSmart('SendTron', { item: itemTron });
         return;
       }
       smartNavigation.navigateSmart('Send', {
