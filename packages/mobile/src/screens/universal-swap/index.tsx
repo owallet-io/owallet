@@ -708,12 +708,12 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             <BalanceText>Minimum Received</BalanceText>
             <BalanceText>{(minimumReceive || '0') + ' ' + toToken.name}</BalanceText>
           </View>
-          {(!fromTokenFee && !toTokenFee) || (fromTokenFee === 0 && toTokenFee === 0) ? (
+          {(!fromTokenFee && !toTokenFee) || (fromTokenFee === 0 && toTokenFee === 0) ? null : (
             <View style={styles.itemBottom}>
-              <BalanceText>Tax rate</BalanceText>
+              <BalanceText>Token fee</BalanceText>
               <BalanceText>{Number(taxRate) * 100}%</BalanceText>
             </View>
-          ) : null}
+          )}
           {!!relayerFeeToken && (
             <View style={styles.itemBottom}>
               <BalanceText>Relayer Fee</BalanceText>
