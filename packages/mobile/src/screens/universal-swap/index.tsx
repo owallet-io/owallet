@@ -51,7 +51,7 @@ import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import { useLoadTokens, useCoinGeckoPrices, useClient, useRelayerFee, useTaxRate } from '@owallet/hooks';
 import { getTransactionUrl, handleErrorSwap } from './helpers';
 import { useQuery } from '@tanstack/react-query';
-import * as Sentry from '@sentry/react-native';
+import { firebase } from '@react-native-firebase/analytics';
 
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
 
@@ -458,11 +458,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       toAmount: `${toAmountToken}`
     };
 
-    Sentry.withScope(function (scope) {
-      scope.setTag('swap-mobile', 'click');
-      scope.setExtra('additionalData', logEvent);
-      // The exception has the event level set by the scope (info).
-      Sentry.captureMessage('Click swap mobile occurred!');
+    firebase.analytics().logEvent('swap_mobile', {
+      logEvent
     });
 
     try {
