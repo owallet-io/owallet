@@ -93,7 +93,7 @@ export const TokensCardAll: FunctionComponent<{
                 <View style={{ alignItems: 'flex-end' }}>
                   <Text color={colors['neutral-text-title']}>{item.balance}</Text>
                   <Text weight="500" color={colors['neutral-text-body']}>
-                    {/* ${item.value.toFixed(6)}({Number(item.value - yesterday.value)}) */}${item.value.toFixed(6)}
+                    ${item.value.toFixed(6)}({Number(item.value - yesterday?.value)}){/* ${item.value.toFixed(6)} */}
                   </Text>
                 </View>
                 <View
