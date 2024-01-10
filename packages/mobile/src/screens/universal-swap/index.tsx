@@ -67,17 +67,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   let accounts = {};
 
-  Object.keys(ChainIdEnum).map(key => {
-    let defaultAddress = accountStore.getAccount(ChainIdEnum[key]).bech32Address;
-    if (ChainIdEnum[key] === ChainIdEnum.TRON) {
-      accounts[ChainIdEnum[key]] = getBase58Address(accountStore.getAccount(ChainIdEnum[key]).evmosHexAddress);
-    } else if (defaultAddress.startsWith('evmos')) {
-      accounts[ChainIdEnum[key]] = accountStore.getAccount(ChainIdEnum[key]).evmosHexAddress;
-    } else {
-      accounts[ChainIdEnum[key]] = defaultAddress;
-    }
-  });
-
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
 
   const [isSlippageModal, setIsSlippageModal] = useState(false);
