@@ -117,6 +117,8 @@ export const HomeScreen: FunctionComponent = observer(props => {
         queries.cosmos.queryDelegations.getQueryBech32Address(address).waitFreshResponse(),
         queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(address).waitFreshResponse()
       ]);
+
+      handleFetchAmounts(accounts);
     }
 
     setRefreshing(false);
