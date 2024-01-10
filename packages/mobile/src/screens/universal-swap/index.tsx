@@ -51,7 +51,7 @@ import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import { useLoadTokens, useCoinGeckoPrices, useClient, useRelayerFee, useTaxRate } from '@owallet/hooks';
 import { getTransactionUrl, handleErrorSwap } from './helpers';
 import { useQuery } from '@tanstack/react-query';
-import analytics from '@react-native-firebase/analytics';
+import * as Sentry from '@sentry/react-native';
 
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
 
@@ -67,6 +67,17 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const chainInfo = chainStore.getChain(ChainIdEnum.Oraichain);
 
   let accounts = {};
+
+  Object.keys(ChainIdEnum).map(key => {
+    let defaultAddress = accountStore.getAccount(ChainIdEnum[key]).bech32Address;
+    if (ChainIdEnum[key] === ChainIdEnum.TRON) {
+      accounts[ChainIdEnum[key]] = getBase58Address(accountStore.getAccount(ChainIdEnum[key]).evmosHexAddress);
+    } else if (defaultAddress.startsWith('evmos')) {
+      accounts[ChainIdEnum[key]] = accountStore.getAccount(ChainIdEnum[key]).evmosHexAddress;
+    } else {
+      accounts[ChainIdEnum[key]] = defaultAddress;
+    }
+  });
 
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
 
@@ -439,12 +450,19 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     }
 
     setSwapLoading(true);
-    await analytics().logEvent('uniswap-native-mobile', {
+    const logEvent = {
       address: accountOrai.bech32Address,
       fromToken: `${originalFromToken.name} - ${originalFromToken.chainId}`,
       fromAmount: `${fromAmountToken}`,
       toToken: `${originalToToken.name} - ${originalToToken.chainId}`,
       toAmount: `${toAmountToken}`
+    };
+
+    Sentry.withScope(function (scope) {
+      scope.setTag('swap-mobile', 'click');
+      scope.setExtra('additionalData', logEvent);
+      // The exception has the event level set by the scope (info).
+      Sentry.captureMessage('Click swap mobile occurred!');
     });
 
     try {
