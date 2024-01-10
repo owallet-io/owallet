@@ -373,8 +373,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
   {
     chainId: 'oraibtc-subnet-1',
     chainName: 'OraiBtc Bridge',
-    rpc: 'https://oraibtc.rpc.orai.io',
-    rest: 'https://oraibtc.lcd.orai.io',
+    rpc: 'https://btc.rpc.orai.io',
+    rest: 'https://btc.lcd.orai.io',
     networkType: 'cosmos',
     stakeCurrency: {
       coinDenom: 'ORAIBTC',
