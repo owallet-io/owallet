@@ -102,6 +102,8 @@ export const TokensCardAll: FunctionComponent<{
       if (item) {
         const yesterday = yesterdayAssets.find(obj => obj['denom'] === item.denom);
         const chainIcon = chainIcons.find(c => c.chainId === item.chainId);
+        const profit = Number(Number(item.value - yesterday?.value)?.toFixed(2));
+        const percent = Number((profit / item.value) * 100).toFixed(2);
 
         return (
           <TouchableOpacity
@@ -133,8 +135,9 @@ export const TokensCardAll: FunctionComponent<{
                   <Text weight="500" color={colors['neutral-text-title']}>
                     ${item.value.toFixed(6)}
                   </Text>
-                  <Text style={styles.profit} color={colors[true ? 'error-text-body' : 'success-text-body']}>
-                    {true ? '-' : '+'}1% (${Number(Number(item.value - yesterday?.value)?.toFixed(2)) ?? 0})
+                  <Text style={styles.profit} color={colors[profit < 0 ? 'error-text-body' : 'success-text-body']}>
+                    {profit < 0 ? '' : '+'}
+                    {percent}% (${profit ?? 0})
                   </Text>
                 </View>
                 <View

@@ -18,7 +18,7 @@ export const CopyAddressModal: FunctionComponent<{
   useEffect(() => {
     const data = [];
     Object.keys(accounts).map(k => {
-      if (k) {
+      if (k && k !== undefined && k !== 'undefined') {
         data.push({
           name: k,
           address: accounts[k]

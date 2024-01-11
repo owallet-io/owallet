@@ -214,7 +214,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
   }, [prices]);
 
   const updatePriceFeed = async () => {
-    await delay(2000);
+    await delay(5000);
     if (Object.keys(universalSwapStore.getAmount).length > 0) {
       appInitStore.updatePriceFeed(
         accountOrai.bech32Address,

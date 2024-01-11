@@ -115,6 +115,8 @@ export class AppInit {
     }
     // Assign new balances into address
     const newPriceFeed = { ...this.getInitApp.priceFeed };
+    console.log('newPriceFeed', newPriceFeed);
+
     newPriceFeed[address] = tmpPrice;
 
     this.initApp = { ...this.initApp, ...{ priceFeed: newPriceFeed } };

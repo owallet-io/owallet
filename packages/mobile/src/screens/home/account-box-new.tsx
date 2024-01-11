@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState } from 'react';
+import React, { FunctionComponent } from 'react';
 import { observer } from 'mobx-react-lite';
 import { OWBox } from '../../components/card';
 import { View, StyleSheet, TouchableOpacity, Image } from 'react-native';
