@@ -425,7 +425,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         }
       ];
     },
-    features: ['stargate', 'ibc-transfer', 'cosmwasm']
+    features: ['stargate', 'ibc-transfer', 'cosmwasm', 'no-legacy-stdTx']
   },
   {
     chainId: 'oraibtc-subnet-1',
@@ -482,7 +482,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         }
       ];
     },
-    features: ['stargate', 'ibc-transfer', 'cosmwasm']
+    features: ['stargate', 'ibc-transfer', 'cosmwasm', 'no-legacy-stdTx']
   },
   {
     rpc: 'https://tendermint1.kawaii.global',
@@ -658,61 +658,61 @@ export const EmbedChainInfos: AppChainInfo[] = [
       txUrl: 'https://www.mintscan.io/osmosis/txs/{txHash}'
     }
   },
-  {
-    chainId: 'nomic-stakenet-3',
-    chainName: 'Nomic Stakenet 3',
-    rpc: 'https://stakenet-rpc.nomic.io:2096',
-    rest: 'https://app.nomic.io:8443',
-    bip44: {
-      coinType: 118
-    },
-    bech32Config: {
-      bech32PrefixAccAddr: 'nomic',
-      bech32PrefixAccPub: 'nomicpub',
-      bech32PrefixValAddr: 'nomicvaloper',
-      bech32PrefixValPub: 'nomicvaloperpub',
-      bech32PrefixConsAddr: 'nomicvalcons',
-      bech32PrefixConsPub: 'nomicvalconspub'
-    },
-    currencies: [
-      {
-        coinDenom: 'NOM',
-        coinMinimalDenom: 'unom',
-        coinDecimals: 6,
-        coinImageUrl: 'https://i.ibb.co/X4gbpMG/download-removebg-preview-1.png'
-      },
-      {
-        coinDenom: 'nBTC',
-        coinMinimalDenom: 'uSAT',
-        coinDecimals: 14,
-        coinGeckoId: 'bitcoin',
-        coinImageUrl: 'https://i.ibb.co/NVP6CDZ/images-removebg-preview.png'
-      }
-    ],
-    feeCurrencies: [
-      {
-        coinDenom: 'NOM',
-        coinMinimalDenom: 'unom',
-        coinDecimals: 6,
-        coinImageUrl: 'https://i.ibb.co/X4gbpMG/download-removebg-preview-1.png',
-        gasPriceStep: {
-          low: 0,
-          average: 0,
-          high: 0
-        }
-      }
-    ],
-    stakeCurrency: {
-      coinDenom: 'NOM',
-      coinMinimalDenom: 'unom',
-      coinDecimals: 6,
-      coinImageUrl: 'https://i.ibb.co/X4gbpMG/download-removebg-preview-1.png'
-    },
-    coinType: 119,
-    networkType: 'cosmos',
-    features: ['stargate'],
-    beta: true
-  },
+  // {
+  //   chainId: 'nomic-stakenet-3',
+  //   chainName: 'Nomic Stakenet 3',
+  //   rpc: 'https://stakenet-rpc.nomic.io:2096',
+  //   rest: 'https://app.nomic.io:8443',
+  //   bip44: {
+  //     coinType: 118
+  //   },
+  //   bech32Config: {
+  //     bech32PrefixAccAddr: 'nomic',
+  //     bech32PrefixAccPub: 'nomicpub',
+  //     bech32PrefixValAddr: 'nomicvaloper',
+  //     bech32PrefixValPub: 'nomicvaloperpub',
+  //     bech32PrefixConsAddr: 'nomicvalcons',
+  //     bech32PrefixConsPub: 'nomicvalconspub'
+  //   },
+  //   currencies: [
+  //     {
+  //       coinDenom: 'NOM',
+  //       coinMinimalDenom: 'unom',
+  //       coinDecimals: 6,
+  //       coinImageUrl: 'https://i.ibb.co/X4gbpMG/download-removebg-preview-1.png'
+  //     },
+  //     {
+  //       coinDenom: 'nBTC',
+  //       coinMinimalDenom: 'uSAT',
+  //       coinDecimals: 14,
+  //       coinGeckoId: 'bitcoin',
+  //       coinImageUrl: 'https://i.ibb.co/NVP6CDZ/images-removebg-preview.png'
+  //     }
+  //   ],
+  //   feeCurrencies: [
+  //     {
+  //       coinDenom: 'NOM',
+  //       coinMinimalDenom: 'unom',
+  //       coinDecimals: 6,
+  //       coinImageUrl: 'https://i.ibb.co/X4gbpMG/download-removebg-preview-1.png',
+  //       gasPriceStep: {
+  //         low: 0,
+  //         average: 0,
+  //         high: 0
+  //       }
+  //     }
+  //   ],
+  //   stakeCurrency: {
+  //     coinDenom: 'NOM',
+  //     coinMinimalDenom: 'unom',
+  //     coinDecimals: 6,
+  //     coinImageUrl: 'https://i.ibb.co/X4gbpMG/download-removebg-preview-1.png'
+  //   },
+  //   coinType: 119,
+  //   networkType: 'cosmos',
+  //   features: ['stargate'],
+  //   beta: true
+  // },
   // {
   //   chainId: 'nomic-testnet-4d',
   //   chainName: 'Nomic Testnet 4d',
