@@ -47,7 +47,6 @@ export const TokensCardAll: FunctionComponent<{
             },
             {
               baseURL: chainStore.current.rpc
-              // baseURL: 'https://nile.trongrid.io/' // TRON testnet
             }
           );
 
@@ -84,9 +83,11 @@ export const TokensCardAll: FunctionComponent<{
         return;
       }
       if (item.chainId === ChainIdEnum.TRON) {
-        const itemTron = tronTokens.find(t => {
+        const itemTron = tronTokens?.find(t => {
           return t.coinGeckoId === item.coinGeckoId;
         });
+
+        console.log('itemTron', itemTron);
 
         smartNavigation.navigateSmart('SendTron', { item: itemTron });
         return;

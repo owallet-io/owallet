@@ -291,7 +291,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   // This section is for PnL display
   const updatePriceFeed = async () => {
-    await delay(4000);
+    await delay(2000);
     if (Object.keys(universalSwapStore.getAmount).length > 0) {
       appInitStore.updatePriceFeed(
         accountOrai.bech32Address,

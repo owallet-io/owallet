@@ -19,7 +19,7 @@ import { AccountCardBitcoin } from './account-card-bitcoin';
 import { TokensBitcoinCard } from './tokens-bitcoin-card';
 import { getAddress, getBase58Address, ChainIdEnum, delay } from '@owallet/common';
 import { TokensCardAll } from './tokens-card-all';
-import { AccountBoxAll } from './account-box-all';
+import { AccountBoxAll } from './account-box-new';
 import { oraichainNetwork } from '@oraichain/oraidex-common';
 import { useCoinGeckoPrices, useLoadTokens } from '@owallet/hooks';
 import { getTokenInfos, showToast } from '@src/utils/helper';
@@ -127,6 +127,17 @@ export const HomeScreen: FunctionComponent = observer(props => {
 
   let accounts = {};
 
+  Object.keys(ChainIdEnum).map(key => {
+    let defaultAddress = accountStore.getAccount(ChainIdEnum[key]).bech32Address;
+    if (ChainIdEnum[key] === ChainIdEnum.TRON) {
+      accounts[ChainIdEnum[key]] = getBase58Address(accountStore.getAccount(ChainIdEnum[key]).evmosHexAddress);
+    } else if (defaultAddress.startsWith('evmos')) {
+      accounts[ChainIdEnum[key]] = accountStore.getAccount(ChainIdEnum[key]).evmosHexAddress;
+    } else {
+      accounts[ChainIdEnum[key]] = defaultAddress;
+    }
+  });
+
   const loadTokenAmounts = useLoadTokens(universalSwapStore);
   // handle fetch all tokens of all chains
   const handleFetchAmounts = async accounts => {
@@ -174,7 +185,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
   };
 
   const delayedFunction = useCallback(async () => {
-    await delay(1700);
+    await delay(500);
     Object.keys(ChainIdEnum).map(key => {
       let defaultAddress = accountStore.getAccount(ChainIdEnum[key]).bech32Address;
       if (ChainIdEnum[key] === ChainIdEnum.TRON) {
@@ -203,7 +214,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
   }, [prices]);
 
   const updatePriceFeed = async () => {
-    await delay(4000);
+    await delay(2000);
     if (Object.keys(universalSwapStore.getAmount).length > 0) {
       appInitStore.updatePriceFeed(
         accountOrai.bech32Address,
