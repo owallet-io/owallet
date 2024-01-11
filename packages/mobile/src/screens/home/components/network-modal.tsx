@@ -177,14 +177,14 @@ export const NetworkModal = () => {
             >
               {item.chainName}
             </Text>
-            <Text
+            {/* <Text
               style={{
                 color: colors['neutral-text-body']
               }}
               numberOfLines={1}
             >
               ${!item.chainId ? totalUsd?.toFixed(6) : Number(groupedData?.[item.chainId]?.sum ?? 0).toFixed(6)}
-            </Text>
+            </Text> */}
           </View>
         </View>
 
@@ -266,7 +266,7 @@ export const NetworkModal = () => {
           height: metrics.screenHeight / 2
         }}
       >
-        {account.isNanoLedger ? null : _renderItem({ item: { chainName: 'All networks', isAll: true } })}
+        {/* {account.isNanoLedger ? null : _renderItem({ item: { chainName: 'All networks', isAll: true } })} */}
         <BottomSheetFlatList data={chainStore.chainInfosInUI} renderItem={_renderItem} keyExtractor={_keyExtract} />
       </View>
     </View>

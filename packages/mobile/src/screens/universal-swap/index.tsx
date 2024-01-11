@@ -290,7 +290,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   // }, [isFocused]);
 
   // This section is for PnL display
-  const updatePriceFeed = async () => {
+ const updatePriceFeed = async () => {
     await delay(2000);
     if (Object.keys(universalSwapStore.getAmount).length > 0) {
       appInitStore.updatePriceFeed(
