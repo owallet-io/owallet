@@ -67,7 +67,7 @@ export const HeaderLayout: FunctionComponent<Props> = (props) => {
     }
   };
 
-  const listTabs = ['Home', 'Token', 'Account', 'Menu'];
+  const listTabs = ['Home', 'Token', 'Account', 'Menu', 'Chatbot'];
   const history = useHistory();
 
   const toggle = (tab) => {
@@ -81,6 +81,9 @@ export const HeaderLayout: FunctionComponent<Props> = (props) => {
         break;
       case 'Menu':
         path = '/menu';
+        break;
+      case 'Chatbot':
+        path = '/chatbot';
         break;
     }
     history.push(path);

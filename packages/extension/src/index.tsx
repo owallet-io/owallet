@@ -65,6 +65,7 @@ import { SignBtcPage } from './pages/sign/sign-btc';
 import { ValidatorListPage } from './pages/stake/validator-list';
 import { TokenPage } from './pages/token';
 import { SendBtcPage } from './pages/send-btc';
+import { ChatbotPage } from './pages/chatbot';
 
 const owallet = new OWallet(manifest.version, 'core', new InExtensionMessageRequester());
 
@@ -235,6 +236,7 @@ ReactDOM.render(
                   <Route path="/sign-ethereum" component={SignEthereumPage} />
                   <Route path="/sign-tron" component={SignTronPage} />
                   <Route path="/suggest-chain" component={ChainSuggestedPage} />
+                  <Route path="/chatbot" component={ChatbotPage} />
                 </LogPageViewWrapper>
               </HashRouter>
             </ConfirmProvider>

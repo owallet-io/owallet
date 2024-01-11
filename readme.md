@@ -27,25 +27,42 @@ OWallet is developed based on Keplr extension and currently maintained by Oraich
 git clone https://github.com/oraichain/owallet
 ```
 
-2. Install required packages
+2. Clone packages/background
+    
+    2.1. Delete packages/background
+    
+    2.2. Then execute folowing commands in terminal:
+    ```shell
+    git submodule add --force https://github.com/oraichain/owallet-background.git packages/background
 
-```shell
-yarn bootstrap
-```
+    cd packages/background
 
-3. Clone packages/background
+    git checkout -b develop remotes/origin/develop
+    ```
 
-```shell
-git submodule add --force https://github.com/oraichain/owallet-background.git packages/background
-```
+3. Install required packages
+    
+    3.1. Open package.json and modify version of **lerna**
+    ```
+    "lerna": "^6.6.2"
+    ```
+    
+    3.2. Open lerna.json and add this line
+    ```
+    "useWorkspaces": true
+    ```
+    
+    3.3. Run the below command
+    ```shell
+    yarn bootstrap
+    ```
 
 4. Build it
-
-```shell
-yarn build 
-or
-yarn build:libs
-```
+    `yarn build`
+    
+    When building for the first time, you may encouter the error. Do not worry, try to run `yarn build` again.
+    
+    And for the last package @owallet/extension, you should go directly into that package then `yarn build`
 
 ## Contributing
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
