@@ -184,8 +184,10 @@ export const HomeScreen: FunctionComponent = observer(props => {
     }
   };
 
-  const delayedFunction = useCallback(async () => {
-    await delay(500);
+  const delayedFunction = useCallback(async (delayTime = 500) => {
+    await delay(delayTime);
+    console.log('call time', new Date().getSeconds());
+
     Object.keys(ChainIdEnum).map(key => {
       let defaultAddress = accountStore.getAccount(ChainIdEnum[key]).bech32Address;
       if (ChainIdEnum[key] === ChainIdEnum.TRON) {
@@ -203,6 +205,11 @@ export const HomeScreen: FunctionComponent = observer(props => {
   useEffect(() => {
     universalSwapStore.clearAmounts();
     delayedFunction();
+  }, [accountOrai.bech32Address]);
+
+  useEffect(() => {
+    // just to make sure that our balance is up to date
+    delayedFunction(15000);
   }, [accountOrai.bech32Address]);
 
   // This section is for PnL display
