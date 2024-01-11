@@ -104,7 +104,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
           </Text>
           <Text style={styles.profit} color={colors[profit < 0 ? 'error-text-body' : 'success-text-body']}>
             {profit < 0 ? '' : '+'}
-            {Number(profit / totalUsd).toFixed(2)}% (${profit ?? 0}) Today
+            {Number((profit / totalUsd) * 100).toFixed(2)}% (${profit ?? 0}) Today
           </Text>
         </View>
         <View style={styles.btnGroup}>
