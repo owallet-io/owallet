@@ -74,7 +74,7 @@ export class AppInit {
   getPriceFeedByAddress(address, day: 'today' | 'yesterday' = 'today') {
     const priceFeed = this.initApp.priceFeed[address];
 
-    if ((day = 'today')) {
+    if (day === 'today') {
       return priceFeed[Object.keys(priceFeed)[1]];
     } else {
       // yesterday
@@ -92,17 +92,17 @@ export class AppInit {
         [Math.floor(Date.now() / 1000)]: balances,
         [Math.floor(Date.now() / 1000) + 1]: balances
       };
-      console.log('not yet ?', tmpPrice);
+      // console.log('not yet ?', tmpPrice);
     } else {
       const today = moment.unix(Math.floor(Date.now() / 1000));
       const yesterday = moment.unix(Number(Object.keys(tmpPrice)[0]));
-      console.log('tmpPrice', tmpPrice);
+      // console.log('tmpPrice', tmpPrice);
 
       if (today.isSame(yesterday, 'day')) {
         // Today is the same day as the day when the last balances were called
         // Replace the today balances with the new one
         tmpPrice[Object.keys(tmpPrice)[1] ?? Math.floor(Date.now() / 1000)] = balances;
-        console.log('today again ?', tmpPrice);
+        // console.log('today again ?', tmpPrice);
       } else {
         // Today is not the same day as the day when the last balances were called
         // Remove the first element of object, which is the outdated data
@@ -110,12 +110,12 @@ export class AppInit {
         // The second element now become first, which is yesterday data
         // Push new element into object, become today data
         tmpPrice[Math.floor(Date.now() / 1000)] = balances;
-        console.log('next day ?', tmpPrice);
+        // console.log('next day ?', tmpPrice);
       }
     }
     // Assign new balances into address
     const newPriceFeed = { ...this.getInitApp.priceFeed };
-    console.log('newPriceFeed', newPriceFeed);
+    // console.log('newPriceFeed', newPriceFeed);
 
     newPriceFeed[address] = tmpPrice;
 
