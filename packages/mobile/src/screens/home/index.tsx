@@ -259,6 +259,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
       <BIP44Selectable />
       {renderAccountCard}
       <DashboardCard />
+
       {renderTokenCard()}
       {chainStore.current.networkType === 'cosmos' ? <UndelegationsCard /> : null}
       {chainStore.current.networkType === 'cosmos' ? <EarningCard containerStyle={styles.containerEarnStyle} /> : null}

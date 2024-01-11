@@ -60,7 +60,15 @@ export const InteractionModalsProivder: FunctionComponent = observer(({ children
       ) : null}
 
       {modalStore.getOptions?.isOpen ? (
-        <HomeBaseModal {...modalStore.getOptions} isOpen={true} close={() => modalStore.close()} />
+        <HomeBaseModal
+          bottomSheetModalConfig={{
+            snapPoints: ['40%', '70%'],
+            index: 1
+          }}
+          {...modalStore.getOptions}
+          isOpen={true}
+          close={() => modalStore.close()}
+        />
       ) : null}
 
       {children}

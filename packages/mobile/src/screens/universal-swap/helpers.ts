@@ -73,14 +73,21 @@ const BnbIcon = 'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png';
 const InjIcon = 'https://s2.coinmarketcap.com/static/img/coins/64x64/7226.png';
 const OraixLightIcon = 'https://assets.coingecko.com/coins/images/28104/standard/oraix.png?1696527113';
 const Noble = 'https://pbs.twimg.com/profile_images/1638130100704100352/7M9dyIKi_400x400.jpg';
+const Juno = 'https://pbs.twimg.com/profile_images/1637016727874674689/2C06aPqM_400x400.png';
 
 type TokenIcon = Pick<TokenItemType, 'coinGeckoId' | 'Icon' | 'IconLight'>;
 type ChainIcon = Pick<CustomChainInfo, 'chainId' | 'Icon' | 'IconLight' | 'chainName'>;
 
-export const chainIcons: ChainIcon[] = [
+export const chainIcons: any[] = [
   {
     chainId: 'Oraichain',
     chainName: 'Oraichain',
+    Icon: OraiIcon,
+    IconLight: OraiLightIcon
+  },
+  {
+    chainId: 'Oraichain-testnet',
+    chainName: 'Oraichain-testnet',
     Icon: OraiIcon,
     IconLight: OraiLightIcon
   },
@@ -137,6 +144,12 @@ export const chainIcons: ChainIcon[] = [
     chainName: 'Noble',
     Icon: Noble,
     IconLight: Noble
+  },
+  {
+    chainId: 'juno-1',
+    chainName: 'Juno',
+    Icon: Juno,
+    IconLight: Juno
   }
 ];
 
