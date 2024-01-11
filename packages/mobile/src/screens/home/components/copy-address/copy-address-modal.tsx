@@ -1,20 +1,11 @@
-import { StyleSheet, TextInput, View, TouchableOpacity } from 'react-native';
-import React, { FunctionComponent, useCallback, useEffect, useState } from 'react';
-import { registerModal } from '@src/modals/base';
+import { StyleSheet, TextInput, View } from 'react-native';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import OWFlatList from '@src/components/page/ow-flat-list';
 import OWIcon from '@src/components/ow-icon/ow-icon';
-import { Text } from '@src/components/text';
 import { TypeTheme, useTheme } from '@src/themes/theme-provider';
 import { metrics } from '@src/themes';
-import { TokenItemType, toDisplay } from '@oraichain/oraidex-common';
-import { useStore } from '@src/stores';
-import { ChainIdEnum } from '@owallet/common';
-import { CoinGeckoPrices } from '@owallet/hooks';
-import { find } from 'lodash';
-import { AddressCopyable } from '@src/components/address-copyable';
 import { CustomAddressCopyable } from '@src/components/address-copyable/custom';
-import { ScrollView } from 'react-native-gesture-handler';
 import { chainIcons } from '@src/screens/universal-swap/helpers';
 
 export const CopyAddressModal: FunctionComponent<{
@@ -22,21 +13,29 @@ export const CopyAddressModal: FunctionComponent<{
 }> = ({ accounts }) => {
   const safeAreaInsets = useSafeAreaInsets();
   const [keyword, setKeyword] = useState('');
+  const [addresses, setAddresses] = useState([]);
 
-  // useEffect(() => {
-  //   if (keyword === '' || !keyword) {
-  //     setTokens(data);
-  //   } else {
-  //     const tmpData = data.filter(d => {
-  //       return (d.chainId + d.denom + d.name + d.org + d.coinGeckoId)
-  //         .toString()
-  //         .toLowerCase()
-  //         .includes(keyword.toLowerCase());
-  //     });
+  useEffect(() => {
+    const data = [];
+    Object.keys(accounts).map(k => {
+      if (k) {
+        data.push({
+          name: k,
+          address: accounts[k]
+        });
+      }
+    });
 
-  //     setTokens(tmpData);
-  //   }
-  // }, [data, keyword]);
+    if (keyword === '' || !keyword) {
+      setAddresses(data);
+    } else {
+      const tmpData = data.filter(d => {
+        return d.name.toString().toLowerCase().includes(keyword.toLowerCase());
+      });
+
+      setAddresses(tmpData);
+    }
+  }, [keyword]);
 
   const { colors } = useTheme();
   const styles = styling(colors);
@@ -55,58 +54,28 @@ export const CopyAddressModal: FunctionComponent<{
           <OWIcon color={colors['blue-400']} text name="search" size={16} />
         </View>
       </View>
-
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {Object.keys(accounts).map(k => {
-          if (accounts[k]) {
-            const chainIcon = chainIcons.find(c => c.chainName === k);
-
-            return (
-              <CustomAddressCopyable
-                icon={<OWIcon type="images" source={{ uri: chainIcon?.Icon }} size={28} />}
-                chain={k}
-                address={accounts[k]}
-                maxCharacters={22}
-              />
-            );
-          }
-        })}
-      </ScrollView>
+      <OWFlatList
+        isBottomSheet
+        keyboardShouldPersistTaps="handled"
+        data={addresses}
+        renderItem={({ item }) => {
+          const chainIcon = chainIcons.find(c => c.chainName === item.name);
+          return (
+            <CustomAddressCopyable
+              icon={<OWIcon type="images" source={{ uri: chainIcon?.Icon }} size={28} />}
+              chain={item.name}
+              address={item.address}
+              maxCharacters={22}
+            />
+          );
+        }}
+      />
     </View>
   );
 };
 
 const styling = (colors: TypeTheme['colors']) =>
   StyleSheet.create({
-    pl10: {
-      paddingLeft: 10
-    },
-    leftBoxItem: {
-      flexDirection: 'row',
-      alignItems: 'center'
-    },
-    rightBoxItem: {
-      alignItems: 'flex-end'
-    },
-    btnItem: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginVertical: 10
-    },
-    txtNetwork: {
-      paddingHorizontal: 4
-    },
-    btnNetwork: {
-      flexDirection: 'row',
-      alignItems: 'center'
-    },
-    containerTitle: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      paddingVertical: 10
-    },
     iconSearch: {
       position: 'absolute',
       left: 12,
