@@ -75,10 +75,10 @@ export class AppInit {
     const priceFeed = this.initApp.priceFeed[address];
 
     if (day === 'today') {
-      return priceFeed[Object.keys(priceFeed)[1]];
+      return priceFeed[Object.keys(priceFeed ?? {})[1]];
     } else {
       // yesterday
-      return priceFeed[Object.keys(priceFeed)[0]];
+      return priceFeed[Object.keys(priceFeed ?? {})[0]];
     }
   }
 
