@@ -80,7 +80,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
             ${totalUsd?.toFixed(6) ?? 0}
           </Text>
           <Text style={styles.profit} color={colors[true ? 'error-text-body' : 'success-text-body']}>
-            +1% (${totalUsd?.toFixed(6) ?? 0}) Today
+            {true ? '-' : '+'}1% (${totalUsd?.toFixed(6) ?? 0}) Today
           </Text>
         </View>
         <View style={styles.btnGroup}>

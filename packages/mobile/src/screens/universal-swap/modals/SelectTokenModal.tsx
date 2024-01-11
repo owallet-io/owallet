@@ -7,7 +7,7 @@ import OWIcon from '@src/components/ow-icon/ow-icon';
 import { Text } from '@src/components/text';
 import { TypeTheme, useTheme } from '@src/themes/theme-provider';
 import { metrics } from '@src/themes';
-import { TokenItemType, tokenMap, toDisplay, AmountDetails } from '@oraichain/oraidex-common';
+import { TokenItemType, toDisplay } from '@oraichain/oraidex-common';
 import { useStore } from '@src/stores';
 import { ChainIdEnum } from '@owallet/common';
 import { CoinGeckoPrices } from '@owallet/hooks';

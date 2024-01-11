@@ -72,6 +72,7 @@ const EthIcon = 'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png';
 const BnbIcon = 'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png';
 const InjIcon = 'https://s2.coinmarketcap.com/static/img/coins/64x64/7226.png';
 const OraixLightIcon = 'https://assets.coingecko.com/coins/images/28104/standard/oraix.png?1696527113';
+const Noble = 'https://pbs.twimg.com/profile_images/1638130100704100352/7M9dyIKi_400x400.jpg';
 
 type TokenIcon = Pick<TokenItemType, 'coinGeckoId' | 'Icon' | 'IconLight'>;
 type ChainIcon = Pick<CustomChainInfo, 'chainId' | 'Icon' | 'IconLight' | 'chainName'>;
@@ -130,6 +131,12 @@ export const chainIcons: ChainIcon[] = [
     chainName: 'Kawaiiverse EVM',
     Icon: KwtIcon,
     IconLight: KwtIcon
+  },
+  {
+    chainId: 'noble-1',
+    chainName: 'Noble',
+    Icon: Noble,
+    IconLight: Noble
   }
 ];
 
@@ -191,6 +198,11 @@ export const tokenImg: TokenIcon[] = [
   },
   {
     coinGeckoId: 'ethereum',
+    Icon: EthIcon,
+    IconLight: EthIcon
+  },
+  {
+    coinGeckoId: 'weth',
     Icon: EthIcon,
     IconLight: EthIcon
   },

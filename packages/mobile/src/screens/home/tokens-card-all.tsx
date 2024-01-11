@@ -6,7 +6,6 @@ import React, { FunctionComponent, useCallback, useEffect, useState } from 'reac
 import { StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { CardBody, OWBox } from '../../components/card';
 import { useStore } from '../../stores';
-import { spacing } from '../../themes';
 import { getTokenInfos, _keyExtract } from '../../utils/helper';
 import OWIcon from '@src/components/ow-icon/ow-icon';
 import { Text } from '@src/components/text';
@@ -16,6 +15,7 @@ import { navigate } from '@src/router/root';
 import { RightArrowIcon } from '@src/components/icon';
 import { ChainIdEnum, getBase58Address, TRC20_LIST } from '@owallet/common';
 import { API } from '@src/common/api';
+import { chainIcons } from '../universal-swap/helpers';
 
 export const TokensCardAll: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -68,7 +68,7 @@ export const TokensCardAll: FunctionComponent<{
     })();
   }, [accountTron.evmosHexAddress]);
 
-  const styles = styling();
+  const styles = styling(colors);
 
   const smartNavigation = useSmartNavigation();
 
@@ -87,8 +87,6 @@ export const TokensCardAll: FunctionComponent<{
           return t.coinGeckoId === item.coinGeckoId;
         });
 
-        console.log('itemTron', itemTron);
-
         smartNavigation.navigateSmart('SendTron', { item: itemTron });
         return;
       }
@@ -103,6 +101,7 @@ export const TokensCardAll: FunctionComponent<{
     item => {
       if (item) {
         const yesterday = yesterdayAssets.find(obj => obj['denom'] === item.denom);
+        const chainIcon = chainIcons.find(c => c.chainId === item.chainId);
 
         return (
           <TouchableOpacity
@@ -112,24 +111,18 @@ export const TokensCardAll: FunctionComponent<{
             style={styles.btnItem}
           >
             <View style={styles.leftBoxItem}>
-              <View
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 12,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  overflow: 'hidden',
-                  backgroundColor: colors['gray-10']
-                }}
-              >
-                <OWIcon type="images" source={{ uri: item.icon }} size={35} />
+              <View style={styles.iconWrap}>
+                <OWIcon type="images" source={{ uri: item.icon }} size={28} />
               </View>
+              <View style={styles.chainWrap}>
+                <OWIcon type="images" source={{ uri: chainIcon.Icon }} size={16} />
+              </View>
+
               <View style={styles.pl10}>
-                <Text size={16} color={colors['neutral-text-title']} weight="500">
-                  {item.asset}
+                <Text size={14} color={colors['neutral-text-title']} weight="600">
+                  {item.balance.toFixed(4)} {item.asset}
                 </Text>
-                <Text weight="500" color={colors['neutral-text-body']}>
+                <Text weight="400" color={colors['neutral-text-body']}>
                   {item.chain}
                 </Text>
               </View>
@@ -137,9 +130,11 @@ export const TokensCardAll: FunctionComponent<{
             <View style={styles.rightBoxItem}>
               <View style={{ flexDirection: 'row' }}>
                 <View style={{ alignItems: 'flex-end' }}>
-                  <Text color={colors['neutral-text-title']}>{item.balance}</Text>
-                  <Text weight="500" color={colors['neutral-text-body']}>
-                    ${item.value.toFixed(6)}({Number(item.value - yesterday?.value)}){/* ${item.value.toFixed(6)} */}
+                  <Text weight="500" color={colors['neutral-text-title']}>
+                    ${item.value.toFixed(6)}
+                  </Text>
+                  <Text style={styles.profit} color={colors[true ? 'error-text-body' : 'success-text-body']}>
+                    {true ? '-' : '+'}1% (${Number(Number(item.value - yesterday?.value)?.toFixed(2)) ?? 0})
                   </Text>
                 </View>
                 <View
@@ -172,18 +167,19 @@ export const TokensCardAll: FunctionComponent<{
             type="link"
             label={'Tokens'}
             textStyle={{
-              color: colors['primary-text'],
-              fontWeight: '700'
+              color: colors['primary-surface-default'],
+              fontWeight: '600',
+              fontSize: 16
             }}
             style={{
               width: '100%',
-              borderBottomColor: colors['primary-text'],
+              borderBottomColor: colors['primary-surface-default'],
               borderBottomWidth: 2
             }}
           />
         </View>
 
-        <CardBody>
+        <CardBody style={{ paddingHorizontal: 0, paddingTop: 16 }}>
           {tokenInfos.length > 0 ? (
             tokenInfos.map((token, index) => {
               if (more) {
@@ -209,12 +205,9 @@ export const TokensCardAll: FunctionComponent<{
   );
 });
 
-const styling = () =>
+const styling = colors =>
   StyleSheet.create({
-    wrapHeaderTitle: {
-      flexDirection: 'row',
-      marginHorizontal: spacing['page-pad']
-    },
+    wrapHeaderTitle: {},
     pl10: {
       paddingLeft: 10
     },
@@ -230,5 +223,29 @@ const styling = () =>
       justifyContent: 'space-between',
       alignItems: 'center',
       marginVertical: 10
+    },
+    profit: {
+      fontWeight: '400',
+      lineHeight: 20
+    },
+    iconWrap: {
+      width: 32,
+      height: 32,
+      borderRadius: 32,
+      alignItems: 'center',
+      justifyContent: 'center',
+      overflow: 'hidden',
+      backgroundColor: colors['neutral-text-action-on-dark-bg']
+    },
+    chainWrap: {
+      width: 18,
+      height: 18,
+      borderRadius: 32,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: colors['neutral-text-action-on-dark-bg'],
+      position: 'absolute',
+      bottom: -6,
+      left: 20
     }
   });
