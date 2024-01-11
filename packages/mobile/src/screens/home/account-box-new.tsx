@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { OWBox } from '../../components/card';
 import { View, StyleSheet, TouchableOpacity, Image } from 'react-native';
@@ -17,11 +17,19 @@ import { CopyAddressModal } from './components/copy-address/copy-address-modal';
 export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
   const { colors } = useTheme();
   const { universalSwapStore, accountStore, modalStore, chainStore, appInitStore } = useStore();
+  const [profit, setProfit] = useState(0);
+  const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
+
   const styles = styling(colors);
   let totalUsd: number;
   if (appInitStore.getInitApp.prices) {
     totalUsd = getTotalUsd(universalSwapStore.getAmount, appInitStore.getInitApp.prices);
   }
+  let yesterdayAssets = [];
+  if (accountOrai.bech32Address) {
+    yesterdayAssets = appInitStore.getPriceFeedByAddress(accountOrai.bech32Address, 'yesterday');
+  }
+
   const account = accountStore.getAccount(chainStore.current.chainId);
 
   let accounts = {};
@@ -51,6 +59,14 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
     modalStore.setOptions();
     modalStore.setChildren(<CopyAddressModal accounts={accounts} />);
   };
+
+  useEffect(() => {
+    let yesterdayBalance = 0;
+    yesterdayAssets.map(y => {
+      yesterdayBalance += y.value;
+    });
+    setProfit(Number(Number(totalUsd - yesterdayBalance).toFixed(6)));
+  }, [totalUsd]);
 
   return (
     <View>
@@ -85,8 +101,9 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
           <Text variant="bigText" style={styles.labelTotalAmount}>
             ${totalUsd?.toFixed(6) ?? 0}
           </Text>
-          <Text style={styles.profit} color={colors[true ? 'error-text-body' : 'success-text-body']}>
-            {true ? '-' : '+'}1% (${totalUsd?.toFixed(6) ?? 0}) Today
+          <Text style={styles.profit} color={colors[profit < 0 ? 'error-text-body' : 'success-text-body']}>
+            {profit < 0 ? '' : '+'}
+            {Number(profit / totalUsd).toFixed(2)}% (${profit ?? 0}) Today
           </Text>
         </View>
         <View style={styles.btnGroup}>
