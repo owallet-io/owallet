@@ -202,7 +202,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
   useEffect(() => {
     // just to make sure that our balance is up to date
     if (accountOrai.bech32Address) {
-      delayedFunction(20000);
+      delayedFunction(17000);
     }
   }, [accountOrai.bech32Address]);
 

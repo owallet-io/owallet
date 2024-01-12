@@ -211,8 +211,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     }
   });
 
-  // const isFocused = useIsFocused();
-
   const [isSelectFromTokenModal, setIsSelectFromTokenModal] = useState(false);
   const [isSelectToTokenModal, setIsSelectToTokenModal] = useState(false);
   const [isNetworkModal, setIsNetworkModal] = useState(false);
@@ -283,7 +281,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     if (accountOrai.bech32Address) {
       delayedFunction();
     }
-  }, []);
+  }, [accountOrai.bech32Address]);
 
   // This section is for PnL display
   const updatePriceFeed = async () => {
