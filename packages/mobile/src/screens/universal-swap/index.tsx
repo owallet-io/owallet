@@ -280,14 +280,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   }, []);
 
   useEffect(() => {
-    delayedFunction();
+    if (accountOrai.bech32Address) {
+      delayedFunction();
+    }
   }, []);
-
-  // useEffect(() => {
-  //   if (isFocused) {
-  //     handleFetchAmounts(accounts);
-  //   }
-  // }, [isFocused]);
 
   // This section is for PnL display
   const updatePriceFeed = async () => {
