@@ -100,7 +100,7 @@ export const TokensCardAll: FunctionComponent<{
   const renderTokenItem = useCallback(
     item => {
       if (item) {
-        const yesterday = yesterdayAssets.find(obj => obj['denom'] === item.denom);
+        const yesterday = yesterdayAssets?.find(obj => obj['denom'] === item.denom);
 
         const chainIcon = chainIcons.find(c => c.chainId === item.chainId);
         const profit = Number(Number(item.value - (yesterday?.value ?? 0))?.toFixed(2) ?? 0);

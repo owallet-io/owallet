@@ -216,16 +216,16 @@ export const HomeScreen: FunctionComponent = observer(props => {
 
   const updatePriceFeed = async () => {
     await delay(5000);
-    if (Object.keys(universalSwapStore.getAmount).length > 0) {
-      appInitStore.updatePriceFeed(
-        accountOrai.bech32Address,
-        getTokenInfos({ tokens: universalSwapStore.getAmount, prices })
-      );
-    }
+    appInitStore.updatePriceFeed(
+      accountOrai.bech32Address,
+      getTokenInfos({ tokens: universalSwapStore.getAmount, prices })
+    );
   };
 
   useEffect(() => {
-    updatePriceFeed();
+    if (Object.keys(universalSwapStore.getAmount).length > 0 && Object.keys(prices).length > 0) {
+      updatePriceFeed();
+    }
   }, [universalSwapStore.getAmount, accountOrai.bech32Address, prices]);
 
   const renderAccountCard = (() => {

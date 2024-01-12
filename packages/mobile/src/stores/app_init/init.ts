@@ -69,19 +69,19 @@ export class AppInit {
     const tmpPrices = { ...this.initApp.prices, ...prices };
     this.initApp = { ...this.initApp, prices: tmpPrices };
   }
-
   @action
   getPriceFeedByAddress(address, day: 'today' | 'yesterday' = 'today') {
     const priceFeed = this.initApp.priceFeed[address];
 
-    if (day === 'today') {
-      return priceFeed[Object.keys(priceFeed ?? {})[1]];
-    } else {
-      // yesterday
-      return priceFeed[Object.keys(priceFeed ?? {})[0]];
+    if (priceFeed) {
+      if (day === 'today') {
+        return priceFeed[Object.keys(priceFeed)[1]] ?? {};
+      } else {
+        // yesterday
+        return priceFeed[Object.keys(priceFeed)[0]] ?? {};
+      }
     }
   }
-
   @action
   updatePriceFeed(address, balances) {
     // TODO: save balances with address
@@ -92,11 +92,11 @@ export class AppInit {
         [Math.floor(Date.now() / 1000)]: balances,
         [Math.floor(Date.now() / 1000) + 1]: balances
       };
-      // console.log('not yet ?', tmpPrice);
+      console.log('not yet ?', tmpPrice);
     } else {
       const today = moment.unix(Math.floor(Date.now() / 1000));
       const yesterday = moment.unix(Number(Object.keys(tmpPrice)[0]));
-      // console.log('tmpPrice', tmpPrice);
+      console.log('tmpPrice', tmpPrice);
 
       if (today.isSame(yesterday, 'day')) {
         // Today is the same day as the day when the last balances were called
@@ -109,8 +109,8 @@ export class AppInit {
         delete tmpPrice[Object.keys(tmpPrice)[0]];
         // The second element now become first, which is yesterday data
         // Push new element into object, become today data
-        tmpPrice[Math.floor(Date.now() / 1000)] = balances;
-        // console.log('next day ?', tmpPrice);
+        tmpPrice[Math.floor(Date.now() / 1000) + Math.floor(Math.random() * 7)] = balances;
+        console.log('next day ?', tmpPrice);
       }
     }
     // Assign new balances into address
