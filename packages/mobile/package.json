@@ -25,7 +25,7 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "test": "jest --detectOpenHandles",
     "postinstall": "patch-package && cd ../../ && rimraf node_modules/crypto && rimraf node_modules/@types/metro-config && yarn patch-package",
-    "code-push-ios": "appcenter codepush release-react -a Oraichain/Owallet -t 1.2.6 --output-dir build",
+    "code-push-ios": "appcenter codepush release-react -a Oraichain/Owallet -t 1.2.7 --output-dir build",
     "code-push-android": "appcenter codepush release-react -a Oraichain/Owallet-1 -t 1.1.2 --output-dir build",
     "images": "node ./src/scripts/generate-images.js",
     "build:ios": "react-native bundle --entry-file='index.js' --bundle-output='./ios/mobile/main.jsbundle' --dev=false --platform='ios' --assets-dest='./ios'"

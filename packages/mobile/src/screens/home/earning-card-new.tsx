@@ -93,6 +93,7 @@ export const EarningCardNew: FunctionComponent<{
           }}
           label="Claim All"
           onPress={_onPressClaim}
+          loading={account.isSendingMsg === 'withdrawRewards'}
           disabled={
             !account.isReadyToSendMsgs ||
             stakingReward.toDec().equals(new Dec(0)) ||

@@ -73,7 +73,7 @@ export class AppInit {
   getPriceFeedByAddress(address, day: 'today' | 'yesterday' = 'today') {
     const priceFeed = this.initApp.priceFeed[address];
 
-    if (Object.keys(priceFeed).length > 0) {
+    if (priceFeed && Object.keys(priceFeed).length > 0) {
       if (day === 'today') {
         return priceFeed[Object.keys(priceFeed)[1]] ?? {};
       } else {
@@ -81,12 +81,13 @@ export class AppInit {
         return priceFeed[Object.keys(priceFeed)[0]] ?? {};
       }
     }
+    return {};
   }
   @action
   updatePriceFeed(address, balances) {
     // TODO: save balances with address
     let tmpPrice = { ...this.initApp.priceFeed[address] };
-    if (Object.keys(tmpPrice).length === 0) {
+    if (Object.keys(tmpPrice ?? {}).length === 0) {
       // Pricefeed is empty, we never call to get balances of this address before
       tmpPrice = {
         [Math.floor(Date.now() / 1000)]: balances,
