@@ -96,7 +96,7 @@ export class AppInit {
     } else {
       const today = moment.unix(Math.floor(Date.now() / 1000));
       const yesterday = moment.unix(Number(Object.keys(tmpPrice)[1]));
-      console.log('tmpPrice', tmpPrice);
+      console.log('tmpPrice', yesterday.format('DD/MM/YYYY'), today.format('DD/MM/YYYY'), tmpPrice);
 
       if (today.isSame(yesterday, 'day')) {
         // Today is the same day as the day when the last balances were called

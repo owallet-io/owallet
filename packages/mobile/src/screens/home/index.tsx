@@ -3,7 +3,6 @@ import { PageWithScrollViewInBottomTabView } from '../../components/page';
 import { AccountCard } from './account-card';
 import { AppState, AppStateStatus, RefreshControl, ScrollView, StyleSheet } from 'react-native';
 import { useStore } from '../../stores';
-import { EarningCard } from './earning-card';
 import { observer } from 'mobx-react-lite';
 import { TokensCard } from './tokens-card';
 import { usePrevious } from '../../hooks';
@@ -23,6 +22,7 @@ import { AccountBoxAll } from './account-box-new';
 import { oraichainNetwork } from '@oraichain/oraidex-common';
 import { useCoinGeckoPrices, useLoadTokens } from '@owallet/hooks';
 import { getTokenInfos, showToast } from '@src/utils/helper';
+import { EarningCardNew } from './earning-card-new';
 
 export const HomeScreen: FunctionComponent = observer(props => {
   const [refreshing, setRefreshing] = React.useState(false);
@@ -262,8 +262,10 @@ export const HomeScreen: FunctionComponent = observer(props => {
       <DashboardCard />
 
       {renderTokenCard()}
-      {chainStore.current.networkType === 'cosmos' ? <UndelegationsCard /> : null}
-      {chainStore.current.networkType === 'cosmos' ? <EarningCard containerStyle={styles.containerEarnStyle} /> : null}
+      {/* {chainStore.current.networkType === 'cosmos' ? <UndelegationsCard /> : null} */}
+      {chainStore.current.networkType === 'cosmos' ? (
+        <EarningCardNew containerStyle={styles.containerEarnStyle} />
+      ) : null}
     </PageWithScrollViewInBottomTabView>
   );
 });
