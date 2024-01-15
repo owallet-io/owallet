@@ -108,7 +108,7 @@ export class AppInit {
         // Remove the first element of object, which is the outdated data
         delete tmpPrice[Object.keys(tmpPrice)[0]];
         // The second element now become first, which is yesterday data
-        // Push new element into object, become today data
+        // Push new element into object, become today's data
         tmpPrice[Math.floor(Date.now() / 1000) + Math.floor(Math.random() * 7)] = balances;
         console.log('next day ?', tmpPrice);
       }
