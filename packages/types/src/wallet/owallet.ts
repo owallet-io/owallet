@@ -8,8 +8,10 @@ export type AddressesLedger = {
   cosmos?: string;
   eth?: string;
   trx?: string;
-  btc?: string;
-  tbtc?: string;
+  btc44?: string;
+  btc84?: string;
+  tbtc44?: string;
+  tbtc84?: string;
 };
 export interface Key {
   // Name of the selected key store.
@@ -201,6 +203,7 @@ export interface Bitcoin {
    * If the connected Ethereum is on the mobile app with the embeded web browser, the mode should be "mobile-web".
    */
   readonly mode: BitcoinMode;
-  initChainId: string;
+
   signAndBroadcast(chainId: string, data: object): Promise<{ rawTxHex: string }>;
+  getKey(chainId: string): Promise<Key>;
 }

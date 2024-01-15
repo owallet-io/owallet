@@ -51,7 +51,6 @@ export const NetworkModal = () => {
       item?.chainId
     );
   };
-
   const groupedData = todayAssets?.reduce((result, element) => {
     const key = element.chainId;
 
@@ -273,7 +272,7 @@ export const NetworkModal = () => {
   );
 };
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     containerBtn: {
       backgroundColor: colors['background-item-list'],

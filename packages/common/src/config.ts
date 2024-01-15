@@ -371,6 +371,63 @@ export const EmbedChainInfos: AppChainInfo[] = [
     features: ['stargate', 'ibc-transfer', 'cosmwasm']
   },
   {
+    chainId: 'oraibtc-subnet-1',
+    chainName: 'OraiBtc Bridge',
+    rpc: 'https://oraibtc.rpc.orai.io',
+    rest: 'https://oraibtc.lcd.orai.io',
+    networkType: 'cosmos',
+    stakeCurrency: {
+      coinDenom: 'ORAIBTC',
+      coinMinimalDenom: 'uoraibtc',
+      coinDecimals: 6,
+      gasPriceStep: {
+        low: 0,
+        average: 0,
+        high: 0
+      },
+      coinImageUrl: 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png'
+    },
+    bip44: {
+      coinType: 118
+    },
+    coinType: 118,
+    bech32Config: Bech32Address.defaultBech32Config('oraibtc'),
+    // List of all coin/tokens used in this chain.
+    get currencies() {
+      return [
+        this.stakeCurrency,
+        {
+          coinDenom: 'oBTC',
+          coinMinimalDenom: 'usat',
+          coinDecimals: 14,
+          gasPriceStep: {
+            low: 0,
+            average: 0,
+            high: 0
+          },
+          coinImageUrl: 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png'
+        }
+      ];
+    },
+    get feeCurrencies() {
+      return [
+        this.stakeCurrency,
+        {
+          coinDenom: 'oBTC',
+          coinMinimalDenom: 'usat',
+          coinDecimals: 14,
+          gasPriceStep: {
+            low: 0,
+            average: 0,
+            high: 0
+          },
+          coinImageUrl: 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png'
+        }
+      ];
+    },
+    features: ['stargate', 'ibc-transfer', 'cosmwasm']
+  },
+  {
     rpc: 'https://tendermint1.kawaii.global',
     evmRpc: 'https://endpoint1.kawaii.global',
     rest: 'https://cosmos1.kawaii.global',
@@ -801,53 +858,53 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
     features: ['isBtc'],
     txExplorer: {
-      name: 'Blockcypher',
+      name: 'BlockStream',
       txUrl: 'https://blockstream.info/testnet/tx/{txHash}',
       accountUrl: 'https://blockstream.info/testnet/address/{address}'
     }
   },
-  // {
-  //   rest: 'https://blockstream.info/api',
-  //   chainId: 'bitcoin',
-  //   chainName: 'Bitcoin',
-  //   bip44: {
-  //     coinType: 0
-  //   },
-  //   coinType: 0,
-  //   stakeCurrency: {
-  //     coinDenom: 'BTC',
-  //     coinMinimalDenom: 'btc',
-  //     coinDecimals: 8,
-  //     coinGeckoId: 'bitcoin',
-  //     coinImageUrl: 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png',
-  //     gasPriceStep: {
-  //       low: 144,
-  //       average: 18,
-  //       high: 1
-  //     }
-  //   },
-  //   bech32Config: Bech32Address.defaultBech32Config('bc'),
-  //   networkType: 'bitcoin',
-  //   currencies: [
-  //     {
-  //       coinDenom: 'BTC',
-  //       coinMinimalDenom: 'btc',
-  //       coinDecimals: 8,
-  //       coinGeckoId: 'bitcoin',
-  //       coinImageUrl: 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png'
-  //     }
-  //   ],
-  //   get feeCurrencies() {
-  //     return this.currencies;
-  //   },
+  {
+    rest: 'https://blockstream.info/api',
+    chainId: 'bitcoin',
+    chainName: 'Bitcoin',
+    bip44: {
+      coinType: 0
+    },
+    coinType: 0,
+    stakeCurrency: {
+      coinDenom: 'BTC',
+      coinMinimalDenom: 'btc',
+      coinDecimals: 8,
+      coinGeckoId: 'bitcoin',
+      coinImageUrl: 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png',
+      gasPriceStep: {
+        low: 144,
+        average: 18,
+        high: 1
+      }
+    },
+    bech32Config: Bech32Address.defaultBech32Config('bc'),
+    networkType: 'bitcoin',
+    currencies: [
+      {
+        coinDenom: 'BTC',
+        coinMinimalDenom: 'btc',
+        coinDecimals: 8,
+        coinGeckoId: 'bitcoin',
+        coinImageUrl: 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png'
+      }
+    ],
+    get feeCurrencies() {
+      return this.currencies;
+    },
 
-  //   features: ['isBtc'],
-  //   txExplorer: {
-  //     name: 'Bitcoin',
-  //     txUrl: 'https://blockstream.info/tx/{txHash}',
-  //     accountUrl: 'https://blockstream.info/address/{address}'
-  //   }
-  // },
+    features: ['isBtc'],
+    txExplorer: {
+      name: 'BlockStream',
+      txUrl: 'https://blockstream.info/tx/{txHash}',
+      accountUrl: 'https://blockstream.info/address/{address}'
+    }
+  },
 
   {
     rest: 'https://data-seed-prebsc-1-s1.binance.org:8545/',

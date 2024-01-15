@@ -14,6 +14,7 @@ import {
   ChainInfoWithoutEndpoints,
   TronWebMode,
   Bitcoin,
+  Bitcoin as IBitcoin,
   BitcoinMode
 } from '@owallet/types';
 import { Result, JSONUint8Array } from '@owallet/router';
@@ -691,17 +692,8 @@ export class InjectedEthereum implements Ethereum {
   // }
 }
 export class InjectedBitcoin implements Bitcoin {
-  // we use this chain id for chain id switching from user
-  // get chainId() {
-  //   return localStore.get('ethereum.chainId');
-  // }
-
-  // set chainId(chainId: string) {
-  //   localStore.set('ethereum.chainId', chainId);
-  // }
-
   static startProxy(
-    bitcoin: Bitcoin,
+    bitcoin: IBitcoin,
     eventListener: {
       addMessageListener: (fn: (e: any) => void) => void;
       postMessage: (message: any) => void;
@@ -715,8 +707,10 @@ export class InjectedBitcoin implements Bitcoin {
     eventListener.addMessageListener(async (e: MessageEvent) => {
       const message: ProxyRequest = parseMessage ? parseMessage(e.data) : e.data;
 
+      // TO DO: Check type proxy for duplicate popup sign with keplr wallet on extension
+       
       // filter proxy-request by namespace
-      if (!message || message.type !== NAMESPACE_BITCOIN + 'proxy-request' || message.namespace !== NAMESPACE_BITCOIN) {
+      if (!message || message.type !== 'proxy-request' || message.namespace !== NAMESPACE_BITCOIN) {
         return;
       }
 
@@ -733,9 +727,29 @@ export class InjectedBitcoin implements Bitcoin {
           throw new Error('Mode is not function');
         }
 
-        if (message.method === 'chainId') {
-          throw new Error('chain id is not function');
+        if (
+          !bitcoin[message.method as keyof Bitcoin] ||
+          typeof bitcoin[message.method as keyof Bitcoin] !== 'function'
+        ) {
+          throw new Error(`Invalid method: ${message.method}`);
         }
+
+        const result = await bitcoin[message.method as any](
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          ...JSONUint8Array.unwrap(message.args)
+        );
+
+        const proxyResponse: ProxyRequestResponse = {
+          type: 'proxy-request-response',
+          namespace: NAMESPACE_BITCOIN,
+          id: message.id,
+          result: {
+            return: JSONUint8Array.wrap(result)
+          }
+        };
+
+        eventListener.postMessage(proxyResponse);
       } catch (e) {
         const proxyResponse: ProxyRequestResponse = {
           type: 'proxy-request-response',
@@ -751,7 +765,7 @@ export class InjectedBitcoin implements Bitcoin {
     });
   }
 
-  protected requestMethod(method: keyof IEthereum | string, args: any[]): Promise<any> {
+  protected requestMethod(method: keyof IBitcoin, args: any[]): Promise<any> {
     const bytes = new Uint8Array(8);
     const id: string = Array.from(crypto.getRandomValues(bytes))
       .map((value) => {
@@ -759,8 +773,9 @@ export class InjectedBitcoin implements Bitcoin {
       })
       .join('');
 
+    
     const proxyMessage: ProxyRequest = {
-      type: (NAMESPACE_BITCOIN + 'proxy-request') as any,
+      type: 'proxy-request',
       namespace: NAMESPACE_BITCOIN,
       id,
       method,
@@ -800,7 +815,6 @@ export class InjectedBitcoin implements Bitcoin {
     });
   }
 
-  public initChainId: string;
   public isOwallet: boolean = true;
 
   constructor(
@@ -818,6 +832,9 @@ export class InjectedBitcoin implements Bitcoin {
     protected readonly parseMessage?: (message: any) => any
   ) {}
 
+  async getKey(chainId: string): Promise<Key> {
+    return await this.requestMethod('getKey', [chainId]);
+  }
   async enable() {
     // return await this.requestMethod('eth_requestAccounts', [[]]);
     return;
@@ -831,7 +848,7 @@ export class InjectedBitcoin implements Bitcoin {
   }
 
   async signAndBroadcast(chainId: string, data: object): Promise<{ rawTxHex: string }> {
-    return { rawTxHex: '' };
+    return await this.requestMethod('signAndBroadcast', [chainId, data]);
   }
 }
 

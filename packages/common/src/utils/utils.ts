@@ -76,7 +76,7 @@ export const bufferToHex = buffer => {
 export function getLedgerAppNameByNetwork(network: string, chainId?: string | number): LedgerAppType {
   switch (network) {
     case 'cosmos':
-      if ((chainId as string).startsWith('injective')) {
+      if ((chainId as string)?.startsWith('injective')) {
         return 'eth';
       }
       return 'cosmos';

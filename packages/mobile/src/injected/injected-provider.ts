@@ -49,10 +49,7 @@ export class RNInjectedBitcoin extends InjectedBitcoin {
     if (message && typeof message === 'string') {
       try {
         return JSON.parse(message);
-      } catch (err) {
-        console.log('err: ', err);
-        // alert(`parseWebviewMessage err`);
-        // alert(err.message);
+      } catch {
         // noop
       }
     }
@@ -65,9 +62,7 @@ export class RNInjectedBitcoin extends InjectedBitcoin {
       version,
       mode,
       {
-        addMessageListener: (fn: (e: any) => void) => {
-          window.addEventListener('message', fn);
-        },
+        addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
         removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
         postMessage: (message) => {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment

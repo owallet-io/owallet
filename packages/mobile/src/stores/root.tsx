@@ -154,7 +154,7 @@ export class RootStore {
             return new Ethereum(version, 'core', '0x38', new RNMessageRequesterInternal());
           },
           getBitcoin: async () => {
-            return new Bitcoin(version, 'core', 'bitcoin', new RNMessageRequesterInternal());
+            return new Bitcoin(version, 'core', new RNMessageRequesterInternal());
           },
           getTronWeb: async () => {
             return new TronWeb(version, 'core', '0x2b6653dc', new RNMessageRequesterInternal());
