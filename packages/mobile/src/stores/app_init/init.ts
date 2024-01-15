@@ -86,8 +86,11 @@ export class AppInit {
   @action
   updatePriceFeed(address, balances) {
     // TODO: save balances with address
-    let tmpPrice = { ...this.initApp.priceFeed[address] };
-    if (Object.keys(tmpPrice ?? {}).length === 0) {
+    let tmpPrice = {};
+    if (this.initApp.priceFeed[address]) {
+      tmpPrice = { ...this.initApp.priceFeed[address] };
+    }
+    if (Object.keys(tmpPrice).length === 0) {
       // Pricefeed is empty, we never call to get balances of this address before
       tmpPrice = {
         [Math.floor(Date.now() / 1000)]: balances,
