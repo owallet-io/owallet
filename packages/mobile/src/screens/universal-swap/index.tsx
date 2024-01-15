@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
+import React, { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
 import { Text } from '@src/components/text';
 import { useTheme } from '@src/themes/theme-provider';
@@ -10,8 +10,16 @@ import { OWButton } from '@src/components/button';
 import OWButtonIcon from '@src/components/button/ow-button-icon';
 import { BalanceText } from './components/BalanceText';
 import { SelectNetworkModal, SelectTokenModal, SlippageModal } from './modals/';
-import { showToast } from '@src/utils/helper';
-import { DEFAULT_SLIPPAGE, GAS_ESTIMATION_SWAP_DEFAULT, ORAI, toDisplay, getBase58Address } from '@owallet/common';
+import { getTokenInfos, showToast } from '@src/utils/helper';
+import {
+  DEFAULT_SLIPPAGE,
+  GAS_ESTIMATION_SWAP_DEFAULT,
+  ORAI,
+  toDisplay,
+  getBase58Address,
+  getAddress,
+  delay
+} from '@owallet/common';
 import {
   TokenItemType,
   NetworkChainId,
@@ -42,15 +50,19 @@ import { BalanceType, MAX, balances } from './types';
 import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import { useLoadTokens, useCoinGeckoPrices, useClient, useRelayerFee, useTaxRate } from '@owallet/hooks';
 import { getTransactionUrl, handleErrorSwap } from './helpers';
-import { useIsFocused } from '@react-navigation/native';
 import { useQuery } from '@tanstack/react-query';
+import { firebase } from '@react-native-firebase/analytics';
 
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
 
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
-  const { accountStore, universalSwapStore, chainStore } = useStore();
+  const { accountStore, universalSwapStore, chainStore, appInitStore } = useStore();
   const { colors } = useTheme();
   const { data: prices } = useCoinGeckoPrices();
+
+  useEffect(() => {
+    appInitStore.updatePrices(prices);
+  }, [prices]);
 
   const chainInfo = chainStore.getChain(ChainIdEnum.Oraichain);
 
@@ -199,13 +211,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     }
   });
 
-  const isFocused = useIsFocused();
-
-  useEffect(() => {
-    if (isFocused) {
-      handleFetchAmounts();
-    }
-  }, [isFocused]);
+  // const isFocused = useIsFocused();
 
   const [isSelectFromTokenModal, setIsSelectFromTokenModal] = useState(false);
   const [isSelectToTokenModal, setIsSelectToTokenModal] = useState(false);
@@ -214,47 +220,84 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const loadTokenAmounts = useLoadTokens(universalSwapStore);
   // handle fetch all tokens of all chains
-  const handleFetchAmounts = async () => {
+  const handleFetchAmounts = async accounts => {
     let loadTokenParams = {};
     try {
-      const cwStargate = {
-        account: accountOrai,
-        chainId: ChainIdEnum.Oraichain,
-        rpc: oraichainNetwork.rpc
-      };
-
-      loadTokenParams = {
-        ...loadTokenParams,
-        oraiAddress: accountOrai.bech32Address,
-        cwStargate
-      };
-      loadTokenParams = {
-        ...loadTokenParams,
-        metamaskAddress: accounts[ChainIdEnum.Ethereum]
-      };
-      loadTokenParams = {
-        ...loadTokenParams,
-        kwtAddress: accountOrai.bech32Address
-      };
-      if (accounts[ChainIdEnum.TRON]) {
+      if (
+        accounts?.[ChainIdEnum.TRON] &&
+        accounts?.[ChainIdEnum.Ethereum] &&
+        accountOrai.bech32Address &&
+        accounts?.[ChainIdEnum.Oraichain] &&
+        accounts?.[ChainIdEnum.Injective]
+      ) {
+        const cwStargate = {
+          account: accountOrai,
+          chainId: ChainIdEnum.Oraichain,
+          rpc: oraichainNetwork.rpc
+        };
+        loadTokenParams = {
+          ...loadTokenParams,
+          oraiAddress: accounts[ChainIdEnum.Oraichain],
+          cwStargate
+        };
+        loadTokenParams = {
+          ...loadTokenParams,
+          metamaskAddress: accounts[ChainIdEnum.Ethereum]
+        };
+        loadTokenParams = {
+          ...loadTokenParams,
+          kwtAddress: getAddress(accounts[ChainIdEnum.Injective], 'oraie')
+        };
         loadTokenParams = {
           ...loadTokenParams,
           tronAddress: accounts[ChainIdEnum.TRON]
         };
+        loadTokenAmounts(loadTokenParams);
       }
-
-      loadTokenAmounts(loadTokenParams);
     } catch (error) {
       console.log('error loadTokenAmounts', error);
-      handleErrorSwap(error?.message ?? error?.ex?.message);
+      showToast({
+        message: error?.message ?? error?.ex?.message,
+        type: 'danger'
+      });
     }
   };
 
-  useEffect(() => {
-    setTimeout(() => {
-      handleFetchAmounts();
-    }, 2000);
+  const delayedFunction = useCallback(async () => {
+    await delay(1900);
+    Object.keys(ChainIdEnum).map(key => {
+      let defaultAddress = accountStore.getAccount(ChainIdEnum[key]).bech32Address;
+      if (ChainIdEnum[key] === ChainIdEnum.TRON) {
+        accounts[ChainIdEnum[key]] = getBase58Address(accountStore.getAccount(ChainIdEnum[key]).evmosHexAddress);
+      } else if (defaultAddress.startsWith('evmos')) {
+        accounts[ChainIdEnum[key]] = accountStore.getAccount(ChainIdEnum[key]).evmosHexAddress;
+      } else {
+        accounts[ChainIdEnum[key]] = defaultAddress;
+      }
+    });
+
+    handleFetchAmounts(accounts);
   }, []);
+
+  useEffect(() => {
+    delayedFunction();
+  }, []);
+
+  // useEffect(() => {
+  //   if (isFocused) {
+  //     handleFetchAmounts(accounts);
+  //   }
+  // }, [isFocused]);
+
+  // This section is for PnL display
+  // useEffect(() => {
+  //   if (Object.keys(universalSwapStore.getAmount).length > 0) {
+  //     appInitStore.updatePriceFeed(
+  //       accountOrai.bech32Address,
+  //       getTokenInfos({ tokens: universalSwapStore.getAmount, prices })
+  //     );
+  //   }
+  // }, [universalSwapStore.getAmount, accountOrai.bech32Address, prices]);
 
   const subAmountFrom = toSubAmount(universalSwapStore.getAmount, originalFromToken);
   const subAmountTo = toSubAmount(universalSwapStore.getAmount, originalToToken);
@@ -343,6 +386,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const estimateAverageRatio = async () => {
     const data = await getSimulateSwap(INIT_AMOUNT);
+
     setRatio(data);
   };
 
@@ -406,6 +450,19 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     }
 
     setSwapLoading(true);
+
+    const logEvent = {
+      address: accountOrai.bech32Address,
+      fromToken: `${originalFromToken.name} - ${originalFromToken.chainId}`,
+      fromAmount: `${fromAmountToken}`,
+      toToken: `${originalToToken.name} - ${originalToToken.chainId}`,
+      toAmount: `${toAmountToken}`
+    };
+
+    firebase.analytics().logEvent('swap_mobile', {
+      logEvent
+    });
+
     try {
       const cosmosWallet = new SwapCosmosWallet(client);
       const cosmosAddress = originalFromToken.cosmosBased
@@ -430,7 +487,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         originalFromToken: originalFromToken,
         originalToToken: originalToToken,
         simulateAmount: toAmountTokenString,
-        simulatePrice: ratio.amount,
+        // @ts-ignore
+        simulatePrice: ratio?.amount && Math.trunc(new BigDecimal(ratio.amount) / INIT_AMOUNT).toString(),
         userSlippage: userSlippage,
         fromAmount: fromAmountToken,
         relayerFee
@@ -461,7 +519,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             }
           }
         });
-        await handleFetchAmounts();
+        await handleFetchAmounts(accounts);
       }
     } catch (error) {
       setSwapLoading(false);
@@ -475,7 +533,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const onRefresh = async () => {
     setLoadingRefresh(true);
-    await handleFetchAmounts();
+    await handleFetchAmounts(accounts);
     setLoadingRefresh(false);
   };
 
@@ -664,12 +722,12 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             <BalanceText>Minimum Received</BalanceText>
             <BalanceText>{(minimumReceive || '0') + ' ' + toToken.name}</BalanceText>
           </View>
-          {(!fromTokenFee && !toTokenFee) || (fromTokenFee === 0 && toTokenFee === 0) ? (
+          {(!fromTokenFee && !toTokenFee) || (fromTokenFee === 0 && toTokenFee === 0) ? null : (
             <View style={styles.itemBottom}>
-              <BalanceText>Tax rate</BalanceText>
+              <BalanceText>Token fee</BalanceText>
               <BalanceText>{Number(taxRate) * 100}%</BalanceText>
             </View>
-          ) : null}
+          )}
           {!!relayerFeeToken && (
             <View style={styles.itemBottom}>
               <BalanceText>Relayer Fee</BalanceText>

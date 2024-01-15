@@ -1,11 +1,11 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { metrics, spacing, typography } from '../../../themes';
-import { _keyExtract, showToast } from '../../../utils/helper';
+import { _keyExtract, showToast, getTokenInfos } from '../../../utils/helper';
 import FastImage from 'react-native-fast-image';
 import { VectorCharacter } from '../../../components/vector-character';
 import { Text } from '@src/components/text';
-import { TRON_ID, COINTYPE_NETWORK, getKeyDerivationFromAddressType } from '@owallet/common';
+import { TRON_ID, COINTYPE_NETWORK, getKeyDerivationFromAddressType, ChainIdEnum } from '@owallet/common';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { useBIP44Option } from '@src/screens/register/bip44';
@@ -14,15 +14,23 @@ import { useTheme } from '@src/themes/theme-provider';
 import { navigate } from '@src/router/root';
 import { SCREENS } from '@src/common/constants';
 import { Popup } from 'react-native-popup-confirm-toast';
+import { getTotalUsd } from '@oraichain/oraidex-common';
 
 export const NetworkModal = () => {
   const { colors } = useTheme();
 
   const bip44Option = useBIP44Option();
-  const { modalStore, chainStore, keyRingStore, accountStore } = useStore();
+  const { modalStore, chainStore, keyRingStore, accountStore, appInitStore, universalSwapStore } = useStore();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const styles = styling(colors);
+  let totalUsd: number = 0;
+  let todayAssets;
+  if (Object.keys(appInitStore.getInitApp.prices).length > 0 && Object.keys(universalSwapStore.getAmount).length > 0) {
+    totalUsd = getTotalUsd(universalSwapStore.getAmount, appInitStore.getInitApp.prices);
+    todayAssets = getTokenInfos({ tokens: universalSwapStore.getAmount, prices: appInitStore.getInitApp.prices });
+  }
+
   const onConfirm = async (item: any) => {
     const { networkType } = chainStore.getChain(item?.chainId);
     const keyDerivation = (() => {
@@ -43,7 +51,21 @@ export const NetworkModal = () => {
       item?.chainId
     );
   };
-  const handleSwitchNetwork = async (item) => {
+  const groupedData = todayAssets?.reduce((result, element) => {
+    const key = element.chainId;
+
+    if (!result[key]) {
+      result[key] = {
+        sum: 0
+      };
+    }
+
+    result[key].sum += element.value;
+
+    return result;
+  }, {});
+
+  const handleSwitchNetwork = async item => {
     try {
       if (account.isNanoLedger) {
         modalStore.close();
@@ -72,9 +94,9 @@ export const NetworkModal = () => {
         if (!item.isAll) {
           chainStore.selectChain(item?.chainId);
           await chainStore.saveLastViewChainId();
-          chainStore.selectAllNetworks(false);
+          appInitStore.selectAllNetworks(false);
         } else {
-          chainStore.selectAllNetworks(true);
+          appInitStore.selectAllNetworks(true);
         }
 
         modalStore.close();
@@ -89,10 +111,10 @@ export const NetworkModal = () => {
 
   const _renderItem = ({ item }) => {
     let isSelectedColor =
-      item?.chainId === chainStore.current.chainId && !chainStore.isAll
+      item?.chainId === chainStore.current.chainId && !appInitStore.getInitApp.isAllNetworks
         ? colors['primary-surface-default']
         : colors['bg-circle-select-modal'];
-    if (item.isAll && chainStore.isAll) {
+    if (item.isAll && appInitStore.getInitApp.isAllNetworks) {
       isSelectedColor = colors['primary-surface-default'];
     }
     return (
@@ -154,6 +176,14 @@ export const NetworkModal = () => {
             >
               {item.chainName}
             </Text>
+            {/* <Text
+              style={{
+                color: colors['neutral-text-body']
+              }}
+              numberOfLines={1}
+            >
+              ${!item.chainId ? totalUsd?.toFixed(6) : Number(groupedData?.[item.chainId]?.sum ?? 0).toFixed(6)}
+            </Text> */}
           </View>
         </View>
 

@@ -1,13 +1,11 @@
 import React, { FunctionComponent } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
-import { ShootingStarIcon } from '../../components/icon/shooting-star';
 import { colors, metrics, spacing } from '../../themes';
 import OWText from '@src/components/text/ow-text';
-import { ProgressBar } from '@src/components/progress-bar';
 
 const styles = StyleSheet.create({
   img: {
-    width: '100%'
+    width: '80%'
   },
   logo: {
     width: 22,
@@ -18,8 +16,7 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: spacing['16'],
     paddingTop: 60,
-    justifyContent: 'space-between',
-    height: metrics.screenHeight
+    maxHeight: metrics.screenHeight
   },
   boardingTitleContainer: {
     flexDirection: 'row',
@@ -37,7 +34,10 @@ const styles = StyleSheet.create({
     zIndex: -1
   },
   content: {
-    alignItems: 'center'
+    alignItems: 'center',
+    position: 'absolute',
+    bottom: metrics.screenHeight > 800 ? 0.1 * -metrics.screenHeight : 0,
+    alignSelf: 'center'
   },
   label: {
     fontSize: 28
@@ -97,7 +97,6 @@ const WelcomeIntroScreen: FunctionComponent = () => {
           </OWText>
         </View>
       </View>
-      <View />
     </View>
   );
 };

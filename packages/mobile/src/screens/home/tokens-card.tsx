@@ -3,23 +3,20 @@ import { OWEmpty } from '@src/components/empty';
 import { Text } from '@src/components/text';
 import { useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
-import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
-import { SectionList, StyleSheet, View, ViewStyle } from 'react-native';
-import { FlatList, TouchableOpacity } from 'react-native';
-import { API } from '../../common/api';
+import React, { FunctionComponent, useState } from 'react';
+import { StyleSheet, View, ViewStyle } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import { CardBody, OWBox } from '../../components/card';
 import ProgressiveImage from '../../components/progessive-image';
 import { useSmartNavigation } from '../../navigation.provider';
 import { useStore } from '../../stores';
 import { metrics, spacing, typography } from '../../themes';
-import { capitalizedText, convertAmount, _keyExtract, delay } from '../../utils/helper';
+import { capitalizedText, _keyExtract } from '../../utils/helper';
 import { TokenItem } from '../tokens/components/token-item';
 import { SoulboundNftInfoResponse } from './types';
 import { useSoulbound } from '../nfts/hooks/useSoulboundNft';
-import images from '@src/assets/images';
 import OWFlatList from '@src/components/page/ow-flat-list';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import { log } from 'console';
 
 export const TokensCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -45,7 +42,7 @@ export const TokensCard: FunctionComponent<{
   // TODO: Add sorting rule
   const tokens = queryBalances.positiveBalances.slice(0, 3);
 
-  const onActiveType = (i) => {
+  const onActiveType = i => {
     setIndex(i);
   };
 
@@ -209,7 +206,7 @@ export const SkeletonNft = () => {
     </SkeletonPlaceholder>
   );
 };
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     titleNft: {
       paddingTop: 12

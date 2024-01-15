@@ -35,7 +35,7 @@ import { SendStore } from './send';
 import { ChainInfoInner } from '@owallet/stores';
 import { ChainInfo } from '@owallet/types';
 import { TxsStore } from './txs';
-import { UniversalSwapStore } from './universal_swap';
+import { universalSwapStore, UniversalSwapStore } from './universal_swap';
 
 export class RootStore {
   public readonly uiConfigStore: UIConfigStore;
@@ -160,7 +160,7 @@ export class RootStore {
             return new TronWeb(version, 'core', '0x2b6653dc', new RNMessageRequesterInternal());
           }
         },
-        chainOpts: this.chainStore.chainInfos.map((chainInfo) => {
+        chainOpts: this.chainStore.chainInfos.map(chainInfo => {
           if (chainInfo.chainId.startsWith('osmosis')) {
             return {
               chainId: chainInfo.chainId,
@@ -250,7 +250,7 @@ export class RootStore {
     this.browserStore = browserStore;
     this.modalStore = new ModalStore();
     this.appInitStore = appInit;
-    this.universalSwapStore = new UniversalSwapStore();
+    this.universalSwapStore = universalSwapStore;
     this.notificationStore = notification;
     this.sendStore = new SendStore();
     this.txsStore = (currentChain: ChainInfoInner<ChainInfo>): TxsStore => new TxsStore(currentChain);

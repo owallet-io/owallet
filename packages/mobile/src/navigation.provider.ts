@@ -211,6 +211,7 @@ const { SmartNavigatorProvider, useSmartNavigation } = createSmartNavigatorProvi
       chainId?: string;
       currency?: string;
       recipient?: string;
+      contractAddress?: string;
     };
     'Validator.Details': {
       validatorAddress: string;

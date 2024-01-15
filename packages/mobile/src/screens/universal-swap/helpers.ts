@@ -195,6 +195,11 @@ export const tokenImg: TokenIcon[] = [
     IconLight: EthIcon
   },
   {
+    coinGeckoId: 'weth',
+    Icon: EthIcon,
+    IconLight: EthIcon
+  },
+  {
     coinGeckoId: 'tron',
     Icon: TronIcon,
     IconLight: TronIcon

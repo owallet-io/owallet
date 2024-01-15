@@ -32,7 +32,7 @@ export const MainTabNavigation: FC = observer(() => {
             if (route?.name === SCREENS.TABS.SendNavigation) {
               return (
                 <View style={styles.paddingIcon}>
-                  <OWIcon type="images" source={imagesGlobal.swap} size={54} />
+                  <OWIcon type="images" source={imagesGlobal.swap} size={50} />
                 </View>
               );
             }
