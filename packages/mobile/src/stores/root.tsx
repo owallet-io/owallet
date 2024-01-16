@@ -167,6 +167,11 @@ export class RootStore {
               msgOpts: {
                 withdrawRewards: {
                   gas: 200000
+                },
+                send: {
+                  native: {
+                    gas: 400000
+                  }
                 }
               }
             };
