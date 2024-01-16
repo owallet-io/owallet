@@ -104,11 +104,14 @@ export const TokensCardAll: FunctionComponent<{
   const renderTokenItem = useCallback(
     item => {
       if (item) {
-        const yesterday = yesterdayAssets?.find(obj => obj['denom'] === item.denom);
-
+        let profit = 0;
+        let percent = '0';
+        if (yesterdayAssets && yesterdayAssets.length > 0) {
+          const yesterday = yesterdayAssets?.find(obj => obj['denom'] === item.denom);
+          profit = Number(Number(item.value - (yesterday?.value ?? 0))?.toFixed(2) ?? 0);
+          percent = Number((profit / item.value) * 100 ?? 0).toFixed(2);
+        }
         const chainIcon = chainIcons.find(c => c.chainId === item.chainId);
-        const profit = Number(Number(item.value - (yesterday?.value ?? 0))?.toFixed(2) ?? 0);
-        const percent = Number((profit / item.value) * 100 ?? 0).toFixed(2);
 
         return (
           <TouchableOpacity
@@ -122,7 +125,7 @@ export const TokensCardAll: FunctionComponent<{
                 <OWIcon type="images" source={{ uri: item.icon }} size={28} />
               </View>
               <View style={styles.chainWrap}>
-                <OWIcon type="images" source={{ uri: chainIcon.Icon }} size={16} />
+                <OWIcon type="images" source={{ uri: chainIcon?.Icon }} size={16} />
               </View>
 
               <View style={styles.pl10}>

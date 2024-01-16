@@ -82,7 +82,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
     const chainIcon = chainIcons.find(c => c.chainId === chainStore.current.chainId);
     let chainBalance = 0;
 
-    chainAssets.map(a => {
+    chainAssets?.map(a => {
       chainBalance += a.value;
     });
 
@@ -95,39 +95,41 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
           {profit < 0 ? '' : '+'}
           {profit && totalUsd ? Number((profit / totalUsd) * 100 ?? 0).toFixed(2) : 0}% (${profit ?? 0}) Today
         </Text>
-        <View
-          style={{
-            borderTopWidth: 1,
-            borderColor: colors['neutral-border-default'],
-            marginVertical: 8,
-            paddingVertical: 8,
-            flexDirection: 'row',
-            justifyContent: 'space-between'
-          }}
-        >
+        {appInitStore.getInitApp.isAllNetworks ? null : (
           <View
             style={{
+              borderTopWidth: 1,
+              borderColor: colors['neutral-border-default'],
+              marginVertical: 8,
+              paddingVertical: 8,
               flexDirection: 'row',
-              alignItems: 'center'
+              justifyContent: 'space-between'
             }}
           >
-            <OWIcon type="images" source={{ uri: chainIcon.Icon }} size={16} />
-            <Text
+            <View
               style={{
-                paddingLeft: 6
+                flexDirection: 'row',
+                alignItems: 'center'
               }}
-              size={16}
-              weight="600"
-              color={colors['neutral-text-title']}
             >
-              {chainStore.current.chainName}
+              <OWIcon type="images" source={{ uri: chainIcon?.Icon }} size={16} />
+              <Text
+                style={{
+                  paddingLeft: 6
+                }}
+                size={16}
+                weight="600"
+                color={colors['neutral-text-title']}
+              >
+                {chainStore.current.chainName}
+              </Text>
+            </View>
+
+            <Text size={16} weight="600" color={colors['neutral-text-title']}>
+              ${chainBalance.toFixed(6)}
             </Text>
           </View>
-
-          <Text size={16} weight="600" color={colors['neutral-text-title']}>
-            ${chainBalance.toFixed(6)}
-          </Text>
-        </View>
+        )}
       </>
     );
   };
