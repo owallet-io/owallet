@@ -254,8 +254,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     // beta: true // use v1beta1
   },
   {
-    rpc: 'https://injective-rpc-global.orai.io',
-    rest: 'https://sentry.lcd.injective.network',
+    rpc: 'https://injective.rpc.orai.io',
+    rest: 'https://injective.lcd.orai.io',
     chainId: 'injective-1',
     chainName: 'Injective',
     networkType: 'cosmos',
