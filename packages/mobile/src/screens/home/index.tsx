@@ -252,9 +252,13 @@ export const HomeScreen: FunctionComponent = observer(props => {
 
   const oldUI = false;
 
-  const rendernewTokenCard = () => {
+  const renderNewTokenCard = () => {
     return <TokensCardAll />;
   };
+
+  const renderNewAccountCard = (() => {
+    return <AccountBoxAll />;
+  })();
 
   return (
     <PageWithScrollViewInBottomTabView
@@ -264,14 +268,13 @@ export const HomeScreen: FunctionComponent = observer(props => {
       ref={scrollViewRef}
     >
       <BIP44Selectable />
-      {renderAccountCard}
+      {oldUI ? renderAccountCard : renderNewAccountCard}
       <DashboardCard />
-
-      {oldUI ? renderTokenCard() : rendernewTokenCard()}
-      {/* {chainStore.current.networkType === 'cosmos' ? <UndelegationsCard /> : null} */}
-      {chainStore.current.networkType === 'cosmos' ? (
+      {chainStore.current.networkType === 'cosmos' && !appInitStore.getInitApp.isAllNetworks ? (
         <EarningCardNew containerStyle={styles.containerEarnStyle} />
       ) : null}
+      {oldUI ? renderTokenCard() : renderNewTokenCard()}
+      {/* {chainStore.current.networkType === 'cosmos' ? <UndelegationsCard /> : null} */}
     </PageWithScrollViewInBottomTabView>
   );
 });

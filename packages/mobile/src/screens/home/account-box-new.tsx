@@ -9,16 +9,23 @@ import { getTotalUsd } from '@oraichain/oraidex-common';
 import { DownArrowIcon } from '@src/components/icon';
 import { metrics, spacing } from '@src/themes';
 import MyWalletModal from './components/my-wallet-modal/my-wallet-modal';
-import { ChainIdEnum, ChainNameEnum, getBase58Address } from '@owallet/common';
+import { chainIcons, ChainIdEnum, ChainNameEnum, getBase58Address } from '@owallet/common';
 import { OWButton } from '@src/components/button';
 import OWIcon from '@src/components/ow-icon/ow-icon';
 import { CopyAddressModal } from './components/copy-address/copy-address-modal';
+import { getTokenInfos } from '@src/utils/helper';
 
 export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
   const { colors } = useTheme();
   const { universalSwapStore, accountStore, modalStore, chainStore, appInitStore } = useStore();
   const [profit, setProfit] = useState(0);
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
+
+  const chainAssets = getTokenInfos({
+    tokens: universalSwapStore.getAmount,
+    prices: appInitStore.getInitApp.prices,
+    networkFilter: chainStore.current.chainId
+  });
 
   const styles = styling(colors);
   let totalUsd: number;
@@ -71,6 +78,60 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
     setProfit(Number(Number(totalUsd - yesterdayBalance).toFixed(6)));
   }, [totalUsd, accountOrai.bech32Address, yesterdayAssets]);
 
+  const renderTotalBalance = () => {
+    const chainIcon = chainIcons.find(c => c.chainId === chainStore.current.chainId);
+    let chainBalance = 0;
+
+    chainAssets.map(a => {
+      chainBalance += a.value;
+    });
+
+    return (
+      <>
+        <Text variant="bigText" style={styles.labelTotalAmount}>
+          ${totalUsd?.toFixed(6) ?? 0}
+        </Text>
+        <Text style={styles.profit} color={colors[profit < 0 ? 'error-text-body' : 'success-text-body']}>
+          {profit < 0 ? '' : '+'}
+          {profit && totalUsd ? Number((profit / totalUsd) * 100 ?? 0).toFixed(2) : 0}% (${profit ?? 0}) Today
+        </Text>
+        <View
+          style={{
+            borderTopWidth: 1,
+            borderColor: colors['neutral-border-default'],
+            marginVertical: 8,
+            paddingVertical: 8,
+            flexDirection: 'row',
+            justifyContent: 'space-between'
+          }}
+        >
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center'
+            }}
+          >
+            <OWIcon type="images" source={{ uri: chainIcon.Icon }} size={16} />
+            <Text
+              style={{
+                paddingLeft: 6
+              }}
+              size={16}
+              weight="600"
+              color={colors['neutral-text-title']}
+            >
+              {chainStore.current.chainName}
+            </Text>
+          </View>
+
+          <Text size={16} weight="600" color={colors['neutral-text-title']}>
+            ${chainBalance.toFixed(6)}
+          </Text>
+        </View>
+      </>
+    );
+  };
+
   return (
     <View>
       <OWBox style={styles.containerOWBox}>
@@ -100,15 +161,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
             }}
           />
         </View>
-        <View style={styles.overview}>
-          <Text variant="bigText" style={styles.labelTotalAmount}>
-            ${totalUsd?.toFixed(6) ?? 0}
-          </Text>
-          <Text style={styles.profit} color={colors[profit < 0 ? 'error-text-body' : 'success-text-body']}>
-            {profit < 0 ? '' : '+'}
-            {profit && totalUsd ? Number((profit / totalUsd) * 100 ?? 0).toFixed(2) : 0}% (${profit ?? 0}) Today
-          </Text>
-        </View>
+        <View style={styles.overview}>{renderTotalBalance()}</View>
         <View style={styles.btnGroup}>
           <OWButton
             style={styles.getStarted}
