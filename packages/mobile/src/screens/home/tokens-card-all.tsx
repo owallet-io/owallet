@@ -28,7 +28,11 @@ export const TokensCardAll: FunctionComponent<{
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
 
-  const tokenInfos = getTokenInfos({ tokens: universalSwapStore.getAmount, prices: appInitStore.getInitApp.prices });
+  const tokenInfos = getTokenInfos({
+    tokens: universalSwapStore.getAmount,
+    prices: appInitStore.getInitApp.prices,
+    networkFilter: appInitStore.getInitApp.isAllNetworks ? '' : chainStore.current.chainId
+  });
 
   let yesterdayAssets = [];
   if (accountOrai.bech32Address) {
@@ -193,17 +197,19 @@ export const TokensCardAll: FunctionComponent<{
               }
             })
           ) : (
-            <OWEmpty />
+            <OWEmpty type="cash" />
           )}
         </CardBody>
-        <OWButton
-          label={more ? 'View all' : 'Hide'}
-          size="medium"
-          type="secondary"
-          onPress={() => {
-            setMore(!more);
-          }}
-        />
+        {tokenInfos.length > 3 ? (
+          <OWButton
+            label={more ? 'View all' : 'Hide'}
+            size="medium"
+            type="secondary"
+            onPress={() => {
+              setMore(!more);
+            }}
+          />
+        ) : null}
       </OWBox>
     </View>
   );

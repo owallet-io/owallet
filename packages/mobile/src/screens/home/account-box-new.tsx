@@ -62,7 +62,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
 
   useEffect(() => {
     let yesterdayBalance = 0;
-    if (yesterdayAssets) {
+    if (yesterdayAssets?.length > 0) {
       yesterdayAssets.map(y => {
         yesterdayBalance += y.value;
       });

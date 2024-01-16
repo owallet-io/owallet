@@ -250,6 +250,12 @@ export const HomeScreen: FunctionComponent = observer(props => {
     return <TokensCard refreshDate={refreshDate} />;
   };
 
+  const oldUI = false;
+
+  const rendernewTokenCard = () => {
+    return <TokensCardAll />;
+  };
+
   return (
     <PageWithScrollViewInBottomTabView
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
@@ -261,7 +267,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
       {renderAccountCard}
       <DashboardCard />
 
-      {renderTokenCard()}
+      {oldUI ? renderTokenCard() : rendernewTokenCard()}
       {/* {chainStore.current.networkType === 'cosmos' ? <UndelegationsCard /> : null} */}
       {chainStore.current.networkType === 'cosmos' ? (
         <EarningCardNew containerStyle={styles.containerEarnStyle} />
