@@ -2,38 +2,51 @@ import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 import { HeaderLayout } from "../../layouts";
 import style from "./style.module.scss";
+import "./style.css";
 
 export const ChatbotPage: FunctionComponent = observer(() => {
   return (
     <HeaderLayout showChainName canChangeChainInfo>
-      <main className={style.msgerChat}>
-        <div className={`${style.msg} ${style.leftMsg}`}>
-          <div className={`${style.msgBubble}`}>
-            <div className={`${style.msgInfo}`}>
-              <div className={`${style.msgInfoName}`}>BOT</div>
-              <div className={`${style.msgInfoTime}`}>12:45</div>
-            </div>
-
-            <div className={`${style.msgText}`}>
-              Hi, welcome to OraiBot! Go ahead and send me a message. 😄
+      <div className={style.container}>
+        <div className="frame-wrapper">
+          <div className="frame">
+            <div className="div">
+              <div className="frame-5">
+                <img
+                  className="img"
+                  alt="WeMinimal Icon"
+                  src={require("../../public/assets/img/we-minimal-icon.svg")}
+                />
+                <p className="p">How can i help you ?</p>
+              </div>
+              <div className="frame-3">
+                <div className="frame-4">
+                  <div className="text-wrapper-2">Price of token today</div>
+                </div>
+                <div className="frame-4">
+                  <p className="text-wrapper-2">
+                    The fluctuation of token this week
+                  </p>
+                </div>
+                <div className="frame-4">
+                  <p className="text-wrapper-2">
+                    The fluctuation of token this year
+                  </p>
+                </div>
+                <div className="div-wrapper">
+                  <div className="frame-2">
+                    <div className="text-wrapper">Ask anything...</div>
+                    <img
+                      className="arrow-up-square"
+                      alt="Arrow up square"
+                      src={require("../../public/assets/img/arrow-up-square.svg")}
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-
-        <div className={`${style.msg} ${style.rightMsg}`}>
-          <div className={`${style.msgBubble}`}>
-            <div className={`${style.msgInfo}`}>
-              <div className={`${style.msgInfoName}`}>Alex</div>
-              <div className={`${style.msgInfoTime}`}>12:46</div>
-            </div>
-
-            <div className={`${style.msgText}`}>Deploy ERC-20 Contract</div>
-          </div>
-        </div>
-      </main>
-      <div className={style.inputChat}>
-        <input type="text" placeholder="Deploy ERC-20 Contract" />
-        <button>Send</button>
       </div>
     </HeaderLayout>
   );
