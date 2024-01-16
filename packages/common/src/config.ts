@@ -131,23 +131,13 @@ export const EmbedChainInfos: AppChainInfo[] = [
         },
         {
           type: 'cw20',
-          coinDenom: 'tBTC',
-          coinMinimalDenom: 'cw20:orai1d2hq8pzf0nswlqhhng95hkfnmgutpmz6g8hd8q7ec9q9pj6t3r2q7vc646:tBTC Token',
+          coinDenom: 'oBTC',
+          coinMinimalDenom: 'cw20:orai1d2hq8pzf0nswlqhhng95hkfnmgutpmz6g8hd8q7ec9q9pj6t3r2q7vc646:oBTC Token',
           contractAddress: 'orai1d2hq8pzf0nswlqhhng95hkfnmgutpmz6g8hd8q7ec9q9pj6t3r2q7vc646',
           coinDecimals: 6,
           coinGeckoId: 'bitcoin',
           coinImageUrl: 'https://i.ibb.co/NVP6CDZ/images-removebg-preview.png'
         },
-        {
-          type: 'cw20',
-          coinDenom: 'BTC',
-          coinMinimalDenom: 'cw20:orai10g6frpysmdgw5tdqke47als6f97aqmr8s3cljsvjce4n5enjftcqtamzsd:orai BTC Token',
-          contractAddress: 'orai10g6frpysmdgw5tdqke47als6f97aqmr8s3cljsvjce4n5enjftcqtamzsd',
-          coinDecimals: 6,
-          coinGeckoId: 'bitcoin',
-          coinImageUrl: 'https://i.ibb.co/NVP6CDZ/images-removebg-preview.png'
-        },
-
         {
           type: 'cw20',
           coinDenom: 'ORAIX',
@@ -264,8 +254,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     // beta: true // use v1beta1
   },
   {
-    rpc: 'https://injective-rpc-global.orai.io',
-    rest: 'https://sentry.lcd.injective.network',
+    rpc: 'https://injective.rpc.orai.io',
+    rest: 'https://injective.lcd.orai.io',
     chainId: 'injective-1',
     chainName: 'Injective',
     networkType: 'cosmos',
@@ -620,8 +610,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
   },
 
   {
-    rpc: 'https://rpc.cosmos.directory/osmosis',
-    rest: 'https://rest.cosmos.directory/osmosis',
+    rpc: 'https://osmosis.rpc.orai.io/',
+    rest: 'https://osmosis.lcd.orai.io/',
     chainId: 'osmosis-1',
     chainName: 'Osmosis',
     networkType: 'cosmos',
@@ -924,48 +914,48 @@ export const EmbedChainInfos: AppChainInfo[] = [
       accountUrl: 'https://blockstream.info/testnet/address/{address}'
     }
   },
-  {
-    rest: 'https://blockstream.info/api',
-    chainId: 'bitcoin',
-    chainName: 'Bitcoin',
-    bip44: {
-      coinType: 0
-    },
-    coinType: 0,
-    stakeCurrency: {
-      coinDenom: 'BTC',
-      coinMinimalDenom: 'btc',
-      coinDecimals: 8,
-      coinGeckoId: 'bitcoin',
-      coinImageUrl: 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png',
-      gasPriceStep: {
-        low: 144,
-        average: 18,
-        high: 1
-      }
-    },
-    bech32Config: Bech32Address.defaultBech32Config('bc'),
-    networkType: 'bitcoin',
-    currencies: [
-      {
-        coinDenom: 'BTC',
-        coinMinimalDenom: 'btc',
-        coinDecimals: 8,
-        coinGeckoId: 'bitcoin',
-        coinImageUrl: 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png'
-      }
-    ],
-    get feeCurrencies() {
-      return this.currencies;
-    },
+  // {
+  //   rest: 'https://blockstream.info/api',
+  //   chainId: 'bitcoin',
+  //   chainName: 'Bitcoin',
+  //   bip44: {
+  //     coinType: 0
+  //   },
+  //   coinType: 0,
+  //   stakeCurrency: {
+  //     coinDenom: 'BTC',
+  //     coinMinimalDenom: 'btc',
+  //     coinDecimals: 8,
+  //     coinGeckoId: 'bitcoin',
+  //     coinImageUrl: 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png',
+  //     gasPriceStep: {
+  //       low: 144,
+  //       average: 18,
+  //       high: 1
+  //     }
+  //   },
+  //   bech32Config: Bech32Address.defaultBech32Config('bc'),
+  //   networkType: 'bitcoin',
+  //   currencies: [
+  //     {
+  //       coinDenom: 'BTC',
+  //       coinMinimalDenom: 'btc',
+  //       coinDecimals: 8,
+  //       coinGeckoId: 'bitcoin',
+  //       coinImageUrl: 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png'
+  //     }
+  //   ],
+  //   get feeCurrencies() {
+  //     return this.currencies;
+  //   },
 
-    features: ['isBtc'],
-    txExplorer: {
-      name: 'BlockStream',
-      txUrl: 'https://blockstream.info/tx/{txHash}',
-      accountUrl: 'https://blockstream.info/address/{address}'
-    }
-  },
+  //   features: ['isBtc'],
+  //   txExplorer: {
+  //     name: 'BlockStream',
+  //     txUrl: 'https://blockstream.info/tx/{txHash}',
+  //     accountUrl: 'https://blockstream.info/address/{address}'
+  //   }
+  // },
 
   {
     rest: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
