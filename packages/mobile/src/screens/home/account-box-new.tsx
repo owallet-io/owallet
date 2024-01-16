@@ -62,12 +62,14 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
 
   useEffect(() => {
     let yesterdayBalance = 0;
-    yesterdayAssets?.map(y => {
-      yesterdayBalance += y.value;
-    });
+    if (yesterdayAssets) {
+      yesterdayAssets.map(y => {
+        yesterdayBalance += y.value;
+      });
+    }
 
     setProfit(Number(Number(totalUsd - yesterdayBalance).toFixed(6)));
-  }, [totalUsd]);
+  }, [totalUsd, accountOrai.bech32Address, yesterdayAssets]);
 
   return (
     <View>
