@@ -131,9 +131,18 @@ export const EmbedChainInfos: AppChainInfo[] = [
         },
         {
           type: 'cw20',
-          coinDenom: 'oBTC',
-          coinMinimalDenom: 'cw20:orai1d2hq8pzf0nswlqhhng95hkfnmgutpmz6g8hd8q7ec9q9pj6t3r2q7vc646:oBTC Token',
+          coinDenom: 'tBTC',
+          coinMinimalDenom: 'cw20:orai1d2hq8pzf0nswlqhhng95hkfnmgutpmz6g8hd8q7ec9q9pj6t3r2q7vc646:tBTC Token',
           contractAddress: 'orai1d2hq8pzf0nswlqhhng95hkfnmgutpmz6g8hd8q7ec9q9pj6t3r2q7vc646',
+          coinDecimals: 6,
+          coinGeckoId: 'bitcoin',
+          coinImageUrl: 'https://i.ibb.co/NVP6CDZ/images-removebg-preview.png'
+        },
+        {
+          type: 'cw20',
+          coinDenom: 'BTC',
+          coinMinimalDenom: 'cw20:orai10g6frpysmdgw5tdqke47als6f97aqmr8s3cljsvjce4n5enjftcqtamzsd:orai BTC Token',
+          contractAddress: 'orai10g6frpysmdgw5tdqke47als6f97aqmr8s3cljsvjce4n5enjftcqtamzsd',
           coinDecimals: 6,
           coinGeckoId: 'bitcoin',
           coinImageUrl: 'https://i.ibb.co/NVP6CDZ/images-removebg-preview.png'
