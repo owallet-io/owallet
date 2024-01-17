@@ -56,11 +56,7 @@ export const EarningCardNew: FunctionComponent<{
     }
   };
   return (
-    <OWBox
-      style={{
-        marginBottom: spacing['page-pad']
-      }}
-    >
+    <OWBox style={{}}>
       <View style={styles.cardBody}>
         <View style={{ flexDirection: 'row', paddingBottom: 6 }}>
           <View style={styles['claim-title']}>
@@ -107,14 +103,6 @@ export const EarningCardNew: FunctionComponent<{
 
 const styling = colors =>
   StyleSheet.create({
-    card: {
-      paddingBottom: spacing['20'],
-      marginTop: spacing['32'],
-      borderTopLeftRadius: spacing['24'],
-      borderTopRightRadius: spacing['24'],
-      backgroundColor: colors['primary'],
-      padding: spacing['24']
-    },
     cardBody: {},
     'flex-center': {
       display: 'flex',

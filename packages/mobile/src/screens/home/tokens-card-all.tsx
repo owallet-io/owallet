@@ -207,6 +207,9 @@ export const TokensCardAll: FunctionComponent<{
         </CardBody>
         {tokenInfos.length > 3 ? (
           <OWButton
+            style={{
+              marginTop: 16
+            }}
             label={more ? 'View all' : 'Hide'}
             size="medium"
             type="secondary"
@@ -237,7 +240,7 @@ const styling = colors =>
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginVertical: 10
+      marginVertical: 8
     },
     profit: {
       fontWeight: '400',
