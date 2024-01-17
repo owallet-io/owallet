@@ -60,6 +60,7 @@ export const CopyAddressModal: FunctionComponent<{
         data={addresses}
         renderItem={({ item }) => {
           const chainIcon = chainIcons.find(c => c.chainName === item.name);
+
           return (
             <CustomAddressCopyable
               icon={<OWIcon type="images" source={{ uri: chainIcon?.Icon }} size={28} />}

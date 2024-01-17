@@ -86,6 +86,12 @@ export const chainIcons: any[] = [
     IconLight: OraiLightIcon
   },
   {
+    chainId: 'Orai-bridge',
+    chainName: 'Orai Bride',
+    Icon: OraiIcon,
+    IconLight: OraiLightIcon
+  },
+  {
     chainId: 'Oraichain-testnet',
     chainName: 'Oraichain-testnet',
     Icon: OraiIcon,
