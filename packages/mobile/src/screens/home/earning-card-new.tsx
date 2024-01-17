@@ -1,4 +1,6 @@
 import { Dec } from '@owallet/unit';
+import { StackActions, useNavigation } from '@react-navigation/native';
+import { SCREENS } from '@src/common/constants';
 import { OWButton } from '@src/components/button';
 import OWIcon from '@src/components/ow-icon/ow-icon';
 import { Text } from '@src/components/text';
@@ -6,7 +8,7 @@ import { useTheme } from '@src/themes/theme-provider';
 import { showToast } from '@src/utils/helper';
 import { observer } from 'mobx-react-lite';
 import React, { FunctionComponent } from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { OWBox } from '../../components/card';
 import { useSmartNavigation } from '../../navigation.provider';
 import { useStore } from '../../stores';
@@ -17,6 +19,8 @@ export const EarningCardNew: FunctionComponent<{
 }> = observer(({}) => {
   const smartNavigation = useSmartNavigation();
   const { chainStore, accountStore, queriesStore, priceStore, analyticsStore } = useStore();
+  const navigation = useNavigation();
+
   const { colors } = useTheme();
   const chainId = chainStore.current.chainId;
   const styles = styling(colors);
@@ -56,47 +60,53 @@ export const EarningCardNew: FunctionComponent<{
     }
   };
   return (
-    <OWBox style={{}}>
-      <View style={styles.cardBody}>
-        <View style={{ flexDirection: 'row', paddingBottom: 6 }}>
-          <View style={styles['claim-title']}>
-            <OWIcon name={'trending-outline'} size={14} color={colors['neutral-text-title']} />
+    <OWBox>
+      <TouchableOpacity
+        onPress={() => {
+          navigation.dispatch(StackActions.replace('MainTab', { screen: SCREENS.TABS.Invest }));
+        }}
+      >
+        <View style={styles.cardBody}>
+          <View style={{ flexDirection: 'row', paddingBottom: 6 }}>
+            <View style={styles['claim-title']}>
+              <OWIcon name={'trending-outline'} size={14} color={colors['neutral-text-title']} />
+            </View>
+            <Text style={[{ ...styles['text-earn'] }]}>Claimable rewards</Text>
           </View>
-          <Text style={[{ ...styles['text-earn'] }]}>Claimable rewards</Text>
-        </View>
 
-        <Text
-          style={[
-            {
-              ...styles['text-amount']
+          <Text
+            style={[
+              {
+                ...styles['text-amount']
+              }
+            ]}
+          >
+            +{totalStakingReward ? totalStakingReward.toString() : stakingReward.shrink(true).maxDecimals(6).toString()}
+          </Text>
+          <Text style={[styles['amount']]}>
+            {stakingReward.toDec().gt(new Dec(0.001))
+              ? stakingReward.shrink(true).maxDecimals(6).trim(true).upperCase(true).toString()
+              : `< 0.001 ${stakingReward.toCoin().denom.toUpperCase()}`}
+          </Text>
+
+          <OWButton
+            style={styles['btn-claim']}
+            textStyle={{
+              fontSize: 14,
+              fontWeight: '600',
+              color: colors['neutral-text-action-on-dark-bg']
+            }}
+            label="Claim All"
+            onPress={_onPressClaim}
+            loading={account.isSendingMsg === 'withdrawRewards'}
+            disabled={
+              !account.isReadyToSendMsgs ||
+              stakingReward.toDec().equals(new Dec(0)) ||
+              queryReward.pendingRewardValidatorAddresses.length === 0
             }
-          ]}
-        >
-          +{totalStakingReward ? totalStakingReward.toString() : stakingReward.shrink(true).maxDecimals(6).toString()}
-        </Text>
-        <Text style={[styles['amount']]}>
-          {stakingReward.toDec().gt(new Dec(0.001))
-            ? stakingReward.shrink(true).maxDecimals(6).trim(true).upperCase(true).toString()
-            : `< 0.001 ${stakingReward.toCoin().denom.toUpperCase()}`}
-        </Text>
-
-        <OWButton
-          style={styles['btn-claim']}
-          textStyle={{
-            fontSize: 14,
-            fontWeight: '600',
-            color: colors['neutral-text-action-on-dark-bg']
-          }}
-          label="Claim All"
-          onPress={_onPressClaim}
-          loading={account.isSendingMsg === 'withdrawRewards'}
-          disabled={
-            !account.isReadyToSendMsgs ||
-            stakingReward.toDec().equals(new Dec(0)) ||
-            queryReward.pendingRewardValidatorAddresses.length === 0
-          }
-        />
-      </View>
+          />
+        </View>
+      </TouchableOpacity>
     </OWBox>
   );
 });
