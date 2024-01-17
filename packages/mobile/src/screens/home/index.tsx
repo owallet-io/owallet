@@ -193,7 +193,9 @@ export const HomeScreen: FunctionComponent = observer(props => {
 
   useEffect(() => {
     universalSwapStore.clearAmounts();
-    delayedFunction();
+    if (accountOrai.bech32Address) {
+      delayedFunction();
+    }
   }, [accountOrai.bech32Address]);
 
   // This section is for PnL display

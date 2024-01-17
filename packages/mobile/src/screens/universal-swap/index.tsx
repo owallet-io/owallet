@@ -280,8 +280,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   }, []);
 
   useEffect(() => {
-    delayedFunction();
-  }, []);
+    if (accountOrai.bech32Address) {
+      delayedFunction();
+    }
+  }, [accountOrai.bech32Address]);
 
   // useEffect(() => {
   //   if (isFocused) {
@@ -386,6 +388,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const estimateAverageRatio = async () => {
     const data = await getSimulateSwap(INIT_AMOUNT);
+    console.log('data', data);
 
     setRatio(data);
   };
@@ -534,6 +537,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const onRefresh = async () => {
     setLoadingRefresh(true);
     await handleFetchAmounts(accounts);
+    await estimateAverageRatio();
     setLoadingRefresh(false);
   };
 
