@@ -1,13 +1,10 @@
 import React, { FunctionComponent, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import GatewayIntroScreen from './gateway_intro';
 import ManageIntroScreen from './manage_intro';
 import WelcomeIntroScreen from './welcome_intro';
 import AppIntroSlider from 'react-native-app-intro-slider';
-import { View, Image, StyleSheet, Platform } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { colors, metrics } from '../../themes';
-import { PageWithScrollView } from '../../components/page';
-import { useGetHeightHeader } from '@src/hooks/use-height-header';
 import { useStore } from '@src/stores';
 import { useSmartNavigation } from '@src/navigation.provider';
 import { useSimpleTimer } from '@src/hooks';
@@ -37,7 +34,7 @@ const styling = () => {
     },
     getStarted: {
       position: 'absolute',
-      bottom: 40,
+      bottom: 20,
       width: metrics.screenWidth - 32,
       marginHorizontal: 16,
       borderRadius: 999
@@ -91,21 +88,16 @@ export const OnboardingIntroScreen: FunctionComponent = observer(() => {
           onSlideChange={s => {
             setSlide(s);
           }}
-          // dotStyle={{ backgroundColor: colors['purple-100'], marginTop: 60 }}
-          // activeDotStyle={{
-          //   backgroundColor: colors['primary-surface-default'],
-          //   marginTop: 60
-          // }}
           showDoneButton={false}
         />
-        <OWButton
-          style={styles.getStarted}
-          label="Get started!"
-          onPress={onGetStarted}
-          disabled={isTimedOut}
-          loading={isTimedOut}
-        />
       </View>
+      <OWButton
+        style={styles.getStarted}
+        label="Get started!"
+        onPress={onGetStarted}
+        disabled={isTimedOut}
+        loading={isTimedOut}
+      />
     </View>
   );
 });

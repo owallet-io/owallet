@@ -1,4 +1,5 @@
 import { Dec } from '@owallet/unit';
+import { StackActions, useNavigation } from '@react-navigation/native';
 // import crashlytics from '@react-native-firebase/crashlytics';
 import { SCREENS } from '@src/common/constants';
 import { OWButton } from '@src/components/button';
@@ -19,8 +20,9 @@ import { WarningView } from './warning-view';
 
 export const EarningCard: FunctionComponent<{
   containerStyle?: ViewStyle;
-}> = observer(({ containerStyle }) => {
+}> = observer(({}) => {
   const smartNavigation = useSmartNavigation();
+  const navigation = useNavigation();
   const { chainStore, accountStore, queriesStore, priceStore, analyticsStore } = useStore();
   const { colors } = useTheme();
   const chainId = chainStore.current.chainId;
@@ -205,7 +207,7 @@ export const EarningCard: FunctionComponent<{
               size="medium"
               label="Manage my staking"
               onPress={() => {
-                navigate('MainTab', { screen: SCREENS.TABS.Invest });
+                navigation.dispatch(StackActions.replace('MainTab', { screen: SCREENS.TABS.Invest }));
               }}
             />
           </View>

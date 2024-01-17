@@ -1,7 +1,5 @@
 import { observable, action, computed, makeObservable, flow } from 'mobx';
-
 import { ChainInfoInner, ChainStore as BaseChainStore } from '@owallet/stores';
-
 import { ChainInfo } from '@owallet/types';
 import {
   ChainInfoWithEmbed,
@@ -11,15 +9,13 @@ import {
   TryUpdateChainMsg
 } from '@owallet/background';
 import { BACKGROUND_PORT } from '@owallet/router';
-
 import { MessageRequester } from '@owallet/router';
 import { KVStore, toGenerator } from '@owallet/common';
 
 export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
   @observable
   protected selectedChainId: string;
-  @observable
-  protected isAllNetworks: boolean;
+
   @observable
   protected _isInitializing: boolean = false;
   protected deferChainIdSelect: string = '';
@@ -41,7 +37,6 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
     );
 
     this.selectedChainId = embedChainInfos[0].chainId;
-    this.isAllNetworks = false;
     makeObservable(this);
 
     this.init();
@@ -65,11 +60,6 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
     this.selectedChainId = chainId;
   }
 
-  @action
-  selectAllNetworks(isAll: boolean) {
-    this.isAllNetworks = isAll;
-  }
-
   @computed
   get current(): ChainInfoInner<ChainInfoWithEmbed> {
     if (this.hasChain(this.selectedChainId)) {
@@ -77,11 +67,6 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
     }
 
     return this.chainInfos[0];
-  }
-
-  @computed
-  get isAll(): boolean {
-    return this.isAllNetworks;
   }
 
   async saveLastViewChainId() {

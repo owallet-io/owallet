@@ -11,9 +11,10 @@ import { useTheme } from '@src/themes/theme-provider';
 export const AddressCopyable: FunctionComponent<{
   style?: ViewStyle;
   address: string;
+  chain?: string;
   networkType?: string;
   maxCharacters: number;
-}> = ({ style: propStyle, address, maxCharacters, networkType }) => {
+}> = ({ style: propStyle, address, maxCharacters, networkType, chain }) => {
   const { isTimedOut, setTimer } = useSimpleTimer();
   const { colors } = useTheme();
 
@@ -40,6 +41,9 @@ export const AddressCopyable: FunctionComponent<{
       underlayColor={colors['primary-50']}
       activeOpacity={1}
     >
+      {chain ? (
+        <Text style={{ fontSize: 14, color: colors['neutral-text-title'], fontWeight: '700' }}>{chain}: </Text>
+      ) : null}
       <Text style={{ fontSize: 14, color: colors['sub-text'], fontWeight: '700' }}>
         {networkType === 'cosmos'
           ? Bech32Address.shortenAddress(address, maxCharacters)

@@ -14,6 +14,7 @@ import { Ratio } from '@oraichain/common-contracts-sdk/build/CwIcs20Latest.types
 import { getBase58Address } from '../../utils';
 import { TaxRateResponse } from '@oraichain/oraidex-contracts-sdk/build/OraiswapOracle.types';
 import { ethers } from 'ethers';
+import { fromBech32, toBech32 } from '@cosmjs/encoding';
 
 export enum SwapDirection {
   From,
@@ -24,6 +25,12 @@ export const calculateTimeoutTimestamp = (timeout: number): string => {
   return Long.fromNumber(Math.floor(Date.now() / 1000) + timeout)
     .multiply(1000000000)
     .toString();
+};
+
+export const getAddress = (addr, prefix: string) => {
+  if (!addr) return '';
+  const { data } = fromBech32(addr);
+  return toBech32(prefix, data);
 };
 
 export function isEvmNetworkNativeSwapSupported(chainId: NetworkChainId) {

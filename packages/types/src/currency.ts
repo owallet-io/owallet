@@ -5,6 +5,7 @@ export interface Currency {
   readonly coinDenom: string;
   readonly coinMinimalDenom: string;
   readonly coinDecimals: number;
+
   /**
    * This is used to fetch asset's fiat value from coingecko.
    * You can get id from https://api.coingecko.com/api/v3/coins/list.
@@ -54,22 +55,13 @@ export interface IBCCurrency extends Currency {
    * If that chain is unknown, this will be undefined.
    */
   readonly originChainId: string | undefined;
-  readonly originCurrency:
-    | Currency
-    | CW20Currency
-    | Secret20Currency
-    | undefined;
+  readonly originCurrency: Currency | CW20Currency | Secret20Currency | undefined;
 }
 
 /**
  * Any type of currency that Kepler applications can support.
  */
-export type AppCurrency =
-  | Currency
-  | CW20Currency
-  | Secret20Currency
-  | IBCCurrency
-  | ERC20Currency;
+export type AppCurrency = Currency | CW20Currency | Secret20Currency | IBCCurrency | ERC20Currency;
 
 export interface FiatCurrency {
   readonly currency: string;
