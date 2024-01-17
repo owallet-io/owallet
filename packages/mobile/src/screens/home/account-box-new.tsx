@@ -112,7 +112,9 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
                 alignItems: 'center'
               }}
             >
-              <OWIcon type="images" source={{ uri: chainIcon?.Icon }} size={16} />
+              <View style={{ backgroundColor: colors['neutral-text-action-on-dark-bg'], borderRadius: 16 }}>
+                <OWIcon type="images" source={{ uri: chainIcon?.Icon }} size={16} />
+              </View>
               <Text
                 style={{
                   paddingLeft: 6

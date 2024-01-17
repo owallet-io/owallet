@@ -22,6 +22,8 @@ export const TokensCardAll: FunctionComponent<{
 }> = observer(({ containerStyle }) => {
   const { accountStore, universalSwapStore, chainStore, appInitStore } = useStore();
   const { colors } = useTheme();
+  const theme = appInitStore.getInitApp.theme;
+
   const [more, setMore] = useState(true);
 
   const account = accountStore.getAccount(chainStore.current.chainId);
@@ -129,7 +131,7 @@ export const TokensCardAll: FunctionComponent<{
               </View>
 
               <View style={styles.pl10}>
-                <Text size={14} color={colors['neutral-text-title']} weight="600">
+                <Text size={14} color={colors['neutral-text-heading']} weight="600">
                   {item.balance.toFixed(4)} {item.asset}
                 </Text>
                 <Text weight="400" color={colors['neutral-text-body']}>
@@ -140,7 +142,7 @@ export const TokensCardAll: FunctionComponent<{
             <View style={styles.rightBoxItem}>
               <View style={{ flexDirection: 'row' }}>
                 <View style={{ alignItems: 'flex-end' }}>
-                  <Text weight="500" color={colors['neutral-text-title']}>
+                  <Text weight="500" color={colors['neutral-text-heading']}>
                     ${item.value.toFixed(6)}
                   </Text>
                   <Text style={styles.profit} color={colors[profit < 0 ? 'error-text-body' : 'success-text-body']}>
@@ -155,7 +157,7 @@ export const TokensCardAll: FunctionComponent<{
                     paddingLeft: 20
                   }}
                 >
-                  <RightArrowIcon height={12} color={colors['primary-text']} />
+                  <RightArrowIcon height={12} color={colors['neutral-text-heading']} />
                 </View>
               </View>
             </View>
@@ -163,7 +165,7 @@ export const TokensCardAll: FunctionComponent<{
         );
       }
     },
-    [universalSwapStore?.getAmount, yesterdayAssets]
+    [universalSwapStore?.getAmount, yesterdayAssets, theme]
   );
 
   return (
