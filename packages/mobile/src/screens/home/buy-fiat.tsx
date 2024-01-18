@@ -46,13 +46,15 @@ const BuyFiat = observer(() => {
 
   return (
     <View style={styles.container}>
-      <WebView
-        originWhitelist={['*']}
-        source={{
-          uri: `https://app.kado.money/?onPayCurrency=USD&onPayAmount=200&onRevCurrency=ORAI&offPayCurrency=ORAI&offRevCurrency=USD&network=ORAICHAIN&&onToAddressMulti=${accountList}&cryptoList=${cryptoList}&networkList=${networkList}&dapiKey=${'67ee8355-a3a4-4a88-8af5-3cbc8f3eb155'}&product=BUY&productList=BUY&theme=${theme}"`
-        }}
-        style={styles.webview}
-      />
+      {accountList.length > 0 ? (
+        <WebView
+          originWhitelist={['*']}
+          source={{
+            uri: `https://app.kado.money/?onPayCurrency=USD&onPayAmount=200&onRevCurrency=ORAI&offPayCurrency=ORAI&offRevCurrency=USD&network=ORAICHAIN&&onToAddressMulti=${accountList}&cryptoList=${cryptoList}&networkList=${networkList}&dapiKey=${'67ee8355-a3a4-4a88-8af5-3cbc8f3eb155'}&product=BUY&productList=BUY&theme=${theme}"`
+          }}
+          style={styles.webview}
+        />
+      ) : null}
     </View>
   );
 });
