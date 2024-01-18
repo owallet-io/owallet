@@ -12,6 +12,7 @@ export const SCREENS = {
   RecoveryPhrase: 'RecoveryPhrase',
   RegisterMain: 'RegisterMain',
   BtcFaucet: 'BtcFaucet',
+  BuyFiat: 'BuyFiat',
   RegisterVerifyMnemonicMain: 'RegisterVerifyMnemonicMain',
   RegisterEnd: 'Register.End',
   RegisterDone: 'Register.Done',
@@ -244,6 +245,9 @@ export const SCREENS_OPTIONS: IScreenOption = {
   },
   [SCREENS.BtcFaucet]: {
     title: 'Bitcoin Faucet'
+  },
+  [SCREENS.BuyFiat]: {
+    title: 'Buy'
   },
   [SCREENS.SettingVersion]: {
     title: 'About'

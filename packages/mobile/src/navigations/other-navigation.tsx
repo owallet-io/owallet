@@ -18,6 +18,7 @@ import TransactionDetailScreen from '@src/screens/transactions/transaction-detai
 import { AddTokenScreen } from '@src/screens/network/add-token';
 import { SendBtcScreen } from '@src/screens/send/send-btc';
 import BtcFaucet from '@src/screens/home/btc-faucet';
+import BuyFiat from '@src/screens/home/buy-fiat';
 const Stack = createStackNavigator();
 export const OtherNavigation: FC = () => {
   const handleScreenOptions = ({ route, navigation }) => {
@@ -63,6 +64,7 @@ export const OtherNavigation: FC = () => {
         component={TxSuccessResultScreen}
       />
       <Stack.Screen name={SCREENS.BtcFaucet} component={BtcFaucet} />
+      <Stack.Screen name={SCREENS.BuyFiat} component={BuyFiat} />
       <Stack.Screen name={SCREENS.SendTron} component={SendTronScreen} />
       <Stack.Screen name={SCREENS.Notifications} component={NotificationScreen} />
       <Stack.Screen name={SCREENS.SendBtc} component={SendBtcScreen} />

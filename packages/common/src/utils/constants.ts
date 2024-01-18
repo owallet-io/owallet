@@ -28,6 +28,16 @@ export enum ChainIdEnum {
   Injective = 'injective-1'
 }
 
+export enum KADOChainNameEnum {
+  'Oraichain' = 'ORAICHAIN',
+  'juno-1' = 'JUNO',
+  '0x01' = 'ETHEREUM',
+  'cosmoshub-4' = 'COSMOS HUB',
+  'injective-1' = 'INJECTIVE',
+  'osmosis-1' = 'OSMOSIS',
+  'bitcoin' = 'BITCOIN'
+}
+
 export enum ChainNameEnum {
   Oraichain = 'Oraichain',
   OraichainTestnet = 'Oraichain-testnet',
