@@ -49,7 +49,7 @@ const BuyFiat = observer(() => {
       <WebView
         originWhitelist={['*']}
         source={{
-          uri: `https://app.kado.money/?onPayCurrency=USD&onPayAmount=200&onRevCurrency=USDC&offPayCurrency=USDC&offRevCurrency=USD&network=OSMOSIS&&onToAddressMulti=${accountList}&cryptoList=${cryptoList}&networkList=${networkList}&dapiKey=${'67ee8355-a3a4-4a88-8af5-3cbc8f3eb155'}&product=BUY&productList=BUY&theme=${theme}"`
+          uri: `https://app.kado.money/?onPayCurrency=USD&onPayAmount=200&onRevCurrency=USDC&offPayCurrency=USDC&offRevCurrency=USD&network=ORAICHAIN&&onToAddressMulti=${accountList}&cryptoList=${cryptoList}&networkList=${networkList}&dapiKey=${'67ee8355-a3a4-4a88-8af5-3cbc8f3eb155'}&product=BUY&productList=BUY&theme=${theme}"`
         }}
         style={styles.webview}
       />
