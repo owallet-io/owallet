@@ -4,10 +4,9 @@ import { WebView } from 'react-native-webview';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@src/stores';
 import { metrics } from '@src/themes';
-import { ChainIdEnum, delay, getBase58Address, KADOChainNameEnum } from '@owallet/common';
+import { ChainIdEnum, delay, KADOChainNameEnum } from '@owallet/common';
 const BuyFiat = observer(() => {
-  const { chainStore, accountStore, keyRingStore } = useStore();
-  const account = accountStore.getAccount(chainStore.current.chainId);
+  const { chainStore, accountStore } = useStore();
 
   const [accountList, setAccounts] = useState('');
 
@@ -48,7 +47,7 @@ const BuyFiat = observer(() => {
       <WebView
         originWhitelist={['*']}
         source={{
-          uri: `https://app.kado.money/?onPayCurrency=USD&onPayAmount=200&onRevCurrency=USDC&offPayCurrency=USDC&offRevCurrency=USD&network=OSMOSIS&&onToAddressMulti=${accountList}&cryptoList=${cryptoList}&networkList=${networkList}&dapiKey=67ee8355-a3a4-4a88-8af5-3cbc8f3eb155&product=BUY&productList=BUY"`
+          uri: `https://app.kado.money/?onPayCurrency=USD&onPayAmount=200&onRevCurrency=USDC&offPayCurrency=USDC&offRevCurrency=USD&network=OSMOSIS&&onToAddressMulti=${accountList}&cryptoList=${cryptoList}&networkList=${networkList}&dapiKey=${process.env.API_KEY_KADO}&product=BUY&productList=BUY"`
         }}
         style={styles.webview}
       />

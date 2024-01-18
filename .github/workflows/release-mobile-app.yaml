@@ -58,6 +58,7 @@ jobs:
           API_KEY: ${{ secrets.API_KEY_FIREBASE }}
           SENDER_ID: ${{ secrets.SENDER_ID_FIREBASE }}
           APP_ID: ${{ secrets.APP_ID_FIREBASE }}
+          API_KEY_KADO: ${{ secrets.API_KEY_KADO }}
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -143,6 +144,7 @@ jobs:
           API_KEY: ${{ secrets.API_KEY_FIREBASE }}
           SENDER_ID: ${{ secrets.SENDER_ID_FIREBASE }}
           APP_ID: ${{ secrets.APP_ID_FIREBASE }}
+          API_KEY_KADO: ${{ secrets.API_KEY_KADO }}
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
