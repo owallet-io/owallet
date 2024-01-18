@@ -1,5 +1,5 @@
 import { Platform, StyleSheet, View } from 'react-native';
-import React, { FC, useMemo } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 import { useStore } from '@src/stores';
 import { useTheme } from '@src/themes/theme-provider';
 import { ICONS_TITLE, SCREENS, SCREENS_OPTIONS } from '@src/common/constants';
@@ -14,16 +14,28 @@ import { observer } from 'mobx-react-lite';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import imagesGlobal from '@src/assets/images';
 import { BlurView } from '@react-native-community/blur';
+import { delay } from '@owallet/common';
 const Tab = createBottomTabNavigator();
 export const MainTabNavigation: FC = observer(() => {
   const { chainStore, appInitStore } = useStore();
-  const { colors, images, dark } = useTheme();
+  const { colors, dark } = useTheme();
   const { visibleTabBar } = appInitStore.getInitApp;
+  const [loading, setLoading] = useState(true);
   const insets = useSafeAreaInsets();
   const isNorthSafe = insets.bottom > 0;
   const checkTabbarVisible = useMemo(() => {
     return visibleTabBar ? SCREENS_OPTIONS[visibleTabBar]?.showTabBar || false : false;
   }, [visibleTabBar]);
+
+  const waitToLoad = async () => {
+    await delay(2000);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    waitToLoad();
+  }, []);
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => {
@@ -85,7 +97,7 @@ export const MainTabNavigation: FC = observer(() => {
           )
         };
       }}
-      tabBar={props => (checkTabbarVisible ? <BottomTabBar {...props} /> : null)}
+      tabBar={props => (checkTabbarVisible && !loading ? <BottomTabBar {...props} /> : null)}
     >
       <Tab.Screen name={SCREENS.TABS.Main} component={MainNavigation} />
       <Tab.Screen name={SCREENS.TABS.Invest} component={InvestNavigation} />

@@ -1,4 +1,4 @@
-import React, { FunctionComponent, ReactElement, useCallback, useState } from 'react';
+import React, { FunctionComponent, ReactElement, useCallback, useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { OWBox } from '../../components/card';
 import { View, Image, StyleSheet } from 'react-native';
@@ -19,7 +19,7 @@ import { navigate } from '@src/router/root';
 import { SCREENS } from '@src/common/constants';
 import RadioGroup from 'react-native-radio-buttons-group';
 import { AddressBtcType } from '@owallet/types';
-import { getKeyDerivationFromAddressType } from '@owallet/common';
+import { delay, getKeyDerivationFromAddressType } from '@owallet/common';
 import { useBIP44Option } from '../register/bip44';
 export const AccountBox: FunctionComponent<{
   totalBalance?: string | React.ReactNode;
@@ -38,6 +38,7 @@ export const AccountBox: FunctionComponent<{
   const { networkType, coinType, chainId, bip44 } = chainStore.current;
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
+  const [loading, setLoading] = useState(true);
   const bip44Option = useBIP44Option();
   const queryStakable = queries.queryBalances.getQueryBech32Address(account.bech32Address).stakable;
 
@@ -50,6 +51,15 @@ export const AccountBox: FunctionComponent<{
     });
     modalStore.setChildren(MyWalletModal());
   };
+
+  const waitToLoad = async () => {
+    await delay(2000);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    waitToLoad();
+  }, []);
 
   const RenderBtnMain = ({ name }) => {
     let icon: ReactElement;
@@ -73,6 +83,7 @@ export const AccountBox: FunctionComponent<{
         icon={icon}
         label={name}
         textStyle={styles.textBtnHeaderDashboard}
+        disabled={loading}
       />
     );
   };
