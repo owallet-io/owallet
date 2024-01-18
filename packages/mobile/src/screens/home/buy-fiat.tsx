@@ -63,8 +63,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: metrics.screenWidth,
-    height: metrics.screenHeight,
-    backgroundColor: 'red'
+    height: metrics.screenHeight
   },
   webview: {}
 });
