@@ -6,13 +6,15 @@ import { useStore } from '@src/stores';
 import { metrics } from '@src/themes';
 import { ChainIdEnum, delay, KADOChainNameEnum } from '@owallet/common';
 const BuyFiat = observer(() => {
-  const { chainStore, accountStore } = useStore();
+  const { accountStore, appInitStore } = useStore();
+
+  const theme = appInitStore.getInitApp.theme;
 
   const [accountList, setAccounts] = useState('');
 
-  const networkList = 'BITCOIN, OSMOSIS, ETHEREUM, JUNO, INJECTIVE, COSMOS HUB'.split(', ').join(',');
+  const networkList = 'BITCOIN, OSMOSIS, ETHEREUM, JUNO, INJECTIVE, COSMOS HUB, ORAICHAIN'.split(', ').join(',');
 
-  const cryptoList = 'USDT, USDC, ETH, OSMO, ATOM, BTC, INJ, wETH, wBTC, USDC.e'.split(', ').join(',');
+  const cryptoList = 'ORAI, USDT, USDC, ETH, OSMO, ATOM, BTC, INJ, wETH, wBTC, USDC.e'.split(', ').join(',');
 
   let accounts = {};
 
@@ -47,7 +49,7 @@ const BuyFiat = observer(() => {
       <WebView
         originWhitelist={['*']}
         source={{
-          uri: `https://app.kado.money/?onPayCurrency=USD&onPayAmount=200&onRevCurrency=USDC&offPayCurrency=USDC&offRevCurrency=USD&network=OSMOSIS&&onToAddressMulti=${accountList}&cryptoList=${cryptoList}&networkList=${networkList}&dapiKey=${process.env.API_KEY_KADO}&product=BUY&productList=BUY"`
+          uri: `https://app.kado.money/?onPayCurrency=USD&onPayAmount=200&onRevCurrency=USDC&offPayCurrency=USDC&offRevCurrency=USD&network=OSMOSIS&&onToAddressMulti=${accountList}&cryptoList=${cryptoList}&networkList=${networkList}&dapiKey=${'67ee8355-a3a4-4a88-8af5-3cbc8f3eb155'}&product=BUY&productList=BUY&theme=${theme}"`
         }}
         style={styles.webview}
       />
