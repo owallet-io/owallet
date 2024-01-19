@@ -200,6 +200,15 @@ export const EmbedChainInfos: AppChainInfo[] = [
           coinDecimals: 6,
           coinGeckoId: 'milky-token',
           coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/14418.png'
+        },
+        {
+          coinDenom: 'WETH',
+          coinGeckoId: 'weth',
+          coinMinimalDenom: 'weth',
+          type: 'cw20',
+          contractAddress: 'orai1dqa52a7hxxuv8ghe7q5v0s36ra0cthea960q2cukznleqhk0wpnshfegez',
+          coinDecimals: 6,
+          coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png'
         }
       ];
     },

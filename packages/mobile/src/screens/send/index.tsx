@@ -79,10 +79,13 @@ export const SendScreen: FunctionComponent = observer(() => {
   useEffect(() => {
     if (route?.params?.currency) {
       const currency = sendConfigs.amountConfig.sendableCurrencies.find(cur => {
-        if (cur?.contractAddress?.includes(route?.params?.contractAddress)) {
-          return cur?.contractAddress?.includes(route?.params?.contractAddress);
+        if (cur?.contractAddress) {
+          return (
+            cur.contractAddress?.includes(route?.params?.contractAddress.toLowerCase()) ||
+            cur.contractAddress === route?.params?.contractAddress.toLowerCase()
+          );
         }
-        if (cur?.coinMinimalDenom.includes(route?.params?.contractAddress)) {
+        if (cur?.coinMinimalDenom) {
           return cur?.coinMinimalDenom.includes(route?.params?.contractAddress);
         }
         if (cur?.type === 'cw20') {
@@ -93,12 +96,13 @@ export const SendScreen: FunctionComponent = observer(() => {
         }
         return cur.coinMinimalDenom == route.params.currency;
       });
+      console.log('currency', currency);
 
       if (currency) {
         sendConfigs.amountConfig.setSendCurrency(currency);
       }
     }
-  }, [route?.params?.currency, sendConfigs.amountConfig]);
+  }, [route?.params?.currency, sendConfigs.amountConfig, route?.params?.contractAddress]);
 
   useEffect(() => {
     if (route?.params?.recipient) {
