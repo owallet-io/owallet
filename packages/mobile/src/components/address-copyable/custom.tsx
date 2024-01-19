@@ -7,6 +7,7 @@ import { CheckIcon, CopyFillIcon } from '../icon';
 import { useSimpleTimer } from '../../hooks';
 import { formatContractAddress } from '../../utils/helper';
 import { useTheme } from '@src/themes/theme-provider';
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
 export const CustomAddressCopyable: FunctionComponent<{
   style?: ViewStyle;
@@ -20,7 +21,7 @@ export const CustomAddressCopyable: FunctionComponent<{
   const { colors } = useTheme();
 
   return (
-    <RectButton
+    <TouchableWithoutFeedback
       style={{
         paddingLeft: 12,
         paddingRight: 8,
@@ -36,9 +37,6 @@ export const CustomAddressCopyable: FunctionComponent<{
         Clipboard.setString(address);
         setTimer(2000);
       }}
-      rippleColor={colors['primary-100']}
-      underlayColor={colors['primary-50']}
-      activeOpacity={1}
     >
       <View
         style={{
@@ -81,6 +79,6 @@ export const CustomAddressCopyable: FunctionComponent<{
       >
         {isTimedOut ? <CheckIcon /> : <CopyFillIcon size={24} color={colors['neutral-icon-on-light']} />}
       </View>
-    </RectButton>
+    </TouchableWithoutFeedback>
   );
 };

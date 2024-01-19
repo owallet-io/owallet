@@ -91,7 +91,8 @@ const styling = (colors: TypeTheme['colors']) =>
       fontSize: 14,
       fontWeight: '500',
       color: colors['neutral-text-body'],
-      marginVertical: 10
+      marginVertical: 10,
+      paddingRight: 12
     },
     containerModal: {
       height: metrics.screenHeight / 1.3

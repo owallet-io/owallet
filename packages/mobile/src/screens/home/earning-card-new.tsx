@@ -12,7 +12,7 @@ import { StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { OWBox } from '../../components/card';
 import { useSmartNavigation } from '../../navigation.provider';
 import { useStore } from '../../stores';
-import { metrics, spacing } from '../../themes';
+import { metrics } from '../../themes';
 
 export const EarningCardNew: FunctionComponent<{
   containerStyle?: ViewStyle;
