@@ -81,8 +81,8 @@ export const SendScreen: FunctionComponent = observer(() => {
       const currency = sendConfigs.amountConfig.sendableCurrencies.find(cur => {
         if (cur?.contractAddress) {
           return (
-            cur.contractAddress?.includes(route?.params?.contractAddress.toLowerCase()) ||
-            cur.contractAddress === route?.params?.contractAddress.toLowerCase()
+            cur.contractAddress?.includes(route?.params?.contractAddress?.toLowerCase()) ||
+            cur.contractAddress === route?.params?.contractAddress?.toLowerCase()
           );
         }
         if (cur?.coinMinimalDenom) {
@@ -96,7 +96,6 @@ export const SendScreen: FunctionComponent = observer(() => {
         }
         return cur.coinMinimalDenom == route.params.currency;
       });
-      console.log('currency', currency);
 
       if (currency) {
         sendConfigs.amountConfig.setSendCurrency(currency);

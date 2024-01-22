@@ -5,16 +5,10 @@ import OWHeaderTitle from '@src/components/header/ow-header-title';
 import OWHeaderRight from '@src/components/header/ow-header-right';
 import { useTheme } from '@src/themes/theme-provider';
 import OWButtonIcon from '@src/components/button/ow-button-icon';
-import {
-  StackNavigationOptions,
-  TransitionPresets
-} from '@react-navigation/stack';
+import { StackNavigationOptions, TransitionPresets } from '@react-navigation/stack';
 import { HEADER_KEY, SCREENS } from '@src/common/constants';
 interface IUseHeaderOptions extends StackNavigationOptions {}
-const useHeaderOptions = (
-  data?: IUseHeaderOptions,
-  navigation?: any
-): IUseHeaderOptions => {
+const useHeaderOptions = (data?: IUseHeaderOptions, navigation?: any): IUseHeaderOptions => {
   const { colors } = useTheme();
   const onGoBack = () => {
     navigation.goBack();
@@ -36,7 +30,7 @@ const useHeaderOptions = (
   return {
     headerStyle: {
       backgroundColor: colors['background-box'],
-      shadowColor: colors['border-gray'],
+      shadowColor: colors['border-gray']
       // shadowRadius: 0,
       // elevation: 1
     },
@@ -62,10 +56,7 @@ const useHeaderOptions = (
       return null;
     },
     ...TransitionPresets.SlideFromRightIOS,
-    headerShown:
-      data?.title === HEADER_KEY.notShowHeader || !!data?.title == false
-        ? false
-        : true,
+    headerShown: data?.title === HEADER_KEY.notShowHeader || !!data?.title == false ? false : true,
     ...data
   };
 };
@@ -74,6 +65,6 @@ export default useHeaderOptions;
 
 const styles = StyleSheet.create({
   btnIcon: {
-    paddingRight: 20
+    paddingRight: 35
   }
 });

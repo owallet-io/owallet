@@ -35,7 +35,7 @@ export const CustomAddressCopyable: FunctionComponent<{
       }}
       onPress={() => {
         Clipboard.setString(address);
-        setTimer(2000);
+        setTimer(300);
       }}
     >
       <View
