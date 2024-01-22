@@ -98,7 +98,8 @@ export const TokensCardAll: FunctionComponent<{
       }
       smartNavigation.navigateSmart('Send', {
         currency: item.denom,
-        contractAddress: item.contractAddress
+        contractAddress: item.contractAddress,
+        coinGeckoId: item.coinGeckoId
       });
     }
   };

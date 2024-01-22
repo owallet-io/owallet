@@ -209,6 +209,7 @@ const { SmartNavigatorProvider, useSmartNavigation } = createSmartNavigatorProvi
     };
     Send: {
       chainId?: string;
+      coinGeckoId?: string;
       currency?: string;
       recipient?: string;
       contractAddress?: string;

@@ -79,11 +79,11 @@ export const SendScreen: FunctionComponent = observer(() => {
   useEffect(() => {
     if (route?.params?.currency) {
       const currency = sendConfigs.amountConfig.sendableCurrencies.find(cur => {
-        if (cur?.contractAddress) {
-          return (
-            cur.contractAddress?.includes(route?.params?.contractAddress?.toLowerCase()) ||
-            cur.contractAddress === route?.params?.contractAddress?.toLowerCase()
-          );
+        if (cur?.coinGeckoId === route?.params?.coinGeckoId) {
+          return true;
+        }
+        if (cur?.contractAddress?.includes(route?.params?.contractAddress?.toLowerCase())) {
+          return true;
         }
         if (cur?.coinMinimalDenom) {
           return cur?.coinMinimalDenom.includes(route?.params?.contractAddress);
