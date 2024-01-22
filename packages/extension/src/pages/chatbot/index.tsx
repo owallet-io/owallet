@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import React, { FunctionComponent, useEffect, useRef, useState } from 'react';
+import React, { FunctionComponent, useEffect, useReducer, useRef } from 'react';
 import { HeaderLayout } from '../../layouts';
 import style from './style.module.scss';
 import { useStore } from '../../stores';
@@ -41,6 +41,36 @@ export const Messages = ({ messages }) => {
 
 const BACKEND_URL = 'http://10.0.131.230:80';
 
+enum StatusEnum {
+  READY = 'ready',
+  CHAT = 'chat',
+}
+
+const initialState = {
+  messages: [],
+  prompt: '',
+  status: StatusEnum.READY,
+};
+
+function reducer(state, action) {
+  const { type, payload } = action;
+  switch (type) {
+    case 'on_change_prompt':
+      return {
+        ...state,
+        prompt: action.payload,
+      };
+    case 'chat':
+      return {
+        ...state,
+        messages: [...state.messages, payload],
+        prompt: '',
+        status: StatusEnum.CHAT,
+      };
+  }
+  throw Error('Unknown action: ' + action.type);
+}
+
 export const ChatbotPage: FunctionComponent = observer(() => {
   const { chainStore, accountStore } = useStore();
   const accountInfo = accountStore.getAccount(chainStore.current.chainId);
@@ -48,10 +78,15 @@ export const ChatbotPage: FunctionComponent = observer(() => {
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const client = useClientTestnet(accountOrai);
 
-  const [prompt, setPrompt] = useState('');
-  const [messages, setMessages] = useState([]);
+  // const [prompt, setPrompt] = useState('');
+  // const [messages, setMessages] = useState([]);
 
   const messagesEndRef = useRef(null);
+
+  const [{ messages, prompt, status }, dispatch] = useReducer(
+    reducer,
+    initialState
+  );
 
   console.log(userAddr);
 
@@ -71,18 +106,34 @@ export const ChatbotPage: FunctionComponent = observer(() => {
   // }, null);
 
   const testChatUI = () => {
-    setMessages([
-      ...messages,
-      {
+    dispatch({
+      type: 'chat',
+      payload: {
         isUser: true,
         msg: prompt,
       },
-      {
+    });
+
+    dispatch({
+      type: 'chat',
+      payload: {
         isUser: false,
         msg: 'Answer',
       },
-    ]);
-    setPrompt('');
+    });
+
+    // setMessages([
+    //   ...messages,
+    //   {
+    //     isUser: true,
+    //     msg: prompt,
+    //   },
+    //   {
+    //     isUser: false,
+    //     msg: 'Answer',
+    //   },
+    // ]);
+    // setPrompt('');
   };
 
   const scrollToBottom = () => {
@@ -94,14 +145,14 @@ export const ChatbotPage: FunctionComponent = observer(() => {
   }, [messages]);
 
   const callBot = async () => {
-    setMessages([
-      ...messages,
-      {
-        isUser: true,
-        msg: prompt,
-      },
-    ]);
-    setPrompt('');
+    // setMessages([
+    //   ...messages,
+    //   {
+    //     isUser: true,
+    //     msg: prompt,
+    //   },
+    // ]);
+    // setPrompt('');
     try {
       const resp = await fetch(`${BACKEND_URL}/swapNative`, {
         method: 'POST',
@@ -133,14 +184,13 @@ export const ChatbotPage: FunctionComponent = observer(() => {
         executeMsg,
         amount
       );
-      setMessages([
-        ...messages,
-        {
-          isUser: false,
-          msg: botCmt,
-        },
-      ]);
-
+      // setMessages([
+      //   ...messages,
+      //   {
+      //     isUser: false,
+      //     msg: botCmt,
+      //   },
+      // ]);
       console.log(result);
     } catch (err) {
       console.log(err);
@@ -205,17 +255,45 @@ export const ChatbotPage: FunctionComponent = observer(() => {
                 />
                 <p>How can I help you?</p>
               </div>
-              {/* <div className={style.wrapperCommonPrompt}>
-                <div className={style.commonPrompt}>
-                  <p>Price of token today</p>
+              {status === StatusEnum.READY && (
+                <div className={style.wrapperCommonPrompt}>
+                  <div
+                    className={style.commonPrompt}
+                    onClick={(evt) =>
+                      dispatch({
+                        type: 'on_change_prompt',
+                        payload: evt.target.innerText,
+                      })
+                    }
+                  >
+                    <p>Price of token today</p>
+                  </div>
+                  <div
+                    className={style.commonPrompt}
+                    onClick={(evt) =>
+                      dispatch({
+                        type: 'on_change_prompt',
+                        payload: evt.target.innerText,
+                      })
+                    }
+                  >
+                    <p>Deploy CW-20</p>
+                  </div>
+                  <div
+                    className={style.commonPrompt}
+                    onClick={(evt) =>
+                      dispatch({
+                        type: 'on_change_prompt',
+                        payload: evt.target.innerText,
+                      })
+                    }
+                  >
+                    <p>The fluctuation of token this year</p>
+                  </div>
                 </div>
-                <div className={style.commonPrompt}>
-                  <p>Deploy CW-20</p>
-                </div>
-                <div className={style.commonPrompt}>
-                  <p>The fluctuation of token this year</p>
-                </div>
-              </div> */}
+              )}
+
+              {status === StatusEnum.CHAT && <Messages messages={messages} />}
 
               {/* <div className={style.wrapperChat}>
                 <UserChat msg="Price of token today" />
@@ -228,12 +306,17 @@ export const ChatbotPage: FunctionComponent = observer(() => {
                       different exchanges."
                 />
               </div> */}
-              <Messages messages={messages} />
+
               <div>
                 <div className={style.inputWrapperContent}>
                   <input
                     value={prompt}
-                    onChange={(e) => setPrompt(e.target.value)}
+                    onChange={(e) =>
+                      dispatch({
+                        payload: e.target.value,
+                        type: 'on_change_prompt',
+                      })
+                    }
                     className={style.inputBox}
                     type="text"
                     placeholder="Ask anything..."
