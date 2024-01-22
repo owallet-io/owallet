@@ -67,7 +67,7 @@ export const HeaderLayout: FunctionComponent<Props> = (props) => {
     }
   };
 
-  const listTabs = ['Home', 'Token', 'Account', 'Menu', 'Chatbot'];
+  const listTabs = ['Home', 'Token', 'Account', 'Chatbot', 'Menu'];
   const history = useHistory();
 
   const toggle = (tab) => {
@@ -79,11 +79,11 @@ export const HeaderLayout: FunctionComponent<Props> = (props) => {
       case 'Account':
         path = '/setting/set-keyring';
         break;
-      case 'Menu':
-        path = '/menu';
-        break;
       case 'Chatbot':
         path = '/chatbot';
+        break;
+      case 'Menu':
+        path = '/menu';
         break;
     }
     history.push(path);

@@ -1,7 +1,10 @@
-import { observer } from "mobx-react-lite";
-import React, { FunctionComponent, useEffect } from "react";
-import { HeaderLayout } from "../../layouts";
-import style from "./style.module.scss";
+import { observer } from 'mobx-react-lite';
+import React, { FunctionComponent } from 'react';
+import { HeaderLayout } from '../../layouts';
+import style from './style.module.scss';
+import { useStore } from '../../stores';
+import { ChainIdEnum } from '@owallet/common';
+import { useClientTestnet } from './use-client-testnet';
 
 export const UserChat = ({ msg }) => {
   return (
@@ -11,17 +14,81 @@ export const UserChat = ({ msg }) => {
   );
 };
 
+const BACKEND_URL = "http://10.0.131.230:80";
+
 export const ChatbotPage: FunctionComponent = observer(() => {
-  useEffect(() => {
-    fetch(
-      "https://api.oraidex.io/price?base_denom=orai&quote_denom=orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh&tf=240"
-    )
-      .then((res) => res.json())
-      .then((data) => console.log(data))
-      .catch((err) => {
-        console.log(err);
+  const { chainStore, accountStore } = useStore();
+  const accountInfo = accountStore.getAccount(chainStore.current.chainId);
+  const userAddr = accountInfo._bech32Address;
+  const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
+  const client = useClientTestnet(accountOrai);
+  console.log(userAddr);
+
+  const callBot = async () => {
+    try {
+      const resp = await fetch(`${BACKEND_URL}/swapNative`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_address: "orai",
+          user_input: "Swap",
+        }),
       });
-  }, []);
+      const data = await resp.json();
+      // console.log(data);
+      const {
+        Action: action,
+        Comment: botCmt,
+        Pair_contract: contractAddr,
+        inputamout: inputAmount,
+        Parameters: params,
+      } = data;
+      const executeMsg = params.msg;
+      const amount = inputAmount
+        ? [{ amount: inputAmount, denom: 'orai' }]
+        : undefined;
+      // console.log(amount);
+      const result = await handleBotResponse(
+        userAddr,
+        contractAddr,
+        executeMsg,
+        amount
+      );
+      console.log(result);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  async function handleBotResponse(
+    senderAddr,
+    contractAddr,
+    executeMsg,
+    amount
+  ) {
+    const result = await client.execute(
+      senderAddr,
+      contractAddr,
+      executeMsg,
+      'auto',
+      undefined,
+      amount
+    );
+    return result;
+  }
+
+  // useEffect(() => {
+  //   fetch(
+  //     'https://api.oraidex.io/price?base_denom=orai&quote_denom=orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh&tf=240'
+  //   )
+  //     .then((res) => res.json())
+  //     .then((data) => console.log(data))
+  //     .catch((err) => {
+  //       console.log(err);
+  //     });
+  // }, []);
 
   return (
     <HeaderLayout showChainName canChangeChainInfo>
@@ -33,7 +100,7 @@ export const ChatbotPage: FunctionComponent = observer(() => {
                 <img
                   className="img"
                   alt="WeMinimal Icon"
-                  src={require("../../public/assets/img/we-minimal-icon.svg")}
+                  src={require('../../public/assets/img/we-minimal-icon.svg')}
                 />
                 <p>How can I help you?</p>
               </div>
@@ -48,7 +115,7 @@ export const ChatbotPage: FunctionComponent = observer(() => {
                   <p>The fluctuation of token this year</p>
                 </div>
               </div>
-              <div className={style.wrapperChat}>
+              {/* <div className={style.wrapperChat}>
                 <div className={style.wrapperUserChat}>
                   <div className={style.userChat}>
                     <p>Price of token today</p>
@@ -70,7 +137,7 @@ export const ChatbotPage: FunctionComponent = observer(() => {
                     </p>
                   </div>
                 </div>
-              </div>
+              </div> */}
               <div>
                 <div className={style.inputWrapperContent}>
                   <input
@@ -79,9 +146,10 @@ export const ChatbotPage: FunctionComponent = observer(() => {
                     placeholder="Ask anything..."
                   />
                   <img
+                    onClick={() => callBot()}
                     className="arrow-up-square"
                     alt="Arrow up square"
-                    src={require("../../public/assets/img/arrow-up-square.svg")}
+                    src={require('../../public/assets/img/arrow-up-square.svg')}
                   />
                 </div>
               </div>
