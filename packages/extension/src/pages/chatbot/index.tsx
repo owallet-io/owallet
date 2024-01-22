@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite';
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useEffect, useRef, useState } from 'react';
 import { HeaderLayout } from '../../layouts';
 import style from './style.module.scss';
 import { useStore } from '../../stores';
@@ -8,13 +8,38 @@ import { useClientTestnet } from './use-client-testnet';
 
 export const UserChat = ({ msg }) => {
   return (
-    <div className={style.userMsg}>
-      <p>{msg}</p>
+    <div className={style.wrapperUserChat}>
+      <div className={style.userChat}>
+        <p>{msg}</p>
+      </div>
     </div>
   );
 };
 
-const BACKEND_URL = "http://10.0.131.230:80";
+export const BotChat = ({ msg }) => {
+  return (
+    <div className={style.wrapperBotChat}>
+      <div className={style.botChat}>
+        <p>{msg}</p>
+      </div>
+    </div>
+  );
+};
+
+export const Messages = ({ messages }) => {
+  return (
+    <div className={style.wrapperChat}>
+      {messages.map((msg) => {
+        if (msg.isUser) {
+          return <UserChat msg={msg.msg} />;
+        }
+        return <BotChat msg={msg.msg} />;
+      })}
+    </div>
+  );
+};
+
+const BACKEND_URL = 'http://10.0.131.230:80';
 
 export const ChatbotPage: FunctionComponent = observer(() => {
   const { chainStore, accountStore } = useStore();
@@ -22,18 +47,70 @@ export const ChatbotPage: FunctionComponent = observer(() => {
   const userAddr = accountInfo._bech32Address;
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const client = useClientTestnet(accountOrai);
+
+  const [prompt, setPrompt] = useState('');
+  const [messages, setMessages] = useState([]);
+
+  const messagesEndRef = useRef(null);
+
   console.log(userAddr);
 
+  // const testChatUI = useCallback(() => {
+  //   setMessages([
+  //     ...messages,
+  //     {
+  //       isUser: true,
+  //       msg: prompt,
+  //     },
+  //     {
+  //       isUser: false,
+  //       msg: 'Answer',
+  //     },
+  //   ]);
+  //   setPrompt('');
+  // }, null);
+
+  const testChatUI = () => {
+    setMessages([
+      ...messages,
+      {
+        isUser: true,
+        msg: prompt,
+      },
+      {
+        isUser: false,
+        msg: 'Answer',
+      },
+    ]);
+    setPrompt('');
+  };
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
   const callBot = async () => {
+    setMessages([
+      ...messages,
+      {
+        isUser: true,
+        msg: prompt,
+      },
+    ]);
+    setPrompt('');
     try {
       const resp = await fetch(`${BACKEND_URL}/swapNative`, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          user_address: "orai",
-          user_input: "Swap",
+          user_address: 'orai',
+          user_input: 'Swap',
         }),
       });
       const data = await resp.json();
@@ -56,6 +133,14 @@ export const ChatbotPage: FunctionComponent = observer(() => {
         executeMsg,
         amount
       );
+      setMessages([
+        ...messages,
+        {
+          isUser: false,
+          msg: botCmt,
+        },
+      ]);
+
       console.log(result);
     } catch (err) {
       console.log(err);
@@ -78,6 +163,22 @@ export const ChatbotPage: FunctionComponent = observer(() => {
     );
     return result;
   }
+
+  // useEffect(() => {
+  //   document.addEventListener('keypress', (evt) => {
+  //     if (evt.key == 'Enter') {
+  //       testChatUI();
+  //     }
+  //   });
+
+  //   return () => {
+  //     document.removeEventListener('keypress', (evt) => {
+  //       if (evt.key == 'Enter') {
+  //         testChatUI();
+  //       }
+  //     });
+  //   };
+  // }, [testChatUI]);
 
   // useEffect(() => {
   //   fetch(
@@ -104,7 +205,7 @@ export const ChatbotPage: FunctionComponent = observer(() => {
                 />
                 <p>How can I help you?</p>
               </div>
-              <div className={style.wrapperCommonPrompt}>
+              {/* <div className={style.wrapperCommonPrompt}>
                 <div className={style.commonPrompt}>
                   <p>Price of token today</p>
                 </div>
@@ -114,39 +215,33 @@ export const ChatbotPage: FunctionComponent = observer(() => {
                 <div className={style.commonPrompt}>
                   <p>The fluctuation of token this year</p>
                 </div>
-              </div>
+              </div> */}
+
               {/* <div className={style.wrapperChat}>
-                <div className={style.wrapperUserChat}>
-                  <div className={style.userChat}>
-                    <p>Price of token today</p>
-                  </div>
-                </div>
-                <div className={style.wrapperBotChat}>
-                  <div className={style.botChat}>
-                    <p>Sure, wait me a minute</p>
-                  </div>
-                </div>
-                <div className={style.wrapperBotChat}>
-                  <div className={style.botChat}>
-                    <p>
-                      To get the latest price information for Orai Coin, I
+                <UserChat msg="Price of token today" />
+                <BotChat msg="Sure, wait me a minute" />
+                <BotChat
+                  msg="To get the latest price information for Orai Coin, I
                       recommend checking a reputable cryptocurrency exchange,
                       financial news website, or the official website of the
                       project. Keep in mind that prices can vary between
-                      different exchanges.
-                    </p>
-                  </div>
-                </div>
+                      different exchanges."
+                />
               </div> */}
+              <Messages messages={messages} />
               <div>
                 <div className={style.inputWrapperContent}>
                   <input
+                    value={prompt}
+                    onChange={(e) => setPrompt(e.target.value)}
                     className={style.inputBox}
                     type="text"
                     placeholder="Ask anything..."
                   />
                   <img
-                    onClick={() => callBot()}
+                    // onClick={() => callBot()}
+                    onClick={() => testChatUI()}
+                    style={{ cursor: 'pointer' }}
                     className="arrow-up-square"
                     alt="Arrow up square"
                     src={require('../../public/assets/img/arrow-up-square.svg')}
@@ -156,6 +251,7 @@ export const ChatbotPage: FunctionComponent = observer(() => {
             </div>
           </div>
         </div>
+        <div ref={messagesEndRef} />
       </div>
     </HeaderLayout>
   );
