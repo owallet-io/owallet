@@ -79,15 +79,21 @@ export const SendScreen: FunctionComponent = observer(() => {
   useEffect(() => {
     if (route?.params?.currency) {
       const currency = sendConfigs.amountConfig.sendableCurrencies.find(cur => {
+        //@ts-ignore
+
         if (cur?.coinGeckoId === route?.params?.coinGeckoId) {
           return true;
         }
+        //@ts-ignore
+
         if (cur?.contractAddress?.includes(route?.params?.contractAddress?.toLowerCase())) {
           return true;
         }
         if (cur?.coinMinimalDenom) {
           return cur?.coinMinimalDenom.includes(route?.params?.contractAddress);
         }
+        //@ts-ignore
+
         if (cur?.type === 'cw20') {
           return cur.coinDenom == route.params.currency;
         }
@@ -143,7 +149,9 @@ export const SendScreen: FunctionComponent = observer(() => {
             }}
           />
           <AmountInput
-            placeholder={`ex. 1000 ${chainStore.current.stakeCurrency.coinDenom}`}
+            placeholder={`ex. 1000 ${
+              sendConfigs.amountConfig.sendCurrency.coinDenom ?? chainStore.current.stakeCurrency.coinDenom
+            }`}
             label="Amount"
             allowMax={chainStore.current.networkType !== 'evm' ? true : false}
             amountConfig={sendConfigs.amountConfig}
