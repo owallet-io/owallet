@@ -219,7 +219,9 @@ export const RecoverPhraseScreen: FunctionComponent = observer(props => {
         }}
         error={errors.mnemonic?.message}
         onBlur={onBlur}
-        onChangeText={onChange}
+        onChangeText={txt => {
+          onChange(txt.toLocaleLowerCase());
+        }}
         value={value}
         ref={ref}
       />
@@ -279,12 +281,14 @@ export const RecoverPhraseScreen: FunctionComponent = observer(props => {
             name="mnemonic"
             defaultValue=""
           />
-          <TouchableOpacity
-            onPress={() => {
-              onPaste();
-            }}
-          >
-            <View style={styles.paste}>
+
+          <View style={styles.paste}>
+            <TouchableOpacity
+              style={styles.pasteBtn}
+              onPress={() => {
+                onPaste();
+              }}
+            >
               <OWIcon size={20} name="mnemo" color={colors['primary-text-action']} />
               <OWText
                 style={{ paddingLeft: 4 }}
@@ -295,8 +299,8 @@ export const RecoverPhraseScreen: FunctionComponent = observer(props => {
               >
                 Paste from clipboard
               </OWText>
-            </View>
-          </TouchableOpacity>
+            </TouchableOpacity>
+          </View>
           <Controller
             control={control}
             rules={{
@@ -391,12 +395,14 @@ const useStyle = () => {
       marginLeft: 16
     },
     paste: {
+      paddingHorizontal: 16,
+      paddingBottom: 24,
+      width: '100%'
+    },
+    pasteBtn: {
       flexDirection: 'row',
       alignItems: 'center',
-      justifyContent: 'flex-end',
-      width: metrics.screenWidth,
-      paddingHorizontal: 16,
-      paddingBottom: 24
+      alignSelf: 'flex-end'
     }
   });
 };
