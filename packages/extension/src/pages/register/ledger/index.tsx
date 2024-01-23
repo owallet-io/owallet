@@ -46,7 +46,7 @@ export const ImportLedgerPage: FunctionComponent<{
 }> = observer(({ registerConfig }) => {
   const intl = useIntl();
   const { chainStore, analyticsStore } = useStore();
-  const bip44Option = useBIP44Option(chainStore?.current?.coinType ?? 118);
+  const bip44Option = useBIP44Option(118);
 
   const { register, handleSubmit, getValues, errors } = useForm<FormData>({
     defaultValues: {

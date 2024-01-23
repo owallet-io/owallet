@@ -115,7 +115,7 @@ export const AdvancedBIP44Option: FunctionComponent<{
         bip44Option.setAccount(0);
         bip44Option.setChange(0);
         bip44Option.setIndex(0);
-        bip44Option.setCoinType(undefined);
+        bip44Option.setCoinType(118);
       }
     } else {
       setIsOpen(true);
@@ -156,6 +156,7 @@ export const AdvancedBIP44Option: FunctionComponent<{
               type="number"
               className="form-control-alternative"
               style={{ maxWidth: '92px', textAlign: 'right' }}
+              disabled={true}
               value={bip44Option.coinType != null ? bip44Option?.coinType?.toString() : 0}
               onChange={(e) => {
                 e.preventDefault();
