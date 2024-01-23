@@ -30,12 +30,13 @@ import {
   TRON_DENOM,
   BigDecimal,
   toSubAmount,
-  oraichainTokens
+  oraichainTokens,
+  tokenMap
 } from '@oraichain/oraidex-common';
 import { openLink } from '../../utils/helper';
 import { SwapDirection, feeEstimate, getTransferTokenFee } from '@owallet/common';
 import { handleSimulateSwap, filterNonPoolEvmTokens } from '@oraichain/oraidex-universal-swap';
-import { fetchTokenInfos, ChainIdEnum, tokenMap } from '@owallet/common';
+import { fetchTokenInfos, ChainIdEnum } from '@owallet/common';
 import { calculateMinReceive, getTokenOnOraichain } from '@oraichain/oraidex-common';
 import {
   isEvmNetworkNativeSwapSupported,
@@ -137,6 +138,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   // get token on oraichain to simulate swap amount.
   const originalFromToken = tokenMap[fromTokenDenom];
   const originalToToken = tokenMap[toTokenDenom];
+
   const isEvmSwap = isEvmSwappable({
     fromChainId: originalFromToken.chainId,
     toChainId: originalToToken.chainId,
@@ -540,7 +542,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     if (isSupportedNoPoolSwapEvm(fromToken.coinGeckoId) && !isEvmNetworkNativeSwapSupported(toToken.chainId)) return;
     setSwapTokens([toTokenDenom, fromTokenDenom]);
     setSwapAmount([0, 0]);
-    setBalanceActive(null);
   };
 
   const handleActiveAmount = item => {
@@ -580,6 +581,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         }}
         selectedChainFilter={selectedChainFilter}
         setToken={denom => {
+          console.log('denom', denom, toTokenDenom);
+
           setSwapTokens([denom, toTokenDenom]);
           setSwapAmount([0, 0]);
           setBalanceActive(null);
@@ -603,6 +606,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           setIsNetworkModal(true);
         }}
         setToken={denom => {
+          console.log('denom 2', fromTokenDenom, denom);
           setSwapTokens([fromTokenDenom, denom]);
           setSwapAmount([0, 0]);
           setBalanceActive(null);
