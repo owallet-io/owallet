@@ -60,7 +60,7 @@ export const EarningCardNew: FunctionComponent<{
     }
   };
   return (
-    <OWBox>
+    <OWBox style={{ marginHorizontal: 16, width: metrics.screenWidth - 32 }}>
       <TouchableOpacity
         onPress={() => {
           navigation.dispatch(StackActions.replace('MainTab', { screen: SCREENS.TABS.Invest }));
