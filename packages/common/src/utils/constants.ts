@@ -25,7 +25,8 @@ export enum ChainIdEnum {
   TRON = '0x2b6653dc',
   BitcoinTestnet = 'bitcoinTestnet',
   Bitcoin = 'bitcoin',
-  Injective = 'injective-1'
+  Injective = 'injective-1',
+  Oasis = '0x5afe'
 }
 
 export enum ChainNameEnum {
@@ -40,7 +41,8 @@ export enum ChainNameEnum {
   Juno = 'Juno',
   BNBChain = 'BNB Chain',
   TRON = 'Tron Network',
-  Injective = 'Injective'
+  Injective = 'Injective',
+  Oasis = 'Oasis Sapphire'
 }
 
 export const restBtc = {
