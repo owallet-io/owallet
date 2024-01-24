@@ -16,6 +16,8 @@ const initialState = {
   prompt: '',
   status: StatusEnum.READY,
   chosenOption: OptionEnum.ORAIDEX,
+  pairContractAddr:
+    'orai1agqfdtyd9lr0ntmfjtzl4f6gyswpeq4z4mdnq4npdxdc99tcw35qesmr9v',
 };
 
 function reducer(state, action) {
@@ -50,6 +52,16 @@ function reducer(state, action) {
         prompt: '',
         status: StatusEnum.READY,
       };
+    case 'on_change_pair_contract_addr':
+      return {
+        ...state,
+        pairContractAddr: payload,
+      };
+    case 'reload_messages':
+      return {
+        ...state,
+        messages: JSON.parse(localStorage.getItem('messages')),
+      };
   }
   throw Error('Unknown action: ' + action.type);
 }
@@ -61,32 +73,20 @@ export const ChatbotPage: FunctionComponent = observer(() => {
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const client = useClientTestnet(accountOrai);
 
-  // const [prompt, setPrompt] = useState('');
-  // const [messages, setMessages] = useState([]);
-
   const messagesEndRef = useRef(null);
 
-  const [{ messages, prompt, status, choose_option }, dispatch] = useReducer(
-    reducer,
-    initialState
-  );
+  const [
+    { messages, prompt, status, chosenOption, pairContractAddr },
+    dispatch,
+  ] = useReducer(reducer, initialState);
 
   console.log(userAddr);
 
-  // const testChatUI = useCallback(() => {
-  //   setMessages([
-  //     ...messages,
-  //     {
-  //       isUser: true,
-  //       msg: prompt,
-  //     },
-  //     {
-  //       isUser: false,
-  //       msg: 'Answer',
-  //     },
-  //   ]);
-  //   setPrompt('');
-  // }, null);
+  useEffect(() => {
+    dispatch({
+      type: 'reload_messages',
+    });
+  }, []);
 
   const testChatUI = () => {
     dispatch({
@@ -104,19 +104,6 @@ export const ChatbotPage: FunctionComponent = observer(() => {
         msg: 'Answer',
       },
     });
-
-    // setMessages([
-    //   ...messages,
-    //   {
-    //     isUser: true,
-    //     msg: prompt,
-    //   },
-    //   {
-    //     isUser: false,
-    //     msg: 'Answer',
-    //   },
-    // ]);
-    // setPrompt('');
   };
 
   const scrollToBottom = () => {
@@ -127,19 +114,23 @@ export const ChatbotPage: FunctionComponent = observer(() => {
     scrollToBottom();
   }, [messages]);
 
-  const callBot = async (userAddr, dispatch, prompt) => {
-    // setMessages([
-    //   ...messages,
-    //   {
-    //     isUser: true,
-    //     msg: prompt,
-    //   },
-    // ]);
-    // setPrompt('');
-
+  const callBot = async (
+    userAddr,
+    dispatch,
+    prompt,
+    pairContractAddr,
+    chosenOption
+  ) => {
     let endPoint = '';
-    if (choose_option === OptionEnum.SWAP) {
+    if (chosenOption === OptionEnum.SWAP) {
       endPoint = `${BACKEND_URL}/swapNative`;
+      dispatch({
+        type: 'chat',
+        payload: {
+          isUser: true,
+          msg: prompt,
+        },
+      });
       try {
         const resp = await fetch(endPoint, {
           method: 'POST',
@@ -148,18 +139,20 @@ export const ChatbotPage: FunctionComponent = observer(() => {
           },
           body: JSON.stringify({
             user_address: userAddr,
-            user_input: 'Swap',
+            user_input: prompt,
+            pair_contract: pairContractAddr,
           }),
         });
         const data = await resp.json();
         console.log(data);
+        const { answer, msg } = data;
+        const msgObject = JSON.parse(msg);
         const {
           Action: action,
-          Comment: botCmt,
           Pair_contract: contractAddr,
           inputamout: inputAmount,
           Parameters: params,
-        } = data;
+        } = msgObject;
         const executeMsg = params.msg;
         const amount = inputAmount
           ? [{ amount: inputAmount, denom: 'orai' }]
@@ -171,11 +164,12 @@ export const ChatbotPage: FunctionComponent = observer(() => {
           executeMsg,
           amount
         );
+        const { transactionHash } = result;
         dispatch({
           type: 'chat',
           payload: {
             isUser: false,
-            msg: botCmt,
+            msg: `${answer}. Go to here https://testnet.scan.orai.io/txs/${transactionHash} to see transaction`,
           },
         });
         console.log(result);
@@ -354,9 +348,24 @@ export const ChatbotPage: FunctionComponent = observer(() => {
                     type="text"
                     placeholder="Ask anything..."
                   />
-
+                  <i
+                    onClick={() => {
+                      dispatch({
+                        type: 'reset',
+                      });
+                    }}
+                    className={`fas fa-trash-alt ${style.iconTrash}`}
+                  />
                   <img
-                    onClick={() => callBot(userAddr, dispatch, prompt)}
+                    onClick={() =>
+                      callBot(
+                        userAddr,
+                        dispatch,
+                        prompt,
+                        pairContractAddr,
+                        chosenOption
+                      )
+                    }
                     // onClick={() => testChatUI()}
                     style={{ cursor: 'pointer' }}
                     className="arrow-up-square"
@@ -364,16 +373,23 @@ export const ChatbotPage: FunctionComponent = observer(() => {
                     src={require('../../public/assets/img/arrow-up-square.svg')}
                   />
                 </div>
-                <Dropdown chosenOption={choose_option} dispatch={dispatch} />
-                <button
-                  onClick={() => {
-                    dispatch({
-                      type: 'reset',
-                    });
-                  }}
-                >
-                  Delete
-                </button>
+                <div className={style.inputWrapperContent}>
+                  <Dropdown chosenOption={chosenOption} dispatch={dispatch} />
+                </div>
+                <div className={style.inputWrapperContent}>
+                  <input
+                    className={style.inputBox}
+                    placeholder="Pair contract address"
+                    value={pairContractAddr}
+                    onChange={(e) =>
+                      dispatch({
+                        payload: e.target.value,
+                        type: 'on_change_pair_contract_addr',
+                      })
+                    }
+                    type="text"
+                  />
+                </div>
               </div>
             </div>
           </div>
