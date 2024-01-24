@@ -296,7 +296,7 @@ export const ChatbotPage: FunctionComponent = observer(() => {
                       })
                     }
                   >
-                    <p>Price of token today</p>
+                    <p>Compare current price of AIRight with 20 days ago</p>
                   </div>
                   <div
                     className={style.commonPrompt}
@@ -307,7 +307,7 @@ export const ChatbotPage: FunctionComponent = observer(() => {
                       })
                     }
                   >
-                    <p>Deploy CW-20</p>
+                    <p>Analyze the current trends of Orai tokens on Oraidex</p>
                   </div>
                   <div
                     className={style.commonPrompt}
@@ -318,7 +318,7 @@ export const ChatbotPage: FunctionComponent = observer(() => {
                       })
                     }
                   >
-                    <p>The fluctuation of token this year</p>
+                    <p>Compare the price of Airight on Oraidex</p>
                   </div>
                 </div>
               )}
