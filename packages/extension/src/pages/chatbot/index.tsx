@@ -8,8 +8,9 @@ import { useClientTestnet } from './use-client-testnet';
 import { OptionEnum, StatusEnum } from './enum';
 import { Dropdown } from './dropdown';
 import { Messages } from './messages';
+import { useHistory, useLocation } from 'react-router';
 
-const BACKEND_URL = 'http://127.0.0.1:5000';
+const BACKEND_URL = 'https://oraidex-tools.fly.dev';
 
 const initialState = {
   messages: JSON.parse(localStorage.getItem('messages')) || [],
@@ -73,6 +74,10 @@ export const ChatbotPage: FunctionComponent = observer(() => {
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const client = useClientTestnet(accountOrai);
 
+  // router
+  const history = useHistory(); // navigate back to chatbot after sign success
+  const location = useLocation(); // active useEffect to reload messages
+
   const messagesEndRef = useRef(null);
 
   const [
@@ -86,7 +91,7 @@ export const ChatbotPage: FunctionComponent = observer(() => {
     dispatch({
       type: 'reload_messages',
     });
-  }, []);
+  }, [location.pathname]);
 
   const testChatUI = () => {
     dispatch({
@@ -165,14 +170,20 @@ export const ChatbotPage: FunctionComponent = observer(() => {
           amount
         );
         const { transactionHash } = result;
-        dispatch({
-          type: 'chat',
-          payload: {
-            isUser: false,
-            msg: `${answer}. Go to here https://testnet.scan.orai.io/txs/${transactionHash} to see transaction`,
-          },
-        });
-        console.log(result);
+        const messages = JSON.parse(localStorage.getItem('messages'));
+        // because when execute it will redirect to signing page so the component will be unmount so we need to save messages to localstorage (temp solution)
+        localStorage.setItem(
+          'messages',
+          JSON.stringify([
+            ...messages,
+            {
+              isUser: false,
+              msg: `${answer}. Go to here https://testnet.scan.orai.io/txs/${transactionHash} to see transaction`,
+            },
+          ])
+        );
+        // navigate to chatbot page
+        history.push('/chatbot');
       } catch (err) {
         console.log(err);
       }
