@@ -5,51 +5,17 @@ import style from './style.module.scss';
 import { useStore } from '../../stores';
 import { ChainIdEnum } from '@owallet/common';
 import { useClientTestnet } from './use-client-testnet';
+import { OptionEnum, StatusEnum } from './enum';
+import { Dropdown } from './dropdown';
+import { Messages } from './messages';
 
-export const UserChat = ({ msg }) => {
-  return (
-    <div className={style.wrapperUserChat}>
-      <div className={style.userChat}>
-        <p>{msg}</p>
-      </div>
-    </div>
-  );
-};
-
-export const BotChat = ({ msg }) => {
-  return (
-    <div className={style.wrapperBotChat}>
-      <div className={style.botChat}>
-        <p>{msg}</p>
-      </div>
-    </div>
-  );
-};
-
-export const Messages = ({ messages }) => {
-  return (
-    <div className={style.wrapperChat}>
-      {messages.map((msg) => {
-        if (msg.isUser) {
-          return <UserChat msg={msg.msg} />;
-        }
-        return <BotChat msg={msg.msg} />;
-      })}
-    </div>
-  );
-};
-
-const BACKEND_URL = 'http://10.0.131.230:80';
-
-enum StatusEnum {
-  READY = 'ready',
-  CHAT = 'chat',
-}
+const BACKEND_URL = 'http://127.0.0.1:5000';
 
 const initialState = {
-  messages: [],
+  messages: JSON.parse(localStorage.getItem('messages')) || [],
   prompt: '',
   status: StatusEnum.READY,
+  chosenOption: OptionEnum.ORAIDEX,
 };
 
 function reducer(state, action) {
@@ -61,11 +27,28 @@ function reducer(state, action) {
         prompt: action.payload,
       };
     case 'chat':
+      localStorage.setItem(
+        'messages',
+        JSON.stringify([...state.messages, payload])
+      );
       return {
         ...state,
         messages: [...state.messages, payload],
         prompt: '',
         status: StatusEnum.CHAT,
+      };
+    case 'choose_option':
+      return {
+        ...state,
+        chosenOption: payload,
+      };
+    case 'reset':
+      localStorage.removeItem('messages');
+      return {
+        ...state,
+        messages: [],
+        prompt: '',
+        status: StatusEnum.READY,
       };
   }
   throw Error('Unknown action: ' + action.type);
@@ -83,7 +66,7 @@ export const ChatbotPage: FunctionComponent = observer(() => {
 
   const messagesEndRef = useRef(null);
 
-  const [{ messages, prompt, status }, dispatch] = useReducer(
+  const [{ messages, prompt, status, choose_option }, dispatch] = useReducer(
     reducer,
     initialState
   );
@@ -144,7 +127,7 @@ export const ChatbotPage: FunctionComponent = observer(() => {
     scrollToBottom();
   }, [messages]);
 
-  const callBot = async () => {
+  const callBot = async (userAddr, dispatch, prompt) => {
     // setMessages([
     //   ...messages,
     //   {
@@ -153,48 +136,90 @@ export const ChatbotPage: FunctionComponent = observer(() => {
     //   },
     // ]);
     // setPrompt('');
-    try {
-      const resp = await fetch(`${BACKEND_URL}/swapNative`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          user_address: 'orai',
-          user_input: 'Swap',
-        }),
-      });
-      const data = await resp.json();
-      // console.log(data);
-      const {
-        Action: action,
-        Comment: botCmt,
-        Pair_contract: contractAddr,
-        inputamout: inputAmount,
-        Parameters: params,
-      } = data;
-      const executeMsg = params.msg;
-      const amount = inputAmount
-        ? [{ amount: inputAmount, denom: 'orai' }]
-        : undefined;
-      // console.log(amount);
-      const result = await handleBotResponse(
-        userAddr,
-        contractAddr,
-        executeMsg,
-        amount
-      );
-      // setMessages([
-      //   ...messages,
-      //   {
-      //     isUser: false,
-      //     msg: botCmt,
-      //   },
-      // ]);
-      console.log(result);
-    } catch (err) {
-      console.log(err);
+
+    let endPoint = '';
+    if (choose_option === OptionEnum.SWAP) {
+      endPoint = `${BACKEND_URL}/swapNative`;
+      try {
+        const resp = await fetch(endPoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            user_address: userAddr,
+            user_input: 'Swap',
+          }),
+        });
+        const data = await resp.json();
+        console.log(data);
+        const {
+          Action: action,
+          Comment: botCmt,
+          Pair_contract: contractAddr,
+          inputamout: inputAmount,
+          Parameters: params,
+        } = data;
+        const executeMsg = params.msg;
+        const amount = inputAmount
+          ? [{ amount: inputAmount, denom: 'orai' }]
+          : undefined;
+        console.log(amount);
+        const result = await handleBotResponse(
+          userAddr,
+          contractAddr,
+          executeMsg,
+          amount
+        );
+        dispatch({
+          type: 'chat',
+          payload: {
+            isUser: false,
+            msg: botCmt,
+          },
+        });
+        console.log(result);
+      } catch (err) {
+        console.log(err);
+      }
+    } else {
+      endPoint = `${BACKEND_URL}/chatoraidex`;
+      try {
+        // console.log(userAddr);
+        // console.log(prompt);
+        dispatch({
+          type: 'chat',
+          payload: {
+            isUser: true,
+            msg: prompt,
+          },
+        });
+        const resp = await fetch(endPoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            user_address: userAddr,
+            user_input: prompt,
+          }),
+        });
+        const data = await resp.json();
+        const { output } = data;
+        console.log(data);
+        dispatch({
+          type: 'chat',
+          payload: {
+            isUser: false,
+            msg: output,
+          },
+        });
+        // console.log(result);
+      } catch (err) {
+        console.log(err);
+      }
     }
+    console.log(endPoint);
   };
 
   async function handleBotResponse(
@@ -255,7 +280,7 @@ export const ChatbotPage: FunctionComponent = observer(() => {
                 />
                 <p>How can I help you?</p>
               </div>
-              {status === StatusEnum.READY && (
+              {status === StatusEnum.READY && messages.length == 0 && (
                 <div className={style.wrapperCommonPrompt}>
                   <div
                     className={style.commonPrompt}
@@ -293,7 +318,9 @@ export const ChatbotPage: FunctionComponent = observer(() => {
                 </div>
               )}
 
-              {status === StatusEnum.CHAT && <Messages messages={messages} />}
+              {(status === StatusEnum.CHAT || messages.length != 0) && (
+                <Messages messages={messages} />
+              )}
 
               {/* <div className={style.wrapperChat}>
                 <UserChat msg="Price of token today" />
@@ -317,19 +344,36 @@ export const ChatbotPage: FunctionComponent = observer(() => {
                         type: 'on_change_prompt',
                       })
                     }
+                    onKeyDown={(evt) => {
+                      if (evt.key === 'Enter') {
+                        testChatUI();
+                        // callBot(userAddr, dispatch, prompt);
+                      }
+                    }}
                     className={style.inputBox}
                     type="text"
                     placeholder="Ask anything..."
                   />
+
                   <img
-                    // onClick={() => callBot()}
-                    onClick={() => testChatUI()}
+                    onClick={() => callBot(userAddr, dispatch, prompt)}
+                    // onClick={() => testChatUI()}
                     style={{ cursor: 'pointer' }}
                     className="arrow-up-square"
                     alt="Arrow up square"
                     src={require('../../public/assets/img/arrow-up-square.svg')}
                   />
                 </div>
+                <Dropdown chosenOption={choose_option} dispatch={dispatch} />
+                <button
+                  onClick={() => {
+                    dispatch({
+                      type: 'reset',
+                    });
+                  }}
+                >
+                  Delete
+                </button>
               </div>
             </div>
           </div>
