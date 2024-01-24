@@ -438,7 +438,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     features: ['stargate', 'ibc-transfer', 'cosmwasm']
   },
   {
-    chainId: 'oraibtc-subnet-1',
+    chainId: 'oraibtc-testnet-2',
     chainName: 'OraiBtc Bridge Testnet',
     rpc: 'https://oraibtc.rpc.orai.io',
     rest: 'https://oraibtc.lcd.orai.io',
