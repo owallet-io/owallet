@@ -466,7 +466,7 @@ export class Oasis implements IOasis {
   }
 
   async getDefaultAddress(): Promise<unknown> {
-    const msg = new GetDefaultAddressOasisMsg(ChainIdEnum.Osmosis);
+    const msg = new GetDefaultAddressOasisMsg(ChainIdEnum.Oasis);
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 }
