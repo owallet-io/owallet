@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { View, ViewStyle } from 'react-native';
 import { useStore } from '../../stores';
@@ -17,6 +17,8 @@ export const AccountCardEVM: FunctionComponent<{
   const { chainStore, accountStore, queriesStore, priceStore, modalStore, keyRingStore } = useStore();
 
   const smartNavigation = useSmartNavigation();
+
+  const [oasisAddress, setOasisAddress] = useState('');
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
@@ -59,8 +61,10 @@ export const AccountCardEVM: FunctionComponent<{
   const getKey = async () => {
     try {
       // @ts-ignore
-      const pub = await window.oasis.getDefaultOasisAddress(chainStore.current.chainId);
-      console.log('pub', pub);
+      const oasisInfo = await window.oasis.getDefaultOasisAddress(chainStore.current.chainId);
+      console.log('oasisInfo', oasisInfo);
+
+      setOasisAddress(oasisInfo.address);
     } catch (err) {
       console.log('err getKey', err);
     }
@@ -68,7 +72,7 @@ export const AccountCardEVM: FunctionComponent<{
 
   useEffect(() => {
     getKey();
-  }, []);
+  }, [account]);
 
   const renderAddress = () => {
     if (chainStore.current.chainId === TRON_ID) {
@@ -86,19 +90,7 @@ export const AccountCardEVM: FunctionComponent<{
       );
     }
 
-    return (
-      <View>
-        <View>
-          <Text>EVM: </Text>
-          <AddressCopyable address={addressDisplay} maxCharacters={22} />
-        </View>
-        <View>
-          <Text>Evmos: </Text>
-          <AddressCopyable address={account.bech32Address} maxCharacters={22} />
-        </View>
-      </View>
-    );
-    // return <AddressCopyable address={addressDisplay} maxCharacters={22} />;
+    return <AddressCopyable address={oasisAddress.length > 0 ? oasisAddress : addressDisplay} maxCharacters={22} />;
   };
   return (
     <AccountBox

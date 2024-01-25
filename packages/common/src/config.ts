@@ -1181,7 +1181,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
   {
     rpc: 'https://sapphire.oasis.io',
     rest: 'https://sapphire.oasis.io',
-    // rest: 'https://grpc.oasis.dev',
+    grpc: 'https://grpc.oasis.dev',
     chainId: '0x5afe',
     networkType: 'evm',
     chainName: 'Oasis Sapphire',
