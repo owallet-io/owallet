@@ -1,5 +1,11 @@
 import { observer } from 'mobx-react-lite';
-import React, { FunctionComponent, useEffect, useReducer, useRef } from 'react';
+import React, {
+  FunctionComponent,
+  useEffect,
+  useReducer,
+  useRef,
+  useState,
+} from 'react';
 import { HeaderLayout } from '../../layouts';
 import style from './style.module.scss';
 import { useStore } from '../../stores';
@@ -8,7 +14,7 @@ import { useClientTestnet } from './use-client-testnet';
 import { OptionEnum, StatusEnum } from './enum';
 import { Dropdown } from './dropdown';
 import { Messages } from './messages';
-import { useHistory, useLocation } from 'react-router';
+import { Loader } from './loader';
 
 const BACKEND_URL = 'https://oraidex-tools.fly.dev';
 
@@ -70,13 +76,9 @@ function reducer(state, action) {
 export const ChatbotPage: FunctionComponent = observer(() => {
   const { chainStore, accountStore } = useStore();
   const accountInfo = accountStore.getAccount(chainStore.current.chainId);
-  const userAddr = accountInfo._bech32Address;
+  const userAddr = accountInfo.bech32Address;
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const client = useClientTestnet(accountOrai);
-
-  // router
-  const history = useHistory(); // navigate back to chatbot after sign success
-  const location = useLocation(); // active useEffect to reload messages
 
   const messagesEndRef = useRef(null);
 
@@ -85,31 +87,7 @@ export const ChatbotPage: FunctionComponent = observer(() => {
     dispatch,
   ] = useReducer(reducer, initialState);
 
-  console.log(userAddr);
-
-  useEffect(() => {
-    dispatch({
-      type: 'reload_messages',
-    });
-  }, [location.pathname]);
-
-  const testChatUI = () => {
-    dispatch({
-      type: 'chat',
-      payload: {
-        isUser: true,
-        msg: prompt,
-      },
-    });
-
-    dispatch({
-      type: 'chat',
-      payload: {
-        isUser: false,
-        msg: 'Answer',
-      },
-    });
-  };
+  const [isLoading, setIsLoading] = useState(false);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -124,7 +102,8 @@ export const ChatbotPage: FunctionComponent = observer(() => {
     dispatch,
     prompt,
     pairContractAddr,
-    chosenOption
+    chosenOption,
+    setIsLoading
   ) => {
     let endPoint = '';
     if (chosenOption === OptionEnum.SWAP) {
@@ -136,6 +115,7 @@ export const ChatbotPage: FunctionComponent = observer(() => {
           msg: prompt,
         },
       });
+      setIsLoading(true);
       try {
         const resp = await fetch(endPoint, {
           method: 'POST',
@@ -149,6 +129,7 @@ export const ChatbotPage: FunctionComponent = observer(() => {
           }),
         });
         const data = await resp.json();
+        setIsLoading(false);
         console.log(data);
         const { answer, msg } = data;
         const msgObject = JSON.parse(msg);
@@ -182,16 +163,12 @@ export const ChatbotPage: FunctionComponent = observer(() => {
             },
           ])
         );
-        // navigate to chatbot page
-        history.push('/chatbot');
       } catch (err) {
         console.log(err);
       }
     } else {
       endPoint = `${BACKEND_URL}/chatoraidex`;
       try {
-        // console.log(userAddr);
-        // console.log(prompt);
         dispatch({
           type: 'chat',
           payload: {
@@ -199,6 +176,7 @@ export const ChatbotPage: FunctionComponent = observer(() => {
             msg: prompt,
           },
         });
+        setIsLoading(true);
         const resp = await fetch(endPoint, {
           method: 'POST',
           headers: {
@@ -210,6 +188,7 @@ export const ChatbotPage: FunctionComponent = observer(() => {
           }),
         });
         const data = await resp.json();
+        setIsLoading(false);
         const { output } = data;
         console.log(data);
         dispatch({
@@ -244,33 +223,6 @@ export const ChatbotPage: FunctionComponent = observer(() => {
     return result;
   }
 
-  // useEffect(() => {
-  //   document.addEventListener('keypress', (evt) => {
-  //     if (evt.key == 'Enter') {
-  //       testChatUI();
-  //     }
-  //   });
-
-  //   return () => {
-  //     document.removeEventListener('keypress', (evt) => {
-  //       if (evt.key == 'Enter') {
-  //         testChatUI();
-  //       }
-  //     });
-  //   };
-  // }, [testChatUI]);
-
-  // useEffect(() => {
-  //   fetch(
-  //     'https://api.oraidex.io/price?base_denom=orai&quote_denom=orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh&tf=240'
-  //   )
-  //     .then((res) => res.json())
-  //     .then((data) => console.log(data))
-  //     .catch((err) => {
-  //       console.log(err);
-  //     });
-  // }, []);
-
   return (
     <HeaderLayout showChainName canChangeChainInfo>
       <div className={style.container}>
@@ -292,7 +244,7 @@ export const ChatbotPage: FunctionComponent = observer(() => {
                     onClick={(evt) =>
                       dispatch({
                         type: 'on_change_prompt',
-                        payload: evt.target.innerText,
+                        payload: (evt.target as HTMLDivElement).innerText,
                       })
                     }
                   >
@@ -303,7 +255,7 @@ export const ChatbotPage: FunctionComponent = observer(() => {
                     onClick={(evt) =>
                       dispatch({
                         type: 'on_change_prompt',
-                        payload: evt.target.innerText,
+                        payload: (evt.target as HTMLDivElement).innerText,
                       })
                     }
                   >
@@ -314,7 +266,7 @@ export const ChatbotPage: FunctionComponent = observer(() => {
                     onClick={(evt) =>
                       dispatch({
                         type: 'on_change_prompt',
-                        payload: evt.target.innerText,
+                        payload: (evt.target as HTMLDivElement).innerText,
                       })
                     }
                   >
@@ -327,17 +279,7 @@ export const ChatbotPage: FunctionComponent = observer(() => {
                 <Messages messages={messages} />
               )}
 
-              {/* <div className={style.wrapperChat}>
-                <UserChat msg="Price of token today" />
-                <BotChat msg="Sure, wait me a minute" />
-                <BotChat
-                  msg="To get the latest price information for Orai Coin, I
-                      recommend checking a reputable cryptocurrency exchange,
-                      financial news website, or the official website of the
-                      project. Keep in mind that prices can vary between
-                      different exchanges."
-                />
-              </div> */}
+              {isLoading && <Loader />}
 
               <div>
                 <div className={style.inputWrapperContent}>
@@ -351,8 +293,14 @@ export const ChatbotPage: FunctionComponent = observer(() => {
                     }
                     onKeyDown={(evt) => {
                       if (evt.key === 'Enter') {
-                        testChatUI();
-                        // callBot(userAddr, dispatch, prompt);
+                        callBot(
+                          userAddr,
+                          dispatch,
+                          prompt,
+                          pairContractAddr,
+                          chosenOption,
+                          setIsLoading
+                        );
                       }
                     }}
                     className={style.inputBox}
@@ -374,7 +322,8 @@ export const ChatbotPage: FunctionComponent = observer(() => {
                         dispatch,
                         prompt,
                         pairContractAddr,
-                        chosenOption
+                        chosenOption,
+                        setIsLoading
                       )
                     }
                     // onClick={() => testChatUI()}
