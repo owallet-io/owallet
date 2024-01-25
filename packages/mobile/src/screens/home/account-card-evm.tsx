@@ -9,7 +9,8 @@ import { AddressQRCodeModal } from './components';
 import Big from 'big.js';
 import { Text } from '@src/components/text';
 import { AccountBox } from './account-box';
-import { TRON_ID } from '@owallet/common';
+import { ChainIdEnum, TRON_ID } from '@owallet/common';
+import { formatBaseUnitsAsRose, formatWeiAsWrose } from '@owallet/background/build/utils/oasis-helper';
 
 export const AccountCardEVM: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -19,6 +20,7 @@ export const AccountCardEVM: FunctionComponent<{
   const smartNavigation = useSmartNavigation();
 
   const [oasisAddress, setOasisAddress] = useState('');
+  const [oasisBalance, setOasisBalance] = useState('0');
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
@@ -62,8 +64,16 @@ export const AccountCardEVM: FunctionComponent<{
     try {
       // @ts-ignore
       const oasisInfo = await window.oasis.getDefaultOasisAddress(chainStore.current.chainId);
-      console.log('oasisInfo', oasisInfo);
-
+      const amountUnit = 'baseUnits';
+      const maximumFractionDigits = undefined;
+      const isUsingBaseUnits = amountUnit === 'baseUnits';
+      const formatter = isUsingBaseUnits ? formatBaseUnitsAsRose : formatWeiAsWrose;
+      const amountString = formatter(oasisInfo.balance, {
+        minimumFractionDigits: 1,
+        maximumFractionDigits:
+          typeof maximumFractionDigits !== 'undefined' ? maximumFractionDigits : isUsingBaseUnits ? 15 : 18
+      });
+      setOasisBalance(amountString);
       setOasisAddress(oasisInfo.address);
     } catch (err) {
       console.log('err getKey', err);
@@ -92,6 +102,54 @@ export const AccountCardEVM: FunctionComponent<{
 
     return <AddressCopyable address={oasisAddress.length > 0 ? oasisAddress : addressDisplay} maxCharacters={22} />;
   };
+  const totalAmount = () => {
+    if (chainStore.current.chainId === ChainIdEnum.Oasis) {
+      return ``;
+    }
+    if (chainStore.current.chainId !== ChainIdEnum.TRON && total) {
+      return (
+        '$' +
+        (
+          parseFloat(new Big(parseInt(total.amount?.int?.value)).div(new Big(10).pow(36)).toString()) *
+          priceStore?.getPrice(chainStore?.current?.stakeCurrency?.coinGeckoId)
+        ).toFixed(6)
+      );
+    }
+    if (chainStore.current.chainId === ChainIdEnum.TRON && total) {
+      return (
+        '$' +
+        (
+          parseFloat(new Big(parseInt(total.amount?.int)).div(new Big(10).pow(24)).toString()) *
+          priceStore?.getPrice(chainStore?.current?.stakeCurrency?.coinGeckoId)
+        ).toFixed(6)
+      );
+    }
+
+    return 0;
+  };
+
+  const totalBalance = () => {
+    if (chainStore.current.chainId === ChainIdEnum.Oasis) {
+      return oasisBalance + ` ${chainStore.current?.stakeCurrency.coinDenom}`;
+    }
+
+    if (chainStore.current.chainId !== TRON_ID && total) {
+      return (
+        `${new Big(parseInt(total?.amount?.int)).div(new Big(10).pow(36)).toFixed(8)}` +
+        ` ${chainStore.current?.stakeCurrency.coinDenom}`
+      );
+    }
+
+    if (chainStore.current.chainId === TRON_ID && total) {
+      return (
+        `${new Big(parseInt(total?.amount?.int)).div(new Big(10).pow(24)).toFixed(6)}` +
+        ` ${chainStore.current?.stakeCurrency.coinDenom}`
+      );
+    }
+
+    return null;
+  };
+
   return (
     <AccountBox
       totalBalance={
@@ -104,15 +162,7 @@ export const AccountCardEVM: FunctionComponent<{
             lineHeight: 50
           }}
         >
-          {chainStore.current.chainId !== TRON_ID && total
-            ? `${new Big(parseInt(total?.amount?.int)).div(new Big(10).pow(36)).toFixed(8)}` +
-              ` ${chainStore.current?.stakeCurrency.coinDenom}`
-            : null}
-
-          {chainStore.current.chainId === TRON_ID && total
-            ? `${new Big(parseInt(total?.amount?.int)).div(new Big(10).pow(24)).toFixed(6)}` +
-              ` ${chainStore.current?.stakeCurrency.coinDenom}`
-            : null}
+          {totalBalance()}
         </Text>
       }
       coinType={`${
@@ -123,19 +173,7 @@ export const AccountCardEVM: FunctionComponent<{
       // networkType={'evm'}
       name={account.name || '...'}
       onPressBtnMain={onPressBtnMain}
-      totalAmount={`$${
-        chainStore.current.chainId !== TRON_ID && total
-          ? (
-              parseFloat(new Big(parseInt(total.amount?.int?.value)).div(new Big(10).pow(36)).toString()) *
-              priceStore?.getPrice(chainStore?.current?.stakeCurrency?.coinGeckoId)
-            ).toFixed(6)
-          : chainStore.current.chainId === TRON_ID && total
-          ? (
-              parseFloat(new Big(parseInt(total.amount?.int)).div(new Big(10).pow(24)).toString()) *
-              priceStore?.getPrice(chainStore?.current?.stakeCurrency?.coinGeckoId)
-            ).toFixed(6)
-          : 0
-      }`}
+      totalAmount={`${totalAmount()}`}
       addressComponent={renderAddress()}
     />
   );
