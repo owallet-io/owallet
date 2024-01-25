@@ -4,6 +4,7 @@ import {
   Ethereum as IEthereum,
   TronWeb as ITronWeb,
   Bitcoin as IBitcoin,
+  Oasis as IOasis,
   OWalletIntereactionOptions,
   OWalletMode,
   OWalletSignOptions,
@@ -55,7 +56,9 @@ import {
   RequestSignEthereumMsg,
   RequestSignTronMsg,
   RequestSendRawTransactionMsg,
-  TriggerSmartContractMsg
+  TriggerSmartContractMsg,
+  RequestSignOasisMsg,
+  GetDefaultAddressOasisMsg
 } from './msgs';
 import { ChainIdEnum } from '@owallet/common';
 
@@ -443,6 +446,27 @@ export class Bitcoin implements IBitcoin {
   }
   async getKey(chainId: string): Promise<Key> {
     const msg = new GetKeyMsg(chainId);
+    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  }
+}
+
+export class Oasis implements IOasis {
+  constructor(
+    public readonly version: string,
+    public readonly mode: EthereumMode,
+    public initChainId: string,
+    protected readonly requester: MessageRequester
+  ) {
+    this.initChainId = initChainId;
+  }
+
+  async sign(transaction: string): Promise<object> {
+    const msg = new RequestSignOasisMsg(ChainIdEnum.Oasis, transaction);
+    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  }
+
+  async getDefaultAddress(): Promise<unknown> {
+    const msg = new GetDefaultAddressOasisMsg(ChainIdEnum.Osmosis);
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 }

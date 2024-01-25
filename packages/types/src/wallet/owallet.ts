@@ -144,6 +144,7 @@ export interface OWallet {
 
 export type EthereumMode = 'core' | 'extension' | 'mobile-web' | 'walletconnect';
 export type BitcoinMode = 'core' | 'extension' | 'mobile-web' | 'walletconnect';
+export type DefaultMode = 'core' | 'extension' | 'mobile-web' | 'walletconnect';
 export type TronWebMode = 'core' | 'extension' | 'mobile-web' | 'walletconnect';
 
 export interface RequestArguments {
@@ -206,4 +207,17 @@ export interface Bitcoin {
 
   signAndBroadcast(chainId: string, data: object): Promise<{ rawTxHex: string }>;
   getKey(chainId: string): Promise<Key>;
+}
+
+export interface Oasis {
+  readonly version: string;
+  /**
+   * mode means that how Oasis is connected.
+   * If the connected Oasis is browser's extension, the mode should be "extension".
+   * If the connected Oasis is on the mobile app with the embeded web browser, the mode should be "mobile-web".
+   */
+  readonly mode: DefaultMode;
+
+  getDefaultAddress(chainId: string): Promise<any>;
+  sign(tx: string): Promise<any>;
 }

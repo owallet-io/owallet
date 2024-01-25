@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { View, ViewStyle } from 'react-native';
 import { useStore } from '../../stores';
@@ -10,7 +10,20 @@ import Big from 'big.js';
 import { Text } from '@src/components/text';
 import { AccountBox } from './account-box';
 import { TRON_ID } from '@owallet/common';
-import { SCREENS } from '@src/common/constants';
+import { fromBech32, toBech32 } from '@cosmjs/encoding';
+import * as oasisRT from '@oasisprotocol/client-rt';
+import * as oasis from '@oasisprotocol/client';
+import { quantity, staking, types } from '@oasisprotocol/client';
+
+const getAddress = (addr, prefix: string) => {
+  console.log('addr', addr);
+
+  const { data } = fromBech32(addr);
+  const evmBytes = oasis.misc.fromHex(addr.replace('0x', ''));
+  const bech32Address = oasisRT.address.toBech32(evmBytes);
+  console.log('bech32Address', bech32Address);
+  // return toBech32(prefix, data);
+};
 
 export const AccountCardEVM: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -24,13 +37,12 @@ export const AccountCardEVM: FunctionComponent<{
   const selected = keyRingStore?.multiKeyStoreInfo.find(keyStore => keyStore?.selected);
   const addressDisplay = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
   const addressCore = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses, false);
+  keyRingStore.showKeyRing();
   let total: any = queries.evm.queryEvmBalance.getQueryBalance(addressCore)?.balance;
 
   const onPressBtnMain = name => {
     if (name === 'Buy') {
-      navigate(SCREENS.STACK.Others, {
-        screen: SCREENS.BuyFiat
-      });
+      navigate('MainTab', { screen: 'Browser', path: 'https://oraidex.io' });
     }
     if (name === 'Receive') {
       _onPressReceiveModal();
@@ -58,6 +70,21 @@ export const AccountCardEVM: FunctionComponent<{
       })
     );
   };
+
+  console.log('account', account.evmosHexAddress);
+  console.log('account 2', account.bech32Address);
+  // console.log('getAddress 2', getAddress(account.evmosHexAddress, 'oasis'));
+  console.log('getAddress 2', getAddress(account.bech32Address, 'oasis'));
+
+  const getKey = async () => {
+    const pub = await window.ethereum.getPublicKey(chainStore.current.chainId);
+    console.log('pub', pub);
+  };
+
+  useEffect(() => {
+    getKey();
+  }, []);
+
   const renderAddress = () => {
     if (chainStore.current.chainId === TRON_ID) {
       return (
@@ -73,7 +100,20 @@ export const AccountCardEVM: FunctionComponent<{
         </View>
       );
     }
-    return <AddressCopyable address={addressDisplay} maxCharacters={22} />;
+
+    return (
+      <View>
+        <View>
+          <Text>EVM: </Text>
+          <AddressCopyable address={addressDisplay} maxCharacters={22} />
+        </View>
+        <View>
+          <Text>Evmos: </Text>
+          <AddressCopyable address={account.bech32Address} maxCharacters={22} />
+        </View>
+      </View>
+    );
+    // return <AddressCopyable address={addressDisplay} maxCharacters={22} />;
   };
   return (
     <AccountBox

@@ -21,7 +21,7 @@ import { showToast } from '@src/utils/helper';
 const bip39 = require('bip39');
 
 function isPrivateKey(str: string): boolean {
-  if (str?.startsWith('0x')) {
+  if (str?.startsWith('0x') || str?.startsWith('zs')) {
     return true;
   }
 

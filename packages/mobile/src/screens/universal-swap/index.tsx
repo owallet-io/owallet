@@ -388,7 +388,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const estimateAverageRatio = async () => {
     const data = await getSimulateSwap(INIT_AMOUNT);
-    console.log('data', data);
 
     setRatio(data);
   };
