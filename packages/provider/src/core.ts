@@ -13,7 +13,8 @@ import {
   RequestArguments,
   TronWebMode,
   BitcoinMode,
-  ChainInfoWithoutEndpoints
+  ChainInfoWithoutEndpoints,
+  DefaultMode
 } from '@owallet/types';
 import { BACKGROUND_PORT, MessageRequester } from '@owallet/router';
 import { BroadcastMode, AminoSignResponse, StdSignDoc, StdTx, OfflineSigner, StdSignature } from '@cosmjs/launchpad';
@@ -453,7 +454,7 @@ export class Bitcoin implements IBitcoin {
 export class Oasis implements IOasis {
   constructor(
     public readonly version: string,
-    public readonly mode: EthereumMode,
+    public readonly mode: DefaultMode,
     public initChainId: string,
     protected readonly requester: MessageRequester
   ) {
