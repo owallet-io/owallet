@@ -8,7 +8,7 @@ import { ChainIdEnum } from '@owallet/common';
 //@ts-ignore
 window.owallet = new OWallet(version, 'core', new RNMessageRequesterInternal());
 //@ts-ignore
-window.oasis = new Oasis(version, 'core', new RNMessageRequesterInternal());
+window.oasis = new Oasis(version, 'core', ChainIdEnum.Oasis, new RNMessageRequesterInternal());
 //@ts-ignore
 window.ethereum = new Ethereum(version, 'core', ChainIdEnum.Ethereum, new RNMessageRequesterInternal());
 //@ts-ignore

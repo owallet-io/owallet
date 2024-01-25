@@ -1253,7 +1253,7 @@ export class InjectedOasisOWallet implements IOasis {
   }
 
   getDefaultOasisAddress(): Promise<object> {
-    return this.requestMethod('getDefaultAddress', []);
+    return this.requestMethod('getDefaultOasisAddress', []);
   }
 
   async request(args: RequestArguments): Promise<any> {

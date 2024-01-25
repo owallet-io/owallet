@@ -10,20 +10,6 @@ import Big from 'big.js';
 import { Text } from '@src/components/text';
 import { AccountBox } from './account-box';
 import { TRON_ID } from '@owallet/common';
-import { fromBech32, toBech32 } from '@cosmjs/encoding';
-import * as oasisRT from '@oasisprotocol/client-rt';
-import * as oasis from '@oasisprotocol/client';
-import { quantity, staking, types } from '@oasisprotocol/client';
-
-const getAddress = (addr, prefix: string) => {
-  console.log('addr', addr);
-
-  const { data } = fromBech32(addr);
-  const evmBytes = oasis.misc.fromHex(addr.replace('0x', ''));
-  const bech32Address = oasisRT.address.toBech32(evmBytes);
-  console.log('bech32Address', bech32Address);
-  // return toBech32(prefix, data);
-};
 
 export const AccountCardEVM: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -37,7 +23,6 @@ export const AccountCardEVM: FunctionComponent<{
   const selected = keyRingStore?.multiKeyStoreInfo.find(keyStore => keyStore?.selected);
   const addressDisplay = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
   const addressCore = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses, false);
-  keyRingStore.showKeyRing();
   let total: any = queries.evm.queryEvmBalance.getQueryBalance(addressCore)?.balance;
 
   const onPressBtnMain = name => {
@@ -71,14 +56,14 @@ export const AccountCardEVM: FunctionComponent<{
     );
   };
 
-  console.log('account', account.evmosHexAddress);
-  console.log('account 2', account.bech32Address);
-  // console.log('getAddress 2', getAddress(account.evmosHexAddress, 'oasis'));
-  console.log('getAddress 2', getAddress(account.bech32Address, 'oasis'));
-
   const getKey = async () => {
-    const pub = await window.ethereum.getPublicKey(chainStore.current.chainId);
-    console.log('pub', pub);
+    try {
+      // @ts-ignore
+      const pub = await window.oasis.getDefaultOasisAddress(chainStore.current.chainId);
+      console.log('pub', pub);
+    } catch (err) {
+      console.log('err getKey', err);
+    }
   };
 
   useEffect(() => {
