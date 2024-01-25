@@ -136,13 +136,8 @@ export function getNetworkTypeByBip44HDPath(path: BIP44HDPath): LedgerAppType {
     case 118:
       return 'cosmos';
     case 0:
-      //@ts-ignore
-      //TODO: Default ledger bitcoin address type is bech32 m84
-      return 'btc84';
     case 1:
-      //@ts-ignore
-      //TODO: Default ledger bitcoin address type is bech32 m84
-      return 'tbtc84';
+      return 'btc';
     case 60:
       return 'eth';
     case 195:
@@ -182,7 +177,6 @@ export function findLedgerAddress(AddressesLedger, chainInfo: ChainInfoWithoutEn
       return AddressesLedger?.eth;
     } else if (networkType === 'bitcoin') {
       const typeBtc = typeBtcLedgerByAddress(chainInfo, addressType);
-      console.log('🚀 ~ findLedgerAddress ~ typeBtc:', typeBtc);
       return AddressesLedger?.[typeBtc];
     } else {
       return AddressesLedger?.cosmos;
