@@ -218,6 +218,6 @@ export interface Oasis {
    */
   readonly mode: DefaultMode;
 
-  getDefaultAddress(chainId: string): Promise<any>;
-  sign(tx: string): Promise<any>;
+  getDefaultOasisAddress(chainId: string): Promise<any>;
+  signOasis(tx: string): Promise<any>;
 }

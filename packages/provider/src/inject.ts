@@ -1116,7 +1116,7 @@ export class InjectedOasisOWallet implements IOasis {
   }
 
   static startProxy(
-    tronweb: IOasis,
+    oasis: IOasis,
     eventListener: {
       addMessageListener: (fn: (e: any) => void) => void;
       postMessage: (message: any) => void;
@@ -1148,11 +1148,11 @@ export class InjectedOasisOWallet implements IOasis {
         var result: any;
         switch (message.method) {
           case 'sign':
-            result = await tronweb.sign(message.args[0]);
+            result = await oasis.signOasis(message.args[0]);
             break;
 
           default:
-            result = await tronweb.sign(message.args[0]);
+            result = await oasis.signOasis(message.args[0]);
             break;
         }
 
@@ -1181,7 +1181,7 @@ export class InjectedOasisOWallet implements IOasis {
     });
   }
 
-  protected requestMethod(method: keyof ITronWeb | string, args: any[]): Promise<any> {
+  protected requestMethod(method: keyof IOasis | string, args: any[]): Promise<any> {
     const bytes = new Uint8Array(8);
     const id: string = Array.from(crypto.getRandomValues(bytes))
       .map(value => {
@@ -1248,11 +1248,11 @@ export class InjectedOasisOWallet implements IOasis {
     protected readonly parseMessage?: (message: any) => any
   ) {}
 
-  sign(transaction: string): Promise<object> {
+  signOasis(transaction: string): Promise<object> {
     throw new Error('Method not implemented.');
   }
 
-  getDefaultAddress(): Promise<object> {
+  getDefaultOasisAddress(): Promise<object> {
     return this.requestMethod('getDefaultAddress', []);
   }
 

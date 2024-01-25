@@ -461,12 +461,12 @@ export class Oasis implements IOasis {
     this.initChainId = initChainId;
   }
 
-  async sign(transaction: string): Promise<object> {
+  async signOasis(transaction: string): Promise<object> {
     const msg = new RequestSignOasisMsg(ChainIdEnum.Oasis, transaction);
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
-  async getDefaultAddress(): Promise<unknown> {
+  async getDefaultOasisAddress(): Promise<unknown> {
     const msg = new GetDefaultAddressOasisMsg(ChainIdEnum.Oasis);
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
