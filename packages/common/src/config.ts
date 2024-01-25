@@ -1180,7 +1180,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
   },
   {
     rpc: 'https://sapphire.oasis.io',
-    rest: 'https://grpc.oasis.dev',
+    rest: 'https://sapphire.oasis.io',
+    // rest: 'https://grpc.oasis.dev',
     chainId: '0x5afe',
     networkType: 'evm',
     chainName: 'Oasis Sapphire',
@@ -1210,7 +1211,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinType: 474
     },
     coinType: 474,
-    bech32Config: Bech32Address.defaultBech32Config('evmos'),
+    bech32Config: Bech32Address.defaultBech32Config('oasis'),
     get feeCurrencies() {
       return [this.stakeCurrency];
     },

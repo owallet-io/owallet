@@ -112,7 +112,7 @@ export const TokensCardAll: FunctionComponent<{
         if (yesterdayAssets && yesterdayAssets.length > 0) {
           const yesterday = yesterdayAssets?.find(obj => obj['denom'] === item.denom);
           profit = Number(Number(item.value - (yesterday?.value ?? 0))?.toFixed(2) ?? 0);
-          percent = Number((profit / item.value) * 100 ?? 0).toFixed(2);
+          percent = Number((profit / yesterday?.value) * 100 ?? 0).toFixed(2);
         }
         const chainIcon = chainIcons.find(c => c.chainId === item.chainId);
 
