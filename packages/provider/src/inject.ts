@@ -1107,24 +1107,6 @@ export class InjectedTronWebOWallet implements ITronWeb {
 }
 
 export class InjectedOasisOWallet implements IOasis {
-  trx: {
-    sign: (transaction: object) => Promise<object>;
-    sendRawTransaction: (transaction: {
-      raw_data: any;
-      raw_data_hex: string;
-      txID: string;
-      visible?: boolean;
-    }) => Promise<object>;
-  };
-  transactionBuilder: {
-    triggerSmartContract: (
-      address: string,
-      functionSelector: string,
-      options: { feeLimit?: number },
-      parameters: any[],
-      issuerAddress: string
-    ) => any;
-  };
   get defaultAddress() {
     return JSON.parse(localStorage.getItem('oasis.defaultAddress'));
   }
@@ -1209,7 +1191,7 @@ export class InjectedOasisOWallet implements IOasis {
 
     const proxyMessage: ProxyRequest = {
       type: (NAMESPACE_OASIS + 'proxy-request') as any,
-      namespace: NAMESPACE_TRONWEB,
+      namespace: NAMESPACE_OASIS,
       id,
       method,
       args: JSONUint8Array.wrap(args)
