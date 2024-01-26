@@ -60,7 +60,7 @@ export const AccountCardEVM: FunctionComponent<{
     );
   };
 
-  const getKey = async () => {
+  const getOasisInfo = async () => {
     try {
       // @ts-ignore
       const oasisInfo = await window.oasis.getDefaultOasisAddress(chainStore.current.chainId);
@@ -76,12 +76,12 @@ export const AccountCardEVM: FunctionComponent<{
       setOasisBalance(amountString);
       setOasisAddress(oasisInfo.address);
     } catch (err) {
-      console.log('err getKey', err);
+      console.log('err getOasisInfo', err);
     }
   };
 
   useEffect(() => {
-    getKey();
+    getOasisInfo();
   }, [account]);
 
   const renderAddress = () => {
