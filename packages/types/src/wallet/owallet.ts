@@ -4,6 +4,8 @@ import { DirectSignResponse, OfflineDirectSigner } from '@cosmjs/proto-signing';
 import { SecretUtils } from 'secretjs/types/enigmautils';
 import Long from 'long';
 import { SignEthereumTypedDataObject } from '../typedMessage';
+import { Signer } from '@oasisprotocol/client/dist/signature';
+
 export type AddressesLedger = {
   cosmos?: string;
   eth?: string;
@@ -220,4 +222,5 @@ export interface Oasis {
 
   getDefaultOasisAddress(chainId: string): Promise<any>;
   signOasis(tx: string): Promise<any>;
+  txBuilderOasis(amount: bigint, to: string): Promise<any>;
 }

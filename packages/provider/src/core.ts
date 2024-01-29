@@ -59,9 +59,11 @@ import {
   RequestSendRawTransactionMsg,
   TriggerSmartContractMsg,
   RequestSignOasisMsg,
+  RequestTxBuilderOasisMsg,
   GetDefaultAddressOasisMsg
 } from './msgs';
 import { ChainIdEnum } from '@owallet/common';
+import { Signer } from '@oasisprotocol/client/dist/signature';
 
 export class OWallet implements IOWallet {
   protected enigmaUtils: Map<string, SecretUtils> = new Map();
@@ -463,6 +465,11 @@ export class Oasis implements IOasis {
 
   async signOasis(transaction: string): Promise<object> {
     const msg = new RequestSignOasisMsg(ChainIdEnum.Oasis, transaction);
+    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  }
+
+  async txBuilderOasis(amount: bigint, to: string): Promise<object> {
+    const msg = new RequestTxBuilderOasisMsg(ChainIdEnum.Oasis, { amount, to });
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 

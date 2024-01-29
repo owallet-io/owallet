@@ -1248,6 +1248,10 @@ export class InjectedOasisOWallet implements IOasis {
     protected readonly parseMessage?: (message: any) => any
   ) {}
 
+  txBuilderOasis(amount: bigint, to: string): Promise<any> {
+    throw new Error('Method not implemented.');
+  }
+
   signOasis(transaction: string): Promise<object> {
     throw new Error('Method not implemented.');
   }

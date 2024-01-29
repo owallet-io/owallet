@@ -80,8 +80,22 @@ export const AccountCardEVM: FunctionComponent<{
     }
   };
 
+  const txBuilder = async () => {
+    // @ts-ignore
+    const tx = await window.oasis.txBuilderOasis(
+      '100000000',
+      'oasis1 qr8v szyq 24vg lt0c e4fj zy4c c24f wemu tyul tsk5'
+    );
+
+    console.log('txBuilder', tx);
+  };
+
   useEffect(() => {
     getOasisInfo();
+  }, [account]);
+
+  useEffect(() => {
+    txBuilder();
   }, [account]);
 
   const renderAddress = () => {
