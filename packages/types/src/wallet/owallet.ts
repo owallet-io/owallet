@@ -222,5 +222,4 @@ export interface Oasis {
 
   getDefaultOasisAddress(chainId: string): Promise<any>;
   signOasis(tx: string): Promise<any>;
-  txBuilderOasis(amount: bigint, to: string): Promise<any>;
 }
