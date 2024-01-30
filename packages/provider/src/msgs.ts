@@ -129,7 +129,7 @@ export class RequestSignOasisMsg extends Message<object> {
     return 'request-sign-oasis';
   }
 
-  constructor(public readonly chainId: string, public readonly data: string) {
+  constructor(public readonly chainId: string, public readonly data: object) {
     super();
   }
 

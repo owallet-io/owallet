@@ -37,8 +37,12 @@ export const AccountCardEVM: FunctionComponent<{
       _onPressReceiveModal();
     }
     if (name === 'Send') {
-      if (chainStore.current.chainId === TRON_ID) {
+      if (chainStore.current.chainId === ChainIdEnum.TRON) {
         smartNavigation.navigateSmart('SendTron', {
+          currency: chainStore.current.stakeCurrency.coinMinimalDenom
+        });
+      } else if (chainStore.current.chainId === ChainIdEnum.Oasis) {
+        smartNavigation.navigateSmart('SendOasis', {
           currency: chainStore.current.stakeCurrency.coinMinimalDenom
         });
       } else {
@@ -73,20 +77,6 @@ export const AccountCardEVM: FunctionComponent<{
   useEffect(() => {
     getOasisWallet();
   }, [account]);
-
-  // const txBuilder = async () => {
-  //   // @ts-ignore
-  //   const tx = await window.oasis.txBuilderOasis(
-  //     '100000000',
-  //     'oasis1 qr8v szyq 24vg lt0c e4fj zy4c c24f wemu tyul tsk5'
-  //   );
-
-  //   console.log('txBuilder', tx);
-  // };
-
-  // useEffect(() => {
-  //   txBuilder();
-  // }, [account]);
 
   const renderAddress = () => {
     if (chainStore.current.chainId === TRON_ID) {

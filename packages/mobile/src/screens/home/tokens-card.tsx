@@ -22,10 +22,10 @@ import { RightArrowIcon } from '@src/components/icon';
 import { VectorCharacter } from '@src/components/vector-character';
 import FastImage from 'react-native-fast-image';
 import Big from 'big.js';
+import { SCREENS } from '@src/common/constants';
 
 const size = 44;
 const imageScale = 0.54;
-const USDT_DEFAULT_PRICE = 1;
 
 export const TokensCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -72,17 +72,16 @@ export const TokensCard: FunctionComponent<{
   };
 
   const renderToken = ({ item, index }) => {
-    console.log('chainStore.current.chainId', chainStore.current.chainId);
-
     if (chainStore.current.chainId === ChainIdEnum.Oasis) {
       const item = chainStore.current.stakeCurrency;
-      console.log('item', item);
 
       return (
         <TouchableOpacity
           style={styles.containerToken}
           onPress={() => {
-            // smartNavigation.navigateSmart('SendTron', { item });
+            smartNavigation.navigateSmart('SendOasis', {
+              currency: chainStore.current.stakeCurrency.coinMinimalDenom
+            });
           }}
         >
           <View
@@ -134,7 +133,7 @@ export const TokensCard: FunctionComponent<{
                   fontWeight: '700'
                 }}
               >
-                {item.coinDenom}
+                {chainStore.current.chainName}
               </Text>
               <Text
                 style={{

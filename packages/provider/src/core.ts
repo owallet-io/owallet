@@ -462,8 +462,8 @@ export class Oasis implements IOasis {
     this.initChainId = initChainId;
   }
 
-  async signOasis(transaction: string): Promise<object> {
-    const msg = new RequestSignOasisMsg(ChainIdEnum.Oasis, transaction);
+  async signOasis(amount: bigint, to: string): Promise<any> {
+    const msg = new RequestSignOasisMsg(ChainIdEnum.Oasis, { amount, to });
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 

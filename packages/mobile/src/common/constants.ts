@@ -35,6 +35,7 @@ export const SCREENS = {
   RegisterRecoverPhrase: 'Register.RecoverPhrase',
   RegisterNewLedger: 'Register.NewLedger',
   Send: 'Send',
+  SendOasis: 'SendOasis',
   TransferNFT: 'TransferNFT',
   Transactions: 'Transactions',
   Dashboard: 'Dashboard',
@@ -207,6 +208,9 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: HEADER_KEY.showNetworkHeader
   },
   [SCREENS.SendTron]: {
+    title: HEADER_KEY.showNetworkHeader
+  },
+  [SCREENS.SendOasis]: {
     title: HEADER_KEY.showNetworkHeader
   },
   [SCREENS.Notifications]: {

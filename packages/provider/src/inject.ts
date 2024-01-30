@@ -1148,11 +1148,11 @@ export class InjectedOasisOWallet implements IOasis {
         var result: any;
         switch (message.method) {
           case 'sign':
-            result = await oasis.signOasis(message.args[0]);
+            result = await oasis.signOasis(message.args[0], message.args[1]);
             break;
 
           default:
-            result = await oasis.signOasis(message.args[0]);
+            result = await oasis.signOasis(message.args[0], message.args[1]);
             break;
         }
 
@@ -1252,7 +1252,7 @@ export class InjectedOasisOWallet implements IOasis {
     throw new Error('Method not implemented.');
   }
 
-  signOasis(transaction: string): Promise<object> {
+  signOasis(): Promise<object> {
     throw new Error('Method not implemented.');
   }
 
