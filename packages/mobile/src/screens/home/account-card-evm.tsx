@@ -14,7 +14,8 @@ import { getOasisInfo } from '@src/utils/helper';
 
 export const AccountCardEVM: FunctionComponent<{
   containerStyle?: ViewStyle;
-}> = observer(({}) => {
+  refreshDate?: number;
+}> = observer(({ refreshDate }) => {
   const { chainStore, accountStore, queriesStore, priceStore, modalStore, keyRingStore } = useStore();
 
   const smartNavigation = useSmartNavigation();
@@ -76,7 +77,7 @@ export const AccountCardEVM: FunctionComponent<{
 
   useEffect(() => {
     getOasisWallet();
-  }, [account]);
+  }, [account, refreshDate]);
 
   const renderAddress = () => {
     if (chainStore.current.chainId === TRON_ID) {

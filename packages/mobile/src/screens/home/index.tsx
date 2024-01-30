@@ -221,7 +221,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
     } else if (chainStore.current.networkType === 'bitcoin') {
       return <AccountCardBitcoin containerStyle={styles.containerStyle} />;
     } else if (chainStore.current.networkType === 'evm') {
-      return <AccountCardEVM containerStyle={styles.containerStyle} />;
+      return <AccountCardEVM containerStyle={styles.containerStyle} refreshDate={refreshDate} />;
     }
     return <AccountCard containerStyle={styles.containerStyle} />;
   })();
