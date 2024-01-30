@@ -17,7 +17,8 @@ import Svg, { Path } from 'react-native-svg';
 import { Button } from '../../components/button';
 import { colors } from '@src/themes';
 import { BottomSheetProps } from '@gorhom/bottom-sheet';
-import { getLedgerAppNameByNetwork, LedgerAppType } from '@owallet/common';
+import { getLedgerAppNameByNetwork } from '@owallet/common';
+import { LedgerAppType } from '@owallet/types';
 const AlertIcon: FunctionComponent<{
   size: number;
   color: string;

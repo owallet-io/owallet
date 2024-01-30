@@ -13,6 +13,7 @@ export type AddressesLedger = {
   tbtc44?: string;
   tbtc84?: string;
 };
+export type LedgerTypes = 'cosmos' | 'eth' | 'trx' | 'btc44' | 'btc84' | 'tbtc44' | 'tbtc84' | 'btc';
 export interface Key {
   // Name of the selected key store.
   readonly name: string;

@@ -4,7 +4,8 @@ import {
   AddressBtcType,
   HDPath,
   KeyDerivationTypeEnum,
-  ChainInfoWithoutEndpoints
+  ChainInfoWithoutEndpoints,
+  LedgerTypes
 } from '@owallet/types';
 import bech32, { fromWords } from 'bech32';
 import { ETH } from '@hanchon/ethermint-address-converter';
@@ -13,7 +14,7 @@ import { ChainIdEnum, TRON_ID } from './constants';
 import { EmbedChainInfos } from '../config';
 import { Hash } from '@owallet/crypto';
 import bs58 from 'bs58';
-export type LedgerAppType = 'cosmos' | 'eth' | 'trx' | 'btc';
+import { LedgerAppType } from '@owallet/types';
 export const COINTYPE_NETWORK = {
   118: 'Cosmos',
   60: 'Ethereum',
@@ -138,6 +139,22 @@ export function getNetworkTypeByBip44HDPath(path: BIP44HDPath): LedgerAppType {
     case 0:
     case 1:
       return 'btc';
+    case 60:
+      return 'eth';
+    case 195:
+      return 'trx';
+    default:
+      return 'cosmos';
+  }
+}
+export function getLedgerTypeByHdPath(path: BIP44HDPath): LedgerTypes {
+  switch (path.coinType) {
+    case 118:
+      return 'cosmos';
+    case 0:
+      return 'tbtc84';
+    case 1:
+      return 'tbtc84';
     case 60:
       return 'eth';
     case 195:
