@@ -34,7 +34,6 @@ export const HomeScreen: FunctionComponent = observer(props => {
   const currentChain = chainStore.current;
   const currentChainId = currentChain?.chainId;
   const account = accountStore.getAccount(chainStore.current.chainId);
-  // const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
 
   const previousChainId = usePrevious(currentChainId);
   const chainStoreIsInitializing = chainStore.isInitializing;
