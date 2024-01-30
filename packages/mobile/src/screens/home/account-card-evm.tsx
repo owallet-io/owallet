@@ -10,7 +10,7 @@ import Big from 'big.js';
 import { Text } from '@src/components/text';
 import { AccountBox } from './account-box';
 import { ChainIdEnum, TRON_ID } from '@owallet/common';
-import { formatBaseUnitsAsRose, formatWeiAsWrose } from '@owallet/background/build/utils/oasis-helper';
+import { getOasisInfo } from '@src/utils/helper';
 
 export const AccountCardEVM: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -60,43 +60,33 @@ export const AccountCardEVM: FunctionComponent<{
     );
   };
 
-  const getOasisInfo = async () => {
+  const getOasisWallet = async () => {
     try {
-      // @ts-ignore
-      const oasisInfo = await window.oasis.getDefaultOasisAddress(chainStore.current.chainId);
-      const amountUnit = 'baseUnits';
-      const maximumFractionDigits = undefined;
-      const isUsingBaseUnits = amountUnit === 'baseUnits';
-      const formatter = isUsingBaseUnits ? formatBaseUnitsAsRose : formatWeiAsWrose;
-      const amountString = formatter(oasisInfo.balance, {
-        minimumFractionDigits: 1,
-        maximumFractionDigits:
-          typeof maximumFractionDigits !== 'undefined' ? maximumFractionDigits : isUsingBaseUnits ? 15 : 18
-      });
-      setOasisBalance(amountString);
-      setOasisAddress(oasisInfo.address);
+      const { amount, address } = await getOasisInfo(chainStore.current.chainId);
+      setOasisBalance(amount);
+      setOasisAddress(address);
     } catch (err) {
       console.log('err getOasisInfo', err);
     }
   };
 
-  const txBuilder = async () => {
-    // @ts-ignore
-    const tx = await window.oasis.txBuilderOasis(
-      '100000000',
-      'oasis1 qr8v szyq 24vg lt0c e4fj zy4c c24f wemu tyul tsk5'
-    );
-
-    console.log('txBuilder', tx);
-  };
-
   useEffect(() => {
-    getOasisInfo();
+    getOasisWallet();
   }, [account]);
 
-  useEffect(() => {
-    txBuilder();
-  }, [account]);
+  // const txBuilder = async () => {
+  //   // @ts-ignore
+  //   const tx = await window.oasis.txBuilderOasis(
+  //     '100000000',
+  //     'oasis1 qr8v szyq 24vg lt0c e4fj zy4c c24f wemu tyul tsk5'
+  //   );
+
+  //   console.log('txBuilder', tx);
+  // };
+
+  // useEffect(() => {
+  //   txBuilder();
+  // }, [account]);
 
   const renderAddress = () => {
     if (chainStore.current.chainId === TRON_ID) {

@@ -1188,7 +1188,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     stakeCurrency: {
       coinDenom: 'ROSE',
       coinMinimalDenom: 'rose',
-      coinDecimals: 18,
+      coinDecimals: 9,
       coinGeckoId: 'oasis-network',
       coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png',
       gasPriceStep: {

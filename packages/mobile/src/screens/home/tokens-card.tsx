@@ -3,7 +3,7 @@ import { OWEmpty } from '@src/components/empty';
 import { Text } from '@src/components/text';
 import { useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
-import React, { FunctionComponent, useState } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { TouchableOpacity } from 'react-native';
 import { CardBody, OWBox } from '../../components/card';
@@ -11,17 +11,26 @@ import ProgressiveImage from '../../components/progessive-image';
 import { useSmartNavigation } from '../../navigation.provider';
 import { useStore } from '../../stores';
 import { metrics, spacing, typography } from '../../themes';
-import { capitalizedText, _keyExtract } from '../../utils/helper';
+import { capitalizedText, getOasisInfo, _keyExtract } from '../../utils/helper';
 import { TokenItem } from '../tokens/components/token-item';
 import { SoulboundNftInfoResponse } from './types';
 import { useSoulbound } from '../nfts/hooks/useSoulboundNft';
 import OWFlatList from '@src/components/page/ow-flat-list';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+import { ChainIdEnum } from '@owallet/common';
+import { RightArrowIcon } from '@src/components/icon';
+import { VectorCharacter } from '@src/components/vector-character';
+import FastImage from 'react-native-fast-image';
+import Big from 'big.js';
+
+const size = 44;
+const imageScale = 0.54;
+const USDT_DEFAULT_PRICE = 1;
 
 export const TokensCard: FunctionComponent<{
   containerStyle?: ViewStyle;
   refreshDate: number;
-}> = observer(({ containerStyle, refreshDate }) => {
+}> = observer(({ containerStyle }) => {
   const { chainStore, queriesStore, accountStore, priceStore, keyRingStore } = useStore();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const { colors } = useTheme();
@@ -29,6 +38,7 @@ export const TokensCard: FunctionComponent<{
   const styles = styling(colors);
   const smartNavigation = useSmartNavigation();
   const [index, setIndex] = useState<number>(0);
+  const [oasisBalance, setOasisBalance] = useState<string>('0');
   const { tokenIds, soulboundNft, isLoading } = useSoulbound(
     chainStore.current.chainId,
     account,
@@ -39,11 +49,150 @@ export const TokensCard: FunctionComponent<{
   const address = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
   const queryBalances = queries.queryBalances.getQueryBech32Address(address);
 
+  const getOasisBalance = async () => {
+    try {
+      const { amount } = await getOasisInfo(chainStore.current.chainId);
+      setOasisBalance(amount);
+    } catch (err) {
+      console.log('err getOasisInfo', err);
+    }
+  };
+
+  useEffect(() => {
+    if (chainStore.current.chainId === ChainIdEnum.Oasis) {
+      getOasisBalance();
+    }
+  }, [chainStore, account]);
+
   // TODO: Add sorting rule
   const tokens = queryBalances.positiveBalances.slice(0, 3);
 
   const onActiveType = i => {
     setIndex(i);
+  };
+
+  const renderToken = ({ item, index }) => {
+    console.log('chainStore.current.chainId', chainStore.current.chainId);
+
+    if (chainStore.current.chainId === ChainIdEnum.Oasis) {
+      const item = chainStore.current.stakeCurrency;
+      console.log('item', item);
+
+      return (
+        <TouchableOpacity
+          style={styles.containerToken}
+          onPress={() => {
+            // smartNavigation.navigateSmart('SendTron', { item });
+          }}
+        >
+          <View
+            style={{
+              flex: 1,
+              flexDirection: 'row',
+              justifyContent: 'flex-start',
+              alignItems: 'center'
+            }}
+          >
+            <View
+              style={{
+                width: size,
+                height: size,
+                borderRadius: spacing['6'],
+                alignItems: 'center',
+                justifyContent: 'center',
+                overflow: 'hidden',
+                backgroundColor: colors['red-10'],
+                marginRight: 12
+              }}
+            >
+              {item?.coinImageUrl ? (
+                <FastImage
+                  style={{
+                    width: size * imageScale,
+                    height: size * imageScale,
+                    backgroundColor: colors['gray-10']
+                  }}
+                  resizeMode={FastImage.resizeMode.contain}
+                  source={{
+                    uri: item.coinImageUrl
+                  }}
+                />
+              ) : (
+                <VectorCharacter char={item.coinDenom} height={Math.floor(size * 0.35)} color="black" />
+              )}
+            </View>
+            <View
+              style={{
+                justifyContent: 'space-between'
+              }}
+            >
+              <Text
+                numberOfLines={1}
+                style={{
+                  fontSize: 13,
+                  color: colors['gray-300'],
+                  fontWeight: '700'
+                }}
+              >
+                {item.coinDenom}
+              </Text>
+              <Text
+                style={{
+                  ...typography.subtitle2,
+                  color: colors['primary-text'],
+                  fontWeight: '700'
+                }}
+              >
+                {`${new Big(parseInt(oasisBalance))} ${item.coinDenom}`}
+              </Text>
+
+              <Text
+                style={{
+                  ...typography.subtitle3,
+                  color: colors['text-black-low'],
+                  marginBottom: spacing['4']
+                }}
+              >
+                $
+                {`${
+                  oasisBalance
+                    ? (
+                        parseFloat(new Big(parseInt(oasisBalance)).toString()) *
+                        Number(priceStore?.getPrice(item.coinGeckoId))
+                      ).toFixed(6)
+                    : 0
+                }` || '$0'}
+              </Text>
+            </View>
+          </View>
+          <View
+            style={{
+              flex: 0.5,
+              justifyContent: 'center',
+              alignItems: 'flex-end'
+            }}
+          >
+            <RightArrowIcon height={10} color={colors['gray-150']} />
+          </View>
+        </TouchableOpacity>
+      );
+    } else {
+      if (item) {
+        const priceBalance = priceStore.calculatePrice(item.balance);
+        return (
+          <TokenItem
+            key={index?.toString()}
+            chainInfo={{
+              stakeCurrency: chainStore.current.stakeCurrency,
+              networkType: chainStore.current.networkType,
+              chainId: chainStore.current.chainId
+            }}
+            balance={item.balance}
+            priceBalance={priceBalance}
+          />
+        );
+      }
+    }
   };
 
   const _renderFlatlistOrchai = ({ item, index }: { item: SoulboundNftInfoResponse; index: number }) => {
@@ -110,25 +259,19 @@ export const TokensCard: FunctionComponent<{
         </View>
         {index === 0 ? (
           <CardBody>
-            {tokens?.length > 0 ? (
-              tokens.map((token, index) => {
-                const priceBalance = priceStore.calculatePrice(token.balance);
-                return (
-                  <TokenItem
-                    key={index?.toString()}
-                    chainInfo={{
-                      stakeCurrency: chainStore.current.stakeCurrency,
-                      networkType: chainStore.current.networkType,
-                      chainId: chainStore.current.chainId
-                    }}
-                    balance={token.balance}
-                    priceBalance={priceBalance}
-                  />
-                );
-              })
-            ) : (
-              <OWEmpty />
-            )}
+            <OWFlatList
+              containerSkeletonStyle={{
+                flexDirection: 'row'
+              }}
+              contentContainerStyle={{ marginBottom: -70 }}
+              data={chainStore.current.chainId === ChainIdEnum.Oasis ? [{ chainId: ChainIdEnum.Oasis }] : tokens}
+              renderItem={renderToken}
+              keyExtractor={_keyExtract}
+              SkeletonComponent={<SkeletonNft />}
+              loading={isLoading}
+              showsHorizontalScrollIndicator={false}
+              ListEmptyComponent={<OWEmpty />}
+            />
           </CardBody>
         ) : (
           <CardBody
@@ -141,15 +284,6 @@ export const TokensCard: FunctionComponent<{
                 paddingBottom: 10
               }}
             >
-              {/* <View
-                style={{
-                  marginTop: spacing['12'],
-                  flexDirection: 'row'
-                }}
-              >
-                <Text style={styles.sectionHeader}>{'NFTs'}</Text>
-              </View> */}
-
               <OWFlatList
                 horizontal
                 contentContainerStyle={
@@ -278,5 +412,12 @@ const styling = colors =>
     transactionListEmpty: {
       justifyContent: 'center',
       alignItems: 'center'
+    },
+    containerToken: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginHorizontal: spacing['4'],
+      marginVertical: spacing['8'],
+      paddingTop: spacing['10']
     }
   });
