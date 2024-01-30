@@ -226,7 +226,6 @@ export const HomeScreen: FunctionComponent = observer(props => {
     <PageWithScrollViewInBottomTabView
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       showsVerticalScrollIndicator={false}
-      // backgroundColor={colors['background']}
       ref={scrollViewRef}
     >
       <BIP44Selectable />
