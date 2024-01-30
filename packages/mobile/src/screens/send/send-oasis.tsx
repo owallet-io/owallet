@@ -65,7 +65,7 @@ export const SendOasisScreen: FunctionComponent = observer(() => {
     chainStore,
     chainId,
     account.msgOpts['send'],
-    account.bech32Address,
+    receiveAddress,
     queries.queryBalances,
     chainStore.current.rpc
   );
