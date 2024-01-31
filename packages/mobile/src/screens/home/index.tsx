@@ -201,7 +201,6 @@ export const HomeScreen: FunctionComponent = observer(props => {
   const { data: prices } = useCoinGeckoPrices();
 
   const updatePrices = async () => {
-    await delay(1000);
     appInitStore.updatePrices(prices);
   };
 

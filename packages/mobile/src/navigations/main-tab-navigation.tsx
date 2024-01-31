@@ -14,7 +14,6 @@ import { observer } from 'mobx-react-lite';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import imagesGlobal from '@src/assets/images';
 import { BlurView } from '@react-native-community/blur';
-import { delay } from '@owallet/common';
 const Tab = createBottomTabNavigator();
 export const MainTabNavigation: FC = observer(() => {
   const { chainStore, appInitStore } = useStore();
@@ -28,7 +27,6 @@ export const MainTabNavigation: FC = observer(() => {
   }, [visibleTabBar]);
 
   const waitToLoad = async () => {
-    await delay(800);
     setLoading(false);
   };
 

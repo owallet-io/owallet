@@ -258,19 +258,25 @@ export const TokensCard: FunctionComponent<{
         </View>
         {index === 0 ? (
           <CardBody>
-            <OWFlatList
-              containerSkeletonStyle={{
-                flexDirection: 'row'
-              }}
-              contentContainerStyle={{ marginBottom: -70 }}
-              data={chainStore.current.chainId === ChainIdEnum.Oasis ? [{ chainId: ChainIdEnum.Oasis }] : tokens}
-              renderItem={renderToken}
-              keyExtractor={_keyExtract}
-              SkeletonComponent={<SkeletonNft />}
-              loading={isLoading}
-              showsHorizontalScrollIndicator={false}
-              ListEmptyComponent={<OWEmpty />}
-            />
+            {tokens?.length > 0 ? (
+              tokens.slice(0, 3).map((token, index) => {
+                const priceBalance = priceStore.calculatePrice(token.balance);
+                return (
+                  <TokenItem
+                    key={index?.toString()}
+                    chainInfo={{
+                      stakeCurrency: chainStore.current.stakeCurrency,
+                      networkType: chainStore.current.networkType,
+                      chainId: chainStore.current.chainId
+                    }}
+                    balance={token.balance}
+                    priceBalance={priceBalance}
+                  />
+                );
+              })
+            ) : (
+              <OWEmpty />
+            )}
           </CardBody>
         ) : (
           <CardBody
