@@ -77,7 +77,7 @@ export const AccountCardEVM: FunctionComponent<{
 
   useEffect(() => {
     getOasisWallet();
-  }, [account, refreshDate]);
+  }, [account.bech32Address, refreshDate]);
 
   const renderAddress = () => {
     if (chainStore.current.chainId === TRON_ID) {

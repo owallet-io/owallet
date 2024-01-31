@@ -17,10 +17,11 @@ const keyboardVerticalOffset = Platform.OS === 'ios' ? 130 : 0;
 export const SignOasisModal: FunctionComponent<{
   isOpen?: boolean;
   close: () => void;
+  onSuccess: () => void;
   bottomSheetModalConfig?: Omit<BottomSheetProps, 'snapPoints' | 'children'>;
   data: object;
 }> = registerModal(
-  observer(({ data, close }) => {
+  observer(({ data, close, onSuccess }) => {
     const { signInteractionStore } = useStore();
 
     useUnmount(() => {
@@ -119,10 +120,7 @@ export const SignOasisModal: FunctionComponent<{
                   const tx = await window.oasis.signOasis(dataSign.amount, dataSign.address);
                   setLoading(false);
                   close();
-                  showToast({
-                    message: 'Transaction successfully',
-                    type: 'success'
-                  });
+                  onSuccess();
                 } catch (error) {
                   signInteractionStore.rejectAll();
                   close();

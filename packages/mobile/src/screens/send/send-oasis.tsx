@@ -11,8 +11,8 @@ import { useTheme } from '@src/themes/theme-provider';
 import { spacing } from '../../themes';
 import { OWBox } from '@src/components/card';
 import { OWSubTitleHeader } from '@src/components/header';
-import { NetworkModal } from '../home/components';
 import { SignOasisModal } from '@src/modals/sign/sign-oasis';
+import { useSmartNavigation } from '@src/navigation.provider';
 
 const styling = colors =>
   StyleSheet.create({
@@ -40,6 +40,8 @@ export const SendOasisScreen: FunctionComponent = observer(() => {
   const { colors } = useTheme();
   const styles = styling(colors);
   const [receiveAddress, setReceiveAddress] = useState('');
+
+  const smartNavigation = useSmartNavigation();
 
   const route = useRoute<
     RouteProp<
@@ -140,6 +142,12 @@ export const SendOasisScreen: FunctionComponent = observer(() => {
                 modalStore.setChildren(
                   <SignOasisModal
                     isOpen={true}
+                    onSuccess={() => {
+                      smartNavigation.replaceSmart('TxSuccessResult', {
+                        chainId,
+                        txHash: ''
+                      });
+                    }}
                     data={{ amount: sendConfigs.amountConfig.amount, address: receiveAddress }}
                     close={async () => await modalStore.close()}
                   />

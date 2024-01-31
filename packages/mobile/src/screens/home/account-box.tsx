@@ -53,7 +53,7 @@ export const AccountBox: FunctionComponent<{
   };
 
   const waitToLoad = async () => {
-    await delay(2000);
+    await delay(800);
     setLoading(false);
   };
 

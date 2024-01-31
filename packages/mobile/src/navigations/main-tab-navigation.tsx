@@ -28,7 +28,7 @@ export const MainTabNavigation: FC = observer(() => {
   }, [visibleTabBar]);
 
   const waitToLoad = async () => {
-    await delay(2000);
+    await delay(800);
     setLoading(false);
   };
 

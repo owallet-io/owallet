@@ -62,7 +62,7 @@ export const TokensCard: FunctionComponent<{
     if (chainStore.current.chainId === ChainIdEnum.Oasis) {
       getOasisBalance();
     }
-  }, [chainStore, account]);
+  }, [chainStore, account.bech32Address]);
 
   // TODO: Add sorting rule
   const tokens = queryBalances.positiveBalances.slice(0, 3);
@@ -142,7 +142,7 @@ export const TokensCard: FunctionComponent<{
                   fontWeight: '700'
                 }}
               >
-                {`${new Big(parseInt(oasisBalance))} ${item.coinDenom}`}
+                {`${oasisBalance} ${item.coinDenom}`}
               </Text>
 
               <Text

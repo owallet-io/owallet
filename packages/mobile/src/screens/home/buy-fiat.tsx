@@ -19,7 +19,7 @@ const BuyFiat = observer(() => {
   let accounts = {};
 
   const delayedFunction = async () => {
-    await delay(2200);
+    await delay(800);
     Object.keys(ChainIdEnum).map(key => {
       if (KADOChainNameEnum[ChainIdEnum[key]]) {
         let defaultAddress = accountStore.getAccount(ChainIdEnum[key]).bech32Address;
