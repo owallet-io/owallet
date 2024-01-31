@@ -200,8 +200,13 @@ export const HomeScreen: FunctionComponent = observer(props => {
 
   const { data: prices } = useCoinGeckoPrices();
 
-  useEffect(() => {
+  const updatePrices = async () => {
+    await delay(1000);
     appInitStore.updatePrices(prices);
+  };
+
+  useEffect(() => {
+    updatePrices();
   }, [prices]);
 
   // useEffect(() => {
