@@ -44,10 +44,10 @@ const MnemonicSeed = () => {
           }}
           onPress={async () => {
             setIsLoading(true);
+            await modalStore.close();
             analyticsStore.logEvent('Account changed');
             await selectKeyStore(item);
-            await modalStore.close();
-            // setIsLoading(false);
+            setIsLoading(false);
           }}
         >
           <View

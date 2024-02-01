@@ -17,8 +17,7 @@ import {
   ORAI,
   toDisplay,
   getBase58Address,
-  getAddress,
-  delay
+  getAddress
 } from '@owallet/common';
 import {
   TokenItemType,
@@ -263,7 +262,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   };
 
   const delayedFunction = useCallback(async () => {
-    // await delay(100);
     Object.keys(ChainIdEnum).map(key => {
       let defaultAddress = accountStore.getAccount(ChainIdEnum[key]).bech32Address;
       if (ChainIdEnum[key] === ChainIdEnum.TRON) {
@@ -283,22 +281,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       delayedFunction();
     }
   }, [accountOrai.bech32Address]);
-
-  // useEffect(() => {
-  //   if (isFocused) {
-  //     handleFetchAmounts(accounts);
-  //   }
-  // }, [isFocused]);
-
-  // This section is for PnL display
-  // useEffect(() => {
-  //   if (Object.keys(universalSwapStore.getAmount).length > 0) {
-  //     appInitStore.updatePriceFeed(
-  //       accountOrai.bech32Address,
-  //       getTokenInfos({ tokens: universalSwapStore.getAmount, prices })
-  //     );
-  //   }
-  // }, [universalSwapStore.getAmount, accountOrai.bech32Address, prices]);
 
   const subAmountFrom = toSubAmount(universalSwapStore.getAmount, originalFromToken);
   const subAmountTo = toSubAmount(universalSwapStore.getAmount, originalToToken);
