@@ -92,14 +92,13 @@ export const NetworkModal = () => {
         return;
       } else {
         if (!item.isAll) {
+          modalStore.close();
           chainStore.selectChain(item?.chainId);
           await chainStore.saveLastViewChainId();
           appInitStore.selectAllNetworks(false);
         } else {
           appInitStore.selectAllNetworks(true);
         }
-
-        modalStore.close();
       }
     } catch (error) {
       showToast({

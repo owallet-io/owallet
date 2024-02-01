@@ -22,7 +22,6 @@ import { RightArrowIcon } from '@src/components/icon';
 import { VectorCharacter } from '@src/components/vector-character';
 import FastImage from 'react-native-fast-image';
 import Big from 'big.js';
-import { SCREENS } from '@src/common/constants';
 
 const size = 44;
 const imageScale = 0.54;
@@ -71,10 +70,9 @@ export const TokensCard: FunctionComponent<{
     setIndex(i);
   };
 
-  const renderToken = ({ item, index }) => {
+  const renderOasisToken = () => {
     if (chainStore.current.chainId === ChainIdEnum.Oasis) {
       const item = chainStore.current.stakeCurrency;
-
       return (
         <TouchableOpacity
           style={styles.containerToken}
@@ -175,21 +173,31 @@ export const TokensCard: FunctionComponent<{
           </View>
         </TouchableOpacity>
       );
+    }
+  };
+
+  const renderTokens = () => {
+    if (ChainIdEnum.Oasis === chainStore.current.chainId) {
+      renderOasisToken();
     } else {
-      if (item) {
-        const priceBalance = priceStore.calculatePrice(item.balance);
-        return (
-          <TokenItem
-            key={index?.toString()}
-            chainInfo={{
-              stakeCurrency: chainStore.current.stakeCurrency,
-              networkType: chainStore.current.networkType,
-              chainId: chainStore.current.chainId
-            }}
-            balance={item.balance}
-            priceBalance={priceBalance}
-          />
-        );
+      if (tokens?.length > 0) {
+        return tokens.slice(0, 3).map((token, index) => {
+          const priceBalance = priceStore.calculatePrice(token.balance);
+          return (
+            <TokenItem
+              key={index?.toString()}
+              chainInfo={{
+                stakeCurrency: chainStore.current.stakeCurrency,
+                networkType: chainStore.current.networkType,
+                chainId: chainStore.current.chainId
+              }}
+              balance={token.balance}
+              priceBalance={priceBalance}
+            />
+          );
+        });
+      } else {
+        return <OWEmpty />;
       }
     }
   };
@@ -257,27 +265,7 @@ export const TokensCard: FunctionComponent<{
           ))}
         </View>
         {index === 0 ? (
-          <CardBody>
-            {tokens?.length > 0 ? (
-              tokens.slice(0, 3).map((token, index) => {
-                const priceBalance = priceStore.calculatePrice(token.balance);
-                return (
-                  <TokenItem
-                    key={index?.toString()}
-                    chainInfo={{
-                      stakeCurrency: chainStore.current.stakeCurrency,
-                      networkType: chainStore.current.networkType,
-                      chainId: chainStore.current.chainId
-                    }}
-                    balance={token.balance}
-                    priceBalance={priceBalance}
-                  />
-                );
-              })
-            ) : (
-              <OWEmpty />
-            )}
-          </CardBody>
+          <CardBody>{renderTokens()}</CardBody>
         ) : (
           <CardBody
             style={{

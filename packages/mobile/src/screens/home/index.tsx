@@ -17,7 +17,7 @@ import { UndelegationsCard } from '../stake/dashboard/undelegations-card';
 import { TronTokensCard } from './tron-tokens-card';
 import { AccountCardBitcoin } from './account-card-bitcoin';
 import { TokensBitcoinCard } from './tokens-bitcoin-card';
-import { getAddress, getBase58Address, ChainIdEnum, delay } from '@owallet/common';
+import { getAddress, getBase58Address, ChainIdEnum } from '@owallet/common';
 import { TokensCardAll } from './tokens-card-all';
 import { AccountBoxAll } from './account-box-all';
 import { oraichainNetwork } from '@oraichain/oraidex-common';

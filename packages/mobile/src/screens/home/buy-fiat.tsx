@@ -4,7 +4,7 @@ import { WebView } from 'react-native-webview';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@src/stores';
 import { colors, metrics } from '@src/themes';
-import { ChainIdEnum, delay, KADOChainNameEnum } from '@owallet/common';
+import { ChainIdEnum, KADOChainNameEnum } from '@owallet/common';
 const BuyFiat = observer(() => {
   const { accountStore, appInitStore } = useStore();
 
