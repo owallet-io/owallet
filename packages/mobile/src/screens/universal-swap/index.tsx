@@ -264,7 +264,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   };
 
   const delayedFunction = useCallback(async () => {
-    await delay(1900);
     Object.keys(ChainIdEnum).map(key => {
       let defaultAddress = accountStore.getAccount(ChainIdEnum[key]).bech32Address;
       if (ChainIdEnum[key] === ChainIdEnum.TRON) {
@@ -280,14 +279,14 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   }, []);
 
   useEffect(() => {
-    if (accountOrai.bech32Address) {
+    universalSwapStore.clearAmounts();
+    if (accounts?.[ChainIdEnum.TRON] && accounts?.[ChainIdEnum.Ethereum]) {
       delayedFunction();
     }
-  }, [accountOrai.bech32Address]);
+  }, [accounts]);
 
   // This section is for PnL display
   const updatePriceFeed = async () => {
-    await delay(2000);
     appInitStore.updatePriceFeed(
       accountOrai.bech32Address,
       getTokenInfos({ tokens: universalSwapStore.getAmount, prices })

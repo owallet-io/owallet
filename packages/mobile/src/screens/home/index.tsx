@@ -16,7 +16,7 @@ import { UndelegationsCard } from '../stake/dashboard/undelegations-card';
 import { TronTokensCard } from './tron-tokens-card';
 import { AccountCardBitcoin } from './account-card-bitcoin';
 import { TokensBitcoinCard } from './tokens-bitcoin-card';
-import { getAddress, getBase58Address, ChainIdEnum, delay } from '@owallet/common';
+import { getAddress, getBase58Address, ChainIdEnum } from '@owallet/common';
 import { TokensCardAll } from './tokens-card-all';
 import { AccountBoxAll } from './account-box-new';
 import { oraichainNetwork } from '@oraichain/oraidex-common';
@@ -117,8 +117,6 @@ export const HomeScreen: FunctionComponent = observer(props => {
         queries.cosmos.queryDelegations.getQueryBech32Address(address).waitFreshResponse(),
         queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(address).waitFreshResponse()
       ]);
-
-      handleFetchAmounts(accounts);
     }
     handleFetchAmounts(accounts);
     setRefreshing(false);
@@ -175,9 +173,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
     }
   };
 
-  const delayedFunction = useCallback(async (delayTime = 500) => {
-    await delay(delayTime);
-
+  const delayedFunction = useCallback(async () => {
     Object.keys(ChainIdEnum).map(key => {
       let defaultAddress = accountStore.getAccount(ChainIdEnum[key]).bech32Address;
       if (ChainIdEnum[key] === ChainIdEnum.TRON) {
@@ -194,17 +190,10 @@ export const HomeScreen: FunctionComponent = observer(props => {
 
   useEffect(() => {
     universalSwapStore.clearAmounts();
-    if (accountOrai.bech32Address) {
+    if (accounts?.[ChainIdEnum.TRON] && accounts?.[ChainIdEnum.Ethereum]) {
       delayedFunction();
     }
-  }, [accountOrai.bech32Address]);
-
-  useEffect(() => {
-    // just to make sure that our balance is up to date
-    if (accountOrai.bech32Address) {
-      delayedFunction(17000);
-    }
-  }, [accountOrai.bech32Address]);
+  }, [accounts]);
 
   // This section is for PnL display
 
@@ -215,7 +204,6 @@ export const HomeScreen: FunctionComponent = observer(props => {
   }, [prices]);
 
   const updatePriceFeed = async () => {
-    await delay(5000);
     appInitStore.updatePriceFeed(
       accountOrai.bech32Address,
       getTokenInfos({ tokens: universalSwapStore.getAmount, prices })

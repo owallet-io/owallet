@@ -254,7 +254,7 @@ export const NetworkModal = () => {
           textAlign: 'center'
         }}
       >
-        {`Select networks`}
+        {`Select networks 2`}
       </Text>
 
       <View
