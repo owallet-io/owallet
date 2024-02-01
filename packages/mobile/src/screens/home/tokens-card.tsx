@@ -152,13 +152,13 @@ export const TokensCard: FunctionComponent<{
               >
                 $
                 {`${
-                  oasisBalance
+                  oasisBalance && priceStore?.getPrice(item.coinGeckoId)
                     ? (
                         parseFloat(new Big(parseInt(oasisBalance)).toString()) *
                         Number(priceStore?.getPrice(item.coinGeckoId))
                       ).toFixed(6)
                     : 0
-                }` || '$0'}
+                }` || '$--'}
               </Text>
             </View>
           </View>
@@ -178,7 +178,7 @@ export const TokensCard: FunctionComponent<{
 
   const renderTokens = () => {
     if (ChainIdEnum.Oasis === chainStore.current.chainId) {
-      renderOasisToken();
+      return renderOasisToken();
     } else {
       if (tokens?.length > 0) {
         return tokens.slice(0, 3).map((token, index) => {
