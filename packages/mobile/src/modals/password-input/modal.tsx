@@ -46,7 +46,6 @@ export const PasswordInputModal: FunctionComponent<{
     labelStyle,
     textButtonLeft = 'Cancel',
     textButtonRight = 'Approve',
-    buttonRightStyle,
     disabled
   }) => {
     const { appInitStore } = useStore();
@@ -58,7 +57,6 @@ export const PasswordInputModal: FunctionComponent<{
     const isVisible = useKeyboardVisible();
     const handleOnterPassword = async () => {
       try {
-        await delay(50);
         await onEnterPassword(password);
         setIsInvalidPassword(false);
         close();
