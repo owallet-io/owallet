@@ -58,9 +58,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const { colors } = useTheme();
   const { data: prices } = useCoinGeckoPrices();
 
-  // useEffect(() => {
-  //   appInitStore.updatePrices(prices);
-  // }, [prices]);
+  useEffect(() => {
+    appInitStore.updatePrices(prices);
+  }, [prices]);
 
   const chainInfo = chainStore.getChain(ChainIdEnum.Oraichain);
 
@@ -261,27 +261,25 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     }
   };
 
-  const delayedFunction = useCallback(async () => {
-    Object.keys(ChainIdEnum).map(key => {
-      let defaultAddress = accountStore.getAccount(ChainIdEnum[key]).bech32Address;
-      if (ChainIdEnum[key] === ChainIdEnum.TRON) {
-        accounts[ChainIdEnum[key]] = getBase58Address(accountStore.getAccount(ChainIdEnum[key]).evmosHexAddress);
-      } else if (defaultAddress.startsWith('evmos')) {
-        accounts[ChainIdEnum[key]] = accountStore.getAccount(ChainIdEnum[key]).evmosHexAddress;
-      } else {
-        accounts[ChainIdEnum[key]] = defaultAddress;
-      }
-    });
-
-    handleFetchAmounts(accounts);
-  }, []);
-
   useEffect(() => {
     universalSwapStore.clearAmounts();
-    if (accounts?.[ChainIdEnum.TRON] && accounts?.[ChainIdEnum.Ethereum]) {
-      delayedFunction();
-    }
-  }, [accounts]);
+    setTimeout(() => {
+      Object.keys(ChainIdEnum).map(key => {
+        let defaultAddress = accountStore.getAccount(ChainIdEnum[key]).bech32Address;
+        if (ChainIdEnum[key] === ChainIdEnum.TRON) {
+          accounts[ChainIdEnum[key]] = getBase58Address(accountStore.getAccount(ChainIdEnum[key]).evmosHexAddress);
+        } else if (defaultAddress.startsWith('evmos')) {
+          accounts[ChainIdEnum[key]] = accountStore.getAccount(ChainIdEnum[key]).evmosHexAddress;
+        } else {
+          accounts[ChainIdEnum[key]] = defaultAddress;
+        }
+      });
+
+      if (accounts?.[ChainIdEnum.TRON] && accounts?.[ChainIdEnum.Ethereum]) {
+        handleFetchAmounts(accounts);
+      }
+    }, 2000);
+  }, []);
 
   const subAmountFrom = toSubAmount(universalSwapStore.getAmount, originalFromToken);
   const subAmountTo = toSubAmount(universalSwapStore.getAmount, originalToToken);
