@@ -78,7 +78,8 @@ export const TokensCard: FunctionComponent<{
           style={styles.containerToken}
           onPress={() => {
             smartNavigation.navigateSmart('SendOasis', {
-              currency: chainStore.current.stakeCurrency.coinMinimalDenom
+              currency: chainStore.current.stakeCurrency.coinMinimalDenom,
+              maxAmount: oasisBalance
             });
           }}
         >
@@ -140,7 +141,7 @@ export const TokensCard: FunctionComponent<{
                   fontWeight: '700'
                 }}
               >
-                {`${oasisBalance} ${item.coinDenom}`}
+                {`${Number(Number(oasisBalance).toFixed(6))} ${item.coinDenom}`}
               </Text>
 
               <Text
@@ -299,18 +300,20 @@ export const TokensCard: FunctionComponent<{
           </CardBody>
         )}
 
-        <OWButton
-          label={capitalizedText('view all')}
-          size="medium"
-          type="secondary"
-          onPress={() => {
-            if (index === 0) {
-              smartNavigation.navigateSmart('Tokens', {});
-            } else {
-              smartNavigation.navigateSmart('Nfts', null);
-            }
-          }}
-        />
+        {tokens.length > 2 ? (
+          <OWButton
+            label={capitalizedText('view all')}
+            size="medium"
+            type="secondary"
+            onPress={() => {
+              if (index === 0) {
+                smartNavigation.navigateSmart('Tokens', {});
+              } else {
+                smartNavigation.navigateSmart('Nfts', null);
+              }
+            }}
+          />
+        ) : null}
       </OWBox>
     </View>
   );

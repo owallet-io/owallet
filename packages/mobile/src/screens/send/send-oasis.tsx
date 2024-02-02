@@ -50,6 +50,7 @@ export const SendOasisScreen: FunctionComponent = observer(() => {
         {
           chainId?: string;
           currency?: string;
+          maxAmount?: string;
           recipient?: string;
           contractAddress?: string;
         }
@@ -59,6 +60,7 @@ export const SendOasisScreen: FunctionComponent = observer(() => {
   >();
 
   const chainId = route?.params?.chainId ? route?.params?.chainId : chainStore?.current?.chainId;
+  const maxAmount = route?.params?.maxAmount;
 
   const account = accountStore.getAccount(chainId);
   const queries = queriesStore.get(chainId);
@@ -148,7 +150,7 @@ export const SendOasisScreen: FunctionComponent = observer(() => {
                         txHash: ''
                       });
                     }}
-                    data={{ amount: sendConfigs.amountConfig.amount, address: receiveAddress }}
+                    data={{ amount: sendConfigs.amountConfig.amount, address: receiveAddress, maxAmount }}
                     close={async () => await modalStore.close()}
                   />
                 );

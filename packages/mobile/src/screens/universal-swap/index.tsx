@@ -279,7 +279,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         handleFetchAmounts(accounts);
       }
     }, 2000);
-  }, []);
+  }, [accountOrai.bech32Address]);
 
   const subAmountFrom = toSubAmount(universalSwapStore.getAmount, originalFromToken);
   const subAmountTo = toSubAmount(universalSwapStore.getAmount, originalToToken);

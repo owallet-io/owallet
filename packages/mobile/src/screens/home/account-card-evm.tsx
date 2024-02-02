@@ -44,7 +44,8 @@ export const AccountCardEVM: FunctionComponent<{
         });
       } else if (chainStore.current.chainId === ChainIdEnum.Oasis) {
         smartNavigation.navigateSmart('SendOasis', {
-          currency: chainStore.current.stakeCurrency.coinMinimalDenom
+          currency: chainStore.current.stakeCurrency.coinMinimalDenom,
+          maxAmount: oasisBalance
         });
       } else {
         smartNavigation.navigateSmart('Send', {
@@ -125,7 +126,7 @@ export const AccountCardEVM: FunctionComponent<{
 
   const totalBalance = () => {
     if (chainStore.current.chainId === ChainIdEnum.Oasis) {
-      return oasisBalance + ` ${chainStore.current?.stakeCurrency.coinDenom}`;
+      return Number(Number(oasisBalance).toFixed(6)) + ` ${chainStore.current?.stakeCurrency.coinDenom}`;
     }
 
     if (chainStore.current.chainId !== TRON_ID && total) {
