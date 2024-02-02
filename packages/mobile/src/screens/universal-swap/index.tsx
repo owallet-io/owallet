@@ -52,7 +52,8 @@ import { useLoadTokens, useCoinGeckoPrices, useClient, useRelayerFee, useTaxRate
 import { getTransactionUrl, handleErrorSwap } from './helpers';
 import { useQuery } from '@tanstack/react-query';
 import { firebase } from '@react-native-firebase/analytics';
-const mixpanel = globalThis.mixpanel;
+import { Mixpanel } from 'mixpanel-react-native';
+const mixpanel = globalThis.mixpanel as Mixpanel;
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
 
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
