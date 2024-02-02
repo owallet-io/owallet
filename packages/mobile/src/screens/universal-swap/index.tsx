@@ -277,12 +277,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   }, []);
 
   useEffect(() => {
-    setTimeout(() => {
-      universalSwapStore.clearAmounts();
-      if (accounts?.[ChainIdEnum.TRON] && accounts?.[ChainIdEnum.Ethereum]) {
-        delayedFunction();
-      }
-    }, 3000);
+    universalSwapStore.clearAmounts();
+    if (accounts?.[ChainIdEnum.TRON] && accounts?.[ChainIdEnum.Ethereum]) {
+      delayedFunction();
+    }
   }, [accounts]);
 
   const subAmountFrom = toSubAmount(universalSwapStore.getAmount, originalFromToken);
