@@ -19,7 +19,7 @@ import { navigate } from '@src/router/root';
 import { SCREENS } from '@src/common/constants';
 import RadioGroup from 'react-native-radio-buttons-group';
 import { AddressBtcType } from '@owallet/types';
-import { delay, getKeyDerivationFromAddressType } from '@owallet/common';
+import { getKeyDerivationFromAddressType } from '@owallet/common';
 import { useBIP44Option } from '../register/bip44';
 export const AccountBox: FunctionComponent<{
   totalBalance?: string | React.ReactNode;

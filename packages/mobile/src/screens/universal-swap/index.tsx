@@ -277,10 +277,13 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   }, []);
 
   useEffect(() => {
-    if (accountOrai.bech32Address) {
-      delayedFunction();
-    }
-  }, [accountOrai.bech32Address]);
+    setTimeout(() => {
+      universalSwapStore.clearAmounts();
+      if (accounts?.[ChainIdEnum.TRON] && accounts?.[ChainIdEnum.Ethereum]) {
+        delayedFunction();
+      }
+    }, 3000);
+  }, [accounts]);
 
   const subAmountFrom = toSubAmount(universalSwapStore.getAmount, originalFromToken);
   const subAmountTo = toSubAmount(universalSwapStore.getAmount, originalToToken);
@@ -351,6 +354,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       const oraiToken = oraichainTokens.find(token => token.coinGeckoId === 'oraichain-token');
 
       const data = await handleSimulateSwap({
+        // @ts-ignore
         originalFromInfo: oraiToken,
         originalToInfo: originalToToken,
         originalAmount: toDisplay(relayerFeeToken.toString()),

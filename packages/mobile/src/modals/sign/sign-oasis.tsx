@@ -116,8 +116,15 @@ export const SignOasisModal: FunctionComponent<{
               onPress={async () => {
                 setLoading(true);
                 try {
+                  if (dataSign.account < 1) {
+                    showToast({
+                      message: 'Minimum amount should be higher than 1!',
+                      type: 'danger'
+                    });
+                    return;
+                  }
                   //@ts-ignore
-                  const tx = await window.oasis.signOasis(dataSign.amount, dataSign.address);
+                  await window.oasis.signOasis(dataSign.amount, dataSign.address);
                   setLoading(false);
                   close();
                   onSuccess();

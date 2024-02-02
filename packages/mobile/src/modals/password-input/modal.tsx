@@ -21,7 +21,6 @@ import { useTheme } from '@src/themes/theme-provider';
 import OWButtonGroup from '@src/components/button/OWButtonGroup';
 import { BottomSheetProps } from '@gorhom/bottom-sheet';
 import { useKeyboardVisible } from '@src/hooks/use-keyboard-visible';
-import { delay } from '@src/utils/helper';
 export const PasswordInputModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
