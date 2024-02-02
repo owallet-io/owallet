@@ -2,11 +2,11 @@ import { navigate } from '../../router/root';
 import isValidDomain from 'is-valid-domain';
 import { find } from 'lodash';
 import moment from 'moment';
-import { TRON_ID, getNetworkTypeByChainId, tokensIcon } from '@owallet/common';
+import { tokensIcon } from '@owallet/common';
 import { AppCurrency } from '@owallet/types';
 import get from 'lodash/get';
 import { TxsHelper } from '@src/stores/txs/helpers/txs-helper';
-import { showMessage, hideMessage, MessageOptions } from 'react-native-flash-message';
+import { showMessage, MessageOptions } from 'react-native-flash-message';
 import { InAppBrowser } from 'react-native-inappbrowser-reborn';
 import { Linking, Platform } from 'react-native';
 import { flattenTokens, getSubAmountDetails, toAmount, toDisplay, toSumDisplay } from '@oraichain/oraidex-common';
@@ -215,9 +215,6 @@ const countAmountValue = array => {
     }
   }
   return count;
-};
-export const delay = (delayInms = 300) => {
-  return new Promise(resolve => setTimeout(resolve, delayInms));
 };
 
 const configBrowser = {
