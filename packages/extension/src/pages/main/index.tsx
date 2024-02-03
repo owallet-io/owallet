@@ -78,6 +78,7 @@ export const MainPage: FunctionComponent = observer(() => {
   // const hasTokens = tokens.length > 0;
 
   const renderAssetView = useMemo(() => {
+    console.log('🚀 ~ renderAssetView ~ networkType:', networkType);
     if (networkType === 'evm') {
       return (
         <>

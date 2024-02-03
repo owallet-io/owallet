@@ -213,22 +213,18 @@ export const AssetChartViewEvm: FunctionComponent = observer(() => {
   const queries = queriesStore.get(current.chainId);
 
   const accountInfo = accountStore.getAccount(current.chainId);
+  console.log('🚀 ~ constAssetChartViewEvm:FunctionComponent=observer ~ accountInfo:', accountInfo.bech32Address);
+  const addressCore = accountInfo.getAddressDisplay(keyRingStore.keyRingLedgerAddresses, false);
   // wait for account to be
-  if (!accountInfo.evmosHexAddress) return null;
-  let evmosAddress = accountInfo.evmosHexAddress;
+  if (!addressCore) return null;
+
   const isTronNetwork = chainStore.current.chainId === TRON_ID;
-  if (keyRingStore.keyRingType === 'ledger' && chainStore.current.networkType === 'evm') {
-    evmosAddress = keyRingStore?.keyRingLedgerAddresses?.eth;
-    if (isTronNetwork) {
-      evmosAddress =
-        keyRingStore?.keyRingLedgerAddresses?.trx && getEvmAddress(keyRingStore?.keyRingLedgerAddresses?.trx);
-    }
-  }
-  const balance = queries.evm.queryEvmBalance.getQueryBalance(evmosAddress)?.balance;
+
+  const balance = queries.evm.queryEvmBalance.getQueryBalance(addressCore)?.balance;
   let totalPrice;
   let total;
-  if (evmosAddress) {
-    total = queries.evm.queryEvmBalance.getQueryBalance(evmosAddress)?.balance;
+  if (addressCore) {
+    total = queries.evm.queryEvmBalance.getQueryBalance(addressCore)?.balance;
     if (total) {
       totalPrice =
         isTronNetwork && total

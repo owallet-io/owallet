@@ -1185,52 +1185,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     grpc: 'https://grpc.oasis.dev',
     chainId: 'native-0x5afe',
     networkType: 'evm',
-    chainName: 'Oasis',
-    stakeCurrency: {
-      coinDenom: 'ROSE',
-      coinMinimalDenom: 'rose',
-      coinDecimals: 9,
-      coinGeckoId: 'oasis-network',
-      coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png',
-      gasPriceStep: {
-        low: 420,
-        average: 504,
-        high: 672
-      }
-    },
-    currencies: [
-      {
-        coinDenom: 'ROSE',
-        coinMinimalDenom: 'rose',
-        coinDecimals: 18,
-        coinGeckoId: 'oasis-network',
-        coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png'
-      }
-    ],
-    restConfig: {},
-    bip44: {
-      coinType: 474
-    },
-    coinType: 474,
-    bech32Config: Bech32Address.defaultBech32Config('evmos'),
-    get feeCurrencies() {
-      return [this.stakeCurrency];
-    },
-
-    features: ['ibc-go', 'stargate', 'isEvm'],
-    txExplorer: {
-      name: 'Oasis scan',
-      txUrl: 'https://explorer.sapphire.oasis.io/{txHash}',
-      accountUrl: 'https://explorer.sapphire.oasis.io/{address}'
-    }
-  },
-  {
-    rpc: 'https://sapphire.oasis.io',
-    rest: 'https://sapphire.oasis.io',
-    grpc: 'https://grpc.oasis.dev',
-    chainId: 'demo-0x5afe',
-    networkType: 'evm',
-    chainName: 'Oasis Demo',
+    chainName: 'Oasis Native',
     stakeCurrency: {
       coinDenom: 'ROSE',
       coinMinimalDenom: 'rose',
