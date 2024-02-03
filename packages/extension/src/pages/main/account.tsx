@@ -19,24 +19,24 @@ export const AccountView: FunctionComponent = observer(() => {
   const chainId = chainStore.current.chainId;
   const { networkType, bip44, coinType } = chainStore.current;
   const accountInfo = accountStore.getAccount(chainId);
-  const selected = keyRingStore?.multiKeyStoreInfo?.find((keyStore) => keyStore?.selected);
+  // const selected = keyRingStore?.multiKeyStoreInfo?.find((keyStore) => keyStore?.selected);
   const intl = useIntl();
   const bip44Option = useBIP44Option();
-  const checkTronNetwork = chainId === TRON_ID;
+  // const checkTronNetwork = chainId === TRON_ID;
   const addressDisplay = accountInfo.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
-  const ledgerAddress =
-    keyRingStore.keyRingType == 'ledger'
-      ? checkTronNetwork
-        ? keyRingStore?.keyRingLedgerAddresses?.trx
-        : keyRingStore?.keyRingLedgerAddresses?.eth
-      : '';
+  // const ledgerAddress =
+  //   keyRingStore.keyRingType == 'ledger'
+  //     ? checkTronNetwork
+  //       ? keyRingStore?.keyRingLedgerAddresses?.trx
+  //       : keyRingStore?.keyRingLedgerAddresses?.eth
+  //     : '';
 
-  const evmAddress =
-    (accountInfo.hasEvmosHexAddress || chainStore.current.networkType === 'evm') && accountInfo.evmosHexAddress;
-  const tronAddress =
-    (accountInfo.hasEvmosHexAddress || chainStore.current.networkType === 'evm') && checkTronNetwork
-      ? getBase58Address(accountInfo.evmosHexAddress ?? '')
-      : null;
+  // const evmAddress =
+  //   (accountInfo.hasEvmosHexAddress || chainStore.current.networkType === 'evm') && accountInfo.evmosHexAddress;
+  // const tronAddress =
+  //   (accountInfo.hasEvmosHexAddress || chainStore.current.networkType === 'evm') && checkTronNetwork
+  //     ? getBase58Address(accountInfo.evmosHexAddress ?? '')
+  //     : null;
   const notification = useNotification();
 
   const copyAddress = useCallback(
@@ -86,7 +86,20 @@ export const AccountView: FunctionComponent = observer(() => {
         </div>
         <div style={{ flex: 1, textAlign: 'right' }}></div>
       </div>
-      {(networkType === 'cosmos' || networkType === 'bitcoin') && (
+      <div className={styleAccount.containerAccount}>
+        <div style={{ flex: 1 }} />
+        <div className={styleAccount.address} onClick={() => copyAddress(addressDisplay)}>
+          <span className={styleAccount.addressText}>
+            <Address maxCharacters={22} lineBreakBeforePrefix={false}>
+              {accountInfo.walletStatus === WalletStatus.Loaded && addressDisplay ? addressDisplay : '...'}
+            </Address>
+          </span>
+          <div style={{ width: 6 }} />
+          <img src={require('../../public/assets/img/filled.svg')} alt="filled" width={16} height={16} />
+        </div>
+        <div style={{ flex: 1 }} />
+      </div>
+      {/* {(networkType === 'cosmos' || networkType === 'bitcoin') && (
         <div className={styleAccount.containerAccount}>
           <div style={{ flex: 1 }} />
           <div className={styleAccount.address} onClick={() => copyAddress(addressDisplay)}>
@@ -166,7 +179,7 @@ export const AccountView: FunctionComponent = observer(() => {
 
           <div style={{ flex: 1 }} />
         </div>
-      )}
+      )} */}
       {networkType === 'bitcoin' && (
         <div
           style={{

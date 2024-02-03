@@ -10,10 +10,7 @@ export const AmountTokenCosmos: FunctionComponent = observer(() => {
   const queries = queriesStore.get(current.chainId);
 
   const accountInfo = accountStore.getAccount(current.chainId);
-  const balanceStakableQuery = queries.queryBalances.getQueryBech32Address(
-    accountInfo.bech32Address
-  ).stakable;
-  
+  const balanceStakableQuery = queries.queryBalances.getQueryBech32Address(accountInfo.bech32Address).stakable;
 
   // const delegated = queries.cosmos.queryDelegations
   //   .getQueryBech32Address(accountInfo.bech32Address)
@@ -33,9 +30,7 @@ export const AmountTokenCosmos: FunctionComponent = observer(() => {
           <FormattedMessage id="main.account.chart.available-balance" />
         </div>
         <div style={{ minWidth: '16px' }} />
-        <div className={styleAsset.value}>
-          {stakable.shrink(true).maxDecimals(6).toString()}
-        </div>
+        <div className={styleAsset.value}>{stakable.shrink(true).maxDecimals(6).toString()}</div>
       </div>
       {/* <div className={styleAsset.legend}>
         <div className={styleAsset.label} style={{ color: '#11cdef' }}>
@@ -72,9 +67,7 @@ export const AmountTokenEvm: FunctionComponent = observer(() => {
   // wait for account to be
   if (!accountInfo.evmosHexAddress) return null;
 
-  const balance = queries.evm.queryEvmBalance.getQueryBalance(
-    accountInfo.evmosHexAddress
-  ).balance;
+  const balance = queries.evm.queryEvmBalance.getQueryBalance(accountInfo.evmosHexAddress).balance;
 
   return (
     <div className={styleAsset.amountOrainWrap}>
@@ -86,9 +79,7 @@ export const AmountTokenEvm: FunctionComponent = observer(() => {
         {/* <div className={styleAsset.label}>
             <img src={chainInfo.stakeCurrency.coinImageUrl} />
           </div> */}
-        <div className={styleAsset.value}>
-          {balance?.trim(true).shrink(true).maxDecimals(6).toString()}
-        </div>
+        <div className={styleAsset.value}>{balance?.trim(true).shrink(true).maxDecimals(6).toString()}</div>
       </div>
     </div>
   );

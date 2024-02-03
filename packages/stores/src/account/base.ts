@@ -332,11 +332,16 @@ export class AccountSetBase<MsgOpts, Queries> {
         return address;
       }
     }
-    if (networkType === 'evm' && !!this.hasEvmosHexAddress) {
-      if (this.chainId === ChainIdEnum.TRON && toDisplay) {
-        return getBase58Address(this.evmosHexAddress);
+    if (networkType === 'evm') {
+      if (!!this.hasEvmosHexAddress) {
+        if (this.chainId === ChainIdEnum.TRON && toDisplay) {
+          return getBase58Address(this.evmosHexAddress);
+        }
+        return this.evmosHexAddress;
+      } else if (this.bech32Address?.startsWith('oasis')) {
+        console.log('🚀 ~ AccountSetBase<MsgOpts, ~ getAddressDisplay ~ this.bech32Address:', this.bech32Address);
+        return this.bech32Address;
       }
-      return this.evmosHexAddress;
     } else if (networkType === 'bitcoin') {
       return this.btcAddress;
     }

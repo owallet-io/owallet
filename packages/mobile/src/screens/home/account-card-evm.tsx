@@ -25,12 +25,12 @@ export const AccountCardEVM: FunctionComponent<{
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
-  const selected = keyRingStore?.multiKeyStoreInfo.find(keyStore => keyStore?.selected);
+  const selected = keyRingStore?.multiKeyStoreInfo.find((keyStore) => keyStore?.selected);
   const addressDisplay = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
   const addressCore = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses, false);
   let total: any = queries.evm.queryEvmBalance.getQueryBalance(addressCore)?.balance;
 
-  const onPressBtnMain = name => {
+  const onPressBtnMain = (name) => {
     if (name === 'Buy') {
       navigate('MainTab', { screen: 'Browser', path: 'https://oraidex.io' });
     }
