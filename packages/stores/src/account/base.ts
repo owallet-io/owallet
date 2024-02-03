@@ -337,6 +337,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         if (this.chainId === ChainIdEnum.TRON && toDisplay) {
           return getBase58Address(this.evmosHexAddress);
         }
+        console.log('🚀 ~ AccountSetBase<MsgOpts, ~ getAddressDisplay ~ this.evmosHexAddress:', this.evmosHexAddress);
         return this.evmosHexAddress;
       } else if (this.bech32Address?.startsWith('oasis')) {
         console.log('🚀 ~ AccountSetBase<MsgOpts, ~ getAddressDisplay ~ this.bech32Address:', this.bech32Address);
@@ -601,6 +602,7 @@ export class AccountSetBase<MsgOpts, Queries> {
     };
 
     const waitForPendingTransaction = async (rpc, txHash, onFulfill, count = 0) => {
+      console.log('🚀 ~ AccountSetBase<MsgOpts, ~ waitForPendingTransaction ~ rpc:', rpc);
       if (count > 10) return;
 
       try {
@@ -610,6 +612,10 @@ export class AccountSetBase<MsgOpts, Queries> {
         while (!transactionReceipt) {
           // Waiting expectedBlockTime until the transaction is mined
           transactionReceipt = await request(rpc, 'eth_getTransactionReceipt', [txHash]);
+          console.log(
+            '🚀 ~ AccountSetBase<MsgOpts, ~ waitForPendingTransaction ~ transactionReceipt:',
+            transactionReceipt
+          );
 
           retryCount += 1;
           if (retryCount === 10) break;

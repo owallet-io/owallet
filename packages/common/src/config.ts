@@ -1228,7 +1228,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     rpc: 'https://sapphire.oasis.io',
     rest: 'https://sapphire.oasis.io',
     grpc: 'https://grpc.oasis.dev',
-    chainId: '0x5afe',
+    chainId: 'demo-0x5afe',
     networkType: 'evm',
     chainName: 'Oasis Demo',
     stakeCurrency: {
@@ -1270,8 +1270,10 @@ export const EmbedChainInfos: AppChainInfo[] = [
     }
   },
   {
+    rpc: 'https://sapphire.oasis.io',
     rest: 'https://sapphire.oasis.io',
-    chainId: 'sapphire-0x5afe',
+    grpc: 'https://grpc.oasis.dev',
+    chainId: '0x5afe',
     chainName: 'Oasis Sapphire',
     bip44: {
       coinType: 60
