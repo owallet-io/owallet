@@ -100,12 +100,8 @@ export const AccountCardEVM: FunctionComponent<{
       return (
         <View>
           <View>
-            <Text>Saphire: </Text>
+            <Text>Native: </Text>
             <AddressCopyable address={oasisAddress} maxCharacters={22} />
-          </View>
-          <View>
-            <Text>Evmos: </Text>
-            <AddressCopyable address={addressCore} maxCharacters={22} />
           </View>
         </View>
       );
