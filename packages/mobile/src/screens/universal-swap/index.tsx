@@ -457,7 +457,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       fromToken: `${originalFromToken.name} - ${originalFromToken.chainId}`,
       fromAmount: `${fromAmountToken}`,
       toToken: `${originalToToken.name} - ${originalToToken.chainId}`,
-      toAmount: `${toAmountToken}`
+      toAmount: `${toAmountToken}`,
+      fromNetwork: originalFromToken.chainId,
+      toNetwork: originalToToken.chainId
     };
     if (mixpanel) {
       mixpanel.track('Universal Swap Owallet', logEvent);

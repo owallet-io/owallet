@@ -6,9 +6,9 @@ import { RNMessageRequesterInternal } from './src/router';
 import { ChainIdEnum } from '@owallet/common';
 
 import { Mixpanel } from 'mixpanel-react-native';
-if (process.env.MIX_PANNEL_TOKEN && !__DEV__) {
+if (process.env.MIX_PANEL_TOKEN && !__DEV__) {
   const trackAutomaticEvents = true;
-  const mixpanel = new Mixpanel(process.env.MIX_PANNEL_TOKEN, trackAutomaticEvents);
+  const mixpanel = new Mixpanel(process.env.MIX_PANEL_TOKEN, trackAutomaticEvents);
 
   mixpanel.init();
   globalThis.mixpanel = mixpanel;
