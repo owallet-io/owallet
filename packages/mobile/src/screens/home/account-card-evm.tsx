@@ -61,7 +61,8 @@ export const AccountCardEVM: FunctionComponent<{
       AddressQRCodeModal({
         account,
         chainStore: chainStore.current,
-        keyRingStore: keyRingStore
+        keyRingStore: keyRingStore,
+        address: chainStore.current.chainId === ChainIdEnum.Oasis ? oasisAddress : undefined
       })
     );
   };
