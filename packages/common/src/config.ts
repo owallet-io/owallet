@@ -1184,7 +1184,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     grpc: 'https://grpc.oasis.dev',
     chainId: '0x5afe',
     networkType: 'evm',
-    chainName: 'Oasis Sapphire',
+    chainName: 'Oasis',
     stakeCurrency: {
       coinDenom: 'ROSE',
       coinMinimalDenom: 'rose',

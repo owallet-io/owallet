@@ -96,7 +96,22 @@ export const AccountCardEVM: FunctionComponent<{
       );
     }
 
-    return <AddressCopyable address={oasisAddress.length > 0 ? oasisAddress : addressDisplay} maxCharacters={22} />;
+    if (chainStore.current.chainId === ChainIdEnum.Oasis) {
+      return (
+        <View>
+          <View>
+            <Text>Saphire: </Text>
+            <AddressCopyable address={oasisAddress} maxCharacters={22} />
+          </View>
+          <View>
+            <Text>Evmos: </Text>
+            <AddressCopyable address={addressCore} maxCharacters={22} />
+          </View>
+        </View>
+      );
+    }
+
+    return <AddressCopyable address={addressDisplay} maxCharacters={22} />;
   };
   const totalAmount = () => {
     if (chainStore.current.chainId === ChainIdEnum.Oasis) {
