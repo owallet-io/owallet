@@ -16,7 +16,7 @@ import { Bech32Address } from '@owallet/cosmos';
 import { useState } from 'react';
 import { ObservableEnsFetcher } from '@owallet/ens';
 import { validateAddress } from '@owallet/bitcoin';
-import { TRON_ID } from '@owallet/common';
+import { ChainIdEnum, TRON_ID } from '@owallet/common';
 
 export class RecipientConfig extends TxChainSetter implements IRecipientConfig {
   @observable
@@ -123,18 +123,19 @@ export class RecipientConfig extends TxChainSetter implements IRecipientConfig {
     }
 
     try {
-      if (this.chainInfo.networkType === 'evm') {
+      if (this.chainInfo.networkType === 'evm' && this.chainInfo.chainId !== ChainIdEnum.OasisNative) {
         if (this.chainInfo.chainId === TRON_ID) {
           const checkAddress = /T[A-Za-z1-9]{33}/g.exec(this.recipient);
           if (!checkAddress) {
             return new InvalidTronAddressError(`Invalid tron address`);
           }
         } else {
-          if (!Web3.utils.isAddress(this.recipient, Number(this.chainInfo.chainId))) return new InvalidEvmAddressError(`Invalid evm address`);
+          if (!Web3.utils.isAddress(this.recipient, Number(this.chainInfo.chainId)))
+            return new InvalidEvmAddressError(`Invalid evm address`);
         }
       } else if (this.chainInfo.networkType === 'bitcoin') {
         const { isValid } = validateAddress(this.recipient, this.chainInfo.chainId);
-        
+
         if (!isValid) {
           return new InvalidBech32Error(`Invalid bitcoin address`);
         }

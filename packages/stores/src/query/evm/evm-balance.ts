@@ -31,14 +31,11 @@ export class ObservableQueryEvmBalanceInner extends ObservableChainQuery<Result 
   protected async getOasisBalance() {
     try {
       const chainInfo = this.chainGetter.getChain(this._chainId);
-
       const nic = await getOasisNic((chainInfo as any)._chainInfo.grpc);
-
       const publicKey = await addressToPublicKey(this.address);
-
       const account = await nic.stakingAccount({ owner: publicKey, height: 0 });
-
       const grpcBalance = parseRpcBalance(account);
+      console.log('🚀 ~ ObservableQueryEvmBalanceInner ~ getOasisBalance ~ grpcBalance:', grpcBalance);
       return grpcBalance;
     } catch (error) {
       console.log('🚀 ~ ObservableQueryEvmBalanceInner ~ getOasisBalance ~ error:', error);

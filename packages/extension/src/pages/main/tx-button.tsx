@@ -143,16 +143,11 @@ export const TxButtonEvmView: FunctionComponent<TxButtonViewProps> = observer(({
   const history = useHistory();
 
   const sendBtnRef = useRef<HTMLButtonElement>(null);
-
-  if (!accountInfo.evmosHexAddress) return null;
+  const addressCore = accountInfo.getAddressDisplay(keyRingStore.keyRingLedgerAddresses, false);
+  const addressDisplay = accountInfo.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
+  if (!addressCore) return null;
   let evmBalance;
-  evmBalance = queries.evm.queryEvmBalance.getQueryBalance(
-    keyRingStore?.keyRingType === 'ledger'
-      ? chainStore.current.chainId === TRON_ID
-        ? keyRingStore?.keyRingLedgerAddresses?.trx && getEvmAddress(keyRingStore?.keyRingLedgerAddresses?.trx)
-        : keyRingStore?.keyRingLedgerAddresses?.eth
-      : accountInfo.evmosHexAddress
-  )?.balance;
+  evmBalance = queries.evm.queryEvmBalance.getQueryBalance(addressCore)?.balance;
 
   const isTronNetwork = chainStore.current.chainId === TRON_ID;
   const hasAssets = isTronNetwork
@@ -162,9 +157,7 @@ export const TxButtonEvmView: FunctionComponent<TxButtonViewProps> = observer(({
   return (
     <div className={styleTxButton.containerTxButton}>
       <Modal toggle={() => setIsDepositOpen(false)} centered isOpen={isDepositOpen}>
-        <DepositModal
-          bech32Address={isTronNetwork ? getBase58Address(accountInfo.evmosHexAddress) : accountInfo.evmosHexAddress}
-        />
+        <DepositModal bech32Address={addressDisplay} />
       </Modal>
       <Button
         className={classnames(styleTxButton.button, styleTxButton.btnReceive)}

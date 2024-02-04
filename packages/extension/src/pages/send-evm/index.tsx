@@ -71,8 +71,8 @@ export const SendEvmPage: FunctionComponent<{
 
   const accountInfo = accountStore.getAccount(current.chainId);
   const [gasPrice, setGasPrice] = useState('0');
-  const address =
-    keyRingStore.keyRingType === 'ledger' ? keyRingStore?.keyRingLedgerAddresses?.eth : accountInfo.evmosHexAddress;
+  const address = accountInfo.getAddressDisplay(keyRingStore.keyRingLedgerAddresses, false);
+
   const sendConfigs = useSendTxConfig(
     chainStore,
     current.chainId,
@@ -83,12 +83,12 @@ export const SendEvmPage: FunctionComponent<{
     chainStore.current.networkType === 'evm' && queriesStore.get(current.chainId).evm.queryEvmBalance,
     address
   );
-
+  const initGasDefault = current.chainId !== ChainIdEnum.OasisNative ? 21000 : 0;
   const gasConfig = useGasEthereumConfig(
     chainStore,
     current.chainId,
     // Hard code gas limit of evm
-    21000
+    initGasDefault
   );
   const feeConfig = useFeeEthereumConfig(chainStore, current.chainId);
 
@@ -115,42 +115,44 @@ export const SendEvmPage: FunctionComponent<{
       console.log(error);
     }
   };
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const web3 = new Web3(chainStore.current.rest);
-        let estimate = 21000;
-        if (coinMinimalDenom) {
-          const tokenInfo = new web3.eth.Contract(
-            // @ts-ignore
-            ERC20_ABI,
-            query?.defaultDenom?.split(':')?.[1]
-          );
-          estimate = await tokenInfo.methods
-            .transfer(
-              accountInfo?.evmosHexAddress,
-              '0x' +
-                parseFloat(new Big(sendConfigs.amountConfig.amount).mul(new Big(10).pow(decimals)).toString()).toString(
-                  16
-                )
-            )
-            .estimateGas({
-              from: query?.defaultDenom?.split(':')?.[1]
-            });
-        } else {
-          estimate = await web3.eth.estimateGas({
-            to: accountInfo?.evmosHexAddress,
+  const estimateGas = async () => {
+    try {
+      const web3 = new Web3(chainStore.current.rest);
+      let estimate = 21000;
+      if (coinMinimalDenom) {
+        const tokenInfo = new web3.eth.Contract(
+          // @ts-ignore
+          ERC20_ABI,
+          query?.defaultDenom?.split(':')?.[1]
+        );
+        estimate = await tokenInfo.methods
+          .transfer(
+            address,
+            '0x' +
+              parseFloat(new Big(sendConfigs.amountConfig.amount).mul(new Big(10).pow(decimals)).toString()).toString(
+                16
+              )
+          )
+          .estimateGas({
             from: query?.defaultDenom?.split(':')?.[1]
           });
-        }
-        gasConfig.setGas(estimate ?? 21000);
-        feeConfig.setFee(new Big(estimate ?? 21000).mul(new Big(gasPrice)).toFixed(decimals));
-      } catch (error) {
-        gasConfig.setGas(50000);
-        feeConfig.setFee(new Big(50000).mul(new Big(gasPrice)).toFixed(decimals));
+      } else {
+        estimate = await web3.eth.estimateGas({
+          to: address,
+          from: query?.defaultDenom?.split(':')?.[1]
+        });
       }
-    })();
+      gasConfig.setGas(estimate ?? 21000);
+      feeConfig.setFee(new Big(estimate ?? 21000).mul(new Big(gasPrice)).toFixed(decimals));
+    } catch (error) {
+      gasConfig.setGas(50000);
+      feeConfig.setFee(new Big(50000).mul(new Big(gasPrice)).toFixed(decimals));
+    }
+  };
+  useEffect(() => {
+    if (chainStore.current.chainId !== ChainIdEnum.OasisNative) {
+      estimateGas();
+    }
   }, [gasPrice, sendConfigs.amountConfig.amount]);
 
   useEffect(() => {
