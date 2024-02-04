@@ -1,18 +1,22 @@
 import { Result } from './types';
-import { KVStore, MyBigInt } from '@owallet/common';
+import {
+  ChainIdEnum,
+  KVStore,
+  MyBigInt,
+  OasisBalance,
+  addressToPublicKey,
+  getOasisNic,
+  parseRpcBalance
+} from '@owallet/common';
 import { ObservableChainQuery, ObservableChainQueryMap } from '../chain-query';
 import { ChainGetter, QueryResponse } from '../../common';
 import { computed } from 'mobx';
 import { CoinPretty, Int } from '@owallet/unit';
 import { CancelToken } from 'axios';
 
-export class ObservableQueryEvmBalanceInner extends ObservableChainQuery<Result> {
-  constructor(
-    kvStore: KVStore,
-    chainId: string,
-    chainGetter: ChainGetter,
-    protected readonly address: string
-  ) {
+export class ObservableQueryEvmBalanceInner extends ObservableChainQuery<Result | OasisBalance> {
+  constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter, protected readonly address: string) {
+    console.log('🚀 ~ ObservableQueryEvmBalanceInner ~ constructor ~ chainId:', chainId, address);
     super(kvStore, chainId, chainGetter, '', {
       jsonrpc: '2.0',
       method: 'eth_getBalance',
@@ -24,12 +28,35 @@ export class ObservableQueryEvmBalanceInner extends ObservableChainQuery<Result>
   protected canFetch(): boolean {
     return this.address.length !== 0;
   }
+  protected async getOasisBalance() {
+    try {
+      const chainInfo = this.chainGetter.getChain(this._chainId);
 
-  protected async fetchResponse(
-    cancelToken: CancelToken
-  ): Promise<QueryResponse<Result>> {
+      const nic = await getOasisNic((chainInfo as any)._chainInfo.grpc);
+
+      const publicKey = await addressToPublicKey(this.address);
+
+      const account = await nic.stakingAccount({ owner: publicKey, height: 0 });
+
+      const grpcBalance = parseRpcBalance(account);
+      return grpcBalance;
+    } catch (error) {
+      console.log('🚀 ~ ObservableQueryEvmBalanceInner ~ getOasisBalance ~ error:', error);
+    }
+  }
+  protected async fetchResponse(cancelToken: CancelToken): Promise<QueryResponse<Result | OasisBalance>> {
     const response = await super.fetchResponse(cancelToken);
 
+    if (this._chainId === ChainIdEnum.OasisNative) {
+      const oasisRs = await this.getOasisBalance();
+      console.log('🚀 ~ ObservableQueryEvmBalanceInner ~ fetchResponse ~ oasisRs:', oasisRs);
+      return {
+        data: oasisRs,
+        status: response.status,
+        staled: false,
+        timestamp: Date.now()
+      };
+    }
     const evmResult = response.data;
 
     if (!evmResult) {
@@ -46,32 +73,31 @@ export class ObservableQueryEvmBalanceInner extends ObservableChainQuery<Result>
 
   @computed
   get balance(): CoinPretty | undefined {
+    const chainInfo = this.chainGetter.getChain(this._chainId);
     if (!this.response?.data) {
       return undefined;
     }
-
-    const chainInfo = this.chainGetter.getChain(this._chainId);
-
+    if (this.chainId === ChainIdEnum.OasisNative) {
+      return new CoinPretty(
+        chainInfo.stakeCurrency,
+        new Int(new MyBigInt((this.response.data as OasisBalance).available).toString())
+      );
+    }
     return new CoinPretty(
       chainInfo.stakeCurrency,
-      new Int(new MyBigInt(this.response.data.result).toString())
+      new Int(new MyBigInt((this.response.data as Result).result).toString())
     );
   }
 }
 
-export class ObservableQueryEvmBalance extends ObservableChainQueryMap<Result> {
+export class ObservableQueryEvmBalance extends ObservableChainQueryMap<Result | OasisBalance> {
   constructor(
     protected readonly kvStore: KVStore,
     protected readonly chainId: string,
     protected readonly chainGetter: ChainGetter
   ) {
     super(kvStore, chainId, chainGetter, (address: string) => {
-      return new ObservableQueryEvmBalanceInner(
-        this.kvStore,
-        this.chainId,
-        this.chainGetter,
-        address
-      );
+      return new ObservableQueryEvmBalanceInner(this.kvStore, this.chainId, this.chainGetter, address);
     });
   }
 

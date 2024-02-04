@@ -213,14 +213,16 @@ export const AssetChartViewEvm: FunctionComponent = observer(() => {
   const queries = queriesStore.get(current.chainId);
 
   const accountInfo = accountStore.getAccount(current.chainId);
-  console.log('🚀 ~ constAssetChartViewEvm:FunctionComponent=observer ~ accountInfo:', accountInfo.bech32Address);
+
   const addressCore = accountInfo.getAddressDisplay(keyRingStore.keyRingLedgerAddresses, false);
+  console.log('🚀 ~ constAssetChartViewEvm:FunctionComponent=observer ~ addressCore:', addressCore);
   // wait for account to be
   if (!addressCore) return null;
 
   const isTronNetwork = chainStore.current.chainId === TRON_ID;
 
   const balance = queries.evm.queryEvmBalance.getQueryBalance(addressCore)?.balance;
+  console.log('🚀 ~ constAssetChartViewEvm:FunctionComponent=observer ~ balance:', balance);
   let totalPrice;
   let total;
   if (addressCore) {
@@ -280,6 +282,7 @@ export const AssetChartViewEvm: FunctionComponent = observer(() => {
     </React.Fragment>
   );
 });
+
 export const AssetChartViewBtc: FunctionComponent = observer(() => {
   const { chainStore, accountStore, queriesStore, priceStore, keyRingStore } = useStore();
 
