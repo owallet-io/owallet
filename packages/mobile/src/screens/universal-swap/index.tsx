@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
 import { Text } from '@src/components/text';
 import { useTheme } from '@src/themes/theme-provider';
@@ -28,13 +28,15 @@ import {
   Networks,
   TRON_DENOM,
   BigDecimal,
-  toSubAmount
+  toSubAmount,
+  oraichainTokens,
+  getTokenOnOraichain
 } from '@oraichain/oraidex-common';
 import { openLink } from '../../utils/helper';
-import { SwapDirection, feeEstimate, getTransferTokenFee, oraichainTokens } from '@owallet/common';
-import { handleSimulateSwap, filterNonPoolEvmTokens } from '@oraichain/oraidex-universal-swap';
+import { feeEstimate, getTransferTokenFee } from '@owallet/common';
+import { handleSimulateSwap, filterNonPoolEvmTokens, SwapDirection } from '@oraichain/oraidex-universal-swap';
 import { fetchTokenInfos, ChainIdEnum, tokenMap } from '@owallet/common';
-import { calculateMinReceive, getTokenOnOraichain } from '@oraichain/oraidex-common';
+import { calculateMinReceive } from '@oraichain/oraidex-common';
 import {
   isEvmNetworkNativeSwapSupported,
   isEvmSwappable,
@@ -135,13 +137,15 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   // get token on oraichain to simulate swap amount.
   const originalFromToken = tokenMap[fromTokenDenom];
   const originalToToken = tokenMap[toTokenDenom];
+  console.log('originalToToken', originalToToken);
+
   const isEvmSwap = isEvmSwappable({
     fromChainId: originalFromToken.chainId,
     toChainId: originalToToken.chainId,
     fromContractAddr: originalFromToken.contractAddress,
     toContractAddr: originalToToken.contractAddress
   });
-
+  console.log('originalToToken 2', originalToToken);
   const relayerFeeToken = useMemo(() => {
     return relayerFee.reduce((acc, cur) => {
       if (
