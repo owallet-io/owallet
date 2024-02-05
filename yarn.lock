@@ -27733,6 +27733,11 @@ w3c-hr-time@^1.0.2:
   dependencies:
     browser-process-hrtime "^1.0.0"
 
+w3c-xmlhttprequest@3.0.4:
+  version "3.0.4"
+  resolved "https://registry.yarnpkg.com/w3c-xmlhttprequest/-/w3c-xmlhttprequest-3.0.4.tgz#1a2885c3a75bf9fdc14a94dbfb7abdb5f799cb11"
+  integrity sha512-GOR3PNrFVioJtxb+VR1kp80+UM89ga85akLRYVZX7fmaQTn/kkj9Q18MhNoGtvRJ2ez5i77EpQ0hNBB7+e/RBg==
+
 w3c-xmlserializer@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/w3c-xmlserializer/-/w3c-xmlserializer-2.0.0.tgz#3e7104a05b75146cc60f564380b7f683acf1020a"
@@ -28832,6 +28837,11 @@ xhr2-cookies@1.1.0:
   integrity sha512-hjXUA6q+jl/bd8ADHcVfFsSPIf+tyLIjuO9TwJC9WI6JP2zKcS7C+p56I9kCLLsaCiNT035iYvEUUzdEFj/8+g==
   dependencies:
     cookiejar "^2.1.1"
+
+xhr2@0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/xhr2/-/xhr2-0.2.1.tgz#4e73adc4f9cfec9cbd2157f73efdce3a5f108a93"
+  integrity sha512-sID0rrVCqkVNUn8t6xuv9+6FViXjUVXq8H5rWOH2rz9fDNQEd4g0EA2XlcEdJXRz5BMEn4O1pJFdT+z4YHhoWw==
 
 xhr@^2.0.4, xhr@^2.3.3:
   version "2.6.0"

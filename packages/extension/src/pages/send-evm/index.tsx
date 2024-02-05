@@ -68,6 +68,7 @@ export const SendEvmPage: FunctionComponent<{
   const { chainStore, accountStore, queriesStore, analyticsStore, keyRingStore } = useStore();
   const current = chainStore.current;
   const decimals = chainStore.current.feeCurrencies[0].coinDecimals;
+  console.log('🚀 ~ decimals:', decimals);
 
   const accountInfo = accountStore.getAccount(current.chainId);
   const [gasPrice, setGasPrice] = useState('0');
@@ -83,7 +84,7 @@ export const SendEvmPage: FunctionComponent<{
     chainStore.current.networkType === 'evm' && queriesStore.get(current.chainId).evm.queryEvmBalance,
     address
   );
-  const initGasDefault = current.chainId !== ChainIdEnum.OasisNative ? 21000 : 0;
+  const initGasDefault = current.chainId !== ChainIdEnum.OasisNative ? 21000 : 1;
   const gasConfig = useGasEthereumConfig(
     chainStore,
     current.chainId,
@@ -304,7 +305,7 @@ export const SendEvmPage: FunctionComponent<{
                   },
                   onFulfill: (tx) => {
                     console.log('🚀 ~ onSubmit={ ~ tx:', tx);
-                    if (chainStore.current.chainId !== ChainIdEnum.Oasis) {
+                    if (tx?.status) {
                       notification.push({
                         placement: 'top-center',
                         type: tx?.status === '0x1' ? 'success' : 'danger',

@@ -561,6 +561,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         txHash = result.txHash;
       } else {
         const result = await this.broadcastEvmMsgs(msgs, fee, signOptions);
+        console.log('🚀 ~ AccountSetBase<MsgOpts, ~ result:', result);
         txHash = result.txHash;
       }
     } catch (e: any) {
@@ -578,7 +579,7 @@ export class AccountSetBase<MsgOpts, Queries> {
 
       throw e;
     }
-
+    console.log('🚀 ~ AccountSetBase<MsgOpts, ~ txHash:', txHash);
     let onBroadcasted: ((txHash: Uint8Array) => void) | undefined;
     let onFulfill: ((tx: any) => void) | undefined;
 
@@ -596,7 +597,17 @@ export class AccountSetBase<MsgOpts, Queries> {
     runInAction(() => {
       this._isSendingMsg = false;
     });
+    if (this.chainId === ChainIdEnum.OasisNative) {
+      console.log(txHash, 'txHash');
+      if (this.opts.preTxEvents?.onFulfill) {
+        this.opts.preTxEvents.onFulfill(txHash);
+      }
 
+      if (onFulfill) {
+        onFulfill(txHash);
+      }
+      return;
+    }
     const sleep = (milliseconds) => {
       return new Promise((resolve) => setTimeout(resolve, milliseconds));
     };
@@ -1001,6 +1012,7 @@ export class AccountSetBase<MsgOpts, Queries> {
       };
     } catch (error) {
       console.log('Error on broadcastEvmMsgs: ', error);
+      throw Error(error);
     }
   }
 

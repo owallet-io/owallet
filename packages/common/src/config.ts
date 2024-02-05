@@ -1185,7 +1185,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     grpc: 'https://grpc.oasis.dev',
     chainId: 'native-0x5afe',
     networkType: 'evm',
-    chainName: 'Oasis Native',
+    chainName: 'Oasis',
     stakeCurrency: {
       coinDenom: 'ROSE',
       coinMinimalDenom: 'rose',
@@ -1202,7 +1202,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       {
         coinDenom: 'ROSE',
         coinMinimalDenom: 'rose',
-        coinDecimals: 18,
+        coinDecimals: 9,
         coinGeckoId: 'oasis-network',
         coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png'
       }
@@ -1264,8 +1264,52 @@ export const EmbedChainInfos: AppChainInfo[] = [
     features: ['ibc-go', 'stargate', 'isEvm'],
     txExplorer: {
       name: 'Oasis Saphire Scan',
-      txUrl: 'https://explorer.sapphire.oasis.io/{txHash}',
-      accountUrl: 'https://explorer.sapphire.oasis.io/{address}'
+      txUrl: 'https://explorer.sapphire.oasis.io/tx/{txHash}',
+      accountUrl: 'https://explorer.sapphire.oasis.io/address/{address}'
+    }
+  },
+  {
+    rpc: 'https://emerald.oasis.dev',
+    rest: 'https://emerald.oasis.dev',
+    grpc: 'https://grpc.oasis.dev',
+    chainId: '0xa516',
+    chainName: 'Oasis Emerald',
+    bip44: {
+      coinType: 60
+    },
+    coinType: 60,
+    stakeCurrency: {
+      coinDenom: 'ROSE',
+      coinMinimalDenom: 'rose',
+      coinDecimals: 18,
+      coinGeckoId: 'oasis-network',
+      coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png',
+      gasPriceStep: {
+        low: 420,
+        average: 504,
+        high: 672
+      }
+    },
+    bech32Config: Bech32Address.defaultBech32Config('evmos'),
+    networkType: 'evm',
+    currencies: [
+      {
+        coinDenom: 'ROSE',
+        coinMinimalDenom: 'rose',
+        coinDecimals: 18,
+        coinGeckoId: 'oasis-network',
+        coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png'
+      }
+    ],
+    get feeCurrencies() {
+      return [this.stakeCurrency];
+    },
+
+    features: ['ibc-go', 'stargate', 'isEvm'],
+    txExplorer: {
+      name: 'Oasis Emerald Scan',
+      txUrl: 'https://explorer.emerald.oasis.dev/tx/{txHash}',
+      accountUrl: 'https://explorer.emerald.oasis.dev/address/{address}'
     }
   }
 ];
