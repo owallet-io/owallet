@@ -278,7 +278,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       if (accounts?.[ChainIdEnum.TRON] && accounts?.[ChainIdEnum.Ethereum]) {
         handleFetchAmounts(accounts);
       }
-    }, 2000);
+    }, 900);
   }, [accountOrai.bech32Address]);
 
   const subAmountFrom = toSubAmount(universalSwapStore.getAmount, originalFromToken);
