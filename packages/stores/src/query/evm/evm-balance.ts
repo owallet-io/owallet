@@ -31,7 +31,7 @@ export class ObservableQueryEvmBalanceInner extends ObservableChainQuery<Result 
   protected async getOasisBalance() {
     try {
       const chainInfo = this.chainGetter.getChain(this._chainId);
-      const nic = await getOasisNic((chainInfo as any)._chainInfo.grpc);
+      const nic = getOasisNic(chainInfo.raw.grpc);
       const publicKey = await addressToPublicKey(this.address);
       const account = await nic.stakingAccount({ owner: publicKey, height: 0 });
       const grpcBalance = parseRpcBalance(account);

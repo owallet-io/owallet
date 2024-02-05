@@ -5,3 +5,4 @@ export * from './bigInt';
 export * from './events';
 export * from './amount';
 export * from './oasis-helper';
+export * from './oasis-transaction';

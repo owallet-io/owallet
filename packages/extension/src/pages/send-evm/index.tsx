@@ -6,6 +6,8 @@ import {
   MemoInput,
   CoinInputEvm
 } from '../../components/form';
+import * as oasis from '@oasisprotocol/client';
+import { ContextSigner, Signer } from '@oasisprotocol/client/dist/signature';
 import { useStore } from '../../stores';
 import bigInteger from 'big-integer';
 import Big from 'big.js';
@@ -26,7 +28,16 @@ import queryString from 'querystring';
 import Web3 from 'web3';
 import { useFeeEthereumConfig, useGasEthereumConfig, useSendTxConfig } from '@owallet/hooks';
 import { fitPopupWindow, openPopupWindow, PopupSize } from '@owallet/popup';
-import { ChainIdEnum, EthereumEndpoint } from '@owallet/common';
+import {
+  ChainIdEnum,
+  EthereumEndpoint,
+  OasisTransaction,
+  getOasisNic,
+  hex2uint,
+  parseRoseStringToBigNumber,
+  signerFromPrivateKey,
+  uint2hex
+} from '@owallet/common';
 import classNames from 'classnames';
 import { GasEthereumInput } from '../../components/form/gas-ethereum-input';
 import { FeeInput } from '../../components/form/fee-input';
@@ -303,8 +314,40 @@ export const SendEvmPage: FunctionComponent<{
                       feeType: sendConfigs.feeConfig.feeType
                     });
                   },
-                  onFulfill: (tx) => {
+                  onFulfill: async (tx) => {
                     console.log('🚀 ~ onSubmit={ ~ tx:', tx);
+                    if (chainStore.current.chainId === ChainIdEnum.OasisNative) {
+                      const { bytes, amount, to } = tx;
+                      console.log('🚀 ~ onFulfill: ~ to:', to);
+                      console.log('🚀 ~ onFulfill: ~ amount:', amount);
+                      console.log('🚀 ~ onFulfill: ~ bytes:', bytes);
+                      const signer = signerFromPrivateKey(bytes);
+
+                      const bigIntAmount = BigInt(parseRoseStringToBigNumber(amount).toString());
+                      const nic = getOasisNic(chainStore.current.raw.grpc);
+
+                      // console.log('🚀 ~ onSubmit={ ~ chainStore.current:', chainStore.current);
+                      const chainContext = await nic.consensusGetChainContext();
+
+                      const tw = await OasisTransaction.buildTransfer(nic, signer as Signer, to, bigIntAmount);
+                      console.log('🚀 ~ onFulfill: ~ tw:', tw);
+
+                      await OasisTransaction.sign(chainContext, signer as Signer, tw);
+
+                      const payload = await OasisTransaction.submit(nic, tw);
+                      console.log('🚀 ~ onFulfill: ~ payload:', payload);
+                      notification.push({
+                        placement: 'top-center',
+                        type: 'success',
+                        duration: 5,
+                        content: 'Transaction successful',
+                        canDelete: true,
+                        transition: {
+                          duration: 0.25
+                        }
+                      });
+                      // return payload;
+                    }
                     if (tx?.status) {
                       notification.push({
                         placement: 'top-center',

@@ -1008,7 +1008,7 @@ export class AccountSetBase<MsgOpts, Queries> {
       const signResponse = await ethereum.signAndBroadcastEthereum(this.chainId, message);
 
       return {
-        txHash: signResponse.rawTxHex
+        txHash: signResponse?.rawTxHex
       };
     } catch (error) {
       console.log('Error on broadcastEvmMsgs: ', error);

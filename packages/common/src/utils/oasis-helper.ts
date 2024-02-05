@@ -133,7 +133,7 @@ const defaultDepositFeeAmount = '0';
 export const getDefaultFeeAmount = (isDepositing: boolean, paraTimeConfig: ParaTimeConfig): string => {
   return isDepositing ? defaultDepositFeeAmount : getFeeAmount(paraTimeConfig.feeGas, paraTimeConfig.gasPrice);
 };
-export const getOasisNic = async (url) => {
-  const nic = await new client.NodeInternal(url);
+export const getOasisNic = (url) => {
+  const nic = new client.NodeInternal(url);
   return nic;
 };
