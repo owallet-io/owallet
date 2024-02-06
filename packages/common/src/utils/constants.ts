@@ -23,9 +23,21 @@ export enum ChainIdEnum {
   BNBChain = '0x38',
   BNBChainTestNet = '0x61',
   TRON = '0x2b6653dc',
+  Oasis = 'native-0x5afe',
+  OasisSaphire = '0x5afe',
   BitcoinTestnet = 'bitcoinTestnet',
   Bitcoin = 'bitcoin',
   Injective = 'injective-1'
+}
+
+export enum KADOChainNameEnum {
+  'Oraichain' = 'ORAICHAIN',
+  'juno-1' = 'JUNO',
+  '0x01' = 'ETHEREUM',
+  'cosmoshub-4' = 'COSMOS HUB',
+  'injective-1' = 'INJECTIVE',
+  'osmosis-1' = 'OSMOSIS',
+  'bitcoin' = 'BITCOIN'
 }
 
 export enum ChainNameEnum {

@@ -8,6 +8,7 @@ import { colors, metrics, spacing, typography } from '../../themes';
 import { navigate } from '../../router/root';
 import { AddressQRCodeModal } from './components';
 import { AccountBox } from './account-box';
+import { SCREENS } from '@src/common/constants';
 
 export const AccountCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -72,7 +73,9 @@ export const AccountCard: FunctionComponent<{
 
   const onPressBtnMain = name => {
     if (name === 'Buy') {
-      navigate('MainTab', { screen: 'Browser', path: 'https://oraidex.io' });
+      navigate(SCREENS.STACK.Others, {
+        screen: SCREENS.BuyFiat
+      });
     }
     if (name === 'Receive') {
       _onPressReceiveModal();

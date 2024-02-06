@@ -15,6 +15,7 @@ import {
   TronWebMode,
   Bitcoin,
   Bitcoin as IBitcoin,
+  Oasis as IOasis,
   BitcoinMode
 } from '@owallet/types';
 import { Result, JSONUint8Array } from '@owallet/router';
@@ -25,7 +26,7 @@ import { DirectSignResponse, OfflineDirectSigner } from '@cosmjs/proto-signing';
 import { CosmJSOfflineSigner, CosmJSOfflineSignerOnlyAmino } from './cosmjs';
 import deepmerge from 'deepmerge';
 import Long from 'long';
-import { NAMESPACE, NAMESPACE_BITCOIN, NAMESPACE_ETHEREUM, NAMESPACE_TRONWEB } from './constants';
+import { NAMESPACE, NAMESPACE_BITCOIN, NAMESPACE_ETHEREUM, NAMESPACE_OASIS, NAMESPACE_TRONWEB } from './constants';
 import { SignEthereumTypedDataObject } from '@owallet/types/build/typedMessage';
 
 export const localStore = new Map<string, any>();
@@ -60,7 +61,7 @@ export class InjectedOWallet implements IOWallet {
       postMessage: (message: any) => void;
     } = {
       addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
-      postMessage: (message) => window.postMessage(message, window.location.origin)
+      postMessage: message => window.postMessage(message, window.location.origin)
     },
     parseMessage?: (message: any) => any
   ) {
@@ -182,7 +183,7 @@ export class InjectedOWallet implements IOWallet {
   protected requestMethod(method: keyof IOWallet, args: any[]): Promise<any> {
     const bytes = new Uint8Array(8);
     const id: string = Array.from(crypto.getRandomValues(bytes))
-      .map((value) => {
+      .map(value => {
         return value.toString(16);
       })
       .join('');
@@ -246,7 +247,7 @@ export class InjectedOWallet implements IOWallet {
     } = {
       addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
       removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
-      postMessage: (message) => window.postMessage(message, window.location.origin)
+      postMessage: message => window.postMessage(message, window.location.origin)
     },
     protected readonly parseMessage?: (message: any) => any
   ) {}
@@ -435,7 +436,7 @@ export class InjectedEthereum implements Ethereum {
       postMessage: (message: any) => void;
     } = {
       addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
-      postMessage: (message) => window.postMessage(message, window.location.origin)
+      postMessage: message => window.postMessage(message, window.location.origin)
     },
     parseMessage?: (message: any) => any
   ) {
@@ -569,7 +570,7 @@ export class InjectedEthereum implements Ethereum {
   protected requestMethod(method: keyof IEthereum | string, args: any[]): Promise<any> {
     const bytes = new Uint8Array(8);
     const id: string = Array.from(crypto.getRandomValues(bytes))
-      .map((value) => {
+      .map(value => {
         return value.toString(16);
       })
       .join('');
@@ -628,7 +629,7 @@ export class InjectedEthereum implements Ethereum {
     } = {
       addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
       removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
-      postMessage: (message) => window.postMessage(message, window.location.origin)
+      postMessage: message => window.postMessage(message, window.location.origin)
     },
     protected readonly parseMessage?: (message: any) => any
   ) {}
@@ -699,7 +700,7 @@ export class InjectedBitcoin implements Bitcoin {
       postMessage: (message: any) => void;
     } = {
       addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
-      postMessage: (message) => window.postMessage(message, window.location.origin)
+      postMessage: message => window.postMessage(message, window.location.origin)
     },
     parseMessage?: (message: any) => any
   ) {
@@ -708,7 +709,7 @@ export class InjectedBitcoin implements Bitcoin {
       const message: ProxyRequest = parseMessage ? parseMessage(e.data) : e.data;
 
       // TO DO: Check type proxy for duplicate popup sign with keplr wallet on extension
-       
+
       // filter proxy-request by namespace
       if (!message || message.type !== 'proxy-request' || message.namespace !== NAMESPACE_BITCOIN) {
         return;
@@ -768,12 +769,11 @@ export class InjectedBitcoin implements Bitcoin {
   protected requestMethod(method: keyof IBitcoin, args: any[]): Promise<any> {
     const bytes = new Uint8Array(8);
     const id: string = Array.from(crypto.getRandomValues(bytes))
-      .map((value) => {
+      .map(value => {
         return value.toString(16);
       })
       .join('');
 
-    
     const proxyMessage: ProxyRequest = {
       type: 'proxy-request',
       namespace: NAMESPACE_BITCOIN,
@@ -827,7 +827,7 @@ export class InjectedBitcoin implements Bitcoin {
     } = {
       addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
       removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
-      postMessage: (message) => window.postMessage(message, window.location.origin)
+      postMessage: message => window.postMessage(message, window.location.origin)
     },
     protected readonly parseMessage?: (message: any) => any
   ) {}
@@ -886,7 +886,7 @@ export class InjectedTronWebOWallet implements ITronWeb {
       postMessage: (message: any) => void;
     } = {
       addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
-      postMessage: (message) => window.postMessage(message, window.location.origin)
+      postMessage: message => window.postMessage(message, window.location.origin)
     },
     parseMessage?: (message: any) => any
   ) {
@@ -971,7 +971,7 @@ export class InjectedTronWebOWallet implements ITronWeb {
   protected requestMethod(method: keyof ITronWeb | string, args: any[]): Promise<any> {
     const bytes = new Uint8Array(8);
     const id: string = Array.from(crypto.getRandomValues(bytes))
-      .map((value) => {
+      .map(value => {
         return value.toString(16);
       })
       .join('');
@@ -1030,7 +1030,7 @@ export class InjectedTronWebOWallet implements ITronWeb {
     } = {
       addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
       removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
-      postMessage: (message) => window.postMessage(message, window.location.origin)
+      postMessage: message => window.postMessage(message, window.location.origin)
     },
     protected readonly parseMessage?: (message: any) => any
   ) {
@@ -1059,7 +1059,7 @@ export class InjectedTronWebOWallet implements ITronWeb {
         if (!address || !functionSelector || !issuerAddress) {
           throw new Error('You need to provide enough data address,functionSelector and issuerAddress');
         }
-        const parametersConvert = parameters.map((par) =>
+        const parametersConvert = parameters.map(par =>
           par.type === 'uint256' ? { type: 'uint256', value: par.value && par.value.toString() } : par
         );
         return await this.requestMethod('triggerSmartContract', [
@@ -1099,6 +1099,165 @@ export class InjectedTronWebOWallet implements ITronWeb {
 
   getDefaultAddress(): Promise<object> {
     return this.requestMethod('getDefaultAddress', []);
+  }
+
+  async request(args: RequestArguments): Promise<any> {
+    return await this.requestMethod(args.method as string, [args.params, args.chainId]);
+  }
+}
+
+export class InjectedOasisOWallet implements IOasis {
+  get defaultAddress() {
+    return JSON.parse(localStorage.getItem('oasis.defaultAddress'));
+  }
+
+  set defaultAddress(account: object) {
+    localStorage.setItem('oasis.defaultAddress', JSON.stringify(account));
+  }
+
+  static startProxy(
+    oasis: IOasis,
+    eventListener: {
+      addMessageListener: (fn: (e: any) => void) => void;
+      postMessage: (message: any) => void;
+    } = {
+      addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
+      postMessage: message => window.postMessage(message, window.location.origin)
+    },
+    parseMessage?: (message: any) => any
+  ) {
+    eventListener.addMessageListener(async (e: MessageEvent) => {
+      const message: ProxyRequest = parseMessage ? parseMessage(e.data) : e.data;
+
+      if (!message || message.type !== NAMESPACE_OASIS + 'proxy-request' || message.namespace !== NAMESPACE_OASIS) {
+        return;
+      }
+
+      try {
+        if (!message.id) {
+          throw new Error('Empty id');
+        }
+
+        if (message.method === 'version') {
+          throw new Error('Version is not function');
+        }
+
+        if (message.method === 'mode') {
+          throw new Error('Mode is not function');
+        }
+        var result: any;
+        switch (message.method) {
+          case 'sign':
+            result = await oasis.signOasis(message.args[0], message.args[1]);
+            break;
+
+          default:
+            result = await oasis.signOasis(message.args[0], message.args[1]);
+            break;
+        }
+
+        const proxyResponse: ProxyRequestResponse = {
+          type: 'proxy-request-response',
+          namespace: NAMESPACE_OASIS,
+          id: message.id,
+          result: {
+            return: JSONUint8Array.wrap(result)
+          }
+        };
+
+        eventListener.postMessage(proxyResponse);
+      } catch (e) {
+        const proxyResponse: ProxyRequestResponse = {
+          type: 'proxy-request-response',
+          namespace: NAMESPACE_OASIS,
+          id: message.id,
+          result: {
+            error: e.message || e.toString()
+          }
+        };
+
+        eventListener.postMessage(proxyResponse);
+      }
+    });
+  }
+
+  protected requestMethod(method: keyof IOasis | string, args: any[]): Promise<any> {
+    const bytes = new Uint8Array(8);
+    const id: string = Array.from(crypto.getRandomValues(bytes))
+      .map(value => {
+        return value.toString(16);
+      })
+      .join('');
+
+    const proxyMessage: ProxyRequest = {
+      type: (NAMESPACE_OASIS + 'proxy-request') as any,
+      namespace: NAMESPACE_OASIS,
+      id,
+      method,
+      args: JSONUint8Array.wrap(args)
+    };
+
+    return new Promise((resolve, reject) => {
+      const receiveResponse = (e: MessageEvent) => {
+        const proxyResponse: ProxyRequestResponse = this.parseMessage ? this.parseMessage(e.data) : e.data;
+
+        if (!proxyResponse || proxyResponse.type !== 'proxy-request-response') {
+          return;
+        }
+
+        if (proxyResponse.id !== id) {
+          return;
+        }
+
+        this.eventListener.removeMessageListener(receiveResponse);
+        const result = JSONUint8Array.unwrap(proxyResponse.result);
+
+        if (!result) {
+          reject(new Error('Result is null'));
+          return;
+        }
+
+        if (result.error) {
+          reject(new Error(result.error));
+          return;
+        }
+
+        resolve(result.return);
+      };
+
+      this.eventListener.addMessageListener(receiveResponse);
+      this.eventListener.postMessage(proxyMessage);
+    });
+  }
+
+  public initChainId: string;
+  public isOwallet: boolean = true;
+
+  constructor(
+    public readonly version: string,
+    public readonly mode: TronWebMode,
+    protected readonly eventListener: {
+      addMessageListener: (fn: (e: any) => void) => void;
+      removeMessageListener: (fn: (e: any) => void) => void;
+      postMessage: (message: any) => void;
+    } = {
+      addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
+      removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
+      postMessage: message => window.postMessage(message, window.location.origin)
+    },
+    protected readonly parseMessage?: (message: any) => any
+  ) {}
+
+  txBuilderOasis(amount: bigint, to: string): Promise<any> {
+    throw new Error('Method not implemented.');
+  }
+
+  signOasis(): Promise<object> {
+    throw new Error('Method not implemented.');
+  }
+
+  getDefaultOasisAddress(): Promise<object> {
+    return this.requestMethod('getDefaultOasisAddress', []);
   }
 
   async request(args: RequestArguments): Promise<any> {

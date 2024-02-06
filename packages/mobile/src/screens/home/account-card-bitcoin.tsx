@@ -36,7 +36,9 @@ export const AccountCardBitcoin: FunctionComponent<{
 
   const onPressBtnMain = name => {
     if (name === 'Buy') {
-      navigate('MainTab', { screen: 'Browser', path: 'https://oraidex.io' });
+      navigate(SCREENS.STACK.Others, {
+        screen: SCREENS.BuyFiat
+      });
     }
     if (name === 'Receive') {
       _onPressReceiveModal();
