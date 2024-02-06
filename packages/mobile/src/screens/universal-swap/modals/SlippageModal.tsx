@@ -121,9 +121,7 @@ export const SlippageModal = registerModal(
             size="medium"
             onPress={() => {
               handleSubmitSlippage();
-              setTimeout(() => {
-                close();
-              }, 100);
+              close();
             }}
           />
         </View>

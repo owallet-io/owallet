@@ -28,11 +28,11 @@ export class UniversalSwapStore {
   }
 }
 
-const hydrate = create({
-  storage: AsyncStorage, // or AsyncStorage in react-native.
-  jsonify: true // if you use AsyncStorage, here shoud be true
-});
+// const hydrate = create({
+//   storage: AsyncStorage, // or AsyncStorage in react-native.
+//   jsonify: true // if you use AsyncStorage, here shoud be true
+// });
 
 export const universalSwapStore = new UniversalSwapStore();
 
-hydrate('UniversalSwapStore', universalSwapStore).then(() => console.log('universalSwapStore hydrated'));
+// hydrate('UniversalSwapStore', universalSwapStore).then(() => console.log('universalSwapStore hydrated'));

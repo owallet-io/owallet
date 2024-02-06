@@ -56,9 +56,7 @@ export const OnboardingIntroScreen: FunctionComponent = observer(() => {
   const onGetStarted = async () => {
     await appInitStore.updateInitApp();
     setTimer(1000);
-    setTimeout(() => {
-      smartNavigation.navigateSmart('Register.Intro', {});
-    }, 1000);
+    smartNavigation.navigateSmart('Register.Intro', {});
   };
   const renderItem = ({ item }) => {
     return <View>{item.component}</View>;

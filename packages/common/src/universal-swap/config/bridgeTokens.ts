@@ -6,9 +6,9 @@ import {
   KWTBSC_ORAICHAIN_DENOM,
   MILKYBSC_ORAICHAIN_DENOM,
   TokenItemType,
-  oraichainNetwork
+  oraichainNetwork,
+  chainInfos
 } from '@oraichain/oraidex-common';
-import { chainInfos } from './chainInfos';
 
 const evmDenomsMap = {
   kwt: [KWTBSC_ORAICHAIN_DENOM],

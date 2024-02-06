@@ -24,12 +24,12 @@ export const NetworkModal = () => {
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const styles = styling(colors);
-  let totalUsd: number = 0;
-  let todayAssets;
-  if (Object.keys(appInitStore.getInitApp.prices).length > 0 && Object.keys(universalSwapStore.getAmount).length > 0) {
-    totalUsd = getTotalUsd(universalSwapStore.getAmount, appInitStore.getInitApp.prices);
-    todayAssets = getTokenInfos({ tokens: universalSwapStore.getAmount, prices: appInitStore.getInitApp.prices });
-  }
+  // let totalUsd: number = 0;
+  // let todayAssets;
+  // if (Object.keys(appInitStore.getInitApp.prices).length > 0 && Object.keys(universalSwapStore.getAmount).length > 0) {
+  //   totalUsd = getTotalUsd(universalSwapStore.getAmount, appInitStore.getInitApp.prices);
+  //   todayAssets = getTokenInfos({ tokens: universalSwapStore.getAmount, prices: appInitStore.getInitApp.prices });
+  // }
 
   const onConfirm = async (item: any) => {
     const { networkType } = chainStore.getChain(item?.chainId);
@@ -51,19 +51,19 @@ export const NetworkModal = () => {
       item?.chainId
     );
   };
-  const groupedData = todayAssets?.reduce((result, element) => {
-    const key = element.chainId;
+  // const groupedData = todayAssets?.reduce((result, element) => {
+  //   const key = element.chainId;
 
-    if (!result[key]) {
-      result[key] = {
-        sum: 0
-      };
-    }
+  //   if (!result[key]) {
+  //     result[key] = {
+  //       sum: 0
+  //     };
+  //   }
 
-    result[key].sum += element.value;
+  //   result[key].sum += element.value;
 
-    return result;
-  }, {});
+  //   return result;
+  // }, {});
 
   const handleSwitchNetwork = async item => {
     try {
@@ -92,14 +92,13 @@ export const NetworkModal = () => {
         return;
       } else {
         if (!item.isAll) {
+          modalStore.close();
           chainStore.selectChain(item?.chainId);
           await chainStore.saveLastViewChainId();
           appInitStore.selectAllNetworks(false);
         } else {
           appInitStore.selectAllNetworks(true);
         }
-
-        modalStore.close();
       }
     } catch (error) {
       showToast({
@@ -272,7 +271,7 @@ export const NetworkModal = () => {
   );
 };
 
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     containerBtn: {
       backgroundColor: colors['background-item-list'],

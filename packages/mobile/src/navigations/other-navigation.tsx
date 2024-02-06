@@ -18,6 +18,8 @@ import TransactionDetailScreen from '@src/screens/transactions/transaction-detai
 import { AddTokenScreen } from '@src/screens/network/add-token';
 import { SendBtcScreen } from '@src/screens/send/send-btc';
 import BtcFaucet from '@src/screens/home/btc-faucet';
+import BuyFiat from '@src/screens/home/buy-fiat';
+import { SendOasisScreen } from '@src/screens/send/send-oasis';
 const Stack = createStackNavigator();
 export const OtherNavigation: FC = () => {
   const handleScreenOptions = ({ route, navigation }) => {
@@ -27,6 +29,7 @@ export const OtherNavigation: FC = () => {
   return (
     <Stack.Navigator screenOptions={handleScreenOptions}>
       <Stack.Screen name={SCREENS.Send} component={SendScreen} />
+      <Stack.Screen name={SCREENS.SendOasis} component={SendOasisScreen} />
       <Stack.Screen name={SCREENS.TransferNFT} component={TransferNFTScreen} />
       <Stack.Screen name={SCREENS.Transactions} component={HistoryTransactionsScreen} />
       <Stack.Screen name={SCREENS.Dashboard} component={DashBoardScreen} />
@@ -63,6 +66,7 @@ export const OtherNavigation: FC = () => {
         component={TxSuccessResultScreen}
       />
       <Stack.Screen name={SCREENS.BtcFaucet} component={BtcFaucet} />
+      <Stack.Screen name={SCREENS.BuyFiat} component={BuyFiat} />
       <Stack.Screen name={SCREENS.SendTron} component={SendTronScreen} />
       <Stack.Screen name={SCREENS.Notifications} component={NotificationScreen} />
       <Stack.Screen name={SCREENS.SendBtc} component={SendBtcScreen} />

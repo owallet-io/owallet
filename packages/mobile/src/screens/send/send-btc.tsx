@@ -15,8 +15,7 @@ import { observer } from 'mobx-react-lite';
 import { useSmartNavigation } from '@src/navigation.provider';
 import { navigate } from '@src/router/root';
 import { SCREENS } from '@src/common/constants';
-import { delay, showToast } from '@src/utils/helper';
-import { Toggle } from '@src/components/toggle';
+import { showToast } from '@src/utils/helper';
 import { RouteProp, useRoute } from '@react-navigation/native';
 
 export const SendBtcScreen: FunctionComponent = observer(({}) => {
@@ -61,7 +60,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
 
   const txStateIsValid = sendConfigError == null;
   const { colors } = useTheme();
-  const refreshBalance = async (address) => {
+  const refreshBalance = async address => {
     try {
       await queries.bitcoin.queryBitcoinBalance.getQueryBalance(address)?.waitFreshResponse();
     } catch (error) {
@@ -97,7 +96,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
         },
 
         {
-          onFulfill: async (tx) => {
+          onFulfill: async tx => {
             console.log('🚀 ~ file: send-btc.tsx:109 ~ onSend ~ tx:', tx);
 
             if (tx) {
@@ -112,7 +111,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
 
             return;
           },
-          onBroadcasted: async (txHash) => {
+          onBroadcasted: async txHash => {
             try {
               analyticsStore.logEvent('Send Btc tx broadcasted', {
                 chainId: chainId,
