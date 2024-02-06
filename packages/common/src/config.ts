@@ -1193,9 +1193,9 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinGeckoId: 'oasis-network',
       coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png',
       gasPriceStep: {
-        low: 420,
-        average: 504,
-        high: 672
+        low: 0,
+        average: 0,
+        high: 0
       }
     },
     currencies: [

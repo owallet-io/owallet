@@ -7,7 +7,7 @@
   "scripts": {
     "clean": "rimraf node_modules dist prod",
     "build": "cross-env NODE_ENV=production webpack",
-    "dev": "cross-env NODE_ENV=development webpack",
+    "start:dev": "cross-env NODE_ENV=development webpack",
     "generate:icons": "for size in 16 48 128 ;do convert src/public/assets/orai_wallet_logo.png -thumbnail $sizex$size src/public/assets/icon/icon-$size.png;done",
     "dev:analyzer": "cross-env NODE_ENV=development ANALYZER=true webpack",
     "test": "jest --passWithNoTests",

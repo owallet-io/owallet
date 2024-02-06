@@ -205,73 +205,32 @@ export const SendEvmPage: FunctionComponent<{
     sendConfigs.gasConfig.getError() ??
     sendConfigs.feeConfig.getError();
   const txStateIsValid = sendConfigError == null;
+  const submitSignOasis = async (tx) => {
+    const { bytes, amount, to } = tx;
+    const signer = signerFromPrivateKey(bytes);
 
+    const bigIntAmount = BigInt(parseRoseStringToBigNumber(amount).toString());
+    const nic = getOasisNic(chainStore.current.raw.grpc);
+    const chainContext = await nic.consensusGetChainContext();
+
+    const tw = await OasisTransaction.buildTransfer(nic, signer as Signer, to, bigIntAmount);
+
+    await OasisTransaction.sign(chainContext, signer as Signer, tw);
+
+    await OasisTransaction.submit(nic, tw);
+
+    notification.push({
+      placement: 'top-center',
+      type: 'success',
+      duration: 5,
+      content: 'Transaction successful',
+      canDelete: true,
+      transition: {
+        duration: 0.25
+      }
+    });
+  };
   return (
-    // <HeaderLayout
-    //   showChainName
-    //   canChangeChainInfo={false}
-    //   onBackButton={
-    //     isDetachedPage
-    //       ? undefined
-    //       : () => {
-    //           history.goBack();
-    //         }
-    //   }
-    //   rightRenderer={
-    //     isDetachedPage ? undefined : (
-    //       <div
-    //         style={{
-    //           height: '64px',
-    //           display: 'flex',
-    //           flexDirection: 'row',
-    //           alignItems: 'center',
-    //           paddingRight: '20px'
-    //         }}
-    //       >
-    //         <i
-    //           className="fas fa-external-link-alt"
-    //           style={{
-    //             cursor: 'pointer',
-    //             padding: '4px',
-    //             color: '#ffffff'
-    //           }}
-    //           onClick={async (e) => {
-    //             e.preventDefault();
-
-    //             const windowInfo = await browser.windows.getCurrent();
-
-    //             let queryString = `?detached=true&defaultDenom=${sendConfigs.amountConfig.sendCurrency.coinMinimalDenom}`;
-    //             if (sendConfigs.recipientConfig.rawRecipient) {
-    //               queryString += `&defaultRecipient=${sendConfigs.recipientConfig.rawRecipient}`;
-    //             }
-    //             if (sendConfigs.amountConfig.amount) {
-    //               queryString += `&defaultAmount=${sendConfigs.amountConfig.amount}`;
-    //             }
-    //             if (sendConfigs.memoConfig.memo) {
-    //               queryString += `&defaultMemo=${sendConfigs.memoConfig.memo}`;
-    //             }
-
-    //             await openPopupWindow(
-    //               browser.runtime.getURL(`/popup.html#/send${queryString}`),
-    //               undefined,
-    //               {
-    //                 top: (windowInfo.top || 0) + 80,
-    //                 left:
-    //                   (windowInfo.left || 0) +
-    //                   (windowInfo.width || 0) -
-    //                   PopupSize.width -
-    //                   20
-    //               }
-    //             );
-    //             window.close();
-    //           }}
-    //         />
-    //       </div>
-    //     )
-    //   }
-    // >
-    // console.log({ sendConfigs: sendConfigs.amountConfig});
-
     <>
       <form
         className={style.formContainer}
@@ -317,36 +276,8 @@ export const SendEvmPage: FunctionComponent<{
                   onFulfill: async (tx) => {
                     console.log('🚀 ~ onSubmit={ ~ tx:', tx);
                     if (chainStore.current.chainId === ChainIdEnum.OasisNative) {
-                      const { bytes, amount, to } = tx;
-                      console.log('🚀 ~ onFulfill: ~ to:', to);
-                      console.log('🚀 ~ onFulfill: ~ amount:', amount);
-                      console.log('🚀 ~ onFulfill: ~ bytes:', bytes);
-                      const signer = signerFromPrivateKey(bytes);
-
-                      const bigIntAmount = BigInt(parseRoseStringToBigNumber(amount).toString());
-                      const nic = getOasisNic(chainStore.current.raw.grpc);
-
-                      // console.log('🚀 ~ onSubmit={ ~ chainStore.current:', chainStore.current);
-                      const chainContext = await nic.consensusGetChainContext();
-
-                      const tw = await OasisTransaction.buildTransfer(nic, signer as Signer, to, bigIntAmount);
-                      console.log('🚀 ~ onFulfill: ~ tw:', tw);
-
-                      await OasisTransaction.sign(chainContext, signer as Signer, tw);
-
-                      const payload = await OasisTransaction.submit(nic, tw);
-                      console.log('🚀 ~ onFulfill: ~ payload:', payload);
-                      notification.push({
-                        placement: 'top-center',
-                        type: 'success',
-                        duration: 5,
-                        content: 'Transaction successful',
-                        canDelete: true,
-                        transition: {
-                          duration: 0.25
-                        }
-                      });
-                      // return payload;
+                      submitSignOasis(tx);
+                      return;
                     }
                     if (tx?.status) {
                       notification.push({
