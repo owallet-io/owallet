@@ -461,9 +461,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       fromNetwork: originalFromToken.chainId,
       toNetwork: originalToToken.chainId
     };
-    if (mixpanel) {
-      mixpanel.track('Universal Swap Owallet', logEvent);
-    }
+
     firebase.analytics().logEvent('swap_mobile', {
       logEvent
     });
@@ -531,6 +529,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       console.log('error', error);
       handleErrorSwap(error?.message ?? error?.ex?.message);
     } finally {
+      if (mixpanel) {
+        mixpanel.track('Universal Swap Owallet', logEvent);
+      }
       setSwapLoading(false);
       setSwapAmount([0, 0]);
     }
