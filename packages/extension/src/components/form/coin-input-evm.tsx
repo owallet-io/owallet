@@ -201,15 +201,11 @@ export const CoinInputEvm: FunctionComponent<CoinInputEvmProps> = observer(
               autoComplete="off"
               placeholder={placeholder}
             />
-            {/* <div
+            <div
               style={{ padding: 7.5, textAlign: 'center', cursor: 'pointer' }}
               onClick={(e) => {
                 e.preventDefault();
-                amountConfig.setAmount(
-                  (parseFloat(ba[0]) - parseFloat(feeConfig))
-                    .toFixed(8)
-                    .toString()
-                );
+                amountConfig.setAmount((parseFloat(ba[0]) - parseFloat(feeConfig)).toFixed(8).toString());
                 // amountConfig.toggleIsMax();
               }}
             >
@@ -230,7 +226,7 @@ export const CoinInputEvm: FunctionComponent<CoinInputEvmProps> = observer(
                   MAX
                 </span>
               </div>
-            </div> */}
+            </div>
           </InputGroup>
           {errorText != null ? (
             <FormFeedback style={{ display: 'block', position: 'sticky' }}>{errorText}</FormFeedback>
