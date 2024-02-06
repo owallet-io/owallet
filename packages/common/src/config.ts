@@ -1227,7 +1227,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
     rpc: 'https://sapphire.oasis.io',
     rest: 'https://sapphire.oasis.io',
     chainId: '0x5afe',
-    networkType: 'evm',
     chainName: 'Oasis Saphire',
     stakeCurrency: {
       coinDenom: 'ROSE',
@@ -1254,13 +1253,13 @@ export const EmbedChainInfos: AppChainInfo[] = [
     bip44: {
       coinType: 60
     },
-    coinType: 60,
     bech32Config: Bech32Address.defaultBech32Config('evmos'),
+    networkType: 'evm',
     get feeCurrencies() {
       return [this.stakeCurrency];
     },
 
-    features: ['ibc-go', 'stargate', 'isEvm'],
+    features: ['isEvm'],
     txExplorer: {
       name: 'Oasis scan',
       txUrl: 'https://explorer.sapphire.oasis.io/{txHash}',
