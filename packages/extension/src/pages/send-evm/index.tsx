@@ -95,7 +95,7 @@ export const SendEvmPage: FunctionComponent<{
     chainStore.current.networkType === 'evm' && queriesStore.get(current.chainId).evm.queryEvmBalance,
     address
   );
-  const initGasDefault = current.chainId !== ChainIdEnum.OasisNative ? 21000 : 1;
+  const initGasDefault = current.chainId !== ChainIdEnum.OasisNative ? 21000 : 0;
   const gasConfig = useGasEthereumConfig(
     chainStore,
     current.chainId,
@@ -230,6 +230,19 @@ export const SendEvmPage: FunctionComponent<{
       }
     });
   };
+  const gasPriceToBig = () => {
+    if (parseFloat(feeConfig.feeRaw) <= 0 || parseFloat(gasConfig.gasRaw) <= 0) return '0';
+    return parseInt(
+      new Big(parseFloat(feeConfig.feeRaw))
+        .mul(new Big(10).pow(decimals))
+        .div(parseFloat(gasConfig.gasRaw))
+        .toFixed(decimals)
+    ).toString(16);
+  };
+  const stdFeeForGas = () => {
+    if (parseFloat(gasConfig.gasRaw) <= 0) return '0';
+    return parseFloat(gasConfig.gasRaw).toString(16);
+  };
   return (
     <>
       <form
@@ -239,17 +252,10 @@ export const SendEvmPage: FunctionComponent<{
 
           if (accountInfo.isReadyToSendMsgs && txStateIsValid) {
             try {
-              const gasPrice =
-                '0x' +
-                parseInt(
-                  new Big(parseFloat(feeConfig.feeRaw))
-                    .mul(new Big(10).pow(decimals))
-                    .div(parseFloat(gasConfig.gasRaw))
-                    .toFixed(decimals)
-                ).toString(16);
+              const gasPrice = '0x' + gasPriceToBig();
 
               const stdFee = {
-                gas: '0x' + parseFloat(gasConfig.gasRaw).toString(16),
+                gas: '0x' + stdFeeForGas(),
                 gasPrice
               };
               (window as any).accountInfo = accountInfo;
