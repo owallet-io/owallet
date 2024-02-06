@@ -58,6 +58,7 @@ jobs:
           API_KEY: ${{ secrets.API_KEY_FIREBASE }}
           SENDER_ID: ${{ secrets.SENDER_ID_FIREBASE }}
           APP_ID: ${{ secrets.APP_ID_FIREBASE }}
+          MIX_PANEL_TOKEN: ${{ secrets.MIX_PANNEL_TOKEN }}
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
