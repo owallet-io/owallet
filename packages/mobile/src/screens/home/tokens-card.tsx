@@ -300,20 +300,18 @@ export const TokensCard: FunctionComponent<{
           </CardBody>
         )}
 
-        {tokens.length > 2 ? (
-          <OWButton
-            label={capitalizedText('view all')}
-            size="medium"
-            type="secondary"
-            onPress={() => {
-              if (index === 0) {
-                smartNavigation.navigateSmart('Tokens', {});
-              } else {
-                smartNavigation.navigateSmart('Nfts', null);
-              }
-            }}
-          />
-        ) : null}
+        <OWButton
+          label={capitalizedText('view all')}
+          size="medium"
+          type="secondary"
+          onPress={() => {
+            if (index === 0) {
+              smartNavigation.navigateSmart('Tokens', {});
+            } else {
+              smartNavigation.navigateSmart('Nfts', null);
+            }
+          }}
+        />
       </OWBox>
     </View>
   );
