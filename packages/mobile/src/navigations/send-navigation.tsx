@@ -16,13 +16,6 @@ export const SendNavigation: FC = () => {
         options={{
           headerLeft: null
         }}
-        name={SCREENS.UniversalSwapScreen}
-        component={UniversalSwapScreen}
-      />
-      <Stack.Screen
-        options={{
-          headerLeft: null
-        }}
         name={SCREENS.TransferTokensScreen}
         component={TransferTokensScreen}
       />

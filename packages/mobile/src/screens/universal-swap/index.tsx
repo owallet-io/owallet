@@ -138,7 +138,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   // get token on oraichain to simulate swap amount.
   const originalFromToken = tokenMap[fromTokenDenom];
   const originalToToken = tokenMap[toTokenDenom];
-  console.log('originalToToken', originalToToken);
 
   const isEvmSwap = isEvmSwappable({
     fromChainId: originalFromToken.chainId,
@@ -146,7 +145,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     fromContractAddr: originalFromToken.contractAddress,
     toContractAddr: originalToToken.contractAddress
   });
-  console.log('originalToToken 2', originalToToken);
   const relayerFeeToken = useMemo(() => {
     return relayerFee.reduce((acc, cur) => {
       if (
@@ -282,7 +280,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     if (accounts?.[ChainIdEnum.TRON] && accounts?.[ChainIdEnum.Ethereum]) {
       handleFetchAmounts(accounts);
     }
-  }, [accountOrai.bech32Address, accounts[ChainIdEnum.TRON], accounts[ChainIdEnum.Ethereum]]);
+  }, [accountOrai.bech32Address, accounts?.[ChainIdEnum.TRON], accounts?.[ChainIdEnum.Ethereum]]);
 
   const subAmountFrom = toSubAmount(universalSwapStore.getAmount, originalFromToken);
   const subAmountTo = toSubAmount(universalSwapStore.getAmount, originalToToken);
