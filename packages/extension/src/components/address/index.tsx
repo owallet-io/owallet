@@ -36,7 +36,7 @@ export class Address extends React.Component<AddressProps & (Bech32AddressProps 
   }
 
   render() {
-    const { tooltipFontSize, children } = this.props;
+    const { tooltipFontSize = 13, children } = this.props;
     const tooltipAddress = this.props.tooltipAddress ? this.props.tooltipAddress : children;
 
     if ('maxCharacters' in this.props) {
