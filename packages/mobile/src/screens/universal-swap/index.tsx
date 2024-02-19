@@ -268,23 +268,21 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   useEffect(() => {
     universalSwapStore.clearAmounts();
-    setTimeout(() => {
-      Object.keys(ChainIdEnum).map(key => {
-        let defaultAddress = accountStore.getAccount(ChainIdEnum[key]).bech32Address;
-        if (ChainIdEnum[key] === ChainIdEnum.TRON) {
-          accounts[ChainIdEnum[key]] = getBase58Address(accountStore.getAccount(ChainIdEnum[key]).evmosHexAddress);
-        } else if (defaultAddress.startsWith('evmos')) {
-          accounts[ChainIdEnum[key]] = accountStore.getAccount(ChainIdEnum[key]).evmosHexAddress;
-        } else {
-          accounts[ChainIdEnum[key]] = defaultAddress;
-        }
-      });
-
-      if (accounts?.[ChainIdEnum.TRON] && accounts?.[ChainIdEnum.Ethereum]) {
-        handleFetchAmounts(accounts);
+    Object.keys(ChainIdEnum).map(key => {
+      let defaultAddress = accountStore.getAccount(ChainIdEnum[key]).bech32Address;
+      if (ChainIdEnum[key] === ChainIdEnum.TRON) {
+        accounts[ChainIdEnum[key]] = getBase58Address(accountStore.getAccount(ChainIdEnum[key]).evmosHexAddress);
+      } else if (defaultAddress.startsWith('evmos')) {
+        accounts[ChainIdEnum[key]] = accountStore.getAccount(ChainIdEnum[key]).evmosHexAddress;
+      } else {
+        accounts[ChainIdEnum[key]] = defaultAddress;
       }
-    }, 200);
-  }, [accountOrai.bech32Address]);
+    });
+
+    if (accounts?.[ChainIdEnum.TRON] && accounts?.[ChainIdEnum.Ethereum]) {
+      handleFetchAmounts(accounts);
+    }
+  }, [accountOrai.bech32Address, accounts[ChainIdEnum.TRON], accounts[ChainIdEnum.Ethereum]]);
 
   const subAmountFrom = toSubAmount(universalSwapStore.getAmount, originalFromToken);
   const subAmountTo = toSubAmount(universalSwapStore.getAmount, originalToToken);
