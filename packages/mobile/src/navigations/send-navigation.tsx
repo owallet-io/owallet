@@ -11,7 +11,7 @@ export const SendNavigation: FC = () => {
     return headerOptions;
   };
   return (
-    <Stack.Navigator screenOptions={handleScreenOptions} initialRouteName={SCREENS.UniversalSwapScreen}>
+    <Stack.Navigator screenOptions={handleScreenOptions} initialRouteName={SCREENS.TransferTokensScreen}>
       <Stack.Screen
         options={{
           headerLeft: null
