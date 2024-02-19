@@ -3,14 +3,14 @@ import { PageWithScrollViewInBottomTabView } from '../../components/page';
 import { Text } from '@src/components/text';
 import { useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
-import { RefreshControl, View } from 'react-native';
+import { FlatList, RefreshControl, View } from 'react-native';
 import { useStore } from '../../stores';
 import { SwapBox } from './components/SwapBox';
 import { OWButton } from '@src/components/button';
 import OWButtonIcon from '@src/components/button/ow-button-icon';
 import { BalanceText } from './components/BalanceText';
 import { SelectNetworkModal, SelectTokenModal, SlippageModal } from './modals/';
-import { showToast } from '@src/utils/helper';
+import { showToast, _keyExtract } from '@src/utils/helper';
 import {
   DEFAULT_SLIPPAGE,
   GAS_ESTIMATION_SWAP_DEFAULT,
@@ -53,6 +53,9 @@ import { getTransactionUrl, handleErrorSwap } from './helpers';
 import { useQuery } from '@tanstack/react-query';
 import { firebase } from '@react-native-firebase/analytics';
 import { Mixpanel } from 'mixpanel-react-native';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+import { metrics } from '@src/themes';
+import { OWEmpty } from '@src/components/empty';
 const mixpanel = globalThis.mixpanel as Mixpanel;
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
 
@@ -539,8 +542,33 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     onMaxFromAmount((fromTokenBalance * BigInt(item.value)) / BigInt(MAX), item.value);
   };
 
+  const renderSkeleton = ({ item, index }) => {
+    return (
+      <View key={`SkeletonComponent-${item}`}>
+        <SkeletonPlaceholder
+          highlightColor={colors['skeleton']}
+          backgroundColor={colors['background-item-list']}
+          borderRadius={12}
+        >
+          <SkeletonPlaceholder.Item
+            width={metrics.screenWidth - 48}
+            marginVertical={8}
+            height={65}
+          ></SkeletonPlaceholder.Item>
+        </SkeletonPlaceholder>
+      </View>
+    );
+  };
+
   return Object.keys(universalSwapStore.getAmount).length === 0 ? (
-    <Text>Loading</Text>
+    <FlatList
+      contentContainerStyle={{ alignItems: 'center' }}
+      renderItem={renderSkeleton}
+      keyExtractor={_keyExtract}
+      showsVerticalScrollIndicator={false}
+      showsHorizontalScrollIndicator={false}
+      data={[1, 2, 3, 4]}
+    />
   ) : (
     <PageWithScrollViewInBottomTabView
       backgroundColor={colors['plain-background']}
