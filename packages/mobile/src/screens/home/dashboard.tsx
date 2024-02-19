@@ -115,7 +115,7 @@ export const DashboardCard: FunctionComponent<{
 
   const smartNavigation = useSmartNavigation();
 
-  const { data: res } = useQuery({
+  const { data: res, refetch } = useQuery({
     queryKey: ['chart-range', chainStore.current.stakeCurrency.coinGeckoId],
     queryFn: () =>
       API.getMarketChartRange(
@@ -130,10 +130,20 @@ export const DashboardCard: FunctionComponent<{
   });
 
   useEffect(() => {
+    console.log('refetch', chainStore.current.stakeCurrency.coinGeckoId, res);
+
+    refetch();
+  }, [chainStore.current.stakeCurrency.coinGeckoId]);
+
+  useEffect(() => {
+    console.log('res', res);
+
     if (res?.status === 200 && typeof res?.data === 'object') {
       setNetworkError(false);
       setData(formatData(transformData(res.data?.prices)));
       setDataVolumes(formatData(transformData(res.data?.total_volumes)));
+    } else {
+      setNetworkError(true);
     }
   }, [res]);
 
