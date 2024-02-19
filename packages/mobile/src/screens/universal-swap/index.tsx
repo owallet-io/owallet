@@ -437,15 +437,18 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     }
 
     setSwapLoading(true);
+    const fromNetwork = chainStore.getChain(originalFromToken.chainId).chainName;
+
+    const toNetwork = chainStore.getChain(originalToToken.chainId).chainName;
 
     const logEvent = {
       address: accountOrai.bech32Address,
-      fromToken: `${originalFromToken.name} - ${originalFromToken.chainId}`,
+      fromToken: originalFromToken.name,
       fromAmount: `${fromAmountToken}`,
-      toToken: `${originalToToken.name} - ${originalToToken.chainId}`,
+      toToken: originalToToken.name,
       toAmount: `${toAmountToken}`,
-      fromNetwork: originalFromToken.chainId,
-      toNetwork: originalToToken.chainId
+      fromNetwork,
+      toNetwork
     };
 
     firebase.analytics().logEvent('swap_mobile', {
