@@ -242,7 +242,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinMinimalDenom: 'uneutaro',
         coinDecimals: 6,
         coinGeckoId: 'unknown',
-        coinImageUrl: 'https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Neutaro/chain.png'
+        coinImageUrl: 'https://asset.brandfetch.io/idKrUw6EdO/ids9m0Bt_7.png'
       }
     ],
     get feeCurrencies() {
@@ -252,7 +252,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinDenom: 'NTMPI',
       coinMinimalDenom: 'uneutaro',
       coinGeckoId: 'unknown',
-      coinImageUrl: 'https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Neutaro/chain.png',
+      coinImageUrl: 'https://asset.brandfetch.io/idKrUw6EdO/ids9m0Bt_7.png',
       coinDecimals: 6,
       gasPriceStep: {
         low: 0.01,
