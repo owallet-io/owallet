@@ -51,12 +51,8 @@ import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import { useLoadTokens, useCoinGeckoPrices, useClient, useRelayerFee, useTaxRate } from '@owallet/hooks';
 import { getTransactionUrl, handleErrorSwap } from './helpers';
 import { useQuery } from '@tanstack/react-query';
-import { firebase } from '@react-native-firebase/analytics';
-import { Mixpanel } from 'mixpanel-react-native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import { metrics } from '@src/themes';
-import { OWEmpty } from '@src/components/empty';
-const mixpanel = globalThis.mixpanel as Mixpanel;
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
 
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
@@ -441,20 +437,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
     const toNetwork = chainStore.getChain(originalToToken.chainId).chainName;
 
-    const logEvent = {
-      address: accountOrai.bech32Address,
-      fromToken: originalFromToken.name,
-      fromAmount: `${fromAmountToken}`,
-      toToken: originalToToken.name,
-      toAmount: `${toAmountToken}`,
-      fromNetwork,
-      toNetwork
-    };
-
-    firebase.analytics().logEvent('swap_mobile', {
-      logEvent
-    });
-
     try {
       const cosmosWallet = new SwapCosmosWallet(client);
       const cosmosAddress = originalFromToken.cosmosBased
@@ -518,9 +500,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       console.log('error', error);
       handleErrorSwap(error?.message ?? error?.ex?.message);
     } finally {
-      if (mixpanel) {
-        mixpanel.track('Universal Swap Owallet', logEvent);
-      }
       setSwapLoading(false);
       setSwapAmount([0, 0]);
     }
