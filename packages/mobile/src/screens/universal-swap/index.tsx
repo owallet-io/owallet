@@ -539,7 +539,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     onMaxFromAmount((fromTokenBalance * BigInt(item.value)) / BigInt(MAX), item.value);
   };
 
-  return (
+  return Object.keys(universalSwapStore.getAmount).length === 0 ? (
+    <Text>Loading</Text>
+  ) : (
     <PageWithScrollViewInBottomTabView
       backgroundColor={colors['plain-background']}
       style={[styles.container, styles.pt30]}
