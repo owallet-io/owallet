@@ -384,7 +384,7 @@ export class AccountSetBase<MsgOpts, Queries> {
       const result = await this.broadcastMsgs(msgs, fee, memo, signOptions, this.broadcastMode);
 
       txHash = result?.txHash;
-      if (txHash) throw Error('Transaction Rejected');
+      if (!txHash) throw Error('Transaction Rejected');
     } catch (e: any) {
       runInAction(() => {
         this._isSendingMsg = false;
@@ -668,7 +668,6 @@ export class AccountSetBase<MsgOpts, Queries> {
 
     try {
       const result = await this.broadcastBtcMsgs(msgs, fee, memo, signOptions, extraOptions);
-
       txHash = result?.txHash;
       if (!txHash) throw Error('Transaction Rejected');
     } catch (e: any) {

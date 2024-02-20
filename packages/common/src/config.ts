@@ -239,7 +239,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     chainName: 'Neutaro',
     networkType: 'cosmos',
     rpc: 'https://neutaro.rpc.orai.io',
-    rest: 'http://api.neutaro.tech:1317',
+    rest: 'https://neutaro.lcd.orai.io',
     bip44: {
       coinType: 118
     },

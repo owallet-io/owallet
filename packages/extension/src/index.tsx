@@ -73,6 +73,7 @@ const ethereum = new Ethereum(manifest.version, 'core', '', new InExtensionMessa
 const tronWeb = new TronWeb(manifest.version, 'core', '0x2b6653dc', new InExtensionMessageRequester());
 
 const bitcoin = new Bitcoin(manifest.version, 'core', new InExtensionMessageRequester());
+
 Sentry.init({
   dsn: 'https://4ce54db1095b48ab8688e701d7cc8301@o1323226.ingest.sentry.io/4504615445725184',
   integrations: [new BrowserTracing()],
