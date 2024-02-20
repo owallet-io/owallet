@@ -281,7 +281,7 @@ export const SendEvmPage: FunctionComponent<{
                   },
                   onFulfill: async (tx) => {
                     console.log('🚀 ~ onSubmit={ ~ tx:', tx);
-                    if (chainStore.current.chainId === ChainIdEnum.OasisNative) {
+                    if (tx && chainStore.current.chainId === ChainIdEnum.OasisNative) {
                       submitSignOasis(tx);
                       return;
                     }
@@ -326,6 +326,7 @@ export const SendEvmPage: FunctionComponent<{
                 }
               });
             } catch (e: any) {
+              console.log('🚀 ~ onSubmit={ ~ e:', e);
               if (!isDetachedPage) {
                 history.replace('/');
               }

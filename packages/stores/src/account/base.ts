@@ -384,6 +384,7 @@ export class AccountSetBase<MsgOpts, Queries> {
       const result = await this.broadcastMsgs(msgs, fee, memo, signOptions, this.broadcastMode);
 
       txHash = result?.txHash;
+      if (txHash) throw Error('Transaction Rejected');
     } catch (e: any) {
       runInAction(() => {
         this._isSendingMsg = false;
@@ -561,9 +562,9 @@ export class AccountSetBase<MsgOpts, Queries> {
         txHash = result.txHash;
       } else {
         const result = await this.broadcastEvmMsgs(msgs, fee, signOptions);
-        console.log('🚀 ~ AccountSetBase<MsgOpts, ~ result:', result);
         txHash = result.txHash;
       }
+      if (!txHash) throw Error('Transaction Rejected');
     } catch (e: any) {
       runInAction(() => {
         this._isSendingMsg = false;
@@ -579,7 +580,7 @@ export class AccountSetBase<MsgOpts, Queries> {
 
       throw e;
     }
-    console.log('🚀 ~ AccountSetBase<MsgOpts, ~ txHash:', txHash);
+
     let onBroadcasted: ((txHash: Uint8Array) => void) | undefined;
     let onFulfill: ((tx: any) => void) | undefined;
 
@@ -597,6 +598,7 @@ export class AccountSetBase<MsgOpts, Queries> {
     runInAction(() => {
       this._isSendingMsg = false;
     });
+
     if (this.chainId === ChainIdEnum.OasisNative) {
       console.log(txHash, 'txHash');
       if (this.opts.preTxEvents?.onFulfill) {
@@ -613,7 +615,6 @@ export class AccountSetBase<MsgOpts, Queries> {
     };
 
     const waitForPendingTransaction = async (rpc, txHash, onFulfill, count = 0) => {
-      console.log('🚀 ~ AccountSetBase<MsgOpts, ~ waitForPendingTransaction ~ rpc:', rpc);
       if (count > 10) return;
 
       try {
@@ -623,10 +624,6 @@ export class AccountSetBase<MsgOpts, Queries> {
         while (!transactionReceipt) {
           // Waiting expectedBlockTime until the transaction is mined
           transactionReceipt = await request(rpc, 'eth_getTransactionReceipt', [txHash]);
-          console.log(
-            '🚀 ~ AccountSetBase<MsgOpts, ~ waitForPendingTransaction ~ transactionReceipt:',
-            transactionReceipt
-          );
 
           retryCount += 1;
           if (retryCount === 10) break;
@@ -673,6 +670,7 @@ export class AccountSetBase<MsgOpts, Queries> {
       const result = await this.broadcastBtcMsgs(msgs, fee, memo, signOptions, extraOptions);
 
       txHash = result?.txHash;
+      if (!txHash) throw Error('Transaction Rejected');
     } catch (e: any) {
       console.log('🚀 ~ file: base.ts:644 ~ AccountSetBase<MsgOpts, ~ e:', e);
       runInAction(() => {
@@ -689,6 +687,7 @@ export class AccountSetBase<MsgOpts, Queries> {
 
       throw e;
     }
+
     let onBroadcasted: ((txHash: Uint8Array) => void) | undefined;
     let onFulfill: ((tx: any) => void) | undefined;
 
@@ -836,7 +835,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         signOptions
       );
     })();
-
+    if (!signResponse) throw Error('Transaction Rejected!');
     const signDoc = {
       bodyBytes: TxBody.encode(
         TxBody.fromPartial({
