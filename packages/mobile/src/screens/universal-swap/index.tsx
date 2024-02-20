@@ -542,16 +542,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     );
   };
 
-  return Object.keys(universalSwapStore.getAmount).length === 0 ? (
-    <FlatList
-      contentContainerStyle={{ alignItems: 'center' }}
-      renderItem={renderSkeleton}
-      keyExtractor={_keyExtract}
-      showsVerticalScrollIndicator={false}
-      showsHorizontalScrollIndicator={false}
-      data={[1, 2, 3, 4]}
-    />
-  ) : (
+  return (
     <PageWithScrollViewInBottomTabView
       backgroundColor={colors['plain-background']}
       style={[styles.container, styles.pt30]}
