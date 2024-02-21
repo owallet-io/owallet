@@ -37,7 +37,6 @@ export const HomeScreen: FunctionComponent = observer(props => {
   const currentChain = chainStore.current;
   const currentChainId = currentChain?.chainId;
   const account = accountStore.getAccount(chainStore.current.chainId);
-  const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const previousChainId = usePrevious(currentChainId);
   const chainStoreIsInitializing = chainStore.isInitializing;
   const previousChainStoreIsInitializing = usePrevious(chainStoreIsInitializing, true);
@@ -121,45 +120,33 @@ export const HomeScreen: FunctionComponent = observer(props => {
 
   // This section for getting all tokens of all chains
 
-  let accounts = {};
+  const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
+  const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
+  const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
+  const accountInjective = accountStore.getAccount(ChainIdEnum.Injective);
 
   const loadTokenAmounts = useLoadTokens(universalSwapStore);
   // handle fetch all tokens of all chains
-  const handleFetchAmounts = async accounts => {
+  const handleFetchAmounts = async () => {
     let loadTokenParams = {};
-
     try {
-      if (
-        accounts?.[ChainIdEnum.TRON] &&
-        accounts?.[ChainIdEnum.Ethereum] &&
-        accountOrai.bech32Address &&
-        accounts?.[ChainIdEnum.Oraichain] &&
-        accounts?.[ChainIdEnum.Injective]
-      ) {
-        const cwStargate = {
-          account: accountOrai,
-          chainId: ChainIdEnum.Oraichain,
-          rpc: oraichainNetwork.rpc
-        };
-        loadTokenParams = {
-          ...loadTokenParams,
-          oraiAddress: accounts[ChainIdEnum.Oraichain],
-          cwStargate
-        };
-        loadTokenParams = {
-          ...loadTokenParams,
-          metamaskAddress: accounts[ChainIdEnum.Ethereum]
-        };
-        loadTokenParams = {
-          ...loadTokenParams,
-          kwtAddress: getAddress(accounts[ChainIdEnum.Injective], 'oraie')
-        };
-        loadTokenParams = {
-          ...loadTokenParams,
-          tronAddress: accounts[ChainIdEnum.TRON]
-        };
+      const cwStargate = {
+        account: accountOrai,
+        chainId: ChainIdEnum.Oraichain,
+        rpc: oraichainNetwork.rpc
+      };
+      loadTokenParams = {
+        ...loadTokenParams,
+        oraiAddress: accountOrai.bech32Address,
+        metamaskAddress: accountEth.evmosHexAddress,
+        kwtAddress: getAddress(accountInjective.evmosHexAddress, 'oraie'),
+        tronAddress: getBase58Address(accountTron.evmosHexAddress),
+        cwStargate
+      };
+
+      setTimeout(() => {
         loadTokenAmounts(loadTokenParams);
-      }
+      }, 2000);
     } catch (error) {
       console.log('error loadTokenAmounts', error);
       showToast({
@@ -169,28 +156,11 @@ export const HomeScreen: FunctionComponent = observer(props => {
     }
   };
 
-  const delayedFunction = useCallback(async () => {
-    Object.keys(ChainIdEnum).map(key => {
-      let defaultAddress = accountStore.getAccount(ChainIdEnum[key]).bech32Address;
-      if (ChainIdEnum[key] === ChainIdEnum.TRON) {
-        accounts[ChainIdEnum[key]] = getBase58Address(accountStore.getAccount(ChainIdEnum[key]).evmosHexAddress);
-      } else if (defaultAddress.startsWith('evmos')) {
-        accounts[ChainIdEnum[key]] = accountStore.getAccount(ChainIdEnum[key]).evmosHexAddress;
-      } else {
-        accounts[ChainIdEnum[key]] = defaultAddress;
-      }
-    });
-
-    handleFetchAmounts(accounts);
-  }, []);
-
   useEffect(() => {
-    universalSwapStore.clearAmounts();
-    if (accounts?.[ChainIdEnum.TRON] && accounts?.[ChainIdEnum.Ethereum]) {
-      delayedFunction();
+    if (accountEth.evmosHexAddress && accountTron.evmosHexAddress) {
+      handleFetchAmounts();
     }
-  }, [accounts]);
-
+  }, [accountOrai.bech32Address, accountEth.evmosHexAddress, accountTron.evmosHexAddress]);
   // This section is for PnL display
 
   const { data: prices } = useCoinGeckoPrices();
