@@ -3,7 +3,7 @@ import { PageWithScrollViewInBottomTabView } from '../../components/page';
 import { Text } from '@src/components/text';
 import { useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
-import { FlatList, RefreshControl, View } from 'react-native';
+import { RefreshControl, View } from 'react-native';
 import { useStore } from '../../stores';
 import { SwapBox } from './components/SwapBox';
 import { OWButton } from '@src/components/button';
@@ -51,8 +51,7 @@ import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import { useLoadTokens, useCoinGeckoPrices, useClient, useRelayerFee, useTaxRate } from '@owallet/hooks';
 import { getTransactionUrl, handleErrorSwap } from './helpers';
 import { useQuery } from '@tanstack/react-query';
-import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import { metrics } from '@src/themes';
+
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
 
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
@@ -68,18 +67,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   let accounts = {};
 
-  Object.keys(ChainIdEnum).map(key => {
-    let defaultAddress = accountStore.getAccount(ChainIdEnum[key]).bech32Address;
-    if (ChainIdEnum[key] === ChainIdEnum.TRON) {
-      accounts[ChainIdEnum[key]] = getBase58Address(accountStore.getAccount(ChainIdEnum[key]).evmosHexAddress);
-    } else if (defaultAddress.startsWith('evmos')) {
-      accounts[ChainIdEnum[key]] = accountStore.getAccount(ChainIdEnum[key]).evmosHexAddress;
-    } else {
-      accounts[ChainIdEnum[key]] = defaultAddress;
-    }
-  });
-
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
+  const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
+  const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
+  const accountInjective = accountStore.getAccount(ChainIdEnum.Injective);
 
   const [isSlippageModal, setIsSlippageModal] = useState(false);
   const [minimumReceive, setMininumReceive] = useState(0);
@@ -117,6 +108,20 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setBalanceActive(null);
   };
 
+  // get token on oraichain to simulate swap amount.
+  const originalFromToken = tokenMap[fromTokenDenom];
+  const originalToToken = tokenMap[toTokenDenom];
+
+  const subAmountFrom = toSubAmount(universalSwapStore.getAmount, originalFromToken);
+  const subAmountTo = toSubAmount(universalSwapStore.getAmount, originalToToken);
+  const fromTokenBalance = originalFromToken
+    ? BigInt(universalSwapStore.getAmount?.[originalFromToken.denom] ?? '0') + subAmountFrom
+    : BigInt(0);
+
+  const toTokenBalance = originalToToken
+    ? BigInt(universalSwapStore.getAmount?.[originalToToken.denom] ?? '0') + subAmountTo
+    : BigInt(0);
+
   const onMaxFromAmount = (amount: bigint, type: string) => {
     const displayAmount = toDisplay(amount, originalFromToken?.decimals);
     let finalAmount = displayAmount;
@@ -133,10 +138,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     }
     setSwapAmount([finalAmount, toAmountToken]);
   };
-
-  // get token on oraichain to simulate swap amount.
-  const originalFromToken = tokenMap[fromTokenDenom];
-  const originalToToken = tokenMap[toTokenDenom];
 
   const isEvmSwap = isEvmSwappable({
     fromChainId: originalFromToken.chainId,
@@ -211,8 +212,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     }
   });
 
-  // const isFocused = useIsFocused();
-
   const [isSelectFromTokenModal, setIsSelectFromTokenModal] = useState(false);
   const [isSelectToTokenModal, setIsSelectToTokenModal] = useState(false);
   const [isNetworkModal, setIsNetworkModal] = useState(false);
@@ -220,40 +219,35 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const loadTokenAmounts = useLoadTokens(universalSwapStore);
   // handle fetch all tokens of all chains
-  const handleFetchAmounts = async accounts => {
+  const handleFetchAmounts = async () => {
     let loadTokenParams = {};
     try {
-      if (
-        accounts?.[ChainIdEnum.TRON] &&
-        accounts?.[ChainIdEnum.Ethereum] &&
-        accountOrai.bech32Address &&
-        accounts?.[ChainIdEnum.Oraichain] &&
-        accounts?.[ChainIdEnum.Injective]
-      ) {
-        const cwStargate = {
-          account: accountOrai,
-          chainId: ChainIdEnum.Oraichain,
-          rpc: oraichainNetwork.rpc
-        };
-        loadTokenParams = {
-          ...loadTokenParams,
-          oraiAddress: accounts[ChainIdEnum.Oraichain],
-          cwStargate
-        };
-        loadTokenParams = {
-          ...loadTokenParams,
-          metamaskAddress: accounts[ChainIdEnum.Ethereum]
-        };
-        loadTokenParams = {
-          ...loadTokenParams,
-          kwtAddress: getAddress(accounts[ChainIdEnum.Injective], 'oraie')
-        };
-        loadTokenParams = {
-          ...loadTokenParams,
-          tronAddress: accounts[ChainIdEnum.TRON]
-        };
+      const cwStargate = {
+        account: accountOrai,
+        chainId: ChainIdEnum.Oraichain,
+        rpc: oraichainNetwork.rpc
+      };
+      loadTokenParams = {
+        ...loadTokenParams,
+        oraiAddress: accountOrai.bech32Address,
+        cwStargate
+      };
+      loadTokenParams = {
+        ...loadTokenParams,
+        metamaskAddress: accountEth.evmosHexAddress
+      };
+      loadTokenParams = {
+        ...loadTokenParams,
+        kwtAddress: getAddress(accountInjective.evmosHexAddress, 'oraie')
+      };
+      loadTokenParams = {
+        ...loadTokenParams,
+        tronAddress: getBase58Address(accountTron.evmosHexAddress)
+      };
+
+      setTimeout(() => {
         loadTokenAmounts(loadTokenParams);
-      }
+      }, 2000);
     } catch (error) {
       console.log('error loadTokenAmounts', error);
       showToast({
@@ -264,32 +258,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   };
 
   useEffect(() => {
-    universalSwapStore.clearAmounts();
-    Object.keys(ChainIdEnum).map(key => {
-      let defaultAddress = accountStore.getAccount(ChainIdEnum[key]).bech32Address;
-      if (ChainIdEnum[key] === ChainIdEnum.TRON) {
-        accounts[ChainIdEnum[key]] = getBase58Address(accountStore.getAccount(ChainIdEnum[key]).evmosHexAddress);
-      } else if (defaultAddress.startsWith('evmos')) {
-        accounts[ChainIdEnum[key]] = accountStore.getAccount(ChainIdEnum[key]).evmosHexAddress;
-      } else {
-        accounts[ChainIdEnum[key]] = defaultAddress;
-      }
-    });
-
-    if (accounts?.[ChainIdEnum.TRON] && accounts?.[ChainIdEnum.Ethereum]) {
-      handleFetchAmounts(accounts);
+    if (accountEth.evmosHexAddress && accountTron.evmosHexAddress) {
+      handleFetchAmounts();
     }
-  }, [accountOrai.bech32Address, accounts?.[ChainIdEnum.TRON], accounts?.[ChainIdEnum.Ethereum]]);
-
-  const subAmountFrom = toSubAmount(universalSwapStore.getAmount, originalFromToken);
-  const subAmountTo = toSubAmount(universalSwapStore.getAmount, originalToToken);
-  const fromTokenBalance = originalFromToken
-    ? BigInt(universalSwapStore.getAmount?.[originalFromToken.denom] ?? '0') + subAmountFrom
-    : BigInt(0);
-
-  const toTokenBalance = originalToToken
-    ? BigInt(universalSwapStore.getAmount?.[originalToToken.denom] ?? '0') + subAmountTo
-    : BigInt(0);
+  }, [accountOrai.bech32Address, accountEth.evmosHexAddress, accountTron.evmosHexAddress]);
 
   useEffect(() => {
     const filteredToTokens = filterNonPoolEvmTokens(
@@ -433,6 +405,17 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     }
 
     setSwapLoading(true);
+    Object.keys(ChainIdEnum).map(key => {
+      let defaultAddress = accountStore.getAccount(ChainIdEnum[key]).bech32Address;
+      if (ChainIdEnum[key] === ChainIdEnum.TRON) {
+        accounts[ChainIdEnum[key]] = getBase58Address(accountStore.getAccount(ChainIdEnum[key]).evmosHexAddress);
+      } else if (defaultAddress.startsWith('evmos')) {
+        accounts[ChainIdEnum[key]] = accountStore.getAccount(ChainIdEnum[key]).evmosHexAddress;
+      } else {
+        accounts[ChainIdEnum[key]] = defaultAddress;
+      }
+    });
+
     const fromNetwork = chainStore.getChain(originalFromToken.chainId).chainName;
 
     const toNetwork = chainStore.getChain(originalToToken.chainId).chainName;
@@ -493,7 +476,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             }
           }
         });
-        await handleFetchAmounts(accounts);
+        await handleFetchAmounts();
       }
     } catch (error) {
       setSwapLoading(false);
@@ -507,7 +490,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const onRefresh = async () => {
     setLoadingRefresh(true);
-    await handleFetchAmounts(accounts);
+    await handleFetchAmounts();
     await estimateAverageRatio();
     setLoadingRefresh(false);
   };
@@ -524,34 +507,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     onMaxFromAmount((fromTokenBalance * BigInt(item.value)) / BigInt(MAX), item.value);
   };
 
-  const renderSkeleton = ({ item, index }) => {
-    return (
-      <View key={`SkeletonComponent-${item}`}>
-        <SkeletonPlaceholder
-          highlightColor={colors['skeleton']}
-          backgroundColor={colors['background-item-list']}
-          borderRadius={12}
-        >
-          <SkeletonPlaceholder.Item
-            width={metrics.screenWidth - 48}
-            marginVertical={8}
-            height={65}
-          ></SkeletonPlaceholder.Item>
-        </SkeletonPlaceholder>
-      </View>
-    );
-  };
-
-  return Object.keys(universalSwapStore.getAmount).length === 0 ? (
-    <FlatList
-      contentContainerStyle={{ alignItems: 'center' }}
-      renderItem={renderSkeleton}
-      keyExtractor={_keyExtract}
-      showsVerticalScrollIndicator={false}
-      showsHorizontalScrollIndicator={false}
-      data={[1, 2, 3, 4]}
-    />
-  ) : (
+  return (
     <PageWithScrollViewInBottomTabView
       backgroundColor={colors['plain-background']}
       style={[styles.container, styles.pt30]}

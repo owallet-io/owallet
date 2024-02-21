@@ -69,14 +69,14 @@ async function loadTokens(
         // different cointype but also require keplr connected by checking oraiAddress
         loadKawaiiSubnetAmount(universalSwapStore, kwtAddress)
       ]);
-    }, 1000);
+    }, 500);
   }
 
   if (metamaskAddress) {
     clearTimeout(timer[metamaskAddress]);
     timer[metamaskAddress] = setTimeout(() => {
       loadEvmAmounts(universalSwapStore, metamaskAddress, evmChains);
-    }, 1000);
+    }, 500);
   }
 
   if (tronAddress) {
@@ -87,7 +87,7 @@ async function loadTokens(
         tronToEthAddress(tronAddress),
         chainInfos.filter(c => c.chainId == '0x2b6653dc')
       );
-    }, 2000);
+    }, 500);
   }
 }
 
