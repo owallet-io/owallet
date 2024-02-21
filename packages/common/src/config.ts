@@ -229,7 +229,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     chainName: 'Neutaro',
     networkType: 'cosmos',
     rpc: 'https://neutaro.rpc.orai.io',
-    rest: 'http://api.neutaro.tech:1317',
+    rest: 'https://neutaro.lcd.orai.io',
     bip44: {
       coinType: 118
     },
@@ -712,116 +712,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       txUrl: 'https://www.mintscan.io/osmosis/txs/{txHash}'
     }
   },
-  // {
-  //   chainId: 'nomic-stakenet-3',
-  //   chainName: 'Nomic Stakenet 3',
-  //   rpc: 'https://stakenet-rpc.nomic.io:2096',
-  //   rest: 'https://app.nomic.io:8443',
-  //   bip44: {
-  //     coinType: 118
-  //   },
-  //   bech32Config: {
-  //     bech32PrefixAccAddr: 'nomic',
-  //     bech32PrefixAccPub: 'nomicpub',
-  //     bech32PrefixValAddr: 'nomicvaloper',
-  //     bech32PrefixValPub: 'nomicvaloperpub',
-  //     bech32PrefixConsAddr: 'nomicvalcons',
-  //     bech32PrefixConsPub: 'nomicvalconspub'
-  //   },
-  //   currencies: [
-  //     {
-  //       coinDenom: 'NOM',
-  //       coinMinimalDenom: 'unom',
-  //       coinDecimals: 6,
-  //       coinImageUrl: 'https://i.ibb.co/X4gbpMG/download-removebg-preview-1.png'
-  //     },
-  //     {
-  //       coinDenom: 'nBTC',
-  //       coinMinimalDenom: 'uSAT',
-  //       coinDecimals: 14,
-  //       coinGeckoId: 'bitcoin',
-  //       coinImageUrl: 'https://i.ibb.co/NVP6CDZ/images-removebg-preview.png'
-  //     }
-  //   ],
-  //   feeCurrencies: [
-  //     {
-  //       coinDenom: 'NOM',
-  //       coinMinimalDenom: 'unom',
-  //       coinDecimals: 6,
-  //       coinImageUrl: 'https://i.ibb.co/X4gbpMG/download-removebg-preview-1.png',
-  //       gasPriceStep: {
-  //         low: 0,
-  //         average: 0,
-  //         high: 0
-  //       }
-  //     }
-  //   ],
-  //   stakeCurrency: {
-  //     coinDenom: 'NOM',
-  //     coinMinimalDenom: 'unom',
-  //     coinDecimals: 6,
-  //     coinImageUrl: 'https://i.ibb.co/X4gbpMG/download-removebg-preview-1.png'
-  //   },
-  //   coinType: 119,
-  //   networkType: 'cosmos',
-  //   features: ['stargate'],
-  //   beta: true
-  // },
-  // {
-  //   chainId: 'nomic-testnet-4d',
-  //   chainName: 'Nomic Testnet 4d',
-  //   rpc: 'https://testnet-rpc.nomic.io:2096',
-  //   rest: 'https://testnet-api.nomic.io:8443',
-  //   networkType: 'cosmos',
-  //   bip44: {
-  //     coinType: 118
-  //   },
-  //   bech32Config: {
-  //     bech32PrefixAccAddr: 'nomic',
-  //     bech32PrefixAccPub: 'nomicpub',
-  //     bech32PrefixValAddr: 'nomicvaloper',
-  //     bech32PrefixValPub: 'nomicvaloperpub',
-  //     bech32PrefixConsAddr: 'nomicvalcons',
-  //     bech32PrefixConsPub: 'nomicvalconspub'
-  //   },
-  //   currencies: [
-  //     {
-  //       coinDenom: 'NOM',
-  //       coinMinimalDenom: 'unom',
-  //       coinDecimals: 6,
-  //       coinImageUrl: 'https://i.ibb.co/X4gbpMG/download-removebg-preview-1.png'
-  //     },
-  //     {
-  //       coinDenom: 'nBTC',
-  //       coinMinimalDenom: 'uSAT',
-  //       coinDecimals: 14,
-  //       coinGeckoId: 'bitcoin',
-  //       coinImageUrl: 'https://i.ibb.co/NVP6CDZ/images-removebg-preview.png'
-  //     }
-  //   ],
-  //   feeCurrencies: [
-  //     {
-  //       coinDenom: 'NOM',
-  //       coinMinimalDenom: 'unom',
-  //       coinDecimals: 6,
-  //       coinImageUrl: 'https://i.ibb.co/X4gbpMG/download-removebg-preview-1.png',
-  //       gasPriceStep: {
-  //         low: 0,
-  //         average: 0,
-  //         high: 0
-  //       }
-  //     }
-  //   ],
-  //   stakeCurrency: {
-  //     coinDenom: 'NOM',
-  //     coinMinimalDenom: 'unom',
-  //     coinDecimals: 6,
-  //     coinImageUrl: 'https://i.ibb.co/X4gbpMG/download-removebg-preview-1.png'
-  //   },
-  //   coinType: 119,
-  //   features: ['stargate'],
-  //   beta: true
-  // },
+
   {
     rpc: 'https://rpc-juno.keplr.app',
     rest: 'https://lcd-juno.keplr.app',
@@ -974,49 +865,48 @@ export const EmbedChainInfos: AppChainInfo[] = [
       accountUrl: 'https://blockstream.info/testnet/address/{address}'
     }
   },
-  // {
-  //   rest: 'https://blockstream.info/api',
-  //   chainId: 'bitcoin',
-  //   chainName: 'Bitcoin',
-  //   bip44: {
-  //     coinType: 0
-  //   },
-  //   coinType: 0,
-  //   stakeCurrency: {
-  //     coinDenom: 'BTC',
-  //     coinMinimalDenom: 'btc',
-  //     coinDecimals: 8,
-  //     coinGeckoId: 'bitcoin',
-  //     coinImageUrl: 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png',
-  //     gasPriceStep: {
-  //       low: 144,
-  //       average: 18,
-  //       high: 1
-  //     }
-  //   },
-  //   bech32Config: Bech32Address.defaultBech32Config('bc'),
-  //   networkType: 'bitcoin',
-  //   currencies: [
-  //     {
-  //       coinDenom: 'BTC',
-  //       coinMinimalDenom: 'btc',
-  //       coinDecimals: 8,
-  //       coinGeckoId: 'bitcoin',
-  //       coinImageUrl: 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png'
-  //     }
-  //   ],
-  //   get feeCurrencies() {
-  //     return this.currencies;
-  //   },
+  {
+    rest: 'https://blockstream.info/api',
+    chainId: 'bitcoin',
+    chainName: 'Bitcoin',
+    bip44: {
+      coinType: 0
+    },
+    coinType: 0,
+    stakeCurrency: {
+      coinDenom: 'BTC',
+      coinMinimalDenom: 'btc',
+      coinDecimals: 8,
+      coinGeckoId: 'bitcoin',
+      coinImageUrl: 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png',
+      gasPriceStep: {
+        low: 144,
+        average: 18,
+        high: 1
+      }
+    },
+    bech32Config: Bech32Address.defaultBech32Config('bc'),
+    networkType: 'bitcoin',
+    currencies: [
+      {
+        coinDenom: 'BTC',
+        coinMinimalDenom: 'btc',
+        coinDecimals: 8,
+        coinGeckoId: 'bitcoin',
+        coinImageUrl: 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png'
+      }
+    ],
+    get feeCurrencies() {
+      return this.currencies;
+    },
 
-  //   features: ['isBtc'],
-  //   txExplorer: {
-  //     name: 'BlockStream',
-  //     txUrl: 'https://blockstream.info/tx/{txHash}',
-  //     accountUrl: 'https://blockstream.info/address/{address}'
-  //   }
-  // },
-
+    features: ['isBtc'],
+    txExplorer: {
+      name: 'BlockStream',
+      txUrl: 'https://blockstream.info/tx/{txHash}',
+      accountUrl: 'https://blockstream.info/address/{address}'
+    }
+  },
   {
     rest: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
     evmRpc: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
