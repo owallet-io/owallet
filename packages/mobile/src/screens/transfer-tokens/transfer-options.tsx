@@ -9,6 +9,7 @@ import { useStore } from '../../stores';
 import { useTheme } from '@src/themes/theme-provider';
 import { OWBox } from '@src/components/card';
 import { TRON_ID } from '@owallet/common';
+import { useNavigation } from '@react-navigation/native';
 
 const styling = colors =>
   StyleSheet.create({
@@ -70,6 +71,7 @@ const tokenTransferInfo = [
 
 const TransferTokensOptions: FunctionComponent = () => {
   const smartNavigation = useSmartNavigation();
+  const navigation = useNavigation();
   const { chainStore } = useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
@@ -93,7 +95,7 @@ const TransferTokensOptions: FunctionComponent = () => {
         });
         break;
       case 'send_cross':
-        smartNavigation.navigateSmart('UniversalSwapScreen', {});
+        navigation.navigate('UniversalSwapScreen', {});
         break;
       default:
         alert('Coming soon!');

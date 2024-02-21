@@ -68,9 +68,7 @@ export const NotificationScreen: FunctionComponent = () => {
         .subscribeMsgByAddress(account.bech32Address)
         .then(tx => {
           page.current = 1;
-          setTimeout(() => {
-            fetchData();
-          }, 1500);
+          fetchData();
         })
         .catch(e => {
           console.log(`Failed to trace the tx ()`, e);

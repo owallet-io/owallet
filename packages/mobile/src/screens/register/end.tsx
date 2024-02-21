@@ -113,10 +113,7 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
               flex: 1
             }}
           />
-          <Toggle
-            on={isBiometricOn}
-            onChange={value => setIsBiometricOn(value)}
-          />
+          <Toggle on={isBiometricOn} onChange={value => setIsBiometricOn(value)} />
         </View>
       ) : null}
       <OWButton
@@ -127,15 +124,11 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
           setIsLoading(true);
           try {
             if (password && isBiometricOn) {
-         
-
               await keychainStore.turnOnBiometry(password);
             }
             // Definetly, the last key is newest keyring.
             if (keyRingStore.multiKeyStoreInfo.length > 0) {
-              await keyRingStore.changeKeyRing(
-                keyRingStore.multiKeyStoreInfo.length - 1
-              );
+              await keyRingStore.changeKeyRing(keyRingStore.multiKeyStoreInfo.length - 1);
             }
             smartNavigation.reset({
               index: 0,

@@ -12,6 +12,7 @@ export const SCREENS = {
   RecoveryPhrase: 'RecoveryPhrase',
   RegisterMain: 'RegisterMain',
   BtcFaucet: 'BtcFaucet',
+  BuyFiat: 'BuyFiat',
   RegisterVerifyMnemonicMain: 'RegisterVerifyMnemonicMain',
   RegisterEnd: 'Register.End',
   RegisterDone: 'Register.Done',
@@ -34,6 +35,7 @@ export const SCREENS = {
   RegisterRecoverPhrase: 'Register.RecoverPhrase',
   RegisterNewLedger: 'Register.NewLedger',
   Send: 'Send',
+  SendOasis: 'SendOasis',
   TransferNFT: 'TransferNFT',
   Transactions: 'Transactions',
   Dashboard: 'Dashboard',
@@ -208,6 +210,9 @@ export const SCREENS_OPTIONS: IScreenOption = {
   [SCREENS.SendTron]: {
     title: HEADER_KEY.showNetworkHeader
   },
+  [SCREENS.SendOasis]: {
+    title: HEADER_KEY.showNetworkHeader
+  },
   [SCREENS.Notifications]: {
     title: HEADER_KEY.showNetworkHeader
   },
@@ -244,6 +249,9 @@ export const SCREENS_OPTIONS: IScreenOption = {
   },
   [SCREENS.BtcFaucet]: {
     title: 'Bitcoin Faucet'
+  },
+  [SCREENS.BuyFiat]: {
+    title: 'Buy'
   },
   [SCREENS.SettingVersion]: {
     title: 'About'

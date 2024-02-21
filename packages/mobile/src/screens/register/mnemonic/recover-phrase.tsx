@@ -6,7 +6,7 @@ import { RegisterConfig } from '@owallet/hooks';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { Controller, useForm } from 'react-hook-form';
 import { TextInput } from '../../../components/input';
-import { StyleSheet, TouchableOpacity, View, Clipboard } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, Clipboard, Keyboard } from 'react-native';
 import { useStore } from '../../../stores';
 import { useBIP44Option } from '../bip44';
 import { Buffer } from 'buffer';
@@ -21,7 +21,7 @@ import { showToast } from '@src/utils/helper';
 const bip39 = require('bip39');
 
 function isPrivateKey(str: string): boolean {
-  if (str?.startsWith('0x')) {
+  if (str?.startsWith('0x') || str?.startsWith('zs')) {
     return true;
   }
 
@@ -213,7 +213,10 @@ export const RecoverPhraseScreen: FunctionComponent = observer(props => {
           ...typography['h6'],
           color: colors['neutral-text-body']
         }}
-        onSubmitEditing={() => {}}
+        onSubmitEditing={() => {
+          Keyboard.dismiss();
+        }}
+        blurOnSubmit={true}
         inputStyle={{
           ...styles.borderInput
         }}

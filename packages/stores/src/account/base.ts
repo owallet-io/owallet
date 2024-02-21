@@ -369,7 +369,6 @@ export class AccountSetBase<MsgOpts, Queries> {
     });
 
     let txHash: Uint8Array;
-
     try {
       if (typeof msgs === 'function') {
         msgs = await msgs();
@@ -738,6 +737,7 @@ export class AccountSetBase<MsgOpts, Queries> {
     const isDirectSign = !msgs.aminoMsgs || msgs.aminoMsgs.length === 0;
     const aminoMsgs: Msg[] = msgs.aminoMsgs || [];
     const protoMsgs: Any[] = msgs.protoMsgs;
+
     if (!protoMsgs || protoMsgs.length === 0) {
       throw new Error('There is no msg to send');
     }

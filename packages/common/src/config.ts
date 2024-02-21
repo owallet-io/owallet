@@ -131,9 +131,18 @@ export const EmbedChainInfos: AppChainInfo[] = [
         },
         {
           type: 'cw20',
-          coinDenom: 'oBTC',
-          coinMinimalDenom: 'cw20:orai1d2hq8pzf0nswlqhhng95hkfnmgutpmz6g8hd8q7ec9q9pj6t3r2q7vc646:oBTC Token',
+          coinDenom: 'tBTC',
+          coinMinimalDenom: 'cw20:orai1d2hq8pzf0nswlqhhng95hkfnmgutpmz6g8hd8q7ec9q9pj6t3r2q7vc646:tBTC Token',
           contractAddress: 'orai1d2hq8pzf0nswlqhhng95hkfnmgutpmz6g8hd8q7ec9q9pj6t3r2q7vc646',
+          coinDecimals: 6,
+          coinGeckoId: 'bitcoin',
+          coinImageUrl: 'https://i.ibb.co/NVP6CDZ/images-removebg-preview.png'
+        },
+        {
+          type: 'cw20',
+          coinDenom: 'BTC',
+          coinMinimalDenom: 'cw20:orai10g6frpysmdgw5tdqke47als6f97aqmr8s3cljsvjce4n5enjftcqtamzsd:orai BTC Token',
+          contractAddress: 'orai10g6frpysmdgw5tdqke47als6f97aqmr8s3cljsvjce4n5enjftcqtamzsd',
           coinDecimals: 6,
           coinGeckoId: 'bitcoin',
           coinImageUrl: 'https://i.ibb.co/NVP6CDZ/images-removebg-preview.png'
@@ -225,6 +234,51 @@ export const EmbedChainInfos: AppChainInfo[] = [
     // beta: true // use v1beta1
   },
   {
+    chainId: 'Neutaro-1',
+    chainName: 'Neutaro',
+    networkType: 'cosmos',
+    rpc: 'https://neutaro.rpc.orai.io',
+    rest: 'https://neutaro.lcd.orai.io',
+    bip44: {
+      coinType: 118
+    },
+    coinType: 118,
+    bech32Config: Bech32Address.defaultBech32Config('neutaro'),
+    currencies: [
+      {
+        coinDenom: 'NTMPI',
+        coinMinimalDenom: 'uneutaro',
+        coinDecimals: 6,
+        coinGeckoId: 'unknown',
+        coinImageUrl: 'https://asset.brandfetch.io/idKrUw6EdO/ids9m0Bt_7.png'
+      }
+    ],
+    get feeCurrencies() {
+      return [this.stakeCurrency];
+    },
+    stakeCurrency: {
+      coinDenom: 'NTMPI',
+      coinMinimalDenom: 'uneutaro',
+      coinGeckoId: 'unknown',
+      coinImageUrl: 'https://asset.brandfetch.io/idKrUw6EdO/ids9m0Bt_7.png',
+      coinDecimals: 6,
+      gasPriceStep: {
+        low: 0.01,
+        average: 0.025,
+        high: 0.03
+      }
+    },
+    features: ['stargate', 'ibc-transfer', 'cosmwasm', 'no-legacy-stdTx'],
+    chainSymbolImageUrl:
+      'https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Neutaro/chain.png',
+    txExplorer: {
+      name: 'Neutaro',
+      txUrl: 'https://nms1.neutaro.tech/Neutaro/tx/{txHash}',
+      //TODO: Not found account explorer for neutaro
+      accountUrl: 'https://nms1.neutaro.tech/account/{address}'
+    }
+  },
+  {
     rpc: 'https://testnet-rpc.orai.io',
     rest: 'https://testnet-lcd.orai.io',
     chainId: 'Oraichain-testnet',
@@ -263,8 +317,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     // beta: true // use v1beta1
   },
   {
-    rpc: 'https://injective-rpc-global.orai.io',
-    rest: 'https://sentry.lcd.injective.network',
+    rpc: 'https://injective.rpc.orai.io',
+    rest: 'https://injective.lcd.orai.io',
     chainId: 'injective-1',
     chainName: 'Injective',
     networkType: 'cosmos',
@@ -373,8 +427,65 @@ export const EmbedChainInfos: AppChainInfo[] = [
     features: ['stargate', 'ibc-transfer', 'cosmwasm']
   },
   {
-    chainId: 'oraibtc-subnet-1',
+    chainId: 'oraibtc-mainnet-1',
     chainName: 'OraiBtc Bridge',
+    rpc: 'https://btc.rpc.orai.io',
+    rest: 'https://btc.lcd.orai.io',
+    networkType: 'cosmos',
+    stakeCurrency: {
+      coinDenom: 'ORAIBTC',
+      coinMinimalDenom: 'uoraibtc',
+      coinDecimals: 6,
+      gasPriceStep: {
+        low: 0,
+        average: 0,
+        high: 0
+      },
+      coinImageUrl: 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png'
+    },
+    bip44: {
+      coinType: 118
+    },
+    coinType: 118,
+    bech32Config: Bech32Address.defaultBech32Config('oraibtc'),
+    // List of all coin/tokens used in this chain.
+    get currencies() {
+      return [
+        this.stakeCurrency,
+        {
+          coinDenom: 'oBTC',
+          coinMinimalDenom: 'usat',
+          coinDecimals: 14,
+          gasPriceStep: {
+            low: 0,
+            average: 0,
+            high: 0
+          },
+          coinImageUrl: 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png'
+        }
+      ];
+    },
+    get feeCurrencies() {
+      return [
+        this.stakeCurrency,
+        {
+          coinDenom: 'oBTC',
+          coinMinimalDenom: 'usat',
+          coinDecimals: 14,
+          gasPriceStep: {
+            low: 0,
+            average: 0,
+            high: 0
+          },
+          coinImageUrl: 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png'
+        }
+      ];
+    },
+    features: ['stargate', 'ibc-transfer', 'cosmwasm']
+  },
+  {
+    chainId: 'oraibtc-testnet-2',
+    chainName: 'OraiBtc Bridge Testnet',
     rpc: 'https://oraibtc.rpc.orai.io',
     rest: 'https://oraibtc.lcd.orai.io',
     networkType: 'cosmos',
@@ -571,8 +682,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
   },
 
   {
-    rpc: 'https://rpc.cosmos.directory/osmosis',
-    rest: 'https://rest.cosmos.directory/osmosis',
+    rpc: 'https://osmosis.rpc.orai.io',
+    rest: 'https://osmosis.lcd.orai.io',
     chainId: 'osmosis-1',
     chainName: 'Osmosis',
     networkType: 'cosmos',
@@ -619,116 +730,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       txUrl: 'https://www.mintscan.io/osmosis/txs/{txHash}'
     }
   },
-  {
-    chainId: 'nomic-stakenet-3',
-    chainName: 'Nomic Stakenet 3',
-    rpc: 'https://stakenet-rpc.nomic.io:2096',
-    rest: 'https://app.nomic.io:8443',
-    bip44: {
-      coinType: 118
-    },
-    bech32Config: {
-      bech32PrefixAccAddr: 'nomic',
-      bech32PrefixAccPub: 'nomicpub',
-      bech32PrefixValAddr: 'nomicvaloper',
-      bech32PrefixValPub: 'nomicvaloperpub',
-      bech32PrefixConsAddr: 'nomicvalcons',
-      bech32PrefixConsPub: 'nomicvalconspub'
-    },
-    currencies: [
-      {
-        coinDenom: 'NOM',
-        coinMinimalDenom: 'unom',
-        coinDecimals: 6,
-        coinImageUrl: 'https://i.ibb.co/X4gbpMG/download-removebg-preview-1.png'
-      },
-      {
-        coinDenom: 'nBTC',
-        coinMinimalDenom: 'uSAT',
-        coinDecimals: 14,
-        coinGeckoId: 'bitcoin',
-        coinImageUrl: 'https://i.ibb.co/NVP6CDZ/images-removebg-preview.png'
-      }
-    ],
-    feeCurrencies: [
-      {
-        coinDenom: 'NOM',
-        coinMinimalDenom: 'unom',
-        coinDecimals: 6,
-        coinImageUrl: 'https://i.ibb.co/X4gbpMG/download-removebg-preview-1.png',
-        gasPriceStep: {
-          low: 0,
-          average: 0,
-          high: 0
-        }
-      }
-    ],
-    stakeCurrency: {
-      coinDenom: 'NOM',
-      coinMinimalDenom: 'unom',
-      coinDecimals: 6,
-      coinImageUrl: 'https://i.ibb.co/X4gbpMG/download-removebg-preview-1.png'
-    },
-    coinType: 119,
-    networkType: 'cosmos',
-    features: ['stargate'],
-    beta: true
-  },
-  // {
-  //   chainId: 'nomic-testnet-4d',
-  //   chainName: 'Nomic Testnet 4d',
-  //   rpc: 'https://testnet-rpc.nomic.io:2096',
-  //   rest: 'https://testnet-api.nomic.io:8443',
-  //   networkType: 'cosmos',
-  //   bip44: {
-  //     coinType: 118
-  //   },
-  //   bech32Config: {
-  //     bech32PrefixAccAddr: 'nomic',
-  //     bech32PrefixAccPub: 'nomicpub',
-  //     bech32PrefixValAddr: 'nomicvaloper',
-  //     bech32PrefixValPub: 'nomicvaloperpub',
-  //     bech32PrefixConsAddr: 'nomicvalcons',
-  //     bech32PrefixConsPub: 'nomicvalconspub'
-  //   },
-  //   currencies: [
-  //     {
-  //       coinDenom: 'NOM',
-  //       coinMinimalDenom: 'unom',
-  //       coinDecimals: 6,
-  //       coinImageUrl: 'https://i.ibb.co/X4gbpMG/download-removebg-preview-1.png'
-  //     },
-  //     {
-  //       coinDenom: 'nBTC',
-  //       coinMinimalDenom: 'uSAT',
-  //       coinDecimals: 14,
-  //       coinGeckoId: 'bitcoin',
-  //       coinImageUrl: 'https://i.ibb.co/NVP6CDZ/images-removebg-preview.png'
-  //     }
-  //   ],
-  //   feeCurrencies: [
-  //     {
-  //       coinDenom: 'NOM',
-  //       coinMinimalDenom: 'unom',
-  //       coinDecimals: 6,
-  //       coinImageUrl: 'https://i.ibb.co/X4gbpMG/download-removebg-preview-1.png',
-  //       gasPriceStep: {
-  //         low: 0,
-  //         average: 0,
-  //         high: 0
-  //       }
-  //     }
-  //   ],
-  //   stakeCurrency: {
-  //     coinDenom: 'NOM',
-  //     coinMinimalDenom: 'unom',
-  //     coinDecimals: 6,
-  //     coinImageUrl: 'https://i.ibb.co/X4gbpMG/download-removebg-preview-1.png'
-  //   },
-  //   coinType: 119,
-  //   features: ['stargate'],
-  //   beta: true
-  // },
+
   {
     rpc: 'https://rpc-juno.keplr.app',
     rest: 'https://lcd-juno.keplr.app',
@@ -923,7 +925,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
       accountUrl: 'https://blockstream.info/address/{address}'
     }
   },
-
   {
     rest: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
     evmRpc: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
@@ -1181,26 +1182,26 @@ export const EmbedChainInfos: AppChainInfo[] = [
   {
     rpc: 'https://sapphire.oasis.io',
     rest: 'https://sapphire.oasis.io',
-    // rest: 'https://grpc.oasis.dev',
-    chainId: '0x5afe',
+    grpc: 'https://grpc.oasis.dev',
+    chainId: 'native-0x5afe',
     networkType: 'evm',
-    chainName: 'Oasis Sapphire',
+    chainName: 'Oasis',
     stakeCurrency: {
       coinDenom: 'ROSE',
-      coinMinimalDenom: 'nanoroses',
-      coinDecimals: 18,
+      coinMinimalDenom: 'rose',
+      coinDecimals: 9,
       coinGeckoId: 'oasis-network',
       coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png',
       gasPriceStep: {
-        low: 420,
-        average: 504,
-        high: 672
+        low: 0,
+        average: 0.025,
+        high: 0.04
       }
     },
     currencies: [
       {
         coinDenom: 'ROSE',
-        coinMinimalDenom: 'nanoroses',
+        coinMinimalDenom: 'rose',
         coinDecimals: 18,
         coinGeckoId: 'oasis-network',
         coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png'
@@ -1211,7 +1212,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinType: 474
     },
     coinType: 474,
-    bech32Config: Bech32Address.defaultBech32Config('oasis'),
+    bech32Config: Bech32Address.defaultBech32Config('evmos'),
     get feeCurrencies() {
       return [this.stakeCurrency];
     },
@@ -1221,6 +1222,94 @@ export const EmbedChainInfos: AppChainInfo[] = [
       name: 'Oasis scan',
       txUrl: 'https://explorer.sapphire.oasis.io/{txHash}',
       accountUrl: 'https://explorer.sapphire.oasis.io/{address}'
+    }
+  },
+  {
+    rpc: 'https://sapphire.oasis.io',
+    rest: 'https://sapphire.oasis.io',
+    chainId: '0x5afe',
+    networkType: 'evm',
+    chainName: 'Oasis Sapphire',
+    stakeCurrency: {
+      coinDenom: 'ROSE',
+      coinMinimalDenom: 'rose',
+      coinDecimals: 18,
+      coinGeckoId: 'oasis-network',
+      coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png',
+      gasPriceStep: {
+        low: 0,
+        average: 0.025,
+        high: 0.04
+      }
+    },
+    currencies: [
+      {
+        coinDenom: 'ROSE',
+        coinMinimalDenom: 'rose',
+        coinDecimals: 18,
+        coinGeckoId: 'oasis-network',
+        coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png'
+      }
+    ],
+    restConfig: {},
+    bip44: {
+      coinType: 60
+    },
+    coinType: 60,
+    bech32Config: Bech32Address.defaultBech32Config('evmos'),
+    get feeCurrencies() {
+      return [this.stakeCurrency];
+    },
+
+    features: ['ibc-go', 'stargate', 'isEvm'],
+    txExplorer: {
+      name: 'Oasis scan',
+      txUrl: 'https://explorer.sapphire.oasis.io/{txHash}',
+      accountUrl: 'https://explorer.sapphire.oasis.io/{address}'
+    }
+  },
+  {
+    rpc: 'https://emerald.oasis.dev/',
+    rest: 'https://emerald.oasis.dev/',
+    grpc: 'https://grpc.oasis.dev/',
+    chainId: '0xa516',
+    chainName: 'Oasis Emerald',
+    bip44: {
+      coinType: 60
+    },
+    coinType: 60,
+    stakeCurrency: {
+      coinDenom: 'ROSE',
+      coinMinimalDenom: 'rose',
+      coinDecimals: 18,
+      coinGeckoId: 'oasis-network',
+      coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png',
+      gasPriceStep: {
+        low: 0,
+        average: 0.025,
+        high: 0.04
+      }
+    },
+    bech32Config: Bech32Address.defaultBech32Config('evmos'),
+    networkType: 'evm',
+    currencies: [
+      {
+        coinDenom: 'ROSE',
+        coinMinimalDenom: 'rose',
+        coinDecimals: 18,
+        coinGeckoId: 'oasis-network',
+        coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png'
+      }
+    ],
+    get feeCurrencies() {
+      return [this.stakeCurrency];
+    },
+
+    features: ['ibc-go', 'stargate', 'isEvm'],
+    txExplorer: {
+      name: 'Oasis Emerald Scan',
+      txUrl: 'https://explorer.emerald.oasis.dev/tx/{txHash}',
+      accountUrl: 'https://explorer.emerald.oasis.dev/address/{address}'
     }
   }
 ];

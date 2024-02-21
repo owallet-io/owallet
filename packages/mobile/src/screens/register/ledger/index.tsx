@@ -8,13 +8,12 @@ import { Controller, useForm } from 'react-hook-form';
 import { TextInput } from '../../../components/input';
 import { Platform, PermissionsAndroid, StyleSheet, View, TouchableOpacity } from 'react-native';
 import { useStore } from '../../../stores';
-import { BIP44AdvancedButton, useBIP44Option } from '../bip44';
+import { useBIP44Option } from '../bip44';
 import { checkRouter, navigate } from '../../../router/root';
 import { metrics } from '../../../themes';
 import OWButton from '../../../components/button/OWButton';
 import OWIcon from '../../../components/ow-icon/ow-icon';
 import { SCREENS } from '@src/common/constants';
-import { delay } from '@src/utils/helper';
 import { KeyRingStatus } from '@owallet/background';
 import OWText from '@src/components/text/ow-text';
 
@@ -73,7 +72,6 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
         registerType: 'ledger',
         accountType: 'ledger'
       });
-      await delay();
       if (keyRingStore.status !== KeyRingStatus.UNLOCKED) {
         return false;
       }

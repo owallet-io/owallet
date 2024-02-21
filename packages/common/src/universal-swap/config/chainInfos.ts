@@ -60,7 +60,8 @@ import {
   USDT_TRON_CONTRACT,
   WRAP_BNB_CONTRACT,
   WRAP_ETH_CONTRACT,
-  WRAP_TRON_TRX_CONTRACT
+  WRAP_TRON_TRX_CONTRACT,
+  WETH_CONTRACT
 } from '@oraichain/oraidex-common';
 import { BridgeAppCurrency, CustomChainInfo, defaultBech32Config } from '@oraichain/oraidex-common';
 import { flatten } from 'lodash';
@@ -299,7 +300,7 @@ export const oraichainNetwork: CustomChainInfo = {
       coinMinimalDenom: 'usdt',
       type: 'cw20',
       contractAddress: USDT_CONTRACT,
-      bridgeTo: ['0x38', '0x2b6653dc'],
+      bridgeTo: ['0x38', '0x2b6653dc', '0x01'],
       coinDecimals: 6,
       Icon: UsdtIcon
     },
@@ -412,7 +413,20 @@ export const oraichainNetwork: CustomChainInfo = {
       coinDecimals: 6,
       Icon: InjIcon,
       IconLight: InjIcon
+    },
+    {
+      coinDenom: 'WETH',
+      coinGeckoId: 'weth',
+      coinMinimalDenom: 'weth',
+      type: 'cw20',
+      contractAddress: WETH_CONTRACT,
+      bridgeTo: ['0x01'],
+      coinDecimals: 6,
+      coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png',
+      Icon: EthIcon,
+      IconLight: EthIcon
     }
+
     // {
     //   coinDenom: 'ATOM-CW20',
     //   coinGeckoId: 'cosmos',

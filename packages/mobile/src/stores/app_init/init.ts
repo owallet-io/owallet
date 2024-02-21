@@ -14,8 +14,8 @@ export class AppInit {
     date_updated: null | number;
     theme: 'dark' | 'light';
     visibleTabBar?: string;
-    priceFeed: object;
     prices: CoinGeckoPrices<string>;
+    priceFeed: {};
   };
   @observable
   protected notiData: {};
@@ -29,8 +29,8 @@ export class AppInit {
       date_updated: null,
       theme: 'light',
       isAllNetworks: false,
-      priceFeed: {},
-      prices: {}
+      prices: {},
+      priceFeed: {}
     };
   }
 

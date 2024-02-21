@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, { FunctionComponent, useState } from 'react';
 
 import { createRootStore, RootStore } from './root';
 
@@ -22,9 +22,7 @@ export const StoreProvider: FunctionComponent = ({ children }) => {
     return rootStore;
   });
 
-  return (
-    <storeContext.Provider value={stores}>{children}</storeContext.Provider>
-  );
+  return <storeContext.Provider value={stores}>{children}</storeContext.Provider>;
 };
 
 export const useStore = () => {
