@@ -27,8 +27,7 @@ export enum ChainIdEnum {
   OasisSaphire = '0x5afe',
   BitcoinTestnet = 'bitcoinTestnet',
   Bitcoin = 'bitcoin',
-  Injective = 'injective-1',
-  Oasis = '0x5afe'
+  Injective = 'injective-1'
 }
 
 export enum KADOChainNameEnum {

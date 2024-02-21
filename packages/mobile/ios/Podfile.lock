@@ -187,6 +187,12 @@ PODS:
   - logrocket-react-native (1.26.2):
     - LogRocket (= 1.26.2)
     - React
+  - Mixpanel-swift (4.2.0):
+    - Mixpanel-swift/Complete (= 4.2.0)
+  - Mixpanel-swift/Complete (4.2.0)
+  - MixpanelReactNative (2.4.0):
+    - Mixpanel-swift (= 4.2.0)
+    - React-Core
   - MultiplatformBleAdapter (0.1.9)
   - nanopb (2.30909.1):
     - nanopb/decode (= 2.30909.1)
@@ -699,6 +705,7 @@ DEPENDENCIES:
   - GoogleDataTransport
   - GoogleUtilities
   - "logrocket-react-native (from `../node_modules/@logrocket/react-native`)"
+  - MixpanelReactNative (from `../node_modules/mixpanel-react-native`)
   - nanopb
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
@@ -784,6 +791,7 @@ SPEC REPOS:
     - JWT
     - libwebp
     - LogRocket
+    - Mixpanel-swift
     - MultiplatformBleAdapter
     - nanopb
     - PromisesObjC
@@ -820,6 +828,8 @@ EXTERNAL SOURCES:
     :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
   logrocket-react-native:
     :path: "../node_modules/@logrocket/react-native"
+  MixpanelReactNative:
+    :path: "../node_modules/mixpanel-react-native"
   RCT-Folly:
     :podspec: "../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTRequired:
@@ -973,6 +983,8 @@ SPEC CHECKSUMS:
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
   LogRocket: e84dddffad717ab9a754758349a8af2e4d14c569
   logrocket-react-native: c41491798ce1546a13ed8aeedf34db5df59cb484
+  Mixpanel-swift: e5dd85295923e6a875acf17ccbab8d2ecb10ea65
+  MixpanelReactNative: 9e83f45fdcb6c2d83e97226d2dff79a780f882b4
   MultiplatformBleAdapter: 5a6a897b006764392f9cef785e4360f54fb9477d
   nanopb: d4d75c12cd1316f4a64e3c6963f879ecd4b5e0d5
   PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
