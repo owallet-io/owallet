@@ -147,7 +147,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
           coinGeckoId: 'bitcoin',
           coinImageUrl: 'https://i.ibb.co/NVP6CDZ/images-removebg-preview.png'
         },
-
         {
           type: 'cw20',
           coinDenom: 'ORAIX',
@@ -230,7 +229,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     chainName: 'Neutaro',
     networkType: 'cosmos',
     rpc: 'https://neutaro.rpc.orai.io',
-    rest: 'http://api.neutaro.tech:1317',
+    rest: 'https://neutaro.lcd.orai.io',
     bip44: {
       coinType: 118
     },
@@ -309,8 +308,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     // beta: true // use v1beta1
   },
   {
-    rpc: 'https://injective-rpc-global.orai.io',
-    rest: 'https://sentry.lcd.injective.network',
+    rpc: 'https://injective.rpc.orai.io',
+    rest: 'https://injective.lcd.orai.io',
     chainId: 'injective-1',
     chainName: 'Injective',
     networkType: 'cosmos',
@@ -665,8 +664,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
   },
 
   {
-    rpc: 'https://rpc.cosmos.directory/osmosis',
-    rest: 'https://rest.cosmos.directory/osmosis',
+    rpc: 'https://osmosis.rpc.orai.io',
+    rest: 'https://osmosis.lcd.orai.io',
     chainId: 'osmosis-1',
     chainName: 'Osmosis',
     networkType: 'cosmos',
@@ -713,116 +712,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       txUrl: 'https://www.mintscan.io/osmosis/txs/{txHash}'
     }
   },
-  // {
-  //   chainId: 'nomic-stakenet-3',
-  //   chainName: 'Nomic Stakenet 3',
-  //   rpc: 'https://stakenet-rpc.nomic.io:2096',
-  //   rest: 'https://app.nomic.io:8443',
-  //   bip44: {
-  //     coinType: 118
-  //   },
-  //   bech32Config: {
-  //     bech32PrefixAccAddr: 'nomic',
-  //     bech32PrefixAccPub: 'nomicpub',
-  //     bech32PrefixValAddr: 'nomicvaloper',
-  //     bech32PrefixValPub: 'nomicvaloperpub',
-  //     bech32PrefixConsAddr: 'nomicvalcons',
-  //     bech32PrefixConsPub: 'nomicvalconspub'
-  //   },
-  //   currencies: [
-  //     {
-  //       coinDenom: 'NOM',
-  //       coinMinimalDenom: 'unom',
-  //       coinDecimals: 6,
-  //       coinImageUrl: 'https://i.ibb.co/X4gbpMG/download-removebg-preview-1.png'
-  //     },
-  //     {
-  //       coinDenom: 'nBTC',
-  //       coinMinimalDenom: 'uSAT',
-  //       coinDecimals: 14,
-  //       coinGeckoId: 'bitcoin',
-  //       coinImageUrl: 'https://i.ibb.co/NVP6CDZ/images-removebg-preview.png'
-  //     }
-  //   ],
-  //   feeCurrencies: [
-  //     {
-  //       coinDenom: 'NOM',
-  //       coinMinimalDenom: 'unom',
-  //       coinDecimals: 6,
-  //       coinImageUrl: 'https://i.ibb.co/X4gbpMG/download-removebg-preview-1.png',
-  //       gasPriceStep: {
-  //         low: 0,
-  //         average: 0,
-  //         high: 0
-  //       }
-  //     }
-  //   ],
-  //   stakeCurrency: {
-  //     coinDenom: 'NOM',
-  //     coinMinimalDenom: 'unom',
-  //     coinDecimals: 6,
-  //     coinImageUrl: 'https://i.ibb.co/X4gbpMG/download-removebg-preview-1.png'
-  //   },
-  //   coinType: 119,
-  //   networkType: 'cosmos',
-  //   features: ['stargate'],
-  //   beta: true
-  // },
-  // {
-  //   chainId: 'nomic-testnet-4d',
-  //   chainName: 'Nomic Testnet 4d',
-  //   rpc: 'https://testnet-rpc.nomic.io:2096',
-  //   rest: 'https://testnet-api.nomic.io:8443',
-  //   networkType: 'cosmos',
-  //   bip44: {
-  //     coinType: 118
-  //   },
-  //   bech32Config: {
-  //     bech32PrefixAccAddr: 'nomic',
-  //     bech32PrefixAccPub: 'nomicpub',
-  //     bech32PrefixValAddr: 'nomicvaloper',
-  //     bech32PrefixValPub: 'nomicvaloperpub',
-  //     bech32PrefixConsAddr: 'nomicvalcons',
-  //     bech32PrefixConsPub: 'nomicvalconspub'
-  //   },
-  //   currencies: [
-  //     {
-  //       coinDenom: 'NOM',
-  //       coinMinimalDenom: 'unom',
-  //       coinDecimals: 6,
-  //       coinImageUrl: 'https://i.ibb.co/X4gbpMG/download-removebg-preview-1.png'
-  //     },
-  //     {
-  //       coinDenom: 'nBTC',
-  //       coinMinimalDenom: 'uSAT',
-  //       coinDecimals: 14,
-  //       coinGeckoId: 'bitcoin',
-  //       coinImageUrl: 'https://i.ibb.co/NVP6CDZ/images-removebg-preview.png'
-  //     }
-  //   ],
-  //   feeCurrencies: [
-  //     {
-  //       coinDenom: 'NOM',
-  //       coinMinimalDenom: 'unom',
-  //       coinDecimals: 6,
-  //       coinImageUrl: 'https://i.ibb.co/X4gbpMG/download-removebg-preview-1.png',
-  //       gasPriceStep: {
-  //         low: 0,
-  //         average: 0,
-  //         high: 0
-  //       }
-  //     }
-  //   ],
-  //   stakeCurrency: {
-  //     coinDenom: 'NOM',
-  //     coinMinimalDenom: 'unom',
-  //     coinDecimals: 6,
-  //     coinImageUrl: 'https://i.ibb.co/X4gbpMG/download-removebg-preview-1.png'
-  //   },
-  //   coinType: 119,
-  //   features: ['stargate'],
-  //   beta: true
-  // },
+
   {
     rpc: 'https://rpc-juno.keplr.app',
     rest: 'https://lcd-juno.keplr.app',
@@ -1017,7 +907,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
       accountUrl: 'https://blockstream.info/address/{address}'
     }
   },
-
   {
     rest: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
     evmRpc: 'https://data-seed-prebsc-1-s1.binance.org:8545/',

@@ -92,6 +92,20 @@ export const SignPage: FunctionComponent = observer(() => {
       }
       amountConfig.setDisableBalanceCheck(!!data.data.signOptions.disableBalanceCheck);
       feeConfig.setDisableBalanceCheck(!!data.data.signOptions.disableBalanceCheck);
+      // We can't check the fee balance if the payer is not the signer.
+      if (
+        data.data.signDocWrapper.payer &&
+        data.data.signDocWrapper.payer !== data.data.signer
+      ) {
+        feeConfig.setDisableBalanceCheck(true);
+      }
+      // We can't check the fee balance if the granter is not the signer.
+      if (
+        data.data.signDocWrapper.granter &&
+        data.data.signDocWrapper.granter !== data.data.signer
+      ) {
+        feeConfig.setDisableBalanceCheck(true);
+      }
       setSigner(data.data.signer);
     }
   }, [amountConfig, chainStore, gasConfig, memoConfig, feeConfig, signDocHelper, signInteractionStore.waitingData]);
