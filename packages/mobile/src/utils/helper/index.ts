@@ -2,14 +2,15 @@ import { navigate } from '../../router/root';
 import isValidDomain from 'is-valid-domain';
 import { find } from 'lodash';
 import moment from 'moment';
-import { TRON_ID, getNetworkTypeByChainId, tokensIcon } from '@owallet/common';
+import { tokensIcon } from '@owallet/common';
 import { AppCurrency } from '@owallet/types';
 import get from 'lodash/get';
 import { TxsHelper } from '@src/stores/txs/helpers/txs-helper';
-import { showMessage, hideMessage, MessageOptions } from 'react-native-flash-message';
+import { showMessage, MessageOptions } from 'react-native-flash-message';
 import { InAppBrowser } from 'react-native-inappbrowser-reborn';
 import { Linking, Platform } from 'react-native';
 import { flattenTokens, getSubAmountDetails, toAmount, toDisplay, toSumDisplay } from '@oraichain/oraidex-common';
+import { formatBaseUnitsAsRose, formatWeiAsWrose } from '@owallet/background/build/utils/oasis-helper';
 const SCHEME_IOS = 'owallet://open_url?url=';
 const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url=';
 export const ORAICHAIN_ID = 'Oraichain';
@@ -214,9 +215,6 @@ const countAmountValue = array => {
     }
   }
   return count;
-};
-export const delay = (delayInms = 300) => {
-  return new Promise(resolve => setTimeout(resolve, delayInms));
 };
 
 const configBrowser = {
@@ -615,3 +613,22 @@ export const LRRedactProps = (redactionTag = 'lr-hide') =>
     : { testID: redactionTag };
 
 export { get };
+
+export async function getOasisInfo(chainId) {
+  // @ts-ignore
+  const oasisInfo = await window.oasis.getDefaultOasisAddress(chainId);
+  const amountUnit = 'baseUnits';
+  const maximumFractionDigits = undefined;
+  const isUsingBaseUnits = amountUnit === 'baseUnits';
+  const formatter = isUsingBaseUnits ? formatBaseUnitsAsRose : formatWeiAsWrose;
+  const amountString = formatter(oasisInfo.balance, {
+    minimumFractionDigits: 1,
+    maximumFractionDigits:
+      typeof maximumFractionDigits !== 'undefined' ? maximumFractionDigits : isUsingBaseUnits ? 15 : 18
+  });
+
+  return {
+    amount: amountString,
+    address: oasisInfo.address
+  };
+}

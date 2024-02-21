@@ -58,7 +58,8 @@ jobs:
           API_KEY: ${{ secrets.API_KEY_FIREBASE }}
           SENDER_ID: ${{ secrets.SENDER_ID_FIREBASE }}
           APP_ID: ${{ secrets.APP_ID_FIREBASE }}
-          MIX_PANEL_TOKEN: ${{ secrets.MIX_PANNEL_TOKEN }}
+          API_KEY_KADO: ${{ secrets.API_KEY_KADO }}
+          MIX_PANEL_TOKEN: ${{ secrets.MIX_PANEL_TOKEN }}
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -144,6 +145,8 @@ jobs:
           API_KEY: ${{ secrets.API_KEY_FIREBASE }}
           SENDER_ID: ${{ secrets.SENDER_ID_FIREBASE }}
           APP_ID: ${{ secrets.APP_ID_FIREBASE }}
+          API_KEY_KADO: ${{ secrets.API_KEY_KADO }}
+          MIX_PANEL_TOKEN: ${{ secrets.MIX_PANEL_TOKEN }}
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -173,3 +176,4 @@ jobs:
           KEYCHAIN_NAME: "login"
           MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
           SENTRY_TOKEN: ${{ secrets.SENTRY_TOKEN }}
+          MIX_PANEL_TOKEN: ${{ secrets.MIX_PANEL_TOKEN }}

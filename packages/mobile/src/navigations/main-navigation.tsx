@@ -14,6 +14,8 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '@src/stores';
 import { BackupMnemonicScreen } from '@src/screens/register/mnemonic/backup-mnemonic';
 import { RecoverPhraseScreen } from '@src/screens/register/mnemonic/recover-phrase';
+import { RegisterDoneScreen } from '@src/screens/register/done';
+import { UniversalSwapScreen } from '@src/screens/universal-swap';
 
 const Stack = createStackNavigator();
 
@@ -50,7 +52,9 @@ export const MainNavigation: FC = observer(() => {
       />
       <Stack.Screen name={SCREENS.RegisterVerifyMnemonicMain} component={VerifyMnemonicScreen} />
       <Stack.Screen name={SCREENS.RegisterEnd} component={RegisterEndScreen} />
+      <Stack.Screen name={SCREENS.RegisterDone} component={RegisterDoneScreen} />
       <Stack.Screen name={SCREENS.RegisterRecoverMnemonicMain} component={RecoverMnemonicScreen} />
+
       <Stack.Screen name={SCREENS.RegisterRecoverPhraseMain} component={RecoverPhraseScreen} />
       <Stack.Screen name={SCREENS.RegisterNewLedgerMain} component={NewLedgerScreen} />
       <Stack.Screen name={SCREENS.Tokens} component={TokensScreen} />

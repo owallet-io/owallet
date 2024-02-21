@@ -60,18 +60,18 @@ enum AutoBiomtricStatus {
   SUCCESS
 }
 
-const useAutoBiomtric = (keychainStore: KeychainStore, tryEnabled: boolean) => {
-  const [status, setStatus] = useState(AutoBiomtricStatus.NO_NEED);
-  // const tryBiometricAutoOnce = useRef(false);
+// const useAutoBiomtric = (keychainStore: KeychainStore, tryEnabled: boolean) => {
+//   const [status, setStatus] = useState(AutoBiomtricStatus.NO_NEED);
+//   // const tryBiometricAutoOnce = useRef(false);
 
-  useEffect(() => {
-    if (keychainStore.isBiometryOn && status === AutoBiomtricStatus.NO_NEED) {
-      setStatus(AutoBiomtricStatus.NEED);
-    }
-  }, [keychainStore.isBiometryOn, status]);
+//   useEffect(() => {
+//     if (keychainStore.isBiometryOn && status === AutoBiomtricStatus.NO_NEED) {
+//       setStatus(AutoBiomtricStatus.NEED);
+//     }
+//   }, [keychainStore.isBiometryOn, status]);
 
-  return status;
-};
+//   return status;
+// };
 
 export const PincodeUnlockScreen: FunctionComponent = observer(() => {
   const { keyRingStore, keychainStore, accountStore, chainStore, appInitStore } = useStore();
@@ -98,9 +98,9 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
     navigateToHomeOnce.current = true;
   }, [accountStore, chainStore, navigation]);
 
-  const autoBiometryStatus = useAutoBiomtric(keychainStore, keyRingStore.status === KeyRingStatus.LOCKED && loaded);
+  // const autoBiometryStatus = useAutoBiomtric(keychainStore, keyRingStore.status === KeyRingStatus.LOCKED && loaded);
 
-  console.log('autoBiometryStatus', autoBiometryStatus);
+  // console.log('autoBiometryStatus', autoBiometryStatus);
 
   useEffect(() => {
     if (__DEV__) {

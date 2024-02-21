@@ -69,8 +69,6 @@ export const AddressInput: FunctionComponent<{
     placeholderTextColor,
     inputRight
   }) => {
-    const smartNavigation = useSmartNavigation();
-
     const style = useStyle();
 
     const isENSAddress = ObservableEnsFetcher.isValidENS(recipientConfig.rawRecipient);
@@ -108,7 +106,7 @@ export const AddressInput: FunctionComponent<{
         error={errorText}
         value={recipientConfig.rawRecipient}
         onChangeText={text => {
-          recipientConfig.setRawRecipient(text);
+          recipientConfig.setRawRecipient(text.replace(/\s/g, ''));
         }}
         placeholder={placeholder}
         placeholderTextColor={placeholderTextColor}

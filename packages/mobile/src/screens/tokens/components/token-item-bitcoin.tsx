@@ -47,6 +47,7 @@ export const TokenItemBitcoin: FunctionComponent<TokenItemBitcoinProps> = ({
     });
     return amount;
   }, [chainInfo.chainId, balance]);
+
   return (
     <TouchableOpacity
       key={chainInfo.chainId}

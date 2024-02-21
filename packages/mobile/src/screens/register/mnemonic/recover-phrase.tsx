@@ -6,7 +6,7 @@ import { RegisterConfig } from '@owallet/hooks';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { Controller, useForm } from 'react-hook-form';
 import { TextInput } from '../../../components/input';
-import { StyleSheet, TouchableOpacity, View, Clipboard } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, Clipboard, Keyboard } from 'react-native';
 import { useStore } from '../../../stores';
 import { useBIP44Option } from '../bip44';
 import { Buffer } from 'buffer';
@@ -21,7 +21,7 @@ import { showToast } from '@src/utils/helper';
 const bip39 = require('bip39');
 
 function isPrivateKey(str: string): boolean {
-  if (str?.startsWith('0x')) {
+  if (str?.startsWith('0x') || str?.startsWith('zs')) {
     return true;
   }
 
@@ -213,7 +213,10 @@ export const RecoverPhraseScreen: FunctionComponent = observer(props => {
           ...typography['h6'],
           color: colors['neutral-text-body']
         }}
-        onSubmitEditing={() => {}}
+        onSubmitEditing={() => {
+          Keyboard.dismiss();
+        }}
+        blurOnSubmit={true}
         inputStyle={{
           ...styles.borderInput
         }}
@@ -279,13 +282,14 @@ export const RecoverPhraseScreen: FunctionComponent = observer(props => {
             name="mnemonic"
             defaultValue=""
           />
-          <TouchableOpacity
-            onPress={() => {
-              onPaste();
-            }}
-          >
-            <View style={styles.paste}>
-              <OWIcon size={20} name="mnemo" color={colors['primary-text-action']} />
+
+          <View style={styles.paste}>
+            <OWIcon size={20} name="mnemo" color={colors['primary-text-action']} />
+            <TouchableOpacity
+              onPress={() => {
+                onPaste();
+              }}
+            >
               <OWText
                 style={{ paddingLeft: 4 }}
                 variant="h2"
@@ -295,8 +299,8 @@ export const RecoverPhraseScreen: FunctionComponent = observer(props => {
               >
                 Paste from clipboard
               </OWText>
-            </View>
-          </TouchableOpacity>
+            </TouchableOpacity>
+          </View>
           <Controller
             control={control}
             rules={{

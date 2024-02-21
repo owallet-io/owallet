@@ -209,6 +209,15 @@ export const EmbedChainInfos: AppChainInfo[] = [
           coinDecimals: 6,
           coinGeckoId: 'milky-token',
           coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/14418.png'
+        },
+        {
+          coinDenom: 'WETH',
+          coinGeckoId: 'weth',
+          coinMinimalDenom: 'weth',
+          type: 'cw20',
+          contractAddress: 'orai1dqa52a7hxxuv8ghe7q5v0s36ra0cthea960q2cukznleqhk0wpnshfegez',
+          coinDecimals: 6,
+          coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png'
         }
       ];
     },
@@ -404,13 +413,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
           coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/14418.png'
         },
         {
-          coinDenom: 'BEP20 MILKY',
-          coinMinimalDenom: 'oraib0x6fE3d0F096FC932A905accd1EB1783F6e4cEc717',
-          coinDecimals: 18,
-          coinGeckoId: 'milky-token',
-          coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/14418.png'
-        },
-        {
           coinDenom: 'BEP20 USDT',
           coinMinimalDenom: 'oraib0x55d398326f99059fF775485246999027B3197955',
           coinDecimals: 18,
@@ -562,7 +564,23 @@ export const EmbedChainInfos: AppChainInfo[] = [
     coinType: 60,
     bech32Config: Bech32Address.defaultBech32Config('oraie'),
     get currencies() {
-      return [this.stakeCurrency];
+      return [
+        this.stakeCurrency,
+        {
+          coinDenom: 'KWT',
+          coinMinimalDenom: 'erc20:0x80b5a32E4F032B2a058b4F29EC95EEfEEB87aDcd:Kawaii Islands',
+          coinDecimals: 18,
+          coinGeckoId: 'kawaii-islands',
+          coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png'
+        },
+        {
+          coinDenom: 'MILKY',
+          coinMinimalDenom: 'erc20:0xd567B3d7B8FE3C79a1AD8dA978812cfC4Fa05e75:Milky Token',
+          coinDecimals: 18,
+          coinGeckoId: 'milky-token',
+          coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/14418.png'
+        }
+      ];
     },
     get feeCurrencies() {
       return [this.stakeCurrency];
@@ -1159,6 +1177,139 @@ export const EmbedChainInfos: AppChainInfo[] = [
       name: 'Tronscan',
       txUrl: 'https://tronscan.org/#/transaction/{txHash}',
       accountUrl: 'https://tronscan.org/#/address/{address}'
+    }
+  },
+  {
+    rpc: 'https://sapphire.oasis.io',
+    rest: 'https://sapphire.oasis.io',
+    grpc: 'https://grpc.oasis.dev',
+    chainId: 'native-0x5afe',
+    networkType: 'evm',
+    chainName: 'Oasis',
+    stakeCurrency: {
+      coinDenom: 'ROSE',
+      coinMinimalDenom: 'rose',
+      coinDecimals: 9,
+      coinGeckoId: 'oasis-network',
+      coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png',
+      gasPriceStep: {
+        low: 0,
+        average: 0.025,
+        high: 0.04
+      }
+    },
+    currencies: [
+      {
+        coinDenom: 'ROSE',
+        coinMinimalDenom: 'rose',
+        coinDecimals: 18,
+        coinGeckoId: 'oasis-network',
+        coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png'
+      }
+    ],
+    restConfig: {},
+    bip44: {
+      coinType: 474
+    },
+    coinType: 474,
+    bech32Config: Bech32Address.defaultBech32Config('evmos'),
+    get feeCurrencies() {
+      return [this.stakeCurrency];
+    },
+
+    features: ['ibc-go', 'stargate', 'isEvm'],
+    txExplorer: {
+      name: 'Oasis scan',
+      txUrl: 'https://explorer.sapphire.oasis.io/{txHash}',
+      accountUrl: 'https://explorer.sapphire.oasis.io/{address}'
+    }
+  },
+  {
+    rpc: 'https://sapphire.oasis.io',
+    rest: 'https://sapphire.oasis.io',
+    chainId: '0x5afe',
+    networkType: 'evm',
+    chainName: 'Oasis Sapphire',
+    stakeCurrency: {
+      coinDenom: 'ROSE',
+      coinMinimalDenom: 'rose',
+      coinDecimals: 18,
+      coinGeckoId: 'oasis-network',
+      coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png',
+      gasPriceStep: {
+        low: 0,
+        average: 0.025,
+        high: 0.04
+      }
+    },
+    currencies: [
+      {
+        coinDenom: 'ROSE',
+        coinMinimalDenom: 'rose',
+        coinDecimals: 18,
+        coinGeckoId: 'oasis-network',
+        coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png'
+      }
+    ],
+    restConfig: {},
+    bip44: {
+      coinType: 60
+    },
+    coinType: 60,
+    bech32Config: Bech32Address.defaultBech32Config('evmos'),
+    get feeCurrencies() {
+      return [this.stakeCurrency];
+    },
+
+    features: ['ibc-go', 'stargate', 'isEvm'],
+    txExplorer: {
+      name: 'Oasis scan',
+      txUrl: 'https://explorer.sapphire.oasis.io/{txHash}',
+      accountUrl: 'https://explorer.sapphire.oasis.io/{address}'
+    }
+  },
+  {
+    rpc: 'https://emerald.oasis.dev/',
+    rest: 'https://emerald.oasis.dev/',
+    grpc: 'https://grpc.oasis.dev/',
+    chainId: '0xa516',
+    chainName: 'Oasis Emerald',
+    bip44: {
+      coinType: 60
+    },
+    coinType: 60,
+    stakeCurrency: {
+      coinDenom: 'ROSE',
+      coinMinimalDenom: 'rose',
+      coinDecimals: 18,
+      coinGeckoId: 'oasis-network',
+      coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png',
+      gasPriceStep: {
+        low: 0,
+        average: 0.025,
+        high: 0.04
+      }
+    },
+    bech32Config: Bech32Address.defaultBech32Config('evmos'),
+    networkType: 'evm',
+    currencies: [
+      {
+        coinDenom: 'ROSE',
+        coinMinimalDenom: 'rose',
+        coinDecimals: 18,
+        coinGeckoId: 'oasis-network',
+        coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png'
+      }
+    ],
+    get feeCurrencies() {
+      return [this.stakeCurrency];
+    },
+
+    features: ['ibc-go', 'stargate', 'isEvm'],
+    txExplorer: {
+      name: 'Oasis Emerald Scan',
+      txUrl: 'https://explorer.emerald.oasis.dev/tx/{txHash}',
+      accountUrl: 'https://explorer.emerald.oasis.dev/address/{address}'
     }
   }
 ];

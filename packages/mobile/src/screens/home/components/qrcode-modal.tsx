@@ -9,10 +9,10 @@ import { AccountWithAll, KeyRingStore } from '@owallet/stores';
 import { Text } from '@src/components/text';
 export const AddressQRCodeModal: FunctionComponent<{
   account?: AccountWithAll;
+  address?: string;
   chainStore?: any;
   keyRingStore?: KeyRingStore;
-}> = ({ account, chainStore, keyRingStore }) => {
-  
+}> = ({ account, address, keyRingStore }) => {
   const addressToShow = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
 
   return (
@@ -36,10 +36,10 @@ export const AddressQRCodeModal: FunctionComponent<{
             marginVertical: spacing['16']
           }}
         >{`Scan QR Code or copy below address`}</Text>
-        <AddressCopyable address={addressToShow} maxCharacters={22} />
+        <AddressCopyable address={address ?? addressToShow} maxCharacters={22} />
         <View style={{ marginVertical: spacing['32'] }}>
           {!!addressToShow ? (
-            <QRCode size={200} value={addressToShow} />
+            <QRCode size={200} value={address ?? addressToShow} />
           ) : (
             <View
               style={{
@@ -57,8 +57,8 @@ export const AddressQRCodeModal: FunctionComponent<{
             disabled={addressToShow === ''}
             onPress={() => {
               Share.share({
-                message: addressToShow
-              }).catch((e) => {
+                message: address ?? addressToShow
+              }).catch(e => {
                 console.log(e);
               });
             }}
