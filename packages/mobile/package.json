@@ -79,6 +79,7 @@
     "react-native-flash-message": "0.4.2",
     "react-native-numeric-pad": "^1.1.5",
     "react-native-smooth-pincode-input": "^1.0.9",
+    "mixpanel-react-native":"2.4.0",
     "appcenter": "4.4.5",
     "appcenter-analytics": "4.4.5",
     "appcenter-crashes": "4.4.5",
