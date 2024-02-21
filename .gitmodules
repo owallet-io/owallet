@@ -1,5 +1,5 @@
 [submodule "packages/background"]
 	path = packages/background
 	url = https://github.com/oraichain/owallet-background.git
-	branch = feat/oasis
+	branch = master
 
