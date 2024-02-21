@@ -1419,8 +1419,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     features: ['ibc-go', 'stargate', 'isEvm'],
     txExplorer: {
       name: 'Oasis Emerald Scan',
-      txUrl: 'https://explorer.emerald.oasis.dev/tx/%7BtxHash%7D',
-      accountUrl: 'https://explorer.emerald.oasis.dev/address/%7Baddress%7D'
+      txUrl: 'https://explorer.emerald.oasis.dev/tx/{txHash}',
+      accountUrl: 'https://explorer.emerald.oasis.dev/address/{address}'
     }
   }
 ];
