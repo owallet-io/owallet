@@ -232,19 +232,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       loadTokenParams = {
         ...loadTokenParams,
         oraiAddress: accountOrai.bech32Address,
+        metamaskAddress: accountEth.evmosHexAddress,
+        kwtAddress: getAddress(accountInjective.evmosHexAddress, 'oraie'),
+        tronAddress: getBase58Address(accountTron.evmosHexAddress),
         cwStargate
-      };
-      loadTokenParams = {
-        ...loadTokenParams,
-        metamaskAddress: accountEth.evmosHexAddress
-      };
-      loadTokenParams = {
-        ...loadTokenParams,
-        kwtAddress: getAddress(accountInjective.evmosHexAddress, 'oraie')
-      };
-      loadTokenParams = {
-        ...loadTokenParams,
-        tronAddress: getBase58Address(accountTron.evmosHexAddress)
       };
 
       setTimeout(() => {

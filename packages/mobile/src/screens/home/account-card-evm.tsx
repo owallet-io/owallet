@@ -156,14 +156,14 @@ export const AccountCardEVM: FunctionComponent<{
 
     if (chainStore.current.chainId !== TRON_ID && total) {
       return (
-        `${new Big(parseInt(total?.amount?.int)).div(new Big(10).pow(36)).toFixed(6)}` +
+        `${Number(new Big(parseInt(total?.amount?.int)).div(new Big(10).pow(36)).toFixed(6))}` +
         ` ${chainStore.current?.stakeCurrency.coinDenom}`
       );
     }
 
     if (chainStore.current.chainId === TRON_ID && total) {
       return (
-        `${new Big(parseInt(total?.amount?.int)).div(new Big(10).pow(24)).toFixed(6)}` +
+        `${Number(new Big(parseInt(total?.amount?.int)).div(new Big(10).pow(24)).toFixed(6))}` +
         ` ${chainStore.current?.stakeCurrency.coinDenom}`
       );
     }
