@@ -553,7 +553,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.13;
+				MARKETING_VERSION = 1.2.15;
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lc++",
@@ -582,7 +582,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.13;
+				MARKETING_VERSION = 1.2.15;
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lc++",
@@ -615,7 +615,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.13;
+				MARKETING_VERSION = 1.2.14;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -650,7 +650,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.13;
+				MARKETING_VERSION = 1.2.14;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",

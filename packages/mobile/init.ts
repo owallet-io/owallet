@@ -5,15 +5,6 @@ import { Ethereum, Oasis, OWallet, TronWeb } from '@owallet/provider';
 import { RNMessageRequesterInternal } from './src/router';
 import { ChainIdEnum } from '@owallet/common';
 
-import { Mixpanel } from 'mixpanel-react-native';
-if (process.env.MIX_PANEL_TOKEN && !__DEV__) {
-  const trackAutomaticEvents = true;
-  const mixpanel = new Mixpanel(process.env.MIX_PANEL_TOKEN, trackAutomaticEvents);
-
-  mixpanel.init();
-  globalThis.mixpanel = mixpanel;
-}
-
 //@ts-ignore
 window.owallet = new OWallet(version, 'core', new RNMessageRequesterInternal());
 //@ts-ignore

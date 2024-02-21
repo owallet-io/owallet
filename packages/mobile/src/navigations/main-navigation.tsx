@@ -54,13 +54,7 @@ export const MainNavigation: FC = observer(() => {
       <Stack.Screen name={SCREENS.RegisterEnd} component={RegisterEndScreen} />
       <Stack.Screen name={SCREENS.RegisterDone} component={RegisterDoneScreen} />
       <Stack.Screen name={SCREENS.RegisterRecoverMnemonicMain} component={RecoverMnemonicScreen} />
-      <Stack.Screen
-        options={{
-          headerLeft: null
-        }}
-        name={SCREENS.UniversalSwapScreen}
-        component={UniversalSwapScreen}
-      />
+
       <Stack.Screen name={SCREENS.RegisterRecoverPhraseMain} component={RecoverPhraseScreen} />
       <Stack.Screen name={SCREENS.RegisterNewLedgerMain} component={NewLedgerScreen} />
       <Stack.Screen name={SCREENS.Tokens} component={TokensScreen} />
