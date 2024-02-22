@@ -73,7 +73,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
   const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
-  const accountInjective = accountStore.getAccount(ChainIdEnum.Injective);
+  const accountKawaiiCosmos = accountStore.getAccount(ChainIdEnum.KawaiiCosmos);
 
   const [isSlippageModal, setIsSlippageModal] = useState(false);
   const [minimumReceive, setMininumReceive] = useState(0);
@@ -235,7 +235,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         ...loadTokenParams,
         oraiAddress: accountOrai.bech32Address,
         metamaskAddress: accountEth.evmosHexAddress,
-        kwtAddress: getAddress(accountInjective.evmosHexAddress, 'oraie'),
+        kwtAddress: accountKawaiiCosmos.bech32Address,
         tronAddress: getBase58Address(accountTron.evmosHexAddress),
         cwStargate
       };
