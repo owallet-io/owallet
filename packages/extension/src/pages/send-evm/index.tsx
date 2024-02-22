@@ -302,19 +302,21 @@ export const SendEvmPage: FunctionComponent<{
                     });
                   },
                   onFulfill: (tx) => {
-                    notification.push({
-                      placement: 'top-center',
-                      type: tx?.status === '0x1' ? 'success' : 'danger',
-                      duration: 5,
-                      content:
-                        tx?.status === '0x1'
-                          ? `Transaction successful with tx: ${tx?.transactionHash}`
-                          : `Transaction failed with tx: ${tx?.transactionHash}`,
-                      canDelete: true,
-                      transition: {
-                        duration: 0.25
-                      }
-                    });
+                    if (tx?.status) {
+                      notification.push({
+                        placement: 'top-center',
+                        type: tx?.status === '0x1' ? 'success' : 'danger',
+                        duration: 5,
+                        content:
+                          tx?.status === '0x1'
+                            ? `Transaction successful with tx: ${tx?.transactionHash}`
+                            : `Transaction failed with tx: ${tx?.transactionHash}`,
+                        canDelete: true,
+                        transition: {
+                          duration: 0.25
+                        }
+                      });
+                    }
                   }
                 },
                 sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.startsWith('erc20')
