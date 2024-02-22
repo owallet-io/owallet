@@ -163,6 +163,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const fromToken = isEvmSwap
     ? tokenMap[fromTokenDenom]
     : getTokenOnOraichain(tokenMap[fromTokenDenom].coinGeckoId) ?? tokenMap[fromTokenDenom];
+
   const toToken = isEvmSwap
     ? tokenMap[toTokenDenom]
     : getTokenOnOraichain(tokenMap[toTokenDenom].coinGeckoId) ?? tokenMap[toTokenDenom];
@@ -274,6 +275,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       SwapDirection.From
     );
     setFilteredFromTokens(filteredFromTokens);
+
+    console.log('filteredFromTokens', filteredFromTokens);
 
     // TODO: need to automatically update from / to token to the correct swappable one when clicking the swap button
   }, [fromToken, toToken, toTokenDenom, fromTokenDenom]);
