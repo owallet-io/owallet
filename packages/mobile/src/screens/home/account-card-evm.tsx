@@ -10,7 +10,7 @@ import Big from 'big.js';
 import { Text } from '@src/components/text';
 import { AccountBox } from './account-box';
 import { ChainIdEnum, TRON_ID } from '@owallet/common';
-import { getOasisInfo } from '@src/utils/helper';
+// import { getOasisInfo } from '@src/utils/helper';
 
 export const AccountCardEVM: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -20,8 +20,8 @@ export const AccountCardEVM: FunctionComponent<{
 
   const smartNavigation = useSmartNavigation();
 
-  const [oasisAddress, setOasisAddress] = useState('');
-  const [oasisBalance, setOasisBalance] = useState('0');
+  // const [oasisAddress, setOasisAddress] = useState('');
+  // const [oasisBalance, setOasisBalance] = useState('0');
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
@@ -42,12 +42,14 @@ export const AccountCardEVM: FunctionComponent<{
         smartNavigation.navigateSmart('SendTron', {
           currency: chainStore.current.stakeCurrency.coinMinimalDenom
         });
-      } else if (chainStore.current.chainId === ChainIdEnum.Oasis) {
-        smartNavigation.navigateSmart('SendOasis', {
-          currency: chainStore.current.stakeCurrency.coinMinimalDenom,
-          maxAmount: oasisBalance
-        });
-      } else {
+      }
+      // else if (chainStore.current.chainId === ChainIdEnum.Oasis) {
+      //   smartNavigation.navigateSmart('SendOasis', {
+      //     currency: chainStore.current.stakeCurrency.coinMinimalDenom,
+      //     maxAmount: oasisBalance
+      //   });
+      // }
+      else {
         smartNavigation.navigateSmart('Send', {
           currency: chainStore.current.stakeCurrency.coinMinimalDenom
         });
@@ -66,19 +68,19 @@ export const AccountCardEVM: FunctionComponent<{
     );
   };
 
-  const getOasisWallet = async () => {
-    try {
-      const { amount, address } = await getOasisInfo(chainStore.current.chainId);
-      setOasisBalance(amount);
-      setOasisAddress(address);
-    } catch (err) {
-      console.log('err getOasisInfo', err);
-    }
-  };
+  // const getOasisWallet = async () => {
+  //   try {
+  //     const { amount, address } = await getOasisInfo(chainStore.current.chainId);
+  //     setOasisBalance(amount);
+  //     setOasisAddress(address);
+  //   } catch (err) {
+  //     console.log('err getOasisInfo', err);
+  //   }
+  // };
 
-  useEffect(() => {
-    getOasisWallet();
-  }, [account.bech32Address, refreshDate]);
+  // useEffect(() => {
+  //   getOasisWallet();
+  // }, [account.bech32Address, refreshDate]);
 
   const renderAddress = () => {
     if (chainStore.current.chainId === TRON_ID) {
@@ -96,20 +98,21 @@ export const AccountCardEVM: FunctionComponent<{
       );
     }
 
-    return <AddressCopyable address={oasisAddress.length > 0 ? oasisAddress : addressDisplay} maxCharacters={22} />;
+    return <AddressCopyable address={addressDisplay} maxCharacters={22} />;
   };
   const totalAmount = () => {
-    if (chainStore.current.chainId === ChainIdEnum.Oasis) {
-      return ``;
-    }
+    // if (chainStore.current.chainId === ChainIdEnum.Oasis) {
+    //   return ``;
+    // }
     if (chainStore.current.chainId !== ChainIdEnum.TRON && total) {
-      return (
-        '$' +
-        (
-          parseFloat(new Big(parseInt(total.amount?.int?.value)).div(new Big(10).pow(36)).toString()) *
-          priceStore?.getPrice(chainStore?.current?.stakeCurrency?.coinGeckoId)
-        ).toFixed(6)
-      );
+      // return (
+      //   '$' +
+      //   (
+      //     parseFloat(new Big(parseInt(total.amount?.int?.value)).div(new Big(10).pow(36)).toString()) *
+      //     priceStore?.getPrice(chainStore?.current?.stakeCurrency?.coinGeckoId)
+      //   ).toFixed(6)
+      // );
+      return priceStore?.calculatePrice(total).toString();
     }
     if (chainStore.current.chainId === ChainIdEnum.TRON && total) {
       return (
@@ -125,15 +128,17 @@ export const AccountCardEVM: FunctionComponent<{
   };
 
   const totalBalance = () => {
-    if (chainStore.current.chainId === ChainIdEnum.Oasis) {
-      return Number(Number(oasisBalance).toFixed(6)) + ` ${chainStore.current?.stakeCurrency.coinDenom}`;
-    }
+    // if (chainStore.current.chainId === ChainIdEnum.Oasis) {
+    //   return Number(Number(oasisBalance).toFixed(6)) + ` ${chainStore.current?.stakeCurrency.coinDenom}`;
+    // }
 
     if (chainStore.current.chainId !== TRON_ID && total) {
-      return (
-        `${new Big(parseInt(total?.amount?.int)).div(new Big(10).pow(36)).toFixed(8)}` +
-        ` ${chainStore.current?.stakeCurrency.coinDenom}`
-      );
+      // return (
+      //   `${new Big(parseInt(total?.amount?.int)).div(new Big(10).pow(36)).toFixed(8)}` +
+      //   ` ${chainStore.current?.stakeCurrency.coinDenom}`
+      // );
+      // return 0;
+      return total?.trim(true).shrink(true).maxDecimals(6).toString();
     }
 
     if (chainStore.current.chainId === TRON_ID && total) {
@@ -158,7 +163,7 @@ export const AccountCardEVM: FunctionComponent<{
             lineHeight: 50
           }}
         >
-          {totalBalance()}
+          {totalAmount()}
         </Text>
       }
       coinType={`${
@@ -169,7 +174,7 @@ export const AccountCardEVM: FunctionComponent<{
       // networkType={'evm'}
       name={account.name || '...'}
       onPressBtnMain={onPressBtnMain}
-      totalAmount={`${totalAmount()}`}
+      totalAmount={`${totalBalance()}`}
       addressComponent={renderAddress()}
     />
   );

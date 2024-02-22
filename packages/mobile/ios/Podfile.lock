@@ -27,7 +27,7 @@ PODS:
   - boost (1.76.0)
   - BVLinearGradient (2.7.3):
     - React-Core
-  - CodePush (8.1.1):
+  - CodePush (8.2.1):
     - Base64 (~> 1.1)
     - JWT (~> 3.0.0-beta.12)
     - React-Core
@@ -526,7 +526,8 @@ PODS:
     - React-Core
   - react-native-splash-screen (3.3.0):
     - React-Core
-  - react-native-webview (13.6.3):
+  - react-native-webview (13.7.0):
+    - RCT-Folly (= 2021.07.22.00)
     - React-Core
   - React-NativeModulesApple (0.72.1):
     - hermes-engine
@@ -648,7 +649,7 @@ PODS:
     - React-Core
     - SDWebImage (~> 5.11.1)
     - SDWebImageWebPCoder (~> 0.8.4)
-  - RNFBAnalytics (18.7.3):
+  - RNFBAnalytics (18.8.0):
     - Firebase/Analytics (= 10.17.0)
     - React-Core
     - RNFBApp
@@ -1007,7 +1008,7 @@ SPEC CHECKSUMS:
   Base64: cecfb41a004124895a7bcee567a89bae5a89d49b
   boost: 57d2868c099736d80fcd648bf211b4431e51a558
   BVLinearGradient: fbe308a1d19a8133f69e033abc85d8008644f5e3
-  CodePush: c3fdecab0dba1f760a1c6d1a562b9b88ce311fe1
+  CodePush: 84c9a5792cb3c8e311197d595610c803f0b01739
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   FBLazyVector: 55cd4593d570bd9e5e227488d637ce6a9581ce51
   FBReactNativeSpec: 799b0e1a1561699cd0e424e24fe5624da38402f0
@@ -1059,7 +1060,7 @@ SPEC CHECKSUMS:
   react-native-randombytes: 421f1c7d48c0af8dbcd471b0324393ebf8fe7846
   react-native-safe-area-context: 238cd8b619e05cb904ccad97ef42e84d1b5ae6ec
   react-native-splash-screen: 4312f786b13a81b5169ef346d76d33bc0c6dc457
-  react-native-webview: 88293a0f23eca8465c0433c023ec632930e644d0
+  react-native-webview: 4e7d637b43eddec107016d316ae75f7063a3075c
   React-NativeModulesApple: 4f31a812364443cee6ef768d256c594ad3b20f53
   React-perflogger: 3d501f34c8d4b10cb75f348e43591765788525ad
   React-RCTActionSheet: f5335572c979198c0c3daff67b07bd1ad8370c1d
@@ -1081,7 +1082,7 @@ SPEC CHECKSUMS:
   RNCMaskedView: 949696f25ec596bfc697fc88e6f95cf0c79669b6
   RNDeviceInfo: 25d818c85db769cc0e7083d39efaa01a6f450df3
   RNFastImage: 5c9c9fed9c076e521b3f509fe79e790418a544e8
-  RNFBAnalytics: f9b4d6efb9975540b8f38b663f4e9110c402a021
+  RNFBAnalytics: e7a1c8e274f601459179a9d60506d274a4c22b3e
   RNFBApp: b43d4829366a5065e17f9af3b03a0c4890eaeb85
   RNFBCrashlytics: 7456cc01ce08e6043dcfade9dbf5e28671887409
   RNFBMessaging: 1b55308131dc7e4cca6b22deb5067f1fdb55f768
@@ -1105,4 +1106,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 49124c79f7c2ce9abaa70f9e741297c33ceddc5e
 
-COCOAPODS: 1.14.3
+COCOAPODS: 1.15.2

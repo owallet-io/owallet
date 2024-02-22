@@ -614,21 +614,21 @@ export const LRRedactProps = (redactionTag = 'lr-hide') =>
 
 export { get };
 
-export async function getOasisInfo(chainId) {
-  // @ts-ignore
-  const oasisInfo = await window.oasis.getDefaultOasisAddress(chainId);
-  const amountUnit = 'baseUnits';
-  const maximumFractionDigits = undefined;
-  const isUsingBaseUnits = amountUnit === 'baseUnits';
-  const formatter = isUsingBaseUnits ? formatBaseUnitsAsRose : formatWeiAsWrose;
-  const amountString = formatter(oasisInfo.balance, {
-    minimumFractionDigits: 1,
-    maximumFractionDigits:
-      typeof maximumFractionDigits !== 'undefined' ? maximumFractionDigits : isUsingBaseUnits ? 15 : 18
-  });
+// export async function getOasisInfo(chainId) {
+//   // @ts-ignore
+//   const oasisInfo = await window.oasis.getDefaultOasisAddress(chainId);
+//   const amountUnit = 'baseUnits';
+//   const maximumFractionDigits = undefined;
+//   const isUsingBaseUnits = amountUnit === 'baseUnits';
+//   const formatter = isUsingBaseUnits ? formatBaseUnitsAsRose : formatWeiAsWrose;
+//   const amountString = formatter(oasisInfo.balance, {
+//     minimumFractionDigits: 1,
+//     maximumFractionDigits:
+//       typeof maximumFractionDigits !== 'undefined' ? maximumFractionDigits : isUsingBaseUnits ? 15 : 18
+//   });
 
-  return {
-    amount: amountString,
-    address: oasisInfo.address
-  };
-}
+//   return {
+//     amount: amountString,
+//     address: oasisInfo.address
+//   };
+// }

@@ -1256,9 +1256,9 @@ export class InjectedOasisOWallet implements IOasis {
     throw new Error('Method not implemented.');
   }
 
-  getDefaultOasisAddress(): Promise<object> {
-    return this.requestMethod('getDefaultOasisAddress', []);
-  }
+  // getDefaultOasisAddress(): Promise<object> {
+  //   return this.requestMethod('getDefaultOasisAddress', []);
+  // }
 
   async request(args: RequestArguments): Promise<any> {
     return await this.requestMethod(args.method as string, [args.params, args.chainId]);
