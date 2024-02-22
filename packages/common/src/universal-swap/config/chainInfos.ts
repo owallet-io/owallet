@@ -445,6 +445,15 @@ export const oraichainNetwork: CustomChainInfo = {
       coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png',
       Icon: EthIcon,
       IconLight: EthIcon
+    },
+    {
+      type: 'cw20',
+      coinDenom: 'OCH',
+      coinMinimalDenom: 'cw20:orai1hn8w33cqvysun2aujk5sv33tku4pgcxhhnsxmvnkfvdxagcx0p8qa4l98q:OCH',
+      contractAddress: 'orai1hn8w33cqvysun2aujk5sv33tku4pgcxhhnsxmvnkfvdxagcx0p8qa4l98q',
+      coinDecimals: 6,
+      coinGeckoId: 'och',
+      coinImageUrl: 'https://assets.coingecko.com/coins/images/34236/standard/orchai_logo_white_copy_4x-8_%281%29.png'
     }
 
     // {
