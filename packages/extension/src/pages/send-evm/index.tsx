@@ -6,14 +6,12 @@ import {
   MemoInput,
   CoinInputEvm
 } from '../../components/form';
-import * as oasis from '@oasisprotocol/client';
-import { ContextSigner, Signer } from '@oasisprotocol/client/dist/signature';
+
+import { Signer } from '@oasisprotocol/client/dist/signature';
 import { useStore } from '../../stores';
-import bigInteger from 'big-integer';
+
 import Big from 'big.js';
 import ERC20_ABI from './erc20.json';
-
-import { HeaderLayout } from '../../layouts';
 
 import { observer } from 'mobx-react-lite';
 
@@ -27,7 +25,7 @@ import { useHistory, useLocation } from 'react-router';
 import queryString from 'querystring';
 import Web3 from 'web3';
 import { useFeeEthereumConfig, useGasEthereumConfig, useSendTxConfig } from '@owallet/hooks';
-import { fitPopupWindow, openPopupWindow, PopupSize } from '@owallet/popup';
+import { fitPopupWindow } from '@owallet/popup';
 import {
   ChainIdEnum,
   EthereumEndpoint,
@@ -96,6 +94,9 @@ export const SendEvmPage: FunctionComponent<{
     address
   );
   const initGasDefault = current.chainId !== ChainIdEnum.Oasis ? 21000 : 0;
+  const recipient = sendConfigs.recipientConfig.recipient;
+  const amount = sendConfigs.amountConfig.amount;
+
   const gasConfig = useGasEthereumConfig(
     chainStore,
     current.chainId,
@@ -127,46 +128,42 @@ export const SendEvmPage: FunctionComponent<{
       console.log(error);
     }
   };
-  const estimateGas = async () => {
-    try {
-      const web3 = new Web3(chainStore.current.rest);
-      let estimate = 21000;
-      if (coinMinimalDenom) {
-        const tokenInfo = new web3.eth.Contract(
-          // @ts-ignore
-          ERC20_ABI,
-          query?.defaultDenom?.split(':')?.[1]
-        );
-        estimate = await tokenInfo.methods
-          .transfer(
-            address,
-            '0x' +
-              parseFloat(new Big(sendConfigs.amountConfig.amount).mul(new Big(10).pow(decimals)).toString()).toString(
-                16
-              )
-          )
-          .estimateGas({
-            from: query?.defaultDenom?.split(':')?.[1]
-          });
-      } else {
-        estimate = await web3.eth.estimateGas({
-          to: address,
-          from: query?.defaultDenom?.split(':')?.[1]
-        });
-      }
-      gasConfig.setGas(estimate ?? 21000);
-      feeConfig.setFee(new Big(estimate ?? 21000).mul(new Big(gasPrice)).toFixed(decimals));
-    } catch (error) {
-      gasConfig.setGas(50000);
-      feeConfig.setFee(new Big(50000).mul(new Big(gasPrice)).toFixed(decimals));
-    }
-  };
+  const currency = sendConfigs.amountConfig.sendCurrency;
   useEffect(() => {
-    if (chainStore.current.chainId !== ChainIdEnum.Oasis) {
-      estimateGas();
-    }
-  }, [gasPrice, sendConfigs.amountConfig.amount]);
+    (async () => {
+      try {
+        const web3 = new Web3(chainStore.current.rest);
+        let estimate = 21000;
+        if (currency?.coinMinimalDenom?.includes('erc20')) {
+          const tokenInfo = new web3.eth.Contract(
+            // @ts-ignore
+            ERC20_ABI,
+            currency?.coinMinimalDenom?.split(':')?.[1]
+          );
 
+          if (amount && recipient) {
+            estimate = await tokenInfo.methods.transfer(recipient, Web3.utils.toWei(amount)).estimateGas({
+              from: accountInfo?.evmosHexAddress
+            });
+          }
+        } else {
+          if (recipient) {
+            estimate = await web3.eth.estimateGas({
+              to: recipient,
+              from: accountInfo?.evmosHexAddress
+            });
+          }
+        }
+        gasConfig.setGas(estimate ?? 21000);
+        feeConfig.setFee(new Big(estimate ?? 21000).mul(new Big(gasPrice)).toFixed(decimals));
+      } catch (error) {
+        gasConfig.setGas(50000);
+        feeConfig.setFee(new Big(50000).mul(new Big(gasPrice)).toFixed(decimals));
+      }
+    })();
+  }, [gasPrice, amount, recipient, currency]);
+
+  console.log('🚀 ~ currency:', currency);
   useEffect(() => {
     if (query.defaultDenom) {
       const currency = current.currencies.find((cur) => cur.coinMinimalDenom === query.defaultDenom);
