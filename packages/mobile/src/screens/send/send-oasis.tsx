@@ -64,8 +64,9 @@ export const SendOasisScreen: FunctionComponent = observer(() => {
 
   const account = accountStore.getAccount(chainId);
   const queries = queriesStore.get(chainId);
-  let maxAmount = queries.evm.queryEvmBalance.getQueryBalance(account.bech32Address)?.balance;
-  console.log('🚀 ~ constSendOasisScreen:FunctionComponent=observer ~ maxAmount:', maxAmount);
+  const balance = queries.evm.queryEvmBalance.getQueryBalance(account.bech32Address)?.balance;
+  let maxAmount = balance?.trim(true).shrink(true).maxDecimals(9).hideDenom(true).toString();
+
   const sendConfigs = useSendTxConfig(
     chainStore,
     chainId,
