@@ -25,6 +25,8 @@ const BnbIcon = 'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png';
 const InjIcon = 'https://s2.coinmarketcap.com/static/img/coins/64x64/7226.png';
 const OraixLightIcon = 'https://assets.coingecko.com/coins/images/28104/standard/oraix.png?1696527113';
 const NobleIcon = 'https://raw.githubusercontent.com/cosmos/chain-registry/master/noble/images/stake.png';
+const NeutaroIcon = 'https://asset.brandfetch.io/idKrUw6EdO/ids9m0Bt_7.png';
+const OChIcon = 'https://assets.coingecko.com/coins/images/34236/standard/orchai_logo_white_copy_4x-8_%281%29.png';
 import {
   AIRI_BSC_CONTRACT,
   AIRI_CONTRACT,
@@ -61,7 +63,10 @@ import {
   WRAP_BNB_CONTRACT,
   WRAP_ETH_CONTRACT,
   WRAP_TRON_TRX_CONTRACT,
-  WETH_CONTRACT
+  WETH_CONTRACT,
+  OCH_CONTRACT,
+  OCH_ETH_CONTRACT,
+  BTC_CONTRACT
 } from '@oraichain/oraidex-common';
 import { BridgeAppCurrency, CustomChainInfo, defaultBech32Config } from '@oraichain/oraidex-common';
 import { flatten } from 'lodash';
@@ -155,6 +160,16 @@ export const tokensIcon: TokenIcon[] = [
     coinGeckoId: 'scatom',
     Icon: ScAtomIcon,
     IconLight: ScAtomIcon
+  },
+  {
+    coinGeckoId: 'neutaro',
+    Icon: NeutaroIcon,
+    IconLight: NeutaroIcon
+  },
+  {
+    coinGeckoId: 'och',
+    Icon: OChIcon,
+    IconLight: OChIcon
   }
 ];
 
@@ -208,6 +223,11 @@ export const chainIcons: ChainIcon[] = [
     chainId: 'noble-1',
     Icon: NobleIcon,
     IconLight: NobleIcon
+  },
+  {
+    chainId: 'Neutaro-1',
+    Icon: NeutaroIcon,
+    IconLight: NeutaroIcon
   }
 ];
 
@@ -425,6 +445,15 @@ export const oraichainNetwork: CustomChainInfo = {
       coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png',
       Icon: EthIcon,
       IconLight: EthIcon
+    },
+    {
+      type: 'cw20',
+      coinDenom: 'OCH',
+      coinMinimalDenom: 'cw20:orai1hn8w33cqvysun2aujk5sv33tku4pgcxhhnsxmvnkfvdxagcx0p8qa4l98q:OCH',
+      contractAddress: 'orai1hn8w33cqvysun2aujk5sv33tku4pgcxhhnsxmvnkfvdxagcx0p8qa4l98q',
+      coinDecimals: 6,
+      coinGeckoId: 'och',
+      coinImageUrl: 'https://assets.coingecko.com/coins/images/34236/standard/orchai_logo_white_copy_4x-8_%281%29.png'
     }
 
     // {
