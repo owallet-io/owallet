@@ -60,6 +60,9 @@ export const SelectTokenModal: FunctionComponent<{
   const renderTokenItem = useCallback(
     item => {
       if (item) {
+        // if (item.coinGeckoId === 'tether' && item.chainId === '0x01') {
+        //   return null;
+        // }
         //@ts-ignore
         // const subAmounts = Object.fromEntries(
         //   Object?.entries(universalSwapStore?.getAmount ?? {}).filter(

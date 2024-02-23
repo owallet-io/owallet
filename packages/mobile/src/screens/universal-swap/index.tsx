@@ -44,6 +44,7 @@ import {
   UniversalSwapData,
   UniversalSwapHandler
 } from '@oraichain/oraidex-universal-swap';
+// } from './handler/src';
 import { SwapCosmosWallet, SwapEvmWallet } from './wallet';
 import { styling } from './styles';
 import { BalanceType, MAX, balances } from './types';
@@ -72,7 +73,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
   const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
-  const accountInjective = accountStore.getAccount(ChainIdEnum.Injective);
+  const accountKawaiiCosmos = accountStore.getAccount(ChainIdEnum.KawaiiCosmos);
 
   const [isSlippageModal, setIsSlippageModal] = useState(false);
   const [minimumReceive, setMininumReceive] = useState(0);
@@ -163,6 +164,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const fromToken = isEvmSwap
     ? tokenMap[fromTokenDenom]
     : getTokenOnOraichain(tokenMap[fromTokenDenom].coinGeckoId) ?? tokenMap[fromTokenDenom];
+
   const toToken = isEvmSwap
     ? tokenMap[toTokenDenom]
     : getTokenOnOraichain(tokenMap[toTokenDenom].coinGeckoId) ?? tokenMap[toTokenDenom];
@@ -233,7 +235,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         ...loadTokenParams,
         oraiAddress: accountOrai.bech32Address,
         metamaskAddress: accountEth.evmosHexAddress,
-        kwtAddress: getAddress(accountInjective.evmosHexAddress, 'oraie'),
+        kwtAddress: accountKawaiiCosmos.bech32Address,
         tronAddress: getBase58Address(accountTron.evmosHexAddress),
         cwStargate
       };
@@ -274,6 +276,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       SwapDirection.From
     );
     setFilteredFromTokens(filteredFromTokens);
+
+    console.log('filteredFromTokens', filteredFromTokens);
 
     // TODO: need to automatically update from / to token to the correct swappable one when clicking the swap button
   }, [fromToken, toToken, toTokenDenom, fromTokenDenom]);
