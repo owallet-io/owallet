@@ -320,12 +320,16 @@ export const API = {
   unsubcribeTopic: ({ topic, subcriber }, config: AxiosRequestConfig) => {
     let url = `api/v1/topics`;
     return API.put(url, { topic, subcriber }, config);
+  },
+  saveTokenInfos: ({ tokesInfos, address }, config: AxiosRequestConfig) => {
+    let url = `account/${address}`;
+    return API.post(url, { tokens: tokesInfos }, config);
   }
 };
 const retryWrapper = (axios, options) => {
   const max_time = 1;
   let counter = 0;
-  axios.interceptors.response.use(null, (error) => {
+  axios.interceptors.response.use(null, error => {
     /** @type {import("axios").AxiosRequestConfig} */
     const config = error.config;
     // you could defined status you want to retry, such as 503
@@ -335,7 +339,7 @@ const retryWrapper = (axios, options) => {
       (counter < max_time && error.response.status === 502)
     ) {
       counter++;
-      return new Promise((resolve) => {
+      return new Promise(resolve => {
         resolve(axios(config));
       });
     }

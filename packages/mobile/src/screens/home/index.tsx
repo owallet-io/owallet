@@ -123,7 +123,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
   const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
-  const accountInjective = accountStore.getAccount(ChainIdEnum.Injective);
+  const accountKawaiiCosmos = accountStore.getAccount(ChainIdEnum.KawaiiCosmos);
 
   const loadTokenAmounts = useLoadTokens(universalSwapStore);
   // handle fetch all tokens of all chains
@@ -139,7 +139,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
         ...loadTokenParams,
         oraiAddress: accountOrai.bech32Address,
         metamaskAddress: accountEth.evmosHexAddress,
-        kwtAddress: getAddress(accountInjective.evmosHexAddress, 'oraie'),
+        kwtAddress: accountKawaiiCosmos.bech32Address,
         tronAddress: getBase58Address(accountTron.evmosHexAddress),
         cwStargate
       };
@@ -157,11 +157,15 @@ export const HomeScreen: FunctionComponent = observer(props => {
   };
 
   useEffect(() => {
-    if (accountEth.evmosHexAddress && accountTron.evmosHexAddress) {
+    if (accountEth.evmosHexAddress && accountTron.evmosHexAddress && accountKawaiiCosmos.bech32Address) {
       handleFetchAmounts();
     }
-  }, [accountOrai.bech32Address, accountEth.evmosHexAddress, accountTron.evmosHexAddress]);
-  // This section is for PnL display
+  }, [
+    accountOrai.bech32Address,
+    accountEth.evmosHexAddress,
+    accountTron.evmosHexAddress,
+    accountKawaiiCosmos.bech32Address
+  ]);
 
   const { data: prices } = useCoinGeckoPrices();
 
@@ -191,14 +195,14 @@ export const HomeScreen: FunctionComponent = observer(props => {
     return <AccountCard containerStyle={styles.containerStyle} />;
   })();
 
-  const renderTokenCard = useMemo(() => {
-    if (chainStore.current.networkType === 'bitcoin') {
-      return <TokensBitcoinCard refreshDate={refreshDate} />;
-    } else if (chainStore.current.chainId === ChainIdEnum.TRON) {
-      return <TronTokensCard />;
-    }
-    return <TokensCard refreshDate={refreshDate} />;
-  }, []);
+  // const renderTokenCard = useMemo(() => {
+  //   if (chainStore.current.networkType === 'bitcoin') {
+  //     return <TokensBitcoinCard refreshDate={refreshDate} />;
+  //   } else if (chainStore.current.chainId === ChainIdEnum.TRON) {
+  //     return <TronTokensCard />;
+  //   }
+  //   return <TokensCard refreshDate={refreshDate} />;
+  // }, []);
 
   const oldUI = false;
 

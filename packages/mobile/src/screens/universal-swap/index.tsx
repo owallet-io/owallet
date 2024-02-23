@@ -154,7 +154,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         originalFromToken?.chainId !== originalToToken?.chainId &&
         (cur.prefix === originalFromToken?.prefix || cur.prefix === originalToToken?.prefix)
       ) {
-        return +cur.amount + acc;
+        return +cur?.amount + acc;
       }
       return acc;
     }, 0);
@@ -253,10 +253,15 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   };
 
   useEffect(() => {
-    if (accountEth.evmosHexAddress && accountTron.evmosHexAddress) {
+    if (accountEth.evmosHexAddress && accountTron.evmosHexAddress && accountKawaiiCosmos.bech32Address) {
       handleFetchAmounts();
     }
-  }, [accountOrai.bech32Address, accountEth.evmosHexAddress, accountTron.evmosHexAddress]);
+  }, [
+    accountOrai.bech32Address,
+    accountEth.evmosHexAddress,
+    accountTron.evmosHexAddress,
+    accountKawaiiCosmos.bech32Address
+  ]);
 
   useEffect(() => {
     const filteredToTokens = filterNonPoolEvmTokens(
@@ -509,6 +514,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     if (isSupportedNoPoolSwapEvm(fromToken.coinGeckoId) && !isEvmNetworkNativeSwapSupported(toToken.chainId)) return;
     setSwapTokens([toTokenDenom, fromTokenDenom]);
     setSwapAmount([0, 0]);
+    setBalanceActive(null);
   };
 
   const handleActiveAmount = item => {
@@ -548,8 +554,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         }}
         selectedChainFilter={selectedChainFilter}
         setToken={denom => {
-          console.log('denom', denom, toTokenDenom);
-
           setSwapTokens([denom, toTokenDenom]);
           setSwapAmount([0, 0]);
           setBalanceActive(null);
@@ -573,7 +577,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           setIsNetworkModal(true);
         }}
         setToken={denom => {
-          console.log('denom 2', fromTokenDenom, denom);
           setSwapTokens([fromTokenDenom, denom]);
           setSwapAmount([0, 0]);
           setBalanceActive(null);

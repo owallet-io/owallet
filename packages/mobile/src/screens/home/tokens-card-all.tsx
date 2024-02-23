@@ -43,6 +43,26 @@ export const TokensCardAll: FunctionComponent<{
 
   const [tronTokens, setTronTokens] = useState([]);
 
+  const handleSaveTokenInfos = async tokenInfos => {
+    const res = await API.saveTokenInfos(
+      {
+        address: accountOrai.bech32Address,
+        tokesInfos: tokenInfos
+      },
+      {
+        baseURL: 'http://10.10.20.183:4000/'
+      }
+    );
+
+    console.log('ressss', res);
+  };
+
+  useEffect(() => {
+    if (tokenInfos.length > 0) {
+      // handleSaveTokenInfos(tokenInfos);
+    }
+  }, [tokenInfos]);
+
   useEffect(() => {
     (async function get() {
       try {
