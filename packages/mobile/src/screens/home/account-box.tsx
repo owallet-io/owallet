@@ -220,7 +220,7 @@ export const AccountBox: FunctionComponent<{
   );
 });
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     labelTotalAmount: {
       textAlign: 'center',

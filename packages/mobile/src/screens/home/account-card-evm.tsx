@@ -133,13 +133,14 @@ export const AccountCardEVM: FunctionComponent<{
     // if (chainStore.current.chainId === ChainIdEnum.Oasis) {
     //   return Number(Number(oasisBalance).toFixed(6)) + ` ${chainStore.current?.stakeCurrency.coinDenom}`;
     // }
-
+    if (!total) return '0';
     if (chainStore.current.chainId !== TRON_ID && total) {
       // return (
       //   `${new Big(parseInt(total?.amount?.int)).div(new Big(10).pow(36)).toFixed(8)}` +
       //   ` ${chainStore.current?.stakeCurrency.coinDenom}`
       // );
       // return 0;
+
       return total?.trim(true).shrink(true).maxDecimals(6).toString();
     }
 

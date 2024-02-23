@@ -73,7 +73,8 @@ export const SendOasisScreen: FunctionComponent = observer(() => {
     account.msgOpts['send'],
     receiveAddress,
     queries.queryBalances,
-    chainStore.current.rpc
+    chainStore.current.rpc,
+    queriesStore.get(chainStore.current.chainId).evm.queryEvmBalance
   );
 
   useEffect(() => {

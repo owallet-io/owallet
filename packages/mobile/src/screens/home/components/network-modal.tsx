@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { metrics, spacing, typography } from '../../../themes';
 import { _keyExtract, showToast, getTokenInfos } from '../../../utils/helper';
@@ -65,7 +65,7 @@ export const NetworkModal = () => {
   //   return result;
   // }, {});
 
-  const handleSwitchNetwork = async item => {
+  const handleSwitchNetwork = useCallback(async (item) => {
     try {
       if (account.isNanoLedger) {
         modalStore.close();
@@ -92,10 +92,10 @@ export const NetworkModal = () => {
         return;
       } else {
         if (!item.isAll) {
-          modalStore.close();
           chainStore.selectChain(item?.chainId);
           await chainStore.saveLastViewChainId();
           appInitStore.selectAllNetworks(false);
+          modalStore.close();
         } else {
           appInitStore.selectAllNetworks(true);
         }
@@ -106,7 +106,7 @@ export const NetworkModal = () => {
         message: JSON.stringify(error)
       });
     }
-  };
+  }, []);
 
   const _renderItem = ({ item }) => {
     let isSelectedColor =
@@ -271,7 +271,7 @@ export const NetworkModal = () => {
   );
 };
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     containerBtn: {
       backgroundColor: colors['background-item-list'],
