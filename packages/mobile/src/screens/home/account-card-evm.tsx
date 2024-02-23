@@ -11,6 +11,7 @@ import { Text } from '@src/components/text';
 import { AccountBox } from './account-box';
 import { ChainIdEnum, TRON_ID } from '@owallet/common';
 // import { getOasisInfo } from '@src/utils/helper';
+import { SCREENS } from '@src/common/constants';
 
 export const AccountCardEVM: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -32,7 +33,10 @@ export const AccountCardEVM: FunctionComponent<{
 
   const onPressBtnMain = (name) => {
     if (name === 'Buy') {
-      navigate('MainTab', { screen: 'Browser', path: 'https://oraidex.io' });
+      // navigate('MainTab', { screen: 'Browser', path: 'https://oraidex.io' });
+      navigate(SCREENS.STACK.Others, {
+        screen: SCREENS.BuyFiat
+      });
     }
     if (name === 'Receive') {
       _onPressReceiveModal();
@@ -60,7 +64,8 @@ export const AccountCardEVM: FunctionComponent<{
       AddressQRCodeModal({
         account,
         chainStore: chainStore.current,
-        keyRingStore: keyRingStore
+        keyRingStore: keyRingStore,
+        address: addressDisplay
       })
     );
   };
@@ -140,7 +145,7 @@ export const AccountCardEVM: FunctionComponent<{
 
     if (chainStore.current.chainId === TRON_ID && total) {
       return (
-        `${new Big(parseInt(total?.amount?.int)).div(new Big(10).pow(24)).toFixed(6)}` +
+        `${Number(new Big(parseInt(total?.amount?.int)).div(new Big(10).pow(24)).toFixed(6))}` +
         ` ${chainStore.current?.stakeCurrency.coinDenom}`
       );
     }

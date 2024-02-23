@@ -95,7 +95,7 @@ export const SendEvmPage: FunctionComponent<{
     chainStore.current.networkType === 'evm' && queriesStore.get(current.chainId).evm.queryEvmBalance,
     address
   );
-  const initGasDefault = current.chainId !== ChainIdEnum.OasisNative ? 21000 : 0;
+  const initGasDefault = current.chainId !== ChainIdEnum.Oasis ? 21000 : 0;
   const gasConfig = useGasEthereumConfig(
     chainStore,
     current.chainId,
@@ -162,7 +162,7 @@ export const SendEvmPage: FunctionComponent<{
     }
   };
   useEffect(() => {
-    if (chainStore.current.chainId !== ChainIdEnum.OasisNative) {
+    if (chainStore.current.chainId !== ChainIdEnum.Oasis) {
       estimateGas();
     }
   }, [gasPrice, sendConfigs.amountConfig.amount]);
@@ -281,7 +281,7 @@ export const SendEvmPage: FunctionComponent<{
                   },
                   onFulfill: async (tx) => {
                     console.log('🚀 ~ onSubmit={ ~ tx:', tx);
-                    if (tx && chainStore.current.chainId === ChainIdEnum.OasisNative) {
+                    if (tx && chainStore.current.chainId === ChainIdEnum.Oasis) {
                       submitSignOasis(tx);
                       return;
                     }

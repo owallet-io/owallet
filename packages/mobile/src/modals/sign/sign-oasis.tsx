@@ -116,9 +116,9 @@ export const SignOasisModal: FunctionComponent<{
               onPress={async () => {
                 setLoading(true);
                 try {
-                  if (dataSign.amount < 1) {
+                  if (dataSign.amount < 0.1) {
                     showToast({
-                      message: 'Minimum amount should be higher than 1!',
+                      message: 'Minimum amount should be higher than 0.1!',
                       type: 'danger'
                     });
                     return;

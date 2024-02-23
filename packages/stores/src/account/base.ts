@@ -374,7 +374,6 @@ export class AccountSetBase<MsgOpts, Queries> {
     });
 
     let txHash: Uint8Array;
-    console.log('🚀 ~ file: base.ts:375 ~ AccountSetBase<MsgOpts, ~ msgs:', msgs);
     try {
       if (typeof msgs === 'function') {
         msgs = await msgs();
@@ -598,7 +597,7 @@ export class AccountSetBase<MsgOpts, Queries> {
       this._isSendingMsg = false;
     });
 
-    if (this.chainId === ChainIdEnum.OasisNative) {
+    if (this.chainId === ChainIdEnum.Oasis) {
       console.log(txHash, 'txHash');
       if (this.opts.preTxEvents?.onFulfill) {
         this.opts.preTxEvents.onFulfill(txHash);
@@ -757,7 +756,7 @@ export class AccountSetBase<MsgOpts, Queries> {
     const isDirectSign = !msgs.aminoMsgs || msgs.aminoMsgs.length === 0;
     const aminoMsgs: Msg[] = msgs.aminoMsgs || [];
     const protoMsgs: Any[] = msgs.protoMsgs;
-    console.log('🚀 ~ file: base.ts:741 ~ AccountSetBase<MsgOpts, ~ protoMsgs:', protoMsgs);
+
     if (!protoMsgs || protoMsgs.length === 0) {
       throw new Error('There is no msg to send');
     }
@@ -925,7 +924,6 @@ export class AccountSetBase<MsgOpts, Queries> {
   ): Promise<{
     txHash: Uint8Array;
   }> {
-    console.log('🚀 ~ file: base.ts:907 ~ AccountSetBase<MsgOpts, ~ msgs:', msgs);
     if (this.walletStatus !== WalletStatus.Loaded) {
       throw new Error(`Wallet is not loaded: ${this.walletStatus}`);
     }

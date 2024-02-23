@@ -123,7 +123,7 @@ export class RecipientConfig extends TxChainSetter implements IRecipientConfig {
     }
 
     try {
-      if (this.chainInfo.networkType === 'evm' && this.chainInfo.chainId !== ChainIdEnum.OasisNative) {
+      if (this.chainInfo.networkType === 'evm' && this.chainInfo.chainId !== ChainIdEnum.Oasis) {
         if (this.chainInfo.chainId === TRON_ID) {
           const checkAddress = /T[A-Za-z1-9]{33}/g.exec(this.recipient);
           if (!checkAddress) {

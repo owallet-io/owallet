@@ -44,7 +44,7 @@ export class ObservableQueryEvmBalanceInner extends ObservableChainQuery<Result 
   protected async fetchResponse(cancelToken: CancelToken): Promise<QueryResponse<Result | OasisBalance>> {
     const response = await super.fetchResponse(cancelToken);
 
-    if (this._chainId === ChainIdEnum.OasisNative) {
+    if (this._chainId === ChainIdEnum.Oasis) {
       const oasisRs = await this.getOasisBalance();
 
       return {
@@ -74,7 +74,7 @@ export class ObservableQueryEvmBalanceInner extends ObservableChainQuery<Result 
     if (!this.response?.data) {
       return undefined;
     }
-    if (this.chainId === ChainIdEnum.OasisNative) {
+    if (this.chainId === ChainIdEnum.Oasis) {
       return new CoinPretty(
         chainInfo.stakeCurrency,
         new Int(new MyBigInt((this.response.data as OasisBalance).available).toString())

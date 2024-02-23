@@ -23,8 +23,7 @@ export enum ChainIdEnum {
   BNBChain = '0x38',
   BNBChainTestNet = '0x61',
   TRON = '0x2b6653dc',
-  Oasis = '0x5afe',
-  OasisNative = 'native-0x5afe',
+  Oasis = 'native-0x5afe',
   BitcoinTestnet = 'bitcoinTestnet',
   Bitcoin = 'bitcoin',
   Injective = 'injective-1'

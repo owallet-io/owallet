@@ -5062,10 +5062,28 @@
   resolved "https://registry.yarnpkg.com/@oraichain/immutable/-/immutable-4.3.9.tgz#ff8d5a7b39b5b01f3f72a902cffbfea32ccb20c3"
   integrity sha512-INpHnhL970OCkR7I71Kssb2aLl2l4Y/x8W6FlyRO0KmC8GHjxc/hlNB1t44BiI7lkOYmcWMRQoC8dwParsp1RQ==
 
-"@oraichain/oraidex-common@^1.0.58", "@oraichain/oraidex-common@^1.0.63":
-  version "1.0.64"
-  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-common/-/oraidex-common-1.0.64.tgz#50b18abdcdd7bf3b70846fced2362c42e2925be3"
-  integrity sha512-twhl/uNRl+hmHjU1FLGZNxTUWFnoaeIMNCh/7V31Zwx0wbb5nGdKjx2apGpJoc+SnhHuY9Tl78/AHhxWFdo14g==
+"@oraichain/oraidex-common@^1.0.58":
+  version "1.0.63"
+  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-common/-/oraidex-common-1.0.63.tgz#179f0d9aef8d6791009ab7116738c462857c2cec"
+  integrity sha512-vziG4JheX2xqT/LVndHEcvSP9I31u7YKgaT4RIp154k3iDvpu+eSL3EJZ0om2jAro81b2Xp7iD4R6EIHK3zKBA==
+  dependencies:
+    "@cosmjs/amino" "^0.31.0"
+    "@cosmjs/cosmwasm-stargate" "^0.31.0"
+    "@cosmjs/crypto" "^0.31.0"
+    "@cosmjs/proto-signing" "^0.31.0"
+    "@cosmjs/stargate" "^0.31.0"
+    "@cosmjs/tendermint-rpc" "0.31.0"
+    "@ethersproject/providers" "^5.0.10"
+    "@keplr-wallet/types" "^0.11.38"
+    "@oraichain/oraidex-contracts-sdk" "^1.0.30"
+    bignumber.js "^9.0.1"
+    cosmjs-types "^0.8.0"
+    ethers "^5.0.15"
+
+"@oraichain/oraidex-common@^1.0.68":
+  version "1.0.68"
+  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-common/-/oraidex-common-1.0.68.tgz#5c38082da60b3fb9254da7b1f141f8c9b0471815"
+  integrity sha512-3HvLIEeIw/EkcEuCfCgepLmjaxwv99uibCOlokPDHMdwUU9HvQRDF2f58NWdmG7ZKph/MoW5RXHkngsR9Pmsvg==
   dependencies:
     "@cosmjs/amino" "^0.31.0"
     "@cosmjs/cosmwasm-stargate" "^0.31.0"
@@ -5085,15 +5103,25 @@
   resolved "https://registry.yarnpkg.com/@oraichain/oraidex-contracts-build/-/oraidex-contracts-build-1.0.23.tgz#e4dbe80a34c0897cfcd99cda4eb9cb477e71b75c"
   integrity sha512-y6SVPxNjrO5BuIS+p3fMCajtw0K8+0DiWcFV5AiJ6eEks4EOM194L2khvEuhjlknGlS1R1844D2l6M0VqFS8Og==
 
-"@oraichain/oraidex-contracts-sdk@^1.0.24", "@oraichain/oraidex-contracts-sdk@^1.0.30", "@oraichain/oraidex-contracts-sdk@^1.0.31":
+"@oraichain/oraidex-contracts-sdk@^1.0.24":
+  version "1.0.27"
+  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-contracts-sdk/-/oraidex-contracts-sdk-1.0.27.tgz#eabd36671e619d00f50a0fd56bed9c9d618594b6"
+  integrity sha512-Icn++t+BX4xdxUsoMdKKO8wL659lmNLdyQpAKCfwrtUdS4DFpRsrmZVw7S1g+Wl7QZUBJOG1fW+3m/YRS2q37Q==
+
+"@oraichain/oraidex-contracts-sdk@^1.0.30":
+  version "1.0.31"
+  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-contracts-sdk/-/oraidex-contracts-sdk-1.0.31.tgz#98e5eb3a8d995febb40fcd188709255e3ecd624c"
+  integrity sha512-bwOs9+xKtlGVOy5vM1oNw54MeoRYLTY+3f4K2oNyAv0Y8QCEeQFt0g2l7LkpzyjXh5OVyu8nOKzx70XW5zajlA==
+
+"@oraichain/oraidex-contracts-sdk@^1.0.32":
   version "1.0.32"
   resolved "https://registry.yarnpkg.com/@oraichain/oraidex-contracts-sdk/-/oraidex-contracts-sdk-1.0.32.tgz#de8e2779cc00e22dc87a2061d3f7dbea3b990506"
   integrity sha512-CPXYM44Mjq5XR9gBWhLDd38uF9W5GfP8wlwJDxHEQmOyaTVQjojKj3Gx/2VNCKjl6zctNXTABwESBM2dEy1jmA==
 
-"@oraichain/oraidex-universal-swap@^1.0.50":
-  version "1.0.50"
-  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-universal-swap/-/oraidex-universal-swap-1.0.50.tgz#c3aeb3ae774fd26d6d9c579663ec2528f8fd34af"
-  integrity sha512-0FNmNUYYGGuGUuRWthVqyxqTRH/kGT9SXE0FOvHG2tIas/4i/5UKlv6Es+u/qeSisQGEyoqr63p2tGmlvYHhLQ==
+"@oraichain/oraidex-universal-swap@^1.0.52":
+  version "1.0.52"
+  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-universal-swap/-/oraidex-universal-swap-1.0.52.tgz#28050163d5c75ea84c8883ea7813d165e0b0bfea"
+  integrity sha512-awICCQePig6wJaNz7kj0nXjCJ+nfdUU8q6odTOaS/dcGCC+EsBkplgpfiXUkOWve7qLoBRZbp9KeOfNM+Jk9rQ==
   dependencies:
     "@oraichain/oraidex-common" "^1.0.58"
     "@oraichain/oraidex-contracts-sdk" "^1.0.24"

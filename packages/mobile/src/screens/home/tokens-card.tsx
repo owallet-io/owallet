@@ -299,8 +299,7 @@ export const TokensCard: FunctionComponent<{
             </View>
           </CardBody>
         )}
-
-        {tokens.length > 2 ? (
+        {tokens.length > 0 ? (
           <OWButton
             label={capitalizedText('view all')}
             size="medium"

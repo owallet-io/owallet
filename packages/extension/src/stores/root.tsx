@@ -20,7 +20,12 @@ import {
   getTronWebFromWindow,
   getBitcoinFromWindow
 } from '@owallet/stores';
-import { ExtensionRouter, ContentScriptEnv, ContentScriptGuards, InExtensionMessageRequester } from '@owallet/router-extension';
+import {
+  ExtensionRouter,
+  ContentScriptEnv,
+  ContentScriptGuards,
+  InExtensionMessageRequester
+} from '@owallet/router-extension';
 import { APP_PORT } from '@owallet/router';
 import { ChainInfoWithEmbed } from '@owallet/background';
 import { FiatCurrency } from '@owallet/types';
@@ -80,7 +85,11 @@ export class RootStore {
     // Order is important.
     this.interactionStore = new InteractionStore(router, new InExtensionMessageRequester());
 
-    this.chainStore = new ChainStore(EmbedChainInfos, new InExtensionMessageRequester(), localStorage.getItem('initchain'));
+    this.chainStore = new ChainStore(
+      EmbedChainInfos,
+      new InExtensionMessageRequester(),
+      localStorage.getItem('initchain')
+    );
 
     this.keyRingStore = new KeyRingStore(
       {
@@ -109,51 +118,18 @@ export class RootStore {
     );
 
     const chainOpts = this.chainStore.chainInfos.map((chainInfo) => {
-      // In certik, change the msg type of the MsgSend to "bank/MsgSend"
-      if (chainInfo.chainId.startsWith('shentu-')) {
+      // In osmosis, increase the default gas for sending
+      if (chainInfo.chainId.startsWith('osmosis-')) {
         return {
           chainId: chainInfo.chainId,
           msgOpts: {
             send: {
               native: {
-                type: 'bank/MsgSend'
-              }
-            }
-          }
-        };
-      }
-
-      // In akash or sifchain, increase the default gas for sending
-      if (chainInfo.chainId.startsWith('akashnet-') || chainInfo.chainId.startsWith('sifchain')) {
-        return {
-          chainId: chainInfo.chainId,
-          msgOpts: {
-            send: {
-              native: {
-                gas: 120000
-              }
-            }
-          }
-        };
-      }
-
-      if (chainInfo.chainId.startsWith('secret-')) {
-        return {
-          chainId: chainInfo.chainId,
-          msgOpts: {
-            send: {
-              native: {
-                gas: 20000
+                gas: 400000
               },
-              secret20: {
-                gas: 50000
+              withdrawRewards: {
+                gas: 400000
               }
-            },
-            withdrawRewards: {
-              gas: 25000
-            },
-            createSecret20ViewingKey: {
-              gas: 50000
             }
           }
         };
@@ -177,36 +153,6 @@ export class RootStore {
 
       return { chainId: chainInfo.chainId };
     });
-
-    // What a silly...
-    chainOpts.push(
-      {
-        chainId: 'bombay-12',
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        prefetching: false,
-        msgOpts: {
-          send: {
-            native: {
-              type: 'bank/MsgSend'
-            }
-          }
-        }
-      },
-      {
-        chainId: 'columbus-5',
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        prefetching: false,
-        msgOpts: {
-          send: {
-            native: {
-              type: 'bank/MsgSend'
-            }
-          }
-        }
-      }
-    );
 
     this.accountStore = new AccountStore(window, AccountWithAll, this.chainStore, this.queriesStore, {
       defaultOpts: {
@@ -263,7 +209,12 @@ export class RootStore {
       'usd'
     );
 
-    this.tokensStore = new TokensStore(window, this.chainStore, new InExtensionMessageRequester(), this.interactionStore);
+    this.tokensStore = new TokensStore(
+      window,
+      this.chainStore,
+      new InExtensionMessageRequester(),
+      this.interactionStore
+    );
 
     this.ibcCurrencyRegistrar = new IBCCurrencyRegsitrar<ChainInfoWithEmbed>(
       new ExtensionKVStore('store_ibc_currency_registrar'),
