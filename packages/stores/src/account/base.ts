@@ -337,10 +337,9 @@ export class AccountSetBase<MsgOpts, Queries> {
         if (this.chainId === ChainIdEnum.TRON && toDisplay) {
           return getBase58Address(this.evmosHexAddress);
         }
-        console.log('🚀 ~ AccountSetBase<MsgOpts, ~ getAddressDisplay ~ this.evmosHexAddress:', this.evmosHexAddress);
+
         return this.evmosHexAddress;
       } else if (this.bech32Address?.startsWith('oasis')) {
-        console.log('🚀 ~ AccountSetBase<MsgOpts, ~ getAddressDisplay ~ this.bech32Address:', this.bech32Address);
         return this.bech32Address;
       }
     } else if (networkType === 'bitcoin') {

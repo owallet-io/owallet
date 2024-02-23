@@ -11,7 +11,7 @@ import ProgressiveImage from '../../components/progessive-image';
 import { useSmartNavigation } from '../../navigation.provider';
 import { useStore } from '../../stores';
 import { metrics, spacing, typography } from '../../themes';
-import { capitalizedText, getOasisInfo, _keyExtract } from '../../utils/helper';
+import { capitalizedText, _keyExtract } from '../../utils/helper';
 import { TokenItem } from '../tokens/components/token-item';
 import { SoulboundNftInfoResponse } from './types';
 import { useSoulbound } from '../nfts/hooks/useSoulboundNft';

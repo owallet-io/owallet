@@ -35,7 +35,7 @@ export class ObservableQueryEvmBalanceInner extends ObservableChainQuery<Result 
       const publicKey = await addressToPublicKey(this.address);
       const account = await nic.stakingAccount({ owner: publicKey, height: 0 });
       const grpcBalance = parseRpcBalance(account);
-      console.log('🚀 ~ ObservableQueryEvmBalanceInner ~ getOasisBalance ~ grpcBalance:', grpcBalance);
+
       return grpcBalance;
     } catch (error) {
       console.log('🚀 ~ ObservableQueryEvmBalanceInner ~ getOasisBalance ~ error:', error);
@@ -46,7 +46,7 @@ export class ObservableQueryEvmBalanceInner extends ObservableChainQuery<Result 
 
     if (this._chainId === ChainIdEnum.OasisNative) {
       const oasisRs = await this.getOasisBalance();
-      console.log('🚀 ~ ObservableQueryEvmBalanceInner ~ fetchResponse ~ oasisRs:', oasisRs);
+
       return {
         data: oasisRs,
         status: response.status,

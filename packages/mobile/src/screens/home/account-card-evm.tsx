@@ -42,14 +42,11 @@ export const AccountCardEVM: FunctionComponent<{
         smartNavigation.navigateSmart('SendTron', {
           currency: chainStore.current.stakeCurrency.coinMinimalDenom
         });
-      }
-      // else if (chainStore.current.chainId === ChainIdEnum.Oasis) {
-      //   smartNavigation.navigateSmart('SendOasis', {
-      //     currency: chainStore.current.stakeCurrency.coinMinimalDenom,
-      //     maxAmount: oasisBalance
-      //   });
-      // }
-      else {
+      } else if (chainStore.current.chainId === ChainIdEnum.Oasis) {
+        smartNavigation.navigateSmart('SendOasis', {
+          currency: chainStore.current.stakeCurrency.coinMinimalDenom
+        });
+      } else {
         smartNavigation.navigateSmart('Send', {
           currency: chainStore.current.stakeCurrency.coinMinimalDenom
         });

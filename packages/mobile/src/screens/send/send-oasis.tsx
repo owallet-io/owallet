@@ -14,7 +14,7 @@ import { OWSubTitleHeader } from '@src/components/header';
 import { SignOasisModal } from '@src/modals/sign/sign-oasis';
 import { useSmartNavigation } from '@src/navigation.provider';
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     sendInputRoot: {
       paddingHorizontal: spacing['20'],
@@ -60,11 +60,12 @@ export const SendOasisScreen: FunctionComponent = observer(() => {
   >();
 
   const chainId = route?.params?.chainId ? route?.params?.chainId : chainStore?.current?.chainId;
-  const maxAmount = route?.params?.maxAmount;
+  // const maxAmount = route?.params?.maxAmount;
 
   const account = accountStore.getAccount(chainId);
   const queries = queriesStore.get(chainId);
-
+  let maxAmount = queries.evm.queryEvmBalance.getQueryBalance(account.bech32Address)?.balance;
+  console.log('🚀 ~ constSendOasisScreen:FunctionComponent=observer ~ maxAmount:', maxAmount);
   const sendConfigs = useSendTxConfig(
     chainStore,
     chainId,
@@ -76,7 +77,7 @@ export const SendOasisScreen: FunctionComponent = observer(() => {
 
   useEffect(() => {
     if (route?.params?.currency) {
-      const currency = sendConfigs.amountConfig.sendableCurrencies.find(cur => {
+      const currency = sendConfigs.amountConfig.sendableCurrencies.find((cur) => {
         if (cur.coinDenom === route.params.currency) {
           return cur.coinDenom === route.params.currency;
         }
