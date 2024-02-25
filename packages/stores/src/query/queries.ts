@@ -8,19 +8,8 @@ import { ObservableQueryEvmBalance } from './evm';
 
 export class QueriesSetBase {
   public readonly queryBalances: DeepReadonly<ObservableQueryBalances>;
-  // public readonly queryEvmBalances: DeepReadonly<ObservableQueryEvmBalance>
-
   constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
-    this.queryBalances = new ObservableQueryBalances(
-      kvStore,
-      chainId,
-      chainGetter
-    );
-    // this.queryEvmBalances = new ObservableQueryEvmBalance(
-    //   kvStore,
-    //   chainId,
-    //   chainGetter
-    // )
+    this.queryBalances = new ObservableQueryBalances(kvStore, chainId, chainGetter);
   }
 }
 
@@ -44,12 +33,7 @@ export class QueriesStore<QueriesSet extends QueriesSetBase> {
 
   get(chainId: string): DeepReadonly<QueriesSet> {
     if (!this.queriesMap.has(chainId)) {
-      const queries = new this.queriesCreator(
-        this.kvStore,
-        chainId,
-        this.chainGetter,
-        this.apiGetter
-      );
+      const queries = new this.queriesCreator(this.kvStore, chainId, this.chainGetter, this.apiGetter);
       runInAction(() => {
         this.queriesMap.set(chainId, queries);
       });

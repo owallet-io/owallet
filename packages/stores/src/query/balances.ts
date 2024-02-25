@@ -7,10 +7,7 @@ import { AppCurrency, NetworkType } from '@owallet/types';
 import { HasMapStore } from '../common';
 import { computedFn } from 'mobx-utils';
 
-export abstract class ObservableQueryBalanceInner<
-  T = unknown,
-  E = unknown
-> extends ObservableChainQuery<T, E> {
+export abstract class ObservableQueryBalanceInner<T = unknown, E = unknown> extends ObservableChainQuery<T, E> {
   protected constructor(
     kvStore: KVStore,
     chainId: string,
@@ -74,27 +71,12 @@ export class ObservableQueryBalancesInner {
     this.balanceMap.forEach((bal) => bal.fetch());
   }
 
-  protected getBalanceInner(
-    currency: AppCurrency
-  ): ObservableQueryBalanceInner {
+  protected getBalanceInner(currency: AppCurrency): ObservableQueryBalanceInner {
     let key = currency.coinMinimalDenom;
-    // If the currency is secret20, it will be different according to not only the minimal denom but also the viewing key of the currency.
-    if ('type' in currency && currency.type === 'secret20') {
-      key = currency.coinMinimalDenom + '/' + currency.viewingKey;
-    }
-
-    const chainInfo = this.chainGetter.getChain(this.chainId);
-
     if (!this.balanceMap.has(key)) {
       runInAction(() => {
         let balanceInner: ObservableQueryBalanceInner | undefined;
-        const chainInfo = this.chainGetter.getChain(this.chainId);
         for (const registry of this.balanceRegistries) {
-          // if is evm then do not use ObservableQueryBalanceNative
-          if (chainInfo.networkType === 'evm' && registry.type !== 'erc20') {
-            continue;
-          }
-
           balanceInner = registry.getBalanceInner(
             this.chainId,
             this.chainGetter,
@@ -162,9 +144,7 @@ export class ObservableQueryBalancesInner {
   @computed
   get nonNativeBalances(): ObservableQueryBalanceInner[] {
     const balances = this.balances;
-    return balances.filter(
-      (bal) => new DenomHelper(bal.currency.coinMinimalDenom).type !== 'native'
-    );
+    return balances.filter((bal) => new DenomHelper(bal.currency.coinMinimalDenom).type !== 'native');
   }
 
   /**
@@ -180,8 +160,7 @@ export class ObservableQueryBalancesInner {
       (bal) =>
         new DenomHelper(bal.currency.coinMinimalDenom).type === 'native' &&
         bal.balance.toDec().gt(new Dec(0)) &&
-        bal.currency.coinMinimalDenom !==
-          chainInfo.stakeCurrency.coinMinimalDenom
+        bal.currency.coinMinimalDenom !== chainInfo.stakeCurrency.coinMinimalDenom
     );
   }
 
@@ -202,18 +181,14 @@ export class ObservableQueryBalancesInner {
     return result;
   }
 
-  readonly getBalanceFromCurrency = computedFn(
-    (currency: AppCurrency): CoinPretty => {
-      const bal = this.balances.find(
-        (bal) => bal.currency.coinMinimalDenom === currency.coinMinimalDenom
-      );
-      if (bal) {
-        return bal.balance;
-      }
-
-      return new CoinPretty(currency, new Int(0));
+  readonly getBalanceFromCurrency = computedFn((currency: AppCurrency): CoinPretty => {
+    const bal = this.balances.find((bal) => bal.currency.coinMinimalDenom === currency.coinMinimalDenom);
+    if (bal) {
+      return bal.balance;
     }
-  );
+
+    return new CoinPretty(currency, new Int(0));
+  });
 }
 
 export class ObservableQueryBalances extends HasMapStore<ObservableQueryBalancesInner> {

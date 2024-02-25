@@ -54,7 +54,6 @@ export const SendPage: FunctionComponent<{
 
   const { chainStore, accountStore, priceStore, queriesStore, analyticsStore } = useStore();
   const current = chainStore.current;
-
   const accountInfo = accountStore.getAccount(current.chainId);
 
   const sendConfigs = useSendTxConfig(
