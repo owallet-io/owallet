@@ -140,8 +140,9 @@
   },
   "version": "0.0.0",
   "lint-staged": {
-    "*": [
-      "prettier --write \"packages/**/*.ts\" \"packages/**/*.tsx\""
-    ]
+    "*.ts": [
+      "prettier --write \"packages/**/*.ts\""
+    ],
+    "*.tsx":["prettier --write \"packages/**/*.tsx\""]
   }
 }
