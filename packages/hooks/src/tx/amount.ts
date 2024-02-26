@@ -241,10 +241,11 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
     }
 
     const balance = (() => {
-      if (this.chainInfo.networkType === 'evm') {
-        if (!this.queryEvmBalances) return;
-        return this.queryEvmBalances.getQueryBalance(this.sender)?.balance;
-      } else if (this.chainInfo.networkType === 'bitcoin') {
+      // if (this.chainInfo.networkType === 'evm') {
+      //   if (!this.queryEvmBalances) return;
+      //   return this.queryEvmBalances.getQueryBalance(this.sender)?.balance;
+      // }else
+      if (this.chainInfo.networkType === 'bitcoin') {
         if (!this.queryBtcBalance) return;
         return this.queryBtcBalance.getQueryBalance(this.sender)?.balance;
       }

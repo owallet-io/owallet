@@ -132,6 +132,11 @@ export const SendEvmPage: FunctionComponent<{
   useEffect(() => {
     (async () => {
       try {
+        if (chainStore.current.chainId === ChainIdEnum.Oasis) {
+          gasConfig.setGas(0);
+          feeConfig.setFee('0');
+          return;
+        }
         const web3 = new Web3(chainStore.current.rest);
         let estimate = 21000;
         if (currency?.coinMinimalDenom?.includes('erc20')) {
