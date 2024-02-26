@@ -13,7 +13,7 @@ import {
   ChainSuggestStore,
   IBCChannelStore,
   IBCCurrencyRegsitrar,
-  QueriesWithCosmosAndSecretAndCosmwasmAndEvmAndBitcoin,
+  QueriesWrappedBitcoin,
   AccountWithAll,
   getOWalletFromWindow,
   getEthereumFromWindow,
@@ -48,7 +48,7 @@ export class RootStore {
   public readonly ledgerInitStore: LedgerInitStore;
   public readonly chainSuggestStore: ChainSuggestStore;
 
-  public readonly queriesStore: QueriesStore<QueriesWithCosmosAndSecretAndCosmwasmAndEvmAndBitcoin>;
+  public readonly queriesStore: QueriesStore<QueriesWrappedBitcoin>;
   public readonly accountStore: AccountStore<AccountWithAll>;
   // public readonly accountEvmStore: AccountEvmStore<AccountWithAll>;
   public readonly priceStore: CoinGeckoPriceStore;
@@ -114,7 +114,7 @@ export class RootStore {
       new ExtensionKVStore('store_queries'),
       this.chainStore,
       getOWalletFromWindow,
-      QueriesWithCosmosAndSecretAndCosmwasmAndEvmAndBitcoin
+      QueriesWrappedBitcoin
     );
 
     const chainOpts = this.chainStore.chainInfos.map((chainInfo) => {

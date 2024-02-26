@@ -462,10 +462,6 @@ export class ObservableQuery<T = unknown, E = unknown> extends ObservableQueryBa
 
   protected async fetchResponse(cancelToken: CancelToken): Promise<QueryResponse<T>> {
     // may be post method in case of ethereum
-    console.log('ok nhe ban oi', this.url);
-    if (typeof this.options.data === 'function') {
-      return this.options.data();
-    }
     const result = this.options.data
       ? await this.instance.post<T>(this.url, this.options.data, {
           cancelToken

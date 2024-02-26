@@ -6,14 +6,14 @@ import { DeepReadonly } from 'utility-types';
 import { ObservableQueryErc20BalanceRegistry } from './erc20-balance';
 
 import { OWallet } from '@owallet/types';
-import { QueriesWithCosmosAndSecretAndCosmwasmAndEvm } from '../evm/queries';
+import { QueriesWrappedEvm } from '../evm/queries';
 
 export interface HasEvmContractQueries {
   evmContract: EvmContractQueries;
 }
 
-export class QueriesWithCosmosAndSecretAndCosmwasmAndEvmAndEvmContract
-  extends QueriesWithCosmosAndSecretAndCosmwasmAndEvm
+export class QueriesWrappedEvmContract
+  extends QueriesWrappedEvm
   implements HasEvmContractQueries
 {
   public evmContract: EvmContractQueries;

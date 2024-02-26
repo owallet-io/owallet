@@ -1,12 +1,14 @@
 import { computed, makeObservable, override } from 'mobx';
 import { DenomHelper, KVStore } from '@owallet/common';
-import { ChainGetter } from '../../common';
+import { ChainGetter, QueryResponse } from '../../common';
 import { CoinPretty, Int } from '@owallet/unit';
 import { BalanceRegistry, BalanceRegistryType, ObservableQueryBalanceInner } from '../balances';
 import { Erc20ContractBalance } from './types';
-import { ObservableCosmwasmContractChainQuery } from './contract-query';
+import ERC20_ABI from './erc20';
+import { ObservableChainQuery } from '../chain-query';
+import Web3 from 'web3';
 
-export class ObservableQueryErc20Balance extends ObservableCosmwasmContractChainQuery<Erc20ContractBalance> {
+export class ObservableQueryErc20Balance extends ObservableChainQuery<Erc20ContractBalance> {
   constructor(
     kvStore: KVStore,
     chainId: string,
@@ -14,13 +16,32 @@ export class ObservableQueryErc20Balance extends ObservableCosmwasmContractChain
     protected readonly contractAddress: string,
     protected readonly walletAddress: string
   ) {
-    super(kvStore, chainId, chainGetter, contractAddress, {
-      balance: { address: walletAddress }
-    });
+    super(kvStore, chainId, chainGetter, contractAddress);
   }
 
   protected canFetch(): boolean {
-    return super.canFetch() && this.walletAddress !== '';
+    return this.contractAddress.length !== 0 && this.walletAddress !== '';
+  }
+  protected async fetchResponse(): Promise<QueryResponse<Erc20ContractBalance>> {
+    const web3 = new Web3(this.chainGetter.getChain(this.chainId).rest);
+    // @ts-ignore
+    const contract = new web3.eth.Contract(ERC20_ABI, this.contractAddress);
+
+    const balance = await contract.methods.balanceOf(this.walletAddress).call();
+    if (!balance) {
+      throw new Error('Failed to get the response from the contract');
+    }
+    const data: Erc20ContractBalance = {
+      balance: balance
+    };
+    console.log('🚀 ~ ObservableQueryErc20Balance ~ data:', data);
+
+    return {
+      data,
+      status: 1,
+      staled: false,
+      timestamp: Date.now()
+    };
   }
 }
 

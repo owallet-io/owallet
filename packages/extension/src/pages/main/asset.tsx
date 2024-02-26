@@ -110,6 +110,7 @@ export const AssetStakedChartView: FunctionComponent = observer(() => {
   const accountInfo = accountStore.getAccount(current.chainId);
 
   const queryBalances = queries.queryBalances.getQueryBech32Address(accountInfo.bech32Address);
+
   const balanceStakableQuery = queryBalances.stakable;
 
   const stakable = balanceStakableQuery?.balance;
@@ -217,8 +218,17 @@ export const AssetChartViewEvm: FunctionComponent = observer(() => {
   if (!accountInfo.evmosHexAddress) return null;
   let walletAddress = accountInfo.getAddressDisplay(keyRingStore.keyRingLedgerAddresses, true);
   const isTronNetwork = chainStore.current.chainId === TRON_ID;
-  const queryBalances = queries.queryBalances.getQueryBech32Address(walletAddress).balances;
-  console.log('🚀 ~ constAssetChartViewEvm:FunctionComponent=observer ~ queryBalances:', queryBalances);
+  // const queryBalances = queries.queryBalances.getQueryBech32Address(walletAddress).balances;
+
+  const queryBalances = queries.queryBalances.getQueryBech32Address(walletAddress);
+
+  const balanceStakableQuery = queryBalances.stakable;
+
+  const stakable = balanceStakableQuery?.balance;
+  console.log("🚀 ~ constAssetChartViewEvm:FunctionComponent=observer ~ displayTokens:", stakable)
+
+
+
 
   // const balance = queries.evm.queryEvmBalance.getQueryBalance(walletAddress)?.balance;
   // let totalPrice;

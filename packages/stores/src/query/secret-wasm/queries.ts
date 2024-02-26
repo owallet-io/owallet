@@ -5,15 +5,15 @@ import { ObservableQuerySecretContractCodeHash } from './contract-hash';
 import { ObservableQuerySecret20ContractInfo } from './secret20-contract-info';
 import { DeepReadonly } from 'utility-types';
 import { ObservableQuerySecret20BalanceRegistry } from './secret20-balance';
-import { QueriesWithCosmos } from '../cosmos';
+import { QueriesWrappedCosmos } from '../cosmos';
 import { OWallet } from '@owallet/types';
 
 export interface HasSecretQueries {
   secret: SecretQueries;
 }
 
-export class QueriesWithCosmosAndSecret
-  extends QueriesWithCosmos
+export class QueriesWrappedSecret
+  extends QueriesWrappedCosmos
   implements HasSecretQueries
 {
   public secret: SecretQueries;

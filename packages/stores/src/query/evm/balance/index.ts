@@ -26,7 +26,7 @@ export class ObservableQueryBalanceNative extends ObservableQueryBalanceInner {
       '',
       denomHelper
     );
-    console.log('ngon native');
+
     makeObservable(this);
   }
 
@@ -69,11 +69,10 @@ export class ObservableQueryEvmBalances extends ObservableChainQuery<Balances> {
   protected duplicatedFetchCheck: boolean = false;
 
   constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter, walletAddress: string) {
-    console.log('nhao zo');
     super(kvStore, chainId, chainGetter, '');
 
     this.walletAddress = walletAddress;
-    // this.fetchResponse();
+    
     makeObservable(this);
   }
 
@@ -95,30 +94,12 @@ export class ObservableQueryEvmBalances extends ObservableChainQuery<Balances> {
       yield super.fetch();
     }
   }
-  public get isStarted(): boolean {
-    return true;
-  }
-  //   protected setResponse(response: Readonly<QueryResponse<Balances>>) {
-  //     super.setResponse(response);
-
-  //     const chainInfo = this.chainGetter.getChain(this.chainId);
-  //     // Attempt to register the denom in the returned response.
-  //     // If it's already registered anyway, it's okay because the method below doesn't do anything.
-  //     // Better to set it as an array all at once to reduce computed.
-  //     const denoms = response.data.balances.map((coin) => coin.denom);
-  //     chainInfo.addUnknownCurrencies(...denoms);
-  //   }
-
   protected async fetchResponse(): Promise<QueryResponse<Balances>> {
     try {
       const web3 = new Web3(this.chainGetter.getChain(this.chainId).rest);
-      console.log('🚀 ~ ObservableQueryEvmBalances ~ fetchResponse ~ web3:', web3);
-      console.log('🚀 ~ ObservableQueryEvmBalances ~ fetchResponse ~ this.walletAddress:', this.walletAddress);
       const ethBalance = await web3.eth.getBalance(this.walletAddress);
-
       console.log('🚀 ~ ObservableQueryEvmBalances ~ fetchResponse ~ ethBalance:', ethBalance);
       const denomNative = this.chainGetter.getChain(this.chainId).stakeCurrency.coinMinimalDenom;
-      console.log('🚀 ~ ObservableQueryEvmBalances ~ fetchResponse ~ denomNative:', denomNative);
       const balances: CoinPrimitive[] = [
         {
           amount: ethBalance,
@@ -129,8 +110,6 @@ export class ObservableQueryEvmBalances extends ObservableChainQuery<Balances> {
       const data = {
         balances
       };
-      console.log('🚀 ~ ObservableQueryEvmBalances ~ fetchResponse ~ data:', data);
-
       return {
         status: 1,
         staled: false,

@@ -4,7 +4,7 @@ import { KVStore } from '@owallet/common';
 import { ObservableQueryErc20ContractInfo } from './erc20-contract-info';
 import { DeepReadonly } from 'utility-types';
 import { ObservableQueryErc20BalanceRegistry } from './erc20-balance';
-import { QueriesWithCosmosAndSecretAndCosmwasm } from '../cosmwasm';
+import { QueriesWrappedCosmwasm } from '../cosmwasm';
 import { OWallet } from '@owallet/types';
 import { ObservableQueryEvmBalance } from './evm-balance';
 import { ObservableQueryEvmBalanceRegistry } from './balance';
@@ -13,8 +13,8 @@ export interface HasEvmQueries {
   evm: EvmQueries;
 }
 
-export class QueriesWithCosmosAndSecretAndCosmwasmAndEvm
-  extends QueriesWithCosmosAndSecretAndCosmwasm
+export class QueriesWrappedEvm
+  extends QueriesWrappedCosmwasm
   implements HasEvmQueries
 {
   public evm: EvmQueries;
