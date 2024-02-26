@@ -12,15 +12,15 @@ export class ObservableQueryErc20Balance extends ObservableCosmwasmContractChain
     chainId: string,
     chainGetter: ChainGetter,
     protected readonly contractAddress: string,
-    protected readonly bech32Address: string
+    protected readonly walletAddress: string
   ) {
     super(kvStore, chainId, chainGetter, contractAddress, {
-      balance: { address: bech32Address }
+      balance: { address: walletAddress }
     });
   }
 
   protected canFetch(): boolean {
-    return super.canFetch() && this.bech32Address !== '';
+    return super.canFetch() && this.walletAddress !== '';
   }
 }
 
@@ -32,7 +32,7 @@ export class ObservableQueryErc20BalanceInner extends ObservableQueryBalanceInne
     chainId: string,
     chainGetter: ChainGetter,
     denomHelper: DenomHelper,
-    protected readonly bech32Address: string
+    protected readonly walletAddress: string
   ) {
     super(
       kvStore,
@@ -50,7 +50,7 @@ export class ObservableQueryErc20BalanceInner extends ObservableQueryBalanceInne
       chainId,
       chainGetter,
       denomHelper.contractAddress,
-      bech32Address
+      walletAddress
     );
   }
 
@@ -92,12 +92,12 @@ export class ObservableQueryErc20BalanceRegistry implements BalanceRegistry {
   getBalanceInner(
     chainId: string,
     chainGetter: ChainGetter,
-    bech32Address: string,
+    walletAddress: string,
     minimalDenom: string
   ): ObservableQueryBalanceInner | undefined {
     const denomHelper = new DenomHelper(minimalDenom);
     if (denomHelper.type === 'erc20') {
-      return new ObservableQueryErc20BalanceInner(this.kvStore, chainId, chainGetter, denomHelper, bech32Address);
+      return new ObservableQueryErc20BalanceInner(this.kvStore, chainId, chainGetter, denomHelper, walletAddress);
     }
   }
 }

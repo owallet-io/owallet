@@ -36,6 +36,7 @@ export class EvmQueries {
   public readonly queryEvmBalance: DeepReadonly<ObservableQueryEvmBalance>;
 
   constructor(base: QueriesSetBase, kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
+    console.log('add balance');
     base.queryBalances.addBalanceRegistry(new ObservableQueryEvmBalanceRegistry(kvStore));
 
     // queryEvmBalance, we need to seperate native balance from cosmos as it is default implementation

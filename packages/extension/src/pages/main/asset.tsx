@@ -215,28 +215,25 @@ export const AssetChartViewEvm: FunctionComponent = observer(() => {
   const accountInfo = accountStore.getAccount(current.chainId);
   // wait for account to be
   if (!accountInfo.evmosHexAddress) return null;
-  let evmosAddress = accountInfo.evmosHexAddress;
+  let walletAddress = accountInfo.getAddressDisplay(keyRingStore.keyRingLedgerAddresses, true);
   const isTronNetwork = chainStore.current.chainId === TRON_ID;
-  if (keyRingStore.keyRingType === 'ledger' && chainStore.current.networkType === 'evm') {
-    evmosAddress = keyRingStore?.keyRingLedgerAddresses?.eth;
-    if (isTronNetwork) {
-      evmosAddress =
-        keyRingStore?.keyRingLedgerAddresses?.trx && getEvmAddress(keyRingStore?.keyRingLedgerAddresses?.trx);
-    }
-  }
-  const balance = queries.evm.queryEvmBalance.getQueryBalance(evmosAddress)?.balance;
-  let totalPrice;
-  let total;
-  if (evmosAddress) {
-    total = queries.evm.queryEvmBalance.getQueryBalance(evmosAddress)?.balance;
-    if (total) {
-      totalPrice =
-        isTronNetwork && total
-          ? toDisplay(total.amount.int.value, 24) *
-            priceStore?.getPrice(chainStore?.current?.stakeCurrency?.coinGeckoId)
-          : priceStore?.calculatePrice(total, fiatCurrency);
-    }
-  }
+  const queryBalances = queries.queryBalances.getQueryBech32Address(walletAddress).balances;
+  console.log('🚀 ~ constAssetChartViewEvm:FunctionComponent=observer ~ queryBalances:', queryBalances);
+
+  // const balance = queries.evm.queryEvmBalance.getQueryBalance(walletAddress)?.balance;
+  // let totalPrice;
+  // let total;
+  // if (walletAddress) {
+  //   total = balance;
+  //   if (total) {
+  //     totalPrice =
+  //       isTronNetwork && total
+  //         ? toDisplay(total.amount.int.value, 24) *
+  //           priceStore?.getPrice(chainStore?.current?.stakeCurrency?.coinGeckoId)
+  //         : priceStore?.calculatePrice(total, fiatCurrency);
+  //   }
+  // }
+
   return (
     <React.Fragment>
       <div className={styleAsset.containerChart}>
@@ -245,13 +242,13 @@ export const AssetChartViewEvm: FunctionComponent = observer(() => {
             <FormattedMessage id="main.account.chart.total-balance" />
           </div>
           <div className={styleAsset.small}>
-            {!isTronNetwork
+            {/* {!isTronNetwork
               ? totalPrice
                 ? totalPrice.toString()
                 : total?.shrink(true).maxDecimals(6).toString()
               : null}
 
-            {isTronNetwork && totalPrice && parseFloat(totalPrice).toFixed(2) + ' $'}
+            {isTronNetwork && totalPrice && parseFloat(totalPrice).toFixed(2) + ' $'} */}
           </div>
         </div>
         <React.Suspense fallback={<div style={{ height: '150px' }} />}>
@@ -273,11 +270,11 @@ export const AssetChartViewEvm: FunctionComponent = observer(() => {
               color: '#353945E5'
             }}
           >
-            {!isTronNetwork && balance?.trim(true).shrink(true).maxDecimals(6).toString()}
+            {/* {!isTronNetwork && balance?.trim(true).shrink(true).maxDecimals(6).toString()}
 
             {isTronNetwork && total
               ? toDisplay(total.amount.int.value, 24) + ` ${chainStore.current?.stakeCurrency.coinDenom}`
-              : null}
+              : null} */}
           </div>
         </div>
       </div>

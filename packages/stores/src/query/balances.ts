@@ -73,6 +73,7 @@ export class ObservableQueryBalancesInner {
 
   protected getBalanceInner(currency: AppCurrency): ObservableQueryBalanceInner {
     let key = currency.coinMinimalDenom;
+
     if (!this.balanceMap.has(key)) {
       runInAction(() => {
         let balanceInner: ObservableQueryBalanceInner | undefined;
@@ -124,7 +125,7 @@ export class ObservableQueryBalancesInner {
         result.push(balanceInner);
       }
     }
-
+    console.log('🚀 ~ ObservableQueryBalancesInner ~ getbalances ~ result:', result);
     return result;
   }
 
@@ -215,6 +216,7 @@ export class ObservableQueryBalances extends HasMapStore<ObservableQueryBalances
   }
 
   getQueryBech32Address(bech32Address: string): ObservableQueryBalancesInner {
+    console.log('🚀 ~ ObservableQueryBalances ~ addBalanceRegistry ~ this.balanceRegistries:', this.balanceRegistries);
     return this.get(bech32Address) as ObservableQueryBalancesInner;
   }
 }
