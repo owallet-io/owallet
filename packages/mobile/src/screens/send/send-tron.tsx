@@ -115,17 +115,7 @@ export const SendTronScreen: FunctionComponent = observer((props) => {
   return (
     <PageWithScrollView>
       <View style={{ marginBottom: 99 }}>
-        <View style={{ alignItems: 'center', marginVertical: spacing['16'] }}>
-          <Text
-            style={{
-              fontWeight: '700',
-              fontSize: 24,
-              lineHeight: 34
-            }}
-          >
-            Send
-          </Text>
-        </View>
+        <View style={{ alignItems: 'center', marginVertical: spacing['16'] }}></View>
         <View style={styles.sendInputRoot}>
           <TextInput
             label="Token"

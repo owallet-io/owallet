@@ -75,9 +75,13 @@ export const SendScreen: FunctionComponent = observer(() => {
     queries.queryBalances,
     EthereumEndpoint,
     chainStore.current.networkType === 'evm' && queriesStore.get(chainStore.current.chainId).evm.queryEvmBalance,
+
     address
   );
-
+  console.log(
+    '🚀 ~ constSendScreen:FunctionComponent=observer ~ chainStore.current.chainId:',
+    chainStore.current.chainId
+  );
   useEffect(() => {
     if (route?.params?.currency) {
       const currency = sendConfigs.amountConfig.sendableCurrencies.find((cur) => {
@@ -119,7 +123,7 @@ export const SendScreen: FunctionComponent = observer(() => {
   return (
     <PageWithScrollView backgroundColor={colors['background']}>
       <View style={{ marginBottom: 99 }}>
-        <OWSubTitleHeader title="Send" />
+        {/* <OWSubTitleHeader title="Send" /> */}
         <OWBox>
           <CurrencySelector
             label="Select a token"

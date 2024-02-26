@@ -154,7 +154,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
   return (
     <PageWithScrollView backgroundColor={colors['background']}>
       <View style={{ marginBottom: 99 }}>
-        <OWSubTitleHeader title="Send" />
+        {/* <OWSubTitleHeader title="Send" /> */}
         <OWBox>
           <CurrencySelector
             label="Select a token"
