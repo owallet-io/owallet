@@ -46,10 +46,10 @@ jobs:
         with:
           submodules: true
 
-      - name: Git Sumbodule Update
-        working-directory: packages/background
-        run: |
-          git pull origin master
+      # - name: Git Sumbodule Update
+      #   working-directory: packages/background
+      #   run: |
+      #     git pull origin master
 
       - name: Install Dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true'

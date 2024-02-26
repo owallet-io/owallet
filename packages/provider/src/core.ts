@@ -165,6 +165,7 @@ export class OWallet implements IOWallet {
 
     const response = await this.requester.sendMessage(BACKGROUND_PORT, msg);
 
+    if (!response) throw Error('Transaction Rejected!');
     return {
       signed: {
         bodyBytes: response.signed.bodyBytes,
@@ -467,8 +468,5 @@ export class Oasis implements IOasis {
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
-  async getDefaultOasisAddress(): Promise<unknown> {
-    const msg = new GetDefaultAddressOasisMsg(ChainIdEnum.Oasis);
-    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
-  }
+  
 }

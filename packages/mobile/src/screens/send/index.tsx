@@ -19,7 +19,7 @@ import { Toggle } from '../../components/toggle';
 import { OWBox } from '@src/components/card';
 import { OWSubTitleHeader } from '@src/components/header';
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     sendInputRoot: {
       paddingHorizontal: spacing['20'],
@@ -40,7 +40,7 @@ const styling = colors =>
   });
 
 export const SendScreen: FunctionComponent = observer(() => {
-  const { chainStore, accountStore, queriesStore, analyticsStore, sendStore } = useStore();
+  const { chainStore, accountStore, queriesStore, analyticsStore, sendStore, keyRingStore } = useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
   const [customFee, setCustomFee] = useState(false);
@@ -66,19 +66,25 @@ export const SendScreen: FunctionComponent = observer(() => {
 
   const account = accountStore.getAccount(chainId);
   const queries = queriesStore.get(chainId);
-
+  const address = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
   const sendConfigs = useSendTxConfig(
     chainStore,
     chainId,
     account.msgOpts['send'],
-    account.bech32Address,
+    address,
     queries.queryBalances,
-    EthereumEndpoint
-  );
+    EthereumEndpoint,
+    chainStore.current.networkType === 'evm' && queriesStore.get(chainStore.current.chainId).evm.queryEvmBalance,
 
+    address
+  );
+  console.log(
+    '🚀 ~ constSendScreen:FunctionComponent=observer ~ chainStore.current.chainId:',
+    chainStore.current.chainId
+  );
   useEffect(() => {
     if (route?.params?.currency) {
-      const currency = sendConfigs.amountConfig.sendableCurrencies.find(cur => {
+      const currency = sendConfigs.amountConfig.sendableCurrencies.find((cur) => {
         if (cur?.contractAddress?.includes(route?.params?.contractAddress)) {
           return cur?.contractAddress?.includes(route?.params?.contractAddress);
         }
@@ -117,7 +123,7 @@ export const SendScreen: FunctionComponent = observer(() => {
   return (
     <PageWithScrollView backgroundColor={colors['background']}>
       <View style={{ marginBottom: 99 }}>
-        <OWSubTitleHeader title="Send" />
+        {/* <OWSubTitleHeader title="Send" /> */}
         <OWBox>
           <CurrencySelector
             label="Select a token"
@@ -142,7 +148,7 @@ export const SendScreen: FunctionComponent = observer(() => {
           <AmountInput
             placeholder={`ex. 1000 ${chainStore.current.stakeCurrency.coinDenom}`}
             label="Amount"
-            allowMax={chainStore.current.networkType !== 'evm' ? true : false}
+            // allowMax={chainStore.current.networkType !== 'evm' ? true : false}
             amountConfig={sendConfigs.amountConfig}
             labelStyle={styles.sendlabelInput}
             inputContainerStyle={{
@@ -160,7 +166,7 @@ export const SendScreen: FunctionComponent = observer(() => {
             >
               <Toggle
                 on={customFee}
-                onChange={value => {
+                onChange={(value) => {
                   setCustomFee(value);
                   if (!value) {
                     if (sendConfigs.feeConfig.feeCurrency && !sendConfigs.feeConfig.fee) {
@@ -192,7 +198,7 @@ export const SendScreen: FunctionComponent = observer(() => {
               placeholder="Type your Fee here"
               keyboardType={'numeric'}
               labelStyle={styles.sendlabelInput}
-              onChangeText={text => {
+              onChangeText={(text) => {
                 const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(DecUtils.getTenExponentNInPrecisionRange(6));
 
                 sendConfigs.feeConfig.setManualFee({
@@ -250,8 +256,8 @@ export const SendScreen: FunctionComponent = observer(() => {
                     },
 
                     {
-                      onFulfill: tx => {},
-                      onBroadcasted: txHash => {
+                      onFulfill: (tx) => {},
+                      onBroadcasted: (txHash) => {
                         analyticsStore.logEvent('Send token tx broadcasted', {
                           chainId: chainStore.current.chainId,
                           chainName: chainStore.current.chainName,

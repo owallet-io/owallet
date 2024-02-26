@@ -6,12 +6,12 @@ import {
   MemoInput,
   CoinInputEvm
 } from '../../components/form';
+
+import { Signer } from '@oasisprotocol/client/dist/signature';
 import { useStore } from '../../stores';
-import bigInteger from 'big-integer';
+
 import Big from 'big.js';
 import ERC20_ABI from './erc20.json';
-
-import { HeaderLayout } from '../../layouts';
 
 import { observer } from 'mobx-react-lite';
 
@@ -24,13 +24,18 @@ import { Button } from 'reactstrap';
 import { useHistory, useLocation } from 'react-router';
 import queryString from 'querystring';
 import Web3 from 'web3';
+import { useFeeEthereumConfig, useGasEthereumConfig, useSendTxConfig } from '@owallet/hooks';
+import { fitPopupWindow } from '@owallet/popup';
 import {
-  useFeeEthereumConfig,
-  useGasEthereumConfig,
-  useSendTxConfig
-} from '@owallet/hooks';
-import { fitPopupWindow, openPopupWindow, PopupSize } from '@owallet/popup';
-import { EthereumEndpoint } from '@owallet/common';
+  ChainIdEnum,
+  EthereumEndpoint,
+  OasisTransaction,
+  getOasisNic,
+  hex2uint,
+  parseRoseStringToBigNumber,
+  signerFromPrivateKey,
+  uint2hex
+} from '@owallet/common';
 import classNames from 'classnames';
 import { GasEthereumInput } from '../../components/form/gas-ethereum-input';
 import { FeeInput } from '../../components/form/fee-input';
@@ -69,22 +74,15 @@ export const SendEvmPage: FunctionComponent<{
 
   const notification = useNotification();
 
-  const {
-    chainStore,
-    accountStore,
-    queriesStore,
-    analyticsStore,
-    keyRingStore
-  } = useStore();
+  const { chainStore, accountStore, queriesStore, analyticsStore, keyRingStore } = useStore();
   const current = chainStore.current;
   const decimals = chainStore.current.feeCurrencies[0].coinDecimals;
+  console.log('🚀 ~ decimals:', decimals);
 
   const accountInfo = accountStore.getAccount(current.chainId);
   const [gasPrice, setGasPrice] = useState('0');
-  const address =
-    keyRingStore.keyRingType === 'ledger'
-      ? keyRingStore?.keyRingLedgerAddresses?.eth
-      : accountInfo.evmosHexAddress;
+  const address = accountInfo.getAddressDisplay(keyRingStore.keyRingLedgerAddresses, false);
+
   const sendConfigs = useSendTxConfig(
     chainStore,
     current.chainId,
@@ -92,16 +90,18 @@ export const SendEvmPage: FunctionComponent<{
     address,
     queriesStore.get(current.chainId).queryBalances,
     EthereumEndpoint,
-    chainStore.current.networkType === 'evm' &&
-    queriesStore.get(current.chainId).evm.queryEvmBalance,
+    chainStore.current.networkType === 'evm' && queriesStore.get(current.chainId).evm.queryEvmBalance,
     address
   );
+  const initGasDefault = current.chainId !== ChainIdEnum.Oasis ? 21000 : 0;
+  const recipient = sendConfigs.recipientConfig.recipient;
+  const amount = sendConfigs.amountConfig.amount;
 
   const gasConfig = useGasEthereumConfig(
     chainStore,
     current.chainId,
     // Hard code gas limit of evm
-    21000
+    initGasDefault
   );
   const feeConfig = useFeeEthereumConfig(chainStore, current.chainId);
 
@@ -123,65 +123,55 @@ export const SendEvmPage: FunctionComponent<{
         },
         params: []
       });
-      setGasPrice(
-        new Big(parseInt(response.data.result, 16))
-          .div(new Big(10).pow(decimals))
-          .toFixed(decimals)
-      );
+      setGasPrice(new Big(parseInt(response.data.result, 16)).div(new Big(10).pow(decimals)).toFixed(decimals));
     } catch (error) {
       console.log(error);
     }
   };
-
+  const currency = sendConfigs.amountConfig.sendCurrency;
   useEffect(() => {
     (async () => {
       try {
+        if (chainStore.current.chainId === ChainIdEnum.Oasis) {
+          gasConfig.setGas(0);
+          feeConfig.setFee('0');
+          return;
+        }
         const web3 = new Web3(chainStore.current.rest);
         let estimate = 21000;
-        if (coinMinimalDenom) {
+        if (currency?.coinMinimalDenom?.includes('erc20')) {
           const tokenInfo = new web3.eth.Contract(
             // @ts-ignore
             ERC20_ABI,
-            query?.defaultDenom?.split(':')?.[1]
+            currency?.coinMinimalDenom?.split(':')?.[1]
           );
-          estimate = await tokenInfo.methods
-            .transfer(
-              accountInfo?.evmosHexAddress,
-              '0x' +
-              parseFloat(
-                new Big(sendConfigs.amountConfig.amount)
-                  .mul(new Big(10).pow(decimals))
-                  .toString()
-              ).toString(16)
-            )
-            .estimateGas({
-              from: query?.defaultDenom?.split(':')?.[1]
+
+          if (amount && recipient) {
+            estimate = await tokenInfo.methods.transfer(recipient, Web3.utils.toWei(amount)).estimateGas({
+              from: accountInfo?.evmosHexAddress
             });
+          }
         } else {
-          estimate = await web3.eth.estimateGas({
-            to: accountInfo?.evmosHexAddress,
-            from: query?.defaultDenom?.split(':')?.[1]
-          });
+          if (recipient) {
+            estimate = await web3.eth.estimateGas({
+              to: recipient,
+              from: accountInfo?.evmosHexAddress
+            });
+          }
         }
         gasConfig.setGas(estimate ?? 21000);
-        feeConfig.setFee(
-          new Big(estimate ?? 21000).mul(new Big(gasPrice)).toFixed(decimals)
-        );
+        feeConfig.setFee(new Big(estimate ?? 21000).mul(new Big(gasPrice)).toFixed(decimals));
       } catch (error) {
-        
         gasConfig.setGas(50000);
-        feeConfig.setFee(
-          new Big(50000).mul(new Big(gasPrice)).toFixed(decimals)
-        );
+        feeConfig.setFee(new Big(50000).mul(new Big(gasPrice)).toFixed(decimals));
       }
     })();
-  }, [gasPrice, sendConfigs.amountConfig.amount]);
+  }, [gasPrice, amount, recipient, currency]);
 
+  console.log('🚀 ~ currency:', currency);
   useEffect(() => {
     if (query.defaultDenom) {
-      const currency = current.currencies.find(
-        cur => cur.coinMinimalDenom === query.defaultDenom
-      );
+      const currency = current.currencies.find((cur) => cur.coinMinimalDenom === query.defaultDenom);
 
       if (currency) {
         sendConfigs.amountConfig.setSendCurrency(currency);
@@ -217,73 +207,45 @@ export const SendEvmPage: FunctionComponent<{
     sendConfigs.gasConfig.getError() ??
     sendConfigs.feeConfig.getError();
   const txStateIsValid = sendConfigError == null;
+  const submitSignOasis = async (tx) => {
+    const { bytes, amount, to } = tx;
+    const signer = signerFromPrivateKey(bytes);
 
+    const bigIntAmount = BigInt(parseRoseStringToBigNumber(amount).toString());
+    const nic = getOasisNic(chainStore.current.raw.grpc);
+    const chainContext = await nic.consensusGetChainContext();
+
+    const tw = await OasisTransaction.buildTransfer(nic, signer as Signer, to, bigIntAmount);
+
+    await OasisTransaction.sign(chainContext, signer as Signer, tw);
+
+    await OasisTransaction.submit(nic, tw);
+
+    notification.push({
+      placement: 'top-center',
+      type: 'success',
+      duration: 5,
+      content: 'Transaction successful',
+      canDelete: true,
+      transition: {
+        duration: 0.25
+      }
+    });
+  };
+  const gasPriceToBig = () => {
+    if (parseFloat(feeConfig.feeRaw) <= 0 || parseFloat(gasConfig.gasRaw) <= 0) return '0';
+    return parseInt(
+      new Big(parseFloat(feeConfig.feeRaw))
+        .mul(new Big(10).pow(decimals))
+        .div(parseFloat(gasConfig.gasRaw))
+        .toFixed(decimals)
+    ).toString(16);
+  };
+  const stdFeeForGas = () => {
+    if (parseFloat(gasConfig.gasRaw) <= 0) return '0';
+    return parseFloat(gasConfig.gasRaw).toString(16);
+  };
   return (
-    // <HeaderLayout
-    //   showChainName
-    //   canChangeChainInfo={false}
-    //   onBackButton={
-    //     isDetachedPage
-    //       ? undefined
-    //       : () => {
-    //           history.goBack();
-    //         }
-    //   }
-    //   rightRenderer={
-    //     isDetachedPage ? undefined : (
-    //       <div
-    //         style={{
-    //           height: '64px',
-    //           display: 'flex',
-    //           flexDirection: 'row',
-    //           alignItems: 'center',
-    //           paddingRight: '20px'
-    //         }}
-    //       >
-    //         <i
-    //           className="fas fa-external-link-alt"
-    //           style={{
-    //             cursor: 'pointer',
-    //             padding: '4px',
-    //             color: '#ffffff'
-    //           }}
-    //           onClick={async (e) => {
-    //             e.preventDefault();
-
-    //             const windowInfo = await browser.windows.getCurrent();
-
-    //             let queryString = `?detached=true&defaultDenom=${sendConfigs.amountConfig.sendCurrency.coinMinimalDenom}`;
-    //             if (sendConfigs.recipientConfig.rawRecipient) {
-    //               queryString += `&defaultRecipient=${sendConfigs.recipientConfig.rawRecipient}`;
-    //             }
-    //             if (sendConfigs.amountConfig.amount) {
-    //               queryString += `&defaultAmount=${sendConfigs.amountConfig.amount}`;
-    //             }
-    //             if (sendConfigs.memoConfig.memo) {
-    //               queryString += `&defaultMemo=${sendConfigs.memoConfig.memo}`;
-    //             }
-
-    //             await openPopupWindow(
-    //               browser.runtime.getURL(`/popup.html#/send${queryString}`),
-    //               undefined,
-    //               {
-    //                 top: (windowInfo.top || 0) + 80,
-    //                 left:
-    //                   (windowInfo.left || 0) +
-    //                   (windowInfo.width || 0) -
-    //                   PopupSize.width -
-    //                   20
-    //               }
-    //             );
-    //             window.close();
-    //           }}
-    //         />
-    //       </div>
-    //     )
-    //   }
-    // >
-    // console.log({ sendConfigs: sendConfigs.amountConfig});
-
     <>
       <form
         className={style.formContainer}
@@ -292,17 +254,10 @@ export const SendEvmPage: FunctionComponent<{
 
           if (accountInfo.isReadyToSendMsgs && txStateIsValid) {
             try {
-              const gasPrice =
-                '0x' +
-                parseInt(
-                  new Big(parseFloat(feeConfig.feeRaw))
-                    .mul(new Big(10).pow(decimals))
-                    .div(parseFloat(gasConfig.gasRaw))
-                    .toFixed(decimals)
-                ).toString(16);
-             
+              const gasPrice = '0x' + gasPriceToBig();
+
               const stdFee = {
-                gas: '0x' + parseFloat(gasConfig.gasRaw).toString(16),
+                gas: '0x' + stdFeeForGas(),
                 gasPrice
               };
               (window as any).accountInfo = accountInfo;
@@ -326,36 +281,37 @@ export const SendEvmPage: FunctionComponent<{
                       feeType: sendConfigs.feeConfig.feeType
                     });
                   },
-                  onFulfill: tx => {
-                    
-                    notification.push({
-                      placement: 'top-center',
-                      type: tx?.status === '0x1' ? 'success' : 'danger',
-                      duration: 5,
-                      content:
-                        tx?.status === '0x1'
-                          ? `Transaction successful with tx: ${tx?.transactionHash}`
-                          : `Transaction failed with tx: ${tx?.transactionHash}`,
-                      canDelete: true,
-                      transition: {
-                        duration: 0.25
-                      }
-                    });
+                  onFulfill: async (tx) => {
+                    console.log('🚀 ~ onSubmit={ ~ tx:', tx);
+                    if (tx && chainStore.current.chainId === ChainIdEnum.Oasis) {
+                      submitSignOasis(tx);
+                      return;
+                    }
+                    if (tx?.status) {
+                      notification.push({
+                        placement: 'top-center',
+                        type: tx?.status === '0x1' ? 'success' : 'danger',
+                        duration: 5,
+                        content:
+                          tx?.status === '0x1'
+                            ? `Transaction successful with tx: ${tx?.transactionHash}`
+                            : `Transaction failed with tx: ${tx?.transactionHash}`,
+                        canDelete: true,
+                        transition: {
+                          duration: 0.25
+                        }
+                      });
+                    }
                   }
                 },
-                sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.startsWith(
-                  'erc20'
-                )
+                sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.startsWith('erc20')
                   ? {
-                    type: 'erc20',
-                    from: address,
-                    contract_addr:
-                      sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.split(
-                        ':'
-                      )[1],
-                    recipient: sendConfigs.recipientConfig.recipient,
-                    amount: sendConfigs.amountConfig.amount
-                  }
+                      type: 'erc20',
+                      from: address,
+                      contract_addr: sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.split(':')[1],
+                      recipient: sendConfigs.recipientConfig.recipient,
+                      amount: sendConfigs.amountConfig.amount
+                    }
                   : null
               );
               if (!isDetachedPage) {
@@ -372,10 +328,11 @@ export const SendEvmPage: FunctionComponent<{
                 }
               });
             } catch (e: any) {
+              console.log('🚀 ~ onSubmit={ ~ e:', e);
               if (!isDetachedPage) {
                 history.replace('/');
               }
-              
+
               notification.push({
                 type: 'warning',
                 placement: 'top-center',
@@ -422,9 +379,9 @@ export const SendEvmPage: FunctionComponent<{
             <GasEthereumInput
               label={intl.formatMessage({ id: 'sign.info.gas' })}
               gasConfig={gasConfig}
-            // defaultValue={
-            //   parseInt(dataSign?.data?.data?.data?.estimatedGasLimit) || 0
-            // }
+              // defaultValue={
+              //   parseInt(dataSign?.data?.data?.data?.estimatedGasLimit) || 0
+              // }
             />
             <FeeInput
               label={intl.formatMessage({ id: 'sign.info.fee' })}
@@ -459,10 +416,7 @@ export const SendEvmPage: FunctionComponent<{
             disabled={!accountInfo.isReadyToSendMsgs || !txStateIsValid}
             className={style.sendBtn}
             style={{
-              cursor:
-                accountInfo.isReadyToSendMsgs || !txStateIsValid
-                  ? 'default'
-                  : 'pointer'
+              cursor: accountInfo.isReadyToSendMsgs || !txStateIsValid ? 'default' : 'pointer'
             }}
           >
             <span className={style.sendBtnText}>

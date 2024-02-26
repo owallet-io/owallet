@@ -213,22 +213,19 @@ export const AssetChartViewEvm: FunctionComponent = observer(() => {
   const queries = queriesStore.get(current.chainId);
 
   const accountInfo = accountStore.getAccount(current.chainId);
+
+  const addressCore = accountInfo.getAddressDisplay(keyRingStore.keyRingLedgerAddresses, false);
+
   // wait for account to be
-  if (!accountInfo.evmosHexAddress) return null;
-  let evmosAddress = accountInfo.evmosHexAddress;
+  if (!addressCore) return null;
+
   const isTronNetwork = chainStore.current.chainId === TRON_ID;
-  if (keyRingStore.keyRingType === 'ledger' && chainStore.current.networkType === 'evm') {
-    evmosAddress = keyRingStore?.keyRingLedgerAddresses?.eth;
-    if (isTronNetwork) {
-      evmosAddress =
-        keyRingStore?.keyRingLedgerAddresses?.trx && getEvmAddress(keyRingStore?.keyRingLedgerAddresses?.trx);
-    }
-  }
-  const balance = queries.evm.queryEvmBalance.getQueryBalance(evmosAddress)?.balance;
+
+  let total: any = queries.evm.queryEvmBalance.getQueryBalance(addressCore)?.balance;
+
   let totalPrice;
-  let total;
-  if (evmosAddress) {
-    total = queries.evm.queryEvmBalance.getQueryBalance(evmosAddress)?.balance;
+  // let total;
+  if (addressCore) {
     if (total) {
       totalPrice =
         isTronNetwork && total
@@ -273,7 +270,7 @@ export const AssetChartViewEvm: FunctionComponent = observer(() => {
               color: '#353945E5'
             }}
           >
-            {!isTronNetwork && balance?.trim(true).shrink(true).maxDecimals(6).toString()}
+            {!isTronNetwork && total?.trim(true).shrink(true).maxDecimals(6).toString()}
 
             {isTronNetwork && total
               ? toDisplay(total.amount.int.value, 24) + ` ${chainStore.current?.stakeCurrency.coinDenom}`
@@ -284,6 +281,7 @@ export const AssetChartViewEvm: FunctionComponent = observer(() => {
     </React.Fragment>
   );
 });
+
 export const AssetChartViewBtc: FunctionComponent = observer(() => {
   const { chainStore, accountStore, queriesStore, priceStore, keyRingStore } = useStore();
 
