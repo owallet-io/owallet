@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  // 👇️ this may vary depending on how you
+  // name your test files
+  "exclude": [
+    "src/**/__mocks__/*",
+    "src/**/__tests__/*",
+    "src/tx/tron.spec.ts",
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx",
+    "build/**/*"
+  ]
+}
