@@ -204,91 +204,91 @@ export const AssetStakedChartView: FunctionComponent = observer(() => {
 
 export const AssetChartViewEvm: FunctionComponent = observer(() => {
   const { chainStore, accountStore, queriesStore, priceStore, keyRingStore } = useStore();
-
+  const intl = useIntl();
   const language = useLanguage();
 
-  const fiatCurrency = language.fiatCurrency;
+  const fiat = language.fiatCurrency;
 
   const current = chainStore.current;
 
   const queries = queriesStore.get(current.chainId);
 
   const accountInfo = accountStore.getAccount(current.chainId);
-  // wait for account to be
-  if (!accountInfo.evmosHexAddress) return null;
-  let walletAddress = accountInfo.getAddressDisplay(keyRingStore.keyRingLedgerAddresses, true);
-  const isTronNetwork = chainStore.current.chainId === TRON_ID;
-  // const queryBalances = queries.queryBalances.getQueryBech32Address(walletAddress).balances;
-
-  const queryBalances = queries.queryBalances.getQueryBech32Address(walletAddress);
+  const evmAddress = accountInfo.getAddressDisplay(keyRingStore.keyRingLedgerAddresses,true)
+  const queryBalances = queries.queryBalances.getQueryBech32Address(evmAddress);
 
   const balanceStakableQuery = queryBalances.stakable;
 
   const stakable = balanceStakableQuery?.balance;
-  console.log("🚀 ~ constAssetChartViewEvm:FunctionComponent=observer ~ displayTokens:", stakable)
 
+  // const delegated = queries.cosmos.queryDelegations
+  //   .getQueryBech32Address(accountInfo.bech32Address)
+  //   .total.upperCase(true);
 
+  // const unbonding = queries.cosmos.queryUnbondingDelegations
+  //   .getQueryBech32Address(accountInfo.bech32Address)
+  //   .total.upperCase(true);
 
+  // const stakedSum = delegated.add(unbonding);
 
-  // const balance = queries.evm.queryEvmBalance.getQueryBalance(walletAddress)?.balance;
-  // let totalPrice;
-  // let total;
-  // if (walletAddress) {
-  //   total = balance;
-  //   if (total) {
-  //     totalPrice =
-  //       isTronNetwork && total
-  //         ? toDisplay(total.amount.int.value, 24) *
-  //           priceStore?.getPrice(chainStore?.current?.stakeCurrency?.coinGeckoId)
-  //         : priceStore?.calculatePrice(total, fiatCurrency);
-  //   }
-  // }
+  // const totalStake = stakable.add(stakedSum);
+
+  const tokens = queryBalances.positiveNativeUnstakables.concat(queryBalances.nonNativeBalances);
+  const totalPrice = useMemo(() => {
+    const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
+    if (!fiatCurrency) {
+      return undefined;
+    }
+    if (!stakable.isReady) {
+      return undefined;
+    }
+    let res = priceStore.calculatePrice(stakable, fiat);
+    for (const token of tokens) {
+      const price = priceStore.calculatePrice(token.balance, fiat);
+      if (price) {
+        res = res.add(price);
+      }
+    }
+
+    return res;
+  }, [stakable, fiat]);
 
   return (
     <React.Fragment>
-      <div className={styleAsset.containerChart}>
-        <div className={styleAsset.centerText}>
-          <div className={styleAsset.big}>
-            <FormattedMessage id="main.account.chart.total-balance" />
-          </div>
-          <div className={styleAsset.small}>
-            {/* {!isTronNetwork
-              ? totalPrice
-                ? totalPrice.toString()
-                : total?.shrink(true).maxDecimals(6).toString()
-              : null}
-
-            {isTronNetwork && totalPrice && parseFloat(totalPrice).toFixed(2) + ' $'} */}
-          </div>
+    <div className={styleAsset.containerChart}>
+      <div className={styleAsset.centerText}>
+        <div className={styleAsset.big}>
+          <FormattedMessage id="main.account.chart.total-balance" />
         </div>
-        <React.Suspense fallback={<div style={{ height: '150px' }} />}>
-          <img src={require('../../public/assets/img/total-balance.svg')} alt="total-balance" />
-        </React.Suspense>
-      </div>
-      <div style={{ marginTop: '12px', width: '100%' }}>
-        <div className={styleAsset.legend}>
-          <div className={styleAsset.label} style={{ color: '#777E90' }}>
-            <span className="badge-dot badge badge-secondary">
-              <i className="bg-gray" />
-            </span>
-            <FormattedMessage id="main.account.chart.available-balance" />
-          </div>
-          <div style={{ minWidth: '20px' }} />
-          <div
-            className={styleAsset.value}
-            style={{
-              color: '#353945E5'
-            }}
-          >
-            {/* {!isTronNetwork && balance?.trim(true).shrink(true).maxDecimals(6).toString()}
-
-            {isTronNetwork && total
-              ? toDisplay(total.amount.int.value, 24) + ` ${chainStore.current?.stakeCurrency.coinDenom}`
-              : null} */}
-          </div>
+        <div className={styleAsset.small}>
+          {totalPrice ? totalPrice.toString() : stakable.shrink(true).trim(true).maxDecimals(6).toString()}
         </div>
       </div>
-    </React.Fragment>
+      <React.Suspense fallback={<div style={{ height: '150px' }} />}>
+        <img src={require('../../public/assets/img/total-balance.svg')} alt="total-balance" />
+      </React.Suspense>
+    </div>
+    <div style={{ marginTop: '12px', width: '100%' }}>
+      <div className={styleAsset.legend}>
+        <div className={styleAsset.label} style={{ color: '#777E90' }}>
+          <span className="badge-dot badge badge-secondary">
+            <i className="bg-gray" />
+          </span>
+          <FormattedMessage id="main.account.chart.available-balance" />
+        </div>
+        <div style={{ minWidth: '20px' }} />
+        <div
+          className={styleAsset.value}
+          style={{
+            color: '#353945E5'
+          }}
+        >
+          {stakable.shrink(true).maxDecimals(6).toString()}
+        </div>
+      </div>
+      
+    </div>
+  </React.Fragment>
   );
 });
 export const AssetChartViewBtc: FunctionComponent = observer(() => {

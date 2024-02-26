@@ -66,9 +66,7 @@ export const SendBtcPage: FunctionComponent<{
     accountInfo.msgOpts['send'],
     address,
     queries.queryBalances,
-    null,
-    null,
-    null,
+    EthereumEndpoint,
     queries.bitcoin.queryBitcoinBalance
   );
 

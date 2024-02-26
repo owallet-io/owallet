@@ -4,7 +4,7 @@ import { DeepReadonly } from 'utility-types';
 import { ObservableQueryBalances } from './balances';
 import { ChainGetter } from '../common';
 import { OWallet } from '@owallet/types';
-import { ObservableQueryEvmBalance } from './evm';
+
 
 export class QueriesSetBase {
   public readonly queryBalances: DeepReadonly<ObservableQueryBalances>;

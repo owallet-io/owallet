@@ -99,12 +99,13 @@ export const MainPage: FunctionComponent = observer(() => {
   }, [networkType]);
 
   const handleCheckSendPage = () => {
-    if (networkType === 'evm') {
-      if (chainId === TRON_ID) {
-        return <SendTronEvmPage />;
-      }
-      return <SendEvmPage />;
-    } else if (networkType === 'bitcoin') {
+    // if (networkType === 'evm') {
+    if (chainId === TRON_ID) {
+      return <SendTronEvmPage />;
+    }
+    // return <SendEvmPage />;
+    // }
+    else if (networkType === 'bitcoin') {
       return <SendBtcPage />;
     }
     return <SendPage />;
@@ -121,11 +122,7 @@ export const MainPage: FunctionComponent = observer(() => {
               <AccountView />
               {renderAssetView}
             </div>
-            {networkType === 'evm' ? (
-              <div style={{ marginTop: 24 }}>
-                <TxButtonEvmView hasSend={hasSend} setHasSend={setHasSend} />
-              </div>
-            ) : networkType === 'bitcoin' ? (
+            {networkType === 'bitcoin' ? (
               <div style={{ marginTop: 24 }}>
                 <TxButtonBtcView hasSend={hasSend} setHasSend={setHasSend} />
               </div>

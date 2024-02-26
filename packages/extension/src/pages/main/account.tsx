@@ -86,7 +86,7 @@ export const AccountView: FunctionComponent = observer(() => {
         </div>
         <div style={{ flex: 1, textAlign: 'right' }}></div>
       </div>
-      {(networkType === 'cosmos' || networkType === 'bitcoin') && (
+      {/* {(networkType === 'cosmos' || networkType === 'bitcoin') && ( */}
         <div className={styleAccount.containerAccount}>
           <div style={{ flex: 1 }} />
           <div className={styleAccount.address} onClick={() => copyAddress(addressDisplay)}>
@@ -100,8 +100,8 @@ export const AccountView: FunctionComponent = observer(() => {
           </div>
           <div style={{ flex: 1 }} />
         </div>
-      )}
-      {(accountInfo.hasEvmosHexAddress || networkType === 'evm') && (
+      {/* )} */}
+      {/* {(accountInfo.hasEvmosHexAddress || networkType === 'evm') && (
         <div
           className={styleAccount.containerAccount}
           style={{
@@ -166,7 +166,7 @@ export const AccountView: FunctionComponent = observer(() => {
 
           <div style={{ flex: 1 }} />
         </div>
-      )}
+      )} */}
       {networkType === 'bitcoin' && (
         <div
           style={{

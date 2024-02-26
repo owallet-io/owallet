@@ -1,7 +1,7 @@
 import { ExtraOptionSendToken, MsgOpt } from './base';
 import { AccountSetBase, AccountSetOpts } from './base';
 import { AppCurrency, OWalletSignOptions } from '@owallet/types';
-import { StdFee } from '@cosmjs/launchpad';
+
 import { DenomHelper, EVMOS_NETWORKS } from '@owallet/common';
 import { Dec, DecUtils, Int } from '@owallet/unit';
 
@@ -100,10 +100,15 @@ export class EthereumAccount {
               
               if (tx) {
                 // After succeeding to send token, refresh the balance.
-                const queryEvmBalance = this.queries.evm.queryEvmBalance.getQueryBalance(this.base.evmosHexAddress);
 
-                if (queryEvmBalance) {
-                  queryEvmBalance.fetch();
+                const queryBalance = this.queries.queryBalances
+                  .getQueryBech32Address(this.base.evmosHexAddress)
+                  .balances.find((bal) => {
+                    return bal.currency.coinMinimalDenom === currency.coinMinimalDenom;
+                  });
+
+                if (queryBalance) {
+                  queryBalance.fetch();
                 }
               }
             })
@@ -143,10 +148,14 @@ export class EthereumAccount {
               console.log('Tx on fullfill: ', tx);
               if (tx) {
                 // After succeeding to send token, refresh the balance.
-                const queryEvmBalance = this.queries.evm.queryEvmBalance.getQueryBalance(this.base.evmosHexAddress);
+                const queryBalance = this.queries.queryBalances
+                  .getQueryBech32Address(this.base.evmosHexAddress)
+                  .balances.find((bal) => {
+                    return bal.currency.coinMinimalDenom === currency.coinMinimalDenom;
+                  });
 
-                if (queryEvmBalance) {
-                  queryEvmBalance.fetch();
+                if (queryBalance) {
+                  queryBalance.fetch();
                 }
               }
             })

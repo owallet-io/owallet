@@ -92,9 +92,6 @@ export const SendEvmPage: FunctionComponent<{
     address,
     queriesStore.get(current.chainId).queryBalances,
     EthereumEndpoint,
-    chainStore.current.networkType === 'evm' &&
-    queriesStore.get(current.chainId).evm.queryEvmBalance,
-    address
   );
 
   const gasConfig = useGasEthereumConfig(

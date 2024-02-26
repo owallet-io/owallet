@@ -62,9 +62,7 @@ export const SendPage: FunctionComponent<{
     accountInfo.msgOpts.send,
     accountInfo.bech32Address,
     queriesStore.get(current.chainId).queryBalances,
-    EthereumEndpoint,
-    chainStore.current.networkType === 'evm' && queriesStore.get(current.chainId).evm.queryEvmBalance,
-    chainStore.current.networkType === 'evm' && accountInfo.evmosHexAddress
+    EthereumEndpoint
   );
 
   useEffect(() => {

@@ -5,13 +5,13 @@ import {
   ObservableQueryBitcoinBalance,
   SecretMsgOpts
 } from '@owallet/stores';
-import { ObservableQueryBalances, ObservableQueryEvmBalance } from '@owallet/stores';
+import { ObservableQueryBalances,  } from '@owallet/stores';
 import { useFeeConfig } from './fee';
 import { useMemoConfig } from './memo';
 import { useRecipientConfig } from './recipient';
 import { useSendGasConfig } from './send-gas';
 import { useAmountConfig } from './amount';
-import { AddressBtcType, IFeeRate } from '@owallet/types';
+
 
 type MsgOpts = CosmosMsgOpts & SecretMsgOpts & CosmwasmMsgOpts;
 
@@ -22,8 +22,8 @@ export const useSendTxConfig = (
   sender: string,
   queryBalances: ObservableQueryBalances,
   ensEndpoint?: string,
-  queryEvmBalances?: ObservableQueryEvmBalance,
-  senderEvm?: string,
+  // queryEvmBalances?: ObservableQueryEvmBalance,
+  // senderEvm?: string,
   queryBtcBalances?: ObservableQueryBitcoinBalance
 ) => {
   const chainInfo = chainGetter.getChain(chainId);
@@ -32,8 +32,8 @@ export const useSendTxConfig = (
     chainId,
     sender,
     queryBalances,
-    chainInfo.networkType === 'evm' && queryEvmBalances,
-    chainInfo.networkType === 'evm' && senderEvm,
+    // chainInfo.networkType === 'evm' && queryEvmBalances,
+    // chainInfo.networkType === 'evm' && senderEvm,
     chainInfo.networkType === 'bitcoin' && queryBtcBalances
   );
 
@@ -47,8 +47,8 @@ export const useSendTxConfig = (
     amountConfig,
     gasConfig,
     true,
-    chainInfo.networkType === 'evm' && queryEvmBalances,
-    chainInfo.networkType === 'evm' && senderEvm,
+    // chainInfo.networkType === 'evm' && queryEvmBalances,
+    // chainInfo.networkType === 'evm' && senderEvm,
     chainInfo.networkType === 'bitcoin' && queryBtcBalances,
     memoConfig
   );
