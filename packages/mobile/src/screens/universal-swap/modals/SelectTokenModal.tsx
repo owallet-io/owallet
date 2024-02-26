@@ -60,12 +60,15 @@ export const SelectTokenModal: FunctionComponent<{
   const renderTokenItem = useCallback(
     item => {
       if (item) {
+        // if (item.coinGeckoId === 'tether' && item.chainId === '0x01') {
+        //   return null;
+        // }
         //@ts-ignore
-        const subAmounts = Object.fromEntries(
-          Object?.entries(universalSwapStore?.getAmount ?? {}).filter(
-            ([denom]) => tokenMap?.[denom]?.chainId === item.chainId
-          )
-        ) as AmountDetails;
+        // const subAmounts = Object.fromEntries(
+        //   Object?.entries(universalSwapStore?.getAmount ?? {}).filter(
+        //     ([denom]) => tokenMap?.[denom]?.chainId === item.chainId
+        //   )
+        // ) as AmountDetails;
 
         const tokenIcon = find(tokenImg, tk => tk.coinGeckoId === item.coinGeckoId);
 

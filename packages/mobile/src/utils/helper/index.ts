@@ -544,6 +544,7 @@ export const getTokenInfos = ({ tokens, prices, networkFilter = '' }) => {
           if (isHide) return result;
 
           const tokenIcon = tokensIcon.find(tIcon => tIcon.coinGeckoId === token.coinGeckoId);
+
           result.push({
             asset: token.name,
             chain: token.org,

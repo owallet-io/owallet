@@ -72,6 +72,9 @@ const EthIcon = 'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png';
 const BnbIcon = 'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png';
 const InjIcon = 'https://s2.coinmarketcap.com/static/img/coins/64x64/7226.png';
 const OraixLightIcon = 'https://assets.coingecko.com/coins/images/28104/standard/oraix.png?1696527113';
+const NeutaroIcon = 'https://asset.brandfetch.io/idKrUw6EdO/ids9m0Bt_7.png';
+const OChIcon = 'https://assets.coingecko.com/coins/images/34236/standard/orchai_logo_white_copy_4x-8_%281%29.png';
+const BTCIcon = 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Bitcoin.svg/1200px-Bitcoin.svg.png';
 
 type TokenIcon = Pick<TokenItemType, 'coinGeckoId' | 'Icon' | 'IconLight'>;
 type ChainIcon = Pick<CustomChainInfo, 'chainId' | 'Icon' | 'IconLight' | 'chainName'>;
@@ -218,5 +221,20 @@ export const tokenImg: TokenIcon[] = [
     coinGeckoId: 'oraidex',
     Icon: OraixIcon,
     IconLight: OraixLightIcon
+  },
+  {
+    coinGeckoId: 'neutaro',
+    Icon: NeutaroIcon,
+    IconLight: NeutaroIcon
+  },
+  {
+    coinGeckoId: 'och',
+    Icon: OChIcon,
+    IconLight: OChIcon
+  },
+  {
+    coinGeckoId: 'bitcoin',
+    Icon: BTCIcon,
+    IconLight: BTCIcon
   }
 ];

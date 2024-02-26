@@ -228,6 +228,16 @@ export const EmbedChainInfos: AppChainInfo[] = [
           contractAddress: 'orai1dqa52a7hxxuv8ghe7q5v0s36ra0cthea960q2cukznleqhk0wpnshfegez',
           coinDecimals: 6,
           coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png'
+        },
+        {
+          type: 'cw20',
+          coinDenom: 'OCH',
+          coinMinimalDenom: 'cw20:orai1hn8w33cqvysun2aujk5sv33tku4pgcxhhnsxmvnkfvdxagcx0p8qa4l98q:OCH',
+          contractAddress: 'orai1hn8w33cqvysun2aujk5sv33tku4pgcxhhnsxmvnkfvdxagcx0p8qa4l98q',
+          coinDecimals: 6,
+          coinGeckoId: 'och',
+          coinImageUrl:
+            'https://assets.coingecko.com/coins/images/34236/standard/orchai_logo_white_copy_4x-8_%281%29.png'
         }
       ];
     },
@@ -1043,6 +1053,14 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinDecimals: 18,
         coinGeckoId: 'oraichain-token',
         coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
+      },
+      {
+        coinDenom: 'OCH',
+        coinMinimalDenom: 'erc20:0x19373EcBB4B8cC2253D70F2a246fa299303227Ba:OCH',
+        contractAddress: '0x19373EcBB4B8cC2253D70F2a246fa299303227Ba',
+        coinDecimals: 18,
+        coinGeckoId: 'och',
+        coinImageUrl: 'https://assets.coingecko.com/coins/images/34236/standard/orchai_logo_white_copy_4x-8_%281%29.png'
       }
     ],
     get feeCurrencies() {
