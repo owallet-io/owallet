@@ -215,18 +215,17 @@ export const AssetChartViewEvm: FunctionComponent = observer(() => {
   const accountInfo = accountStore.getAccount(current.chainId);
 
   const addressCore = accountInfo.getAddressDisplay(keyRingStore.keyRingLedgerAddresses, false);
-  console.log('🚀 ~ constAssetChartViewEvm:FunctionComponent=observer ~ addressCore:', addressCore);
+
   // wait for account to be
   if (!addressCore) return null;
 
   const isTronNetwork = chainStore.current.chainId === TRON_ID;
 
-  const balance = queries.evm.queryEvmBalance.getQueryBalance(addressCore)?.balance;
-  console.log('🚀 ~ constAssetChartViewEvm:FunctionComponent=observer ~ balance:', balance);
+  let total: any = queries.evm.queryEvmBalance.getQueryBalance(addressCore)?.balance;
+
   let totalPrice;
-  let total;
+  // let total;
   if (addressCore) {
-    total = queries.evm.queryEvmBalance.getQueryBalance(addressCore)?.balance;
     if (total) {
       totalPrice =
         isTronNetwork && total
@@ -271,7 +270,7 @@ export const AssetChartViewEvm: FunctionComponent = observer(() => {
               color: '#353945E5'
             }}
           >
-            {!isTronNetwork && balance?.trim(true).shrink(true).maxDecimals(6).toString()}
+            {!isTronNetwork && total?.trim(true).shrink(true).maxDecimals(6).toString()}
 
             {isTronNetwork && total
               ? toDisplay(total.amount.int.value, 24) + ` ${chainStore.current?.stakeCurrency.coinDenom}`

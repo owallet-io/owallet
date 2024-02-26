@@ -54,9 +54,6 @@ init(
 );
 
 router.listen(BACKGROUND_PORT);
-// if (typeof XMLHttpRequest === 'undefined') {
-//   (globalThis as any).XMLHttpRequest = require('xhr2');
-// }
-// global.XMLHttpRequest = require('xhr2');
+
 // @ts-ignore
 window.Ledger = Ledger;

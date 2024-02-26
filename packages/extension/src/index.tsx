@@ -45,7 +45,6 @@ import { StoreProvider, useStore } from './stores';
 
 import { NftDetailsPage } from './pages/nft/nft-details';
 
-// import * as BackgroundTxResult from "../../background/tx/foreground";
 import { AdditonalIntlMessages, AppIntlProvider, ChainIdEnum, LanguageToFiatCurrency } from '@owallet/common';
 
 import { Ethereum, OWallet, TronWeb, Bitcoin, Oasis } from '@owallet/provider';
