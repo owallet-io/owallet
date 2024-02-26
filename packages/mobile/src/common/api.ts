@@ -324,6 +324,10 @@ export const API = {
   saveTokenInfos: ({ tokesInfos, address }, config: AxiosRequestConfig) => {
     let url = `account/${address}`;
     return API.post(url, { tokens: tokesInfos }, config);
+  },
+  getYesterdayAssets: ({ address, time }, config: AxiosRequestConfig) => {
+    let url = `account/${address}?time=${time}`;
+    return API.get(url, config);
   }
 };
 const retryWrapper = (axios, options) => {

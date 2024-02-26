@@ -15,16 +15,20 @@ import { navigate } from '@src/router/root';
 import { RightArrowIcon } from '@src/components/icon';
 import { ChainIdEnum, getBase58Address, TRC20_LIST } from '@owallet/common';
 import { API } from '@src/common/api';
+import moment from 'moment';
 import { chainIcons } from '../universal-swap/helpers';
+// import { TokenItem } from '../tokens/components/token-item';
 
 export const TokensCardAll: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
-  const { accountStore, universalSwapStore, chainStore, appInitStore } = useStore();
+  const { accountStore, universalSwapStore, chainStore, appInitStore, queriesStore, keyRingStore } = useStore();
   const { colors } = useTheme();
   const theme = appInitStore.getInitApp.theme;
 
   const [more, setMore] = useState(true);
+  const [yesterdayAssets, setYesterdayAssets] = useState([]);
+  const [queryBalances, setQueryBalances] = useState({});
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
@@ -36,10 +40,12 @@ export const TokensCardAll: FunctionComponent<{
     networkFilter: appInitStore.getInitApp.isAllNetworks ? '' : chainStore.current.chainId
   });
 
-  let yesterdayAssets = [];
-  if (accountOrai.bech32Address) {
-    yesterdayAssets = appInitStore.getPriceFeedByAddress(accountOrai.bech32Address, 'yesterday');
-  }
+  useEffect(() => {
+    const queries = queriesStore.get(chainStore.current.chainId);
+    const address = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
+    const balances = queries.queryBalances.getQueryBech32Address(address);
+    setQueryBalances(balances);
+  }, [chainStore.current.chainId]);
 
   const [tronTokens, setTronTokens] = useState([]);
 
@@ -53,15 +59,49 @@ export const TokensCardAll: FunctionComponent<{
         baseURL: 'http://10.10.20.183:4000/'
       }
     );
+  };
 
-    console.log('ressss', res);
+  const getYesterdayAssets = async () => {
+    // const yesterdayTime = moment().startOf('day').subtract(1, 'day').valueOf();
+
+    const res = await API.getYesterdayAssets(
+      {
+        address: accountOrai.bech32Address,
+        time: 'YESTERDAY'
+      },
+      {
+        baseURL: 'http://10.10.20.183:4000/'
+      }
+    );
+
+    if (res && res.status === 200) {
+      const dataKeys = Object.keys(res.data);
+
+      const yesterday = dataKeys.find(k => {
+        const isToday = moment(Number(k)).isSame(moment(), 'day');
+        return !isToday;
+      });
+
+      if (yesterday) {
+        const yesterdayData = res.data[yesterday];
+
+        setYesterdayAssets(yesterdayData);
+        appInitStore.updateYesterdayPriceFeed(yesterdayData);
+      }
+    }
   };
 
   useEffect(() => {
+    getYesterdayAssets();
+  }, [accountOrai.bech32Address]);
+
+  useEffect(() => {
     if (tokenInfos.length > 0) {
-      // handleSaveTokenInfos(tokenInfos);
+      setTimeout(() => {
+        handleSaveTokenInfos(tokenInfos);
+      }, 5000);
     }
-  }, [tokenInfos]);
+  }, [accountOrai.bech32Address]);
 
   useEffect(() => {
     (async function get() {
@@ -124,15 +164,42 @@ export const TokensCardAll: FunctionComponent<{
     }
   };
 
+  // const renderTokensFromQueryBalances = () => {
+  //   //@ts-ignore
+  //   const tokens = queryBalances?.positiveBalances;
+  //   if (tokens?.length > 0) {
+  //     return tokens.map((token, index) => {
+  //       const priceBalance = priceStore.calculatePrice(token.balance);
+  //       return (
+  //         <TokenItem
+  //           key={index?.toString()}
+  //           chainInfo={{
+  //             stakeCurrency: chainStore.current.stakeCurrency,
+  //             networkType: chainStore.current.networkType,
+  //             chainId: chainStore.current.chainId
+  //           }}
+  //           balance={token.balance}
+  //           priceBalance={priceBalance}
+  //         />
+  //       );
+  //     });
+  //   } else {
+  //     return <OWEmpty />;
+  //   }
+  // };
+
   const renderTokenItem = useCallback(
     item => {
       if (item) {
         let profit = 0;
         let percent = '0';
+
         if (yesterdayAssets && yesterdayAssets.length > 0) {
-          const yesterday = yesterdayAssets?.find(obj => obj['denom'] === item.denom);
-          profit = Number(Number(item.value - (yesterday?.value ?? 0))?.toFixed(2) ?? 0);
-          percent = Number((profit / yesterday?.value) * 100 ?? 0).toFixed(2);
+          const yesterday = yesterdayAssets.find(obj => obj['denom'] === item.denom);
+          if (yesterday && yesterday.value) {
+            profit = Number(Number(item.value - (yesterday.value ?? 0))?.toFixed(2) ?? 0);
+            percent = Number((profit / yesterday.value) * 100 ?? 0).toFixed(2);
+          }
         }
         const chainIcon = chainIcons.find(c => c.chainId === item.chainId);
 
@@ -186,7 +253,7 @@ export const TokensCardAll: FunctionComponent<{
         );
       }
     },
-    [universalSwapStore?.getAmount, yesterdayAssets, theme]
+    [universalSwapStore?.getAmount, theme]
   );
 
   return (
@@ -214,6 +281,7 @@ export const TokensCardAll: FunctionComponent<{
         </View>
 
         <CardBody style={{ paddingHorizontal: 0, paddingTop: 16 }}>
+          {/* {renderTokensFromQueryBalances()} */}
           {tokenInfos.length > 0 ? (
             tokenInfos.map((token, index) => {
               if (more) {

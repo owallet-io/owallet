@@ -19,7 +19,10 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
   const { colors } = useTheme();
   const { universalSwapStore, accountStore, modalStore, chainStore, appInitStore } = useStore();
   const [profit, setProfit] = useState(0);
+  const [accountAddresses, settAddresses] = useState({});
+
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
+  const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
 
   const chainAssets = getTokenInfos({
     tokens: universalSwapStore.getAmount,
@@ -32,25 +35,28 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
   if (appInitStore.getInitApp.prices) {
     totalUsd = getTotalUsd(universalSwapStore.getAmount, appInitStore.getInitApp.prices);
   }
-  let yesterdayAssets = [];
-  if (accountOrai.bech32Address) {
-    yesterdayAssets = appInitStore.getPriceFeedByAddress(accountOrai.bech32Address, 'yesterday');
-  }
 
   const account = accountStore.getAccount(chainStore.current.chainId);
 
-  let accounts = {};
+  useEffect(() => {
+    let accounts = {};
+    let defaultEvmAddress = accountStore.getAccount(ChainIdEnum.Ethereum).evmosHexAddress;
+    setTimeout(() => {
+      Object.keys(ChainIdEnum).map(key => {
+        let defaultCosmosAddress = accountStore.getAccount(ChainIdEnum[key]).bech32Address;
 
-  Object.keys(ChainIdEnum).map(key => {
-    let defaultAddress = accountStore.getAccount(ChainIdEnum[key]).bech32Address;
-    if (ChainIdEnum[key] === ChainIdEnum.TRON) {
-      accounts[ChainNameEnum[key]] = getBase58Address(accountStore.getAccount(ChainIdEnum[key]).evmosHexAddress);
-    } else if (defaultAddress.startsWith('evmos')) {
-      accounts[ChainNameEnum[key]] = accountStore.getAccount(ChainIdEnum[key]).evmosHexAddress;
-    } else {
-      accounts[ChainNameEnum[key]] = defaultAddress;
-    }
-  });
+        if (defaultCosmosAddress.startsWith('evmos')) {
+          accounts[ChainNameEnum[key]] = defaultEvmAddress;
+        } else {
+          accounts[ChainNameEnum[key]] = defaultCosmosAddress;
+        }
+      });
+    }, 2000);
+
+    accounts[ChainNameEnum.TRON] = getBase58Address(accountStore.getAccount(ChainIdEnum.TRON).evmosHexAddress);
+
+    settAddresses(accounts);
+  }, [accountEth.evmosHexAddress]);
 
   const _onPressMyWallet = () => {
     modalStore.setOptions({
@@ -64,11 +70,14 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
 
   const _onPressAddressModal = () => {
     modalStore.setOptions();
-    modalStore.setChildren(<CopyAddressModal accounts={accounts} />);
+    modalStore.setChildren(<CopyAddressModal accounts={accountAddresses} />);
   };
 
   useEffect(() => {
     let yesterdayBalance = 0;
+    const yesterdayAssets = appInitStore.getInitApp.yesterdayPriceFeed;
+    console.log('yesterdayAssets', yesterdayAssets);
+
     if (yesterdayAssets?.length > 0) {
       yesterdayAssets.map(y => {
         yesterdayBalance += y.value;
@@ -76,7 +85,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
     }
 
     setProfit(Number(Number(totalUsd - yesterdayBalance).toFixed(6)));
-  }, [totalUsd, accountOrai.bech32Address, yesterdayAssets]);
+  }, [totalUsd, accountOrai.bech32Address]);
 
   const renderTotalBalance = () => {
     const chainIcon = chainIcons.find(c => c.chainId === chainStore.current.chainId);

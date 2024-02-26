@@ -4,7 +4,7 @@ import { MulticallQueryClient } from '@oraichain/common-contracts-sdk';
 import { OraiswapTokenTypes } from '@oraichain/oraidex-contracts-sdk';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { fromBech32, toBech32 } from '@cosmjs/encoding';
-import { CustomChainInfo, EVM_BALANCE_RETRY_COUNT, ERC20__factory, evmChains } from '@oraichain/oraidex-common';
+import { CustomChainInfo, ERC20__factory, evmChains } from '@oraichain/oraidex-common';
 import flatten from 'lodash/flatten';
 import { ContractCallResults, Multicall } from '@oraichain/ethereum-multicall';
 import { evmTokens, isEvmNetworkNativeSwapSupported, getEvmAddress, tronToEthAddress } from '@owallet/common';
@@ -12,6 +12,8 @@ import { network, chainInfos } from '@oraichain/oraidex-common';
 import { cosmosTokens, oraichainTokens, tokenMap } from '@oraichain/oraidex-common';
 import { CWStargate } from '@owallet/common';
 import { AccountWithAll } from '@owallet/stores';
+
+const EVM_BALANCE_RETRY_COUNT = 3;
 
 export type CWStargateType = {
   account: AccountWithAll;
@@ -206,7 +208,7 @@ async function loadEvmEntries(
     console.log('error querying EVM balance: ', error);
     let retry = retryCount ? retryCount + 1 : 1;
     if (retry >= EVM_BALANCE_RETRY_COUNT) throw `Cannot query EVM balance with error: ${error}`;
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise(resolve => setTimeout(resolve, 5000));
     return loadEvmEntries(address, chain, multicallCustomContractAddress, retry);
   }
 }

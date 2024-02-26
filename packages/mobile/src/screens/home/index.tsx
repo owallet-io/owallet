@@ -157,6 +157,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
   };
 
   useEffect(() => {
+    universalSwapStore.clearAmounts();
     if (accountEth.evmosHexAddress && accountTron.evmosHexAddress && accountKawaiiCosmos.bech32Address) {
       handleFetchAmounts();
     }
@@ -173,18 +174,18 @@ export const HomeScreen: FunctionComponent = observer(props => {
     appInitStore.updatePrices(prices);
   }, [prices]);
 
-  const updatePriceFeed = async () => {
-    appInitStore.updatePriceFeed(
-      accountOrai.bech32Address,
-      getTokenInfos({ tokens: universalSwapStore.getAmount, prices })
-    );
-  };
+  // const updatePriceFeed = async () => {
+  //   appInitStore.updatePriceFeed(
+  //     accountOrai.bech32Address,
+  //     getTokenInfos({ tokens: universalSwapStore.getAmount, prices })
+  //   );
+  // };
 
-  useEffect(() => {
-    if (Object.keys(universalSwapStore.getAmount).length > 0 && Object.keys(prices).length > 0) {
-      updatePriceFeed();
-    }
-  }, [universalSwapStore.getAmount, accountOrai.bech32Address, prices]);
+  // useEffect(() => {
+  //   if (Object.keys(universalSwapStore.getAmount).length > 0) {
+  //     updatePriceFeed();
+  //   }
+  // }, [universalSwapStore.getAmount, accountOrai.bech32Address]);
 
   const renderAccountCard = (() => {
     if (chainStore.current.networkType === 'bitcoin') {

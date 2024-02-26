@@ -83,7 +83,7 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
   async estimateFeeRate() {
     try {
       await Promise.all(
-        Object.keys(this.chainInfo.gasPriceStep).map(async (item) => {
+        Object.keys(this.chainInfo.gasPriceStep).map(async item => {
           try {
             const feeRate = await getFeeRate({
               url: this.chainInfo.rest,
@@ -248,7 +248,7 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
     const feeTypePrimitive = this.getFeeTypePrimitive(feeType);
     const feeCurrency = this.feeCurrency;
 
-    return new CoinPretty(feeCurrency, new Int(feeTypePrimitive.amount)).maxDecimals(feeCurrency.coinDecimals);
+    return new CoinPretty(feeCurrency, new Int(feeTypePrimitive?.amount ?? '0')).maxDecimals(feeCurrency.coinDecimals);
   });
 
   getError(): Error | undefined {
@@ -300,7 +300,7 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
             return new InsufficientFeeError('insufficient fee');
           }
         } else {
-          const bal = this.queryBalances.getQueryBech32Address(this._sender).balances.find((bal) => {
+          const bal = this.queryBalances.getQueryBech32Address(this._sender).balances.find(bal => {
             return bal.currency.coinMinimalDenom === need.denom;
           });
 
