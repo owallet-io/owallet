@@ -80,7 +80,9 @@ Sentry.init({
 
   // We recommend adjusting this value in production, or using tracesSampler
   // for finer control
-  tracesSampleRate: 1.0
+  tracesSampleRate: 1.0,
+  environment: 'production',
+  ignoreErrors: ['Request rejected', 'Failed to fetch', 'Load failed', 'User rejected the request']
 });
 //@ts-ignore
 window.oasis = oasis;
