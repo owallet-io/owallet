@@ -52,15 +52,15 @@ export const SendPage: FunctionComponent<{
 
   const notification = useNotification();
 
-  const { chainStore, accountStore, priceStore, queriesStore, analyticsStore } = useStore();
+  const { chainStore, accountStore, priceStore, queriesStore, analyticsStore, keyRingStore } = useStore();
   const current = chainStore.current;
   const accountInfo = accountStore.getAccount(current.chainId);
-
+  const walletAddress =  accountInfo.getAddressDisplay(keyRingStore.keyRingLedgerAddresses,true);
   const sendConfigs = useSendTxConfig(
     chainStore,
     current.chainId,
     accountInfo.msgOpts.send,
-    accountInfo.bech32Address,
+    walletAddress,
     queriesStore.get(current.chainId).queryBalances,
     EthereumEndpoint
   );
