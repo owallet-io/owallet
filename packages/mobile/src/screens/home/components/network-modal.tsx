@@ -91,8 +91,8 @@ export const NetworkModal = () => {
         });
         return;
       } else {
+        modalStore.close();
         if (!item.isAll) {
-          modalStore.close();
           chainStore.selectChain(item?.chainId);
           await chainStore.saveLastViewChainId();
           appInitStore.selectAllNetworks(false);
@@ -253,7 +253,7 @@ export const NetworkModal = () => {
           textAlign: 'center'
         }}
       >
-        {`Select networks 2`}
+        {`Select networks`}
       </Text>
 
       <View

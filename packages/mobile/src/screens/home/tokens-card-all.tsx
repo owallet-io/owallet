@@ -388,7 +388,6 @@ export const TokensCardAll: FunctionComponent<{
           </View>
 
           <CardBody style={{ paddingHorizontal: 0, paddingTop: 8 }}>
-            {renderTokensFromQueryBalances()}
             {mockHistoryItems.length > 0 ? (
               mockHistoryItems.map((token, index) => {
                 if (more) {
