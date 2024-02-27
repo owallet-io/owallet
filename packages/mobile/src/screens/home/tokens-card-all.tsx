@@ -18,7 +18,7 @@ import { API } from '@src/common/api';
 import moment from 'moment';
 import { chainIcons } from '../universal-swap/helpers';
 import { Bech32Address } from '@owallet/cosmos';
-// import { TokenItem } from '../tokens/components/token-item';
+import { TokenItem } from '../tokens/components/token-item';
 
 const mockHistoryItems = [
   {
@@ -53,7 +53,8 @@ const mockHistoryItems = [
 export const TokensCardAll: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
-  const { accountStore, universalSwapStore, chainStore, appInitStore, queriesStore, keyRingStore } = useStore();
+  const { accountStore, universalSwapStore, chainStore, appInitStore, queriesStore, keyRingStore, priceStore } =
+    useStore();
   const { colors } = useTheme();
   const theme = appInitStore.getInitApp.theme;
 
@@ -94,8 +95,6 @@ export const TokensCardAll: FunctionComponent<{
   };
 
   const getYesterdayAssets = async () => {
-    // const yesterdayTime = moment().startOf('day').subtract(1, 'day').valueOf();
-
     const res = await API.getYesterdayAssets(
       {
         address: accountOrai.bech32Address,
@@ -196,29 +195,29 @@ export const TokensCardAll: FunctionComponent<{
     }
   };
 
-  // const renderTokensFromQueryBalances = () => {
-  //   //@ts-ignore
-  //   const tokens = queryBalances?.positiveBalances;
-  //   if (tokens?.length > 0) {
-  //     return tokens.map((token, index) => {
-  //       const priceBalance = priceStore.calculatePrice(token.balance);
-  //       return (
-  //         <TokenItem
-  //           key={index?.toString()}
-  //           chainInfo={{
-  //             stakeCurrency: chainStore.current.stakeCurrency,
-  //             networkType: chainStore.current.networkType,
-  //             chainId: chainStore.current.chainId
-  //           }}
-  //           balance={token.balance}
-  //           priceBalance={priceBalance}
-  //         />
-  //       );
-  //     });
-  //   } else {
-  //     return <OWEmpty />;
-  //   }
-  // };
+  const renderTokensFromQueryBalances = () => {
+    //@ts-ignore
+    const tokens = queryBalances?.positiveBalances;
+    if (tokens?.length > 0) {
+      return tokens.map((token, index) => {
+        const priceBalance = priceStore.calculatePrice(token.balance);
+        return (
+          <TokenItem
+            key={index?.toString()}
+            chainInfo={{
+              stakeCurrency: chainStore.current.stakeCurrency,
+              networkType: chainStore.current.networkType,
+              chainId: chainStore.current.chainId
+            }}
+            balance={token.balance}
+            priceBalance={priceBalance}
+          />
+        );
+      });
+    } else {
+      return <OWEmpty />;
+    }
+  };
 
   const renderHistoryItem = useCallback(
     item => {
@@ -382,8 +381,14 @@ export const TokensCardAll: FunctionComponent<{
     } else {
       return (
         <>
-          <CardBody style={{ paddingHorizontal: 0, paddingTop: 16 }}>
-            {/* {renderTokensFromQueryBalances()} */}
+          <View style={{ paddingTop: 16 }}>
+            <Text size={14} color={colors['neutral-text-heading']} weight="600">
+              {'Dec 8, 2024'}
+            </Text>
+          </View>
+
+          <CardBody style={{ paddingHorizontal: 0, paddingTop: 8 }}>
+            {renderTokensFromQueryBalances()}
             {mockHistoryItems.length > 0 ? (
               mockHistoryItems.map((token, index) => {
                 if (more) {

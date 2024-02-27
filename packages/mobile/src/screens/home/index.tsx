@@ -174,19 +174,6 @@ export const HomeScreen: FunctionComponent = observer(props => {
     appInitStore.updatePrices(prices);
   }, [prices]);
 
-  // const updatePriceFeed = async () => {
-  //   appInitStore.updatePriceFeed(
-  //     accountOrai.bech32Address,
-  //     getTokenInfos({ tokens: universalSwapStore.getAmount, prices })
-  //   );
-  // };
-
-  // useEffect(() => {
-  //   if (Object.keys(universalSwapStore.getAmount).length > 0) {
-  //     updatePriceFeed();
-  //   }
-  // }, [universalSwapStore.getAmount, accountOrai.bech32Address]);
-
   const renderAccountCard = (() => {
     if (chainStore.current.networkType === 'bitcoin') {
       return <AccountCardBitcoin containerStyle={styles.containerStyle} />;

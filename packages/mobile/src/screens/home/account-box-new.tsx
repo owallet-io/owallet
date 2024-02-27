@@ -76,7 +76,6 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
   useEffect(() => {
     let yesterdayBalance = 0;
     const yesterdayAssets = appInitStore.getInitApp.yesterdayPriceFeed;
-    console.log('yesterdayAssets', yesterdayAssets);
 
     if (yesterdayAssets?.length > 0) {
       yesterdayAssets.map(y => {
