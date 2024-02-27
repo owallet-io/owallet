@@ -1,11 +1,6 @@
 import { IAmountConfig, IFeeConfig } from './types';
 import { TxChainSetter } from './chain';
-import {
-  ChainGetter,
-  CoinPrimitive,
-  ObservableQueryBitcoinBalance,
-  ObservableQueryEvmBalance
-} from '@owallet/stores';
+import { ChainGetter, CoinPrimitive, ObservableQueryBitcoinBalance, ObservableQueryEvmBalance } from '@owallet/stores';
 import { action, computed, makeObservable, observable } from 'mobx';
 import { ObservableQueryBalances } from '@owallet/stores';
 import { AppCurrency } from '@owallet/types';
@@ -147,29 +142,23 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
   get amount(): string {
     if (this.fraction != null) {
       let balance = null;
-      if (!!this.queryBtcBalance) {
+      const networkType = this.chainGetter.getChain(this.chainId).networkType;
+      if (networkType === 'bitcoin') {
         balance = this.queryBtcBalance.getQueryBalance(this.sender)?.balance;
+      } else if (networkType === 'evm') {
+        balance = this.queryEvmBalances.getQueryBalance(this.sender)?.balance;
       } else {
-        balance = this.queryBalances
-          .getQueryBech32Address(this.sender)
-          .getBalanceFromCurrency(this.sendCurrency);
+        balance = this.queryBalances.getQueryBech32Address(this.sender).getBalanceFromCurrency(this.sendCurrency);
       }
 
       if (!balance) return '0';
-      const result = this.feeConfig?.fee
-        ? balance.sub(this.feeConfig.fee)
-        : balance;
+      const result = this.feeConfig?.fee ? balance.sub(this.feeConfig.fee) : balance;
       if (result.toDec().lte(new Dec(0))) {
         return '0';
       }
 
       // Remember that the `CoinPretty`'s sub method do nothing if the currencies are different.
-      return result
-        .mul(new Dec(this.fraction))
-        .trim(true)
-        .locale(false)
-        .hideDenom(true)
-        .toString();
+      return result.mul(new Dec(this.fraction)).trim(true).locale(false).hideDenom(true).toString();
     }
 
     return this._amount;
@@ -190,9 +179,7 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
       return {
         denom: sendCurrency.coinMinimalDenom,
         amount: new Dec(amountStr)
-          .mul(
-            DecUtils.getTenExponentNInPrecisionRange(sendCurrency.coinDecimals)
-          )
+          .mul(DecUtils.getTenExponentNInPrecisionRange(sendCurrency.coinDecimals))
           .truncate()
           .toString()
       };
@@ -253,27 +240,21 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
       return new NegativeAmountError('Amount is negative');
     }
 
-    if (
-      this.chainInfo.networkType !== 'evm' &&
-      this.chainInfo.networkType !== 'bitcoin'
-    ) {
-      const balance = this.queryBalances
-        .getQueryBech32Address(this.sender)
-        .getBalanceFromCurrency(this.sendCurrency);
-      const balanceDec = balance.toDec();
-      if (dec.gt(balanceDec)) {
-        return new InsufficientAmountError('Insufficient amount');
+    const balance = (() => {
+      if (this.chainInfo.networkType === 'evm') {
+        if (!this.queryEvmBalances) return;
+        return;
+      } else if (this.chainInfo.networkType === 'bitcoin') {
+        if (!this.queryBtcBalance) return;
+        return this.queryBtcBalance.getQueryBalance(this.sender)?.balance;
       }
-    } else if (this.chainInfo.networkType === 'bitcoin') {
-      const balance = this.queryBtcBalance.getQueryBalance(
-        this.sender
-      )?.balance;
-      const balanceDec = balance.toDec();
-      if (dec.gt(balanceDec)) {
-        return new InsufficientAmountError('Insufficient amount');
-      }
+      return this.queryBalances.getQueryBech32Address(this.sender).getBalanceFromCurrency(this.sendCurrency);
+    })();
+    if (!balance) return;
+    const balanceDec = balance.toDec();
+    if (dec.gt(balanceDec)) {
+      return new InsufficientAmountError('Insufficient amount');
     }
-
     return;
   }
 }

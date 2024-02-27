@@ -332,11 +332,16 @@ export class AccountSetBase<MsgOpts, Queries> {
         return address;
       }
     }
-    if (networkType === 'evm' && !!this.hasEvmosHexAddress) {
-      if (this.chainId === ChainIdEnum.TRON && toDisplay) {
-        return getBase58Address(this.evmosHexAddress);
+    if (networkType === 'evm') {
+      if (!!this.hasEvmosHexAddress) {
+        if (this.chainId === ChainIdEnum.TRON && toDisplay) {
+          return getBase58Address(this.evmosHexAddress);
+        }
+
+        return this.evmosHexAddress;
+      } else if (this.bech32Address?.startsWith('oasis')) {
+        return this.bech32Address;
       }
-      return this.evmosHexAddress;
     } else if (networkType === 'bitcoin') {
       return this.btcAddress;
     }
@@ -377,6 +382,7 @@ export class AccountSetBase<MsgOpts, Queries> {
       const result = await this.broadcastMsgs(msgs, fee, memo, signOptions, this.broadcastMode);
 
       txHash = result?.txHash;
+      if (!txHash) throw Error('Transaction Rejected');
     } catch (e: any) {
       runInAction(() => {
         this._isSendingMsg = false;
@@ -556,6 +562,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         const result = await this.broadcastEvmMsgs(msgs, fee, signOptions);
         txHash = result.txHash;
       }
+      if (!txHash) throw Error('Transaction Rejected');
     } catch (e: any) {
       runInAction(() => {
         this._isSendingMsg = false;
@@ -590,6 +597,17 @@ export class AccountSetBase<MsgOpts, Queries> {
       this._isSendingMsg = false;
     });
 
+    if (this.chainId === ChainIdEnum.Oasis) {
+      console.log(txHash, 'txHash');
+      if (this.opts.preTxEvents?.onFulfill) {
+        this.opts.preTxEvents.onFulfill(txHash);
+      }
+
+      if (onFulfill) {
+        onFulfill(txHash);
+      }
+      return;
+    }
     const sleep = (milliseconds) => {
       return new Promise((resolve) => setTimeout(resolve, milliseconds));
     };
@@ -648,8 +666,8 @@ export class AccountSetBase<MsgOpts, Queries> {
 
     try {
       const result = await this.broadcastBtcMsgs(msgs, fee, memo, signOptions, extraOptions);
-
       txHash = result?.txHash;
+      if (!txHash) throw Error('Transaction Rejected');
     } catch (e: any) {
       console.log('🚀 ~ file: base.ts:644 ~ AccountSetBase<MsgOpts, ~ e:', e);
       runInAction(() => {
@@ -666,6 +684,7 @@ export class AccountSetBase<MsgOpts, Queries> {
 
       throw e;
     }
+
     let onBroadcasted: ((txHash: Uint8Array) => void) | undefined;
     let onFulfill: ((tx: any) => void) | undefined;
 
@@ -813,7 +832,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         signOptions
       );
     })();
-
+    if (!signResponse) throw Error('Transaction Rejected!');
     const signDoc = {
       bodyBytes: TxBody.encode(
         TxBody.fromPartial({
@@ -986,10 +1005,11 @@ export class AccountSetBase<MsgOpts, Queries> {
       const signResponse = await ethereum.signAndBroadcastEthereum(this.chainId, message);
 
       return {
-        txHash: signResponse.rawTxHex
+        txHash: signResponse?.rawTxHex
       };
     } catch (error) {
       console.log('Error on broadcastEvmMsgs: ', error);
+      throw Error(error);
     }
   }
 

@@ -169,7 +169,15 @@ export const SignEthereumPage: FunctionComponent = observer(() => {
 
     return feeConfig.getError() != null;
   })();
-
+  const gasPriceToBig = () => {
+    if (parseFloat(feeConfig.feeRaw) <= 0 || parseFloat(gasConfig.gasRaw) <= 0) return '0';
+    return parseInt(
+      new Big(parseFloat(feeConfig.feeRaw))
+        .mul(new Big(10).pow(decimals.current))
+        .div(parseFloat(gasConfig.gasRaw))
+        .toFixed(decimals.current)
+    ).toString(16);
+  };
   return (
     // <HeaderLayout
     //   showChainName={alternativeTitle == null}
@@ -285,7 +293,7 @@ export const SignEthereumPage: FunctionComponent = observer(() => {
                     color=""
                     // disabled={}
                     // data-loading={signInteractionStore.isLoading}
-                    onClick={async e => {
+                    onClick={async (e) => {
                       e.preventDefault();
 
                       if (needSetIsProcessing) {
@@ -308,7 +316,7 @@ export const SignEthereumPage: FunctionComponent = observer(() => {
                     color=""
                     disabled={approveIsDisabled}
                     data-loading={signInteractionStore.isLoading}
-                    onClick={async e => {
+                    onClick={async (e) => {
                       e.preventDefault();
 
                       if (needSetIsProcessing) {
@@ -316,14 +324,7 @@ export const SignEthereumPage: FunctionComponent = observer(() => {
                       }
 
                       // if (signDocHelper.signDocWrapper) {
-                      const gasPrice =
-                        '0x' +
-                        parseInt(
-                          new Big(parseFloat(feeConfig.feeRaw))
-                            .mul(new Big(10).pow(decimals.current))
-                            .div(parseFloat(gasConfig.gasRaw))
-                            .toFixed(decimals.current)
-                        ).toString(16);
+                      const gasPrice = '0x' + gasPriceToBig();
                       await signInteractionStore.approveEthereumAndWaitEnd({
                         gasPrice,
                         gasLimit: `0x${parseFloat(gasConfig.gasRaw).toString(16)}`

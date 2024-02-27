@@ -246,6 +246,7 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
     }
 
     const feeTypePrimitive = this.getFeeTypePrimitive(feeType);
+
     const feeCurrency = this.feeCurrency;
 
     return new CoinPretty(feeCurrency, new Int(feeTypePrimitive?.amount ?? '0')).maxDecimals(feeCurrency.coinDecimals);
@@ -277,6 +278,7 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
 
       if (need.amount.gt(new Int(0))) {
         if (this.chainInfo.networkType === 'evm') {
+          if (!this.queryEvmBalances) return;
           const balance = this.queryEvmBalances.getQueryBalance(this._senderEvm).balance;
           if (!balance) return new InsufficientFeeError('insufficient fee');
           else if (
@@ -288,6 +290,7 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
           )
             return new InsufficientFeeError('insufficient fee');
         } else if (this.chainInfo.networkType === 'bitcoin') {
+          if (!this.queryBtcBalances) return;
           const balance = this.queryBtcBalances.getQueryBalance(this._sender)?.balance;
           if (!balance) return new InsufficientFeeError('insufficient fee');
           else if (

@@ -40,7 +40,7 @@ const styling = colors =>
   });
 
 export const SendScreen: FunctionComponent = observer(() => {
-  const { chainStore, accountStore, queriesStore, analyticsStore, sendStore } = useStore();
+  const { chainStore, accountStore, queriesStore, analyticsStore, sendStore, keyRingStore } = useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
   const [customFee, setCustomFee] = useState(false);
@@ -66,23 +66,27 @@ export const SendScreen: FunctionComponent = observer(() => {
 
   const account = accountStore.getAccount(chainId);
   const queries = queriesStore.get(chainId);
-
+  const address = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
   const sendConfigs = useSendTxConfig(
     chainStore,
     chainId,
     account.msgOpts['send'],
-    account.bech32Address,
+    address,
     queries.queryBalances,
-    EthereumEndpoint
-  );
+    EthereumEndpoint,
+    chainStore.current.networkType === 'evm' && queriesStore.get(chainStore.current.chainId).evm.queryEvmBalance,
 
+    address
+  );
+  console.log(
+    '🚀 ~ constSendScreen:FunctionComponent=observer ~ chainStore.current.chainId:',
+    chainStore.current.chainId
+  );
   useEffect(() => {
     if (route?.params?.currency) {
       const currency = sendConfigs.amountConfig.sendableCurrencies.find(cur => {
-        //@ts-ignore
-
-        if (cur?.coinGeckoId === route?.params?.coinGeckoId) {
-          return true;
+        if (cur?.contractAddress?.includes(route?.params?.contractAddress)) {
+          return cur?.contractAddress?.includes(route?.params?.contractAddress);
         }
         //@ts-ignore
 
@@ -126,7 +130,7 @@ export const SendScreen: FunctionComponent = observer(() => {
   return (
     <PageWithScrollView backgroundColor={colors['background']}>
       <View style={{ marginBottom: 99 }}>
-        <OWSubTitleHeader title="Send" />
+        {/* <OWSubTitleHeader title="Send" /> */}
         <OWBox>
           <CurrencySelector
             label="Select a token"
@@ -153,7 +157,7 @@ export const SendScreen: FunctionComponent = observer(() => {
               sendConfigs.amountConfig.sendCurrency.coinDenom ?? chainStore.current.stakeCurrency.coinDenom
             }`}
             label="Amount"
-            allowMax={chainStore.current.networkType !== 'evm' ? true : false}
+            // allowMax={chainStore.current.networkType !== 'evm' ? true : false}
             amountConfig={sendConfigs.amountConfig}
             labelStyle={styles.sendlabelInput}
             inputContainerStyle={{

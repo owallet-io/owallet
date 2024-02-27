@@ -187,7 +187,7 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: HEADER_KEY.notShowHeader
   },
   [SCREENS.Send]: {
-    title: HEADER_KEY.showNetworkHeader
+    title: 'Send '
   },
   [SCREENS.TransferNFT]: {
     title: HEADER_KEY.showNetworkHeader
@@ -208,10 +208,10 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: HEADER_KEY.showNetworkHeader
   },
   [SCREENS.SendTron]: {
-    title: HEADER_KEY.showNetworkHeader
+    title: 'Send'
   },
   [SCREENS.SendOasis]: {
-    title: HEADER_KEY.showNetworkHeader
+    title: 'Send'
   },
   [SCREENS.Notifications]: {
     title: HEADER_KEY.showNetworkHeader
@@ -257,7 +257,7 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: 'About'
   },
   [SCREENS.SendBtc]: {
-    title: 'Send BTC'
+    title: 'Send'
   },
   [SCREENS.AddressBook]: {
     title: HEADER_KEY.showNetworkHeader

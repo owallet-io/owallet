@@ -321,7 +321,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const convertRelayerFee = async () => {
     if (client && relayerFeeToken) {
       const routerClient = new OraiswapRouterQueryClient(client, network.router);
-      const oraiToken = oraichainTokens.find(token => token.coinGeckoId === 'oraichain-token');
+      const oraiToken = oraichainTokens.find((token) => token.coinGeckoId === 'oraichain-token');
 
       const data = await handleSimulateSwap({
         // @ts-ignore
@@ -347,7 +347,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setRatio(data);
   };
 
-  const estimateSwapAmount = async fromAmountBalance => {
+  const estimateSwapAmount = async (fromAmountBalance) => {
     setAmountLoading(true);
     try {
       const data = await getSimulateSwap();
@@ -407,7 +407,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     }
 
     setSwapLoading(true);
-    Object.keys(ChainIdEnum).map(key => {
+    Object.keys(ChainIdEnum).map((key) => {
       let defaultAddress = accountStore.getAccount(ChainIdEnum[key]).bech32Address;
       if (ChainIdEnum[key] === ChainIdEnum.TRON) {
         accounts[ChainIdEnum[key]] = getBase58Address(accountStore.getAccount(ChainIdEnum[key]).evmosHexAddress);
@@ -517,7 +517,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setBalanceActive(null);
   };
 
-  const handleActiveAmount = item => {
+  const handleActiveAmount = (item) => {
     handleBalanceActive(item);
     onMaxFromAmount((fromTokenBalance * BigInt(item.value)) / BigInt(MAX), item.value);
   };
@@ -553,7 +553,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           setIsNetworkModal(true);
         }}
         selectedChainFilter={selectedChainFilter}
-        setToken={denom => {
+        setToken={(denom) => {
           setSwapTokens([denom, toTokenDenom]);
           setSwapAmount([0, 0]);
           setBalanceActive(null);
@@ -576,7 +576,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         onNetworkModal={() => {
           setIsNetworkModal(true);
         }}
-        setToken={denom => {
+        setToken={(denom) => {
           setSwapTokens([fromTokenDenom, denom]);
           setSwapAmount([0, 0]);
           setBalanceActive(null);
