@@ -97,12 +97,13 @@ export const TokenPage: FunctionComponent = observer(() => {
     setHasSend(false);
   }, [chainStore.current]);
   const handleCheckSendPage = () => {
-    if (networkType === 'evm') {
-      if (chainId === TRON_ID) {
-        return <SendTronEvmPage coinMinimalDenom={coinMinimalDenom} tokensTrc20Tron={tokensTron} />;
-      }
-      return <SendEvmPage coinMinimalDenom={coinMinimalDenom} />;
-    } else if (networkType === 'bitcoin') {
+    // if (networkType === 'evm') {
+    if (chainId === TRON_ID) {
+      return <SendTronEvmPage coinMinimalDenom={coinMinimalDenom} tokensTrc20Tron={tokensTron} />;
+    }
+    // return <SendEvmPage coinMinimalDenom={coinMinimalDenom} />;
+    // }
+    else if (networkType === 'bitcoin') {
       return <SendBtcPage />;
     }
     return <SendPage coinMinimalDenom={coinMinimalDenom} />;
