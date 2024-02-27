@@ -21,7 +21,7 @@ import { TokensCardAll } from './tokens-card-all';
 import { AccountBoxAll } from './account-box-new';
 import { oraichainNetwork } from '@oraichain/oraidex-common';
 import { useCoinGeckoPrices, useLoadTokens } from '@owallet/hooks';
-import { getTokenInfos, showToast } from '@src/utils/helper';
+import { showToast } from '@src/utils/helper';
 import { EarningCardNew } from './earning-card-new';
 
 export const HomeScreen: FunctionComponent = observer(props => {

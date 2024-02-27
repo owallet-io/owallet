@@ -5,7 +5,7 @@ import { _keyExtract, showToast, getTokenInfos } from '../../../utils/helper';
 import FastImage from 'react-native-fast-image';
 import { VectorCharacter } from '../../../components/vector-character';
 import { Text } from '@src/components/text';
-import { TRON_ID, COINTYPE_NETWORK, getKeyDerivationFromAddressType, ChainIdEnum } from '@owallet/common';
+import { TRON_ID, COINTYPE_NETWORK, getKeyDerivationFromAddressType } from '@owallet/common';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { useBIP44Option } from '@src/screens/register/bip44';
