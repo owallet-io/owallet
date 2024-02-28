@@ -23,12 +23,13 @@ import {
   BigDecimal,
   toSubAmount,
   oraichainTokens,
-  getTokenOnOraichain
+  getTokenOnOraichain,
+  tokenMap
 } from '@oraichain/oraidex-common';
 import { openLink } from '../../utils/helper';
 import { feeEstimate, getTransferTokenFee } from '@owallet/common';
 import { handleSimulateSwap, filterNonPoolEvmTokens, SwapDirection } from '@oraichain/oraidex-universal-swap';
-import { fetchTokenInfos, ChainIdEnum, tokenMap } from '@owallet/common';
+import { fetchTokenInfos, ChainIdEnum } from '@owallet/common';
 import { calculateMinReceive } from '@oraichain/oraidex-common';
 import {
   isEvmNetworkNativeSwapSupported,
