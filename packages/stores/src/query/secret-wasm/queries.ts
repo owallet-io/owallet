@@ -1,12 +1,12 @@
-import { QueriesSetBase } from '../queries';
-import { ChainGetter } from '../../common';
-import { KVStore } from '@owallet/common';
-import { ObservableQuerySecretContractCodeHash } from './contract-hash';
-import { ObservableQuerySecret20ContractInfo } from './secret20-contract-info';
-import { DeepReadonly } from 'utility-types';
-import { ObservableQuerySecret20BalanceRegistry } from './secret20-balance';
-import { QueriesWrappedCosmos } from '../cosmos';
-import { OWallet } from '@owallet/types';
+import { QueriesSetBase } from "../queries";
+import { ChainGetter } from "../../common";
+import { KVStore } from "@owallet/common";
+import { ObservableQuerySecretContractCodeHash } from "./contract-hash";
+import { ObservableQuerySecret20ContractInfo } from "./secret20-contract-info";
+import { DeepReadonly } from "utility-types";
+import { ObservableQuerySecret20BalanceRegistry } from "./secret20-balance";
+import { QueriesWrappedCosmos } from "../cosmos";
+import { OWallet } from "@owallet/types";
 
 export interface HasSecretQueries {
   secret: SecretQueries;

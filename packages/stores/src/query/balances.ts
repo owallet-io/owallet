@@ -7,7 +7,10 @@ import { AppCurrency, NetworkType } from "@owallet/types";
 import { HasMapStore } from "../common";
 import { computedFn } from "mobx-utils";
 
-export abstract class ObservableQueryBalanceInner<T = unknown, E = unknown> extends ObservableChainQuery<T, E> {
+export abstract class ObservableQueryBalanceInner<
+  T = unknown,
+  E = unknown
+> extends ObservableChainQuery<T, E> {
   protected constructor(
     kvStore: KVStore,
     chainId: string,
@@ -71,7 +74,9 @@ export class ObservableQueryBalancesInner {
     this.balanceMap.forEach((bal) => bal.fetch());
   }
 
-  protected getBalanceInner(currency: AppCurrency): ObservableQueryBalanceInner {
+  protected getBalanceInner(
+    currency: AppCurrency
+  ): ObservableQueryBalanceInner {
     let key = currency.coinMinimalDenom;
 
     if (!this.balanceMap.has(key)) {
@@ -125,7 +130,10 @@ export class ObservableQueryBalancesInner {
         result.push(balanceInner);
       }
     }
-    console.log('🚀 ~ ObservableQueryBalancesInner ~ getbalances ~ result:', result);
+    console.log(
+      "🚀 ~ ObservableQueryBalancesInner ~ getbalances ~ result:",
+      result
+    );
     return result;
   }
 
@@ -145,7 +153,9 @@ export class ObservableQueryBalancesInner {
   @computed
   get nonNativeBalances(): ObservableQueryBalanceInner[] {
     const balances = this.balances;
-    return balances.filter((bal) => new DenomHelper(bal.currency.coinMinimalDenom).type !== 'native');
+    return balances.filter(
+      (bal) => new DenomHelper(bal.currency.coinMinimalDenom).type !== "native"
+    );
   }
 
   /**
@@ -161,7 +171,8 @@ export class ObservableQueryBalancesInner {
       (bal) =>
         new DenomHelper(bal.currency.coinMinimalDenom).type === "native" &&
         bal.balance.toDec().gt(new Dec(0)) &&
-        bal.currency.coinMinimalDenom !== chainInfo.stakeCurrency.coinMinimalDenom
+        bal.currency.coinMinimalDenom !==
+          chainInfo.stakeCurrency.coinMinimalDenom
     );
   }
 
@@ -182,14 +193,18 @@ export class ObservableQueryBalancesInner {
     return result;
   }
 
-  readonly getBalanceFromCurrency = computedFn((currency: AppCurrency): CoinPretty => {
-    const bal = this.balances.find((bal) => bal.currency.coinMinimalDenom === currency.coinMinimalDenom);
-    if (bal) {
-      return bal.balance;
-    }
+  readonly getBalanceFromCurrency = computedFn(
+    (currency: AppCurrency): CoinPretty => {
+      const bal = this.balances.find(
+        (bal) => bal.currency.coinMinimalDenom === currency.coinMinimalDenom
+      );
+      if (bal) {
+        return bal.balance;
+      }
 
-    return new CoinPretty(currency, new Int(0));
-  });
+      return new CoinPretty(currency, new Int(0));
+    }
+  );
 }
 
 export class ObservableQueryBalances extends HasMapStore<ObservableQueryBalancesInner> {
@@ -216,7 +231,10 @@ export class ObservableQueryBalances extends HasMapStore<ObservableQueryBalances
   }
 
   getQueryBech32Address(bech32Address: string): ObservableQueryBalancesInner {
-    console.log('🚀 ~ ObservableQueryBalances ~ addBalanceRegistry ~ this.balanceRegistries:', this.balanceRegistries);
+    console.log(
+      "🚀 ~ ObservableQueryBalances ~ addBalanceRegistry ~ this.balanceRegistries:",
+      this.balanceRegistries
+    );
     return this.get(bech32Address) as ObservableQueryBalancesInner;
   }
 }

@@ -1,11 +1,15 @@
-import { DenomHelper, KVStore } from '@owallet/common';
-import { ChainGetter, QueryResponse } from '../../../common';
-import { computed, makeObservable, override } from 'mobx';
-import { CoinPretty, Int } from '@owallet/unit';
-import { StoreUtils } from '../../../common';
-import { BalanceRegistry, BalanceRegistryType, ObservableQueryBalanceInner } from '../../balances';
-import { ObservableChainQuery } from '../../chain-query';
-import { Balances } from './types';
+import { DenomHelper, KVStore } from "@owallet/common";
+import { ChainGetter, QueryResponse } from "../../../common";
+import { computed, makeObservable, override } from "mobx";
+import { CoinPretty, Int } from "@owallet/unit";
+import { StoreUtils } from "../../../common";
+import {
+  BalanceRegistry,
+  BalanceRegistryType,
+  ObservableQueryBalanceInner,
+} from "../../balances";
+import { ObservableChainQuery } from "../../chain-query";
+import { Balances } from "./types";
 
 export class ObservableQueryBalanceNative extends ObservableQueryBalanceInner {
   constructor(
@@ -56,7 +60,10 @@ export class ObservableQueryBalanceNative extends ObservableQueryBalanceInner {
       return new CoinPretty(currency, new Int(0)).ready(false);
     }
 
-    return StoreUtils.getBalanceFromCurrency(currency, this.nativeBalances.response.data.balances);
+    return StoreUtils.getBalanceFromCurrency(
+      currency,
+      this.nativeBalances.response.data.balances
+    );
   }
 }
 
@@ -65,8 +72,18 @@ export class ObservableQueryCosmosBalances extends ObservableChainQuery<Balances
 
   protected duplicatedFetchCheck: boolean = false;
 
-  constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter, bech32Address: string) {
-    super(kvStore, chainId, chainGetter, `/cosmos/bank/v1beta1/balances/${bech32Address}?pagination.limit=1000`);
+  constructor(
+    kvStore: KVStore,
+    chainId: string,
+    chainGetter: ChainGetter,
+    bech32Address: string
+  ) {
+    super(
+      kvStore,
+      chainId,
+      chainGetter,
+      `/cosmos/bank/v1beta1/balances/${bech32Address}?pagination.limit=1000`
+    );
 
     this.bech32Address = bech32Address;
 
@@ -106,7 +123,8 @@ export class ObservableQueryCosmosBalances extends ObservableChainQuery<Balances
 }
 
 export class ObservableQueryCosmosBalanceRegistry implements BalanceRegistry {
-  protected nativeBalances: Map<string, ObservableQueryCosmosBalances> = new Map();
+  protected nativeBalances: Map<string, ObservableQueryCosmosBalances> =
+    new Map();
 
   readonly type: BalanceRegistryType = "cosmos";
 
@@ -123,13 +141,18 @@ export class ObservableQueryCosmosBalanceRegistry implements BalanceRegistry {
       return;
     }
     const networkType = chainGetter.getChain(chainId).networkType;
-    if (networkType !== 'cosmos') return;
+    if (networkType !== "cosmos") return;
     const key = `${chainId}/${bech32Address}`;
 
     if (!this.nativeBalances.has(key)) {
       this.nativeBalances.set(
         key,
-        new ObservableQueryCosmosBalances(this.kvStore, chainId, chainGetter, bech32Address)
+        new ObservableQueryCosmosBalances(
+          this.kvStore,
+          chainId,
+          chainGetter,
+          bech32Address
+        )
       );
     }
 

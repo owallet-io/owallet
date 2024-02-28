@@ -90,7 +90,10 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
   @observable.ref
   protected _instance: AxiosInstance;
 
-  protected constructor(instance: AxiosInstance, options: Partial<QueryOptions>) {
+  protected constructor(
+    instance: AxiosInstance,
+    options: Partial<QueryOptions>
+  ) {
     this.options = {
       ...defaultOptions,
       ...options,
@@ -157,7 +160,10 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
     this.fetch();
 
     if (this.options.fetchingInterval > 0) {
-      this.intervalId = setInterval(this.intervalFetch, this.options.fetchingInterval);
+      this.intervalId = setInterval(
+        this.intervalFetch,
+        this.options.fetchingInterval
+      );
     }
   }
 
@@ -223,12 +229,16 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
     this.cancelToken = Axios.CancelToken.source();
 
     try {
-      let response = yield* toGenerator(this.fetchResponse(this.cancelToken.token));
+      let response = yield* toGenerator(
+        this.fetchResponse(this.cancelToken.token)
+      );
       if (
         response.data &&
-        typeof response.data === 'string' &&
-        (response.data?.startsWith('stream was reset:') ||
-          ObservableQuery.suspectedResponseDatasWithInvalidValue.includes(response.data))
+        typeof response.data === "string" &&
+        (response.data?.startsWith("stream was reset:") ||
+          ObservableQuery.suspectedResponseDatasWithInvalidValue.includes(
+            response.data
+          ))
       ) {
         // In some devices, it is a http ok code, but a strange response is sometimes returned.
         // It's not that they can't query at all, it seems that they get weird response from time to time.
@@ -240,13 +250,17 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
         }
 
         // Try to query again.
-        response = yield* toGenerator(this.fetchResponse(this.cancelToken.token));
+        response = yield* toGenerator(
+          this.fetchResponse(this.cancelToken.token)
+        );
 
         if (
           response.data &&
-          typeof response.data === 'string' &&
-          (response.data.startsWith('stream was reset:') ||
-            ObservableQuery.suspectedResponseDatasWithInvalidValue.includes(response.data))
+          typeof response.data === "string" &&
+          (response.data.startsWith("stream was reset:") ||
+            ObservableQuery.suspectedResponseDatasWithInvalidValue.includes(
+              response.data
+            ))
         ) {
           throw new Error(response.data);
         }
@@ -374,18 +388,27 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
     });
   }
 
-  protected abstract fetchResponse(cancelToken: CancelToken): Promise<QueryResponse<T>>;
+  protected abstract fetchResponse(
+    cancelToken: CancelToken
+  ): Promise<QueryResponse<T>>;
 
-  protected abstract saveResponse(response: Readonly<QueryResponse<T>>): Promise<void>;
+  protected abstract saveResponse(
+    response: Readonly<QueryResponse<T>>
+  ): Promise<void>;
 
-  protected abstract loadStaledResponse(): Promise<QueryResponse<T> | undefined>;
+  protected abstract loadStaledResponse(): Promise<
+    QueryResponse<T> | undefined
+  >;
 }
 
 /**
  * ObservableQuery defines the event class to query the result from endpoint.
  * This supports the stale state if previous query exists.
  */
-export class ObservableQuery<T = unknown, E = unknown> extends ObservableQueryBase<T, E> {
+export class ObservableQuery<
+  T = unknown,
+  E = unknown
+> extends ObservableQueryBase<T, E> {
   protected static eventListener: EventEmitter = new EventEmitter();
 
   public static refreshAllObserved() {
@@ -460,7 +483,9 @@ export class ObservableQuery<T = unknown, E = unknown> extends ObservableQueryBa
     }
   }
 
-  protected async fetchResponse(cancelToken: CancelToken): Promise<QueryResponse<T>> {
+  protected async fetchResponse(
+    cancelToken: CancelToken
+  ): Promise<QueryResponse<T>> {
     // may be post method in case of ethereum
     const result = this.options.data
       ? await this.instance.post<T>(this.url, this.options.data, {
@@ -479,13 +504,17 @@ export class ObservableQuery<T = unknown, E = unknown> extends ObservableQueryBa
   }
 
   protected getCacheKey(): string {
-    return `${this.instance.name}-${this.instance.defaults.baseURL}${this.instance.getUri({
+    return `${this.instance.name}-${
+      this.instance.defaults.baseURL
+    }${this.instance.getUri({
       url: this.url,
       params: this.options.data,
     })}`;
   }
 
-  protected async saveResponse(response: Readonly<QueryResponse<T>>): Promise<void> {
+  protected async saveResponse(
+    response: Readonly<QueryResponse<T>>
+  ): Promise<void> {
     const key = this.getCacheKey();
 
     await this.kvStore.set(key, response);
@@ -504,7 +533,9 @@ export class ObservableQuery<T = unknown, E = unknown> extends ObservableQueryBa
   }
 }
 
-export class ObservableQueryMap<T = unknown, E = unknown> extends HasMapStore<ObservableQuery<T, E>> {
+export class ObservableQueryMap<T = unknown, E = unknown> extends HasMapStore<
+  ObservableQuery<T, E>
+> {
   constructor(creater: (key: string) => ObservableQuery<T, E>) {
     super(creater);
   }

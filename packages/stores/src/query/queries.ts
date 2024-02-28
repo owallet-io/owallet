@@ -1,15 +1,18 @@
-import { makeObservable, observable, runInAction } from 'mobx';
-import { KVStore } from '@owallet/common';
-import { DeepReadonly } from 'utility-types';
-import { ObservableQueryBalances } from './balances';
-import { ChainGetter } from '../common';
-import { OWallet } from '@owallet/types';
-
+import { makeObservable, observable, runInAction } from "mobx";
+import { KVStore } from "@owallet/common";
+import { DeepReadonly } from "utility-types";
+import { ObservableQueryBalances } from "./balances";
+import { ChainGetter } from "../common";
+import { OWallet } from "@owallet/types";
 
 export class QueriesSetBase {
   public readonly queryBalances: DeepReadonly<ObservableQueryBalances>;
   constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
-    this.queryBalances = new ObservableQueryBalances(kvStore, chainId, chainGetter);
+    this.queryBalances = new ObservableQueryBalances(
+      kvStore,
+      chainId,
+      chainGetter
+    );
   }
 }
 
@@ -33,7 +36,12 @@ export class QueriesStore<QueriesSet extends QueriesSetBase> {
 
   get(chainId: string): DeepReadonly<QueriesSet> {
     if (!this.queriesMap.has(chainId)) {
-      const queries = new this.queriesCreator(this.kvStore, chainId, this.chainGetter, this.apiGetter);
+      const queries = new this.queriesCreator(
+        this.kvStore,
+        chainId,
+        this.chainGetter,
+        this.apiGetter
+      );
       runInAction(() => {
         this.queriesMap.set(chainId, queries);
       });

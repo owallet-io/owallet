@@ -1,13 +1,17 @@
-import { DenomHelper, KVStore, Web3Provider } from '@owallet/common';
-import { ChainGetter, CoinPrimitive, QueryResponse } from '../../../common';
-import { computed, makeObservable, override } from 'mobx';
-import { CoinPretty, Int } from '@owallet/unit';
-import { StoreUtils } from '../../../common';
-import { BalanceRegistry, BalanceRegistryType, ObservableQueryBalanceInner } from '../../balances';
-import { ObservableChainQuery } from '../../chain-query';
-import { Balances } from './types';
-import { CancelToken } from 'axios';
-import Web3 from 'web3';
+import { DenomHelper, KVStore, Web3Provider } from "@owallet/common";
+import { ChainGetter, CoinPrimitive, QueryResponse } from "../../../common";
+import { computed, makeObservable, override } from "mobx";
+import { CoinPretty, Int } from "@owallet/unit";
+import { StoreUtils } from "../../../common";
+import {
+  BalanceRegistry,
+  BalanceRegistryType,
+  ObservableQueryBalanceInner,
+} from "../../balances";
+import { ObservableChainQuery } from "../../chain-query";
+import { Balances } from "./types";
+import { CancelToken } from "axios";
+import Web3 from "web3";
 
 export class ObservableQueryBalanceNative extends ObservableQueryBalanceInner {
   constructor(
@@ -17,13 +21,13 @@ export class ObservableQueryBalanceNative extends ObservableQueryBalanceInner {
     denomHelper: DenomHelper,
     protected readonly nativeBalances: ObservableQueryEvmBalances
   ) {
-    console.log('hup');
+    console.log("hup");
     super(
       kvStore,
       chainId,
       chainGetter,
       // No need to set the url
-      '',
+      "",
       denomHelper
     );
 
@@ -59,7 +63,10 @@ export class ObservableQueryBalanceNative extends ObservableQueryBalanceInner {
       return new CoinPretty(currency, new Int(0)).ready(false);
     }
 
-    return StoreUtils.getBalanceFromCurrency(currency, this.nativeBalances.response.data.balances);
+    return StoreUtils.getBalanceFromCurrency(
+      currency,
+      this.nativeBalances.response.data.balances
+    );
   }
 }
 
@@ -68,11 +75,16 @@ export class ObservableQueryEvmBalances extends ObservableChainQuery<Balances> {
 
   protected duplicatedFetchCheck: boolean = false;
 
-  constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter, walletAddress: string) {
-    super(kvStore, chainId, chainGetter, '');
+  constructor(
+    kvStore: KVStore,
+    chainId: string,
+    chainGetter: ChainGetter,
+    walletAddress: string
+  ) {
+    super(kvStore, chainId, chainGetter, "");
 
     this.walletAddress = walletAddress;
-    
+
     makeObservable(this);
   }
 
@@ -98,26 +110,33 @@ export class ObservableQueryEvmBalances extends ObservableChainQuery<Balances> {
     try {
       const web3 = new Web3(this.chainGetter.getChain(this.chainId).rest);
       const ethBalance = await web3.eth.getBalance(this.walletAddress);
-      console.log('🚀 ~ ObservableQueryEvmBalances ~ fetchResponse ~ ethBalance:', ethBalance);
-      const denomNative = this.chainGetter.getChain(this.chainId).stakeCurrency.coinMinimalDenom;
+      console.log(
+        "🚀 ~ ObservableQueryEvmBalances ~ fetchResponse ~ ethBalance:",
+        ethBalance
+      );
+      const denomNative = this.chainGetter.getChain(this.chainId).stakeCurrency
+        .coinMinimalDenom;
       const balances: CoinPrimitive[] = [
         {
           amount: ethBalance,
-          denom: denomNative
-        }
+          denom: denomNative,
+        },
       ];
 
       const data = {
-        balances
+        balances,
       };
       return {
         status: 1,
         staled: false,
         data,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
     } catch (error) {
-      console.log('🚀 ~ ObservableQueryEvmBalances ~ fetchResponse ~ error:', error);
+      console.log(
+        "🚀 ~ ObservableQueryEvmBalances ~ fetchResponse ~ error:",
+        error
+      );
     }
   }
   protected getCacheKey(): string {
@@ -128,7 +147,7 @@ export class ObservableQueryEvmBalances extends ObservableChainQuery<Balances> {
 export class ObservableQueryEvmBalanceRegistry implements BalanceRegistry {
   protected nativeBalances: Map<string, ObservableQueryEvmBalances> = new Map();
 
-  readonly type: BalanceRegistryType = 'evm';
+  readonly type: BalanceRegistryType = "evm";
 
   constructor(protected readonly kvStore: KVStore) {}
 
@@ -139,16 +158,28 @@ export class ObservableQueryEvmBalanceRegistry implements BalanceRegistry {
     minimalDenom: string
   ): ObservableQueryBalanceInner | undefined {
     const denomHelper = new DenomHelper(minimalDenom);
-    console.log('🚀 ~ ObservableQueryEvmBalanceRegistry ~ denomHelper.type:', minimalDenom, denomHelper.type);
-    if (denomHelper.type !== 'native') {
+    console.log(
+      "🚀 ~ ObservableQueryEvmBalanceRegistry ~ denomHelper.type:",
+      minimalDenom,
+      denomHelper.type
+    );
+    if (denomHelper.type !== "native") {
       return;
     }
     const networkType = chainGetter.getChain(chainId).networkType;
-    if (networkType !== 'evm') return;
+    if (networkType !== "evm") return;
     const key = `evm-${chainId}/${walletAddress}`;
 
     if (!this.nativeBalances.has(key)) {
-      this.nativeBalances.set(key, new ObservableQueryEvmBalances(this.kvStore, chainId, chainGetter, walletAddress));
+      this.nativeBalances.set(
+        key,
+        new ObservableQueryEvmBalances(
+          this.kvStore,
+          chainId,
+          chainGetter,
+          walletAddress
+        )
+      );
     }
     return new ObservableQueryBalanceNative(
       this.kvStore,

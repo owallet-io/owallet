@@ -1,9 +1,9 @@
-import { ExtraOptionSendToken, MsgOpt } from './base';
-import { AccountSetBase, AccountSetOpts } from './base';
-import { AppCurrency, OWalletSignOptions } from '@owallet/types';
+import { ExtraOptionSendToken, MsgOpt } from "./base";
+import { AccountSetBase, AccountSetOpts } from "./base";
+import { AppCurrency, OWalletSignOptions } from "@owallet/types";
 
-import { DenomHelper, EVMOS_NETWORKS } from '@owallet/common';
-import { Dec, DecUtils, Int } from '@owallet/unit';
+import { DenomHelper, EVMOS_NETWORKS } from "@owallet/common";
+import { Dec, DecUtils, Int } from "@owallet/unit";
 
 import {
   HasCosmosQueries,
@@ -125,7 +125,10 @@ export class EthereumAccount {
                 const queryBalance = this.queries.queryBalances
                   .getQueryBech32Address(this.base.evmosHexAddress)
                   .balances.find((bal) => {
-                    return bal.currency.coinMinimalDenom === currency.coinMinimalDenom;
+                    return (
+                      bal.currency.coinMinimalDenom ===
+                      currency.coinMinimalDenom
+                    );
                   });
 
                 if (queryBalance) {
@@ -174,7 +177,10 @@ export class EthereumAccount {
                 const queryBalance = this.queries.queryBalances
                   .getQueryBech32Address(this.base.evmosHexAddress)
                   .balances.find((bal) => {
-                    return bal.currency.coinMinimalDenom === currency.coinMinimalDenom;
+                    return (
+                      bal.currency.coinMinimalDenom ===
+                      currency.coinMinimalDenom
+                    );
                   });
 
                 if (queryBalance) {

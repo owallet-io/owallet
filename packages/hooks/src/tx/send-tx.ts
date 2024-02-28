@@ -3,15 +3,14 @@ import {
   CosmosMsgOpts,
   CosmwasmMsgOpts,
   ObservableQueryBitcoinBalance,
-  SecretMsgOpts
-} from '@owallet/stores';
-import { ObservableQueryBalances,  } from '@owallet/stores';
-import { useFeeConfig } from './fee';
-import { useMemoConfig } from './memo';
-import { useRecipientConfig } from './recipient';
-import { useSendGasConfig } from './send-gas';
-import { useAmountConfig } from './amount';
-
+  SecretMsgOpts,
+} from "@owallet/stores";
+import { ObservableQueryBalances } from "@owallet/stores";
+import { useFeeConfig } from "./fee";
+import { useMemoConfig } from "./memo";
+import { useRecipientConfig } from "./recipient";
+import { useSendGasConfig } from "./send-gas";
+import { useAmountConfig } from "./amount";
 
 type MsgOpts = CosmosMsgOpts & SecretMsgOpts & CosmwasmMsgOpts;
 
@@ -34,7 +33,7 @@ export const useSendTxConfig = (
     queryBalances,
     // chainInfo.networkType === 'evm' && queryEvmBalances,
     // chainInfo.networkType === 'evm' && senderEvm,
-    chainInfo.networkType === 'bitcoin' && queryBtcBalances
+    chainInfo.networkType === "bitcoin" && queryBtcBalances
   );
 
   const memoConfig = useMemoConfig(chainGetter, chainId);
@@ -54,7 +53,7 @@ export const useSendTxConfig = (
     true,
     // chainInfo.networkType === 'evm' && queryEvmBalances,
     // chainInfo.networkType === 'evm' && senderEvm,
-    chainInfo.networkType === 'bitcoin' && queryBtcBalances,
+    chainInfo.networkType === "bitcoin" && queryBtcBalances,
     memoConfig
   );
   // Due to the circular references between the amount config and gas/fee configs,

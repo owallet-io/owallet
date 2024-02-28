@@ -1,16 +1,27 @@
-import { DefaultGasPriceStep, FeeType, IAmountConfig, IFeeConfig, IGasConfig, IMemoConfig } from './types';
-import { TxChainSetter } from './chain';
-import { ChainGetter, CoinPrimitive, ObservableQueryBitcoinBalance,  } from '@owallet/stores';
-import { action, computed, makeObservable, observable } from 'mobx';
-import { Coin, CoinPretty, Dec, DecUtils, Int } from '@owallet/unit';
-import { AddressBtcType, Currency, IFeeRate } from '@owallet/types';
-import { computedFn } from 'mobx-utils';
-import { StdFee } from '@cosmjs/launchpad';
-import { useState } from 'react';
-import { ObservableQueryBalances } from '@owallet/stores';
-import { InsufficientFeeError, NotLoadedFeeError } from './errors';
-import { calculatorFee, getFeeRate } from '@owallet/bitcoin';
-import { MIN_FEE_RATE } from '@owallet/common';
+import {
+  DefaultGasPriceStep,
+  FeeType,
+  IAmountConfig,
+  IFeeConfig,
+  IGasConfig,
+  IMemoConfig,
+} from "./types";
+import { TxChainSetter } from "./chain";
+import {
+  ChainGetter,
+  CoinPrimitive,
+  ObservableQueryBitcoinBalance,
+} from "@owallet/stores";
+import { action, computed, makeObservable, observable } from "mobx";
+import { Coin, CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
+import { AddressBtcType, Currency, IFeeRate } from "@owallet/types";
+import { computedFn } from "mobx-utils";
+import { StdFee } from "@cosmjs/launchpad";
+import { useState } from "react";
+import { ObservableQueryBalances } from "@owallet/stores";
+import { InsufficientFeeError, NotLoadedFeeError } from "./errors";
+import { calculatorFee, getFeeRate } from "@owallet/bitcoin";
+import { MIN_FEE_RATE } from "@owallet/common";
 
 export class FeeConfig extends TxChainSetter implements IFeeConfig {
   @observable.ref
@@ -302,9 +313,11 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
         //   )
         //     return new InsufficientFeeError('insufficient fee');
         // } else
-        if (this.chainInfo.networkType === 'bitcoin') {
-          const balance = this.queryBtcBalances.getQueryBalance(this._sender)?.balance;
-          if (!balance) return new InsufficientFeeError('insufficient fee');
+        if (this.chainInfo.networkType === "bitcoin") {
+          const balance = this.queryBtcBalances.getQueryBalance(
+            this._sender
+          )?.balance;
+          if (!balance) return new InsufficientFeeError("insufficient fee");
           else if (
             balance
               .toDec()
@@ -319,24 +332,32 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
             return new InsufficientFeeError("insufficient fee");
           }
         }
-        const bal = this.queryBalances.getQueryBech32Address(this._sender).balances.find((bal) => {
-          return bal.currency.coinMinimalDenom === need.denom;
-        });
+        const bal = this.queryBalances
+          .getQueryBech32Address(this._sender)
+          .balances.find((bal) => {
+            return bal.currency.coinMinimalDenom === need.denom;
+          });
 
         if (!bal) {
-          return new InsufficientFeeError('insufficient fee');
+          return new InsufficientFeeError("insufficient fee");
         } else if (!bal.response && !bal.error) {
           // If fetching balance doesn't have the response nor error,
           // assume it is not loaded from KVStore(cache).
-          return new NotLoadedFeeError(`${bal.currency.coinDenom} is not loaded yet`);
+          return new NotLoadedFeeError(
+            `${bal.currency.coinDenom} is not loaded yet`
+          );
         } else if (
           bal.balance
             .toDec()
-            .mul(DecUtils.getTenExponentNInPrecisionRange(bal.currency.coinDecimals))
+            .mul(
+              DecUtils.getTenExponentNInPrecisionRange(
+                bal.currency.coinDecimals
+              )
+            )
             .truncate()
             .lt(need.amount)
         ) {
-          return new InsufficientFeeError('insufficient fee');
+          return new InsufficientFeeError("insufficient fee");
         }
       }
     } catch (error) {

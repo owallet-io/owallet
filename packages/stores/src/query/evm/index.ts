@@ -1,2 +1,2 @@
-export * as EVM from './types';
-export * from './queries';
+export * as EVM from "./types";
+export * from "./queries";

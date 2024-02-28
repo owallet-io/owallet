@@ -1,12 +1,16 @@
-import { computed, makeObservable, override } from 'mobx';
-import { DenomHelper, KVStore } from '@owallet/common';
-import { ChainGetter, QueryResponse } from '../../common';
-import { CoinPretty, Int } from '@owallet/unit';
-import { BalanceRegistry, BalanceRegistryType, ObservableQueryBalanceInner } from '../balances';
-import { Erc20ContractBalance } from './types';
-import ERC20_ABI from './erc20';
-import { ObservableChainQuery } from '../chain-query';
-import Web3 from 'web3';
+import { computed, makeObservable, override } from "mobx";
+import { DenomHelper, KVStore } from "@owallet/common";
+import { ChainGetter, QueryResponse } from "../../common";
+import { CoinPretty, Int } from "@owallet/unit";
+import {
+  BalanceRegistry,
+  BalanceRegistryType,
+  ObservableQueryBalanceInner,
+} from "../balances";
+import { Erc20ContractBalance } from "./types";
+import ERC20_ABI from "./erc20";
+import { ObservableChainQuery } from "../chain-query";
+import Web3 from "web3";
 
 export class ObservableQueryErc20Balance extends ObservableChainQuery<Erc20ContractBalance> {
   constructor(
@@ -20,27 +24,29 @@ export class ObservableQueryErc20Balance extends ObservableChainQuery<Erc20Contr
   }
 
   protected canFetch(): boolean {
-    return this.contractAddress.length !== 0 && this.walletAddress !== '';
+    return this.contractAddress.length !== 0 && this.walletAddress !== "";
   }
-  protected async fetchResponse(): Promise<QueryResponse<Erc20ContractBalance>> {
+  protected async fetchResponse(): Promise<
+    QueryResponse<Erc20ContractBalance>
+  > {
     const web3 = new Web3(this.chainGetter.getChain(this.chainId).rest);
     // @ts-ignore
     const contract = new web3.eth.Contract(ERC20_ABI, this.contractAddress);
 
     const balance = await contract.methods.balanceOf(this.walletAddress).call();
     if (!balance) {
-      throw new Error('Failed to get the response from the contract');
+      throw new Error("Failed to get the response from the contract");
     }
     const data: Erc20ContractBalance = {
-      balance: balance
+      balance: balance,
     };
-    console.log('🚀 ~ ObservableQueryErc20Balance ~ data:', data);
+    console.log("🚀 ~ ObservableQueryErc20Balance ~ data:", data);
 
     return {
       data,
       status: 1,
       staled: false,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
   }
 }
@@ -60,7 +66,7 @@ export class ObservableQueryErc20BalanceInner extends ObservableQueryBalanceInne
       chainId,
       chainGetter,
       // No need to set the url at initial.
-      '',
+      "",
       denomHelper
     );
 
@@ -90,23 +96,31 @@ export class ObservableQueryErc20BalanceInner extends ObservableQueryBalanceInne
     const denom = this.denomHelper.denom;
 
     const chainInfo = this.chainGetter.getChain(this.chainId);
-    const currency = chainInfo.currencies.find((cur) => cur.coinMinimalDenom === denom);
+    const currency = chainInfo.currencies.find(
+      (cur) => cur.coinMinimalDenom === denom
+    );
 
     // TODO: Infer the currency according to its denom (such if denom is `uatom` -> `Atom` with decimal 6)?
     if (!currency) {
       throw new Error(`Unknown currency: ${denom}`);
     }
 
-    if (!this.queryErc20Balance.response || !this.queryErc20Balance.response.data.balance) {
+    if (
+      !this.queryErc20Balance.response ||
+      !this.queryErc20Balance.response.data.balance
+    ) {
       return new CoinPretty(currency, new Int(0)).ready(false);
     }
 
-    return new CoinPretty(currency, new Int(this.queryErc20Balance.response.data.balance));
+    return new CoinPretty(
+      currency,
+      new Int(this.queryErc20Balance.response.data.balance)
+    );
   }
 }
 
 export class ObservableQueryErc20BalanceRegistry implements BalanceRegistry {
-  readonly type: BalanceRegistryType = 'erc20';
+  readonly type: BalanceRegistryType = "erc20";
 
   constructor(protected readonly kvStore: KVStore) {}
 
@@ -117,8 +131,14 @@ export class ObservableQueryErc20BalanceRegistry implements BalanceRegistry {
     minimalDenom: string
   ): ObservableQueryBalanceInner | undefined {
     const denomHelper = new DenomHelper(minimalDenom);
-    if (denomHelper.type === 'erc20') {
-      return new ObservableQueryErc20BalanceInner(this.kvStore, chainId, chainGetter, denomHelper, walletAddress);
+    if (denomHelper.type === "erc20") {
+      return new ObservableQueryErc20BalanceInner(
+        this.kvStore,
+        chainId,
+        chainGetter,
+        denomHelper,
+        walletAddress
+      );
     }
   }
 }
