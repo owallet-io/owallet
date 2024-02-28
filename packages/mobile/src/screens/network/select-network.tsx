@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { PageWithScrollView } from '../../components/page';
-import { colors, typography } from '../../themes';
-import { OWalletLogo } from '../register/owallet-logo';
-import { Text } from '@src/components/text';
-import { Controller, useForm } from 'react-hook-form';
-import { TextInput } from '../../components/input';
-import { LoadingSpinner } from '../../components/spinner';
-import { useSimpleTimer } from '../../hooks';
-import { useSmartNavigation } from '../../navigation.provider';
-import { useStore } from '../../stores';
-import { Bech32Address } from '@owallet/cosmos';
-import RadioGroup from 'react-native-radio-buttons-group';
-import CheckBox from 'react-native-check-box';
-import { useTheme } from '@src/themes/theme-provider';
+import React, { useEffect, useState } from "react";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { PageWithScrollView } from "../../components/page";
+import { colors, typography } from "../../themes";
+import { OWalletLogo } from "../register/owallet-logo";
+import { Text } from "@src/components/text";
+import { Controller, useForm } from "react-hook-form";
+import { TextInput } from "../../components/input";
+import { LoadingSpinner } from "../../components/spinner";
+import { useSimpleTimer } from "../../hooks";
+import { useSmartNavigation } from "../../navigation.provider";
+import { useStore } from "../../stores";
+import { Bech32Address } from "@owallet/cosmos";
+import RadioGroup from "react-native-radio-buttons-group";
+import CheckBox from "react-native-check-box";
+import { useTheme } from "@src/themes/theme-provider";
 
 interface FormData {
   name: string;
@@ -37,67 +37,89 @@ export const SelectNetworkType = ({ onChange }) => {
   const { colors } = useTheme();
   const radioButtons = [
     {
-      id: 'cosmos',
-      label: 'Cosmos',
-      value: 'cosmos',
-      borderColor: colors['primary-text'],
+      id: "cosmos",
+      label: "Cosmos",
+      value: "cosmos",
+      borderColor: colors["primary-text"],
       labelStyle: {
-        color: colors['primary-text']
-      }
+        color: colors["primary-text"],
+      },
     },
     {
-      id: 'evm',
-      label: 'EVM',
-      value: 'evm',
-      borderColor: colors['primary-text'],
+      id: "evm",
+      label: "EVM",
+      value: "evm",
+      borderColor: colors["primary-text"],
       labelStyle: {
-        color: colors['primary-text']
-      }
-    }
+        color: colors["primary-text"],
+      },
+    },
   ];
 
-  const [selectedId, setSelectedId] = useState('cosmos');
+  const [selectedId, setSelectedId] = useState("cosmos");
   function onPressRadioButton(idRadio) {
     setSelectedId(idRadio);
-    const selected = radioButtons.find(rb => rb.id == idRadio);
+    const selected = radioButtons.find((rb) => rb.id == idRadio);
     onChange && onChange(selected);
   }
 
-  return <RadioGroup layout={'row'} radioButtons={radioButtons} onPress={onPressRadioButton} selectedId={selectedId} />;
+  return (
+    <RadioGroup
+      layout={"row"}
+      radioButtons={radioButtons}
+      onPress={onPressRadioButton}
+      selectedId={selectedId}
+    />
+  );
 };
 
-const features = ['stargate', 'ibc-transfer', 'cosmwasm', 'secretwasm', 'ibc-go', 'isEvm', 'no-legacy-stdTx'];
+const features = [
+  "stargate",
+  "ibc-transfer",
+  "cosmwasm",
+  "secretwasm",
+  "ibc-go",
+  "isEvm",
+  "no-legacy-stdTx",
+];
 
 export const SelectFeatures = ({ onChange, networkType }) => {
   const [selected, setSelected] = useState([]);
   const { colors } = useTheme();
   useEffect(() => {
-    if (networkType === 'evm') {
-      setSelected(['ibc-go', 'stargate', 'isEvm']);
+    if (networkType === "evm") {
+      setSelected(["ibc-go", "stargate", "isEvm"]);
     } else {
-      setSelected(['stargate', 'ibc-go', 'ibc-transfer', 'cosmwasm', 'no-legacy-stdTx']);
+      setSelected([
+        "stargate",
+        "ibc-go",
+        "ibc-transfer",
+        "cosmwasm",
+        "no-legacy-stdTx",
+      ]);
     }
   }, [networkType]);
 
   return (
     <View
       style={{
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        maxHeight: 150
+        flexDirection: "row",
+        flexWrap: "wrap",
+        maxHeight: 150,
       }}
     >
-      {features.map(f => {
+      {features.map((f) => {
         return (
-          <View key={f} style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <View key={f} style={{ flexDirection: "row", alignItems: "center" }}>
             <CheckBox
               disabled={
-                (networkType === 'cosmos' && (f === 'isEvm' || f === 'secretwasm')) ||
-                (networkType === 'evm' && f === 'cosmwasm')
+                (networkType === "cosmos" &&
+                  (f === "isEvm" || f === "secretwasm")) ||
+                (networkType === "evm" && f === "cosmwasm")
               }
               style={{ flex: 1, padding: 14 }}
-              checkBoxColor={colors['primary-text']}
-              checkedCheckBoxColor={colors['primary-text']}
+              checkBoxColor={colors["primary-text"]}
+              checkedCheckBoxColor={colors["primary-text"]}
               onClick={() => {
                 const tempArr = [...selected];
                 if (selected.includes(f)) {
@@ -129,12 +151,12 @@ export const SelectNetworkScreen = () => {
     setFocus,
     getValues,
     setValue,
-    formState: { errors }
+    formState: { errors },
   } = useForm<FormData>();
   const { isTimedOut, setTimer } = useSimpleTimer();
   const { chainStore } = useStore();
   const smartNavigation = useSmartNavigation();
-  const [networkType, setNetworkType] = useState('cosmos');
+  const [networkType, setNetworkType] = useState("cosmos");
 
   const submit = handleSubmit(async () => {
     const {
@@ -146,13 +168,13 @@ export const SelectNetworkScreen = () => {
       bech32Config,
       url_block,
       symbol,
-      coingecko = '',
+      coingecko = "",
       coinMinimal,
       networkType,
       features,
       feeLow,
       feeMedium,
-      feeHigh
+      feeHigh,
     } = getValues();
 
     setTimer(2000);
@@ -161,25 +183,39 @@ export const SelectNetworkScreen = () => {
 
     try {
       chainInfo = {
-        rpc: url_rpc.endsWith('/') ? `${url_rpc.slice(0, -1)}` : `${url_rpc}`,
-        rest: url_rest.endsWith('/') ? `${url_rest.slice(0, -1)}` : `${url_rest}`,
-        chainId: chainId.split(' ').join('-').toLocaleLowerCase() ?? `${name.split(' ').join('-')}`,
+        rpc: url_rpc.endsWith("/") ? `${url_rpc.slice(0, -1)}` : `${url_rpc}`,
+        rest: url_rest.endsWith("/")
+          ? `${url_rest.slice(0, -1)}`
+          : `${url_rest}`,
+        chainId:
+          chainId.split(" ").join("-").toLocaleLowerCase() ??
+          `${name.split(" ").join("-")}`,
         chainName: `${name}`,
-        networkType: networkType?.toLocaleLowerCase() ?? 'cosmos',
+        networkType: networkType?.toLocaleLowerCase() ?? "cosmos",
         stakeCurrency: {
-          coinDenom: `${code.split(' ').join('').toLocaleUpperCase()}`,
-          coinMinimalDenom: `${coinMinimal.split(' ').join('').toLocaleLowerCase()}`,
+          coinDenom: `${code.split(" ").join("").toLocaleUpperCase()}`,
+          coinMinimalDenom: `${coinMinimal
+            .split(" ")
+            .join("")
+            .toLocaleLowerCase()}`,
           coinDecimals: 6,
           coinGeckoId: `${
-            coingecko?.split(' ').join('-').toLocaleLowerCase() ?? code.split(' ').join('-').toLocaleLowerCase()
+            coingecko?.split(" ").join("-").toLocaleLowerCase() ??
+            code.split(" ").join("-").toLocaleLowerCase()
           }`,
-          coinImageUrl: symbol !== '' ? symbol : 'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
+          coinImageUrl:
+            symbol !== ""
+              ? symbol
+              : "https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png",
         },
         bip44: {
-          coinType: 118
+          coinType: 118,
         },
         bech32Config: Bech32Address.defaultBech32Config(
-          `${bech32Config.split(' ').join('').toLocaleLowerCase() ?? code.split(' ').join('').toLocaleLowerCase()}`
+          `${
+            bech32Config.split(" ").join("").toLocaleLowerCase() ??
+            code.split(" ").join("").toLocaleLowerCase()
+          }`
         ),
         get currencies() {
           return [this.stakeCurrency];
@@ -190,58 +226,61 @@ export const SelectNetworkScreen = () => {
         gasPriceStep: {
           low: feeLow ?? 0,
           average: feeMedium ?? 0,
-          high: feeHigh ?? 0
+          high: feeHigh ?? 0,
         },
-        features: features?.length > 0 ? features : ['stargate'],
-        chainSymbolImageUrl: symbol !== '' ? symbol : 'https://orai.io/images/logos/logomark-dark.png',
+        features: features?.length > 0 ? features : ["stargate"],
+        chainSymbolImageUrl:
+          symbol !== ""
+            ? symbol
+            : "https://orai.io/images/logos/logomark-dark.png",
         txExplorer: {
-          name: 'Scan',
+          name: "Scan",
           txUrl: `${block}/txs/{txHash}`,
-          accountUrl: `${block}/account/{address}`
-        }
+          accountUrl: `${block}/account/{address}`,
+        },
         // beta: true // use v1beta1
       };
 
       await chainStore.addChain(chainInfo);
       smartNavigation.goBack();
     } catch (err) {
-      console.log('err: ', err);
+      console.log("err: ", err);
       // alert('Oops! Something went wrong!');
       // alert(err.message);
     }
   });
 
-  const handleChangeNetwork = selected => {
-    setValue('networkType', selected.value);
+  const handleChangeNetwork = (selected) => {
+    setValue("networkType", selected.value);
 
     setNetworkType(selected.value);
   };
 
-  const handleSelectFeatures = features => {
-    setValue('features', features);
+  const handleSelectFeatures = (features) => {
+    setValue("features", features);
   };
 
   return (
     <PageWithScrollView
       contentContainerStyle={{
         paddingLeft: 20,
-        paddingRight: 20
+        paddingRight: 20,
       }}
     >
       <View
         style={{
           height: 72,
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between'
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
         }}
       >
         <Text
           style={{
             fontSize: 24,
             lineHeight: 34,
-            fontWeight: '700'
+            fontWeight: "700",
           }}
         >
           New RPC network
@@ -251,14 +290,15 @@ export const SelectNetworkScreen = () => {
         </View>
       </View>
       <Text style={{ paddingTop: 10 }}>
-        Use a custom network that supports RPC via URL instead of some of the networks provided
+        Use a custom network that supports RPC via URL instead of some of the
+        networks provided
       </Text>
       <View style={{ height: 20 }} />
       <Text
         style={{
           ...typography.h3,
-          fontWeight: '900',
-          paddingBottom: 20
+          fontWeight: "900",
+          paddingBottom: 20,
         }}
       >
         {`Network Info`}
@@ -270,11 +310,11 @@ export const SelectNetworkScreen = () => {
             <TextInput
               label="Network name"
               labelStyle={{
-                fontWeight: '700'
+                fontWeight: "700",
               }}
-              placeholder={'Network name'}
+              placeholder={"Network name"}
               inputStyle={{
-                ...styles.borderInput
+                ...styles.borderInput,
               }}
               onSubmitEditing={() => {
                 submit();
@@ -293,18 +333,18 @@ export const SelectNetworkScreen = () => {
       <Controller
         control={control}
         rules={{
-          required: 'Chain Id is required'
+          required: "Chain Id is required",
         }}
         render={({ field: { onChange, onBlur, value, ref } }) => {
           return (
             <TextInput
               label="Chain Id"
               labelStyle={{
-                fontWeight: '700'
+                fontWeight: "700",
               }}
-              placeholder={'e.g: Oraichain'}
+              placeholder={"e.g: Oraichain"}
               inputStyle={{
-                ...styles.borderInput
+                ...styles.borderInput,
               }}
               onSubmitEditing={() => {
                 submit();
@@ -323,27 +363,27 @@ export const SelectNetworkScreen = () => {
       <Controller
         control={control}
         rules={{
-          required: 'New RPC network is required',
+          required: "New RPC network is required",
           validate: (value: string) => {
             const values = value.toLowerCase();
             if (!/^https?:\/\//.test(values)) {
-              return 'The url must have a proper https prefix';
+              return "The url must have a proper https prefix";
             }
-          }
+          },
         }}
         render={({ field: { onChange, onBlur, value, ref } }) => {
           return (
             <TextInput
               label="URL RPC"
               inputStyle={{
-                ...styles.borderInput
+                ...styles.borderInput,
               }}
-              placeholder={'e.g: https://rpc.orai.io'}
+              placeholder={"e.g: https://rpc.orai.io"}
               labelStyle={{
-                fontWeight: '700'
+                fontWeight: "700",
               }}
               onSubmitEditing={() => {
-                setFocus('url_rpc');
+                setFocus("url_rpc");
               }}
               error={errors.url_rpc?.message}
               onBlur={onBlur}
@@ -359,27 +399,27 @@ export const SelectNetworkScreen = () => {
       <Controller
         control={control}
         rules={{
-          required: 'New Rest network is required',
+          required: "New Rest network is required",
           validate: (value: string) => {
             const values = value.toLowerCase();
             if (!/^https?:\/\//.test(values)) {
-              return 'The url must have a proper https prefix';
+              return "The url must have a proper https prefix";
             }
-          }
+          },
         }}
         render={({ field: { onChange, onBlur, value, ref } }) => {
           return (
             <TextInput
               label="URL Rest"
               inputStyle={{
-                ...styles.borderInput
+                ...styles.borderInput,
               }}
-              placeholder={'e.g: https://lcd.orai.io'}
+              placeholder={"e.g: https://lcd.orai.io"}
               labelStyle={{
-                fontWeight: '700'
+                fontWeight: "700",
               }}
               onSubmitEditing={() => {
-                setFocus('url_rest');
+                setFocus("url_rest");
               }}
               error={errors.url_rest?.message}
               onBlur={onBlur}
@@ -400,8 +440,8 @@ export const SelectNetworkScreen = () => {
               <Text
                 style={{
                   ...typography.h6,
-                  fontWeight: '600',
-                  paddingBottom: 8
+                  fontWeight: "600",
+                  paddingBottom: 8,
                 }}
               >
                 {`Network Type`}
@@ -416,18 +456,18 @@ export const SelectNetworkScreen = () => {
       <Controller
         control={control}
         rules={{
-          required: 'Bech32 Prefix is required'
+          required: "Bech32 Prefix is required",
         }}
         render={({ field: { onChange, onBlur, value, ref } }) => {
           return (
             <TextInput
               label="Bech32 Prefix"
               inputStyle={{
-                ...styles.borderInput
+                ...styles.borderInput,
               }}
-              placeholder={'e.g: orai'}
+              placeholder={"e.g: orai"}
               labelStyle={{
-                fontWeight: '700'
+                fontWeight: "700",
               }}
               onSubmitEditing={() => {
                 submit();
@@ -447,19 +487,22 @@ export const SelectNetworkScreen = () => {
         <Text
           style={{
             ...typography.h6,
-            fontWeight: '600',
-            paddingBottom: 8
+            fontWeight: "600",
+            paddingBottom: 8,
           }}
         >
           {`Features`}
         </Text>
-        <SelectFeatures onChange={handleSelectFeatures} networkType={networkType} />
+        <SelectFeatures
+          onChange={handleSelectFeatures}
+          networkType={networkType}
+        />
       </View>
       <Text
         style={{
           ...typography.h3,
-          fontWeight: '900',
-          paddingBottom: 20
+          fontWeight: "900",
+          paddingBottom: 20,
         }}
       >
         {`Fee config`}
@@ -472,18 +515,18 @@ export const SelectNetworkScreen = () => {
               label="Fee (Low)"
               keyboardType="numeric"
               inputStyle={{
-                ...styles.borderInput
+                ...styles.borderInput,
               }}
-              placeholder={'Fee (Low)'}
+              placeholder={"Fee (Low)"}
               labelStyle={{
-                fontWeight: '700'
+                fontWeight: "700",
               }}
               onSubmitEditing={() => {
                 submit();
               }}
               error={errors.feeLow?.message}
               onBlur={onBlur}
-              onChangeText={txt => onChange(txt.replace(/,/g, '.'))}
+              onChangeText={(txt) => onChange(txt.replace(/,/g, "."))}
               value={value.toString()}
               ref={ref}
             />
@@ -500,18 +543,18 @@ export const SelectNetworkScreen = () => {
               label="Fee (Average)"
               keyboardType="numeric"
               inputStyle={{
-                ...styles.borderInput
+                ...styles.borderInput,
               }}
-              placeholder={'Fee (Average)'}
+              placeholder={"Fee (Average)"}
               labelStyle={{
-                fontWeight: '700'
+                fontWeight: "700",
               }}
               onSubmitEditing={() => {
                 submit();
               }}
               error={errors.feeMedium?.message}
               onBlur={onBlur}
-              onChangeText={txt => onChange(txt.replace(/,/g, '.'))}
+              onChangeText={(txt) => onChange(txt.replace(/,/g, "."))}
               value={value.toString()}
               ref={ref}
             />
@@ -528,18 +571,18 @@ export const SelectNetworkScreen = () => {
               label="Fee (High)"
               keyboardType="numeric"
               inputStyle={{
-                ...styles.borderInput
+                ...styles.borderInput,
               }}
-              placeholder={'Fee (High)'}
+              placeholder={"Fee (High)"}
               labelStyle={{
-                fontWeight: '700'
+                fontWeight: "700",
               }}
               onSubmitEditing={() => {
                 submit();
               }}
               error={errors.feeHigh?.message}
               onBlur={onBlur}
-              onChangeText={txt => onChange(txt.replace(/,/g, '.'))}
+              onChangeText={(txt) => onChange(txt.replace(/,/g, "."))}
               value={value.toString()}
               ref={ref}
             />
@@ -551,8 +594,8 @@ export const SelectNetworkScreen = () => {
       <Text
         style={{
           ...typography.h3,
-          fontWeight: '900',
-          paddingBottom: 20
+          fontWeight: "900",
+          paddingBottom: 20,
         }}
       >
         {`Token Info`}
@@ -560,24 +603,24 @@ export const SelectNetworkScreen = () => {
       <Controller
         control={control}
         rules={{
-          required: 'Coin Denom is required',
+          required: "Coin Denom is required",
           validate: (value: string) => {
             const values = value.toLowerCase();
             if (!values) {
-              return 'Coin Denom is required';
+              return "Coin Denom is required";
             }
-          }
+          },
         }}
         render={({ field: { onChange, onBlur, value, ref } }) => {
           return (
             <TextInput
               label="Coin Denom"
               inputStyle={{
-                ...styles.borderInput
+                ...styles.borderInput,
               }}
-              placeholder={'Code'}
+              placeholder={"Code"}
               labelStyle={{
-                fontWeight: '700'
+                fontWeight: "700",
               }}
               onSubmitEditing={() => {
                 submit();
@@ -596,24 +639,24 @@ export const SelectNetworkScreen = () => {
       <Controller
         control={control}
         rules={{
-          required: 'Coin Minimnal Denom is required',
+          required: "Coin Minimnal Denom is required",
           validate: (value: string) => {
             const values = value.toLowerCase();
             if (!values) {
-              return 'Coin Minimnal is required';
+              return "Coin Minimnal is required";
             }
-          }
+          },
         }}
         render={({ field: { onChange, onBlur, value, ref } }) => {
           return (
             <TextInput
               label="Coin Minimal Denom"
               inputStyle={{
-                ...styles.borderInput
+                ...styles.borderInput,
               }}
-              placeholder={'Coin Minimal Denom'}
+              placeholder={"Coin Minimal Denom"}
               labelStyle={{
-                fontWeight: '700'
+                fontWeight: "700",
               }}
               onSubmitEditing={() => {
                 submit();
@@ -646,11 +689,11 @@ export const SelectNetworkScreen = () => {
             <TextInput
               label="Coingecko ID"
               inputStyle={{
-                ...styles.borderInput
+                ...styles.borderInput,
               }}
-              placeholder={'Coingecko ID'}
+              placeholder={"Coingecko ID"}
               labelStyle={{
-                fontWeight: '700'
+                fontWeight: "700",
               }}
               onSubmitEditing={() => {
                 submit();
@@ -673,12 +716,12 @@ export const SelectNetworkScreen = () => {
             <TextInput
               label="Symbol (Optional)"
               inputStyle={{
-                ...styles.borderInput
+                ...styles.borderInput,
               }}
               labelStyle={{
-                fontWeight: '700'
+                fontWeight: "700",
               }}
-              placeholder={'Symbol'}
+              placeholder={"Symbol"}
               onSubmitEditing={() => {
                 submit();
               }}
@@ -700,15 +743,15 @@ export const SelectNetworkScreen = () => {
             <TextInput
               label="Block explorer URL (Optional)"
               inputStyle={{
-                ...styles.borderInput
+                ...styles.borderInput,
               }}
               labelStyle={{
-                fontWeight: '700'
+                fontWeight: "700",
               }}
               onSubmitEditing={() => {
                 submit();
               }}
-              placeholder={'Block explorer URL'}
+              placeholder={"Block explorer URL"}
               error={errors.url_block?.message}
               onBlur={onBlur}
               onChangeText={onChange}
@@ -726,22 +769,22 @@ export const SelectNetworkScreen = () => {
         style={{
           marginBottom: 24,
           marginTop: 20,
-          backgroundColor: colors['primary-surface-default'],
-          borderRadius: 8
+          backgroundColor: colors["primary-surface-default"],
+          borderRadius: 8,
         }}
       >
         {isTimedOut ? (
-          <View style={{ padding: 16, alignItems: 'center' }}>
-            <LoadingSpinner color={colors['white']} size={20} />
+          <View style={{ padding: 16, alignItems: "center" }}>
+            <LoadingSpinner color={colors["white"]} size={20} />
           </View>
         ) : (
           <Text
             style={{
-              color: 'white',
-              textAlign: 'center',
-              fontWeight: '700',
+              color: "white",
+              textAlign: "center",
+              fontWeight: "700",
               fontSize: 16,
-              padding: 16
+              padding: 16,
             }}
           >
             Next
@@ -756,10 +799,10 @@ export const SelectNetworkScreen = () => {
       >
         <Text
           style={{
-            color: colors['primary-surface-default'],
-            textAlign: 'center',
-            fontWeight: '700',
-            fontSize: 16
+            color: colors["primary-surface-default"],
+            textAlign: "center",
+            fontWeight: "700",
+            fontSize: 16,
           }}
         >
           Go back
@@ -776,6 +819,6 @@ const styles = StyleSheet.create({
     paddingRight: 11,
     paddingTop: 12,
     paddingBottom: 12,
-    borderRadius: 8
-  }
+    borderRadius: 8,
+  },
 });

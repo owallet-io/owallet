@@ -1,30 +1,29 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
-import { SettingItem } from '../components';
-import { Toggle } from '../../../components/toggle';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../../stores';
-import delay from 'delay';
+import React, { FunctionComponent, useEffect, useState } from "react";
+import { SettingItem } from "../components";
+import { Toggle } from "../../../components/toggle";
+import { observer } from "mobx-react-lite";
+import { useStore } from "../../../stores";
+import delay from "delay";
 
 export const SettingSwitchModeItem: FunctionComponent<{
   topBorder?: boolean;
 }> = observer(({ topBorder }) => {
   const { appInitStore } = useStore();
-  
 
   const [toggle, setToggle] = useState(
-    appInitStore.getInitApp.theme == 'dark' ? true : false
+    appInitStore.getInitApp.theme == "dark" ? true : false
   );
 
   useEffect(() => {
     handleUpdateTheme(toggle, appInitStore.getInitApp.theme);
   }, [toggle, appInitStore.getInitApp.theme]);
   const handleUpdateTheme = async (toggle, theme) => {
-    if (toggle && theme === 'light') {
+    if (toggle && theme === "light") {
       await delay(130);
-      appInitStore.updateTheme('dark');
-    } else if (!toggle && theme === 'dark') {
+      appInitStore.updateTheme("dark");
+    } else if (!toggle && theme === "dark") {
       await delay(130);
-      appInitStore.updateTheme('light');
+      appInitStore.updateTheme("light");
     }
   };
   return (

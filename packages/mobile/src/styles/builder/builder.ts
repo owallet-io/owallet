@@ -1,6 +1,6 @@
-import { StyleBuilderDefinitions, StaticStyles } from './types';
-import { StyleSheet } from 'react-native';
-import { UnionToIntersection } from 'utility-types';
+import { StyleBuilderDefinitions, StaticStyles } from "./types";
+import { StyleSheet } from "react-native";
+import { UnionToIntersection } from "utility-types";
 
 export class DefinitionKebabCase {
   protected startIndex: number = -1;
@@ -8,7 +8,7 @@ export class DefinitionKebabCase {
   constructor(protected readonly definition: string) {}
 
   peek(): string {
-    const index = this.definition.indexOf('-', this.startIndex + 1);
+    const index = this.definition.indexOf("-", this.startIndex + 1);
     if (index < 0) {
       return this.definition.slice(this.startIndex + 1);
     }
@@ -16,7 +16,7 @@ export class DefinitionKebabCase {
   }
 
   read(): string {
-    const index = this.definition.indexOf('-', this.startIndex + 1);
+    const index = this.definition.indexOf("-", this.startIndex + 1);
     if (index < 0) {
       return this.flush();
     }
@@ -32,7 +32,7 @@ export class DefinitionKebabCase {
   }
 
   segments(): string[] {
-    return this.definition.split('-');
+    return this.definition.split("-");
   }
 
   reset() {
@@ -72,7 +72,7 @@ export class StyleBuilder<
     opacity: true,
     solid: true,
     dotted: true,
-    dashed: true
+    dashed: true,
   };
 
   static readonly checkReservedWord = (config: Record<string, any>) => {
@@ -117,7 +117,7 @@ export class StyleBuilder<
 
     this.staticStyles = {
       ...configs.custom,
-      ...StaticStyles
+      ...StaticStyles,
     };
   }
 
@@ -152,7 +152,7 @@ export class StyleBuilder<
     ConditionalK extends keyof D
   >(
     definitions: K[],
-    conditionalDefinitions: (ConditionalK | null | undefined | boolean | '')[]
+    conditionalDefinitions: (ConditionalK | null | undefined | boolean | "")[]
   ): UnionToIntersection<D[K]> & Partial<UnionToIntersection<D[ConditionalK]>>;
 
   flatten<
@@ -212,114 +212,114 @@ export class StyleBuilder<
     const segment = new DefinitionKebabCase(definition as string);
 
     switch (segment.read()) {
-      case 'color':
+      case "color":
         return {
-          color: this.configs.colors[segment.flush()]
+          color: this.configs.colors[segment.flush()],
         };
-      case 'background':
-        if (segment.read() === 'color') {
+      case "background":
+        if (segment.read() === "color") {
           return {
-            backgroundColor: this.configs.colors[segment.flush()]
+            backgroundColor: this.configs.colors[segment.flush()],
           };
         }
         throw new Error(`Failed to get style of ${definition}`);
-      case 'width':
+      case "width":
         return {
-          width: this.configs.widths[segment.flush()]
+          width: this.configs.widths[segment.flush()],
         };
-      case 'height':
+      case "height":
         return {
-          height: this.configs.heights[segment.flush()]
+          height: this.configs.heights[segment.flush()],
         };
-      case 'min':
+      case "min":
         switch (segment.read()) {
-          case 'width':
+          case "width":
             return {
-              minWidth: this.configs.widths[segment.flush()]
+              minWidth: this.configs.widths[segment.flush()],
             };
-          case 'height':
+          case "height":
             return {
-              minHeight: this.configs.heights[segment.flush()]
+              minHeight: this.configs.heights[segment.flush()],
             };
         }
         throw new Error(`Failed to get style of ${definition}`);
-      case 'max':
+      case "max":
         switch (segment.read()) {
-          case 'width':
+          case "width":
             return {
-              maxWidth: this.configs.widths[segment.flush()]
+              maxWidth: this.configs.widths[segment.flush()],
             };
-          case 'height':
+          case "height":
             return {
-              maxHeight: this.configs.heights[segment.flush()]
+              maxHeight: this.configs.heights[segment.flush()],
             };
         }
         throw new Error(`Failed to get style of ${definition}`);
-      case 'border':
+      case "border":
         switch (segment.read()) {
-          case 'color':
+          case "color":
             return {
-              borderColor: this.configs.colors[segment.flush()]
+              borderColor: this.configs.colors[segment.flush()],
             };
-          case 'width':
+          case "width":
             switch (segment.peek()) {
-              case 'left':
+              case "left":
                 segment.read();
                 return {
-                  borderLeftWidth: this.configs.borderWidths[segment.flush()]
+                  borderLeftWidth: this.configs.borderWidths[segment.flush()],
                 };
-              case 'right':
+              case "right":
                 segment.read();
                 return {
-                  borderRightWidth: this.configs.borderWidths[segment.flush()]
+                  borderRightWidth: this.configs.borderWidths[segment.flush()],
                 };
-              case 'top':
+              case "top":
                 segment.read();
                 return {
-                  borderTopWidth: this.configs.borderWidths[segment.flush()]
+                  borderTopWidth: this.configs.borderWidths[segment.flush()],
                 };
-              case 'bottom':
+              case "bottom":
                 segment.read();
                 return {
-                  borderBottomWidth: this.configs.borderWidths[segment.flush()]
+                  borderBottomWidth: this.configs.borderWidths[segment.flush()],
                 };
             }
 
             return {
-              borderWidth: this.configs.borderWidths[segment.flush()]
+              borderWidth: this.configs.borderWidths[segment.flush()],
             };
-          case 'radius':
+          case "radius":
             switch (segment.peek()) {
-              case 'top':
+              case "top":
                 segment.read();
                 switch (segment.read()) {
-                  case 'left': {
+                  case "left": {
                     return {
                       borderTopLeftRadius:
-                        this.configs.borderRadiuses[segment.flush()]
+                        this.configs.borderRadiuses[segment.flush()],
                     };
                   }
-                  case 'right': {
+                  case "right": {
                     return {
                       borderTopRightRadius:
-                        this.configs.borderRadiuses[segment.flush()]
+                        this.configs.borderRadiuses[segment.flush()],
                     };
                   }
                 }
                 throw new Error(`Failed to get style of ${definition}`);
-              case 'bottom':
+              case "bottom":
                 segment.read();
                 switch (segment.read()) {
-                  case 'left': {
+                  case "left": {
                     return {
                       borderBottomLeftRadius:
-                        this.configs.borderRadiuses[segment.flush()]
+                        this.configs.borderRadiuses[segment.flush()],
                     };
                   }
-                  case 'right': {
+                  case "right": {
                     return {
                       borderBottomRightRadius:
-                        this.configs.borderRadiuses[segment.flush()]
+                        this.configs.borderRadiuses[segment.flush()],
                     };
                   }
                 }
@@ -331,46 +331,46 @@ export class StyleBuilder<
               borderTopLeftRadius: borderRadius,
               borderTopRightRadius: borderRadius,
               borderBottomLeftRadius: borderRadius,
-              borderBottomRightRadius: borderRadius
+              borderBottomRightRadius: borderRadius,
             };
         }
 
         throw new Error(`Failed to get style of ${definition}`);
-      case 'padding':
+      case "padding":
         switch (segment.peek()) {
-          case 'left':
+          case "left":
             segment.read();
             return {
-              paddingLeft: this.configs.paddingSizes[segment.flush()]
+              paddingLeft: this.configs.paddingSizes[segment.flush()],
             };
-          case 'right':
+          case "right":
             segment.read();
             return {
-              paddingRight: this.configs.paddingSizes[segment.flush()]
+              paddingRight: this.configs.paddingSizes[segment.flush()],
             };
-          case 'top':
+          case "top":
             segment.read();
             return {
-              paddingTop: this.configs.paddingSizes[segment.flush()]
+              paddingTop: this.configs.paddingSizes[segment.flush()],
             };
-          case 'bottom':
+          case "bottom":
             segment.read();
             return {
-              paddingBottom: this.configs.paddingSizes[segment.flush()]
+              paddingBottom: this.configs.paddingSizes[segment.flush()],
             };
-          case 'x':
+          case "x":
             segment.read();
             const keyX = segment.flush();
             return {
               paddingLeft: this.configs.paddingSizes[keyX],
-              paddingRight: this.configs.paddingSizes[keyX]
+              paddingRight: this.configs.paddingSizes[keyX],
             };
-          case 'y':
+          case "y":
             segment.read();
             const keyY = segment.flush();
             return {
               paddingTop: this.configs.paddingSizes[keyY],
-              paddingBottom: this.configs.paddingSizes[keyY]
+              paddingBottom: this.configs.paddingSizes[keyY],
             };
         }
 
@@ -379,43 +379,43 @@ export class StyleBuilder<
           paddingTop: padding,
           paddingBottom: padding,
           paddingLeft: padding,
-          paddingRight: padding
+          paddingRight: padding,
         };
-      case 'margin':
+      case "margin":
         switch (segment.peek()) {
-          case 'left':
+          case "left":
             segment.read();
             return {
-              marginLeft: this.configs.marginSizes[segment.flush()]
+              marginLeft: this.configs.marginSizes[segment.flush()],
             };
-          case 'right':
+          case "right":
             segment.read();
             return {
-              marginRight: this.configs.marginSizes[segment.flush()]
+              marginRight: this.configs.marginSizes[segment.flush()],
             };
-          case 'top':
+          case "top":
             segment.read();
             return {
-              marginTop: this.configs.marginSizes[segment.flush()]
+              marginTop: this.configs.marginSizes[segment.flush()],
             };
-          case 'bottom':
+          case "bottom":
             segment.read();
             return {
-              marginBottom: this.configs.marginSizes[segment.flush()]
+              marginBottom: this.configs.marginSizes[segment.flush()],
             };
-          case 'x':
+          case "x":
             segment.read();
             const keyX = segment.flush();
             return {
               marginLeft: this.configs.marginSizes[keyX],
-              marginRight: this.configs.marginSizes[keyX]
+              marginRight: this.configs.marginSizes[keyX],
             };
-          case 'y':
+          case "y":
             segment.read();
             const keyY = segment.flush();
             return {
               marginTop: this.configs.marginSizes[keyY],
-              marginBottom: this.configs.marginSizes[keyY]
+              marginBottom: this.configs.marginSizes[keyY],
             };
         }
 
@@ -424,11 +424,11 @@ export class StyleBuilder<
           marginTop: margin,
           marginBottom: margin,
           marginLeft: margin,
-          marginRight: margin
+          marginRight: margin,
         };
-      case 'opacity':
+      case "opacity":
         return {
-          opacity: this.configs.opacities[segment.flush()]
+          opacity: this.configs.opacities[segment.flush()],
         };
     }
 

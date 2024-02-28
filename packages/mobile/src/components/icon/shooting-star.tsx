@@ -1,17 +1,12 @@
-import React, { FunctionComponent } from 'react'
-import Svg, { ClipPath, Defs, G, Path, Rect } from 'react-native-svg'
+import React, { FunctionComponent } from "react";
+import Svg, { ClipPath, Defs, G, Path, Rect } from "react-native-svg";
 
 export const ShootingStarIcon: FunctionComponent<{
-  color?: string
-  size?: number
+  color?: string;
+  size?: number;
 }> = ({ color, size = 34 }) => {
   return (
-    <Svg
-      width={size}
-      height={size}
-      viewBox="0 0 29 28"
-      fill={color}
-    >
+    <Svg width={size} height={size} viewBox="0 0 29 28" fill={color}>
       <G clipPath="url(#clip0_1021_10060)">
         <Path
           d="M19.7578 8.4251C12.262 0.92941 3.44044 -2.27692 0.842295 1.75289C0.760428 1.87982 0.924162 2.03453 1.05519 1.90345C3.7993 -0.840662 11.1301 2.04082 17.4287 8.33951C20.7218 11.6326 25.051 17.4548 24.8954 21.9872C24.3145 26.0499 16.7893 21.4316 13.944 19.5125L13.0623 20.372C12.9601 20.4716 12.9135 20.6151 12.9376 20.7557L13.4659 23.8356C19.0213 27.7356 24.6546 29.2287 27.0096 26.8737C30.1015 23.7819 26.8548 15.5221 19.7578 8.4251Z"
@@ -45,5 +40,5 @@ export const ShootingStarIcon: FunctionComponent<{
         </ClipPath>
       </Defs>
     </Svg>
-  )
-}
+  );
+};

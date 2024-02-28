@@ -1,12 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { useEffect } from "react";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
   withTiming,
   cancelAnimation,
-  Easing
-} from 'react-native-reanimated';
+  Easing,
+} from "react-native-reanimated";
 export const useSpinAnimated = () => {
   const rotation = useSharedValue(0);
   useEffect(() => {
@@ -23,9 +23,9 @@ export const useSpinAnimated = () => {
     return {
       transform: [
         {
-          rotateZ: `${rotation.value}deg`
-        }
-      ]
+          rotateZ: `${rotation.value}deg`,
+        },
+      ],
     };
   }, [rotation.value]);
   return animatedStyles;

@@ -1,18 +1,18 @@
-import { observable, action, makeObservable, computed } from 'mobx';
-import { create, persist } from 'mobx-persist';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import moment from 'moment';
-import { CoinGeckoPrices } from '@oraichain/oraidex-common';
+import { observable, action, makeObservable, computed } from "mobx";
+import { create, persist } from "mobx-persist";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import moment from "moment";
+import { CoinGeckoPrices } from "@oraichain/oraidex-common";
 
 export class AppInit {
-  @persist('object')
+  @persist("object")
   @observable
   protected initApp: {
     status: boolean;
-    passcodeType: 'numeric' | 'alphabet';
+    passcodeType: "numeric" | "alphabet";
     isAllNetworks: boolean;
     date_updated: null | number;
-    theme: 'dark' | 'light';
+    theme: "dark" | "light";
     visibleTabBar?: string;
     prices: CoinGeckoPrices<string>;
     yesterdayPriceFeed: Array<any>;
@@ -25,12 +25,15 @@ export class AppInit {
     this.initApp = {
       visibleTabBar: null,
       status: true,
-      passcodeType: 'alphabet',
+      passcodeType: "alphabet",
       date_updated: null,
-      theme: 'light',
+      theme: "light",
       isAllNetworks: false,
       prices: {},
+<<<<<<< HEAD
       yesterdayPriceFeed: []
+=======
+>>>>>>> main
     };
   }
 
@@ -131,9 +134,9 @@ export class AppInit {
 
 const hydrate = create({
   storage: AsyncStorage, // or AsyncStorage in react-native.
-  jsonify: true // if you use AsyncStorage, here shoud be true
+  jsonify: true, // if you use AsyncStorage, here shoud be true
 });
 
 export const appInit = new AppInit();
 
-hydrate('appInit', appInit).then(() => console.log('appInit hydrated'));
+hydrate("appInit", appInit).then(() => console.log("appInit hydrated"));

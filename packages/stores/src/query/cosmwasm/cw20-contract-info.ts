@@ -1,9 +1,9 @@
-import { Cw20ContractTokenInfo } from './types';
-import { KVStore } from '@owallet/common';
-import { ObservableChainQueryMap } from '../chain-query';
-import { ChainGetter } from '../../common';
-import { computed } from 'mobx';
-import { ObservableCosmwasmContractChainQuery } from './contract-query';
+import { Cw20ContractTokenInfo } from "./types";
+import { KVStore } from "@owallet/common";
+import { ObservableChainQueryMap } from "../chain-query";
+import { ChainGetter } from "../../common";
+import { computed } from "mobx";
+import { ObservableCosmwasmContractChainQuery } from "./contract-query";
 
 export class ObservableQueryCw20ContactInfoInner extends ObservableCosmwasmContractChainQuery<Cw20ContractTokenInfo> {
   constructor(

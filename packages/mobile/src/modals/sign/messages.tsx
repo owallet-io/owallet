@@ -1,26 +1,26 @@
 /* eslint-disable react/display-name */
 
-import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
-import { CoinUtils, Coin } from '@owallet/unit';
-import { AppCurrency, Currency } from '@owallet/types';
-import yaml from 'js-yaml';
-import { CoinPrimitive } from '@owallet/stores';
-import { Text } from '@src/components/text';
-import { useStyle } from '../../styles';
-import { Bech32Address } from '@owallet/cosmos';
+import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
+import { CoinUtils, Coin } from "@owallet/unit";
+import { AppCurrency, Currency } from "@owallet/types";
+import yaml from "js-yaml";
+import { CoinPrimitive } from "@owallet/stores";
+import { Text } from "@src/components/text";
+import { useStyle } from "../../styles";
+import { Bech32Address } from "@owallet/cosmos";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import Hypher from 'hypher';
+import Hypher from "hypher";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import english from 'hyphenation.en-us';
-import { useStore } from '../../stores';
-import { Buffer } from 'buffer';
-import { observer } from 'mobx-react-lite';
-import { FormattedMessage, IntlShape } from 'react-intl';
-import { Badge } from '../../components/badge';
-import { StyleSheet, View } from 'react-native';
-import { typography } from '../../themes';
+import english from "hyphenation.en-us";
+import { useStore } from "../../stores";
+import { Buffer } from "buffer";
+import { observer } from "mobx-react-lite";
+import { FormattedMessage, IntlShape } from "react-intl";
+import { Badge } from "../../components/badge";
+import { StyleSheet, View } from "react-native";
+import { typography } from "../../themes";
 
 const h = new Hypher(english);
 
@@ -175,9 +175,9 @@ export interface MsgLink {
 export function renderUnknownMessage(msg: object) {
   return {
     icon: undefined,
-    title: 'Custom',
+    title: "Custom",
     content: <UnknownMsgView msg={msg} />,
-    scrollViewHorizontal: true
+    scrollViewHorizontal: true,
   };
 }
 
@@ -193,45 +193,45 @@ export function renderMsgSend(
 
     receives.push({
       amount: clearDecimals(parsed.amount),
-      denom: parsed.denom
+      denom: parsed.denom,
     });
   }
 
   return {
-    title: 'Send',
+    title: "Send",
     content: (
       <View style={{}}>
         <View
           style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between'
+            flexDirection: "row",
+            justifyContent: "space-between",
           }}
         >
           <Text style={{ ...styles.textInfo }}>Send to </Text>
-          <Text style={{ fontWeight: 'bold' }}>
+          <Text style={{ fontWeight: "bold" }}>
             {hyphen(Bech32Address.shortenAddress(toAddress, 20))}
           </Text>
         </View>
         <View
           style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between'
+            flexDirection: "row",
+            justifyContent: "space-between",
           }}
         >
           <Text style={{ ...styles.textInfo }}>Amount </Text>
-          <Text style={{ fontWeight: 'bold' }}>
+          <Text style={{ fontWeight: "bold" }}>
             {hyphen(
               receives
-                .map(coin => {
+                .map((coin) => {
                   return `${coin.amount} ${coin.denom}`;
                 })
-                .join(',')
+                .join(",")
             )}
           </Text>
         </View>
         {/* <Text>{' will receive '}</Text> */}
       </View>
-    )
+    ),
   };
 }
 
@@ -246,11 +246,11 @@ export function renderMsgTransfer(
 
   amount = {
     amount: clearDecimals(parsed.amount),
-    denom: parsed.denom
+    denom: parsed.denom,
   };
 
   return {
-    title: 'IBC Transfer',
+    title: "IBC Transfer",
     // content: (
     //   <Text>
     //     <Text>{'Send '}</Text>
@@ -273,29 +273,29 @@ export function renderMsgTransfer(
       <View style={{}}>
         <View
           style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between'
+            flexDirection: "row",
+            justifyContent: "space-between",
           }}
         >
           <Text style={{ ...styles.textInfo }}>Transfer IBC to </Text>
-          <Text style={{ fontWeight: 'bold' }}>
+          <Text style={{ fontWeight: "bold" }}>
             {hyphen(Bech32Address.shortenAddress(receiver, 20))}
           </Text>
         </View>
         <View
           style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between'
+            flexDirection: "row",
+            justifyContent: "space-between",
           }}
         >
           <Text style={{ ...styles.textInfo }}>Amount </Text>
-          <Text style={{ fontWeight: 'bold' }}>
+          <Text style={{ fontWeight: "bold" }}>
             {hyphen(`${amount.amount} ${amount.denom}`)}
           </Text>
         </View>
         {/* <Text>{' will receive '}</Text> */}
       </View>
-    )
+    ),
   };
 }
 
@@ -312,43 +312,43 @@ export function renderMsgBeginRedelegate(
 
   amount = {
     amount: clearDecimals(parsed.amount),
-    denom: parsed.denom
+    denom: parsed.denom,
   };
 
   return {
-    title: 'Switch Validator',
+    title: "Switch Validator",
     content: (
       <View style={{}}>
         <View
           style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between'
+            flexDirection: "row",
+            justifyContent: "space-between",
           }}
         >
           <Text style={{ ...styles.textInfo }}>From </Text>
-          <Text style={{ fontWeight: 'bold' }}>
+          <Text style={{ fontWeight: "bold" }}>
             {hyphen(Bech32Address.shortenAddress(validatorSrcAddress, 24))}
           </Text>
         </View>
         <View
           style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between'
+            flexDirection: "row",
+            justifyContent: "space-between",
           }}
         >
           <Text style={{ ...styles.textInfo }}>To </Text>
-          <Text style={{ fontWeight: 'bold' }}>
+          <Text style={{ fontWeight: "bold" }}>
             {hyphen(Bech32Address.shortenAddress(validatorDstAddress, 24))}
           </Text>
         </View>
         <View
           style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between'
+            flexDirection: "row",
+            justifyContent: "space-between",
           }}
         >
           <Text style={{ ...styles.textInfo }}>Amount </Text>
-          <Text style={{ fontWeight: 'bold' }}>
+          <Text style={{ fontWeight: "bold" }}>
             {hyphen(`${amount.amount} ${amount.denom}`)}
           </Text>
         </View>
@@ -368,7 +368,7 @@ export function renderMsgBeginRedelegate(
       //     {hyphen(Bech32Address.shortenAddress(validatorDstAddress, 24))}
       //   </Text>
       // </Text>
-    )
+    ),
   };
 }
 
@@ -384,37 +384,37 @@ export function renderMsgUndelegate(
 
   amount = {
     amount: clearDecimals(parsed.amount),
-    denom: parsed.denom
+    denom: parsed.denom,
   };
 
   return {
-    title: 'Unstake',
+    title: "Unstake",
     content: (
       <View style={{}}>
         <View
           style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between'
+            flexDirection: "row",
+            justifyContent: "space-between",
           }}
         >
           <Text style={{ ...styles.textInfo }}>Unstake </Text>
-          <Text style={{ fontWeight: 'bold' }}>
+          <Text style={{ fontWeight: "bold" }}>
             {hyphen(Bech32Address.shortenAddress(validatorAddress, 24))}
           </Text>
         </View>
         <View
           style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between'
+            flexDirection: "row",
+            justifyContent: "space-between",
           }}
         >
           <Text style={{ ...styles.textInfo }}>Amount </Text>
-          <Text style={{ fontWeight: 'bold' }}>
+          <Text style={{ fontWeight: "bold" }}>
             {hyphen(`${amount.amount} ${amount.denom}`)}
           </Text>
         </View>
       </View>
-    )
+    ),
     // content: (
     //   <Text>
     //     <Text>{'Unstake '}</Text>
@@ -445,80 +445,80 @@ export function renderMsgDelegate(
 
   amount = {
     amount: clearDecimals(parsed.amount),
-    denom: parsed.denom
+    denom: parsed.denom,
   };
 
   return {
-    title: 'Stake',
+    title: "Stake",
     content: (
       <View style={{}}>
         <View
           style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between'
+            flexDirection: "row",
+            justifyContent: "space-between",
           }}
         >
           <Text style={{ ...styles.textInfo }}>Stake to</Text>
-          <Text style={{ fontWeight: 'bold' }}>
+          <Text style={{ fontWeight: "bold" }}>
             {hyphen(Bech32Address.shortenAddress(validatorAddress, 24))}
           </Text>
         </View>
         <View
           style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between'
+            flexDirection: "row",
+            justifyContent: "space-between",
           }}
         >
           <Text style={{ ...styles.textInfo }}>Amount </Text>
-          <Text style={{ fontWeight: 'bold' }}>
+          <Text style={{ fontWeight: "bold" }}>
             {hyphen(`${amount.amount} ${amount.denom}`)}
           </Text>
         </View>
       </View>
-    )
+    ),
   };
 }
 
 export function renderMsgWithdrawDelegatorReward(validatorAddress: string) {
   return {
-    title: 'Claim Staking Reward',
+    title: "Claim Staking Reward",
     content: (
       <View style={{}}>
         <View
           style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between'
+            flexDirection: "row",
+            justifyContent: "space-between",
           }}
         >
           <Text style={{ ...styles.textInfo }}>Claim From </Text>
-          <Text style={{ fontWeight: 'bold' }}>
-            {hyphen(Bech32Address.shortenAddress(validatorAddress ?? '', 20))}
+          <Text style={{ fontWeight: "bold" }}>
+            {hyphen(Bech32Address.shortenAddress(validatorAddress ?? "", 20))}
           </Text>
         </View>
       </View>
-    )
+    ),
   };
 }
 
 export function renderMsgIBCMsgTransfer(msg: any) {
   return {
-    title: 'IBC Transfer',
+    title: "IBC Transfer",
     content: (
       <View style={{}}>
         <View
           style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between'
+            flexDirection: "row",
+            justifyContent: "space-between",
           }}
         >
           <Text style={{ ...styles.textInfo }}>IBC Transfer</Text>
-          <Text style={{ fontWeight: 'bold' }}>
+          <Text style={{ fontWeight: "bold" }}>
             {/* {hyphen(Bech32Address.shortenAddress(validatorAddress, 20))} */}
           </Text>
         </View>
         {/* <Text>{' will receive '}</Text> */}
       </View>
-    )
+    ),
     // content: (
     //   <Text>
     //     <Text>{'Claim pending staking reward from '}</Text>
@@ -532,53 +532,53 @@ export function renderMsgIBCMsgTransfer(msg: any) {
 
 export function renderMsgVote(proposalId: string, option: string | number) {
   const textualOption = (() => {
-    if (typeof option === 'string') {
+    if (typeof option === "string") {
       return option;
     }
 
     switch (option) {
       case 0:
-        return 'Empty';
+        return "Empty";
       case 1:
-        return 'Yes';
+        return "Yes";
       case 2:
-        return 'Abstain';
+        return "Abstain";
       case 3:
-        return 'No';
+        return "No";
       case 4:
-        return 'No with veto';
+        return "No with veto";
       default:
-        return 'Unspecified';
+        return "Unspecified";
     }
   })();
 
   // Vote <b>{option}</b> on <b>Proposal {id}</b>
 
   return {
-    title: 'Vote',
+    title: "Vote",
     content: (
       <View style={{}}>
         <View
           style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between'
+            flexDirection: "row",
+            justifyContent: "space-between",
           }}
         >
           <Text style={{ ...styles.textInfo }}>Vote </Text>
-          <Text style={{ fontWeight: 'bold' }}>{textualOption}</Text>
+          <Text style={{ fontWeight: "bold" }}>{textualOption}</Text>
         </View>
         <View
           style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between'
+            flexDirection: "row",
+            justifyContent: "space-between",
           }}
         >
           <Text style={{ ...styles.textInfo }}>Proposal </Text>
-          <Text style={{ fontWeight: 'bold' }}>{proposalId}</Text>
+          <Text style={{ fontWeight: "bold" }}>{proposalId}</Text>
         </View>
         {/* <Text>{' will receive '}</Text> */}
       </View>
-    )
+    ),
     // content: (
     //   <Text>
     //     <Text>{'Vote '}</Text>
@@ -606,13 +606,13 @@ export function renderMsgInstantiateContract(
     const parsed = CoinUtils.parseDecAndDenomFromCoin(currencies, coin);
     funds.push({
       amount: clearDecimals(parsed.amount),
-      denom: parsed.denom
+      denom: parsed.denom,
     });
   }
   return {
-    icon: 'fas fa-cog',
+    icon: "fas fa-cog",
     title: intl.formatMessage({
-      id: 'sign.list.message.wasm/MsgInstantiateContract.title'
+      id: "sign.list.message.wasm/MsgInstantiateContract.title",
     }),
     content: (
       <React.Fragment>
@@ -621,23 +621,23 @@ export function renderMsgInstantiateContract(
           values={{
             b: (...chunks: any[]) => <b>{chunks}</b>,
             br: <br />,
-            admin: admin ? Bech32Address.shortenAddress(admin, 30) : '',
-            ['only-admin-exist']: (...chunks: any[]) => (admin ? chunks : ''),
+            admin: admin ? Bech32Address.shortenAddress(admin, 30) : "",
+            ["only-admin-exist"]: (...chunks: any[]) => (admin ? chunks : ""),
             codeId: codeId,
             label: label,
-            ['only-funds-exist']: (...chunks: any[]) =>
-              funds.length > 0 ? chunks : '',
+            ["only-funds-exist"]: (...chunks: any[]) =>
+              funds.length > 0 ? chunks : "",
             funds: funds
-              .map(coin => {
+              .map((coin) => {
                 return `${coin.amount} ${coin.denom}`;
               })
-              .join(',')
+              .join(","),
           }}
         />
         <br />
         <WasmExecutionMsgView msg={initMsg} />
       </React.Fragment>
-    )
+    ),
   };
 }
 
@@ -656,31 +656,31 @@ export function renderMsgExecuteContract(
 
     sent.push({
       amount: clearDecimals(parsed.amount),
-      denom: parsed.denom
+      denom: parsed.denom,
     });
   }
 
   const isSecretWasm = callbackCodeHash != null;
 
   return {
-    icon: 'fas fa-cog',
-    title: 'Execute Wasm Contract',
+    icon: "fas fa-cog",
+    title: "Execute Wasm Contract",
     content: (
       <Text>
         <Text>
           <Text>Execute contract </Text>
-          <Text style={{ fontWeight: 'bold' }}>
+          <Text style={{ fontWeight: "bold" }}>
             {Bech32Address.shortenAddress(contract, 26)}
           </Text>
           {sent.length > 0 ? (
             <Text>
               <Text> by sending </Text>
-              <Text style={{ fontWeight: 'bold' }}>
+              <Text style={{ fontWeight: "bold" }}>
                 {sent
-                  .map(coin => {
+                  .map((coin) => {
                     return `${coin.amount} ${coin.denom}`;
                   })
-                  .join(',')}
+                  .join(",")}
               </Text>
             </Text>
           ) : undefined}
@@ -689,7 +689,7 @@ export function renderMsgExecuteContract(
           <React.Fragment>
             <Badge
               color="primary"
-              style={{ marginTop: '6px', marginBottom: '6px' }}
+              style={{ marginTop: "6px", marginBottom: "6px" }}
             >
               <FormattedMessage id="sign.list.message.wasm/MsgExecuteContract.content.badge.secret-wasm" />
             </Badge>
@@ -697,7 +697,7 @@ export function renderMsgExecuteContract(
         )}
         <WasmExecutionMsgView msg={msg} />
       </Text>
-    )
+    ),
   };
 }
 
@@ -716,17 +716,17 @@ export const WasmExecutionMsgView: FunctionComponent<{
   const [detailsMsg, setDetailsMsg] = useState(() =>
     JSON.stringify(msg, null, 2)
   );
-  const [warningMsg, setWarningMsg] = useState('');
+  const [warningMsg, setWarningMsg] = useState("");
 
   useEffect(() => {
     // If msg is string, it will be the message for secret-wasm.
     // So, try to decrypt.
     // But, if this msg is not encrypted via OWallet, OWallet cannot decrypt it.
     // TODO: Handle the error case. If an error occurs, rather than rejecting the signing, it informs the user that OWallet cannot decrypt it and allows the user to choose.
-    if (typeof msg === 'string') {
+    if (typeof msg === "string") {
       (async () => {
         try {
-          let cipherText = Buffer.from(Buffer.from(msg, 'base64'));
+          let cipherText = Buffer.from(Buffer.from(msg, "base64"));
           // Msg is start with 32 bytes nonce and 32 bytes public key.
           const nonce = cipherText.slice(0, 32);
           cipherText = cipherText.slice(64);
@@ -750,10 +750,10 @@ export const WasmExecutionMsgView: FunctionComponent<{
           setDetailsMsg(
             JSON.stringify(JSON.parse(plainText.toString()), null, 2)
           );
-          setWarningMsg('');
+          setWarningMsg("");
         } catch {
           setWarningMsg(
-            'Failed to decrypt Secret message. This may be due to OWallet viewing key not matching the transaction viewing key.'
+            "Failed to decrypt Secret message. This may be due to OWallet viewing key not matching the transaction viewing key."
           );
         }
       })();
@@ -761,10 +761,10 @@ export const WasmExecutionMsgView: FunctionComponent<{
   }, [accountStore, chainStore, chainStore.current.chainId, msg]);
 
   return (
-    <Text style={style.flatten(['margin-top-8'])}>
+    <Text style={style.flatten(["margin-top-8"])}>
       <Text>{`\n${detailsMsg}`}</Text>
       {warningMsg ? (
-        <Text style={style.flatten(['color-danger-200'])}>{warningMsg}</Text>
+        <Text style={style.flatten(["color-danger-200"])}>{warningMsg}</Text>
       ) : null}
     </Text>
   );
@@ -779,30 +779,30 @@ export const UnknownMsgView: FunctionComponent<{ msg: object }> = ({ msg }) => {
       return yaml.dump(msg);
     } catch (e) {
       console.log(e);
-      return 'Failed to decode the msg';
+      return "Failed to decode the msg";
     }
   }, [msg]);
 
   return (
-    <Text style={style.flatten(['body3', 'color-text-black-low'])}>
+    <Text style={style.flatten(["body3", "color-text-black-low"])}>
       {prettyMsg}
     </Text>
   );
 };
 
 export function clearDecimals(dec: string): string {
-  if (!dec.includes('.')) {
+  if (!dec.includes(".")) {
     return dec;
   }
 
   for (let i = dec.length - 1; i >= 0; i--) {
-    if (dec[i] === '0') {
+    if (dec[i] === "0") {
       dec = dec.slice(0, dec.length - 1);
     } else {
       break;
     }
   }
-  if (dec.length > 0 && dec[dec.length - 1] === '.') {
+  if (dec.length > 0 && dec[dec.length - 1] === ".") {
     dec = dec.slice(0, dec.length - 1);
   }
 
@@ -812,6 +812,6 @@ export function clearDecimals(dec: string): string {
 const styles = StyleSheet.create({
   textInfo: {
     ...typography.h5,
-    fontWeight: '400'
-  }
+    fontWeight: "400",
+  },
 });

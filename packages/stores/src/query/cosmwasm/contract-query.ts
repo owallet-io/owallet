@@ -1,10 +1,10 @@
-import { ObservableChainQuery } from '../chain-query';
-import { KVStore } from '@owallet/common';
-import { ChainGetter } from '../../common';
-import { CancelToken } from 'axios';
-import { QueryResponse } from '../../common';
+import { ObservableChainQuery } from "../chain-query";
+import { KVStore } from "@owallet/common";
+import { ChainGetter } from "../../common";
+import { CancelToken } from "axios";
+import { QueryResponse } from "../../common";
 
-import { Buffer } from 'buffer';
+import { Buffer } from "buffer";
 
 export class ObservableCosmwasmContractChainQuery<
   T
@@ -36,10 +36,10 @@ export class ObservableCosmwasmContractChainQuery<
     beta?: boolean
   ): string {
     const msg = JSON.stringify(obj);
-    const query = Buffer.from(msg).toString('base64');
+    const query = Buffer.from(msg).toString("base64");
 
     return `/cosmwasm/wasm/${
-      beta ? 'v1beta1' : 'v1'
+      beta ? "v1beta1" : "v1"
     }/contract/${contractAddress}/smart/${query}`;
   }
 
@@ -72,14 +72,14 @@ export class ObservableCosmwasmContractChainQuery<
       | undefined;
 
     if (!wasmResult) {
-      throw new Error('Failed to get the response from the contract');
+      throw new Error("Failed to get the response from the contract");
     }
 
     return {
       data: wasmResult.data as T,
       status: response.status,
       staled: false,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
   }
 }

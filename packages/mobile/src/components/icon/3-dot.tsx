@@ -1,11 +1,11 @@
-import React, { FunctionComponent } from 'react';
-import Svg, { Circle } from 'react-native-svg';
+import React, { FunctionComponent } from "react";
+import Svg, { Circle } from "react-native-svg";
 
 export const ThreeDotIcon: FunctionComponent<{
   color?: string;
   size?: number;
   onPress?: () => void;
-}> = ({ color = '#AEAEB2', size = 20, onPress }) => {
+}> = ({ color = "#AEAEB2", size = 20, onPress }) => {
   return (
     <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
       <Circle

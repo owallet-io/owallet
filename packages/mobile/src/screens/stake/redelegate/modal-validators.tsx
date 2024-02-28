@@ -1,20 +1,26 @@
-import { ValidatorThumbnails } from '@owallet/common';
-import { BondStatus } from '@owallet/stores';
-import { CoinPretty, Dec } from '@owallet/unit';
-import { Text } from '@src/components/text';
-import React from 'react';
-import { FlatList, View } from 'react-native';
-import { RectButton } from '../../../components/rect-button';
-import { ValidatorThumbnail } from '../../../components/thumbnail';
-import { useStore } from '../../../stores';
-import { colors, metrics, spacing, typography } from '../../../themes';
-import { _keyExtract } from '../../../utils/helper';
-import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
+import { ValidatorThumbnails } from "@owallet/common";
+import { BondStatus } from "@owallet/stores";
+import { CoinPretty, Dec } from "@owallet/unit";
+import { Text } from "@src/components/text";
+import React from "react";
+import { FlatList, View } from "react-native";
+import { RectButton } from "../../../components/rect-button";
+import { ValidatorThumbnail } from "../../../components/thumbnail";
+import { useStore } from "../../../stores";
+import { colors, metrics, spacing, typography } from "../../../themes";
+import { _keyExtract } from "../../../utils/helper";
+import { BottomSheetFlatList } from "@gorhom/bottom-sheet";
 
-const Validators = ({ onPressSelectValidator, styles, dstValidatorAddress }) => {
+const Validators = ({
+  onPressSelectValidator,
+  styles,
+  dstValidatorAddress,
+}) => {
   const { chainStore, queriesStore, accountStore, modalStore } = useStore();
   const queries = queriesStore.get(chainStore.current.chainId);
-  const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(BondStatus.Bonded);
+  const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
+    BondStatus.Bonded
+  );
 
   const dataAll = bondedValidators.validators;
   const data = [...dataAll];
@@ -24,38 +30,42 @@ const Validators = ({ onPressSelectValidator, styles, dstValidatorAddress }) => 
     return (
       <RectButton
         style={{
-          ...styles.containerAccount
+          ...styles.containerAccount,
         }}
         onPress={() =>
           onPressSelectValidator(
             validatorsAddress,
-            ValidatorThumbnails[validatorsAddress] ?? bondedValidators.getValidatorThumbnail(validatorsAddress),
+            ValidatorThumbnails[validatorsAddress] ??
+              bondedValidators.getValidatorThumbnail(validatorsAddress),
             item?.description?.moniker
           )
         }
       >
         <View
           style={{
-            flexDirection: 'row',
-            alignItems: 'center'
+            flexDirection: "row",
+            alignItems: "center",
           }}
         >
           <ValidatorThumbnail
             style={{
-              marginRight: spacing['8']
+              marginRight: spacing["8"],
             }}
             size={38}
-            url={ValidatorThumbnails[validatorsAddress] ?? bondedValidators.getValidatorThumbnail(validatorsAddress)}
+            url={
+              ValidatorThumbnails[validatorsAddress] ??
+              bondedValidators.getValidatorThumbnail(validatorsAddress)
+            }
           />
           <View
             style={{
-              marginLeft: spacing['12']
+              marginLeft: spacing["12"],
             }}
           >
             <Text
               style={{
                 ...typography.h6,
-                fontWeight: '900'
+                fontWeight: "900",
               }}
               numberOfLines={1}
             >
@@ -65,16 +75,19 @@ const Validators = ({ onPressSelectValidator, styles, dstValidatorAddress }) => 
               <Text
                 style={{
                   ...typography.h7,
-                  color: colors['gray-300'],
-                  fontWeight: '900',
-                  fontSize: 13
+                  color: colors["gray-300"],
+                  fontWeight: "900",
+                  fontSize: 13,
                 }}
               >
                 {/* Stake {amount.maxDecimals(4).trim(true).shrink(true).toString()} */}
-                {new CoinPretty(chainStore.current.stakeCurrency, new Dec(item.tokens))
+                {new CoinPretty(
+                  chainStore.current.stakeCurrency,
+                  new Dec(item.tokens)
+                )
                   .maxDecimals(0)
                   .hideDenom(true)
-                  .toString() + ' staked'}
+                  .toString() + " staked"}
               </Text>
             )}
           </View>
@@ -85,19 +98,21 @@ const Validators = ({ onPressSelectValidator, styles, dstValidatorAddress }) => 
             style={{
               width: 24,
               height: 24,
-              borderRadius: spacing['32'],
+              borderRadius: spacing["32"],
               backgroundColor:
-                item.operator_address == dstValidatorAddress ? colors['background-btn-primary'] : colors['gray-100'],
-              justifyContent: 'center',
-              alignItems: 'center'
+                item.operator_address == dstValidatorAddress
+                  ? colors["background-btn-primary"]
+                  : colors["gray-100"],
+              justifyContent: "center",
+              alignItems: "center",
             }}
           >
             <View
               style={{
                 width: 12,
                 height: 12,
-                borderRadius: spacing['32'],
-                backgroundColor: colors['white']
+                borderRadius: spacing["32"],
+                backgroundColor: colors["white"],
               }}
             />
           </View>
@@ -109,7 +124,7 @@ const Validators = ({ onPressSelectValidator, styles, dstValidatorAddress }) => 
     <View
       style={{
         width: metrics.screenWidth - 36,
-        height: metrics.screenHeight / 2
+        height: metrics.screenHeight / 2,
       }}
     >
       <BottomSheetFlatList
@@ -120,7 +135,7 @@ const Validators = ({ onPressSelectValidator, styles, dstValidatorAddress }) => 
         ListFooterComponent={() => (
           <View
             style={{
-              height: spacing['16']
+              height: spacing["16"],
             }}
           />
         )}

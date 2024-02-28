@@ -1,18 +1,18 @@
-import { ObservableChainQuery } from '../../chain-query';
-import { GovProposals } from './types';
-import { computed, makeObservable, observable, runInAction } from 'mobx';
+import { ObservableChainQuery } from "../../chain-query";
+import { GovProposals } from "./types";
+import { computed, makeObservable, observable, runInAction } from "mobx";
 import {
   ObservableQueryGovParamDeposit,
   ObservableQueryGovParamTally,
-  ObservableQueryGovParamVoting
-} from './params';
-import { KVStore } from '@owallet/common';
-import { ChainGetter } from '../../../common';
-import { StakingPool } from '../staking/types';
-import { DeepReadonly } from 'utility-types';
-import { Dec, DecUtils, Int, IntPretty } from '@owallet/unit';
-import { computedFn } from 'mobx-utils';
-import { ObservableQueryProposal } from './proposal';
+  ObservableQueryGovParamVoting,
+} from "./params";
+import { KVStore } from "@owallet/common";
+import { ChainGetter } from "../../../common";
+import { StakingPool } from "../staking/types";
+import { DeepReadonly } from "utility-types";
+import { Dec, DecUtils, Int, IntPretty } from "@owallet/unit";
+import { computedFn } from "mobx-utils";
+import { ObservableQueryProposal } from "./proposal";
 
 export class ObservableQueryGovernance extends ObservableChainQuery<GovProposals> {
   @observable.ref
@@ -28,7 +28,7 @@ export class ObservableQueryGovernance extends ObservableChainQuery<GovProposals
     chainGetter: ChainGetter,
     protected readonly _queryPool: ObservableChainQuery<StakingPool>
   ) {
-    super(kvStore, chainId, chainGetter, '/gov/proposals?limit=1000');
+    super(kvStore, chainId, chainGetter, "/gov/proposals?limit=1000");
     makeObservable(this);
   }
 

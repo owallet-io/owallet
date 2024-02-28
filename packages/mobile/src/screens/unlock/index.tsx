@@ -1,36 +1,54 @@
-import React, { FunctionComponent, useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, AppState, AppStateStatus, Image, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { observer } from 'mobx-react-lite';
-import { TextInput } from '../../components/input';
-import delay from 'delay';
-import { useStore } from '../../stores';
-import { StackActions, useNavigation } from '@react-navigation/native';
-import { KeyRingStatus } from '@owallet/background';
-import { KeychainStore } from '../../stores/keychain';
-import { AccountStore } from '@owallet/stores';
-import { autorun } from 'mobx';
-import { spacing } from '../../themes';
-import { ProgressBar } from '../../components/progress-bar';
-import CodePush from 'react-native-code-push';
-import messaging from '@react-native-firebase/messaging';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useTheme } from '@src/themes/theme-provider';
-import OWButton from '@src/components/button/OWButton';
-import { PageWithScrollView } from '@src/components/page';
-import { HeaderWelcome, OrText } from '../register/components';
-import OWButtonIcon from '@src/components/button/ow-button-icon';
-import { Text } from '@src/components/text';
-import OWIcon from '@src/components/ow-icon/ow-icon';
-import images from '@src/assets/images';
-import { showToast } from '@src/utils/helper';
-import { LRRedact } from '@logrocket/react-native';
+import React, {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import {
+  Alert,
+  AppState,
+  AppStateStatus,
+  Image,
+  Platform,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { observer } from "mobx-react-lite";
+import { TextInput } from "../../components/input";
+import delay from "delay";
+import { useStore } from "../../stores";
+import { StackActions, useNavigation } from "@react-navigation/native";
+import { KeyRingStatus } from "@owallet/background";
+import { KeychainStore } from "../../stores/keychain";
+import { AccountStore } from "@owallet/stores";
+import { autorun } from "mobx";
+import { spacing } from "../../themes";
+import { ProgressBar } from "../../components/progress-bar";
+import CodePush from "react-native-code-push";
+import messaging from "@react-native-firebase/messaging";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useTheme } from "@src/themes/theme-provider";
+import OWButton from "@src/components/button/OWButton";
+import { PageWithScrollView } from "@src/components/page";
+import { HeaderWelcome, OrText } from "../register/components";
+import OWButtonIcon from "@src/components/button/ow-button-icon";
+import { Text } from "@src/components/text";
+import OWIcon from "@src/components/ow-icon/ow-icon";
+import images from "@src/assets/images";
+import { showToast } from "@src/utils/helper";
+import { LRRedact } from "@logrocket/react-native";
 
-async function waitAccountLoad(accountStore: AccountStore<any, any, any, any>, chainId: string): Promise<void> {
+async function waitAccountLoad(
+  accountStore: AccountStore<any, any, any, any>,
+  chainId: string
+): Promise<void> {
   if (accountStore.getAccount(chainId).bech32Address) {
     return;
   }
 
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     const disposer = autorun(() => {
       if (accountStore.getAccount(chainId).bech32Address) {
         resolve();
@@ -46,7 +64,7 @@ enum AutoBiomtricStatus {
   NO_NEED,
   NEED,
   FAILED,
-  SUCCESS
+  SUCCESS,
 }
 
 const useAutoBiomtric = (keychainStore: KeychainStore, tryEnabled: boolean) => {
@@ -63,7 +81,14 @@ const useAutoBiomtric = (keychainStore: KeychainStore, tryEnabled: boolean) => {
 };
 
 export const UnlockScreen: FunctionComponent = observer(() => {
-  const { keyRingStore, keychainStore, accountStore, chainStore, appInitStore, notificationStore } = useStore();
+  const {
+    keyRingStore,
+    keychainStore,
+    accountStore,
+    chainStore,
+    appInitStore,
+    notificationStore,
+  } = useStore();
   const navigation = useNavigation();
   const { colors } = useTheme();
   const [downloading, setDownloading] = useState(false);
@@ -76,11 +101,15 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     const chainId = chainStore.current.chainId;
     const isLedger = accountStore.getAccount(chainId).isNanoLedger;
     if (!navigateToHomeOnce.current) {
-      if (!!accountStore.getAccount(chainId).bech32Address === false && chainId?.startsWith('inj') && isLedger) {
-        navigation.dispatch(StackActions.replace('MainTab'));
+      if (
+        !!accountStore.getAccount(chainId).bech32Address === false &&
+        chainId?.startsWith("inj") &&
+        isLedger
+      ) {
+        navigation.dispatch(StackActions.replace("MainTab"));
       } else {
         await waitAccountLoad(accountStore, chainId);
-        navigation.dispatch(StackActions.replace('MainTab'));
+        navigation.dispatch(StackActions.replace("MainTab"));
       }
     }
     navigateToHomeOnce.current = true;
@@ -100,9 +129,9 @@ export const UnlockScreen: FunctionComponent = observer(() => {
         //   appendReleaseDescription: true,
         //   title: 'Update available'
         // },
-        installMode: CodePush.InstallMode.IMMEDIATE
+        installMode: CodePush.InstallMode.IMMEDIATE,
       },
-      status => {
+      (status) => {
         switch (status) {
           case CodePush.SyncStatus.UP_TO_DATE:
             // Show "downloading" modal
@@ -135,7 +164,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     );
   }, []);
 
-  const [password, setPassword] = useState('');
+  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isBiometricLoading, setIsBiometricLoading] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
@@ -168,12 +197,15 @@ export const UnlockScreen: FunctionComponent = observer(() => {
 
   const routeToRegisterOnce = useRef(false);
   useEffect(() => {
-    if (!routeToRegisterOnce.current && keyRingStore.status === KeyRingStatus.EMPTY) {
+    if (
+      !routeToRegisterOnce.current &&
+      keyRingStore.status === KeyRingStatus.EMPTY
+    ) {
       (() => {
         routeToRegisterOnce.current = true;
         navigation.dispatch(
-          StackActions.replace('Register', {
-            screen: 'Register.Intro'
+          StackActions.replace("Register", {
+            screen: "Register.Intro",
           })
         );
       })();
@@ -182,12 +214,12 @@ export const UnlockScreen: FunctionComponent = observer(() => {
 
   useEffect(() => {
     const appStateHandler = (state: AppStateStatus) => {
-      if (state !== 'active') {
+      if (state !== "active") {
         setDownloading(false);
         setInstalling(false);
       }
     };
-    const subscription = AppState.addEventListener('change', appStateHandler);
+    const subscription = AppState.addEventListener("change", appStateHandler);
 
     return () => {
       subscription.remove();
@@ -205,27 +237,27 @@ export const UnlockScreen: FunctionComponent = observer(() => {
   }, [keyRingStore.status, navigateToHome, downloading]);
 
   // Notification setup section
-  const regisFcmToken = useCallback(async FCMToken => {
-    await AsyncStorage.setItem('FCM_TOKEN', FCMToken);
+  const regisFcmToken = useCallback(async (FCMToken) => {
+    await AsyncStorage.setItem("FCM_TOKEN", FCMToken);
   }, []);
 
   const getToken = useCallback(async () => {
-    const fcmToken = await AsyncStorage.getItem('FCM_TOKEN');
+    const fcmToken = await AsyncStorage.getItem("FCM_TOKEN");
 
     if (!fcmToken) {
       messaging()
         .getToken()
-        .then(async FCMToken => {
+        .then(async (FCMToken) => {
           if (FCMToken) {
             regisFcmToken(FCMToken);
           } else {
             // Alert.alert('[FCMService] User does not have a device token');
           }
         })
-        .catch(error => {
+        .catch((error) => {
           // let err = `FCM token get error: ${error}`;
           // Alert.alert(err);
-          console.log('[FCMService] getToken rejected ', error);
+          console.log("[FCMService] getToken rejected ", error);
         });
     } else {
       // regisFcmToken(fcmToken);
@@ -233,10 +265,10 @@ export const UnlockScreen: FunctionComponent = observer(() => {
   }, [regisFcmToken]);
 
   const registerAppWithFCM = useCallback(() => {
-    if (Platform.OS === 'ios') {
+    if (Platform.OS === "ios") {
       messaging()
         .registerDeviceForRemoteMessages()
-        .then(register => {
+        .then((register) => {
           getToken();
         });
       //await messaging().setAutoInitEnabled(true);
@@ -251,15 +283,15 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       .then(() => {
         registerAppWithFCM();
       })
-      .catch(error => {
-        console.log('[FCMService] Requested persmission rejected ', error);
+      .catch((error) => {
+        console.log("[FCMService] Requested persmission rejected ", error);
       });
   }, [registerAppWithFCM]);
 
   const checkPermission = useCallback(() => {
     messaging()
       .hasPermission()
-      .then(enabled => {
+      .then((enabled) => {
         if (enabled) {
           //user has permission
           registerAppWithFCM();
@@ -268,7 +300,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
           requestPermission();
         }
       })
-      .catch(error => {
+      .catch((error) => {
         requestPermission();
         let err = `check permission error${error}`;
         Alert.alert(err);
@@ -285,47 +317,48 @@ export const UnlockScreen: FunctionComponent = observer(() => {
   }, [requestPermission]);
 
   useEffect(() => {
-    const unsubscribe = messaging().onMessage(async remoteMessage => {});
+    const unsubscribe = messaging().onMessage(async (remoteMessage) => {});
     return unsubscribe;
   }, []);
 
   // return <MaintainScreen />;
   const showPass = () => setStatusPass(!statusPass);
-  return !routeToRegisterOnce.current && keyRingStore.status === KeyRingStatus.EMPTY ? (
+  return !routeToRegisterOnce.current &&
+    keyRingStore.status === KeyRingStatus.EMPTY ? (
     <View />
   ) : downloading || installing ? (
     <View
       style={{
-        width: '100%',
-        height: '100%',
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: colors['background-container']
+        width: "100%",
+        height: "100%",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: colors["background-container"],
       }}
     >
       <View
         style={{
-          marginBottom: spacing['24']
+          marginBottom: spacing["24"],
         }}
       >
         <Image
           style={{
             height: 70,
-            width: 70
+            width: 70,
           }}
           fadeDuration={0}
           resizeMode="contain"
-          source={require('../../assets/logo/splash-image.png')}
+          source={require("../../assets/logo/splash-image.png")}
         />
       </View>
       <Text
         style={{
-          color: colors['primary-surface-default'],
-          textAlign: 'center',
-          fontWeight: '600',
+          color: colors["primary-surface-default"],
+          textAlign: "center",
+          fontWeight: "600",
           fontSize: 16,
           lineHeight: 22,
-          opacity: isLoading ? 0.5 : 1
+          opacity: isLoading ? 0.5 : 1,
         }}
       >
         {installing ? `Installing` : `Checking for`} update
@@ -333,10 +366,10 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       <View style={{ marginVertical: 12 }}>
         <Text
           style={{
-            color: colors['primary-surface-default'],
-            textAlign: 'center',
+            color: colors["primary-surface-default"],
+            textAlign: "center",
             fontSize: 13,
-            lineHeight: 22
+            lineHeight: 22,
           }}
         >
           {progress}%
@@ -351,12 +384,12 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       >
         <Text
           style={{
-            color: colors['primary-surface-default'],
-            textAlign: 'center',
-            fontWeight: '600',
+            color: colors["primary-surface-default"],
+            textAlign: "center",
+            fontWeight: "600",
             fontSize: 16,
             lineHeight: 22,
-            opacity: isLoading ? 0.5 : 1
+            opacity: isLoading ? 0.5 : 1,
           }}
         >
           Cancel
@@ -367,32 +400,32 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     <PageWithScrollView
       contentContainerStyle={{
         flexGrow: 1,
-        justifyContent: 'center'
+        justifyContent: "center",
       }}
-      backgroundColor={colors['plain-background']}
+      backgroundColor={colors["plain-background"]}
     >
       <LRRedact>
         <HeaderWelcome
           style={{
-            marginTop: 0
+            marginTop: 0,
           }}
-          title={'Sign in to OWallet'}
+          title={"Sign in to OWallet"}
         />
         <View
           style={{
             paddingLeft: 20,
-            paddingRight: 20
+            paddingRight: 20,
           }}
         >
           <TextInput
             containerStyle={{
-              paddingBottom: 40
+              paddingBottom: 40,
             }}
             accessibilityLabel="password"
             returnKeyType="done"
             secureTextEntry={statusPass}
             value={password}
-            error={isFailed ? 'Invalid password' : undefined}
+            error={isFailed ? "Invalid password" : undefined}
             onChangeText={setPassword}
             onSubmitEditing={tryUnlock}
             placeholder="Password"
@@ -405,8 +438,8 @@ export const UnlockScreen: FunctionComponent = observer(() => {
               <OWButtonIcon
                 style={styles.padIcon}
                 onPress={showPass}
-                name={statusPass ? 'eye' : 'eye-slash'}
-                colorIcon={colors['icon-primary-surface-default-gray']}
+                name={statusPass ? "eye" : "eye-slash"}
+                colorIcon={colors["icon-primary-surface-default-gray"]}
                 sizeIcon={22}
               />
             }
@@ -432,7 +465,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
         </View>
         <View
           style={{
-            height: 100
+            height: 100,
           }}
         ></View>
       </LRRedact>
@@ -446,6 +479,6 @@ const styles = StyleSheet.create({
   },
   padIcon: {
     paddingLeft: 10,
-    width: 'auto'
-  }
+    width: "auto",
+  },
 });

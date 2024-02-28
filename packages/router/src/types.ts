@@ -1,8 +1,8 @@
-import { Message } from './message';
+import { Message } from "./message";
 
 export type MessageSender = Pick<
   browser.runtime.MessageSender,
-  'id' | 'url' | 'tab'
+  "id" | "url" | "tab"
 >;
 
 export type FnRequestInteractionOptions = {
@@ -34,7 +34,7 @@ export interface MessageRequester {
 }
 
 export type Guard = (
-  env: Omit<Env, 'requestInteraction'>,
+  env: Omit<Env, "requestInteraction">,
   msg: Message<unknown>,
   sender: MessageSender
 ) => Promise<void>;

@@ -1,7 +1,7 @@
-import React, { FunctionComponent } from 'react';
-import { observer } from 'mobx-react-lite';
+import React, { FunctionComponent } from "react";
+import { observer } from "mobx-react-lite";
 
-import style from '../style.module.scss';
+import style from "../style.module.scss";
 
 export const BtcDataTab: FunctionComponent<{
   data: object;

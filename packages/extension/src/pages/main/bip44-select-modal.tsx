@@ -1,14 +1,14 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
-import { Button, Col, CustomInput, Modal, ModalBody, Row } from 'reactstrap';
-import { Bech32Address } from '@owallet/cosmos';
+import React, { FunctionComponent, useEffect, useState } from "react";
+import { Button, Col, CustomInput, Modal, ModalBody, Row } from "reactstrap";
+import { Bech32Address } from "@owallet/cosmos";
 
-import style from './bip44-select-modal.module.scss';
-import { useStore } from '../../stores';
-import { observer } from 'mobx-react-lite';
-import { FormattedMessage } from 'react-intl';
-import { BIP44 } from '@owallet/types';
-import { useLoadingIndicator } from '../../components/loading-indicator';
-import { Dec } from '@owallet/unit';
+import style from "./bip44-select-modal.module.scss";
+import { useStore } from "../../stores";
+import { observer } from "mobx-react-lite";
+import { FormattedMessage } from "react-intl";
+import { BIP44 } from "@owallet/types";
+import { useLoadingIndicator } from "../../components/loading-indicator";
+import { Dec } from "@owallet/unit";
 
 const BIP44Selectable: FunctionComponent<{
   selectable: {
@@ -30,7 +30,7 @@ const BIP44Selectable: FunctionComponent<{
 
   return (
     <div
-      style={{ cursor: 'pointer' }}
+      style={{ cursor: "pointer" }}
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -109,7 +109,7 @@ export const BIP44SelectModal: FunctionComponent = observer(() => {
     if (selectables.isInitializing) {
       setIsModalOpen(false);
     } else if (!selectables.needSelectCoinType) {
-      loadingIndicator.setIsLoading('bip44-selectables-init', false);
+      loadingIndicator.setIsLoading("bip44-selectables-init", false);
       setIsModalOpen(false);
     } else {
       // Wait to fetch the balances of the accounts.
@@ -165,7 +165,7 @@ export const BIP44SelectModal: FunctionComponent = observer(() => {
           const account = queries.cosmos.queryAccount.getQueryBech32Address(
             other.bech32Address
           );
-          return account.sequence !== '0';
+          return account.sequence !== "0";
         });
 
         // If there is no other accounts that have the balances or have sent txs,
@@ -179,7 +179,7 @@ export const BIP44SelectModal: FunctionComponent = observer(() => {
           setIsModalOpen(true);
         }
 
-        loadingIndicator.setIsLoading('bip44-selectables-init', false);
+        loadingIndicator.setIsLoading("bip44-selectables-init", false);
       });
     }
   }, [
@@ -189,7 +189,7 @@ export const BIP44SelectModal: FunctionComponent = observer(() => {
     queries,
     selectables.isInitializing,
     selectables.needSelectCoinType,
-    selectables.selectables
+    selectables.selectables,
   ]);
 
   const [selectedCoinType, setSelectedCoinType] = useState(-1);
@@ -225,7 +225,7 @@ export const BIP44SelectModal: FunctionComponent = observer(() => {
           type="button"
           color="primary"
           block
-          style={{ marginTop: '10px' }}
+          style={{ marginTop: "10px" }}
           disabled={selectedCoinType < 0}
           onClick={async (e) => {
             e.preventDefault();

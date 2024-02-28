@@ -1,10 +1,10 @@
-import React, { FunctionComponent } from 'react';
-import Svg, { Path } from 'react-native-svg';
+import React, { FunctionComponent } from "react";
+import Svg, { Path } from "react-native-svg";
 
 export const SwapIcon: FunctionComponent<{
   color?: string;
   size?: number;
-}> = ({ color = '#C7C7CC', size = 24 }) => {
+}> = ({ color = "#C7C7CC", size = 24 }) => {
   return (
     <Svg width="20" height="15" viewBox="0 0 20 15" fill="none">
       <Path

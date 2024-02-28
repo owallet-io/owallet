@@ -1,5 +1,5 @@
-import React, { FunctionComponent } from 'react';
-import Svg, { Path, Circle } from 'react-native-svg';
+import React, { FunctionComponent } from "react";
+import Svg, { Path, Circle } from "react-native-svg";
 
 export const RewardIcon: FunctionComponent<{
   color: string;
@@ -39,7 +39,7 @@ export const RewardIcon: FunctionComponent<{
 export const RewardDashboardIcon: FunctionComponent<{
   color?: string;
   size?: number;
-}> = ({ size = 24, color = 'none' }) => {
+}> = ({ size = 24, color = "none" }) => {
   return (
     <Svg width={size} height={size} fill={color} viewBox="0 0 44 44">
       <Path

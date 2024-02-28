@@ -13,5 +13,5 @@ export interface BtcTokenInfo {
 }
 export type Result = {
   balance: number;
-  utxos:BtcTokenInfo[]
+  utxos: BtcTokenInfo[];
 };

@@ -1,5 +1,5 @@
-import { APP_PORT, Env, MessageSender } from '@owallet/router';
-import { RNMessageRequesterInternalToUI } from './requester';
+import { APP_PORT, Env, MessageSender } from "@owallet/router";
+import { RNMessageRequesterInternalToUI } from "./requester";
 
 export class RNEnv {
   static readonly produceEnv = (sender: MessageSender): Env => {
@@ -18,7 +18,7 @@ export class RNEnv {
           APP_PORT,
           msg
         );
-      }
+      },
     };
   };
 
@@ -26,7 +26,7 @@ export class RNEnv {
     sender: MessageSender
   ): boolean => {
     return (
-      sender.id === 'react-native' && sender.url === 'react-native://internal'
+      sender.id === "react-native" && sender.url === "react-native://internal"
     );
   };
 }

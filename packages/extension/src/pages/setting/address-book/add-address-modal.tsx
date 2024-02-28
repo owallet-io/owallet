@@ -1,11 +1,11 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
-import { HeaderLayout } from '../../../layouts';
-import { AddressInput, Input, MemoInput } from '../../../components/form';
-import { Button } from 'reactstrap';
-import { FormattedMessage, useIntl } from 'react-intl';
-import { observer } from 'mobx-react-lite';
-import { AddressBookConfig, MemoConfig, RecipientConfig } from '@owallet/hooks';
-import style from './style.module.scss';
+import React, { FunctionComponent, useEffect, useState } from "react";
+import { HeaderLayout } from "../../../layouts";
+import { AddressInput, Input, MemoInput } from "../../../components/form";
+import { Button } from "reactstrap";
+import { FormattedMessage, useIntl } from "react-intl";
+import { observer } from "mobx-react-lite";
+import { AddressBookConfig, MemoConfig, RecipientConfig } from "@owallet/hooks";
+import style from "./style.module.scss";
 /**
  *
  * @param closeModal
@@ -30,37 +30,37 @@ export const AddAddressModal: FunctionComponent<{
     memoConfig,
     addressBookConfig,
     index,
-    typeAddress
+    typeAddress,
   }) => {
     const intl = useIntl();
 
-    const [name, setName] = useState('');
+    const [name, setName] = useState("");
 
     useEffect(() => {
-      if (index >= 0 && typeAddress === 'Edit') {
+      if (index >= 0 && typeAddress === "Edit") {
         const data = addressBookConfig.addressBookDatas[index];
         setName(data.name);
         recipientConfig.setRawRecipient(data.address);
         memoConfig.setMemo(data.memo);
       } else {
-        setName('');
-        recipientConfig.setRawRecipient('');
-        memoConfig.setMemo('');
+        setName("");
+        recipientConfig.setRawRecipient("");
+        memoConfig.setMemo("");
       }
     }, [
       addressBookConfig.addressBookDatas,
       index,
       memoConfig,
-      recipientConfig
+      recipientConfig,
     ]);
 
     return (
       <>
-        <div className={style.textTypeAddress}>{typeAddress + ' Address'}</div>
+        <div className={style.textTypeAddress}>{typeAddress + " Address"}</div>
         <form className={style.formAdd}>
           <Input
             type="text"
-            label={intl.formatMessage({ id: 'setting.address-book.name' })}
+            label={intl.formatMessage({ id: "setting.address-book.name" })}
             autoComplete="off"
             classNameInputGroup={style.inputGroup}
             value={name}
@@ -70,23 +70,23 @@ export const AddAddressModal: FunctionComponent<{
           />
           <AddressInput
             recipientConfig={recipientConfig}
-            label={intl.formatMessage({ id: 'setting.address-book.address' })}
+            label={intl.formatMessage({ id: "setting.address-book.address" })}
             disableAddressBook={true}
           />
           <MemoInput
             memoConfig={memoConfig}
-            label={intl.formatMessage({ id: 'setting.address-book.memo' })}
+            label={intl.formatMessage({ id: "setting.address-book.memo" })}
           />
           <div
             style={{
-              display: 'flex'
+              display: "flex",
             }}
           >
             <Button
               style={{
-                width: '50%',
-                border: '1px solid #7664E4',
-                color: '#7664E4'
+                width: "50%",
+                border: "1px solid #7664E4",
+                color: "#7664E4",
               }}
               onClick={() => closeModal()}
             >
@@ -105,30 +105,30 @@ export const AddAddressModal: FunctionComponent<{
                 e.stopPropagation();
 
                 if (!recipientConfig.recipient) {
-                  throw new Error('Invalid address');
+                  throw new Error("Invalid address");
                 }
 
                 if (index < 0) {
                   await addressBookConfig.addAddressBook({
                     name,
                     address: recipientConfig.recipient,
-                    memo: memoConfig.memo
+                    memo: memoConfig.memo,
                   });
                 } else {
                   await addressBookConfig.editAddressBookAt(index, {
                     name,
                     address: recipientConfig.recipient,
-                    memo: memoConfig.memo
+                    memo: memoConfig.memo,
                   });
                 }
 
                 // Clear the recipient and memo before closing
-                recipientConfig.setRawRecipient('');
-                memoConfig.setMemo('');
+                recipientConfig.setRawRecipient("");
+                memoConfig.setMemo("");
                 closeModal();
               }}
             >
-              <FormattedMessage id={'setting.address-book.button.save'} />
+              <FormattedMessage id={"setting.address-book.button.save"} />
             </Button>
           </div>
         </form>

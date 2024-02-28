@@ -1,17 +1,17 @@
-import assert from 'assert';
-import { Message, Router } from '@owallet/router';
-import { MockRouter } from '../router';
-import { MockEnv } from '../env';
-import { MockMessageRequester } from '../requester';
-import { MockGuards } from '../guard';
+import assert from "assert";
+import { Message, Router } from "@owallet/router";
+import { MockRouter } from "../router";
+import { MockEnv } from "../env";
+import { MockMessageRequester } from "../requester";
+import { MockGuards } from "../guard";
 
 class MockMessage extends Message<boolean> {
   public static type() {
-    return 'mock';
+    return "mock";
   }
 
   route(): string {
-    return 'mock';
+    return "mock";
   }
 
   type(): string {
@@ -25,11 +25,11 @@ class MockMessage extends Message<boolean> {
 
 class MockExternalMessage extends Message<boolean> {
   public static type() {
-    return 'mock-extern';
+    return "mock-extern";
   }
 
   route(): string {
-    return 'mock-extern';
+    return "mock-extern";
   }
 
   type(): string {
@@ -45,20 +45,20 @@ class MockExternalMessage extends Message<boolean> {
   }
 }
 
-describe('Test message permission', () => {
-  const port = 'port';
-  const mockId = 'mock';
-  const mockUrl = 'http://mock.com';
+describe("Test message permission", () => {
+  const port = "port";
+  const mockId = "mock";
+  const mockUrl = "http://mock.com";
 
   const mockInternalRequester = new MockMessageRequester(mockId, mockUrl);
   const mockExternalRequester = new MockMessageRequester(
     mockId,
-    'http://other.com'
+    "http://other.com"
   );
-  const mockExternalRequester2 = new MockMessageRequester('other', mockUrl);
+  const mockExternalRequester2 = new MockMessageRequester("other", mockUrl);
   const mockExternalRequester3 = new MockMessageRequester(
-    'other',
-    'http://other.com'
+    "other",
+    "http://other.com"
   );
 
   let router: Router | undefined;
@@ -71,8 +71,8 @@ describe('Test message permission', () => {
     router.registerMessage(MockMessage);
     router.registerMessage(MockExternalMessage);
 
-    router.addHandler('mock', () => true);
-    router.addHandler('mock-extern', () => true);
+    router.addHandler("mock", () => true);
+    router.addHandler("mock-extern", () => true);
 
     router.listen(port);
   });
@@ -119,12 +119,12 @@ describe('Test message permission', () => {
     }
   };
 
-  it('Basic message should be allowed only if it is from internal', async () => {
+  it("Basic message should be allowed only if it is from internal", async () => {
     const mockMsg = new MockMessage();
     await testSendMessage(mockMsg, false);
   });
 
-  it('External message should be allowed event if it is from external', async () => {
+  it("External message should be allowed event if it is from external", async () => {
     const mockMsg = new MockExternalMessage();
     await testSendMessage(mockMsg, true);
   });

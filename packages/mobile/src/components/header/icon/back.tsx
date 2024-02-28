@@ -1,6 +1,6 @@
-import React, { FunctionComponent } from 'react';
-import Svg, { Path } from 'react-native-svg';
-import { useStyle } from '../../../styles';
+import React, { FunctionComponent } from "react";
+import Svg, { Path } from "react-native-svg";
+import { useStyle } from "../../../styles";
 
 export const HeaderBackButtonIcon: FunctionComponent<{
   color?: string;
@@ -9,7 +9,7 @@ export const HeaderBackButtonIcon: FunctionComponent<{
   const style = useStyle();
 
   if (!color) {
-    color = style.get('color-text-black-low').color;
+    color = style.get("color-text-black-low").color;
   }
 
   return (
@@ -32,7 +32,7 @@ export const HeaderBackDownButtonIcon: FunctionComponent<{
   const style = useStyle();
 
   if (!color) {
-    color = style.get('color-text-black-low').color;
+    color = style.get("color-text-black-low").color;
   }
 
   return (

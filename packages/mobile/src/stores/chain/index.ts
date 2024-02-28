@@ -1,16 +1,16 @@
-import { observable, action, computed, makeObservable, flow } from 'mobx';
-import { ChainInfoInner, ChainStore as BaseChainStore } from '@owallet/stores';
-import { ChainInfo } from '@owallet/types';
+import { observable, action, computed, makeObservable, flow } from "mobx";
+import { ChainInfoInner, ChainStore as BaseChainStore } from "@owallet/stores";
+import { ChainInfo } from "@owallet/types";
 import {
   ChainInfoWithEmbed,
   GetChainInfosMsg,
   RemoveSuggestedChainInfoMsg,
   SuggestChainInfoMsg,
-  TryUpdateChainMsg
-} from '@owallet/background';
-import { BACKGROUND_PORT } from '@owallet/router';
-import { MessageRequester } from '@owallet/router';
-import { KVStore, toGenerator } from '@owallet/common';
+  TryUpdateChainMsg,
+} from "@owallet/background";
+import { BACKGROUND_PORT } from "@owallet/router";
+import { MessageRequester } from "@owallet/router";
+import { KVStore, toGenerator } from "@owallet/common";
 
 export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
   @observable
@@ -18,7 +18,7 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
 
   @observable
   protected _isInitializing: boolean = false;
-  protected deferChainIdSelect: string = '';
+  protected deferChainIdSelect: string = "";
 
   constructor(
     embedChainInfos: ChainInfo[],
@@ -26,12 +26,12 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
     protected readonly kvStore: KVStore
   ) {
     super(
-      embedChainInfos.map(chainInfo => {
+      embedChainInfos.map((chainInfo) => {
         return {
           ...chainInfo,
           ...{
-            embeded: true
-          }
+            embeded: true,
+          },
         };
       })
     );
@@ -47,7 +47,7 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
   }
 
   get chainInfosInUI() {
-    return this.chainInfos.filter(chainInfo => {
+    return this.chainInfos.filter((chainInfo) => {
       return !chainInfo.raw.hideInUI;
     });
   }
@@ -71,7 +71,7 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
 
   async saveLastViewChainId() {
     // Save last view chain id to kv store
-    await this.kvStore.set<string>('last_view_chain_id', this.selectedChainId);
+    await this.kvStore.set<string>("last_view_chain_id", this.selectedChainId);
   }
 
   @flow
@@ -80,7 +80,9 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
     yield this.getChainInfosFromBackground();
 
     // Get last view chain id from kv store
-    const lastViewChainId = yield* toGenerator(this.kvStore.get<string>('last_view_chain_id'));
+    const lastViewChainId = yield* toGenerator(
+      this.kvStore.get<string>("last_view_chain_id")
+    );
 
     if (!this.deferChainIdSelect) {
       if (lastViewChainId) {
@@ -91,21 +93,25 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
 
     if (this.deferChainIdSelect) {
       this.selectChain(this.deferChainIdSelect);
-      this.deferChainIdSelect = '';
+      this.deferChainIdSelect = "";
     }
   }
 
   @flow
   protected *getChainInfosFromBackground() {
     const msg = new GetChainInfosMsg();
-    const result = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
+    const result = yield* toGenerator(
+      this.requester.sendMessage(BACKGROUND_PORT, msg)
+    );
     this.setChainInfos(result.chainInfos);
   }
 
   @flow
   *removeChainInfo(chainId: string) {
     const msg = new RemoveSuggestedChainInfoMsg(chainId);
-    const chainInfos = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
+    const chainInfos = yield* toGenerator(
+      this.requester.sendMessage(BACKGROUND_PORT, msg)
+    );
 
     this.setChainInfos(chainInfos);
   }
@@ -113,7 +119,9 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
   @flow
   *addChain(chainInfo) {
     const msg = new GetChainInfosMsg();
-    const result = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
+    const result = yield* toGenerator(
+      this.requester.sendMessage(BACKGROUND_PORT, msg)
+    );
     const msgAddchain = new SuggestChainInfoMsg(chainInfo);
     yield this.requester.sendMessage(BACKGROUND_PORT, msgAddchain);
     yield this.setChainInfos([...result.chainInfos, chainInfo]);

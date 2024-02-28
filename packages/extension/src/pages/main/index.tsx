@@ -1,28 +1,28 @@
-import React, { FunctionComponent, useEffect, useMemo, useRef } from 'react';
+import React, { FunctionComponent, useEffect, useMemo, useRef } from "react";
 
-import { HeaderLayout, LayoutHidePage } from '../../layouts';
+import { HeaderLayout, LayoutHidePage } from "../../layouts";
 
-import { Card, CardBody } from 'reactstrap';
+import { Card, CardBody } from "reactstrap";
 
-import { AccountView } from './account';
-import { AssetView, AssetViewBtc, AssetViewEvm } from './asset';
-import { LinkStakeView, StakeView } from './stake';
-import style from './style.module.scss';
-import { TxButtonBtcView, TxButtonEvmView, TxButtonView } from './tx-button';
+import { AccountView } from "./account";
+import { AssetView, AssetViewBtc, AssetViewEvm } from "./asset";
+import { LinkStakeView, StakeView } from "./stake";
+import style from "./style.module.scss";
+import { TxButtonBtcView, TxButtonEvmView, TxButtonView } from "./tx-button";
 
-import { ChainUpdaterService } from '@owallet/background';
-import { TRON_ID } from '@owallet/common';
-import classnames from 'classnames';
-import { observer } from 'mobx-react-lite';
-import { useIntl } from 'react-intl';
-import { useConfirm } from '../../components/confirm';
-import { SelectChain } from '../../layouts/header';
-import { useStore } from '../../stores';
-import { SendPage } from '../send';
-import { SendEvmPage } from '../send-evm';
-import { SendTronEvmPage } from '../send-tron';
-import { BIP44SelectModal } from './bip44-select-modal';
-import { SendBtcPage } from '../send-btc';
+import { ChainUpdaterService } from "@owallet/background";
+import { TRON_ID } from "@owallet/common";
+import classnames from "classnames";
+import { observer } from "mobx-react-lite";
+import { useIntl } from "react-intl";
+import { useConfirm } from "../../components/confirm";
+import { SelectChain } from "../../layouts/header";
+import { useStore } from "../../stores";
+import { SendPage } from "../send";
+import { SendEvmPage } from "../send-evm";
+import { SendTronEvmPage } from "../send-tron";
+import { BIP44SelectModal } from "./bip44-select-modal";
+import { SendBtcPage } from "../send-btc";
 
 export const MainPage: FunctionComponent = observer(() => {
   const intl = useIntl();
@@ -37,20 +37,22 @@ export const MainPage: FunctionComponent = observer(() => {
   useEffect(() => {
     if (!chainStore.isInitializing && prevChainId.current !== currentChainId) {
       (async () => {
-        const result = await ChainUpdaterService.checkChainUpdate(chainStore.current);
+        const result = await ChainUpdaterService.checkChainUpdate(
+          chainStore.current
+        );
         if (result.explicit) {
           // If chain info has been changed, warning the user wether update the chain or not.
           if (
             await confirm.confirm({
               paragraph: intl.formatMessage({
-                id: 'main.update-chain.confirm.paragraph'
+                id: "main.update-chain.confirm.paragraph",
               }),
               yes: intl.formatMessage({
-                id: 'main.update-chain.confirm.yes'
+                id: "main.update-chain.confirm.yes",
               }),
               no: intl.formatMessage({
-                id: 'main.update-chain.confirm.no'
-              })
+                id: "main.update-chain.confirm.no",
+              }),
             })
           ) {
             await chainStore.tryUpdateChain(chainId);
@@ -69,13 +71,13 @@ export const MainPage: FunctionComponent = observer(() => {
   }, [chainStore.current]);
 
   const renderAssetView = useMemo(() => {
-    if (networkType === 'evm') {
+    if (networkType === "evm") {
       return (
         <>
           <AssetViewEvm />
         </>
       );
-    } else if (networkType === 'bitcoin') {
+    } else if (networkType === "bitcoin") {
       return (
         <>
           <AssetViewBtc />
@@ -90,12 +92,12 @@ export const MainPage: FunctionComponent = observer(() => {
   }, [networkType]);
 
   const handleCheckSendPage = () => {
-    if (networkType === 'evm') {
+    if (networkType === "evm") {
       if (chainId === TRON_ID) {
         return <SendTronEvmPage />;
       }
       return <SendEvmPage />;
-    } else if (networkType === 'bitcoin') {
+    } else if (networkType === "bitcoin") {
       return <SendBtcPage />;
     }
     return <SendPage />;
@@ -105,18 +107,18 @@ export const MainPage: FunctionComponent = observer(() => {
       <SelectChain showChainName canChangeChainInfo />
       <div style={{ height: 10 }} />
       <BIP44SelectModal />
-      <Card className={classnames(style.card, 'shadow')}>
+      <Card className={classnames(style.card, "shadow")}>
         <CardBody>
           <div className={style.containerAccountInner}>
             <div className={style.imageWrap}>
               <AccountView />
               {renderAssetView}
             </div>
-            {networkType === 'evm' ? (
+            {networkType === "evm" ? (
               <div style={{ marginTop: 24 }}>
                 <TxButtonEvmView hasSend={hasSend} setHasSend={setHasSend} />
               </div>
-            ) : networkType === 'bitcoin' ? (
+            ) : networkType === "bitcoin" ? (
               <div style={{ marginTop: 24 }}>
                 <TxButtonBtcView hasSend={hasSend} setHasSend={setHasSend} />
               </div>
@@ -132,7 +134,7 @@ export const MainPage: FunctionComponent = observer(() => {
                   className="my-3"
                   style={{
                     height: 1,
-                    borderTop: '1px solid #E6E8EC'
+                    borderTop: "1px solid #E6E8EC",
                   }}
                 />
                 <LayoutHidePage hidePage={() => setHasSend(false)} />
@@ -143,14 +145,14 @@ export const MainPage: FunctionComponent = observer(() => {
         </CardBody>
       </Card>
 
-      {networkType === 'cosmos' && (
+      {networkType === "cosmos" && (
         <>
-          <Card className={classnames(style.card, 'shadow')}>
+          <Card className={classnames(style.card, "shadow")}>
             <CardBody>
               <StakeView />
             </CardBody>
           </Card>
-          <Card className={classnames(style.card, 'shadow')}>
+          <Card className={classnames(style.card, "shadow")}>
             <CardBody>
               <LinkStakeView />
             </CardBody>

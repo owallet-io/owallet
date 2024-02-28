@@ -1,12 +1,12 @@
-import React, { FunctionComponent } from 'react';
-import { View, FlatList } from 'react-native';
-import { metrics, spacing, typography } from '../../../themes';
-import { _keyExtract } from '../../../utils/helper';
-import { Text } from '@src/components/text';
-import { KeyStoreItem } from '.';
-import { CoinGeckoPriceStore } from '@owallet/stores';
-import { ModalStore } from '../../../stores/modal';
-import OWFlatList from '@src/components/page/ow-flat-list';
+import React, { FunctionComponent } from "react";
+import { View, FlatList } from "react-native";
+import { metrics, spacing, typography } from "../../../themes";
+import { _keyExtract } from "../../../utils/helper";
+import { Text } from "@src/components/text";
+import { KeyStoreItem } from ".";
+import { CoinGeckoPriceStore } from "@owallet/stores";
+import { ModalStore } from "../../../stores/modal";
+import OWFlatList from "@src/components/page/ow-flat-list";
 
 interface CountryModalProps {
   data: any;
@@ -21,7 +21,7 @@ export const CountryModal: FunctionComponent<CountryModalProps> = ({
   current,
   priceStore,
   modalStore,
-  colors
+  colors,
 }) => {
   const _renderItem = ({ item, index }) => {
     return (
@@ -29,12 +29,12 @@ export const CountryModal: FunctionComponent<CountryModalProps> = ({
         colors={colors}
         key={index.toString()}
         containerStyle={{
-          backgroundColor: colors['background-item-list']
+          backgroundColor: colors["background-item-list"],
         }}
-        label={item.label || 'USD'}
+        label={item.label || "USD"}
         active={current === item.key ? true : false}
         onPress={() => {
-          priceStore.setDefaultVsCurrency(item.key || 'usd');
+          priceStore.setDefaultVsCurrency(item.key || "usd");
           modalStore.close();
         }}
       />
@@ -45,20 +45,20 @@ export const CountryModal: FunctionComponent<CountryModalProps> = ({
     // container
     <View
       style={{
-        alignItems: 'center'
+        alignItems: "center",
         // backgroundColor: colors['primary']
       }}
     >
       <View
         style={{
-          justifyContent: 'flex-start'
+          justifyContent: "flex-start",
         }}
       >
         <Text
           style={{
             ...typography.h6,
-            fontWeight: '900',
-            color: colors['primary-text']
+            fontWeight: "900",
+            color: colors["primary-text"],
           }}
         >
           {`Select Currency`}
@@ -67,8 +67,8 @@ export const CountryModal: FunctionComponent<CountryModalProps> = ({
 
       <View
         style={{
-          marginTop: spacing['12'],
-          height: metrics.screenHeight / 2
+          marginTop: spacing["12"],
+          height: metrics.screenHeight / 2,
         }}
       >
         <OWFlatList

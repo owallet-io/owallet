@@ -1,10 +1,17 @@
-import React, { FunctionComponent, useMemo } from 'react';
-import { View, ViewStyle, Image } from 'react-native';
-import { AppCurrency, Currency } from '@owallet/types';
-import { Circle, Defs, LinearGradient, Path, Stop, Svg } from 'react-native-svg';
-import FastImage from 'react-native-fast-image';
-import { VectorCharacter } from '../vector-character';
-import { colors, spacing } from '../../themes';
+import React, { FunctionComponent, useMemo } from "react";
+import { View, ViewStyle, Image } from "react-native";
+import { AppCurrency, Currency } from "@owallet/types";
+import {
+  Circle,
+  Defs,
+  LinearGradient,
+  Path,
+  Stop,
+  Svg,
+} from "react-native-svg";
+import FastImage from "react-native-fast-image";
+import { VectorCharacter } from "../vector-character";
+import { colors, spacing } from "../../themes";
 
 export const StakedTokenSymbol: FunctionComponent<{
   size: number;
@@ -34,11 +41,18 @@ export const TokenSymbol: FunctionComponent<{
   };
   size?: number;
   imageScale?: number;
-}> = ({ style: propStyle, size, currency, chainInfo, imageScale = 32 / 44 }) => {
-  const isStakeCurrency = currency.coinMinimalDenom === chainInfo.stakeCurrency.coinMinimalDenom;
+}> = ({
+  style: propStyle,
+  size,
+  currency,
+  chainInfo,
+  imageScale = 32 / 44,
+}) => {
+  const isStakeCurrency =
+    currency.coinMinimalDenom === chainInfo.stakeCurrency.coinMinimalDenom;
 
   const profileColor = useMemo(() => {
-    return 'red-10';
+    return "red-10";
   }, []);
 
   return (
@@ -46,41 +60,47 @@ export const TokenSymbol: FunctionComponent<{
       style={{
         width: size,
         height: size,
-        borderRadius: spacing['6'],
-        alignItems: 'center',
-        justifyContent: 'center',
-        overflow: 'hidden',
-        backgroundColor: isStakeCurrency ? colors['red-10'] : colors[`${profileColor}`],
-        ...propStyle
+        borderRadius: spacing["6"],
+        alignItems: "center",
+        justifyContent: "center",
+        overflow: "hidden",
+        backgroundColor: isStakeCurrency
+          ? colors["red-10"]
+          : colors[`${profileColor}`],
+        ...propStyle,
       }}
     >
       {currency?.coinImageUrl ? (
-        currency?.coinImageUrl?.includes('white') ? (
+        currency?.coinImageUrl?.includes("white") ? (
           <Image
             style={{
               width: size * imageScale,
               height: size * imageScale,
-              tintColor: colors['black']
+              tintColor: colors["black"],
             }}
-            resizeMode={'contain'}
+            resizeMode={"contain"}
             source={{
-              uri: currency.coinImageUrl
+              uri: currency.coinImageUrl,
             }}
           />
         ) : (
           <FastImage
             style={{
               width: size * imageScale,
-              height: size * imageScale
+              height: size * imageScale,
             }}
             resizeMode={FastImage.resizeMode.contain}
             source={{
-              uri: currency.coinImageUrl
+              uri: currency.coinImageUrl,
             }}
           />
         )
       ) : (
-        <VectorCharacter char={currency.coinDenom[0]} height={Math.floor(size * 0.35)} color="black" />
+        <VectorCharacter
+          char={currency.coinDenom[0]}
+          height={Math.floor(size * 0.35)}
+          color="black"
+        />
       )}
     </View>
   );

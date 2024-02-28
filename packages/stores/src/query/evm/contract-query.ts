@@ -1,12 +1,14 @@
-import { ObservableChainQuery } from '../chain-query';
-import Web3 from 'web3';
-import { KVStore } from '@owallet/common';
-import { ChainGetter } from '../../common';
-import { CancelToken } from 'axios';
-import { QueryResponse } from '../../common';
-import ERC20_ABI from './erc20';
+import { ObservableChainQuery } from "../chain-query";
+import Web3 from "web3";
+import { KVStore } from "@owallet/common";
+import { ChainGetter } from "../../common";
+import { CancelToken } from "axios";
+import { QueryResponse } from "../../common";
+import ERC20_ABI from "./erc20";
 
-export class ObservableEvmContractChainQuery<T> extends ObservableChainQuery<T> {
+export class ObservableEvmContractChainQuery<
+  T
+> extends ObservableChainQuery<T> {
   constructor(
     kvStore: KVStore,
     chainId: string,
@@ -15,14 +17,16 @@ export class ObservableEvmContractChainQuery<T> extends ObservableChainQuery<T> 
     // eslint-disable-next-line @typescript-eslint/ban-types
     protected data: { [key: string]: any }
   ) {
-    super(kvStore, chainId, chainGetter, '', data);
+    super(kvStore, chainId, chainGetter, "", data);
   }
 
   protected canFetch(): boolean {
     return this.contractAddress.length !== 0;
   }
 
-  protected async fetchResponse(cancelToken: CancelToken): Promise<QueryResponse<T>> {
+  protected async fetchResponse(
+    cancelToken: CancelToken
+  ): Promise<QueryResponse<T>> {
     try {
       const response = await super.fetchResponse(cancelToken);
       const resultFetchBalance = response.data;
@@ -36,14 +40,14 @@ export class ObservableEvmContractChainQuery<T> extends ObservableChainQuery<T> 
       const tokenName = await tokenInfo.methods.name().call();
 
       if (!resultFetchBalance) {
-        throw new Error('Failed to get the response from the contract');
+        throw new Error("Failed to get the response from the contract");
       }
 
       const tokenInfoData = {
         decimals: parseInt(tokenDecimal),
         symbol: tokenSymbol,
         name: tokenName,
-        total_supply: resultFetchBalance
+        total_supply: resultFetchBalance,
       };
 
       return {
@@ -51,10 +55,10 @@ export class ObservableEvmContractChainQuery<T> extends ObservableChainQuery<T> 
         status: response.status,
         staled: false,
         timestamp: Date.now(),
-        info: tokenInfoData
+        info: tokenInfoData,
       };
     } catch (error) {
-      console.log('Error on fetch response: ', error);
+      console.log("Error on fetch response: ", error);
     }
   }
 }

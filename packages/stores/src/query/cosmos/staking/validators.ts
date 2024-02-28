@@ -1,22 +1,22 @@
 import {
   ObservableChainQuery,
-  ObservableChainQueryMap
-} from '../../chain-query';
-import { BondStatus, Validators, Validator } from './types';
-import { KVStore, fetchAdapter } from '@owallet/common';
-import { ChainGetter } from '../../../common';
+  ObservableChainQueryMap,
+} from "../../chain-query";
+import { BondStatus, Validators, Validator } from "./types";
+import { KVStore, fetchAdapter } from "@owallet/common";
+import { ChainGetter } from "../../../common";
 import {
   autorun,
   computed,
   makeObservable,
   observable,
-  runInAction
-} from 'mobx';
-import { ObservableQuery, QueryResponse } from '../../../common';
-import Axios, { CancelToken } from 'axios';
-import PQueue from 'p-queue';
-import { CoinPretty, Dec } from '@owallet/unit';
-import { computedFn } from 'mobx-utils';
+  runInAction,
+} from "mobx";
+import { ObservableQuery, QueryResponse } from "../../../common";
+import Axios, { CancelToken } from "axios";
+import PQueue from "p-queue";
+import { CoinPretty, Dec } from "@owallet/unit";
+import { computedFn } from "mobx-utils";
 
 interface KeybaseResult {
   status: {
@@ -45,15 +45,15 @@ export class ObservableQueryValidatorThumbnail extends ObservableQuery<KeybaseRe
    * @protected
    */
   protected static fetchingThumbnailQueue: PQueue = new PQueue({
-    concurrency: 3
+    concurrency: 3,
   });
 
   protected readonly validator: Validator;
 
   constructor(kvStore: KVStore, validator: Validator) {
     const instance = Axios.create({
-      baseURL: 'https://keybase.io/',
-      adapter: fetchAdapter
+      baseURL: "https://keybase.io/",
+      adapter: fetchAdapter,
     });
 
     super(
@@ -67,7 +67,7 @@ export class ObservableQueryValidatorThumbnail extends ObservableQuery<KeybaseRe
   }
 
   protected canFetch(): boolean {
-    return this.validator.description.identity !== '';
+    return this.validator.description.identity !== "";
   }
 
   protected async fetchResponse(
@@ -84,11 +84,11 @@ export class ObservableQueryValidatorThumbnail extends ObservableQuery<KeybaseRe
   get thumbnail(): string {
     if (this.response?.data.status.code === 0) {
       if (this.response.data.them && this.response.data.them.length > 0) {
-        return this.response.data.them[0].pictures?.primary?.url ?? '';
+        return this.response.data.them[0].pictures?.primary?.url ?? "";
       }
     }
 
-    return '';
+    return "";
   }
 }
 
@@ -110,13 +110,13 @@ export class ObservableQueryValidatorsInner extends ObservableChainQuery<Validat
       `/cosmos/staking/v1beta1/validators?pagination.limit=1000&status=${(() => {
         switch (status) {
           case BondStatus.Bonded:
-            return 'BOND_STATUS_BONDED';
+            return "BOND_STATUS_BONDED";
           case BondStatus.Unbonded:
-            return 'BOND_STATUS_UNBONDED';
+            return "BOND_STATUS_UNBONDED";
           case BondStatus.Unbonding:
-            return 'BOND_STATUS_UNBONDING';
+            return "BOND_STATUS_UNBONDING";
           default:
-            return 'BOND_STATUS_UNSPECIFIED';
+            return "BOND_STATUS_UNSPECIFIED";
         }
       })()}`
     );
@@ -177,11 +177,11 @@ export class ObservableQueryValidatorsInner extends ObservableChainQuery<Validat
         (val) => val.operator_address === operatorAddress
       );
       if (!validator) {
-        return '';
+        return "";
       }
 
       if (!validator.description.identity) {
-        return '';
+        return "";
       }
 
       const identity = validator.description.identity;

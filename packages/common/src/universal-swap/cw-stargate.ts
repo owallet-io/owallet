@@ -1,8 +1,13 @@
-import * as cosmwasm from '@cosmjs/cosmwasm-stargate';
-import { GasPrice } from '@cosmjs/stargate';
-import { network } from '@oraichain/oraidex-common';
+import * as cosmwasm from "@cosmjs/cosmwasm-stargate";
+import { GasPrice } from "@cosmjs/stargate";
+import { network } from "@oraichain/oraidex-common";
 export class CWStargate {
-  static async init(account: any, chainId: string, rpc: string, options?: cosmwasm.SigningCosmWasmClientOptions) {
+  static async init(
+    account: any,
+    chainId: string,
+    rpc: string,
+    options?: cosmwasm.SigningCosmWasmClientOptions
+  ) {
     const owallet = await account.getOWallet();
     if (!owallet) {
       throw new Error("Can't get the owallet API");
@@ -13,7 +18,7 @@ export class CWStargate {
       rpc,
       wallet,
       options ?? {
-        gasPrice: GasPrice.fromString(network.fee.gasPrice + network.denom)
+        gasPrice: GasPrice.fromString(network.fee.gasPrice + network.denom),
       }
     );
     return client;

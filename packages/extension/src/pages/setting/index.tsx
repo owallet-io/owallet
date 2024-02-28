@@ -3,16 +3,16 @@ import React, {
   FunctionComponent,
   ReactElement,
   useCallback,
-  useMemo
-} from 'react';
-import { useHistory } from 'react-router';
-import { PageButton, PageButtonAccount } from './page-button';
-import style from './style.module.scss';
-import { useLanguage } from '@owallet/common';
-import { useIntl } from 'react-intl';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../stores';
-import classNames from 'classnames';
+  useMemo,
+} from "react";
+import { useHistory } from "react-router";
+import { PageButton, PageButtonAccount } from "./page-button";
+import style from "./style.module.scss";
+import { useLanguage } from "@owallet/common";
+import { useIntl } from "react-intl";
+import { observer } from "mobx-react-lite";
+import { useStore } from "../../stores";
+import classNames from "classnames";
 import {
   Card,
   CardBody,
@@ -20,11 +20,11 @@ import {
   ModalBody,
   Popover,
   PopoverBody,
-  PopoverHeader
-} from 'reactstrap';
-import { ExportToMobilePage } from '../setting/export-to-mobile';
-import { CreditPage } from '../setting/credit';
-import { SettingConnectionsPage } from '../setting/connections';
+  PopoverHeader,
+} from "reactstrap";
+import { ExportToMobilePage } from "../setting/export-to-mobile";
+import { CreditPage } from "../setting/credit";
+import { SettingConnectionsPage } from "../setting/connections";
 
 export const PageButtonSetting: FunctionComponent<{
   paragraph?: string;
@@ -45,14 +45,14 @@ export const PageButtonSetting: FunctionComponent<{
   disable,
   isHasTabs,
   setIsHasTabs,
-  type
+  type,
 }) => {
   const [isDepositOpen, setIsDepositOpen] = React.useState(false);
   const intl = useIntl();
   const [tooltipId] = React.useState(() => {
     const bytes = new Uint8Array(4);
     crypto.getRandomValues(bytes);
-    return `tools-${Buffer.from(bytes).toString('hex')}`;
+    return `tools-${Buffer.from(bytes).toString("hex")}`;
   });
   return (
     <>
@@ -70,7 +70,7 @@ export const PageButtonSetting: FunctionComponent<{
               if (
                 title !=
                 intl.formatMessage({
-                  id: 'setting.export-to-mobile'
+                  id: "setting.export-to-mobile",
                 })
               ) {
                 e.preventDefault();
@@ -84,7 +84,7 @@ export const PageButtonSetting: FunctionComponent<{
           </PopoverBody>
         </Popover>
       )}
-      <ul style={{ cursor: 'pointer' }}>
+      <ul style={{ cursor: "pointer" }}>
         <li>
           <div
             id={tooltipId}
@@ -117,26 +117,26 @@ export const SettingPage: FunctionComponent = observer(() => {
   const paragraphLang = language.automatic
     ? intl.formatMessage(
         {
-          id: 'setting.language.automatic-with-language'
+          id: "setting.language.automatic-with-language",
         },
         {
           language: intl.formatMessage({
-            id: `setting.language.${language.language}`
-          })
+            id: `setting.language.${language.language}`,
+          }),
         }
       )
     : intl.formatMessage({
-        id: `setting.language.${language.language}`
+        id: `setting.language.${language.language}`,
       });
 
   const paragraphFiat = !language.isFiatCurrencyAutomatic
     ? language.fiatCurrency.toUpperCase()
     : intl.formatMessage(
         {
-          id: 'setting.fiat.automatic-with-fiat'
+          id: "setting.fiat.automatic-with-fiat",
         },
         {
-          fiat: language.fiatCurrency.toUpperCase()
+          fiat: language.fiatCurrency.toUpperCase(),
         }
       );
 
@@ -145,7 +145,7 @@ export const SettingPage: FunctionComponent = observer(() => {
       <div className={style.container}>
         <PageButtonSetting
           title={intl.formatMessage({
-            id: 'setting.language'
+            id: "setting.language",
           })}
           paragraph={paragraphLang}
           disable={true}
@@ -196,11 +196,11 @@ export const SettingPage: FunctionComponent = observer(() => {
         />
         <PageButtonSetting
           title={intl.formatMessage({
-            id: 'setting.fiat'
+            id: "setting.fiat",
           })}
           paragraph={paragraphFiat}
           modalBody={
-            <div style={{ padding: 10, height: 250, overflow: 'auto' }}>
+            <div style={{ padding: 10, height: 250, overflow: "auto" }}>
               {Object.keys(priceStore.supportedVsCurrencies).map((currency) => {
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 const fiatCurrency =
@@ -213,15 +213,15 @@ export const SettingPage: FunctionComponent = observer(() => {
                     onClick={() => {
                       language.setFiatCurrency(fiatCurrency.currency);
                       history.push({
-                        pathname: '/'
+                        pathname: "/",
                       });
                     }}
                     style={{
                       color:
                         paragraphFiat.toUpperCase() ==
                         fiatCurrency.currency.toUpperCase()
-                          ? '#7664E4'
-                          : '#353945'
+                          ? "#7664E4"
+                          : "#353945",
                     }}
                   >
                     {!language.isFiatCurrencyAutomatic
@@ -243,10 +243,10 @@ export const SettingPage: FunctionComponent = observer(() => {
         />
         <PageButtonSetting
           title={intl.formatMessage({
-            id: 'setting.connections'
+            id: "setting.connections",
           })}
           paragraph={intl.formatMessage({
-            id: 'setting.connections.paragraph'
+            id: "setting.connections.paragraph",
           })}
           disable={true}
           setIsHasTabs={setIsHasTabs}

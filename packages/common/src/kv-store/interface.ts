@@ -11,6 +11,6 @@ export interface KVStoreProvider {
 }
 
 export enum KVStoreType {
-  extension = 'extension',
-  mobile = 'mobile'
+  extension = "extension",
+  mobile = "mobile",
 }

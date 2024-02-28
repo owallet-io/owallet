@@ -1,15 +1,15 @@
-import React, { forwardRef, useState } from 'react';
+import React, { forwardRef, useState } from "react";
 
-import classnames from 'classnames';
+import classnames from "classnames";
 
 import {
   FormFeedback,
   FormGroup,
   Input as ReactStrapInput,
-  Label
-} from 'reactstrap';
+  Label,
+} from "reactstrap";
 
-import { Buffer } from 'buffer';
+import { Buffer } from "buffer";
 
 export interface TextareaProps {
   label?: string;
@@ -33,7 +33,7 @@ export const TextArea = forwardRef<
   const [inputId] = useState(() => {
     const bytes = new Uint8Array(4);
     crypto.getRandomValues(bytes);
-    return `input-${Buffer.from(bytes).toString('hex')}`;
+    return `input-${Buffer.from(bytes).toString("hex")}`;
   });
 
   return (
@@ -45,8 +45,8 @@ export const TextArea = forwardRef<
       ) : null}
       <ReactStrapInput
         id={inputId}
-        className={classnames('form-control-alternative', props.className)}
-        type={'textarea' as any}
+        className={classnames("form-control-alternative", props.className)}
+        type={"textarea" as any}
         innerRef={ref}
         invalid={error != null}
         {...attributes}

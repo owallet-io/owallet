@@ -4,13 +4,13 @@ import {
   AccountSetOpts,
   CosmosMsgOpts,
   CosmwasmMsgOpts,
-  SecretMsgOpts
-} from '@owallet/stores';
-import { Currency } from '@owallet/types';
-import { FormattedMessage, IntlShape } from 'react-intl';
-import React from 'react';
-import { Bech32Address } from '@owallet/cosmos';
-import { Hash } from '@owallet/crypto';
+  SecretMsgOpts,
+} from "@owallet/stores";
+import { Currency } from "@owallet/types";
+import { FormattedMessage, IntlShape } from "react-intl";
+import React from "react";
+import { Bech32Address } from "@owallet/cosmos";
+import { Hash } from "@owallet/crypto";
 import {
   MessageObj,
   MsgBeginRedelegate,
@@ -32,13 +32,13 @@ import {
   renderMsgUndelegate,
   renderMsgVote,
   renderMsgWithdrawDelegatorReward,
-  renderUnknownMessage
-} from './messages';
+  renderUnknownMessage,
+} from "./messages";
 
 export function renderAminoMessage(
   msgOpts: AccountSetOpts<
     CosmosMsgOpts & SecretMsgOpts & CosmwasmMsgOpts
-  >['msgOpts'],
+  >["msgOpts"],
   msg: MessageObj,
   currencies: Currency[],
   intl: IntlShape
@@ -49,12 +49,12 @@ export function renderAminoMessage(
 } {
   try {
     if (msg.type === msgOpts.send.native.type) {
-      const value = msg.value as MsgSend['value'];
+      const value = msg.value as MsgSend["value"];
       return renderMsgSend(currencies, intl, value.amount, value.to_address);
     }
 
     if (msg.type === msgOpts.ibcTransfer.type) {
-      const value = msg.value as MsgTransfer['value'];
+      const value = msg.value as MsgTransfer["value"];
       return renderMsgTransfer(
         currencies,
         intl,
@@ -65,7 +65,7 @@ export function renderAminoMessage(
     }
 
     if (msg.type === msgOpts.redelegate.type) {
-      const value = msg.value as MsgBeginRedelegate['value'];
+      const value = msg.value as MsgBeginRedelegate["value"];
       return renderMsgBeginRedelegate(
         currencies,
         intl,
@@ -76,7 +76,7 @@ export function renderAminoMessage(
     }
 
     if (msg.type === msgOpts.undelegate.type) {
-      const value = msg.value as MsgUndelegate['value'];
+      const value = msg.value as MsgUndelegate["value"];
       return renderMsgUndelegate(
         currencies,
         intl,
@@ -86,7 +86,7 @@ export function renderAminoMessage(
     }
 
     if (msg.type === msgOpts.delegate.type) {
-      const value = msg.value as MsgDelegate['value'];
+      const value = msg.value as MsgDelegate["value"];
       return renderMsgDelegate(
         currencies,
         intl,
@@ -96,17 +96,17 @@ export function renderAminoMessage(
     }
 
     if (msg.type === msgOpts.withdrawRewards.type) {
-      const value = msg.value as MsgWithdrawDelegatorReward['value'];
+      const value = msg.value as MsgWithdrawDelegatorReward["value"];
       return renderMsgWithdrawDelegatorReward(intl, value.validator_address);
     }
 
     if (msg.type === msgOpts.govVote.type) {
-      const value = msg.value as MsgVote['value'];
+      const value = msg.value as MsgVote["value"];
       return renderMsgVote(intl, value.proposal_id, value.option);
     }
 
-    if (msg.type === 'wasm/MsgInstantiateContract') {
-      const value = msg.value as MsgInstantiateContract['value'];
+    if (msg.type === "wasm/MsgInstantiateContract") {
+      const value = msg.value as MsgInstantiateContract["value"];
       return renderMsgInstantiateContract(
         currencies,
         intl,
@@ -119,7 +119,7 @@ export function renderAminoMessage(
     }
 
     if (msg.type === msgOpts.executeWasm.type) {
-      const value = msg.value as MsgExecuteContract['value'];
+      const value = msg.value as MsgExecuteContract["value"];
       return renderMsgExecuteContract(
         currencies,
         intl,
@@ -131,7 +131,7 @@ export function renderAminoMessage(
     }
 
     if (msg.type === msgOpts.executeSecretWasm.type) {
-      const value = msg.value as MsgExecuteContract['value'];
+      const value = msg.value as MsgExecuteContract["value"];
       return renderMsgExecuteContract(
         currencies,
         intl,
@@ -142,22 +142,22 @@ export function renderAminoMessage(
       );
     }
 
-    if (msg.type === 'cyber/Link') {
-      const value = msg.value as MsgLink['value'];
+    if (msg.type === "cyber/Link") {
+      const value = msg.value as MsgLink["value"];
 
       const cyberlinks: { from: string; to: string }[] = [];
 
       for (const link of value.links) {
         cyberlinks.push({
           from: link.from,
-          to: link.to
+          to: link.to,
         });
       }
 
       return {
-        icon: 'fas fa-paper-plane',
+        icon: "fas fa-paper-plane",
         title: intl.formatMessage({
-          id: 'sign.list.message.cyber/Link.title'
+          id: "sign.list.message.cyber/Link.title",
         }),
         content: (
           <FormattedMessage
@@ -174,10 +174,10 @@ export function renderAminoMessage(
                     7
                   )} → ${Hash.truncHashPortion(link.to, 7, 7)}`;
                 })
-                .join(', ')
+                .join(", "),
             }}
           />
-        )
+        ),
       };
     }
   } catch (e) {

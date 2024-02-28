@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { OWButton } from '@src/components/button';
 import { OWEmpty } from '@src/components/empty';
 import { useTheme } from '@src/themes/theme-provider';
@@ -19,11 +20,33 @@ import moment from 'moment';
 import { chainIcons } from '@oraichain/oraidex-common';
 import { TokenItem } from '../tokens/components/token-item';
 import { HistoryCard } from './history-card';
+=======
+import { OWButton } from "@src/components/button";
+import { OWEmpty } from "@src/components/empty";
+import { useTheme } from "@src/themes/theme-provider";
+import { observer } from "mobx-react-lite";
+import React, { FunctionComponent, useCallback, useState } from "react";
+import { StyleSheet, TouchableOpacity, View, ViewStyle } from "react-native";
+import { CardBody, OWBox } from "../../components/card";
+import { useStore } from "../../stores";
+import { spacing } from "../../themes";
+import { getTokenInfos, _keyExtract } from "../../utils/helper";
+import OWIcon from "@src/components/ow-icon/ow-icon";
+import { Text } from "@src/components/text";
+import { useSmartNavigation } from "@src/navigation.provider";
+import { SCREENS } from "@src/common/constants";
+import { navigate } from "@src/router/root";
+import { RightArrowIcon } from "@src/components/icon";
+>>>>>>> main
 
 export const TokensCardAll: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
+<<<<<<< HEAD
   const { accountStore, universalSwapStore, chainStore, appInitStore, queriesStore, keyRingStore, priceStore } =
+=======
+  const { accountStore, universalSwapStore, chainStore, appInitStore } =
+>>>>>>> main
     useStore();
   const { colors } = useTheme();
   const theme = appInitStore.getInitApp.theme;
@@ -38,12 +61,19 @@ export const TokensCardAll: FunctionComponent<{
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
 
+<<<<<<< HEAD
   useEffect(() => {
     const queries = queriesStore.get(chainStore.current.chainId);
     const address = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
     const balances = queries.queryBalances.getQueryBech32Address(address);
     setQueryBalances(balances);
   }, [chainStore.current.chainId]);
+=======
+  const tokenInfos = getTokenInfos({
+    tokens: universalSwapStore.getAmount,
+    prices: appInitStore.getInitApp.prices,
+  });
+>>>>>>> main
 
   const [tronTokens, setTronTokens] = useState([]);
 
@@ -140,16 +170,17 @@ export const TokensCardAll: FunctionComponent<{
 
   const smartNavigation = useSmartNavigation();
 
-  const onPressToken = async item => {
+  const onPressToken = async (item) => {
     chainStore.selectChain(item?.chainId);
     await chainStore.saveLastViewChainId();
     if (!account.isNanoLedger) {
-      if (chainStore.current.networkType === 'bitcoin') {
+      if (chainStore.current.networkType === "bitcoin") {
         navigate(SCREENS.STACK.Others, {
-          screen: SCREENS.SendBtc
+          screen: SCREENS.SendBtc,
         });
         return;
       }
+<<<<<<< HEAD
       if (item.chainId === ChainIdEnum.TRON) {
         const itemTron = tronTokens?.find(t => {
           return t.coinGeckoId === item.coinGeckoId;
@@ -162,6 +193,11 @@ export const TokensCardAll: FunctionComponent<{
         currency: item.denom,
         contractAddress: item.contractAddress,
         coinGeckoId: item.coinGeckoId
+=======
+      smartNavigation.navigateSmart("Send", {
+        currency: item.denom,
+        contractAddress: item.contractAddress,
+>>>>>>> main
       });
     }
   };
@@ -191,7 +227,7 @@ export const TokensCardAll: FunctionComponent<{
   };
 
   const renderTokenItem = useCallback(
-    item => {
+    (item) => {
       if (item) {
         let profit = 0;
         let percent = '0';
@@ -213,26 +249,61 @@ export const TokensCardAll: FunctionComponent<{
             style={styles.btnItem}
           >
             <View style={styles.leftBoxItem}>
+<<<<<<< HEAD
               <View style={styles.iconWrap}>
                 <OWIcon type="images" source={{ uri: item.icon }} size={28} />
+=======
+              <View
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 12,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  overflow: "hidden",
+                  backgroundColor: colors["gray-10"],
+                }}
+              >
+                <OWIcon type="images" source={{ uri: item.icon }} size={35} />
+>>>>>>> main
               </View>
               <View style={styles.chainWrap}>
                 <OWIcon type="images" source={{ uri: chainIcon?.Icon }} size={16} />
               </View>
 
               <View style={styles.pl10}>
+<<<<<<< HEAD
                 <Text size={14} color={colors['neutral-text-heading']} weight="600">
                   {item.balance.toFixed(4)} {item.asset}
                 </Text>
                 <Text weight="400" color={colors['neutral-text-body']}>
+=======
+                <Text
+                  size={16}
+                  color={colors["neutral-text-title"]}
+                  weight="500"
+                >
+                  {item.asset}
+                </Text>
+                <Text weight="500" color={colors["neutral-text-body"]}>
+>>>>>>> main
                   {item.chain}
                 </Text>
               </View>
             </View>
             <View style={styles.rightBoxItem}>
+<<<<<<< HEAD
               <View style={{ flexDirection: 'row' }}>
                 <View style={{ alignItems: 'flex-end' }}>
                   <Text weight="500" color={colors['neutral-text-heading']}>
+=======
+              <View style={{ flexDirection: "row" }}>
+                <View style={{ alignItems: "flex-end" }}>
+                  <Text color={colors["neutral-text-title"]}>
+                    {item.balance}
+                  </Text>
+                  <Text weight="500" color={colors["neutral-text-body"]}>
+>>>>>>> main
                     ${item.value.toFixed(6)}
                   </Text>
                   <Text style={styles.profit} color={colors[profit < 0 ? 'error-text-body' : 'success-text-body']}>
@@ -243,11 +314,15 @@ export const TokensCardAll: FunctionComponent<{
                 <View
                   style={{
                     flex: 0.5,
-                    justifyContent: 'center',
-                    paddingLeft: 20
+                    justifyContent: "center",
+                    paddingLeft: 20,
                   }}
                 >
+<<<<<<< HEAD
                   <RightArrowIcon height={12} color={colors['neutral-text-heading']} />
+=======
+                  <RightArrowIcon height={12} color={colors["primary-text"]} />
+>>>>>>> main
                 </View>
               </View>
             </View>
@@ -304,14 +379,15 @@ export const TokensCardAll: FunctionComponent<{
     <View style={containerStyle}>
       <OWBox
         style={{
-          paddingTop: 12
+          paddingTop: 12,
         }}
       >
         <View style={styles.wrapHeaderTitle}>
           <OWButton
             type="link"
-            label={'Tokens'}
+            label={"Tokens"}
             textStyle={{
+<<<<<<< HEAD
               color: colors['primary-surface-default'],
               fontWeight: '600',
               fontSize: 16
@@ -332,6 +408,15 @@ export const TokensCardAll: FunctionComponent<{
               color: colors['primary-surface-default'],
               fontWeight: '600',
               fontSize: 16
+=======
+              color: colors["primary-text"],
+              fontWeight: "700",
+            }}
+            style={{
+              width: "100%",
+              borderBottomColor: colors["primary-text"],
+              borderBottomWidth: 2,
+>>>>>>> main
             }}
             style={[
               {
@@ -342,7 +427,31 @@ export const TokensCardAll: FunctionComponent<{
           />
         </View>
 
+<<<<<<< HEAD
         {renderContent()}
+=======
+        <CardBody>
+          {tokenInfos.length > 0 ? (
+            tokenInfos.map((token, index) => {
+              if (more) {
+                if (index < 3) return renderTokenItem(token);
+              } else {
+                return renderTokenItem(token);
+              }
+            })
+          ) : (
+            <OWEmpty />
+          )}
+        </CardBody>
+        <OWButton
+          label={more ? "View all" : "Hide"}
+          size="medium"
+          type="secondary"
+          onPress={() => {
+            setMore(!more);
+          }}
+        />
+>>>>>>> main
       </OWBox>
     </View>
   );
@@ -351,19 +460,25 @@ export const TokensCardAll: FunctionComponent<{
 const styling = colors =>
   StyleSheet.create({
     wrapHeaderTitle: {
+<<<<<<< HEAD
       flexDirection: 'row'
+=======
+      flexDirection: "row",
+      marginHorizontal: spacing["page-pad"],
+>>>>>>> main
     },
     pl10: {
-      paddingLeft: 10
+      paddingLeft: 10,
     },
     leftBoxItem: {
-      flexDirection: 'row',
-      alignItems: 'center'
+      flexDirection: "row",
+      alignItems: "center",
     },
     rightBoxItem: {
-      alignItems: 'flex-end'
+      alignItems: "flex-end",
     },
     btnItem: {
+<<<<<<< HEAD
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
@@ -394,4 +509,11 @@ const styling = colors =>
       left: 20
     },
     active: { borderBottomColor: colors['primary-surface-default'], borderBottomWidth: 2 }
+=======
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginVertical: 10,
+    },
+>>>>>>> main
   });

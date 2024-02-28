@@ -1,23 +1,23 @@
-import React, { FunctionComponent, useEffect, useRef, useState } from 'react';
-import { PageWithScrollViewInBottomTabView } from '../../../../components/page';
-import { observer } from 'mobx-react-lite';
-import DeviceInfo from 'react-native-device-info';
-import codePush from 'react-native-code-push';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import { spacing, typography } from '../../../../themes';
-import { View, Text } from 'react-native';
-import { useStyle } from '../../../../styles';
+import React, { FunctionComponent, useEffect, useRef, useState } from "react";
+import { PageWithScrollViewInBottomTabView } from "../../../../components/page";
+import { observer } from "mobx-react-lite";
+import DeviceInfo from "react-native-device-info";
+import codePush from "react-native-code-push";
+import { TouchableWithoutFeedback } from "react-native-gesture-handler";
+import { spacing, typography } from "../../../../themes";
+import { View, Text } from "react-native";
+import { useStyle } from "../../../../styles";
 // import { Divider } from '@rneui/base';
-import { useStore } from '../../../../stores';
-import moment from 'moment';
-import { useTheme } from '@src/themes/theme-provider';
+import { useStore } from "../../../../stores";
+import moment from "moment";
+import { useTheme } from "@src/themes/theme-provider";
 export const OWalletVersionScreen: FunctionComponent = observer(() => {
   const [appVersion] = useState(() => DeviceInfo.getVersion());
   const { colors } = useTheme();
   const [buildNumber] = useState(() => DeviceInfo.getBuildNumber());
   const { appInitStore } = useStore();
   const date = moment(appInitStore.getInitApp.date_updated).format(
-    'MMM DD, YYYY - HH:mm'
+    "MMM DD, YYYY - HH:mm"
   );
   // "undefined" means that it is on fetching,
   // empty string "" means that there is no data.
@@ -32,38 +32,38 @@ export const OWalletVersionScreen: FunctionComponent = observer(() => {
   >(undefined);
 
   useEffect(() => {
-    codePush.getUpdateMetadata(codePush.UpdateState.RUNNING).then(update => {
+    codePush.getUpdateMetadata(codePush.UpdateState.RUNNING).then((update) => {
       if (update) {
         setCurrentCodeVersion(update.label);
       } else {
-        setCurrentCodeVersion('');
+        setCurrentCodeVersion("");
       }
     });
 
-    codePush.getUpdateMetadata(codePush.UpdateState.LATEST).then(update => {
+    codePush.getUpdateMetadata(codePush.UpdateState.LATEST).then((update) => {
       if (update) {
         setLatestCodeVersion(update.label);
       } else {
-        setLatestCodeVersion('');
+        setLatestCodeVersion("");
       }
     });
 
-    codePush.getUpdateMetadata(codePush.UpdateState.PENDING).then(update => {
+    codePush.getUpdateMetadata(codePush.UpdateState.PENDING).then((update) => {
       if (update) {
         setPendingCodeVersion(update.label);
       } else {
-        setPendingCodeVersion('');
+        setPendingCodeVersion("");
       }
     });
   }, []);
 
   const parseVersion = (version: string | undefined) => {
     if (version === undefined) {
-      return 'Fetching...';
+      return "Fetching...";
     }
 
-    if (version === '') {
-      return 'None';
+    if (version === "") {
+      return "None";
     }
 
     return version;
@@ -75,29 +75,29 @@ export const OWalletVersionScreen: FunctionComponent = observer(() => {
   const [blockRender, setBlockRender] = useState(false);
 
   if (blockRender) {
-    throw new Error('This is an render error for error report test');
+    throw new Error("This is an render error for error report test");
   }
 
   return (
-    <PageWithScrollViewInBottomTabView backgroundColor={colors['background']}>
+    <PageWithScrollViewInBottomTabView backgroundColor={colors["background"]}>
       <View
         style={{
-          marginTop: spacing['32'],
-          marginBottom: spacing['12']
+          marginTop: spacing["32"],
+          marginBottom: spacing["12"],
         }}
       />
       <TouchableWithoutFeedback
         style={{
-          backgroundColor: colors['background-box'],
-          borderRadius: spacing['24'],
-          marginHorizontal: spacing['20']
+          backgroundColor: colors["background-box"],
+          borderRadius: spacing["24"],
+          marginHorizontal: spacing["20"],
         }}
         onPress={() => {
           testErrorReportRef.current++;
 
           if (testErrorReportRef.current === 10) {
             setTimeout(() => {
-              throw new Error('This is an runtime error for error report test');
+              throw new Error("This is an runtime error for error report test");
             }, 200);
           }
 
@@ -124,15 +124,15 @@ export const OWalletVersionScreen: FunctionComponent = observer(() => {
 
       <View
         style={{
-          marginTop: spacing['32'],
-          marginBottom: spacing['12']
+          marginTop: spacing["32"],
+          marginBottom: spacing["12"],
         }}
       />
       <TouchableWithoutFeedback
         style={{
-          backgroundColor: colors['background-box'],
-          borderRadius: spacing['24'],
-          marginHorizontal: spacing['20']
+          backgroundColor: colors["background-box"],
+          borderRadius: spacing["24"],
+          marginHorizontal: spacing["20"],
         }}
       >
         <SettingItem
@@ -164,25 +164,25 @@ const SettingItem: FunctionComponent<{
       <React.Fragment>
         <View
           style={{
-            width: '100%'
+            width: "100%",
           }}
         >
           <View
             style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
               marginTop: 20,
               marginBottom: 20,
-              marginHorizontal: spacing['16']
+              marginHorizontal: spacing["16"],
             }}
           >
             <Text
               style={{
                 ...typography.h6,
-                color: colors['primary-text'],
-                fontWeight: '600',
-                textAlign: 'left'
+                color: colors["primary-text"],
+                fontWeight: "600",
+                textAlign: "left",
               }}
             >
               {label}
@@ -191,8 +191,8 @@ const SettingItem: FunctionComponent<{
               <Text
                 style={{
                   ...typography.h6,
-                  color: colors['primary-text'],
-                  textAlign: 'right'
+                  color: colors["primary-text"],
+                  textAlign: "right",
                 }}
               >
                 {paragraph}
@@ -219,9 +219,9 @@ const SettingItem: FunctionComponent<{
       <TouchableWithoutFeedback
         style={{
           height: 80,
-          paddingHorizontal: spacing['20'],
-          flexDirection: 'row',
-          alignItems: 'center'
+          paddingHorizontal: spacing["20"],
+          flexDirection: "row",
+          alignItems: "center",
         }}
       >
         {renderChildren()}

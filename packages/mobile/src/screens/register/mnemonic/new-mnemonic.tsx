@@ -1,26 +1,31 @@
-import React, { FunctionComponent, useCallback, useEffect, useState } from 'react';
-import { View, StyleSheet, Platform, Clipboard } from 'react-native';
-import { observer } from 'mobx-react-lite';
-import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
-import { useTheme } from '@src/themes/theme-provider';
-import { RegisterConfig } from '@owallet/hooks';
-import { useNewMnemonicConfig } from './hook';
-import { PageWithScrollView } from '../../../components/page';
-import { CheckIcon } from '../../../components/icon';
-import { WordChip } from '../../../components/mnemonic';
-import { Text } from '@src/components/text';
-import { TextInput } from '../../../components/input';
-import { Controller, useForm } from 'react-hook-form';
-import { useSmartNavigation } from '../../../navigation.provider';
-import { useSimpleTimer } from '../../../hooks';
-import { BIP44AdvancedButton, useBIP44Option } from '../bip44';
-import { navigate, checkRouter } from '../../../router/root';
-import { OWalletLogo } from '../owallet-logo';
-import OWButton from '../../../components/button/OWButton';
-import OWIcon from '../../../components/ow-icon/ow-icon';
-import { spacing } from '../../../themes';
-import OWButtonIcon from '@src/components/button/ow-button-icon';
-import { LRRedact } from '@logrocket/react-native';
+import React, {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
+import { View, StyleSheet, Platform, Clipboard } from "react-native";
+import { observer } from "mobx-react-lite";
+import { RouteProp, useIsFocused, useRoute } from "@react-navigation/native";
+import { useTheme } from "@src/themes/theme-provider";
+import { RegisterConfig } from "@owallet/hooks";
+import { useNewMnemonicConfig } from "./hook";
+import { PageWithScrollView } from "../../../components/page";
+import { CheckIcon } from "../../../components/icon";
+import { WordChip } from "../../../components/mnemonic";
+import { Text } from "@src/components/text";
+import { TextInput } from "../../../components/input";
+import { Controller, useForm } from "react-hook-form";
+import { useSmartNavigation } from "../../../navigation.provider";
+import { useSimpleTimer } from "../../../hooks";
+import { BIP44AdvancedButton, useBIP44Option } from "../bip44";
+import { navigate, checkRouter } from "../../../router/root";
+import { OWalletLogo } from "../owallet-logo";
+import OWButton from "../../../components/button/OWButton";
+import OWIcon from "../../../components/ow-icon/ow-icon";
+import { spacing } from "../../../themes";
+import OWButtonIcon from "@src/components/button/ow-button-icon";
+import { LRRedact } from "@logrocket/react-native";
 
 interface FormData {
   name: string;
@@ -28,7 +33,7 @@ interface FormData {
   confirmPassword: string;
 }
 
-export const NewMnemonicScreen: FunctionComponent = observer(props => {
+export const NewMnemonicScreen: FunctionComponent = observer((props) => {
   const route = useRoute<
     RouteProp<
       Record<
@@ -51,47 +56,47 @@ export const NewMnemonicScreen: FunctionComponent = observer(props => {
   const [statusPass, setStatusPass] = useState(false);
   const [statusConfirmPass, setStatusConfirmPass] = useState(false);
 
-  const words = newMnemonicConfig.mnemonic.split(' ');
+  const words = newMnemonicConfig.mnemonic.split(" ");
 
   const {
     control,
     handleSubmit,
     setFocus,
     getValues,
-    formState: { errors }
+    formState: { errors },
   } = useForm<FormData>();
 
   const submit = handleSubmit(() => {
-    newMnemonicConfig.setName(getValues('name'));
-    newMnemonicConfig.setPassword(getValues('password'));
+    newMnemonicConfig.setName(getValues("name"));
+    newMnemonicConfig.setPassword(getValues("password"));
 
-    if (checkRouter(props?.route?.name, 'RegisterMain')) {
-      navigate('RegisterVerifyMnemonicMain', {
+    if (checkRouter(props?.route?.name, "RegisterMain")) {
+      navigate("RegisterVerifyMnemonicMain", {
         registerConfig,
         newMnemonicConfig,
-        bip44HDPath: bip44Option.bip44HDPath
+        bip44HDPath: bip44Option.bip44HDPath,
       });
     } else {
-      smartNavigation.navigateSmart('Register.VerifyMnemonic', {
+      smartNavigation.navigateSmart("Register.VerifyMnemonic", {
         registerConfig,
         newMnemonicConfig,
-        bip44HDPath: bip44Option.bip44HDPath
+        bip44HDPath: bip44Option.bip44HDPath,
       });
     }
   });
   const onGoBack = () => {
-    if (checkRouter(props?.route?.name, 'RegisterMain')) {
+    if (checkRouter(props?.route?.name, "RegisterMain")) {
       smartNavigation.goBack();
     } else {
-      smartNavigation.navigateSmart('Register.Intro', {});
+      smartNavigation.navigateSmart("Register.Intro", {});
     }
   };
   const onSubmitEditingUserName = () => {
-    if (mode === 'add') {
+    if (mode === "add") {
       submit();
     }
-    if (mode === 'create') {
-      setFocus('password');
+    if (mode === "create") {
+      setFocus("password");
     }
   };
   const renderUserName = ({ field: { onChange, onBlur, value, ref } }) => {
@@ -99,9 +104,9 @@ export const NewMnemonicScreen: FunctionComponent = observer(props => {
       <TextInput
         label="Username"
         inputStyle={{
-          ...styles.borderInput
+          ...styles.borderInput,
         }}
-        returnKeyType={mode === 'add' ? 'done' : 'next'}
+        returnKeyType={mode === "add" ? "done" : "next"}
         onSubmitEditing={onSubmitEditingUserName}
         error={errors.name?.message}
         onBlur={onBlur}
@@ -112,7 +117,7 @@ export const NewMnemonicScreen: FunctionComponent = observer(props => {
     );
   };
   const onSubmitEditingPassword = () => {
-    setFocus('confirmPassword');
+    setFocus("confirmPassword");
   };
   const showPass = () => setStatusPass(!statusPass);
   const renderPassword = ({ field: { onChange, onBlur, value, ref } }) => {
@@ -121,7 +126,7 @@ export const NewMnemonicScreen: FunctionComponent = observer(props => {
         label="Password"
         returnKeyType="next"
         inputStyle={{
-          ...styles.borderInput
+          ...styles.borderInput,
         }}
         secureTextEntry={true}
         onSubmitEditing={onSubmitEditingPassword}
@@ -129,8 +134,8 @@ export const NewMnemonicScreen: FunctionComponent = observer(props => {
           <OWButtonIcon
             style={styles.padIcon}
             onPress={showPass}
-            name={!statusPass ? 'eye' : 'eye-slash'}
-            colorIcon={colors['icon-primary-surface-default-gray']}
+            name={!statusPass ? "eye" : "eye-slash"}
+            colorIcon={colors["icon-primary-surface-default-gray"]}
             sizeIcon={22}
           />
         }
@@ -145,12 +150,17 @@ export const NewMnemonicScreen: FunctionComponent = observer(props => {
   };
   const validatePassword = (value: string) => {
     if (value.length < 8) {
-      return 'Password must be longer than 8 characters';
+      return "Password must be longer than 8 characters";
     }
   };
-  const showConfirmPass = useCallback(() => setStatusConfirmPass(!statusConfirmPass), [statusConfirmPass]);
+  const showConfirmPass = useCallback(
+    () => setStatusConfirmPass(!statusConfirmPass),
+    [statusConfirmPass]
+  );
 
-  const renderConfirmPassword = ({ field: { onChange, onBlur, value, ref } }) => {
+  const renderConfirmPassword = ({
+    field: { onChange, onBlur, value, ref },
+  }) => {
     return (
       <TextInput
         label="Confirm password"
@@ -162,8 +172,8 @@ export const NewMnemonicScreen: FunctionComponent = observer(props => {
             onPress={showConfirmPass}
             icon={
               <OWIcon
-                name={!statusConfirmPass ? 'eye' : 'eye-slash'}
-                color={colors['icon-primary-surface-default-gray']}
+                name={!statusConfirmPass ? "eye" : "eye-slash"}
+                color={colors["icon-primary-surface-default-gray"]}
                 size={22}
               />
             }
@@ -172,7 +182,7 @@ export const NewMnemonicScreen: FunctionComponent = observer(props => {
         secureTextEntry={!statusConfirmPass}
         onSubmitEditing={submit}
         inputStyle={{
-          ...styles.borderInput
+          ...styles.borderInput,
         }}
         error={errors.confirmPassword?.message}
         onBlur={onBlur}
@@ -184,16 +194,19 @@ export const NewMnemonicScreen: FunctionComponent = observer(props => {
   };
   const validateConfirmPassword = (value: string) => {
     if (value.length < 8) {
-      return 'Password must be longer than 8 characters';
+      return "Password must be longer than 8 characters";
     }
-    if (getValues('password') !== value) {
+    if (getValues("password") !== value) {
       return "Password doesn't match";
     }
   };
   const styles = useStyles();
 
   return (
-    <PageWithScrollView contentContainerStyle={styles.container} backgroundColor={colors['plain-background']}>
+    <PageWithScrollView
+      contentContainerStyle={styles.container}
+      backgroundColor={colors["plain-background"]}
+    >
       {/* Mock for flexible margin top */}
       <LRRedact>
         <View style={styles.headerContainer}>
@@ -206,19 +219,19 @@ export const NewMnemonicScreen: FunctionComponent = observer(props => {
         <Controller
           control={control}
           rules={{
-            required: 'Name is required'
+            required: "Name is required",
           }}
           render={renderUserName}
           name="name"
           defaultValue={`OWallet-${Math.floor(Math.random() * 100)}`}
         />
-        {mode === 'create' ? (
+        {mode === "create" ? (
           <React.Fragment>
             <Controller
               control={control}
               rules={{
-                required: 'Password is required',
-                validate: validatePassword
+                required: "Password is required",
+                validate: validatePassword,
               }}
               render={renderPassword}
               name="password"
@@ -227,8 +240,8 @@ export const NewMnemonicScreen: FunctionComponent = observer(props => {
             <Controller
               control={control}
               rules={{
-                required: 'Confirm password is required',
-                validate: validateConfirmPassword
+                required: "Confirm password is required",
+                validate: validateConfirmPassword,
               }}
               render={renderConfirmPassword}
               name="confirmPassword"
@@ -268,20 +281,27 @@ const WordsCard: FunctionComponent<{
     }
   }, [isFocused]);
   const onCopy = useCallback(() => {
-    Clipboard.setString(words.join(' '));
+    Clipboard.setString(words.join(" "));
     setTimer(3000);
   }, [words]);
   const styles = useStyles();
   return (
     <View style={styles.containerWord}>
       {words.map((word, i) => {
-        return <WordChip key={i.toString()} index={i + 1} word={word} hideWord={hideWord} />;
+        return (
+          <WordChip
+            key={i.toString()}
+            index={i + 1}
+            word={word}
+            hideWord={hideWord}
+          />
+        );
       })}
 
       <View style={styles.containerBtnCopy}>
         <View
           style={{
-            flex: 1
+            flex: 1,
           }}
         />
         <OWButton
@@ -291,7 +311,11 @@ const WordsCard: FunctionComponent<{
             isTimedOut ? (
               <CheckIcon />
             ) : (
-              <OWIcon name="copy" color={colors['icon-primary-surface-default-gray']} size={20} />
+              <OWIcon
+                name="copy"
+                color={colors["icon-primary-surface-default-gray"]}
+                size={20}
+              />
             )
           }
           type="link"
@@ -305,23 +329,23 @@ const useStyles = () => {
   const { colors } = useTheme();
   return StyleSheet.create({
     mockView: {
-      height: 20
+      height: 20,
     },
     padIcon: {
       paddingLeft: 10,
-      width: 'auto'
+      width: "auto",
     },
     icon: {
       width: 22,
       height: 22,
-      tintColor: colors['icon-primary-surface-default-gray']
+      tintColor: colors["icon-primary-surface-default-gray"],
     },
     containerBtnCopy: {
-      width: '100%',
-      display: 'flex',
-      flexDirection: 'row',
-      justifyContent: 'flex-end',
-      alignItems: 'center'
+      width: "100%",
+      display: "flex",
+      flexDirection: "row",
+      justifyContent: "flex-end",
+      alignItems: "center",
     },
     containerWord: {
       marginTop: 14,
@@ -330,39 +354,39 @@ const useStyles = () => {
       paddingLeft: 16,
       paddingRight: 16,
       paddingBottom: 10,
-      borderColor: colors['border-purple-100-gray-800'],
+      borderColor: colors["border-purple-100-gray-800"],
       borderWidth: 1,
       borderRadius: 8,
-      display: 'flex',
-      flexDirection: 'row',
-      flexWrap: 'wrap'
+      display: "flex",
+      flexDirection: "row",
+      flexWrap: "wrap",
     },
     title: {
       fontSize: 24,
       lineHeight: 34,
-      fontWeight: '700',
-      color: colors['text-title']
+      fontWeight: "700",
+      color: colors["text-title"],
     },
     headerContainer: {
       height: 72,
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between'
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
     },
     container: {
-      paddingHorizontal: spacing['page-pad'],
+      paddingHorizontal: spacing["page-pad"],
       // flexGrow: 1,
-      paddingTop: Platform.OS == 'android' ? 50 : 0
+      paddingTop: Platform.OS == "android" ? 50 : 0,
     },
     borderInput: {
-      borderColor: colors['border-purple-100-gray-800'],
-      backgroundColor: 'transparent',
+      borderColor: colors["border-purple-100-gray-800"],
+      backgroundColor: "transparent",
       borderWidth: 1,
       paddingLeft: 11,
       paddingRight: 11,
       paddingTop: 12,
       paddingBottom: 12,
-      borderRadius: 8
-    }
+      borderRadius: 8,
+    },
   });
 };

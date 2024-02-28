@@ -1,4 +1,4 @@
-import { currenciesData, defaultCoin } from './txs-constants';
+import { currenciesData, defaultCoin } from "./txs-constants";
 
 export class TxsCurrencies {
   private readonly currencies: Currencies;

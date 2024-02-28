@@ -1,12 +1,19 @@
-import { Currency } from '@owallet/types';
-import { IntlShape } from 'react-intl';
-import { UnknownMessage } from '@owallet/cosmos';
-import { MsgSend } from '@owallet/proto-types/cosmos/bank/v1beta1/tx';
-import { MsgTransfer } from '@owallet/proto-types/ibc/applications/transfer/v1/tx';
-import { MsgBeginRedelegate, MsgDelegate, MsgUndelegate } from '@owallet/proto-types/cosmos/staking/v1beta1/tx';
-import { MsgExecuteContract, MsgInstantiateContract } from '@owallet/proto-types/cosmwasm/wasm/v1/tx';
-import { MsgWithdrawDelegatorReward } from '@owallet/proto-types/cosmos/distribution/v1beta1/tx';
-import { MsgVote } from '@owallet/proto-types/cosmos/gov/v1beta1/tx';
+import { Currency } from "@owallet/types";
+import { IntlShape } from "react-intl";
+import { UnknownMessage } from "@owallet/cosmos";
+import { MsgSend } from "@owallet/proto-types/cosmos/bank/v1beta1/tx";
+import { MsgTransfer } from "@owallet/proto-types/ibc/applications/transfer/v1/tx";
+import {
+  MsgBeginRedelegate,
+  MsgDelegate,
+  MsgUndelegate,
+} from "@owallet/proto-types/cosmos/staking/v1beta1/tx";
+import {
+  MsgExecuteContract,
+  MsgInstantiateContract,
+} from "@owallet/proto-types/cosmwasm/wasm/v1/tx";
+import { MsgWithdrawDelegatorReward } from "@owallet/proto-types/cosmos/distribution/v1beta1/tx";
+import { MsgVote } from "@owallet/proto-types/cosmos/gov/v1beta1/tx";
 import {
   renderMsgBeginRedelegate,
   renderMsgDelegate,
@@ -17,28 +24,44 @@ import {
   renderMsgUndelegate,
   renderMsgVote,
   renderMsgWithdrawDelegatorReward,
-  renderUnknownMessage
-} from './messages';
-import { CoinPrimitive } from '@owallet/stores';
+  renderUnknownMessage,
+} from "./messages";
+import { CoinPrimitive } from "@owallet/stores";
 
-import { Buffer } from 'buffer';
+import { Buffer } from "buffer";
 
-export function renderDirectMessage(msg: any, currencies: Currency[], intl: IntlShape) {
+export function renderDirectMessage(
+  msg: any,
+  currencies: Currency[],
+  intl: IntlShape
+) {
   try {
-    if (!(msg instanceof UnknownMessage) && 'unpacked' in msg) {
-      if (msg.typeUrl === '/cosmos.bank.v1beta1.MsgSend') {
+    if (!(msg instanceof UnknownMessage) && "unpacked" in msg) {
+      if (msg.typeUrl === "/cosmos.bank.v1beta1.MsgSend") {
         const sendMsg = msg.unpacked as MsgSend;
-        return renderMsgSend(currencies, intl, sendMsg.amount as CoinPrimitive[], sendMsg.toAddress);
+        return renderMsgSend(
+          currencies,
+          intl,
+          sendMsg.amount as CoinPrimitive[],
+          sendMsg.toAddress
+        );
       }
-      if (msg.typeUrl === '/cosmos.staking.v1beta1.MsgDelegate') {
+      if (msg.typeUrl === "/cosmos.staking.v1beta1.MsgDelegate") {
         const delegateMsg = msg.unpacked as MsgDelegate;
-        return renderMsgDelegate(currencies, intl, delegateMsg.amount as CoinPrimitive, delegateMsg.validatorAddress);
+        return renderMsgDelegate(
+          currencies,
+          intl,
+          delegateMsg.amount as CoinPrimitive,
+          delegateMsg.validatorAddress
+        );
       }
-      if (msg.typeUrl === '/cosmwasm.wasm.v1.MsgInstantiateContract') {
+      if (msg.typeUrl === "/cosmwasm.wasm.v1.MsgInstantiateContract") {
         const instantiateContractMsg = msg.unpacked as MsgInstantiateContract;
         let codeId: string | any = instantiateContractMsg.codeId;
-        if (typeof instantiateContractMsg.codeId == 'object') {
-          codeId = instantiateContractMsg.codeId?.low?.toString() || instantiateContractMsg.codeId?.high?.toString();
+        if (typeof instantiateContractMsg.codeId == "object") {
+          codeId =
+            instantiateContractMsg.codeId?.low?.toString() ||
+            instantiateContractMsg.codeId?.high?.toString();
         }
         return renderMsgInstantiateContract(
           currencies,
@@ -50,7 +73,7 @@ export function renderDirectMessage(msg: any, currencies: Currency[], intl: Intl
           instantiateContractMsg.msg
         );
       }
-      if (msg.typeUrl === '/ibc.applications.transfer.v1.MsgTransfer') {
+      if (msg.typeUrl === "/ibc.applications.transfer.v1.MsgTransfer") {
         const msgTransfer = msg.unpacked as MsgTransfer;
         return renderMsgTransfer(
           currencies,
@@ -60,7 +83,7 @@ export function renderDirectMessage(msg: any, currencies: Currency[], intl: Intl
           msgTransfer.sourceChannel
         );
       }
-      if (msg.typeUrl === '/cosmos.staking.v1beta1.MsgBeginRedelegate') {
+      if (msg.typeUrl === "/cosmos.staking.v1beta1.MsgBeginRedelegate") {
         const beginRedelegateMsg = msg.unpacked as MsgBeginRedelegate;
         return renderMsgBeginRedelegate(
           currencies,
@@ -71,7 +94,7 @@ export function renderDirectMessage(msg: any, currencies: Currency[], intl: Intl
         );
       }
 
-      if (msg.typeUrl === '/cosmos.staking.v1beta1.MsgUndelegate') {
+      if (msg.typeUrl === "/cosmos.staking.v1beta1.MsgUndelegate") {
         const msgUndelegate = msg.unpacked as MsgUndelegate;
         return renderMsgUndelegate(
           currencies,
@@ -80,11 +103,18 @@ export function renderDirectMessage(msg: any, currencies: Currency[], intl: Intl
           msgUndelegate.validatorAddress
         );
       }
-      if (msg.typeUrl === '/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward') {
-        const msgWithdrawDelegatorReward = msg.unpacked as MsgWithdrawDelegatorReward;
-        return renderMsgWithdrawDelegatorReward(intl, msgWithdrawDelegatorReward.validatorAddress);
+      if (
+        msg.typeUrl ===
+        "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward"
+      ) {
+        const msgWithdrawDelegatorReward =
+          msg.unpacked as MsgWithdrawDelegatorReward;
+        return renderMsgWithdrawDelegatorReward(
+          intl,
+          msgWithdrawDelegatorReward.validatorAddress
+        );
       }
-      if (msg.typeUrl === '/cosmwasm.wasm.v1.MsgExecuteContract') {
+      if (msg.typeUrl === "/cosmwasm.wasm.v1.MsgExecuteContract") {
         const msgExecuteContract = msg.unpacked as MsgExecuteContract;
         return renderMsgExecuteContract(
           currencies,
@@ -96,10 +126,14 @@ export function renderDirectMessage(msg: any, currencies: Currency[], intl: Intl
         );
       }
 
-      if (msg.typeUrl === '/cosmos.gov.v1beta1.MsgVote') {
+      if (msg.typeUrl === "/cosmos.gov.v1beta1.MsgVote") {
         const msgVote = msg.unpacked as MsgVote;
         // return renderMsgVote(intl,msg.proposalId.toString(), msgVote.option);
-        return renderMsgVote(intl, msgVote.proposalId.toString(), msgVote.option);
+        return renderMsgVote(
+          intl,
+          msgVote.proposalId.toString(),
+          msgVote.option
+        );
       }
     }
 
@@ -111,7 +145,7 @@ export function renderDirectMessage(msg: any, currencies: Currency[], intl: Intl
   }
 
   return renderUnknownMessage({
-    typeUrl: msg.typeUrl || msg.type_url || 'Unknown',
-    value: Buffer.from(msg.value).toString('base64')
+    typeUrl: msg.typeUrl || msg.type_url || "Unknown",
+    value: Buffer.from(msg.value).toString("base64"),
   });
 }

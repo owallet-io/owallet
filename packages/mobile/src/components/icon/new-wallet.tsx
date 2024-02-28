@@ -93,12 +93,7 @@ export const BookMnemonicSeedIcon: FunctionComponent<{
   size: number;
 }> = ({ color = "none", size = 16 }) => {
   return (
-    <Svg
-      width={size}
-      height={size}
-      viewBox="0 0 16 16"
-      fill={color}
-    >
+    <Svg width={size} height={size} viewBox="0 0 16 16" fill={color}>
       <Path
         fill-rule="evenodd"
         clip-rule="evenodd"

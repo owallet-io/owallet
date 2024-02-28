@@ -1,9 +1,9 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const bip39 = require('bip39');
+const bip39 = require("bip39");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const bip32 = require('bip32');
+const bip32 = require("bip32");
 
-import { Buffer } from 'buffer';
+import { Buffer } from "buffer";
 
 export type RNG = <
   T extends
@@ -26,7 +26,7 @@ export class Mnemonic {
   static async generateWallet(
     rng: RNG,
     path: string = `m/44'/118'/0'/0/0`,
-    password: string = '',
+    password: string = "",
     strength: number = 256
   ): Promise<{ privKey: Uint8Array; mnemonic: string }> {
     const mnemonic = await Mnemonic.generateSeed(rng, strength);
@@ -38,7 +38,7 @@ export class Mnemonic {
 
     return {
       privKey,
-      mnemonic
+      mnemonic,
     };
   }
 
@@ -48,17 +48,17 @@ export class Mnemonic {
 
   static async generateSeed(rng: RNG, strength: number = 128): Promise<string> {
     if (strength % 32 !== 0) {
-      throw new TypeError('invalid entropy');
+      throw new TypeError("invalid entropy");
     }
     let bytes = new Uint8Array(strength / 8);
     bytes = await rng(bytes);
-    return bip39.entropyToMnemonic(Buffer.from(bytes).toString('hex'));
+    return bip39.entropyToMnemonic(Buffer.from(bytes).toString("hex"));
   }
 
   static generateWalletFromMnemonic(
     mnemonic: string,
     path: string = `m/44'/118'/0'/0/0`,
-    password: string = ''
+    password: string = ""
   ): Uint8Array {
     const seed = bip39.mnemonicToSeedSync(mnemonic, password);
     const masterKey = bip32.fromSeed(seed);
@@ -67,7 +67,7 @@ export class Mnemonic {
     const privateKey = hd.privateKey;
 
     if (!privateKey) {
-      throw new Error('null hd key');
+      throw new Error("null hd key");
     }
     return privateKey;
   }

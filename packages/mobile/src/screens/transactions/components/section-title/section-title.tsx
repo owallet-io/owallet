@@ -1,9 +1,9 @@
-import React, { FunctionComponent } from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
-import { Text } from '@src/components/text';
-import { RefreshIcon } from '../../../../components/icon/refresh';
-import { spacing, typography } from '../../../../themes';
-import { useTheme } from '@src/themes/theme-provider';
+import React, { FunctionComponent } from "react";
+import { StyleSheet, View, ViewStyle } from "react-native";
+import { Text } from "@src/components/text";
+import { RefreshIcon } from "../../../../components/icon/refresh";
+import { spacing, typography } from "../../../../themes";
+import { useTheme } from "@src/themes/theme-provider";
 
 export const TransactionSectionTitle: FunctionComponent<{
   title: string;
@@ -17,28 +17,37 @@ export const TransactionSectionTitle: FunctionComponent<{
     <View
       style={{
         ...styles.container,
-        ...containerStyle
+        ...containerStyle,
       }}
     >
-      <Text style={[styles.textTitle, { color: colors['text-label-list'] }]}>
-        {title && title.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase())}
+      <Text style={[styles.textTitle, { color: colors["text-label-list"] }]}>
+        {title &&
+          title.replace(/(^\w{1})|(\s+\w{1})/g, (letter) =>
+            letter.toUpperCase()
+          )}
       </Text>
-      {right ?? <RefreshIcon onPress={onPress} color={colors['primary-surface-default']} size={24} />}
+      {right ?? (
+        <RefreshIcon
+          onPress={onPress}
+          color={colors["primary-surface-default"]}
+          size={24}
+        />
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    paddingHorizontal: spacing['20'],
-    paddingTop: spacing['16'],
-    paddingBottom: spacing['12'],
-    marginTop: spacing['16'],
-    justifyContent: 'space-between',
-    alignItems: 'center'
+    flexDirection: "row",
+    paddingHorizontal: spacing["20"],
+    paddingTop: spacing["16"],
+    paddingBottom: spacing["12"],
+    marginTop: spacing["16"],
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   textTitle: {
-    ...typography.body2
-  }
+    ...typography.body2,
+  },
 });

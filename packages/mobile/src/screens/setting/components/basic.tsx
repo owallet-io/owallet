@@ -1,11 +1,11 @@
-import React, { FunctionComponent } from 'react';
-import { useStyle } from '../../../styles';
-import { StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
-import { Text } from '@src/components/text';
-import { RightArrowIcon } from '../../../components/icon';
-import { RectButton } from '../../../components/rect-button';
-import { spacing, typography } from '../../../themes';
-import { useTheme } from '@src/themes/theme-provider';
+import React, { FunctionComponent } from "react";
+import { useStyle } from "../../../styles";
+import { StyleSheet, TextStyle, View, ViewStyle } from "react-native";
+import { Text } from "@src/components/text";
+import { RightArrowIcon } from "../../../components/icon";
+import { RectButton } from "../../../components/rect-button";
+import { spacing, typography } from "../../../themes";
+import { useTheme } from "@src/themes/theme-provider";
 // useTheme
 export const SettingSectionTitle: FunctionComponent<{
   title: string;
@@ -14,16 +14,16 @@ export const SettingSectionTitle: FunctionComponent<{
   return (
     <View
       style={{
-        paddingHorizontal: spacing['20'],
-        paddingTop: spacing['16'],
-        paddingBottom: spacing['4']
+        paddingHorizontal: spacing["20"],
+        paddingTop: spacing["16"],
+        paddingBottom: spacing["4"],
       }}
     >
       <Text
         style={{
           ...typography.h4,
-          color: colors['primary-text'],
-          fontWeight: '700'
+          color: colors["primary-text"],
+          fontWeight: "700",
         }}
       >
         {title}
@@ -55,7 +55,7 @@ export const SettingItem: FunctionComponent<{
   paragraph,
   left,
   right,
-  onPress
+  onPress,
 }) => {
   const { colors } = useTheme();
   const styles = styling(colors);
@@ -66,15 +66,15 @@ export const SettingItem: FunctionComponent<{
         {left}
         <View
           style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center'
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
           }}
         >
           <Text
             style={{
               ...styles.defaultLabel,
-              ...labelStyle
+              ...labelStyle,
             }}
           >
             {label}
@@ -83,7 +83,7 @@ export const SettingItem: FunctionComponent<{
             <Text
               style={{
                 ...styles.defaultLabel,
-                ...paragraphStyle
+                ...paragraphStyle,
               }}
             >
               {paragraph}
@@ -106,7 +106,7 @@ export const SettingItem: FunctionComponent<{
         <RectButton
           style={{
             ...styles.defaultBtn,
-            ...propStyle
+            ...propStyle,
           }}
           onPress={onPress}
         >
@@ -116,7 +116,7 @@ export const SettingItem: FunctionComponent<{
         <View
           style={{
             ...styles.defaultBtn,
-            ...propStyle
+            ...propStyle,
           }}
         >
           {renderChildren()}
@@ -136,16 +136,16 @@ export const RightArrow: FunctionComponent<{
       {paragraph ? (
         <Text
           style={style.flatten([
-            'body1',
-            'color-text-black-low',
-            'margin-right-16'
+            "body1",
+            "color-text-black-low",
+            "margin-right-16",
           ])}
         >
           {paragraph}
         </Text>
       ) : null}
       <RightArrowIcon
-        color={style.get('color-text-black-low').color}
+        color={style.get("color-text-black-low").color}
         height={15}
       />
     </React.Fragment>
@@ -156,13 +156,13 @@ const styling = (colors) =>
   StyleSheet.create({
     defaultLabel: {
       ...typography.h6,
-      color: colors['primary-text']
+      color: colors["primary-text"],
     },
     defaultBtn: {
-      backgroundColor: colors['background-box'],
+      backgroundColor: colors["background-box"],
       height: 62,
-      paddingHorizontal: spacing['20'],
-      flexDirection: 'row',
-      alignItems: 'center'
-    }
+      paddingHorizontal: spacing["20"],
+      flexDirection: "row",
+      alignItems: "center",
+    },
   });

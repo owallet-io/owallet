@@ -1,44 +1,44 @@
-import Web3 from 'web3';
-import { TxsCurrencies } from './txs-currencies';
-import { find } from 'lodash';
-import { ChainInfoInner } from '@owallet/stores';
-import { ChainIdEnum } from '@owallet/common';
-import { ChainInfo } from '@owallet/types';
-import Big from 'big.js';
-import moment from 'moment';
-import { formatContractAddress, get, limitString } from '@src/utils/helper';
-import { isArray, isString } from 'util';
-import { TYPE_ACTIONS_COSMOS_HISTORY } from '@src/common/constants';
-import { Bech32Address } from '@owallet/cosmos';
-import { formatBalance } from '@owallet/bitcoin';
+import Web3 from "web3";
+import { TxsCurrencies } from "./txs-currencies";
+import { find } from "lodash";
+import { ChainInfoInner } from "@owallet/stores";
+import { ChainIdEnum } from "@owallet/common";
+import { ChainInfo } from "@owallet/types";
+import Big from "big.js";
+import moment from "moment";
+import { formatContractAddress, get, limitString } from "@src/utils/helper";
+import { isArray, isString } from "util";
+import { TYPE_ACTIONS_COSMOS_HISTORY } from "@src/common/constants";
+import { Bech32Address } from "@owallet/cosmos";
+import { formatBalance } from "@owallet/bitcoin";
 export class TxsHelper {
   public readonly INFO_API_EVM = {
     [ChainIdEnum.TRON]: {
-      BASE_URL: 'https://apilist.tronscanapi.com',
-      API_KEY: ''
+      BASE_URL: "https://apilist.tronscanapi.com",
+      API_KEY: "",
     },
     [ChainIdEnum.BNBChain]: {
-      BASE_URL: 'https://api.bscscan.com',
-      API_KEY: process.env.API_KEY_BSC_SCAN
+      BASE_URL: "https://api.bscscan.com",
+      API_KEY: process.env.API_KEY_BSC_SCAN,
     },
     [ChainIdEnum.KawaiiEvm]: {
-      BASE_URL: 'https://developers.kawaii.global/mintscan',
-      API_KEY: ''
+      BASE_URL: "https://developers.kawaii.global/mintscan",
+      API_KEY: "",
     },
     [ChainIdEnum.Ethereum]: {
-      BASE_URL: 'https://api.etherscan.io',
-      API_KEY: process.env.API_KEY_ETH_SCAN
-    }
+      BASE_URL: "https://api.etherscan.io",
+      API_KEY: process.env.API_KEY_ETH_SCAN,
+    },
   };
   public readonly INFO_API_BITCOIN = {
     [ChainIdEnum.BitcoinTestnet]: {
-      BASE_URL: 'https://blockstream.info/testnet/api',
-      API_KEY: ''
+      BASE_URL: "https://blockstream.info/testnet/api",
+      API_KEY: "",
     },
     [ChainIdEnum.Bitcoin]: {
-      BASE_URL: 'https://blockstream.info/api',
-      API_KEY: ''
-    }
+      BASE_URL: "https://blockstream.info/api",
+      API_KEY: "",
+    },
   };
   public readonly TxsCurrencies: TxsCurrencies;
   constructor() {
@@ -48,19 +48,22 @@ export class TxsHelper {
     return new Big(10).pow(decimals);
   }
   replaceZero(str) {
-    if (!str) throw new Error('str params in replaceZero function not empty or undefined');
-    return str.replace(/(\.\d*[1-9])0+/g, '$1');
+    if (!str)
+      throw new Error(
+        "str params in replaceZero function not empty or undefined"
+      );
+    return str.replace(/(\.\d*[1-9])0+/g, "$1");
   }
   checkZeros(input) {
     if (!input) return false;
     // Find the position of the decimal point
-    let dotIndex = input.indexOf('.');
+    let dotIndex = input.indexOf(".");
     // Check if the input has a decimal point
     if (dotIndex !== -1) {
       // Get the part after the decimal point
       let fraction = input.slice(dotIndex + 1);
       // Check if the fraction is all zeros
-      if (fraction === '0'.repeat(fraction.length)) {
+      if (fraction === "0".repeat(fraction.length)) {
         // Return true if the fraction is all zeros
         return true;
       } else {
@@ -73,7 +76,7 @@ export class TxsHelper {
     }
   }
   sortByTimestamp(array: Partial<ResTxsInfo>[]): Partial<ResTxsInfo>[] {
-    if (!array) throw new Error('Array is not empty to sort txs by timestamp');
+    if (!array) throw new Error("Array is not empty to sort txs by timestamp");
     return array.sort((a, b) => b.time.timestamp - a.time.timestamp);
   }
   uniqueArrayByHash<T>(array: T[]): T[] {
@@ -94,31 +97,44 @@ export class TxsHelper {
     if (!str) return str;
     if (this.checkZeros(str)) {
       return parseFloat(str);
-    } else if (`${this.replaceZero(str)}`.indexOf('.') == -1) {
+    } else if (`${this.replaceZero(str)}`.indexOf(".") == -1) {
       return parseInt(this.replaceZero(str)).toFixed(1);
     }
     return this.replaceZero(str);
   }
   formatNumberSeparateThousand(num) {
     if (!num) return num;
-    if (`${num}`.includes('.')) {
-      const numSplit = num && num.split('.');
+    if (`${num}`.includes(".")) {
+      const numSplit = num && num.split(".");
       if (numSplit?.length > 1) {
-        return numSplit[0].toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') + '.' + numSplit[1];
+        return (
+          numSplit[0].toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") +
+          "." +
+          numSplit[1]
+        );
       }
     }
-    return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') || '0';
+    return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") || "0";
   }
   calculateTransactionFee(gasPrice, gasUsed, decimals = 18): string {
     return (
       (gasPrice &&
         gasUsed &&
-        new Big(parseInt(gasUsed)).mul(parseInt(gasPrice)).div(this.totalFromDecimal(decimals)).toFixed(decimals)) ||
-      '0'
+        new Big(parseInt(gasUsed))
+          .mul(parseInt(gasPrice))
+          .div(this.totalFromDecimal(decimals))
+          .toFixed(decimals)) ||
+      "0"
     );
   }
   calculateTransactionFeeCosmos(fee, decimals = 18): string {
-    return (fee && new Big(parseInt(fee)).div(this.totalFromDecimal(decimals)).toFixed(decimals)) || '0';
+    return (
+      (fee &&
+        new Big(parseInt(fee))
+          .div(this.totalFromDecimal(decimals))
+          .toFixed(decimals)) ||
+      "0"
+    );
   }
   formatTime(timestamp): timeTxs {
     if (timestamp) {
@@ -126,24 +142,24 @@ export class TxsHelper {
       var myMoment = moment.unix(timestamp);
 
       // Format the moment object using tokens
-      var formatted = myMoment.format('YYYY-MM-DD HH:mm:ss');
+      var formatted = myMoment.format("YYYY-MM-DD HH:mm:ss");
 
       // Get the relative time from the moment object to now
       var relative = this.capitalizeFirstLetter(myMoment.fromNow());
 
       // Combine the formatted and relative strings
       return {
-        timeLong: relative + ' (' + formatted + ')',
+        timeLong: relative + " (" + formatted + ")",
         timeShort: relative,
         date: formatted,
-        timestamp
+        timestamp,
       };
     } else {
       return {
-        timeLong: '',
-        date: '',
-        timeShort: '',
-        timestamp: 0
+        timeLong: "",
+        date: "",
+        timeShort: "",
+        timestamp: 0,
       };
     }
   }
@@ -153,24 +169,24 @@ export class TxsHelper {
       var myMoment = moment(timestamp);
 
       // Format the moment object using tokens
-      var formatted = myMoment.format('YYYY-MM-DD HH:mm:ss');
+      var formatted = myMoment.format("YYYY-MM-DD HH:mm:ss");
 
       // Get the relative time from the moment object to now
       var relative = this.capitalizeFirstLetter(myMoment.fromNow());
 
       // Combine the formatted and relative strings
       return {
-        timeLong: relative + ' (' + formatted + ')',
+        timeLong: relative + " (" + formatted + ")",
         timeShort: relative,
         timestamp,
-        date: formatted
+        date: formatted,
       };
     } else {
       return {
-        timeLong: '',
-        timeShort: '',
-        date: '',
-        timestamp: 0
+        timeLong: "",
+        timeShort: "",
+        date: "",
+        timestamp: 0,
       };
     }
   }
@@ -180,33 +196,33 @@ export class TxsHelper {
       var myMoment = moment(time);
 
       // Format the moment object using tokens
-      var formatted = myMoment.format('YYYY-MM-DD HH:mm:ss');
+      var formatted = myMoment.format("YYYY-MM-DD HH:mm:ss");
 
       // Get the relative time from the moment object to now
       var relative = this.capitalizeFirstLetter(myMoment.fromNow());
 
       // Combine the formatted and relative strings
       return {
-        timeLong: relative + ' (' + formatted + ')',
+        timeLong: relative + " (" + formatted + ")",
         timeShort: relative,
         timestamp: 0,
-        date: formatted
+        date: formatted,
       };
     } else {
       return {
-        timeLong: '',
-        timeShort: '',
-        date: '',
-        timestamp: 0
+        timeLong: "",
+        timeShort: "",
+        date: "",
+        timestamp: 0,
       };
     }
   }
   addSpacesToString(str) {
-    return str && str.replace(/([a-z])([A-Z])/g, '$1 $2');
+    return str && str.replace(/([a-z])([A-Z])/g, "$1 $2");
   }
   getFunctionName(input: string): string {
     // Split the input string by "(" and get the first element of the array
-    let output = input && input.split('(')[0];
+    let output = input && input.split("(")[0];
     // Return the output string
     return output;
   }
@@ -222,34 +238,40 @@ export class TxsHelper {
     // Return the concatenated string
     return firstChar + rest;
   }
-  capitalizedWords(str, splitCharacter = '_') {
+  capitalizedWords(str, splitCharacter = "_") {
     const words = str && str.split(splitCharacter);
-    const capitalizedWords = words && words.map((word) => word.charAt(0).toUpperCase() + word.slice(1));
-    return capitalizedWords && capitalizedWords.join(' ')?.trim();
+    const capitalizedWords =
+      words &&
+      words.map((word) => word.charAt(0).toUpperCase() + word.slice(1));
+    return capitalizedWords && capitalizedWords.join(" ")?.trim();
   }
 
   convertToWord(str) {
     if (!str) return null;
-    if (str.indexOf('_') !== -1) {
-      return this.capitalizedWords(str, '_');
-    } else if (str.indexOf('.') !== -1) {
-      let splitCapitalize = str.split('.');
-      return this.convertVarCapitalizeToWord(splitCapitalize[splitCapitalize?.length - 1]);
+    if (str.indexOf("_") !== -1) {
+      return this.capitalizedWords(str, "_");
+    } else if (str.indexOf(".") !== -1) {
+      let splitCapitalize = str.split(".");
+      return this.convertVarCapitalizeToWord(
+        splitCapitalize[splitCapitalize?.length - 1]
+      );
     }
-    return this.capitalizedWords(str, ' ');
+    return this.capitalizedWords(str, " ");
   }
   convertValueTransactionToDisplay(str, label, currentChain) {
     if (!str || !label || !currentChain) return null;
     if (this.isAmount(str, label)) {
       const matchesAmount = str?.match(/\d+/g);
-      const matchesDenom = str?.replace(/^\d+/g, '');
+      const matchesDenom = str?.replace(/^\d+/g, "");
       return {
         amount: this.removeZeroNumberLast(
           this.formatNumberSeparateThousand(
             this.formatAmount(
               matchesAmount && matchesAmount[0],
               matchesDenom
-                ? this.TxsCurrencies.getCurrencyInfoByMinimalDenom(matchesDenom?.trim()?.toUpperCase()).coinDecimals
+                ? this.TxsCurrencies.getCurrencyInfoByMinimalDenom(
+                    matchesDenom?.trim()?.toUpperCase()
+                  ).coinDecimals
                 : currentChain.stakeCurrency.coinDecimals
             )
           )
@@ -261,7 +283,7 @@ export class TxsHelper {
               matchesDenom?.trim()?.toUpperCase()
             ).coinDenom?.toUpperCase(),
             10
-          )
+          ),
       };
     } else if (this.isAddress(str, currentChain.networkType)) {
       return formatContractAddress(str);
@@ -278,19 +300,26 @@ export class TxsHelper {
   }
   isAmount(str, label) {
     if (!str || !label) return false;
-    if (str?.indexOf(' ') === -1 && this.isAlphaNumeric(str) && label?.toLowerCase()?.indexOf('amount') !== -1) {
+    if (
+      str?.indexOf(" ") === -1 &&
+      this.isAlphaNumeric(str) &&
+      label?.toLowerCase()?.indexOf("amount") !== -1
+    ) {
       const regex = /^(\d+)(.+)$/;
       return regex.test(str);
-    } else if (label?.toLowerCase()?.indexOf('amount') !== -1 && this.isDigitsOnly(str)) {
+    } else if (
+      label?.toLowerCase()?.indexOf("amount") !== -1 &&
+      this.isDigitsOnly(str)
+    ) {
       return true;
     }
     return false;
   }
   convertVarCapitalizeToWord(str) {
     if (!str) return null;
-    let converted = str?.replace(/([a-z])([A-Z])/g, '$1 $2');
-    converted = converted?.replace(/([A-Z])([A-Z][a-z])/g, '$1 $2');
-    converted = converted?.replace(/(\d+)([A-Za-z]+)/g, '$1 $2');
+    let converted = str?.replace(/([a-z])([A-Z])/g, "$1 $2");
+    converted = converted?.replace(/([A-Z])([A-Z][a-z])/g, "$1 $2");
+    converted = converted?.replace(/(\d+)([A-Za-z]+)/g, "$1 $2");
     return converted?.trim();
   }
   formatAmount(amount, decimals = 6) {
@@ -300,7 +329,10 @@ export class TxsHelper {
     if (!decimals) {
       decimals = 6;
     }
-    const amountRs = new Big(parseInt(amount)).div(this.totalFromDecimal(decimals)).toFixed(decimals) || '0';
+    const amountRs =
+      new Big(parseInt(amount))
+        .div(this.totalFromDecimal(decimals))
+        .toFixed(decimals) || "0";
     return amountRs;
   }
   handleTransferDetailEthAndBsc(
@@ -312,25 +344,33 @@ export class TxsHelper {
     const isMinus = data?.from?.toLowerCase() == addressAccount?.toLowerCase();
     const isPlus = data?.to?.toLowerCase() == addressAccount?.toLowerCase();
     transferItem.typeEvent = data?.functionName
-      ? this.capitalizedWords(this.addSpacesToString(this.getFunctionName(data?.functionName)), ' ')
+      ? this.capitalizedWords(
+          this.addSpacesToString(this.getFunctionName(data?.functionName)),
+          " "
+        )
       : isMinus && !isPlus
-      ? 'Sent'
+      ? "Sent"
       : isPlus && !isMinus
-      ? 'Received'
+      ? "Received"
       : isPlus && isMinus
-      ? 'Refund'
-      : '';
+      ? "Refund"
+      : "";
     transferItem.transferInfo = [
       {
         from: data?.from,
         to: data?.to,
         amount: this.removeZeroNumberLast(
-          this.formatNumberSeparateThousand(this.formatAmount(data?.value, currentChain?.stakeCurrency?.coinDecimals))
+          this.formatNumberSeparateThousand(
+            this.formatAmount(
+              data?.value,
+              currentChain?.stakeCurrency?.coinDecimals
+            )
+          )
         ),
         token: currentChain.stakeCurrency.coinDenom?.toUpperCase(),
         isMinus,
-        isPlus
-      }
+        isPlus,
+      },
     ];
     return [transferItem];
   }
@@ -345,36 +385,42 @@ export class TxsHelper {
     let transferItemIn: Partial<TransferDetail> = {};
     transferItemIn.transferInfo = [];
     if (data?.vin?.length > 0 && data?.vout?.length > 0) {
-      const found = data.vin.some((item) => item.prevout.scriptpubkey_address === addressAccount);
+      const found = data.vin.some(
+        (item) => item.prevout.scriptpubkey_address === addressAccount
+      );
       if (found) {
-        let arrVoutFilter = data.vout.filter((item) => item.scriptpubkey_address !== addressAccount);
+        let arrVoutFilter = data.vout.filter(
+          (item) => item.scriptpubkey_address !== addressAccount
+        );
         const totalBalance = arrVoutFilter.reduce((total, data) => {
           return total + data.value;
         }, 0);
         transferItem.transferInfo.push({
           amount: formatBalance({
             balance: Number(totalBalance),
-            cryptoUnit: 'BTC',
-            coin: currentChain.chainId
+            cryptoUnit: "BTC",
+            coin: currentChain.chainId,
           }),
-          isMinus: true
+          isMinus: true,
         });
       } else {
-        let arrVoutFilter = data.vout.filter((item) => item.scriptpubkey_address === addressAccount);
+        let arrVoutFilter = data.vout.filter(
+          (item) => item.scriptpubkey_address === addressAccount
+        );
         const totalBalance = arrVoutFilter.reduce((total, data) => {
           return total + data.value;
         }, 0);
         transferItem.transferInfo.push({
           amount: formatBalance({
             balance: Number(totalBalance),
-            cryptoUnit: 'BTC',
-            coin: currentChain.chainId
+            cryptoUnit: "BTC",
+            coin: currentChain.chainId,
           }),
-          isPlus: true
+          isPlus: true,
         });
       }
     }
-    transferItem.typeEvent = 'Transaction';
+    transferItem.typeEvent = "Transaction";
     return [transferItem];
   }
   handleItemTxsEthAndBsc(
@@ -385,19 +431,27 @@ export class TxsHelper {
     let item: Partial<ResTxsInfo> = {};
     item.fee = this.removeZeroNumberLast(
       this.formatNumberSeparateThousand(
-        this.calculateTransactionFee(data.gasPrice, data.gasUsed, currentChain?.feeCurrencies[0]?.coinDecimals)
+        this.calculateTransactionFee(
+          data.gasPrice,
+          data.gasUsed,
+          currentChain?.feeCurrencies[0]?.coinDecimals
+        )
       )
     );
     item.denomFee = currentChain?.feeCurrencies[0]?.coinDenom?.toUpperCase();
     item.time = this.formatTime(data?.timeStamp);
     item.txHash = data?.hash;
     item.height = this.formatNumberSeparateThousand(data?.blockNumber);
-    item.status = data?.isError == '0' ? 'success' : 'fail';
+    item.status = data?.isError == "0" ? "success" : "fail";
     item.memo = null;
     item.countTypeEvent = 0;
     item.gasUsed = this.formatNumberSeparateThousand(data?.gasUsed);
     item.gasWanted = this.formatNumberSeparateThousand(data?.gas);
-    item.transfers = this.handleTransferDetailEthAndBsc(data, currentChain, addressAccount);
+    item.transfers = this.handleTransferDetailEthAndBsc(
+      data,
+      currentChain,
+      addressAccount
+    );
     item.isRefreshData = false;
     return item;
   }
@@ -410,20 +464,28 @@ export class TxsHelper {
     let item: Partial<ResTxsInfo> = {};
     item.fee = formatBalance({
       balance: Number(data.fee),
-      cryptoUnit: 'BTC',
-      coin: currentChain.chainId
+      cryptoUnit: "BTC",
+      coin: currentChain.chainId,
     });
-    item.denomFee = '';
-    item.time = data?.status?.confirmed ? this.formatTimeBitcoin(data?.status?.block_time * 1000) : null;
+    item.denomFee = "";
+    item.time = data?.status?.confirmed
+      ? this.formatTimeBitcoin(data?.status?.block_time * 1000)
+      : null;
     item.txHash = data?.txid;
-    item.height = data?.status?.confirmed ? this.formatNumberSeparateThousand(data?.status?.block_height) : '--';
-    item.status = data?.status?.confirmed ? 'success' : 'pending';
+    item.height = data?.status?.confirmed
+      ? this.formatNumberSeparateThousand(data?.status?.block_height)
+      : "--";
+    item.status = data?.status?.confirmed ? "success" : "pending";
     item.memo = null;
     item.confirmations = 0;
     item.countTypeEvent = 0;
     item.gasUsed = null;
     item.gasWanted = null;
-    item.transfers = this.handleTransferDetailBtc(data, currentChain, addressAccount);
+    item.transfers = this.handleTransferDetailBtc(
+      data,
+      currentChain,
+      addressAccount
+    );
     item.isRefreshData = false;
     return item;
   }
@@ -440,11 +502,19 @@ export class TxsHelper {
         const itData = data[i];
         switch (currentChain.chainId) {
           case ChainIdEnum.Ethereum:
-            item = this.handleItemTxsEthAndBsc(itData, currentChain, addressAccount);
+            item = this.handleItemTxsEthAndBsc(
+              itData,
+              currentChain,
+              addressAccount
+            );
             dataConverted.push(item);
             break;
           case ChainIdEnum.BNBChain:
-            item = this.handleItemTxsEthAndBsc(itData, currentChain, addressAccount);
+            item = this.handleItemTxsEthAndBsc(
+              itData,
+              currentChain,
+              addressAccount
+            );
             dataConverted.push(item);
             break;
         }
@@ -476,20 +546,29 @@ export class TxsHelper {
     const isMinus = data?.from?.toLowerCase() == addressAccount?.toLowerCase();
     const isPlus = data?.to?.toLowerCase() == addressAccount?.toLowerCase();
     transferItem.typeEvent =
-      isMinus && !isPlus ? 'Sent' : isPlus && !isMinus ? 'Received' : isPlus && isMinus ? 'Refund' : '';
+      isMinus && !isPlus
+        ? "Sent"
+        : isPlus && !isMinus
+        ? "Received"
+        : isPlus && isMinus
+        ? "Refund"
+        : "";
     transferItem.transferInfo = [
       {
         from: data?.from,
         to: data?.to,
         amount: this.removeZeroNumberLast(
           this.formatNumberSeparateThousand(
-            this.formatAmount(data?.value, data?.tokenDecimal ? parseInt(data?.tokenDecimal) : 18)
+            this.formatAmount(
+              data?.value,
+              data?.tokenDecimal ? parseInt(data?.tokenDecimal) : 18
+            )
           )
         ),
         token: data?.tokenSymbol?.toUpperCase(),
         isMinus,
-        isPlus
-      }
+        isPlus,
+      },
     ];
     return [transferItem];
   }
@@ -501,19 +580,26 @@ export class TxsHelper {
     let item: Partial<ResTxsInfo> = {};
     item.fee = this.removeZeroNumberLast(
       this.formatNumberSeparateThousand(
-        this.calculateTransactionFee(data.gasPrice, data.gasUsed, currentChain?.feeCurrencies[0]?.coinDecimals)
+        this.calculateTransactionFee(
+          data.gasPrice,
+          data.gasUsed,
+          currentChain?.feeCurrencies[0]?.coinDecimals
+        )
       )
     );
     item.denomFee = currentChain?.feeCurrencies[0]?.coinDenom?.toUpperCase();
     item.time = this.formatTime(data?.timeStamp);
     item.txHash = data?.hash;
     item.height = data?.blockNumber;
-    item.status = data?.value !== '0' ? 'success' : 'fail';
+    item.status = data?.value !== "0" ? "success" : "fail";
     item.memo = null;
     item.countTypeEvent = 0;
     item.gasUsed = this.formatNumberSeparateThousand(data?.gasUsed);
     item.gasWanted = this.formatNumberSeparateThousand(data?.gas);
-    item.transfers = this.handleTransferDetailEthAndBscByToken(data, addressAccount);
+    item.transfers = this.handleTransferDetailEthAndBscByToken(
+      data,
+      addressAccount
+    );
     item.isRefreshData = false;
     return item;
   }
@@ -529,11 +615,19 @@ export class TxsHelper {
         const itData = data[i];
         switch (currentChain.chainId) {
           case ChainIdEnum.Ethereum:
-            item = this.handleItemTxsEthAndBscByToken(itData, currentChain, addressAccount);
+            item = this.handleItemTxsEthAndBscByToken(
+              itData,
+              currentChain,
+              addressAccount
+            );
             dataConverted.push(item);
             break;
           case ChainIdEnum.BNBChain:
-            item = this.handleItemTxsEthAndBscByToken(itData, currentChain, addressAccount);
+            item = this.handleItemTxsEthAndBscByToken(
+              itData,
+              currentChain,
+              addressAccount
+            );
             dataConverted.push(item);
             break;
         }
@@ -542,8 +636,8 @@ export class TxsHelper {
     return dataConverted;
   }
   getModuleFromAction(action) {
-    if (action && action?.includes('.')) {
-      const splitData = action?.split('.');
+    if (action && action?.includes(".")) {
+      const splitData = action?.split(".");
       if (splitData?.length > 3) {
         return splitData[splitData?.length - 3];
       }
@@ -551,8 +645,8 @@ export class TxsHelper {
     return null;
   }
   convertLastActionToVar(actionValue) {
-    if (actionValue && actionValue?.includes('.')) {
-      const splitData = actionValue?.split('.');
+    if (actionValue && actionValue?.includes(".")) {
+      const splitData = actionValue?.split(".");
       return this.convertStringToVar(splitData[splitData?.length - 1]);
     }
     return null;
@@ -562,7 +656,7 @@ export class TxsHelper {
     if (array) {
       for (let item of array) {
         // if the key is "amount" and the value is only a number
-        if (item?.key === 'amount' && /^\d+$/.test(item?.value)) {
+        if (item?.key === "amount" && /^\d+$/.test(item?.value)) {
           // store the value as a number
           let amount = Number(item?.value);
           // loop through the array again
@@ -570,7 +664,7 @@ export class TxsHelper {
             // if the key is not "amount" and the value starts with the same number followed by some text
             if (
               !!amount &&
-              other?.key !== 'amount' &&
+              other?.key !== "amount" &&
               other?.value.startsWith(amount.toString()) &&
               other?.value?.length > amount.toString()?.length
             ) {
@@ -592,7 +686,9 @@ export class TxsHelper {
       for (let i = 0; i < inputArray.length; i++) {
         const events = inputArray[i].events;
         if (Array.isArray(events)) {
-          const transferIndex = events.findIndex((event) => event.type === 'transfer');
+          const transferIndex = events.findIndex(
+            (event) => event.type === "transfer"
+          );
           if (transferIndex !== -1 && transferIndex !== 0) {
             const transferEvent = events.splice(transferIndex, 1)[0];
             events.unshift(transferEvent);
@@ -605,15 +701,17 @@ export class TxsHelper {
   sortTransferEvents(array) {
     if (!array || !isArray(array) || array?.length < 0) return null;
     const transferEvents = array.filter((item) => {
-      return item.events && item?.events[0]?.type === 'transfer';
+      return item.events && item?.events[0]?.type === "transfer";
     });
     if (transferEvents && transferEvents?.length > 0) {
       transferEvents.forEach((item) => {
         const attributes = item?.events[0]?.attributes;
         const sortedAttributes = [];
-        const keys = ['sender', 'recipient', 'amount'];
+        const keys = ["sender", "recipient", "amount"];
         for (let key of keys) {
-          const foundAttribute = attributes.find((attr) => attr?.key && attr?.key?.toLowerCase()?.trim() == key);
+          const foundAttribute = attributes.find(
+            (attr) => attr?.key && attr?.key?.toLowerCase()?.trim() == key
+          );
           if (foundAttribute) {
             sortedAttributes.push(foundAttribute);
           }
@@ -630,17 +728,18 @@ export class TxsHelper {
     // remove the first word "Msg"
     words.shift();
     // join the words with underscore and lowercase them
-    return words.join('_').toLowerCase();
+    return words.join("_").toLowerCase();
   };
   convertTypeEvent = (actionValue) => {
-    return actionValue?.length > 0 && actionValue?.toLowerCase()?.includes('msg')
+    return actionValue?.length > 0 &&
+      actionValue?.toLowerCase()?.includes("msg")
       ? this.getStringAfterMsg(this.addSpacesToString(actionValue))
       : this.convertVarToWord(actionValue);
   };
 
   isAddress(value, networkType): boolean {
     if (!value) return value;
-    if (networkType == 'evm') {
+    if (networkType == "evm") {
       try {
         if (!Web3.utils.isAddress(value)) {
           return false;
@@ -667,20 +766,20 @@ export class TxsHelper {
   }
   checkSendReceive(evType, evAttr, indexAttr, addressAcc) {
     if (!evType || evAttr?.length < 3 || !Array.isArray(evAttr)) return null;
-    if (evType === 'transfer') {
+    if (evType === "transfer") {
       if (
         evAttr[indexAttr - 2] &&
-        evAttr[indexAttr - 2]?.key == 'sender' &&
+        evAttr[indexAttr - 2]?.key == "sender" &&
         evAttr[indexAttr - 2]?.value === addressAcc &&
-        evAttr[indexAttr - 1]?.key == 'recipient' &&
+        evAttr[indexAttr - 1]?.key == "recipient" &&
         evAttr[indexAttr - 1]?.value !== addressAcc
       ) {
         return { isPlus: false, isMinus: true };
       } else if (
         evAttr[indexAttr - 2] &&
-        evAttr[indexAttr - 2]?.key == 'sender' &&
+        evAttr[indexAttr - 2]?.key == "sender" &&
         evAttr[indexAttr - 2]?.value !== addressAcc &&
-        evAttr[indexAttr - 1]?.key == 'recipient' &&
+        evAttr[indexAttr - 1]?.key == "recipient" &&
         evAttr[indexAttr - 1]?.value === addressAcc
       ) {
         return { isPlus: true, isMinus: false };
@@ -691,14 +790,16 @@ export class TxsHelper {
   }
   convertVarToWord(str) {
     if (!str) return str;
-    const words = str && str.split('_');
-    const capitalizedWords = words && words.map((word) => word.charAt(0).toUpperCase() + word.slice(1));
-    return capitalizedWords && capitalizedWords.join(' ')?.trim();
+    const words = str && str.split("_");
+    const capitalizedWords =
+      words &&
+      words.map((word) => word.charAt(0).toUpperCase() + word.slice(1));
+    return capitalizedWords && capitalizedWords.join(" ")?.trim();
   }
   getStringAfterMsg(str) {
-    const msgIndex = str?.toUpperCase().indexOf('MSG');
+    const msgIndex = str?.toUpperCase().indexOf("MSG");
     if (msgIndex === -1) {
-      return '';
+      return "";
     }
     return str.substring(msgIndex + 3);
   }
@@ -706,7 +807,7 @@ export class TxsHelper {
     let count = 0;
 
     for (let element of array) {
-      if (element.key === 'amount') {
+      if (element.key === "amount") {
         count++;
       }
     }
@@ -716,82 +817,104 @@ export class TxsHelper {
       return false;
     }
   };
-  handleItemRawLogCosmos(itemLog, address, currentChain: ChainInfoInner<ChainInfo>) {
-    const transfer = 'transfer';
+  handleItemRawLogCosmos(
+    itemLog,
+    address,
+    currentChain: ChainInfoInner<ChainInfo>
+  ) {
+    const transfer = "transfer";
     let isRecipient: boolean;
-    const event = itemLog && find(get(itemLog, `events`), { type: 'message' });
-    const action = event && find(get(event, 'attributes'), { key: 'action' });
+    const event = itemLog && find(get(itemLog, `events`), { type: "message" });
+    const action = event && find(get(event, "attributes"), { key: "action" });
     const actionValue = action?.value;
     const moduleEvent = this.getModuleFromAction(actionValue);
     const lastAction = this.convertLastActionToVar(actionValue);
-    const eventModule = moduleEvent && find(get(itemLog, `events`), { type: moduleEvent });
-    const eventLastAction = moduleEvent && find(get(itemLog, `events`), { type: lastAction });
-    const moduleAction = eventModule && find(get(eventModule, 'attributes'), { key: 'action' });
+    const eventModule =
+      moduleEvent && find(get(itemLog, `events`), { type: moduleEvent });
+    const eventLastAction =
+      moduleEvent && find(get(itemLog, `events`), { type: lastAction });
+    const moduleAction =
+      eventModule && find(get(eventModule, "attributes"), { key: "action" });
     const moduleValue = moduleAction && moduleAction?.value;
-    const eventType = this.convertTypeEvent(moduleValue ? moduleValue : actionValue);
+    const eventType = this.convertTypeEvent(
+      moduleValue ? moduleValue : actionValue
+    );
 
     const valueTransfer =
       itemLog &&
       find(get(itemLog, `events`), {
-        type: transfer
+        type: transfer,
       });
     let transferInfo;
-    if (valueTransfer?.attributes && this.checkDuplicateAmount(valueTransfer?.attributes)) {
+    if (
+      valueTransfer?.attributes &&
+      this.checkDuplicateAmount(valueTransfer?.attributes)
+    ) {
       transferInfo = this.convertFormatArrayTransfer(valueTransfer?.attributes);
     } else {
       transferInfo = [
         {
           amountData: valueTransfer
-            ? find(valueTransfer?.attributes, { key: 'amount' })
-            : this.checkAmountHasDenom(get(eventModule, 'attributes'))
-            ? this.checkAmountHasDenom(get(eventModule, 'attributes'))
-            : find(get(eventModule, 'attributes'), { key: 'amount' }) ||
-              this.checkAmountHasDenom(get(eventLastAction, 'attributes'))
-            ? this.checkAmountHasDenom(get(eventLastAction, 'attributes'))
-            : find(get(eventLastAction, 'attributes'), { key: 'amount' }),
+            ? find(valueTransfer?.attributes, { key: "amount" })
+            : this.checkAmountHasDenom(get(eventModule, "attributes"))
+            ? this.checkAmountHasDenom(get(eventModule, "attributes"))
+            : find(get(eventModule, "attributes"), { key: "amount" }) ||
+              this.checkAmountHasDenom(get(eventLastAction, "attributes"))
+            ? this.checkAmountHasDenom(get(eventLastAction, "attributes"))
+            : find(get(eventLastAction, "attributes"), { key: "amount" }),
           from: valueTransfer
-            ? find(valueTransfer?.attributes, { key: 'sender' })?.value
-            : find(get(eventModule, 'attributes'), { key: 'from' }) ||
-              find(get(eventModule, 'attributes'), { key: 'sender' }),
+            ? find(valueTransfer?.attributes, { key: "sender" })?.value
+            : find(get(eventModule, "attributes"), { key: "from" }) ||
+              find(get(eventModule, "attributes"), { key: "sender" }),
           to: valueTransfer
-            ? find(valueTransfer?.attributes, { key: 'recipient' })?.value
-            : find(get(eventModule, 'attributes'), { key: 'to' }) ||
-              find(get(eventModule, 'attributes'), { key: 'recipient' })
-        }
+            ? find(valueTransfer?.attributes, { key: "recipient" })?.value
+            : find(get(eventModule, "attributes"), { key: "to" }) ||
+              find(get(eventModule, "attributes"), { key: "recipient" }),
+        },
       ];
     }
 
     transferInfo.forEach((itDataTransfer) => {
       isRecipient =
         itDataTransfer?.recipient?.value === address &&
-        (actionValue === TYPE_ACTIONS_COSMOS_HISTORY['bank/MsgSend'] ||
+        (actionValue === TYPE_ACTIONS_COSMOS_HISTORY["bank/MsgSend"] ||
           actionValue === TYPE_ACTIONS_COSMOS_HISTORY.send);
 
-      const matchesAmount = get(itDataTransfer, 'amountData.value')
+      const matchesAmount = get(itDataTransfer, "amountData.value")
         ? itDataTransfer?.amountData?.value?.match(/\d+/g)
         : isString(itDataTransfer?.amountData)
         ? itDataTransfer?.amountData?.match(/\d+/g)
-        : '';
-      const matchesDenom = get(itDataTransfer, 'amountData.value')
-        ? itDataTransfer?.amountData?.value?.replace(/^\d+/g, '')
+        : "";
+      const matchesDenom = get(itDataTransfer, "amountData.value")
+        ? itDataTransfer?.amountData?.value?.replace(/^\d+/g, "")
         : isString(itDataTransfer?.amountData)
-        ? itDataTransfer?.amountData?.replace(/^\d+/g, '')
-        : '';
+        ? itDataTransfer?.amountData?.replace(/^\d+/g, "")
+        : "";
       const amountFormated = this.formatAmount(
         matchesAmount && matchesAmount[0],
         matchesDenom
-          ? this.TxsCurrencies.getCurrencyInfoByMinimalDenom(matchesDenom?.trim()?.toUpperCase()).coinDecimals
+          ? this.TxsCurrencies.getCurrencyInfoByMinimalDenom(
+              matchesDenom?.trim()?.toUpperCase()
+            ).coinDecimals
           : currentChain.stakeCurrency.coinDecimals
       );
-      itDataTransfer.amount = this.removeZeroNumberLast(this.formatNumberSeparateThousand(amountFormated));
+      itDataTransfer.amount = this.removeZeroNumberLast(
+        this.formatNumberSeparateThousand(amountFormated)
+      );
       itDataTransfer.token =
         matchesDenom &&
-        this.TxsCurrencies.getCurrencyInfoByMinimalDenom(matchesDenom?.trim()?.toUpperCase()).coinDenom?.toUpperCase();
+        this.TxsCurrencies.getCurrencyInfoByMinimalDenom(
+          matchesDenom?.trim()?.toUpperCase()
+        ).coinDenom?.toUpperCase();
 
-      if (itDataTransfer?.to?.value === address || itDataTransfer?.to === address) {
+      if (
+        itDataTransfer?.to?.value === address ||
+        itDataTransfer?.to === address
+      ) {
         itDataTransfer.isPlus = true;
       } else if (
-        (itDataTransfer?.to?.value !== address && itDataTransfer?.from?.value === address) ||
+        (itDataTransfer?.to?.value !== address &&
+          itDataTransfer?.from?.value === address) ||
         (itDataTransfer?.from && itDataTransfer?.to !== address)
       ) {
         itDataTransfer.isMinus = true;
@@ -800,10 +923,10 @@ export class TxsHelper {
 
     return {
       transferInfo,
-      typeEvent: isRecipient ? 'Received' : eventType && eventType?.trim(),
+      typeEvent: isRecipient ? "Received" : eventType && eventType?.trim(),
       moduleValue: moduleEvent,
       eventValue: moduleValue ? moduleValue : actionValue,
-      pathEvent: moduleValue ? `${moduleEvent}.action` : `message.action`
+      pathEvent: moduleValue ? `${moduleEvent}.action` : `message.action`,
     };
   }
   convertDateToTimeStamp(da: Date): number {
@@ -821,12 +944,12 @@ export class TxsHelper {
     } = {};
 
     for (let element of array) {
-      if (element.key === 'amount') {
-        tempObject['amountData'] = element.value;
-      } else if (element.key === 'sender') {
-        tempObject['from'] = element.value;
-      } else if (element.key === 'recipient') {
-        tempObject['to'] = element.value;
+      if (element.key === "amount") {
+        tempObject["amountData"] = element.value;
+      } else if (element.key === "sender") {
+        tempObject["from"] = element.value;
+      } else if (element.key === "recipient") {
+        tempObject["to"] = element.value;
       }
 
       if (tempObject?.amountData && tempObject?.from && tempObject?.to) {
@@ -844,7 +967,7 @@ export class TxsHelper {
   ): Partial<ResTxsInfo> {
     let item: Partial<ResTxsInfo> = {};
     let dataEvents = [];
-    item.status = data?.code === 0 ? 'success' : 'fail';
+    item.status = data?.code === 0 ? "success" : "fail";
     item.txHash = data?.txhash;
     item.fee = this.removeZeroNumberLast(
       this.formatNumberSeparateThousand(
@@ -860,14 +983,22 @@ export class TxsHelper {
     item.height = this.formatNumberSeparateThousand(data?.height);
     item.memo = data?.tx?.body?.memo;
     item.infoTransaction = [];
-    item.time = this.formatTimeTron(this.convertDateToTimeStamp(data?.timestamp));
+    item.time = this.formatTimeTron(
+      this.convertDateToTimeStamp(data?.timestamp)
+    );
     if (data?.code === 0) {
       const logs = data?.raw_log && JSON.parse(data?.raw_log);
       item.countTypeEvent = logs?.length > 1 ? logs?.length - 1 : 0;
       if (logs?.length > 0) {
-        item.infoTransaction = this.sortTransferEvents(this.sortTransferFirst(this.filterEventsNotUse(logs)));
+        item.infoTransaction = this.sortTransferEvents(
+          this.sortTransferFirst(this.filterEventsNotUse(logs))
+        );
         logs.forEach((itemLog) => {
-          let itemDataTransferDetail = this.handleItemRawLogCosmos(itemLog, addressAccount, currentChain);
+          let itemDataTransferDetail = this.handleItemRawLogCosmos(
+            itemLog,
+            addressAccount,
+            currentChain
+          );
           dataEvents.push(itemDataTransferDetail);
         });
       }
@@ -880,12 +1011,23 @@ export class TxsHelper {
     return item;
   }
   filterEventsNotUse(eventsArray) {
-    const messages = eventsArray.flatMap((item) => item?.events?.filter((event) => event?.type === 'message'));
+    const messages = eventsArray.flatMap((item) =>
+      item?.events?.filter((event) => event?.type === "message")
+    );
     const filteredEvents = eventsArray?.map((item) => ({
       events: item.events.filter(
-        (event) => !['coin_received', 'coin_spent', 'execute', 'message', 'wasm'].includes(event?.type)
+        (event) =>
+          ![
+            "coin_received",
+            "coin_spent",
+            "execute",
+            "message",
+            "wasm",
+          ].includes(event?.type)
       ),
-      messages: messages && messages[0]?.attributes.find((item, data) => item?.key == 'action')
+      messages:
+        messages &&
+        messages[0]?.attributes.find((item, data) => item?.key == "action"),
     }));
     return filteredEvents;
   }
@@ -912,28 +1054,36 @@ export class TxsHelper {
   ): Partial<ResTxsInfo> {
     let item: Partial<ResTxsInfo> = {};
     let dataEvents = [];
-    item.status = data?.tx_result?.code === 0 ? 'success' : 'fail';
+    item.status = data?.tx_result?.code === 0 ? "success" : "fail";
     item.txHash = data?.hash;
-    item.fee = '0';
+    item.fee = "0";
     item.denomFee = currentChain?.feeCurrencies[0]?.coinDenom?.toUpperCase();
     item.gasUsed = this.formatNumberSeparateThousand(data?.tx_result?.gas_used);
-    item.gasWanted = this.formatNumberSeparateThousand(data?.tx_result?.gas_wanted);
+    item.gasWanted = this.formatNumberSeparateThousand(
+      data?.tx_result?.gas_wanted
+    );
     item.height = this.formatNumberSeparateThousand(data?.height);
-    item.memo = '';
+    item.memo = "";
     item.time = {
-      timeLong: '',
-      timeShort: '',
-      date: '',
-      timestamp: 0
+      timeLong: "",
+      timeShort: "",
+      date: "",
+      timestamp: 0,
     };
     item.infoTransaction = [];
     if (data?.tx_result?.code === 0) {
       const logs = data?.tx_result?.log && JSON.parse(data?.tx_result?.log);
       item.countTypeEvent = logs?.length > 1 ? logs?.length - 1 : 0;
       if (logs?.length > 0) {
-        item.infoTransaction = this.sortTransferEvents(this.filterEventsNotUse(logs));
+        item.infoTransaction = this.sortTransferEvents(
+          this.filterEventsNotUse(logs)
+        );
         logs.forEach((itemLog) => {
-          let itemDataTransferDetail = this.handleItemRawLogCosmos(itemLog, addressAccount, currentChain);
+          let itemDataTransferDetail = this.handleItemRawLogCosmos(
+            itemLog,
+            addressAccount,
+            currentChain
+          );
           dataEvents.push(itemDataTransferDetail);
         });
       }
@@ -952,7 +1102,11 @@ export class TxsHelper {
       for (let i = 0; i < txs.length; i++) {
         let item: Partial<ResTxsInfo>;
         const elementTx = txs[i];
-        item = this.handleItemRpcCosmos(elementTx, currentChain, addressAccount);
+        item = this.handleItemRpcCosmos(
+          elementTx,
+          currentChain,
+          addressAccount
+        );
         dataConverted.push(item);
       }
     }
@@ -964,17 +1118,22 @@ export class TxsHelper {
     currentChain: ChainInfoInner<ChainInfo>
   ): Partial<TransferDetail>[] {
     let transferItem: Partial<TransferDetail> = {};
-    const isMinus = data?.ownerAddress?.toLowerCase() == addressAccount?.toLowerCase();
-    const isPlus = data?.toAddress?.toLowerCase() == addressAccount?.toLowerCase();
+    const isMinus =
+      data?.ownerAddress?.toLowerCase() == addressAccount?.toLowerCase();
+    const isPlus =
+      data?.toAddress?.toLowerCase() == addressAccount?.toLowerCase();
     transferItem.typeEvent = data?.trigger_info?.methodName
-      ? this.capitalizedWords(this.addSpacesToString(data?.trigger_info?.methodName), ' ')
+      ? this.capitalizedWords(
+          this.addSpacesToString(data?.trigger_info?.methodName),
+          " "
+        )
       : isMinus && !isPlus
-      ? 'Sent'
+      ? "Sent"
       : isPlus && !isMinus
-      ? 'Received'
+      ? "Received"
       : isPlus && isMinus
-      ? 'Refund'
-      : '';
+      ? "Refund"
+      : "";
 
     transferItem.transferInfo = [
       {
@@ -984,14 +1143,15 @@ export class TxsHelper {
           this.formatNumberSeparateThousand(
             this.formatAmount(
               data?.amount,
-              data?.tokenInfo?.tokenDecimal || currentChain?.feeCurrencies[0]?.coinDecimals
+              data?.tokenInfo?.tokenDecimal ||
+                currentChain?.feeCurrencies[0]?.coinDecimals
             )
           )
         ),
-        token: data?.tokenInfo?.tokenAbbr?.toUpperCase() || '',
+        token: data?.tokenInfo?.tokenAbbr?.toUpperCase() || "",
         isMinus,
-        isPlus
-      }
+        isPlus,
+      },
     ];
     return [transferItem];
   }
@@ -1005,12 +1165,16 @@ export class TxsHelper {
     item.height = `${this.formatNumberSeparateThousand(data.block)}`;
     item.denomFee = `${currentChain?.feeCurrencies[0]?.coinDenom?.toUpperCase()}`;
     item.txHash = data.hash;
-    item.status = data.contractRet == 'SUCCESS' ? 'success' : 'fail';
+    item.status = data.contractRet == "SUCCESS" ? "success" : "fail";
     item.time = this.formatTimeTron(data?.timestamp);
-    item.gasUsed = '0';
-    item.gasWanted = '0';
+    item.gasUsed = "0";
+    item.gasWanted = "0";
     item.countTypeEvent = 0;
-    item.transfers = this.handleTransferDetailTron(data, addressAccount, currentChain);
+    item.transfers = this.handleTransferDetailTron(
+      data,
+      addressAccount,
+      currentChain
+    );
     item.isRefreshData = false;
     return item;
   }

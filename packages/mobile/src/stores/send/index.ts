@@ -1,4 +1,4 @@
-import { observable, action, makeObservable, computed } from 'mobx';
+import { observable, action, makeObservable, computed } from "mobx";
 
 export class SendStore {
   @observable

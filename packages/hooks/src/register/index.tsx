@@ -1,10 +1,10 @@
-import React, { FunctionComponent, useState } from 'react';
-import { KeyRingStore } from '@owallet/stores';
-import { action, computed, flow, makeObservable, observable } from 'mobx';
-import { Mnemonic, RNG } from '@owallet/crypto';
-import { BIP44HDPath } from '@owallet/types';
+import React, { FunctionComponent, useState } from "react";
+import { KeyRingStore } from "@owallet/stores";
+import { action, computed, flow, makeObservable, observable } from "mobx";
+import { Mnemonic, RNG } from "@owallet/crypto";
+import { BIP44HDPath } from "@owallet/types";
 
-export type RegisterMode = 'create' | 'add';
+export type RegisterMode = "create" | "add";
 
 export type RegisterOption = {
   type: string;
@@ -27,7 +27,7 @@ export class RegisterConfig {
   protected options: RegisterOption[] = [];
 
   @observable
-  protected _type: string = '';
+  protected _type: string = "";
 
   @observable
   protected _isFinalized: boolean = false;
@@ -47,7 +47,7 @@ export class RegisterConfig {
 
   @computed
   get mode(): RegisterMode {
-    return this.keyRingStore.multiKeyStoreInfo.length === 0 ? 'create' : 'add';
+    return this.keyRingStore.multiKeyStoreInfo.length === 0 ? "create" : "add";
   }
 
   get isLoading(): boolean {
@@ -61,13 +61,13 @@ export class RegisterConfig {
   @action
   addRegisterOption(
     type: string,
-    intro: RegisterOption['intro'],
-    page: RegisterOption['page']
+    intro: RegisterOption["intro"],
+    page: RegisterOption["page"]
   ) {
     this.options.push({
       type,
       intro,
-      page
+      page,
     });
   }
 
@@ -81,12 +81,12 @@ export class RegisterConfig {
   }
 
   get isIntro(): boolean {
-    return this._type === '';
+    return this._type === "";
   }
 
   @action
   clear() {
-    this.setType('');
+    this.setType("");
   }
 
   // Create or add the mnemonic account.
@@ -101,13 +101,13 @@ export class RegisterConfig {
   ) {
     this._isLoading = true;
     try {
-      if (this.mode === 'create') {
+      if (this.mode === "create") {
         yield this.keyRingStore.createMnemonicKey(
           mnemonic,
           password,
           {
             name,
-            ...meta
+            ...meta,
           },
           bip44HDPath
         );
@@ -116,7 +116,7 @@ export class RegisterConfig {
           mnemonic,
           {
             name,
-            ...meta
+            ...meta,
           },
           bip44HDPath
         );
@@ -133,19 +133,18 @@ export class RegisterConfig {
   *createLedger(name: string, password: string, bip44HDPath: BIP44HDPath) {
     this._isLoading = true;
     try {
-      if (this.mode === 'create') {
-        
+      if (this.mode === "create") {
         yield this.keyRingStore.createLedgerKey(
           password,
           {
-            name
+            name,
           },
           bip44HDPath
         );
       } else {
         yield this.keyRingStore.addLedgerKey(
           {
-            name
+            name,
           },
           bip44HDPath
         );
@@ -153,7 +152,7 @@ export class RegisterConfig {
 
       this._isFinalized = true;
     } catch (error) {
-      console.log('ERROR ON CREATE LEDGER IN REGISTER CONFIG: ', error);
+      console.log("ERROR ON CREATE LEDGER IN REGISTER CONFIG: ", error);
     } finally {
       this._isLoading = false;
     }
@@ -170,15 +169,15 @@ export class RegisterConfig {
   ) {
     this._isLoading = true;
     try {
-      if (this.mode === 'create') {
+      if (this.mode === "create") {
         yield this.keyRingStore.createPrivateKey(privateKey, password, {
           name,
-          ...meta
+          ...meta,
         });
       } else {
         yield this.keyRingStore.addPrivateKey(privateKey, {
           name,
-          ...meta
+          ...meta,
         });
       }
       this._isFinalized = true;

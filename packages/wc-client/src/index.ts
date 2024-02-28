@@ -1,13 +1,35 @@
-import { IConnector, IJsonRpcRequest, IRequestOptions } from '@walletconnect/types';
-import { ChainInfo, OWallet, OWalletIntereactionOptions, OWalletMode, OWalletSignOptions, Key, ChainInfoWithoutEndpoints } from '@owallet/types';
-import { DirectSignResponse, OfflineDirectSigner } from '@cosmjs/proto-signing';
-import { AminoSignResponse, BroadcastMode, OfflineSigner, StdSignature, StdSignDoc, StdTx } from '@cosmjs/launchpad';
-import { CosmJSOfflineSigner, CosmJSOfflineSignerOnlyAmino } from '@owallet/provider';
-import { SecretUtils } from 'secretjs/types/enigmautils';
-import { payloadId } from '@walletconnect/utils';
-import deepmerge from 'deepmerge';
-import { Buffer } from 'buffer';
-import { IndexedDBKVStore, KVStore } from '@owallet/common';
+import {
+  IConnector,
+  IJsonRpcRequest,
+  IRequestOptions,
+} from "@walletconnect/types";
+import {
+  ChainInfo,
+  OWallet,
+  OWalletIntereactionOptions,
+  OWalletMode,
+  OWalletSignOptions,
+  Key,
+  ChainInfoWithoutEndpoints,
+} from "@owallet/types";
+import { DirectSignResponse, OfflineDirectSigner } from "@cosmjs/proto-signing";
+import {
+  AminoSignResponse,
+  BroadcastMode,
+  OfflineSigner,
+  StdSignature,
+  StdSignDoc,
+  StdTx,
+} from "@cosmjs/launchpad";
+import {
+  CosmJSOfflineSigner,
+  CosmJSOfflineSignerOnlyAmino,
+} from "@owallet/provider";
+import { SecretUtils } from "secretjs/types/enigmautils";
+import { payloadId } from "@walletconnect/utils";
+import deepmerge from "deepmerge";
+import { Buffer } from "buffer";
+import { IndexedDBKVStore, KVStore } from "@owallet/common";
 
 // VersionFormatRegExp checks if a chainID is in the format required for parsing versions
 // The chainID should be in the form: `{identifier}-{version}`
@@ -21,7 +43,7 @@ function parseChainId(chainId: string): {
   if (split.length !== 2) {
     return {
       identifier: chainId,
-      version: 0
+      version: 0,
     };
   } else {
     return { identifier: split[0], version: parseInt(split[1]) };
@@ -54,28 +76,38 @@ export class OWalletConnectV1 implements OWallet {
     public readonly connector: IConnector,
     public readonly options: {
       kvStore?: KVStore;
-      sendTx?: OWallet['sendTx'];
-      onBeforeSendRequest?: (request: Partial<IJsonRpcRequest>, options?: IRequestOptions) => Promise<void> | void;
-      onAfterSendRequest?: (response: any, request: Partial<IJsonRpcRequest>, options?: IRequestOptions) => Promise<void> | void;
+      sendTx?: OWallet["sendTx"];
+      onBeforeSendRequest?: (
+        request: Partial<IJsonRpcRequest>,
+        options?: IRequestOptions
+      ) => Promise<void> | void;
+      onAfterSendRequest?: (
+        response: any,
+        request: Partial<IJsonRpcRequest>,
+        options?: IRequestOptions
+      ) => Promise<void> | void;
     } = {}
   ) {
     if (!options.kvStore) {
-      options.kvStore = new IndexedDBKVStore('keplr_wallet_connect');
+      options.kvStore = new IndexedDBKVStore("keplr_wallet_connect");
     }
 
-    connector.on('disconnect', () => {
+    connector.on("disconnect", () => {
       this.clearSaved();
     });
 
-    connector.on('call_request', this.onCallReqeust);
+    connector.on("call_request", this.onCallReqeust);
   }
 
-  readonly version: string = '0.9.0';
-  readonly mode: OWalletMode = 'walletconnect';
+  readonly version: string = "0.9.0";
+  readonly mode: OWalletMode = "walletconnect";
 
   defaultOptions: OWalletIntereactionOptions = {};
 
-  protected readonly onCallReqeust = async (error: Error | null, payload: any | null) => {
+  protected readonly onCallReqeust = async (
+    error: Error | null,
+    payload: any | null
+  ) => {
     if (error) {
       console.log(error);
       return;
@@ -85,8 +117,12 @@ export class OWalletConnectV1 implements OWallet {
       return;
     }
 
-    if (payload.method === 'keplr_keystore_may_changed_event_wallet_connect_v1') {
-      const param = payload.params[0] as OWalletKeystoreMayChangedEventParam | undefined;
+    if (
+      payload.method === "keplr_keystore_may_changed_event_wallet_connect_v1"
+    ) {
+      const param = payload.params[0] as
+        | OWalletKeystoreMayChangedEventParam
+        | undefined;
       if (!param) {
         return;
       }
@@ -96,7 +132,10 @@ export class OWalletConnectV1 implements OWallet {
         return;
       }
 
-      const mayChangedKeyMap: Record<string, OWalletGetKeyWalletCoonectV1Response> = {};
+      const mayChangedKeyMap: Record<
+        string,
+        OWalletGetKeyWalletCoonectV1Response
+      > = {};
       for (const mayChangedKey of param.keys) {
         mayChangedKeyMap[mayChangedKey.chainIdentifier] = {
           address: mayChangedKey.address,
@@ -104,7 +143,7 @@ export class OWalletConnectV1 implements OWallet {
           bech32Address: mayChangedKey.bech32Address,
           isNanoLedger: param.isNanoLedger,
           name: param.name,
-          pubKey: mayChangedKey.pubKey
+          pubKey: mayChangedKey.pubKey,
         };
       }
 
@@ -134,7 +173,7 @@ export class OWalletConnectV1 implements OWallet {
 
       if (hasChanged) {
         await this.saveAllLastSeenKey(lastSeenKeys);
-        window.dispatchEvent(new Event('keplr_keystorechange'));
+        window.dispatchEvent(new Event("keplr_keystorechange"));
       }
     }
   };
@@ -142,10 +181,16 @@ export class OWalletConnectV1 implements OWallet {
   protected async clearSaved(): Promise<void> {
     const kvStore = this.options.kvStore!;
 
-    await Promise.all([kvStore.set(this.getKeyHasEnabled(), null), kvStore.set(this.getKeyLastSeenKey(), null)]);
+    await Promise.all([
+      kvStore.set(this.getKeyHasEnabled(), null),
+      kvStore.set(this.getKeyLastSeenKey(), null),
+    ]);
   }
 
-  protected async sendCustomRequest(request: Partial<IJsonRpcRequest>, options?: IRequestOptions): Promise<any> {
+  protected async sendCustomRequest(
+    request: Partial<IJsonRpcRequest>,
+    options?: IRequestOptions
+  ): Promise<any> {
     if (this.options.onBeforeSendRequest) {
       await this.options.onBeforeSendRequest(request, options);
     }
@@ -160,7 +205,7 @@ export class OWalletConnectV1 implements OWallet {
   }
 
   async enable(chainIds: string | string[]): Promise<void> {
-    if (typeof chainIds === 'string') {
+    if (typeof chainIds === "string") {
       chainIds = [chainIds];
     }
 
@@ -179,9 +224,9 @@ export class OWalletConnectV1 implements OWallet {
 
     await this.sendCustomRequest({
       id: payloadId(),
-      jsonrpc: '2.0',
-      method: 'keplr_enable_wallet_connect_v1',
-      params: chainIds
+      jsonrpc: "2.0",
+      method: "keplr_enable_wallet_connect_v1",
+      params: chainIds,
     });
 
     await this.saveHasEnabledChainIds(chainIds);
@@ -192,7 +237,9 @@ export class OWalletConnectV1 implements OWallet {
   }
 
   protected async getHasEnabledChainIds(): Promise<string[]> {
-    return (await this.options.kvStore!.get<string[]>(this.getKeyHasEnabled())) ?? [];
+    return (
+      (await this.options.kvStore!.get<string[]>(this.getKeyHasEnabled())) ?? []
+    );
   }
 
   protected async saveHasEnabledChainIds(chainIds: string[]) {
@@ -202,11 +249,18 @@ export class OWalletConnectV1 implements OWallet {
         hasEnabledChainIds.push(chainId);
       }
     }
-    await this.options.kvStore!.set(this.getKeyHasEnabled(), hasEnabledChainIds);
+    await this.options.kvStore!.set(
+      this.getKeyHasEnabled(),
+      hasEnabledChainIds
+    );
   }
 
-  enigmaDecrypt(_chainId: string, _ciphertext: Uint8Array, _nonce: Uint8Array): Promise<Uint8Array> {
-    throw new Error('Not yet implemented');
+  enigmaDecrypt(
+    _chainId: string,
+    _ciphertext: Uint8Array,
+    _nonce: Uint8Array
+  ): Promise<Uint8Array> {
+    throw new Error("Not yet implemented");
   }
 
   enigmaEncrypt(
@@ -215,56 +269,59 @@ export class OWalletConnectV1 implements OWallet {
     // eslint-disable-next-line @typescript-eslint/ban-types
     _msg: object
   ): Promise<Uint8Array> {
-    throw new Error('Not yet implemented');
+    throw new Error("Not yet implemented");
   }
 
   experimentalSuggestChain(_chainInfo: ChainInfo): Promise<void> {
-    throw new Error('Not yet implemented');
+    throw new Error("Not yet implemented");
   }
 
   getEnigmaPubKey(_chainId: string): Promise<Uint8Array> {
-    throw new Error('Not yet implemented');
+    throw new Error("Not yet implemented");
   }
 
-  getEnigmaTxEncryptionKey(_chainId: string, _nonce: Uint8Array): Promise<Uint8Array> {
-    throw new Error('Not yet implemented');
+  getEnigmaTxEncryptionKey(
+    _chainId: string,
+    _nonce: Uint8Array
+  ): Promise<Uint8Array> {
+    throw new Error("Not yet implemented");
   }
 
   getEnigmaUtils(_chainId: string): SecretUtils {
-    throw new Error('Not yet implemented');
+    throw new Error("Not yet implemented");
   }
 
   async getKey(chainId: string): Promise<Key> {
     const lastSeenKey = await this.getLastSeenKey(chainId);
     if (lastSeenKey) {
       return {
-        address: Buffer.from(lastSeenKey.address, 'hex'),
+        address: Buffer.from(lastSeenKey.address, "hex"),
         algo: lastSeenKey.algo,
         bech32Address: lastSeenKey.bech32Address,
         isNanoLedger: lastSeenKey.isNanoLedger,
         name: lastSeenKey.name,
-        pubKey: Buffer.from(lastSeenKey.pubKey, 'hex')
+        pubKey: Buffer.from(lastSeenKey.pubKey, "hex"),
       };
     }
 
     const response = (
       await this.sendCustomRequest({
         id: payloadId(),
-        jsonrpc: '2.0',
-        method: 'keplr_get_key_wallet_connect_v1',
-        params: [chainId]
+        jsonrpc: "2.0",
+        method: "keplr_get_key_wallet_connect_v1",
+        params: [chainId],
       })
     )[0] as OWalletGetKeyWalletCoonectV1Response;
 
     await this.saveLastSeenKey(chainId, response);
 
     return {
-      address: Buffer.from(response.address, 'hex'),
+      address: Buffer.from(response.address, "hex"),
       algo: response.algo,
       bech32Address: response.bech32Address,
       isNanoLedger: response.isNanoLedger,
       name: response.name,
-      pubKey: Buffer.from(response.pubKey, 'hex')
+      pubKey: Buffer.from(response.pubKey, "hex"),
     };
   }
 
@@ -272,7 +329,9 @@ export class OWalletConnectV1 implements OWallet {
     return `${this.connector.session.handshakeTopic}-key`;
   }
 
-  protected async getLastSeenKey(chainId: string): Promise<OWalletGetKeyWalletCoonectV1Response | undefined> {
+  protected async getLastSeenKey(
+    chainId: string
+  ): Promise<OWalletGetKeyWalletCoonectV1Response | undefined> {
     const saved = await this.getAllLastSeenKey();
 
     if (!saved) {
@@ -288,11 +347,16 @@ export class OWalletConnectV1 implements OWallet {
     }>(this.getKeyLastSeenKey());
   }
 
-  protected async saveAllLastSeenKey(data: { [chainId: string]: OWalletGetKeyWalletCoonectV1Response | undefined }) {
+  protected async saveAllLastSeenKey(data: {
+    [chainId: string]: OWalletGetKeyWalletCoonectV1Response | undefined;
+  }) {
     await this.options.kvStore!.set(this.getKeyLastSeenKey(), data);
   }
 
-  protected async saveLastSeenKey(chainId: string, response: OWalletGetKeyWalletCoonectV1Response) {
+  protected async saveLastSeenKey(
+    chainId: string,
+    response: OWalletGetKeyWalletCoonectV1Response
+  ) {
     let saved = await this.getAllLastSeenKey();
 
     if (!saved) {
@@ -304,19 +368,30 @@ export class OWalletConnectV1 implements OWallet {
     await this.saveAllLastSeenKey(saved);
   }
 
-  signArbitrary(_chainId: string, _signer: string, _data: string | Uint8Array): Promise<StdSignature> {
-    throw new Error('Not yet implemented');
+  signArbitrary(
+    _chainId: string,
+    _signer: string,
+    _data: string | Uint8Array
+  ): Promise<StdSignature> {
+    throw new Error("Not yet implemented");
   }
 
-  verifyArbitrary(_chainId: string, _signer: string, _data: string | Uint8Array, _signature: StdSignature): Promise<boolean> {
-    throw new Error('Not yet implemented');
+  verifyArbitrary(
+    _chainId: string,
+    _signer: string,
+    _data: string | Uint8Array,
+    _signature: StdSignature
+  ): Promise<boolean> {
+    throw new Error("Not yet implemented");
   }
 
   getOfflineSigner(chainId: string): OfflineSigner & OfflineDirectSigner {
     return new CosmJSOfflineSigner(chainId, this);
   }
 
-  async getOfflineSignerAuto(chainId: string): Promise<OfflineSigner | OfflineDirectSigner> {
+  async getOfflineSignerAuto(
+    chainId: string
+  ): Promise<OfflineSigner | OfflineDirectSigner> {
     const key = await this.getKey(chainId);
     if (key.isNanoLedger) {
       return new CosmJSOfflineSignerOnlyAmino(chainId, this);
@@ -328,8 +403,11 @@ export class OWalletConnectV1 implements OWallet {
     return new CosmJSOfflineSignerOnlyAmino(chainId, this);
   }
 
-  getSecret20ViewingKey(_chainId: string, _contractAddress: string): Promise<string> {
-    throw new Error('Not yet implemented');
+  getSecret20ViewingKey(
+    _chainId: string,
+    _contractAddress: string
+  ): Promise<string> {
+    throw new Error("Not yet implemented");
   }
   experimentalSignEIP712CosmosTx_v0(
     _chainId: string,
@@ -353,25 +431,39 @@ export class OWalletConnectV1 implements OWallet {
    * @param stdTx
    * @param mode
    */
-  sendTx(chainId: string, tx: StdTx | Uint8Array, mode: BroadcastMode): Promise<Uint8Array> {
+  sendTx(
+    chainId: string,
+    tx: StdTx | Uint8Array,
+    mode: BroadcastMode
+  ): Promise<Uint8Array> {
     if (this.options.sendTx) {
       return this.options.sendTx(chainId, tx, mode);
     }
 
-    throw new Error('send tx is not delivered by options');
+    throw new Error("send tx is not delivered by options");
   }
 
   getChainInfosWithoutEndpoints(): Promise<ChainInfoWithoutEndpoints[]> {
-    throw new Error('Not yet implemented');
+    throw new Error("Not yet implemented");
   }
 
-  async signAmino(chainId: string, signer: string, signDoc: StdSignDoc, signOptions: OWalletSignOptions = {}): Promise<AminoSignResponse> {
+  async signAmino(
+    chainId: string,
+    signer: string,
+    signDoc: StdSignDoc,
+    signOptions: OWalletSignOptions = {}
+  ): Promise<AminoSignResponse> {
     return (
       await this.sendCustomRequest({
         id: payloadId(),
-        jsonrpc: '2.0',
-        method: 'keplr_sign_amino_wallet_connect_v1',
-        params: [chainId, signer, signDoc, deepmerge(this.defaultOptions.sign ?? {}, signOptions)]
+        jsonrpc: "2.0",
+        method: "keplr_sign_amino_wallet_connect_v1",
+        params: [
+          chainId,
+          signer,
+          signDoc,
+          deepmerge(this.defaultOptions.sign ?? {}, signOptions),
+        ],
       })
     )[0];
   }
@@ -387,10 +479,14 @@ export class OWalletConnectV1 implements OWallet {
     },
     _signOptions: OWalletSignOptions = {}
   ): Promise<DirectSignResponse> {
-    throw new Error('Not yet implemented');
+    throw new Error("Not yet implemented");
   }
 
-  suggestToken(_chainId: string, _contractAddress: string, _viewingKey?: string): Promise<void> {
-    throw new Error('Not yet implemented');
+  suggestToken(
+    _chainId: string,
+    _contractAddress: string,
+    _viewingKey?: string
+  ): Promise<void> {
+    throw new Error("Not yet implemented");
   }
 }

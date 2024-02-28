@@ -1,20 +1,20 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../stores';
-import { KeyRingStatus } from '@owallet/background';
-import { LoadingScreenModal } from '../../providers/loading-screen/modal';
-import { Dec } from '@owallet/unit';
-import { View } from 'react-native';
-import { Text } from '@src/components/text';
-import { registerModal } from '../../modals/base';
-import { CardModal } from '../../modals/card';
-import { useStyle } from '../../styles';
-import { RectButton } from '../../components/rect-button';
-import { Button } from '../../components/button';
-import { Bech32Address } from '@owallet/cosmos';
-import { WalletIcon } from '../setting/components';
-import LoadingScreenOverlay from '@src/providers/loading-screen/loading-screen-overlay';
-import { BottomSheetProps } from '@gorhom/bottom-sheet';
+import React, { FunctionComponent, useEffect, useState } from "react";
+import { observer } from "mobx-react-lite";
+import { useStore } from "../../stores";
+import { KeyRingStatus } from "@owallet/background";
+import { LoadingScreenModal } from "../../providers/loading-screen/modal";
+import { Dec } from "@owallet/unit";
+import { View } from "react-native";
+import { Text } from "@src/components/text";
+import { registerModal } from "../../modals/base";
+import { CardModal } from "../../modals/card";
+import { useStyle } from "../../styles";
+import { RectButton } from "../../components/rect-button";
+import { Button } from "../../components/button";
+import { Bech32Address } from "@owallet/cosmos";
+import { WalletIcon } from "../setting/components";
+import LoadingScreenOverlay from "@src/providers/loading-screen/loading-screen-overlay";
+import { BottomSheetProps } from "@gorhom/bottom-sheet";
 
 export const BIP44Selectable: FunctionComponent = observer(() => {
   const { chainStore, keyRingStore, queriesStore } = useStore();
@@ -89,7 +89,7 @@ export const BIP44Selectable: FunctionComponent = observer(() => {
           const account = queries.cosmos.queryAccount.getQueryBech32Address(
             other.bech32Address
           );
-          return account.sequence !== '0';
+          return account.sequence !== "0";
         });
 
         // If there is no other accounts that have the balances or have sent txs,
@@ -110,7 +110,7 @@ export const BIP44Selectable: FunctionComponent = observer(() => {
     needSelectBIP44,
     queries.cosmos.queryAccount,
     queries.queryBalances,
-    selectables.selectables
+    selectables.selectables,
   ]);
 
   return (
@@ -129,10 +129,7 @@ export const BIP44Selectable: FunctionComponent = observer(() => {
 export const BIP44SelectableModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
-  bottomSheetModalConfig?: Omit<
-    BottomSheetProps,
-    'snapPoints' | 'children'
-  >;
+  bottomSheetModalConfig?: Omit<BottomSheetProps, "snapPoints" | "children">;
 }> = registerModal(
   observer(() => {
     const { chainStore, keyRingStore, queriesStore } = useStore();
@@ -155,35 +152,35 @@ export const BIP44SelectableModal: FunctionComponent<{
               key={selectable.bech32Address}
               style={style.flatten(
                 [
-                  'padding-20',
-                  'border-radius-8',
-                  'border-width-2',
-                  'border-color-primary-10',
-                  'margin-bottom-12'
+                  "padding-20",
+                  "border-radius-8",
+                  "border-width-2",
+                  "border-color-primary-10",
+                  "margin-bottom-12",
                 ],
-                [selectedIndex === i && 'border-color-primary']
+                [selectedIndex === i && "border-color-primary"]
               )}
               onPress={() => {
                 setSelectedIndex(i);
               }}
             >
-              <View style={style.flatten(['flex-row', 'items-center'])}>
-                <View style={style.flatten(['margin-right-16'])}>
+              <View style={style.flatten(["flex-row", "items-center"])}>
+                <View style={style.flatten(["margin-right-16"])}>
                   <WalletIcon
-                    color={style.get('color-text-black-medium').color}
+                    color={style.get("color-text-black-medium").color}
                     height={44}
                   />
                 </View>
                 <View>
                   <Text
                     style={style.flatten([
-                      'subtitle3',
-                      'color-text-black-low',
-                      'margin-bottom-4'
+                      "subtitle3",
+                      "color-text-black-low",
+                      "margin-bottom-4",
                     ])}
                   >{`m/44'/${selectable.path.coinType}'`}</Text>
                   <Text
-                    style={style.flatten(['body2', 'color-text-black-high'])}
+                    style={style.flatten(["body2", "color-text-black-high"])}
                   >
                     {Bech32Address.shortenAddress(selectable.bech32Address, 26)}
                   </Text>
@@ -191,29 +188,29 @@ export const BIP44SelectableModal: FunctionComponent<{
               </View>
               <View
                 style={style.flatten([
-                  'height-1',
-                  'background-color-divider',
-                  'margin-y-16'
+                  "height-1",
+                  "background-color-divider",
+                  "margin-y-16",
                 ])}
               />
               <View
                 style={style.flatten([
-                  'flex-row',
-                  'items-center',
-                  'margin-bottom-4'
+                  "flex-row",
+                  "items-center",
+                  "margin-bottom-4",
                 ])}
               >
                 <Text
                   style={style.flatten([
-                    'subtitle2',
-                    'color-text-black-medium'
+                    "subtitle2",
+                    "color-text-black-medium",
                   ])}
                 >
                   Balance
                 </Text>
-                <View style={style.get('flex-1')} />
+                <View style={style.get("flex-1")} />
                 <Text
-                  style={style.flatten(['body2', 'color-text-black-medium'])}
+                  style={style.flatten(["body2", "color-text-black-medium"])}
                 >
                   {queries.queryBalances
                     .getQueryBech32Address(selectable.bech32Address)
@@ -223,18 +220,18 @@ export const BIP44SelectableModal: FunctionComponent<{
                     .toString()}
                 </Text>
               </View>
-              <View style={style.flatten(['flex-row', 'items-center'])}>
+              <View style={style.flatten(["flex-row", "items-center"])}>
                 <Text
                   style={style.flatten([
-                    'subtitle2',
-                    'color-text-black-medium'
+                    "subtitle2",
+                    "color-text-black-medium",
                   ])}
                 >
                   Previous txs
                 </Text>
-                <View style={style.get('flex-1')} />
+                <View style={style.get("flex-1")} />
                 <Text
-                  style={style.flatten(['body2', 'color-text-black-medium'])}
+                  style={style.flatten(["body2", "color-text-black-medium"])}
                 >
                   {
                     queries.cosmos.queryAccount.getQueryBech32Address(
@@ -249,7 +246,7 @@ export const BIP44SelectableModal: FunctionComponent<{
         <Button
           size="large"
           text="Select Account"
-          containerStyle={style.flatten(['margin-top-12'])}
+          containerStyle={style.flatten(["margin-top-12"])}
           disabled={selectedIndex < 0}
           onPress={() => {
             keyRingStore.setKeyStoreCoinType(
@@ -262,6 +259,6 @@ export const BIP44SelectableModal: FunctionComponent<{
     );
   }),
   {
-    disableSafeArea: true
+    disableSafeArea: true,
   }
 );

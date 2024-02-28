@@ -17,6 +17,6 @@ export type HDPath = {
 };
 
 export enum KeyDerivationTypeEnum {
-  BIP44 = '44',
-  BIP84 = '84'
+  BIP44 = "44",
+  BIP84 = "84",
 }

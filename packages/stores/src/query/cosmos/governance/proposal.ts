@@ -1,16 +1,16 @@
-import { ObservableChainQuery } from '../../chain-query';
+import { ObservableChainQuery } from "../../chain-query";
 import {
   Proposal,
   ProposalStargate,
   ProposalStatus,
-  ProposalTally
-} from './types';
-import { KVStore } from '@owallet/common';
-import { ChainGetter } from '../../../common';
-import { computed, makeObservable } from 'mobx';
-import { DeepReadonly } from 'utility-types';
-import { CoinPretty, Dec, DecUtils, Int, IntPretty } from '@owallet/unit';
-import { ObservableQueryGovernance } from './proposals';
+  ProposalTally,
+} from "./types";
+import { KVStore } from "@owallet/common";
+import { ChainGetter } from "../../../common";
+import { computed, makeObservable } from "mobx";
+import { DeepReadonly } from "utility-types";
+import { CoinPretty, Dec, DecUtils, Int, IntPretty } from "@owallet/unit";
+import { ObservableQueryGovernance } from "./proposals";
 
 export class ObservableQueryProposal extends ObservableChainQuery<ProposalTally> {
   constructor(
@@ -33,17 +33,17 @@ export class ObservableQueryProposal extends ObservableChainQuery<ProposalTally>
   }
 
   get proposalStatus(): ProposalStatus {
-    if ('proposal_status' in this.raw) {
+    if ("proposal_status" in this.raw) {
       switch (this.raw.proposal_status) {
-        case 'DepositPeriod':
+        case "DepositPeriod":
           return ProposalStatus.DEPOSIT_PERIOD;
-        case 'VotingPeriod':
+        case "VotingPeriod":
           return ProposalStatus.VOTING_PERIOD;
-        case 'Passed':
+        case "Passed":
           return ProposalStatus.PASSED;
-        case 'Rejected':
+        case "Rejected":
           return ProposalStatus.REJECTED;
-        case 'Failed':
+        case "Failed":
           return ProposalStatus.FAILED;
         default:
           return ProposalStatus.UNSPECIFIED;
@@ -71,7 +71,7 @@ export class ObservableQueryProposal extends ObservableChainQuery<ProposalTally>
   }
 
   get title(): string {
-    if ('value' in this.raw.content) {
+    if ("value" in this.raw.content) {
       return this.raw.content.value.title;
     }
 
@@ -79,7 +79,7 @@ export class ObservableQueryProposal extends ObservableChainQuery<ProposalTally>
   }
 
   get description(): string {
-    if ('value' in this.raw.content) {
+    if ("value" in this.raw.content) {
       return this.raw.content.value.description;
     }
 
@@ -145,7 +145,7 @@ export class ObservableQueryProposal extends ObservableChainQuery<ProposalTally>
           new Int(this.raw.final_tally_result.no_with_veto)
         )
           .moveDecimalPointLeft(stakeCurrency.coinDecimals)
-          .maxDecimals(stakeCurrency.coinDecimals)
+          .maxDecimals(stakeCurrency.coinDecimals),
       };
     }
 
@@ -166,7 +166,7 @@ export class ObservableQueryProposal extends ObservableChainQuery<ProposalTally>
         noWithVeto: new IntPretty(new Int(0))
           .ready(false)
           .moveDecimalPointLeft(stakeCurrency.coinDecimals)
-          .maxDecimals(stakeCurrency.coinDecimals)
+          .maxDecimals(stakeCurrency.coinDecimals),
       };
     }
 
@@ -182,7 +182,7 @@ export class ObservableQueryProposal extends ObservableChainQuery<ProposalTally>
         .maxDecimals(stakeCurrency.coinDecimals),
       noWithVeto: new IntPretty(new Int(this.response.data.result.no_with_veto))
         .moveDecimalPointLeft(stakeCurrency.coinDecimals)
-        .maxDecimals(stakeCurrency.coinDecimals)
+        .maxDecimals(stakeCurrency.coinDecimals),
     };
   }
 
@@ -217,7 +217,7 @@ export class ObservableQueryProposal extends ObservableChainQuery<ProposalTally>
         yes: new IntPretty(new Int(0)).ready(false),
         no: new IntPretty(new Int(0)).ready(false),
         abstain: new IntPretty(new Int(0)).ready(false),
-        noWithVeto: new IntPretty(new Int(0)).ready(false)
+        noWithVeto: new IntPretty(new Int(0)).ready(false),
       };
     }
 
@@ -245,7 +245,7 @@ export class ObservableQueryProposal extends ObservableChainQuery<ProposalTally>
           .toDec()
           .quoTruncate(tallySum.toDec())
           .mulTruncate(DecUtils.getTenExponentNInPrecisionRange(2))
-      ).ready(tally.noWithVeto.isReady)
+      ).ready(tally.noWithVeto.isReady),
     };
   }
 }

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { navigate } from '../../router/root';
 import isValidDomain from 'is-valid-domain';
 import { find } from 'lodash';
@@ -8,12 +9,26 @@ import { TxsHelper } from '@src/stores/txs/helpers/txs-helper';
 import { showMessage, MessageOptions } from 'react-native-flash-message';
 import { InAppBrowser } from 'react-native-inappbrowser-reborn';
 import { Linking, Platform } from 'react-native';
+=======
+import { navigate } from "../../router/root";
+import isValidDomain from "is-valid-domain";
+import { find } from "lodash";
+import moment from "moment";
+import { tokensIcon } from "@owallet/common";
+import { AppCurrency } from "@owallet/types";
+import get from "lodash/get";
+import { TxsHelper } from "@src/stores/txs/helpers/txs-helper";
+import { showMessage, MessageOptions } from "react-native-flash-message";
+import { InAppBrowser } from "react-native-inappbrowser-reborn";
+import { Linking, Platform } from "react-native";
+>>>>>>> main
 import {
   flattenTokens,
   getSubAmountDetails,
   toAmount,
   toDisplay,
   toSumDisplay,
+<<<<<<< HEAD
   tokensIcon
 } from '@oraichain/oraidex-common';
 const SCHEME_IOS = 'owallet://open_url?url=';
@@ -21,40 +36,56 @@ const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url=';
 export const ORAICHAIN_ID = 'Oraichain';
 export const KAWAII_ID = 'kawaii_6886-1';
 export const ETH_ID = '0x01';
+=======
+} from "@oraichain/oraidex-common";
+import {
+  formatBaseUnitsAsRose,
+  formatWeiAsWrose,
+} from "@owallet/background/build/utils/oasis-helper";
+const SCHEME_IOS = "owallet://open_url?url=";
+const SCHEME_ANDROID = "app.owallet.oauth://google/open_url?url=";
+export const ORAICHAIN_ID = "Oraichain";
+export const KAWAII_ID = "kawaii_6886-1";
+export const ETH_ID = "0x01";
+>>>>>>> main
 export const TRON_BIP39_PATH_PREFIX = "m/44'/195'";
 export const BIP44_PATH_PREFIX = "m/44'";
-export const FAILED = 'FAILED';
-export const SUCCESS = 'SUCCESS';
+export const FAILED = "FAILED";
+export const SUCCESS = "SUCCESS";
 export const TRON_BIP39_PATH_INDEX_0 = TRON_BIP39_PATH_PREFIX + "/0'/0/0";
 
 export const TRC20_LIST = [
   {
-    contractAddress: 'TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8',
-    tokenName: 'USDC',
-    coinDenom: 'USDC',
-    coinGeckoId: 'usd-coin',
-    coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png',
+    contractAddress: "TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8",
+    tokenName: "USDC",
+    coinDenom: "USDC",
+    coinGeckoId: "usd-coin",
+    coinImageUrl:
+      "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png",
     coinDecimals: 6,
-    type: 'trc20'
+    type: "trc20",
   },
   {
-    contractAddress: 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t',
-    tokenName: 'USDT',
-    coinDenom: 'USDT',
+    contractAddress: "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+    tokenName: "USDT",
+    coinDenom: "USDT",
     coinDecimals: 6,
-    coinGeckoId: 'tether',
-    coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/825.png',
-    type: 'trc20'
+    coinGeckoId: "tether",
+    coinImageUrl: "https://s2.coinmarketcap.com/static/img/coins/64x64/825.png",
+    type: "trc20",
   },
   {
-    type: 'cw20',
-    coinDenom: 'wTRX',
-    coinMinimalDenom: 'cw20:orai1c7tpjenafvgjtgm9aqwm7afnke6c56hpdms8jc6md40xs3ugd0es5encn0:wTRX',
-    contractAddress: 'orai1c7tpjenafvgjtgm9aqwm7afnke6c56hpdms8jc6md40xs3ugd0es5encn0',
+    type: "cw20",
+    coinDenom: "wTRX",
+    coinMinimalDenom:
+      "cw20:orai1c7tpjenafvgjtgm9aqwm7afnke6c56hpdms8jc6md40xs3ugd0es5encn0:wTRX",
+    contractAddress:
+      "orai1c7tpjenafvgjtgm9aqwm7afnke6c56hpdms8jc6md40xs3ugd0es5encn0",
     coinDecimals: 6,
-    coinGeckoId: 'tron',
-    coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png'
-  }
+    coinGeckoId: "tron",
+    coinImageUrl:
+      "https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png",
+  },
   // {
   //   contractAddress: 'TGjgvdTWWrybVLaVeFqSyVqJQWjxqRYbaK',
   //   tokenName: 'USDD',
@@ -107,21 +138,21 @@ export const handleError = (error, url, method) => {
 };
 export const showToast = ({ ...params }: MessageOptions) => {
   showMessage({
-    type: params?.type ?? 'success',
+    type: params?.type ?? "success",
     duration: 5000,
-    ...params
+    ...params,
   });
   return;
 };
 export const handleDeepLink = async ({ url }) => {
   if (url) {
-    const path = url.replace(SCHEME_ANDROID, '').replace(SCHEME_IOS, '');
+    const path = url.replace(SCHEME_ANDROID, "").replace(SCHEME_IOS, "");
     if (!url.indexOf(SCHEME_ANDROID)) {
-      navigate('Browser', { path });
+      navigate("Browser", { path });
     }
 
     if (url.indexOf(SCHEME_IOS) === 0) {
-      navigate('Browser', { path });
+      navigate("Browser", { path });
     }
   }
 };
@@ -142,14 +173,14 @@ export const checkValidDomain = (url: string) => {
 export const _keyExtract = (item, index) => index.toString();
 
 export const formatContractAddress = (address: string, limitFirst = 10) => {
-  const fristLetter = address?.slice(0, limitFirst) ?? '';
-  const lastLetter = address?.slice(-5) ?? '';
+  const fristLetter = address?.slice(0, limitFirst) ?? "";
+  const lastLetter = address?.slice(-5) ?? "";
 
   return `${fristLetter}...${lastLetter}`;
 };
 export function limitString(str, limit) {
   if (str && str.length > limit) {
-    return str.slice(0, limit) + '...';
+    return str.slice(0, limit) + "...";
   } else {
     return str;
   }
@@ -160,13 +191,13 @@ export const capitalizedText = (text: string) => {
 };
 
 export const TRANSACTION_TYPE = {
-  DELEGATE: 'MsgDelegate',
-  UNDELEGATE: 'MsgUndelegate',
-  CLAIM_REWARD: 'MsgWithdrawDelegationReward',
-  WITHDRAW: 'MsgWithdrawDelegatorReward',
-  SEND: 'MsgSend',
-  INSTANTIATE_CONTRACT: 'MsgInstantiateContract',
-  EXECUTE_CONTRACT: 'MsgExecuteContract'
+  DELEGATE: "MsgDelegate",
+  UNDELEGATE: "MsgUndelegate",
+  CLAIM_REWARD: "MsgWithdrawDelegationReward",
+  WITHDRAW: "MsgWithdrawDelegatorReward",
+  SEND: "MsgSend",
+  INSTANTIATE_CONTRACT: "MsgInstantiateContract",
+  EXECUTE_CONTRACT: "MsgExecuteContract",
 };
 
 export const getValueFromDataEvents = arr => {
@@ -198,16 +229,16 @@ export const getDataFromDataEvent = itemEvents => {
   return countAmountValue(itemEvents?.value[0]?.transferInfo) < 2
     ? {
         ...itemEvents?.value[0],
-        ...itemEvents?.value[0]?.transferInfo[0]
+        ...itemEvents?.value[0]?.transferInfo[0],
       }
     : {
         ...itemEvents?.value[0],
         ...{
-          amount: 'More',
+          amount: "More",
           denom: false,
           isPlus: false,
-          isMinus: false
-        }
+          isMinus: false,
+        },
       };
 };
 const countAmountValue = array => {
@@ -224,20 +255,20 @@ const countAmountValue = array => {
 
 const configBrowser = {
   // iOS Properties
-  dismissButtonStyle: 'Close',
-  preferredBarTintColor: '#453AA4',
-  preferredControlTintColor: 'white',
+  dismissButtonStyle: "Close",
+  preferredBarTintColor: "#453AA4",
+  preferredControlTintColor: "white",
   readerMode: false,
   animated: true,
-  modalPresentationStyle: 'fullScreen',
-  modalTransitionStyle: 'coverVertical',
+  modalPresentationStyle: "fullScreen",
+  modalTransitionStyle: "coverVertical",
   modalEnabled: true,
   enableBarCollapsing: true,
   // Android Properties
   showTitle: true,
-  toolbarColor: '#6200EE',
+  toolbarColor: "#6200EE",
   hasBackButton: true,
-  secondaryToolbarColor: 'black',
+  secondaryToolbarColor: "black",
   enableUrlBarHiding: false,
   enableDefaultShare: true,
   showInRecents: true,
@@ -245,22 +276,22 @@ const configBrowser = {
   // Specify full animation resource identifier(package:anim/name)
   // or only resource name(in case of animation bundled with app).
   animations: {
-    startEnter: 'slide_in_right',
-    startExit: 'slide_out_left',
-    endEnter: 'slide_in_left',
-    endExit: 'slide_out_right'
-  }
+    startEnter: "slide_in_right",
+    startExit: "slide_out_left",
+    endEnter: "slide_in_left",
+    endExit: "slide_out_right",
+  },
 };
 export const openLink = async url => {
   try {
     if (!url) {
-      console.log('url: ', url);
+      console.log("url: ", url);
     }
     if (await InAppBrowser.isAvailable()) {
       const result = await InAppBrowser.open(url, configBrowser);
     } else Linking.openURL(url);
   } catch (error) {
-    console.log('error: ', error);
+    console.log("error: ", error);
     // Alert.alert(error.message);
   }
 };
@@ -275,22 +306,29 @@ export function parseObjectToQueryString(obj) {
       params.append(key, obj[key]);
     }
   }
-  return '?' + params.toString();
+  return "?" + params.toString();
 }
 export function removeEmptyElements(array) {
   return array.filter(element => !!element);
 }
 
 function convertVarToWord(str) {
+<<<<<<< HEAD
   const words = str && str.split('_');
   const capitalizedWords = words && words.map(word => word.charAt(0).toUpperCase() + word.slice(1));
   return capitalizedWords && capitalizedWords.join(' ');
+=======
+  const words = str && str.split("_");
+  const capitalizedWords =
+    words && words.map((word) => word.charAt(0).toUpperCase() + word.slice(1));
+  return capitalizedWords && capitalizedWords.join(" ");
+>>>>>>> main
 }
 export function removeSpecialChars(str) {
-  return str.replace(/[^\w\s]/gi, '');
+  return str.replace(/[^\w\s]/gi, "");
 }
 function addSpacesToString(str) {
-  return str.replace(/([a-z])([A-Z])/g, '$1 $2');
+  return str.replace(/([a-z])([A-Z])/g, "$1 $2");
 }
 
 export const getTransactionValue = ({ data, address, logs }) => {
@@ -304,13 +342,16 @@ export const getTransactionValue = ({ data, address, logs }) => {
     checkType(transactionType, TRANSACTION_TYPE.CLAIM_REWARD) ||
     checkType(transactionType, TRANSACTION_TYPE.WITHDRAW)
   ) {
-    eventType = 'withdraw_rewards';
+    eventType = "withdraw_rewards";
   }
   if (checkType(transactionType, TRANSACTION_TYPE.DELEGATE)) {
-    eventType = 'delegate';
+    eventType = "delegate";
   }
-  if (checkType(transactionType, TRANSACTION_TYPE.SEND) || checkType(transactionType, TRANSACTION_TYPE.UNDELEGATE)) {
-    eventType = 'transfer';
+  if (
+    checkType(transactionType, TRANSACTION_TYPE.SEND) ||
+    checkType(transactionType, TRANSACTION_TYPE.UNDELEGATE)
+  ) {
+    eventType = "transfer";
   }
   if (events && eventType) {
     const value = find(events, { type: eventType });
@@ -318,15 +359,15 @@ export const getTransactionValue = ({ data, address, logs }) => {
       unbond = getUnbondInfo(logs?.[0]?.events);
     }
 
-    const amountReward = value && find(value?.attributes, { key: 'amount' });
-    const recipient = value && find(value?.attributes, { key: 'recipient' });
+    const amountReward = value && find(value?.attributes, { key: "amount" });
+    const recipient = value && find(value?.attributes, { key: "recipient" });
     if (recipient?.value === address) {
       isRecipient = true;
     }
     valueAmount = {
       // eslint-disable-next-line no-useless-escape
-      amount: amountReward?.value?.replace(/[^0-9\.]+/g, ''),
-      denom: amountReward?.value?.replace(/^\d+/g, '') || 'orai'
+      amount: amountReward?.value?.replace(/[^0-9\.]+/g, ""),
+      denom: amountReward?.value?.replace(/^\d+/g, "") || "orai",
     };
   }
 
@@ -336,29 +377,29 @@ export const getTransactionValue = ({ data, address, logs }) => {
 
   switch (true) {
     case checkType(transactionType, TRANSACTION_TYPE.DELEGATE):
-      title = 'Delegated';
+      title = "Delegated";
 
       isPlus = false;
       break;
 
     case checkType(transactionType, TRANSACTION_TYPE.UNDELEGATE):
-      title = 'Un-Delegated';
+      title = "Un-Delegated";
 
       isPlus = true;
       break;
 
     case checkType(transactionType, TRANSACTION_TYPE.CLAIM_REWARD):
     case checkType(transactionType, TRANSACTION_TYPE.WITHDRAW):
-      title = 'Reward';
+      title = "Reward";
 
       isPlus = true;
       break;
 
     case checkType(transactionType, TRANSACTION_TYPE.SEND): {
-      title = 'Send Token';
+      title = "Send Token";
 
       if (isRecipient) {
-        title = 'Received Token';
+        title = "Received Token";
 
         isPlus = true;
       }
@@ -366,10 +407,10 @@ export const getTransactionValue = ({ data, address, logs }) => {
     }
 
     case checkType(transactionType, TRANSACTION_TYPE.EXECUTE_CONTRACT): {
-      title = 'Execute Contract';
+      title = "Execute Contract";
 
       if (isRecipient) {
-        title = 'Execute Contract';
+        title = "Execute Contract";
 
         isPlus = true;
       }
@@ -377,7 +418,7 @@ export const getTransactionValue = ({ data, address, logs }) => {
     }
 
     case checkType(transactionType, TRANSACTION_TYPE.INSTANTIATE_CONTRACT): {
-      title = 'Instantiate Contract';
+      title = "Instantiate Contract";
 
       break;
     }
@@ -391,10 +432,10 @@ export const getTransactionValue = ({ data, address, logs }) => {
 export const checkType = (str, type) => str?.indexOf?.(type) >= 0;
 
 export const getUnbondInfo = (events = []) => {
-  const unbond = find(events, { type: 'unbond' });
-  const unbondValue = find(unbond.attributes, { key: 'amount' });
+  const unbond = find(events, { type: "unbond" });
+  const unbondValue = find(unbond.attributes, { key: "amount" });
   const unbondCompleted = find(unbond.attributes, {
-    key: 'completion_time'
+    key: "completion_time",
   });
 
   const date = moment(unbondCompleted.value);
@@ -403,14 +444,14 @@ export const getUnbondInfo = (events = []) => {
   return {
     isCompleted,
     date,
-    value: unbondValue?.value
+    value: unbondValue?.value,
   };
 };
 
 export const convertAmount = (amount: any) => {
   switch (typeof amount) {
-    case 'string':
-    case 'number':
+    case "string":
+    case "number":
       return Number(amount) / Math.pow(10, 6);
     default:
       return 0;
@@ -419,18 +460,23 @@ export const convertAmount = (amount: any) => {
 
 export const getDomainFromUrl = url => {
   if (!url) {
-    return '';
+    return "";
   }
   return `${url?.match?.(
     // eslint-disable-next-line no-useless-escape
     /^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/?\n]+)/gim
   )}`
-    .replace('https://', '')
-    .replace('http://', '');
+    .replace("https://", "")
+    .replace("http://", "");
 };
 
+<<<<<<< HEAD
 export const parseIbcMsgRecvPacket = denom => {
   return denom?.slice(0, 1) === 'u' ? denom?.slice(1, denom?.length) : denom;
+=======
+export const parseIbcMsgRecvPacket = (denom) => {
+  return denom?.slice(0, 1) === "u" ? denom?.slice(1, denom?.length) : denom;
+>>>>>>> main
 };
 export function addTimeProperty(array1, array2) {
   // Create a new object with heightId as the key and time as the value
@@ -446,13 +492,14 @@ export function addTimeProperty(array1, array2) {
 
   return array2;
 }
-export const getTxTypeNew = (type, rawLog = '[]', result = '') => {
+export const getTxTypeNew = (type, rawLog = "[]", result = "") => {
   if (type) {
-    const typeArr = type.split('.');
+    const typeArr = type.split(".");
     let typeMsg = typeArr?.[typeArr?.length - 1];
-    if (typeMsg === 'MsgExecuteContract' && result === 'Success') {
+    if (typeMsg === "MsgExecuteContract" && result === "Success") {
       let rawLogArr = JSON.parse(rawLog);
       for (let event of rawLogArr?.[0].events) {
+<<<<<<< HEAD
         if (event?.['type'] === 'wasm') {
           for (let att of event?.['attributes']) {
             if (att?.['key'] === 'action') {
@@ -461,6 +508,16 @@ export const getTxTypeNew = (type, rawLog = '[]', result = '') => {
                 .map(word => word?.charAt(0).toUpperCase() + word?.slice(1))
                 .join('');
               typeMsg += '/' + attValue;
+=======
+        if (event?.["type"] === "wasm") {
+          for (let att of event?.["attributes"]) {
+            if (att?.["key"] === "action") {
+              let attValue = att?.["value"]
+                .split("_")
+                .map((word) => word?.charAt(0).toUpperCase() + word?.slice(1))
+                .join("");
+              typeMsg += "/" + attValue;
+>>>>>>> main
               break;
             }
           }
@@ -471,16 +528,30 @@ export const getTxTypeNew = (type, rawLog = '[]', result = '') => {
     }
     return typeMsg;
   }
-  return 'Msg';
+  return "Msg";
 };
 
+<<<<<<< HEAD
 export const parseIbcMsgTransfer = (rawLog, type = 'send_packet', key = 'packet_data') => {
   const arrayIbcDemonPacket = rawLog && rawLog?.[0]?.events?.find(e => e?.type === type);
   const ibcDemonPackData = arrayIbcDemonPacket && arrayIbcDemonPacket?.attributes?.find(ele => ele?.key === key);
+=======
+export const parseIbcMsgTransfer = (
+  rawLog,
+  type = "send_packet",
+  key = "packet_data"
+) => {
+  const arrayIbcDemonPacket =
+    rawLog && rawLog?.[0]?.events?.find((e) => e?.type === type);
+  const ibcDemonPackData =
+    arrayIbcDemonPacket &&
+    arrayIbcDemonPacket?.attributes?.find((ele) => ele?.key === key);
+>>>>>>> main
   const ibcDemonObj =
-    typeof ibcDemonPackData?.value === 'string' || ibcDemonPackData?.value instanceof String
-      ? JSON.parse(ibcDemonPackData?.value ?? '{}')
-      : { denom: '' };
+    typeof ibcDemonPackData?.value === "string" ||
+    ibcDemonPackData?.value instanceof String
+      ? JSON.parse(ibcDemonPackData?.value ?? "{}")
+      : { denom: "" };
   return ibcDemonObj;
 };
 
@@ -490,24 +561,24 @@ export const formatOrai = (amount, decimal = 6) => {
 
 export const getUnixTimes = (value, unit, startOf) => [
   moment()
-    .startOf(startOf ?? 'hour')
+    .startOf(startOf ?? "hour")
     .subtract(value, unit)
     .unix(),
   moment()
-    .startOf(startOf ?? 'hour')
-    .add(3, 'minute')
-    .unix()
+    .startOf(startOf ?? "hour")
+    .add(3, "minute")
+    .unix(),
 ];
 
 export function nFormatter(num, digits: 1) {
   const lookup = [
-    { value: 1, symbol: '' },
-    { value: 1e3, symbol: 'k' },
-    { value: 1e6, symbol: 'M' },
-    { value: 1e9, symbol: 'G' },
-    { value: 1e12, symbol: 'T' },
-    { value: 1e15, symbol: 'P' },
-    { value: 1e18, symbol: 'E' }
+    { value: 1, symbol: "" },
+    { value: 1e3, symbol: "k" },
+    { value: 1e6, symbol: "M" },
+    { value: 1e9, symbol: "G" },
+    { value: 1e12, symbol: "T" },
+    { value: 1e15, symbol: "P" },
+    { value: 1e18, symbol: "E" },
   ];
   const rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
   var item = lookup
@@ -518,37 +589,55 @@ export function nFormatter(num, digits: 1) {
     });
   return item
     ? {
-        value: Number((num / item.value).toFixed(digits).replace(rx, '$1')),
-        symbol: item.symbol
+        value: Number((num / item.value).toFixed(digits).replace(rx, "$1")),
+        symbol: item.symbol,
       }
-    : { value: 0, symbol: '' };
+    : { value: 0, symbol: "" };
 }
-export const getAddressFromLedgerWhenChangeNetwork = (address, ledgerAddress) => {
+export const getAddressFromLedgerWhenChangeNetwork = (
+  address,
+  ledgerAddress
+) => {
   if (address === ledgerAddress) {
     return ledgerAddress;
   }
   return null;
 };
 
-export const getTokenInfos = ({ tokens, prices, networkFilter = '' }) => {
+export const getTokenInfos = ({ tokens, prices, networkFilter = "" }) => {
   const dataTokens = flattenTokens
     .reduce((result, token) => {
       // not display because it is evm map and no bridge to option, also no smart contract and is ibc native
       if (token.bridgeTo || token.contractAddress) {
-        const isValidNetwork = !networkFilter || token.chainId === networkFilter;
+        const isValidNetwork =
+          !networkFilter || token.chainId === networkFilter;
         if (isValidNetwork) {
           const amount = BigInt(tokens?.[token.denom] ?? 0);
 
           const isHaveSubAmounts = token.contractAddress && token.evmDenoms;
-          const subAmounts = isHaveSubAmounts ? getSubAmountDetails(tokens, token) : {};
-          const totalAmount = amount + (isHaveSubAmounts ? toAmount(toSumDisplay(subAmounts), token.decimals) : 0n);
-          const value = toDisplay(totalAmount.toString(), token.decimals) * (prices?.[token.coinGeckoId] || 0);
+          const subAmounts = isHaveSubAmounts
+            ? getSubAmountDetails(tokens, token)
+            : {};
+          const totalAmount =
+            amount +
+            (isHaveSubAmounts
+              ? toAmount(toSumDisplay(subAmounts), token.decimals)
+              : 0n);
+          const value =
+            toDisplay(totalAmount.toString(), token.decimals) *
+            (prices?.[token.coinGeckoId] || 0);
 
           const SMALL_BALANCE = 0.01;
           const isHide = value < SMALL_BALANCE;
           if (isHide) return result;
 
+<<<<<<< HEAD
           const tokenIcon = tokensIcon.find(tIcon => tIcon.coinGeckoId === token.coinGeckoId);
+=======
+          const tokenIcon = tokensIcon.find(
+            (tIcon) => tIcon.coinGeckoId === token.coinGeckoId
+          );
+>>>>>>> main
 
           result.push({
             asset: token.name,
@@ -566,7 +655,7 @@ export const getTokenInfos = ({ tokens, prices, networkFilter = '' }) => {
             denom: token.denom,
             value,
             coeff: 0,
-            coeffType: 'increase'
+            coeffType: "increase",
           });
         }
       }
@@ -577,15 +666,27 @@ export const getTokenInfos = ({ tokens, prices, networkFilter = '' }) => {
   return dataTokens;
 };
 
-export const getCurrencyByMinimalDenom = (tokens, minimalDenom): AppCurrency => {
+export const getCurrencyByMinimalDenom = (
+  tokens,
+  minimalDenom
+): AppCurrency => {
   if (tokens && tokens?.length > 0 && minimalDenom) {
     const info = tokens?.filter((item, index) => {
       if (item?.contractAddress) {
-        return item?.contractAddress?.toUpperCase() == minimalDenom?.trim()?.toUpperCase();
+        return (
+          item?.contractAddress?.toUpperCase() ==
+          minimalDenom?.trim()?.toUpperCase()
+        );
       } else if (item?.originCurrency) {
-        return item?.originCurrency?.coinMinimalDenom?.toUpperCase() == minimalDenom?.trim()?.toUpperCase();
+        return (
+          item?.originCurrency?.coinMinimalDenom?.toUpperCase() ==
+          minimalDenom?.trim()?.toUpperCase()
+        );
       }
-      return item?.coinMinimalDenom?.toUpperCase() == minimalDenom?.trim()?.toUpperCase();
+      return (
+        item?.coinMinimalDenom?.toUpperCase() ==
+        minimalDenom?.trim()?.toUpperCase()
+      );
     });
     if (info?.length > 0) {
       return info[0];
@@ -593,28 +694,28 @@ export const getCurrencyByMinimalDenom = (tokens, minimalDenom): AppCurrency => 
     return {
       coinDecimals: 0,
       coinDenom: minimalDenom,
-      coinMinimalDenom: minimalDenom
+      coinMinimalDenom: minimalDenom,
     };
   }
   return {
     coinDecimals: 0,
     coinDenom: minimalDenom,
-    coinMinimalDenom: minimalDenom
+    coinMinimalDenom: minimalDenom,
   };
 };
 export function numberWithCommas(x) {
-  return x ? x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '';
+  return x ? x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : "";
 }
 
 export function createTxsHelper() {
   return new TxsHelper();
 }
 
-export const LRRedactProps = (redactionTag = 'lr-hide') =>
-  Platform.OS === 'ios'
+export const LRRedactProps = (redactionTag = "lr-hide") =>
+  Platform.OS === "ios"
     ? {
         testID: redactionTag,
-        accessible: false
+        accessible: false,
       }
     : { testID: redactionTag };
 

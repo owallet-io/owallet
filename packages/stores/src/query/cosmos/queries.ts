@@ -1,39 +1,39 @@
-import { QueriesSetBase } from '../queries';
-import { KVStore } from '@owallet/common';
-import { ChainGetter } from '../../common';
-import { ObservableQueryBlock } from './block';
-import { ObservableQueryAccount } from './account';
+import { QueriesSetBase } from "../queries";
+import { KVStore } from "@owallet/common";
+import { ChainGetter } from "../../common";
+import { ObservableQueryBlock } from "./block";
+import { ObservableQueryAccount } from "./account";
 import {
   ObservableQueryInflation,
   ObservableQueryMintingInfation,
-  ObservableQuerySupplyTotal
-} from './supply';
+  ObservableQuerySupplyTotal,
+} from "./supply";
 import {
   ObservableQueryDelegations,
   ObservableQueryRewards,
   ObservableQueryStakingParams,
   ObservableQueryStakingPool,
   ObservableQueryUnbondingDelegations,
-  ObservableQueryValidators
-} from './staking';
+  ObservableQueryValidators,
+} from "./staking";
 import {
   ObservableQueryGovernance,
-  ObservableQueryProposalVote
-} from './governance';
+  ObservableQueryProposalVote,
+} from "./governance";
 import {
   ObservableQueryDenomTrace,
   ObservableQueryIBCChannel,
-  ObservableQueryIBCClientState
-} from './ibc';
-import { ObservableQuerySifchainLiquidityAPY } from './supply/sifchain';
-import { ObservableQueryCosmosBalanceRegistry } from './balance';
-import { ObservableQueryIrisMintingInfation } from './supply/iris-minting';
-import { DeepReadonly } from 'utility-types';
+  ObservableQueryIBCClientState,
+} from "./ibc";
+import { ObservableQuerySifchainLiquidityAPY } from "./supply/sifchain";
+import { ObservableQueryCosmosBalanceRegistry } from "./balance";
+import { ObservableQueryIrisMintingInfation } from "./supply/iris-minting";
+import { DeepReadonly } from "utility-types";
 import {
   ObservableQueryOsmosisEpochProvisions,
   ObservableQueryOsmosisEpochs,
-  ObservableQueryOsmosisMintParmas
-} from './supply/osmosis';
+  ObservableQueryOsmosisMintParmas,
+} from "./supply/osmosis";
 
 export interface HasCosmosQueries {
   cosmos: CosmosQueries;

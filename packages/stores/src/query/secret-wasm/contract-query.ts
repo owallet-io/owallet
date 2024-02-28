@@ -1,13 +1,13 @@
-import { ObservableChainQuery } from '../chain-query';
-import { KVStore, toGenerator } from '@owallet/common';
-import { ChainGetter } from '../../common';
-import { ObservableQuerySecretContractCodeHash } from './contract-hash';
-import { autorun, computed, flow, makeObservable, observable } from 'mobx';
-import { OWallet } from '@owallet/types';
-import Axios, { CancelToken } from 'axios';
-import { QueryResponse } from '../../common';
+import { ObservableChainQuery } from "../chain-query";
+import { KVStore, toGenerator } from "@owallet/common";
+import { ChainGetter } from "../../common";
+import { ObservableQuerySecretContractCodeHash } from "./contract-hash";
+import { autorun, computed, flow, makeObservable, observable } from "mobx";
+import { OWallet } from "@owallet/types";
+import Axios, { CancelToken } from "axios";
+import { QueryResponse } from "../../common";
 
-import { Buffer } from 'buffer';
+import { Buffer } from "buffer";
 
 export class ObservableSecretContractChainQuery<
   T
@@ -90,8 +90,8 @@ export class ObservableSecretContractChainQuery<
       this.nonce = encrypted.slice(0, 32);
 
       const encoded = Buffer.from(
-        Buffer.from(encrypted).toString('base64')
-      ).toString('hex');
+        Buffer.from(encrypted).toString("base64")
+      ).toString("hex");
 
       this.setUrl(
         `/wasm/contract/${this.contractAddress}/query/${encoded}?encoding=hex`
@@ -117,7 +117,7 @@ export class ObservableSecretContractChainQuery<
         const rgxMatches = errorMessageRgx.exec(encryptedError);
         if (rgxMatches != null && rgxMatches.length === 4) {
           const errorCipherB64 = rgxMatches[2];
-          const errorCipherBz = Buffer.from(errorCipherB64, 'base64');
+          const errorCipherBz = Buffer.from(errorCipherB64, "base64");
 
           if (this.owallet && this.nonce) {
             const decrypted = await this.owallet
@@ -144,24 +144,24 @@ export class ObservableSecretContractChainQuery<
       | undefined;
 
     if (!this.owallet) {
-      throw new Error('OWallet API not initialized');
+      throw new Error("OWallet API not initialized");
     }
 
     if (!this.nonce) {
-      throw new Error('Nonce is unknown');
+      throw new Error("Nonce is unknown");
     }
 
     if (!encResult) {
-      throw new Error('Failed to get the response from the contract');
+      throw new Error("Failed to get the response from the contract");
     }
 
     const decrypted = await this.owallet
       .getEnigmaUtils(this.chainId)
-      .decrypt(Buffer.from(encResult.result.smart, 'base64'), this.nonce);
+      .decrypt(Buffer.from(encResult.result.smart, "base64"), this.nonce);
 
     const message = Buffer.from(
       Buffer.from(decrypted).toString(),
-      'base64'
+      "base64"
     ).toString();
 
     const obj = JSON.parse(message);
@@ -169,7 +169,7 @@ export class ObservableSecretContractChainQuery<
       data: obj as T,
       status: response.status,
       staled: false,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
   }
 
@@ -181,7 +181,7 @@ export class ObservableSecretContractChainQuery<
     }${this.instance.getUri({
       url: `/wasm/contract/${this.contractAddress}/query/${JSON.stringify(
         this.obj
-      )}?encoding=json`
+      )}?encoding=json`,
     })}`;
   }
 

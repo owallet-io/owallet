@@ -29,7 +29,6 @@
   "scripts": {
     "git:update": "git submodule update --recursive && git pull",
     "bootstrap": "lerna bootstrap",
-    "test:package": "lerna run test --parallel --ignore @owallet/router-mock --ignore @owallet/unit --ignore @owallet/extension",
     "setup:mobile": "yarn && yarn build:libs && cd packages/mobile && yarn build:provider && yarn pod:install",
     "dev": "lerna run dev --parallel --ignore @owallet/extension --ignore @owallet/mobile --ignore @owallet/wc-client --ignore @owallet/wc-qrcode-modal",
     "clean:setup": "yarn clean:all && yarn setup:mobile",
@@ -40,19 +39,21 @@
     "rebuild": "lerna run rebuild",
     "build:libs": "yarn build:proto && lerna run build --ignore @owallet/extension  --ignore @owallet/proto-types --ignore @owallet/bitcoin --include-dependencies --stream",
     "postinstall": "patch-package",
-    "build:proto":"lerna run build --scope @owallet/proto-types --scope @owallet/bitcoin",
+    "build:proto": "lerna run build --scope @owallet/proto-types --scope @owallet/bitcoin",
     "test": "lerna run test --parallel",
     "build:clean": "yarn clean && yarn install --frozen-lockfile && lerna run build",
     "lint-test": "lerna run lint-test",
     "lint-fix": "lerna run lint-fix",
     "ci": "yarn install --frozen-lockfile && yarn build && yarn workspace mobile typecheck && yarn test",
-    "ci-lint": "yarn install --frozen-lockfile && yarn lint-test"
+    "ci-lint": "yarn install --frozen-lockfile && yarn lint-test",
+    "prepare": "husky install"
   },
   "keywords": [],
   "author": "Oraichain",
   "license": "Apache-2.0",
   "devDependencies": {
     "@octokit/core": "^3.5.1",
+    "husky": "^8.0.0",
     "folder-hash": "^4.0.2",
     "@types/jest": "29.5.3",
     "@types/node": "^16.6.2",
@@ -81,7 +82,7 @@
     "esbuild-node-tsc": "^2.0.5",
     "esbuild": "^0.19.2",
     "zx": "^4.2.0",
-    "@protobuf-ts/protoc":"2.9.1"
+    "@protobuf-ts/protoc": "2.9.1"
   },
   "resolutions": {
     "@ledgerhq/hw-transport": "6.27.2",
@@ -132,10 +133,15 @@
     "@sentry-internal/tracing": "=7.80.0",
     "@sentry/hub": "=7.80.0",
     "@sentry/react-native": "=5.13.0"
-
   },
   "browser": {
     "assert": false
   },
-  "version": "0.0.0"
+  "version": "0.0.0",
+  "lint-staged": {
+    "*.ts": [
+      "prettier --write \"packages/**/*.ts\""
+    ],
+    "*.tsx":["prettier --write \"packages/**/*.tsx\""]
+  }
 }

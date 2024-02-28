@@ -14,7 +14,7 @@ export interface IScryptBaseOptions {
 }
 
 export interface IScryptOptions extends IScryptBaseOptions {
-  encoding?: 'base64' | 'hex' | 'binary';
+  encoding?: "base64" | "hex" | "binary";
 }
 
 /**
@@ -58,51 +58,59 @@ export function scrypt(
 export function scrypt(
   password: string | number[] | Uint8Array | ArrayBuffer,
   salt: string | number[] | Uint8Array | ArrayBuffer,
-  options?: IScryptBaseOptions & { encoding: 'hex' }
+  options?: IScryptBaseOptions & { encoding: "hex" }
 ): Promise<string>;
 
 export function scrypt(
   password: string | number[] | Uint8Array | ArrayBuffer,
   salt: string | number[] | Uint8Array | ArrayBuffer,
-  options?: IScryptBaseOptions & { encoding: 'base64' }
+  options?: IScryptBaseOptions & { encoding: "base64" }
 ): Promise<string>;
 
 export function scrypt(
   password: string | number[] | Uint8Array | ArrayBuffer,
   salt: string | number[] | Uint8Array | ArrayBuffer,
-  options?: IScryptBaseOptions & { encoding: 'binary' }
+  options?: IScryptBaseOptions & { encoding: "binary" }
 ): Promise<Uint8Array>;
 
 export function scrypt(
   password: string | number[] | Uint8Array | ArrayBuffer,
   salt: string | number[] | Uint8Array | ArrayBuffer,
-  { N = 16384, logN, r = 8, p = 1, dkLen = 32, interruptStep = 0, encoding }: IScryptOptions = {}
+  {
+    N = 16384,
+    logN,
+    r = 8,
+    p = 1,
+    dkLen = 32,
+    interruptStep = 0,
+    encoding,
+  }: IScryptOptions = {}
 ): unknown {
   return new Promise((resolve, reject) => {
     if (!logN && !N) {
-      return reject(new Error('scrypt: missing N or logN parameter'));
+      return reject(new Error("scrypt: missing N or logN parameter"));
     }
 
     if (logN || logN === 0) {
       if (logN < 1 || logN > 31) {
-        return reject(new Error('scrypt: logN must be between 1 and 31'));
+        return reject(new Error("scrypt: logN must be between 1 and 31"));
       }
 
       N = (1 << logN) >>> 0;
     } else {
       if (N < 2 || N > MAX_UINT) {
-        return reject(new Error('scrypt: N is out of range'));
+        return reject(new Error("scrypt: N is out of range"));
       } else if ((N & (N - 1)) !== 0) {
-        return reject(Error('scrypt: N is not a power of 2'));
+        return reject(Error("scrypt: N is not a power of 2"));
       }
     }
 
     if (p < 1) {
-      return reject(new Error('scrypt: invalid p'));
+      return reject(new Error("scrypt: invalid p"));
     }
 
     if (r < 1) {
-      return reject(new Error('scrypt: invalid r'));
+      return reject(new Error("scrypt: invalid r"));
     }
 
     run({ password, salt, N, r, p, dkLen, interruptStep, encoding }, resolve);
@@ -115,15 +123,32 @@ interface IScryptRunOptions {
 }
 
 // Internal scrypt function
-function run({ password, salt, N, r, p, dkLen, interruptStep, encoding }: IScryptOptions & IScryptRunOptions, callback: Function) {
+function run(
+  {
+    password,
+    salt,
+    N,
+    r,
+    p,
+    dkLen,
+    interruptStep,
+    encoding,
+  }: IScryptOptions & IScryptRunOptions,
+  callback: Function
+) {
   function SHA256(m) {
     const K = [
-      0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,
-      0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174, 0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
-      0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967, 0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13,
-      0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85, 0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
-      0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3, 0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208,
-      0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
+      0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1,
+      0x923f82a4, 0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,
+      0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174, 0xe49b69c1, 0xefbe4786,
+      0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+      0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147,
+      0x06ca6351, 0x14292967, 0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13,
+      0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85, 0xa2bfe8a1, 0xa81a664b,
+      0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+      0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a,
+      0x5b9cca4f, 0x682e6ff3, 0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208,
+      0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2,
     ];
 
     let h0 = 0x6a09e667,
@@ -156,26 +181,45 @@ function run({ password, salt, N, r, p, dkLen, interruptStep, encoding }: IScryp
 
         for (i = 0; i < 16; i++) {
           j = off + i * 4;
-          w[i] = ((p[j] & 0xff) << 24) | ((p[j + 1] & 0xff) << 16) | ((p[j + 2] & 0xff) << 8) | (p[j + 3] & 0xff);
+          w[i] =
+            ((p[j] & 0xff) << 24) |
+            ((p[j + 1] & 0xff) << 16) |
+            ((p[j + 2] & 0xff) << 8) |
+            (p[j + 3] & 0xff);
         }
 
         for (i = 16; i < 64; i++) {
           u = w[i - 2];
-          t1 = ((u >>> 17) | (u << (32 - 17))) ^ ((u >>> 19) | (u << (32 - 19))) ^ (u >>> 10);
+          t1 =
+            ((u >>> 17) | (u << (32 - 17))) ^
+            ((u >>> 19) | (u << (32 - 19))) ^
+            (u >>> 10);
 
           u = w[i - 15];
-          t2 = ((u >>> 7) | (u << (32 - 7))) ^ ((u >>> 18) | (u << (32 - 18))) ^ (u >>> 3);
+          t2 =
+            ((u >>> 7) | (u << (32 - 7))) ^
+            ((u >>> 18) | (u << (32 - 18))) ^
+            (u >>> 3);
 
           w[i] = (((t1 + w[i - 7]) | 0) + ((t2 + w[i - 16]) | 0)) | 0;
         }
 
         for (i = 0; i < 64; i++) {
           t1 =
-            ((((((e >>> 6) | (e << (32 - 6))) ^ ((e >>> 11) | (e << (32 - 11))) ^ ((e >>> 25) | (e << (32 - 25)))) + ((e & f) ^ (~e & g))) | 0) +
+            ((((((e >>> 6) | (e << (32 - 6))) ^
+              ((e >>> 11) | (e << (32 - 11))) ^
+              ((e >>> 25) | (e << (32 - 25)))) +
+              ((e & f) ^ (~e & g))) |
+              0) +
               ((h + ((K[i] + w[i]) | 0)) | 0)) |
             0;
 
-          t2 = ((((a >>> 2) | (a << (32 - 2))) ^ ((a >>> 13) | (a << (32 - 13))) ^ ((a >>> 22) | (a << (32 - 22)))) + ((a & b) ^ (a & c) ^ (b & c))) | 0;
+          t2 =
+            ((((a >>> 2) | (a << (32 - 2))) ^
+              ((a >>> 13) | (a << (32 - 13))) ^
+              ((a >>> 22) | (a << (32 - 22)))) +
+              ((a & b) ^ (a & c) ^ (b & c))) |
+            0;
 
           h = g;
           g = f;
@@ -257,7 +301,7 @@ function run({ password, salt, N, r, p, dkLen, interruptStep, encoding }: IScryp
       (h7 >>> 24) & 0xff,
       (h7 >>> 16) & 0xff,
       (h7 >>> 8) & 0xff,
-      (h7 >>> 0) & 0xff
+      (h7 >>> 0) & 0xff,
     ];
   }
 
@@ -457,15 +501,20 @@ function run({ password, salt, N, r, p, dkLen, interruptStep, encoding }: IScryp
 
   let XY, V, B, tmp;
 
-  if (r * p >= 1 << 30 || r > MAX_UINT / 128 / p || r > MAX_UINT / 256 || N > MAX_UINT / 128 / r) {
-    throw new Error('scrypt: parameters are too large');
+  if (
+    r * p >= 1 << 30 ||
+    r > MAX_UINT / 128 / p ||
+    r > MAX_UINT / 256 ||
+    N > MAX_UINT / 128 / r
+  ) {
+    throw new Error("scrypt: parameters are too large");
   }
 
   // Decode strings.
-  if (typeof password === 'string') password = Buffer.from(password);
-  if (typeof salt === 'string') salt = Buffer.from(salt);
+  if (typeof password === "string") password = Buffer.from(password);
+  if (typeof salt === "string") salt = Buffer.from(salt);
 
-  if (typeof Int32Array !== 'undefined') {
+  if (typeof Int32Array !== "undefined") {
     //XXX We can use Uint32Array, but Int32Array is faster in Safari.
     XY = new Int32Array(64 * r);
     V = new Int32Array(32 * N * r);
@@ -483,7 +532,11 @@ function run({ password, salt, N, r, p, dkLen, interruptStep, encoding }: IScryp
   function smixStart(pos: number) {
     for (let i = 0; i < 32 * r; i++) {
       const j = pos + i * 4;
-      XY[xi + i] = ((B[j + 3] & 0xff) << 24) | ((B[j + 2] & 0xff) << 16) | ((B[j + 1] & 0xff) << 8) | ((B[j + 0] & 0xff) << 0);
+      XY[xi + i] =
+        ((B[j + 3] & 0xff) << 24) |
+        ((B[j + 2] & 0xff) << 16) |
+        ((B[j + 1] & 0xff) << 8) |
+        ((B[j + 0] & 0xff) << 0);
     }
   }
 
@@ -521,9 +574,15 @@ function run({ password, salt, N, r, p, dkLen, interruptStep, encoding }: IScryp
 
   const nextTick =
     // @ts-ignore
-    typeof setImmediate !== 'undefined' ? setImmediate : setTimeout;
+    typeof setImmediate !== "undefined" ? setImmediate : setTimeout;
 
-  function interruptedFor(start: number, end: number, step: number, fn: Function, donefn: Function) {
+  function interruptedFor(
+    start: number,
+    end: number,
+    step: number,
+    fn: Function,
+    donefn: Function
+  ) {
     (function performStep() {
       nextTick(function () {
         fn(start, start + step < end ? start + step : end);
@@ -534,13 +593,13 @@ function run({ password, salt, N, r, p, dkLen, interruptStep, encoding }: IScryp
     })();
   }
 
-  function getResult(enc: IScryptOptions['encoding']) {
+  function getResult(enc: IScryptOptions["encoding"]) {
     const result = PBKDF2_HMAC_SHA256_OneIter(password, B, dkLen);
     switch (enc) {
-      case 'binary':
+      case "binary":
         return new Uint8Array(result);
-      case 'base64':
-      case 'hex':
+      case "base64":
+      case "hex":
         return Buffer.from(result).toString(enc);
       default:
         return result;

@@ -1,14 +1,14 @@
-import React, { FunctionComponent, useMemo, useState } from 'react';
-import { observer } from 'mobx-react-lite';
-import { ObservableQueryBalanceInner } from '@owallet/stores';
-import { BondStatus } from '@owallet/stores';
-import { CoinPretty, Dec } from '@owallet/unit';
-import { useStore } from '../../stores';
-import style from './validator-list.module.scss';
-import { ValidatorThumbnails } from '@owallet/common/src/config';
-import { HeaderLayout } from '../../layouts';
+import React, { FunctionComponent, useMemo, useState } from "react";
+import { observer } from "mobx-react-lite";
+import { ObservableQueryBalanceInner } from "@owallet/stores";
+import { BondStatus } from "@owallet/stores";
+import { CoinPretty, Dec } from "@owallet/unit";
+import { useStore } from "../../stores";
+import style from "./validator-list.module.scss";
+import { ValidatorThumbnails } from "@owallet/common/src/config";
+import { HeaderLayout } from "../../layouts";
 
-type Sort = 'APY' | 'Voting Power' | 'Name';
+type Sort = "APY" | "Voting Power" | "Name";
 
 export const ValidatorListPage: FunctionComponent<{
   balance: ObservableQueryBalanceInner;
@@ -17,8 +17,8 @@ export const ValidatorListPage: FunctionComponent<{
   const { chainStore, queriesStore } = useStore();
   const queries = queriesStore.get(chainStore.current.chainId);
 
-  const [search, setSearch] = useState('');
-  const [sort, setSort] = useState<Sort>('Voting Power');
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState<Sort>("Voting Power");
   const [isSortModalOpen, setIsSortModalOpen] = useState(false);
 
   const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
@@ -33,7 +33,7 @@ export const ValidatorListPage: FunctionComponent<{
       );
     }
     switch (sort) {
-      case 'APY':
+      case "APY":
         data.sort((val1, val2) => {
           return new Dec(val1.commission.commission_rates.rate).gt(
             new Dec(val2.commission.commission_rates.rate)
@@ -42,7 +42,7 @@ export const ValidatorListPage: FunctionComponent<{
             : -1;
         });
         break;
-      case 'Name':
+      case "Name":
         data.sort((val1, val2) => {
           if (!val1.description.moniker) {
             return 1;
@@ -53,7 +53,7 @@ export const ValidatorListPage: FunctionComponent<{
           return val1.description.moniker > val2.description.moniker ? -1 : 1;
         });
         break;
-      case 'Voting Power':
+      case "Voting Power":
         data.sort((val1, val2) => {
           return new Dec(val1.tokens).gt(new Dec(val2.tokens)) ? -1 : 1;
         });
@@ -65,9 +65,9 @@ export const ValidatorListPage: FunctionComponent<{
 
   const items = useMemo(() => {
     return [
-      { label: 'APY', key: 'APY' },
-      { label: 'Amount Staked', key: 'Voting Power' },
-      { label: 'Name', key: 'Name' }
+      { label: "APY", key: "APY" },
+      { label: "Amount Staked", key: "Voting Power" },
+      { label: "Name", key: "Name" },
     ];
   }, []);
 
@@ -141,7 +141,7 @@ const ValidatorItem: FunctionComponent<{
         <span>{validator.description.moniker}</span>
       </div>
 
-      {sort === 'APY' ? (
+      {sort === "APY" ? (
         <span>
           {queries.cosmos.queryInflation.inflation
             .mul(
@@ -151,10 +151,10 @@ const ValidatorItem: FunctionComponent<{
             )
             .maxDecimals(2)
             .trim(true)
-            .toString() + '%'}
+            .toString() + "%"}
         </span>
       ) : null}
-      {sort === 'Voting Power' ? (
+      {sort === "Voting Power" ? (
         <span>
           {new CoinPretty(
             chainStore.current.stakeCurrency,

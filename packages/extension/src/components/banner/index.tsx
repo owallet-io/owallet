@@ -1,7 +1,7 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent } from "react";
 
-import classmames from 'classnames';
-import style from './style.module.scss';
+import classmames from "classnames";
+import style from "./style.module.scss";
 
 interface Props {
   icon: string;

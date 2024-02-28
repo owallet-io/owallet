@@ -1,15 +1,10 @@
 // we always make sure 'react-native' gets included first
 
-import 'reflect-metadata';
-import * as ReactNative from 'react-native';
+import "reflect-metadata";
+import * as ReactNative from "react-native";
 
-
-
-
-
-
-jest.mock('@react-native-async-storage/async-storage', () =>
-  require('@react-native-async-storage/async-storage/jest/async-storage-mock')
+jest.mock("@react-native-async-storage/async-storage", () =>
+  require("@react-native-async-storage/async-storage/jest/async-storage-mock")
 );
 
 declare const tron; // eslint-disable-line @typescript-eslint/no-unused-vars
@@ -33,17 +28,17 @@ var localStorageMock = (function () {
     },
     removeItem: function (key) {
       delete store[key];
-    }
+    },
   };
 })();
 
-jest.mock('react-native-keychain', () => {
+jest.mock("react-native-keychain", () => {
   const defaultOptions = {
     authenticationPrompt: {
-      title: 'Biometric Authentication'
+      title: "Biometric Authentication",
     },
-    accessible: 'AccessibleWhenUnlockedThisDeviceOnly',
-    accessControl: 'BiometryCurrentSet'
+    accessible: "AccessibleWhenUnlockedThisDeviceOnly",
+    accessControl: "BiometryCurrentSet",
   };
 
   return {
@@ -52,20 +47,20 @@ jest.mock('react-native-keychain', () => {
     getSupportedBiometryType: jest.fn(),
     resetGenericPassword: jest.fn(),
     ACCESSIBLE: {
-      WHEN_UNLOCKED_THIS_DEVICE_ONLY: 'AccessibleWhenUnlockedThisDeviceOnly'
+      WHEN_UNLOCKED_THIS_DEVICE_ONLY: "AccessibleWhenUnlockedThisDeviceOnly",
     },
     ACCESS_CONTROL: {
-      BIOMETRY_CURRENT_SET: 'BiometryCurrentSet'
-    }
+      BIOMETRY_CURRENT_SET: "BiometryCurrentSet",
+    },
   };
 });
 
-Object.defineProperty(window, 'localStorage', { value: localStorageMock });
-const nodeCrypto = require('crypto');
-Object.defineProperty(globalThis, 'crypto', {
+Object.defineProperty(window, "localStorage", { value: localStorageMock });
+const nodeCrypto = require("crypto");
+Object.defineProperty(globalThis, "crypto", {
   value: {
-    getRandomValues: (arr) => nodeCrypto.randomBytes(arr.length)
-  }
+    getRandomValues: (arr) => nodeCrypto.randomBytes(arr.length),
+  },
 });
 class ChannelMock {
   onmessage: (event: { data: any }) => void;
@@ -81,7 +76,7 @@ class ChannelMock {
 (global as any).window = {};
 (global as any).navigator = {};
 (global as any).alert = (data) => {
-  console.log('err by alert: ', data);
+  console.log("err by alert: ", data);
 };
 class WebSocket {
   constructor(url) {}

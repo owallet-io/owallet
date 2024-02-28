@@ -1,6 +1,6 @@
-import { ChainInfoInner } from '@owallet/stores';
-import { ChainInfo } from '@owallet/types';
-import { TxsHelper } from '../helpers/txs-helper';
+import { ChainInfoInner } from "@owallet/stores";
+import { ChainInfo } from "@owallet/types";
+import { TxsHelper } from "../helpers/txs-helper";
 
 export abstract class Txs {
   public readonly currentChain: ChainInfoInner<ChainInfo>;
@@ -14,12 +14,16 @@ export abstract class Txs {
     this.chainId = current_chain?.chainId;
     this.txsHelper = new TxsHelper();
   }
-  abstract getTxsByHash(txHash: string, addressAccount?: string): Promise<Partial<ResTxsInfo>>;
-  abstract getAllMethodActionTxs(addressAccount?: string): Promise<Partial<ResTxs>>;
+  abstract getTxsByHash(
+    txHash: string,
+    addressAccount?: string
+  ): Promise<Partial<ResTxsInfo>>;
+  abstract getAllMethodActionTxs(
+    addressAccount?: string
+  ): Promise<Partial<ResTxs>>;
   abstract getTxs(
     page: number,
     current_page: number,
     params: ParamsFilterReqTxs
   ): Promise<Partial<ResTxs>>;
-  
 }

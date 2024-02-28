@@ -1,20 +1,28 @@
-import React, { FunctionComponent, ChangeEvent, useEffect, useState } from 'react';
+import React, {
+  FunctionComponent,
+  ChangeEvent,
+  useEffect,
+  useState,
+} from "react";
 
-import { Button } from 'reactstrap';
+import { Button } from "reactstrap";
 
-import { LedgerInternal as Ledger, LedgerInitErrorOn } from '@owallet/background';
+import {
+  LedgerInternal as Ledger,
+  LedgerInitErrorOn,
+} from "@owallet/background";
 
-import style from './style.module.scss';
-import { EmptyLayout } from '../../layouts/empty-layout';
+import style from "./style.module.scss";
+import { EmptyLayout } from "../../layouts/empty-layout";
 
-import classnames from 'classnames';
-import { FormattedMessage, useIntl } from 'react-intl';
-import { useNotification } from '../../components/notification';
-import delay from 'delay';
-import { useInteractionInfo } from '@owallet/hooks';
-import { getLedgerAppNameByNetwork } from '@owallet/common';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../stores';
+import classnames from "classnames";
+import { FormattedMessage, useIntl } from "react-intl";
+import { useNotification } from "../../components/notification";
+import delay from "delay";
+import { useInteractionInfo } from "@owallet/hooks";
+import { getLedgerAppNameByNetwork } from "@owallet/common";
+import { observer } from "mobx-react-lite";
+import { useStore } from "../../stores";
 
 export const LedgerGrantPage: FunctionComponent = observer(() => {
   // Force to fit the screen size.
@@ -55,10 +63,16 @@ export const LedgerGrantPage: FunctionComponent = observer(() => {
       // If ledger init is aborted due to the timeout on the background, just close the window.
       window.close();
     }
-  }, [ledgerInitStore.isGetPubKeySucceeded, ledgerInitStore.isSignCompleted, ledgerInitStore.isInitAborted]);
+  }, [
+    ledgerInitStore.isGetPubKeySucceeded,
+    ledgerInitStore.isSignCompleted,
+    ledgerInitStore.isInitAborted,
+  ]);
 
   const [initTryCount, setInitTryCount] = useState(0);
-  const [initErrorOn, setInitErrorOn] = useState<LedgerInitErrorOn | undefined>(undefined);
+  const [initErrorOn, setInitErrorOn] = useState<LedgerInitErrorOn | undefined>(
+    undefined
+  );
   const [tryInitializing, setTryInitializing] = useState(false);
   const [initSucceed, setInitSucceed] = useState(false);
 
@@ -69,9 +83,12 @@ export const LedgerGrantPage: FunctionComponent = observer(() => {
 
     try {
       const ledger = await Ledger.init(
-        ledgerInitStore.isWebHID ? 'webhid' : 'webusb',
+        ledgerInitStore.isWebHID ? "webhid" : "webusb",
         [],
-        getLedgerAppNameByNetwork(chainStore.current.networkType, chainStore.current.chainId)
+        getLedgerAppNameByNetwork(
+          chainStore.current.networkType,
+          chainStore.current.chainId
+        )
       );
       await ledger.close();
       // Unfortunately, closing ledger blocks the writing to Ledger on background process.
@@ -108,16 +125,26 @@ export const LedgerGrantPage: FunctionComponent = observer(() => {
         <div className={style.instructions}>
           <Instruction
             icon={
-              <img src={require('../../public/assets/img/icons8-usb-2.svg')} style={{ height: '50px' }} alt="usb" />
+              <img
+                src={require("../../public/assets/img/icons8-usb-2.svg")}
+                style={{ height: "50px" }}
+                alt="usb"
+              />
             }
-            title={intl.formatMessage({ id: 'ledger.step1' })}
-            paragraph={intl.formatMessage({ id: 'ledger.step1.paragraph' })}
+            title={intl.formatMessage({ id: "ledger.step1" })}
+            paragraph={intl.formatMessage({ id: "ledger.step1.paragraph" })}
             pass={initTryCount > 0 && initErrorOn === LedgerInitErrorOn.App}
           />
           <Instruction
-            icon={<img src={require('../../public/assets/img/atom-o.svg')} style={{ height: '34px' }} alt="atom" />}
-            title={intl.formatMessage({ id: 'ledger.step2' })}
-            paragraph={intl.formatMessage({ id: 'ledger.step2.paragraph' })}
+            icon={
+              <img
+                src={require("../../public/assets/img/atom-o.svg")}
+                style={{ height: "34px" }}
+                alt="atom"
+              />
+            }
+            title={intl.formatMessage({ id: "ledger.step2" })}
+            paragraph={intl.formatMessage({ id: "ledger.step2.paragraph" })}
             pass={initTryCount > 0 && initErrorOn == null}
           />
           <div style={{ flex: 1 }} />
@@ -132,7 +159,7 @@ export const LedgerGrantPage: FunctionComponent = observer(() => {
             <label
               className="custom-control-label"
               htmlFor="use-webhid"
-              style={{ color: '#666666', paddingTop: '1px' }}
+              style={{ color: "#666666", paddingTop: "1px" }}
             >
               <FormattedMessage id="ledger.option.webhid.checkbox" />
             </label>
@@ -140,9 +167,9 @@ export const LedgerGrantPage: FunctionComponent = observer(() => {
           {showWebHIDWarning ? (
             <div
               style={{
-                fontSize: '14px',
-                marginBottom: '20px',
-                color: '#777777'
+                fontSize: "14px",
+                marginBottom: "20px",
+                color: "#777777",
               }}
             >
               <FormattedMessage
@@ -155,26 +182,28 @@ export const LedgerGrantPage: FunctionComponent = observer(() => {
                       rel="noopener noreferrer"
                       onClick={() => {
                         navigator.clipboard
-                          .writeText('chrome://flags/#enable-experimental-web-platform-features')
+                          .writeText(
+                            "chrome://flags/#enable-experimental-web-platform-features"
+                          )
                           .then(() => {
                             notification.push({
-                              placement: 'top-center',
-                              type: 'success',
+                              placement: "top-center",
+                              type: "success",
                               duration: 2,
                               content: intl.formatMessage({
-                                id: 'ledger.option.webhid.link.copied'
+                                id: "ledger.option.webhid.link.copied",
                               }),
                               canDelete: true,
                               transition: {
-                                duration: 0.25
-                              }
+                                duration: 0.25,
+                              },
                             });
                           });
                       }}
                     >
                       chrome://flags/#enable-experimental-web-platform-features
                     </a>
-                  )
+                  ),
                 }}
               />
             </div>
@@ -182,7 +211,7 @@ export const LedgerGrantPage: FunctionComponent = observer(() => {
           <Button
             color="primary"
             block
-            onClick={async e => {
+            onClick={async (e) => {
               e.preventDefault();
               await tryInit();
             }}
@@ -202,12 +231,15 @@ const ConfirmLedgerDialog: FunctionComponent = () => {
       <div
         style={{
           flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'flex-end'
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "flex-end",
         }}
       >
-        <img src={require('../../public/assets/img/icons8-pen.svg')} alt="pen" />
+        <img
+          src={require("../../public/assets/img/icons8-pen.svg")}
+          alt="pen"
+        />
       </div>
       <p>
         <FormattedMessage id="ledger.confirm.waiting.paragraph" />
@@ -215,9 +247,9 @@ const ConfirmLedgerDialog: FunctionComponent = () => {
       <div
         style={{
           flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'flex-start'
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "flex-start",
         }}
       >
         <i className="fa fa-spinner fa-spin fa-2x fa-fw" />
@@ -236,34 +268,40 @@ const SignCompleteDialog: FunctionComponent<{
       <div
         style={{
           flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'flex-end'
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "flex-end",
         }}
       >
         {!rejected ? (
-          <img src={require('../../public/assets/img/icons8-checked.svg')} alt="success" />
+          <img
+            src={require("../../public/assets/img/icons8-checked.svg")}
+            alt="success"
+          />
         ) : (
-          <img src={require('../../public/assets/img/icons8-cancel.svg')} alt="rejected" />
+          <img
+            src={require("../../public/assets/img/icons8-cancel.svg")}
+            alt="rejected"
+          />
         )}
       </div>
       <p>
         {!rejected
-          ? intl.formatMessage({ id: 'ledger.confirm.success' })
-          : intl.formatMessage({ id: 'ledger.confirm.rejected' })}
+          ? intl.formatMessage({ id: "ledger.confirm.success" })
+          : intl.formatMessage({ id: "ledger.confirm.rejected" })}
       </p>
       <div
         style={{
           flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'flex-start'
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "flex-start",
         }}
       >
         <div className={style.subParagraph}>
           {!rejected
-            ? intl.formatMessage({ id: 'ledger.confirm.success.paragraph' })
-            : intl.formatMessage({ id: 'ledger.confirm.rejected.paragraph' })}
+            ? intl.formatMessage({ id: "ledger.confirm.success.paragraph" })
+            : intl.formatMessage({ id: "ledger.confirm.rejected.paragraph" })}
         </div>
       </div>
     </div>
@@ -282,9 +320,14 @@ const Instruction: FunctionComponent<{
       <div className={style.inner}>
         <h1>
           {title}
-          {pass ? <i className="fas fa-check" style={{ marginLeft: '10px', color: '#2dce89' }} /> : null}
+          {pass ? (
+            <i
+              className="fas fa-check"
+              style={{ marginLeft: "10px", color: "#2dce89" }}
+            />
+          ) : null}
         </h1>
-        <p style={{ color: '#777e90' }}>{paragraph}</p>
+        <p style={{ color: "#777e90" }}>{paragraph}</p>
         {children}
       </div>
     </div>

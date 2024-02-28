@@ -1,12 +1,12 @@
-import React, { FunctionComponent, useState } from 'react';
-import { observer } from 'mobx-react-lite';
-import { RightArrow, SettingItem } from '../components';
-import { PasswordInputModal } from '../../../modals/password-input/modal';
-import { useStore } from '../../../stores';
-import { getPrivateDataTitle } from '../screens/view-private-data';
-import { useSmartNavigation } from '../../../navigation.provider';
-import { LRRedact } from '@logrocket/react-native';
-import { SCREENS } from '@src/common/constants';
+import React, { FunctionComponent, useState } from "react";
+import { observer } from "mobx-react-lite";
+import { RightArrow, SettingItem } from "../components";
+import { PasswordInputModal } from "../../../modals/password-input/modal";
+import { useStore } from "../../../stores";
+import { getPrivateDataTitle } from "../screens/view-private-data";
+import { useSmartNavigation } from "../../../navigation.provider";
+import { LRRedact } from "@logrocket/react-native";
+import { SCREENS } from "@src/common/constants";
 
 export const SettingViewPrivateDataItem: FunctionComponent<{
   topBorder?: boolean;
@@ -21,7 +21,7 @@ export const SettingViewPrivateDataItem: FunctionComponent<{
     <React.Fragment>
       <LRRedact>
         <SettingItem
-          label={'Mnemonic'}
+          label={"Mnemonic"}
           onPress={() => {
             setIsOpenModal(true);
           }}
@@ -30,19 +30,24 @@ export const SettingViewPrivateDataItem: FunctionComponent<{
         />
         <PasswordInputModal
           isOpen={isOpenModal}
-          paragraph={'Do not reveal your mnemonic to anyone'}
+          paragraph={"Do not reveal your mnemonic to anyone"}
           close={() => {
             setIsOpenModal(false);
           }}
           title={getPrivateDataTitle(keyRingStore.keyRingType, true)}
-          onEnterPassword={async password => {
-            const index = keyRingStore.multiKeyStoreInfo.findIndex(keyStore => keyStore.selected);
+          onEnterPassword={async (password) => {
+            const index = keyRingStore.multiKeyStoreInfo.findIndex(
+              (keyStore) => keyStore.selected
+            );
 
             if (index >= 0) {
-              const privateData = await keyRingStore.showKeyRing(index, password);
-              smartNavigation.navigateSmart('Setting.BackupMnemonic', {
+              const privateData = await keyRingStore.showKeyRing(
+                index,
+                password
+              );
+              smartNavigation.navigateSmart("Setting.BackupMnemonic", {
                 privateData,
-                privateDataType: keyRingStore.keyRingType
+                privateDataType: keyRingStore.keyRingType,
               });
             }
           }}

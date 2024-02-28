@@ -2,8 +2,8 @@ import {
   MessageRequester,
   Message,
   JSONUint8Array,
-  OWalletError
-} from '@owallet/router';
+  OWalletError,
+} from "@owallet/router";
 
 export class InExtensionMessageRequester implements MessageRequester {
   async sendMessage<M extends Message<unknown>>(
@@ -23,15 +23,15 @@ export class InExtensionMessageRequester implements MessageRequester {
     // Set message's origin.
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    msg['origin'] =
-      typeof window !== 'undefined' && window.location
+    msg["origin"] =
+      typeof window !== "undefined" && window.location
         ? window.location.origin
-        : new URL(browser.runtime.getURL('/')).origin;
+        : new URL(browser.runtime.getURL("/")).origin;
 
     const message = {
       port,
       type: msg.type(),
-      msg: JSONUint8Array.wrap(msg)
+      msg: JSONUint8Array.wrap(msg),
     };
     const result = JSONUint8Array.unwrap(
       Number.isInteger(tabId)
@@ -40,11 +40,11 @@ export class InExtensionMessageRequester implements MessageRequester {
     );
 
     if (!result) {
-      throw new Error('Null result');
+      throw new Error("Null result");
     }
 
     if (result.error) {
-      if (typeof result.error === 'string') {
+      if (typeof result.error === "string") {
         throw new Error(result.error);
       } else {
         throw new OWalletError(

@@ -1,18 +1,30 @@
-import React, { FunctionComponent, useCallback, useEffect, useRef, useState } from 'react';
-import { Text } from '@src/components/text';
-import { ActivityIndicator, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { TransactionSectionTitle, TransactionItem } from './components';
-import { metrics, spacing, typography } from '../../themes';
-import { _keyExtract } from '../../utils/helper';
-import { useSmartNavigation } from '../../navigation.provider';
-import { useStore } from '../../stores';
-import { API } from '../../common/api';
-import crashlytics from '@react-native-firebase/crashlytics';
-import { NewsTab } from './news';
-import { useIsFocused } from '@react-navigation/core';
-import { TendermintTxTracer } from '@owallet/cosmos';
-import { useTheme } from '@src/themes/theme-provider';
-import { OWBox } from '@src/components/card';
+import React, {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { Text } from "@src/components/text";
+import {
+  ActivityIndicator,
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { TransactionSectionTitle, TransactionItem } from "./components";
+import { metrics, spacing, typography } from "../../themes";
+import { _keyExtract } from "../../utils/helper";
+import { useSmartNavigation } from "../../navigation.provider";
+import { useStore } from "../../stores";
+import { API } from "../../common/api";
+import crashlytics from "@react-native-firebase/crashlytics";
+import { NewsTab } from "./news";
+import { useIsFocused } from "@react-navigation/core";
+import { TendermintTxTracer } from "@owallet/cosmos";
+import { useTheme } from "@src/themes/theme-provider";
+import { OWBox } from "@src/components/card";
 
 export const Transactions: FunctionComponent = () => {
   const { chainStore, accountStore } = useStore();
@@ -28,7 +40,7 @@ export const Transactions: FunctionComponent = () => {
   const page = useRef(1);
   const hasMore = useRef(true);
   const fetchData = async (isLoadMore = false) => {
-    crashlytics().log('transactions - home - fetchData');
+    crashlytics().log("transactions - home - fetchData");
 
     try {
       if (hasMore.current) {
@@ -37,10 +49,10 @@ export const Transactions: FunctionComponent = () => {
             address: account.bech32Address,
             page: page.current,
             limit: 10,
-            type: indexChildren === 0 ? 'native' : 'cw20'
+            type: indexChildren === 0 ? "native" : "cw20",
           },
           // { baseURL: chainStore.current.rest }
-          { baseURL: 'https://api.scan.orai.io' }
+          { baseURL: "https://api.scan.orai.io" }
         );
 
         const value = res.data?.data || [];
@@ -77,16 +89,19 @@ export const Transactions: FunctionComponent = () => {
     let msgTracer: TendermintTxTracer | undefined;
 
     if (isFocused) {
-      msgTracer = new TendermintTxTracer(chainInfo?.rpc ?? chainInfo?.rest, '/websocket');
+      msgTracer = new TendermintTxTracer(
+        chainInfo?.rpc ?? chainInfo?.rest,
+        "/websocket"
+      );
       msgTracer
         .subscribeMsgByAddress(account.bech32Address)
-        .then(tx => {
+        .then((tx) => {
           page.current = 1;
           setTimeout(() => {
             fetchData();
           }, 1500);
         })
-        .catch(e => {
+        .catch((e) => {
           console.log(`Failed to trace the tx ()`, e);
         });
     }
@@ -109,21 +124,21 @@ export const Transactions: FunctionComponent = () => {
       return (
         <TransactionItem
           loading={loading}
-          type={indexChildren === 0 ? 'native' : 'cw20'}
+          type={indexChildren === 0 ? "native" : "cw20"}
           address={account.bech32Address}
           item={item}
           key={index}
           onPress={() =>
-            smartNavigation.navigateSmart('Transactions.Detail', {
+            smartNavigation.navigateSmart("Transactions.Detail", {
               item: {
                 ...item,
-                address: account.bech32Address
+                address: account.bech32Address,
               },
-              type: indexChildren === 0 ? 'native' : 'cw20'
+              type: indexChildren === 0 ? "native" : "cw20",
             })
           }
           containerStyle={{
-            backgroundColor: colors['background-item-list']
+            backgroundColor: colors["background-item-list"],
           }} // customize item transaction
         />
       );
@@ -135,27 +150,30 @@ export const Transactions: FunctionComponent = () => {
     <View style={styles.container}>
       <View
         style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: colors['background-box'],
-          borderRadius: spacing['12'],
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: colors["background-box"],
+          borderRadius: spacing["12"],
           height: 56,
-          marginVertical: spacing['12'],
-          marginHorizontal: spacing['24'],
-          paddingHorizontal: spacing['8']
+          marginVertical: spacing["12"],
+          marginHorizontal: spacing["24"],
+          paddingHorizontal: spacing["8"],
         }}
       >
-        {['Transactions', 'News'].map((title: string, i: number) => (
+        {["Transactions", "News"].map((title: string, i: number) => (
           <TouchableOpacity
             key={i}
             style={{
               ...styles.tabSelected,
               width: (metrics.screenWidth - 60) / 2,
-              alignItems: 'center',
-              paddingVertical: spacing['12'],
-              backgroundColor: indexParent === i ? colors['primary-surface-default'] : colors['background-box'],
-              borderRadius: spacing['12']
+              alignItems: "center",
+              paddingVertical: spacing["12"],
+              backgroundColor:
+                indexParent === i
+                  ? colors["primary-surface-default"]
+                  : colors["background-box"],
+              borderRadius: spacing["12"],
             }}
             onPress={() => {
               setIndexParent(i);
@@ -165,8 +183,8 @@ export const Transactions: FunctionComponent = () => {
             <Text
               style={{
                 fontSize: 16,
-                fontWeight: '700',
-                color: indexParent === i ? colors['white'] : colors['gray-300']
+                fontWeight: "700",
+                color: indexParent === i ? colors["white"] : colors["gray-300"],
               }}
             >
               {title}
@@ -178,25 +196,25 @@ export const Transactions: FunctionComponent = () => {
         <OWBox
           style={{
             marginTop: 0,
-            padding: 0
+            padding: 0,
           }}
         >
           <View
             style={{
-              marginTop: spacing['12'],
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center'
+              marginTop: spacing["12"],
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
             }}
           >
-            {['Transactions', 'CW20'].map((title: string, i: number) => (
+            {["Transactions", "CW20"].map((title: string, i: number) => (
               <TouchableOpacity
                 key={i}
                 style={{
                   ...styles.tabSelected,
                   width: (metrics.screenWidth - 60) / 2,
-                  alignItems: 'center',
-                  paddingVertical: spacing['12']
+                  alignItems: "center",
+                  paddingVertical: spacing["12"],
                 }}
                 onPress={() => {
                   setData([]);
@@ -208,8 +226,11 @@ export const Transactions: FunctionComponent = () => {
                 <Text
                   style={{
                     fontSize: 16,
-                    fontWeight: '700',
-                    color: indexChildren === i ? colors['primary-text'] : colors['blue-300']
+                    fontWeight: "700",
+                    color:
+                      indexChildren === i
+                        ? colors["primary-text"]
+                        : colors["blue-300"],
                   }}
                 >
                   {title}
@@ -218,9 +239,9 @@ export const Transactions: FunctionComponent = () => {
             ))}
           </View>
           <TransactionSectionTitle
-            title={'Transfer list'}
+            title={"Transfer list"}
             containerStyle={{
-              paddingTop: spacing['4']
+              paddingTop: spacing["4"],
             }}
             onPress={() => {
               page.current = 1;
@@ -243,17 +264,17 @@ export const Transactions: FunctionComponent = () => {
                   setLoadMore(true);
                   fetchData(true);
                 }}
-                ListFooterComponent={<View style={{ height: spacing['12'] }} />}
+                ListFooterComponent={<View style={{ height: spacing["12"] }} />}
                 ListEmptyComponent={
                   <View style={styles.transactionListEmpty}>
                     <Text
                       style={{
                         ...typography.subtitle1,
-                        color: colors['gray-300'],
-                        marginTop: spacing['8']
+                        color: colors["gray-300"],
+                        marginTop: spacing["8"],
                       }}
                     >
-                      {'Not found transaction'}
+                      {"Not found transaction"}
                     </Text>
                   </View>
                 }
@@ -273,31 +294,31 @@ export const Transactions: FunctionComponent = () => {
   );
 };
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     container: {
-      backgroundColor: colors['background'],
-      marginBottom: spacing['20']
+      backgroundColor: colors["background"],
+      marginBottom: spacing["20"],
     },
     tabBarHeader: {
-      backgroundColor: colors['background'],
-      display: 'flex',
-      flexDirection: 'row',
+      backgroundColor: colors["background"],
+      display: "flex",
+      flexDirection: "row",
       width: metrics.screenWidth,
-      justifyContent: 'space-around',
-      height: spacing['44']
+      justifyContent: "space-around",
+      height: spacing["44"],
     },
     tabText: {
       ...typography.body2,
-      fontWeight: 'normal'
+      fontWeight: "normal",
     },
     tabSelected: {},
     transactionList: {
-      height: metrics.screenHeight / 1.5
+      height: metrics.screenHeight / 1.5,
     },
     transactionListEmpty: {
-      justifyContent: 'center',
-      alignItems: 'center',
-      marginTop: metrics.screenHeight / 4
-    }
+      justifyContent: "center",
+      alignItems: "center",
+      marginTop: metrics.screenHeight / 4,
+    },
   });

@@ -1,26 +1,23 @@
-import React, { FunctionComponent } from 'react';
-import { registerModal } from '../base';
-import { CardModal } from '../card';
+import React, { FunctionComponent } from "react";
+import { registerModal } from "../base";
+import { CardModal } from "../card";
 import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
   TouchableWithoutFeedback,
-  View
-} from 'react-native';
-import { useStyle } from '../../styles';
-import { observer } from 'mobx-react-lite';
-import { useUnmount } from '../../hooks';
-import { useStore } from '../../stores';
-import { useTheme } from '@src/themes/theme-provider';
-import { BottomSheetProps } from '@gorhom/bottom-sheet';
+  View,
+} from "react-native";
+import { useStyle } from "../../styles";
+import { observer } from "mobx-react-lite";
+import { useUnmount } from "../../hooks";
+import { useStore } from "../../stores";
+import { useTheme } from "@src/themes/theme-provider";
+import { BottomSheetProps } from "@gorhom/bottom-sheet";
 export const HomeBaseModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
-  bottomSheetModalConfig?: Omit<
-    BottomSheetProps,
-    'snapPoints' | 'children'
-  >;
+  bottomSheetModalConfig?: Omit<BottomSheetProps, "snapPoints" | "children">;
 }> = registerModal(
   observer(({ children }) => {
     const style = useStyle();
@@ -39,11 +36,11 @@ export const HomeBaseModal: FunctionComponent<{
       >
         <CardModal
           childrenContainerStyle={{
-            backgroundColor: colors['background-box']
+            backgroundColor: colors["background-box"],
           }}
-          title={''}
+          title={""}
         >
-          <View style={style.flatten(['margin-bottom-16'])}>
+          <View style={style.flatten(["margin-bottom-16"])}>
             {children}
             {modalStore.getChildren()}
           </View>
@@ -53,6 +50,6 @@ export const HomeBaseModal: FunctionComponent<{
     );
   }),
   {
-    disableSafeArea: true
+    disableSafeArea: true,
   }
 );

@@ -1,5 +1,5 @@
-import React, { FunctionComponent } from 'react';
-import Svg, { Path } from 'react-native-svg';
+import React, { FunctionComponent } from "react";
+import Svg, { Path } from "react-native-svg";
 
 export const AddressBookIcon: FunctionComponent<{
   color: string;
@@ -24,7 +24,7 @@ export const AddressBookIcon: FunctionComponent<{
 export const NoteIcon: FunctionComponent<{
   color: string;
   height: number;
-}> = ({ color = 'none', height = 19 }) => {
+}> = ({ color = "none", height = 19 }) => {
   return (
     <Svg width={height} height={height} viewBox="0 0 19 19" fill={color}>
       <Path

@@ -1,18 +1,18 @@
-import { RouteProp, useRoute } from '@react-navigation/native';
-import { Text } from '@src/components/text';
-import { observer } from 'mobx-react-lite';
-import React, { FunctionComponent, useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { PageWithView } from '../../components/page';
-import { Toggle } from '../../components/toggle';
-import { useSmartNavigation } from '../../navigation.provider';
-import { useStore } from '../../stores';
+import { RouteProp, useRoute } from "@react-navigation/native";
+import { Text } from "@src/components/text";
+import { observer } from "mobx-react-lite";
+import React, { FunctionComponent, useEffect, useState } from "react";
+import { StyleSheet, View } from "react-native";
+import { PageWithView } from "../../components/page";
+import { Toggle } from "../../components/toggle";
+import { useSmartNavigation } from "../../navigation.provider";
+import { useStore } from "../../stores";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import OWButton from '@src/components/button/OWButton';
-import { useTheme } from '@src/themes/theme-provider';
-import { typography } from '../../themes';
-import { OWalletLogo, OWalletStar } from './owallet-logo';
+import OWButton from "@src/components/button/OWButton";
+import { useTheme } from "@src/themes/theme-provider";
+import { typography } from "../../themes";
+import { OWalletLogo, OWalletStar } from "./owallet-logo";
 
 export const RegisterEndScreen: FunctionComponent = observer(() => {
   const { keychainStore, keyRingStore } = useStore();
@@ -50,14 +50,14 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
         paddingLeft: 50,
         paddingTop: 140,
         paddingRight: 50,
-        backgroundColor: colors['background-container']
+        backgroundColor: colors["background-container"],
       }}
     >
       <View />
       <View
         style={{
-          display: 'flex',
-          alignItems: 'center'
+          display: "flex",
+          alignItems: "center",
         }}
       >
         {/* <WelcomeRocket width={358} height={254} /> */}
@@ -69,51 +69,54 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
         </View>
         <Text
           style={{
-            ...typography['h2'],
-            color: colors['text-title-login'],
+            ...typography["h2"],
+            color: colors["text-title-login"],
             marginTop: 18,
-            fontWeight: '700'
+            fontWeight: "700",
           }}
         >
           Congratulation!
         </Text>
         <Text
           style={{
-            ...typography['subtitle1'],
-            color: colors['text-content-success'],
-            textAlign: 'center',
+            ...typography["subtitle1"],
+            color: colors["text-content-success"],
+            textAlign: "center",
             paddingTop: 20,
             paddingLeft: 8,
-            paddingRight: 8
+            paddingRight: 8,
           }}
         >
           Your new wallet has been successfully
-          {route?.params?.type === 'recover' ? ' imported' : ' created'}!
+          {route?.params?.type === "recover" ? " imported" : " created"}!
         </Text>
       </View>
       {password && keychainStore.isBiometrySupported ? (
         <View
           style={{
-            display: 'flex',
-            flexDirection: 'row',
+            display: "flex",
+            flexDirection: "row",
             marginTop: 58,
-            alignItems: 'center'
+            alignItems: "center",
           }}
         >
           <Text
             style={{
-              ...typography['subtitle1'],
-              color: colors['text-black-medium']
+              ...typography["subtitle1"],
+              color: colors["text-black-medium"],
             }}
           >
             Enable Biometric
           </Text>
           <View
             style={{
-              flex: 1
+              flex: 1,
             }}
           />
-          <Toggle on={isBiometricOn} onChange={value => setIsBiometricOn(value)} />
+          <Toggle
+            on={isBiometricOn}
+            onChange={(value) => setIsBiometricOn(value)}
+          />
         </View>
       ) : null}
       <OWButton
@@ -128,15 +131,17 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
             }
             // Definetly, the last key is newest keyring.
             if (keyRingStore.multiKeyStoreInfo.length > 0) {
-              await keyRingStore.changeKeyRing(keyRingStore.multiKeyStoreInfo.length - 1);
+              await keyRingStore.changeKeyRing(
+                keyRingStore.multiKeyStoreInfo.length - 1
+              );
             }
             smartNavigation.reset({
               index: 0,
               routes: [
                 {
-                  name: 'MainTab'
-                }
-              ]
+                  name: "MainTab",
+                },
+              ],
             });
           } catch (e) {
             console.log(e);
@@ -147,7 +152,7 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
       />
       <View
         style={{
-          flex: 1
+          flex: 1,
         }}
       />
     </PageWithView>
@@ -156,6 +161,6 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
 
 const styles = StyleSheet.create({
   btnDone: {
-    marginTop: 44
-  }
+    marginTop: 44,
+  },
 });

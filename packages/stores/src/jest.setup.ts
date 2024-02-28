@@ -1,9 +1,9 @@
-import 'reflect-metadata';
-const nodeCrypto = require('crypto');
-Object.defineProperty(globalThis, 'crypto', {
+import "reflect-metadata";
+const nodeCrypto = require("crypto");
+Object.defineProperty(globalThis, "crypto", {
   value: {
-    getRandomValues: (arr) => nodeCrypto.randomBytes(arr.length)
-  }
+    getRandomValues: (arr) => nodeCrypto.randomBytes(arr.length),
+  },
 });
 class ChannelMock {
   onmessage: (event: { data: any }) => void;

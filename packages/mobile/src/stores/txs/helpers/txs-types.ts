@@ -1,5 +1,5 @@
 interface CurrencyInfo {
-  prefix?: 'cw20' | 'trc20' | 'erc20' | 'bep20' | 'ibc' | '';
+  prefix?: "cw20" | "trc20" | "erc20" | "bep20" | "ibc" | "";
   coinDenom?: string;
   coinMinimalDenom?: string;
   contractAddress?: string;
@@ -188,7 +188,7 @@ interface ResTxsInfo {
   time: timeTxs;
   denomFee: string;
   height: string;
-  status: 'success' | 'fail' | 'pending';
+  status: "success" | "fail" | "pending";
   memo: string;
   gasUsed: string;
   gasWanted: string;
@@ -363,7 +363,7 @@ interface FluffyAttributeLcdCosmos {
 }
 
 interface TxLcdCosmos {
-  '@type'?: string;
+  "@type"?: string;
   body?: Body;
   auth_info?: AuthInfo;
   signatures?: string[];
@@ -401,7 +401,7 @@ interface Single {
 }
 
 interface PublicKey {
-  '@type'?: string;
+  "@type"?: string;
   key?: string;
 }
 
@@ -414,7 +414,7 @@ interface Body {
 }
 
 interface MessageLcdCosmos {
-  '@type'?: string;
+  "@type"?: string;
   sender?: string;
   contract?: string;
   msg?: MsgLcdCosmos;

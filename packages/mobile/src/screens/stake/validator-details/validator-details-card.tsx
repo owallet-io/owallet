@@ -1,65 +1,65 @@
-import { BondStatus } from '@owallet/stores';
-import { CoinPretty, Dec, IntPretty } from '@owallet/unit';
-import { Text } from '@src/components/text';
-import { useTheme } from '@src/themes/theme-provider';
-import { observer } from 'mobx-react-lite';
-import React, { FunctionComponent, useMemo } from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
-import { useStore } from '../../../stores';
-import { ValidatorThumbnails } from '@owallet/common';
-import { OWButton } from '@src/components/button';
-import { OWBox } from '@src/components/card';
-import { OWSubTitleHeader } from '@src/components/header';
+import { BondStatus } from "@owallet/stores";
+import { CoinPretty, Dec, IntPretty } from "@owallet/unit";
+import { Text } from "@src/components/text";
+import { useTheme } from "@src/themes/theme-provider";
+import { observer } from "mobx-react-lite";
+import React, { FunctionComponent, useMemo } from "react";
+import { StyleSheet, View, ViewStyle } from "react-native";
+import { useStore } from "../../../stores";
+import { ValidatorThumbnails } from "@owallet/common";
+import { OWButton } from "@src/components/button";
+import { OWBox } from "@src/components/card";
+import { OWSubTitleHeader } from "@src/components/header";
 import {
   ValidatorAPYIcon,
   ValidatorBlockIcon,
   ValidatorCommissionIcon,
-  ValidatorVotingIcon
-} from '../../../components/icon';
-import { ValidatorThumbnail } from '../../../components/thumbnail';
-import { useSmartNavigation } from '../../../navigation.provider';
-import { metrics, spacing, typography } from '../../../themes';
+  ValidatorVotingIcon,
+} from "../../../components/icon";
+import { ValidatorThumbnail } from "../../../components/thumbnail";
+import { useSmartNavigation } from "../../../navigation.provider";
+import { metrics, spacing, typography } from "../../../themes";
 
 const renderIconValidator = (label: string, size?: number, styles?: any) => {
   switch (label) {
-    case 'Website':
+    case "Website":
       return (
         <View
           style={{
-            ...styles.containerIcon
+            ...styles.containerIcon,
           }}
         >
-          <ValidatorBlockIcon color={'#1E1E1E'} size={size} />
+          <ValidatorBlockIcon color={"#1E1E1E"} size={size} />
         </View>
       );
-    case 'APR':
+    case "APR":
       return (
         <View
           style={{
-            ...styles.containerIcon
+            ...styles.containerIcon,
           }}
         >
-          <ValidatorAPYIcon color={'#1E1E1E'} size={size} />
+          <ValidatorAPYIcon color={"#1E1E1E"} size={size} />
         </View>
       );
-    case 'Commission':
+    case "Commission":
       return (
         <View
           style={{
-            ...styles.containerIcon
+            ...styles.containerIcon,
           }}
         >
-          <ValidatorCommissionIcon color={'#1E1E1E'} size={size} />
+          <ValidatorCommissionIcon color={"#1E1E1E"} size={size} />
         </View>
       );
-    case 'Voting power':
+    case "Voting power":
       return (
         <View
           style={{
-            ...styles.containerIcon
+            ...styles.containerIcon,
           }}
         >
-          <ValidatorVotingIcon color={'#1E1E1E'} size={size} />
+          <ValidatorVotingIcon color={"#1E1E1E"} size={size} />
         </View>
       );
   }
@@ -87,12 +87,12 @@ export const ValidatorDetailsCard: FunctionComponent<{
     return bondedValidators.validators
       .concat(unbondingValidators.validators)
       .concat(unbondedValidators.validators)
-      .find(val => val.operator_address === validatorAddress);
+      .find((val) => val.operator_address === validatorAddress);
   }, [
     bondedValidators.validators,
     unbondingValidators.validators,
     unbondedValidators.validators,
-    validatorAddress
+    validatorAddress,
   ]);
   const smartNavigation = useSmartNavigation();
   const thumbnail =
@@ -103,29 +103,29 @@ export const ValidatorDetailsCard: FunctionComponent<{
 
   const renderTextDetail = (label: string) => {
     switch (label) {
-      case 'Website':
+      case "Website":
         return (
           <Text style={{ ...styles.textDetail }}>
             {validator?.description.website}
           </Text>
         );
-      case 'APR':
+      case "APR":
         return (
           <Text style={{ ...styles.textDetail }}>
-            {apr ? apr?.toFixed(2).toString() + '%' : '0' + '%'}
+            {apr ? apr?.toFixed(2).toString() + "%" : "0" + "%"}
           </Text>
         );
-      case 'Commission':
+      case "Commission":
         return (
           <Text style={{ ...styles.textDetail }}>
             {new IntPretty(new Dec(validator.commission.commission_rates.rate))
               .moveDecimalPointRight(2)
               .maxDecimals(2)
               .trim(true)
-              .toString() + '%'}
+              .toString() + "%"}
           </Text>
         );
-      case 'Voting power':
+      case "Voting power":
         return (
           <Text style={{ ...styles.textDetail }}>
             {new CoinPretty(
@@ -148,17 +148,17 @@ export const ValidatorDetailsCard: FunctionComponent<{
         <OWBox>
           <View
             style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              marginBottom: spacing['16']
+              flexDirection: "row",
+              alignItems: "center",
+              marginBottom: spacing["16"],
             }}
           >
             <ValidatorThumbnail size={44} url={thumbnail} />
             <Text
               style={{
                 ...styles.textInfo,
-                fontWeight: '700',
-                color: colors['primary-text']
+                fontWeight: "700",
+                color: colors["primary-text"],
               }}
             >
               {validator?.description.moniker}
@@ -167,26 +167,26 @@ export const ValidatorDetailsCard: FunctionComponent<{
 
           <View
             style={{
-              flexWrap: 'wrap',
-              flexDirection: 'row',
-              justifyContent: 'space-between'
+              flexWrap: "wrap",
+              flexDirection: "row",
+              justifyContent: "space-between",
             }}
           >
-            {['Website', 'APR', 'Commission', 'Voting power'].map(
+            {["Website", "APR", "Commission", "Voting power"].map(
               (label: string, index: number) => (
                 <View
                   style={{
-                    ...styles.containerItem
+                    ...styles.containerItem,
                   }}
                 >
                   {renderIconValidator(label, 24, styles)}
                   <Text
                     style={{
                       ...typography.h7,
-                      fontWeight: '700',
-                      textAlign: 'center',
-                      marginTop: spacing['6'],
-                      color: colors['primary-text']
+                      fontWeight: "700",
+                      textAlign: "center",
+                      marginTop: spacing["6"],
+                      color: colors["primary-text"],
                     }}
                   >
                     {label}
@@ -198,16 +198,16 @@ export const ValidatorDetailsCard: FunctionComponent<{
           </View>
           <View
             style={{
-              marginBottom: spacing['14']
+              marginBottom: spacing["14"],
             }}
           >
             <Text
               style={{
                 ...typography.h7,
-                fontWeight: '700',
-                marginTop: spacing['24'],
-                marginBottom: spacing['4'],
-                color: colors['sub-primary-text']
+                fontWeight: "700",
+                marginTop: spacing["24"],
+                marginBottom: spacing["4"],
+                color: colors["sub-primary-text"],
               }}
             >
               Description
@@ -215,8 +215,8 @@ export const ValidatorDetailsCard: FunctionComponent<{
             <Text
               style={{
                 ...styles.textDetail,
-                textAlign: 'left',
-                fontWeight: '400'
+                textAlign: "left",
+                fontWeight: "400",
                 // marginBottom: spacing['28']
               }}
               selectable={true}
@@ -229,13 +229,13 @@ export const ValidatorDetailsCard: FunctionComponent<{
       <OWButton
         label="Stake now"
         onPress={() => {
-          smartNavigation.navigateSmart('Delegate', {
-            validatorAddress
+          smartNavigation.navigateSmart("Delegate", {
+            validatorAddress,
           });
         }}
         style={{
           marginTop: 20,
-          marginHorizontal: 24
+          marginHorizontal: 24,
         }}
         fullWidth={false}
       />
@@ -243,33 +243,33 @@ export const ValidatorDetailsCard: FunctionComponent<{
   );
 });
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     containerIcon: {
-      borderRadius: spacing['8'],
-      padding: spacing['10'],
-      alignItems: 'center',
-      backgroundColor: colors['gray-10']
+      borderRadius: spacing["8"],
+      padding: spacing["10"],
+      alignItems: "center",
+      backgroundColor: colors["gray-10"],
     },
     textInfo: {
       ...typography.h5,
-      fontWeight: '400',
-      marginLeft: spacing['12']
+      fontWeight: "400",
+      marginLeft: spacing["12"],
     },
     containerItem: {
       borderWidth: 1,
-      borderColor: colors['border-input-login'],
-      borderRadius: spacing['8'],
+      borderColor: colors["border-input-login"],
+      borderRadius: spacing["8"],
       width: (metrics.screenWidth - 60) / 2,
-      marginVertical: spacing['6'],
-      paddingVertical: spacing['16'],
-      paddingHorizontal: spacing['16'],
-      alignItems: 'center'
+      marginVertical: spacing["6"],
+      paddingVertical: spacing["16"],
+      paddingHorizontal: spacing["16"],
+      alignItems: "center",
     },
     textDetail: {
       ...typography.h7,
-      fontWeight: '700',
-      color: colors['sub-text'],
-      textAlign: 'center'
-    }
+      fontWeight: "700",
+      color: colors["sub-text"],
+      textAlign: "center",
+    },
   });

@@ -3,19 +3,19 @@ import React, {
   useEffect,
   useMemo,
   useRef,
-  useState
-} from 'react';
-import { View } from 'react-native';
-import { Text } from '@src/components/text';
-import Animated from 'react-native-reanimated';
-import { AlertIcon, RefreshIcon } from '../../components/icon';
-import { useStyle } from '../../styles';
-import { useNetInfo } from '@react-native-community/netinfo';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../stores';
-import { useSpinAnimated } from '../../components/spinner';
-import { ObservableQuery } from '@owallet/stores';
+  useState,
+} from "react";
+import { View } from "react-native";
+import { Text } from "@src/components/text";
+import Animated from "react-native-reanimated";
+import { AlertIcon, RefreshIcon } from "../../components/icon";
+import { useStyle } from "../../styles";
+import { useNetInfo } from "@react-native-community/netinfo";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { observer } from "mobx-react-lite";
+import { useStore } from "../../stores";
+import { useSpinAnimated } from "../../components/spinner";
+import { ObservableQuery } from "@owallet/stores";
 
 export const NetworkErrorView: FunctionComponent = observer(() => {
   const { chainStore, accountStore, queriesStore } = useStore();
@@ -40,17 +40,17 @@ export const NetworkErrorView: FunctionComponent = observer(() => {
 
   const netInfo = useNetInfo();
   const networkIsConnected =
-    typeof netInfo.isConnected !== 'boolean' || netInfo.isConnected;
+    typeof netInfo.isConnected !== "boolean" || netInfo.isConnected;
 
   const [isOpen, setIsOpen] = useState(false);
   const [isRefreshable, setIsRefreshable] = useState(true);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
 
   const prevNetworkIsConnected = useRef(true);
   useEffect(() => {
     if (!networkIsConnected) {
       setIsOpen(true);
-      setMessage('No internet connection');
+      setMessage("No internet connection");
       setIsRefreshable(false);
     } else {
       setIsOpen(false);
@@ -75,10 +75,10 @@ export const NetworkErrorView: FunctionComponent = observer(() => {
         const errorData = error.data as { error?: string } | undefined;
         const message = (() => {
           if (errorData?.error) {
-            return 'Failed to get response\n' + errorData.error;
+            return "Failed to get response\n" + errorData.error;
           }
 
-          return error.message || 'Unknown error';
+          return error.message || "Unknown error";
         })();
 
         setIsOpen(true);
@@ -92,7 +92,7 @@ export const NetworkErrorView: FunctionComponent = observer(() => {
     queryStakable.error,
     queryDelegated.error,
     queryUnbonding.error,
-    networkIsConnected
+    networkIsConnected,
   ]);
 
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -112,7 +112,7 @@ export const NetworkErrorView: FunctionComponent = observer(() => {
     isRefreshing,
     queryDelegated.isFetching,
     queryStakable.isFetching,
-    queryUnbonding.isFetching
+    queryUnbonding.isFetching,
   ]);
 
   const [childLayout, setChildLayout] = useState<{
@@ -120,39 +120,39 @@ export const NetworkErrorView: FunctionComponent = observer(() => {
     height: number;
   }>({
     width: 0,
-    height: 0
+    height: 0,
   });
 
   return (
     <View
       style={{
-        overflow: 'hidden',
-        justifyContent: 'center',
-        height: childLayout.height + extraHeight
+        overflow: "hidden",
+        justifyContent: "center",
+        height: childLayout.height + extraHeight,
       }}
     >
       <View
         style={style.flatten([
-          'flex-row',
-          'items-center',
-          'background-color-danger-10',
-          'padding-left-26',
-          'padding-right-24',
-          'height-80'
+          "flex-row",
+          "items-center",
+          "background-color-danger-10",
+          "padding-left-26",
+          "padding-right-24",
+          "height-80",
         ])}
         onLayout={(e) => {
           setChildLayout(e.nativeEvent.layout);
         }}
       >
-        <View style={style.flatten(['margin-right-16'])}>
-          <AlertIcon color={style.get('color-danger').color} size={24} />
+        <View style={style.flatten(["margin-right-16"])}>
+          <AlertIcon color={style.get("color-danger").color} size={24} />
         </View>
-        <View style={style.flatten(['flex-1', 'overflow-visible'])}>
+        <View style={style.flatten(["flex-1", "overflow-visible"])}>
           <Text
             style={style.flatten([
-              'subtitle2',
-              'color-danger',
-              'overflow-visible'
+              "subtitle2",
+              "color-danger",
+              "overflow-visible",
             ])}
           >
             {message}
@@ -166,17 +166,17 @@ export const NetworkErrorView: FunctionComponent = observer(() => {
               ObservableQuery.refreshAllObservedIfError();
             }}
             style={style.flatten([
-              'background-color-danger-50',
-              'justify-center',
-              'items-center',
-              'width-32',
-              'height-32',
-              'border-radius-64',
-              'margin-left-16'
+              "background-color-danger-50",
+              "justify-center",
+              "items-center",
+              "width-32",
+              "height-32",
+              "border-radius-64",
+              "margin-left-16",
             ])}
           >
             <Animated.View style={spinAnimated}>
-              <RefreshIcon color={style.get('color-danger').color} size={24} />
+              <RefreshIcon color={style.get("color-danger").color} size={24} />
             </Animated.View>
           </TouchableOpacity>
         ) : null}

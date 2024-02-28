@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "build",
+    "declaration": true,
+    "rootDir": "src",
+    "emitDecoratorMetadata": true,
+    "target": "es2020",
+  },
+  "include": ["src/**/*"]
+}

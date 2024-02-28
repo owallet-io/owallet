@@ -1,11 +1,11 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
-import { observer } from 'mobx-react-lite';
-import styles from './nft.module.scss';
-import { useHistory } from 'react-router';
-import { useStore } from '../../stores';
-import { Limit, NftContract, StartAfter, InfoNft } from './types';
-import * as cosmwasm from '@cosmjs/cosmwasm-stargate';
-import { generateMsgInfoNft, generateMsgNft } from '../helpers';
+import React, { FunctionComponent, useEffect, useState } from "react";
+import { observer } from "mobx-react-lite";
+import styles from "./nft.module.scss";
+import { useHistory } from "react-router";
+import { useStore } from "../../stores";
+import { Limit, NftContract, StartAfter, InfoNft } from "./types";
+import * as cosmwasm from "@cosmjs/cosmwasm-stargate";
+import { generateMsgInfoNft, generateMsgNft } from "../helpers";
 
 export const NftPage: FunctionComponent = observer(() => {
   const [token, setToken] = useState<InfoNft[]>(null);
@@ -14,14 +14,15 @@ export const NftPage: FunctionComponent = observer(() => {
   const accountInfo = accountStore.getAccount(chainStore.current.chainId);
   const getListNft = async () => {
     try {
-      const client = await cosmwasm.CosmWasmClient.connect(chainStore.current.rpc);
+      const client = await cosmwasm.CosmWasmClient.connect(
+        chainStore.current.rpc
+      );
       const msg = generateMsgNft(Limit, accountInfo.bech32Address, StartAfter);
       const res = await client.queryContractSmart(NftContract, msg);
       if (res) {
         fetchInfoNft(res?.tokens?.[0], client);
       }
     } catch (error) {
-      
       setToken([]);
     }
   };
@@ -35,8 +36,8 @@ export const NftPage: FunctionComponent = observer(() => {
         {
           ...res.extension,
           token_uri: res?.token_uri,
-          tokenId
-        }
+          tokenId,
+        },
       ]);
     }
   };
@@ -49,10 +50,10 @@ export const NftPage: FunctionComponent = observer(() => {
     return (
       <span
         style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: 100
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: 100,
         }}
       >
         <i className="fas fa-spinner fa-spin" />
@@ -71,7 +72,7 @@ export const NftPage: FunctionComponent = observer(() => {
           })}
           {(!token || !token?.length) && (
             <div className={styles.nodata}>
-              <img src={require('./img/no-data.png')} alt={'no-data'} />
+              <img src={require("./img/no-data.png")} alt={"no-data"} />
             </div>
           )}
         </div>
@@ -80,7 +81,7 @@ export const NftPage: FunctionComponent = observer(() => {
         <div className={styles.label}>NFT-1155</div>
         <div className={styles.list}>
           <div className={styles.nodata}>
-            <img src={require('./img/no-data.png')} alt={'no-data'} />
+            <img src={require("./img/no-data.png")} alt={"no-data"} />
           </div>
         </div>
       </div>
@@ -90,25 +91,28 @@ export const NftPage: FunctionComponent = observer(() => {
 
 export const NftItem = ({ token, history }) => {
   return (
-    <div className={styles.card} onClick={() => history.push(`/token/${token.tokenId}`)}>
+    <div
+      className={styles.card}
+      onClick={() => history.push(`/token/${token.tokenId}`)}
+    >
       <div className={styles.img}>
         <img
           src={token.token_uri}
           onError={({ currentTarget }) => {
             currentTarget.onerror = null;
-            currentTarget.src = require('./img/not-found.png');
+            currentTarget.src = require("./img/not-found.png");
           }}
           alt={token.name}
           style={{
-            border: '0.5px solid #E4E4E4',
-            borderRadius: 6
+            border: "0.5px solid #E4E4E4",
+            borderRadius: 6,
           }}
         />
       </div>
       <div className={styles.info}>
-        <div className={styles.content}>{token.image || '-'} </div>
-        <div className={styles.content}>{token.name || '-'}</div>
-        <div className={styles.description}>{token.description || '-'}</div>
+        <div className={styles.content}>{token.image || "-"} </div>
+        <div className={styles.content}>{token.name || "-"}</div>
+        <div className={styles.description}>{token.description || "-"}</div>
       </div>
     </div>
   );

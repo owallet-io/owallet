@@ -2,10 +2,10 @@ import {
   Env,
   FnRequestInteraction,
   MessageSender,
-  APP_PORT
-} from '@owallet/router';
-import { openPopupWindow as openPopupWindowInner } from '@owallet/popup';
-import { InExtensionMessageRequester } from '../requester';
+  APP_PORT,
+} from "@owallet/router";
+import { openPopupWindow as openPopupWindowInner } from "@owallet/popup";
+import { InExtensionMessageRequester } from "../requester";
 
 class PromiseQueue {
   protected workingOnPromise: boolean = false;
@@ -20,7 +20,7 @@ class PromiseQueue {
       this.queue.push({
         fn,
         resolve,
-        reject
+        reject,
       });
 
       this.dequeue();
@@ -58,7 +58,7 @@ const openPopupQueue = new PromiseQueue();
 // just open the popup one by one.
 async function openPopupWindow(
   url: string,
-  channel: string = 'default'
+  channel: string = "default"
 ): Promise<number> {
   return await openPopupQueue.enqueue(() => openPopupWindowInner(url, channel));
 }
@@ -68,28 +68,28 @@ export class ExtensionEnv {
     const isInternalMsg = ExtensionEnv.checkIsInternalMessage(
       sender,
       browser.runtime.id,
-      browser.runtime.getURL('/')
+      browser.runtime.getURL("/")
     );
 
     // Add additional query string for letting the extension know it is for interaction.
     const queryString = `interaction=true&interactionInternal=${isInternalMsg}`;
 
     const openAndSendMsg: FnRequestInteraction = async (url, msg, options) => {
-      if (url.startsWith('/')) {
+      if (url.startsWith("/")) {
         url = url.slice(1);
       }
 
-      url = browser.runtime.getURL('/popup.html#/' + url);
+      url = browser.runtime.getURL("/popup.html#/" + url);
 
-      if (url.includes('?')) {
-        url += '&' + queryString;
+      if (url.includes("?")) {
+        url += "&" + queryString;
       } else {
-        url += '?' + queryString;
+        url += "?" + queryString;
       }
 
       const windowId = await openPopupWindow(url, options?.channel);
       const window = await browser.windows.get(windowId, {
-        populate: true
+        populate: true,
       });
 
       let tabId: number;
@@ -98,13 +98,13 @@ export class ExtensionEnv {
       // Wait until that tab is loaded
       await (async () => {
         const tab = await browser.tabs.get(tabId);
-        if (tab.status === 'complete') {
+        if (tab.status === "complete") {
           return;
         }
 
         return new Promise<void>((resolve) => {
           const handler = (_tabId: number, changeInfo: { status: string }) => {
-            if (tabId === _tabId && changeInfo.status === 'complete') {
+            if (tabId === _tabId && changeInfo.status === "complete") {
               browser.tabs.onUpdated.removeListener(handler);
               resolve();
             }
@@ -124,7 +124,7 @@ export class ExtensionEnv {
       // If msg is from external (probably from webpage), it opens the popup for extension and send the msg back to the tab opened.
       return {
         isInternalMsg,
-        requestInteraction: openAndSendMsg
+        requestInteraction: openAndSendMsg,
       };
     } else {
       // If msg is from the extension itself, it can send the msg back to the extension itself.
@@ -138,16 +138,16 @@ export class ExtensionEnv {
           return await openAndSendMsg(url, msg, options);
         }
 
-        if (url.startsWith('/')) {
+        if (url.startsWith("/")) {
           url = url.slice(1);
         }
 
-        url = browser.runtime.getURL('/popup.html#/' + url);
+        url = browser.runtime.getURL("/popup.html#/" + url);
 
-        if (url.includes('?')) {
-          url += '&' + queryString;
+        if (url.includes("?")) {
+          url += "&" + queryString;
         } else {
-          url += '?' + queryString;
+          url += "?" + queryString;
         }
 
         // post message reload to popup
@@ -161,7 +161,7 @@ export class ExtensionEnv {
 
       return {
         isInternalMsg,
-        requestInteraction
+        requestInteraction,
       };
     }
   };
@@ -172,16 +172,16 @@ export class ExtensionEnv {
     extensionUrl: string
   ): boolean => {
     if (!sender.url) {
-      throw new Error('Empty sender url');
+      throw new Error("Empty sender url");
     }
     const url = new URL(sender.url);
-    if (!url.origin || url.origin === 'null') {
-      throw new Error('Invalid sender url');
+    if (!url.origin || url.origin === "null") {
+      throw new Error("Invalid sender url");
     }
 
     const browserURL = new URL(extensionUrl);
-    if (!browserURL.origin || browserURL.origin === 'null') {
-      throw new Error('Invalid browser url');
+    if (!browserURL.origin || browserURL.origin === "null") {
+      throw new Error("Invalid browser url");
     }
 
     if (url.origin !== browserURL.origin) {
