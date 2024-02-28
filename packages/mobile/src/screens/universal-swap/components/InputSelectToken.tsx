@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
-import React, { FunctionComponent, useCallback, useEffect, useState } from 'react';
-import { IInputSelectToken } from '../types';
-import OWIcon from '@src/components/ow-icon/ow-icon';
-import { Text } from '@src/components/text';
-import { BalanceText } from './BalanceText';
-import { TypeTheme, useTheme } from '@src/themes/theme-provider';
-import { find } from 'lodash';
-import _debounce from 'lodash/debounce';
-import { tokensIcon } from '@oraichain/oraidex-common';
-=======
 import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 import React, {
   FunctionComponent,
@@ -22,10 +10,9 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { Text } from "@src/components/text";
 import { BalanceText } from "./BalanceText";
 import { TypeTheme, useTheme } from "@src/themes/theme-provider";
-import { tokenImg } from "../helpers";
 import { find } from "lodash";
 import _debounce from "lodash/debounce";
->>>>>>> main
+import { tokensIcon } from "@oraichain/oraidex-common";
 
 const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
   tokenActive,
@@ -50,14 +37,10 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
   const debounceFn = useCallback(_debounce(handleChangeAmount, 500), []);
 
   useEffect(() => {
-<<<<<<< HEAD
-    const tokenIcon = find(tokensIcon, tk => tk.coinGeckoId === tokenActive.coinGeckoId);
-=======
     const tokenIcon = find(
-      tokenImg,
+      tokensIcon,
       (tk) => tk.coinGeckoId === tokenActive.coinGeckoId
     );
->>>>>>> main
     setTokenIcon(tokenIcon);
   }, [tokenActive]);
 

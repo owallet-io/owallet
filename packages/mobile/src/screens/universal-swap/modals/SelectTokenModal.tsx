@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-import { StyleSheet, TextInput, View, TouchableOpacity } from 'react-native';
-import React, { FunctionComponent, useCallback, useEffect, useState } from 'react';
-import { registerModal } from '@src/modals/base';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import OWFlatList from '@src/components/page/ow-flat-list';
-import OWIcon from '@src/components/ow-icon/ow-icon';
-import { Text } from '@src/components/text';
-import { TypeTheme, useTheme } from '@src/themes/theme-provider';
-import { metrics } from '@src/themes';
-import { TokenItemType, toDisplay } from '@oraichain/oraidex-common';
-import { useStore } from '@src/stores';
-import { ChainIdEnum } from '@owallet/common';
-import { CoinGeckoPrices } from '@owallet/hooks';
-import { find } from 'lodash';
-import { tokensIcon } from '@oraichain/oraidex-common';
-=======
 import { StyleSheet, TextInput, View, TouchableOpacity } from "react-native";
 import React, {
   FunctionComponent,
@@ -34,13 +17,12 @@ import {
   tokenMap,
   toDisplay,
   AmountDetails,
+  tokensIcon,
 } from "@oraichain/oraidex-common";
 import { useStore } from "@src/stores";
 import { ChainIdEnum } from "@owallet/common";
 import { CoinGeckoPrices } from "@owallet/hooks";
-import { tokenImg } from "../helpers";
 import { find } from "lodash";
->>>>>>> main
 
 export const SelectTokenModal: FunctionComponent<{
   onNetworkModal?: () => void;
@@ -91,45 +73,6 @@ export const SelectTokenModal: FunctionComponent<{
     const { colors } = useTheme();
     const styles = styling(colors);
 
-<<<<<<< HEAD
-  const renderTokenItem = useCallback(
-    item => {
-      if (item) {
-        // if (item.coinGeckoId === 'tether' && item.chainId === '0x01') {
-        //   return null;
-        // }
-        //@ts-ignore
-        // const subAmounts = Object.fromEntries(
-        //   Object?.entries(universalSwapStore?.getAmount ?? {}).filter(
-        //     ([denom]) => tokenMap?.[denom]?.chainId === item.chainId
-        //   )
-        // ) as AmountDetails;
-        // const totalUsd = getTotalUsd(subAmounts, prices);
-
-        const tokenIcon = find(tokensIcon, tk => tk.coinGeckoId === item.coinGeckoId);
-
-        return (
-          <TouchableOpacity
-            onPress={() => {
-              close();
-              setToken(item.denom);
-            }}
-            style={styles.btnItem}
-          >
-            <View style={styles.leftBoxItem}>
-              <View
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 12,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  overflow: 'hidden',
-                  backgroundColor: colors['gray-10']
-                }}
-              >
-                <OWIcon type="images" source={{ uri: tokenIcon?.Icon }} size={35} />
-=======
     const renderTokenItem = useCallback(
       (item) => {
         if (item) {
@@ -144,7 +87,7 @@ export const SelectTokenModal: FunctionComponent<{
           // ) as AmountDetails;
 
           const tokenIcon = find(
-            tokenImg,
+            tokensIcon,
             (tk) => tk.coinGeckoId === item.coinGeckoId
           );
 
@@ -183,7 +126,6 @@ export const SelectTokenModal: FunctionComponent<{
                     {item.org}
                   </Text>
                 </View>
->>>>>>> main
               </View>
               <View style={styles.rightBoxItem}>
                 <Text color={colors["text-title"]}>

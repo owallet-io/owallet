@@ -135,22 +135,11 @@ export const DashboardCard: FunctionComponent<{
   });
 
   useEffect(() => {
-<<<<<<< HEAD
-=======
-    console.log("refetch", chainStore.current.stakeCurrency.coinGeckoId, res);
-
->>>>>>> main
     refetch();
   }, [chainStore.current.stakeCurrency.coinGeckoId]);
 
   useEffect(() => {
-<<<<<<< HEAD
-    if (res?.status === 200 && typeof res?.data === 'object') {
-=======
-    console.log("res", res);
-
     if (res?.status === 200 && typeof res?.data === "object") {
->>>>>>> main
       setNetworkError(false);
       setData(formatData(transformData(res.data?.prices)));
       setDataVolumes(formatData(transformData(res.data?.total_volumes)));

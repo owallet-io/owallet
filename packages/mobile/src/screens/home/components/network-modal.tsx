@@ -1,22 +1,3 @@
-<<<<<<< HEAD
-import React, { useCallback } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { metrics, spacing, typography } from '../../../themes';
-import { _keyExtract, showToast, getTokenInfos } from '../../../utils/helper';
-import FastImage from 'react-native-fast-image';
-import { VectorCharacter } from '../../../components/vector-character';
-import { Text } from '@src/components/text';
-import { TRON_ID, COINTYPE_NETWORK, getKeyDerivationFromAddressType } from '@owallet/common';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
-import { useBIP44Option } from '@src/screens/register/bip44';
-import { useStore } from '@src/stores';
-import { useTheme } from '@src/themes/theme-provider';
-import { navigate } from '@src/router/root';
-import { SCREENS } from '@src/common/constants';
-import { Popup } from 'react-native-popup-confirm-toast';
-import { getTotalUsd } from '@oraichain/oraidex-common';
-=======
 import React, { useCallback } from "react";
 import { StyleSheet, View } from "react-native";
 import { metrics, spacing, typography } from "../../../themes";
@@ -28,7 +9,6 @@ import {
   TRON_ID,
   COINTYPE_NETWORK,
   getKeyDerivationFromAddressType,
-  ChainIdEnum,
 } from "@owallet/common";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { BottomSheetFlatList } from "@gorhom/bottom-sheet";
@@ -39,7 +19,6 @@ import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { Popup } from "react-native-popup-confirm-toast";
 import { getTotalUsd } from "@oraichain/oraidex-common";
->>>>>>> main
 
 export const NetworkModal = () => {
   const { colors } = useTheme();
@@ -58,9 +37,18 @@ export const NetworkModal = () => {
   const styles = styling(colors);
   let totalUsd: number = 0;
   let todayAssets;
-  if (Object.keys(appInitStore.getInitApp.prices).length > 0 && Object.keys(universalSwapStore.getAmount).length > 0) {
-    totalUsd = getTotalUsd(universalSwapStore.getAmount, appInitStore.getInitApp.prices);
-    todayAssets = getTokenInfos({ tokens: universalSwapStore.getAmount, prices: appInitStore.getInitApp.prices });
+  if (
+    Object.keys(appInitStore.getInitApp.prices).length > 0 &&
+    Object.keys(universalSwapStore.getAmount).length > 0
+  ) {
+    totalUsd = getTotalUsd(
+      universalSwapStore.getAmount,
+      appInitStore.getInitApp.prices
+    );
+    todayAssets = getTokenInfos({
+      tokens: universalSwapStore.getAmount,
+      prices: appInitStore.getInitApp.prices,
+    });
   }
 
   const onConfirm = async (item: any) => {
@@ -90,7 +78,7 @@ export const NetworkModal = () => {
 
     if (!result[key]) {
       result[key] = {
-        sum: 0
+        sum: 0,
       };
     }
 
@@ -219,11 +207,14 @@ export const NetworkModal = () => {
             </Text>
             <Text
               style={{
-                color: colors['neutral-text-body']
+                color: colors["neutral-text-body"],
               }}
               numberOfLines={1}
             >
-              ${!item.chainId ? totalUsd?.toFixed(6) : Number(groupedData?.[item.chainId]?.sum ?? 0).toFixed(6)}
+              $
+              {!item.chainId
+                ? totalUsd?.toFixed(6)
+                : Number(groupedData?.[item.chainId]?.sum ?? 0).toFixed(6)}
             </Text>
           </View>
         </View>
@@ -306,17 +297,14 @@ export const NetworkModal = () => {
           height: metrics.screenHeight / 2,
         }}
       >
-<<<<<<< HEAD
-        {account.isNanoLedger ? null : _renderItem({ item: { chainName: 'All networks', isAll: true } })}
-        <BottomSheetFlatList data={chainStore.chainInfosInUI} renderItem={_renderItem} keyExtractor={_keyExtract} />
-=======
-        {/* {account.isNanoLedger ? null : _renderItem({ item: { chainName: 'All networks', isAll: true } })} */}
+        {account.isNanoLedger
+          ? null
+          : _renderItem({ item: { chainName: "All networks", isAll: true } })}
         <BottomSheetFlatList
           data={chainStore.chainInfosInUI}
           renderItem={_renderItem}
           keyExtractor={_keyExtract}
         />
->>>>>>> main
       </View>
     </View>
   );

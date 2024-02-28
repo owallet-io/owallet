@@ -30,10 +30,7 @@ export class AppInit {
       theme: "light",
       isAllNetworks: false,
       prices: {},
-<<<<<<< HEAD
-      yesterdayPriceFeed: []
-=======
->>>>>>> main
+      yesterdayPriceFeed: [],
     };
   }
 

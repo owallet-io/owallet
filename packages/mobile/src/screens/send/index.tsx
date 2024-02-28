@@ -6,7 +6,6 @@ import { EthereumEndpoint } from "@owallet/common";
 import { PageWithScrollView } from "../../components/page";
 import { StyleSheet, View } from "react-native";
 import { Dec, DecUtils } from "@owallet/unit";
-
 import {
   AddressInput,
   AmountInput,
@@ -24,9 +23,8 @@ import { spacing } from "../../themes";
 import { Text } from "@src/components/text";
 import { Toggle } from "../../components/toggle";
 import { OWBox } from "@src/components/card";
-import { OWSubTitleHeader } from "@src/components/header";
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     sendInputRoot: {
       paddingHorizontal: spacing["20"],
@@ -103,30 +101,6 @@ export const SendScreen: FunctionComponent = observer(() => {
   );
   useEffect(() => {
     if (route?.params?.currency) {
-<<<<<<< HEAD
-      const currency = sendConfigs.amountConfig.sendableCurrencies.find(cur => {
-        if (cur?.contractAddress?.includes(route?.params?.contractAddress)) {
-          return cur?.contractAddress?.includes(route?.params?.contractAddress);
-        }
-        //@ts-ignore
-
-        if (cur?.contractAddress?.includes(route?.params?.contractAddress?.toLowerCase())) {
-          return true;
-        }
-        if (cur?.coinMinimalDenom) {
-          return cur?.coinMinimalDenom.includes(route?.params?.contractAddress);
-        }
-        //@ts-ignore
-
-        if (cur?.type === 'cw20') {
-          return cur.coinDenom == route.params.currency;
-        }
-        if (cur.coinDenom === route.params.currency) {
-          return cur.coinDenom === route.params.currency;
-        }
-        return cur.coinMinimalDenom == route.params.currency;
-      });
-=======
       const currency = sendConfigs.amountConfig.sendableCurrencies.find(
         (cur) => {
           if (cur?.contractAddress?.includes(route?.params?.contractAddress)) {
@@ -134,11 +108,22 @@ export const SendScreen: FunctionComponent = observer(() => {
               route?.params?.contractAddress
             );
           }
-          if (cur?.coinMinimalDenom.includes(route?.params?.contractAddress)) {
+          //@ts-ignore
+
+          if (
+            cur?.contractAddress?.includes(
+              route?.params?.contractAddress?.toLowerCase()
+            )
+          ) {
+            return true;
+          }
+          if (cur?.coinMinimalDenom) {
             return cur?.coinMinimalDenom.includes(
               route?.params?.contractAddress
             );
           }
+          //@ts-ignore
+
           if (cur?.type === "cw20") {
             return cur.coinDenom == route.params.currency;
           }
@@ -148,13 +133,16 @@ export const SendScreen: FunctionComponent = observer(() => {
           return cur.coinMinimalDenom == route.params.currency;
         }
       );
->>>>>>> main
 
       if (currency) {
         sendConfigs.amountConfig.setSendCurrency(currency);
       }
     }
-  }, [route?.params?.currency, sendConfigs.amountConfig, route?.params?.contractAddress]);
+  }, [
+    route?.params?.currency,
+    sendConfigs.amountConfig,
+    route?.params?.contractAddress,
+  ]);
 
   useEffect(() => {
     if (route?.params?.recipient) {
@@ -197,7 +185,8 @@ export const SendScreen: FunctionComponent = observer(() => {
           />
           <AmountInput
             placeholder={`ex. 1000 ${
-              sendConfigs.amountConfig.sendCurrency.coinDenom ?? chainStore.current.stakeCurrency.coinDenom
+              sendConfigs.amountConfig.sendCurrency.coinDenom ??
+              chainStore.current.stakeCurrency.coinDenom
             }`}
             label="Amount"
             // allowMax={chainStore.current.networkType !== 'evm' ? true : false}
@@ -218,7 +207,7 @@ export const SendScreen: FunctionComponent = observer(() => {
             >
               <Toggle
                 on={customFee}
-                onChange={value => {
+                onChange={(value) => {
                   setCustomFee(value);
                   if (!value) {
                     if (
@@ -253,15 +242,10 @@ export const SendScreen: FunctionComponent = observer(() => {
               placeholder="Type your Fee here"
               keyboardType={"numeric"}
               labelStyle={styles.sendlabelInput}
-<<<<<<< HEAD
-              onChangeText={text => {
-                const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(DecUtils.getTenExponentNInPrecisionRange(6));
-=======
               onChangeText={(text) => {
                 const fee = new Dec(Number(text.replace(/,/g, "."))).mul(
                   DecUtils.getTenExponentNInPrecisionRange(6)
                 );
->>>>>>> main
 
                 sendConfigs.feeConfig.setManualFee({
                   amount: fee.roundUp().toString(),
@@ -325,15 +309,9 @@ export const SendScreen: FunctionComponent = observer(() => {
                     },
 
                     {
-<<<<<<< HEAD
-                      onFulfill: tx => {},
-                      onBroadcasted: txHash => {
-                        analyticsStore.logEvent('Send token tx broadcasted', {
-=======
                       onFulfill: (tx) => {},
                       onBroadcasted: (txHash) => {
                         analyticsStore.logEvent("Send token tx broadcasted", {
->>>>>>> main
                           chainId: chainStore.current.chainId,
                           chainName: chainStore.current.chainName,
                           feeType: sendConfigs.feeConfig.feeType,

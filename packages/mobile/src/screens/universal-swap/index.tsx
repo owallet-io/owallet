@@ -1,19 +1,3 @@
-<<<<<<< HEAD
-import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
-import { PageWithScrollViewInBottomTabView } from '../../components/page';
-import { Text } from '@src/components/text';
-import { useTheme } from '@src/themes/theme-provider';
-import { observer } from 'mobx-react-lite';
-import { RefreshControl, View } from 'react-native';
-import { useStore } from '../../stores';
-import { SwapBox } from './components/SwapBox';
-import { OWButton } from '@src/components/button';
-import OWButtonIcon from '@src/components/button/ow-button-icon';
-import { BalanceText } from './components/BalanceText';
-import { SelectNetworkModal, SelectTokenModal, SlippageModal } from './modals/';
-import { getTokenInfos, showToast, _keyExtract } from '@src/utils/helper';
-import { DEFAULT_SLIPPAGE, GAS_ESTIMATION_SWAP_DEFAULT, ORAI, toDisplay, getBase58Address } from '@owallet/common';
-=======
 import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { PageWithScrollViewInBottomTabView } from "../../components/page";
 import { Text } from "@src/components/text";
@@ -26,16 +10,14 @@ import { OWButton } from "@src/components/button";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { BalanceText } from "./components/BalanceText";
 import { SelectNetworkModal, SelectTokenModal, SlippageModal } from "./modals/";
-import { showToast, _keyExtract } from "@src/utils/helper";
+import { getTokenInfos, showToast, _keyExtract } from "@src/utils/helper";
 import {
   DEFAULT_SLIPPAGE,
   GAS_ESTIMATION_SWAP_DEFAULT,
   ORAI,
   toDisplay,
   getBase58Address,
-  getAddress,
 } from "@owallet/common";
->>>>>>> main
 import {
   TokenItemType,
   NetworkChainId,
@@ -48,15 +30,7 @@ import {
   toSubAmount,
   oraichainTokens,
   getTokenOnOraichain,
-<<<<<<< HEAD
-  tokenMap
-} from '@oraichain/oraidex-common';
-import { openLink } from '../../utils/helper';
-import { feeEstimate, getTransferTokenFee } from '@owallet/common';
-import { handleSimulateSwap, filterNonPoolEvmTokens, SwapDirection } from '@oraichain/oraidex-universal-swap';
-import { fetchTokenInfos, ChainIdEnum } from '@owallet/common';
-import { calculateMinReceive } from '@oraichain/oraidex-common';
-=======
+  tokenMap,
 } from "@oraichain/oraidex-common";
 import { openLink } from "../../utils/helper";
 import { feeEstimate, getTransferTokenFee } from "@owallet/common";
@@ -65,30 +39,15 @@ import {
   filterNonPoolEvmTokens,
   SwapDirection,
 } from "@oraichain/oraidex-universal-swap";
-import { fetchTokenInfos, ChainIdEnum, tokenMap } from "@owallet/common";
+import { fetchTokenInfos, ChainIdEnum } from "@owallet/common";
 import { calculateMinReceive } from "@oraichain/oraidex-common";
->>>>>>> main
 import {
   isEvmNetworkNativeSwapSupported,
   isEvmSwappable,
   isSupportedNoPoolSwapEvm,
   UniversalSwapData,
-<<<<<<< HEAD
-  UniversalSwapHandler
-} from '@oraichain/oraidex-universal-swap';
-import { SwapCosmosWallet, SwapEvmWallet } from './wallet';
-import { styling } from './styles';
-import { BalanceType, MAX, balances } from './types';
-import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
-import { useLoadTokens, useCoinGeckoPrices, useClient, useRelayerFee, useTaxRate } from '@owallet/hooks';
-import { getTransactionUrl, handleErrorSwap } from './helpers';
-import { useQuery } from '@tanstack/react-query';
-import { Mixpanel } from 'mixpanel-react-native';
-import { API } from '@src/common/api';
-=======
   UniversalSwapHandler,
 } from "@oraichain/oraidex-universal-swap";
-// } from './handler/src';
 import { SwapCosmosWallet, SwapEvmWallet } from "./wallet";
 import { styling } from "./styles";
 import { BalanceType, MAX, balances } from "./types";
@@ -103,7 +62,7 @@ import {
 import { getTransactionUrl, handleErrorSwap } from "./helpers";
 import { useQuery } from "@tanstack/react-query";
 import { Mixpanel } from "mixpanel-react-native";
->>>>>>> main
+import { API } from "@src/common/api";
 const mixpanel = globalThis.mixpanel as Mixpanel;
 
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
@@ -321,19 +280,11 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       };
       loadTokenParams = {
         ...loadTokenParams,
-<<<<<<< HEAD
         oraiAddress: orai ?? accountOrai.bech32Address,
         metamaskAddress: eth ?? accountEth.evmosHexAddress,
         kwtAddress: kwt ?? accountKawaiiCosmos.bech32Address,
         tronAddress: getBase58Address(tron ?? accountTron.evmosHexAddress),
-        cwStargate
-=======
-        oraiAddress: accountOrai.bech32Address,
-        metamaskAddress: accountEth.evmosHexAddress,
-        kwtAddress: accountKawaiiCosmos.bech32Address,
-        tronAddress: getBase58Address(accountTron.evmosHexAddress),
         cwStargate,
->>>>>>> main
       };
 
       setTimeout(() => {
@@ -369,10 +320,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     accountOrai.bech32Address,
     accountEth.evmosHexAddress,
     accountTron.evmosHexAddress,
-<<<<<<< HEAD
-    accountKawaiiCosmos.bech32Address
-=======
->>>>>>> main
+    accountKawaiiCosmos.bech32Address,
   ]);
 
   useEffect(() => {
@@ -394,11 +342,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     );
     setFilteredFromTokens(filteredFromTokens);
 
-<<<<<<< HEAD
-=======
-    console.log("filteredFromTokens", filteredFromTokens);
-
->>>>>>> main
     // TODO: need to automatically update from / to token to the correct swappable one when clicking the swap button
   }, [fromToken, toToken, toTokenDenom, fromTokenDenom]);
 
@@ -446,10 +389,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const convertRelayerFee = async () => {
     if (client && relayerFeeToken) {
-<<<<<<< HEAD
-      const routerClient = new OraiswapRouterQueryClient(client, network.router);
-      const oraiToken = oraichainTokens.find(token => token.coinGeckoId === 'oraichain-token');
-=======
       const routerClient = new OraiswapRouterQueryClient(
         client,
         network.router
@@ -457,7 +396,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       const oraiToken = oraichainTokens.find(
         (token) => token.coinGeckoId === "oraichain-token"
       );
->>>>>>> main
 
       const data = await handleSimulateSwap({
         // @ts-ignore
@@ -483,18 +421,14 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setRatio(data);
   };
 
-  const estimateSwapAmount = async fromAmountBalance => {
+  const estimateSwapAmount = async (fromAmountBalance) => {
     setAmountLoading(true);
     try {
       const data = await getSimulateSwap();
       const minimumReceive = Number(
-<<<<<<< HEAD
-        data?.displayAmount - (data?.displayAmount * userSlippage) / 100 - relayerFeeAmount
-=======
-        data.displayAmount -
-          (data.displayAmount * userSlippage) / 100 -
+        data?.displayAmount -
+          (data?.displayAmount * userSlippage) / 100 -
           relayerFeeAmount
->>>>>>> main
       );
 
       const fromAmountTokenBalance =
@@ -555,28 +489,28 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setBalanceActive(item);
   };
 
-  const handleSaveTokenInfos = async tokenInfos => {
+  const handleSaveTokenInfos = async (tokenInfos) => {
     await API.saveTokenInfos(
       {
         address: accountOrai.bech32Address,
-        tokesInfos: tokenInfos
+        tokesInfos: tokenInfos,
       },
       {
-        baseURL: 'https://staging.owallet.dev/'
+        baseURL: "https://staging.owallet.dev/",
       }
     );
   };
 
-  const handleSaveHistory = async infos => {
+  const handleSaveHistory = async (infos) => {
     try {
       const res = await API.saveHistory(
         { address: accountOrai.bech32Address, infos },
         {
-          baseURL: 'https://staging.owallet.dev/'
+          baseURL: "https://staging.owallet.dev/",
         }
       );
     } catch (err) {
-      console.log('err handleSaveHistory ', err);
+      console.log("err handleSaveHistory ", err);
     }
   };
 
@@ -590,41 +524,28 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     }
 
     setSwapLoading(true);
-<<<<<<< HEAD
-    let defaultEvmAddress = accountStore.getAccount(ChainIdEnum.Ethereum).evmosHexAddress;
-    Object.keys(ChainIdEnum).map(key => {
-      let defaultCosmosAddress = accountStore.getAccount(ChainIdEnum[key]).bech32Address;
-
-      if (defaultCosmosAddress.startsWith('evmos')) {
-        accounts[ChainIdEnum[key]] = defaultEvmAddress;
-=======
+    let defaultEvmAddress = accountStore.getAccount(
+      ChainIdEnum.Ethereum
+    ).evmosHexAddress;
     Object.keys(ChainIdEnum).map((key) => {
-      let defaultAddress = accountStore.getAccount(
+      let defaultCosmosAddress = accountStore.getAccount(
         ChainIdEnum[key]
       ).bech32Address;
-      if (ChainIdEnum[key] === ChainIdEnum.TRON) {
-        accounts[ChainIdEnum[key]] = getBase58Address(
-          accountStore.getAccount(ChainIdEnum[key]).evmosHexAddress
-        );
-      } else if (defaultAddress.startsWith("evmos")) {
-        accounts[ChainIdEnum[key]] = accountStore.getAccount(
-          ChainIdEnum[key]
-        ).evmosHexAddress;
->>>>>>> main
+
+      if (defaultCosmosAddress.startsWith("evmos")) {
+        accounts[ChainIdEnum[key]] = defaultEvmAddress;
       } else {
         accounts[ChainIdEnum[key]] = defaultCosmosAddress;
       }
     });
 
-<<<<<<< HEAD
-    accounts[ChainIdEnum.TRON] = getBase58Address(accountStore.getAccount(ChainIdEnum.TRON).evmosHexAddress);
+    accounts[ChainIdEnum.TRON] = getBase58Address(
+      accountStore.getAccount(ChainIdEnum.TRON).evmosHexAddress
+    );
 
-    const fromNetwork = chainStore.getChain(originalFromToken.chainId).chainName;
-=======
     const fromNetwork = chainStore.getChain(
       originalFromToken.chainId
     ).chainName;
->>>>>>> main
 
     const toNetwork = chainStore.getChain(originalToToken.chainId).chainName;
 
@@ -690,21 +611,21 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           fromAddress: accounts[originalFromToken.chainId],
           toAddress: accounts[originalToToken.chainId],
           hash: transactionHash,
-          memo: '',
+          memo: "",
           fromAmount: fromAmountToken,
           toAmount: toAmountToken,
           value: toAmountToken,
           fee: relayerFeeAmount,
-          type: 'SWAP',
+          type: "SWAP",
           fromToken: {
             asset: originalFromToken.denom,
-            chainId: originalFromToken.chainId
+            chainId: originalFromToken.chainId,
           },
           toToken: {
             asset: originalToToken.denom,
-            chainId: originalToToken.chainId
+            chainId: originalToToken.chainId,
           },
-          status: 'SUCCESS'
+          status: "SUCCESS",
         };
 
         await handleSaveHistory(historyInfos);
@@ -724,7 +645,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         const tokens = getTokenInfos({
           tokens: universalSwapStore.getAmount,
           prices: appInitStore.getInitApp.prices,
-          networkFilter: appInitStore.getInitApp.isAllNetworks ? '' : chainStore.current.chainId
+          networkFilter: appInitStore.getInitApp.isAllNetworks
+            ? ""
+            : chainStore.current.chainId,
         });
         if (tokens.length > 0) {
           handleSaveTokenInfos(tokens);
@@ -762,7 +685,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setBalanceActive(null);
   };
 
-  const handleActiveAmount = item => {
+  const handleActiveAmount = (item) => {
     handleBalanceActive(item);
     onMaxFromAmount(
       (fromTokenBalance * BigInt(item.value)) / BigInt(MAX),
@@ -803,7 +726,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           setIsNetworkModal(true);
         }}
         selectedChainFilter={selectedChainFilter}
-        setToken={denom => {
+        setToken={(denom) => {
           setSwapTokens([denom, toTokenDenom]);
           setSwapAmount([0, 0]);
           setBalanceActive(null);
@@ -826,7 +749,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         onNetworkModal={() => {
           setIsNetworkModal(true);
         }}
-        setToken={denom => {
+        setToken={(denom) => {
           setSwapTokens([fromTokenDenom, denom]);
           setSwapAmount([0, 0]);
           setBalanceActive(null);

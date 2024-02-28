@@ -1,30 +1,3 @@
-<<<<<<< HEAD
-import React, { FunctionComponent, useCallback, useEffect, useMemo, useRef } from 'react';
-import { PageWithScrollViewInBottomTabView } from '../../components/page';
-import { AccountCard } from './account-card';
-import { AppState, AppStateStatus, RefreshControl, ScrollView, StyleSheet } from 'react-native';
-import { useStore } from '../../stores';
-import { observer } from 'mobx-react-lite';
-import { TokensCard } from './tokens-card';
-import { usePrevious } from '../../hooks';
-import { BIP44Selectable } from './bip44-selectable';
-import { useTheme } from '@src/themes/theme-provider';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { ChainUpdaterService } from '@owallet/background';
-import { AccountCardEVM } from './account-card-evm';
-import { DashboardCard } from './dashboard';
-import { UndelegationsCard } from '../stake/dashboard/undelegations-card';
-import { TronTokensCard } from './tron-tokens-card';
-import { AccountCardBitcoin } from './account-card-bitcoin';
-import { TokensBitcoinCard } from './tokens-bitcoin-card';
-import { getAddress, getBase58Address, ChainIdEnum } from '@owallet/common';
-import { TokensCardAll } from './tokens-card-all';
-import { AccountBoxAll } from './account-box-new';
-import { oraichainNetwork } from '@oraichain/oraidex-common';
-import { useCoinGeckoPrices, useLoadTokens } from '@owallet/hooks';
-import { showToast } from '@src/utils/helper';
-import { EarningCardNew } from './earning-card-new';
-=======
 import React, {
   FunctionComponent,
   useCallback,
@@ -42,7 +15,6 @@ import {
   StyleSheet,
 } from "react-native";
 import { useStore } from "../../stores";
-import { EarningCard } from "./earning-card";
 import { observer } from "mobx-react-lite";
 import { TokensCard } from "./tokens-card";
 import { usePrevious } from "../../hooks";
@@ -56,8 +28,13 @@ import { UndelegationsCard } from "../stake/dashboard/undelegations-card";
 import { TronTokensCard } from "./tron-tokens-card";
 import { AccountCardBitcoin } from "./account-card-bitcoin";
 import { TokensBitcoinCard } from "./tokens-bitcoin-card";
-import { TRON_ID } from "@owallet/common";
->>>>>>> main
+import { getAddress, getBase58Address, ChainIdEnum } from "@owallet/common";
+import { TokensCardAll } from "./tokens-card-all";
+import { AccountBoxAll } from "./account-box-new";
+import { oraichainNetwork } from "@oraichain/oraidex-common";
+import { useCoinGeckoPrices, useLoadTokens } from "@owallet/hooks";
+import { showToast } from "@src/utils/helper";
+import { EarningCardNew } from "./earning-card-new";
 
 export const HomeScreen: FunctionComponent = observer((props) => {
   const [refreshing, setRefreshing] = React.useState(false);
@@ -65,7 +42,14 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   const { colors } = useTheme();
 
   const styles = styling(colors);
-  const { chainStore, accountStore, queriesStore, priceStore, appInitStore, universalSwapStore } = useStore();
+  const {
+    chainStore,
+    accountStore,
+    queriesStore,
+    priceStore,
+    appInitStore,
+    universalSwapStore,
+  } = useStore();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
 
@@ -182,7 +166,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       const cwStargate = {
         account: accountOrai,
         chainId: ChainIdEnum.Oraichain,
-        rpc: oraichainNetwork.rpc
+        rpc: oraichainNetwork.rpc,
       };
       loadTokenParams = {
         ...loadTokenParams,
@@ -190,17 +174,17 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         metamaskAddress: eth ?? accountEth.evmosHexAddress,
         kwtAddress: kwt ?? accountKawaiiCosmos.bech32Address,
         tronAddress: getBase58Address(tron ?? accountTron.evmosHexAddress),
-        cwStargate
+        cwStargate,
       };
 
       setTimeout(() => {
         loadTokenAmounts(loadTokenParams);
       }, 2000);
     } catch (error) {
-      console.log('error loadTokenAmounts', error);
+      console.log("error loadTokenAmounts", error);
       showToast({
         message: error?.message ?? error?.ex?.message,
-        type: 'danger'
+        type: "danger",
       });
     }
   };
@@ -226,7 +210,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     accountOrai.bech32Address,
     accountEth.evmosHexAddress,
     accountTron.evmosHexAddress,
-    accountKawaiiCosmos.bech32Address
+    accountKawaiiCosmos.bech32Address,
   ]);
 
   const { data: prices } = useCoinGeckoPrices();
@@ -243,7 +227,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     }
     return <AccountCard containerStyle={styles.containerStyle} />;
   })();
-<<<<<<< HEAD
 
   // const renderTokenCard = useMemo(() => {
   //   if (chainStore.current.networkType === 'bitcoin') {
@@ -264,16 +247,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     return <AccountBoxAll />;
   })();
 
-=======
-  const renderTokenCard = useMemo(() => {
-    if (chainStore.current.networkType === "bitcoin") {
-      return <TokensBitcoinCard refreshDate={refreshDate} />;
-    } else if (chainStore.current.chainId === TRON_ID) {
-      return <TronTokensCard />;
-    }
-    return <TokensCard refreshDate={refreshDate} />;
-  }, [chainStore.current.networkType, chainStore.current.chainId]);
->>>>>>> main
   return (
     <PageWithScrollViewInBottomTabView
       refreshControl={
@@ -286,21 +259,12 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       <BIP44Selectable />
       {oldUI ? renderAccountCard : renderNewAccountCard}
       <DashboardCard />
-<<<<<<< HEAD
-      {chainStore.current.networkType === 'cosmos' && !appInitStore.getInitApp.isAllNetworks ? (
+      {chainStore.current.networkType === "cosmos" &&
+      !appInitStore.getInitApp.isAllNetworks ? (
         <EarningCardNew containerStyle={styles.containerEarnStyle} />
       ) : null}
       {renderNewTokenCard()}
       {/* {chainStore.current.networkType === 'cosmos' ? <UndelegationsCard /> : null} */}
-=======
-      {renderTokenCard}
-      {chainStore.current.networkType === "cosmos" ? (
-        <UndelegationsCard />
-      ) : null}
-      {chainStore.current.networkType === "cosmos" ? (
-        <EarningCard containerStyle={styles.containerEarnStyle} />
-      ) : null}
->>>>>>> main
     </PageWithScrollViewInBottomTabView>
   );
 });

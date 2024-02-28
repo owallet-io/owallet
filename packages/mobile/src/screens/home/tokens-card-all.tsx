@@ -1,35 +1,16 @@
-<<<<<<< HEAD
-import { OWButton } from '@src/components/button';
-import { OWEmpty } from '@src/components/empty';
-import { useTheme } from '@src/themes/theme-provider';
-import { observer } from 'mobx-react-lite';
-import React, { FunctionComponent, useCallback, useEffect, useState } from 'react';
-import { StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
-import { CardBody, OWBox } from '../../components/card';
-import { useStore } from '../../stores';
-import { getTokenInfos, _keyExtract } from '../../utils/helper';
-import OWIcon from '@src/components/ow-icon/ow-icon';
-import { Text } from '@src/components/text';
-import { useSmartNavigation } from '@src/navigation.provider';
-import { SCREENS } from '@src/common/constants';
-import { navigate } from '@src/router/root';
-import { RightArrowIcon } from '@src/components/icon';
-import { ChainIdEnum, getBase58Address, TRC20_LIST } from '@owallet/common';
-import { API } from '@src/common/api';
-import moment from 'moment';
-import { chainIcons } from '@oraichain/oraidex-common';
-import { TokenItem } from '../tokens/components/token-item';
-import { HistoryCard } from './history-card';
-=======
 import { OWButton } from "@src/components/button";
 import { OWEmpty } from "@src/components/empty";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent, useCallback, useState } from "react";
+import React, {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { StyleSheet, TouchableOpacity, View, ViewStyle } from "react-native";
 import { CardBody, OWBox } from "../../components/card";
 import { useStore } from "../../stores";
-import { spacing } from "../../themes";
 import { getTokenInfos, _keyExtract } from "../../utils/helper";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { Text } from "@src/components/text";
@@ -37,23 +18,31 @@ import { useSmartNavigation } from "@src/navigation.provider";
 import { SCREENS } from "@src/common/constants";
 import { navigate } from "@src/router/root";
 import { RightArrowIcon } from "@src/components/icon";
->>>>>>> main
+import { ChainIdEnum, getBase58Address, TRC20_LIST } from "@owallet/common";
+import { API } from "@src/common/api";
+import moment from "moment";
+import { chainIcons } from "@oraichain/oraidex-common";
+import { TokenItem } from "../tokens/components/token-item";
+import { HistoryCard } from "./history-card";
 
 export const TokensCardAll: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
-<<<<<<< HEAD
-  const { accountStore, universalSwapStore, chainStore, appInitStore, queriesStore, keyRingStore, priceStore } =
-=======
-  const { accountStore, universalSwapStore, chainStore, appInitStore } =
->>>>>>> main
-    useStore();
+  const {
+    accountStore,
+    universalSwapStore,
+    chainStore,
+    appInitStore,
+    queriesStore,
+    keyRingStore,
+    priceStore,
+  } = useStore();
   const { colors } = useTheme();
   const theme = appInitStore.getInitApp.theme;
 
   const [more, setMore] = useState(true);
   const [tokenInfos, setTokenInfos] = useState([]);
-  const [activeTab, setActiveTab] = useState('tokens');
+  const [activeTab, setActiveTab] = useState("tokens");
   const [yesterdayAssets, setYesterdayAssets] = useState([]);
   const [queryBalances, setQueryBalances] = useState({});
 
@@ -61,30 +50,25 @@ export const TokensCardAll: FunctionComponent<{
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
 
-<<<<<<< HEAD
   useEffect(() => {
     const queries = queriesStore.get(chainStore.current.chainId);
-    const address = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
+    const address = account.getAddressDisplay(
+      keyRingStore.keyRingLedgerAddresses
+    );
     const balances = queries.queryBalances.getQueryBech32Address(address);
     setQueryBalances(balances);
   }, [chainStore.current.chainId]);
-=======
-  const tokenInfos = getTokenInfos({
-    tokens: universalSwapStore.getAmount,
-    prices: appInitStore.getInitApp.prices,
-  });
->>>>>>> main
 
   const [tronTokens, setTronTokens] = useState([]);
 
-  const handleSaveTokenInfos = async tokenInfos => {
+  const handleSaveTokenInfos = async (tokenInfos) => {
     await API.saveTokenInfos(
       {
         address: accountOrai.bech32Address,
-        tokesInfos: tokenInfos
+        tokesInfos: tokenInfos,
       },
       {
-        baseURL: 'https://staging.owallet.dev/'
+        baseURL: "https://staging.owallet.dev/",
       }
     );
   };
@@ -93,18 +77,18 @@ export const TokensCardAll: FunctionComponent<{
     const res = await API.getYesterdayAssets(
       {
         address: accountOrai.bech32Address,
-        time: 'YESTERDAY'
+        time: "YESTERDAY",
       },
       {
-        baseURL: 'https://staging.owallet.dev/'
+        baseURL: "https://staging.owallet.dev/",
       }
     );
 
     if (res && res.status === 200) {
       const dataKeys = Object.keys(res.data);
 
-      const yesterday = dataKeys.find(k => {
-        const isToday = moment(Number(k)).isSame(moment(), 'day');
+      const yesterday = dataKeys.find((k) => {
+        const isToday = moment(Number(k)).isSame(moment(), "day");
         return !isToday;
       });
 
@@ -126,7 +110,9 @@ export const TokensCardAll: FunctionComponent<{
       const tokens = getTokenInfos({
         tokens: universalSwapStore.getAmount,
         prices: appInitStore.getInitApp.prices,
-        networkFilter: appInitStore.getInitApp.isAllNetworks ? '' : chainStore.current.chainId
+        networkFilter: appInitStore.getInitApp.isAllNetworks
+          ? ""
+          : chainStore.current.chainId,
       });
       if (tokens.length > 0) {
         setTokenInfos(tokens);
@@ -141,18 +127,20 @@ export const TokensCardAll: FunctionComponent<{
         if (accountTron.evmosHexAddress) {
           const res = await API.getTronAccountInfo(
             {
-              address: getBase58Address(accountTron.evmosHexAddress)
+              address: getBase58Address(accountTron.evmosHexAddress),
             },
             {
-              baseURL: chainStore.current.rpc
+              baseURL: chainStore.current.rpc,
             }
           );
 
           if (res.data?.data.length > 0) {
             if (res.data?.data[0].trc20) {
               const tokenArr = [];
-              TRC20_LIST.map(tk => {
-                let token = res.data?.data[0].trc20.find(t => tk.contractAddress in t);
+              TRC20_LIST.map((tk) => {
+                let token = res.data?.data[0].trc20.find(
+                  (t) => tk.contractAddress in t
+                );
                 if (token) {
                   tokenArr.push({ ...tk, amount: token[tk.contractAddress] });
                 }
@@ -180,24 +168,18 @@ export const TokensCardAll: FunctionComponent<{
         });
         return;
       }
-<<<<<<< HEAD
       if (item.chainId === ChainIdEnum.TRON) {
-        const itemTron = tronTokens?.find(t => {
+        const itemTron = tronTokens?.find((t) => {
           return t.coinGeckoId === item.coinGeckoId;
         });
 
-        smartNavigation.navigateSmart('SendTron', { item: itemTron });
+        smartNavigation.navigateSmart("SendTron", { item: itemTron });
         return;
       }
-      smartNavigation.navigateSmart('Send', {
-        currency: item.denom,
-        contractAddress: item.contractAddress,
-        coinGeckoId: item.coinGeckoId
-=======
       smartNavigation.navigateSmart("Send", {
         currency: item.denom,
         contractAddress: item.contractAddress,
->>>>>>> main
+        coinGeckoId: item.coinGeckoId,
       });
     }
   };
@@ -214,7 +196,7 @@ export const TokensCardAll: FunctionComponent<{
             chainInfo={{
               stakeCurrency: chainStore.current.stakeCurrency,
               networkType: chainStore.current.networkType,
-              chainId: chainStore.current.chainId
+              chainId: chainStore.current.chainId,
             }}
             balance={token.balance}
             priceBalance={priceBalance}
@@ -230,16 +212,20 @@ export const TokensCardAll: FunctionComponent<{
     (item) => {
       if (item) {
         let profit = 0;
-        let percent = '0';
+        let percent = "0";
 
         if (yesterdayAssets && yesterdayAssets.length > 0) {
-          const yesterday = yesterdayAssets.find(obj => obj['denom'] === item.denom);
+          const yesterday = yesterdayAssets.find(
+            (obj) => obj["denom"] === item.denom
+          );
           if (yesterday && yesterday.value) {
-            profit = Number(Number(item.value - (yesterday.value ?? 0))?.toFixed(2) ?? 0);
+            profit = Number(
+              Number(item.value - (yesterday.value ?? 0))?.toFixed(2) ?? 0
+            );
             percent = Number((profit / yesterday.value) * 100 ?? 0).toFixed(2);
           }
         }
-        const chainIcon = chainIcons.find(c => c.chainId === item.chainId);
+        const chainIcon = chainIcons.find((c) => c.chainId === item.chainId);
 
         return (
           <TouchableOpacity
@@ -249,65 +235,45 @@ export const TokensCardAll: FunctionComponent<{
             style={styles.btnItem}
           >
             <View style={styles.leftBoxItem}>
-<<<<<<< HEAD
               <View style={styles.iconWrap}>
                 <OWIcon type="images" source={{ uri: item.icon }} size={28} />
-=======
-              <View
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 12,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  overflow: "hidden",
-                  backgroundColor: colors["gray-10"],
-                }}
-              >
-                <OWIcon type="images" source={{ uri: item.icon }} size={35} />
->>>>>>> main
               </View>
               <View style={styles.chainWrap}>
-                <OWIcon type="images" source={{ uri: chainIcon?.Icon }} size={16} />
+                <OWIcon
+                  type="images"
+                  source={{ uri: chainIcon?.Icon }}
+                  size={16}
+                />
               </View>
 
               <View style={styles.pl10}>
-<<<<<<< HEAD
-                <Text size={14} color={colors['neutral-text-heading']} weight="600">
+                <Text
+                  size={14}
+                  color={colors["neutral-text-heading"]}
+                  weight="600"
+                >
                   {item.balance.toFixed(4)} {item.asset}
                 </Text>
-                <Text weight="400" color={colors['neutral-text-body']}>
-=======
-                <Text
-                  size={16}
-                  color={colors["neutral-text-title"]}
-                  weight="500"
-                >
-                  {item.asset}
-                </Text>
-                <Text weight="500" color={colors["neutral-text-body"]}>
->>>>>>> main
+                <Text weight="400" color={colors["neutral-text-body"]}>
                   {item.chain}
                 </Text>
               </View>
             </View>
             <View style={styles.rightBoxItem}>
-<<<<<<< HEAD
-              <View style={{ flexDirection: 'row' }}>
-                <View style={{ alignItems: 'flex-end' }}>
-                  <Text weight="500" color={colors['neutral-text-heading']}>
-=======
               <View style={{ flexDirection: "row" }}>
                 <View style={{ alignItems: "flex-end" }}>
-                  <Text color={colors["neutral-text-title"]}>
-                    {item.balance}
-                  </Text>
-                  <Text weight="500" color={colors["neutral-text-body"]}>
->>>>>>> main
+                  <Text weight="500" color={colors["neutral-text-heading"]}>
                     ${item.value.toFixed(6)}
                   </Text>
-                  <Text style={styles.profit} color={colors[profit < 0 ? 'error-text-body' : 'success-text-body']}>
-                    {profit < 0 ? '' : '+'}
+                  <Text
+                    style={styles.profit}
+                    color={
+                      colors[
+                        profit < 0 ? "error-text-body" : "success-text-body"
+                      ]
+                    }
+                  >
+                    {profit < 0 ? "" : "+"}
                     {percent}% (${profit ?? 0})
                   </Text>
                 </View>
@@ -318,11 +284,10 @@ export const TokensCardAll: FunctionComponent<{
                     paddingLeft: 20,
                   }}
                 >
-<<<<<<< HEAD
-                  <RightArrowIcon height={12} color={colors['neutral-text-heading']} />
-=======
-                  <RightArrowIcon height={12} color={colors["primary-text"]} />
->>>>>>> main
+                  <RightArrowIcon
+                    height={12}
+                    color={colors["neutral-text-heading"]}
+                  />
                 </View>
               </View>
             </View>
@@ -334,7 +299,7 @@ export const TokensCardAll: FunctionComponent<{
   );
 
   const renderContent = () => {
-    if (activeTab === 'tokens') {
+    if (activeTab === "tokens") {
       return (
         <>
           <CardBody style={{ paddingHorizontal: 0, paddingTop: 16 }}>
@@ -354,9 +319,9 @@ export const TokensCardAll: FunctionComponent<{
           {tokenInfos.length > 3 ? (
             <OWButton
               style={{
-                marginTop: 16
+                marginTop: 16,
               }}
-              label={more ? 'View all' : 'Hide'}
+              label={more ? "View all" : "Hide"}
               size="medium"
               type="secondary"
               onPress={() => {
@@ -387,85 +352,46 @@ export const TokensCardAll: FunctionComponent<{
             type="link"
             label={"Tokens"}
             textStyle={{
-<<<<<<< HEAD
-              color: colors['primary-surface-default'],
-              fontWeight: '600',
-              fontSize: 16
+              color: colors["primary-surface-default"],
+              fontWeight: "600",
+              fontSize: 16,
             }}
-            onPress={() => setActiveTab('tokens')}
+            onPress={() => setActiveTab("tokens")}
             style={[
               {
-                width: '50%'
+                width: "50%",
               },
-              activeTab === 'tokens' ? styles.active : null
+              activeTab === "tokens" ? styles.active : null,
             ]}
           />
           <OWButton
             type="link"
-            label={'History'}
-            onPress={() => setActiveTab('history')}
+            label={"History"}
+            onPress={() => setActiveTab("history")}
             textStyle={{
-              color: colors['primary-surface-default'],
-              fontWeight: '600',
-              fontSize: 16
-=======
-              color: colors["primary-text"],
-              fontWeight: "700",
-            }}
-            style={{
-              width: "100%",
-              borderBottomColor: colors["primary-text"],
-              borderBottomWidth: 2,
->>>>>>> main
+              color: colors["primary-surface-default"],
+              fontWeight: "600",
+              fontSize: 16,
             }}
             style={[
               {
-                width: '50%'
+                width: "50%",
               },
-              activeTab === 'history' ? styles.active : null
+              activeTab === "history" ? styles.active : null,
             ]}
           />
         </View>
 
-<<<<<<< HEAD
         {renderContent()}
-=======
-        <CardBody>
-          {tokenInfos.length > 0 ? (
-            tokenInfos.map((token, index) => {
-              if (more) {
-                if (index < 3) return renderTokenItem(token);
-              } else {
-                return renderTokenItem(token);
-              }
-            })
-          ) : (
-            <OWEmpty />
-          )}
-        </CardBody>
-        <OWButton
-          label={more ? "View all" : "Hide"}
-          size="medium"
-          type="secondary"
-          onPress={() => {
-            setMore(!more);
-          }}
-        />
->>>>>>> main
       </OWBox>
     </View>
   );
 });
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     wrapHeaderTitle: {
-<<<<<<< HEAD
-      flexDirection: 'row'
-=======
       flexDirection: "row",
-      marginHorizontal: spacing["page-pad"],
->>>>>>> main
     },
     pl10: {
       paddingLeft: 10,
@@ -478,42 +404,37 @@ const styling = colors =>
       alignItems: "flex-end",
     },
     btnItem: {
-<<<<<<< HEAD
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginVertical: 8
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginVertical: 8,
     },
     profit: {
-      fontWeight: '400',
-      lineHeight: 20
+      fontWeight: "400",
+      lineHeight: 20,
     },
     iconWrap: {
       width: 32,
       height: 32,
       borderRadius: 32,
-      alignItems: 'center',
-      justifyContent: 'center',
-      overflow: 'hidden',
-      backgroundColor: colors['neutral-text-action-on-dark-bg']
+      alignItems: "center",
+      justifyContent: "center",
+      overflow: "hidden",
+      backgroundColor: colors["neutral-text-action-on-dark-bg"],
     },
     chainWrap: {
       width: 18,
       height: 18,
       borderRadius: 32,
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: colors['neutral-text-action-on-dark-bg'],
-      position: 'absolute',
-      bottom: -6,
-      left: 20
-    },
-    active: { borderBottomColor: colors['primary-surface-default'], borderBottomWidth: 2 }
-=======
-      flexDirection: "row",
-      justifyContent: "space-between",
       alignItems: "center",
-      marginVertical: 10,
+      justifyContent: "center",
+      backgroundColor: colors["neutral-text-action-on-dark-bg"],
+      position: "absolute",
+      bottom: -6,
+      left: 20,
     },
->>>>>>> main
+    active: {
+      borderBottomColor: colors["primary-surface-default"],
+      borderBottomWidth: 2,
+    },
   });
