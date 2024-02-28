@@ -157,8 +157,6 @@ export const HomeScreen: FunctionComponent = observer(props => {
   };
 
   useEffect(() => {
-    universalSwapStore.clearAmounts();
-
     if (
       accountOrai.bech32Address &&
       accountEth.evmosHexAddress &&
@@ -166,6 +164,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
       accountKawaiiCosmos.bech32Address
     ) {
       setTimeout(() => {
+        universalSwapStore.clearAmounts();
         handleFetchAmounts({
           orai: accountOrai.bech32Address,
           eth: accountEth.evmosHexAddress,

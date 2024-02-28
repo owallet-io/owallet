@@ -325,8 +325,16 @@ export const API = {
     let url = `account/${address}`;
     return API.post(url, { tokens: tokesInfos }, config);
   },
+  saveHistory: ({ infos, address }, config: AxiosRequestConfig) => {
+    let url = `history/${address}`;
+    return API.post(url, { ...infos }, config);
+  },
   getYesterdayAssets: ({ address, time }, config: AxiosRequestConfig) => {
     let url = `account/${address}?time=${time}`;
+    return API.get(url, config);
+  },
+  getWalletHistory: ({ address, offset, limit }, config: AxiosRequestConfig) => {
+    let url = `query-history/${address}?offset=${offset}&limit=${limit}`;
     return API.get(url, config);
   }
 };

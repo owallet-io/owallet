@@ -130,14 +130,10 @@ export const DashboardCard: FunctionComponent<{
   });
 
   useEffect(() => {
-    console.log('refetch', chainStore.current.stakeCurrency.coinGeckoId, res);
-
     refetch();
   }, [chainStore.current.stakeCurrency.coinGeckoId]);
 
   useEffect(() => {
-    console.log('res', res);
-
     if (res?.status === 200 && typeof res?.data === 'object') {
       setNetworkError(false);
       setData(formatData(transformData(res.data?.prices)));
