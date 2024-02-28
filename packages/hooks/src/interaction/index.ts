@@ -1,14 +1,14 @@
-import { useLocation } from 'react-router';
+import { useLocation } from "react-router";
 
-import queryString from 'querystring';
+import queryString from "querystring";
 
-import { disableScroll, fitPopupWindow } from '@owallet/popup';
-import { useEffect, useRef } from 'react';
+import { disableScroll, fitPopupWindow } from "@owallet/popup";
+import { useEffect, useRef } from "react";
 
 export const useInteractionInfo = (cleanUp?: () => void) => {
   const location = useLocation();
   let search = location.search;
-  if (search.startsWith('?')) {
+  if (search.startsWith("?")) {
     search = search.slice(1);
   }
   const query = queryString.parse(search);
@@ -17,8 +17,8 @@ export const useInteractionInfo = (cleanUp?: () => void) => {
   cleanUpRef.current = cleanUp;
 
   const result = {
-    interaction: query.interaction === 'true',
-    interactionInternal: query.interactionInternal === 'true'
+    interaction: query.interaction === "true",
+    interactionInternal: query.interactionInternal === "true",
   };
 
   useEffect(() => {
@@ -44,9 +44,9 @@ export const useInteractionInfo = (cleanUp?: () => void) => {
       }
     };
 
-    addEventListener('beforeunload', beforeunload);
+    addEventListener("beforeunload", beforeunload);
     return () => {
-      removeEventListener('beforeunload', beforeunload);
+      removeEventListener("beforeunload", beforeunload);
     };
   }, []);
 

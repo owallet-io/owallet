@@ -40,6 +40,6 @@ export const SettingFiatCurrencyItem: FunctionComponent<{
           setIsOpenModal(true);
         }}
       />
-    </React.Fragment> 
+    </React.Fragment>
   );
 });

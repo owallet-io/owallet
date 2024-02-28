@@ -43,7 +43,7 @@ export class AccountStore<
         this.chainGetter,
         chainId,
         this.queriesStore,
-        (deepmerge(
+        deepmerge(
           deepmerge(
             {
               msgOpts: accountSetCreator.defaultMsgOpts,
@@ -52,7 +52,7 @@ export class AccountStore<
           ),
           this.storeOpts.chainOpts?.find((opts) => opts.chainId === chainId) ??
             {}
-        ) as unknown) as Opts
+        ) as unknown as Opts
       );
     });
 

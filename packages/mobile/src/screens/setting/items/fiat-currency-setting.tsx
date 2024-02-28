@@ -4,7 +4,7 @@ import { observer } from "mobx-react-lite";
 import { useStore } from "../../../stores";
 import { SelectorModal } from "../../../components/input";
 import { View, TouchableOpacity } from "react-native";
-import { Text } from '@src/components/text';
+import { Text } from "@src/components/text";
 
 export const SettingFiatCurrencyTopItem: FunctionComponent<{
   style?: any;

@@ -1,8 +1,8 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent } from "react";
 
-import classnames from 'classnames';
+import classnames from "classnames";
 
-import stylePageButton from './page-button.module.scss';
+import stylePageButton from "./page-button.module.scss";
 
 export const PageButton: FunctionComponent<
   {
@@ -22,7 +22,7 @@ export const PageButton: FunctionComponent<
     icons,
     styleTitle,
     styleParagraph,
-    customModal
+    customModal,
   } = props;
 
   const attributes = { ...props };
@@ -33,7 +33,7 @@ export const PageButton: FunctionComponent<
   return (
     <div
       className={classnames(stylePageButton.container, {
-        [stylePageButton.withSubParagraph]: subParagraph != null
+        [stylePageButton.withSubParagraph]: subParagraph != null,
       })}
       {...attributes}
     >
@@ -76,7 +76,7 @@ export const PageButtonAccount: FunctionComponent<
     icons,
     styleTitle,
     styleParagraph,
-    ind
+    ind,
   } = props;
 
   const attributes = { ...props };
@@ -88,7 +88,7 @@ export const PageButtonAccount: FunctionComponent<
     <div
       className={classnames(stylePageButton.containerAccount, {
         [stylePageButton.withSubParagraph]: subParagraph != null,
-        [stylePageButton.bgAccount]: ind % 2 == 0
+        [stylePageButton.bgAccount]: ind % 2 == 0,
       })}
       {...attributes}
     >

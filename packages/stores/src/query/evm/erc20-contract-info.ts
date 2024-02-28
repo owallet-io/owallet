@@ -1,9 +1,9 @@
-import { Erc20ContractTokenInfo, Result } from './types';
-import { KVStore, MyBigInt } from '@owallet/common';
-import { ObservableChainQueryMap } from '../chain-query';
-import { ChainGetter } from '../../common';
-import { computed } from 'mobx';
-import { ObservableEvmContractChainQuery } from './contract-query';
+import { Erc20ContractTokenInfo, Result } from "./types";
+import { KVStore, MyBigInt } from "@owallet/common";
+import { ObservableChainQueryMap } from "../chain-query";
+import { ChainGetter } from "../../common";
+import { computed } from "mobx";
+import { ObservableEvmContractChainQuery } from "./contract-query";
 
 export class ObservableQueryErc20ContactInfoInner extends ObservableEvmContractChainQuery<Result> {
   constructor(
@@ -13,16 +13,16 @@ export class ObservableQueryErc20ContactInfoInner extends ObservableEvmContractC
     protected readonly contractAddress: string
   ) {
     super(kvStore, chainId, chainGetter, contractAddress, {
-      jsonrpc: '2.0',
-      method: 'eth_call',
+      jsonrpc: "2.0",
+      method: "eth_call",
       params: [
         {
           to: contractAddress,
-          data: '0x18160ddd'
+          data: "0x18160ddd",
         },
-        'latest'
+        "latest",
       ],
-      id: 'erc20-total-supply'
+      id: "erc20-total-supply",
     });
   }
 
@@ -36,18 +36,18 @@ export class ObservableQueryErc20ContactInfoInner extends ObservableEvmContractC
       }
 
       const chainInfo = this.chainGetter.getChain(this._chainId);
-      const currency = chainInfo.currencies.find(curency =>
+      const currency = chainInfo.currencies.find((curency) =>
         curency.coinMinimalDenom?.startsWith(`erc20:${this.contractAddress}`)
       );
 
       return {
         decimals: currency?.coinDecimals || fetchInfo.decimals,
-        name: currency?.coinMinimalDenom?.split(':')?.pop() || fetchInfo.name,
+        name: currency?.coinMinimalDenom?.split(":")?.pop() || fetchInfo.name,
         symbol: currency?.coinDenom || fetchInfo.symbol,
-        total_supply: new MyBigInt(fetchData.result)?.toString()
+        total_supply: new MyBigInt(fetchData.result)?.toString(),
       };
     } catch (error) {
-      console.log('Error on getting token info: ', error);
+      console.log("Error on getting token info: ", error);
     }
   }
 }

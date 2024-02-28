@@ -1,17 +1,17 @@
-import { AppCurrency, Currency } from '@owallet/types';
-import React, { FunctionComponent } from 'react';
-import { View, ViewStyle } from 'react-native';
-import FastImage from 'react-native-fast-image';
+import { AppCurrency, Currency } from "@owallet/types";
+import React, { FunctionComponent } from "react";
+import { View, ViewStyle } from "react-native";
+import FastImage from "react-native-fast-image";
 import {
   Circle,
   Defs,
   LinearGradient,
   Path,
   Stop,
-  Svg
-} from 'react-native-svg';
-import { colors, spacing } from '../../themes';
-import { VectorCharacter } from '../vector-character';
+  Svg,
+} from "react-native-svg";
+import { colors, spacing } from "../../themes";
+import { VectorCharacter } from "../vector-character";
 
 export const StakedTokenSymbol: FunctionComponent<{
   size: number;
@@ -46,19 +46,19 @@ export const TokenSymbolEVM: FunctionComponent<{
   size,
   currency,
   chainInfo,
-  imageScale = 32 / 44
+  imageScale = 32 / 44,
 }) => {
   return (
     <View
       style={{
         width: size,
         height: size,
-        borderRadius: spacing['6'],
-        alignItems: 'center',
-        justifyContent: 'center',
-        overflow: 'hidden',
-        backgroundColor: colors['red-10'],
-        ...propStyle
+        borderRadius: spacing["6"],
+        alignItems: "center",
+        justifyContent: "center",
+        overflow: "hidden",
+        backgroundColor: colors["red-10"],
+        ...propStyle,
       }}
     >
       {currency?.coinImageUrl ? (
@@ -66,16 +66,16 @@ export const TokenSymbolEVM: FunctionComponent<{
           style={{
             width: size * imageScale,
             height: size * imageScale,
-            backgroundColor: colors['gray-10']
+            backgroundColor: colors["gray-10"],
           }}
           resizeMode={FastImage.resizeMode.contain}
           source={{
-            uri: currency.coinImageUrl
+            uri: currency.coinImageUrl,
           }}
         />
       ) : (
         <VectorCharacter
-          char={currency?.coinDenom[0] ?? ''}
+          char={currency?.coinDenom[0] ?? ""}
           height={Math.floor(size * 0.35)}
           color="black"
         />

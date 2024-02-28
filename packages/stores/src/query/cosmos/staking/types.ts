@@ -1,4 +1,4 @@
-import { CoinPrimitive } from '../../../common';
+import { CoinPrimitive } from "../../../common";
 
 export type Rewards = {
   rewards: DelegatorReward[] | null;

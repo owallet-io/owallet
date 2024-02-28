@@ -1,5 +1,5 @@
-import React, { FunctionComponent } from 'react';
-import Svg, { Circle } from 'react-native-svg';
+import React, { FunctionComponent } from "react";
+import Svg, { Circle } from "react-native-svg";
 
 export const ThreeDotsIcon: FunctionComponent<{
   color: string;
@@ -24,14 +24,9 @@ export const ThreeDotsIcon: FunctionComponent<{
 export const DotsIcon: FunctionComponent<{
   color?: string;
   size?: number;
-}> = ({ color = 'none', size = 9 }) => {
+}> = ({ color = "none", size = 9 }) => {
   return (
-    <Svg
-      width={size}
-      height={size - 1}
-      viewBox="0 0 9 8"
-      fill={color}
-    >
+    <Svg width={size} height={size - 1} viewBox="0 0 9 8" fill={color}>
       <Circle cx="4.5" cy="4" r="4" fill="#945EF8" />
     </Svg>
   );

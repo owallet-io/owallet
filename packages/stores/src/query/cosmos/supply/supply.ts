@@ -1,11 +1,11 @@
-import { SupplyTotal, SupplyTotalStargate } from './types';
-import { KVStore } from '@owallet/common';
+import { SupplyTotal, SupplyTotalStargate } from "./types";
+import { KVStore } from "@owallet/common";
 import {
   ObservableChainQuery,
-  ObservableChainQueryMap
-} from '../../chain-query';
-import { ChainGetter } from '../../../common';
-import { autorun } from 'mobx';
+  ObservableChainQueryMap,
+} from "../../chain-query";
+import { ChainGetter } from "../../../common";
+import { autorun } from "mobx";
 
 export class ObservableChainQuerySupplyTotal extends ObservableChainQuery<
   SupplyTotal | SupplyTotalStargate
@@ -25,7 +25,7 @@ export class ObservableChainQuerySupplyTotal extends ObservableChainQuery<
 
     autorun(() => {
       const chainInfo = this.chainGetter.getChain(this.chainId);
-      if (chainInfo.chainId.startsWith('injective')) {
+      if (chainInfo.chainId.startsWith("injective")) {
         // cosmos-sdk v0.46.0+ has changed the API to use query string.
         const url = `/cosmos/bank/v1beta1/supply/by_denom?denom=${denom}`;
 

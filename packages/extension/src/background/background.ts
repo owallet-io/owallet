@@ -1,16 +1,16 @@
-import { BACKGROUND_PORT } from '@owallet/router';
+import { BACKGROUND_PORT } from "@owallet/router";
 import {
   ExtensionRouter,
   ExtensionGuards,
   ExtensionEnv,
-  ContentScriptMessageRequester
-} from '@owallet/router-extension';
-import { ExtensionKVStore } from '@owallet/common';
-import { init, Ledger, ScryptParams } from '@owallet/background';
-import { scrypt } from '@owallet/crypto';
-import { Buffer } from 'buffer';
+  ContentScriptMessageRequester,
+} from "@owallet/router-extension";
+import { ExtensionKVStore } from "@owallet/common";
+import { init, Ledger, ScryptParams } from "@owallet/background";
+import { scrypt } from "@owallet/crypto";
+import { Buffer } from "buffer";
 
-import { EmbedChainInfos, PrivilegedOrigins } from '@owallet/common';
+import { EmbedChainInfos, PrivilegedOrigins } from "@owallet/common";
 
 const router = new ExtensionRouter(ExtensionEnv.produceEnv);
 router.addGuard(ExtensionGuards.checkOriginIsValid);
@@ -27,29 +27,35 @@ init(
   },
   {
     scrypt: async (text: string, params: ScryptParams) => {
-      const buf = await scrypt(text, Buffer.from(params.salt, 'hex'), {
+      const buf = await scrypt(text, Buffer.from(params.salt, "hex"), {
         dkLen: params.dklen,
         N: params.n,
         r: params.r,
         p: params.p,
-        encoding: 'binary'
+        encoding: "binary",
       });
 
       return buf;
-    }
+    },
   },
   {
-    create: (params: { iconRelativeUrl?: string; title: string; message: string }) => {
+    create: (params: {
+      iconRelativeUrl?: string;
+      title: string;
+      message: string;
+    }) => {
       browser.notifications.create({
-        type: 'basic',
-        iconUrl: params.iconRelativeUrl ? browser.runtime.getURL(params.iconRelativeUrl) : undefined,
+        type: "basic",
+        iconUrl: params.iconRelativeUrl
+          ? browser.runtime.getURL(params.iconRelativeUrl)
+          : undefined,
         title: params.title,
-        message: params.message
+        message: params.message,
       });
-    }
+    },
   },
   {
-    defaultMode: 'webhid'
+    defaultMode: "webhid",
   }
 );
 

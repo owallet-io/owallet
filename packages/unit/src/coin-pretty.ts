@@ -1,9 +1,9 @@
-import { IntPretty, IntPrettyOptions } from './int-pretty';
-import { Dec } from './decimal';
-import { AppCurrency } from '@owallet/types';
-import { DeepReadonly } from 'utility-types';
-import { DecUtils } from './dec-utils';
-import bigInteger from 'big-integer';
+import { IntPretty, IntPrettyOptions } from "./int-pretty";
+import { Dec } from "./decimal";
+import { AppCurrency } from "@owallet/types";
+import { DeepReadonly } from "utility-types";
+import { DecUtils } from "./dec-utils";
+import bigInteger from "big-integer";
 
 export type CoinPrettyOptions = {
   separator: string;
@@ -16,17 +16,17 @@ export class CoinPretty {
   protected intPretty: IntPretty;
 
   protected _options: CoinPrettyOptions = {
-    separator: ' ',
+    separator: " ",
     upperCase: false,
     lowerCase: false,
-    hideDenom: false
+    hideDenom: false,
   };
 
   constructor(
     protected _currency: AppCurrency,
     protected amount: Dec | { toDec(): Dec } | bigInteger.BigNumber
   ) {
-    if (typeof this.amount === 'object' && 'toDec' in this.amount) {
+    if (typeof this.amount === "object" && "toDec" in this.amount) {
       this.amount = this.amount.toDec();
     } else if (!(this.amount instanceof Dec)) {
       this.amount = new Dec(this.amount);
@@ -42,7 +42,7 @@ export class CoinPretty {
   get options(): DeepReadonly<IntPrettyOptions & CoinPrettyOptions> {
     return {
       ...this._options,
-      ...this.intPretty.options
+      ...this.intPretty.options,
     };
   }
 
@@ -173,14 +173,14 @@ export class CoinPretty {
     if (isCoinPretty) {
       // If target is `CoinPretty` and it has different denom, do nothing.
       if (
-        'currency' in target &&
+        "currency" in target &&
         this.currency.coinMinimalDenom !== target.currency.coinMinimalDenom
       ) {
         return this.clone();
       }
     }
 
-    if ('toDec' in target) {
+    if ("toDec" in target) {
       target = target.toDec();
     }
 
@@ -202,14 +202,14 @@ export class CoinPretty {
     if (isCoinPretty) {
       // If target is `CoinPretty` and it has different denom, do nothing.
       if (
-        'currency' in target &&
+        "currency" in target &&
         this.currency.coinMinimalDenom !== target.currency.coinMinimalDenom
       ) {
         return this.clone();
       }
     }
 
-    if ('toDec' in target) {
+    if ("toDec" in target) {
       target = target.toDec();
     }
 
@@ -254,7 +254,7 @@ export class CoinPretty {
 
     return {
       denom: this.currency.coinMinimalDenom,
-      amount: amount.toString()
+      amount: amount.toString(),
     };
   }
 
@@ -270,17 +270,17 @@ export class CoinPretty {
     let separator = this._options.separator;
 
     if (this._options.hideDenom) {
-      denom = '';
-      separator = '';
+      denom = "";
+      separator = "";
     }
 
-    return this.intPretty.toStringWithSymbols('', `${separator}${denom}`);
+    return this.intPretty.toStringWithSymbols("", `${separator}${denom}`);
   }
 
   clone(): CoinPretty {
     const pretty = new CoinPretty(this._currency, this.amount);
     pretty._options = {
-      ...this._options
+      ...this._options,
     };
     pretty.intPretty = this.intPretty.clone();
     return pretty;

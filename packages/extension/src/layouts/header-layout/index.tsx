@@ -2,15 +2,15 @@ import React, {
   CSSProperties,
   FunctionComponent,
   ReactElement,
-  useState
-} from 'react';
+  useState,
+} from "react";
 
-import { MenuProvider, MenuContext } from '../menu';
+import { MenuProvider, MenuContext } from "../menu";
 
-import { Header, Props as HeaderProps } from '../header';
+import { Header, Props as HeaderProps } from "../header";
 
-import style from './style.module.scss';
-import { useHistory } from 'react-router';
+import style from "./style.module.scss";
+import { useHistory } from "react-router";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface Props extends HeaderProps {
@@ -39,10 +39,10 @@ export const LayoutHidePage: FunctionComponent<{
       className={style.layoutHidePage}
       onClick={hidePage}
     >
-      <div style={{ paddingRight: 4 }}>{label ?? 'Hide'}</div>
+      <div style={{ paddingRight: 4 }}>{label ?? "Hide"}</div>
       {img ?? (
         <img
-          src={require('../../public/assets/img/shape.svg')}
+          src={require("../../public/assets/img/shape.svg")}
           alt="total-balance"
         />
       )}
@@ -64,23 +64,23 @@ export const HeaderLayout: FunctionComponent<Props> = (props) => {
     },
     toggle: () => {
       setMenuOpen(!isMenuOpen);
-    }
+    },
   };
 
-  const listTabs = ['Home', 'Token', 'Account', 'Menu'];
+  const listTabs = ["Home", "Token", "Account", "Menu"];
   const history = useHistory();
 
   const toggle = (tab) => {
-    let path = '/';
+    let path = "/";
     switch (listTabs[tab]) {
-      case 'Token':
-        path = '/token';
+      case "Token":
+        path = "/token";
         break;
-      case 'Account':
-        path = '/setting/set-keyring';
+      case "Account":
+        path = "/setting/set-keyring";
         break;
-      case 'Menu':
-        path = '/menu';
+      case "Menu":
+        path = "/menu";
         break;
     }
     history.push(path);

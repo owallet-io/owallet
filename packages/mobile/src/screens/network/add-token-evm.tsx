@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { PageWithScrollView } from '../../components/page';
-import { colors, typography } from '../../themes';
-import { OWalletLogo } from '../register/owallet-logo';
-import { Text } from '@src/components/text';
-import { Controller, useForm } from 'react-hook-form';
-import { TextInput } from '../../components/input';
-import { LoadingSpinner } from '../../components/spinner';
-import { useSmartNavigation } from '../../navigation.provider';
-import { useStore } from '../../stores';
-import CheckBox from 'react-native-check-box';
-import { ERC20Currency, Secret20Currency } from '@owallet/types';
-import { observer } from 'mobx-react-lite';
-import { showToast } from '@src/utils/helper';
+import React, { useEffect, useState } from "react";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { PageWithScrollView } from "../../components/page";
+import { colors, typography } from "../../themes";
+import { OWalletLogo } from "../register/owallet-logo";
+import { Text } from "@src/components/text";
+import { Controller, useForm } from "react-hook-form";
+import { TextInput } from "../../components/input";
+import { LoadingSpinner } from "../../components/spinner";
+import { useSmartNavigation } from "../../navigation.provider";
+import { useStore } from "../../stores";
+import CheckBox from "react-native-check-box";
+import { ERC20Currency, Secret20Currency } from "@owallet/types";
+import { observer } from "mobx-react-lite";
+import { showToast } from "@src/utils/helper";
 
 interface FormData {
   viewingKey: string;
@@ -24,7 +24,7 @@ export const AddTokenEVMScreen = observer(() => {
     control,
     handleSubmit,
     watch,
-    formState: { errors }
+    formState: { errors },
   } = useForm<FormData>();
   const smartNavigation = useSmartNavigation();
 
@@ -36,18 +36,24 @@ export const AddTokenEVMScreen = observer(() => {
 
   const form = useForm<FormData>({
     defaultValues: {
-      contractAddress: '',
-      viewingKey: ''
-    }
+      contractAddress: "",
+      viewingKey: "",
+    },
   });
 
-  const contractAddress = watch('contractAddress');
+  const contractAddress = watch("contractAddress");
 
   useEffect(() => {
     if (tokensStore.waitingSuggestedToken) {
       chainStore.selectChain(tokensStore.waitingSuggestedToken.data.chainId);
-      if (contractAddress !== tokensStore.waitingSuggestedToken.data.contractAddress) {
-        form.setValue('contractAddress', tokensStore.waitingSuggestedToken.data.contractAddress);
+      if (
+        contractAddress !==
+        tokensStore.waitingSuggestedToken.data.contractAddress
+      ) {
+        form.setValue(
+          "contractAddress",
+          tokensStore.waitingSuggestedToken.data.contractAddress
+        );
       }
     }
   }, [chainStore, contractAddress, form, tokensStore.waitingSuggestedToken]);
@@ -60,14 +66,21 @@ export const AddTokenEVMScreen = observer(() => {
 
   const tokenInfo = queryContractInfo.tokenInfo;
 
-  const [isOpenSecret20ViewingKey, setIsOpenSecret20ViewingKey] = useState(false);
+  const [isOpenSecret20ViewingKey, setIsOpenSecret20ViewingKey] =
+    useState(false);
 
   const createViewingKey = async (): Promise<string> => {
     return new Promise((resolve, reject) => {
       accountInfo.secret
-        .createSecret20ViewingKey(contractAddress, '', {}, {}, (_, viewingKey) => {
-          resolve(viewingKey);
-        })
+        .createSecret20ViewingKey(
+          contractAddress,
+          "",
+          {},
+          {},
+          (_, viewingKey) => {
+            resolve(viewingKey);
+          }
+        )
         .then(() => {})
         .catch(reject);
     });
@@ -75,23 +88,23 @@ export const AddTokenEVMScreen = observer(() => {
 
   const addTokenSuccess = () => {
     setLoading(false);
-    smartNavigation.navigateSmart('Home', {});
+    smartNavigation.navigateSmart("Home", {});
     showToast({
-      message: 'Token added'
+      message: "Token added",
     });
   };
 
-  const submit = handleSubmit(async data => {
+  const submit = handleSubmit(async (data) => {
     try {
       if (tokenInfo?.decimals != null && tokenInfo.name && tokenInfo.symbol) {
         setLoading(true);
         if (!isSecret20) {
           const currency: ERC20Currency = {
-            type: 'erc20',
+            type: "erc20",
             contractAddress: data.contractAddress,
             coinMinimalDenom: tokenInfo.name,
             coinDenom: tokenInfo.symbol,
-            coinDecimals: tokenInfo.decimals
+            coinDecimals: tokenInfo.decimals,
           };
 
           await tokensOf.addToken(currency);
@@ -112,19 +125,19 @@ export const AddTokenEVMScreen = observer(() => {
 
           if (!viewingKey) {
             setLoading(false);
-            smartNavigation.navigateSmart('Home', {});
+            smartNavigation.navigateSmart("Home", {});
             showToast({
-              message: 'Failed to create the viewing key',
-              type: 'danger'
+              message: "Failed to create the viewing key",
+              type: "danger",
             });
           } else {
             const currency: Secret20Currency = {
-              type: 'secret20',
+              type: "secret20",
               contractAddress: data.contractAddress,
               viewingKey,
               coinMinimalDenom: tokenInfo.name,
               coinDenom: tokenInfo.symbol,
-              coinDecimals: tokenInfo.decimals
+              coinDecimals: tokenInfo.decimals,
             };
 
             await tokensOf.addToken(currency);
@@ -134,11 +147,11 @@ export const AddTokenEVMScreen = observer(() => {
       }
     } catch (err) {
       setLoading(false);
-      smartNavigation.navigateSmart('Home', {});
+      smartNavigation.navigateSmart("Home", {});
       showToast({
         message: JSON.stringify(err.message),
-        type: 'danger',
-        onPress: () => {}
+        type: "danger",
+        onPress: () => {},
       });
     }
   });
@@ -147,23 +160,23 @@ export const AddTokenEVMScreen = observer(() => {
     <PageWithScrollView
       contentContainerStyle={{
         paddingLeft: 20,
-        paddingRight: 20
+        paddingRight: 20,
       }}
     >
       <View
         style={{
           height: 72,
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between'
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
         }}
       >
         <Text
           style={{
             fontSize: 24,
             lineHeight: 34,
-            fontWeight: '700'
+            fontWeight: "700",
           }}
         >
           Add Token (EVM)
@@ -177,8 +190,8 @@ export const AddTokenEVMScreen = observer(() => {
       <Text
         style={{
           ...typography.h3,
-          fontWeight: '900',
-          paddingBottom: 20
+          fontWeight: "900",
+          paddingBottom: 20,
         }}
       >
         {`Token Info`}
@@ -190,11 +203,11 @@ export const AddTokenEVMScreen = observer(() => {
             <TextInput
               label="Contract Address"
               labelStyle={{
-                fontWeight: '700'
+                fontWeight: "700",
               }}
-              placeholder={'Contract Address'}
+              placeholder={"Contract Address"}
               inputStyle={{
-                ...styles.borderInput
+                ...styles.borderInput,
               }}
               onSubmitEditing={() => {
                 submit();
@@ -214,66 +227,66 @@ export const AddTokenEVMScreen = observer(() => {
       <TextInput
         label="Name"
         labelStyle={{
-          fontWeight: '700'
+          fontWeight: "700",
         }}
         inputStyle={{
-          ...styles.borderInput
+          ...styles.borderInput,
         }}
         onSubmitEditing={() => {
           submit();
         }}
         error={errors.contractAddress?.message}
-        value={tokenInfo?.name ?? '-'}
-        defaultValue={'-'}
+        value={tokenInfo?.name ?? "-"}
+        defaultValue={"-"}
         editable={false}
       />
 
       <TextInput
         label="Symbol"
         labelStyle={{
-          fontWeight: '700'
+          fontWeight: "700",
         }}
         inputStyle={{
-          ...styles.borderInput
+          ...styles.borderInput,
         }}
         onSubmitEditing={() => {
           submit();
         }}
         error={errors.contractAddress?.message}
-        value={tokenInfo?.symbol ?? '-'}
-        defaultValue={'-'}
+        value={tokenInfo?.symbol ?? "-"}
+        defaultValue={"-"}
         editable={false}
       />
 
       <TextInput
         label="Decimals"
         labelStyle={{
-          fontWeight: '700'
+          fontWeight: "700",
         }}
         inputStyle={{
-          ...styles.borderInput
+          ...styles.borderInput,
         }}
         onSubmitEditing={() => {
           submit();
         }}
         error={errors.contractAddress?.message}
-        value={tokenInfo?.decimals.toString() ?? '-'}
-        defaultValue={'-'}
+        value={tokenInfo?.decimals.toString() ?? "-"}
+        defaultValue={"-"}
         editable={false}
       />
 
       {isSecret20 ? (
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
           <CheckBox
             style={{ flex: 1, padding: 14 }}
-            checkBoxColor={colors['primary-text']}
-            checkedCheckBoxColor={colors['primary-text']}
+            checkBoxColor={colors["primary-text"]}
+            checkedCheckBoxColor={colors["primary-text"]}
             onClick={() => {
-              setIsOpenSecret20ViewingKey(value => !value);
+              setIsOpenSecret20ViewingKey((value) => !value);
             }}
             isChecked={isOpenSecret20ViewingKey}
           />
-          <Text style={{ paddingLeft: 16 }}>{'Viewing key'}</Text>
+          <Text style={{ paddingLeft: 16 }}>{"Viewing key"}</Text>
         </View>
       ) : null}
 
@@ -283,22 +296,22 @@ export const AddTokenEVMScreen = observer(() => {
         style={{
           marginBottom: 24,
           marginTop: 20,
-          backgroundColor: colors['primary-surface-default'],
-          borderRadius: 8
+          backgroundColor: colors["primary-surface-default"],
+          borderRadius: 8,
         }}
       >
         {loading ? (
-          <View style={{ padding: 16, alignItems: 'center' }}>
-            <LoadingSpinner color={colors['white']} size={20} />
+          <View style={{ padding: 16, alignItems: "center" }}>
+            <LoadingSpinner color={colors["white"]} size={20} />
           </View>
         ) : (
           <Text
             style={{
-              color: 'white',
-              textAlign: 'center',
-              fontWeight: '700',
+              color: "white",
+              textAlign: "center",
+              fontWeight: "700",
               fontSize: 16,
-              padding: 16
+              padding: 16,
             }}
           >
             Submit
@@ -313,10 +326,10 @@ export const AddTokenEVMScreen = observer(() => {
       >
         <Text
           style={{
-            color: colors['primary-surface-default'],
-            textAlign: 'center',
-            fontWeight: '700',
-            fontSize: 16
+            color: colors["primary-surface-default"],
+            textAlign: "center",
+            fontWeight: "700",
+            fontSize: 16,
           }}
         >
           Go back
@@ -333,6 +346,6 @@ const styles = StyleSheet.create({
     paddingRight: 11,
     paddingTop: 12,
     paddingBottom: 12,
-    borderRadius: 8
-  }
+    borderRadius: 8,
+  },
 });

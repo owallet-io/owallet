@@ -1,8 +1,8 @@
-import React, { FunctionComponent } from 'react';
-import { observer } from 'mobx-react-lite';
-import { IMemoConfig } from '@owallet/hooks';
-import { TextStyle, ViewStyle } from 'react-native';
-import { TextInput } from './input';
+import React, { FunctionComponent } from "react";
+import { observer } from "mobx-react-lite";
+import { IMemoConfig } from "@owallet/hooks";
+import { TextStyle, ViewStyle } from "react-native";
+import { TextInput } from "./input";
 
 export const MemoInput: FunctionComponent<{
   labelStyle?: TextStyle;
@@ -14,7 +14,7 @@ export const MemoInput: FunctionComponent<{
   label: string;
   placeholderTextColor?: string;
   memoConfig: IMemoConfig;
-  multiline?: boolean
+  multiline?: boolean;
 }> = observer(
   ({
     labelStyle,
@@ -26,7 +26,7 @@ export const MemoInput: FunctionComponent<{
     placeholder,
     placeholderTextColor,
     inputStyle,
-    multiline
+    multiline,
   }) => {
     return (
       <TextInput

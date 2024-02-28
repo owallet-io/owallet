@@ -1,1 +1,1 @@
-export { default as Text } from './ow-text';
+export { default as Text } from "./ow-text";

@@ -1,18 +1,18 @@
-import { HasMapStore } from '../common';
-import { BACKGROUND_PORT, MessageRequester } from '@owallet/router';
+import { HasMapStore } from "../common";
+import { BACKGROUND_PORT, MessageRequester } from "@owallet/router";
 import {
   AddTokenMsg,
   GetTokensMsg,
   RemoveTokenMsg,
-  SuggestTokenMsg
-} from '@owallet/background';
-import { autorun, flow, makeObservable, observable } from 'mobx';
-import { AppCurrency, ChainInfo } from '@owallet/types';
-import { DeepReadonly } from 'utility-types';
-import { ChainStore } from '../chain';
-import { InteractionStore } from './interaction';
-import { toGenerator } from '@owallet/common';
-import { ChainIdHelper } from '@owallet/cosmos';
+  SuggestTokenMsg,
+} from "@owallet/background";
+import { autorun, flow, makeObservable, observable } from "mobx";
+import { AppCurrency, ChainInfo } from "@owallet/types";
+import { DeepReadonly } from "utility-types";
+import { ChainStore } from "../chain";
+import { InteractionStore } from "./interaction";
+import { toGenerator } from "@owallet/common";
+import { ChainIdHelper } from "@owallet/cosmos";
 
 export class TokensStoreInner {
   @observable.ref
@@ -32,13 +32,13 @@ export class TokensStoreInner {
 
     // If key store in the owallet extension is unlocked, this event will be dispatched.
     // This is needed becuase the token such as secret20 exists according to the account.
-    this.eventListener.addEventListener('keplr_keystoreunlock', () => {
+    this.eventListener.addEventListener("keplr_keystoreunlock", () => {
       this.refreshTokens();
     });
 
     // If key store in the owallet extension is changed, this event will be dispatched.
     // This is needed becuase the token such as secret20 exists according to the account.
-    this.eventListener.addEventListener('keplr_keystorechange', () => {
+    this.eventListener.addEventListener("keplr_keystorechange", () => {
       this.refreshTokens();
     });
   }
@@ -52,11 +52,12 @@ export class TokensStoreInner {
     const chainInfo = this.chainStore.getChain(this.chainId);
 
     if (
-      chainInfo.features &&
-      // Tokens service is only needed for secretwasm and cosmwasm,
-      // so, there is no need to fetch the registered token if the chain doesn't support the secretwasm and cosmwasm.
-      (chainInfo.features.includes('secretwasm') ||
-        chainInfo.features.includes('cosmwasm')) || chainInfo.features.includes('isEvm')
+      (chainInfo.features &&
+        // Tokens service is only needed for secretwasm and cosmwasm,
+        // so, there is no need to fetch the registered token if the chain doesn't support the secretwasm and cosmwasm.
+        (chainInfo.features.includes("secretwasm") ||
+          chainInfo.features.includes("cosmwasm"))) ||
+      chainInfo.features.includes("isEvm")
     ) {
       const msg = new GetTokensMsg(this.chainId);
       this._tokens = yield* toGenerator(

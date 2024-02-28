@@ -1,17 +1,12 @@
-import React, { FunctionComponent } from 'react';
-import Svg, { Path } from 'react-native-svg';
+import React, { FunctionComponent } from "react";
+import Svg, { Path } from "react-native-svg";
 
 export const Scanner: FunctionComponent<{
   color?: string;
   size?: number;
-}> = ({ color = '#5F5E77', size = 24 }) => {
+}> = ({ color = "#5F5E77", size = 24 }) => {
   return (
-    <Svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill={color}
-    >
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
       <Path
         fill-rule="evenodd"
         clip-rule="evenodd"

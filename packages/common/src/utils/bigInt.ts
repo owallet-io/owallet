@@ -1,4 +1,4 @@
-import _BigInt from 'big-integer';
+import _BigInt from "big-integer";
 
 export class MyBigInt {
   value;
@@ -6,7 +6,7 @@ export class MyBigInt {
     if (value instanceof MyBigInt) {
       return value;
     } else {
-      if (typeof value === 'string' && value.startsWith('0x')) {
+      if (typeof value === "string" && value.startsWith("0x")) {
         this.value = _BigInt(value.substring(2), 16);
       } else {
         this.value = _BigInt(value);
@@ -16,10 +16,10 @@ export class MyBigInt {
     return new Proxy(this, {
       get(obj, field) {
         if (field in obj) return obj[field];
-        if (typeof obj.value !== 'bigint' && field in obj.value)
+        if (typeof obj.value !== "bigint" && field in obj.value)
           return obj.value[field].bind(obj.value);
         return undefined;
-      }
+      },
     });
   }
 
@@ -28,7 +28,7 @@ export class MyBigInt {
   }
 
   equals(b) {
-    if (typeof this.value === 'bigint') {
+    if (typeof this.value === "bigint") {
       return this.value === b.value;
     } else if (b instanceof MyBigInt) {
       return this.value.equals(_BigInt(b.value));
@@ -58,7 +58,7 @@ export class MyBigInt {
   }
 
   toUint8Array(littleEndian = false, elements = 8) {
-    if (typeof this.value === 'bigint') {
+    if (typeof this.value === "bigint") {
       return this._toUint8ArrayNative(littleEndian, elements);
     } else {
       return this._toUint8Array(littleEndian, elements);

@@ -1,4 +1,4 @@
-import { getNetworkTypeByChainId, TRON_ID } from '@owallet/common';
+import { getNetworkTypeByChainId, TRON_ID } from "@owallet/common";
 
 export const generateMsgNft = (limit, address, startAfter) => {
   let obj: {
@@ -6,30 +6,30 @@ export const generateMsgNft = (limit, address, startAfter) => {
     owner: string;
     start_after?: string;
   } = {
-    owner: ''
+    owner: "",
   };
   if (limit) obj.limit = limit;
   if (address) obj.owner = address;
   if (startAfter) obj.start_after = startAfter;
   return {
     tokens: {
-      ...obj
-    }
+      ...obj,
+    },
   };
 };
 
 export const generateMsgInfoNft = (tokenId) => {
   return {
     nft_info: {
-      token_id: tokenId
-    }
+      token_id: tokenId,
+    },
   };
 };
 
 export const generateMsgAllNft = (tokenId) => {
   return {
     all_nft_info: {
-      token_id: tokenId
-    }
+      token_id: tokenId,
+    },
   };
 };

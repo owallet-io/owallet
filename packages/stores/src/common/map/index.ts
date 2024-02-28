@@ -1,5 +1,5 @@
-import { AddressBtcType } from '@owallet/types';
-import { makeObservable, observable, runInAction } from 'mobx';
+import { AddressBtcType } from "@owallet/types";
+import { makeObservable, observable, runInAction } from "mobx";
 
 export class HasMapStore<T> {
   @observable.shallow

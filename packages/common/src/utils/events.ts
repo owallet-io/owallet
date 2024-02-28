@@ -1,4 +1,4 @@
-import EventEmitter from 'eventemitter3';
+import EventEmitter from "eventemitter3";
 export class OwalletEvent {
   protected static eventListener = new EventEmitter();
   public static txHashEmit = (txHash: string, infoTx: any) =>

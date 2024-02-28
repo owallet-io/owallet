@@ -1,14 +1,14 @@
-import { ScrollView, StyleSheet, View } from 'react-native';
-import React, { useState } from 'react';
-import { registerModal } from '@src/modals/base';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Text } from '@src/components/text';
-import OWButtonIcon from '@src/components/button/ow-button-icon';
-import { OWButton } from '@src/components/button';
-import { TypeTheme, useTheme } from '@src/themes/theme-provider';
-import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
-import { metrics } from '@src/themes';
-import { DEFAULT_SLIPPAGE } from '@owallet/common';
+import { ScrollView, StyleSheet, View } from "react-native";
+import React, { useState } from "react";
+import { registerModal } from "@src/modals/base";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Text } from "@src/components/text";
+import OWButtonIcon from "@src/components/button/ow-button-icon";
+import { OWButton } from "@src/components/button";
+import { TypeTheme, useTheme } from "@src/themes/theme-provider";
+import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
+import { metrics } from "@src/themes";
+import { DEFAULT_SLIPPAGE } from "@owallet/common";
 
 export const SlippageModal = registerModal(
   //@ts-ignore
@@ -18,8 +18,8 @@ export const SlippageModal = registerModal(
     const { colors } = useTheme();
     const styles = styling(colors);
 
-    const handleChangeSlippage = direction => {
-      if (direction === 'minus') {
+    const handleChangeSlippage = (direction) => {
+      if (direction === "minus") {
         if (slippage > 1) {
           setSlippage(slippage - 1);
         } else {
@@ -49,7 +49,7 @@ export const SlippageModal = registerModal(
             <Text style={styles.title} size={16} weight="500">
               Slippage tolerance
             </Text>
-            <Text style={styles.des} color={colors['blue-300']}>
+            <Text style={styles.des} color={colors["blue-300"]}>
               {`Your transaction will be suspended \nif the price exceeds the slippage percentage.`}
             </Text>
             <View style={styles.containerInputSlippage}>
@@ -60,24 +60,26 @@ export const SlippageModal = registerModal(
                   sizeIcon={20}
                   style={styles.minusBtn}
                   fullWidth={false}
-                  onPress={() => handleChangeSlippage('minus')}
+                  onPress={() => handleChangeSlippage("minus")}
                 />
                 <View style={styles.inputWrap}>
                   <BottomSheetTextInput
                     style={styles.input}
                     placeholder="0"
                     keyboardType="decimal-pad"
-                    defaultValue={currentSlippage?.toString() ?? '0'}
+                    defaultValue={currentSlippage?.toString() ?? "0"}
                     value={slippage.toString()}
                     textAlign="right"
-                    placeholderTextColor={colors['neutral-text-action-on-dark-bg']}
-                    onSubmitEditing={txt => {
+                    placeholderTextColor={
+                      colors["neutral-text-action-on-dark-bg"]
+                    }
+                    onSubmitEditing={(txt) => {
                       if (Number(txt) > 0 && Number(txt) < 100) {
                         setSlippage(Number(txt));
                       }
                     }}
                   />
-                  <Text size={18} color={colors['text-value-input-modal']}>
+                  <Text size={18} color={colors["text-value-input-modal"]}>
                     %
                   </Text>
                 </View>
@@ -87,7 +89,7 @@ export const SlippageModal = registerModal(
                   name="add_ic"
                   sizeIcon={20}
                   fullWidth={false}
-                  onPress={() => handleChangeSlippage('plus')}
+                  onPress={() => handleChangeSlippage("plus")}
                 />
               </View>
             </View>
@@ -100,10 +102,14 @@ export const SlippageModal = registerModal(
                   key={item}
                   size="medium"
                   style={
-                    slippage === Number(item) ? styles.btnSlippgaePercentActive : styles.btnSlippgaePercentInActive
+                    slippage === Number(item)
+                      ? styles.btnSlippgaePercentActive
+                      : styles.btnSlippgaePercentInActive
                   }
                   textStyle={
-                    slippage === Number(item) ? styles.txtSlippgaePercentActive : styles.txtSlippgaePercentInActive
+                    slippage === Number(item)
+                      ? styles.txtSlippgaePercentActive
+                      : styles.txtSlippgaePercentInActive
                   }
                   label={`${item}%`}
                   fullWidth={false}
@@ -130,81 +136,81 @@ export const SlippageModal = registerModal(
   }
 );
 
-const styling = (colors: TypeTheme['colors']) =>
+const styling = (colors: TypeTheme["colors"]) =>
   StyleSheet.create({
     txtBtn: {
-      fontWeight: '700',
-      fontSize: 16
+      fontWeight: "700",
+      fontSize: 16,
     },
     confirmBtn: {
-      marginVertical: 10
+      marginVertical: 10,
     },
     txtSlippgaePercentInActive: {
-      color: '#7C8397'
+      color: "#7C8397",
     },
     btnSlippgaePercentInActive: {
       width: metrics.screenWidth / 4 - 20,
-      backgroundColor: colors['background-item-list'],
-      height: 40
+      backgroundColor: colors["background-item-list"],
+      height: 40,
     },
     txtSlippgaePercentActive: {
-      color: colors['primary-text-action']
+      color: colors["primary-text-action"],
     },
     btnSlippgaePercentActive: {
       width: metrics.screenWidth / 4 - 20,
-      backgroundColor: colors['background-item-list'],
+      backgroundColor: colors["background-item-list"],
       height: 40,
       borderWidth: 1,
-      borderColor: colors['primary-text-action']
+      borderColor: colors["primary-text-action"],
     },
     containerSlippagePercent: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
+      flexDirection: "row",
+      justifyContent: "space-between",
       paddingVertical: 16,
-      width: '100%'
+      width: "100%",
     },
     addBtn: {
-      width: 60
+      width: 60,
     },
     input: {
       fontSize: 18,
       width: 30,
-      color: colors['text-value-input-modal'],
-      paddingVertical: 0
+      color: colors["text-value-input-modal"],
+      paddingVertical: 0,
     },
     inputWrap: {
-      flexDirection: 'row',
-      alignItems: 'center'
+      flexDirection: "row",
+      alignItems: "center",
     },
     minusBtn: {
-      width: 60
+      width: 60,
     },
     subContainerInputSlippage: {
       height: 40,
       borderRadius: 12,
       borderWidth: 0.5,
-      borderColor: colors['border-input-slippage'],
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginHorizontal: 10
+      borderColor: colors["border-input-slippage"],
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginHorizontal: 10,
     },
     containerInputSlippage: {
-      flexDirection: 'row',
+      flexDirection: "row",
       paddingVertical: 10,
-      alignItems: 'center'
+      alignItems: "center",
     },
     des: {
-      textAlign: 'center',
-      paddingVertical: 10
+      textAlign: "center",
+      paddingVertical: 10,
     },
     title: {
-      paddingVertical: 10
+      paddingVertical: 10,
     },
     containerTitle: {
-      alignItems: 'center'
+      alignItems: "center",
     },
     container: {
-      paddingHorizontal: 24
-    }
+      paddingHorizontal: 24,
+    },
   });

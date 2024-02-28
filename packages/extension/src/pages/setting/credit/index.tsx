@@ -1,18 +1,18 @@
-import React, { FunctionComponent } from 'react';
-import { HeaderLayout } from '../../../layouts';
-import { useHistory } from 'react-router';
-import { useIntl } from 'react-intl';
-import { PageButton } from '../page-button';
+import React, { FunctionComponent } from "react";
+import { HeaderLayout } from "../../../layouts";
+import { useHistory } from "react-router";
+import { useIntl } from "react-intl";
+import { PageButton } from "../page-button";
 
-import style from './style.module.scss';
+import style from "./style.module.scss";
 
 const styleTitle = {
-  fontWeight: '400',
-  fontSize: 14
+  fontWeight: "400",
+  fontSize: 14,
 };
 
 const styleParagraph = {
-  color: '#A6A6B0',
+  color: "#A6A6B0",
 };
 
 export const CreditPage: FunctionComponent = () => {
@@ -25,7 +25,7 @@ export const CreditPage: FunctionComponent = () => {
           onClick={(e) => {
             e.preventDefault();
             browser.tabs.create({
-              url: 'https://interchain.io'
+              url: "https://interchain.io",
             });
           }}
           styleTitle={styleTitle}
@@ -38,7 +38,7 @@ export const CreditPage: FunctionComponent = () => {
           onClick={(e) => {
             e.preventDefault();
             browser.tabs.create({
-              url: 'https://www.coingecko.com/'
+              url: "https://www.coingecko.com/",
             });
           }}
           styleTitle={styleTitle}
@@ -51,7 +51,7 @@ export const CreditPage: FunctionComponent = () => {
           onClick={(e) => {
             e.preventDefault();
             browser.tabs.create({
-              url: 'https://stake.fish'
+              url: "https://stake.fish",
             });
           }}
           styleTitle={styleTitle}

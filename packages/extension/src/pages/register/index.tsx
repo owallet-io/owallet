@@ -1,34 +1,44 @@
-import React, { FunctionComponent, useEffect } from 'react';
+import React, { FunctionComponent, useEffect } from "react";
 
-import { EmptyLayout } from '../../layouts/empty-layout';
+import { EmptyLayout } from "../../layouts/empty-layout";
 
-import { observer } from 'mobx-react-lite';
+import { observer } from "mobx-react-lite";
 
-import style from './style.module.scss';
+import style from "./style.module.scss";
 
-import { Button } from 'reactstrap';
+import { Button } from "reactstrap";
 
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage } from "react-intl";
 
-import { RegisterOption, useRegisterConfig } from '@owallet/hooks';
-import { useStore } from '../../stores';
-import { NewMnemonicIntro, NewMnemonicPage, TypeNewMnemonic } from './mnemonic';
-import { RecoverMnemonicIntro, RecoverMnemonicPage, TypeRecoverMnemonic } from './mnemonic';
-import { ImportLedgerIntro, ImportLedgerPage, TypeImportLedger } from './ledger';
-import { WelcomePage } from './welcome';
+import { RegisterOption, useRegisterConfig } from "@owallet/hooks";
+import { useStore } from "../../stores";
+import { NewMnemonicIntro, NewMnemonicPage, TypeNewMnemonic } from "./mnemonic";
+import {
+  RecoverMnemonicIntro,
+  RecoverMnemonicPage,
+  TypeRecoverMnemonic,
+} from "./mnemonic";
+import {
+  ImportLedgerIntro,
+  ImportLedgerPage,
+  TypeImportLedger,
+} from "./ledger";
+import { WelcomePage } from "./welcome";
 
 export const AdditionalSignInPrepend: RegisterOption[] | undefined = undefined;
 
 export enum NunWords {
   WORDS12,
-  WORDS24
+  WORDS24,
 }
 
-export const BackButton: FunctionComponent<{ onClick: () => void }> = ({ onClick }) => {
+export const BackButton: FunctionComponent<{ onClick: () => void }> = ({
+  onClick,
+}) => {
   return (
     <div className={style.backButton}>
-      <Button color="link" onClick={onClick} style={{ color: '#8f63ec' }}>
-        <i className="fas fa-angle-left" style={{ marginRight: '8px' }} />
+      <Button color="link" onClick={onClick} style={{ color: "#8f63ec" }}>
+        <i className="fas fa-angle-left" style={{ marginRight: "8px" }} />
         <FormattedMessage id="register.button.back" />
       </Button>
     </div>
@@ -37,10 +47,10 @@ export const BackButton: FunctionComponent<{ onClick: () => void }> = ({ onClick
 
 export const RegisterPage: FunctionComponent = observer(() => {
   useEffect(() => {
-    document.body.setAttribute('data-centered', 'true');
+    document.body.setAttribute("data-centered", "true");
 
     return () => {
-      document.body.removeAttribute('data-centered');
+      document.body.removeAttribute("data-centered");
     };
   }, []);
 
@@ -51,32 +61,43 @@ export const RegisterPage: FunctionComponent = observer(() => {
     {
       type: TypeNewMnemonic,
       intro: NewMnemonicIntro,
-      page: NewMnemonicPage
+      page: NewMnemonicPage,
     },
     {
       type: TypeRecoverMnemonic,
       intro: RecoverMnemonicIntro,
-      page: RecoverMnemonicPage
+      page: RecoverMnemonicPage,
     },
     {
       type: TypeImportLedger,
       intro: ImportLedgerIntro,
-      page: ImportLedgerPage
-    }
+      page: ImportLedgerPage,
+    },
   ]);
   return (
     <EmptyLayout
       className={style.container}
       style={{
-        justifyContent: registerConfig.isIntro || registerConfig.isFinalized ? 'center' : 'start'
+        justifyContent:
+          registerConfig.isIntro || registerConfig.isFinalized
+            ? "center"
+            : "start",
       }}
     >
       <div className={style.logoContainer}>
         <div>
-          <img className={style.icon} src={require('../../public/assets/orai_wallet_logo.png')} alt="logo" />
+          <img
+            className={style.icon}
+            src={require("../../public/assets/orai_wallet_logo.png")}
+            alt="logo"
+          />
         </div>
         <div className={style.logoInnerContainer}>
-          <img className={style.logo} src={require('../../public/assets/logo.svg')} alt="logo" />
+          <img
+            className={style.logo}
+            src={require("../../public/assets/logo.svg")}
+            alt="logo"
+          />
           <div className={style.paragraph}>Cosmos x EVM in one Wallet</div>
         </div>
       </div>

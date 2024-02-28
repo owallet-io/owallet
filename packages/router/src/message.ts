@@ -1,4 +1,4 @@
-import { Env, MessageSender } from './types';
+import { Env, MessageSender } from "./types";
 
 /**
  * This messaging system is influenced by cosmos-sdk.
@@ -46,7 +46,7 @@ export abstract class Message<R> {
    * Ask for approval if message is sent externally.
    */
   approveExternal(
-    _env: Omit<Env, 'requestInteraction'>,
+    _env: Omit<Env, "requestInteraction">,
     _sender: MessageSender
   ): boolean {
     return true;

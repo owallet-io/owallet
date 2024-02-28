@@ -1,11 +1,11 @@
-import React, { FunctionComponent, MouseEvent, useCallback } from 'react';
+import React, { FunctionComponent, MouseEvent, useCallback } from "react";
 
-import styleWarningView from './warning-view.module.scss';
-import { Alert, Button } from 'reactstrap';
-import { useHistory } from 'react-router';
-import { FormattedMessage } from 'react-intl';
+import styleWarningView from "./warning-view.module.scss";
+import { Alert, Button } from "reactstrap";
+import { useHistory } from "react-router";
+import { FormattedMessage } from "react-intl";
 
-import { MultiKeyStoreInfoWithSelectedElem } from '@owallet/background';
+import { MultiKeyStoreInfoWithSelectedElem } from "@owallet/background";
 
 export const WarningView: FunctionComponent<{
   index: number;
@@ -24,16 +24,16 @@ export const WarningView: FunctionComponent<{
 
   return (
     <div className={styleWarningView.innerContainer}>
-      {keyStore.type === 'mnemonic' ? (
+      {keyStore.type === "mnemonic" ? (
         <div
           style={{
             width: 344,
-            backgroundColor: 'rgba(119, 126, 144, 0.08)',
+            backgroundColor: "rgba(119, 126, 144, 0.08)",
             fontSize: 14,
-            color: '#777E90',
+            color: "#777E90",
             fontWeight: 500,
-            padding: '10px 20px 10px 20px',
-            borderRadius: 20
+            padding: "10px 20px 10px 20px",
+            borderRadius: 20,
           }}
         >
           <div>
@@ -43,9 +43,9 @@ export const WarningView: FunctionComponent<{
             size="sm"
             color=""
             style={{
-              color: 'white',
-              backgroundColor: '#7664E4',
-              marginTop: 10
+              color: "white",
+              backgroundColor: "#7664E4",
+              marginTop: 10,
             }}
             onClick={onBackUpMnemonicButtonClick}
           >
@@ -56,7 +56,7 @@ export const WarningView: FunctionComponent<{
       <div style={{ height: 20 }} />
       <div className={styleWarningView.trashContainer}>
         <img
-          src={require('../../../public/assets/img/trash-can.svg')}
+          src={require("../../../public/assets/img/trash-can.svg")}
           alt="trash-can"
         />
       </div>

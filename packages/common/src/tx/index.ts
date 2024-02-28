@@ -1,10 +1,10 @@
 import {
   DEFAULT_BLOCK_TIME_IN_SECONDS,
-  DEFAULT_TX_BLOCK_INCLUSION_TIMEOUT_IN_MS
-} from '../utils/utils';
-import Axios, { AxiosResponse } from 'axios';
-import { TxResponse, TxResultResponse } from './type';
-import { fetchAdapter } from '../axios';
+  DEFAULT_TX_BLOCK_INCLUSION_TIMEOUT_IN_MS,
+} from "../utils/utils";
+import Axios, { AxiosResponse } from "axios";
+import { TxResponse, TxResultResponse } from "./type";
+import { fetchAdapter } from "../axios";
 export class TxRestCosmosClient {
   constructor(
     protected readonly restApi: string,
@@ -14,16 +14,15 @@ export class TxRestCosmosClient {
     try {
       const restInstance = Axios.create({
         ...{
-          baseURL: this.restApi
+          baseURL: this.restApi,
         },
         ...this.restConfig,
-        adapter: fetchAdapter
+        adapter: fetchAdapter,
       });
       const response = await restInstance.get<TxResultResponse>(
         `/cosmos/tx/v1beta1/txs/${txHash}`,
         params
       );
-      
 
       const { tx_response: txResponse } = response.data;
 
@@ -31,8 +30,8 @@ export class TxRestCosmosClient {
         throw (
           (new Error(`The transaction with ${txHash} is not found`),
           {
-            context: 'TxRestApi',
-            contextModule: 'fetch-tx'
+            context: "TxRestApi",
+            contextModule: "fetch-tx",
           })
         );
       }
@@ -42,7 +41,7 @@ export class TxRestCosmosClient {
           (new Error(txResponse.raw_log),
           {
             contextCode: txResponse.code,
-            contextModule: txResponse.codespace
+            contextModule: txResponse.codespace,
           })
         );
       }
@@ -53,15 +52,15 @@ export class TxRestCosmosClient {
         gasWanted: parseInt(txResponse.gas_wanted, 10),
         gasUsed: parseInt(txResponse.gas_used, 10),
         height: parseInt(txResponse.height, 10),
-        txHash: txResponse?.txhash
+        txHash: txResponse?.txhash,
       };
     } catch (e: unknown) {
       // The response itself failed
       throw (
-        (new Error('There was an issue while fetching transaction details'),
+        (new Error("There was an issue while fetching transaction details"),
         {
-          context: 'TxRestApi',
-          contextModule: 'fetch-tx'
+          context: "TxRestApi",
+          contextModule: "fetch-tx",
         })
       );
     }
@@ -95,8 +94,8 @@ export class TxRestCosmosClient {
         `Transaction was not included in a block before timeout of ${timeout}ms`
       ),
       {
-        context: 'TxRestApi',
-        contextModule: 'fetch-tx-poll'
+        context: "TxRestApi",
+        contextModule: "fetch-tx-poll",
       })
     );
   }

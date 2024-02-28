@@ -1,33 +1,33 @@
-import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
-import { Button } from 'reactstrap';
+import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
+import { Button } from "reactstrap";
 
-import { HeaderLayout } from '../../layouts';
+import { HeaderLayout } from "../../layouts";
 
-import style from './style.module.scss';
+import style from "./style.module.scss";
 
-import { useStore } from '../../stores';
+import { useStore } from "../../stores";
 
-import classnames from 'classnames';
-import { DataTab } from './data-tab';
-import { DetailsTab } from './details-tab';
-import { FormattedMessage, useIntl } from 'react-intl';
+import classnames from "classnames";
+import { DataTab } from "./data-tab";
+import { DetailsTab } from "./details-tab";
+import { FormattedMessage, useIntl } from "react-intl";
 
-import { useHistory } from 'react-router';
-import { observer } from 'mobx-react-lite';
+import { useHistory } from "react-router";
+import { observer } from "mobx-react-lite";
 import {
   useInteractionInfo,
   useSignDocHelper,
   useGasConfig,
   useFeeConfig,
   useMemoConfig,
-  useSignDocAmountConfig
-} from '@owallet/hooks';
-import { ADR36SignDocDetailsTab } from './adr-36';
-import { ChainIdHelper } from '@owallet/cosmos';
+  useSignDocAmountConfig,
+} from "@owallet/hooks";
+import { ADR36SignDocDetailsTab } from "./adr-36";
+import { ChainIdHelper } from "@owallet/cosmos";
 
 enum Tab {
   Details,
-  Data
+  Data,
 }
 
 export const SignPage: FunctionComponent = observer(() => {
@@ -43,11 +43,19 @@ export const SignPage: FunctionComponent = observer(() => {
     };
   }, []);
 
-  const { chainStore, keyRingStore, signInteractionStore, accountStore, queriesStore } = useStore();
+  const {
+    chainStore,
+    keyRingStore,
+    signInteractionStore,
+    accountStore,
+    queriesStore,
+  } = useStore();
 
-  const [signer, setSigner] = useState('');
+  const [signer, setSigner] = useState("");
   const [origin, setOrigin] = useState<string | undefined>();
-  const [isADR36WithString, setIsADR36WithString] = useState<boolean | undefined>();
+  const [isADR36WithString, setIsADR36WithString] = useState<
+    boolean | undefined
+  >();
 
   const current = chainStore.current;
   // Make the gas config with 1 gas initially to prevent the temporary 0 gas error at the beginning.
@@ -79,19 +87,29 @@ export const SignPage: FunctionComponent = observer(() => {
         setIsADR36WithString(data.data.isADR36WithString);
       }
       setOrigin(data.data.msgOrigin);
-      if (!data.data.signDocWrapper.isADR36SignDoc && data.data.chainId !== data.data.signDocWrapper.chainId) {
+      if (
+        !data.data.signDocWrapper.isADR36SignDoc &&
+        data.data.chainId !== data.data.signDocWrapper.chainId
+      ) {
         // Validate the requested chain id and the chain id in the sign doc are same.
         // If the sign doc is for ADR-36, there is no chain id in the sign doc, so no need to validate.
-        throw new Error('Chain id unmatched');
+        throw new Error("Chain id unmatched");
       }
       signDocHelper.setSignDocWrapper(data.data.signDocWrapper);
       gasConfig.setGas(data.data.signDocWrapper.gas);
       memoConfig.setMemo(data.data.signDocWrapper.memo);
-      if (data.data.signOptions.preferNoSetFee && data.data.signDocWrapper.fees[0]) {
+      if (
+        data.data.signOptions.preferNoSetFee &&
+        data.data.signDocWrapper.fees[0]
+      ) {
         feeConfig.setManualFee(data.data.signDocWrapper.fees[0]);
       }
-      amountConfig.setDisableBalanceCheck(!!data.data.signOptions.disableBalanceCheck);
-      feeConfig.setDisableBalanceCheck(!!data.data.signOptions.disableBalanceCheck);
+      amountConfig.setDisableBalanceCheck(
+        !!data.data.signOptions.disableBalanceCheck
+      );
+      feeConfig.setDisableBalanceCheck(
+        !!data.data.signOptions.disableBalanceCheck
+      );
       // We can't check the fee balance if the payer is not the signer.
       if (
         data.data.signDocWrapper.payer &&
@@ -108,7 +126,15 @@ export const SignPage: FunctionComponent = observer(() => {
       }
       setSigner(data.data.signer);
     }
-  }, [amountConfig, chainStore, gasConfig, memoConfig, feeConfig, signDocHelper, signInteractionStore.waitingData]);
+  }, [
+    amountConfig,
+    chainStore,
+    gasConfig,
+    memoConfig,
+    feeConfig,
+    signDocHelper,
+    signInteractionStore.waitingData,
+  ]);
 
   // If the preferNoSetFee or preferNoSetMemo in sign options is true,
   // don't show the fee buttons/memo input by default
@@ -116,11 +142,16 @@ export const SignPage: FunctionComponent = observer(() => {
   // Thus, without this state, the fee buttons/memo input would be shown after clicking the approve buttion.
   const [isProcessing, setIsProcessing] = useState(false);
   const needSetIsProcessing =
-    signInteractionStore.waitingData?.data.signOptions.preferNoSetFee === true ||
+    signInteractionStore.waitingData?.data.signOptions.preferNoSetFee ===
+      true ||
     signInteractionStore.waitingData?.data.signOptions.preferNoSetMemo === true;
 
-  const preferNoSetFee = signInteractionStore.waitingData?.data.signOptions.preferNoSetFee === true || isProcessing;
-  const preferNoSetMemo = signInteractionStore.waitingData?.data.signOptions.preferNoSetMemo === true || isProcessing;
+  const preferNoSetFee =
+    signInteractionStore.waitingData?.data.signOptions.preferNoSetFee ===
+      true || isProcessing;
+  const preferNoSetMemo =
+    signInteractionStore.waitingData?.data.signOptions.preferNoSetMemo ===
+      true || isProcessing;
 
   const interactionInfo = useInteractionInfo(() => {
     if (needSetIsProcessing) {
@@ -142,17 +173,24 @@ export const SignPage: FunctionComponent = observer(() => {
       ChainIdHelper.parse(chainStore.current.chainId).identifier ===
       ChainIdHelper.parse(chainStore.selectedChainId).identifier
     );
-  }, [signDocHelper.signDocWrapper, chainStore.current.chainId, chainStore.selectedChainId]);
+  }, [
+    signDocHelper.signDocWrapper,
+    chainStore.current.chainId,
+    chainStore.selectedChainId,
+  ]);
 
   // If this is undefined, show the chain name on the header.
   // If not, show the alternative title.
   const alternativeTitle = (() => {
     if (!isLoaded) {
-      return '';
+      return "";
     }
 
-    if (signDocHelper.signDocWrapper && signDocHelper.signDocWrapper.isADR36SignDoc) {
-      return 'Prove Ownership';
+    if (
+      signDocHelper.signDocWrapper &&
+      signDocHelper.signDocWrapper.isADR36SignDoc
+    ) {
+      return "Prove Ownership";
     }
 
     return undefined;
@@ -192,9 +230,9 @@ export const SignPage: FunctionComponent = observer(() => {
     <div
       style={{
         padding: 20,
-        backgroundColor: '#FFFFFF',
-        height: '100%',
-        overflowX: 'auto'
+        backgroundColor: "#FFFFFF",
+        height: "100%",
+        overflowX: "auto",
       }}
     >
       {
@@ -206,42 +244,42 @@ export const SignPage: FunctionComponent = observer(() => {
           <div className={style.container}>
             <div
               style={{
-                color: '#353945',
+                color: "#353945",
                 fontSize: 24,
                 fontWeight: 500,
-                textAlign: 'center',
-                paddingBottom: 24
+                textAlign: "center",
+                paddingBottom: 24,
               }}
             >
-              {chainStore?.current?.raw?.chainName || 'Oraichain'}
+              {chainStore?.current?.raw?.chainName || "Oraichain"}
             </div>
             <div className={classnames(style.tabs)}>
               <ul>
                 <li className={classnames({ activeTabs: tab === Tab.Details })}>
                   <a
                     className={classnames(style.tab, {
-                      activeText: tab === Tab.Details
+                      activeText: tab === Tab.Details,
                     })}
                     onClick={() => {
                       setTab(Tab.Details);
                     }}
                   >
                     {intl.formatMessage({
-                      id: 'sign.tab.details'
+                      id: "sign.tab.details",
                     })}
                   </a>
                 </li>
                 <li className={classnames({ activeTabs: tab === Tab.Data })}>
                   <a
                     className={classnames(style.tab, {
-                      activeText: tab === Tab.Data
+                      activeText: tab === Tab.Data,
                     })}
                     onClick={() => {
                       setTab(Tab.Data);
                     }}
                   >
                     {intl.formatMessage({
-                      id: 'sign.tab.data'
+                      id: "sign.tab.data",
                     })}
                   </a>
                 </li>
@@ -249,10 +287,12 @@ export const SignPage: FunctionComponent = observer(() => {
             </div>
             <div
               className={classnames(style.tabContainer, {
-                [style.dataTab]: tab === Tab.Data
+                [style.dataTab]: tab === Tab.Data,
               })}
             >
-              {tab === Tab.Data ? <DataTab signDocHelper={signDocHelper} /> : null}
+              {tab === Tab.Data ? (
+                <DataTab signDocHelper={signDocHelper} />
+              ) : null}
               {tab === Tab.Details ? (
                 signDocHelper.signDocWrapper?.isADR36SignDoc ? (
                   <ADR36SignDocDetailsTab
@@ -266,7 +306,10 @@ export const SignPage: FunctionComponent = observer(() => {
                     memoConfig={memoConfig}
                     feeConfig={feeConfig}
                     gasConfig={gasConfig}
-                    isInternal={interactionInfo.interaction && interactionInfo.interactionInternal}
+                    isInternal={
+                      interactionInfo.interaction &&
+                      interactionInfo.interactionInternal
+                    }
                     preferNoSetFee={preferNoSetFee}
                     preferNoSetMemo={preferNoSetMemo}
                   />
@@ -275,9 +318,11 @@ export const SignPage: FunctionComponent = observer(() => {
             </div>
             <div style={{ flex: 1 }} />
             <div className={style.buttons}>
-              {keyRingStore.keyRingType === 'ledger' && signInteractionStore.isLoading ? (
+              {keyRingStore.keyRingType === "ledger" &&
+              signInteractionStore.isLoading ? (
                 <Button className={style.button} disabled={true} outline>
-                  <FormattedMessage id="sign.button.confirm-ledger" /> <i className="fa fa-spinner fa-spin fa-fw" />
+                  <FormattedMessage id="sign.button.confirm-ledger" />{" "}
+                  <i className="fa fa-spinner fa-spin fa-fw" />
                 </Button>
               ) : (
                 <React.Fragment>
@@ -286,7 +331,7 @@ export const SignPage: FunctionComponent = observer(() => {
                     color=""
                     disabled={signDocHelper.signDocWrapper == null}
                     // data-loading={signInteractionStore.isLoading}
-                    onClick={async e => {
+                    onClick={async (e) => {
                       e.preventDefault();
 
                       if (needSetIsProcessing) {
@@ -295,7 +340,10 @@ export const SignPage: FunctionComponent = observer(() => {
 
                       await signInteractionStore.reject();
 
-                      if (interactionInfo.interaction && !interactionInfo.interactionInternal) {
+                      if (
+                        interactionInfo.interaction &&
+                        !interactionInfo.interactionInternal
+                      ) {
                         window.close();
                       } else {
                         history.goBack();
@@ -303,7 +351,7 @@ export const SignPage: FunctionComponent = observer(() => {
                     }}
                   >
                     {intl.formatMessage({
-                      id: 'sign.button.reject'
+                      id: "sign.button.reject",
                     })}
                   </Button>
                   <Button
@@ -311,7 +359,7 @@ export const SignPage: FunctionComponent = observer(() => {
                     color=""
                     disabled={approveIsDisabled}
                     data-loading={signInteractionStore.isLoading}
-                    onClick={async e => {
+                    onClick={async (e) => {
                       e.preventDefault();
 
                       if (needSetIsProcessing) {
@@ -319,18 +367,23 @@ export const SignPage: FunctionComponent = observer(() => {
                       }
 
                       if (signDocHelper.signDocWrapper) {
-                        await signInteractionStore.approveAndWaitEnd(signDocHelper.signDocWrapper);
+                        await signInteractionStore.approveAndWaitEnd(
+                          signDocHelper.signDocWrapper
+                        );
                       }
 
                       history.goBack();
 
-                      if (interactionInfo.interaction && !interactionInfo.interactionInternal) {
+                      if (
+                        interactionInfo.interaction &&
+                        !interactionInfo.interactionInternal
+                      ) {
                         window.close();
                       }
                     }}
                   >
                     {intl.formatMessage({
-                      id: 'sign.button.approve'
+                      id: "sign.button.approve",
                     })}
                   </Button>
                 </React.Fragment>
@@ -340,11 +393,11 @@ export const SignPage: FunctionComponent = observer(() => {
         ) : (
           <div
             style={{
-              width: '100%',
-              height: '100%',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center'
+              width: "100%",
+              height: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
             }}
           >
             <i className="fas fa-spinner fa-spin fa-2x text-gray" />

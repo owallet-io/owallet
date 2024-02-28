@@ -1,6 +1,6 @@
-import React, { FunctionComponent } from 'react';
-import { View } from 'react-native';
-import { Text } from '@src/components/text';
+import React, { FunctionComponent } from "react";
+import { View } from "react-native";
+import { Text } from "@src/components/text";
 
 export const WordChip: FunctionComponent<{
   index: number;
@@ -17,18 +17,22 @@ export const WordChip: FunctionComponent<{
         borderRadius: 8,
         borderWidth: 1,
         margin: 5,
-        borderColor: empty ? colors['primary-100'] : colors['primary-surface-default'],
-        borderStyle: dashedBorder ? 'dashed' : 'dotted'
+        borderColor: empty
+          ? colors["primary-100"]
+          : colors["primary-surface-default"],
+        borderStyle: dashedBorder ? "dashed" : "dotted",
       }}
     >
       <Text
         style={{
-          color: empty ? colors['primary-100'] : colors['text-gray-900-primary-surface-default'],
+          color: empty
+            ? colors["primary-100"]
+            : colors["text-gray-900-primary-surface-default"],
           fontSize: 18,
           lineHeight: 22,
-          fontWeight: '400',
+          fontWeight: "400",
           padding: 4,
-          opacity: 1
+          opacity: 1,
         }}
       >
         {empty ? `         ` : ` ${word}`}
@@ -50,11 +54,11 @@ export const BackupWordChip: FunctionComponent<{
       style={{
         borderRadius: 999,
         margin: 5,
-        backgroundColor: colors['neutral-surface-action3'],
-        justifyContent: 'center',
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 4
+        backgroundColor: colors["neutral-surface-action3"],
+        justifyContent: "center",
+        flexDirection: "row",
+        alignItems: "center",
+        paddingHorizontal: 4,
       }}
     >
       <View
@@ -62,17 +66,19 @@ export const BackupWordChip: FunctionComponent<{
           borderRadius: 999,
           width: 20,
           height: 20,
-          backgroundColor: colors['primary-surface-subtle'],
-          justifyContent: 'center',
-          alignItems: 'center'
+          backgroundColor: colors["primary-surface-subtle"],
+          justifyContent: "center",
+          alignItems: "center",
         }}
       >
         <Text
           style={{
             fontSize: 12,
-            fontWeight: '600',
+            fontWeight: "600",
             padding: 4,
-            color: empty ? colors['primary-surface-default'] : colors['primary-surface-default']
+            color: empty
+              ? colors["primary-surface-default"]
+              : colors["primary-surface-default"],
           }}
         >
           {index}
@@ -82,11 +88,13 @@ export const BackupWordChip: FunctionComponent<{
         style={{
           fontSize: 14,
           lineHeight: 22,
-          fontWeight: '500',
+          fontWeight: "500",
           padding: 4,
           paddingHorizontal: 6,
           opacity: 1,
-          color: empty ? colors['primary-surface-default'] : colors['neutral-text-title']
+          color: empty
+            ? colors["primary-surface-default"]
+            : colors["neutral-text-title"],
         }}
       >
         {empty ? `         ` : `${word}`}

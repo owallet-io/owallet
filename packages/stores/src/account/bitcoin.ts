@@ -1,12 +1,12 @@
-import { ExtraOptionSendToken, MsgOpt } from './base';
-import { AccountSetBase, AccountSetOpts } from './base';
-import { AppCurrency, OWalletSignOptions } from '@owallet/types';
-import { StdFee } from '@cosmjs/launchpad';
-import { DenomHelper } from '@owallet/common';
+import { ExtraOptionSendToken, MsgOpt } from "./base";
+import { AccountSetBase, AccountSetOpts } from "./base";
+import { AppCurrency, OWalletSignOptions } from "@owallet/types";
+import { StdFee } from "@cosmjs/launchpad";
+import { DenomHelper } from "@owallet/common";
 
-import { HasBtcQueries, QueriesSetBase, QueriesStore } from '../query';
-import { DeepReadonly } from 'utility-types';
-import { ChainGetter } from '../common';
+import { HasBtcQueries, QueriesSetBase, QueriesStore } from "../query";
+import { DeepReadonly } from "utility-types";
+import { ChainGetter } from "../common";
 
 export interface HasBitcoinAccount {
   bitcoin: DeepReadonly<BitcoinAccount>;
@@ -18,16 +18,19 @@ export interface BitcoinMsgOpts {
   };
 }
 
-export class AccountWithBitcoin extends AccountSetBase<BitcoinMsgOpts, HasBtcQueries> implements HasBitcoinAccount {
+export class AccountWithBitcoin
+  extends AccountSetBase<BitcoinMsgOpts, HasBtcQueries>
+  implements HasBitcoinAccount
+{
   public readonly bitcoin: DeepReadonly<BitcoinAccount>;
 
   static readonly defaultMsgOpts: BitcoinMsgOpts = {
     send: {
       native: {
-        type: 'send',
-        gas: 80000
-      }
-    }
+        type: "send",
+        gas: 80000,
+      },
+    },
   };
 
   constructor(
@@ -37,7 +40,9 @@ export class AccountWithBitcoin extends AccountSetBase<BitcoinMsgOpts, HasBtcQue
     },
     protected readonly chainGetter: ChainGetter,
     protected readonly chainId: string,
-    protected readonly queriesStore: QueriesStore<QueriesSetBase & HasBtcQueries>,
+    protected readonly queriesStore: QueriesStore<
+      QueriesSetBase & HasBtcQueries
+    >,
     protected readonly opts: AccountSetOpts<BitcoinMsgOpts>
   ) {
     super(eventListener, chainGetter, chainId, queriesStore, opts);
@@ -51,7 +56,9 @@ export class BitcoinAccount {
     protected readonly base: AccountSetBase<BitcoinMsgOpts, HasBtcQueries>,
     protected readonly chainGetter: ChainGetter,
     protected readonly chainId: string,
-    protected readonly queriesStore: QueriesStore<QueriesSetBase & HasBtcQueries>
+    protected readonly queriesStore: QueriesStore<
+      QueriesSetBase & HasBtcQueries
+    >
   ) {
     this.base.registerSendTokenFn(this.processSendToken.bind(this));
   }
@@ -72,11 +79,11 @@ export class BitcoinAccount {
         },
     extraOptions?: ExtraOptionSendToken
   ): Promise<boolean> {
-    if (signOptions.networkType === 'bitcoin') {
+    if (signOptions.networkType === "bitcoin") {
       const denomHelper = new DenomHelper(currency.coinMinimalDenom);
 
       switch (denomHelper.type) {
-        case 'native':
+        case "native":
           const msg: any = {
             address: recipient,
             changeAddress: this.base.btcAddress,
@@ -85,11 +92,11 @@ export class BitcoinAccount {
             totalFee: Number(stdFee.amount[0].amount),
             selectedCrypto: signOptions.chainId,
             confirmedBalance: extraOptions.confirmedBalance,
-            feeRate: extraOptions.feeRate
+            feeRate: extraOptions.feeRate,
           };
 
           await this.base.sendBtcMsgs(
-            'send',
+            "send",
             msg,
             memo,
             stdFee,
@@ -97,7 +104,10 @@ export class BitcoinAccount {
             this.txEventsWithPreOnFulfill(onTxEvents, (tx) => {
               if (tx) {
                 // After succeeding to send token, refresh the balance.
-                const queryBtcBalance = this.queries.bitcoin.queryBitcoinBalance.getQueryBalance(this.base.btcAddress);
+                const queryBtcBalance =
+                  this.queries.bitcoin.queryBitcoinBalance.getQueryBalance(
+                    this.base.btcAddress
+                  );
                 if (queryBtcBalance) {
                   queryBtcBalance.fetch();
                 }
@@ -130,8 +140,10 @@ export class BitcoinAccount {
       return;
     }
 
-    const onBroadcasted = typeof onTxEvents === 'function' ? undefined : onTxEvents.onBroadcasted;
-    const onFulfill = typeof onTxEvents === 'function' ? onTxEvents : onTxEvents.onFulfill;
+    const onBroadcasted =
+      typeof onTxEvents === "function" ? undefined : onTxEvents.onBroadcasted;
+    const onFulfill =
+      typeof onTxEvents === "function" ? onTxEvents : onTxEvents.onFulfill;
 
     return {
       onBroadcasted,
@@ -146,7 +158,7 @@ export class BitcoinAccount {
                 onFulfill(tx);
               }
             }
-          : undefined
+          : undefined,
     };
   }
 
@@ -156,6 +168,9 @@ export class BitcoinAccount {
 
   protected hasNoLegacyStdFeature(): boolean {
     const chainInfo = this.chainGetter.getChain(this.chainId);
-    return chainInfo.features != null && chainInfo.features.includes('no-legacy-stdTx');
+    return (
+      chainInfo.features != null &&
+      chainInfo.features.includes("no-legacy-stdTx")
+    );
   }
 }

@@ -1,16 +1,16 @@
-import { useRegisterConfig } from '@owallet/hooks';
-import { useHeaderHeight } from '@react-navigation/elements';
-import { useTheme } from '@src/themes/theme-provider';
-import { observer } from 'mobx-react-lite';
-import React, { FunctionComponent } from 'react';
-import { Dimensions, StyleSheet, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Button } from '../../components/button';
-import { PageWithScrollView } from '../../components/page';
-import { useSmartNavigation } from '../../navigation.provider';
-import { useStore } from '../../stores';
-import { useStyle } from '../../styles';
-import { OWalletLogo } from './owallet-logo';
+import { useRegisterConfig } from "@owallet/hooks";
+import { useHeaderHeight } from "@react-navigation/elements";
+import { useTheme } from "@src/themes/theme-provider";
+import { observer } from "mobx-react-lite";
+import React, { FunctionComponent } from "react";
+import { Dimensions, StyleSheet, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Button } from "../../components/button";
+import { PageWithScrollView } from "../../components/page";
+import { useSmartNavigation } from "../../navigation.provider";
+import { useStore } from "../../stores";
+import { useStyle } from "../../styles";
+import { OWalletLogo } from "./owallet-logo";
 
 export const RegisterNotNewUserScreen: FunctionComponent = observer(() => {
   const { keyRingStore, analyticsStore } = useStore();
@@ -26,17 +26,20 @@ export const RegisterNotNewUserScreen: FunctionComponent = observer(() => {
 
   return (
     <PageWithScrollView
-      contentContainerStyle={style.get('flex-grow-1')}
+      contentContainerStyle={style.get("flex-grow-1")}
       style={StyleSheet.flatten([
-        style.flatten(['padding-x-42']),
+        style.flatten(["padding-x-42"]),
         {
-          paddingTop: Dimensions.get('window').height * 0.22 - actualHeightHeight,
-          paddingBottom: Dimensions.get('window').height * 0.11
-        }
+          paddingTop:
+            Dimensions.get("window").height * 0.22 - actualHeightHeight,
+          paddingBottom: Dimensions.get("window").height * 0.11,
+        },
       ])}
-      backgroundColor={colors['plain-background']}
+      backgroundColor={colors["plain-background"]}
     >
-      <View style={style.flatten(['flex-grow-1', 'items-center', 'padding-x-18'])}>
+      <View
+        style={style.flatten(["flex-grow-1", "items-center", "padding-x-18"])}
+      >
         <OWalletLogo />
       </View>
       <Button
@@ -44,14 +47,14 @@ export const RegisterNotNewUserScreen: FunctionComponent = observer(() => {
         size="large"
         mode="light"
         onPress={() => {
-          analyticsStore.logEvent('Import account started', {
-            registerType: 'seed'
+          analyticsStore.logEvent("Import account started", {
+            registerType: "seed",
           });
           // smartNavigation.navigateSmart('Register.RecoverPhrase', {
           //   registerConfig
           // });
-          smartNavigation.navigateSmart('Register.RecoverMnemonic', {
-            registerConfig
+          smartNavigation.navigateSmart("Register.RecoverMnemonic", {
+            registerConfig,
           });
         }}
       />

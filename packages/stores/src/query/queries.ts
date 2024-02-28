@@ -1,10 +1,10 @@
-import { makeObservable, observable, runInAction } from 'mobx';
-import { KVStore } from '@owallet/common';
-import { DeepReadonly } from 'utility-types';
-import { ObservableQueryBalances } from './balances';
-import { ChainGetter } from '../common';
-import { OWallet } from '@owallet/types';
-import { ObservableQueryEvmBalance } from './evm';
+import { makeObservable, observable, runInAction } from "mobx";
+import { KVStore } from "@owallet/common";
+import { DeepReadonly } from "utility-types";
+import { ObservableQueryBalances } from "./balances";
+import { ChainGetter } from "../common";
+import { OWallet } from "@owallet/types";
+import { ObservableQueryEvmBalance } from "./evm";
 
 export class QueriesSetBase {
   public readonly queryBalances: DeepReadonly<ObservableQueryBalances>;

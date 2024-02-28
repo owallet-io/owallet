@@ -1,8 +1,8 @@
 // @ts-nocheck
-import { OWallet, Ethereum, TronWeb, Bitcoin, Oasis } from '@owallet/types';
-import { OfflineSigner } from '@cosmjs/launchpad';
-import { SecretUtils } from 'secretjs/types/enigmautils';
-import { OfflineDirectSigner } from '@cosmjs/proto-signing';
+import { OWallet, Ethereum, TronWeb, Bitcoin, Oasis } from "@owallet/types";
+import { OfflineSigner } from "@cosmjs/launchpad";
+import { SecretUtils } from "secretjs/types/enigmautils";
+import { OfflineDirectSigner } from "@cosmjs/proto-signing";
 
 export function init(
   owallet: OWallet,
@@ -12,7 +12,9 @@ export function init(
   oasis: Oasis,
   getOfflineSigner: (chainId: string) => OfflineSigner & OfflineDirectSigner,
   getOfflineSignerOnlyAmino: (chainId: string) => OfflineSigner,
-  getOfflineSignerAuto: (chainId: string) => Promise<OfflineSigner | OfflineDirectSigner>,
+  getOfflineSignerAuto: (
+    chainId: string
+  ) => Promise<OfflineSigner | OfflineDirectSigner>,
   getEnigmaUtils: (chainId: string) => SecretUtils
 ) {
   // Give a priority to production build.

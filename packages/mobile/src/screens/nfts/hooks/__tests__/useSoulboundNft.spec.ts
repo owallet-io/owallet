@@ -1,17 +1,17 @@
-import { getTokens, getTokensInfoFromContract } from '../useSoulboundNft';
+import { getTokens, getTokensInfoFromContract } from "../useSoulboundNft";
 const mockContractAddress =
-  'orai15g3lhqtsdhsjr2qzhtrc06jfshyuaegmf75rn5jf3ql3u8lc4l2sje4xpu';
-const mockAccountAddress = 'orai1ntdmh848kktumfw5tx8l2semwkxa5s7e5rs03x';
-const mockToken = ['1', '2'];
+  "orai15g3lhqtsdhsjr2qzhtrc06jfshyuaegmf75rn5jf3ql3u8lc4l2sje4xpu";
+const mockAccountAddress = "orai1ntdmh848kktumfw5tx8l2semwkxa5s7e5rs03x";
+const mockToken = ["1", "2"];
 const mockClient = {
-  queryContractSmart: jest.fn().mockResolvedValue({ tokens: mockToken })
+  queryContractSmart: jest.fn().mockResolvedValue({ tokens: mockToken }),
 };
-describe('getTokens', () => {
+describe("getTokens", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('should fetch tokens and return them', async () => {
+  it("should fetch tokens and return them", async () => {
     const result = await getTokens(mockClient, mockAccountAddress);
 
     expect(result).toEqual(mockToken);
@@ -22,18 +22,18 @@ describe('getTokens', () => {
         tokens: {
           limit: 10,
           owner: mockAccountAddress,
-          start_after: '0'
-        }
+          start_after: "0",
+        },
       }
     );
   });
 
-  it('should throw an error if tokens are empty', async () => {
+  it("should throw an error if tokens are empty", async () => {
     mockClient.queryContractSmart.mockResolvedValueOnce({ tokens: [] });
 
     await expect(
       getTokens(mockClient, mockAccountAddress)
-    ).rejects.toThrowError('NFT is empty');
+    ).rejects.toThrowError("NFT is empty");
 
     expect(mockClient.queryContractSmart).toHaveBeenCalledWith(
       mockContractAddress,
@@ -41,38 +41,38 @@ describe('getTokens', () => {
         tokens: {
           limit: 10,
           owner: mockAccountAddress,
-          start_after: '0'
-        }
+          start_after: "0",
+        },
       }
     );
   });
 });
-describe('getTokensInfoFromContract', () => {
+describe("getTokensInfoFromContract", () => {
   const mockTokenInfo = {
     token_uri:
-      'https://bafybeiebijqycbza6wqkdtvxluix6w3idifdgfhwebdawuufu5mympfhhe.ipfs.nftstorage.link/',
+      "https://bafybeiebijqycbza6wqkdtvxluix6w3idifdgfhwebdawuufu5mympfhhe.ipfs.nftstorage.link/",
     extension: {
       image: null,
       image_data: null,
       external_url: null,
       description: null,
-      name: 'Orchai NFT AIfinity',
+      name: "Orchai NFT AIfinity",
       attributes: null,
       background_color: null,
       animation_url: null,
       youtube_url: null,
-      dyn_attrs: [['scAtom_pending_reward', '543483']]
-    }
+      dyn_attrs: [["scAtom_pending_reward", "543483"]],
+    },
   };
   const mockClient = {
-    queryContractSmart: jest.fn().mockResolvedValue(mockTokenInfo)
+    queryContractSmart: jest.fn().mockResolvedValue(mockTokenInfo),
   };
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('should fetch tokens info and return them', async () => {
+  it("should fetch tokens info and return them", async () => {
     mockClient.queryContractSmart.mockResolvedValueOnce({ tokens: mockToken });
     const result = await getTokensInfoFromContract(
       mockClient,
@@ -87,8 +87,8 @@ describe('getTokensInfoFromContract', () => {
         tokens: {
           limit: 10,
           owner: mockAccountAddress,
-          start_after: '0'
-        }
+          start_after: "0",
+        },
       }
     );
 
@@ -98,8 +98,8 @@ describe('getTokensInfoFromContract', () => {
       mockContractAddress,
       {
         nft_info: {
-          token_id: '1'
-        }
+          token_id: "1",
+        },
       }
     );
     expect(mockClient.queryContractSmart).toHaveBeenNthCalledWith(
@@ -107,18 +107,18 @@ describe('getTokensInfoFromContract', () => {
       mockContractAddress,
       {
         nft_info: {
-          token_id: '2'
-        }
+          token_id: "2",
+        },
       }
     );
   });
 
-  it('should throw an error if tokens info are empty', async () => {
+  it("should throw an error if tokens info are empty", async () => {
     mockClient.queryContractSmart.mockResolvedValueOnce({ tokens: [] });
 
     await expect(
       getTokensInfoFromContract(mockClient, mockAccountAddress)
-    ).rejects.toThrowError('NFT is empty');
+    ).rejects.toThrowError("NFT is empty");
 
     expect(mockClient.queryContractSmart).toHaveBeenCalledWith(
       mockContractAddress,
@@ -126,8 +126,8 @@ describe('getTokensInfoFromContract', () => {
         tokens: {
           limit: 10,
           owner: mockAccountAddress,
-          start_after: '0'
-        }
+          start_after: "0",
+        },
       }
     );
 

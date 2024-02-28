@@ -1,9 +1,9 @@
-import React, { CSSProperties, FunctionComponent, useCallback } from 'react';
-import { Button } from 'reactstrap';
+import React, { CSSProperties, FunctionComponent, useCallback } from "react";
+import { Button } from "reactstrap";
 
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage } from "react-intl";
 
-import style from './style.module.scss';
+import style from "./style.module.scss";
 
 export const ConfirmDialog: FunctionComponent<{
   img?: React.ReactElement;
@@ -28,7 +28,7 @@ export const ConfirmDialog: FunctionComponent<{
   styleNoBtn,
   styleParagraph,
   onConfirm,
-  onReject
+  onReject,
 }) => {
   return (
     <div className={style.dialog}>

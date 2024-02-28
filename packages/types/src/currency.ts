@@ -25,17 +25,17 @@ export interface Currency {
  * And, in this case, `coinMinimalDenom` must start with the type and contract address of currency such as "cw20:coral1vv6hruqu...3sfhwh:uowallet".
  */
 export interface CW20Currency extends Currency {
-  readonly type: 'cw20';
+  readonly type: "cw20";
   readonly contractAddress: string;
 }
 
 export interface ERC20Currency extends Currency {
-  readonly type: 'erc20';
+  readonly type: "erc20";
   readonly contractAddress: string;
 }
 
 export interface Secret20Currency extends Currency {
-  readonly type: 'secret20';
+  readonly type: "secret20";
   readonly contractAddress: string;
   readonly viewingKey: string;
 }
@@ -55,13 +55,22 @@ export interface IBCCurrency extends Currency {
    * If that chain is unknown, this will be undefined.
    */
   readonly originChainId: string | undefined;
-  readonly originCurrency: Currency | CW20Currency | Secret20Currency | undefined;
+  readonly originCurrency:
+    | Currency
+    | CW20Currency
+    | Secret20Currency
+    | undefined;
 }
 
 /**
  * Any type of currency that Kepler applications can support.
  */
-export type AppCurrency = Currency | CW20Currency | Secret20Currency | IBCCurrency | ERC20Currency;
+export type AppCurrency =
+  | Currency
+  | CW20Currency
+  | Secret20Currency
+  | IBCCurrency
+  | ERC20Currency;
 
 export interface FiatCurrency {
   readonly currency: string;

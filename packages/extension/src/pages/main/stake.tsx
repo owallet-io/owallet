@@ -1,20 +1,20 @@
-import React, { FunctionComponent, useMemo, useRef, useState } from 'react';
+import React, { FunctionComponent, useMemo, useRef, useState } from "react";
 
-import { Button, Tooltip } from 'reactstrap';
+import { Button, Tooltip } from "reactstrap";
 
-import { useStore } from '../../stores';
+import { useStore } from "../../stores";
 
-import { observer } from 'mobx-react-lite';
+import { observer } from "mobx-react-lite";
 
-import styleStake from './stake.module.scss';
-import classnames from 'classnames';
-import { Dec } from '@owallet/unit';
+import styleStake from "./stake.module.scss";
+import classnames from "classnames";
+import { Dec } from "@owallet/unit";
 
-import { useNotification } from '../../components/notification';
+import { useNotification } from "../../components/notification";
 
-import { useHistory } from 'react-router';
+import { useHistory } from "react-router";
 
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage } from "react-intl";
 
 export const StakeView: FunctionComponent = observer(() => {
   const history = useHistory();
@@ -39,44 +39,44 @@ export const StakeView: FunctionComponent = observer(() => {
         // So, to prevent this problem, just send the msgs up to 8.
         await accountInfo.cosmos.sendWithdrawDelegationRewardMsgs(
           rewards.getDescendingPendingRewardValidatorAddresses(8),
-          '',
+          "",
           undefined,
           undefined,
           {
             onBroadcasted: () => {
-              analyticsStore.logEvent('Claim reward tx broadcasted', {
+              analyticsStore.logEvent("Claim reward tx broadcasted", {
                 chainId: chainStore.current.chainId,
-                chainName: chainStore.current.chainName
+                chainName: chainStore.current.chainName,
               });
             },
             onFulfill: (tx) => {
-              console.log(tx, 'TX INFO ON CLAIM PAGE!!!!!!!!!!!!!!!!!!!!!');
-            }
+              console.log(tx, "TX INFO ON CLAIM PAGE!!!!!!!!!!!!!!!!!!!!!");
+            },
           },
           stakableReward.currency.coinMinimalDenom
         );
-        history.push('/');
+        history.push("/");
         notification.push({
-          type: 'success',
-          placement: 'top-center',
+          type: "success",
+          placement: "top-center",
           duration: 5,
           content: `Success`,
           canDelete: true,
           transition: {
-            duration: 0.25
-          }
+            duration: 0.25,
+          },
         });
       } catch (e) {
-        history.push('/');
+        history.push("/");
         notification.push({
-          type: 'warning',
-          placement: 'top-center',
+          type: "warning",
+          placement: "top-center",
           duration: 5,
           content: `Fail to withdraw rewards: ${e.message}`,
           canDelete: true,
           transition: {
-            duration: 0.25
-          }
+            duration: 0.25,
+          },
         });
       }
     }
@@ -91,9 +91,9 @@ export const StakeView: FunctionComponent = observer(() => {
           <div className={styleStake.vertical}>
             <p
               className={classnames(
-                'h4',
-                'my-0',
-                'font-weight-normal',
+                "h4",
+                "my-0",
+                "font-weight-normal",
                 styleStake.paragraphSub
               )}
             >
@@ -101,9 +101,9 @@ export const StakeView: FunctionComponent = observer(() => {
             </p>
             <p
               className={classnames(
-                'h2',
-                'my-0',
-                'font-weight-normal',
+                "h2",
+                "my-0",
+                "font-weight-normal",
                 styleStake.paragraphMain
               )}
             >
@@ -122,7 +122,7 @@ export const StakeView: FunctionComponent = observer(() => {
               size="sm"
               disabled={!isRewardExist || !accountInfo.isReadyToSendMsgs}
               onClick={withdrawAllRewards}
-              data-loading={accountInfo.isSendingMsg === 'withdrawRewards'}
+              data-loading={accountInfo.isSendingMsg === "withdrawRewards"}
             >
               <FormattedMessage id="main.stake.button.claim-rewards" />
             </Button>
@@ -155,9 +155,9 @@ export const LinkStakeView: FunctionComponent = observer(() => {
       <div className={styleStake.vertical}>
         <p
           className={classnames(
-            'h2',
-            'my-0',
-            'font-weight-normal',
+            "h2",
+            "my-0",
+            "font-weight-normal",
             styleStake.paragraphMain
           )}
         >
@@ -166,9 +166,9 @@ export const LinkStakeView: FunctionComponent = observer(() => {
         {inflation.inflation.toDec().equals(new Dec(0)) ? null : (
           <p
             className={classnames(
-              'h4',
-              'my-0',
-              'font-weight-normal',
+              "h4",
+              "my-0",
+              "font-weight-normal",
               styleStake.paragraphSub
             )}
           >
@@ -184,7 +184,7 @@ export const LinkStakeView: FunctionComponent = observer(() => {
                       </span>
                     ) : null}
                   </React.Fragment>
-                )
+                ),
               }}
             />
           </p>
@@ -196,7 +196,7 @@ export const LinkStakeView: FunctionComponent = observer(() => {
           const pttrn = /^(https?:\/\/)?(www\.)?([^\/]+)/gm;
           const urlInfo = pttrn.exec(chainInfo.raw.txExplorer.txUrl);
           window.open(
-            urlInfo && urlInfo[0] ? urlInfo[0] : 'https://scan.orai.io/'
+            urlInfo && urlInfo[0] ? urlInfo[0] : "https://scan.orai.io/"
           );
           // if (!isStakableExist) {
           //   e.preventDefault();
@@ -217,7 +217,13 @@ export const LinkStakeView: FunctionComponent = observer(() => {
         <span
           aria-disabled={!isStakableExist}
           ref={stakeBtnRef}
-          style={{ cursor: 'pointer', textDecoration: 'underline', fontSize: 14 , fontWeight: 500 , color: '#434193' }}
+          style={{
+            cursor: "pointer",
+            textDecoration: "underline",
+            fontSize: 14,
+            fontWeight: 500,
+            color: "#434193",
+          }}
         >
           <FormattedMessage id="main.stake.button.link-stake" />
         </span>

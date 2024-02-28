@@ -1,16 +1,16 @@
-import React, { FunctionComponent } from 'react';
-import { RegisterConfig } from '@owallet/hooks';
-import { FormattedMessage, useIntl } from 'react-intl';
-import { Button, Form } from 'reactstrap';
-import useForm from 'react-hook-form';
-import style from '../style.module.scss';
-import { Input, PasswordInput } from '../../../components/form';
-import { AdvancedBIP44Option, useBIP44Option } from '../advanced-bip44';
-import { BackButton } from '../index';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../../stores';
+import React, { FunctionComponent } from "react";
+import { RegisterConfig } from "@owallet/hooks";
+import { FormattedMessage, useIntl } from "react-intl";
+import { Button, Form } from "reactstrap";
+import useForm from "react-hook-form";
+import style from "../style.module.scss";
+import { Input, PasswordInput } from "../../../components/form";
+import { AdvancedBIP44Option, useBIP44Option } from "../advanced-bip44";
+import { BackButton } from "../index";
+import { observer } from "mobx-react-lite";
+import { useStore } from "../../../stores";
 
-export const TypeImportLedger = 'import-ledger';
+export const TypeImportLedger = "import-ledger";
 
 interface FormData {
   name: string;
@@ -30,8 +30,8 @@ export const ImportLedgerIntro: FunctionComponent<{
         e.preventDefault();
 
         registerConfig.setType(TypeImportLedger);
-        analyticsStore.logEvent('Import account started', {
-          registerType: 'ledger'
+        analyticsStore.logEvent("Import account started", {
+          registerType: "ledger",
         });
       }}
       className={style.importWalletBtn}
@@ -50,17 +50,17 @@ export const ImportLedgerPage: FunctionComponent<{
 
   const { register, handleSubmit, getValues, errors } = useForm<FormData>({
     defaultValues: {
-      name: '',
-      password: '',
-      confirmPassword: ''
-    }
+      name: "",
+      password: "",
+      confirmPassword: "",
+    },
   });
 
   return (
     <div>
       <div className={style.title}>
         {intl.formatMessage({
-          id: 'register.name'
+          id: "register.name",
         })}
       </div>
       <Form
@@ -72,13 +72,13 @@ export const ImportLedgerPage: FunctionComponent<{
               data.password,
               bip44Option.bip44HDPath
             );
-            
+
             analyticsStore.setUserProperties({
-              registerType: 'ledger',
-              accountType: 'ledger'
+              registerType: "ledger",
+              accountType: "ledger",
             });
           } catch (e) {
-            console.log('ERROR ON HANDLE SUBMIT CREATE LEDGER', e);
+            console.log("ERROR ON HANDLE SUBMIT CREATE LEDGER", e);
             alert(e.message ? e.message : e.toString());
             registerConfig.clear();
           }
@@ -86,64 +86,64 @@ export const ImportLedgerPage: FunctionComponent<{
       >
         <Input
           label={intl.formatMessage({
-            id: 'register.name'
+            id: "register.name",
           })}
           styleInputGroup={{
-            border: '1px solid rgba(8, 4, 28, 0.12)'
+            border: "1px solid rgba(8, 4, 28, 0.12)",
           }}
           type="text"
           name="name"
           ref={register({
             required: intl.formatMessage({
-              id: 'register.name.error.required'
-            })
+              id: "register.name.error.required",
+            }),
           })}
           error={errors.name && errors.name.message}
         />
-        {registerConfig.mode === 'create' ? (
+        {registerConfig.mode === "create" ? (
           <React.Fragment>
             <PasswordInput
               label={intl.formatMessage({
-                id: 'register.create.input.password'
+                id: "register.create.input.password",
               })}
               styleInputGroup={{
-                border: '1px solid rgba(8, 4, 28, 0.12)'
+                border: "1px solid rgba(8, 4, 28, 0.12)",
               }}
               name="password"
               ref={register({
                 required: intl.formatMessage({
-                  id: 'register.create.input.password.error.required'
+                  id: "register.create.input.password.error.required",
                 }),
                 validate: (password: string): string | undefined => {
                   if (password.length < 8) {
                     return intl.formatMessage({
-                      id: 'register.create.input.password.error.too-short'
+                      id: "register.create.input.password.error.too-short",
                     });
                   }
-                }
+                },
               })}
               error={errors.password && errors.password.message}
             />
             <PasswordInput
               label={intl.formatMessage({
-                id: 'register.create.input.confirm-password'
+                id: "register.create.input.confirm-password",
               })}
               styleInputGroup={{
-                border: '1px solid rgba(8, 4, 28, 0.12)'
+                border: "1px solid rgba(8, 4, 28, 0.12)",
               }}
-              style={{ position: 'relative' }}
+              style={{ position: "relative" }}
               name="confirmPassword"
               ref={register({
                 required: intl.formatMessage({
-                  id: 'register.create.input.confirm-password.error.required'
+                  id: "register.create.input.confirm-password.error.required",
                 }),
                 validate: (confirmPassword: string): string | undefined => {
-                  if (confirmPassword !== getValues()['password']) {
+                  if (confirmPassword !== getValues()["password"]) {
                     return intl.formatMessage({
-                      id: 'register.create.input.confirm-password.error.unmatched'
+                      id: "register.create.input.confirm-password.error.unmatched",
                     });
                   }
-                }
+                },
               })}
               error={errors.confirmPassword && errors.confirmPassword.message}
             />

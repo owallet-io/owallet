@@ -1,24 +1,29 @@
-import React, { FunctionComponent, useCallback, useEffect, useState } from 'react';
-import { PageWithScrollView } from '../../../components/page';
-import { Platform, StyleSheet, View } from 'react-native';
-import { Text } from '@src/components/text';
-import { WordChip } from '../../../components/mnemonic';
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
-import { useTheme } from '@src/themes/theme-provider';
-import { NewMnemonicConfig } from './hook';
-import { RegisterConfig } from '@owallet/hooks';
-import { observer } from 'mobx-react-lite';
-import { RectButton } from '../../../components/rect-button';
-import { BIP44HDPath } from '@owallet/types';
-import { useStore } from '../../../stores';
-import { navigate, checkRouter } from '../../../router/root';
-import { spacing, typography } from '../../../themes';
-import { OWalletLogo } from '../owallet-logo';
-import OWButton from '@src/components/button/OWButton';
-import { SCREENS } from '@src/common/constants';
-import { LRRedact } from '@logrocket/react-native';
+import React, {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
+import { PageWithScrollView } from "../../../components/page";
+import { Platform, StyleSheet, View } from "react-native";
+import { Text } from "@src/components/text";
+import { WordChip } from "../../../components/mnemonic";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+import { useTheme } from "@src/themes/theme-provider";
+import { NewMnemonicConfig } from "./hook";
+import { RegisterConfig } from "@owallet/hooks";
+import { observer } from "mobx-react-lite";
+import { RectButton } from "../../../components/rect-button";
+import { BIP44HDPath } from "@owallet/types";
+import { useStore } from "../../../stores";
+import { navigate, checkRouter } from "../../../router/root";
+import { spacing, typography } from "../../../themes";
+import { OWalletLogo } from "../owallet-logo";
+import OWButton from "@src/components/button/OWButton";
+import { SCREENS } from "@src/common/constants";
+import { LRRedact } from "@logrocket/react-native";
 
-export const VerifyMnemonicScreen: FunctionComponent = observer(props => {
+export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
   const route = useRoute<
     RouteProp<
       Record<
@@ -50,26 +55,28 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(props => {
   const [wordSet, setWordSet] = useState<(string | undefined)[]>([]);
 
   useEffect(() => {
-    const words = newMnemonicConfig.mnemonic.split(' ');
+    const words = newMnemonicConfig.mnemonic.split(" ");
     const randomSortedWords = words.slice().sort(() => {
       return Math.random() > 0.5 ? 1 : -1;
     });
     setCandidateWords(
-      randomSortedWords.map(word => {
+      randomSortedWords.map((word) => {
         return {
           word,
-          usedIndex: -1
+          usedIndex: -1,
         };
       })
     );
     setWordSet(
-      newMnemonicConfig.mnemonic.split(' ').map(() => {
+      newMnemonicConfig.mnemonic.split(" ").map(() => {
         return undefined;
       })
     );
   }, [newMnemonicConfig.mnemonic]);
 
-  const firstEmptyWordSetIndex = wordSet.findIndex(word => word === undefined);
+  const firstEmptyWordSetIndex = wordSet.findIndex(
+    (word) => word === undefined
+  );
 
   const [isCreating, setIsCreating] = useState(false);
   const styles = useStyles();
@@ -84,33 +91,33 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(props => {
     );
 
     analyticsStore.setUserProperties({
-      registerType: 'seed',
-      accountType: 'mnemonic'
+      registerType: "seed",
+      accountType: "mnemonic",
     });
-    if (checkRouter(props?.route?.name, 'RegisterVerifyMnemonicMain')) {
+    if (checkRouter(props?.route?.name, "RegisterVerifyMnemonicMain")) {
       navigate(SCREENS.RegisterDone, {
         password: newMnemonicConfig.password,
-        type: 'new'
+        type: "new",
       });
     } else {
       navigation.reset({
         index: 0,
         routes: [
           {
-            name: 'Register.Done',
+            name: "Register.Done",
             params: {
               password: newMnemonicConfig.password,
-              type: 'new'
-            }
-          }
-        ]
+              type: "new",
+            },
+          },
+        ],
       });
     }
   }, [newMnemonicConfig, isCreating]);
   return (
     <PageWithScrollView
       contentContainerStyle={styles.containerContentScroll}
-      backgroundColor={colors['plain-background']}
+      backgroundColor={colors["plain-background"]}
     >
       <LRRedact>
         <View style={styles.headerView}>
@@ -121,10 +128,10 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(props => {
         </View>
         <Text
           style={{
-            ...typography['h7'],
-            color: colors['text-label-input'],
+            ...typography["h7"],
+            color: colors["text-label-input"],
             marginTop: 32,
-            marginBottom: 4
+            marginBottom: 4,
           }}
         >
           Confirm your mnemonic
@@ -132,17 +139,17 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(props => {
         <WordsCard
           wordSet={wordSet.map((word, i) => {
             return {
-              word: word ?? '',
+              word: word ?? "",
               empty: word === undefined,
-              dashed: i === firstEmptyWordSetIndex
+              dashed: i === firstEmptyWordSetIndex,
             };
           })}
         />
         <View
           style={{
-            display: 'flex',
-            flexDirection: 'row',
-            flexWrap: 'wrap'
+            display: "flex",
+            flexDirection: "row",
+            flexWrap: "wrap",
           }}
         >
           {candidateWords.map(({ word, usedIndex }, i) => {
@@ -178,14 +185,14 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(props => {
         </View>
         <View
           style={{
-            flex: 1
+            flex: 1,
           }}
         />
 
         <OWButton
           label="Next"
           loading={isCreating}
-          disabled={wordSet.join(' ') !== newMnemonicConfig.mnemonic}
+          disabled={wordSet.join(" ") !== newMnemonicConfig.mnemonic}
           onPress={onVerifyMnemonic}
         />
 
@@ -199,7 +206,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(props => {
         {/* Mock element for bottom padding */}
         <View
           style={{
-            height: 20
+            height: 20,
           }}
         />
       </LRRedact>
@@ -217,7 +224,9 @@ const WordButton: FunctionComponent<{
   return (
     <RectButton
       style={{
-        backgroundColor: used ? colors['background-btn-mnemonic-active'] : colors['background-container'],
+        backgroundColor: used
+          ? colors["background-btn-mnemonic-active"]
+          : colors["background-container"],
         paddingTop: 4,
         paddingBottom: 4,
         paddingLeft: 12,
@@ -226,16 +235,18 @@ const WordButton: FunctionComponent<{
         marginBottom: 12,
         borderRadius: 8,
         borderWidth: used ? 0 : 1,
-        borderColor: used ? colors['background-container'] : colors['btn-mnemonic']
+        borderColor: used
+          ? colors["background-container"]
+          : colors["btn-mnemonic"],
       }}
       onPress={onPress}
     >
       <Text
         style={{
-          ...typography['subtitle2'],
-          color: colors['btn-mnemonic'],
+          ...typography["subtitle2"],
+          color: colors["btn-mnemonic"],
           fontSize: 14,
-          fontWeight: '700'
+          fontWeight: "700",
         }}
       >
         {word}
@@ -262,12 +273,12 @@ const WordsCard: FunctionComponent<{
         paddingBottom: 10,
         paddingLeft: 24,
         paddingRight: 24,
-        borderColor: colors['border-input-login'],
+        borderColor: colors["border-input-login"],
         borderWidth: 1,
         borderRadius: 8,
-        display: 'flex',
-        flexDirection: 'row',
-        flexWrap: 'wrap'
+        display: "flex",
+        flexDirection: "row",
+        flexWrap: "wrap",
       }}
     >
       {wordSet.map((word, i) => {
@@ -292,19 +303,19 @@ const useStyles = () => {
     titleHeaderView: {
       fontSize: 24,
       lineHeight: 34,
-      fontWeight: '700',
-      color: colors['text-title-login']
+      fontWeight: "700",
+      color: colors["text-title-login"],
     },
     headerView: {
       height: 72,
-      display: 'flex',
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between'
+      display: "flex",
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
     },
     containerContentScroll: {
-      paddingTop: Platform.OS == 'android' ? 50 : 0,
-      paddingHorizontal: spacing['page-pad']
-    }
+      paddingTop: Platform.OS == "android" ? 50 : 0,
+      paddingHorizontal: spacing["page-pad"],
+    },
   });
 };

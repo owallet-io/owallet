@@ -1,18 +1,18 @@
-import { Env, Guard, MessageSender, Message } from '@owallet/router';
+import { Env, Guard, MessageSender, Message } from "@owallet/router";
 
 export class ExtensionGuards {
   static readonly checkOriginIsValid: Guard = (
-    _: Omit<Env, 'requestInteraction'>,
+    _: Omit<Env, "requestInteraction">,
     msg: Message<unknown>,
     sender: MessageSender
   ): Promise<void> => {
     // TODO: When is a url undefined?
     if (!sender.url) {
-      throw new Error('url is empty');
+      throw new Error("url is empty");
     }
 
     if (!msg.origin) {
-      throw new Error('origin is empty');
+      throw new Error("origin is empty");
     }
 
     const url = new URL(sender.url);
@@ -25,12 +25,12 @@ export class ExtensionGuards {
   };
 
   static readonly checkMessageIsInternal: Guard = (
-    env: Omit<Env, 'requestInteraction'>,
+    env: Omit<Env, "requestInteraction">,
     msg: Message<unknown>,
     sender: MessageSender
   ): Promise<void> => {
     if (!env.isInternalMsg && !msg.approveExternal(env, sender)) {
-      throw new Error('Permission rejected');
+      throw new Error("Permission rejected");
     }
     return Promise.resolve();
   };

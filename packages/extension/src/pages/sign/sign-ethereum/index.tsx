@@ -1,20 +1,26 @@
-import React, { FunctionComponent, useEffect, useMemo, useRef, useState } from 'react';
-import { Button } from 'reactstrap';
+import React, {
+  FunctionComponent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { Button } from "reactstrap";
 
-import { HeaderLayout } from '../../../layouts';
+import { HeaderLayout } from "../../../layouts";
 
-import style from '../style.module.scss';
-import Big from 'big.js';
+import style from "../style.module.scss";
+import Big from "big.js";
 
-import { useStore } from '../../../stores';
+import { useStore } from "../../../stores";
 
-import classnames from 'classnames';
-import { EthereumDataTab } from './ethereum-data-tab';
-import { EthereumDetailsTab } from './ethereum-details-tab';
-import { FormattedMessage, useIntl } from 'react-intl';
+import classnames from "classnames";
+import { EthereumDataTab } from "./ethereum-data-tab";
+import { EthereumDetailsTab } from "./ethereum-details-tab";
+import { FormattedMessage, useIntl } from "react-intl";
 
-import { useHistory } from 'react-router';
-import { observer } from 'mobx-react-lite';
+import { useHistory } from "react-router";
+import { observer } from "mobx-react-lite";
 import {
   useInteractionInfo,
   useSignDocHelper,
@@ -23,14 +29,14 @@ import {
   useMemoConfig,
   useSignDocAmountConfig,
   useFeeEthereumConfig,
-  useGasEthereumConfig
-} from '@owallet/hooks';
-import { ADR36SignDocDetailsTab } from '../adr-36';
-import { ChainIdHelper } from '@owallet/cosmos';
+  useGasEthereumConfig,
+} from "@owallet/hooks";
+import { ADR36SignDocDetailsTab } from "../adr-36";
+import { ChainIdHelper } from "@owallet/cosmos";
 
 enum Tab {
   Details,
-  Data
+  Data,
 }
 
 export const SignEthereumPage: FunctionComponent = observer(() => {
@@ -48,14 +54,16 @@ export const SignEthereumPage: FunctionComponent = observer(() => {
     };
   }, []);
 
-  const [signer, setSigner] = useState('');
+  const [signer, setSigner] = useState("");
   const [origin, setOrigin] = useState<string | undefined>();
-  const [isADR36WithString, setIsADR36WithString] = useState<boolean | undefined>();
+  const [isADR36WithString, setIsADR36WithString] = useState<
+    boolean | undefined
+  >();
 
   const current = chainStore.current;
   // Make the gas config with 1 gas initially to prevent the temporary 0 gas error at the beginning.
   const [dataSign, setDataSign] = useState(null);
-  const [gasPrice, setGasPrice] = useState('0');
+  const [gasPrice, setGasPrice] = useState("0");
   const gasConfig = useGasEthereumConfig(
     chainStore,
     current.chainId,
@@ -74,15 +82,24 @@ export const SignEthereumPage: FunctionComponent = observer(() => {
 
         chainStore.selectChain(chainIdSign);
 
-        const estimatedGasLimit = parseInt(dataSign?.data?.data?.data?.estimatedGasLimit, 16);
-        const estimatedGasPrice = new Big(parseInt(dataSign?.data?.data?.data?.estimatedGasPrice, 16))
+        const estimatedGasLimit = parseInt(
+          dataSign?.data?.data?.data?.estimatedGasLimit,
+          16
+        );
+        const estimatedGasPrice = new Big(
+          parseInt(dataSign?.data?.data?.data?.estimatedGasPrice, 16)
+        )
           .div(new Big(10).pow(decimals.current))
           .toFixed(decimals.current);
 
-        if (!isNaN(estimatedGasLimit) && estimatedGasPrice !== 'NaN') {
+        if (!isNaN(estimatedGasLimit) && estimatedGasPrice !== "NaN") {
           setGasPrice(estimatedGasPrice);
           gasConfig.setGas(estimatedGasLimit);
-          feeConfig.setFee(new Big(estimatedGasLimit).mul(estimatedGasPrice).toFixed(decimals.current));
+          feeConfig.setFee(
+            new Big(estimatedGasLimit)
+              .mul(estimatedGasPrice)
+              .toFixed(decimals.current)
+          );
         }
       }
     } catch (error) {
@@ -132,14 +149,14 @@ export const SignEthereumPage: FunctionComponent = observer(() => {
   }, [
     // signDocHelper.signDocWrapper,
     chainStore.current.chainId,
-    chainStore.selectedChainId
+    chainStore.selectedChainId,
   ]);
 
   // If this is undefined, show the chain name on the header.
   // If not, show the alternative title.
   const alternativeTitle = (() => {
     if (!isLoaded) {
-      return '';
+      return "";
     }
 
     // if (
@@ -170,7 +187,8 @@ export const SignEthereumPage: FunctionComponent = observer(() => {
     return feeConfig.getError() != null;
   })();
   const gasPriceToBig = () => {
-    if (parseFloat(feeConfig.feeRaw) <= 0 || parseFloat(gasConfig.gasRaw) <= 0) return '0';
+    if (parseFloat(feeConfig.feeRaw) <= 0 || parseFloat(gasConfig.gasRaw) <= 0)
+      return "0";
     return parseInt(
       new Big(parseFloat(feeConfig.feeRaw))
         .mul(new Big(10).pow(decimals.current))
@@ -194,9 +212,9 @@ export const SignEthereumPage: FunctionComponent = observer(() => {
     <div
       style={{
         padding: 20,
-        backgroundColor: '#FFFFFF',
-        height: '100%',
-        overflowX: 'auto'
+        backgroundColor: "#FFFFFF",
+        height: "100%",
+        overflowX: "auto",
       }}
     >
       {
@@ -208,42 +226,42 @@ export const SignEthereumPage: FunctionComponent = observer(() => {
           <div className={style.container}>
             <div
               style={{
-                color: '#353945',
+                color: "#353945",
                 fontSize: 24,
                 fontWeight: 500,
-                textAlign: 'center',
-                paddingBottom: 24
+                textAlign: "center",
+                paddingBottom: 24,
               }}
             >
-              {chainStore?.current?.raw?.chainName || 'Oraichain'}
+              {chainStore?.current?.raw?.chainName || "Oraichain"}
             </div>
             <div className={classnames(style.tabs)}>
               <ul>
                 <li className={classnames({ activeTabs: tab === Tab.Details })}>
                   <a
                     className={classnames(style.tab, {
-                      activeText: tab === Tab.Details
+                      activeText: tab === Tab.Details,
                     })}
                     onClick={() => {
                       setTab(Tab.Details);
                     }}
                   >
                     {intl.formatMessage({
-                      id: 'sign.tab.details'
+                      id: "sign.tab.details",
                     })}
                   </a>
                 </li>
                 <li className={classnames({ activeTabs: tab === Tab.Data })}>
                   <a
                     className={classnames(style.tab, {
-                      activeText: tab === Tab.Data
+                      activeText: tab === Tab.Data,
                     })}
                     onClick={() => {
                       setTab(Tab.Data);
                     }}
                   >
                     {intl.formatMessage({
-                      id: 'sign.tab.data'
+                      id: "sign.tab.data",
                     })}
                   </a>
                 </li>
@@ -251,7 +269,7 @@ export const SignEthereumPage: FunctionComponent = observer(() => {
             </div>
             <div
               className={classnames(style.tabContainer, {
-                [style.dataTab]: tab === Tab.Data
+                [style.dataTab]: tab === Tab.Data,
               })}
             >
               {tab === Tab.Data ? <EthereumDataTab data={dataSign} /> : null}
@@ -272,7 +290,10 @@ export const SignEthereumPage: FunctionComponent = observer(() => {
                     memoConfig={memoConfig}
                     feeConfig={feeConfig}
                     gasConfig={gasConfig}
-                    isInternal={interactionInfo.interaction && interactionInfo.interactionInternal}
+                    isInternal={
+                      interactionInfo.interaction &&
+                      interactionInfo.interactionInternal
+                    }
                     preferNoSetFee={preferNoSetFee}
                     preferNoSetMemo={preferNoSetMemo}
                   />
@@ -282,9 +303,11 @@ export const SignEthereumPage: FunctionComponent = observer(() => {
             </div>
             <div style={{ flex: 1 }} />
             <div className={style.buttons}>
-              {keyRingStore.keyRingType === 'ledger' && signInteractionStore.isLoading ? (
+              {keyRingStore.keyRingType === "ledger" &&
+              signInteractionStore.isLoading ? (
                 <Button className={style.button} disabled={true} outline>
-                  <FormattedMessage id="sign.button.confirm-ledger" /> <i className="fa fa-spinner fa-spin fa-fw" />
+                  <FormattedMessage id="sign.button.confirm-ledger" />{" "}
+                  <i className="fa fa-spinner fa-spin fa-fw" />
                 </Button>
               ) : (
                 <React.Fragment>
@@ -300,7 +323,10 @@ export const SignEthereumPage: FunctionComponent = observer(() => {
                         setIsProcessing(true);
                       }
                       await signInteractionStore.reject();
-                      if (interactionInfo.interaction && !interactionInfo.interactionInternal) {
+                      if (
+                        interactionInfo.interaction &&
+                        !interactionInfo.interactionInternal
+                      ) {
                         window.close();
                       }
                       history.goBack();
@@ -308,7 +334,7 @@ export const SignEthereumPage: FunctionComponent = observer(() => {
                     outline
                   >
                     {intl.formatMessage({
-                      id: 'sign.button.reject'
+                      id: "sign.button.reject",
                     })}
                   </Button>
                   <Button
@@ -324,15 +350,20 @@ export const SignEthereumPage: FunctionComponent = observer(() => {
                       }
 
                       // if (signDocHelper.signDocWrapper) {
-                      const gasPrice = '0x' + gasPriceToBig();
+                      const gasPrice = "0x" + gasPriceToBig();
                       await signInteractionStore.approveEthereumAndWaitEnd({
                         gasPrice,
-                        gasLimit: `0x${parseFloat(gasConfig.gasRaw).toString(16)}`
+                        gasLimit: `0x${parseFloat(gasConfig.gasRaw).toString(
+                          16
+                        )}`,
                         // fees: `0x${parseFloat(feeConfig.feeRaw).toString(16)}`
                       });
                       // }
 
-                      if (interactionInfo.interaction && !interactionInfo.interactionInternal) {
+                      if (
+                        interactionInfo.interaction &&
+                        !interactionInfo.interactionInternal
+                      ) {
                         window.close();
                       } else {
                         history.goBack();
@@ -340,7 +371,7 @@ export const SignEthereumPage: FunctionComponent = observer(() => {
                     }}
                   >
                     {intl.formatMessage({
-                      id: 'sign.button.approve'
+                      id: "sign.button.approve",
                     })}
                   </Button>
                 </React.Fragment>
@@ -350,11 +381,11 @@ export const SignEthereumPage: FunctionComponent = observer(() => {
         ) : (
           <div
             style={{
-              width: '100%',
-              height: '100%',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center'
+              width: "100%",
+              height: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
             }}
           >
             <i className="fas fa-spinner fa-spin fa-2x text-gray" />

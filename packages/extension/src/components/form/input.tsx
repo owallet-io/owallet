@@ -1,6 +1,6 @@
-import React, { CSSProperties, forwardRef, useState } from 'react';
+import React, { CSSProperties, forwardRef, useState } from "react";
 
-import classnames from 'classnames';
+import classnames from "classnames";
 
 import {
   FormFeedback,
@@ -8,16 +8,16 @@ import {
   FormText,
   InputGroup,
   Input as ReactStrapInput,
-  Label
-} from 'reactstrap';
-import { InputType } from 'reactstrap/lib/Input';
+  Label,
+} from "reactstrap";
+import { InputType } from "reactstrap/lib/Input";
 
-import styleInput from './input.module.scss';
+import styleInput from "./input.module.scss";
 
-import { Buffer } from 'buffer';
+import { Buffer } from "buffer";
 
 export interface InputProps {
-  type?: Exclude<InputType, 'textarea'>;
+  type?: Exclude<InputType, "textarea">;
   label?: string;
   text?: string | React.ReactElement;
   error?: string;
@@ -33,8 +33,16 @@ export const Input = forwardRef<
   HTMLInputElement,
   InputProps & React.InputHTMLAttributes<HTMLInputElement>
 >((props, ref) => {
-  const { type, label, text, error, append, styleInputGroup, typeInput , classNameInputGroup } =
-    props;
+  const {
+    type,
+    label,
+    text,
+    error,
+    append,
+    styleInputGroup,
+    typeInput,
+    classNameInputGroup,
+  } = props;
 
   const attributes = { ...props };
   delete attributes.className;
@@ -51,7 +59,7 @@ export const Input = forwardRef<
   const [inputId] = useState(() => {
     const bytes = new Uint8Array(4);
     crypto.getRandomValues(bytes);
-    return `input-${Buffer.from(bytes).toString('hex')}`;
+    return `input-${Buffer.from(bytes).toString("hex")}`;
   });
 
   return (
@@ -65,7 +73,7 @@ export const Input = forwardRef<
         <ReactStrapInput
           id={inputId}
           className={classnames(
-            'form-control-alternative',
+            "form-control-alternative",
             props.className,
             styleInput.input
           )}
@@ -76,7 +84,7 @@ export const Input = forwardRef<
         {append}
       </InputGroup>
       {error ? (
-        <FormFeedback style={{ display: 'block' }}>{error}</FormFeedback>
+        <FormFeedback style={{ display: "block" }}>{error}</FormFeedback>
       ) : text ? (
         <FormText>{text}</FormText>
       ) : null}

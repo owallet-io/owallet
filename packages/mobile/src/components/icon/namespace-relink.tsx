@@ -1,10 +1,10 @@
-import React, { FunctionComponent } from 'react'
-import Svg, { Path } from 'react-native-svg'
+import React, { FunctionComponent } from "react";
+import Svg, { Path } from "react-native-svg";
 
 export const NamespaceRelinkIcon: FunctionComponent<{
-  color?: string
-  size?: number
-}> = ({ color = '#292D32', size = 24 }) => {
+  color?: string;
+  size?: number;
+}> = ({ color = "#292D32", size = 24 }) => {
   return (
     <Svg fill="none" width={size} height={size} viewBox="0 0 24 24">
       <Path
@@ -26,11 +26,11 @@ export const NamespaceRelinkIcon: FunctionComponent<{
         fill={color}
       />
     </Svg>
-  )
-}
+  );
+};
 
 export const NamespaceRelinkOutLineIcon: FunctionComponent<{
-  size?: number
+  size?: number;
 }> = ({ size = 24 }) => {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -43,5 +43,5 @@ export const NamespaceRelinkOutLineIcon: FunctionComponent<{
         fill="#292D32"
       />
     </Svg>
-  )
-}
+  );
+};

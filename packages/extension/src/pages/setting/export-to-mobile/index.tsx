@@ -1,24 +1,24 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
-import { HeaderLayout } from '../../../layouts';
-import { useHistory } from 'react-router';
-import { FormattedMessage, useIntl } from 'react-intl';
+import React, { FunctionComponent, useEffect, useState } from "react";
+import { HeaderLayout } from "../../../layouts";
+import { useHistory } from "react-router";
+import { FormattedMessage, useIntl } from "react-intl";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import QRCode from 'qrcode.react';
-import style from './style.module.scss';
-import WalletConnect from '@walletconnect/client';
-import { Buffer } from 'buffer';
-import { useLoadingIndicator } from '../../../components/loading-indicator';
-import { Button, Form } from 'reactstrap';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../../stores';
-import useForm from 'react-hook-form';
-import { PasswordInput } from '../../../components/form';
-import { ExportKeyRingData } from '@owallet/background';
-import AES, { Counter } from 'aes-js';
-import { AddressBookConfigMap, AddressBookData } from '@owallet/hooks';
-import { ExtensionKVStore } from '@owallet/common';
-import { toJS } from 'mobx';
+import QRCode from "qrcode.react";
+import style from "./style.module.scss";
+import WalletConnect from "@walletconnect/client";
+import { Buffer } from "buffer";
+import { useLoadingIndicator } from "../../../components/loading-indicator";
+import { Button, Form } from "reactstrap";
+import { observer } from "mobx-react-lite";
+import { useStore } from "../../../stores";
+import useForm from "react-hook-form";
+import { PasswordInput } from "../../../components/form";
+import { ExportKeyRingData } from "@owallet/background";
+import AES, { Counter } from "aes-js";
+import { AddressBookConfigMap, AddressBookData } from "@owallet/hooks";
+import { ExtensionKVStore } from "@owallet/common";
+import { toJS } from "mobx";
 
 export interface QRCodeSharedData {
   // The uri for the wallet connect
@@ -43,14 +43,20 @@ export const ExportToMobilePage: FunctionComponent = () => {
   const history = useHistory();
   const intl = useIntl();
 
-  const [exportKeyRingDatas, setExportKeyRingDatas] = useState<ExportKeyRingData[]>([]);
+  const [exportKeyRingDatas, setExportKeyRingDatas] = useState<
+    ExportKeyRingData[]
+  >([]);
 
   return (
     <>
       {exportKeyRingDatas.length === 0 ? (
-        <EnterPasswordToExportKeyRingView onSetExportKeyRingDatas={setExportKeyRingDatas} />
+        <EnterPasswordToExportKeyRingView
+          onSetExportKeyRingDatas={setExportKeyRingDatas}
+        />
       ) : (
-        <WalletConnectToExportKeyRingView exportKeyRingDatas={exportKeyRingDatas} />
+        <WalletConnectToExportKeyRingView
+          exportKeyRingDatas={exportKeyRingDatas}
+        />
       )}
     </>
   );
@@ -69,8 +75,8 @@ export const EnterPasswordToExportKeyRingView: FunctionComponent<{
   const [showPass, setShowPass] = useState(false);
   const { register, handleSubmit, setError, errors } = useForm<FormData>({
     defaultValues: {
-      password: ''
-    }
+      password: "",
+    },
   });
 
   const [loading, setLoading] = useState(false);
@@ -81,53 +87,53 @@ export const EnterPasswordToExportKeyRingView: FunctionComponent<{
         style={{
           fontSize: 24,
           fontWeight: 500,
-          color: '#434193',
-          textAlign: 'center',
-          paddingBottom: 24
+          color: "#434193",
+          textAlign: "center",
+          paddingBottom: 24,
         }}
       >
         Link OWallet
       </div>
       <div
         style={{
-          display: 'flex',
-          padding: '16px',
-          paddingBottom: '36px',
-          background: 'rgba(255, 184, 0, 0.08)',
-          borderRadius: '8px'
+          display: "flex",
+          padding: "16px",
+          paddingBottom: "36px",
+          background: "rgba(255, 184, 0, 0.08)",
+          borderRadius: "8px",
         }}
       >
         <img
           style={{
-            width: '22px',
-            height: '22px',
-            marginRight: '4px'
+            width: "22px",
+            height: "22px",
+            marginRight: "4px",
           }}
-          src={require('../../../public/assets/svg/info.svg')}
+          src={require("../../../public/assets/svg/info.svg")}
           alt="info"
         />
         <div
           style={{
-            display: 'flex',
-            flexDirection: 'column'
+            display: "flex",
+            flexDirection: "column",
           }}
         >
           <h3
             style={{
-              marginBottom: '9px',
+              marginBottom: "9px",
               fontWeight: 600,
-              fontSize: '14px',
-              lineHeight: '20px',
-              color: '#FFB800'
+              fontSize: "14px",
+              lineHeight: "20px",
+              color: "#FFB800",
             }}
           >
             Only scan on OWallet
           </h3>
           <div
             style={{
-              fontSize: '14px',
-              lineHeight: '20px',
-              color: '#FFB800'
+              fontSize: "14px",
+              lineHeight: "20px",
+              color: "#FFB800",
             }}
           >
             Scanning the QR code outside of OWallet can lead to loss of funds
@@ -137,24 +143,24 @@ export const EnterPasswordToExportKeyRingView: FunctionComponent<{
       <div style={{ flex: 1 }} />
       <img
         style={{
-          marginLeft: '90px',
-          marginRight: '90px',
-          marginTop: '24px',
-          width: '132px',
-          height: '132px'
+          marginLeft: "90px",
+          marginRight: "90px",
+          marginTop: "24px",
+          width: "132px",
+          height: "132px",
         }}
-        src={require('../../../public/assets/svg/qr-empty.svg')}
+        src={require("../../../public/assets/svg/qr-empty.svg")}
         alt="export-to-mobile"
       />
       <div
         style={{
-          padding: '0 20px',
-          textAlign: 'center',
-          marginTop: '14px',
-          marginBottom: '28px',
-          fontSize: '16px',
-          lineHeight: '22px',
-          color: '#434193'
+          padding: "0 20px",
+          textAlign: "center",
+          marginTop: "14px",
+          marginBottom: "28px",
+          fontSize: "16px",
+          lineHeight: "22px",
+          color: "#434193",
         }}
       >
         {/* Scan QR code to export accounts to OWallet Mobile */}
@@ -178,14 +184,16 @@ export const EnterPasswordToExportKeyRingView: FunctionComponent<{
         onSubmit={handleSubmit(async (data) => {
           setLoading(true);
           try {
-            onSetExportKeyRingDatas(await keyRingStore.exportKeyRingDatas(data.password));
+            onSetExportKeyRingDatas(
+              await keyRingStore.exportKeyRingDatas(data.password)
+            );
           } catch (e) {
-            console.log('Fail to decrypt: ' + e.message);
+            console.log("Fail to decrypt: " + e.message);
             setError(
-              'password',
-              'invalid',
+              "password",
+              "invalid",
               intl.formatMessage({
-                id: 'setting.export-to-mobile.input.password.error.invalid'
+                id: "setting.export-to-mobile.input.password.error.invalid",
               })
             );
           } finally {
@@ -195,21 +203,21 @@ export const EnterPasswordToExportKeyRingView: FunctionComponent<{
       >
         <PasswordInput
           label={intl.formatMessage({
-            id: 'setting.export-to-mobile.input.password'
+            id: "setting.export-to-mobile.input.password",
           })}
           name="password"
-          typeInput={!showPass ? 'password' : 'text'}
+          typeInput={!showPass ? "password" : "text"}
           styleInputGroup={{
-            boxShadow: '0px 2px 4px 1px rgba(8, 4, 28, 0.12)'
+            boxShadow: "0px 2px 4px 1px rgba(8, 4, 28, 0.12)",
           }}
           style={{
-            boxShadow: 'none !important'
+            boxShadow: "none !important",
           }}
           error={errors.password && errors.password.message}
           ref={register({
             required: intl.formatMessage({
-              id: 'setting.export-to-mobile.input.password.error.required'
-            })
+              id: "setting.export-to-mobile.input.password.error.required",
+            }),
           })}
           append={
             <Button
@@ -217,9 +225,12 @@ export const EnterPasswordToExportKeyRingView: FunctionComponent<{
               onClick={() => setShowPass(!showPass)}
               outline={true}
               disabled={false}
-              style={{ boxShadow: 'none !important' }}
+              style={{ boxShadow: "none !important" }}
             >
-              <img src={require('../../../public/assets/svg/eyes.svg')} alt="logo" />
+              <img
+                src={require("../../../public/assets/svg/eyes.svg")}
+                alt="logo"
+              />
             </Button>
           }
         />
@@ -241,7 +252,8 @@ export const WalletConnectToExportKeyRingView: FunctionComponent<{
   const loadingIndicator = useLoadingIndicator();
 
   const [addressBookConfigMap] = useState(
-    () => new AddressBookConfigMap(new ExtensionKVStore('address-book'), chainStore)
+    () =>
+      new AddressBookConfigMap(new ExtensionKVStore("address-book"), chainStore)
   );
 
   const [connector, setConnector] = useState<WalletConnect | undefined>();
@@ -251,7 +263,7 @@ export const WalletConnectToExportKeyRingView: FunctionComponent<{
     if (!connector) {
       (async () => {
         const connector = new WalletConnect({
-          bridge: 'https://bridge.walletconnect.org'
+          bridge: "https://bridge.walletconnect.org",
         });
 
         if (connector.connected) {
@@ -265,22 +277,22 @@ export const WalletConnectToExportKeyRingView: FunctionComponent<{
 
   useEffect(() => {
     if (connector) {
-      connector.on('display_uri', (error, payload) => {
+      connector.on("display_uri", (error, payload) => {
         if (error) {
           console.log(error);
-          history.replace('/');
+          history.replace("/");
           connector.killSession();
           return;
         }
 
         const bytes = new Uint8Array(32);
         crypto.getRandomValues(bytes);
-        const password = Buffer.from(bytes).toString('hex');
+        const password = Buffer.from(bytes).toString("hex");
 
         const uri = payload.params[0] as string;
         setQRCodeData({
           wcURI: uri,
-          sharedPassword: password
+          sharedPassword: password,
         });
       });
 
@@ -291,19 +303,23 @@ export const WalletConnectToExportKeyRingView: FunctionComponent<{
 
   useEffect(() => {
     if (connector && qrCodeData) {
-      connector.on('connect', (error) => {
+      connector.on("connect", (error) => {
         if (error) {
           console.log(error);
-          history.replace('/');
+          history.replace("/");
           connector.killSession();
         } else {
-          loadingIndicator.setIsLoading('export-to-mobile', true);
+          loadingIndicator.setIsLoading("export-to-mobile", true);
 
-          connector.on('call_request', (error, payload) => {
-            if (error || payload.method !== 'keplr_request_export_keyring_datas_wallet_connect_v1') {
-              history.replace('/');
+          connector.on("call_request", (error, payload) => {
+            if (
+              error ||
+              payload.method !==
+                "keplr_request_export_keyring_datas_wallet_connect_v1"
+            ) {
+              history.replace("/");
               connector.killSession();
-              loadingIndicator.setIsLoading('export-to-mobile', false);
+              loadingIndicator.setIsLoading("export-to-mobile", false);
             } else {
               const buf = Buffer.from(JSON.stringify(exportKeyRingDatas));
 
@@ -313,7 +329,10 @@ export const WalletConnectToExportKeyRingView: FunctionComponent<{
 
               const counter = new Counter(0);
               counter.setBytes(iv);
-              const aesCtr = new AES.ModeOfOperation.ctr(Buffer.from(qrCodeData!.sharedPassword, 'hex'), counter);
+              const aesCtr = new AES.ModeOfOperation.ctr(
+                Buffer.from(qrCodeData!.sharedPassword, "hex"),
+                counter
+              );
 
               (async () => {
                 const addressBooks: {
@@ -321,32 +340,38 @@ export const WalletConnectToExportKeyRingView: FunctionComponent<{
                 } = {};
 
                 if (payload.params && payload.params.length > 0) {
-                  for (const chainId of payload.params[0].addressBookChainIds ?? []) {
-                    const addressBookConfig = addressBookConfigMap.getAddressBookConfig(chainId);
+                  for (const chainId of payload.params[0].addressBookChainIds ??
+                    []) {
+                    const addressBookConfig =
+                      addressBookConfigMap.getAddressBookConfig(chainId);
 
                     await addressBookConfig.waitLoaded();
 
-                    addressBooks[chainId] = toJS(addressBookConfig.addressBookDatas) as AddressBookData[];
+                    addressBooks[chainId] = toJS(
+                      addressBookConfig.addressBookDatas
+                    ) as AddressBookData[];
                   }
                 }
 
                 const response: WCExportKeyRingDatasResponse = {
                   encrypted: {
-                    ciphertext: Buffer.from(aesCtr.encrypt(buf)).toString('hex'),
+                    ciphertext: Buffer.from(aesCtr.encrypt(buf)).toString(
+                      "hex"
+                    ),
                     // Hex encoded
-                    iv: iv.toString('hex')
+                    iv: iv.toString("hex"),
                   },
-                  addressBooks
+                  addressBooks,
                 };
 
                 connector.approveRequest({
                   id: payload.id,
-                  result: [response]
+                  result: [response],
                 });
 
-                history.replace('/');
+                history.replace("/");
                 connector.killSession();
-                loadingIndicator.setIsLoading('export-to-mobile', false);
+                loadingIndicator.setIsLoading("export-to-mobile", false);
               })();
             }
           });
@@ -362,53 +387,53 @@ export const WalletConnectToExportKeyRingView: FunctionComponent<{
         style={{
           fontSize: 24,
           fontWeight: 500,
-          color: '#434193',
-          textAlign: 'center',
-          paddingBottom: 24
+          color: "#434193",
+          textAlign: "center",
+          paddingBottom: 24,
         }}
       >
         Link OWallet
       </div>
       <div
         style={{
-          display: 'flex',
-          padding: '16px',
-          paddingBottom: '36px',
-          background: 'rgba(255, 184, 0, 0.08)',
-          borderRadius: '8px'
+          display: "flex",
+          padding: "16px",
+          paddingBottom: "36px",
+          background: "rgba(255, 184, 0, 0.08)",
+          borderRadius: "8px",
         }}
       >
         <img
           style={{
-            width: '22px',
-            height: '22px',
-            marginRight: '4px'
+            width: "22px",
+            height: "22px",
+            marginRight: "4px",
           }}
-          src={require('../../../public/assets/svg/info.svg')}
+          src={require("../../../public/assets/svg/info.svg")}
           alt="info"
         />
         <div
           style={{
-            display: 'flex',
-            flexDirection: 'column'
+            display: "flex",
+            flexDirection: "column",
           }}
         >
           <h3
             style={{
-              marginBottom: '9px',
+              marginBottom: "9px",
               fontWeight: 600,
-              fontSize: '14px',
-              lineHeight: '20px',
-              color: '#FFB800'
+              fontSize: "14px",
+              lineHeight: "20px",
+              color: "#FFB800",
             }}
           >
             Only scan on OWallet
           </h3>
           <div
             style={{
-              fontSize: '14px',
-              lineHeight: '20px',
-              color: '#FFB800'
+              fontSize: "14px",
+              lineHeight: "20px",
+              color: "#FFB800",
             }}
           >
             Scanning the QR code outside of OWallet can lead to loss of funds
@@ -418,24 +443,27 @@ export const WalletConnectToExportKeyRingView: FunctionComponent<{
       <div style={{ flex: 1 }} />
       <div
         style={{
-          marginLeft: '90px',
-          marginRight: '90px',
-          marginTop: '24px',
-          width: '132px',
-          height: '132px'
+          marginLeft: "90px",
+          marginRight: "90px",
+          marginTop: "24px",
+          width: "132px",
+          height: "132px",
         }}
       >
-        <QRCode size={130} value={qrCodeData ? JSON.stringify(qrCodeData) : ''} />
+        <QRCode
+          size={130}
+          value={qrCodeData ? JSON.stringify(qrCodeData) : ""}
+        />
       </div>
       <div
         style={{
-          padding: '0 20px',
-          textAlign: 'center',
-          marginTop: '14px',
-          marginBottom: '28px',
-          fontSize: '16px',
-          lineHeight: '22px',
-          color: '#434193'
+          padding: "0 20px",
+          textAlign: "center",
+          marginTop: "14px",
+          marginBottom: "28px",
+          fontSize: "16px",
+          lineHeight: "22px",
+          color: "#434193",
         }}
       >
         Scan this QR code on OWallet to export your accounts.

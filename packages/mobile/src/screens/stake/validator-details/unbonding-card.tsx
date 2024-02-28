@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import { useStore } from "../../../stores";
 import { Card, CardBody } from "../../../components/card";
 import { ViewStyle, View } from "react-native";
-import { Text } from '@src/components/text';
+import { Text } from "@src/components/text";
 import { useStyle } from "../../../styles";
 import { useIntl } from "react-intl";
 import { ProgressBar } from "../../../components/progress-bar";

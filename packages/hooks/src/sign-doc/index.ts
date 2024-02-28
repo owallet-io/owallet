@@ -1,16 +1,25 @@
-import { action, computed, makeObservable, observable } from 'mobx';
-import { useState } from 'react';
-import { IFeeConfig, IMemoConfig } from '../tx';
-import { SignDocWrapper } from '@owallet/cosmos';
-import Long from 'long';
-import { AuthInfo, Fee, SignerInfo, TxBody, TxRaw } from '@owallet/proto-types/cosmos/tx/v1beta1/tx';
-export * from './amount';
-import { SignDoc } from '@owallet/proto-types/cosmos/tx/v1beta1/tx';
+import { action, computed, makeObservable, observable } from "mobx";
+import { useState } from "react";
+import { IFeeConfig, IMemoConfig } from "../tx";
+import { SignDocWrapper } from "@owallet/cosmos";
+import Long from "long";
+import {
+  AuthInfo,
+  Fee,
+  SignerInfo,
+  TxBody,
+  TxRaw,
+} from "@owallet/proto-types/cosmos/tx/v1beta1/tx";
+export * from "./amount";
+import { SignDoc } from "@owallet/proto-types/cosmos/tx/v1beta1/tx";
 export class SignDocHelper {
   @observable.ref
   protected _signDocWrapper?: SignDocWrapper = undefined;
 
-  constructor(protected readonly feeConfig: IFeeConfig, protected readonly memoConfig: IMemoConfig) {
+  constructor(
+    protected readonly feeConfig: IFeeConfig,
+    protected readonly memoConfig: IMemoConfig
+  ) {
     makeObservable(this);
   }
 
@@ -29,11 +38,11 @@ export class SignDocHelper {
 
     const stdFee = this.feeConfig.toStdFee();
 
-    if (this._signDocWrapper.mode === 'amino') {
+    if (this._signDocWrapper.mode === "amino") {
       const signDoc = {
         ...this._signDocWrapper.aminoSignDoc,
         fee: stdFee,
-        memo: this.memoConfig.memo
+        memo: this.memoConfig.memo,
       };
 
       return SignDocWrapper.fromAminoSignDoc(signDoc);
@@ -45,11 +54,15 @@ export class SignDocHelper {
       amount: stdFee.amount.map((fee) => {
         return {
           amount: fee.amount,
-          denom: fee.denom
+          denom: fee.denom,
         };
       }),
-      granter: protoSignDoc.authInfo.fee?.granter ? protoSignDoc.authInfo.fee?.granter : null,
-      payer: protoSignDoc.authInfo.fee?.payer ? protoSignDoc.authInfo.fee?.granter : null
+      granter: protoSignDoc.authInfo.fee?.granter
+        ? protoSignDoc.authInfo.fee?.granter
+        : null,
+      payer: protoSignDoc.authInfo.fee?.payer
+        ? protoSignDoc.authInfo.fee?.granter
+        : null,
     });
 
     const newSignDoc = SignDoc.create({
@@ -58,16 +71,16 @@ export class SignDocHelper {
         bodyBytes: TxBody.encode({
           ...protoSignDoc.txBody,
           ...{
-            memo: this.memoConfig.memo
-          }
+            memo: this.memoConfig.memo,
+          },
         }).finish(),
         authInfoBytes: AuthInfo.encode({
           ...protoSignDoc.authInfo,
           ...{
-            fee
-          }
-        }).finish()
-      }
+            fee,
+          },
+        }).finish(),
+      },
     });
 
     return SignDocWrapper.fromDirectSignDoc(newSignDoc);
@@ -79,7 +92,7 @@ export class SignDocHelper {
       return undefined;
     }
 
-    if (this.signDocWrapper.mode === 'amino') {
+    if (this.signDocWrapper.mode === "amino") {
       return this.signDocWrapper.aminoSignDoc;
     } else {
       return this.signDocWrapper.protoSignDoc.toJSON();
@@ -92,7 +105,10 @@ export class SignDocHelper {
   }
 }
 
-export const useSignDocHelper = (feeConfig: IFeeConfig, memoConfig: IMemoConfig) => {
+export const useSignDocHelper = (
+  feeConfig: IFeeConfig,
+  memoConfig: IMemoConfig
+) => {
   const [helper] = useState(() => new SignDocHelper(feeConfig, memoConfig));
 
   return helper;

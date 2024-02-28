@@ -1,17 +1,17 @@
-import { EthereumAccount, EthereumMsgOpts } from './ethereum';
-import { AccountSetBase, AccountSetOpts } from './base';
+import { EthereumAccount, EthereumMsgOpts } from "./ethereum";
+import { AccountSetBase, AccountSetOpts } from "./base";
 import {
   AccountWithCosmos,
   CosmosAccount,
   CosmosMsgOpts,
-  HasCosmosAccount
-} from './cosmos';
+  HasCosmosAccount,
+} from "./cosmos";
 import {
   AccountWithSecret,
   HasSecretAccount,
   SecretAccount,
-  SecretMsgOpts
-} from './secret';
+  SecretMsgOpts,
+} from "./secret";
 import {
   HasBtcQueries,
   HasCosmosQueries,
@@ -19,18 +19,18 @@ import {
   HasEvmQueries,
   HasSecretQueries,
   QueriesSetBase,
-  QueriesStore
-} from '../query';
-import deepmerge from 'deepmerge';
-import { DeepReadonly } from 'utility-types';
-import { ChainGetter } from '../common';
+  QueriesStore,
+} from "../query";
+import deepmerge from "deepmerge";
+import { DeepReadonly } from "utility-types";
+import { ChainGetter } from "../common";
 import {
   AccountWithCosmwasm,
   CosmwasmAccount,
   CosmwasmMsgOpts,
-  HasCosmwasmAccount
-} from './cosmwasm';
-import { BitcoinAccount, BitcoinMsgOpts } from './bitcoin';
+  HasCosmwasmAccount,
+} from "./cosmwasm";
+import { BitcoinAccount, BitcoinMsgOpts } from "./bitcoin";
 
 export class AccountWithAll
   extends AccountSetBase<

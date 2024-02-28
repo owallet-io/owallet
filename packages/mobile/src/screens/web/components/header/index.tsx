@@ -1,19 +1,19 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
-import { Platform, StyleSheet, View, TextInput } from 'react-native';
-import { Text } from '@src/components/text';
-import { useHeaderHeight } from '@react-navigation/elements';
-import { useStyle } from '../../../../styles';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useWebViewState } from '../context';
-import Svg, { Path } from 'react-native-svg';
-import { RectButton } from '../../../../components/rect-button';
-import { metrics } from '../../../../themes';
-import { useNavigation } from '@react-navigation/native';
-import { useStore } from '../../../../stores';
-import { observer } from 'mobx-react-lite';
-import { checkValidDomain } from '../../../../utils/helper';
-import { HeaderBackButtonIcon } from '../../../../components/header/icon';
-import { useTheme } from '@src/themes/theme-provider';
+import React, { FunctionComponent, useEffect, useState } from "react";
+import { Platform, StyleSheet, View, TextInput } from "react-native";
+import { Text } from "@src/components/text";
+import { useHeaderHeight } from "@react-navigation/elements";
+import { useStyle } from "../../../../styles";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useWebViewState } from "../context";
+import Svg, { Path } from "react-native-svg";
+import { RectButton } from "../../../../components/rect-button";
+import { metrics } from "../../../../themes";
+import { useNavigation } from "@react-navigation/native";
+import { useStore } from "../../../../stores";
+import { observer } from "mobx-react-lite";
+import { checkValidDomain } from "../../../../utils/helper";
+import { HeaderBackButtonIcon } from "../../../../components/header/icon";
+import { useTheme } from "@src/themes/theme-provider";
 const EditIcon: FunctionComponent<{
   size: number;
   color: string;
@@ -79,20 +79,24 @@ export const OnScreenWebpageScreenHeader: FunctionComponent = observer(() => {
   const [currentUrl, setURL] = useState(webViewState.name);
 
   useEffect(() => {
-    const rIndex = browserStore.getBookmarks.findIndex(b => b.uri === webViewState.url);
+    const rIndex = browserStore.getBookmarks.findIndex(
+      (b) => b.uri === webViewState.url
+    );
     if (rIndex > -1) {
       setIsBookmark(true);
     }
   }, [browserStore]);
 
   const onBookmark = () => {
-    const rIndex = browserStore.getBookmarks.findIndex(b => b.uri === webViewState.url);
+    const rIndex = browserStore.getBookmarks.findIndex(
+      (b) => b.uri === webViewState.url
+    );
 
     if (rIndex > -1) {
       // case found
       browserStore.removeBoorkmark({
         uri: webViewState.url,
-        name: webViewState.name
+        name: webViewState.name,
       });
       setIsBookmark(false);
     } else {
@@ -100,7 +104,7 @@ export const OnScreenWebpageScreenHeader: FunctionComponent = observer(() => {
       browserStore.addBoorkmark({
         id: Date.now(),
         uri: webViewState.url,
-        name: webViewState.name
+        name: webViewState.name,
       });
       setIsBookmark(true);
     }
@@ -113,20 +117,22 @@ export const OnScreenWebpageScreenHeader: FunctionComponent = observer(() => {
           height: headerHeight,
           // If the iPhone has notch, add the extra bottom space for header.
           // Because of the lack of space, it slightly invades the notch, giving it a bit more space.
-          paddingTop: safeAreaInsets.top - (Platform.OS === 'ios' && safeAreaInsets.top > 44 ? 6 : 0)
-        }
+          paddingTop:
+            safeAreaInsets.top -
+            (Platform.OS === "ios" && safeAreaInsets.top > 44 ? 6 : 0),
+        },
       ])}
     >
       {/* Name and refresh icon on center */}
       <View
         style={{
-          flexDirection: 'row',
-          width: '100%',
-          justifyContent: 'space-between',
+          flexDirection: "row",
+          width: "100%",
+          justifyContent: "space-between",
           paddingRight: 16,
-          alignItems: 'center',
+          alignItems: "center",
           height: actualHeaderHeight,
-          marginBottom: 16
+          marginBottom: 16,
         }}
       >
         <RectButton
@@ -140,46 +146,48 @@ export const OnScreenWebpageScreenHeader: FunctionComponent = observer(() => {
             }
           }}
         >
-          <HeaderBackButtonIcon size={24} color={colors['icon']} />
+          <HeaderBackButtonIcon size={24} color={colors["icon"]} />
         </RectButton>
         {onEdit ? (
           <TextInput
             style={{
               width: metrics.screenWidth * 0.7,
-              fontFamily: 'SpaceGrotesk-Regular',
-              color: colors['label'],
-              fontWeight: '500'
+              fontFamily: "SpaceGrotesk-Regular",
+              color: colors["label"],
+              fontWeight: "500",
             }}
-            returnKeyType={'next'}
-            placeholder={'Type URL'}
-            placeholderTextColor={colors['label']}
+            returnKeyType={"next"}
+            placeholder={"Type URL"}
+            placeholderTextColor={colors["label"]}
             autoFocus={true}
             defaultValue={webViewState.name}
-            onChangeText={text => setURL(text)}
+            onChangeText={(text) => setURL(text)}
             onSubmitEditing={() => {
               browserStore.removeTab(browserStore.getSelectedTab);
-              if (currentUrl !== '') {
+              if (currentUrl !== "") {
                 if (checkValidDomain(currentUrl?.toLowerCase())) {
                   const tab = {
                     id: Date.now(),
                     name: currentUrl,
                     uri:
-                      currentUrl?.toLowerCase().indexOf('http') >= 0
+                      currentUrl?.toLowerCase().indexOf("http") >= 0
                         ? currentUrl?.toLowerCase()
-                        : 'https://' + currentUrl?.toLowerCase()
+                        : "https://" + currentUrl?.toLowerCase(),
                   };
                   browserStore.addTab(tab);
-                  navigation.navigate('Web.dApp', tab);
+                  navigation.navigate("Web.dApp", tab);
                 } else {
-                  let uri = `https://www.google.com/search?q=${currentUrl ?? ''}`;
+                  let uri = `https://www.google.com/search?q=${
+                    currentUrl ?? ""
+                  }`;
                   browserStore.addTab({
                     id: Date.now(),
-                    name: 'Google',
-                    uri
+                    name: "Google",
+                    uri,
                   });
-                  navigation.navigate('Web.dApp', {
-                    name: 'Google',
-                    uri
+                  navigation.navigate("Web.dApp", {
+                    name: "Google",
+                    uri,
                   });
                 }
               }
@@ -189,12 +197,17 @@ export const OnScreenWebpageScreenHeader: FunctionComponent = observer(() => {
         ) : (
           <RectButton
             style={StyleSheet.flatten([
-              style.flatten(['flex-row', 'items-center', 'padding-y-5', 'justify-between']),
+              style.flatten([
+                "flex-row",
+                "items-center",
+                "padding-y-5",
+                "justify-between",
+              ]),
               {
                 borderBottomWidth: 0.4,
-                borderBottomColor: colors['border'],
-                width: metrics.screenWidth * 0.7
-              }
+                borderBottomColor: colors["border"],
+                width: metrics.screenWidth * 0.7,
+              },
             ])}
             onPress={() => {
               setOnEdit(true);
@@ -202,17 +215,21 @@ export const OnScreenWebpageScreenHeader: FunctionComponent = observer(() => {
           >
             <Text
               style={{
-                color: colors['label'],
-                fontWeight: '500'
+                color: colors["label"],
+                fontWeight: "500",
               }}
             >
               {webViewState.name}
             </Text>
-            <EditIcon size={20} color={colors['icon']} />
+            <EditIcon size={20} color={colors["icon"]} />
           </RectButton>
         )}
         <RectButton onPress={onBookmark}>
-          {isBookmark ? <BookmarkedIcon size={20} /> : <BookmarkIcon size={20} />}
+          {isBookmark ? (
+            <BookmarkedIcon size={20} />
+          ) : (
+            <BookmarkIcon size={20} />
+          )}
         </RectButton>
       </View>
 

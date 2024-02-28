@@ -1,11 +1,11 @@
-import { KVStore, getUrlV1Beta } from '@owallet/common';
+import { KVStore, getUrlV1Beta } from "@owallet/common";
 import {
   ObservableChainQuery,
-  ObservableChainQueryMap
-} from '../../chain-query';
-import { ChainGetter } from '../../../common';
-import { DenomTraceResponse } from './types';
-import { autorun, computed } from 'mobx';
+  ObservableChainQueryMap,
+} from "../../chain-query";
+import { ChainGetter } from "../../../common";
+import { DenomTraceResponse } from "./types";
+import { autorun, computed } from "mobx";
 
 export class ObservableChainQueryDenomTrace extends ObservableChainQuery<DenomTraceResponse> {
   constructor(
@@ -23,10 +23,8 @@ export class ObservableChainQueryDenomTrace extends ObservableChainQuery<DenomTr
 
     autorun(() => {
       const chainInfo = this.chainGetter.getChain(this.chainId);
-      if (chainInfo.features && chainInfo.features.includes('ibc-go')) {
-        this.setUrl(
-          `/ibc/apps/transfer/v1/denom_traces/${hash}`
-        );
+      if (chainInfo.features && chainInfo.features.includes("ibc-go")) {
+        this.setUrl(`/ibc/apps/transfer/v1/denom_traces/${hash}`);
       }
     });
   }
@@ -40,10 +38,9 @@ export class ObservableChainQueryDenomTrace extends ObservableChainQuery<DenomTr
       return [];
     }
 
-    const rawPaths = this.response.data.denom_trace.path.split('/');
+    const rawPaths = this.response.data.denom_trace.path.split("/");
 
     if (rawPaths.length % 2 !== 0) {
-      
       return [];
     }
 
@@ -55,7 +52,7 @@ export class ObservableChainQueryDenomTrace extends ObservableChainQuery<DenomTr
     return rawPathChunks.map((chunk) => {
       return {
         portId: chunk[0],
-        channelId: chunk[1]
+        channelId: chunk[1],
       };
     });
   }
@@ -84,7 +81,7 @@ export class ObservableChainQueryDenomTrace extends ObservableChainQuery<DenomTr
 
     return {
       denom: this.denom,
-      paths: this.paths
+      paths: this.paths,
     };
   }
 }

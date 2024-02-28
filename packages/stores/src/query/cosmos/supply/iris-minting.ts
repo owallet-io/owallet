@@ -1,6 +1,6 @@
-import { ObservableChainQuery } from '../../chain-query';
-import { KVStore } from '@owallet/common';
-import { ChainGetter } from '../../../common';
+import { ObservableChainQuery } from "../../chain-query";
+import { KVStore } from "@owallet/common";
+import { ChainGetter } from "../../../common";
 
 export class ObservableQueryIrisMintingInfation extends ObservableChainQuery<{
   height: string;
@@ -11,6 +11,6 @@ export class ObservableQueryIrisMintingInfation extends ObservableChainQuery<{
   };
 }> {
   constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
-    super(kvStore, chainId, chainGetter, '/mint/params');
+    super(kvStore, chainId, chainGetter, "/mint/params");
   }
 }

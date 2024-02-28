@@ -1,7 +1,8 @@
-import React from 'react';
-import { SoulboundNftInfoResponse } from '@src/screens/home/types';
-import { CWStargate } from '@src/common/cw-stargate';
-const contractAddress = 'orai15g3lhqtsdhsjr2qzhtrc06jfshyuaegmf75rn5jf3ql3u8lc4l2sje4xpu';
+import React from "react";
+import { SoulboundNftInfoResponse } from "@src/screens/home/types";
+import { CWStargate } from "@src/common/cw-stargate";
+const contractAddress =
+  "orai15g3lhqtsdhsjr2qzhtrc06jfshyuaegmf75rn5jf3ql3u8lc4l2sje4xpu";
 
 export const useSoulbound = (
   chainId,
@@ -17,7 +18,7 @@ export const useSoulbound = (
     loading: boolean;
   }>({
     soulboundNft: [],
-    loading: true
+    loading: true,
   });
 
   const tokenIds = React.useRef([]);
@@ -33,12 +34,12 @@ export const useSoulbound = (
 
       setState({
         soulboundNft: tokensInfo,
-        loading: false
+        loading: false,
       });
     } catch (error) {
       setState({
         soulboundNft: [],
-        loading: false
+        loading: false,
       });
       tokenIds.current = [];
     }
@@ -46,7 +47,7 @@ export const useSoulbound = (
   React.useEffect(() => {
     setState({
       soulboundNft: [],
-      loading: true
+      loading: true,
     });
     init();
   }, [chainId, rpc, account.bech32Address, account.evmosHexAddress]);
@@ -54,7 +55,7 @@ export const useSoulbound = (
   return {
     tokenIds: tokenIds.current,
     soulboundNft: state.soulboundNft,
-    isLoading: state.loading
+    isLoading: state.loading,
   };
 };
 export const getTokens = async (client, accountAddress) => {
@@ -62,11 +63,11 @@ export const getTokens = async (client, accountAddress) => {
     tokens: {
       limit: 10,
       owner: accountAddress,
-      start_after: '0'
-    }
+      start_after: "0",
+    },
   });
   if (!tokens || !tokens?.length) {
-    throw new Error('NFT is empty');
+    throw new Error("NFT is empty");
   }
   return tokens;
 };
@@ -76,17 +77,19 @@ export const getTokensInfoFromContract = async (client, accountAddress) => {
   for (let i = 0; i < tokens.length; i++) {
     const qsContract = await client.queryContractSmart(contractAddress, {
       nft_info: {
-        token_id: tokens[i]
-      }
+        token_id: tokens[i],
+      },
     });
     tokensInfoPromise.push(qsContract);
   }
   if (!tokensInfoPromise?.length) {
-    throw new Error('NFT is empty');
+    throw new Error("NFT is empty");
   }
-  const tokensInfo: SoulboundNftInfoResponse[] = await Promise.all(tokensInfoPromise);
+  const tokensInfo: SoulboundNftInfoResponse[] = await Promise.all(
+    tokensInfoPromise
+  );
   if (!tokensInfo?.length) {
-    throw new Error('NFT is empty');
+    throw new Error("NFT is empty");
   }
   return tokensInfo;
 };

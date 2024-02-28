@@ -1,7 +1,11 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
-import { FormGroup, Input, Label } from 'reactstrap';
-import { IFeeEthereumConfig, IGasConfig, IGasEthereumConfig } from '@owallet/hooks';
-import { observer } from 'mobx-react-lite';
+import React, { FunctionComponent, useEffect, useState } from "react";
+import { FormGroup, Input, Label } from "reactstrap";
+import {
+  IFeeEthereumConfig,
+  IGasConfig,
+  IGasEthereumConfig,
+} from "@owallet/hooks";
+import { observer } from "mobx-react-lite";
 
 export interface GasInputProps {
   gasConfig: IGasEthereumConfig;
@@ -17,7 +21,7 @@ export const GasEthereumInput: FunctionComponent<GasInputProps> = observer(
     const [inputId] = useState(() => {
       const bytes = new Uint8Array(4);
       crypto.getRandomValues(bytes);
-      return `input-${Buffer.from(bytes).toString('hex')}`;
+      return `input-${Buffer.from(bytes).toString("hex")}`;
     });
 
     // useEffect(() => {

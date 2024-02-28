@@ -1,17 +1,20 @@
-import { KVStore, KVStoreProvider, KVStoreType } from './interface';
+import { KVStore, KVStoreProvider, KVStoreType } from "./interface";
 
 export class BaseKVStore implements KVStore {
-  constructor(private readonly provider: KVStoreProvider, private readonly _prefix: string) {}
+  constructor(
+    private readonly provider: KVStoreProvider,
+    private readonly _prefix: string
+  ) {}
 
   async get<T = unknown>(key: string): Promise<T | undefined> {
-    const k = this.prefix() + '/' + key;
+    const k = this.prefix() + "/" + key;
 
     const data = await this.provider.get();
     return data[k];
   }
 
   set<T = unknown>(key: string, data: T | null): Promise<void> {
-    const k = this.prefix() + '/' + key;
+    const k = this.prefix() + "/" + key;
 
     return this.provider.set({ [k]: data });
   }

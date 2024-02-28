@@ -1,4 +1,4 @@
-import { Ethereum } from '@owallet/types';
+import { Ethereum } from "@owallet/types";
 
 export const getEthereumFromWindow: () => Promise<
   Ethereum | undefined
@@ -7,7 +7,7 @@ export const getEthereumFromWindow: () => Promise<
     return window.ethereum;
   }
 
-  if (document.readyState === 'complete') {
+  if (document.readyState === "complete") {
     return window.ethereum;
   }
 
@@ -15,13 +15,13 @@ export const getEthereumFromWindow: () => Promise<
     const documentStateChange = (event: Event) => {
       if (
         event.target &&
-        (event.target as Document).readyState === 'complete'
+        (event.target as Document).readyState === "complete"
       ) {
         resolve(window.ethereum);
-        document.removeEventListener('readystatechange', documentStateChange);
+        document.removeEventListener("readystatechange", documentStateChange);
       }
     };
 
-    document.addEventListener('readystatechange', documentStateChange);
+    document.addEventListener("readystatechange", documentStateChange);
   });
 };

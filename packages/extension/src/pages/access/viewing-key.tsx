@@ -1,16 +1,16 @@
-import React, { FunctionComponent, useEffect, useMemo } from 'react';
+import React, { FunctionComponent, useEffect, useMemo } from "react";
 
-import { useInteractionInfo } from '@owallet/hooks';
-import { Button } from 'reactstrap';
+import { useInteractionInfo } from "@owallet/hooks";
+import { Button } from "reactstrap";
 
-import { ChainIdHelper } from '@owallet/cosmos';
+import { ChainIdHelper } from "@owallet/cosmos";
 
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../stores';
+import { observer } from "mobx-react-lite";
+import { useStore } from "../../stores";
 
-import style from './style.module.scss';
-import { EmptyLayout } from '../../layouts/empty-layout';
-import { FormattedMessage } from 'react-intl';
+import style from "./style.module.scss";
+import { EmptyLayout } from "../../layouts/empty-layout";
+import { FormattedMessage } from "react-intl";
 
 export const Secret20ViewingKeyAccessPage: FunctionComponent = observer(() => {
   const { chainStore, permissionStore } = useStore();
@@ -38,19 +38,19 @@ export const Secret20ViewingKeyAccessPage: FunctionComponent = observer(() => {
         .map((origin) => {
           return new URL(origin).host;
         })
-        .join(',');
+        .join(",");
     } else {
-      return '';
+      return "";
     }
   }, [waitingPermission]);
 
   return (
-    <EmptyLayout style={{ height: '100%', paddingTop: '80px' }}>
+    <EmptyLayout style={{ height: "100%", paddingTop: "80px" }}>
       <div className={style.container}>
         <img
-          src={require('../../public/assets/orai_wallet_logo.png')}
+          src={require("../../public/assets/orai_wallet_logo.png")}
           alt="logo"
-          style={{ height: '92px', maxWidth: 92, margin: '0 auto' }}
+          style={{ height: "92px", maxWidth: 92, margin: "0 auto" }}
         />
         <h1 className={style.header}>
           <FormattedMessage id="access.viewing-key.title" />
@@ -62,9 +62,9 @@ export const Secret20ViewingKeyAccessPage: FunctionComponent = observer(() => {
               host,
               contractAddress: waitingPermission
                 ? waitingPermission.data.contractAddress
-                : 'loading...',
+                : "loading...",
               // eslint-disable-next-line react/display-name
-              b: (...chunks: any) => <b>{chunks}</b>
+              b: (...chunks: any) => <b>{chunks}</b>,
             }}
           />
         </p>

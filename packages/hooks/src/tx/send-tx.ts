@@ -3,22 +3,25 @@ import {
   CosmosMsgOpts,
   CosmwasmMsgOpts,
   ObservableQueryBitcoinBalance,
-  SecretMsgOpts
-} from '@owallet/stores';
-import { ObservableQueryBalances, ObservableQueryEvmBalance } from '@owallet/stores';
-import { useFeeConfig } from './fee';
-import { useMemoConfig } from './memo';
-import { useRecipientConfig } from './recipient';
-import { useSendGasConfig } from './send-gas';
-import { useAmountConfig } from './amount';
-import { AddressBtcType, IFeeRate } from '@owallet/types';
+  SecretMsgOpts,
+} from "@owallet/stores";
+import {
+  ObservableQueryBalances,
+  ObservableQueryEvmBalance,
+} from "@owallet/stores";
+import { useFeeConfig } from "./fee";
+import { useMemoConfig } from "./memo";
+import { useRecipientConfig } from "./recipient";
+import { useSendGasConfig } from "./send-gas";
+import { useAmountConfig } from "./amount";
+import { AddressBtcType, IFeeRate } from "@owallet/types";
 
 type MsgOpts = CosmosMsgOpts & SecretMsgOpts & CosmwasmMsgOpts;
 
 export const useSendTxConfig = (
   chainGetter: ChainGetter,
   chainId: string,
-  sendMsgOpts: MsgOpts['send'],
+  sendMsgOpts: MsgOpts["send"],
   sender: string,
   queryBalances: ObservableQueryBalances,
   ensEndpoint?: string,
@@ -32,13 +35,18 @@ export const useSendTxConfig = (
     chainId,
     sender,
     queryBalances,
-    chainInfo.networkType === 'evm' && queryEvmBalances,
-    chainInfo.networkType === 'evm' && senderEvm,
-    chainInfo.networkType === 'bitcoin' && queryBtcBalances
+    chainInfo.networkType === "evm" && queryEvmBalances,
+    chainInfo.networkType === "evm" && senderEvm,
+    chainInfo.networkType === "bitcoin" && queryBtcBalances
   );
 
   const memoConfig = useMemoConfig(chainGetter, chainId);
-  const gasConfig = useSendGasConfig(chainGetter, chainId, amountConfig, sendMsgOpts);
+  const gasConfig = useSendGasConfig(
+    chainGetter,
+    chainId,
+    amountConfig,
+    sendMsgOpts
+  );
   const feeConfig = useFeeConfig(
     chainGetter,
     chainId,
@@ -47,9 +55,9 @@ export const useSendTxConfig = (
     amountConfig,
     gasConfig,
     true,
-    chainInfo.networkType === 'evm' && queryEvmBalances,
-    chainInfo.networkType === 'evm' && senderEvm,
-    chainInfo.networkType === 'bitcoin' && queryBtcBalances,
+    chainInfo.networkType === "evm" && queryEvmBalances,
+    chainInfo.networkType === "evm" && senderEvm,
+    chainInfo.networkType === "bitcoin" && queryBtcBalances,
     memoConfig
   );
   // Due to the circular references between the amount config and gas/fee configs,
@@ -63,6 +71,6 @@ export const useSendTxConfig = (
     memoConfig,
     gasConfig,
     feeConfig,
-    recipientConfig
+    recipientConfig,
   };
 };

@@ -1,17 +1,17 @@
-import React, { FunctionComponent, useState } from 'react';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../stores';
-import { useStyle } from '../../styles';
-import { Governance, ObservableQueryProposal } from '@owallet/stores';
-import { Chip } from '../../components/chip';
-import { CardBody } from '../../components/card';
-import { View } from 'react-native';
-import { Text } from '@src/components/text';
-import { LoadingSpinner } from '../../components/spinner';
-import { useIntl } from 'react-intl';
-import { dateToLocalString } from './utils';
-import { useSmartNavigation } from '../../navigation.provider';
-import { RectButton } from '../../components/rect-button';
+import React, { FunctionComponent, useState } from "react";
+import { observer } from "mobx-react-lite";
+import { useStore } from "../../stores";
+import { useStyle } from "../../styles";
+import { Governance, ObservableQueryProposal } from "@owallet/stores";
+import { Chip } from "../../components/chip";
+import { CardBody } from "../../components/card";
+import { View } from "react-native";
+import { Text } from "@src/components/text";
+import { LoadingSpinner } from "../../components/spinner";
+import { useIntl } from "react-intl";
+import { dateToLocalString } from "./utils";
+import { useSmartNavigation } from "../../navigation.provider";
+import { RectButton } from "../../components/rect-button";
 
 export const GovernanceProposalStatusChip: FunctionComponent<{
   status: Governance.ProposalStatus;
@@ -72,7 +72,7 @@ export const GovernanceCardBody: FunctionComponent<{
   // Relative time is between the end time and "the time that the component is mounted."
   const proposalRelativeEndTimeString = (() => {
     if (!proposal) {
-      return '';
+      return "";
     }
 
     switch (proposal.proposalStatus) {
@@ -89,21 +89,21 @@ export const GovernanceCardBody: FunctionComponent<{
         if (relativeDepositEndTimeDays) {
           return (
             intl
-              .formatRelativeTime(relativeDepositEndTimeDays, 'days', {
-                numeric: 'always'
+              .formatRelativeTime(relativeDepositEndTimeDays, "days", {
+                numeric: "always",
               })
-              .replace('in ', '') + ' left'
+              .replace("in ", "") + " left"
           );
         } else if (relativeDepositEndTimeHours) {
           return (
             intl
-              .formatRelativeTime(relativeDepositEndTimeHours, 'hours', {
-                numeric: 'always'
+              .formatRelativeTime(relativeDepositEndTimeHours, "hours", {
+                numeric: "always",
               })
-              .replace('in ', '') + ' left'
+              .replace("in ", "") + " left"
           );
         }
-        return '';
+        return "";
       case Governance.ProposalStatus.VOTING_PERIOD:
         const relativeVotingEndTime =
           (new Date(proposal.raw.voting_end_time).getTime() - current) / 1000;
@@ -117,73 +117,73 @@ export const GovernanceCardBody: FunctionComponent<{
         if (relativeVotingEndTimeDays) {
           return (
             intl
-              .formatRelativeTime(relativeVotingEndTimeDays, 'days', {
-                numeric: 'always'
+              .formatRelativeTime(relativeVotingEndTimeDays, "days", {
+                numeric: "always",
               })
-              .replace('in ', '') + ' left'
+              .replace("in ", "") + " left"
           );
         } else if (relativeVotingEndTimeHours) {
           return (
             intl
-              .formatRelativeTime(relativeVotingEndTimeHours, 'hours', {
-                numeric: 'always'
+              .formatRelativeTime(relativeVotingEndTimeHours, "hours", {
+                numeric: "always",
               })
-              .replace('in ', '') + ' left'
+              .replace("in ", "") + " left"
           );
         }
-        return '';
+        return "";
       case Governance.ProposalStatus.FAILED:
       case Governance.ProposalStatus.PASSED:
       case Governance.ProposalStatus.REJECTED:
       case Governance.ProposalStatus.UNSPECIFIED:
-        return '';
+        return "";
     }
   })();
 
   return (
-    <CardBody style={style.flatten(['padding-0', 'overflow-hidden'])}>
+    <CardBody style={style.flatten(["padding-0", "overflow-hidden"])}>
       {proposal ? (
         <RectButton
           style={style.flatten([
-            'padding-x-card-horizontal',
-            'padding-y-card-vertical'
+            "padding-x-card-horizontal",
+            "padding-y-card-vertical",
           ])}
           onPress={() => {
-            navigation.navigateSmart('Governance.Details', {
-              proposalId: proposal.id
+            navigation.navigateSmart("Governance.Details", {
+              proposalId: proposal.id,
             });
           }}
         >
           <View
             style={style.flatten([
-              'flex-row',
-              'items-center',
-              'margin-bottom-8'
+              "flex-row",
+              "items-center",
+              "margin-bottom-8",
             ])}
           >
             <Text
-              style={style.flatten(['h5', 'color-text-black-high'])}
+              style={style.flatten(["h5", "color-text-black-high"])}
             >{`#${proposal.id}`}</Text>
-            <View style={style.flatten(['flex-1'])} />
+            <View style={style.flatten(["flex-1"])} />
             <GovernanceProposalStatusChip status={proposal.proposalStatus} />
           </View>
-          <View style={style.flatten(['margin-bottom-8'])}>
-            <Text style={style.flatten(['h6', 'color-text-black-high'])}>
+          <View style={style.flatten(["margin-bottom-8"])}>
+            <Text style={style.flatten(["h6", "color-text-black-high"])}>
               {proposal.title}
             </Text>
           </View>
-          <View style={style.flatten(['flex-row', 'items-center'])}>
+          <View style={style.flatten(["flex-row", "items-center"])}>
             <Text
-              style={style.flatten(['text-caption1', 'color-text-black-low'])}
+              style={style.flatten(["text-caption1", "color-text-black-low"])}
             >
               {renderProposalDateString(proposal)}
             </Text>
-            <View style={style.flatten(['flex-1'])} />
+            <View style={style.flatten(["flex-1"])} />
             {proposalRelativeEndTimeString ? (
               <Text
                 style={style.flatten([
-                  'text-caption1',
-                  'color-text-black-medium'
+                  "text-caption1",
+                  "color-text-black-medium",
                 ])}
               >
                 {proposalRelativeEndTimeString}
@@ -194,13 +194,13 @@ export const GovernanceCardBody: FunctionComponent<{
       ) : (
         <View
           style={style.flatten([
-            'height-governance-card-body-placeholder',
-            'justify-center',
-            'items-center'
+            "height-governance-card-body-placeholder",
+            "justify-center",
+            "items-center",
           ])}
         >
           <LoadingSpinner
-            color={style.get('color-loading-spinner').color}
+            color={style.get("color-loading-spinner").color}
             size={22}
           />
         </View>

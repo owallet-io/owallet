@@ -1,10 +1,10 @@
-import React, { FunctionComponent } from 'react';
-import Svg, { Path } from 'react-native-svg';
+import React, { FunctionComponent } from "react";
+import Svg, { Path } from "react-native-svg";
 
 export const TransactionIcon: FunctionComponent<{
   size?: number;
   color?: string;
-}> = ({ size, color = '#292D32' }) => {
+}> = ({ size, color = "#292D32" }) => {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
       <Path
@@ -18,7 +18,7 @@ export const TransactionIcon: FunctionComponent<{
 export const TransactionOutlineIcon: FunctionComponent<{
   size?: number;
   color?: string;
-}> = ({ size, color = '#292D32' }) => {
+}> = ({ size, color = "#292D32" }) => {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
       <Path
@@ -42,7 +42,7 @@ export const TransactionOutlineIcon: FunctionComponent<{
 export const TransactionMinusIcon: FunctionComponent<{
   color?: string;
   size?: number;
-}> = ({ size = 19, color = 'white' }) => {
+}> = ({ size = 19, color = "white" }) => {
   return (
     <Svg width={size} height={size} viewBox="0 0 19 19" fill={color}>
       <Path

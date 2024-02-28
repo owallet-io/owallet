@@ -1,6 +1,6 @@
-import { TxEventMap, WsReadyState } from './types';
+import { TxEventMap, WsReadyState } from "./types";
 
-import { Buffer } from 'buffer';
+import { Buffer } from "buffer";
 
 type Listeners = {
   [K in keyof TxEventMap]?: TxEventMap[K][];
@@ -53,15 +53,15 @@ export class TendermintTxTracer {
 
   protected getWsEndpoint(): string {
     let url = this.url;
-    if (url?.startsWith('http')) {
-      url = url.replace('http', 'ws');
+    if (url?.startsWith("http")) {
+      url = url.replace("http", "ws");
     }
     if (!url?.endsWith(this.wsEndpoint)) {
-      const wsEndpoint = this.wsEndpoint.startsWith('/')
+      const wsEndpoint = this.wsEndpoint.startsWith("/")
         ? this.wsEndpoint
-        : '/' + this.wsEndpoint;
+        : "/" + this.wsEndpoint;
 
-      url = url?.endsWith('/') ? url + wsEndpoint.slice(1) : url + wsEndpoint;
+      url = url?.endsWith("/") ? url + wsEndpoint.slice(1) : url + wsEndpoint;
     }
 
     return url;
@@ -155,13 +155,13 @@ export class TendermintTxTracer {
           }
         }
 
-        if (obj?.result?.data?.type === 'tendermint/event/NewBlock') {
+        if (obj?.result?.data?.type === "tendermint/event/NewBlock") {
           for (const handler of this.newBlockSubscribes) {
             handler.handler(obj.result.data.value);
           }
         }
 
-        if (obj?.result?.data?.type === 'tendermint/event/Tx') {
+        if (obj?.result?.data?.type === "tendermint/event/Tx") {
           if (obj?.id) {
             if (this.txSubscribes.has(obj.id)) {
               if (obj.error) {
@@ -198,7 +198,7 @@ export class TendermintTxTracer {
 
   subscribeBlock(handler: (block: any) => void) {
     this.newBlockSubscribes.push({
-      handler
+      handler,
     });
 
     if (this.newBlockSubscribes.length === 1) {
@@ -210,10 +210,10 @@ export class TendermintTxTracer {
     if (this.readyState === WsReadyState.OPEN) {
       this.ws.send(
         JSON.stringify({
-          jsonrpc: '2.0',
-          method: 'subscribe',
+          jsonrpc: "2.0",
+          method: "subscribe",
           params: ["tm.event='NewBlock'"],
-          id: 1
+          id: 1,
         })
       );
     }
@@ -234,7 +234,7 @@ export class TendermintTxTracer {
       this.txSubscribes.set(id, {
         address,
         resolver: resolve,
-        rejector: reject
+        rejector: reject,
       });
 
       this.sendSubscribeMsgRpc(id, address);
@@ -245,18 +245,18 @@ export class TendermintTxTracer {
     if (this.readyState === WsReadyState.OPEN) {
       this.ws.send(
         JSON.stringify({
-          jsonrpc: '2.0',
-          method: 'subscribe',
+          jsonrpc: "2.0",
+          method: "subscribe",
           params: [`tm.event='Tx' AND transfer.recipient = '${address}'`],
-          id
+          id,
         })
       );
       this.ws.send(
         JSON.stringify({
-          jsonrpc: '2.0',
-          method: 'subscribe',
+          jsonrpc: "2.0",
+          method: "subscribe",
           params: [`tm.event='Tx' AND message.sender = '${address}'`],
-          id
+          id,
         })
       );
     }
@@ -297,7 +297,7 @@ export class TendermintTxTracer {
       this.txSubscribes.set(id, {
         hash,
         resolver: resolve,
-        rejector: reject
+        rejector: reject,
       });
 
       this.sendSubscribeTxRpc(id, hash);
@@ -308,21 +308,21 @@ export class TendermintTxTracer {
     if (this.readyState === WsReadyState.OPEN) {
       this.ws.send(
         JSON.stringify({
-          jsonrpc: '2.0',
-          method: 'subscribe',
+          jsonrpc: "2.0",
+          method: "subscribe",
           params: [
             `tm.event='Tx' AND tx.hash='${Buffer.from(hash)
-              .toString('hex')
-              .toUpperCase()}'`
+              .toString("hex")
+              .toUpperCase()}'`,
           ],
-          id
+          id,
         })
       );
     }
   }
 
   queryTx(hash: Uint8Array): Promise<any> {
-    return this.query('tx', [Buffer.from(hash).toString('base64'), false]);
+    return this.query("tx", [Buffer.from(hash).toString("base64"), false]);
   }
 
   protected query(method: string, params: unknown[]): Promise<any> {
@@ -333,7 +333,7 @@ export class TendermintTxTracer {
         method,
         params,
         resolver: resolve,
-        rejector: reject
+        rejector: reject,
       });
 
       this.sendQueryRpc(id, method, params);
@@ -344,10 +344,10 @@ export class TendermintTxTracer {
     if (this.readyState === WsReadyState.OPEN) {
       this.ws.send(
         JSON.stringify({
-          jsonrpc: '2.0',
+          jsonrpc: "2.0",
           method,
           params,
-          id
+          id,
         })
       );
     }
@@ -357,7 +357,7 @@ export class TendermintTxTracer {
     return parseInt(
       Array.from({ length: 6 })
         .map(() => Math.floor(Math.random() * 100))
-        .join('')
+        .join("")
     );
   }
 }

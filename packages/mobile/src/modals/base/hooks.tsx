@@ -1,11 +1,11 @@
-import React, { useContext } from 'react';
-import { BottomSheetProps } from '@gorhom/bottom-sheet';
+import React, { useContext } from "react";
+import { BottomSheetProps } from "@gorhom/bottom-sheet";
 export interface ModalStateContext {
   readonly key: string;
   readonly isTransitionOpening: boolean;
   readonly isTransitionClosing: boolean;
 
-  readonly align?: 'top' | 'center' | 'bottom';
+  readonly align?: "top" | "center" | "bottom";
   readonly isOpen: boolean;
   // readonly transitionVelocity?: number;
   // readonly openTransitionVelocity?: number;
@@ -19,7 +19,7 @@ export interface ModalStateContext {
   // readonly blurBackdropOnIOS?: boolean;
   readonly bottomSheetModalConfig?: Omit<
     BottomSheetProps,
-    'snapPoints' | 'children'
+    "snapPoints" | "children"
   >;
   readonly close: () => void;
 }
@@ -29,7 +29,7 @@ export const ModalContext = React.createContext<ModalStateContext | null>(null);
 export const useModalState = () => {
   const state = useContext(ModalContext);
   if (!state) {
-    throw new Error('You forgot to use ModalProvider');
+    throw new Error("You forgot to use ModalProvider");
   }
 
   return state;

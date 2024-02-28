@@ -1,9 +1,9 @@
-import React, { FunctionComponent, useContext, useState } from 'react';
-import { ConfirmModal } from './modal';
+import React, { FunctionComponent, useContext, useState } from "react";
+import { ConfirmModal } from "./modal";
 
 export type ConfirmModalContextProps = Omit<
   React.ComponentProps<typeof ConfirmModal>,
-  'isOpen' | 'close' | 'children' | 'onSelectYes' | 'onSelectNo'
+  "isOpen" | "close" | "children" | "onSelectYes" | "onSelectNo"
 >;
 
 export interface ConfirmModal {
@@ -26,7 +26,7 @@ export const ConfirmModalProvider: FunctionComponent = ({ children }) => {
       resolver: (result: boolean) => void;
     })[]
   >([]);
-  
+
   const onSelectConfirm = (
     confirm: ConfirmModalContextProps & {
       key: string;
@@ -59,12 +59,12 @@ export const ConfirmModalProvider: FunctionComponent = ({ children }) => {
             confirms.push({
               ...props,
               key,
-              resolver: resolve
+              resolver: resolve,
             });
 
             setWaitingConfirms(confirms);
           });
-        }
+        },
       }}
     >
       {children}
@@ -95,9 +95,9 @@ export const ConfirmModalProvider: FunctionComponent = ({ children }) => {
 export const useConfirmModal = () => {
   const context = useContext(ConfirmModalContext);
   if (!context) {
-    throw new Error('You forgot to use ConfirmModalContext');
+    throw new Error("You forgot to use ConfirmModalContext");
   }
   return context;
 };
 
-export * from './modal';
+export * from "./modal";

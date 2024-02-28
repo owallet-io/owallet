@@ -1,9 +1,9 @@
-import React, { FunctionComponent, useState } from 'react';
-import { FormGroup, Input, Label } from 'reactstrap';
-import { IMemoConfig } from '@owallet/hooks';
-import { observer } from 'mobx-react-lite';
-import classNames from 'classnames';
-import styleMemo from './address-input.module.scss';
+import React, { FunctionComponent, useState } from "react";
+import { FormGroup, Input, Label } from "reactstrap";
+import { IMemoConfig } from "@owallet/hooks";
+import { observer } from "mobx-react-lite";
+import classNames from "classnames";
+import styleMemo from "./address-input.module.scss";
 
 export interface MemoInputProps {
   memoConfig: IMemoConfig;
@@ -23,7 +23,7 @@ export const MemoInput: FunctionComponent<MemoInputProps> = observer(
     const [inputId] = useState(() => {
       const bytes = new Uint8Array(4);
       crypto.getRandomValues(bytes);
-      return `input-${Buffer.from(bytes).toString('hex')}`;
+      return `input-${Buffer.from(bytes).toString("hex")}`;
     });
 
     return (
@@ -35,10 +35,10 @@ export const MemoInput: FunctionComponent<MemoInputProps> = observer(
         ) : null}
         <Input
           id={inputId}
-          className={classNames('form-control-alternative', styleMemo.input)}
+          className={classNames("form-control-alternative", styleMemo.input)}
           type="textarea"
           rows={rows ? rows : 2}
-          style={{ resize: 'none' }}
+          style={{ resize: "none" }}
           value={memoConfig.memo}
           onChange={(e) => {
             memoConfig.setMemo(e.target.value);

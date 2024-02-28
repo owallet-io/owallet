@@ -1,6 +1,6 @@
-import { Currency } from '@owallet/types';
-import { CoinPrimitive } from '../types';
-import { CoinPretty, Dec, Int } from '@owallet/unit';
+import { Currency } from "@owallet/types";
+import { CoinPrimitive } from "../types";
+import { CoinPretty, Dec, Int } from "@owallet/unit";
 
 export class StoreUtils {
   public static getBalancesFromCurrencies(
@@ -30,7 +30,7 @@ export class StoreUtils {
   ): CoinPretty {
     const result = StoreUtils.getBalancesFromCurrencies(
       {
-        [currency.coinMinimalDenom]: currency
+        [currency.coinMinimalDenom]: currency,
       },
       bals
     );

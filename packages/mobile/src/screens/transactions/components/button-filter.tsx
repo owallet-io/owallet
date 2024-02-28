@@ -1,8 +1,8 @@
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import React from 'react';
-import { Text } from '@src/components/text';
-import OWIcon from '@src/components/ow-icon/ow-icon';
-import { useTheme } from '@src/themes/theme-provider';
+import { StyleSheet, TouchableOpacity, View } from "react-native";
+import React from "react";
+import { Text } from "@src/components/text";
+import OWIcon from "@src/components/ow-icon/ow-icon";
+import { useTheme } from "@src/themes/theme-provider";
 
 const ButtonFilter = ({ label, onPress, value }) => {
   const styles = styling();
@@ -13,7 +13,7 @@ const ButtonFilter = ({ label, onPress, value }) => {
       <TouchableOpacity onPress={onPress} style={styles.input}>
         <Text variant="body2">{value}</Text>
         <View>
-          <OWIcon name="down" size={15} color={colors['primary-text']} />
+          <OWIcon name="down" size={15} color={colors["primary-text"]} />
         </View>
       </TouchableOpacity>
     </View>
@@ -27,17 +27,17 @@ const styling = () => {
   return StyleSheet.create({
     input: {
       borderWidth: 0.5,
-      borderColor: colors['border-input-login'],
+      borderColor: colors["border-input-login"],
       height: 39,
       borderRadius: 10,
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
       paddingHorizontal: 20,
-      marginTop: 4
+      marginTop: 4,
     },
     containerInput: {
-      width: '50%'
-    }
+      width: "50%",
+    },
   });
 };

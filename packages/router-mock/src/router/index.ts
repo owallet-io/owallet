@@ -1,21 +1,21 @@
-import { Router, MessageSender, Result } from '@owallet/router';
-import { EventEmitter } from 'events';
+import { Router, MessageSender, Result } from "@owallet/router";
+import { EventEmitter } from "events";
 
 export class MockRouter extends Router {
   public static eventEmitter = new EventEmitter();
 
   listen(port: string): void {
     if (!port) {
-      throw new Error('Empty port');
+      throw new Error("Empty port");
     }
 
     this.port = port;
-    MockRouter.eventEmitter.addListener('message', this.onMessage);
+    MockRouter.eventEmitter.addListener("message", this.onMessage);
   }
 
   unlisten(): void {
-    this.port = '';
-    MockRouter.eventEmitter.removeListener('message', this.onMessage);
+    this.port = "";
+    MockRouter.eventEmitter.removeListener("message", this.onMessage);
   }
 
   protected onMessage = async (params: {
@@ -32,7 +32,7 @@ export class MockRouter extends Router {
     try {
       const result = await this.handleMessage(message, sender);
       sender.resolver({
-        return: result
+        return: result,
       });
       return;
     } catch (e) {
@@ -41,11 +41,11 @@ export class MockRouter extends Router {
       );
       if (e) {
         sender.resolver({
-          error: e.message || e.toString()
+          error: e.message || e.toString(),
         });
       } else {
         sender.resolver({
-          error: 'Unknown error, and error is null'
+          error: "Unknown error, and error is null",
         });
       }
     }
