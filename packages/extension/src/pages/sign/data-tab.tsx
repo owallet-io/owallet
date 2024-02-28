@@ -1,9 +1,9 @@
-import React, { FunctionComponent } from 'react';
-import { observer } from 'mobx-react-lite';
-import { SignDocHelper } from '@owallet/hooks';
+import React, { FunctionComponent } from "react";
+import { observer } from "mobx-react-lite";
+import { SignDocHelper } from "@owallet/hooks";
 
-import style from './style.module.scss';
-import { Buffer } from 'buffer/';
+import style from "./style.module.scss";
+import { Buffer } from "buffer/";
 
 export const DataTab: FunctionComponent<{
   signDocHelper: SignDocHelper;
@@ -15,15 +15,15 @@ export const DataTab: FunctionComponent<{
     signDocJson.txBody.messages.map((mess) => {
       return {
         ...mess,
-        msg: mess?.msg ? Buffer.from(mess?.msg).toString('base64') : ''
+        msg: mess?.msg ? Buffer.from(mess?.msg).toString("base64") : "",
       };
     });
   const signDocJsonAll = messages
     ? {
         ...signDocJson,
         txBody: {
-          messages
-        }
+          messages,
+        },
       }
     : signDocJson;
 
@@ -31,8 +31,8 @@ export const DataTab: FunctionComponent<{
     <pre
       className={style.message}
       style={{
-        color: '#353945',
-        fontSize: 12
+        color: "#353945",
+        fontSize: 12,
       }}
     >
       {JSON.stringify(signDocJsonAll, undefined, 2)}

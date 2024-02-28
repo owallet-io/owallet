@@ -1,15 +1,15 @@
-import React, { FunctionComponent } from 'react'
-import Svg, { Path, Defs, Rect, Stop, LinearGradient } from 'react-native-svg'
+import React, { FunctionComponent } from "react";
+import Svg, { Path, Defs, Rect, Stop, LinearGradient } from "react-native-svg";
 
 export const GiftStakingLogo: FunctionComponent<{
-  width?: number | string
-  height?: number | string
+  width?: number | string;
+  height?: number | string;
 }> = ({ width = 119, height = 149 }) => {
   return (
     <Svg
       style={{
         width,
-        height
+        height,
       }}
       viewBox="0 0 119 149"
       fill={"none"}
@@ -67,5 +67,5 @@ export const GiftStakingLogo: FunctionComponent<{
         </LinearGradient>
       </Defs>
     </Svg>
-  )
-}
+  );
+};

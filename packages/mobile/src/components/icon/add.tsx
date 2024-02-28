@@ -1,10 +1,10 @@
-import React, { FunctionComponent } from 'react'
-import Svg, { Path } from 'react-native-svg'
+import React, { FunctionComponent } from "react";
+import Svg, { Path } from "react-native-svg";
 
 export const AddIcon: FunctionComponent<{
-  color: string
-  size: number
-  onPress?: () => void
+  color: string;
+  size: number;
+  onPress?: () => void;
 }> = ({ color, size = 24, onPress }) => {
   return (
     <Svg
@@ -14,7 +14,7 @@ export const AddIcon: FunctionComponent<{
       viewBox="0 0 24 24"
       style={{
         width: size,
-        height: size
+        height: size,
       }}
     >
       <Path
@@ -36,5 +36,5 @@ export const AddIcon: FunctionComponent<{
         fill={color}
       />
     </Svg>
-  )
-}
+  );
+};

@@ -1,1 +1,1 @@
-export {default as OWEmpty} from './ow-empty';
+export { default as OWEmpty } from "./ow-empty";

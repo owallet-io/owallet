@@ -2,11 +2,11 @@ import React, {
   createContext,
   FunctionComponent,
   useContext,
-  useState
-} from 'react';
-import { Modal } from 'reactstrap';
+  useState,
+} from "react";
+import { Modal } from "reactstrap";
 
-import style from './style.module.scss';
+import style from "./style.module.scss";
 
 export interface LoadingState {
   setIsLoading(type: string, isLoading: boolean): void;
@@ -42,11 +42,11 @@ export const LoadingIndicatorProvider: FunctionComponent = ({ children }) => {
             setLoadingList(
               loadingList.concat({
                 type,
-                isLoading
+                isLoading,
               })
             );
           }
-        }
+        },
       }}
     >
       {isLoading ? (
@@ -67,6 +67,6 @@ export const LoadingIndicatorProvider: FunctionComponent = ({ children }) => {
 export function useLoadingIndicator() {
   const state = useContext(LoadingIndicatorContext);
   if (!state)
-    throw new Error('You probably forgot to use LoadingIndicatorProvider');
+    throw new Error("You probably forgot to use LoadingIndicatorProvider");
   return state;
 }

@@ -1,16 +1,16 @@
-import { BondStatus } from '@owallet/stores';
-import { OWEmpty } from '@src/components/empty';
-import { Text } from '@src/components/text';
-import { useTheme } from '@src/themes/theme-provider';
-import { observer } from 'mobx-react-lite';
-import React, { FunctionComponent } from 'react';
-import { useIntl } from 'react-intl';
-import { View, ViewStyle } from 'react-native';
-import { CardBody, OWBox } from '../../../components/card';
-import { ProgressBar } from '../../../components/progress-bar';
-import { ValidatorThumbnail } from '../../../components/thumbnail';
-import { useStore } from '../../../stores';
-import { useStyle } from '../../../styles';
+import { BondStatus } from "@owallet/stores";
+import { OWEmpty } from "@src/components/empty";
+import { Text } from "@src/components/text";
+import { useTheme } from "@src/themes/theme-provider";
+import { observer } from "mobx-react-lite";
+import React, { FunctionComponent } from "react";
+import { useIntl } from "react-intl";
+import { View, ViewStyle } from "react-native";
+import { CardBody, OWBox } from "../../../components/card";
+import { ProgressBar } from "../../../components/progress-bar";
+import { ValidatorThumbnail } from "../../../components/thumbnail";
+import { useStore } from "../../../stores";
+import { useStyle } from "../../../styles";
 
 export const UndelegationsCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -43,14 +43,14 @@ export const UndelegationsCard: FunctionComponent<{
   return (
     <OWBox
       style={{
-        paddingTop: 0
+        paddingTop: 0,
       }}
     >
       <CardBody>
         <Text
           style={[
-            { color: colors['primary-text'] },
-            style.flatten(['h6', 'self-center'])
+            { color: colors["primary-text"] },
+            style.flatten(["h6", "self-center"]),
           ]}
         >
           My Unstaking
@@ -81,26 +81,26 @@ export const UndelegationsCard: FunctionComponent<{
               <View
                 key={unbonding.validatorAddress}
                 style={style.flatten(
-                  ['padding-y-16'],
-                  [isLastUnbondingIndex && 'padding-bottom-8']
+                  ["padding-y-16"],
+                  [isLastUnbondingIndex && "padding-bottom-8"]
                 )}
               >
-                <View style={style.flatten(['flex-row', 'items-center'])}>
+                <View style={style.flatten(["flex-row", "items-center"])}>
                   <ValidatorThumbnail
                     size={32}
                     url={thumbnail}
                     style={{
-                      backgroundColor: colors['purple-100'],
-                      borderRadius: 32
+                      backgroundColor: colors["purple-100"],
+                      borderRadius: 32,
                     }}
                   />
                   <Text
                     style={[
-                      { color: colors['primary-text'] },
-                      style.flatten(['margin-left-16', 'h7'])
+                      { color: colors["primary-text"] },
+                      style.flatten(["margin-left-16", "h7"]),
                     ]}
                   >
-                    {validator?.description.moniker ?? '...'}
+                    {validator?.description.moniker ?? "..."}
                   </Text>
                 </View>
 
@@ -121,22 +121,22 @@ export const UndelegationsCard: FunctionComponent<{
                     if (relativeEndTimeDays) {
                       return (
                         intl
-                          .formatRelativeTime(relativeEndTimeDays, 'days', {
-                            numeric: 'always'
+                          .formatRelativeTime(relativeEndTimeDays, "days", {
+                            numeric: "always",
                           })
-                          .replace('in ', '') + ' left'
+                          .replace("in ", "") + " left"
                       );
                     } else if (relativeEndTimeHours) {
                       return (
                         intl
-                          .formatRelativeTime(relativeEndTimeHours, 'hours', {
-                            numeric: 'always'
+                          .formatRelativeTime(relativeEndTimeHours, "hours", {
+                            numeric: "always",
                           })
-                          .replace('in ', '') + ' left'
+                          .replace("in ", "") + " left"
                       );
                     }
 
-                    return '';
+                    return "";
                   })();
                   const progress = (() => {
                     const currentTime = new Date().getTime();
@@ -154,20 +154,20 @@ export const UndelegationsCard: FunctionComponent<{
                   return (
                     <View
                       key={i.toString()}
-                      style={style.flatten(['padding-top-12'])}
+                      style={style.flatten(["padding-top-12"])}
                     >
                       <View
                         style={style.flatten([
-                          'flex-row',
-                          'items-center',
-                          'margin-bottom-8'
+                          "flex-row",
+                          "items-center",
+                          "margin-bottom-8",
                         ])}
                       >
                         <Text
                           style={[
-                            { color: colors['primary-text'] },
+                            { color: colors["primary-text"] },
                             ,
-                            style.flatten(['subtitle2'])
+                            style.flatten(["subtitle2"]),
                           ]}
                         >
                           {entry.balance
@@ -176,11 +176,11 @@ export const UndelegationsCard: FunctionComponent<{
                             .maxDecimals(6)
                             .toString()}
                         </Text>
-                        <View style={style.get('flex-1')} />
+                        <View style={style.get("flex-1")} />
                         <Text
                           style={style.flatten([
-                            'body2',
-                            'color-text-black-low'
+                            "body2",
+                            "color-text-black-low",
                           ])}
                         >
                           {remainingText}
@@ -196,10 +196,10 @@ export const UndelegationsCard: FunctionComponent<{
               {!isLastUnbondingIndex && (
                 <View
                   style={[
-                    style.flatten(['height-1']),
+                    style.flatten(["height-1"]),
                     {
-                      backgroundColor: colors['border-input-login']
-                    }
+                      backgroundColor: colors["border-input-login"],
+                    },
                   ]}
                 />
               )}

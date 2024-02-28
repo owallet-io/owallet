@@ -1,22 +1,21 @@
-import React, { FunctionComponent } from 'react';
-import { View, Image, StyleSheet } from 'react-native';
+import React, { FunctionComponent } from "react";
+import { View, Image, StyleSheet } from "react-native";
 
 export const OWalletLogo = ({
   size,
-  theme
+  theme,
 }: {
   size?: number;
-  theme?: 'dark' | 'light';
+  theme?: "dark" | "light";
 }) => {
   return (
     <View style={styles.container}>
       <Image
         style={{
           width: size || 120,
-          height: size || 120
+          height: size || 120,
         }}
-        source={require('../../assets/logo/logo_transparent.png')
-        }
+        source={require("../../assets/logo/logo_transparent.png")}
         resizeMode="contain"
         fadeDuration={0}
       />
@@ -24,15 +23,15 @@ export const OWalletLogo = ({
   );
 };
 
-export const OWalletUnion: FunctionComponent = ({theme}) => {
+export const OWalletUnion: FunctionComponent = ({ theme }) => {
   return (
     <View style={styles.container}>
       <Image
         style={{
           width: 28,
-          height: 16
+          height: 16,
         }}
-        source={require('../../assets/logo/Union.png')}
+        source={require("../../assets/logo/Union.png")}
         resizeMode="contain"
         fadeDuration={0}
       />
@@ -46,9 +45,9 @@ export const OWalletStar: FunctionComponent = () => {
       <Image
         style={{
           width: 20,
-          height: 20
+          height: 20,
         }}
-        source={require('../../assets/logo/splash-star.png')}
+        source={require("../../assets/logo/splash-star.png")}
         resizeMode="contain"
         fadeDuration={0}
       />
@@ -58,8 +57,8 @@ export const OWalletStar: FunctionComponent = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center'
-  }
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
 });

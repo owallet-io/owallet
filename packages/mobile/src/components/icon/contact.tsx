@@ -1,10 +1,10 @@
-import React, { FunctionComponent } from 'react';
-import Svg, { Path } from 'react-native-svg';
+import React, { FunctionComponent } from "react";
+import Svg, { Path } from "react-native-svg";
 
 export const ContactIcon: FunctionComponent<{
   color?: string;
   size?: number;
-}> = ({ color = '#292D32', size = 24 }) => {
+}> = ({ color = "#292D32", size = 24 }) => {
   return (
     <Svg
       width={size}

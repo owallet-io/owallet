@@ -1,6 +1,6 @@
-import React, { FunctionComponent } from 'react';
-import Svg, { Path, Rect, G, Defs, ClipPath } from 'react-native-svg';
-import { IconProps } from './arrow';
+import React, { FunctionComponent } from "react";
+import Svg, { Path, Rect, G, Defs, ClipPath } from "react-native-svg";
+import { IconProps } from "./arrow";
 
 export const SendIcon: FunctionComponent<{
   color?: string;
@@ -32,7 +32,7 @@ export const SendIcon: FunctionComponent<{
 export const FastIcon: FunctionComponent<{
   color?: string;
   size?: number;
-}> = ({ color = 'none', size = 20 }) => {
+}> = ({ color = "none", size = 20 }) => {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
       <Path
@@ -46,7 +46,7 @@ export const FastIcon: FunctionComponent<{
 export const LowIcon: FunctionComponent<{
   color?: string;
   size?: number;
-}> = ({ color = 'none', size = 20 }) => {
+}> = ({ color = "none", size = 20 }) => {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
       <Path
@@ -74,7 +74,7 @@ export const LowIcon: FunctionComponent<{
 export const AverageIcon: FunctionComponent<{
   color?: string;
   size?: number;
-}> = ({ color = 'none', size = 20 }) => {
+}> = ({ color = "none", size = 20 }) => {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
       <Path
@@ -116,7 +116,7 @@ export const AverageIcon: FunctionComponent<{
 export const SendWithinNetworkIcon: FunctionComponent<{
   color?: string;
   size?: number;
-}> = ({ size = 45, color = 'none' }) => {
+}> = ({ size = 45, color = "none" }) => {
   return (
     <Svg width={size} height={size} viewBox="0 0 45 44" fill={color}>
       <Rect x="0.75" width="44" height="44" rx="6" fill="#F8EFFF" />
@@ -159,7 +159,7 @@ export const SendWithinNetworkIcon: FunctionComponent<{
 export const SendCrossChainIcon: FunctionComponent<{
   color?: string;
   size?: number;
-}> = ({ size = 45, color = 'none' }) => {
+}> = ({ size = 45, color = "none" }) => {
   return (
     <Svg width={size} height={size} viewBox="0 0 45 44" fill={color}>
       <Rect x="0.25" width="44" height="44" rx="6" fill="#EBF1FA" />
@@ -202,7 +202,7 @@ export const SendCrossChainIcon: FunctionComponent<{
 export const SendBridgeIcon: FunctionComponent<{
   color?: string;
   size?: number;
-}> = ({ size = 45, color = 'none' }) => {
+}> = ({ size = 45, color = "none" }) => {
   return (
     <Svg width={size} height={size} viewBox="0 0 45 44" fill={color}>
       <Rect x="0.75" width="44" height="44" rx="6" fill="#FFF6E9" />
@@ -245,7 +245,7 @@ export const SendBridgeIcon: FunctionComponent<{
 export const SendQRCodeIcon: FunctionComponent<{
   color?: string;
   size?: number;
-}> = ({ size = 45, color = 'none' }) => {
+}> = ({ size = 45, color = "none" }) => {
   return (
     <Svg width={size} height={size} viewBox="0 0 45 44" fill={color}>
       <Rect x="0.25" width="44" height="44" rx="6" fill="#F3F1F5" />
@@ -302,7 +302,7 @@ export const LowIconFill: FunctionComponent<IconProps> = ({ color, size }) => {
 
 export const AverageIconFill: FunctionComponent<IconProps> = ({
   color,
-  size
+  size,
 }) => {
   return (
     <Svg width={size} height={size} viewBox="0 0 22 15" fill={color}>
@@ -316,12 +316,7 @@ export const AverageIconFill: FunctionComponent<IconProps> = ({
 
 export const FastIconFill: FunctionComponent<IconProps> = ({ color, size }) => {
   return (
-    <Svg
-      width={size}
-      height={size}
-      viewBox="0 0 16 16"
-      fill={color}
-    >
+    <Svg width={size} height={size} viewBox="0 0 16 16" fill={color}>
       <Path
         fill-rule="evenodd"
         clip-rule="evenodd"

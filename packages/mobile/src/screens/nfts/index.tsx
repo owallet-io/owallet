@@ -1,2 +1,2 @@
-export * from './nfts'
-export * from './nft-detail'
+export * from "./nfts";
+export * from "./nft-detail";

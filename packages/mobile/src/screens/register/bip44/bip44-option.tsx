@@ -1,6 +1,6 @@
-import { action, computed, makeObservable, observable } from 'mobx';
-import { BIP44HDPath } from '@owallet/types';
-import { useState } from 'react';
+import { action, computed, makeObservable, observable } from "mobx";
+import { BIP44HDPath } from "@owallet/types";
+import { useState } from "react";
 
 export class BIP44Option {
   @observable
@@ -43,13 +43,13 @@ export class BIP44Option {
         coinType: this.coinType,
         account: this.account,
         change: this.change,
-        addressIndex: this.index
+        addressIndex: this.index,
       };
     }
     return {
       account: this.account,
       change: this.change,
-      addressIndex: this.index
+      addressIndex: this.index,
     };
   }
 

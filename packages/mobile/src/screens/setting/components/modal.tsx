@@ -1,5 +1,5 @@
-import React from 'react';
-import { Modal } from 'react-native';
+import React from "react";
+import { Modal } from "react-native";
 
 export const ModalComponent = ({
   children,
@@ -8,7 +8,7 @@ export const ModalComponent = ({
   onRequestClose,
   transparent = true,
   animationType,
-  presentationStyle
+  presentationStyle,
 }) => {
   return (
     <Modal

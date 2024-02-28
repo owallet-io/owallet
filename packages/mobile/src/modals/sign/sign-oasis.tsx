@@ -1,24 +1,24 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
-import { registerModal } from '../base';
-import { CardModal } from '../card';
-import { Text, View, KeyboardAvoidingView, Platform } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
-import { useStyle } from '../../styles';
-import { useStore } from '../../stores';
-import { Button } from '../../components/button';
-import { colors } from '../../themes';
-import { observer } from 'mobx-react-lite';
-import { useUnmount } from '../../hooks';
-import { BottomSheetProps } from '@gorhom/bottom-sheet';
-import { showToast } from '@src/utils/helper';
+import React, { FunctionComponent, useEffect, useState } from "react";
+import { registerModal } from "../base";
+import { CardModal } from "../card";
+import { Text, View, KeyboardAvoidingView, Platform } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
+import { useStyle } from "../../styles";
+import { useStore } from "../../stores";
+import { Button } from "../../components/button";
+import { colors } from "../../themes";
+import { observer } from "mobx-react-lite";
+import { useUnmount } from "../../hooks";
+import { BottomSheetProps } from "@gorhom/bottom-sheet";
+import { showToast } from "@src/utils/helper";
 
-const keyboardVerticalOffset = Platform.OS === 'ios' ? 130 : 0;
+const keyboardVerticalOffset = Platform.OS === "ios" ? 130 : 0;
 
 export const SignOasisModal: FunctionComponent<{
   isOpen?: boolean;
   close: () => void;
   onSuccess: () => void;
-  bottomSheetModalConfig?: Omit<BottomSheetProps, 'snapPoints' | 'children'>;
+  bottomSheetModalConfig?: Omit<BottomSheetProps, "snapPoints" | "children">;
   data: object;
 }> = registerModal(
   observer(({ data, close, onSuccess }) => {
@@ -50,24 +50,36 @@ export const SignOasisModal: FunctionComponent<{
 
     return (
       <CardModal>
-        <KeyboardAvoidingView behavior="position" keyboardVerticalOffset={keyboardVerticalOffset}>
-          <View style={style.flatten(['margin-bottom-16'])}>
-            <Text style={style.flatten(['margin-bottom-3'])}>
-              <Text style={style.flatten(['subtitle3', 'color-primary'])}>{`1 `}</Text>
-              <Text style={style.flatten(['subtitle3', 'color-text-black-medium'])}>Message:</Text>
+        <KeyboardAvoidingView
+          behavior="position"
+          keyboardVerticalOffset={keyboardVerticalOffset}
+        >
+          <View style={style.flatten(["margin-bottom-16"])}>
+            <Text style={style.flatten(["margin-bottom-3"])}>
+              <Text
+                style={style.flatten(["subtitle3", "color-primary"])}
+              >{`1 `}</Text>
+              <Text
+                style={style.flatten(["subtitle3", "color-text-black-medium"])}
+              >
+                Message:
+              </Text>
             </Text>
             <View
               style={style.flatten([
-                'border-radius-8',
-                'border-width-1',
-                'border-color-border-white',
-                'overflow-hidden'
+                "border-radius-8",
+                "border-width-1",
+                "border-color-border-white",
+                "overflow-hidden",
               ])}
             >
-              <ScrollView style={style.flatten(['max-height-214'])} persistentScrollbar={true}>
+              <ScrollView
+                style={style.flatten(["max-height-214"])}
+                persistentScrollbar={true}
+              >
                 <Text
                   style={{
-                    color: colors['sub-text']
+                    color: colors["sub-text"],
                   }}
                 >
                   {JSON.stringify(dataSign, null, 2)}
@@ -78,23 +90,23 @@ export const SignOasisModal: FunctionComponent<{
 
           <View
             style={{
-              flexDirection: 'row',
-              justifyContent: 'space-evenly'
+              flexDirection: "row",
+              justifyContent: "space-evenly",
             }}
           >
             <Button
               text="Reject"
               size="large"
               containerStyle={{
-                width: '40%'
+                width: "40%",
               }}
               style={{
-                backgroundColor: colors['red-500']
+                backgroundColor: colors["red-500"],
               }}
               textStyle={{
-                color: colors['white']
+                color: colors["white"],
               }}
-              underlayColor={colors['danger-400']}
+              underlayColor={colors["danger-400"]}
               loading={signInteractionStore.isLoading || loading}
               disabled={signInteractionStore.isLoading || loading}
               onPress={_onPressReject}
@@ -104,13 +116,15 @@ export const SignOasisModal: FunctionComponent<{
               size="large"
               disabled={signInteractionStore.isLoading || loading}
               containerStyle={{
-                width: '40%'
+                width: "40%",
               }}
               textStyle={{
-                color: colors['white']
+                color: colors["white"],
               }}
               style={{
-                backgroundColor: signInteractionStore.isLoading ? colors['gray-400'] : colors['purple-900']
+                backgroundColor: signInteractionStore.isLoading
+                  ? colors["gray-400"]
+                  : colors["purple-900"],
               }}
               loading={signInteractionStore.isLoading || loading}
               onPress={async () => {
@@ -118,20 +132,26 @@ export const SignOasisModal: FunctionComponent<{
                 try {
                   if (dataSign.amount < 0.1) {
                     showToast({
-                      message: 'Minimum amount should be higher than 0.1!',
-                      type: 'danger'
+                      message: "Minimum amount should be higher than 0.1!",
+                      type: "danger",
                     });
                     return;
                   }
-                  if (dataSign.maxAmount && Number(dataSign.amount) > Number(dataSign.maxAmount)) {
+                  if (
+                    dataSign.maxAmount &&
+                    Number(dataSign.amount) > Number(dataSign.maxAmount)
+                  ) {
                     showToast({
                       message: `Too large amount!`,
-                      type: 'danger'
+                      type: "danger",
                     });
                     return;
                   }
                   //@ts-ignore
-                  await window.oasis.signOasis(dataSign.amount, dataSign.address);
+                  await window.oasis.signOasis(
+                    dataSign.amount,
+                    dataSign.address
+                  );
                   setLoading(false);
                   close();
                   onSuccess();
@@ -139,10 +159,12 @@ export const SignOasisModal: FunctionComponent<{
                   signInteractionStore.rejectAll();
                   close();
                   showToast({
-                    message: error?.message ?? 'Something went wrong! Please try again later.',
-                    type: 'danger'
+                    message:
+                      error?.message ??
+                      "Something went wrong! Please try again later.",
+                    type: "danger",
                   });
-                  console.log('error tx builder Oasis', error);
+                  console.log("error tx builder Oasis", error);
                 }
               }}
             />
@@ -152,6 +174,6 @@ export const SignOasisModal: FunctionComponent<{
     );
   }),
   {
-    disableSafeArea: true
+    disableSafeArea: true,
   }
 );

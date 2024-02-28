@@ -1,13 +1,13 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
-import { observer } from 'mobx-react-lite';
-import styles from './nft-details.module.scss';
-import { HeaderLayout } from '../../layouts';
-import { SelectChain } from '../../layouts/header';
-import { Button, Card, CardBody } from 'reactstrap';
-import { useStore } from '../../stores';
-import { InfoNft, NftContract } from './types';
-import * as cosmwasm from '@cosmjs/cosmwasm-stargate';
-import { generateMsgAllNft } from '../helpers';
+import React, { FunctionComponent, useEffect, useState } from "react";
+import { observer } from "mobx-react-lite";
+import styles from "./nft-details.module.scss";
+import { HeaderLayout } from "../../layouts";
+import { SelectChain } from "../../layouts/header";
+import { Button, Card, CardBody } from "reactstrap";
+import { useStore } from "../../stores";
+import { InfoNft, NftContract } from "./types";
+import * as cosmwasm from "@cosmjs/cosmwasm-stargate";
+import { generateMsgAllNft } from "../helpers";
 
 export const NftDetailsPage: FunctionComponent<{
   match?: {
@@ -16,7 +16,7 @@ export const NftDetailsPage: FunctionComponent<{
     };
   };
 }> = observer(({ match }) => {
-  const nftId = match?.params?.nftId || '';
+  const nftId = match?.params?.nftId || "";
   const [info, setInfo] = useState<InfoNft>({});
   const [isLoading, setIsLoading] = useState(false);
   const { chainStore } = useStore();
@@ -24,19 +24,20 @@ export const NftDetailsPage: FunctionComponent<{
     try {
       if (!nftId) return;
       setIsLoading(true);
-      const client = await cosmwasm.CosmWasmClient.connect(chainStore.current.rpc);
-      const msg = generateMsgAllNft(nftId)
+      const client = await cosmwasm.CosmWasmClient.connect(
+        chainStore.current.rpc
+      );
+      const msg = generateMsgAllNft(nftId);
       const res = await client.queryContractSmart(NftContract, msg);
       if (res) {
         setInfo({
           ...res?.info?.extension,
           ...res?.access,
           token_uri: res?.info?.token_uri,
-          tokenId: nftId
+          tokenId: nftId,
         });
       }
     } catch (error) {
-      
     } finally {
       setIsLoading(false);
     }
@@ -52,7 +53,7 @@ export const NftDetailsPage: FunctionComponent<{
         style={{
           fontSize: 24,
           fontWeight: 500,
-          textAlign: 'center'
+          textAlign: "center",
         }}
       >
         NFT Detail
@@ -61,10 +62,10 @@ export const NftDetailsPage: FunctionComponent<{
         {isLoading ? (
           <span
             style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              height: 300
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: 300,
             }}
           >
             <i className="fas fa-spinner fa-spin" />
@@ -74,32 +75,36 @@ export const NftDetailsPage: FunctionComponent<{
             <img
               src={info.token_uri}
               className={styles.imgDetail}
-              alt={'details'}
+              alt={"details"}
               style={{
-                border: '0.5px solid #E4E4E4',
-                borderRadius: 12
+                border: "0.5px solid #E4E4E4",
+                borderRadius: 12,
               }}
               onError={({ currentTarget }) => {
                 currentTarget.onerror = null;
-                currentTarget.src = require('./img/not-found.png');
+                currentTarget.src = require("./img/not-found.png");
               }}
             />
-            <div className={styles.imgName}>{info?.image || '-'}</div>
+            <div className={styles.imgName}>{info?.image || "-"}</div>
             <div className={styles.content}>
               <div className={styles.tokenId}>
-                <img src={require('./img/layer.png')} alt={'layer'} />
+                <img src={require("./img/layer.png")} alt={"layer"} />
                 <span>{info?.tokenId}</span>
               </div>
               <span>{info?.name}</span>
             </div>
-            <div className={styles.rightContent}>{info?.description || '-'}</div>
-            <div className={styles.rightContent}>{info?.external_url || '-'}</div>
-            <div className={styles.rightContent}>{info?.image_data || '-'}</div>
+            <div className={styles.rightContent}>
+              {info?.description || "-"}
+            </div>
+            <div className={styles.rightContent}>
+              {info?.external_url || "-"}
+            </div>
+            <div className={styles.rightContent}>{info?.image_data || "-"}</div>
             <div
               className={styles.rightContent}
               style={{
-                cursor: 'pointer',
-                color: 'blue'
+                cursor: "pointer",
+                color: "blue",
               }}
               onClick={() => window.open(info?.youtube_url)}
             >

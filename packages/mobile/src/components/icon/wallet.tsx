@@ -1,10 +1,10 @@
-import React, { FunctionComponent } from 'react';
-import Svg, { Path } from 'react-native-svg';
+import React, { FunctionComponent } from "react";
+import Svg, { Path } from "react-native-svg";
 
 export const WalletIcon: FunctionComponent<{
   color?: string;
   size?: number;
-}> = ({ color = '#292D32', size = 24 }) => {
+}> = ({ color = "#292D32", size = 24 }) => {
   return (
     <Svg fill="none" width="24" height="24" viewBox="0 0 24 24">
       <Path

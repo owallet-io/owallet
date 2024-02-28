@@ -1,26 +1,52 @@
-import { InteractionManager, StyleSheet, Text, View } from 'react-native';
-import React, { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
-import { AddressInput, AmountInput, CurrencySelector, FeeButtons, MemoInput, TextInput } from '@src/components/input';
-import { OWButton } from '@src/components/button';
-import { PageWithScrollView } from '@src/components/page';
-import { createTransaction, calculatorFee, formatBalance, BtcToSats, validateAddress } from '@owallet/bitcoin';
-import { OWSubTitleHeader } from '@src/components/header';
-import { OWBox } from '@src/components/card';
-import { useSendTxConfig } from '@owallet/hooks';
-import { useStore } from '@src/stores';
-import { TypeTheme, useTheme } from '@src/themes/theme-provider';
-import { spacing } from '@src/themes';
-import { Dec, DecUtils } from '@owallet/unit';
-import { observer } from 'mobx-react-lite';
-import { useSmartNavigation } from '@src/navigation.provider';
-import { navigate } from '@src/router/root';
-import { SCREENS } from '@src/common/constants';
-import { showToast } from '@src/utils/helper';
-import { RouteProp, useRoute } from '@react-navigation/native';
-import { EthereumEndpoint } from '@owallet/common';
+import { InteractionManager, StyleSheet, Text, View } from "react-native";
+import React, {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import {
+  AddressInput,
+  AmountInput,
+  CurrencySelector,
+  FeeButtons,
+  MemoInput,
+  TextInput,
+} from "@src/components/input";
+import { OWButton } from "@src/components/button";
+import { PageWithScrollView } from "@src/components/page";
+import {
+  createTransaction,
+  calculatorFee,
+  formatBalance,
+  BtcToSats,
+  validateAddress,
+} from "@owallet/bitcoin";
+import { OWSubTitleHeader } from "@src/components/header";
+import { OWBox } from "@src/components/card";
+import { useSendTxConfig } from "@owallet/hooks";
+import { useStore } from "@src/stores";
+import { TypeTheme, useTheme } from "@src/themes/theme-provider";
+import { spacing } from "@src/themes";
+import { Dec, DecUtils } from "@owallet/unit";
+import { observer } from "mobx-react-lite";
+import { useSmartNavigation } from "@src/navigation.provider";
+import { navigate } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
+import { showToast } from "@src/utils/helper";
+import { RouteProp, useRoute } from "@react-navigation/native";
+import { EthereumEndpoint } from "@owallet/common";
 
 export const SendBtcScreen: FunctionComponent = observer(({}) => {
-  const { chainStore, accountStore, keyRingStore, queriesStore, analyticsStore, sendStore } = useStore();
+  const {
+    chainStore,
+    accountStore,
+    keyRingStore,
+    queriesStore,
+    analyticsStore,
+    sendStore,
+  } = useStore();
   const route = useRoute<
     RouteProp<
       Record<
@@ -33,15 +59,19 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
       string
     >
   >();
-  const chainId = route?.params?.chainId ? route?.params?.chainId : chainStore.current.chainId;
+  const chainId = route?.params?.chainId
+    ? route?.params?.chainId
+    : chainStore.current.chainId;
   const queries = queriesStore.get(chainId);
   const account = accountStore.getAccount(chainId);
-  const address = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
+  const address = account.getAddressDisplay(
+    keyRingStore.keyRingLedgerAddresses
+  );
 
   const sendConfigs = useSendTxConfig(
     chainStore,
     chainId,
-    account.msgOpts['send'],
+    account.msgOpts["send"],
     address,
     queries.queryBalances,
     EthereumEndpoint,
@@ -50,7 +80,9 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
     queries.bitcoin.queryBitcoinBalance
   );
 
-  const data = queries.bitcoin.queryBitcoinBalance.getQueryBalance(address)?.response?.data;
+  const data =
+    queries.bitcoin.queryBitcoinBalance.getQueryBalance(address)?.response
+      ?.data;
   const utxos = data?.utxos;
   const confirmedBalance = data?.balance;
   const sendConfigError =
@@ -63,9 +95,14 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
   const { colors } = useTheme();
   const refreshBalance = async (address) => {
     try {
-      await queries.bitcoin.queryBitcoinBalance.getQueryBalance(address)?.waitFreshResponse();
+      await queries.bitcoin.queryBitcoinBalance
+        .getQueryBalance(address)
+        ?.waitFreshResponse();
     } catch (error) {
-      console.log('🚀 ~ file: send-btc.tsx:112 ~ refreshBalance ~ error:', error);
+      console.log(
+        "🚀 ~ file: send-btc.tsx:112 ~ refreshBalance ~ error:",
+        error
+      );
     }
   };
   useEffect(() => {
@@ -93,20 +130,20 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
           preferNoSetFee: true,
           preferNoSetMemo: true,
           networkType: chainStore.current.networkType,
-          chainId: chainId
+          chainId: chainId,
         },
 
         {
           onFulfill: async (tx) => {
-            console.log('🚀 ~ file: send-btc.tsx:109 ~ onSend ~ tx:', tx);
+            console.log("🚀 ~ file: send-btc.tsx:109 ~ onSend ~ tx:", tx);
 
             if (tx) {
               navigate(SCREENS.STACK.Others, {
                 screen: SCREENS.TxSuccessResult,
                 params: {
                   txHash: tx,
-                  chainId: chainId
-                }
+                  chainId: chainId,
+                },
               });
             }
 
@@ -114,45 +151,54 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
           },
           onBroadcasted: async (txHash) => {
             try {
-              analyticsStore.logEvent('Send Btc tx broadcasted', {
+              analyticsStore.logEvent("Send Btc tx broadcasted", {
                 chainId: chainId,
                 chainName: chainStore.current.chainName,
-                feeType: sendConfigs.feeConfig.feeType
+                feeType: sendConfigs.feeConfig.feeType,
               });
 
               return;
             } catch (error) {
-              console.log('🚀 ~ file: send-btc.tsx:149 ~ onBroadcasted: ~ error:', error);
+              console.log(
+                "🚀 ~ file: send-btc.tsx:149 ~ onBroadcasted: ~ error:",
+                error
+              );
             }
-          }
+          },
         },
         {
           confirmedBalance: confirmedBalance,
           utxos: utxos,
           blacklistedUtxos: [],
           amount: BtcToSats(Number(sendConfigs.amountConfig.amount)),
-          feeRate: sendConfigs.feeConfig.feeRate[sendConfigs.feeConfig.feeType]
+          feeRate: sendConfigs.feeConfig.feeRate[sendConfigs.feeConfig.feeType],
         }
       );
     } catch (error) {
       if (error?.message) {
         showToast({
           message: error?.message,
-          type: 'danger'
+          type: "danger",
         });
         return;
       }
       showToast({
-        type: 'danger',
-        message: JSON.stringify(error)
+        type: "danger",
+        message: JSON.stringify(error),
       });
-      console.log('🚀 ~ file: send-btc.tsx:146 ~ onSend ~ error:', error);
+      console.log("🚀 ~ file: send-btc.tsx:146 ~ onSend ~ error:", error);
     }
-  }, [chainStore.current.networkType, chainId, utxos, address, confirmedBalance]);
+  }, [
+    chainStore.current.networkType,
+    chainId,
+    utxos,
+    address,
+    confirmedBalance,
+  ]);
 
   const styles = styling(colors);
   return (
-    <PageWithScrollView backgroundColor={colors['background']}>
+    <PageWithScrollView backgroundColor={colors["background"]}>
       <View style={{ marginBottom: 99 }}>
         {/* <OWSubTitleHeader title="Send" /> */}
         <OWBox>
@@ -163,7 +209,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
             labelStyle={styles.sendlabelInput}
             containerStyle={styles.containerStyle}
             selectorContainerStyle={{
-              backgroundColor: colors['background-box']
+              backgroundColor: colors["background-box"],
             }}
           />
           <AddressInput
@@ -173,7 +219,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
             memoConfig={sendConfigs.memoConfig}
             labelStyle={styles.sendlabelInput}
             inputContainerStyle={{
-              backgroundColor: colors['background-box']
+              backgroundColor: colors["background-box"],
             }}
           />
           <AmountInput
@@ -183,7 +229,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
             amountConfig={sendConfigs.amountConfig}
             labelStyle={styles.sendlabelInput}
             inputContainerStyle={{
-              backgroundColor: colors['background-box']
+              backgroundColor: colors["background-box"],
             }}
           />
 
@@ -191,7 +237,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
             label="Message (Optional)"
             placeholder="Type your message here"
             inputContainerStyle={{
-              backgroundColor: colors['background-box']
+              backgroundColor: colors["background-box"],
             }}
             memoConfig={sendConfigs.memoConfig}
             labelStyle={styles.sendlabelInput}
@@ -234,41 +280,45 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
             selectTextOnFocus={false}
             value={totalFee.feeDisplay || '0'}
           /> */}
-          <OWButton disabled={!account.isReadyToSendMsgs || !txStateIsValid} label="Send" onPress={onSend} />
+          <OWButton
+            disabled={!account.isReadyToSendMsgs || !txStateIsValid}
+            label="Send"
+            onPress={onSend}
+          />
         </OWBox>
       </View>
     </PageWithScrollView>
   );
 });
 
-const styling = (colors: TypeTheme['colors']) =>
+const styling = (colors: TypeTheme["colors"]) =>
   StyleSheet.create({
     txtFee: {
-      fontWeight: '700',
+      fontWeight: "700",
       fontSize: 16,
       lineHeight: 34,
       paddingHorizontal: 8,
-      color: colors['primary-text']
+      color: colors["primary-text"],
     },
     containerToggle: {
-      flexDirection: 'row',
+      flexDirection: "row",
       paddingBottom: 24,
-      alignItems: 'center'
+      alignItems: "center",
     },
     sendInputRoot: {
-      paddingHorizontal: spacing['20'],
-      paddingVertical: spacing['24'],
-      backgroundColor: colors['primary'],
-      borderRadius: 24
+      paddingHorizontal: spacing["20"],
+      paddingVertical: spacing["24"],
+      backgroundColor: colors["primary"],
+      borderRadius: 24,
     },
     sendlabelInput: {
       fontSize: 16,
-      fontWeight: '700',
+      fontWeight: "700",
       lineHeight: 22,
-      color: colors['sub-primary-text'],
-      marginBottom: spacing['8']
+      color: colors["sub-primary-text"],
+      marginBottom: spacing["8"],
     },
     containerStyle: {
-      backgroundColor: colors['background-box']
-    }
+      backgroundColor: colors["background-box"],
+    },
   });

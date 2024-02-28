@@ -1,21 +1,27 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
-import { observer } from 'mobx-react-lite';
-import { RouteProp, useRoute } from '@react-navigation/native';
-import { useTheme } from '@src/themes/theme-provider';
-import { RegisterConfig } from '@owallet/hooks';
-import { useSmartNavigation } from '../../../navigation.provider';
-import { Controller, useForm } from 'react-hook-form';
-import { TextInput } from '../../../components/input';
-import { Platform, PermissionsAndroid, StyleSheet, View, TouchableOpacity } from 'react-native';
-import { useStore } from '../../../stores';
-import { useBIP44Option } from '../bip44';
-import { checkRouter, navigate } from '../../../router/root';
-import { metrics } from '../../../themes';
-import OWButton from '../../../components/button/OWButton';
-import OWIcon from '../../../components/ow-icon/ow-icon';
-import { SCREENS } from '@src/common/constants';
-import { KeyRingStatus } from '@owallet/background';
-import OWText from '@src/components/text/ow-text';
+import React, { FunctionComponent, useEffect, useState } from "react";
+import { observer } from "mobx-react-lite";
+import { RouteProp, useRoute } from "@react-navigation/native";
+import { useTheme } from "@src/themes/theme-provider";
+import { RegisterConfig } from "@owallet/hooks";
+import { useSmartNavigation } from "../../../navigation.provider";
+import { Controller, useForm } from "react-hook-form";
+import { TextInput } from "../../../components/input";
+import {
+  Platform,
+  PermissionsAndroid,
+  StyleSheet,
+  View,
+  TouchableOpacity,
+} from "react-native";
+import { useStore } from "../../../stores";
+import { useBIP44Option } from "../bip44";
+import { checkRouter, navigate } from "../../../router/root";
+import { metrics } from "../../../themes";
+import OWButton from "../../../components/button/OWButton";
+import OWIcon from "../../../components/ow-icon/ow-icon";
+import { SCREENS } from "@src/common/constants";
+import { KeyRingStatus } from "@owallet/background";
+import OWText from "@src/components/text/ow-text";
 
 interface FormData {
   name: string;
@@ -23,7 +29,7 @@ interface FormData {
   confirmPassword: string;
 }
 
-export const NewLedgerScreen: FunctionComponent = observer(props => {
+export const NewLedgerScreen: FunctionComponent = observer((props) => {
   const route = useRoute<
     RouteProp<
       Record<
@@ -52,7 +58,7 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
     handleSubmit,
     setFocus,
     getValues,
-    formState: { errors }
+    formState: { errors },
   } = useForm<FormData>();
 
   const [isCreating, setIsCreating] = useState(false);
@@ -64,21 +70,26 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
 
     try {
       // Re-create ledger when change network
-      await registerConfig.createLedger(getValues('name'), getValues('password'), {
-        ...bip44Option.bip44HDPath,
-        coinType: bip44Option.bip44HDPath?.coinType ?? chainStore.current.coinType
-      });
+      await registerConfig.createLedger(
+        getValues("name"),
+        getValues("password"),
+        {
+          ...bip44Option.bip44HDPath,
+          coinType:
+            bip44Option.bip44HDPath?.coinType ?? chainStore.current.coinType,
+        }
+      );
       analyticsStore.setUserProperties({
-        registerType: 'ledger',
-        accountType: 'ledger'
+        registerType: "ledger",
+        accountType: "ledger",
       });
       if (keyRingStore.status !== KeyRingStatus.UNLOCKED) {
         return false;
       }
-      if (checkRouter(route?.name, 'RegisterNewLedgerMain')) {
+      if (checkRouter(route?.name, "RegisterNewLedgerMain")) {
         navigate(SCREENS.RegisterDone, {
-          password: getValues('password'),
-          walletName: getValues('name')
+          password: getValues("password"),
+          walletName: getValues("name"),
         });
       } else {
         smartNavigation.reset({
@@ -87,11 +98,11 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
             {
               name: SCREENS.RegisterDone,
               params: {
-                password: getValues('password'),
-                walletName: getValues('name')
-              }
-            }
-          ]
+                password: getValues("password"),
+                walletName: getValues("name"),
+              },
+            },
+          ],
         });
       }
     } catch (e) {
@@ -111,16 +122,22 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
         }
         returnKeyType="next"
         onSubmitEditing={() => {
-          if (mode === 'add') {
+          if (mode === "add") {
             submit();
           }
-          if (mode === 'create') {
-            setFocus('password');
+          if (mode === "create") {
+            setFocus("password");
           }
         }}
         inputStyle={styles.input}
         style={styles.textInput}
-        inputLeft={<OWIcon size={22} name="wallet-outline" color={colors['primary-surface-default']} />}
+        inputLeft={
+          <OWIcon
+            size={22}
+            name="wallet-outline"
+            color={colors["primary-surface-default"]}
+          />
+        }
         error={errors.name?.message}
         onBlur={onBlur}
         onChangeText={onChange}
@@ -132,7 +149,7 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
 
   const validatePass = (value: string) => {
     if (value.length < 6) {
-      return 'Password must be longer than 6 characters';
+      return "Password must be longer than 6 characters";
     }
   };
   const renderPass = ({ field: { onChange, onBlur, value, ref } }) => {
@@ -140,7 +157,7 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
       <TextInput
         label=""
         onSubmitEditing={() => {
-          setFocus('confirmPassword');
+          setFocus("confirmPassword");
         }}
         topInInputContainer={
           <View style={{ paddingBottom: 4 }}>
@@ -156,11 +173,15 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
             type="link"
             onPress={() => setStatusPass(!statusPass)}
             icon={
-              <OWIcon name={!statusPass ? 'eye' : 'eye-slash'} color={colors['primary-surface-default']} size={22} />
+              <OWIcon
+                name={!statusPass ? "eye" : "eye-slash"}
+                color={colors["primary-surface-default"]}
+                size={22}
+              />
             }
           />
         }
-        placeholder={'Enter your passcode'}
+        placeholder={"Enter your passcode"}
         secureTextEntry={!statusPass}
         error={errors.password?.message}
         onBlur={onBlur}
@@ -172,22 +193,24 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
   };
 
   const requestPermissions = async () => {
-    if (Platform.OS === 'android') {
+    if (Platform.OS === "android") {
       try {
         const granted = await PermissionsAndroid.requestMultiple([
           PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
-          PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT
+          PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
         ]);
         if (
-          granted['android.permission.BLUETOOTH_CONNECT'] === PermissionsAndroid.RESULTS.GRANTED &&
-          granted['android.permission.BLUETOOTH_SCAN'] === PermissionsAndroid.RESULTS.GRANTED
+          granted["android.permission.BLUETOOTH_CONNECT"] ===
+            PermissionsAndroid.RESULTS.GRANTED &&
+          granted["android.permission.BLUETOOTH_SCAN"] ===
+            PermissionsAndroid.RESULTS.GRANTED
         ) {
           // alert('ok');
         } else {
           // alert('fail');
         }
       } catch (error) {
-        console.log('error: ', error);
+        console.log("error: ", error);
       }
     }
   };
@@ -198,18 +221,18 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
 
   const validateConfirmPass = (value: string) => {
     if (value.length < 6) {
-      return 'Password must be longer than 6 characters';
+      return "Password must be longer than 6 characters";
     }
 
-    if (getValues('password') !== value) {
+    if (getValues("password") !== value) {
       return "Password doesn't match";
     }
   };
   const onGoBack = () => {
-    if (checkRouter(route?.name, 'RegisterNewLedgerMain')) {
+    if (checkRouter(route?.name, "RegisterNewLedgerMain")) {
       smartNavigation.goBack();
     } else {
-      smartNavigation.navigateSmart('Register.Intro', {});
+      smartNavigation.navigateSmart("Register.Intro", {});
     }
   };
 
@@ -223,7 +246,7 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
             <OWText>Confirn Passcode</OWText>
           </View>
         }
-        placeholder={'Enter your confirm passcode'}
+        placeholder={"Enter your confirm passcode"}
         inputStyle={styles.input}
         style={styles.textInput}
         inputRight={
@@ -233,8 +256,8 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
             onPress={() => setStatusConfirmPass(!statusConfirmPass)}
             icon={
               <OWIcon
-                name={!statusConfirmPass ? 'eye' : 'eye-slash'}
-                color={colors['primary-surface-default']}
+                name={!statusConfirmPass ? "eye" : "eye-slash"}
+                color={colors["primary-surface-default"]}
                 size={22}
               />
             }
@@ -256,10 +279,14 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
     <View style={styles.container}>
       <View>
         <TouchableOpacity onPress={onGoBack} style={styles.goBack}>
-          <OWIcon size={16} color={colors['neutral-icon-on-light']} name="arrow-left" />
+          <OWIcon
+            size={16}
+            color={colors["neutral-icon-on-light"]}
+            name="arrow-left"
+          />
         </TouchableOpacity>
         <View style={[styles.aic, styles.title]}>
-          <OWText variant="heading" style={{ textAlign: 'center' }} typo="bold">
+          <OWText variant="heading" style={{ textAlign: "center" }} typo="bold">
             Import Ledger Nano X
           </OWText>
 
@@ -267,25 +294,27 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
             style={{
               paddingLeft: 20,
               paddingRight: 20,
-              paddingTop: 32
+              paddingTop: 32,
             }}
           />
           <Controller
             control={control}
             rules={{
-              required: 'Wallet name is required'
+              required: "Wallet name is required",
             }}
             render={renderWalletName}
             name="name"
-            defaultValue={`OWallet-${Math.floor(Math.random() * (100 - 1)) + 1}`}
+            defaultValue={`OWallet-${
+              Math.floor(Math.random() * (100 - 1)) + 1
+            }`}
           />
-          {mode === 'create' ? (
+          {mode === "create" ? (
             <React.Fragment>
               <Controller
                 control={control}
                 rules={{
-                  required: 'Password is required',
-                  validate: validatePass
+                  required: "Password is required",
+                  validate: validatePass,
                 }}
                 render={renderPass}
                 name="password"
@@ -294,8 +323,8 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
               <Controller
                 control={control}
                 rules={{
-                  required: 'Confirm password is required',
-                  validate: validateConfirmPass
+                  required: "Confirm password is required",
+                  validate: validateConfirmPass,
                 }}
                 render={renderConfirmPass}
                 name="confirmPassword"
@@ -310,9 +339,9 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
         <View style={styles.signIn}>
           <OWButton
             style={{
-              borderRadius: 32
+              borderRadius: 32,
             }}
-            label={mode === 'add' ? 'Import' : ' Next'}
+            label={mode === "add" ? "Import" : " Next"}
             loading={isCreating}
             disabled={isCreating}
             onPress={submit}
@@ -328,47 +357,47 @@ const useStyles = () => {
   return StyleSheet.create({
     padIcon: {
       width: 22,
-      height: 22
+      height: 22,
     },
 
     container: {
       paddingTop: metrics.screenHeight / 14,
-      justifyContent: 'space-between',
-      height: '100%',
-      backgroundColor: colors['neutral-surface-card']
+      justifyContent: "space-between",
+      height: "100%",
+      backgroundColor: colors["neutral-surface-card"],
     },
     signIn: {
-      width: '100%',
-      alignItems: 'center',
+      width: "100%",
+      alignItems: "center",
       borderTopWidth: 1,
-      borderTopColor: colors['neutral-border-default'],
-      padding: 16
+      borderTopColor: colors["neutral-border-default"],
+      padding: 16,
     },
     aic: {
-      alignItems: 'center',
-      paddingBottom: 20
+      alignItems: "center",
+      paddingBottom: 20,
     },
     rc: {
-      flexDirection: 'row',
-      alignItems: 'center'
+      flexDirection: "row",
+      alignItems: "center",
     },
     goBack: {
-      backgroundColor: colors['neutral-surface-action3'],
+      backgroundColor: colors["neutral-surface-action3"],
       borderRadius: 999,
       width: 44,
       height: 44,
-      alignItems: 'center',
-      justifyContent: 'center',
-      marginLeft: 16
+      alignItems: "center",
+      justifyContent: "center",
+      marginLeft: 16,
     },
     title: {
       paddingHorizontal: 16,
-      paddingTop: 24
+      paddingTop: 24,
     },
     input: {
       width: metrics.screenWidth - 32,
-      borderColor: colors['neutral-border-strong']
+      borderColor: colors["neutral-border-strong"],
     },
-    textInput: { fontWeight: '600', paddingLeft: 4, fontSize: 15 }
+    textInput: { fontWeight: "600", paddingLeft: 4, fontSize: 15 },
   });
 };

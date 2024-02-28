@@ -75,7 +75,7 @@
 //             left: 0,
 //             right: 0,
 //             backgroundColor: colors['primary'],
-            
+
 //           }}
 //         />
 //         <BottomTabBar

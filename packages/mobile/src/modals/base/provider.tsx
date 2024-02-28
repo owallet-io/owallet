@@ -1,12 +1,20 @@
-import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
-import { AppState, BackHandler, Platform, StyleSheet, TouchableWithoutFeedback, View, ViewStyle } from 'react-native';
-import { action, makeObservable, observable } from 'mobx';
-import { observer } from 'mobx-react-lite';
-import { ModalBase } from './base';
-import { ModalContext, useModalState } from './hooks';
-import { BottomSheetProps } from '@gorhom/bottom-sheet';
+import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
+import {
+  AppState,
+  BackHandler,
+  Platform,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  View,
+  ViewStyle,
+} from "react-native";
+import { action, makeObservable, observable } from "mobx";
+import { observer } from "mobx-react-lite";
+import { ModalBase } from "./base";
+import { ModalContext, useModalState } from "./hooks";
+import { BottomSheetProps } from "@gorhom/bottom-sheet";
 export interface ModalOptions {
-  readonly align?: 'top' | 'center' | 'bottom';
+  readonly align?: "top" | "center" | "bottom";
   readonly containerStyle?: ViewStyle;
   readonly disableSafeArea?: boolean;
 }
@@ -18,7 +26,10 @@ export interface Modal {
   props: any;
   close: () => void;
   onCloseTransitionEnd: () => void;
-  readonly bottomSheetModalConfig?: Omit<BottomSheetProps, 'snapPoints' | 'children'>;
+  readonly bottomSheetModalConfig?: Omit<
+    BottomSheetProps,
+    "snapPoints" | "children"
+  >;
   options: ModalOptions;
 }
 
@@ -49,7 +60,7 @@ export class ModalsRendererState {
     bottomSheetModalConfig,
     onCloseTransitionEnd: () => void,
     options: ModalOptions = {
-      align: 'bottom'
+      align: "bottom",
     }
   ): string {
     const key = ModalsRendererState.getKey();
@@ -62,7 +73,7 @@ export class ModalsRendererState {
       onCloseTransitionEnd,
       props,
       bottomSheetModalConfig,
-      options
+      options,
     });
 
     return key;
@@ -74,7 +85,7 @@ export class ModalsRendererState {
     if (index >= 0) {
       this._modals[index] = {
         ...this._modals[index],
-        isOpen: false
+        isOpen: false,
       };
     }
   }
@@ -85,7 +96,7 @@ export class ModalsRendererState {
     if (index >= 0) {
       this._modals[index] = {
         ...this._modals[index],
-        props
+        props,
       };
     }
   }
@@ -108,8 +119,8 @@ export const globalModalRendererState = new ModalsRendererState();
  It looks strange and it make hard to estimate the modal unmounted.
  So, to prevent this problem, if the state is not in foreground, forcely remove the modals.
  */
-AppState.addEventListener('change', (state) => {
-  if (state !== 'active' && state !== 'inactive') {
+AppState.addEventListener("change", (state) => {
+  if (state !== "active" && state !== "inactive") {
     for (const modal of globalModalRendererState.modals) {
       if (!modal.isOpen) {
         globalModalRendererState.removeModal(modal.key);
@@ -119,12 +130,15 @@ AppState.addEventListener('change', (state) => {
 });
 
 export const ModalsProvider: FunctionComponent = observer(({ children }) => {
-  const hasOpenedModal = globalModalRendererState.modals.find((modal) => modal.isOpen) != null;
+  const hasOpenedModal =
+    globalModalRendererState.modals.find((modal) => modal.isOpen) != null;
 
   useEffect(() => {
     if (hasOpenedModal) {
       const handler = () => {
-        const openedModals = globalModalRendererState.modals.filter((modal) => modal.isOpen);
+        const openedModals = globalModalRendererState.modals.filter(
+          (modal) => modal.isOpen
+        );
         // The topmost modal can be closed by the back button if this modal can be closed by pressing the backdrop.
         if (openedModals.length > 0) {
           const topmost = openedModals[openedModals.length - 1];
@@ -133,10 +147,10 @@ export const ModalsProvider: FunctionComponent = observer(({ children }) => {
         }
       };
 
-      BackHandler.addEventListener('hardwareBackPress', handler);
+      BackHandler.addEventListener("hardwareBackPress", handler);
 
       return () => {
-        BackHandler.removeEventListener('hardwareBackPress', handler);
+        BackHandler.removeEventListener("hardwareBackPress", handler);
       };
     }
   }, [hasOpenedModal]);
@@ -147,11 +161,11 @@ export const ModalsProvider: FunctionComponent = observer(({ children }) => {
       {globalModalRendererState.modals.length > 0 ? (
         <View
           style={{
-            position: 'absolute',
+            position: "absolute",
             top: 0,
             bottom: 0,
             left: 0,
-            right: 0
+            right: 0,
           }}
           pointerEvents="box-none"
         >
@@ -186,7 +200,7 @@ export const ModalRenderer: FunctionComponent<{
           align: modal.options.align,
           isOpen: modal.props.isOpen,
           bottomSheetModalConfig: modal.bottomSheetModalConfig,
-          close: modal.close
+          close: modal.close,
         };
       }, [
         isOpenTransitioning,
@@ -195,7 +209,7 @@ export const ModalRenderer: FunctionComponent<{
         modal.key,
         modal.options.align,
         modal.props.isOpen,
-        modal.bottomSheetModalConfig
+        modal.bottomSheetModalConfig,
       ])}
     >
       <ModalBase
@@ -209,7 +223,6 @@ export const ModalRenderer: FunctionComponent<{
           modal.onCloseTransitionEnd();
         }}
         close={() => {
-          
           modal.close();
         }}
         bottomSheetModalConfig={modal.bottomSheetModalConfig}

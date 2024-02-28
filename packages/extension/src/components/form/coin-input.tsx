@@ -1,7 +1,7 @@
-import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
+import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
 
-import classnames from 'classnames';
-import styleCoinInput from './coin-input.module.scss';
+import classnames from "classnames";
+import styleCoinInput from "./coin-input.module.scss";
 
 import {
   Button,
@@ -13,21 +13,21 @@ import {
   FormGroup,
   Input,
   InputGroup,
-  Label
-} from 'reactstrap';
-import { observer } from 'mobx-react-lite';
+  Label,
+} from "reactstrap";
+import { observer } from "mobx-react-lite";
 import {
   EmptyAmountError,
   InvalidNumberAmountError,
   ZeroAmountError,
   NegativeAmountError,
   InsufficientAmountError,
-  IAmountConfig
-} from '@owallet/hooks';
-import { CoinPretty, Dec, DecUtils, Int } from '@owallet/unit';
-import { FormattedMessage, useIntl } from 'react-intl';
-import { useStore } from '../../stores';
-import { DenomHelper } from '@owallet/common';
+  IAmountConfig,
+} from "@owallet/hooks";
+import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
+import { FormattedMessage, useIntl } from "react-intl";
+import { useStore } from "../../stores";
+import { DenomHelper } from "@owallet/common";
 
 export interface CoinInputProps {
   amountConfig: IAmountConfig;
@@ -42,7 +42,7 @@ export interface CoinInputProps {
 }
 
 const reduceStringAssets = (str) => {
-  return (str && str.split('(')[0]) || '';
+  return (str && str.split("(")[0]) || "";
 };
 
 export const CoinInput: FunctionComponent<CoinInputProps> = observer(
@@ -52,7 +52,7 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
     const [randomId] = useState(() => {
       const bytes = new Uint8Array(4);
       crypto.getRandomValues(bytes);
-      return Buffer.from(bytes).toString('hex');
+      return Buffer.from(bytes).toString("hex");
     });
 
     const error = amountConfig.getError();
@@ -64,22 +64,22 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
             return;
           case InvalidNumberAmountError:
             return intl.formatMessage({
-              id: 'input.amount.error.invalid-number'
+              id: "input.amount.error.invalid-number",
             });
           case ZeroAmountError:
             return intl.formatMessage({
-              id: 'input.amount.error.is-zero'
+              id: "input.amount.error.is-zero",
             });
           case NegativeAmountError:
             return intl.formatMessage({
-              id: 'input.amount.error.is-negative'
+              id: "input.amount.error.is-negative",
             });
           case InsufficientAmountError:
             return intl.formatMessage({
-              id: 'input.amount.error.insufficient'
+              id: "input.amount.error.insufficient",
             });
           default:
-            return intl.formatMessage({ id: 'input.amount.error.unknown' });
+            return intl.formatMessage({ id: "input.amount.error.unknown" });
         }
       }
     }, [intl, error]);
@@ -100,7 +100,7 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
       .currency.coinDenom;
 
     useEffect(() => {
-      if (chainStore.current.networkType === 'evm') {
+      if (chainStore.current.networkType === "evm") {
         if (!accountInfo.evmosHexAddress) return null;
 
         const evmBalance = queries.evm.queryEvmBalance.getQueryBalance(
@@ -140,21 +140,21 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
           <Label
             for={`selector-${randomId}`}
             className="form-control-label"
-            style={{ width: '100%' }}
+            style={{ width: "100%" }}
           >
             <FormattedMessage id="component.form.coin-input.token.label" />
           </Label>
           <ButtonDropdown
             id={`selector-${randomId}`}
             className={classnames(styleCoinInput.tokenSelector, {
-              disabled: amountConfig.fraction === 1
+              disabled: amountConfig.fraction === 1,
             })}
             isOpen={isOpenTokenSelector}
             toggle={() => setIsOpenTokenSelector((value) => !value)}
             disabled={amountConfig.fraction === 1}
           >
             <DropdownToggle caret>
-              {amountConfig.sendCurrency.coinDenom}{' '}
+              {amountConfig.sendCurrency.coinDenom}{" "}
               {denomHelper.contractAddress &&
                 ` (${denomHelper.contractAddress})`}
             </DropdownToggle>
@@ -174,7 +174,7 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
                       amountConfig.setSendCurrency(currency);
                     }}
                   >
-                    {currency.coinDenom}{' '}
+                    {currency.coinDenom}{" "}
                     {denomHelper.contractAddress &&
                       ` (${denomHelper.contractAddress})`}
                   </DropdownItem>
@@ -188,7 +188,7 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
             <Label
               for={`input-${randomId}`}
               className={classnames(
-                'form-control-label',
+                "form-control-label",
                 styleCoinInput.labelBalance
               )}
             >
@@ -199,7 +199,7 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
                     styleCoinInput.balance,
                     styleCoinInput.clickable,
                     {
-                      [styleCoinInput.clicked]: amountConfig.isMax
+                      [styleCoinInput.clicked]: amountConfig.isMax,
                     }
                   )}
                   onClick={(e) => {
@@ -220,7 +220,7 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
           <InputGroup className={styleCoinInput.inputGroup}>
             <Input
               className={classnames(
-                'form-control-alternative',
+                "form-control-alternative",
                 styleCoinInput.input
               )}
               id={`input-${randomId}`}
@@ -244,7 +244,7 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
               placeholder={placeholder}
             />
             <div
-              style={{ padding: 7.5, textAlign: 'center', cursor: 'pointer' }}
+              style={{ padding: 7.5, textAlign: "center", cursor: "pointer" }}
               onClick={(e) => {
                 e.preventDefault();
                 amountConfig.toggleIsMax();
@@ -254,14 +254,14 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
                 style={{
                   width: 50,
                   height: 28,
-                  backgroundColor: amountConfig.isMax ? '#7664E4' : '#f8fafc',
-                  borderRadius: 4
+                  backgroundColor: amountConfig.isMax ? "#7664E4" : "#f8fafc",
+                  borderRadius: 4,
                 }}
               >
                 <span
                   style={{
-                    color: amountConfig.isMax ? 'white' : '#7664E4',
-                    fontSize: 14
+                    color: amountConfig.isMax ? "white" : "#7664E4",
+                    fontSize: 14,
                   }}
                 >
                   MAX
@@ -270,7 +270,7 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
             </div>
           </InputGroup>
           {errorText != null ? (
-            <FormFeedback style={{ display: 'block', position: 'sticky' }}>
+            <FormFeedback style={{ display: "block", position: "sticky" }}>
               {errorText}
             </FormFeedback>
           ) : null}

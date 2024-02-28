@@ -1,6 +1,6 @@
-import React, { FunctionComponent } from 'react';
-import { View, ViewStyle } from 'react-native';
-import { spacing } from '../../themes';
+import React, { FunctionComponent } from "react";
+import { View, ViewStyle } from "react-native";
+import { spacing } from "../../themes";
 
 export const CardBody: FunctionComponent<{
   style?: ViewStyle;
@@ -9,10 +9,10 @@ export const CardBody: FunctionComponent<{
     <View
       style={[
         {
-          paddingHorizontal: spacing['card-horizontal'],
-          paddingVertical: spacing['card-vertical']
+          paddingHorizontal: spacing["card-horizontal"],
+          paddingVertical: spacing["card-vertical"],
         },
-        props.style
+        props.style,
       ]}
       {...props}
     >

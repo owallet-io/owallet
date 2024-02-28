@@ -2,9 +2,9 @@ import React, {
   FunctionComponent,
   useCallback,
   useContext,
-  useState
-} from 'react';
-import LoadingScreenOverlay from './loading-screen-overlay';
+  useState,
+} from "react";
+import LoadingScreenOverlay from "./loading-screen-overlay";
 
 export interface LoadingScreen {
   isLoading: boolean;
@@ -40,7 +40,7 @@ export const LoadingScreenProvider: FunctionComponent = ({ children }) => {
 export const useLoadingScreen = () => {
   const context = useContext(LoadingScreenContext);
   if (!context) {
-    throw new Error('You forgot to use LoadingScreenContext');
+    throw new Error("You forgot to use LoadingScreenContext");
   }
   return context;
 };

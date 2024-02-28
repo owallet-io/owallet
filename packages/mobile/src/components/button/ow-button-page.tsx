@@ -2,16 +2,16 @@ import {
   StyleSheet,
   View,
   TouchableOpacity,
-  TouchableOpacityProps
-} from 'react-native';
-import React from 'react';
-import { Text } from '../text';
-import { spacing } from '@src/themes';
-import { useTheme } from '@src/themes/theme-provider';
+  TouchableOpacityProps,
+} from "react-native";
+import React from "react";
+import { Text } from "../text";
+import { spacing } from "@src/themes";
+import { useTheme } from "@src/themes/theme-provider";
 interface IOWButtonPage extends TouchableOpacityProps {
   title: string;
   active: boolean;
-  style?: TouchableOpacityProps['style'];
+  style?: TouchableOpacityProps["style"];
 }
 const OWButtonPage = ({ title, style, active, ...props }: IOWButtonPage) => {
   const { colors } = useTheme();
@@ -21,15 +21,15 @@ const OWButtonPage = ({ title, style, active, ...props }: IOWButtonPage) => {
       style={[
         styles.containerButton,
         {
-          borderBottomColor: active ? colors['purple-100'] : colors['blue-300']
+          borderBottomColor: active ? colors["purple-100"] : colors["blue-300"],
         },
-        style
+        style,
       ]}
     >
       <Text
         size={14}
         typo="bold"
-        color={active ? colors['purple-100'] : colors['blue-300']}
+        color={active ? colors["purple-100"] : colors["blue-300"]}
       >
         {title}
       </Text>
@@ -41,9 +41,9 @@ export default OWButtonPage;
 
 const styles = StyleSheet.create({
   containerButton: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingBottom: spacing['12'],
-    borderBottomWidth: 1
-  }
+    justifyContent: "center",
+    alignItems: "center",
+    paddingBottom: spacing["12"],
+    borderBottomWidth: 1,
+  },
 });

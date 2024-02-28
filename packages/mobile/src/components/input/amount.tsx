@@ -4,14 +4,14 @@ import {
   InsufficientAmountError,
   InvalidNumberAmountError,
   NegativeAmountError,
-  ZeroAmountError
-} from '@owallet/hooks';
-import { observer } from 'mobx-react-lite';
-import React, { FunctionComponent, useMemo } from 'react';
-import { TextStyle, View, ViewStyle } from 'react-native';
-import { colors, spacing } from '../../themes';
-import { Button } from '../button';
-import { TextInput } from './input';
+  ZeroAmountError,
+} from "@owallet/hooks";
+import { observer } from "mobx-react-lite";
+import React, { FunctionComponent, useMemo } from "react";
+import { TextStyle, View, ViewStyle } from "react-native";
+import { colors, spacing } from "../../themes";
+import { Button } from "../button";
+import { TextInput } from "./input";
 
 export const AmountInput: FunctionComponent<{
   labelStyle?: TextStyle;
@@ -33,7 +33,7 @@ export const AmountInput: FunctionComponent<{
     amountConfig,
     placeholder,
     placeholderTextColor,
-    allowMax = true
+    allowMax = true,
   }) => {
     const error = amountConfig.getError();
     const errorText: string | undefined = useMemo(() => {
@@ -42,15 +42,15 @@ export const AmountInput: FunctionComponent<{
           case EmptyAmountError:
             return;
           case InvalidNumberAmountError:
-            return 'Invalid number';
+            return "Invalid number";
           case ZeroAmountError:
-            return 'Amount is zero';
+            return "Amount is zero";
           case NegativeAmountError:
-            return 'Amount is negative';
+            return "Amount is negative";
           case InsufficientAmountError:
-            return 'Insufficient fund';
+            return "Insufficient fund";
           default:
-            return 'Unknown error';
+            return "Unknown error";
         }
       }
     }, [error]);
@@ -63,8 +63,8 @@ export const AmountInput: FunctionComponent<{
         inputContainerStyle={inputContainerStyle}
         errorLabelStyle={errorLabelStyle}
         value={amountConfig.amount}
-        onChangeText={text => {
-          amountConfig.setAmount(text.replace(/,/g, '.'));
+        onChangeText={(text) => {
+          amountConfig.setAmount(text.replace(/,/g, "."));
         }}
         placeholder={placeholder}
         placeholderTextColor={placeholderTextColor}
@@ -73,24 +73,24 @@ export const AmountInput: FunctionComponent<{
             <View
               style={{
                 height: 1,
-                overflow: 'visible',
-                justifyContent: 'center'
+                overflow: "visible",
+                justifyContent: "center",
               }}
             >
               <Button
                 text="MAX"
-                mode={'light'}
+                mode={"light"}
                 size="small"
                 containerStyle={{
                   height: 24,
-                  borderRadius: spacing['8'],
-                  backgroundColor: colors['primary-surface-default'],
-                  justifyContent: 'center',
-                  alignItems: 'center'
+                  borderRadius: spacing["8"],
+                  backgroundColor: colors["primary-surface-default"],
+                  justifyContent: "center",
+                  alignItems: "center",
                 }}
                 textStyle={{
-                  color: colors['white'],
-                  textTransform: 'uppercase'
+                  color: colors["white"],
+                  textTransform: "uppercase",
                 }}
                 onPress={() => {
                   amountConfig.setIsMax(!amountConfig.isMax);

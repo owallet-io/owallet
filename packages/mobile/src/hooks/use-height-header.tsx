@@ -1,5 +1,5 @@
-import { useHeaderHeight } from '@react-navigation/elements';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useHeaderHeight } from "@react-navigation/elements";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export const useGetHeightHeader = () => {
   const safeAreaInsets = useSafeAreaInsets();

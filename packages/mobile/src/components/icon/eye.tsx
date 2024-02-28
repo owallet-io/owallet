@@ -1,10 +1,10 @@
-import React, { FunctionComponent } from 'react';
-import Svg, { Path } from 'react-native-svg';
+import React, { FunctionComponent } from "react";
+import Svg, { Path } from "react-native-svg";
 
 export const EyeIcon: FunctionComponent<{
   color?: string;
   size?: number;
-}> = ({ color = 'none', size = 20 }) => {
+}> = ({ color = "none", size = 20 }) => {
   return (
     <Svg width={size} height={size} fill={color} viewBox="0 0 28 28">
       <Path

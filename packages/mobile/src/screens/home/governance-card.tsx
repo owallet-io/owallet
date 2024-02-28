@@ -1,11 +1,11 @@
-import React, { FunctionComponent, useMemo } from 'react';
-import { Card, CardDivider, CardHeaderFullButton } from '../../components/card';
-import { ViewStyle } from 'react-native';
-import { observer } from 'mobx-react-lite';
-import { GovernanceCardBody } from '../governance';
-import { useStore } from '../../stores';
-import { ObservableQueryProposal, Governance } from '@owallet/stores';
-import { useSmartNavigation } from '../../navigation.provider';
+import React, { FunctionComponent, useMemo } from "react";
+import { Card, CardDivider, CardHeaderFullButton } from "../../components/card";
+import { ViewStyle } from "react-native";
+import { observer } from "mobx-react-lite";
+import { GovernanceCardBody } from "../governance";
+import { useStore } from "../../stores";
+import { ObservableQueryProposal, Governance } from "@owallet/stores";
+import { useSmartNavigation } from "../../navigation.provider";
 
 export const GovernanceCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -52,7 +52,7 @@ export const GovernanceCard: FunctionComponent<{
       <CardHeaderFullButton
         title="Governance"
         onPress={() => {
-          smartNavigation.navigateSmart('Governance', undefined);
+          smartNavigation.navigateSmart("Governance", undefined);
         }}
       />
       {/* TODO: Show the alternative component if any proposals don't exist */}

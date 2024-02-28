@@ -1,17 +1,12 @@
-import React, { FunctionComponent } from 'react';
-import Svg, { Path } from 'react-native-svg';
+import React, { FunctionComponent } from "react";
+import Svg, { Path } from "react-native-svg";
 
 export const RemoveIcon: FunctionComponent<{
   color?: string;
   size?: number;
-}> = ({ color = 'none', size = 24 }) => {
+}> = ({ color = "none", size = 24 }) => {
   return (
-    <Svg
-      width={size}
-      height={size}
-      viewBox="0 0 20 20"
-      fill={color}
-    >
+    <Svg width={size} height={size} viewBox="0 0 20 20" fill={color}>
       <Path
         d="M7.64172 12.9834C7.48338 12.9834 7.32505 12.925 7.20005 12.8C6.95838 12.5584 6.95838 12.1584 7.20005 11.9167L11.9167 7.20005C12.1584 6.95838 12.5584 6.95838 12.8 7.20005C13.0417 7.44172 13.0417 7.84172 12.8 8.08338L8.08338 12.8C7.96671 12.925 7.80005 12.9834 7.64172 12.9834Z"
         fill="#C7C7CC"

@@ -1,28 +1,47 @@
-import React, { FunctionComponent, ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { observer } from 'mobx-react-lite';
-import { StyleSheet, View } from 'react-native';
-import { BuyIcon, DepositIcon, SendDashboardIcon } from '../../components/icon/button';
-import { TokenSymbol } from '../../components/token-symbol';
-import { useSmartNavigation } from '../../navigation.provider';
-import { useStore } from '../../stores';
-import { metrics, spacing, typography } from '../../themes';
-import { _keyExtract } from '../../utils/helper';
-import { PageWithView } from '../../components/page';
-import { navigate } from '../../router/root';
-import { API } from '../../common/api';
-import { AddressQRCodeModal } from '../home/components';
-import { TokenSymbolEVM } from '../../components/token-symbol/token-symbol-evm';
-import { useTheme } from '@src/themes/theme-provider';
-import { OWBox } from '@src/components/card';
-import { OWButton } from '@src/components/button';
-import OWTransactionItem from '../transactions/components/items/transaction-item';
-import OWFlatList from '@src/components/page/ow-flat-list';
-import { Text } from '@src/components/text';
-import { useNavigation } from '@react-navigation/native';
-import { SCREENS } from '@src/common/constants';
+import React, {
+  FunctionComponent,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { observer } from "mobx-react-lite";
+import { StyleSheet, View } from "react-native";
+import {
+  BuyIcon,
+  DepositIcon,
+  SendDashboardIcon,
+} from "../../components/icon/button";
+import { TokenSymbol } from "../../components/token-symbol";
+import { useSmartNavigation } from "../../navigation.provider";
+import { useStore } from "../../stores";
+import { metrics, spacing, typography } from "../../themes";
+import { _keyExtract } from "../../utils/helper";
+import { PageWithView } from "../../components/page";
+import { navigate } from "../../router/root";
+import { API } from "../../common/api";
+import { AddressQRCodeModal } from "../home/components";
+import { TokenSymbolEVM } from "../../components/token-symbol/token-symbol-evm";
+import { useTheme } from "@src/themes/theme-provider";
+import { OWBox } from "@src/components/card";
+import { OWButton } from "@src/components/button";
+import OWTransactionItem from "../transactions/components/items/transaction-item";
+import OWFlatList from "@src/components/page/ow-flat-list";
+import { Text } from "@src/components/text";
+import { useNavigation } from "@react-navigation/native";
+import { SCREENS } from "@src/common/constants";
 
 export const TokenDetailScreen: FunctionComponent = observer((props) => {
-  const { chainStore, modalStore, txsStore, accountStore, keyRingStore, queriesStore } = useStore();
+  const {
+    chainStore,
+    modalStore,
+    txsStore,
+    accountStore,
+    keyRingStore,
+    queriesStore,
+  } = useStore();
   const smartNavigation = useSmartNavigation();
   const navigation = useNavigation();
   const { colors } = useTheme();
@@ -30,18 +49,28 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const styles = styling(colors);
-  const { amountBalance, balanceCoinDenom, priceBalance, balanceCoinFull, balanceCurrency } =
-    props?.route?.params ?? {};
+  const {
+    amountBalance,
+    balanceCoinDenom,
+    priceBalance,
+    balanceCoinFull,
+    balanceCurrency,
+  } = props?.route?.params ?? {};
 
   const txs = txsStore(chainStore.current);
   const account = accountStore.getAccount(chainStore.current.chainId);
-  const addressDisplay = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
+  const addressDisplay = account.getAddressDisplay(
+    keyRingStore.keyRingLedgerAddresses
+  );
   const queryBalances = queriesStore
     .get(chainStore.current.chainId)
     .queryBalances.getQueryBech32Address(addressDisplay);
 
   const tokens = queryBalances.balances
-    .concat(queryBalances.nonNativeBalances, queryBalances.positiveNativeUnstakables)
+    .concat(
+      queryBalances.nonNativeBalances,
+      queryBalances.positiveNativeUnstakables
+    )
     .slice(0, 2);
 
   const page = useRef(1);
@@ -93,27 +122,30 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
       AddressQRCodeModal({
         account,
         chainStore: chainStore.current,
-        keyRingStore: keyRingStore
+        keyRingStore: keyRingStore,
       })
     );
   };
 
   const _onPressBtnMain = (name) => {
-    if (name === 'Buy') {
-      navigate('MainTab', { screen: 'Browser', path: 'https://oraidex.io' });
+    if (name === "Buy") {
+      navigate("MainTab", { screen: "Browser", path: "https://oraidex.io" });
     }
-    if (name === 'Receive') {
+    if (name === "Receive") {
       _onPressReceiveModal();
     }
-    if (name === 'Send') {
-      if (chainStore.current.networkType === 'bitcoin') {
+    if (name === "Send") {
+      if (chainStore.current.networkType === "bitcoin") {
         navigate(SCREENS.STACK.Others, {
-          screen: SCREENS.SendBtc
+          screen: SCREENS.SendBtc,
         });
         return;
       }
-      smartNavigation.navigateSmart('Send', {
-        currency: balanceCoinFull ?? balanceCoinDenom ?? chainStore.current.stakeCurrency.coinMinimalDenom
+      smartNavigation.navigateSmart("Send", {
+        currency:
+          balanceCoinFull ??
+          balanceCoinDenom ??
+          chainStore.current.stakeCurrency.coinMinimalDenom,
       });
       return;
     }
@@ -122,13 +154,13 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
   const RenderBtnMain = ({ name }) => {
     let icon: ReactElement;
     switch (name) {
-      case 'Buy':
+      case "Buy":
         icon = <BuyIcon />;
         break;
-      case 'Receive':
+      case "Receive":
         icon = <DepositIcon />;
         break;
-      case 'Send':
+      case "Send":
         icon = <SendDashboardIcon />;
         break;
     }
@@ -148,8 +180,13 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
       setLoadMore(true);
       fetchData(
         {
-          addressAccount: chainStore.current.networkType == 'evm' ? account?.evmosHexAddress : account?.bech32Address,
-          token: balanceCurrency?.contractAddress || balanceCurrency?.coinMinimalDenom
+          addressAccount:
+            chainStore.current.networkType == "evm"
+              ? account?.evmosHexAddress
+              : account?.bech32Address,
+          token:
+            balanceCurrency?.contractAddress ||
+            balanceCurrency?.coinMinimalDenom,
         },
         true
       );
@@ -160,13 +197,19 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
       screen: SCREENS.TransactionDetail,
       params: {
         txHash: item?.txHash,
-        item
-      }
+        item,
+      },
     });
     return;
   };
   const renderItem = ({ item, index }) => {
-    return <OWTransactionItem key={`item-${index}`} onPress={() => onTransactionDetail(item)} item={item} />;
+    return (
+      <OWTransactionItem
+        key={`item-${index}`}
+        onPress={() => onTransactionDetail(item)}
+        item={item}
+      />
+    );
   };
   const refreshData = useCallback(() => {
     page.current = 1;
@@ -174,7 +217,8 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
     fetchData(
       {
         addressAccount: addressDisplay,
-        token: balanceCurrency?.contractAddress || balanceCurrency?.coinMinimalDenom
+        token:
+          balanceCurrency?.contractAddress || balanceCurrency?.coinMinimalDenom,
       },
       false
     );
@@ -185,7 +229,7 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
   };
   const onTransactions = () => {
     navigation.navigate(SCREENS.STACK.Others, {
-      screen: SCREENS.Transactions
+      screen: SCREENS.Transactions,
     });
     return;
   };
@@ -196,15 +240,15 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
         <OWBox type="gradient">
           <View
             style={{
-              justifyContent: 'center',
-              alignItems: 'center'
+              justifyContent: "center",
+              alignItems: "center",
             }}
           >
-            {chainStore.current.networkType === 'evm' ? (
+            {chainStore.current.networkType === "evm" ? (
               <TokenSymbolEVM
                 size={44}
                 chainInfo={{
-                  stakeCurrency: chainStore.current.stakeCurrency
+                  stakeCurrency: chainStore.current.stakeCurrency,
                 }}
                 currency={tokens?.[0]?.balance?.currency}
                 imageScale={0.54}
@@ -213,7 +257,7 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
               <TokenSymbol
                 size={44}
                 chainInfo={{
-                  stakeCurrency: chainStore.current.stakeCurrency
+                  stakeCurrency: chainStore.current.stakeCurrency,
                 }}
                 currency={tokens?.[0]?.balance?.currency}
                 imageScale={0.54}
@@ -222,15 +266,15 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
 
             <View
               style={{
-                alignItems: 'center'
+                alignItems: "center",
               }}
             >
               <Text
                 style={{
                   ...typography.h3,
-                  color: colors['white'],
-                  marginTop: spacing['8'],
-                  fontWeight: '800'
+                  color: colors["white"],
+                  marginTop: spacing["8"],
+                  fontWeight: "800",
                 }}
               >
                 {`${amountBalance} `}
@@ -238,23 +282,23 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
               <Text
                 style={{
                   ...typography.h6,
-                  color: colors['purple-400']
+                  color: colors["purple-400"],
                 }}
               >
-                {`${priceBalance?.toString() ?? '$0'}`}
+                {`${priceBalance?.toString() ?? "$0"}`}
               </Text>
             </View>
           </View>
 
           <View
             style={{
-              display: 'flex',
-              flexDirection: 'row',
-              paddingTop: spacing['6'],
-              justifyContent: 'space-around'
+              display: "flex",
+              flexDirection: "row",
+              paddingTop: spacing["6"],
+              justifyContent: "space-around",
             }}
           >
-            {['Buy', 'Receive', 'Send'].map((e, i) => (
+            {["Buy", "Receive", "Send"].map((e, i) => (
               <RenderBtnMain key={i} name={e} />
             ))}
           </View>
@@ -263,7 +307,13 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
       <OWBox style={styles.containerListTransaction}>
         <View style={styles.containerTitleList}>
           <Text>Transaction List</Text>
-          <OWButton type="link" size="medium" fullWidth={false} label="View all" onPress={onTransactions} />
+          <OWButton
+            type="link"
+            size="medium"
+            fullWidth={false}
+            label="View all"
+            onPress={onTransactions}
+          />
         </View>
 
         <OWFlatList
@@ -284,34 +334,34 @@ const styling = (colors) =>
   StyleSheet.create({
     containerListTransaction: {
       flex: 1,
-      paddingTop: 10
+      paddingTop: 10,
     },
     containerTitleList: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
       paddingTop: 0,
-      marginTop: 0
+      marginTop: 0,
     },
     containerBox: {
-      marginHorizontal: 24
+      marginHorizontal: 24,
     },
     containerToken: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginHorizontal: spacing['4'],
-      marginVertical: spacing['8'],
-      paddingTop: spacing['18'],
-      paddingBottom: spacing['18']
+      flexDirection: "row",
+      alignItems: "center",
+      marginHorizontal: spacing["4"],
+      marginVertical: spacing["8"],
+      paddingTop: spacing["18"],
+      paddingBottom: spacing["18"],
     },
     transactionListEmpty: {
-      justifyContent: 'center',
-      alignItems: 'center'
+      justifyContent: "center",
+      alignItems: "center",
     },
     fixedScroll: {
-      position: 'absolute',
+      position: "absolute",
       bottom: 0,
       left: 0,
-      right: 0
-    }
+      right: 0,
+    },
   });

@@ -1,29 +1,35 @@
-import { Bitcoin, Ethereum, OWallet, TronWeb } from '@owallet/provider';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
-import EventEmitter from 'eventemitter3';
-import { observer } from 'mobx-react-lite';
-import React, { FunctionComponent, useCallback, useEffect, useRef, useState } from 'react';
-import { useTheme } from '@src/themes/theme-provider';
-import { BackHandler, Platform, View } from 'react-native';
-import DeviceInfo from 'react-native-device-info';
-import { URL } from 'react-native-url-polyfill';
-import WebView, { WebViewMessageEvent } from 'react-native-webview';
-import { version, name } from '../../../../../package.json';
-import { PageWithView } from '../../../../components/page';
+import { Bitcoin, Ethereum, OWallet, TronWeb } from "@owallet/provider";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
+import EventEmitter from "eventemitter3";
+import { observer } from "mobx-react-lite";
+import React, {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { useTheme } from "@src/themes/theme-provider";
+import { BackHandler, Platform, View } from "react-native";
+import DeviceInfo from "react-native-device-info";
+import { URL } from "react-native-url-polyfill";
+import WebView, { WebViewMessageEvent } from "react-native-webview";
+import { version, name } from "../../../../../package.json";
+import { PageWithView } from "../../../../components/page";
 import {
   RNInjectedBitcoin,
   RNInjectedEthereum,
   RNInjectedOWallet,
-  RNInjectedTronWeb
-} from '../../../../injected/injected-provider';
-import { RNMessageRequesterExternal } from '../../../../router';
-import { useStore } from '../../../../stores';
-import { InjectedProviderUrl } from '../../config';
-import { WebViewStateContext } from '../context';
-import { BrowserFooterSection } from '../footer-section';
-import { OnScreenWebpageScreenHeader } from '../header';
-import { SwtichTab } from '../switch-tabs';
-import { LRRedactProps } from '@logrocket/react-native';
+  RNInjectedTronWeb,
+} from "../../../../injected/injected-provider";
+import { RNMessageRequesterExternal } from "../../../../router";
+import { useStore } from "../../../../stores";
+import { InjectedProviderUrl } from "../../config";
+import { WebViewStateContext } from "../context";
+import { BrowserFooterSection } from "../footer-section";
+import { OnScreenWebpageScreenHeader } from "../header";
+import { SwtichTab } from "../switch-tabs";
+import { LRRedactProps } from "@logrocket/react-native";
 
 export const useInjectedSourceCode = () => {
   const [code, setCode] = useState<string | undefined>();
@@ -61,30 +67,30 @@ export const WebpageScreen: FunctionComponent<
 
   const webviewRef = useRef<WebView | null>(null);
   const [currentURL, setCurrentURL] = useState(() => {
-    if (props.source && 'uri' in props.source) {
+    if (props.source && "uri" in props.source) {
       return props.source.uri;
     }
 
-    return '';
+    return "";
   });
 
   const [owallet] = useState(
     () =>
       new OWallet(
         `${name}-${version}`,
-        'core',
+        "core",
         new RNMessageRequesterExternal(() => {
           if (!webviewRef.current) {
-            throw new Error('Webview not initialized yet');
+            throw new Error("Webview not initialized yet");
           }
 
           if (!currentURL) {
-            throw new Error('Current URL is empty');
+            throw new Error("Current URL is empty");
           }
 
           return {
             url: currentURL,
-            origin: new URL(currentURL).origin
+            origin: new URL(currentURL).origin,
           };
         })
       )
@@ -93,19 +99,19 @@ export const WebpageScreen: FunctionComponent<
     () =>
       new Bitcoin(
         version,
-        'core',
+        "core",
         new RNMessageRequesterExternal(() => {
           if (!webviewRef.current) {
-            throw new Error('Webview not initialized yet');
+            throw new Error("Webview not initialized yet");
           }
 
           if (!currentURL) {
-            throw new Error('Current URL is empty');
+            throw new Error("Current URL is empty");
           }
 
           return {
             url: currentURL,
-            origin: new URL(currentURL).origin
+            origin: new URL(currentURL).origin,
           };
         })
       )
@@ -115,20 +121,20 @@ export const WebpageScreen: FunctionComponent<
     () =>
       new Ethereum(
         DeviceInfo.getVersion(),
-        'core',
+        "core",
         chainStore.current.chainId,
         new RNMessageRequesterExternal(() => {
           if (!webviewRef.current) {
-            throw new Error('Webview not initialized yet');
+            throw new Error("Webview not initialized yet");
           }
 
           if (!currentURL) {
-            throw new Error('Current URL is empty');
+            throw new Error("Current URL is empty");
           }
 
           return {
             url: currentURL,
-            origin: new URL(currentURL).origin
+            origin: new URL(currentURL).origin,
           };
         })
       )
@@ -138,20 +144,20 @@ export const WebpageScreen: FunctionComponent<
     () =>
       new TronWeb(
         version,
-        'core',
+        "core",
         chainStore.current.chainId,
         new RNMessageRequesterExternal(() => {
           if (!webviewRef.current) {
-            throw new Error('Webview not initialized yet');
+            throw new Error("Webview not initialized yet");
           }
 
           if (!currentURL) {
-            throw new Error('Current URL is empty');
+            throw new Error("Current URL is empty");
           }
 
           return {
             url: currentURL,
-            origin: new URL(currentURL).origin
+            origin: new URL(currentURL).origin,
           };
         })
       )
@@ -161,10 +167,10 @@ export const WebpageScreen: FunctionComponent<
     setIsSwitchTab(false);
     if (browserStore.getSelectedTab?.uri !== uri) {
       browserStore.updateSelectedTab({ id: Date.now(), name, uri });
-      navigation.navigate('Web.dApp', {
+      navigation.navigate("Web.dApp", {
         id: Date.now(),
         name,
-        uri
+        uri,
       });
     }
   };
@@ -172,22 +178,24 @@ export const WebpageScreen: FunctionComponent<
   const [eventEmitter] = useState(() => new EventEmitter());
   const onMessage = useCallback(
     (event: WebViewMessageEvent) => {
-      eventEmitter.emit('message', event.nativeEvent);
+      eventEmitter.emit("message", event.nativeEvent);
     },
     [eventEmitter]
   );
   const eventListener = {
     addMessageListener: (fn: any) => {
-      eventEmitter.addListener('message', fn);
+      eventEmitter.addListener("message", fn);
     },
     postMessage: (message: any) => {
       webviewRef.current?.injectJavaScript(
         `
-            window.postMessage(${JSON.stringify(message)}, window.location.origin);
+            window.postMessage(${JSON.stringify(
+              message
+            )}, window.location.origin);
             true; // note: this is required, or you'll sometimes get silent failures
           `
       );
-    }
+    },
   };
 
   const handleWebViewLoaded = () => {
@@ -196,18 +204,34 @@ export const WebpageScreen: FunctionComponent<
 
   // Start proxy for webview
   useEffect(() => {
-    RNInjectedOWallet.startProxy(owallet, eventListener, RNInjectedOWallet.parseWebviewMessage);
+    RNInjectedOWallet.startProxy(
+      owallet,
+      eventListener,
+      RNInjectedOWallet.parseWebviewMessage
+    );
   }, [eventEmitter, owallet]);
 
   useEffect(() => {
-    RNInjectedBitcoin.startProxy(bitcoin, eventListener, RNInjectedBitcoin.parseWebviewMessage);
+    RNInjectedBitcoin.startProxy(
+      bitcoin,
+      eventListener,
+      RNInjectedBitcoin.parseWebviewMessage
+    );
   }, [eventEmitter, bitcoin]);
   useEffect(() => {
-    RNInjectedEthereum.startProxy(ethereum, eventListener, RNInjectedEthereum.parseWebviewMessage);
+    RNInjectedEthereum.startProxy(
+      ethereum,
+      eventListener,
+      RNInjectedEthereum.parseWebviewMessage
+    );
   }, [eventEmitter, ethereum]);
 
   useEffect(() => {
-    RNInjectedTronWeb.startProxy(tronWeb, eventListener, RNInjectedTronWeb.parseWebviewMessage);
+    RNInjectedTronWeb.startProxy(
+      tronWeb,
+      eventListener,
+      RNInjectedTronWeb.parseWebviewMessage
+    );
   }, [eventEmitter, tronWeb]);
 
   useEffect(() => {
@@ -247,11 +271,11 @@ export const WebpageScreen: FunctionComponent<
     };
 
     if (isFocused) {
-      BackHandler.addEventListener('hardwareBackPress', backHandler);
+      BackHandler.addEventListener("hardwareBackPress", backHandler);
     }
 
     return () => {
-      BackHandler.removeEventListener('hardwareBackPress', backHandler);
+      BackHandler.removeEventListener("hardwareBackPress", backHandler);
     };
   }, [canGoBack, isFocused]);
 
@@ -262,9 +286,9 @@ export const WebpageScreen: FunctionComponent<
     // If we turn on the gesture manually without checking OS,
     // the gesture will turn on even on Android.
     // So, checking platform is required.
-    if (Platform.OS === 'ios') {
+    if (Platform.OS === "ios") {
       navigation.setOptions({
-        gestureEnabled: !canGoBack
+        gestureEnabled: !canGoBack,
       });
     }
   }, [canGoBack, navigation]);
@@ -272,7 +296,7 @@ export const WebpageScreen: FunctionComponent<
   const sourceCode = useInjectedSourceCode();
 
   return (
-    <PageWithView backgroundColor={colors['background']} disableSafeArea>
+    <PageWithView backgroundColor={colors["background"]} disableSafeArea>
       {isSwitchTab ? (
         <>
           <SwtichTab onPressItem={onPressItem} />
@@ -285,10 +309,14 @@ export const WebpageScreen: FunctionComponent<
               canGoForward,
               clearWebViewContext: () => {
                 webviewRef.current = null;
-              }
+              },
             }}
           >
-            <BrowserFooterSection isSwitchTab={isSwitchTab} setIsSwitchTab={setIsSwitchTab} typeOf={'webview'} />
+            <BrowserFooterSection
+              isSwitchTab={isSwitchTab}
+              setIsSwitchTab={setIsSwitchTab}
+              typeOf={"webview"}
+            />
           </WebViewStateContext.Provider>
         </>
       ) : (
@@ -302,7 +330,7 @@ export const WebpageScreen: FunctionComponent<
               canGoForward,
               clearWebViewContext: () => {
                 webviewRef.current = null;
-              }
+              },
             }}
           >
             <OnScreenWebpageScreenHeader />
@@ -310,7 +338,7 @@ export const WebpageScreen: FunctionComponent<
           {sourceCode ? (
             <>
               <WebView
-                originWhitelist={['*']} // to allowing WebView to load blob
+                originWhitelist={["*"]} // to allowing WebView to load blob
                 ref={webviewRef}
                 // incognito={true}
                 style={pageLoaded ? {} : { flex: 0, height: 0, opacity: 0 }}
@@ -352,7 +380,7 @@ export const WebpageScreen: FunctionComponent<
                   canGoForward,
                   clearWebViewContext: () => {
                     webviewRef.current = null;
-                  }
+                  },
                 }}
               >
                 {/* <Animated.View
@@ -361,7 +389,11 @@ export const WebpageScreen: FunctionComponent<
                   }}
                 > */}
                 <View>
-                  <BrowserFooterSection isSwitchTab={isSwitchTab} setIsSwitchTab={setIsSwitchTab} typeOf={'webview'} />
+                  <BrowserFooterSection
+                    isSwitchTab={isSwitchTab}
+                    setIsSwitchTab={setIsSwitchTab}
+                    typeOf={"webview"}
+                  />
                 </View>
                 {/* </Animated.View> */}
               </WebViewStateContext.Provider>
@@ -373,4 +405,4 @@ export const WebpageScreen: FunctionComponent<
   );
 });
 
-export * from './screen-options';
+export * from "./screen-options";

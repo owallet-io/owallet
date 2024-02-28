@@ -1,25 +1,31 @@
-import React, { FunctionComponent } from 'react';
-import { RNCamera } from 'react-native-camera';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { StyleSheet, View, TouchableOpacity } from 'react-native';
-import { Text } from '@src/components/text';
-import { CloseIcon } from '../icon';
-import Svg, { Path } from 'react-native-svg';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { LoadingSpinner } from '../spinner';
-import { colors, typography } from '../../themes';
+import React, { FunctionComponent } from "react";
+import { RNCamera } from "react-native-camera";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
+import { StyleSheet, View, TouchableOpacity } from "react-native";
+import { Text } from "@src/components/text";
+import { CloseIcon } from "../icon";
+import Svg, { Path } from "react-native-svg";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { LoadingSpinner } from "../spinner";
+import { colors, typography } from "../../themes";
 
 export const FullScreenCameraView: FunctionComponent<
   React.ComponentProps<typeof RNCamera> & {
     containerBottom?: React.ReactElement;
     isLoading?: boolean;
   }
-> = props => {
+> = (props) => {
   const navigation = useNavigation();
 
   const isFocused = useIsFocused();
 
-  const { children, containerBottom, isLoading, style: propStyle, ...rest } = props;
+  const {
+    children,
+    containerBottom,
+    isLoading,
+    style: propStyle,
+    ...rest
+  } = props;
 
   return (
     <React.Fragment>
@@ -27,36 +33,36 @@ export const FullScreenCameraView: FunctionComponent<
         <RNCamera
           style={StyleSheet.flatten([
             {
-              position: 'absolute',
+              position: "absolute",
               left: 0,
               right: 0,
               top: 0,
-              bottom: 0
+              bottom: 0,
             },
-            propStyle
+            propStyle,
           ])}
           {...rest}
         />
       ) : null}
       <SafeAreaView
         style={{
-          position: 'absolute',
+          position: "absolute",
           left: 0,
           right: 0,
           top: 0,
           bottom: 0,
-          alignItems: 'center'
+          alignItems: "center",
         }}
       >
         <View
           style={{
-            display: 'flex',
-            flexDirection: 'row'
+            display: "flex",
+            flexDirection: "row",
           }}
         >
           <View
             style={{
-              flex: 1
+              flex: 1,
             }}
           />
           {navigation.canGoBack() ? (
@@ -70,28 +76,31 @@ export const FullScreenCameraView: FunctionComponent<
                   height: 38,
                   width: 38,
                   borderRadius: 64,
-                  backgroundColor: colors['gray-50'],
+                  backgroundColor: colors["gray-50"],
                   opacity: 0.9,
                   marginTop: 8,
                   marginRight: 16,
-                  alignItems: 'center',
-                  justifyContent: 'center'
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
-                <CloseIcon size={28} color={colors['primary-surface-default']} />
+                <CloseIcon
+                  size={28}
+                  color={colors["primary-surface-default"]}
+                />
               </View>
             </TouchableOpacity>
           ) : null}
         </View>
         <View
           style={{
-            flex: 1
+            flex: 1,
           }}
         />
         <View>
           <Svg width="217" height="217" fill="none" viewBox="0 0 217 217">
             <Path
-              stroke={colors['primary-surface-default']}
+              stroke={colors["primary-surface-default"]}
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeWidth="6"
@@ -101,13 +110,13 @@ export const FullScreenCameraView: FunctionComponent<
           {isLoading ? (
             <View
               style={{
-                position: 'absolute',
+                position: "absolute",
                 left: 0,
                 right: 0,
                 top: 0,
                 bottom: 0,
-                alignItems: 'center',
-                justifyContent: 'center'
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
               <View
@@ -116,16 +125,19 @@ export const FullScreenCameraView: FunctionComponent<
                   paddingRight: 48,
                   paddingBottom: 31,
                   borderRadius: 8,
-                  alignItems: 'center',
-                  backgroundColor: colors['camera-loading-background']
+                  alignItems: "center",
+                  backgroundColor: colors["camera-loading-background"],
                 }}
               >
-                <LoadingSpinner size={42} color={colors['primary-surface-default']} />
+                <LoadingSpinner
+                  size={42}
+                  color={colors["primary-surface-default"]}
+                />
                 <Text
                   style={{
-                    ...typography['subtitle1'],
+                    ...typography["subtitle1"],
                     marginTop: 34,
-                    color: colors['primary-surface-default']
+                    color: colors["primary-surface-default"],
                   }}
                 >
                   Loading...
@@ -137,7 +149,7 @@ export const FullScreenCameraView: FunctionComponent<
         {containerBottom}
         <View
           style={{
-            flex: 1
+            flex: 1,
           }}
         />
       </SafeAreaView>

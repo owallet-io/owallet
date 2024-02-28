@@ -1,22 +1,27 @@
-import { EthereumEndpoint } from '@owallet/common';
-import { useDelegateTxConfig } from '@owallet/hooks';
-import { BondStatus } from '@owallet/stores';
-import { Dec, DecUtils } from '@owallet/unit';
-import { RouteProp, useRoute } from '@react-navigation/native';
-import { OWBox } from '@src/components/card';
-import { OWSubTitleHeader } from '@src/components/header';
-import { Text } from '@src/components/text';
-import { useTheme } from '@src/themes/theme-provider';
-import { observer } from 'mobx-react-lite';
-import React, { FunctionComponent, useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { OWButton } from '../../../components/button';
-import { AmountInput, FeeButtons, MemoInput, TextInput } from '../../../components/input';
-import { PageWithScrollView } from '../../../components/page';
-import { Toggle } from '../../../components/toggle';
-import { useSmartNavigation } from '../../../navigation.provider';
-import { useStore } from '../../../stores';
-import { spacing, typography } from '../../../themes';
+import { EthereumEndpoint } from "@owallet/common";
+import { useDelegateTxConfig } from "@owallet/hooks";
+import { BondStatus } from "@owallet/stores";
+import { Dec, DecUtils } from "@owallet/unit";
+import { RouteProp, useRoute } from "@react-navigation/native";
+import { OWBox } from "@src/components/card";
+import { OWSubTitleHeader } from "@src/components/header";
+import { Text } from "@src/components/text";
+import { useTheme } from "@src/themes/theme-provider";
+import { observer } from "mobx-react-lite";
+import React, { FunctionComponent, useEffect, useState } from "react";
+import { StyleSheet, View } from "react-native";
+import { OWButton } from "../../../components/button";
+import {
+  AmountInput,
+  FeeButtons,
+  MemoInput,
+  TextInput,
+} from "../../../components/input";
+import { PageWithScrollView } from "../../../components/page";
+import { Toggle } from "../../../components/toggle";
+import { useSmartNavigation } from "../../../navigation.provider";
+import { useStore } from "../../../stores";
+import { spacing, typography } from "../../../themes";
 
 export const DelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -46,7 +51,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   const sendConfigs = useDelegateTxConfig(
     chainStore,
     chainStore.current.chainId,
-    account.msgOpts['delegate'].gas,
+    account.msgOpts["delegate"].gas,
     account.bech32Address,
     queries.queryBalances,
     EthereumEndpoint
@@ -64,7 +69,9 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     sendConfigs.feeConfig.getError();
   const txStateIsValid = sendConfigError == null;
 
-  const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(BondStatus.Bonded);
+  const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
+    BondStatus.Bonded
+  );
 
   const validator = bondedValidators.getValidator(validatorAddress);
 
@@ -78,66 +85,79 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   // };
 
   return (
-    <PageWithScrollView backgroundColor={colors['background']}>
+    <PageWithScrollView backgroundColor={colors["background"]}>
       <OWSubTitleHeader title="Staking" />
       <OWBox
         style={{
-          marginBottom: 24
+          marginBottom: 24,
         }}
       >
-        <AmountInput label={'Amount'} amountConfig={sendConfigs.amountConfig} />
-        <MemoInput label={'Memo (Optional)'} memoConfig={sendConfigs.memoConfig} />
+        <AmountInput label={"Amount"} amountConfig={sendConfigs.amountConfig} />
+        <MemoInput
+          label={"Memo (Optional)"}
+          memoConfig={sendConfigs.memoConfig}
+        />
 
         {/* Need to some custom fee here */}
 
         <View
           style={{
-            flexDirection: 'row',
+            flexDirection: "row",
             paddingBottom: 24,
-            alignItems: 'center'
+            alignItems: "center",
           }}
         >
           <Toggle
             on={customFee}
-            onChange={value => {
+            onChange={(value) => {
               setCustomFee(value);
               if (!value) {
-                if (sendConfigs.feeConfig.feeCurrency && !sendConfigs.feeConfig.fee) {
-                  sendConfigs.feeConfig.setFeeType('average');
+                if (
+                  sendConfigs.feeConfig.feeCurrency &&
+                  !sendConfigs.feeConfig.fee
+                ) {
+                  sendConfigs.feeConfig.setFeeType("average");
                 }
               }
             }}
           />
           <Text
             style={{
-              fontWeight: '700',
+              fontWeight: "700",
               fontSize: 16,
               lineHeight: 34,
               paddingHorizontal: 8,
-              color: colors['primary-text']
+              color: colors["primary-text"],
             }}
           >
             Custom Fee
           </Text>
         </View>
 
-        {customFee && chainStore.current.networkType !== 'evm' ? (
+        {customFee && chainStore.current.networkType !== "evm" ? (
           <TextInput
             label="Fee"
             placeholder="Type your Fee here"
-            keyboardType={'numeric'}
+            keyboardType={"numeric"}
             labelStyle={styles.sendlabelInput}
-            onChangeText={text => {
-              const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(DecUtils.getTenExponentNInPrecisionRange(6));
+            onChangeText={(text) => {
+              const fee = new Dec(Number(text.replace(/,/g, "."))).mul(
+                DecUtils.getTenExponentNInPrecisionRange(6)
+              );
 
               sendConfigs.feeConfig.setManualFee({
                 amount: fee.roundUp().toString(),
-                denom: sendConfigs.feeConfig.feeCurrency.coinMinimalDenom
+                denom: sendConfigs.feeConfig.feeCurrency.coinMinimalDenom,
               });
             }}
           />
-        ) : chainStore.current.networkType !== 'evm' ? (
-          <FeeButtons label="Fee" gasLabel="gas" feeConfig={sendConfigs.feeConfig} gasConfig={sendConfigs.gasConfig} />
+        ) : chainStore.current.networkType !== "evm" ? (
+          <FeeButtons
+            label="Fee"
+            gasLabel="gas"
+            feeConfig={sendConfigs.feeConfig}
+            gasConfig={sendConfigs.gasConfig}
+          />
         ) : null}
 
         {/* <TouchableOpacity
@@ -159,25 +179,25 @@ export const DelegateScreen: FunctionComponent = observer(() => {
 
         <View
           style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            marginTop: spacing['16'],
-            paddingTop: spacing['4']
+            flexDirection: "row",
+            justifyContent: "space-between",
+            marginTop: spacing["16"],
+            paddingTop: spacing["4"],
           }}
         >
           <View>
             <Text
               style={{
                 ...styles.textNormal,
-                marginBottom: spacing['4'],
-                color: colors['sub-primary-text']
+                marginBottom: spacing["4"],
+                color: colors["sub-primary-text"],
               }}
             >{`Gas limit`}</Text>
             {/* Gas limit now fixed at 0.00004 ORAI for every transactions */}
             <Text
               style={{
                 ...styles.textNormal,
-                color: colors['sub-primary-text']
+                color: colors["sub-primary-text"],
               }}
             >{`200000`}</Text>
           </View>
@@ -185,12 +205,12 @@ export const DelegateScreen: FunctionComponent = observer(() => {
         </View>
         <OWButton
           style={{
-            marginTop: 20
+            marginTop: 20,
           }}
           label="Stake"
           fullWidth={false}
           disabled={!account.isReadyToSendMsgs || !txStateIsValid}
-          loading={account.isSendingMsg === 'delegate'}
+          loading={account.isSendingMsg === "delegate"}
           onPress={async () => {
             if (account.isReadyToSendMsgs && txStateIsValid) {
               try {
@@ -201,31 +221,33 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                   sendConfigs.feeConfig.toStdFee(),
                   {
                     preferNoSetMemo: true,
-                    preferNoSetFee: true
+                    preferNoSetFee: true,
                   },
                   {
-                    onBroadcasted: txHash => {
-                      analyticsStore.logEvent('Delegate tx broadcasted', {
+                    onBroadcasted: (txHash) => {
+                      analyticsStore.logEvent("Delegate tx broadcasted", {
                         chainId: chainStore.current.chainId,
                         chainName: chainStore.current.chainName,
-                        validatorName: validator?.description.moniker ?? '...',
-                        feeType: sendConfigs.feeConfig.feeType
+                        validatorName: validator?.description.moniker ?? "...",
+                        feeType: sendConfigs.feeConfig.feeType,
                       });
-                      smartNavigation.pushSmart('TxPendingResult', {
-                        txHash: Buffer.from(txHash).toString('hex')
+                      smartNavigation.pushSmart("TxPendingResult", {
+                        txHash: Buffer.from(txHash).toString("hex"),
                       });
-                    }
+                    },
                   }
                 );
               } catch (e) {
-                if (e?.message === 'Request rejected') {
+                if (e?.message === "Request rejected") {
                   return;
                 }
-                if (e?.message.includes('Cannot read properties of undefined')) {
+                if (
+                  e?.message.includes("Cannot read properties of undefined")
+                ) {
                   return;
                 }
                 console.log(e);
-                smartNavigation.navigate('Home', {});
+                smartNavigation.navigate("Home", {});
               }
             }
           }}
@@ -235,45 +257,45 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   );
 });
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     page: {
-      padding: spacing['page']
+      padding: spacing["page"],
     },
     containerStaking: {
-      borderRadius: spacing['24'],
-      backgroundColor: colors['primary'],
-      marginBottom: spacing['24']
+      borderRadius: spacing["24"],
+      backgroundColor: colors["primary"],
+      marginBottom: spacing["24"],
     },
     containerBtn: {
-      backgroundColor: colors['primary-surface-default'],
-      marginLeft: spacing['24'],
-      marginRight: spacing['24'],
-      borderRadius: spacing['8'],
-      marginTop: spacing['20'],
-      paddingVertical: spacing['16']
+      backgroundColor: colors["primary-surface-default"],
+      marginLeft: spacing["24"],
+      marginRight: spacing["24"],
+      borderRadius: spacing["8"],
+      marginTop: spacing["20"],
+      paddingVertical: spacing["16"],
     },
     textBtn: {
       ...typography.h6,
-      color: colors['white'],
-      fontWeight: '700'
+      color: colors["white"],
+      fontWeight: "700",
     },
     sendlabelInput: {
       fontSize: 16,
-      fontWeight: '700',
+      fontWeight: "700",
       lineHeight: 22,
-      color: colors['gray-900'],
-      marginBottom: spacing['8']
+      color: colors["gray-900"],
+      marginBottom: spacing["8"],
     },
     textNormal: {
       ...typography.h7,
-      color: colors['gray-600']
+      color: colors["gray-600"],
     },
     title: {
       ...typography.h3,
-      fontWeight: '700',
-      textAlign: 'center',
-      color: colors['gray-900'],
-      marginTop: spacing['12']
-    }
+      fontWeight: "700",
+      textAlign: "center",
+      color: colors["gray-900"],
+      marginTop: spacing["12"],
+    },
   });

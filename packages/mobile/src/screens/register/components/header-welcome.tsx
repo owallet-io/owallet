@@ -1,8 +1,8 @@
-import { StyleSheet, View, ViewStyle } from 'react-native';
-import React from 'react';
-import { OWalletLogo, OWalletUnion } from '../owallet-logo';
-import { Text } from '@src/components/text';
-import { metrics } from '@src/themes';
+import { StyleSheet, View, ViewStyle } from "react-native";
+import React from "react";
+import { OWalletLogo, OWalletUnion } from "../owallet-logo";
+import { Text } from "@src/components/text";
+import { metrics } from "@src/themes";
 interface IHeaderWelcome {
   title?: string;
   style?: ViewStyle;
@@ -27,9 +27,9 @@ export default HeaderWelcome;
 
 const styles = StyleSheet.create({
   containerHeader: {
-    alignItems: 'center',
+    alignItems: "center",
     padding: 18,
-    marginTop: metrics.screenHeight * 0.08
+    marginTop: metrics.screenHeight * 0.08,
   },
-  containerUnion: { paddingTop: 20, paddingBottom: 16 }
+  containerUnion: { paddingTop: 20, paddingBottom: 16 },
 });

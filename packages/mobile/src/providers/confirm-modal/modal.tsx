@@ -2,16 +2,13 @@ import React, { FunctionComponent } from "react";
 import { registerModal } from "../../modals/base";
 import { useStyle } from "../../styles";
 import { StyleSheet, TextStyle, View, ViewStyle } from "react-native";
-import { Text } from '@src/components/text';
+import { Text } from "@src/components/text";
 import { Button } from "../../components/button";
-import { BottomSheetProps } from '@gorhom/bottom-sheet';
+import { BottomSheetProps } from "@gorhom/bottom-sheet";
 export const ConfirmModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
-  bottomSheetModalConfig?: Omit<
-  BottomSheetProps,
-  'snapPoints' | 'children'
->;
+  bottomSheetModalConfig?: Omit<BottomSheetProps, "snapPoints" | "children">;
   title: string;
   paragraph?: string;
 
@@ -55,7 +52,7 @@ export const ConfirmModal: FunctionComponent<{
               "padding-y-28",
               "items-center",
             ]),
-            ...modalRootCustom
+            ...modalRootCustom,
           }}
         >
           <Text
@@ -65,7 +62,7 @@ export const ConfirmModal: FunctionComponent<{
                 "color-text-black-medium",
                 "margin-bottom-8",
               ]),
-              ...titleStyleCustom
+              ...titleStyleCustom,
             }}
           >
             {title}
@@ -79,7 +76,7 @@ export const ConfirmModal: FunctionComponent<{
                   "margin-bottom-16",
                   "text-center",
                 ]),
-                ...contentStyleCustom
+                ...contentStyleCustom,
               }}
             >
               {paragraph}
@@ -97,13 +94,13 @@ export const ConfirmModal: FunctionComponent<{
                 onSelectNo();
                 close();
               }}
-              textStyle={{ color: noBtnStyleCustom?.color}}
+              textStyle={{ color: noBtnStyleCustom?.color }}
             />
             <View style={style.flatten(["width-12"])} />
             <Button
               containerStyle={{
                 ...style.flatten(["flex-1"]),
-                ...yesBtnStyleCustom
+                ...yesBtnStyleCustom,
               }}
               text={yesButtonText}
               onPress={() => {

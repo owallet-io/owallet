@@ -1,10 +1,10 @@
-import React, { FunctionComponent } from 'react';
-import Svg, { Path, G, Defs, ClipPath, Rect } from 'react-native-svg';
-import { IconProps } from './arrow';
+import React, { FunctionComponent } from "react";
+import Svg, { Path, G, Defs, ClipPath, Rect } from "react-native-svg";
+import { IconProps } from "./arrow";
 
 export const ValidatorBlockIcon: FunctionComponent<IconProps> = ({
-  color = '#5F5E77',
-  size = 24
+  color = "#5F5E77",
+  size = 24,
 }) => {
   return (
     <Svg fill="none" width={size} height={size} viewBox="0 0 24 24">
@@ -38,8 +38,8 @@ export const ValidatorBlockIcon: FunctionComponent<IconProps> = ({
 };
 
 export const ValidatorAPYIcon: FunctionComponent<IconProps> = ({
-  color = '#5F5E77',
-  size = 24
+  color = "#5F5E77",
+  size = 24,
 }) => {
   return (
     <Svg fill="none" width={size} height={size} viewBox="0 0 24 24">
@@ -59,8 +59,8 @@ export const ValidatorAPYIcon: FunctionComponent<IconProps> = ({
 };
 
 export const ValidatorCommissionIcon: FunctionComponent<IconProps> = ({
-  color = '#5F5E77',
-  size = 24
+  color = "#5F5E77",
+  size = 24,
 }) => {
   return (
     <Svg fill="none" width={size} height={size} viewBox="0 0 24 24">
@@ -73,8 +73,8 @@ export const ValidatorCommissionIcon: FunctionComponent<IconProps> = ({
 };
 
 export const ValidatorVotingIcon: FunctionComponent<IconProps> = ({
-  color = '#5F5E77',
-  size = 24
+  color = "#5F5E77",
+  size = 24,
 }) => {
   return (
     <Svg fill="none" width={size} height={size} viewBox="0 0 24 24">

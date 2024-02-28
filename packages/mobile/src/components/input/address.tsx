@@ -1,5 +1,5 @@
-import React, { FunctionComponent, useMemo } from 'react';
-import { observer } from 'mobx-react-lite';
+import React, { FunctionComponent, useMemo } from "react";
+import { observer } from "mobx-react-lite";
 import {
   EmptyAddressError,
   ENSFailedToFetchError,
@@ -7,35 +7,41 @@ import {
   ENSNotSupportedError,
   IMemoConfig,
   InvalidBech32Error,
-  IRecipientConfig
-} from '@owallet/hooks';
-import { StyleSheet, TextStyle, View, ViewStyle, TouchableOpacity } from 'react-native';
-import { TextInput } from './input';
-import { ObservableEnsFetcher } from '@owallet/ens';
-import { LoadingSpinner } from '../spinner';
-import { useStyle } from '../../styles';
-import { useSmartNavigation } from '../../navigation.provider';
-import { colors } from '../../themes';
-import { NoteIcon } from '../icon';
-import { navigate } from '@src/router/root';
-import { SCREENS } from '@src/common/constants';
+  IRecipientConfig,
+} from "@owallet/hooks";
+import {
+  StyleSheet,
+  TextStyle,
+  View,
+  ViewStyle,
+  TouchableOpacity,
+} from "react-native";
+import { TextInput } from "./input";
+import { ObservableEnsFetcher } from "@owallet/ens";
+import { LoadingSpinner } from "../spinner";
+import { useStyle } from "../../styles";
+import { useSmartNavigation } from "../../navigation.provider";
+import { colors } from "../../themes";
+import { NoteIcon } from "../icon";
+import { navigate } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
 
 const styles = StyleSheet.create({
   absolute: {
-    position: 'absolute'
+    position: "absolute",
   },
-  'height-16': {
-    height: 16
+  "height-16": {
+    height: 16,
   },
-  'justify-center': {
-    justifyContent: 'center'
+  "justify-center": {
+    justifyContent: "center",
   },
-  'margin-top-2': {
-    marginTop: 2
+  "margin-top-2": {
+    marginTop: 2,
   },
-  'margin-left-4': {
-    marginLeft: 4
-  }
+  "margin-left-4": {
+    marginLeft: 4,
+  },
 });
 
 export const AddressInput: FunctionComponent<{
@@ -67,11 +73,13 @@ export const AddressInput: FunctionComponent<{
     disableAddressBook,
     placeholder,
     placeholderTextColor,
-    inputRight
+    inputRight,
   }) => {
     const style = useStyle();
 
-    const isENSAddress = ObservableEnsFetcher.isValidENS(recipientConfig.rawRecipient);
+    const isENSAddress = ObservableEnsFetcher.isValidENS(
+      recipientConfig.rawRecipient
+    );
 
     const error = recipientConfig.getError();
     const errorText: string | undefined = useMemo(() => {
@@ -81,15 +89,15 @@ export const AddressInput: FunctionComponent<{
             // No need to show the error to user.
             return;
           case InvalidBech32Error:
-            return 'Invalid address';
+            return "Invalid address";
           case ENSNotSupportedError:
-            return 'ENS not supported';
+            return "ENS not supported";
           case ENSFailedToFetchError:
-            return 'Failed to fetch the address from ENS';
+            return "Failed to fetch the address from ENS";
           case ENSIsFetchingError:
             return;
           default:
-            return 'Unknown error';
+            return "Unknown error";
         }
       }
     }, [error]);
@@ -105,8 +113,8 @@ export const AddressInput: FunctionComponent<{
         errorLabelStyle={errorLabelStyle}
         error={errorText}
         value={recipientConfig.rawRecipient}
-        onChangeText={text => {
-          recipientConfig.setRawRecipient(text.replace(/\s/g, ''));
+        onChangeText={(text) => {
+          recipientConfig.setRawRecipient(text.replace(/\s/g, ""));
         }}
         placeholder={placeholder}
         placeholderTextColor={placeholderTextColor}
@@ -116,14 +124,14 @@ export const AddressInput: FunctionComponent<{
               <View>
                 <View
                   style={[
-                    styles['absolute'],
-                    styles['height-16'],
-                    styles['justify-center'],
-                    styles['margin-top-2'],
-                    styles['margin-left-4']
+                    styles["absolute"],
+                    styles["height-16"],
+                    styles["justify-center"],
+                    styles["margin-top-2"],
+                    styles["margin-left-4"],
                   ]}
                 >
-                  <LoadingSpinner size={14} color={'#83838F'} />
+                  <LoadingSpinner size={14} color={"#83838F"} />
                 </View>
               </View>
             ) : (
@@ -133,23 +141,32 @@ export const AddressInput: FunctionComponent<{
         }
         inputRight={
           disableAddressBook ? null : (
-            <View style={style.flatten(['height-1', 'overflow-visible', 'justify-center'])}>
+            <View
+              style={style.flatten([
+                "height-1",
+                "overflow-visible",
+                "justify-center",
+              ])}
+            >
               {inputRight ? (
                 inputRight
               ) : (
                 <TouchableOpacity
-                  style={style.flatten(['padding-4'])}
+                  style={style.flatten(["padding-4"])}
                   onPress={() => {
                     navigate(SCREENS.STACK.AddressBooks, {
                       screen: SCREENS.AddressBook,
                       params: {
                         recipientConfig,
-                        memoConfig
-                      }
+                        memoConfig,
+                      },
                     });
                   }}
                 >
-                  <NoteIcon color={colors['primary-surface-default']} height={18} />
+                  <NoteIcon
+                    color={colors["primary-surface-default"]}
+                    height={18}
+                  />
                 </TouchableOpacity>
               )}
             </View>

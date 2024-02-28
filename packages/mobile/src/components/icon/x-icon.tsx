@@ -1,10 +1,10 @@
-import React, { FunctionComponent } from 'react';
-import Svg, { Path } from 'react-native-svg';
+import React, { FunctionComponent } from "react";
+import Svg, { Path } from "react-native-svg";
 
 export const XIcon: FunctionComponent<{
   size?: number;
   color?: string;
-}> = ({ size, color = '#C7C7CC' }) => {
+}> = ({ size, color = "#C7C7CC" }) => {
   return (
     <Svg width="20" height="20" viewBox="0 0 20 20" fill="none">
       <Path
