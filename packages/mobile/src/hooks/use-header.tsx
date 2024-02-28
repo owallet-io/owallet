@@ -1,41 +1,47 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import OWHeaderTitle from '@src/components/header/ow-header-title';
-import OWHeaderRight from '@src/components/header/ow-header-right';
-import { useTheme } from '@src/themes/theme-provider';
-import OWButtonIcon from '@src/components/button/ow-button-icon';
-import { StackNavigationOptions, TransitionPresets } from '@react-navigation/stack';
-import { HEADER_KEY, SCREENS } from '@src/common/constants';
+import React, { useCallback, useEffect, useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import OWHeaderTitle from "@src/components/header/ow-header-title";
+import OWHeaderRight from "@src/components/header/ow-header-right";
+import { useTheme } from "@src/themes/theme-provider";
+import OWButtonIcon from "@src/components/button/ow-button-icon";
+import {
+  StackNavigationOptions,
+  TransitionPresets,
+} from "@react-navigation/stack";
+import { HEADER_KEY, SCREENS } from "@src/common/constants";
 interface IUseHeaderOptions extends StackNavigationOptions {}
-const useHeaderOptions = (data?: IUseHeaderOptions, navigation?: any): IUseHeaderOptions => {
+const useHeaderOptions = (
+  data?: IUseHeaderOptions,
+  navigation?: any
+): IUseHeaderOptions => {
   const { colors } = useTheme();
   const onGoBack = () => {
     navigation.goBack();
   };
   const onTransaction = () => {
     navigation.navigate(SCREENS.STACK.Others, {
-      screen: SCREENS.Transactions
+      screen: SCREENS.Transactions,
     });
     return;
   };
 
   const onScan = () => {
     navigation.navigate(SCREENS.STACK.Others, {
-      screen: SCREENS.Camera
+      screen: SCREENS.Camera,
     });
     return;
   };
 
   return {
     headerStyle: {
-      backgroundColor: colors['background-box'],
-      shadowColor: colors['border-gray']
+      backgroundColor: colors["background-box"],
+      shadowColor: colors["border-gray"],
       // shadowRadius: 0,
       // elevation: 1
     },
     headerTitle: () => <OWHeaderTitle title={data?.title} />,
-    headerTitleAlign: 'center',
+    headerTitleAlign: "center",
     headerRight: () => {
       if (data?.title == HEADER_KEY.showNetworkHeader) {
         return <OWHeaderRight onTransaction={onTransaction} onScan={onScan} />;
@@ -45,7 +51,7 @@ const useHeaderOptions = (data?: IUseHeaderOptions, navigation?: any): IUseHeade
       if (navigation.canGoBack())
         return (
           <OWButtonIcon
-            colorIcon={colors['primary-text']}
+            colorIcon={colors["primary-text"]}
             onPress={onGoBack}
             name="arrow-left"
             fullWidth={false}
@@ -56,8 +62,11 @@ const useHeaderOptions = (data?: IUseHeaderOptions, navigation?: any): IUseHeade
       return null;
     },
     ...TransitionPresets.SlideFromRightIOS,
-    headerShown: data?.title === HEADER_KEY.notShowHeader || !!data?.title == false ? false : true,
-    ...data
+    headerShown:
+      data?.title === HEADER_KEY.notShowHeader || !!data?.title == false
+        ? false
+        : true,
+    ...data,
   };
 };
 
@@ -65,6 +74,6 @@ export default useHeaderOptions;
 
 const styles = StyleSheet.create({
   btnIcon: {
-    paddingRight: 35
-  }
+    paddingRight: 35,
+  },
 });

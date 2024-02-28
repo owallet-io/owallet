@@ -1,23 +1,25 @@
-import React, { FunctionComponent } from 'react';
-import { StackHeaderLeftButtonProps } from '@react-navigation/stack';
-import { TouchableOpacity, View, ViewStyle } from 'react-native';
-import { useStyle } from '../../styles';
-import { HeaderBackButtonIcon } from './icon';
-import { spacing } from '../../themes';
+import React, { FunctionComponent } from "react";
+import { StackHeaderLeftButtonProps } from "@react-navigation/stack";
+import { TouchableOpacity, View, ViewStyle } from "react-native";
+import { useStyle } from "../../styles";
+import { HeaderBackButtonIcon } from "./icon";
+import { spacing } from "../../themes";
 
-export const HeaderLeftButton: FunctionComponent<StackHeaderLeftButtonProps> = ({ children, onPress }) => {
+export const HeaderLeftButton: FunctionComponent<
+  StackHeaderLeftButtonProps
+> = ({ children, onPress }) => {
   const style = useStyle();
 
   return (
     <View
       style={{
-        position: 'absolute'
+        position: "absolute",
       }}
     >
       <TouchableOpacity
         onPress={onPress}
         style={{
-          padding: spacing['30']
+          padding: spacing["30"],
         }}
       >
         {children}
@@ -35,14 +37,14 @@ export const HeaderRightButton: FunctionComponent<{
   return (
     <View
       style={{
-        position: 'absolute',
-        ...propStyle
+        position: "absolute",
+        ...propStyle,
       }}
     >
       <TouchableOpacity
         onPress={onPress}
         style={{
-          padding: spacing['10']
+          padding: spacing["10"],
         }}
       >
         {children}
@@ -50,7 +52,9 @@ export const HeaderRightButton: FunctionComponent<{
     </View>
   );
 };
-export const HeaderLeftBackButton: FunctionComponent<StackHeaderLeftButtonProps> = props => {
+export const HeaderLeftBackButton: FunctionComponent<
+  StackHeaderLeftButtonProps
+> = (props) => {
   return (
     <React.Fragment>
       {props.canGoBack ? (
