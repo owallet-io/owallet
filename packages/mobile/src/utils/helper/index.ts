@@ -164,14 +164,14 @@ export const TRANSACTION_TYPE = {
   EXECUTE_CONTRACT: 'MsgExecuteContract'
 };
 
-export const getValueFromDataEvents = (arr) => {
+export const getValueFromDataEvents = arr => {
   if (arr.length === 1) {
     return { value: [arr[0]], typeId: 1 };
   }
   let result = [];
   for (let item of arr) {
     // if any element has amountValue, push it to the result array
-    if (item?.transferInfo.some((data) => data?.amount)) {
+    if (item?.transferInfo.some(data => data?.amount)) {
       result.push(item);
     }
   }
@@ -189,7 +189,7 @@ export const getValueFromDataEvents = (arr) => {
   // if the result array has more than one element, return it and typeId = 3
   return { value: result, typeId: 3 };
 };
-export const getDataFromDataEvent = (itemEvents) => {
+export const getDataFromDataEvent = itemEvents => {
   return countAmountValue(itemEvents?.value[0]?.transferInfo) < 2
     ? {
         ...itemEvents?.value[0],
@@ -205,7 +205,7 @@ export const getDataFromDataEvent = (itemEvents) => {
         }
       };
 };
-const countAmountValue = (array) => {
+const countAmountValue = array => {
   let count = 0;
   if (array && array?.length > 0) {
     for (let element of array) {
@@ -246,7 +246,7 @@ const configBrowser = {
     endExit: 'slide_out_right'
   }
 };
-export const openLink = async (url) => {
+export const openLink = async url => {
   try {
     if (!url) {
       console.log('url: ', url);
@@ -273,12 +273,12 @@ export function parseObjectToQueryString(obj) {
   return '?' + params.toString();
 }
 export function removeEmptyElements(array) {
-  return array.filter((element) => !!element);
+  return array.filter(element => !!element);
 }
 
 function convertVarToWord(str) {
   const words = str && str.split('_');
-  const capitalizedWords = words && words.map((word) => word.charAt(0).toUpperCase() + word.slice(1));
+  const capitalizedWords = words && words.map(word => word.charAt(0).toUpperCase() + word.slice(1));
   return capitalizedWords && capitalizedWords.join(' ');
 }
 export function removeSpecialChars(str) {
@@ -412,7 +412,7 @@ export const convertAmount = (amount: any) => {
   }
 };
 
-export const getDomainFromUrl = (url) => {
+export const getDomainFromUrl = url => {
   if (!url) {
     return '';
   }
@@ -424,18 +424,18 @@ export const getDomainFromUrl = (url) => {
     .replace('http://', '');
 };
 
-export const parseIbcMsgRecvPacket = (denom) => {
+export const parseIbcMsgRecvPacket = denom => {
   return denom?.slice(0, 1) === 'u' ? denom?.slice(1, denom?.length) : denom;
 };
 export function addTimeProperty(array1, array2) {
   // Create a new object with heightId as the key and time as the value
   const timeMap = {};
-  array1.forEach((obj) => {
+  array1.forEach(obj => {
     timeMap[obj?.block?.header?.height] = obj?.block?.header?.time;
   });
 
   // Add time property to each object in array2 based on heightId
-  array2.forEach((obj) => {
+  array2.forEach(obj => {
     obj.time = timeMap[obj?.height];
   });
 
@@ -453,7 +453,7 @@ export const getTxTypeNew = (type, rawLog = '[]', result = '') => {
             if (att?.['key'] === 'action') {
               let attValue = att?.['value']
                 .split('_')
-                .map((word) => word?.charAt(0).toUpperCase() + word?.slice(1))
+                .map(word => word?.charAt(0).toUpperCase() + word?.slice(1))
                 .join('');
               typeMsg += '/' + attValue;
               break;
@@ -470,8 +470,8 @@ export const getTxTypeNew = (type, rawLog = '[]', result = '') => {
 };
 
 export const parseIbcMsgTransfer = (rawLog, type = 'send_packet', key = 'packet_data') => {
-  const arrayIbcDemonPacket = rawLog && rawLog?.[0]?.events?.find((e) => e?.type === type);
-  const ibcDemonPackData = arrayIbcDemonPacket && arrayIbcDemonPacket?.attributes?.find((ele) => ele?.key === key);
+  const arrayIbcDemonPacket = rawLog && rawLog?.[0]?.events?.find(e => e?.type === type);
+  const ibcDemonPackData = arrayIbcDemonPacket && arrayIbcDemonPacket?.attributes?.find(ele => ele?.key === key);
   const ibcDemonObj =
     typeof ibcDemonPackData?.value === 'string' || ibcDemonPackData?.value instanceof String
       ? JSON.parse(ibcDemonPackData?.value ?? '{}')
@@ -543,7 +543,7 @@ export const getTokenInfos = ({ tokens, prices, networkFilter = '' }) => {
           const isHide = value < SMALL_BALANCE;
           if (isHide) return result;
 
-          const tokenIcon = tokensIcon.find((tIcon) => tIcon.coinGeckoId === token.coinGeckoId);
+          const tokenIcon = tokensIcon.find(tIcon => tIcon.coinGeckoId === token.coinGeckoId);
 
           result.push({
             asset: token.name,

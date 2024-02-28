@@ -44,8 +44,6 @@ export const HistoryCard: FunctionComponent<{
       );
 
       if (res && res.status === 200) {
-        console.log('res.data', res.data);
-
         setHistories(res.data);
       }
     } catch (err) {
@@ -114,11 +112,10 @@ export const HistoryCard: FunctionComponent<{
   );
 
   const renderListHistoryItem = ({ item }) => {
-    console.log('item', item);
     return (
       <View style={{ paddingTop: 16 }}>
         <Text size={14} color={colors['neutral-text-heading']} weight="600">
-          {'Dec 8, 2024'}
+          {item}
         </Text>
       </View>
     );
@@ -138,7 +135,7 @@ export const HistoryCard: FunctionComponent<{
     return (
       <>
         <OWFlatList
-          data={histories}
+          data={Object.keys(histories)}
           onEndReached={onEndReached}
           renderItem={renderListHistoryItem}
           loadMore={loadMore}

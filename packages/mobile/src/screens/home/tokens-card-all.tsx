@@ -29,6 +29,7 @@ export const TokensCardAll: FunctionComponent<{
   const theme = appInitStore.getInitApp.theme;
 
   const [more, setMore] = useState(true);
+  const [tokenInfos, setTokenInfos] = useState([]);
   const [activeTab, setActiveTab] = useState('tokens');
   const [yesterdayAssets, setYesterdayAssets] = useState([]);
   const [queryBalances, setQueryBalances] = useState({});
@@ -36,12 +37,6 @@ export const TokensCardAll: FunctionComponent<{
   const account = accountStore.getAccount(chainStore.current.chainId);
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
-
-  const tokenInfos = getTokenInfos({
-    tokens: universalSwapStore.getAmount,
-    prices: appInitStore.getInitApp.prices,
-    networkFilter: appInitStore.getInitApp.isAllNetworks ? '' : chainStore.current.chainId
-  });
 
   useEffect(() => {
     const queries = queriesStore.get(chainStore.current.chainId);
@@ -97,11 +92,17 @@ export const TokensCardAll: FunctionComponent<{
   }, [accountOrai.bech32Address]);
 
   useEffect(() => {
-    if (tokenInfos.length > 0) {
-      setTimeout(() => {
-        handleSaveTokenInfos(tokenInfos);
-      }, 5000);
-    }
+    setTimeout(() => {
+      const tokens = getTokenInfos({
+        tokens: universalSwapStore.getAmount,
+        prices: appInitStore.getInitApp.prices,
+        networkFilter: appInitStore.getInitApp.isAllNetworks ? '' : chainStore.current.chainId
+      });
+      if (tokens.length > 0) {
+        setTokenInfos(tokens);
+        handleSaveTokenInfos(tokens);
+      }
+    }, 3000);
   }, [accountOrai.bech32Address]);
 
   useEffect(() => {

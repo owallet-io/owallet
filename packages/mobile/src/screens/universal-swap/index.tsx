@@ -10,7 +10,7 @@ import { OWButton } from '@src/components/button';
 import OWButtonIcon from '@src/components/button/ow-button-icon';
 import { BalanceText } from './components/BalanceText';
 import { SelectNetworkModal, SelectTokenModal, SlippageModal } from './modals/';
-import { showToast, _keyExtract } from '@src/utils/helper';
+import { getTokenInfos, showToast, _keyExtract } from '@src/utils/helper';
 import { DEFAULT_SLIPPAGE, GAS_ESTIMATION_SWAP_DEFAULT, ORAI, toDisplay, getBase58Address } from '@owallet/common';
 import {
   TokenItemType,
@@ -404,6 +404,18 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setBalanceActive(item);
   };
 
+  const handleSaveTokenInfos = async tokenInfos => {
+    await API.saveTokenInfos(
+      {
+        address: accountOrai.bech32Address,
+        tokesInfos: tokenInfos
+      },
+      {
+        baseURL: 'https://staging.owallet.dev/'
+      }
+    );
+  };
+
   const handleSaveHistory = async infos => {
     try {
       const res = await API.saveHistory(
@@ -412,8 +424,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           baseURL: 'https://staging.owallet.dev/'
         }
       );
-
-      console.log('resss', res);
     } catch (err) {
       console.log('err handleSaveHistory ', err);
     }
@@ -535,6 +545,14 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           }
         });
         await handleFetchAmounts();
+        const tokens = getTokenInfos({
+          tokens: universalSwapStore.getAmount,
+          prices: appInitStore.getInitApp.prices,
+          networkFilter: appInitStore.getInitApp.isAllNetworks ? '' : chainStore.current.chainId
+        });
+        if (tokens.length > 0) {
+          handleSaveTokenInfos(tokens);
+        }
       }
     } catch (error) {
       setSwapLoading(false);
