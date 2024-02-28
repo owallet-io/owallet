@@ -2,7 +2,7 @@ name: Mobile fastlane release workflow
 on:
   push:
     tags:
-      - mobile/v*
+      - mobile/v[0-9].[0-9].[0-9]
   workflow_dispatch:
 
 jobs:

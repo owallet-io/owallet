@@ -1,8 +1,8 @@
 name: Mobile code push release workflow
 on:
   push:
-    branches:
-      - release/mobile/v[0-9].[0-9].[0-9]
+    tags:
+      - mobile/v[0-9].[0-9].[0-9]-cp.[0-9]
   workflow_dispatch:
 
 jobs:
@@ -41,16 +41,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
-      - name: Checkout submodule repo
+      - name: Checkout to repo
         uses: actions/checkout@v3
-        with:
-          submodules: true
-      # Update references
-      - name: Git Sumbodule Update
-        working-directory: packages/background
-        run: |
-          git pull origin mobile-backup
-
+        
       - name: Install Dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn --ignore-platform --ignore-scripts
