@@ -2,7 +2,7 @@ name: Mobile code push release workflow
 on:
   push:
     tags:
-      - mobile/v[0-9].[0-9].[0-9]-cp.[0-9]
+      - mobile/v*.*.*-cp.*
   workflow_dispatch:
 
 jobs:
