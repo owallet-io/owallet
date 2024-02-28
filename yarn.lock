@@ -5080,10 +5080,10 @@
     cosmjs-types "^0.8.0"
     ethers "^5.0.15"
 
-"@oraichain/oraidex-common@^1.0.71":
-  version "1.0.71"
-  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-common/-/oraidex-common-1.0.71.tgz#f09ed0fa7b12d00c9b1f5124f7c3b45eef1e09d5"
-  integrity sha512-yxOXmC+G8qf7+WaAp0XXjtTGhT9jQGIENwkzSHdWVbR/yYP3fBAve1KtEGHyyDakTRhqfEqjJ3Dyue5kARclGw==
+"@oraichain/oraidex-common@^1.0.72":
+  version "1.0.72"
+  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-common/-/oraidex-common-1.0.72.tgz#289a54139b30e575cb8688dac87a5370e058dad7"
+  integrity sha512-dgElO9TWCSFh4Z2yMWNAIX3NZR/zbikkFNXS+Y7dIn5T1KeMPp8JWBFol5L3BpJoFDd5cbG99Y6nv2P6pin/DQ==
   dependencies:
     "@cosmjs/amino" "^0.31.0"
     "@cosmjs/cosmwasm-stargate" "^0.31.0"

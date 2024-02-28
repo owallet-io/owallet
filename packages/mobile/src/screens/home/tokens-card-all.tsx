@@ -16,7 +16,7 @@ import { RightArrowIcon } from '@src/components/icon';
 import { ChainIdEnum, getBase58Address, TRC20_LIST } from '@owallet/common';
 import { API } from '@src/common/api';
 import moment from 'moment';
-import { chainIcons } from '../universal-swap/helpers';
+import { chainIcons } from '@oraichain/oraidex-common';
 import { TokenItem } from '../tokens/components/token-item';
 import { HistoryCard } from './history-card';
 

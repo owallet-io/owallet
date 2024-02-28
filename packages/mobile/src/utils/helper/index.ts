@@ -2,14 +2,20 @@ import { navigate } from '../../router/root';
 import isValidDomain from 'is-valid-domain';
 import { find } from 'lodash';
 import moment from 'moment';
-import { tokensIcon } from '@owallet/common';
 import { AppCurrency } from '@owallet/types';
 import get from 'lodash/get';
 import { TxsHelper } from '@src/stores/txs/helpers/txs-helper';
 import { showMessage, MessageOptions } from 'react-native-flash-message';
 import { InAppBrowser } from 'react-native-inappbrowser-reborn';
 import { Linking, Platform } from 'react-native';
-import { flattenTokens, getSubAmountDetails, toAmount, toDisplay, toSumDisplay } from '@oraichain/oraidex-common';
+import {
+  flattenTokens,
+  getSubAmountDetails,
+  toAmount,
+  toDisplay,
+  toSumDisplay,
+  tokensIcon
+} from '@oraichain/oraidex-common';
 const SCHEME_IOS = 'owallet://open_url?url=';
 const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url=';
 export const ORAICHAIN_ID = 'Oraichain';
