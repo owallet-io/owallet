@@ -2,7 +2,7 @@ name: Mobile fastlane release workflow
 on:
   push:
     tags:
-      - mobile/v*
+      - mobile/v*.*.*
   workflow_dispatch:
 
 jobs:
@@ -13,6 +13,10 @@ jobs:
       matrix:
         node-version: [18.17.0]
     steps:
+      - name: Check tag name
+        if: contains(github.ref, 'cp')
+        run: |
+          exit 1
       - name: Cancel Previous Runs
         uses: styfle/cancel-workflow-action@0.8.0
         with:
@@ -98,6 +102,10 @@ jobs:
       matrix:
         node-version: [18.17.0]
     steps:
+      - name: Check tag name
+        if: contains(github.ref, 'cp')
+        run: |
+          exit 1
       - name: Cancel Previous Runs
         uses: styfle/cancel-workflow-action@0.8.0
         with:
