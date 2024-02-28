@@ -565,9 +565,11 @@ export class KeyRing {
         // To decrease the barrier of existing users, set the alternative coin type by force if the keystore version is prior than 1.2.
         if (this.keyStore) {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
+
           if (
+            // @ts-ignore
             this.keyStore.version === "1" ||
+            // @ts-ignore
             this.keyStore.version === "1.1"
           ) {
             hasLegacyKeyStore = true;
