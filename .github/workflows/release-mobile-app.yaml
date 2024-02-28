@@ -32,8 +32,13 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
+      - name: Checkout submodule repo
+        uses: actions/checkout@v3
       - name: Install dependencies # install project deps with --frozen-lockfile to make sure we will have the same packages version ( very recommended  on running yarn install on ci)
         run: yarn install --frozen-lockfile
+      - name: Install mobile packages
+        working-directory: packages/mobile
+        run: yarn --silent
       - name: restore lerna
         uses: actions/cache@v3
         with:
@@ -112,8 +117,13 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
+      - name: Checkout submodule repo
+        uses: actions/checkout@v3
       - name: Install dependencies # install project deps with --frozen-lockfile to make sure we will have the same packages version ( very recommended  on running yarn install on ci)
         run: yarn install --frozen-lockfile
+      - name: Install mobile packages
+        working-directory: packages/mobile
+        run: yarn --silent
       - name: restore lerna
         uses: actions/cache@v3
         with:
