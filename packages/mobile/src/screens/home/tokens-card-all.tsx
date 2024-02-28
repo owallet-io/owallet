@@ -60,6 +60,7 @@ export const TokensCardAll: FunctionComponent<{
 
   const [more, setMore] = useState(true);
   const [activeTab, setActiveTab] = useState('tokens');
+  const [histories, setHistories] = useState([]);
   const [yesterdayAssets, setYesterdayAssets] = useState([]);
   const [queryBalances, setQueryBalances] = useState({});
 
@@ -89,19 +90,21 @@ export const TokensCardAll: FunctionComponent<{
         tokesInfos: tokenInfos
       },
       {
-        baseURL: 'http://10.10.20.183:4000/'
+        baseURL: 'https://staging.owallet.dev/'
       }
     );
   };
 
   const getYesterdayAssets = async () => {
+    console.log(' accountOrai.bech32Address', accountOrai.bech32Address);
+
     const res = await API.getYesterdayAssets(
       {
         address: accountOrai.bech32Address,
         time: 'YESTERDAY'
       },
       {
-        baseURL: 'http://10.10.20.183:4000/'
+        baseURL: 'https://staging.owallet.dev/'
       }
     );
 
@@ -115,15 +118,37 @@ export const TokensCardAll: FunctionComponent<{
 
       if (yesterday) {
         const yesterdayData = res.data[yesterday];
-
         setYesterdayAssets(yesterdayData);
         appInitStore.updateYesterdayPriceFeed(yesterdayData);
       }
     }
   };
 
+  const getWalletHistory = async () => {
+    try {
+      const res = await API.getWalletHistory(
+        {
+          address: accountOrai.bech32Address,
+          offset: 0,
+          limit: 10
+        },
+        {
+          baseURL: 'https://staging.owallet.dev/'
+        }
+      );
+
+      if (res && res.status === 200) {
+        setHistories(res.data);
+      }
+    } catch (err) {
+      console.log('getWalletHistory err', err);
+    }
+  };
+
   useEffect(() => {
+    setYesterdayAssets([]);
     getYesterdayAssets();
+    getWalletHistory();
   }, [accountOrai.bech32Address]);
 
   useEffect(() => {
@@ -222,16 +247,10 @@ export const TokensCardAll: FunctionComponent<{
   const renderHistoryItem = useCallback(
     item => {
       if (item) {
-        const fromChainIcon = chainIcons.find(c => c.chainId === item.fromChainId);
-        const toChainIcon = chainIcons.find(c => c.chainId === item.toChainId);
-
+        const fromChainIcon = chainIcons.find(c => c.chainId === item.fromToken?.chainId ?? ChainIdEnum.Oraichain);
+        const toChainIcon = chainIcons.find(c => c.chainId === item.toToken?.chainId ?? ChainIdEnum.Oraichain);
         return (
-          <TouchableOpacity
-            onPress={() => {
-              onPressToken(item);
-            }}
-            style={styles.btnItem}
-          >
+          <TouchableOpacity onPress={() => {}} style={styles.btnItem}>
             <View style={styles.leftBoxItem}>
               <View style={styles.iconWrap}>
                 <OWIcon type="images" source={{ uri: fromChainIcon?.Icon }} size={28} />
@@ -245,7 +264,7 @@ export const TokensCardAll: FunctionComponent<{
                   {item.type}
                 </Text>
                 <Text weight="400" color={colors['neutral-text-body']}>
-                  {Bech32Address.shortenAddress(item.address, 16)}
+                  {Bech32Address.shortenAddress(item.fromAddress, 16)}
                 </Text>
               </View>
             </View>
@@ -253,7 +272,7 @@ export const TokensCardAll: FunctionComponent<{
               <View style={{ flexDirection: 'row' }}>
                 <View style={{ alignItems: 'flex-end' }}>
                   <Text weight="500" color={colors['neutral-text-heading']}>
-                    {item.amount} {item.asset}
+                    {item.fromAmount} {item.fromToken?.asset ?? ''}
                   </Text>
                   <Text style={styles.profit} color={colors['success-text-body']}>
                     {'+'}${item.value.toFixed(6)}
@@ -388,8 +407,8 @@ export const TokensCardAll: FunctionComponent<{
           </View>
 
           <CardBody style={{ paddingHorizontal: 0, paddingTop: 8 }}>
-            {mockHistoryItems.length > 0 ? (
-              mockHistoryItems.map((token, index) => {
+            {histories.length > 0 ? (
+              histories.map((token, index) => {
                 if (more) {
                   if (index < 3) return renderHistoryItem(token);
                 } else {
