@@ -1,4 +1,4 @@
-import { cosmosTokens, evmTokens } from '@owallet/common';
+import { cosmosTokens, evmTokens } from '@oraichain/oraidex-common';
 import { useEffect, useState } from 'react';
 
 /**

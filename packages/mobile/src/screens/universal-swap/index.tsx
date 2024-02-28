@@ -37,7 +37,6 @@ import {
   UniversalSwapData,
   UniversalSwapHandler
 } from '@oraichain/oraidex-universal-swap';
-// } from './handler/src';
 import { SwapCosmosWallet, SwapEvmWallet } from './wallet';
 import { styling } from './styles';
 import { BalanceType, MAX, balances } from './types';

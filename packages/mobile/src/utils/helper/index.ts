@@ -10,7 +10,6 @@ import { showMessage, MessageOptions } from 'react-native-flash-message';
 import { InAppBrowser } from 'react-native-inappbrowser-reborn';
 import { Linking, Platform } from 'react-native';
 import { flattenTokens, getSubAmountDetails, toAmount, toDisplay, toSumDisplay } from '@oraichain/oraidex-common';
-import { formatBaseUnitsAsRose, formatWeiAsWrose } from '@owallet/background/build/utils/oasis-helper';
 const SCHEME_IOS = 'owallet://open_url?url=';
 const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url=';
 export const ORAICHAIN_ID = 'Oraichain';

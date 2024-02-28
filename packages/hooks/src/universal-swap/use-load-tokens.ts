@@ -7,9 +7,10 @@ import { fromBech32, toBech32 } from '@cosmjs/encoding';
 import { CustomChainInfo, ERC20__factory, evmChains } from '@oraichain/oraidex-common';
 import flatten from 'lodash/flatten';
 import { ContractCallResults, Multicall } from '@oraichain/ethereum-multicall';
-import { evmTokens, isEvmNetworkNativeSwapSupported, getEvmAddress, tronToEthAddress } from '@owallet/common';
+import { evmTokens, getEvmAddress, tronToEthAddress } from '@oraichain/oraidex-common';
 import { network, chainInfos } from '@oraichain/oraidex-common';
 import { cosmosTokens, oraichainTokens, tokenMap } from '@oraichain/oraidex-common';
+import { isEvmNetworkNativeSwapSupported } from '@owallet/common';
 import { CWStargate } from '@owallet/common';
 import { AccountWithAll } from '@owallet/stores';
 
