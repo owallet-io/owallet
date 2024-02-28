@@ -1,16 +1,16 @@
-import { observable, action, makeObservable, computed } from 'mobx';
+import { observable, action, makeObservable, computed } from "mobx";
 
 export class DeepLinkStore {
   @observable
   protected linkUri: string;
 
   constructor() {
-    this.linkUri = '';
+    this.linkUri = "";
     makeObservable(this);
   }
 
   @action
-  updateDeepLink(link = '') {
+  updateDeepLink(link = "") {
     this.linkUri = link;
   }
 

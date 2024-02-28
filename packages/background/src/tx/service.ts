@@ -1,14 +1,14 @@
-import { delay, inject, singleton } from 'tsyringe';
-import { TYPES } from '../types';
-import { fetchAdapter } from '@owallet/common';
-import Axios from 'axios';
-import { ChainInfoWithEmbed, ChainsService } from '../chains';
-import { PermissionService } from '../permission';
-import { TendermintTxTracer } from '@owallet/cosmos';
-import { Notification } from './types';
+import { delay, inject, singleton } from "tsyringe";
+import { TYPES } from "../types";
+import { fetchAdapter } from "@owallet/common";
+import Axios from "axios";
+import { ChainInfoWithEmbed, ChainsService } from "../chains";
+import { PermissionService } from "../permission";
+import { TendermintTxTracer } from "@owallet/cosmos";
+import { Notification } from "./types";
 
-import { Buffer } from 'buffer';
-import { KeyRingService } from '../keyring';
+import { Buffer } from "buffer";
+import { KeyRingService } from "../keyring";
 
 interface CosmosSdkError {
   codespace: string;
@@ -24,34 +24,38 @@ interface ABCIMessageLog {
 }
 
 // TODO: is this place good to place this function?
-export async function request(rpc: string, method: string, params: any[]): Promise<any> {
+export async function request(
+  rpc: string,
+  method: string,
+  params: any[]
+): Promise<any> {
   const restInstance = Axios.create({
     ...{
-      baseURL: rpc
+      baseURL: rpc,
     },
-    adapter: fetchAdapter
+    adapter: fetchAdapter,
   });
 
   const response = await restInstance.post(
-    '/',
+    "/",
     {
-      jsonrpc: '2.0',
+      jsonrpc: "2.0",
       id: 1,
       method,
-      params
+      params,
     },
     {
       headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'x-api-key': process.env.X_API_KEY
-      }
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "x-api-key": process.env.X_API_KEY,
+      },
     }
   );
 
-  console.log('🚀 ~ file: service.ts ~ line 48 ~ params', params);
-  console.log('🚀 ~ file: service.ts ~ line 48 ~ method', method);
-  console.log('🚀 ~ file: service.ts ~ line 55 ~ response', response);
+  console.log("🚀 ~ file: service.ts ~ line 48 ~ params", params);
+  console.log("🚀 ~ file: service.ts ~ line 48 ~ method", method);
+  console.log("🚀 ~ file: service.ts ~ line 55 ~ response", response);
 
   if (response.data.result) return response.data.result;
   if (response.data.error) throw new Error(JSON.stringify(response.data.error));
@@ -72,21 +76,25 @@ export class BackgroundTxService {
     protected readonly notification: Notification
   ) {}
 
-  async sendTx(chainId: string, tx: unknown, mode: 'async' | 'sync' | 'block'): Promise<Uint8Array> {
+  async sendTx(
+    chainId: string,
+    tx: unknown,
+    mode: "async" | "sync" | "block"
+  ): Promise<Uint8Array> {
     const chainInfo = await this.chainsService.getChainInfo(chainId);
 
     const restInstance = Axios.create({
       ...{
-        baseURL: chainInfo.rest
+        baseURL: chainInfo.rest,
       },
       ...chainInfo.restConfig,
-      adapter: fetchAdapter
+      adapter: fetchAdapter,
     });
 
     this.notification.create({
-      iconRelativeUrl: 'assets/orai_wallet_logo.png',
-      title: 'Tx is pending...',
-      message: 'Wait a second'
+      iconRelativeUrl: "assets/orai_wallet_logo.png",
+      title: "Tx is pending...",
+      message: "Wait a second",
     });
 
     // here
@@ -94,38 +102,41 @@ export class BackgroundTxService {
 
     const params = isProtoTx
       ? {
-          tx_bytes: Buffer.from(tx as any).toString('base64'),
+          tx_bytes: Buffer.from(tx as any).toString("base64"),
           mode: (() => {
             switch (mode) {
-              case 'async':
-                return 'BROADCAST_MODE_ASYNC';
-              case 'block':
-                return 'BROADCAST_MODE_BLOCK';
-              case 'sync':
-                return 'BROADCAST_MODE_SYNC';
+              case "async":
+                return "BROADCAST_MODE_ASYNC";
+              case "block":
+                return "BROADCAST_MODE_BLOCK";
+              case "sync":
+                return "BROADCAST_MODE_SYNC";
               default:
-                return 'BROADCAST_MODE_UNSPECIFIED';
+                return "BROADCAST_MODE_UNSPECIFIED";
             }
-          })()
+          })(),
         }
       : {
           tx,
-          mode: mode
+          mode: mode,
         };
 
     try {
-      const result = await restInstance.post(isProtoTx ? '/cosmos/tx/v1beta1/txs' : '/txs', params);
+      const result = await restInstance.post(
+        isProtoTx ? "/cosmos/tx/v1beta1/txs" : "/txs",
+        params
+      );
 
-      const txResponse = isProtoTx ? result.data['tx_response'] : result.data;
+      const txResponse = isProtoTx ? result.data["tx_response"] : result.data;
 
       if (txResponse.code != null && txResponse.code !== 0) {
-        throw new Error(txResponse['raw_log']);
+        throw new Error(txResponse["raw_log"]);
       }
 
-      const txHash = Buffer.from(txResponse.txhash, 'hex');
+      const txHash = Buffer.from(txResponse.txhash, "hex");
 
-      const txTracer = new TendermintTxTracer(chainInfo.rpc, '/websocket');
-      txTracer.traceTx(txHash).then(tx => {
+      const txTracer = new TendermintTxTracer(chainInfo.rpc, "/websocket");
+      txTracer.traceTx(txHash).then((tx) => {
         txTracer.close();
         BackgroundTxService.processTxResultNotification(this.notification, tx);
       });
@@ -142,74 +153,90 @@ export class BackgroundTxService {
     chainId: string;
     isEvm: boolean;
   } {
-    if (!chainId) throw new Error('Invalid empty chain id when switching Ethereum chain');
-    if (chainId.substring(0, 2) === '0x') return { chainId: chainId, isEvm: true };
+    if (!chainId)
+      throw new Error("Invalid empty chain id when switching Ethereum chain");
+    if (chainId.substring(0, 2) === "0x")
+      return { chainId: chainId, isEvm: true };
     return { chainId, isEvm: false };
   }
 
   async request(chainId: string, method: string, params: any[]): Promise<any> {
     let chainInfo: ChainInfoWithEmbed;
     switch (method) {
-      case 'eth_accounts':
-      case 'eth_requestAccounts':
+      case "eth_accounts":
+      case "eth_requestAccounts":
         chainInfo = await this.chainsService.getChainInfo(chainId);
         if (chainInfo.coinType !== 60) return undefined;
         const chainIdOrCoinType = params.length ? parseInt(params[0]) : chainId; // default is cointype 60 for ethereum based
         const key = await this.keyRingService.getKey(chainIdOrCoinType);
         const ledgerCheck = await this.keyRingService.getKeyRingType();
-        if (ledgerCheck === 'ledger') {
-          const addresses = await this.keyRingService.getKeyRingLedgerAddresses();
+        if (ledgerCheck === "ledger") {
+          const addresses =
+            await this.keyRingService.getKeyRingLedgerAddresses();
           return [`${addresses?.eth}`];
         }
-        return [`0x${Buffer.from(key.address).toString('hex')}`];
-      case 'wallet_switchEthereumChain' as any:
+        return [`0x${Buffer.from(key.address).toString("hex")}`];
+      case "wallet_switchEthereumChain" as any:
         const { chainId: inputChainId, isEvm } = this.parseChainId(params[0]);
         chainInfo = isEvm
-          ? await this.chainsService.getChainInfo(inputChainId, 'evm')
+          ? await this.chainsService.getChainInfo(inputChainId, "evm")
           : await this.chainsService.getChainInfo(inputChainId);
 
         return chainInfo.chainId;
       default:
         chainInfo = await this.chainsService.getChainInfo(chainId);
         if (!chainInfo.rest)
-          throw new Error(`The given chain ID: ${chainId} does not have a RPC endpoint to connect to`);
+          throw new Error(
+            `The given chain ID: ${chainId} does not have a RPC endpoint to connect to`
+          );
         return await request(chainInfo.rest, method, params);
     }
   }
 
-  private static processTxResultNotification(notification: Notification, result: any): void {
+  private static processTxResultNotification(
+    notification: Notification,
+    result: any
+  ): void {
     try {
-      if (result.mode === 'commit') {
+      if (result.mode === "commit") {
         if (result.checkTx.code !== undefined && result.checkTx.code !== 0) {
           throw new Error(result.checkTx.log);
         }
-        if (result.deliverTx.code !== undefined && result.deliverTx.code !== 0) {
+        if (
+          result.deliverTx.code !== undefined &&
+          result.deliverTx.code !== 0
+        ) {
           throw new Error(result.deliverTx.log);
         }
       } else {
         if (result.code != null && result.code !== 0) {
           // XXX: Hack of the support of the stargate.
-          const log = result.log ?? (result as any)['raw_log'];
+          const log = result.log ?? (result as any)["raw_log"];
           throw new Error(log);
         }
       }
 
       notification.create({
-        iconRelativeUrl: 'assets/orai_wallet_logo.png',
-        title: 'Tx succeeds',
+        iconRelativeUrl: "assets/orai_wallet_logo.png",
+        title: "Tx succeeds",
         // TODO: Let users know the tx id?
-        message: 'Congratulations!'
+        message: "Congratulations!",
       });
     } catch (e: any) {
       BackgroundTxService.processTxErrorNotification(notification, e);
     }
   }
 
-  private static processTxErrorNotification(notification: Notification, e: Error): void {
+  private static processTxErrorNotification(
+    notification: Notification,
+    e: Error
+  ): void {
     let message = e.message;
 
     // Tendermint rpc error.
-    const regResult = /code:\s*(-?\d+),\s*message:\s*(.+),\sdata:\s(.+)/g.exec(e.message);
+    const regResult = /code:\s*(-?\d+),\s*message:\s*(.+),\sdata:\s(.+)/g.exec(
+      e.message
+    );
     if (regResult && regResult.length === 4) {
       // If error is from tendermint
       message = regResult[3];
@@ -244,9 +271,9 @@ export class BackgroundTxService {
     }
 
     notification.create({
-      iconRelativeUrl: 'assets/orai_wallet_logo.png',
-      title: 'Tx failed',
-      message
+      iconRelativeUrl: "assets/orai_wallet_logo.png",
+      title: "Tx failed",
+      message,
     });
   }
 }

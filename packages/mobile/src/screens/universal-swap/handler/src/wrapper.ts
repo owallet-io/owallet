@@ -1,4 +1,10 @@
-import { CosmosChainId, CosmosWallet, EvmResponse, EvmWallet, TokenItemType } from "@oraichain/oraidex-common";
+import {
+  CosmosChainId,
+  CosmosWallet,
+  EvmResponse,
+  EvmWallet,
+  TokenItemType,
+} from "@oraichain/oraidex-common";
 import { UniversalSwapHandler } from "./handler";
 import { ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 
@@ -11,7 +17,15 @@ export const swapOraichainToOraichain = async (data: {
   simulatePrice: string;
   userSlippage: number;
 }): Promise<ExecuteResult> => {
-  const { cosmosWallet, fromAmount, fromToken, toToken, simulatePrice, userSlippage, simulateAmount } = data;
+  const {
+    cosmosWallet,
+    fromAmount,
+    fromToken,
+    toToken,
+    simulatePrice,
+    userSlippage,
+    simulateAmount,
+  } = data;
   const sender = await cosmosWallet.getKeplrAddr("Oraichain");
   const handler = new UniversalSwapHandler(
     {
@@ -21,7 +35,7 @@ export const swapOraichainToOraichain = async (data: {
       originalFromToken: fromToken,
       originalToToken: toToken,
       simulatePrice,
-      userSlippage
+      userSlippage,
     },
     { cosmosWallet }
   );
@@ -37,8 +51,18 @@ export const swapOraichainToCosmos = async (data: {
   simulatePrice: string;
   userSlippage: number;
 }) => {
-  const { cosmosWallet, fromAmount, fromToken, toToken, simulatePrice, userSlippage, simulateAmount } = data;
-  const cosmos = await cosmosWallet.getKeplrAddr(fromToken.chainId as CosmosChainId);
+  const {
+    cosmosWallet,
+    fromAmount,
+    fromToken,
+    toToken,
+    simulatePrice,
+    userSlippage,
+    simulateAmount,
+  } = data;
+  const cosmos = await cosmosWallet.getKeplrAddr(
+    fromToken.chainId as CosmosChainId
+  );
   const handler = new UniversalSwapHandler(
     {
       sender: { cosmos },
@@ -47,7 +71,7 @@ export const swapOraichainToCosmos = async (data: {
       originalToToken: toToken,
       simulatePrice,
       simulateAmount,
-      userSlippage
+      userSlippage,
     },
     { cosmosWallet }
   );
@@ -64,8 +88,19 @@ export const swapOraichainToEvm = async (data: {
   simulatePrice: string;
   userSlippage: number;
 }) => {
-  const { evmWallet, cosmosWallet, fromAmount, fromToken, toToken, simulatePrice, userSlippage, simulateAmount } = data;
-  const cosmos = await cosmosWallet.getKeplrAddr(fromToken.chainId as CosmosChainId);
+  const {
+    evmWallet,
+    cosmosWallet,
+    fromAmount,
+    fromToken,
+    toToken,
+    simulatePrice,
+    userSlippage,
+    simulateAmount,
+  } = data;
+  const cosmos = await cosmosWallet.getKeplrAddr(
+    fromToken.chainId as CosmosChainId
+  );
   const evm = await evmWallet.getEthAddress();
   const tron = evmWallet.tronWeb?.defaultAddress?.base58;
   const handler = new UniversalSwapHandler(
@@ -76,7 +111,7 @@ export const swapOraichainToEvm = async (data: {
       originalToToken: toToken,
       simulatePrice,
       simulateAmount,
-      userSlippage
+      userSlippage,
     },
     { cosmosWallet, evmWallet }
   );
@@ -97,8 +132,19 @@ export const swapEvmToOraichain = async (data: {
   userSlippage: number;
 }): Promise<EvmResponse> => {
   // the params and logic are the same, so we reuse it
-  const { evmWallet, cosmosWallet, fromAmount, fromToken, toToken, simulatePrice, userSlippage, simulateAmount } = data;
-  const cosmos = await cosmosWallet.getKeplrAddr(fromToken.chainId as CosmosChainId);
+  const {
+    evmWallet,
+    cosmosWallet,
+    fromAmount,
+    fromToken,
+    toToken,
+    simulatePrice,
+    userSlippage,
+    simulateAmount,
+  } = data;
+  const cosmos = await cosmosWallet.getKeplrAddr(
+    fromToken.chainId as CosmosChainId
+  );
   const evm = await evmWallet.getEthAddress();
   const tron = evmWallet.tronWeb?.defaultAddress?.base58;
   const handler = new UniversalSwapHandler(
@@ -109,7 +155,7 @@ export const swapEvmToOraichain = async (data: {
       originalToToken: toToken,
       simulatePrice,
       simulateAmount,
-      userSlippage
+      userSlippage,
     },
     { cosmosWallet, evmWallet }
   );

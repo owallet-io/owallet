@@ -1,13 +1,13 @@
-import { Message } from '@owallet/router';
-import { ChainInfoWithEmbed } from './types';
-import { ChainInfo, ChainInfoWithoutEndpoints } from '@owallet/types';
-import { ROUTE } from './constants';
+import { Message } from "@owallet/router";
+import { ChainInfoWithEmbed } from "./types";
+import { ChainInfo, ChainInfoWithoutEndpoints } from "@owallet/types";
+import { ROUTE } from "./constants";
 
 export class GetChainInfosMsg extends Message<{
   chainInfos: ChainInfoWithEmbed[];
 }> {
   public static type() {
-    return 'get-chain-infos';
+    return "get-chain-infos";
   }
 
   validateBasic(): void {
@@ -25,7 +25,7 @@ export class GetChainInfosMsg extends Message<{
 
 export class SuggestChainInfoMsg extends Message<void> {
   public static type() {
-    return 'suggest-chain-info';
+    return "suggest-chain-info";
   }
 
   constructor(public readonly chainInfo: ChainInfo) {
@@ -34,7 +34,7 @@ export class SuggestChainInfoMsg extends Message<void> {
 
   validateBasic(): void {
     if (!this.chainInfo) {
-      throw new Error('chain info not set');
+      throw new Error("chain info not set");
     }
   }
 
@@ -53,7 +53,7 @@ export class SuggestChainInfoMsg extends Message<void> {
 
 export class RemoveSuggestedChainInfoMsg extends Message<ChainInfoWithEmbed[]> {
   public static type() {
-    return 'remove-suggested-chain-info';
+    return "remove-suggested-chain-info";
   }
 
   constructor(public readonly chainId: string) {
@@ -62,7 +62,7 @@ export class RemoveSuggestedChainInfoMsg extends Message<ChainInfoWithEmbed[]> {
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new Error('Chain id not set');
+      throw new Error("Chain id not set");
     }
   }
 
@@ -94,4 +94,3 @@ export class GetChainInfosWithoutEndpointsMsg extends Message<{
     return GetChainInfosWithoutEndpointsMsg.type();
   }
 }
-

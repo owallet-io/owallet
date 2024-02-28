@@ -1,27 +1,27 @@
-import Joi from 'joi';
+import Joi from "joi";
 export const schemaRequestSignBitcoin = Joi.object({
-  memo: Joi.string().empty(''),
+  memo: Joi.string().empty(""),
   fee: Joi.object({
     gas: Joi.string().required(),
     amount: Joi.array()
       .items(
         Joi.object({
           denom: Joi.string().required(),
-          amount: Joi.string().required()
+          amount: Joi.string().required(),
         })
       )
-      .required()
+      .required(),
   }).required(),
   address: Joi.string().required(),
   msgs: Joi.object({
     address: Joi.string().required(),
     changeAddress: Joi.string().required(),
     amount: Joi.number().required(),
-    message: Joi.string().empty(''),
+    message: Joi.string().empty(""),
     totalFee: Joi.number().required(),
     selectedCrypto: Joi.string().required(),
     confirmedBalance: Joi.number().required(),
-    feeRate: Joi.number().required()
+    feeRate: Joi.number().required(),
   }).required(),
   confirmedBalance: Joi.number().required(),
   utxos: Joi.array()
@@ -36,11 +36,11 @@ export const schemaRequestSignBitcoin = Joi.object({
         vout: Joi.number().required(),
         tx_hash: Joi.string().required(),
         tx_hash_big_endian: Joi.string().required(),
-        tx_output_n: Joi.number().required()
+        tx_output_n: Joi.number().required(),
       })
     )
     .empty(),
   blacklistedUtxos: Joi.array().items(Joi.object()).empty(),
   amount: Joi.number().required(),
-  feeRate: Joi.number().required()
+  feeRate: Joi.number().required(),
 });

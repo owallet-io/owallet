@@ -1,10 +1,10 @@
-import { Message, OWalletError } from '@owallet/router';
-import { ROUTE } from './constants';
-import { InteractionWaitingData } from '../types';
+import { Message, OWalletError } from "@owallet/router";
+import { ROUTE } from "./constants";
+import { InteractionWaitingData } from "../types";
 
 export class PushInteractionDataMsg extends Message<void> {
   public static type() {
-    return 'push-interaction-data';
+    return "push-interaction-data";
   }
 
   constructor(public readonly data: InteractionWaitingData) {
@@ -13,7 +13,7 @@ export class PushInteractionDataMsg extends Message<void> {
 
   validateBasic(): void {
     if (!this.data.type) {
-      throw new Error('Type should not be empty');
+      throw new Error("Type should not be empty");
     }
   }
 
@@ -28,18 +28,18 @@ export class PushInteractionDataMsg extends Message<void> {
 
 export class PushEventDataMsg extends Message<void> {
   public static type() {
-    return 'push-event-data';
+    return "push-event-data";
   }
 
   constructor(
-    public readonly data: Omit<InteractionWaitingData, 'id' | 'isInternal'>
+    public readonly data: Omit<InteractionWaitingData, "id" | "isInternal">
   ) {
     super();
   }
 
   validateBasic(): void {
     if (!this.data.type) {
-      throw new OWalletError('interaction', 101, 'Type should not be empty');
+      throw new OWalletError("interaction", 101, "Type should not be empty");
     }
   }
 

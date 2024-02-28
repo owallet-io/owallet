@@ -1,5 +1,5 @@
 declare namespace _default {
-    export { HttpProvider };
+  export { HttpProvider };
 }
 export default _default;
-import HttpProvider from './HttpProvider';
+import HttpProvider from "./HttpProvider";

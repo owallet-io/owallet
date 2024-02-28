@@ -1,9 +1,9 @@
-import { autorun, flow, makeObservable, observable, toJS } from 'mobx';
-import { KVStore, toGenerator } from '@owallet/common';
-import { ChainInfo } from '@owallet/types';
-import { ChainGetter, HasMapStore } from '@owallet/stores';
-import { DeepReadonly } from 'utility-types';
-import { useState } from 'react';
+import { autorun, flow, makeObservable, observable, toJS } from "mobx";
+import { KVStore, toGenerator } from "@owallet/common";
+import { ChainInfo } from "@owallet/types";
+import { ChainGetter, HasMapStore } from "@owallet/stores";
+import { DeepReadonly } from "utility-types";
+import { useState } from "react";
 
 export interface AddressBookSelectHandler {
   setRecipient(recipient: string): void;

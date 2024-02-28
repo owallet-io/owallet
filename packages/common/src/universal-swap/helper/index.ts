@@ -1,24 +1,27 @@
-import Long from 'long';
-import { TokenItemType, network } from '@oraichain/oraidex-common';
+import Long from "long";
+import { TokenItemType, network } from "@oraichain/oraidex-common";
 import {
   flattenTokens,
   oraichainTokens,
   CoinGeckoId,
   NetworkChainId,
-  IBC_WASM_CONTRACT
-} from '@oraichain/oraidex-common';
-import { HIGH_GAS_PRICE, MULTIPLIER } from '../config/constants';
-import { OraiswapOracleQueryClient } from '@oraichain/oraidex-contracts-sdk';
-import { CwIcs20LatestQueryClient, SigningCosmWasmClient } from '@oraichain/common-contracts-sdk';
-import { Ratio } from '@oraichain/common-contracts-sdk/build/CwIcs20Latest.types';
-import { getBase58Address } from '../../utils';
-import { TaxRateResponse } from '@oraichain/oraidex-contracts-sdk/build/OraiswapOracle.types';
-import { ethers } from 'ethers';
-import { fromBech32, toBech32 } from '@cosmjs/encoding';
+  IBC_WASM_CONTRACT,
+} from "@oraichain/oraidex-common";
+import { HIGH_GAS_PRICE, MULTIPLIER } from "../config/constants";
+import { OraiswapOracleQueryClient } from "@oraichain/oraidex-contracts-sdk";
+import {
+  CwIcs20LatestQueryClient,
+  SigningCosmWasmClient,
+} from "@oraichain/common-contracts-sdk";
+import { Ratio } from "@oraichain/common-contracts-sdk/build/CwIcs20Latest.types";
+import { getBase58Address } from "../../utils";
+import { TaxRateResponse } from "@oraichain/oraidex-contracts-sdk/build/OraiswapOracle.types";
+import { ethers } from "ethers";
+import { fromBech32, toBech32 } from "@cosmjs/encoding";
 
 export enum SwapDirection {
   From,
-  To
+  To,
 }
 
 export const calculateTimeoutTimestamp = (timeout: number): string => {
@@ -28,15 +31,15 @@ export const calculateTimeoutTimestamp = (timeout: number): string => {
 };
 
 export const getAddress = (addr, prefix: string) => {
-  if (!addr) return '';
+  if (!addr) return "";
   const { data } = fromBech32(addr);
   return toBech32(prefix, data);
 };
 
 export function isEvmNetworkNativeSwapSupported(chainId: NetworkChainId) {
   switch (chainId) {
-    case '0x01':
-    case '0x38':
+    case "0x01":
+    case "0x38":
       return true;
     default:
       return false;
@@ -52,13 +55,20 @@ export function getTokenOnSpecificChainId(
   coingeckoId: CoinGeckoId,
   chainId: NetworkChainId
 ): TokenItemType | undefined {
-  return flattenTokens.find(t => t.coinGeckoId === coingeckoId && t.chainId === chainId);
+  return flattenTokens.find(
+    (t) => t.coinGeckoId === coingeckoId && t.chainId === chainId
+  );
 }
 
 export const tronToEthAddress = (base58: string) => {
-  const buffer = Buffer.from(ethers.utils.base58.decode(base58)).subarray(1, -4);
-  const hexString = Array.prototype.map.call(buffer, byte => ('0' + byte.toString(16)).slice(-2)).join('');
-  return '0x' + hexString;
+  const buffer = Buffer.from(ethers.utils.base58.decode(base58)).subarray(
+    1,
+    -4
+  );
+  const hexString = Array.prototype.map
+    .call(buffer, (byte) => ("0" + byte.toString(16)).slice(-2))
+    .join("");
+  return "0x" + hexString;
 };
 
 export const ethToTronAddress = (address: string) => {
@@ -66,13 +76,15 @@ export const ethToTronAddress = (address: string) => {
 };
 
 export const getTokenOnOraichain = (coingeckoId: CoinGeckoId) => {
-  if (coingeckoId === 'kawaii-islands' || coingeckoId === 'milky-token') {
-    throw new Error('KWT and MILKY not supported in this function');
+  if (coingeckoId === "kawaii-islands" || coingeckoId === "milky-token") {
+    throw new Error("KWT and MILKY not supported in this function");
   }
-  return oraichainTokens.find(token => token.coinGeckoId === coingeckoId);
+  return oraichainTokens.find((token) => token.coinGeckoId === coingeckoId);
 };
 
-export async function fetchTaxRate(client: SigningCosmWasmClient): Promise<TaxRateResponse> {
+export async function fetchTaxRate(
+  client: SigningCosmWasmClient
+): Promise<TaxRateResponse> {
   const oracleContract = new OraiswapOracleQueryClient(client, network.oracle);
   try {
     const data = await oracleContract.treasury({ tax_rate: {} });
@@ -86,18 +98,28 @@ export async function fetchTaxRate(client: SigningCosmWasmClient): Promise<TaxRa
  * @param param0
  * @returns
  */
-export const getTransferTokenFee = async ({ remoteTokenDenom, client }): Promise<Ratio | undefined> => {
+export const getTransferTokenFee = async ({
+  remoteTokenDenom,
+  client,
+}): Promise<Ratio | undefined> => {
   try {
     const ibcWasmContractAddress = IBC_WASM_CONTRACT;
-    const ibcWasmContract = new CwIcs20LatestQueryClient(client, ibcWasmContractAddress);
-    const ratio = await ibcWasmContract.getTransferTokenFee({ remoteTokenDenom });
+    const ibcWasmContract = new CwIcs20LatestQueryClient(
+      client,
+      ibcWasmContractAddress
+    );
+    const ratio = await ibcWasmContract.getTransferTokenFee({
+      remoteTokenDenom,
+    });
     return ratio;
   } catch (error) {
     console.log({ error });
   }
 };
 
-export async function fetchRelayerFee(client: SigningCosmWasmClient): Promise<any> {
+export async function fetchRelayerFee(
+  client: SigningCosmWasmClient
+): Promise<any> {
   const ics20Contract = new CwIcs20LatestQueryClient(client, IBC_WASM_CONTRACT);
   try {
     const { relayer_fees } = await ics20Contract.config();

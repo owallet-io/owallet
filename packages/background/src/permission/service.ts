@@ -1,17 +1,17 @@
-import { delay, inject, singleton } from 'tsyringe';
-import { TYPES } from '../types';
+import { delay, inject, singleton } from "tsyringe";
+import { TYPES } from "../types";
 
-import { InteractionService } from '../interaction';
-import { APP_PORT, Env } from '@owallet/router';
+import { InteractionService } from "../interaction";
+import { APP_PORT, Env } from "@owallet/router";
 import {
   getBasicAccessPermissionType,
   INTERACTION_TYPE_PERMISSION,
-  PermissionData
-} from './types';
-import { KVStore } from '@owallet/common';
-import { ChainsService } from '../chains';
-import { KeyRingService } from '../keyring';
-import { ChainIdHelper } from '@owallet/cosmos';
+  PermissionData,
+} from "./types";
+import { KVStore } from "@owallet/common";
+import { ChainsService } from "../chains";
+import { KeyRingService } from "../keyring";
+import { ChainIdHelper } from "@owallet/cosmos";
 
 @singleton()
 export class PermissionService {
@@ -62,7 +62,7 @@ export class PermissionService {
     // Try to unlock the key ring before checking or granting the basic permission.
     await this.keyRingService.enable(env);
 
-    if (typeof chainIds === 'string') {
+    if (typeof chainIds === "string") {
       chainIds = [chainIds];
     }
 
@@ -94,7 +94,7 @@ export class PermissionService {
     const permissionData: PermissionData = {
       chainIds,
       type,
-      origins
+      origins,
     };
 
     await this.interactionService.waitApprove(
@@ -105,7 +105,7 @@ export class PermissionService {
     );
 
     await this.addPermission(chainIds, type, origins);
-    this.interactionService.dispatchEvent(APP_PORT, 'enable-access-end', {});
+    this.interactionService.dispatchEvent(APP_PORT, "enable-access-end", {});
   }
 
   private parseChainId({ chainId }: { chainId: string }): {
@@ -113,8 +113,8 @@ export class PermissionService {
     isEvm: boolean;
   } {
     if (!chainId)
-      throw new Error('Invalid empty chain id when switching Ethereum chain');
-    if (chainId.substring(0, 2) === '0x')
+      throw new Error("Invalid empty chain id when switching Ethereum chain");
+    if (chainId.substring(0, 2) === "0x")
       return { chainId: parseInt(chainId, 16).toString(), isEvm: true };
     return { chainId, isEvm: false };
   }
@@ -132,7 +132,7 @@ export class PermissionService {
 
     await this.grantPermission(
       env,
-      '/access',
+      "/access",
       chainIds,
       getBasicAccessPermissionType(),
       origins
@@ -276,13 +276,13 @@ export class PermissionService {
   }
 
   protected async restore() {
-    const map = await this.kvStore.get<any>('permissionMap');
+    const map = await this.kvStore.get<any>("permissionMap");
     if (map) {
       this.permissionMap = map;
     }
   }
 
   protected async save() {
-    await this.kvStore.set('permissionMap', this.permissionMap);
+    await this.kvStore.set("permissionMap", this.permissionMap);
   }
 }

@@ -1,9 +1,9 @@
-import { Message } from '@owallet/router';
-import { ROUTE } from './constants';
+import { Message } from "@owallet/router";
+import { ROUTE } from "./constants";
 
 export class TryUpdateChainMsg extends Message<void> {
   public static type() {
-    return 'try-update-chain';
+    return "try-update-chain";
   }
 
   constructor(public readonly chainId: string) {
@@ -12,7 +12,7 @@ export class TryUpdateChainMsg extends Message<void> {
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new Error('Empty chain id');
+      throw new Error("Empty chain id");
     }
   }
 

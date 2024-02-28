@@ -1,31 +1,31 @@
-import { delay, inject, singleton } from 'tsyringe';
-import { TYPES } from '../types';
+import { delay, inject, singleton } from "tsyringe";
+import { TYPES } from "../types";
 
-import { Env } from '@owallet/router';
+import { Env } from "@owallet/router";
 import {
   ChainInfo,
   AppCurrency,
   CW20Currency,
   Secret20Currency,
-  ERC20Currency
-} from '@owallet/types';
+  ERC20Currency,
+} from "@owallet/types";
 import {
   CurrencySchema,
   CW20CurrencySchema,
   ERC20CurrencySchema,
-  Secret20CurrencySchema
-} from '../chains';
-import { Bech32Address, ChainIdHelper } from '@owallet/cosmos';
-import { ChainsService } from '../chains';
-import { KeyRingService } from '../keyring';
-import { KVStore } from '@owallet/common';
-import { KeyRingStatus } from '../keyring';
-import { InteractionService } from '../interaction';
-import { PermissionService } from '../permission';
+  Secret20CurrencySchema,
+} from "../chains";
+import { Bech32Address, ChainIdHelper } from "@owallet/cosmos";
+import { ChainsService } from "../chains";
+import { KeyRingService } from "../keyring";
+import { KVStore } from "@owallet/common";
+import { KeyRingStatus } from "../keyring";
+import { InteractionService } from "../interaction";
+import { PermissionService } from "../permission";
 
-import { Buffer } from 'buffer';
-import { SuggestTokenMsg } from './messages';
-import { getSecret20ViewingKeyPermissionType } from './types';
+import { Buffer } from "buffer";
+import { SuggestTokenMsg } from "./messages";
+import { getSecret20ViewingKeyPermissionType } from "./types";
 
 @singleton()
 export class TokensService {
@@ -57,8 +57,8 @@ export class TokensService {
     const chainInfo = await this.chainsService.getChainInfo(chainId);
 
     const find = (await this.getTokens(chainId)).find(
-      currency =>
-        'contractAddress' in currency &&
+      (currency) =>
+        "contractAddress" in currency &&
         currency.contractAddress === contractAddress
     );
     // If the same currency is already registered, do nothing.
@@ -66,10 +66,10 @@ export class TokensService {
       // If the secret20 token,
       // just try to change the viewing key.
       if (viewingKey) {
-        if ('type' in find && find.type === 'secret20') {
+        if ("type" in find && find.type === "secret20") {
           await this.addToken(chainId, {
             ...find,
-            viewingKey
+            viewingKey,
           });
         }
         return;
@@ -86,7 +86,7 @@ export class TokensService {
     const params = {
       chainId,
       contractAddress,
-      viewingKey
+      viewingKey,
     };
 
     // const appCurrency = await this.interactionService.waitApprove(
@@ -107,15 +107,15 @@ export class TokensService {
       // Update coinMinimalDenom here ?
       currency = {
         ...currency,
-        coinMinimalDenom: `${'type' in currency && currency.type}:${
-          'contractAddress' in currency && currency.contractAddress
-        }:${currency.coinDenom}`
+        coinMinimalDenom: `${"type" in currency && currency.type}:${
+          "contractAddress" in currency && currency.contractAddress
+        }:${currency.coinDenom}`,
       };
 
       const chainCurrencies = await this.getTokens(chainId);
 
       const isTokenForAccount =
-        'type' in currency && currency.type === 'secret20';
+        "type" in currency && currency.type === "secret20";
       let isCurrencyUpdated = false;
 
       for (const chainCurrency of chainCurrencies) {
@@ -144,7 +144,7 @@ export class TokensService {
           await this.saveTokensToChainAndAccount(chainId, currencies);
         } else {
           const index = currencies.findIndex(
-            cur => cur.coinMinimalDenom === currency.coinMinimalDenom
+            (cur) => cur.coinMinimalDenom === currency.coinMinimalDenom
           );
           if (index >= 0) {
             currencies[index] = currency;
@@ -165,7 +165,7 @@ export class TokensService {
     const chainCurrencies = await this.getTokens(chainId);
 
     const isTokenForAccount =
-      'type' in currency && currency.type === 'secret20';
+      "type" in currency && currency.type === "secret20";
     let isFoundCurrency = false;
 
     for (const chainCurrency of chainCurrencies) {
@@ -181,13 +181,13 @@ export class TokensService {
 
     if (!isTokenForAccount) {
       const currencies = (await this.getTokensFromChain(chainId)).filter(
-        cur => cur.coinMinimalDenom !== currency.coinMinimalDenom
+        (cur) => cur.coinMinimalDenom !== currency.coinMinimalDenom
       );
       await this.saveTokensToChain(chainId, currencies);
     } else {
       const currencies = (
         await this.getTokensFromChainAndAccount(chainId)
-      ).filter(cur => cur.coinMinimalDenom !== currency.coinMinimalDenom);
+      ).filter((cur) => cur.coinMinimalDenom !== currency.coinMinimalDenom);
       await this.saveTokensToChainAndAccount(chainId, currencies);
     }
   }
@@ -206,7 +206,7 @@ export class TokensService {
         (await this.kvStore.get<AppCurrency[]>(
           `${chainIdHelper.identifier}-${Buffer.from(
             currentKey.address
-          ).toString('hex')}`
+          ).toString("hex")}`
         )) ?? [];
     }
 
@@ -247,7 +247,7 @@ export class TokensService {
     return (
       (await this.kvStore.get<Promise<AppCurrency[]>>(
         `${chainIdHelper.identifier}-${Buffer.from(currentKey.address).toString(
-          'hex'
+          "hex"
         )}`
       )) ?? []
     );
@@ -260,7 +260,7 @@ export class TokensService {
     const chainIdHelper = ChainIdHelper.parse(chainId);
 
     const currentKey = await this.keyRingService.getKey(chainId);
-    const hexAddress = Buffer.from(currentKey.address).toString('hex');
+    const hexAddress = Buffer.from(currentKey.address).toString("hex");
     await this.kvStore.set(
       `${chainIdHelper.identifier}-${hexAddress}`,
       currencies
@@ -301,14 +301,14 @@ export class TokensService {
     const tokens = await this.getTokens(chainId);
 
     for (const currency of tokens) {
-      if ('type' in currency && currency.type === 'secret20') {
+      if ("type" in currency && currency.type === "secret20") {
         if (currency.contractAddress === contractAddress) {
           return currency.viewingKey;
         }
       }
     }
 
-    throw new Error('There is no matched secret20');
+    throw new Error("There is no matched secret20");
   }
 
   async checkOrGrantSecret20ViewingKeyPermission(
@@ -325,7 +325,7 @@ export class TokensService {
     if (!this.permissionService.hasPermisson(chainId, type, origin)) {
       await this.permissionService.grantPermission(
         env,
-        '/access/viewing-key',
+        "/access/viewing-key",
         [chainId],
         type,
         [origin]
@@ -340,28 +340,28 @@ export class TokensService {
     currency: AppCurrency
   ): Promise<AppCurrency> {
     // Validate the schema.
-    if ('type' in currency) {
+    if ("type" in currency) {
       switch (currency.type) {
-        case 'cw20':
+        case "cw20":
           currency = await TokensService.validateCW20Currency(
             chainInfo,
             currency
           );
           break;
-        case 'secret20':
+        case "secret20":
           currency = await TokensService.validateSecret20Currency(
             chainInfo,
             currency
           );
           break;
-        case 'erc20':
+        case "erc20":
           currency = await TokensService.validateERC20Currency(
             chainInfo,
             currency
           );
           break;
         default:
-          throw new Error('Unknown type of currency');
+          throw new Error("Unknown type of currency");
       }
     } else {
       currency = await CurrencySchema.validateAsync(currency);
@@ -394,8 +394,8 @@ export class TokensService {
     currency = await ERC20CurrencySchema.validateAsync(currency);
 
     // Validate the contract address.
-    if (!currency.contractAddress.startsWith('0x'))
-      throw new Error('Not a valid erc20 address');
+    if (!currency.contractAddress.startsWith("0x"))
+      throw new Error("Not a valid erc20 address");
     return currency;
   }
 

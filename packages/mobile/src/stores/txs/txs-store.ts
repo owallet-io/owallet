@@ -1,11 +1,11 @@
-import { observable, action, makeObservable, computed } from 'mobx';
-import { Txs } from './abstract/txs';
-import { TxsEVM } from './ethereum/txs-evm';
-import { TxsCosmos } from './cosmos/txs-cosmos';
-import { ChainInfoInner } from '@owallet/stores';
-import { ChainInfo } from '@owallet/types';
-import { ChainIdEnum, NetworkEnum } from '@owallet/common';
-import { TxsBitcoin } from './bitcoin/txs-bitcoin';
+import { observable, action, makeObservable, computed } from "mobx";
+import { Txs } from "./abstract/txs";
+import { TxsEVM } from "./ethereum/txs-evm";
+import { TxsCosmos } from "./cosmos/txs-cosmos";
+import { ChainInfoInner } from "@owallet/stores";
+import { ChainInfo } from "@owallet/types";
+import { ChainIdEnum, NetworkEnum } from "@owallet/common";
+import { TxsBitcoin } from "./bitcoin/txs-bitcoin";
 export class TxsStore extends Txs {
   @observable
   public readonly txsEvm: TxsEVM;
@@ -21,7 +21,11 @@ export class TxsStore extends Txs {
     this.txsBitcoin = new TxsBitcoin(current_chain);
   }
 
-  async getTxs(page: number, current_page: number, params: ParamsFilterReqTxs): Promise<Partial<ResTxs>> {
+  async getTxs(
+    page: number,
+    current_page: number,
+    params: ParamsFilterReqTxs
+  ): Promise<Partial<ResTxs>> {
     try {
       if (this.networkType === NetworkEnum.Cosmos) {
         return await this.txsCosmos.getTxs(page, current_page, params);
@@ -32,10 +36,13 @@ export class TxsStore extends Txs {
       }
       return;
     } catch (error) {
-      console.log('error: ', error);
+      console.log("error: ", error);
     }
   }
-  async getTxsByHash(txHash: string, addressAccount?: string): Promise<Partial<ResTxsInfo>> {
+  async getTxsByHash(
+    txHash: string,
+    addressAccount?: string
+  ): Promise<Partial<ResTxsInfo>> {
     try {
       if (this.networkType === NetworkEnum.Cosmos) {
         return await this.txsCosmos.getTxsByHash(txHash, addressAccount);
@@ -44,20 +51,26 @@ export class TxsStore extends Txs {
       }
       return;
     } catch (error) {
-      console.log('error: ', error);
+      console.log("error: ", error);
     }
   }
-  async getReceiveTxs(page: number, current_page: number, params: ParamsFilterReqTxs): Promise<Partial<ResTxs>> {
+  async getReceiveTxs(
+    page: number,
+    current_page: number,
+    params: ParamsFilterReqTxs
+  ): Promise<Partial<ResTxs>> {
     try {
       if (this.networkType === NetworkEnum.Cosmos) {
         return await this.txsCosmos.getReceiveTxs(page, current_page, params);
       }
       return;
     } catch (error) {
-      console.log('error: ', error);
+      console.log("error: ", error);
     }
   }
-  async getAllMethodActionTxs(addressAccount?: string): Promise<Partial<ResTxs>> {
+  async getAllMethodActionTxs(
+    addressAccount?: string
+  ): Promise<Partial<ResTxs>> {
     try {
       if (this.networkType === NetworkEnum.Cosmos) {
         return await this.txsCosmos.getAllMethodActionTxs(addressAccount);

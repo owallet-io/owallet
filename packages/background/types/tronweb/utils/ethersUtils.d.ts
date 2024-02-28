@@ -12,9 +12,9 @@ export const FormatTypes: {
 export const splitSignature: typeof utils.splitSignature;
 export const joinSignature: typeof utils.joinSignature;
 export const arrayify: typeof utils.arrayify;
-import { Wallet as ethersWallet } from 'ethers';
+import { Wallet as ethersWallet } from "ethers";
 export const concat: typeof utils.concat;
 export const id: typeof utils.id;
 // export const isValidMnemonic: typeof utils.isValidMnemonic;
-import { utils } from 'ethers';
+import { utils } from "ethers";
 export { ethersWallet };

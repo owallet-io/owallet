@@ -1,1 +1,1 @@
-export const ROUTE = 'interaction';
+export const ROUTE = "interaction";

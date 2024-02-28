@@ -1,8 +1,8 @@
-import { IFeeEthereumConfig, IGasConfig } from './types';
-import { TxChainSetter } from './chain';
-import { ChainGetter } from '@owallet/stores';
-import { action, makeObservable, observable } from 'mobx';
-import { useState } from 'react';
+import { IFeeEthereumConfig, IGasConfig } from "./types";
+import { TxChainSetter } from "./chain";
+import { ChainGetter } from "@owallet/stores";
+import { action, makeObservable, observable } from "mobx";
+import { useState } from "react";
 
 export class FeeEthereumConfig
   extends TxChainSetter
@@ -51,8 +51,8 @@ export class FeeEthereumConfig
 
   @action
   setFee(fee: string) {
-    if (fee.startsWith('.')) {
-      fee = '0' + fee;
+    if (fee.startsWith(".")) {
+      fee = "0" + fee;
     }
 
     this._feeRaw = fee;
@@ -81,20 +81,20 @@ export class FeeEthereumConfig
   }
 
   getError(): Error | undefined {
-    if (this._feeRaw === '') {
-      return new Error('Fee not set');
+    if (this._feeRaw === "") {
+      return new Error("Fee not set");
     }
 
     if (this._feeRaw && Number.isNaN(this._feeRaw)) {
-      return new Error('Fee is not valid number');
+      return new Error("Fee is not valid number");
     }
 
     if (!Number.isInteger(this.fee)) {
-      return new Error('Fee is not integer');
+      return new Error("Fee is not integer");
     }
 
     if (this.fee < 0) {
-      return new Error('Fee should be greater or equal to 0');
+      return new Error("Fee should be greater or equal to 0");
     }
     return;
   }

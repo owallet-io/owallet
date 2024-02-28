@@ -3,10 +3,10 @@ import {
   EnableAccessMsg,
   GetOriginPermittedChainsMsg,
   GetPermissionOriginsMsg,
-  RemovePermissionOrigin
-} from './messages';
-import { Env, Handler, InternalHandler, Message } from '@owallet/router';
-import { PermissionService } from './service';
+  RemovePermissionOrigin,
+} from "./messages";
+import { Env, Handler, InternalHandler, Message } from "@owallet/router";
+import { PermissionService } from "./service";
 
 export const getHandler: (service: PermissionService) => Handler = (
   service
@@ -36,7 +36,7 @@ export const getHandler: (service: PermissionService) => Handler = (
           msg as RemovePermissionOrigin
         );
       default:
-        throw new Error('Unknown msg type');
+        throw new Error("Unknown msg type");
     }
   };
 };
@@ -77,7 +77,7 @@ const handleAddPermissionOrigin: (
 ) => InternalHandler<AddPermissionOrigin> = (service) => {
   return (_, msg) => {
     service.addPermission([msg.chainId], msg.permissionType, [
-      msg.permissionOrigin
+      msg.permissionOrigin,
     ]);
   };
 };
@@ -87,7 +87,7 @@ const handleRemovePermissionOrigin: (
 ) => InternalHandler<RemovePermissionOrigin> = (service) => {
   return (_, msg) => {
     service.removePermission(msg.chainId, msg.permissionType, [
-      msg.permissionOrigin
+      msg.permissionOrigin,
     ]);
   };
 };

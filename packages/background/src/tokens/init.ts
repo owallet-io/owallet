@@ -1,14 +1,14 @@
-import { Router } from '@owallet/router';
+import { Router } from "@owallet/router";
 import {
   GetTokensMsg,
   AddTokenMsg,
   RemoveTokenMsg,
   GetSecret20ViewingKey,
-  SuggestTokenMsg
-} from './messages';
-import { ROUTE } from './constants';
-import { getHandler } from './handler';
-import { TokensService } from './service';
+  SuggestTokenMsg,
+} from "./messages";
+import { ROUTE } from "./constants";
+import { getHandler } from "./handler";
+import { TokensService } from "./service";
 
 export function init(router: Router, service: TokensService): void {
   router.registerMessage(GetTokensMsg);

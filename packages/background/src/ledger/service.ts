@@ -1,16 +1,16 @@
-import { delay as diDelay, inject, singleton } from 'tsyringe';
-import { TYPES } from '../types';
+import { delay as diDelay, inject, singleton } from "tsyringe";
+import { TYPES } from "../types";
 
-import { Ledger } from './ledger';
+import { Ledger } from "./ledger";
 
-import delay from 'delay';
+import delay from "delay";
 
-import { APP_PORT, Env } from '@owallet/router';
-import { BIP44HDPath, HDPath } from '@owallet/types';
-import { KVStore, LedgerAppType } from '@owallet/common';
-import { InteractionService } from '../interaction';
-import { LedgerOptions } from './options';
-import { Buffer } from 'buffer';
+import { APP_PORT, Env } from "@owallet/router";
+import { BIP44HDPath, HDPath } from "@owallet/types";
+import { KVStore, LedgerAppType } from "@owallet/common";
+import { InteractionService } from "../interaction";
+import { LedgerOptions } from "./options";
+import { Buffer } from "buffer";
 
 @singleton()
 export class LedgerService {
@@ -27,11 +27,15 @@ export class LedgerService {
     options: Partial<LedgerOptions>
   ) {
     this.options = {
-      defaultMode: options.defaultMode || 'webhid'
+      defaultMode: options.defaultMode || "webhid",
     };
   }
 
-  async getPublicKey(env: Env, hdPath: HDPath, ledgerType: LedgerAppType): Promise<any> {
+  async getPublicKey(
+    env: Env,
+    hdPath: HDPath,
+    ledgerType: LedgerAppType
+  ): Promise<any> {
     return await this.useLedger(env, ledgerType, async (ledger, retryCount) => {
       try {
         // Cosmos App on Ledger doesn't support the coin type other than 118.
@@ -40,14 +44,14 @@ export class LedgerService {
           hdPath.coinType,
           hdPath.account,
           hdPath.change,
-          hdPath.addressIndex
+          hdPath.addressIndex,
         ]);
       } finally {
         // Notify UI Ledger pubkey derivation succeeded only when Ledger initialization is tried again.
         if (retryCount > 0) {
-          this.interactionService.dispatchEvent(APP_PORT, 'ledger-init', {
-            event: 'get-pubkey',
-            success: true
+          this.interactionService.dispatchEvent(APP_PORT, "ledger-init", {
+            event: "get-pubkey",
+            success: true,
           });
         }
       }
@@ -61,30 +65,34 @@ export class LedgerService {
     message: Uint8Array,
     ledgerType: LedgerAppType
   ): Promise<Uint8Array | any> {
-    return await this.useLedger(env, ledgerType, async (ledger, retryCount: number) => {
-      try {
-        // Cosmos App on Ledger doesn't support the coin type other than 118.
-        const signature = await ledger.sign(path, message);
+    return await this.useLedger(
+      env,
+      ledgerType,
+      async (ledger, retryCount: number) => {
+        try {
+          // Cosmos App on Ledger doesn't support the coin type other than 118.
+          const signature = await ledger.sign(path, message);
 
-        // Notify UI Ledger signing succeeded only when Ledger initialization is tried again.
-        if (retryCount > 0) {
-          this.interactionService.dispatchEvent(APP_PORT, 'ledger-init', {
-            event: 'sign',
-            success: true
-          });
+          // Notify UI Ledger signing succeeded only when Ledger initialization is tried again.
+          if (retryCount > 0) {
+            this.interactionService.dispatchEvent(APP_PORT, "ledger-init", {
+              event: "sign",
+              success: true,
+            });
+          }
+          return signature;
+        } catch (e) {
+          // Notify UI Ledger signing failed only when Ledger initialization is tried again.
+          if (retryCount > 0) {
+            this.interactionService.dispatchEvent(APP_PORT, "ledger-init", {
+              event: "sign",
+              success: false,
+            });
+          }
+          throw e;
         }
-        return signature;
-      } catch (e) {
-        // Notify UI Ledger signing failed only when Ledger initialization is tried again.
-        if (retryCount > 0) {
-          this.interactionService.dispatchEvent(APP_PORT, 'ledger-init', {
-            event: 'sign',
-            success: false
-          });
-        }
-        throw e;
       }
-    });
+    );
   }
 
   async useLedger<T>(
@@ -98,7 +106,7 @@ export class LedgerService {
       ledger = await this.initLedger(env, ledgerType);
       return await fn(ledger.ledger, ledger.retryCount);
     } catch (error) {
-      console.log('🚀 ~ file: service.ts:121 ~ LedgerService ~ error:', error);
+      console.log("🚀 ~ file: service.ts:121 ~ LedgerService ~ error:", error);
     } finally {
       if (ledger) {
         await ledger.ledger.close();
@@ -106,9 +114,16 @@ export class LedgerService {
     }
   }
 
-  async initLedger(env: Env, ledgerType: LedgerAppType): Promise<{ ledger: Ledger; retryCount: number }> {
+  async initLedger(
+    env: Env,
+    ledgerType: LedgerAppType
+  ): Promise<{ ledger: Ledger; retryCount: number }> {
     if (this.previousInitAborter) {
-      this.previousInitAborter(new Error('New ledger request occurred before the ledger was initialized'));
+      this.previousInitAborter(
+        new Error(
+          "New ledger request occurred before the ledger was initialized"
+        )
+      );
     }
 
     const aborter = (() => {
@@ -124,7 +139,7 @@ export class LedgerService {
           if (_reject) {
             _reject(e);
           }
-        }
+        },
       };
     })();
 
@@ -141,7 +156,7 @@ export class LedgerService {
         this.previousInitAborter = undefined;
         return {
           ledger,
-          retryCount
+          retryCount,
         };
       } catch (e) {
         console.log(e);
@@ -153,16 +168,16 @@ export class LedgerService {
             (async () => {
               const response = (await this.interactionService.waitApprove(
                 env,
-                '/ledger-grant',
-                'ledger-init',
+                "/ledger-grant",
+                "ledger-init",
                 {
-                  event: 'init-failed',
+                  event: "init-failed",
                   mode,
-                  ledgerType
+                  ledgerType,
                 },
                 {
                   forceOpenWindow: true,
-                  channel: 'ledger'
+                  channel: "ledger",
                 }
               )) as
                 | {
@@ -172,13 +187,13 @@ export class LedgerService {
                 | undefined;
 
               if (response?.abort) {
-                throw new Error('Ledger init aborted');
+                throw new Error("Ledger init aborted");
               }
 
               if (response?.initArgs) {
                 initArgs = response.initArgs;
               }
-            })()
+            })(),
           ];
 
           promises.push(
@@ -187,21 +202,21 @@ export class LedgerService {
               // If ledger is not inited in 5 minutes, abort it.
               try {
                 await delay(5 * 60 * 1000, {
-                  signal: timeoutAbortController.signal
+                  signal: timeoutAbortController.signal,
                 });
               } catch (e) {
-                if (e.name === 'AbortError') {
+                if (e.name === "AbortError") {
                   timeoutAborted = true;
                 } else {
                   throw e;
                 }
               }
               if (!timeoutAborted) {
-                this.interactionService.dispatchEvent(APP_PORT, 'ledger-init', {
-                  event: 'init-aborted',
-                  mode
+                this.interactionService.dispatchEvent(APP_PORT, "ledger-init", {
+                  event: "init-aborted",
+                  mode,
                 });
-                throw new Error('Ledger init timeout');
+                throw new Error("Ledger init timeout");
               }
             })()
           );
@@ -209,7 +224,7 @@ export class LedgerService {
           promises.push(aborter.wait());
 
           // Check that the Ledger Popup is opened only if the environment is extension.
-          if (typeof browser !== 'undefined' && browser.extension.getViews) {
+          if (typeof browser !== "undefined" && browser.extension.getViews) {
             promises.push(this.testLedgerGrantUIOpened());
           }
 
@@ -231,14 +246,18 @@ export class LedgerService {
       const views = browser.extension.getViews();
       let find = false;
       for (const view of views) {
-        if (view.location.href.includes(browser.runtime.getURL('popup.html#/ledger-grant'))) {
+        if (
+          view.location.href.includes(
+            browser.runtime.getURL("popup.html#/ledger-grant")
+          )
+        ) {
           find = true;
           break;
         }
       }
 
       if (!find) {
-        throw new Error('Ledger init aborted');
+        throw new Error("Ledger init aborted");
       }
 
       await delay(1000);
@@ -254,18 +273,18 @@ export class LedgerService {
   async getMode(): Promise<string> {
     // Backward compatibilty for the extension.
     if (await this.getWebHIDFlag()) {
-      return 'webhid';
+      return "webhid";
     }
 
     return this.options.defaultMode;
   }
 
   async getWebHIDFlag(): Promise<boolean> {
-    const webHIDFlag = await this.kvStore.get<boolean>('webhid');
+    const webHIDFlag = await this.kvStore.get<boolean>("webhid");
     return !!webHIDFlag;
   }
 
   async setWebHIDFlag(flag: boolean): Promise<void> {
-    await this.kvStore.set<boolean>('webhid', flag);
+    await this.kvStore.set<boolean>("webhid", flag);
   }
 }

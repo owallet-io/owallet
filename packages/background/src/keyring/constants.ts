@@ -1,25 +1,25 @@
-export const ROUTE = 'keyring';
+export const ROUTE = "keyring";
 export const ETHEREUM_BASE_FEE = 1000000000;
 export const TYPED_MESSAGE_SCHEMA = {
-  type: 'object',
+  type: "object",
   properties: {
     types: {
-      type: 'object',
+      type: "object",
       additionalProperties: {
-        type: 'array',
+        type: "array",
         items: {
-          type: 'object',
+          type: "object",
           properties: {
-            name: { type: 'string' },
-            type: { type: 'string' }
+            name: { type: "string" },
+            type: { type: "string" },
           },
-          required: ['name', 'type']
-        }
-      }
+          required: ["name", "type"],
+        },
+      },
     },
-    primaryType: { type: 'string' },
-    domain: { type: 'object' },
-    message: { type: 'object' }
+    primaryType: { type: "string" },
+    domain: { type: "object" },
+    message: { type: "object" },
   },
-  required: ['types', 'primaryType', 'domain', 'message']
+  required: ["types", "primaryType", "domain", "message"],
 };

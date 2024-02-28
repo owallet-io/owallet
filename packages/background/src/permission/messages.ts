@@ -1,9 +1,9 @@
-import { Message } from '@owallet/router';
-import { ROUTE } from './constants';
+import { Message } from "@owallet/router";
+import { ROUTE } from "./constants";
 
 export class EnableAccessMsg extends Message<void> {
   public static type() {
-    return 'enable-access';
+    return "enable-access";
   }
 
   constructor(public readonly chainIds: string[]) {
@@ -12,7 +12,7 @@ export class EnableAccessMsg extends Message<void> {
 
   validateBasic(): void {
     if (!this.chainIds || this.chainIds.length === 0) {
-      throw new Error('chain id not set');
+      throw new Error("chain id not set");
     }
   }
 
@@ -31,7 +31,7 @@ export class EnableAccessMsg extends Message<void> {
 
 export class GetPermissionOriginsMsg extends Message<string[]> {
   public static type() {
-    return 'get-permission-origins';
+    return "get-permission-origins";
   }
 
   constructor(
@@ -43,11 +43,11 @@ export class GetPermissionOriginsMsg extends Message<string[]> {
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new Error('chain id not set');
+      throw new Error("chain id not set");
     }
 
     if (!this.permissionType) {
-      throw new Error('empty permission type');
+      throw new Error("empty permission type");
     }
   }
 
@@ -62,7 +62,7 @@ export class GetPermissionOriginsMsg extends Message<string[]> {
 
 export class GetOriginPermittedChainsMsg extends Message<string[]> {
   public static type() {
-    return 'get-origin-permitted-chains';
+    return "get-origin-permitted-chains";
   }
 
   constructor(
@@ -74,11 +74,11 @@ export class GetOriginPermittedChainsMsg extends Message<string[]> {
 
   validateBasic(): void {
     if (!this.permissionOrigin) {
-      throw new Error('origin not set');
+      throw new Error("origin not set");
     }
 
     if (!this.permissionType) {
-      throw new Error('empty permission type');
+      throw new Error("empty permission type");
     }
   }
 
@@ -93,7 +93,7 @@ export class GetOriginPermittedChainsMsg extends Message<string[]> {
 
 export class AddPermissionOrigin extends Message<void> {
   public static type() {
-    return 'add-permission-origin';
+    return "add-permission-origin";
   }
 
   constructor(
@@ -106,15 +106,15 @@ export class AddPermissionOrigin extends Message<void> {
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new Error('chain id not set');
+      throw new Error("chain id not set");
     }
 
     if (!this.permissionType) {
-      throw new Error('empty permission type');
+      throw new Error("empty permission type");
     }
 
     if (!this.permissionOrigin) {
-      throw new Error('empty permission origin');
+      throw new Error("empty permission origin");
     }
   }
 
@@ -129,7 +129,7 @@ export class AddPermissionOrigin extends Message<void> {
 
 export class RemovePermissionOrigin extends Message<void> {
   public static type() {
-    return 'remove-permission-origin';
+    return "remove-permission-origin";
   }
 
   constructor(
@@ -142,15 +142,15 @@ export class RemovePermissionOrigin extends Message<void> {
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new Error('chain id not set');
+      throw new Error("chain id not set");
     }
 
     if (!this.permissionType) {
-      throw new Error('empty permission type');
+      throw new Error("empty permission type");
     }
 
     if (!this.permissionOrigin) {
-      throw new Error('empty permission origin');
+      throw new Error("empty permission origin");
     }
   }
 

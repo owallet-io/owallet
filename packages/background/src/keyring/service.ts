@@ -1,14 +1,19 @@
-import { delay, inject, singleton } from 'tsyringe';
-import { TYPES } from '../types';
+import { delay, inject, singleton } from "tsyringe";
+import { TYPES } from "../types";
 
-import { Key, KeyRing, KeyRingStatus, MultiKeyStoreInfoWithSelected } from './keyring';
+import {
+  Key,
+  KeyRing,
+  KeyRingStatus,
+  MultiKeyStoreInfoWithSelected,
+} from "./keyring";
 
 import {
   Bech32Address,
   checkAndValidateADR36AminoSignDoc,
   makeADR36AminoSignDoc,
-  verifyADR36AminoSignDoc
-} from '@owallet/cosmos';
+  verifyADR36AminoSignDoc,
+} from "@owallet/cosmos";
 import {
   CommonCrypto,
   ECDSASignature,
@@ -16,29 +21,48 @@ import {
   MessageTypes,
   SignEthereumTypedDataObject,
   SignTypedDataVersion,
-  TypedMessage
-} from './types';
-import TronWeb from 'tronweb';
+  TypedMessage,
+} from "./types";
+import TronWeb from "tronweb";
 
-import { KVStore, fetchAdapter, EVMOS_NETWORKS, MyBigInt, escapeHTML, sortObjectByKey } from '@owallet/common';
-import { ChainsService } from '../chains';
-import { LedgerService } from '../ledger';
-import { BIP44, ChainInfo, OWalletSignOptions, StdSignDoc, BIP44HDPath, AddressesLedger } from '@owallet/types';
-import { APP_PORT, Env, OWalletError, WEBPAGE_PORT } from '@owallet/router';
-import { InteractionService } from '../interaction';
-import { PermissionService } from '../permission';
-import { SignDoc } from '@owallet/proto-types/cosmos/tx/v1beta1/tx';
-import { encodeSecp256k1Signature, serializeSignDoc, AminoSignResponse, StdSignature } from '@cosmjs/launchpad';
+import {
+  KVStore,
+  fetchAdapter,
+  EVMOS_NETWORKS,
+  MyBigInt,
+  escapeHTML,
+  sortObjectByKey,
+} from "@owallet/common";
+import { ChainsService } from "../chains";
+import { LedgerService } from "../ledger";
+import {
+  BIP44,
+  ChainInfo,
+  OWalletSignOptions,
+  StdSignDoc,
+  BIP44HDPath,
+  AddressesLedger,
+} from "@owallet/types";
+import { APP_PORT, Env, OWalletError, WEBPAGE_PORT } from "@owallet/router";
+import { InteractionService } from "../interaction";
+import { PermissionService } from "../permission";
+import { SignDoc } from "@owallet/proto-types/cosmos/tx/v1beta1/tx";
+import {
+  encodeSecp256k1Signature,
+  serializeSignDoc,
+  AminoSignResponse,
+  StdSignature,
+} from "@cosmjs/launchpad";
 
-import { DirectSignResponse, makeSignBytes } from '@cosmjs/proto-signing';
-import { RNG } from '@owallet/crypto';
-import { encodeSecp256k1Pubkey } from '@owallet/cosmos';
-import { Buffer } from 'buffer/';
-import { request } from '../tx';
-import { Dec, DecUtils } from '@owallet/unit';
-import { trimAminoSignDoc } from './amino-sign-doc';
-import { KeyringHelper } from './utils';
-import * as oasis from '@oasisprotocol/client';
+import { DirectSignResponse, makeSignBytes } from "@cosmjs/proto-signing";
+import { RNG } from "@owallet/crypto";
+import { encodeSecp256k1Pubkey } from "@owallet/cosmos";
+import { Buffer } from "buffer/";
+import { request } from "../tx";
+import { Dec, DecUtils } from "@owallet/unit";
+import { trimAminoSignDoc } from "./amino-sign-doc";
+import { KeyringHelper } from "./utils";
+import * as oasis from "@oasisprotocol/client";
 
 @singleton()
 export class KeyRingService {
@@ -62,7 +86,13 @@ export class KeyRingService {
     @inject(TYPES.CommonCrypto)
     protected readonly crypto: CommonCrypto
   ) {
-    this.keyRing = new KeyRing(chainsService, kvStore, ledgerService, rng, crypto);
+    this.keyRing = new KeyRing(
+      chainsService,
+      kvStore,
+      ledgerService,
+      rng,
+      crypto
+    );
   }
 
   async restore(): Promise<{
@@ -72,13 +102,13 @@ export class KeyRingService {
     await this.keyRing.restore();
     return {
       status: this.keyRing.status,
-      multiKeyStoreInfo: this.keyRing.getMultiKeyStoreInfo()
+      multiKeyStoreInfo: this.keyRing.getMultiKeyStoreInfo(),
     };
   }
 
   async enable(env: Env): Promise<KeyRingStatus> {
     if (this.keyRing.status === KeyRingStatus.EMPTY) {
-      throw new OWalletError('keyring', 261, "key doesn't exist");
+      throw new OWalletError("keyring", 261, "key doesn't exist");
     }
 
     if (this.keyRing.status === KeyRingStatus.NOTLOADED) {
@@ -87,7 +117,7 @@ export class KeyRingService {
 
     if (this.keyRing.status === KeyRingStatus.LOCKED) {
       try {
-        await this.interactionService.waitApprove(env, '/unlock', 'unlock', {});
+        await this.interactionService.waitApprove(env, "/unlock", "unlock", {});
         return this.keyRing.status;
       } catch (error) {
         throw Error(error);
@@ -115,42 +145,82 @@ export class KeyRingService {
       keyStoreChanged = result.keyStoreChanged;
       return {
         multiKeyStoreInfo: result.multiKeyStoreInfo,
-        status: this.keyRing.status
+        status: this.keyRing.status,
       };
     } finally {
       if (keyStoreChanged) {
-        this.interactionService.dispatchEvent(WEBPAGE_PORT, 'keystore-changed', {});
+        this.interactionService.dispatchEvent(
+          WEBPAGE_PORT,
+          "keystore-changed",
+          {}
+        );
       }
     }
   }
 
-  async requestSignProxyDecryptionData(env: Env, chainId: string, data: object): Promise<object> {
+  async requestSignProxyDecryptionData(
+    env: Env,
+    chainId: string,
+    data: object
+  ): Promise<object> {
     try {
       const rpc = await this.chainsService.getChainInfo(chainId);
-      const rpcCustom = EVMOS_NETWORKS.includes(chainId) ? rpc.evmRpc : rpc.rest;
-      const newData = await this.estimateFeeAndWaitApprove(env, chainId, rpcCustom, data);
-      const rawTxHex = await this.keyRing.signProxyDecryptionData(chainId, newData);
+      const rpcCustom = EVMOS_NETWORKS.includes(chainId)
+        ? rpc.evmRpc
+        : rpc.rest;
+      const newData = await this.estimateFeeAndWaitApprove(
+        env,
+        chainId,
+        rpcCustom,
+        data
+      );
+      const rawTxHex = await this.keyRing.signProxyDecryptionData(
+        chainId,
+        newData
+      );
 
       return rawTxHex;
     } catch (e) {
-      console.log('e', e.message);
+      console.log("e", e.message);
     } finally {
-      this.interactionService.dispatchEvent(APP_PORT, 'request-sign-ethereum-end', {});
+      this.interactionService.dispatchEvent(
+        APP_PORT,
+        "request-sign-ethereum-end",
+        {}
+      );
     }
   }
 
-  async requestSignProxyReEncryptionData(env: Env, chainId: string, data: object): Promise<object> {
+  async requestSignProxyReEncryptionData(
+    env: Env,
+    chainId: string,
+    data: object
+  ): Promise<object> {
     try {
       const rpc = await this.chainsService.getChainInfo(chainId);
-      const rpcCustom = EVMOS_NETWORKS.includes(chainId) ? rpc.evmRpc : rpc.rest;
-      const newData = await this.estimateFeeAndWaitApprove(env, chainId, rpcCustom, data);
-      const rawTxHex = await this.keyRing.signProxyReEncryptionData(chainId, newData);
+      const rpcCustom = EVMOS_NETWORKS.includes(chainId)
+        ? rpc.evmRpc
+        : rpc.rest;
+      const newData = await this.estimateFeeAndWaitApprove(
+        env,
+        chainId,
+        rpcCustom,
+        data
+      );
+      const rawTxHex = await this.keyRing.signProxyReEncryptionData(
+        chainId,
+        newData
+      );
 
       return rawTxHex;
     } catch (e) {
-      console.log('e', e.message);
+      console.log("e", e.message);
     } finally {
-      this.interactionService.dispatchEvent(APP_PORT, 'request-sign-ethereum-end', {});
+      this.interactionService.dispatchEvent(
+        APP_PORT,
+        "request-sign-ethereum-end",
+        {}
+      );
     }
   }
 
@@ -161,9 +231,13 @@ export class KeyRingService {
   ): Promise<{
     multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
   }> {
-    const multiKeyStoreInfo = await this.keyRing.updateNameKeyRing(index, name, email);
+    const multiKeyStoreInfo = await this.keyRing.updateNameKeyRing(
+      index,
+      name,
+      email
+    );
     return {
-      multiKeyStoreInfo
+      multiKeyStoreInfo,
     };
   }
 
@@ -172,7 +246,7 @@ export class KeyRingService {
   }
 
   async createMnemonicKey(
-    kdf: 'scrypt' | 'sha256' | 'pbkdf2',
+    kdf: "scrypt" | "sha256" | "pbkdf2",
     mnemonic: string,
     password: string,
     meta: Record<string, string>,
@@ -182,11 +256,17 @@ export class KeyRingService {
     multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
   }> {
     // TODO: Check mnemonic checksum.
-    return await this.keyRing.createMnemonicKey(kdf, mnemonic, password, meta, bip44HDPath);
+    return await this.keyRing.createMnemonicKey(
+      kdf,
+      mnemonic,
+      password,
+      meta,
+      bip44HDPath
+    );
   }
 
   async createPrivateKey(
-    kdf: 'scrypt' | 'sha256' | 'pbkdf2',
+    kdf: "scrypt" | "sha256" | "pbkdf2",
     privateKey: Uint8Array,
     password: string,
     meta: Record<string, string>
@@ -199,7 +279,7 @@ export class KeyRingService {
 
   async createLedgerKey(
     env: Env,
-    kdf: 'scrypt' | 'sha256' | 'pbkdf2',
+    kdf: "scrypt" | "sha256" | "pbkdf2",
     password: string,
     meta: Record<string, string>,
     bip44HDPath: BIP44HDPath
@@ -207,7 +287,13 @@ export class KeyRingService {
     status: KeyRingStatus;
     multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
   }> {
-    return await this.keyRing.createLedgerKey(env, kdf, password, meta, bip44HDPath);
+    return await this.keyRing.createLedgerKey(
+      env,
+      kdf,
+      password,
+      meta,
+      bip44HDPath
+    );
   }
 
   lock(): KeyRingStatus {
@@ -223,10 +309,13 @@ export class KeyRingService {
 
   async getKey(chainIdOrCoinType: string | number): Promise<Key> {
     // if getKey directly from cointype as number
-    if (typeof chainIdOrCoinType === 'number') {
+    if (typeof chainIdOrCoinType === "number") {
       return this.keyRing.getKeyFromCoinType(chainIdOrCoinType);
     }
-    return this.keyRing.getKey(chainIdOrCoinType, await this.chainsService.getChainCoinType(chainIdOrCoinType));
+    return this.keyRing.getKey(
+      chainIdOrCoinType,
+      await this.chainsService.getChainCoinType(chainIdOrCoinType)
+    );
   }
 
   getKeyStoreMeta(key: string): string {
@@ -256,26 +345,42 @@ export class KeyRingService {
     signDoc: StdSignDoc,
     signOptions: OWalletSignOptions
   ): Promise<AminoSignResponse> {
-    return this.requestSignEIP712CosmosTx_v0(env, origin, chainId, signer, eip712, signDoc, signOptions);
+    return this.requestSignEIP712CosmosTx_v0(
+      env,
+      origin,
+      chainId,
+      signer,
+      eip712,
+      signDoc,
+      signOptions
+    );
   }
-  async processSignDocEIP712(signDoc: StdSignDoc, chainId: string, signer: string, keyInfo: Key) {
+  async processSignDocEIP712(
+    signDoc: StdSignDoc,
+    chainId: string,
+    signer: string,
+    keyInfo: Key
+  ) {
     const chainInfo = await this.chainsService.getChainInfo(chainId);
     const isEthermint = KeyringHelper.isEthermintByChainInfo(chainInfo);
     if (!isEthermint) {
-      throw new Error('This feature is only usable on cosmos-sdk evm chain');
+      throw new Error("This feature is only usable on cosmos-sdk evm chain");
     }
 
     if (!keyInfo.isNanoLedger) {
-      throw new Error('This feature is only usable on ledger ethereum app');
+      throw new Error("This feature is only usable on ledger ethereum app");
     }
-    const bech32Prefix = (await this.chainsService.getChainInfo(chainId)).bech32Config.bech32PrefixAccAddr;
-    const bech32Address = new Bech32Address(keyInfo.address).toBech32(bech32Prefix);
+    const bech32Prefix = (await this.chainsService.getChainInfo(chainId))
+      .bech32Config.bech32PrefixAccAddr;
+    const bech32Address = new Bech32Address(keyInfo.address).toBech32(
+      bech32Prefix
+    );
     if (signer !== bech32Address) {
-      throw new Error('Signer mismatched');
+      throw new Error("Signer mismatched");
     }
     signDoc = {
       ...signDoc,
-      memo: escapeHTML(signDoc.memo)
+      memo: escapeHTML(signDoc.memo),
     };
     signDoc = trimAminoSignDoc(signDoc);
     const sortSignDoc = sortObjectByKey(signDoc);
@@ -297,25 +402,35 @@ export class KeyRingService {
     const coinType = await this.chainsService.getChainCoinType(chainId);
     const keyInfo = await this.keyRing.getKey(chainId, coinType);
     if (!keyInfo) {
-      throw new Error('Null key info');
+      throw new Error("Null key info");
     }
-    signDoc = await this.processSignDocEIP712(signDoc, chainId, signer, keyInfo);
-
-    let newSignDoc = (await this.interactionService.waitApprove(env, '/sign', 'request-sign', {
-      msgOrigin: origin,
-      chainId,
-      mode: 'amino',
+    signDoc = await this.processSignDocEIP712(
       signDoc,
+      chainId,
       signer,
-      signOptions,
-      pubKey: keyInfo.pubKey,
-      eip712,
-      keyType: this.getKeyRingType()
-    })) as StdSignDoc;
+      keyInfo
+    );
+
+    let newSignDoc = (await this.interactionService.waitApprove(
+      env,
+      "/sign",
+      "request-sign",
+      {
+        msgOrigin: origin,
+        chainId,
+        mode: "amino",
+        signDoc,
+        signer,
+        signOptions,
+        pubKey: keyInfo.pubKey,
+        eip712,
+        keyType: this.getKeyRingType(),
+      }
+    )) as StdSignDoc;
 
     newSignDoc = {
       ...newSignDoc,
-      memo: escapeHTML(newSignDoc.memo)
+      memo: escapeHTML(newSignDoc.memo),
     };
     try {
       // const signature = null;
@@ -325,7 +440,7 @@ export class KeyRingService {
         coinType,
         serializeSignDoc({
           ...newSignDoc,
-          eip712
+          eip712,
         } as any)
       );
 
@@ -334,11 +449,11 @@ export class KeyRingService {
         signature: {
           pub_key: encodeSecp256k1Pubkey(keyInfo.pubKey),
           // Return eth signature (r | s | v) 65 bytes.
-          signature: Buffer.from(signature).toString('base64')
-        }
+          signature: Buffer.from(signature).toString("base64"),
+        },
       };
     } finally {
-      this.interactionService.dispatchEvent(APP_PORT, 'request-sign-end', {});
+      this.interactionService.dispatchEvent(APP_PORT, "request-sign-end", {});
     }
   }
   async requestSignAmino(
@@ -355,58 +470,80 @@ export class KeyRingService {
     const coinType = await this.chainsService.getChainCoinType(chainId);
 
     const key = await this.keyRing.getKey(chainId, coinType);
-    const bech32Prefix = (await this.chainsService.getChainInfo(chainId)).bech32Config.bech32PrefixAccAddr;
+    const bech32Prefix = (await this.chainsService.getChainInfo(chainId))
+      .bech32Config.bech32PrefixAccAddr;
     const bech32Address = new Bech32Address(key.address).toBech32(bech32Prefix);
     if (signer !== bech32Address) {
-      throw new Error('Signer mismatched');
+      throw new Error("Signer mismatched");
     }
 
-    const isADR36SignDoc = checkAndValidateADR36AminoSignDoc(signDoc, bech32Prefix);
+    const isADR36SignDoc = checkAndValidateADR36AminoSignDoc(
+      signDoc,
+      bech32Prefix
+    );
     if (isADR36SignDoc) {
       if (signDoc.msgs[0].value.signer !== signer) {
-        throw new OWalletError('keyring', 233, 'Unmatched signer in sign doc');
+        throw new OWalletError("keyring", 233, "Unmatched signer in sign doc");
       }
     }
 
     if (signOptions.isADR36WithString != null && !isADR36SignDoc) {
-      throw new OWalletError('keyring', 236, 'Sign doc is not for ADR-36. But, "isADR36WithString" option is defined');
+      throw new OWalletError(
+        "keyring",
+        236,
+        'Sign doc is not for ADR-36. But, "isADR36WithString" option is defined'
+      );
     }
 
-    const newSignDoc = (await this.interactionService.waitApprove(env, '/sign', 'request-sign', {
-      msgOrigin,
-      chainId,
-      mode: 'amino',
-      signDoc,
-      signer,
-      signOptions,
-      isADR36SignDoc,
-      isADR36WithString: signOptions.isADR36WithString
-    })) as StdSignDoc;
+    const newSignDoc = (await this.interactionService.waitApprove(
+      env,
+      "/sign",
+      "request-sign",
+      {
+        msgOrigin,
+        chainId,
+        mode: "amino",
+        signDoc,
+        signer,
+        signOptions,
+        isADR36SignDoc,
+        isADR36WithString: signOptions.isADR36WithString,
+      }
+    )) as StdSignDoc;
 
     if (isADR36SignDoc) {
       // Validate the new sign doc, if it was for ADR-36.
       if (checkAndValidateADR36AminoSignDoc(signDoc, bech32Prefix)) {
         if (signDoc.msgs[0].value.signer !== signer) {
-          throw new OWalletError('keyring', 232, 'Unmatched signer in new sign doc');
+          throw new OWalletError(
+            "keyring",
+            232,
+            "Unmatched signer in new sign doc"
+          );
         }
       } else {
         throw new OWalletError(
-          'keyring',
+          "keyring",
           237,
-          'Signing request was for ADR-36. But, accidentally, new sign doc is not for ADR-36'
+          "Signing request was for ADR-36. But, accidentally, new sign doc is not for ADR-36"
         );
       }
     }
 
     try {
-      const signature = await this.keyRing.sign(env, chainId, coinType, serializeSignDoc(newSignDoc));
+      const signature = await this.keyRing.sign(
+        env,
+        chainId,
+        coinType,
+        serializeSignDoc(newSignDoc)
+      );
 
       return {
         signed: newSignDoc,
-        signature: encodeSecp256k1Signature(key.pubKey, signature)
+        signature: encodeSecp256k1Signature(key.pubKey, signature),
       };
     } finally {
-      this.interactionService.dispatchEvent(APP_PORT, 'request-sign-end', {});
+      this.interactionService.dispatchEvent(APP_PORT, "request-sign-end", {});
     }
   }
 
@@ -423,36 +560,51 @@ export class KeyRingService {
     // sign get here
     const key = await this.keyRing.getKey(chainId, coinType);
     const bech32Address = new Bech32Address(key.address).toBech32(
-      (await this.chainsService.getChainInfo(chainId)).bech32Config.bech32PrefixAccAddr
+      (await this.chainsService.getChainInfo(chainId)).bech32Config
+        .bech32PrefixAccAddr
     );
     if (signer !== bech32Address) {
-      throw new Error('Signer mismatched');
+      throw new Error("Signer mismatched");
     }
 
-    const newSignDocBytes = (await this.interactionService.waitApprove(env, '/sign', 'request-sign', {
-      msgOrigin,
-      chainId,
-      mode: 'direct',
-      signDocBytes: SignDoc.encode(signDoc).finish(),
-      signer,
-      signOptions
-    })) as Uint8Array;
+    const newSignDocBytes = (await this.interactionService.waitApprove(
+      env,
+      "/sign",
+      "request-sign",
+      {
+        msgOrigin,
+        chainId,
+        mode: "direct",
+        signDocBytes: SignDoc.encode(signDoc).finish(),
+        signer,
+        signOptions,
+      }
+    )) as Uint8Array;
 
     const newSignDoc = SignDoc.decode(newSignDocBytes);
 
     try {
-      const signature = await this.keyRing.sign(env, chainId, coinType, makeSignBytes(newSignDoc));
+      const signature = await this.keyRing.sign(
+        env,
+        chainId,
+        coinType,
+        makeSignBytes(newSignDoc)
+      );
 
       return {
         signed: newSignDoc,
-        signature: encodeSecp256k1Signature(key.pubKey, signature)
+        signature: encodeSecp256k1Signature(key.pubKey, signature),
       };
     } finally {
-      this.interactionService.dispatchEvent(APP_PORT, 'request-sign-end', {});
+      this.interactionService.dispatchEvent(APP_PORT, "request-sign-end", {});
     }
   }
 
-  async requestSignEthereum(env: Env, chainId: string, data: object): Promise<string> {
+  async requestSignEthereum(
+    env: Env,
+    chainId: string,
+    data: object
+  ): Promise<string> {
     const coinType = await this.chainsService.getChainCoinType(chainId);
     const rpc = await this.chainsService.getChainInfo(chainId);
     const rpcCustom = EVMOS_NETWORKS.includes(chainId) ? rpc.evmRpc : rpc.rest;
@@ -460,30 +612,57 @@ export class KeyRingService {
     // Need to check ledger here and ledger app type by chainId
     try {
       // TODO: add UI here so users can change gas, memo & fee
-      const newData = await this.estimateFeeAndWaitApprove(env, chainId, rpcCustom, data);
-      const rawTxHex = await this.keyRing.signAndBroadcastEthereum(env, chainId, coinType, rpcCustom, newData);
+      const newData = await this.estimateFeeAndWaitApprove(
+        env,
+        chainId,
+        rpcCustom,
+        data
+      );
+      const rawTxHex = await this.keyRing.signAndBroadcastEthereum(
+        env,
+        chainId,
+        coinType,
+        rpcCustom,
+        newData
+      );
       return rawTxHex;
     } finally {
-      this.interactionService.dispatchEvent(APP_PORT, 'request-sign-ethereum-end', {});
+      this.interactionService.dispatchEvent(
+        APP_PORT,
+        "request-sign-ethereum-end",
+        {}
+      );
     }
   }
-  async requestSignBitcoin(env: Env, chainId: string, data: object): Promise<string> {
+  async requestSignBitcoin(
+    env: Env,
+    chainId: string,
+    data: object
+  ): Promise<string> {
     // here
     const newData = (await this.interactionService.waitApprove(
       env,
-      '/sign-bitcoin',
-      'request-sign-bitcoin',
+      "/sign-bitcoin",
+      "request-sign-bitcoin",
       data
     )) as any;
     // Need to check ledger here and ledger app type by chainId
     try {
-      const txHash = await this.keyRing.signAndBroadcastBitcoin(env, chainId, newData);
+      const txHash = await this.keyRing.signAndBroadcastBitcoin(
+        env,
+        chainId,
+        newData
+      );
       return txHash;
     } catch (error) {
       console.log({ error });
       throw error;
     } finally {
-      this.interactionService.dispatchEvent(APP_PORT, 'request-sign-bitcoin-end', {});
+      this.interactionService.dispatchEvent(
+        APP_PORT,
+        "request-sign-bitcoin-end",
+        {}
+      );
     }
   }
 
@@ -497,14 +676,14 @@ export class KeyRingService {
         typedMessage: data.typedMessage,
         version: data.version,
         chainId,
-        defaultCoinType: data.defaultCoinType
+        defaultCoinType: data.defaultCoinType,
       });
 
       return rawTxHex;
     } catch (e) {
-      console.log('e', e.message);
+      console.log("e", e.message);
     } finally {
-      this.interactionService.dispatchEvent(APP_PORT, 'request-sign-end', {});
+      this.interactionService.dispatchEvent(APP_PORT, "request-sign-end", {});
     }
   }
 
@@ -513,80 +692,132 @@ export class KeyRingService {
       const rawTxHex = (await this.keyRing.getPublicKey(chainId)) as string;
       return rawTxHex;
     } catch (e) {
-      console.log('e', e.message);
+      console.log("e", e.message);
     } finally {
-      this.interactionService.dispatchEvent(APP_PORT, 'request-sign-ethereum-end', {});
+      this.interactionService.dispatchEvent(
+        APP_PORT,
+        "request-sign-ethereum-end",
+        {}
+      );
     }
   }
 
-  async requestSignDecryptData(env: Env, chainId: string, data: object): Promise<object> {
+  async requestSignDecryptData(
+    env: Env,
+    chainId: string,
+    data: object
+  ): Promise<object> {
     try {
       const rpc = await this.chainsService.getChainInfo(chainId);
-      const rpcCustom = EVMOS_NETWORKS.includes(chainId) ? rpc.evmRpc : rpc.rest;
-      const newData = await this.estimateFeeAndWaitApprove(env, chainId, rpcCustom, data);
+      const rpcCustom = EVMOS_NETWORKS.includes(chainId)
+        ? rpc.evmRpc
+        : rpc.rest;
+      const newData = await this.estimateFeeAndWaitApprove(
+        env,
+        chainId,
+        rpcCustom,
+        data
+      );
       const rawTxHex = await this.keyRing.signDecryptData(chainId, newData);
       return rawTxHex;
     } catch (e) {
-      console.log('e', e.message);
+      console.log("e", e.message);
     } finally {
-      this.interactionService.dispatchEvent(APP_PORT, 'request-sign-ethereum-end', {});
+      this.interactionService.dispatchEvent(
+        APP_PORT,
+        "request-sign-ethereum-end",
+        {}
+      );
     }
   }
 
-  async requestSignReEncryptData(env: Env, chainId: string, data: object): Promise<object> {
+  async requestSignReEncryptData(
+    env: Env,
+    chainId: string,
+    data: object
+  ): Promise<object> {
     try {
       const rpc = await this.chainsService.getChainInfo(chainId);
-      const rpcCustom = EVMOS_NETWORKS.includes(chainId) ? rpc.evmRpc : rpc.rest;
-      const newData = await this.estimateFeeAndWaitApprove(env, chainId, rpcCustom, data);
+      const rpcCustom = EVMOS_NETWORKS.includes(chainId)
+        ? rpc.evmRpc
+        : rpc.rest;
+      const newData = await this.estimateFeeAndWaitApprove(
+        env,
+        chainId,
+        rpcCustom,
+        data
+      );
       const rawTxHex = await this.keyRing.signReEncryptData(chainId, newData);
 
       return rawTxHex;
     } catch (e) {
-      console.log('e', e.message);
+      console.log("e", e.message);
     } finally {
-      this.interactionService.dispatchEvent(APP_PORT, 'request-sign-ethereum-end', {});
+      this.interactionService.dispatchEvent(
+        APP_PORT,
+        "request-sign-ethereum-end",
+        {}
+      );
     }
   }
 
-  async setKeyStoreLedgerAddress(env: Env, bip44HDPath: string, chainId: string | number): Promise<void> {
+  async setKeyStoreLedgerAddress(
+    env: Env,
+    bip44HDPath: string,
+    chainId: string | number
+  ): Promise<void> {
     await this.keyRing.setKeyStoreLedgerAddress(env, bip44HDPath, chainId);
 
-    this.interactionService.dispatchEvent(WEBPAGE_PORT, 'keystore-changed', {});
+    this.interactionService.dispatchEvent(WEBPAGE_PORT, "keystore-changed", {});
   }
 
-  async estimateFeeAndWaitApprove(env: Env, chainId: string, rpc: string, data: object): Promise<object> {
-    const decimals = (await this.chainsService.getChainInfo(chainId)).feeCurrencies?.[0].coinDecimals;
-    const estimatedGasPrice = await request(rpc, 'eth_gasPrice', []);
-    let estimatedGasLimit = '0x5028';
+  async estimateFeeAndWaitApprove(
+    env: Env,
+    chainId: string,
+    rpc: string,
+    data: object
+  ): Promise<object> {
+    const decimals = (await this.chainsService.getChainInfo(chainId))
+      .feeCurrencies?.[0].coinDecimals;
+    const estimatedGasPrice = await request(rpc, "eth_gasPrice", []);
+    let estimatedGasLimit = "0x5028";
     try {
-      estimatedGasLimit = await request(rpc, 'eth_estimateGas', [
+      estimatedGasLimit = await request(rpc, "eth_estimateGas", [
         {
           ...data,
           maxFeePerGas: undefined,
-          maxPriorityFeePerGas: undefined
-        }
+          maxPriorityFeePerGas: undefined,
+        },
       ]);
     } catch (error) {
-      console.log('🚀 ~ file: service.ts ~ line 396 ~ KeyRingService ~ error', error);
+      console.log(
+        "🚀 ~ file: service.ts ~ line 396 ~ KeyRingService ~ error",
+        error
+      );
     }
 
-    const approveData = (await this.interactionService.waitApprove(env, '/sign-ethereum', 'request-sign-ethereum', {
+    const approveData = (await this.interactionService.waitApprove(
       env,
-      chainId,
-      mode: 'direct',
-      data: {
-        ...data,
-        estimatedGasPrice: (data as any)?.gasPrice || estimatedGasPrice,
-        estimatedGasLimit: (data as any)?.gas || estimatedGasLimit,
-        decimals
+      "/sign-ethereum",
+      "request-sign-ethereum",
+      {
+        env,
+        chainId,
+        mode: "direct",
+        data: {
+          ...data,
+          estimatedGasPrice: (data as any)?.gasPrice || estimatedGasPrice,
+          estimatedGasLimit: (data as any)?.gas || estimatedGasLimit,
+          decimals,
+        },
       }
-    })) as any;
+    )) as any;
 
     const { gasPrice, gasLimit, memo, fees } = {
-      gasPrice: approveData.gasPrice ?? '0x0',
-      memo: approveData.memo ?? '',
+      gasPrice: approveData.gasPrice ?? "0x0",
+      memo: approveData.memo ?? "",
       gasLimit: approveData.gasLimit,
-      fees: approveData.fees
+      fees: approveData.fees,
     };
 
     return { ...data, gasPrice, gasLimit, memo, fees };
@@ -601,16 +832,19 @@ export class KeyRingService {
     const coinType = await this.chainsService.getChainCoinType(chainId);
 
     const key = await this.keyRing.getKey(chainId, coinType);
-    const bech32Prefix = (await this.chainsService.getChainInfo(chainId)).bech32Config.bech32PrefixAccAddr;
+    const bech32Prefix = (await this.chainsService.getChainInfo(chainId))
+      .bech32Config.bech32PrefixAccAddr;
     const bech32Address = new Bech32Address(key.address).toBech32(bech32Prefix);
     if (signer !== bech32Address) {
-      throw new Error('Signer mismatched');
+      throw new Error("Signer mismatched");
     }
-    if (signature.pub_key.type !== 'tendermint/PubKeySecp256k1') {
+    if (signature.pub_key.type !== "tendermint/PubKeySecp256k1") {
       throw new Error(`Unsupported type of pub key: ${signature.pub_key.type}`);
     }
-    if (Buffer.from(key.pubKey).toString('base64') !== signature.pub_key.value) {
-      throw new Error('Pub key unmatched');
+    if (
+      Buffer.from(key.pubKey).toString("base64") !== signature.pub_key.value
+    ) {
+      throw new Error("Pub key unmatched");
     }
 
     const signDoc = makeADR36AminoSignDoc(signer, data);
@@ -618,18 +852,27 @@ export class KeyRingService {
     return verifyADR36AminoSignDoc(
       bech32Prefix,
       signDoc,
-      Buffer.from(signature.pub_key.value, 'base64'),
-      Buffer.from(signature.signature, 'base64')
+      Buffer.from(signature.pub_key.value, "base64"),
+      Buffer.from(signature.signature, "base64")
     );
   }
 
   // here
-  async sign(env: Env, chainId: string, message: Uint8Array): Promise<Uint8Array> {
-    return this.keyRing.sign(env, chainId, await this.chainsService.getChainCoinType(chainId), message);
+  async sign(
+    env: Env,
+    chainId: string,
+    message: Uint8Array
+  ): Promise<Uint8Array> {
+    return this.keyRing.sign(
+      env,
+      chainId,
+      await this.chainsService.getChainCoinType(chainId),
+      message
+    );
   }
 
   async addMnemonicKey(
-    kdf: 'scrypt' | 'sha256' | 'pbkdf2',
+    kdf: "scrypt" | "sha256" | "pbkdf2",
     mnemonic: string,
     meta: Record<string, string>,
     bip44HDPath: BIP44HDPath
@@ -640,7 +883,7 @@ export class KeyRingService {
   }
 
   async addPrivateKey(
-    kdf: 'scrypt' | 'sha256' | 'pbkdf2',
+    kdf: "scrypt" | "sha256" | "pbkdf2",
     privateKey: Uint8Array,
     meta: Record<string, string>
   ): Promise<{
@@ -651,7 +894,7 @@ export class KeyRingService {
 
   async addLedgerKey(
     env: Env,
-    kdf: 'scrypt' | 'sha256' | 'pbkdf2',
+    kdf: "scrypt" | "sha256" | "pbkdf2",
     meta: Record<string, string>,
     bip44HDPath: BIP44HDPath
   ): Promise<{
@@ -666,13 +909,17 @@ export class KeyRingService {
     try {
       return await this.keyRing.changeKeyStoreFromMultiKeyStore(index);
     } finally {
-      this.interactionService.dispatchEvent(WEBPAGE_PORT, 'keystore-changed', {});
+      this.interactionService.dispatchEvent(
+        WEBPAGE_PORT,
+        "keystore-changed",
+        {}
+      );
     }
   }
 
   public async changeChain(chainInfos: object = {}): Promise<void | any> {
-    this.interactionService.dispatchEvent(WEBPAGE_PORT, 'keystore-changed', {
-      ...chainInfos
+    this.interactionService.dispatchEvent(WEBPAGE_PORT, "keystore-changed", {
+      ...chainInfos,
     });
   }
 
@@ -697,7 +944,11 @@ export class KeyRingService {
     await this.keyRing.setKeyStoreCoinType(chainId, coinType);
 
     if (prevCoinType !== coinType) {
-      this.interactionService.dispatchEvent(WEBPAGE_PORT, 'keystore-changed', {});
+      this.interactionService.dispatchEvent(
+        WEBPAGE_PORT,
+        "keystore-changed",
+        {}
+      );
     }
   }
 
@@ -714,11 +965,13 @@ export class KeyRingService {
 
     for (const path of paths) {
       const key = await this.keyRing.getKeyFromCoinType(path.coinType);
-      const bech32Address = new Bech32Address(key.address).toBech32(chainInfo.bech32Config.bech32PrefixAccAddr);
+      const bech32Address = new Bech32Address(key.address).toBech32(
+        chainInfo.bech32Config.bech32PrefixAccAddr
+      );
 
       result.push({
         path,
-        bech32Address
+        bech32Address,
       });
     }
 
@@ -741,7 +994,7 @@ export class KeyRingService {
   ) {
     try {
       const tronWeb = new TronWeb({
-        fullHost: (await this.chainsService.getChainInfo(chainId)).rpc
+        fullHost: (await this.chainsService.getChainInfo(chainId)).rpc,
       });
       tronWeb.fullNode.instance.defaults.adapter = fetchAdapter;
       return await tronWeb.trx.sendRawTransaction(transaction);
@@ -771,7 +1024,7 @@ export class KeyRingService {
   }> {
     try {
       const tronWeb = new TronWeb({
-        fullHost: (await this.chainsService.getChainInfo(chainId)).rpc
+        fullHost: (await this.chainsService.getChainInfo(chainId)).rpc,
       });
       tronWeb.fullNode.instance.defaults.adapter = fetchAdapter;
       return await tronWeb.transactionBuilder.triggerSmartContract(
@@ -781,7 +1034,7 @@ export class KeyRingService {
           ? data.options
           : {
               feeLimit: 100_000_000,
-              callValue: 0
+              callValue: 0,
             },
         data.parameters,
         data.issuerAddress
@@ -791,34 +1044,49 @@ export class KeyRingService {
     }
   }
 
-  async requestSignTron(env: Env, chainId: string, data: object): Promise<object> {
-    const newData = (await this.interactionService.waitApprove(env, '/sign-tron', 'request-sign-tron', data)) as any;
+  async requestSignTron(
+    env: Env,
+    chainId: string,
+    data: object
+  ): Promise<object> {
+    const newData = (await this.interactionService.waitApprove(
+      env,
+      "/sign-tron",
+      "request-sign-tron",
+      data
+    )) as any;
     try {
       if (newData?.txID) {
-        newData.signature = [Buffer.from(await this.keyRing.sign(env, chainId, 195, newData.txID)).toString('hex')];
+        newData.signature = [
+          Buffer.from(
+            await this.keyRing.sign(env, chainId, 195, newData.txID)
+          ).toString("hex"),
+        ];
         return newData;
       }
 
       const tronWeb = new TronWeb({
-        fullHost: (await this.chainsService.getChainInfo(chainId)).rpc
+        fullHost: (await this.chainsService.getChainInfo(chainId)).rpc,
       });
       tronWeb.fullNode.instance.defaults.adapter = fetchAdapter;
       let transaction: any;
       if (newData?.tokenTrc20) {
-        const amount = new MyBigInt(Math.trunc(newData?.amount * Math.pow(10, 6)));
+        const amount = new MyBigInt(
+          Math.trunc(newData?.amount * Math.pow(10, 6))
+        );
         transaction = (
           await tronWeb.transactionBuilder.triggerSmartContract(
             newData.tokenTrc20.contractAddress,
-            'transfer(address,uint256)',
+            "transfer(address,uint256)",
             {
               callValue: 0,
               feeLimit: 200_000_000,
               userFeePercentage: 100,
-              shouldPollResponse: false
+              shouldPollResponse: false,
             },
             [
-              { type: 'address', value: newData.recipient },
-              { type: 'uint256', value: amount.toString() }
+              { type: "address", value: newData.recipient },
+              { type: "uint256", value: amount.toString() },
             ],
             newData.address
           )
@@ -827,7 +1095,9 @@ export class KeyRingService {
         // get address here from keyring and
         transaction = await tronWeb.transactionBuilder.sendTrx(
           newData.recipient,
-          new Dec(Number((newData.amount ?? '0').replace(/,/g, '.'))).mul(DecUtils.getTenExponentNInPrecisionRange(6)),
+          new Dec(Number((newData.amount ?? "0").replace(/,/g, "."))).mul(
+            DecUtils.getTenExponentNInPrecisionRange(6)
+          ),
           newData.address
         );
       }
@@ -835,22 +1105,36 @@ export class KeyRingService {
       // const transactionData = Buffer.from(transaction.raw_data_hex, 'hex');
 
       transaction.signature = [
-        Buffer.from(await this.keyRing.sign(env, chainId, 195, transaction?.txID)).toString('hex')
+        Buffer.from(
+          await this.keyRing.sign(env, chainId, 195, transaction?.txID)
+        ).toString("hex"),
       ];
 
       const receipt = await tronWeb.trx.sendRawTransaction(transaction);
       return receipt.txid ?? receipt.transaction.raw_data_hex;
     } finally {
-      this.interactionService.dispatchEvent(APP_PORT, 'request-sign-tron-end', {});
+      this.interactionService.dispatchEvent(
+        APP_PORT,
+        "request-sign-tron-end",
+        {}
+      );
     }
   }
 
-  async requestSignOasis(env: Env, chainId: string, data: object): Promise<object> {
+  async requestSignOasis(
+    env: Env,
+    chainId: string,
+    data: object
+  ): Promise<object> {
     try {
       const tx = await this.keyRing.signOasis(chainId, data);
       return tx;
     } finally {
-      this.interactionService.dispatchEvent(APP_PORT, 'request-sign-oasis-end', {});
+      this.interactionService.dispatchEvent(
+        APP_PORT,
+        "request-sign-oasis-end",
+        {}
+      );
     }
   }
 }

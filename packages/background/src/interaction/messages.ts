@@ -1,9 +1,9 @@
-import { Message } from '@owallet/router';
-import { ROUTE } from './constants';
+import { Message } from "@owallet/router";
+import { ROUTE } from "./constants";
 
 export class ApproveInteractionMsg extends Message<void> {
   public static type() {
-    return 'approve-interaction';
+    return "approve-interaction";
   }
 
   constructor(public readonly id: string, public readonly result: unknown) {
@@ -25,7 +25,7 @@ export class ApproveInteractionMsg extends Message<void> {
 
 export class RejectInteractionMsg extends Message<void> {
   public static type() {
-    return 'reject-interaction';
+    return "reject-interaction";
   }
 
   constructor(public readonly id: string) {

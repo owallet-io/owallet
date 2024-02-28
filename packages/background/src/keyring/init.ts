@@ -1,4 +1,4 @@
-import { Router } from '@owallet/router';
+import { Router } from "@owallet/router";
 import {
   CreateMnemonicKeyMsg,
   CreatePrivateKeyMsg,
@@ -36,11 +36,11 @@ import {
   GetDefaultAddressTronMsg,
   GetDefaultAddressOasisMsg,
   TriggerSmartContractMsg,
-  RequestSendRawTransactionMsg
-} from './messages';
-import { ROUTE } from './constants';
-import { getHandler } from './handler';
-import { KeyRingService } from './service';
+  RequestSendRawTransactionMsg,
+} from "./messages";
+import { ROUTE } from "./constants";
+import { getHandler } from "./handler";
+import { KeyRingService } from "./service";
 
 export function init(router: Router, service: KeyRingService): void {
   router.registerMessage(RestoreKeyRingMsg);

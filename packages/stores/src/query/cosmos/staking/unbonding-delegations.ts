@@ -1,12 +1,12 @@
 import {
   ObservableChainQuery,
-  ObservableChainQueryMap
-} from '../../chain-query';
-import { UnbondingDelegation, UnbondingDelegations } from './types';
-import { KVStore } from '@owallet/common';
-import { ChainGetter } from '../../../common';
-import { CoinPretty, Int } from '@owallet/unit';
-import { computed, makeObservable } from 'mobx';
+  ObservableChainQueryMap,
+} from "../../chain-query";
+import { UnbondingDelegation, UnbondingDelegations } from "./types";
+import { KVStore } from "@owallet/common";
+import { ChainGetter } from "../../../common";
+import { CoinPretty, Int } from "@owallet/unit";
+import { computed, makeObservable } from "mobx";
 
 export class ObservableQueryUnbondingDelegationsInner extends ObservableChainQuery<UnbondingDelegations> {
   protected bech32Address: string;
@@ -71,13 +71,13 @@ export class ObservableQueryUnbondingDelegationsInner extends ObservableChainQue
         entries.push({
           creationHeight: new Int(entry.creation_height),
           completionTime: entry.completion_time,
-          balance: new CoinPretty(stakeCurrency, new Int(entry.balance))
+          balance: new CoinPretty(stakeCurrency, new Int(entry.balance)),
         });
       }
 
       result.push({
         validatorAddress: unbonding.validator_address,
-        entries
+        entries,
       });
     }
 

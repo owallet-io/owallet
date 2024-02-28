@@ -1,5 +1,5 @@
-import { Guard } from '@owallet/router';
-import { ExtensionGuards } from '@owallet/router-extension';
+import { Guard } from "@owallet/router";
+import { ExtensionGuards } from "@owallet/router-extension";
 
 export class MockGuards {
   static readonly checkOriginIsValid: Guard =

@@ -1,34 +1,34 @@
-import { Message } from '@owallet/router';
-import { ROUTE } from './constants';
+import { Message } from "@owallet/router";
+import { ROUTE } from "./constants";
 
 // Return the tx hash
 export class SendTxMsg extends Message<Uint8Array> {
   public static type() {
-    return 'send-tx-to-background';
+    return "send-tx-to-background";
   }
 
   constructor(
     public readonly chainId: string,
     public readonly tx: unknown,
-    public readonly mode: 'async' | 'sync' | 'block'
+    public readonly mode: "async" | "sync" | "block"
   ) {
     super();
   }
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new Error('chain id is empty');
+      throw new Error("chain id is empty");
     }
 
     if (!this.tx) {
-      throw new Error('tx is empty');
+      throw new Error("tx is empty");
     }
 
     if (
       !this.mode ||
-      (this.mode !== 'sync' && this.mode !== 'async' && this.mode !== 'block')
+      (this.mode !== "sync" && this.mode !== "async" && this.mode !== "block")
     ) {
-      throw new Error('invalid mode');
+      throw new Error("invalid mode");
     }
   }
 
@@ -47,28 +47,28 @@ export class SendTxMsg extends Message<Uint8Array> {
 
 export class RequestEthereumMsg extends Message<string> {
   public static type() {
-    return 'send-tx-ethereum-to-background';
+    return "send-tx-ethereum-to-background";
   }
 
   constructor(
     public readonly chainId: string,
     public readonly method: string,
-    public readonly params: any[],
+    public readonly params: any[]
   ) {
     super();
   }
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new Error('chain id is empty');
+      throw new Error("chain id is empty");
     }
 
     if (!this.method) {
-      throw new Error('method is empty');
+      throw new Error("method is empty");
     }
 
     if (!this.params) {
-      throw new Error('params is empty');
+      throw new Error("params is empty");
     }
   }
 

@@ -1,10 +1,30 @@
 export default class Trx {
-  static verifySignature(message: any, address: any, signature: any, useTronHeader?: boolean): boolean;
+  static verifySignature(
+    message: any,
+    address: any,
+    signature: any,
+    useTronHeader?: boolean
+  ): boolean;
   static verifyMessageV2(message: any, signature: any): any;
-  static verifyTypedData(domain: any, types: any, value: any, signature: any, address: any): boolean;
-  static signString(message: any, privateKey: any, useTronHeader?: boolean): string;
+  static verifyTypedData(
+    domain: any,
+    types: any,
+    value: any,
+    signature: any,
+    address: any
+  ): boolean;
+  static signString(
+    message: any,
+    privateKey: any,
+    useTronHeader?: boolean
+  ): string;
   static signMessageV2(message: any, privateKey: any): any;
-  static _signTypedData(domain: any, types: any, value: any, privateKey: any): any;
+  static _signTypedData(
+    domain: any,
+    types: any,
+    value: any,
+    privateKey: any
+  ): any;
   constructor(tronWeb?: boolean);
   tronWeb: true;
   injectPromise: any;
@@ -24,10 +44,30 @@ export default class Trx {
   getConfirmedTransaction(transactionID: any, callback?: boolean): any;
   getUnconfirmedTransactionInfo(transactionID: any, callback?: boolean): any;
   getTransactionInfo(transactionID: any, callback?: boolean): any;
-  _getTransactionInfoById(transactionID: any, options: any, callback?: boolean): any;
-  getTransactionsToAddress(address?: any, limit?: number, offset?: number, callback?: boolean): any;
-  getTransactionsFromAddress(address?: any, limit?: number, offset?: number, callback?: boolean): any;
-  getTransactionsRelated(address?: any, direction?: string, limit?: number, offset?: number, callback?: boolean): any;
+  _getTransactionInfoById(
+    transactionID: any,
+    options: any,
+    callback?: boolean
+  ): any;
+  getTransactionsToAddress(
+    address?: any,
+    limit?: number,
+    offset?: number,
+    callback?: boolean
+  ): any;
+  getTransactionsFromAddress(
+    address?: any,
+    limit?: number,
+    offset?: number,
+    callback?: boolean
+  ): any;
+  getTransactionsRelated(
+    address?: any,
+    direction?: string,
+    limit?: number,
+    offset?: number,
+    callback?: boolean
+  ): any;
   getAccount(address?: any, callback?: boolean): any;
   getAccountById(id?: boolean, callback?: boolean): any;
   getAccountInfoById(id: any, options: any, callback: any): void;
@@ -51,8 +91,20 @@ export default class Trx {
     useTronHeader?: boolean,
     callback?: boolean
   ): Promise<any>;
-  verifyMessageV2(message?: any, signature?: boolean, options?: {}, callback?: boolean): any;
-  verifyTypedData(domain: any, types: any, value: any, signature: any, address?: any, callback?: boolean): any;
+  verifyMessageV2(
+    message?: any,
+    signature?: boolean,
+    options?: {},
+    callback?: boolean
+  ): any;
+  verifyTypedData(
+    domain: any,
+    types: any,
+    value: any,
+    signature: any,
+    address?: any,
+    callback?: boolean
+  ): any;
   sign(
     transaction?: any,
     privateKey?: any,
@@ -68,15 +120,54 @@ export default class Trx {
    * @param {reserved} options
    * @param {callback function} callback
    */
-  signMessageV2(message: any, privateKey?: any, options?: {}, callback?: boolean): any;
-  _signTypedData(domain: any, types: any, value: any, privateKey?: any, callback?: boolean): any;
-  multiSign(transaction?: any, privateKey?: any, permissionId?: boolean, callback?: boolean): Promise<any>;
+  signMessageV2(
+    message: any,
+    privateKey?: any,
+    options?: {},
+    callback?: boolean
+  ): any;
+  _signTypedData(
+    domain: any,
+    types: any,
+    value: any,
+    privateKey?: any,
+    callback?: boolean
+  ): any;
+  multiSign(
+    transaction?: any,
+    privateKey?: any,
+    permissionId?: boolean,
+    callback?: boolean
+  ): Promise<any>;
   getApprovedList(transaction: any, callback?: boolean): Promise<any>;
-  getSignWeight(transaction: any, permissionId: any, callback?: boolean): Promise<any>;
-  sendRawTransaction(signedTransaction?: any, options?: {}, callback?: boolean): any;
-  sendHexTransaction(signedHexTransaction?: any, options?: {}, callback?: boolean): any;
-  sendTransaction(to?: any, amount?: boolean, options?: {}, callback?: boolean): Promise<any>;
-  sendToken(to?: any, amount?: boolean, tokenID?: boolean, options?: {}, callback?: boolean): Promise<any>;
+  getSignWeight(
+    transaction: any,
+    permissionId: any,
+    callback?: boolean
+  ): Promise<any>;
+  sendRawTransaction(
+    signedTransaction?: any,
+    options?: {},
+    callback?: boolean
+  ): any;
+  sendHexTransaction(
+    signedHexTransaction?: any,
+    options?: {},
+    callback?: boolean
+  ): any;
+  sendTransaction(
+    to?: any,
+    amount?: boolean,
+    options?: {},
+    callback?: boolean
+  ): Promise<any>;
+  sendToken(
+    to?: any,
+    amount?: boolean,
+    tokenID?: boolean,
+    options?: {},
+    callback?: boolean
+  ): Promise<any>;
   /**
    * Freezes an amount of TRX.
    * Will give bandwidth OR Energy and TRON Power(voting rights)
@@ -104,7 +195,12 @@ export default class Trx {
    * @param options
    * @param callback
    */
-  unfreezeBalance(resource?: string, options?: {}, receiverAddress?: any, callback?: boolean): Promise<any>;
+  unfreezeBalance(
+    resource?: string,
+    options?: {},
+    receiverAddress?: any,
+    callback?: boolean
+  ): Promise<any>;
   /**
    * Modify account name
    * Note: Username is allowed to edit only once.
@@ -115,7 +211,11 @@ export default class Trx {
    *
    * @return modified Transaction Object
    */
-  updateAccount(accountName?: boolean, options?: {}, callback?: boolean): Promise<any>;
+  updateAccount(
+    accountName?: boolean,
+    options?: {},
+    callback?: boolean
+  ): Promise<any>;
   signMessage(...args: any[]): Promise<any>;
   sendAsset(...args: any[]): Promise<any>;
   send(...args: any[]): Promise<any>;
@@ -203,7 +303,11 @@ export default class Trx {
   /**
    * Lists all network modification proposals.
    */
-  listExchangesPaginated(limit?: number, offset?: number, callback?: boolean): any;
+  listExchangesPaginated(
+    limit?: number,
+    offset?: number,
+    callback?: boolean
+  ): any;
   /**
    * Get info about thre node
    */
@@ -211,10 +315,18 @@ export default class Trx {
   getTokenListByName(tokenID?: boolean, callback?: boolean): any;
   getTokenByID(tokenID?: boolean, callback?: boolean): any;
   getReward(address: any, options?: {}, callback?: boolean): Promise<any>;
-  getUnconfirmedReward(address: any, options?: {}, callback?: boolean): Promise<any>;
+  getUnconfirmedReward(
+    address: any,
+    options?: {},
+    callback?: boolean
+  ): Promise<any>;
   getBrokerage(address: any, options?: {}, callback?: boolean): Promise<any>;
-  getUnconfirmedBrokerage(address: any, options?: {}, callback?: boolean): Promise<any>;
+  getUnconfirmedBrokerage(
+    address: any,
+    options?: {},
+    callback?: boolean
+  ): Promise<any>;
   _getReward(address: any, options: any, callback?: boolean): Promise<any>;
   _getBrokerage(address: any, options: any, callback?: boolean): Promise<any>;
 }
-import Validator from '../paramValidator';
+import Validator from "../paramValidator";

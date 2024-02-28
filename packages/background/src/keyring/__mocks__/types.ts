@@ -7,7 +7,7 @@ export type AddressesLedger = {
 };
 export type MultiKeyStoreInfoElem = Pick<
   KeyStore,
-  'version' | 'type' | 'meta' | 'bip44HDPath' | 'coinTypeForChain'
+  "version" | "type" | "meta" | "bip44HDPath" | "coinTypeForChain"
 >;
 export type MultiKeyStoreInfoWithSelectedElem = MultiKeyStoreInfoElem & {
   selected: boolean;
@@ -19,13 +19,14 @@ export enum KeyRingStatus {
   NOTLOADED,
   EMPTY,
   LOCKED,
-  UNLOCKED
+  UNLOCKED,
 }
 
-export const KeyStoreKey = 'key-store';
-export const KeyMultiStoreKey = 'key-multi-store';
+export const KeyStoreKey = "key-store";
+export const KeyMultiStoreKey = "key-multi-store";
 
-
-
-type PDFType = Record<'pbkdf2' | 'sha256' | 'scrypt', KeyStore>;
-export type TypeMockKeyStore = Record<'mnemonic' | 'ledger' | 'privateKey', PDFType>;
+type PDFType = Record<"pbkdf2" | "sha256" | "scrypt", KeyStore>;
+export type TypeMockKeyStore = Record<
+  "mnemonic" | "ledger" | "privateKey",
+  PDFType
+>;

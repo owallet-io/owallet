@@ -1,4 +1,4 @@
-declare module 'bip32-path' {
+declare module "bip32-path" {
   export class BipPath {
     validatePathArray(path: number[]): boolean;
     validateString(path: string): boolean;

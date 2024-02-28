@@ -1,15 +1,15 @@
-import { singleton, inject } from 'tsyringe';
-import { TYPES } from '../types';
+import { singleton, inject } from "tsyringe";
+import { TYPES } from "../types";
 
-import { InteractionWaitingData } from './types';
+import { InteractionWaitingData } from "./types";
 import {
   Env,
   FnRequestInteractionOptions,
   MessageRequester,
-  OWalletError
-} from '@owallet/router';
-import { PushEventDataMsg, PushInteractionDataMsg } from './foreground';
-import { RNG } from '@owallet/crypto';
+  OWalletError,
+} from "@owallet/router";
+import { PushEventDataMsg, PushInteractionDataMsg } from "./foreground";
+import { RNG } from "@owallet/crypto";
 
 @singleton()
 export class InteractionService {
@@ -29,15 +29,15 @@ export class InteractionService {
   // And, don't ensure that the event is delivered successfully, just ignore the any errors.
   dispatchEvent(port: string, type: string, data: unknown) {
     if (!type) {
-      throw new Error('Type should not be empty');
+      throw new Error("Type should not be empty");
     }
 
     const msg = new PushEventDataMsg({
       type,
-      data
+      data,
     });
 
-    this.eventMsgRequester.sendMessage(port, msg).catch(e => {
+    this.eventMsgRequester.sendMessage(port, msg).catch((e) => {
       console.log(`Failed to send the event to ${port}: ${e.message}`);
     });
   }
@@ -50,7 +50,7 @@ export class InteractionService {
     options?: FnRequestInteractionOptions
   ): Promise<unknown> {
     if (!type) {
-      throw new OWalletError('interaction', 101, 'Type should not be empty');
+      throw new OWalletError("interaction", 101, "Type should not be empty");
     }
 
     // TODO: Add timeout?
@@ -59,9 +59,8 @@ export class InteractionService {
       env.isInternalMsg,
       data
     );
-    
+
     const msg = new PushInteractionDataMsg(interactionWaitingData);
-    
 
     return await this.wait(msg.data.id, () => {
       env.requestInteraction(url, msg, options);
@@ -70,13 +69,13 @@ export class InteractionService {
 
   protected async wait(id: string, fn: () => void): Promise<unknown> {
     if (this.resolverMap.has(id)) {
-      throw new OWalletError('interaction', 100, 'Id is aleady in use');
+      throw new OWalletError("interaction", 100, "Id is aleady in use");
     }
 
     return new Promise<unknown>((resolve, reject) => {
       this.resolverMap.set(id, {
         onApprove: resolve,
-        onReject: reject
+        onReject: reject,
       });
       fn();
     });
@@ -95,7 +94,7 @@ export class InteractionService {
   reject(id: string) {
     if (this.resolverMap.has(id)) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      this.resolverMap.get(id)!.onReject(new Error('Request rejected'));
+      this.resolverMap.get(id)!.onReject(new Error("Request rejected"));
       this.resolverMap.delete(id);
     }
 
@@ -109,20 +108,20 @@ export class InteractionService {
   ): Promise<InteractionWaitingData> {
     const bytes = new Uint8Array(8);
     const id: string = Array.from(await this.rng(bytes))
-      .map(value => {
+      .map((value) => {
         return value.toString(16);
       })
-      .join('');
+      .join("");
 
     const interactionWaitingData: InteractionWaitingData = {
       id,
       type,
       isInternal,
-      data
+      data,
     };
 
     if (this.waitingMap.has(id)) {
-      throw new OWalletError('interaction', 100, 'Id is aleady in use');
+      throw new OWalletError("interaction", 100, "Id is aleady in use");
     }
 
     this.waitingMap.set(id, interactionWaitingData);

@@ -1,12 +1,12 @@
 import {
   ObservableChainQuery,
-  ObservableChainQueryMap
-} from '../../chain-query';
-import { KVStore } from '@owallet/common';
-import { ChainGetter } from '../../../common';
-import { AuthAccount } from './types';
-import { computed, makeObservable } from 'mobx';
-import { BaseAccount } from '@owallet/cosmos';
+  ObservableChainQueryMap,
+} from "../../chain-query";
+import { KVStore } from "@owallet/common";
+import { ChainGetter } from "../../../common";
+import { AuthAccount } from "./types";
+import { computed, makeObservable } from "mobx";
+import { BaseAccount } from "@owallet/cosmos";
 
 export class ObservableQueryAccountInner extends ObservableChainQuery<AuthAccount> {
   constructor(
@@ -15,7 +15,12 @@ export class ObservableQueryAccountInner extends ObservableChainQuery<AuthAccoun
     chainGetter: ChainGetter,
     protected readonly bech32Address: string
   ) {
-    super(kvStore, chainId, chainGetter, `/cosmos/auth/v1beta1/accounts/${bech32Address}`);
+    super(
+      kvStore,
+      chainId,
+      chainGetter,
+      `/cosmos/auth/v1beta1/accounts/${bech32Address}`
+    );
 
     makeObservable(this);
   }
@@ -23,7 +28,7 @@ export class ObservableQueryAccountInner extends ObservableChainQuery<AuthAccoun
   @computed
   get sequence(): string {
     if (!this.response) {
-      return '0';
+      return "0";
     }
 
     try {
@@ -33,7 +38,7 @@ export class ObservableQueryAccountInner extends ObservableChainQuery<AuthAccoun
       );
       return account.getSequence().toString();
     } catch {
-      return '0';
+      return "0";
     }
   }
 }

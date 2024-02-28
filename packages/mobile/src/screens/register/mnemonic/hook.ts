@@ -1,30 +1,30 @@
-import { action, flow, makeObservable, observable } from 'mobx';
-import { RegisterConfig } from '@owallet/hooks';
-import { useState } from 'react';
-import { toGenerator } from '@owallet/common';
+import { action, flow, makeObservable, observable } from "mobx";
+import { RegisterConfig } from "@owallet/hooks";
+import { useState } from "react";
+import { toGenerator } from "@owallet/common";
 
-export type NewMnemonicMode = 'generate' | 'verify';
+export type NewMnemonicMode = "generate" | "verify";
 
 export enum NumWords {
   WORDS12,
-  WORDS24
+  WORDS24,
 }
 
 export class NewMnemonicConfig {
   @observable
-  protected _mode: NewMnemonicMode = 'generate';
+  protected _mode: NewMnemonicMode = "generate";
 
   @observable
   protected _numWords: NumWords = NumWords.WORDS12;
 
   @observable
-  protected _mnemonic: string = '';
+  protected _mnemonic: string = "";
 
   @observable
-  protected _name: string = '';
+  protected _name: string = "";
 
   @observable
-  protected _password: string = '';
+  protected _password: string = "";
 
   constructor(protected readonly registerConfig: RegisterConfig) {
     makeObservable(this);

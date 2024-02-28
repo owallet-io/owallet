@@ -1,13 +1,13 @@
 import {
   openTransportReplayer,
-  RecordStore
-} from '@ledgerhq/hw-transport-mocker';
-import CosmosApp from '@ledgerhq/hw-app-cosmos';
-import EthApp from '@ledgerhq/hw-app-eth';
-import TrxApp from '@ledgerhq/hw-app-trx';
+  RecordStore,
+} from "@ledgerhq/hw-transport-mocker";
+import CosmosApp from "@ledgerhq/hw-app-cosmos";
+import EthApp from "@ledgerhq/hw-app-eth";
+import TrxApp from "@ledgerhq/hw-app-trx";
 
-describe('Test ledger app', () => {
-  it('test ledger app cosmos type', async () => {
+describe("Test ledger app", () => {
+  it("test ledger app cosmos type", async () => {
     // const cosmosApp = new CosmosApp(
     //   await openTransportReplayer(
     //     // second is public key return

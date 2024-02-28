@@ -1,9 +1,9 @@
-import { Message } from '@owallet/router';
-import { ROUTE } from './constants';
+import { Message } from "@owallet/router";
+import { ROUTE } from "./constants";
 
 export class SetPersistentMemoryMsg extends Message<{ success: boolean }> {
   public static type() {
-    return 'set-persistent-memory';
+    return "set-persistent-memory";
   }
 
   constructor(public readonly data: any) {
@@ -24,7 +24,7 @@ export class SetPersistentMemoryMsg extends Message<{ success: boolean }> {
 
 export class GetPersistentMemoryMsg extends Message<any> {
   public static type() {
-    return 'get-persistent-memory';
+    return "get-persistent-memory";
   }
 
   constructor() {

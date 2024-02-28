@@ -1,28 +1,28 @@
-import { action, flow, makeObservable, observable } from 'mobx';
-import { rawEncode, rawDecode } from 'ethereumjs-abi';
-import Axios, { AxiosInstance } from 'axios';
-import { toGenerator } from '@owallet/common';
+import { action, flow, makeObservable, observable } from "mobx";
+import { rawEncode, rawDecode } from "ethereumjs-abi";
+import Axios, { AxiosInstance } from "axios";
+import { toGenerator } from "@owallet/common";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import { hash as nameHash } from '@ensdomains/eth-ens-namehash';
+import { hash as nameHash } from "@ensdomains/eth-ens-namehash";
 
 export class ObservableEnsFetcher {
   static isValidENS(name: string): boolean {
-    const strs = name.split('.');
+    const strs = name.split(".");
     if (strs.length <= 1) {
       return false;
     }
 
     const tld = strs[strs.length - 1];
     // TODO: What if more top level domain is added?
-    return tld === 'eth' || tld === 'xyz' || tld === 'luxe' || tld === 'kred';
+    return tld === "eth" || tld === "xyz" || tld === "luxe" || tld === "kred";
   }
 
   @observable
   protected _isFetching = false;
 
   @observable
-  protected _name: string = '';
+  protected _name: string = "";
 
   @observable
   protected _coinType: number | undefined = undefined;
@@ -35,7 +35,7 @@ export class ObservableEnsFetcher {
 
   constructor(
     public readonly endpoint: string,
-    public readonly ensRegistryContract: string = '0x00000000000c2e074ec69a0dfb2997ba6c7d2e1e'
+    public readonly ensRegistryContract: string = "0x00000000000c2e074ec69a0dfb2997ba6c7d2e1e"
   ) {
     makeObservable(this);
   }
@@ -78,24 +78,24 @@ export class ObservableEnsFetcher {
     node: string
   ): Promise<string> {
     const result = await instance.post<{
-      jsonrpc: '2.0';
+      jsonrpc: "2.0";
       result?: string;
       id: string;
       error?: {
         code?: number;
         message?: string;
       };
-    }>('', {
-      jsonrpc: '2.0',
-      id: '1',
-      method: 'eth_call',
+    }>("", {
+      jsonrpc: "2.0",
+      id: "1",
+      method: "eth_call",
       params: [
         {
           to: this.ensRegistryContract,
-          data: rawEncode(['bytes32'], [node])
+          data: rawEncode(["bytes32"], [node]),
         },
-        'latest'
-      ]
+        "latest",
+      ],
     });
 
     if (result.data.error && result.data.error.message) {
@@ -103,12 +103,12 @@ export class ObservableEnsFetcher {
     }
 
     if (!result.data.result) {
-      throw new Error('Unknown error');
+      throw new Error("Unknown error");
     }
 
     return rawDecode(
-      ['address'],
-      Buffer.from(result.data.result.slice(2), 'hex')
+      ["address"],
+      Buffer.from(result.data.result.slice(2), "hex")
     )[0];
   }
 
@@ -119,24 +119,24 @@ export class ObservableEnsFetcher {
     coinType: number
   ): Promise<string> {
     const result = await instance.post<{
-      jsonrpc: '2.0';
+      jsonrpc: "2.0";
       result?: string;
       id: string;
       error?: {
         code?: number;
         message?: string;
       };
-    }>('', {
-      jsonrpc: '2.0',
-      id: '1',
-      method: 'eth_call',
+    }>("", {
+      jsonrpc: "2.0",
+      id: "1",
+      method: "eth_call",
       params: [
         {
           to: resolver,
-          data: rawEncode(['bytes32', 'uint256'], [node, coinType])
+          data: rawEncode(["bytes32", "uint256"], [node, coinType]),
         },
-        'latest'
-      ]
+        "latest",
+      ],
     });
 
     if (result.data.error && result.data.error.message) {
@@ -144,12 +144,12 @@ export class ObservableEnsFetcher {
     }
 
     if (!result.data.result) {
-      throw new Error('Unknown error');
+      throw new Error("Unknown error");
     }
 
     return rawDecode(
-      ['bytes'],
-      Buffer.from(result.data.result.slice(2), 'hex')
+      ["bytes"],
+      Buffer.from(result.data.result.slice(2), "hex")
     )[0];
   }
 
@@ -160,8 +160,8 @@ export class ObservableEnsFetcher {
     try {
       const instance = Axios.create({
         ...{
-          baseURL: this.endpoint
-        }
+          baseURL: this.endpoint,
+        },
       });
 
       const node = nameHash(name);
@@ -174,7 +174,7 @@ export class ObservableEnsFetcher {
         this.fetchAddrFromResolver(instance, resolver, node, coinType)
       );
 
-      this._address = Buffer.from(addr.replace('0x', ''), 'hex');
+      this._address = Buffer.from(addr.replace("0x", ""), "hex");
       this._error = undefined;
     } catch (e) {
       this._error = e;

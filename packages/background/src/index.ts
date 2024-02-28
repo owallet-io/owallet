@@ -1,38 +1,38 @@
-import 'reflect-metadata';
+import "reflect-metadata";
 
-import { container } from 'tsyringe';
-import { TYPES } from './types';
+import { container } from "tsyringe";
+import { TYPES } from "./types";
 
-import { MessageRequester, Router } from '@owallet/router';
+import { MessageRequester, Router } from "@owallet/router";
 
-import * as PersistentMemory from './persistent-memory/internal';
-import * as Chains from './chains/internal';
-import * as Ledger from './ledger/internal';
-import * as KeyRing from './keyring/internal';
-import * as SecretWasm from './secret-wasm/internal';
-import * as BackgroundTx from './tx/internal';
-import * as Updater from './updater/internal';
-import * as Tokens from './tokens/internal';
-import * as Interaction from './interaction/internal';
-import * as Permission from './permission/internal';
+import * as PersistentMemory from "./persistent-memory/internal";
+import * as Chains from "./chains/internal";
+import * as Ledger from "./ledger/internal";
+import * as KeyRing from "./keyring/internal";
+import * as SecretWasm from "./secret-wasm/internal";
+import * as BackgroundTx from "./tx/internal";
+import * as Updater from "./updater/internal";
+import * as Tokens from "./tokens/internal";
+import * as Interaction from "./interaction/internal";
+import * as Permission from "./permission/internal";
 
-export * from './persistent-memory';
-export * from './chains';
-export * from './ledger';
-export * from './keyring';
-export * from './secret-wasm';
-export * from './tx';
-export * from './updater';
-export * from './tokens';
-export * from './interaction';
-export * from './permission';
+export * from "./persistent-memory";
+export * from "./chains";
+export * from "./ledger";
+export * from "./keyring";
+export * from "./secret-wasm";
+export * from "./tx";
+export * from "./updater";
+export * from "./tokens";
+export * from "./interaction";
+export * from "./permission";
 
-import { KVStore } from '@owallet/common';
-import { ChainInfo } from '@owallet/types';
-import { RNG } from '@owallet/crypto';
-import { CommonCrypto } from './keyring';
-import { Notification } from './tx';
-import { LedgerOptions, TransportIniter } from './ledger/options';
+import { KVStore } from "@owallet/common";
+import { ChainInfo } from "@owallet/types";
+import { RNG } from "@owallet/crypto";
+import { CommonCrypto } from "./keyring";
+import { Notification } from "./tx";
+import { LedgerOptions, TransportIniter } from "./ledger/options";
 
 export { TransportIniter };
 
@@ -50,41 +50,41 @@ export function init(
   ledgerOptions: Partial<LedgerOptions> = {}
 ) {
   container.register(TYPES.ChainsEmbedChainInfos, {
-    useValue: embedChainInfos
+    useValue: embedChainInfos,
   });
 
   container.register(TYPES.EventMsgRequester, {
-    useValue: eventMsgRequester
+    useValue: eventMsgRequester,
   });
   container.register(TYPES.RNG, { useValue: rng });
   container.register(TYPES.CommonCrypto, { useValue: commonCrypto });
   container.register(TYPES.Notification, { useValue: notification });
 
-  container.register(TYPES.ChainsStore, { useValue: storeCreator('chains') });
+  container.register(TYPES.ChainsStore, { useValue: storeCreator("chains") });
   container.register(TYPES.InteractionStore, {
-    useValue: storeCreator('interaction')
+    useValue: storeCreator("interaction"),
   });
-  container.register(TYPES.KeyRingStore, { useValue: storeCreator('keyring') });
-  container.register(TYPES.LedgerStore, { useValue: storeCreator('ledger') });
+  container.register(TYPES.KeyRingStore, { useValue: storeCreator("keyring") });
+  container.register(TYPES.LedgerStore, { useValue: storeCreator("ledger") });
   container.register(TYPES.LedgerOptions, { useValue: ledgerOptions });
 
   container.register(TYPES.PermissionStore, {
-    useValue: storeCreator('permission')
+    useValue: storeCreator("permission"),
   });
   container.register(TYPES.PermissionServicePrivilegedOrigins, {
-    useValue: privilegedOrigins
+    useValue: privilegedOrigins,
   });
   container.register(TYPES.PersistentMemoryStore, {
-    useValue: storeCreator('persistent-memory')
+    useValue: storeCreator("persistent-memory"),
   });
   container.register(TYPES.SecretWasmStore, {
-    useValue: storeCreator('secretwasm')
+    useValue: storeCreator("secretwasm"),
   });
-  container.register(TYPES.TokensStore, { useValue: storeCreator('tokens') });
+  container.register(TYPES.TokensStore, { useValue: storeCreator("tokens") });
   container.register(TYPES.TxStore, {
-    useValue: storeCreator('background-tx')
+    useValue: storeCreator("background-tx"),
   });
-  container.register(TYPES.UpdaterStore, { useValue: storeCreator('updator') });
+  container.register(TYPES.UpdaterStore, { useValue: storeCreator("updator") });
 
   const interactionService = container.resolve(Interaction.InteractionService);
   Interaction.init(router, interactionService);

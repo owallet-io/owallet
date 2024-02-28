@@ -1,4 +1,4 @@
-import { Router, MessageRequester, BACKGROUND_PORT } from '@owallet/router';
+import { Router, MessageRequester, BACKGROUND_PORT } from "@owallet/router";
 import {
   InteractionForegroundHandler,
   interactionForegroundInit,
@@ -6,7 +6,7 @@ import {
   InteractionWaitingData,
   ApproveInteractionMsg,
   RejectInteractionMsg,
-} from '@owallet/background';
+} from "@owallet/background";
 import {
   action,
   observable,
@@ -14,7 +14,7 @@ import {
   makeObservable,
   flow,
   toJS,
-} from 'mobx';
+} from "mobx";
 
 export class InteractionStore implements InteractionForegroundHandler {
   @observable.shallow
@@ -23,7 +23,7 @@ export class InteractionStore implements InteractionForegroundHandler {
   @observable.shallow
   protected events: Map<
     string,
-    Omit<InteractionWaitingData, 'id' | 'isInternal'>[]
+    Omit<InteractionWaitingData, "id" | "isInternal">[]
   > = new Map();
 
   constructor(
@@ -42,12 +42,12 @@ export class InteractionStore implements InteractionForegroundHandler {
 
   getEvents<T = unknown>(
     type: string
-  ): Omit<InteractionWaitingData<T>, 'id' | 'isInternal'>[] {
+  ): Omit<InteractionWaitingData<T>, "id" | "isInternal">[] {
     return (
       toJS(
         this.events.get(type) as Omit<
           InteractionWaitingData<T>,
-          'id' | 'isInternal'
+          "id" | "isInternal"
         >[]
       ) ?? []
     );
@@ -69,7 +69,7 @@ export class InteractionStore implements InteractionForegroundHandler {
   }
 
   @action
-  onEventDataReceived(data: Omit<InteractionWaitingData, 'id' | 'isInternal'>) {
+  onEventDataReceived(data: Omit<InteractionWaitingData, "id" | "isInternal">) {
     if (!this.events.has(data.type)) {
       this.events.set(
         data.type,

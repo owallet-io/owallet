@@ -4,29 +4,39 @@ import {
   chainInfos as customChainInfos,
   OsmoToken,
   AtomToken,
-  InjectiveToken
-} from '@oraichain/oraidex-common';
-const OraiIcon = 'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png';
-const OraiLightIcon = 'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png';
-const AtomIcon = 'https://s2.coinmarketcap.com/static/img/coins/64x64/3794.png';
-const AiriIcon = 'https://i.ibb.co/m8mCyMr/airi.png';
-const UsdtIcon = 'https://s2.coinmarketcap.com/static/img/coins/64x64/825.png';
-const KwtIcon = 'https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png';
-const OsmoLightIcon = 'https://assets.coingecko.com/coins/images/16724/large/osmo.png?1632763885';
-const OsmoIcon = 'https://assets.coingecko.com/coins/images/16724/large/osmo.png?1632763885';
-const UsdcIcon = 'https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png';
-const ScOraiIcon = 'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png';
-const OraixIcon = 'https://assets.coingecko.com/coins/images/28104/standard/oraix.png?1696527113';
-const MilkyIcon = 'https://s2.coinmarketcap.com/static/img/coins/64x64/14418.png';
-const TronIcon = 'https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png';
-const ScAtomIcon = 'https://s2.coinmarketcap.com/static/img/coins/64x64/3794.png';
-const EthIcon = 'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png';
-const BnbIcon = 'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png';
-const InjIcon = 'https://s2.coinmarketcap.com/static/img/coins/64x64/7226.png';
-const OraixLightIcon = 'https://assets.coingecko.com/coins/images/28104/standard/oraix.png?1696527113';
-const NobleIcon = 'https://raw.githubusercontent.com/cosmos/chain-registry/master/noble/images/stake.png';
-const NeutaroIcon = 'https://asset.brandfetch.io/idKrUw6EdO/ids9m0Bt_7.png';
-const OChIcon = 'https://assets.coingecko.com/coins/images/34236/standard/orchai_logo_white_copy_4x-8_%281%29.png';
+  InjectiveToken,
+} from "@oraichain/oraidex-common";
+const OraiIcon = "https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png";
+const OraiLightIcon =
+  "https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png";
+const AtomIcon = "https://s2.coinmarketcap.com/static/img/coins/64x64/3794.png";
+const AiriIcon = "https://i.ibb.co/m8mCyMr/airi.png";
+const UsdtIcon = "https://s2.coinmarketcap.com/static/img/coins/64x64/825.png";
+const KwtIcon = "https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png";
+const OsmoLightIcon =
+  "https://assets.coingecko.com/coins/images/16724/large/osmo.png?1632763885";
+const OsmoIcon =
+  "https://assets.coingecko.com/coins/images/16724/large/osmo.png?1632763885";
+const UsdcIcon = "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png";
+const ScOraiIcon =
+  "https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png";
+const OraixIcon =
+  "https://assets.coingecko.com/coins/images/28104/standard/oraix.png?1696527113";
+const MilkyIcon =
+  "https://s2.coinmarketcap.com/static/img/coins/64x64/14418.png";
+const TronIcon = "https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png";
+const ScAtomIcon =
+  "https://s2.coinmarketcap.com/static/img/coins/64x64/3794.png";
+const EthIcon = "https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png";
+const BnbIcon = "https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png";
+const InjIcon = "https://s2.coinmarketcap.com/static/img/coins/64x64/7226.png";
+const OraixLightIcon =
+  "https://assets.coingecko.com/coins/images/28104/standard/oraix.png?1696527113";
+const NobleIcon =
+  "https://raw.githubusercontent.com/cosmos/chain-registry/master/noble/images/stake.png";
+const NeutaroIcon = "https://asset.brandfetch.io/idKrUw6EdO/ids9m0Bt_7.png";
+const OChIcon =
+  "https://assets.coingecko.com/coins/images/34236/standard/orchai_logo_white_copy_4x-8_%281%29.png";
 import {
   AIRI_BSC_CONTRACT,
   AIRI_CONTRACT,
@@ -66,236 +76,240 @@ import {
   WETH_CONTRACT,
   OCH_CONTRACT,
   OCH_ETH_CONTRACT,
-  BTC_CONTRACT
-} from '@oraichain/oraidex-common';
-import { BridgeAppCurrency, CustomChainInfo, defaultBech32Config } from '@oraichain/oraidex-common';
-import { flatten } from 'lodash';
+  BTC_CONTRACT,
+} from "@oraichain/oraidex-common";
+import {
+  BridgeAppCurrency,
+  CustomChainInfo,
+  defaultBech32Config,
+} from "@oraichain/oraidex-common";
+import { flatten } from "lodash";
 
 const [otherChainTokens, oraichainTokens] = tokens;
-type TokenIcon = Pick<TokenItemType, 'coinGeckoId' | 'Icon' | 'IconLight'>;
-type ChainIcon = Pick<CustomChainInfo, 'chainId' | 'Icon' | 'IconLight'>;
+type TokenIcon = Pick<TokenItemType, "coinGeckoId" | "Icon" | "IconLight">;
+type ChainIcon = Pick<CustomChainInfo, "chainId" | "Icon" | "IconLight">;
 
 export const tokensIcon: TokenIcon[] = [
   {
-    coinGeckoId: 'oraichain-token',
+    coinGeckoId: "oraichain-token",
     Icon: OraiIcon,
-    IconLight: OraiLightIcon
+    IconLight: OraiLightIcon,
   },
   {
-    coinGeckoId: 'usd-coin',
+    coinGeckoId: "usd-coin",
     Icon: UsdcIcon,
-    IconLight: UsdcIcon
+    IconLight: UsdcIcon,
   },
   {
-    coinGeckoId: 'airight',
+    coinGeckoId: "airight",
     Icon: AiriIcon,
-    IconLight: AiriIcon
+    IconLight: AiriIcon,
   },
   {
-    coinGeckoId: 'tether',
+    coinGeckoId: "tether",
     Icon: UsdtIcon,
-    IconLight: UsdtIcon
+    IconLight: UsdtIcon,
   },
   {
-    coinGeckoId: 'tron',
+    coinGeckoId: "tron",
     Icon: TronIcon,
-    IconLight: TronIcon
+    IconLight: TronIcon,
   },
   {
-    coinGeckoId: 'kawaii-islands',
+    coinGeckoId: "kawaii-islands",
     Icon: KwtIcon,
-    IconLight: KwtIcon
+    IconLight: KwtIcon,
   },
   {
-    coinGeckoId: 'milky-token',
+    coinGeckoId: "milky-token",
     Icon: MilkyIcon,
-    IconLight: MilkyIcon
+    IconLight: MilkyIcon,
   },
   {
-    coinGeckoId: 'osmosis',
+    coinGeckoId: "osmosis",
     Icon: OsmoIcon,
-    IconLight: OsmoLightIcon
+    IconLight: OsmoLightIcon,
   },
   {
-    coinGeckoId: 'injective-protocol',
+    coinGeckoId: "injective-protocol",
     Icon: InjIcon,
-    IconLight: InjIcon
+    IconLight: InjIcon,
   },
   {
-    coinGeckoId: 'cosmos',
+    coinGeckoId: "cosmos",
     Icon: AtomIcon,
-    IconLight: AtomIcon
+    IconLight: AtomIcon,
   },
   {
-    coinGeckoId: 'weth',
+    coinGeckoId: "weth",
     Icon: EthIcon,
-    IconLight: EthIcon
+    IconLight: EthIcon,
   },
   {
-    coinGeckoId: 'ethereum',
+    coinGeckoId: "ethereum",
     Icon: EthIcon,
-    IconLight: EthIcon
+    IconLight: EthIcon,
   },
   {
-    coinGeckoId: 'wbnb',
+    coinGeckoId: "wbnb",
     Icon: BnbIcon,
-    IconLight: BnbIcon
+    IconLight: BnbIcon,
   },
   {
-    coinGeckoId: 'binancecoin',
+    coinGeckoId: "binancecoin",
     Icon: BnbIcon,
-    IconLight: BnbIcon
+    IconLight: BnbIcon,
   },
   {
-    coinGeckoId: 'oraidex',
+    coinGeckoId: "oraidex",
     Icon: OraixIcon,
-    IconLight: OraixLightIcon
+    IconLight: OraixLightIcon,
   },
   {
-    coinGeckoId: 'scorai',
+    coinGeckoId: "scorai",
     Icon: ScOraiIcon,
-    IconLight: ScOraiIcon
+    IconLight: ScOraiIcon,
   },
   {
-    coinGeckoId: 'scatom',
+    coinGeckoId: "scatom",
     Icon: ScAtomIcon,
-    IconLight: ScAtomIcon
+    IconLight: ScAtomIcon,
   },
   {
-    coinGeckoId: 'neutaro',
+    coinGeckoId: "neutaro",
     Icon: NeutaroIcon,
-    IconLight: NeutaroIcon
+    IconLight: NeutaroIcon,
   },
   {
-    coinGeckoId: 'och',
+    coinGeckoId: "och",
     Icon: OChIcon,
-    IconLight: OChIcon
-  }
+    IconLight: OChIcon,
+  },
 ];
 
 export const chainIcons: ChainIcon[] = [
   {
-    chainId: 'Oraichain',
+    chainId: "Oraichain",
     Icon: OraiIcon,
-    IconLight: OraiLightIcon
+    IconLight: OraiLightIcon,
   },
   {
-    chainId: 'kawaii_6886-1',
+    chainId: "kawaii_6886-1",
     Icon: KwtIcon,
-    IconLight: KwtIcon
+    IconLight: KwtIcon,
   },
   {
-    chainId: 'osmosis-1',
+    chainId: "osmosis-1",
     Icon: OsmoIcon,
-    IconLight: OsmoLightIcon
+    IconLight: OsmoLightIcon,
   },
   {
-    chainId: 'injective-1',
+    chainId: "injective-1",
     Icon: InjIcon,
-    IconLight: InjIcon
+    IconLight: InjIcon,
   },
   {
-    chainId: 'cosmoshub-4',
+    chainId: "cosmoshub-4",
     Icon: AtomIcon,
-    IconLight: AtomIcon
+    IconLight: AtomIcon,
   },
   {
-    chainId: '0x01',
+    chainId: "0x01",
     Icon: EthIcon,
-    IconLight: EthIcon
+    IconLight: EthIcon,
   },
   {
-    chainId: '0x2b6653dc',
+    chainId: "0x2b6653dc",
     Icon: TronIcon,
-    IconLight: TronIcon
+    IconLight: TronIcon,
   },
   {
-    chainId: '0x38',
+    chainId: "0x38",
     Icon: BnbIcon,
-    IconLight: BnbIcon
+    IconLight: BnbIcon,
   },
   {
-    chainId: '0x1ae6',
+    chainId: "0x1ae6",
     Icon: KwtIcon,
-    IconLight: KwtIcon
+    IconLight: KwtIcon,
   },
   {
-    chainId: 'noble-1',
+    chainId: "noble-1",
     Icon: NobleIcon,
-    IconLight: NobleIcon
+    IconLight: NobleIcon,
   },
   {
-    chainId: 'Neutaro-1',
+    chainId: "Neutaro-1",
     Icon: NeutaroIcon,
-    IconLight: NeutaroIcon
-  }
+    IconLight: NeutaroIcon,
+  },
 ];
 
 export const OraiToken: BridgeAppCurrency = {
-  coinDenom: 'ORAI',
-  coinMinimalDenom: 'orai',
+  coinDenom: "ORAI",
+  coinMinimalDenom: "orai",
   coinDecimals: 6,
-  coinGeckoId: 'oraichain-token',
+  coinGeckoId: "oraichain-token",
   Icon: OraiIcon,
   IconLight: OraiLightIcon,
-  bridgeTo: ['0x38', '0x01', 'injective-1'],
+  bridgeTo: ["0x38", "0x01", "injective-1"],
   gasPriceStep: {
     low: 0.003,
     average: 0.005,
-    high: 0.007
-  }
+    high: 0.007,
+  },
 };
 
 const OraiBToken: BridgeAppCurrency = {
-  coinDenom: 'ORAIB',
-  coinMinimalDenom: 'uoraib',
+  coinDenom: "ORAIB",
+  coinMinimalDenom: "uoraib",
   coinDecimals: 6,
   gasPriceStep: {
     low: 0,
     average: 0,
-    high: 0
-  }
+    high: 0,
+  },
 };
 
 const KawaiiToken: BridgeAppCurrency = {
-  coinDenom: 'ORAIE',
-  coinMinimalDenom: 'oraie',
+  coinDenom: "ORAIE",
+  coinMinimalDenom: "oraie",
   coinDecimals: 18,
-  coinGeckoId: 'kawaii-islands',
+  coinGeckoId: "kawaii-islands",
   Icon: KwtIcon,
   gasPriceStep: {
     low: 0,
     average: 0.000025,
-    high: 0.00004
-  }
+    high: 0.00004,
+  },
 };
 
 export const oraichainNetwork: CustomChainInfo = {
-  rpc: 'https://rpc.orai.io',
-  rest: 'https://lcd.orai.io',
-  chainId: 'Oraichain',
-  chainName: 'Oraichain',
-  networkType: 'cosmos',
+  rpc: "https://rpc.orai.io",
+  rest: "https://lcd.orai.io",
+  chainId: "Oraichain",
+  chainName: "Oraichain",
+  networkType: "cosmos",
   stakeCurrency: OraiToken,
   bip44: {
-    coinType: 118
+    coinType: 118,
   },
-  bech32Config: defaultBech32Config('orai'),
+  bech32Config: defaultBech32Config("orai"),
   feeCurrencies: [OraiToken],
 
   Icon: OraiIcon,
   IconLight: OraiLightIcon,
-  features: ['ibc-transfer', 'cosmwasm', 'wasmd_0.24+'],
+  features: ["ibc-transfer", "cosmwasm", "wasmd_0.24+"],
   currencies: [
     OraiToken,
     {
-      coinDenom: 'ATOM',
-      coinGeckoId: 'cosmos',
+      coinDenom: "ATOM",
+      coinGeckoId: "cosmos",
       coinMinimalDenom: ATOM_ORAICHAIN_DENOM,
-      bridgeTo: ['cosmoshub-4'],
+      bridgeTo: ["cosmoshub-4"],
       coinDecimals: 6,
       Icon: AtomIcon,
-      IconLight: AtomIcon
+      IconLight: AtomIcon,
     },
     // {
     //   coinDenom: 'BEP20 AIRI',
@@ -305,156 +319,160 @@ export const oraichainNetwork: CustomChainInfo = {
     //   Icon: AiriIcon
     // },
     {
-      coinDenom: 'AIRI',
-      coinGeckoId: 'airight',
-      coinMinimalDenom: 'airi',
-      type: 'cw20',
+      coinDenom: "AIRI",
+      coinGeckoId: "airight",
+      coinMinimalDenom: "airi",
+      type: "cw20",
       contractAddress: AIRI_CONTRACT,
-      bridgeTo: ['0x38'],
+      bridgeTo: ["0x38"],
       coinDecimals: 6,
-      Icon: AiriIcon
+      Icon: AiriIcon,
     },
     {
-      coinDenom: 'USDT',
-      coinGeckoId: 'tether',
-      coinMinimalDenom: 'usdt',
-      type: 'cw20',
+      coinDenom: "USDT",
+      coinGeckoId: "tether",
+      coinMinimalDenom: "usdt",
+      type: "cw20",
       contractAddress: USDT_CONTRACT,
-      bridgeTo: ['0x38', '0x2b6653dc', '0x01'],
+      bridgeTo: ["0x38", "0x2b6653dc", "0x01"],
       coinDecimals: 6,
-      Icon: UsdtIcon
+      Icon: UsdtIcon,
     },
     {
-      coinDenom: 'USDC',
-      coinGeckoId: 'usd-coin',
-      coinMinimalDenom: 'usdc',
-      type: 'cw20',
+      coinDenom: "USDC",
+      coinGeckoId: "usd-coin",
+      coinMinimalDenom: "usdc",
+      type: "cw20",
       contractAddress: USDC_CONTRACT,
-      bridgeTo: ['0x01', 'noble-1'],
+      bridgeTo: ["0x01", "noble-1"],
       coinDecimals: 6,
-      Icon: UsdcIcon
+      Icon: UsdcIcon,
     },
     {
-      coinDenom: 'OSMO',
+      coinDenom: "OSMO",
       coinMinimalDenom: OSMOSIS_ORAICHAIN_DENOM,
       coinDecimals: 6,
-      coinGeckoId: 'osmosis',
-      bridgeTo: ['osmosis-1'],
+      coinGeckoId: "osmosis",
+      bridgeTo: ["osmosis-1"],
       Icon: OsmoIcon,
-      IconLight: OsmoLightIcon
+      IconLight: OsmoLightIcon,
     },
     {
-      coinDenom: 'BEP20 KWT',
-      coinGeckoId: 'kawaii-islands',
+      coinDenom: "BEP20 KWT",
+      coinGeckoId: "kawaii-islands",
       coinMinimalDenom: KWTBSC_ORAICHAIN_DENOM,
       coinDecimals: 18,
-      Icon: KwtIcon
+      Icon: KwtIcon,
     },
     {
-      coinDenom: 'KWT',
-      coinGeckoId: 'kawaii-islands',
-      coinMinimalDenom: 'kwt',
-      type: 'cw20',
+      coinDenom: "KWT",
+      coinGeckoId: "kawaii-islands",
+      coinMinimalDenom: "kwt",
+      type: "cw20",
       contractAddress: KWT_CONTRACT,
-      bridgeTo: ['kawaii_6886-1', '0x38'],
+      bridgeTo: ["kawaii_6886-1", "0x38"],
       coinDecimals: 6,
-      Icon: KwtIcon
+      Icon: KwtIcon,
     },
     {
-      coinDenom: 'BEP20 MILKY',
-      coinGeckoId: 'milky-token',
+      coinDenom: "BEP20 MILKY",
+      coinGeckoId: "milky-token",
       coinMinimalDenom: MILKYBSC_ORAICHAIN_DENOM,
       coinDecimals: 18,
-      Icon: MilkyIcon
+      Icon: MilkyIcon,
     },
     {
-      coinDenom: 'MILKY',
-      coinGeckoId: 'milky-token',
-      coinMinimalDenom: 'milky',
-      type: 'cw20',
+      coinDenom: "MILKY",
+      coinGeckoId: "milky-token",
+      coinMinimalDenom: "milky",
+      type: "cw20",
       contractAddress: MILKY_CONTRACT,
-      bridgeTo: ['kawaii_6886-1', '0x38'],
+      bridgeTo: ["kawaii_6886-1", "0x38"],
       coinDecimals: 6,
-      Icon: MilkyIcon
+      Icon: MilkyIcon,
     },
     {
-      coinDenom: 'ORAIX',
-      coinMinimalDenom: 'oraix',
-      type: 'cw20',
+      coinDenom: "ORAIX",
+      coinMinimalDenom: "oraix",
+      type: "cw20",
       contractAddress: ORAIX_CONTRACT,
-      coinGeckoId: 'oraidex',
+      coinGeckoId: "oraidex",
       coinDecimals: 6,
       Icon: OraixIcon,
-      IconLight: OraixLightIcon
+      IconLight: OraixLightIcon,
     },
     {
-      coinDenom: 'scORAI',
-      coinMinimalDenom: 'scorai',
-      type: 'cw20',
+      coinDenom: "scORAI",
+      coinMinimalDenom: "scorai",
+      type: "cw20",
       contractAddress: SCORAI_CONTRACT,
-      coinGeckoId: 'scorai',
+      coinGeckoId: "scorai",
       coinDecimals: 6,
-      Icon: ScOraiIcon
+      Icon: ScOraiIcon,
     },
     {
-      coinDenom: 'wTRX',
-      coinGeckoId: 'tron',
-      coinMinimalDenom: 'trx',
-      type: 'cw20',
+      coinDenom: "wTRX",
+      coinGeckoId: "tron",
+      coinMinimalDenom: "trx",
+      type: "cw20",
       contractAddress: TRX_CONTRACT,
-      bridgeTo: ['0x2b6653dc'],
+      bridgeTo: ["0x2b6653dc"],
       coinDecimals: 6,
-      Icon: TronIcon
+      Icon: TronIcon,
     },
     {
-      coinDenom: 'scATOM',
-      coinMinimalDenom: 'scatom',
-      type: 'cw20',
+      coinDenom: "scATOM",
+      coinMinimalDenom: "scatom",
+      type: "cw20",
       contractAddress: SCATOM_CONTRACT,
-      coinGeckoId: 'scatom',
+      coinGeckoId: "scatom",
       coinDecimals: 6,
-      Icon: ScAtomIcon
+      Icon: ScAtomIcon,
     },
     {
-      coinDenom: 'IBC INJ',
-      coinGeckoId: 'injective-protocol',
+      coinDenom: "IBC INJ",
+      coinGeckoId: "injective-protocol",
       coinMinimalDenom: INJECTIVE_ORAICHAIN_DENOM,
       coinDecimals: 18,
       Icon: InjIcon,
-      IconLight: InjIcon
+      IconLight: InjIcon,
     },
     {
-      coinDenom: 'INJ',
-      coinGeckoId: 'injective-protocol',
-      coinMinimalDenom: 'injective',
+      coinDenom: "INJ",
+      coinGeckoId: "injective-protocol",
+      coinMinimalDenom: "injective",
       contractAddress: INJECTIVE_CONTRACT,
-      bridgeTo: ['injective-1'],
-      type: 'cw20',
+      bridgeTo: ["injective-1"],
+      type: "cw20",
       coinDecimals: 6,
       Icon: InjIcon,
-      IconLight: InjIcon
+      IconLight: InjIcon,
     },
     {
-      coinDenom: 'WETH',
-      coinGeckoId: 'weth',
-      coinMinimalDenom: 'weth',
-      type: 'cw20',
+      coinDenom: "WETH",
+      coinGeckoId: "weth",
+      coinMinimalDenom: "weth",
+      type: "cw20",
       contractAddress: WETH_CONTRACT,
-      bridgeTo: ['0x01'],
+      bridgeTo: ["0x01"],
       coinDecimals: 6,
-      coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png',
+      coinImageUrl:
+        "https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png",
       Icon: EthIcon,
-      IconLight: EthIcon
+      IconLight: EthIcon,
     },
     {
-      type: 'cw20',
-      coinDenom: 'OCH',
-      coinMinimalDenom: 'cw20:orai1hn8w33cqvysun2aujk5sv33tku4pgcxhhnsxmvnkfvdxagcx0p8qa4l98q:OCH',
-      contractAddress: 'orai1hn8w33cqvysun2aujk5sv33tku4pgcxhhnsxmvnkfvdxagcx0p8qa4l98q',
+      type: "cw20",
+      coinDenom: "OCH",
+      coinMinimalDenom:
+        "cw20:orai1hn8w33cqvysun2aujk5sv33tku4pgcxhhnsxmvnkfvdxagcx0p8qa4l98q:OCH",
+      contractAddress:
+        "orai1hn8w33cqvysun2aujk5sv33tku4pgcxhhnsxmvnkfvdxagcx0p8qa4l98q",
       coinDecimals: 6,
-      coinGeckoId: 'och',
-      coinImageUrl: 'https://assets.coingecko.com/coins/images/34236/standard/orchai_logo_white_copy_4x-8_%281%29.png'
-    }
+      coinGeckoId: "och",
+      coinImageUrl:
+        "https://assets.coingecko.com/coins/images/34236/standard/orchai_logo_white_copy_4x-8_%281%29.png",
+    },
 
     // {
     //   coinDenom: 'ATOM-CW20',
@@ -466,504 +484,517 @@ export const oraichainNetwork: CustomChainInfo = {
     //   coinDecimals: 6,
     //   Icon: AtomIcon
     // }
-  ]
+  ],
 };
 
 export const chainInfos: CustomChainInfo[] = [
   // networks to add on keplr
   oraichainNetwork,
   {
-    rpc: 'https://bridge-v2.rpc.orai.io',
-    rest: 'https://bridge-v2.lcd.orai.io',
-    chainId: 'oraibridge-subnet-2',
-    chainName: 'OraiBridge',
-    networkType: 'cosmos',
+    rpc: "https://bridge-v2.rpc.orai.io",
+    rest: "https://bridge-v2.lcd.orai.io",
+    chainId: "oraibridge-subnet-2",
+    chainName: "OraiBridge",
+    networkType: "cosmos",
     bip44: {
-      coinType: 118
+      coinType: 118,
     },
-    bech32Config: defaultBech32Config('oraib'),
+    bech32Config: defaultBech32Config("oraib"),
 
-    features: ['ibc-transfer'],
+    features: ["ibc-transfer"],
     stakeCurrency: OraiBToken,
     feeCurrencies: [OraiBToken],
     // not use oraib as currency
     currencies: [
       OraiBToken,
       {
-        coinDenom: 'ORAI',
+        coinDenom: "ORAI",
         coinMinimalDenom: ORAI_BRIDGE_EVM_DENOM_PREFIX + ORAI_BSC_CONTRACT,
-        bridgeNetworkIdentifier: '0x38',
+        bridgeNetworkIdentifier: "0x38",
         coinDecimals: 18,
-        coinGeckoId: 'oraichain-token',
+        coinGeckoId: "oraichain-token",
         IconLight: OraiLightIcon,
-        Icon: OraiIcon
+        Icon: OraiIcon,
       },
       {
-        coinDenom: 'ORAI',
+        coinDenom: "ORAI",
         coinMinimalDenom: ORAI_BRIDGE_EVM_ETH_DENOM_PREFIX + ORAI_ETH_CONTRACT,
-        bridgeNetworkIdentifier: '0x01',
+        bridgeNetworkIdentifier: "0x01",
         coinDecimals: 18,
-        coinGeckoId: 'oraichain-token',
+        coinGeckoId: "oraichain-token",
         IconLight: OraiLightIcon,
         prefixToken: ORAI_BRIDGE_EVM_ETH_DENOM_PREFIX,
-        Icon: OraiIcon
+        Icon: OraiIcon,
       },
       {
-        coinDenom: 'USDC',
+        coinDenom: "USDC",
         coinMinimalDenom: ORAI_BRIDGE_EVM_ETH_DENOM_PREFIX + USDC_ETH_CONTRACT,
-        bridgeNetworkIdentifier: '0x01',
+        bridgeNetworkIdentifier: "0x01",
         coinDecimals: 6,
-        coinGeckoId: 'usd-coin',
+        coinGeckoId: "usd-coin",
         prefixToken: ORAI_BRIDGE_EVM_ETH_DENOM_PREFIX,
-        Icon: UsdcIcon
+        Icon: UsdcIcon,
       },
       {
-        coinDenom: 'AIRI',
+        coinDenom: "AIRI",
         coinMinimalDenom: ORAI_BRIDGE_EVM_DENOM_PREFIX + AIRI_BSC_CONTRACT,
-        bridgeNetworkIdentifier: '0x38',
+        bridgeNetworkIdentifier: "0x38",
         coinDecimals: 18,
-        coinGeckoId: 'airight',
-        Icon: AiriIcon
+        coinGeckoId: "airight",
+        Icon: AiriIcon,
       },
       {
-        coinDenom: 'USDT',
+        coinDenom: "USDT",
         coinMinimalDenom: ORAI_BRIDGE_EVM_DENOM_PREFIX + USDT_BSC_CONTRACT,
-        bridgeNetworkIdentifier: '0x38',
+        bridgeNetworkIdentifier: "0x38",
         coinDecimals: 18,
-        coinGeckoId: 'tether',
-        Icon: UsdtIcon
+        coinGeckoId: "tether",
+        Icon: UsdtIcon,
       },
       {
-        coinDenom: 'USDT',
-        coinMinimalDenom: ORAI_BRIDGE_EVM_TRON_DENOM_PREFIX + USDT_TRON_CONTRACT,
-        bridgeNetworkIdentifier: '0x2b6653dc',
+        coinDenom: "USDT",
+        coinMinimalDenom:
+          ORAI_BRIDGE_EVM_TRON_DENOM_PREFIX + USDT_TRON_CONTRACT,
+        bridgeNetworkIdentifier: "0x2b6653dc",
         prefixToken: ORAI_BRIDGE_EVM_TRON_DENOM_PREFIX,
         coinDecimals: 6,
-        coinGeckoId: 'tether',
-        Icon: UsdtIcon
+        coinGeckoId: "tether",
+        Icon: UsdtIcon,
       },
       {
-        coinDenom: 'wTRX',
-        coinMinimalDenom: ORAI_BRIDGE_EVM_TRON_DENOM_PREFIX + WRAP_TRON_TRX_CONTRACT,
-        bridgeNetworkIdentifier: '0x2b6653dc',
+        coinDenom: "wTRX",
+        coinMinimalDenom:
+          ORAI_BRIDGE_EVM_TRON_DENOM_PREFIX + WRAP_TRON_TRX_CONTRACT,
+        bridgeNetworkIdentifier: "0x2b6653dc",
         coinDecimals: 6,
-        coinGeckoId: 'tron',
+        coinGeckoId: "tron",
         prefixToken: ORAI_BRIDGE_EVM_TRON_DENOM_PREFIX,
-        Icon: TronIcon
+        Icon: TronIcon,
       },
       {
-        coinDenom: 'KWT',
-        bridgeNetworkIdentifier: '0x38',
+        coinDenom: "KWT",
+        bridgeNetworkIdentifier: "0x38",
         coinMinimalDenom: KWT_DENOM,
         coinDecimals: 18,
-        coinGeckoId: 'kawaii-islands',
-        Icon: KwtIcon
+        coinGeckoId: "kawaii-islands",
+        Icon: KwtIcon,
       },
       {
-        coinDenom: 'MILKY',
-        bridgeNetworkIdentifier: '0x38',
+        coinDenom: "MILKY",
+        bridgeNetworkIdentifier: "0x38",
         coinMinimalDenom: MILKY_DENOM,
         coinDecimals: 18,
-        coinGeckoId: 'milky-token',
-        Icon: MilkyIcon
-      }
-    ]
+        coinGeckoId: "milky-token",
+        Icon: MilkyIcon,
+      },
+    ],
   },
   {
-    rpc: 'https://tendermint1.kawaii.global',
-    rest: 'https://cosmos1.kawaii.global',
-    chainId: 'kawaii_6886-1',
-    chainName: 'Kawaiiverse',
-    networkType: 'cosmos',
+    rpc: "https://tendermint1.kawaii.global",
+    rest: "https://cosmos1.kawaii.global",
+    chainId: "kawaii_6886-1",
+    chainName: "Kawaiiverse",
+    networkType: "cosmos",
     stakeCurrency: KawaiiToken,
     bip44: {
-      coinType: 60
+      coinType: 60,
     },
-    bech32Config: defaultBech32Config('oraie'),
+    bech32Config: defaultBech32Config("oraie"),
     feeCurrencies: [KawaiiToken],
 
     Icon: KwtIcon,
     // features: ['ibc-transfer'],
-    features: ['ibc-transfer', 'ibc-go', 'stargate', 'eth-address-gen', 'eth-key-sign'],
+    features: [
+      "ibc-transfer",
+      "ibc-go",
+      "stargate",
+      "eth-address-gen",
+      "eth-key-sign",
+    ],
     currencies: [
       KawaiiToken,
       {
-        coinDenom: 'MILKY',
-        coinGeckoId: 'milky-token',
+        coinDenom: "MILKY",
+        coinGeckoId: "milky-token",
         coinMinimalDenom: MILKY_SUB_NETWORK_DENOM,
         coinDecimals: 18,
-        bridgeTo: ['Oraichain', 'kawaii_6886-1'],
-        Icon: MilkyIcon
+        bridgeTo: ["Oraichain", "kawaii_6886-1"],
+        Icon: MilkyIcon,
       },
       {
-        coinDenom: 'ERC20 MILKY',
-        coinMinimalDenom: 'erc20_milky',
-        bridgeTo: ['Oraichain', 'kawaii_6886-1'],
+        coinDenom: "ERC20 MILKY",
+        coinMinimalDenom: "erc20_milky",
+        bridgeTo: ["Oraichain", "kawaii_6886-1"],
         contractAddress: MILKY_ERC_CONTRACT,
         coinDecimals: 18,
-        coinGeckoId: 'milky-token',
-        Icon: MilkyIcon
+        coinGeckoId: "milky-token",
+        Icon: MilkyIcon,
       },
       {
-        coinDenom: 'KWT',
+        coinDenom: "KWT",
         coinMinimalDenom: KWT_SUB_NETWORK_DENOM,
         coinDecimals: 18,
-        bridgeTo: ['Oraichain', 'kawaii_6886-1'],
-        coinGeckoId: 'kawaii-islands',
-        Icon: KwtIcon
+        bridgeTo: ["Oraichain", "kawaii_6886-1"],
+        coinGeckoId: "kawaii-islands",
+        Icon: KwtIcon,
       },
       {
-        coinDenom: 'ERC20 KWT',
-        bridgeTo: ['Oraichain', 'kawaii_6886-1'],
-        coinMinimalDenom: 'erc20_kwt',
-        contractAddress: '0x80b5a32E4F032B2a058b4F29EC95EEfEEB87aDcd',
+        coinDenom: "ERC20 KWT",
+        bridgeTo: ["Oraichain", "kawaii_6886-1"],
+        coinMinimalDenom: "erc20_kwt",
+        contractAddress: "0x80b5a32E4F032B2a058b4F29EC95EEfEEB87aDcd",
         coinDecimals: 18,
-        coinGeckoId: 'kawaii-islands',
-        Icon: KwtIcon
-      }
-    ]
+        coinGeckoId: "kawaii-islands",
+        Icon: KwtIcon,
+      },
+    ],
   },
 
   /// popular networks already included
   {
-    rpc: 'https://osmosis.rpc.orai.io/',
-    rest: 'https://osmosis.lcd.orai.io/',
-    chainId: 'osmosis-1',
-    chainName: 'Osmosis',
-    networkType: 'cosmos',
+    rpc: "https://osmosis.rpc.orai.io/",
+    rest: "https://osmosis.lcd.orai.io/",
+    chainId: "osmosis-1",
+    chainName: "Osmosis",
+    networkType: "cosmos",
     bip44: {
-      coinType: 118
+      coinType: 118,
     },
     Icon: OsmoIcon,
     IconLight: OsmoLightIcon,
-    bech32Config: defaultBech32Config('osmo'),
+    bech32Config: defaultBech32Config("osmo"),
     feeCurrencies: [OsmoToken],
     currencies: [
       {
-        coinDenom: 'OSMO',
-        coinMinimalDenom: 'uosmo',
+        coinDenom: "OSMO",
+        coinMinimalDenom: "uosmo",
         coinDecimals: 6,
-        coinGeckoId: 'osmosis',
-        bridgeTo: ['Oraichain'],
+        coinGeckoId: "osmosis",
+        bridgeTo: ["Oraichain"],
         Icon: OsmoIcon,
-        IconLight: OsmoLightIcon
-      }
-    ]
+        IconLight: OsmoLightIcon,
+      },
+    ],
   },
   /// popular networks already included
   {
-    rpc: 'https://injective-rpc.polkachu.com',
-    rest: 'https://injective-lcd.quickapi.com',
-    chainId: 'injective-1',
-    chainName: 'Injective',
-    networkType: 'cosmos',
+    rpc: "https://injective-rpc.polkachu.com",
+    rest: "https://injective-lcd.quickapi.com",
+    chainId: "injective-1",
+    chainName: "Injective",
+    networkType: "cosmos",
     bip44: {
-      coinType: 60
+      coinType: 60,
     },
     Icon: InjIcon,
     IconLight: InjIcon,
-    bech32Config: defaultBech32Config('inj'),
+    bech32Config: defaultBech32Config("inj"),
     feeCurrencies: [InjectiveToken],
     currencies: [
       {
-        coinDenom: 'INJ',
-        coinMinimalDenom: 'inj',
+        coinDenom: "INJ",
+        coinMinimalDenom: "inj",
         coinDecimals: 18,
-        coinGeckoId: 'injective-protocol',
-        bridgeTo: ['Oraichain'],
+        coinGeckoId: "injective-protocol",
+        bridgeTo: ["Oraichain"],
         Icon: InjIcon,
-        IconLight: InjIcon
+        IconLight: InjIcon,
       },
       {
-        coinDenom: 'ORAI',
+        coinDenom: "ORAI",
         coinMinimalDenom: ORAIIBC_INJECTIVE_DENOM,
         coinDecimals: 6,
-        coinGeckoId: 'oraichain-token',
-        bridgeTo: ['Oraichain'],
+        coinGeckoId: "oraichain-token",
+        bridgeTo: ["Oraichain"],
         Icon: OraiIcon,
-        IconLight: OraiLightIcon
-      }
-    ]
+        IconLight: OraiLightIcon,
+      },
+    ],
   },
   {
-    rpc: 'https://rpc.mainnet.noble.strange.love/',
-    rest: 'https://noble-api.polkachu.com',
-    chainId: 'noble-1',
-    chainName: 'Noble',
-    networkType: 'cosmos',
+    rpc: "https://rpc.mainnet.noble.strange.love/",
+    rest: "https://noble-api.polkachu.com",
+    chainId: "noble-1",
+    chainName: "Noble",
+    networkType: "cosmos",
     bip44: {
-      coinType: 118
+      coinType: 118,
     },
-    bech32Config: defaultBech32Config('noble'),
-    features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+    bech32Config: defaultBech32Config("noble"),
+    features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
     Icon: NobleIcon,
     IconLight: NobleIcon,
     currencies: [
       {
-        coinDenom: 'USDC',
-        coinMinimalDenom: 'uusdc',
+        coinDenom: "USDC",
+        coinMinimalDenom: "uusdc",
         coinDecimals: 6,
-        coinGeckoId: 'usd-coin',
-        coinImageUrl: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/noble/images/USDCoin.png',
+        coinGeckoId: "usd-coin",
+        coinImageUrl:
+          "https://raw.githubusercontent.com/cosmos/chain-registry/master/noble/images/USDCoin.png",
         gasPriceStep: {
           low: 0,
           average: 0.025,
-          high: 0.03
+          high: 0.03,
         },
-        bridgeTo: ['Oraichain'],
+        bridgeTo: ["Oraichain"],
         Icon: UsdcIcon,
-        IconLight: UsdcIcon
-      }
+        IconLight: UsdcIcon,
+      },
     ],
     feeCurrencies: [
       {
-        coinDenom: 'USDC',
-        coinMinimalDenom: 'uusdc',
+        coinDenom: "USDC",
+        coinMinimalDenom: "uusdc",
         coinDecimals: 6,
-        coinGeckoId: 'usd-coin',
-        coinImageUrl: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/noble/images/USDCoin.png',
+        coinGeckoId: "usd-coin",
+        coinImageUrl:
+          "https://raw.githubusercontent.com/cosmos/chain-registry/master/noble/images/USDCoin.png",
         gasPriceStep: {
           low: 0,
           average: 0.025,
-          high: 0.03
-        }
-      }
+          high: 0.03,
+        },
+      },
     ],
     stakeCurrency: {
       coinDecimals: 6,
-      coinDenom: 'STAKE',
-      coinMinimalDenom: 'ustake',
-      coinImageUrl: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/noble/images/stake.png'
+      coinDenom: "STAKE",
+      coinMinimalDenom: "ustake",
+      coinImageUrl:
+        "https://raw.githubusercontent.com/cosmos/chain-registry/master/noble/images/stake.png",
     },
-    chainSymbolImageUrl: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/noble/images/stake.png',
+    chainSymbolImageUrl:
+      "https://raw.githubusercontent.com/cosmos/chain-registry/master/noble/images/stake.png",
     txExplorer: {
-      name: 'Mintscan',
-      txUrl: 'https://www.mintscan.io/noble/txs/{txHash}'
-    }
+      name: "Mintscan",
+      txUrl: "https://www.mintscan.io/noble/txs/{txHash}",
+    },
   },
   {
-    rpc: 'https://rpc-cosmos.oraidex.io',
-    rest: 'https://lcd-cosmos.oraidex.io',
-    chainId: 'cosmoshub-4',
-    chainName: 'Cosmos Hub',
-    networkType: 'cosmos',
+    rpc: "https://rpc-cosmos.oraidex.io",
+    rest: "https://lcd-cosmos.oraidex.io",
+    chainId: "cosmoshub-4",
+    chainName: "Cosmos Hub",
+    networkType: "cosmos",
     bip44: {
-      coinType: 118
+      coinType: 118,
     },
     Icon: AtomIcon,
     IconLight: AtomIcon,
-    bech32Config: defaultBech32Config('cosmos'),
+    bech32Config: defaultBech32Config("cosmos"),
     feeCurrencies: [AtomToken],
     currencies: [
       {
-        coinDenom: 'ATOM',
-        coinGeckoId: 'cosmos',
-        coinMinimalDenom: 'uatom',
+        coinDenom: "ATOM",
+        coinGeckoId: "cosmos",
+        coinMinimalDenom: "uatom",
         coinDecimals: 6,
-        bridgeTo: ['Oraichain'],
+        bridgeTo: ["Oraichain"],
         Icon: AtomIcon,
-        IconLight: AtomIcon
-      }
-    ]
+        IconLight: AtomIcon,
+      },
+    ],
   },
 
   /// evm chain info
   {
-    rpc: 'https://rpc.ankr.com/eth',
-    chainId: '0x01',
-    chainName: 'Ethereum',
+    rpc: "https://rpc.ankr.com/eth",
+    chainId: "0x01",
+    chainName: "Ethereum",
     bip44: {
-      coinType: 60
+      coinType: 60,
     },
     Icon: EthIcon,
-    networkType: 'evm',
+    networkType: "evm",
     currencies: [
       {
-        coinDenom: 'ORAI',
-        coinMinimalDenom: 'erc20_orai',
+        coinDenom: "ORAI",
+        coinMinimalDenom: "erc20_orai",
         contractAddress: ORAI_ETH_CONTRACT,
         coinDecimals: 18,
-        bridgeTo: ['Oraichain'],
-        coinGeckoId: 'oraichain-token',
+        bridgeTo: ["Oraichain"],
+        coinGeckoId: "oraichain-token",
         IconLight: OraiLightIcon,
         prefixToken: ORAI_BRIDGE_EVM_ETH_DENOM_PREFIX,
-        Icon: OraiIcon
+        Icon: OraiIcon,
       },
       {
-        coinDenom: 'USDC',
-        coinMinimalDenom: 'erc20_usdc',
+        coinDenom: "USDC",
+        coinMinimalDenom: "erc20_usdc",
         contractAddress: USDC_ETH_CONTRACT,
         coinDecimals: 6,
-        bridgeTo: ['Oraichain'],
-        coinGeckoId: 'usd-coin',
+        bridgeTo: ["Oraichain"],
+        coinGeckoId: "usd-coin",
         prefixToken: ORAI_BRIDGE_EVM_ETH_DENOM_PREFIX,
-        Icon: UsdcIcon
+        Icon: UsdcIcon,
       },
       {
-        coinDenom: 'WETH',
-        coinMinimalDenom: 'erc20_eth',
+        coinDenom: "WETH",
+        coinMinimalDenom: "erc20_eth",
         contractAddress: WRAP_ETH_CONTRACT,
         coinDecimals: 18,
-        bridgeTo: ['Oraichain'],
-        coinGeckoId: 'weth',
-        Icon: EthIcon
+        bridgeTo: ["Oraichain"],
+        coinGeckoId: "weth",
+        Icon: EthIcon,
       },
       {
-        coinDenom: 'ETH',
-        coinMinimalDenom: 'eth',
-        contractAddress: '',
+        coinDenom: "ETH",
+        coinMinimalDenom: "eth",
+        contractAddress: "",
         coinDecimals: 18,
-        bridgeTo: ['Oraichain'],
-        coinGeckoId: 'ethereum',
-        Icon: EthIcon
-      }
-    ]
+        bridgeTo: ["Oraichain"],
+        coinGeckoId: "ethereum",
+        Icon: EthIcon,
+      },
+    ],
   },
   {
-    rpc: 'https://api.trongrid.io/jsonrpc',
-    rest: 'https://api.trongrid.io',
-    chainId: '0x2b6653dc',
-    networkType: 'evm',
-    chainName: 'Tron Network',
+    rpc: "https://api.trongrid.io/jsonrpc",
+    rest: "https://api.trongrid.io",
+    chainId: "0x2b6653dc",
+    networkType: "evm",
+    chainName: "Tron Network",
     Icon: TronIcon,
     currencies: [
       {
-        coinDenom: 'USDT',
-        coinMinimalDenom: 'trx20_usdt',
+        coinDenom: "USDT",
+        coinMinimalDenom: "trx20_usdt",
         contractAddress: USDT_TRON_CONTRACT,
-        bridgeTo: ['Oraichain'],
+        bridgeTo: ["Oraichain"],
         coinDecimals: 6,
-        coinGeckoId: 'tether',
+        coinGeckoId: "tether",
         prefixToken: ORAI_BRIDGE_EVM_TRON_DENOM_PREFIX,
-        Icon: UsdtIcon
+        Icon: UsdtIcon,
       },
       {
-        coinDenom: 'wTRX',
-        coinMinimalDenom: 'trx20_trx',
+        coinDenom: "wTRX",
+        coinMinimalDenom: "trx20_trx",
         contractAddress: WRAP_TRON_TRX_CONTRACT,
-        bridgeTo: ['Oraichain'],
+        bridgeTo: ["Oraichain"],
         coinDecimals: 6,
-        coinGeckoId: 'tron',
+        coinGeckoId: "tron",
         prefixToken: ORAI_BRIDGE_EVM_TRON_DENOM_PREFIX,
-        Icon: TronIcon
-      }
+        Icon: TronIcon,
+      },
     ],
     bip44: {
-      coinType: 195
-    }
+      coinType: 195,
+    },
   },
   {
-    rpc: 'https://bsc-dataseed1.binance.org',
-    networkType: 'evm',
+    rpc: "https://bsc-dataseed1.binance.org",
+    networkType: "evm",
     Icon: BnbIcon,
-    chainId: '0x38',
-    chainName: 'BNB Chain',
+    chainId: "0x38",
+    chainName: "BNB Chain",
     bip44: {
-      coinType: 60
+      coinType: 60,
     },
     currencies: [
       {
-        coinDenom: 'ORAI',
-        coinMinimalDenom: 'bep20_orai',
+        coinDenom: "ORAI",
+        coinMinimalDenom: "bep20_orai",
         contractAddress: ORAI_BSC_CONTRACT,
-        bridgeTo: ['Oraichain'],
+        bridgeTo: ["Oraichain"],
         coinDecimals: 18,
-        coinGeckoId: 'oraichain-token',
+        coinGeckoId: "oraichain-token",
         prefixToken: ORAI_BRIDGE_EVM_DENOM_PREFIX,
         Icon: OraiIcon,
-        IconLight: OraiLightIcon
+        IconLight: OraiLightIcon,
       },
       {
-        coinDenom: 'AIRI',
-        coinMinimalDenom: 'bep20_airi',
+        coinDenom: "AIRI",
+        coinMinimalDenom: "bep20_airi",
         contractAddress: AIRI_BSC_CONTRACT,
-        bridgeTo: ['Oraichain'],
+        bridgeTo: ["Oraichain"],
         coinDecimals: 18,
-        coinGeckoId: 'airight',
+        coinGeckoId: "airight",
         prefixToken: ORAI_BRIDGE_EVM_DENOM_PREFIX,
-        Icon: AiriIcon
+        Icon: AiriIcon,
       },
       {
-        coinDenom: 'USDT',
-        coinMinimalDenom: 'bep20_usdt',
+        coinDenom: "USDT",
+        coinMinimalDenom: "bep20_usdt",
         contractAddress: USDT_BSC_CONTRACT,
-        bridgeTo: ['Oraichain'],
+        bridgeTo: ["Oraichain"],
         coinDecimals: 18,
-        coinGeckoId: 'tether',
+        coinGeckoId: "tether",
         prefixToken: ORAI_BRIDGE_EVM_DENOM_PREFIX,
-        Icon: UsdtIcon
+        Icon: UsdtIcon,
       },
       {
-        coinDenom: 'KWT',
-        coinMinimalDenom: 'bep20_kwt',
+        coinDenom: "KWT",
+        coinMinimalDenom: "bep20_kwt",
         contractAddress: KWT_BSC_CONTRACT,
-        bridgeTo: ['Oraichain'],
+        bridgeTo: ["Oraichain"],
         coinDecimals: 18,
-        coinGeckoId: 'kawaii-islands',
-        Icon: KwtIcon
+        coinGeckoId: "kawaii-islands",
+        Icon: KwtIcon,
       },
       {
-        coinDenom: 'MILKY',
-        coinMinimalDenom: 'bep20_milky',
+        coinDenom: "MILKY",
+        coinMinimalDenom: "bep20_milky",
         contractAddress: MILKY_BSC_CONTRACT,
         coinDecimals: 18,
-        coinGeckoId: 'milky-token',
-        bridgeTo: ['Oraichain'],
-        Icon: MilkyIcon
+        coinGeckoId: "milky-token",
+        bridgeTo: ["Oraichain"],
+        Icon: MilkyIcon,
       },
       {
-        coinDenom: 'WBNB',
-        coinMinimalDenom: 'bep20_wbnb',
+        coinDenom: "WBNB",
+        coinMinimalDenom: "bep20_wbnb",
         contractAddress: WRAP_BNB_CONTRACT,
         coinDecimals: 18,
-        coinGeckoId: 'wbnb',
-        bridgeTo: ['Oraichain'],
-        Icon: BnbIcon
+        coinGeckoId: "wbnb",
+        bridgeTo: ["Oraichain"],
+        Icon: BnbIcon,
       },
       {
-        coinDenom: 'BNB',
-        coinMinimalDenom: 'bnb',
-        contractAddress: '',
+        coinDenom: "BNB",
+        coinMinimalDenom: "bnb",
+        contractAddress: "",
         coinDecimals: 18,
-        coinGeckoId: 'binancecoin',
-        bridgeTo: ['Oraichain'],
-        Icon: BnbIcon
-      }
-    ]
+        coinGeckoId: "binancecoin",
+        bridgeTo: ["Oraichain"],
+        Icon: BnbIcon,
+      },
+    ],
   },
   {
-    rpc: 'https://endpoint1.kawaii.global',
-    chainId: '0x1ae6',
-    networkType: 'evm',
-    chainName: 'Kawaiiverse EVM',
+    rpc: "https://endpoint1.kawaii.global",
+    chainId: "0x1ae6",
+    networkType: "evm",
+    chainName: "Kawaiiverse EVM",
     Icon: KwtIcon,
     bip44: {
-      coinType: 60
+      coinType: 60,
     },
     currencies: [
       {
-        coinDenom: 'ERC20 MILKY',
-        coinMinimalDenom: 'erc20_milky',
-        bridgeTo: ['Oraichain', 'kawaii_6886-1'],
+        coinDenom: "ERC20 MILKY",
+        coinMinimalDenom: "erc20_milky",
+        bridgeTo: ["Oraichain", "kawaii_6886-1"],
         contractAddress: MILKY_ERC_CONTRACT,
         coinDecimals: 18,
-        coinGeckoId: 'milky-token',
-        Icon: MilkyIcon
+        coinGeckoId: "milky-token",
+        Icon: MilkyIcon,
       },
       {
-        coinDenom: 'ERC20 KWT',
-        bridgeTo: ['Oraichain', 'kawaii_6886-1'],
-        coinMinimalDenom: 'erc20_kwt',
-        contractAddress: '0x80b5a32E4F032B2a058b4F29EC95EEfEEB87aDcd',
+        coinDenom: "ERC20 KWT",
+        bridgeTo: ["Oraichain", "kawaii_6886-1"],
+        coinMinimalDenom: "erc20_kwt",
+        contractAddress: "0x80b5a32E4F032B2a058b4F29EC95EEfEEB87aDcd",
         coinDecimals: 18,
-        coinGeckoId: 'kawaii-islands',
-        Icon: KwtIcon
-      }
-    ]
-  }
+        coinGeckoId: "kawaii-islands",
+        Icon: KwtIcon,
+      },
+    ],
+  },
 ];
 
 // exclude kawaiverse subnet and other special evm that has different cointype
 export const evmChains = chainInfos.filter(
-  c => c.networkType === 'evm' && c.bip44.coinType === 60 && c.chainId !== '0x1ae6'
+  (c) =>
+    c.networkType === "evm" && c.bip44.coinType === 60 && c.chainId !== "0x1ae6"
 );

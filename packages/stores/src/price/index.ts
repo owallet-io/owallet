@@ -1,13 +1,18 @@
-import { ObservableQuery, QueryResponse } from '../common';
-import { CoinGeckoSimplePrice } from './types';
-import Axios, { CancelToken } from 'axios';
-import { KVStore, toGenerator, fetchAdapter, MarketAPIEndPoint } from '@owallet/common';
-import { Dec, CoinPretty, Int } from '@owallet/unit';
-import { FiatCurrency } from '@owallet/types';
-import { PricePretty } from '@owallet/unit';
-import { DeepReadonly } from 'utility-types';
-import deepmerge from 'deepmerge';
-import { action, flow, makeObservable, observable } from 'mobx';
+import { ObservableQuery, QueryResponse } from "../common";
+import { CoinGeckoSimplePrice } from "./types";
+import Axios, { CancelToken } from "axios";
+import {
+  KVStore,
+  toGenerator,
+  fetchAdapter,
+  MarketAPIEndPoint,
+} from "@owallet/common";
+import { Dec, CoinPretty, Int } from "@owallet/unit";
+import { FiatCurrency } from "@owallet/types";
+import { PricePretty } from "@owallet/unit";
+import { DeepReadonly } from "utility-types";
+import deepmerge from "deepmerge";
+import { action, flow, makeObservable, observable } from "mobx";
 
 export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
   protected coinIds: string[];
@@ -30,10 +35,10 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
     const instance = Axios.create({
       // baseURL: 'https://api.coingecko.com/api/v3',
       baseURL: MarketAPIEndPoint,
-      adapter: fetchAdapter
+      adapter: fetchAdapter,
     });
 
-    super(kvStore, instance, '/simple/price');
+    super(kvStore, instance, "/simple/price");
 
     this.coinIds = [];
     this.vsCurrencies = [];
@@ -58,14 +63,16 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
 
   @flow
   *restoreDefaultVsCurrency() {
-    const saved = yield* toGenerator(this.kvStore.get<string>('__default_vs_currency'));
+    const saved = yield* toGenerator(
+      this.kvStore.get<string>("__default_vs_currency")
+    );
     if (saved) {
       this._defaultVsCurrency = saved;
     }
   }
 
   async saveDefaultVsCurrency() {
-    await this.kvStore.set('__default_vs_currency', this.defaultVsCurrency);
+    await this.kvStore.set("__default_vs_currency", this.defaultVsCurrency);
   }
 
   get supportedVsCurrencies(): DeepReadonly<{
@@ -82,7 +89,9 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
     return this.coinIds.length > 0 && this.vsCurrencies.length > 0;
   }
 
-  protected async fetchResponse(cancelToken: CancelToken): Promise<QueryResponse<CoinGeckoSimplePrice>> {
+  protected async fetchResponse(
+    cancelToken: CancelToken
+  ): Promise<QueryResponse<CoinGeckoSimplePrice>> {
     const response = await super.fetchResponse(cancelToken);
     // Because this store only queries the price of the tokens that have been requested from start,
     // it will remove the prior prices that have not been requested to just return the fetching result.
@@ -90,13 +99,15 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
     return {
       ...response,
       ...{
-        data: deepmerge(this.response ? this.response.data : {}, response.data)
-      }
+        data: deepmerge(this.response ? this.response.data : {}, response.data),
+      },
     };
   }
 
   protected refetch() {
-    const url = `/simple/price?ids=${this.coinIds.join(',')}&vs_currencies=${this.vsCurrencies.join(',')}`;
+    const url = `/simple/price?ids=${this.coinIds.join(
+      ","
+    )}&vs_currencies=${this.vsCurrencies.join(",")}`;
 
     this.setUrl(url);
   }
@@ -104,8 +115,10 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
   protected getCacheKey(): string {
     // Because the uri of the coingecko would be changed according to the coin ids and vsCurrencies.
     // Therefore, just using the uri as the cache key is not useful.
-    return `${this.instance.name}-${this.instance.defaults.baseURL}${this.instance.getUri({
-      url: '/simple/price'
+    return `${this.instance.name}-${
+      this.instance.defaults.baseURL
+    }${this.instance.getUri({
+      url: "/simple/price",
     })}`;
   }
 
@@ -118,7 +131,10 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
       return undefined;
     }
 
-    if (!this.coinIds.includes(coinId) || !this.vsCurrencies.includes(vsCurrency)) {
+    if (
+      !this.coinIds.includes(coinId) ||
+      !this.vsCurrencies.includes(vsCurrency)
+    ) {
       if (!this.coinIds.includes(coinId)) {
         this.coinIds.push(coinId);
       }
@@ -141,14 +157,18 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
     return coinPrices[vsCurrency];
   }
 
-  calculatePrice(coin: CoinPretty, vsCurrrency?: string): PricePretty | undefined {
+  calculatePrice(
+    coin: CoinPretty,
+    vsCurrrency?: string
+  ): PricePretty | undefined {
     if (!coin?.currency?.coinGeckoId) {
       return undefined;
     }
     if (!vsCurrrency) {
       vsCurrrency = this.defaultVsCurrency;
     }
-    const fiatCurrency = this.supportedVsCurrencies[vsCurrrency.toLocaleLowerCase()];
+    const fiatCurrency =
+      this.supportedVsCurrencies[vsCurrrency.toLocaleLowerCase()];
     if (!fiatCurrency) {
       return undefined;
     }

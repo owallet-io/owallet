@@ -1,10 +1,10 @@
 import {
   ObservableChainQuery,
-  ObservableChainQueryMap
-} from '../../chain-query';
-import { ProposalVoter, ProposalVoterStargate } from './types';
-import { KVStore } from '@owallet/common';
-import { ChainGetter } from '../../../common';
+  ObservableChainQueryMap,
+} from "../../chain-query";
+import { ProposalVoter, ProposalVoterStargate } from "./types";
+import { KVStore } from "@owallet/common";
+import { ChainGetter } from "../../../common";
 
 export class ObservableQueryProposalVoteInner extends ObservableChainQuery<
   ProposalVoter | ProposalVoterStargate
@@ -30,11 +30,11 @@ export class ObservableQueryProposalVoteInner extends ObservableChainQuery<
     this.bech32Address = bech32Address;
   }
 
-  get vote(): 'Yes' | 'Abstain' | 'No' | 'NoWithVeto' | 'Unspecified' {
+  get vote(): "Yes" | "Abstain" | "No" | "NoWithVeto" | "Unspecified" {
     if (!this.response) {
-      return 'Unspecified';
+      return "Unspecified";
     }
-    if (typeof this.response.data.result.option === 'string') {
+    if (typeof this.response.data.result.option === "string") {
       return this.response.data.result.option;
     }
 
@@ -42,15 +42,15 @@ export class ObservableQueryProposalVoteInner extends ObservableChainQuery<
       switch (this.response.data.result.option) {
         //yes: 1, abstain: 2, no: 3, no with veto: 4)
         case 1:
-          return 'Yes';
+          return "Yes";
         case 2:
-          return 'Abstain';
+          return "Abstain";
         case 3:
-          return 'No';
+          return "No";
         case 4:
-          return 'NoWithVeto';
+          return "NoWithVeto";
         default:
-          return 'Unspecified';
+          return "Unspecified";
       }
     })();
   }
@@ -85,7 +85,7 @@ export class ObservableQueryProposalVote extends ObservableChainQueryMap<
   getVote(proposalId: string, voter: string): ObservableQueryProposalVoteInner {
     const param = JSON.stringify({
       proposalId,
-      voter
+      voter,
     });
     return this.get(param) as ObservableQueryProposalVoteInner;
   }

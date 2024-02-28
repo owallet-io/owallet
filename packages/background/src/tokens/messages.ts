@@ -1,10 +1,10 @@
-import { Message } from '@owallet/router';
-import { ROUTE } from './constants';
-import { AppCurrency } from '@owallet/types';
+import { Message } from "@owallet/router";
+import { ROUTE } from "./constants";
+import { AppCurrency } from "@owallet/types";
 
 export class GetTokensMsg extends Message<AppCurrency[]> {
   public static type() {
-    return 'get-tokens';
+    return "get-tokens";
   }
 
   constructor(public readonly chainId: string) {
@@ -13,7 +13,7 @@ export class GetTokensMsg extends Message<AppCurrency[]> {
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new Error('Chain id is empty');
+      throw new Error("Chain id is empty");
     }
   }
 
@@ -28,7 +28,7 @@ export class GetTokensMsg extends Message<AppCurrency[]> {
 
 export class SuggestTokenMsg extends Message<void> {
   public static type() {
-    return 'suggest-token';
+    return "suggest-token";
   }
 
   constructor(
@@ -45,11 +45,11 @@ export class SuggestTokenMsg extends Message<void> {
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new Error('Chain id is empty');
+      throw new Error("Chain id is empty");
     }
 
     if (!this.contractAddress) {
-      throw new Error('Contract address is empty');
+      throw new Error("Contract address is empty");
     }
   }
 
@@ -64,7 +64,7 @@ export class SuggestTokenMsg extends Message<void> {
 
 export class AddTokenMsg extends Message<void> {
   public static type() {
-    return 'add-token';
+    return "add-token";
   }
 
   constructor(
@@ -76,7 +76,7 @@ export class AddTokenMsg extends Message<void> {
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new Error('Chain id is empty');
+      throw new Error("Chain id is empty");
     }
   }
 
@@ -91,7 +91,7 @@ export class AddTokenMsg extends Message<void> {
 
 export class RemoveTokenMsg extends Message<void> {
   public static type() {
-    return 'remove-token';
+    return "remove-token";
   }
 
   constructor(
@@ -103,7 +103,7 @@ export class RemoveTokenMsg extends Message<void> {
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new Error('Chain id is empty');
+      throw new Error("Chain id is empty");
     }
   }
 
@@ -118,7 +118,7 @@ export class RemoveTokenMsg extends Message<void> {
 
 export class GetSecret20ViewingKey extends Message<string> {
   public static type() {
-    return 'get-secret20-viewing-key';
+    return "get-secret20-viewing-key";
   }
 
   constructor(
@@ -130,11 +130,11 @@ export class GetSecret20ViewingKey extends Message<string> {
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new Error('Chain id is empty');
+      throw new Error("Chain id is empty");
     }
 
     if (!this.contractAddress) {
-      throw new Error('Contract address is empty');
+      throw new Error("Contract address is empty");
     }
   }
 

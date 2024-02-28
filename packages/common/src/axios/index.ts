@@ -1,26 +1,28 @@
-import { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
-import settle from 'axios/lib/core/settle';
-import buildURL from 'axios/lib/helpers/buildURL';
-import buildFullPath from 'axios/lib/core/buildFullPath';
-import { isUndefined } from 'axios/lib/utils';
+import { AxiosRequestConfig, AxiosResponse, AxiosError } from "axios";
+import settle from "axios/lib/core/settle";
+import buildURL from "axios/lib/helpers/buildURL";
+import buildFullPath from "axios/lib/core/buildFullPath";
+import { isUndefined } from "axios/lib/utils";
 
 /**
  * - Create a request object
  * - Get response body
  * - Check if timeout
  */
-export const fetchAdapter = async (config: AxiosRequestConfig): Promise<AxiosResponse> => {
+export const fetchAdapter = async (
+  config: AxiosRequestConfig
+): Promise<AxiosResponse> => {
   const request = createRequest(config);
   const promiseChain = [getResponse(request, config)];
 
   if (config.timeout && config.timeout > 0) {
     promiseChain.push(
-      new Promise(res => {
+      new Promise((res) => {
         setTimeout(() => {
           const message = config.timeoutErrorMessage
             ? config.timeoutErrorMessage
-            : 'timeout of ' + config.timeout + 'ms exceeded';
-          res(createError(message, config, 'ECONNABORTED', request));
+            : "timeout of " + config.timeout + "ms exceeded";
+          res(createError(message, config, "ECONNABORTED", request));
         }, config.timeout);
       })
     );
@@ -40,12 +42,15 @@ export const fetchAdapter = async (config: AxiosRequestConfig): Promise<AxiosRes
  * Fetch API stage two is to get response body. This funtion tries to retrieve
  * response body based on response's type
  */
-async function getResponse(request: Request, config: AxiosRequestConfig): Promise<AxiosResponse> {
+async function getResponse(
+  request: Request,
+  config: AxiosRequestConfig
+): Promise<AxiosResponse> {
   let stageOne: Response;
   try {
     stageOne = await fetch(request);
   } catch (e) {
-    return createError('Network Error', config, 'ERR_NETWORK', request);
+    return createError("Network Error", config, "ERR_NETWORK", request);
   }
 
   const response: AxiosResponse = {
@@ -54,18 +59,18 @@ async function getResponse(request: Request, config: AxiosRequestConfig): Promis
     headers: Object.fromEntries(stageOne.headers.entries()), // Make a copy of headers
     config: config,
     request,
-    data: null
+    data: null,
   };
 
   if (stageOne.status >= 200 && stageOne.status !== 204) {
     switch (config.responseType) {
-      case 'arraybuffer':
+      case "arraybuffer":
         response.data = await stageOne.arrayBuffer();
         break;
-      case 'blob':
+      case "blob":
         response.data = await stageOne.blob();
         break;
-      case 'json':
+      case "json":
         response.data = await stageOne.json();
         break;
       default:
@@ -85,23 +90,25 @@ function createRequest(config: AxiosRequestConfig): Request {
 
   // HTTP basic authentication
   if (config.auth) {
-    const username = config.auth.username || '';
-    const password = config.auth.password ? decodeURI(encodeURIComponent(config.auth.password)) : '';
-    headers['Authorization'] = `Basic ${btoa(username + ':' + password)}`;
+    const username = config.auth.username || "";
+    const password = config.auth.password
+      ? decodeURI(encodeURIComponent(config.auth.password))
+      : "";
+    headers["Authorization"] = `Basic ${btoa(username + ":" + password)}`;
   }
 
   const method = config.method.toUpperCase();
   const options: RequestInit = {
     headers: headers,
-    method
+    method,
   };
-  if (method !== 'GET' && method !== 'HEAD') {
+  if (method !== "GET" && method !== "HEAD") {
     options.body = config.data;
   }
   // This config is similar to XHR’s withCredentials flag, but with three available values instead of two.
   // So if withCredentials is not set, default value 'same-origin' will be used
   if (!isUndefined(config.withCredentials)) {
-    options.credentials = config.withCredentials ? 'include' : 'omit';
+    options.credentials = config.withCredentials ? "include" : "omit";
   }
 
   const fullPath = buildFullPath(config.baseURL, config.url);
@@ -134,7 +141,7 @@ function createError(
   code: string,
   request: Request
 ): AxiosResponse<AxiosError> {
-  const err = new AxiosError(message ?? 'Unknown error', code, config, request);
+  const err = new AxiosError(message ?? "Unknown error", code, config, request);
 
   const response: AxiosResponse = {
     status: Number(err.code),
@@ -142,7 +149,7 @@ function createError(
     headers: Object.fromEntries(request.headers),
     config,
     request,
-    data: err
+    data: err,
   };
 
   return response;

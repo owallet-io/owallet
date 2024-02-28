@@ -1,12 +1,12 @@
-import { Env, Handler, InternalHandler, Message } from '@owallet/router';
-import { TokensService } from './service';
+import { Env, Handler, InternalHandler, Message } from "@owallet/router";
+import { TokensService } from "./service";
 import {
   AddTokenMsg,
   GetSecret20ViewingKey,
   GetTokensMsg,
   RemoveTokenMsg,
-  SuggestTokenMsg
-} from './messages';
+  SuggestTokenMsg,
+} from "./messages";
 
 export const getHandler: (service: TokensService) => Handler = (service) => {
   return (env: Env, msg: Message<unknown>) => {
@@ -25,7 +25,7 @@ export const getHandler: (service: TokensService) => Handler = (service) => {
           msg as GetSecret20ViewingKey
         );
       default:
-        throw new Error('Unknown msg type');
+        throw new Error("Unknown msg type");
     }
   };
 };

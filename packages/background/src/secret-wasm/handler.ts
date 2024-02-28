@@ -1,11 +1,11 @@
-import { Env, Handler, InternalHandler, Message } from '@owallet/router';
+import { Env, Handler, InternalHandler, Message } from "@owallet/router";
 import {
   GetPubkeyMsg,
   GetTxEncryptionKeyMsg,
   ReqeustEncryptMsg,
-  RequestDecryptMsg
-} from './messages';
-import { SecretWasmService } from './service';
+  RequestDecryptMsg,
+} from "./messages";
+import { SecretWasmService } from "./service";
 
 export const getHandler: (service: SecretWasmService) => Handler = (
   service: SecretWasmService
@@ -24,7 +24,7 @@ export const getHandler: (service: SecretWasmService) => Handler = (
           msg as GetTxEncryptionKeyMsg
         );
       default:
-        throw new Error('Unknown msg type');
+        throw new Error("Unknown msg type");
     }
   };
 };

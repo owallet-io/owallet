@@ -1,33 +1,33 @@
 export const TYPES = {
-  ChainsStore: Symbol('ChainsStore'),
+  ChainsStore: Symbol("ChainsStore"),
 
-  ChainsEmbedChainInfos: Symbol('ChainsEmbededChainInfos'),
+  ChainsEmbedChainInfos: Symbol("ChainsEmbededChainInfos"),
 
-  InteractionStore: Symbol('InteractionStore'),
+  InteractionStore: Symbol("InteractionStore"),
 
-  KeyRingStore: Symbol('KeyRingStore'),
+  KeyRingStore: Symbol("KeyRingStore"),
 
-  LedgerStore: Symbol('LedgerStore'),
-  LedgerOptions: Symbol('LedgerOptions'),
+  LedgerStore: Symbol("LedgerStore"),
+  LedgerOptions: Symbol("LedgerOptions"),
 
-  PermissionStore: Symbol('PermissionStore'),
+  PermissionStore: Symbol("PermissionStore"),
   PermissionServicePrivilegedOrigins: Symbol(
-    'PermissionServicePrivilegedOrigins'
+    "PermissionServicePrivilegedOrigins"
   ),
 
-  PersistentMemoryStore: Symbol('PersistentMemoryStore'),
+  PersistentMemoryStore: Symbol("PersistentMemoryStore"),
 
-  SecretWasmStore: Symbol('SecretWasmStore'),
+  SecretWasmStore: Symbol("SecretWasmStore"),
 
-  TokensStore: Symbol('TokensStore'),
+  TokensStore: Symbol("TokensStore"),
 
-  TxStore: Symbol('TxStore'),
+  TxStore: Symbol("TxStore"),
 
-  UpdaterStore: Symbol('UpdaterStore'),
+  UpdaterStore: Symbol("UpdaterStore"),
 
-  EventMsgRequester: Symbol('EventMsgRequester'),
+  EventMsgRequester: Symbol("EventMsgRequester"),
 
-  RNG: Symbol('RandomNumberGenerator'),
-  CommonCrypto: Symbol('CommonCrypto'),
-  Notification: Symbol('Notification')
+  RNG: Symbol("RandomNumberGenerator"),
+  CommonCrypto: Symbol("CommonCrypto"),
+  Notification: Symbol("Notification"),
 };

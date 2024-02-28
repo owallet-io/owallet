@@ -1,7 +1,11 @@
-import bigInteger from 'big-integer';
-import { Int } from './int';
-import { CoinUtils } from './coin-utils';
-import { exponentDecStringToDecString, isExponentDecString, isValidDecimalString } from './etc';
+import bigInteger from "big-integer";
+import { Int } from "./int";
+import { CoinUtils } from "./coin-utils";
+import {
+  exponentDecStringToDecString,
+  isExponentDecString,
+  isValidDecimalString,
+} from "./etc";
 
 export class Dec {
   public static readonly precision = 18;
@@ -12,18 +16,20 @@ export class Dec {
   // The int in the `Dec` is handled as integer assuming that it has 18 precision.
   // (2 ** (256 + 60) - 1)
   protected static readonly maxDec = bigInteger(
-    '133499189745056880149688856635597007162669032647290798121690100488888732861290034376435130433535'
+    "133499189745056880149688856635597007162669032647290798121690100488888732861290034376435130433535"
   );
 
   protected static readonly precisionMultipliers: {
     [key: string]: bigInteger.BigInteger | undefined;
   } = {};
-  protected static calcPrecisionMultiplier(prec: number): bigInteger.BigInteger {
+  protected static calcPrecisionMultiplier(
+    prec: number
+  ): bigInteger.BigInteger {
     if (prec < 0) {
-      throw new Error('Invalid prec');
+      throw new Error("Invalid prec");
     }
     if (prec > Dec.precision) {
-      throw new Error('Too much precision');
+      throw new Error("Too much precision");
     }
     if (Dec.precisionMultipliers[prec.toString()]) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -40,11 +46,11 @@ export class Dec {
     res: string;
     isDownToZero: boolean;
   } {
-    const decimalPointIndex = str.indexOf('.');
+    const decimalPointIndex = str.indexOf(".");
     if (decimalPointIndex < 0) {
       return {
         res: str,
-        isDownToZero: false
+        isDownToZero: false,
       };
     }
 
@@ -52,14 +58,14 @@ export class Dec {
     if (exceededDecimals <= 0) {
       return {
         res: str,
-        isDownToZero: false
+        isDownToZero: false,
       };
     }
 
     const res = str.slice(0, str.length - exceededDecimals);
     return {
       res,
-      isDownToZero: /^[0.]*$/.test(res)
+      isDownToZero: /^[0.]*$/.test(res),
     };
   }
 
@@ -72,20 +78,20 @@ export class Dec {
    * @param prec - Precision
    */
   constructor(int: bigInteger.BigNumber | Int, prec: number = 0) {
-    if (typeof int === 'number') {
+    if (typeof int === "number") {
       int = int.toString();
     }
 
-    if (typeof int === 'string') {
+    if (typeof int === "string") {
       if (int.length === 0) {
-        int = '0.0';
+        int = "0.0";
         // throw new Error('empty string');
       }
       if (!isValidDecimalString(int)) {
         if (isExponentDecString(int)) {
           int = exponentDecStringToDecString(int);
         } else {
-          int = '0.0';
+          int = "0.0";
 
           // throw new Error(`invalid decimal: ${int}`);
         }
@@ -99,14 +105,14 @@ export class Dec {
         );
       }
       int = reduced.res;
-      if (int.indexOf('.') >= 0) {
-        prec = int.length - int.indexOf('.') - 1;
-        int = int.replace('.', '');
+      if (int.indexOf(".") >= 0) {
+        prec = int.length - int.indexOf(".") - 1;
+        int = int.replace(".", "");
       }
       this.int = bigInteger(int);
     } else if (int instanceof Int) {
       this.int = bigInteger(int.toString());
-    } else if (typeof int === 'bigint') {
+    } else if (typeof int === "bigint") {
       this.int = bigInteger(int);
     } else {
       this.int = bigInteger(int);
@@ -315,18 +321,23 @@ export class Dec {
     return this.int.divide(precision);
   }
 
-  public toString(prec: number = Dec.precision, locale: boolean = false): string {
+  public toString(
+    prec: number = Dec.precision,
+    locale: boolean = false
+  ): string {
     const precision = Dec.calcPrecisionMultiplier(0);
     const int = this.int.abs();
     const { quotient: integer, remainder: fraction } = int.divmod(precision);
 
     let fractionStr = fraction.toString(10);
     for (let i = 0, l = fractionStr.length; i < Dec.precision - l; i++) {
-      fractionStr = '0' + fractionStr;
+      fractionStr = "0" + fractionStr;
     }
     fractionStr = fractionStr.substring(0, prec);
 
-    const isNegative = this.isNegative() && !(integer.eq(bigInteger(0)) && fractionStr.length === 0);
+    const isNegative =
+      this.isNegative() &&
+      !(integer.eq(bigInteger(0)) && fractionStr.length === 0);
 
     const integerStr = locale
       ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -334,7 +345,9 @@ export class Dec {
         CoinUtils.integerStringToUSLocaleString(integer.toString())
       : integer.toString();
 
-    return `${isNegative ? '-' : ''}${integerStr}${fractionStr.length > 0 ? '.' + fractionStr : ''}`;
+    return `${isNegative ? "-" : ""}${integerStr}${
+      fractionStr.length > 0 ? "." + fractionStr : ""
+    }`;
   }
 
   public round(): Int {

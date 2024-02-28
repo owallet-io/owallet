@@ -1,7 +1,8 @@
-import { ImageSourcePropType } from 'react-native';
+import { ImageSourcePropType } from "react-native";
 
 export const InjectedProviderUrl =
-  process.env.INJECTED_PROVIDER_URL || 'https://static.orai.io/injected-provider-merge.bundle.js';
+  process.env.INJECTED_PROVIDER_URL ||
+  "https://static.orai.io/injected-provider-merge.bundle.js";
 
 export type DAppInfo = {
   name: string;
@@ -9,19 +10,19 @@ export type DAppInfo = {
   logo?: ImageSourcePropType;
 };
 
-const oraiLogo = require('../../assets/image/webpage/orai_logo.png');
+const oraiLogo = require("../../assets/image/webpage/orai_logo.png");
 // const aiRight = require('../../assets/image/webpage/airight_logo.png');
 
 export const DAppInfos: DAppInfo[] = [
   {
-    name: 'Oraidex',
-    uri: 'https://oraidex.io',
-    logo: oraiLogo
+    name: "Oraidex",
+    uri: "https://oraidex.io",
+    logo: oraiLogo,
   },
   {
-    name: 'Orderbook',
-    uri: 'https://orderbook.orai.io',
-    logo: oraiLogo
+    name: "Orderbook",
+    uri: "https://orderbook.orai.io",
+    logo: oraiLogo,
   },
   // {
   //
@@ -45,19 +46,19 @@ export const DAppInfos: DAppInfo[] = [
   //   logo: oraiLogo
   // },
   {
-    name: 'Osmosis',
-    uri: 'https://app.osmosis.zone',
-    logo: require('../../assets/image/webpage/osmosis_logo.png')
+    name: "Osmosis",
+    uri: "https://app.osmosis.zone",
+    logo: require("../../assets/image/webpage/osmosis_logo.png"),
   },
   {
-    name: 'Oraiscan testnet',
-    uri: 'https://testnet.scan.orai.io',
-    logo: oraiLogo
+    name: "Oraiscan testnet",
+    uri: "https://testnet.scan.orai.io",
+    logo: oraiLogo,
   },
   {
-    name: 'Oraiscan',
-    uri: 'https://scan.orai.io',
-    logo: oraiLogo
+    name: "Oraiscan",
+    uri: "https://scan.orai.io",
+    logo: oraiLogo,
   },
   // {
   //   name: 'Balcony Subnet',
@@ -71,9 +72,9 @@ export const DAppInfos: DAppInfo[] = [
   //   logo: balconyLogo
   // },
   {
-    name: 'OraiDEX Info',
-    uri: 'https://info.oraidex.io',
-    logo: oraiLogo
+    name: "OraiDEX Info",
+    uri: "https://info.oraidex.io",
+    logo: oraiLogo,
   },
   // {
   //
@@ -82,41 +83,41 @@ export const DAppInfos: DAppInfo[] = [
   //   logo: balconyLogo
   // },
   {
-    name: 'Orchai App',
-    uri: 'https://app.orchai.io',
-    logo: oraiLogo
+    name: "Orchai App",
+    uri: "https://app.orchai.io",
+    logo: oraiLogo,
   },
   {
-    name: 'Orchai App Staging',
-    uri: 'https://app-staging.orchai.io',
-    logo: oraiLogo
+    name: "Orchai App Staging",
+    uri: "https://app-staging.orchai.io",
+    logo: oraiLogo,
   },
   {
-    name: 'Kawaii App Staging',
-    uri: 'https://owallet-kawaii.web.app',
-    logo: oraiLogo
+    name: "Kawaii App Staging",
+    uri: "https://owallet-kawaii.web.app",
+    logo: oraiLogo,
   },
   {
-    name: 'Kawaii App',
-    uri: 'https://owallet-kawaii.firebaseapp.com',
-    logo: oraiLogo
+    name: "Kawaii App",
+    uri: "https://owallet-kawaii.firebaseapp.com",
+    logo: oraiLogo,
   },
   {
-    name: 'aiRight',
-    uri: 'https://airight.io',
-    logo: oraiLogo
+    name: "aiRight",
+    uri: "https://airight.io",
+    logo: oraiLogo,
   },
   {
-    name: 'aiRight',
-    uri: 'https://mainnet-airight-staging.web.app',
-    logo: oraiLogo
-  }
+    name: "aiRight",
+    uri: "https://mainnet-airight-staging.web.app",
+    logo: oraiLogo,
+  },
 ];
 
 if (__DEV__) {
   DAppInfos.unshift({
-    name: 'Oraidex',
+    name: "Oraidex",
     uri: InjectedProviderUrl,
-    logo: oraiLogo
+    logo: oraiLogo,
   });
 }

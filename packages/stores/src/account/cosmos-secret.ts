@@ -26,7 +26,8 @@ export class AccountWithCosmosAndSecret
     CosmosMsgOpts & SecretMsgOpts,
     HasCosmosQueries & HasSecretQueries
   >
-  implements HasCosmosAccount, HasSecretAccount {
+  implements HasCosmosAccount, HasSecretAccount
+{
   static readonly defaultMsgOpts: CosmosMsgOpts & SecretMsgOpts = deepmerge(
     AccountWithCosmos.defaultMsgOpts,
     AccountWithSecret.defaultMsgOpts

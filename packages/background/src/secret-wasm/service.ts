@@ -1,17 +1,17 @@
-import { delay, inject, singleton } from 'tsyringe';
-import { TYPES } from '../types';
+import { delay, inject, singleton } from "tsyringe";
+import { TYPES } from "../types";
 
-import { EnigmaUtils } from 'secretjs';
-import { KeyRingService } from '../keyring';
-import { ChainsService } from '../chains';
-import { PermissionService } from '../permission';
-import { Hash } from '@owallet/crypto';
-import { KVStore, Debouncer } from '@owallet/common';
-import { ChainInfo } from '@owallet/types';
-import { Bech32Address } from '@owallet/cosmos';
-import { Env } from '@owallet/router';
+import { EnigmaUtils } from "secretjs";
+import { KeyRingService } from "../keyring";
+import { ChainsService } from "../chains";
+import { PermissionService } from "../permission";
+import { Hash } from "@owallet/crypto";
+import { KVStore, Debouncer } from "@owallet/common";
+import { ChainInfo } from "@owallet/types";
+import { Bech32Address } from "@owallet/cosmos";
+import { Env } from "@owallet/router";
 
-import { Buffer } from 'buffer';
+import { Buffer } from "buffer";
 
 @singleton()
 export class SecretWasmService {
@@ -47,8 +47,8 @@ export class SecretWasmService {
     const chainInfo = await this.chainsService.getChainInfo(chainId);
 
     const keyRingType = this.keyRingService.getKeyRingType();
-    if (keyRingType === 'none') {
-      throw new Error('Key ring is not initialized');
+    if (keyRingType === "none") {
+      throw new Error("Key ring is not initialized");
     }
 
     const seed = await this.getSeed(env, chainInfo);
@@ -65,8 +65,8 @@ export class SecretWasmService {
     const chainInfo = await this.chainsService.getChainInfo(chainId);
 
     const keyRingType = this.keyRingService.getKeyRingType();
-    if (keyRingType === 'none') {
-      throw new Error('Key ring is not initialized');
+    if (keyRingType === "none") {
+      throw new Error("Key ring is not initialized");
     }
 
     const seed = await this.getSeed(env, chainInfo);
@@ -85,8 +85,8 @@ export class SecretWasmService {
     const chainInfo = await this.chainsService.getChainInfo(chainId);
 
     const keyRingType = this.keyRingService.getKeyRingType();
-    if (keyRingType === 'none') {
-      throw new Error('Key ring is not initialized');
+    if (keyRingType === "none") {
+      throw new Error("Key ring is not initialized");
     }
 
     // XXX: OWallet should generate the seed deterministically according to the account.
@@ -109,8 +109,8 @@ export class SecretWasmService {
     const chainInfo = await this.chainsService.getChainInfo(chainId);
 
     const keyRingType = this.keyRingService.getKeyRingType();
-    if (keyRingType === 'none') {
-      throw new Error('Key ring is not initialized');
+    if (keyRingType === "none") {
+      throw new Error("Key ring is not initialized");
     }
 
     // XXX: OWallet should generate the seed deterministically according to the account.
@@ -125,7 +125,7 @@ export class SecretWasmService {
   }
 
   private getEnigmaUtils(chainInfo: ChainInfo, seed: Uint8Array): EnigmaUtils {
-    const key = `${chainInfo.chainId}-${Buffer.from(seed).toString('hex')}`;
+    const key = `${chainInfo.chainId}-${Buffer.from(seed).toString("hex")}`;
 
     if (this.cacheEnigmaUtils.has(key)) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -172,7 +172,7 @@ export class SecretWasmService {
 
     const cached = await this.kvStore.get<string>(storeKey);
     if (cached) {
-      return Buffer.from(cached, 'hex');
+      return Buffer.from(cached, "hex");
     }
 
     const seed = Hash.sha256(
@@ -185,16 +185,16 @@ export class SecretWasmService {
               account_number: 0,
               chain_id: chainInfo.chainId,
               fee: [],
-              memo: 'Create OWallet Secret encryption key. Only approve requests by OWallet.',
+              memo: "Create OWallet Secret encryption key. Only approve requests by OWallet.",
               msgs: [],
-              sequence: 0
+              sequence: 0,
             })
           )
         )
       )
     );
 
-    await this.kvStore.set(storeKey, Buffer.from(seed).toString('hex'));
+    await this.kvStore.set(storeKey, Buffer.from(seed).toString("hex"));
 
     return seed;
   }

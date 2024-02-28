@@ -1,7 +1,7 @@
-import { InteractionStore } from './interaction';
-import { ChainInfo } from '@owallet/types';
-import { SuggestChainInfoMsg } from '@owallet/background';
-import { flow, makeObservable, observable } from 'mobx';
+import { InteractionStore } from "./interaction";
+import { ChainInfo } from "@owallet/types";
+import { SuggestChainInfoMsg } from "@owallet/background";
+import { flow, makeObservable, observable } from "mobx";
 
 export class ChainSuggestStore {
   @observable

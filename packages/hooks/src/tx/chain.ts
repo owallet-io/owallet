@@ -1,7 +1,7 @@
-import { action, computed, makeObservable, observable } from 'mobx';
-import { ChainGetter } from '@owallet/stores';
-import { ChainInfo } from '@owallet/types';
-import { ITxChainSetter } from './types';
+import { action, computed, makeObservable, observable } from "mobx";
+import { ChainGetter } from "@owallet/stores";
+import { ChainInfo } from "@owallet/types";
+import { ITxChainSetter } from "./types";
 
 export class TxChainSetter implements ITxChainSetter {
   @observable

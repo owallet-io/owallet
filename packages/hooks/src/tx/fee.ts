@@ -1,16 +1,28 @@
-import { DefaultGasPriceStep, FeeType, IAmountConfig, IFeeConfig, IGasConfig, IMemoConfig } from './types';
-import { TxChainSetter } from './chain';
-import { ChainGetter, CoinPrimitive, ObservableQueryBitcoinBalance, ObservableQueryEvmBalance } from '@owallet/stores';
-import { action, computed, makeObservable, observable } from 'mobx';
-import { Coin, CoinPretty, Dec, DecUtils, Int } from '@owallet/unit';
-import { AddressBtcType, Currency, IFeeRate } from '@owallet/types';
-import { computedFn } from 'mobx-utils';
-import { StdFee } from '@cosmjs/launchpad';
-import { useState } from 'react';
-import { ObservableQueryBalances } from '@owallet/stores';
-import { InsufficientFeeError, NotLoadedFeeError } from './errors';
-import { calculatorFee, getFeeRate } from '@owallet/bitcoin';
-import { MIN_FEE_RATE } from '@owallet/common';
+import {
+  DefaultGasPriceStep,
+  FeeType,
+  IAmountConfig,
+  IFeeConfig,
+  IGasConfig,
+  IMemoConfig,
+} from "./types";
+import { TxChainSetter } from "./chain";
+import {
+  ChainGetter,
+  CoinPrimitive,
+  ObservableQueryBitcoinBalance,
+  ObservableQueryEvmBalance,
+} from "@owallet/stores";
+import { action, computed, makeObservable, observable } from "mobx";
+import { Coin, CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
+import { AddressBtcType, Currency, IFeeRate } from "@owallet/types";
+import { computedFn } from "mobx-utils";
+import { StdFee } from "@cosmjs/launchpad";
+import { useState } from "react";
+import { ObservableQueryBalances } from "@owallet/stores";
+import { InsufficientFeeError, NotLoadedFeeError } from "./errors";
+import { calculatorFee, getFeeRate } from "@owallet/bitcoin";
+import { MIN_FEE_RATE } from "@owallet/common";
 
 export class FeeConfig extends TxChainSetter implements IFeeConfig {
   @observable.ref
@@ -27,7 +39,7 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
   protected _feeRate: IFeeRate = {
     low: MIN_FEE_RATE,
     average: MIN_FEE_RATE,
-    high: MIN_FEE_RATE
+    high: MIN_FEE_RATE,
   };
 
   @observable
@@ -74,7 +86,7 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
     this.queryEvmBalances = queryEvmBalances;
     this.additionAmountToNeedFee = additionAmountToNeedFee;
     this.queryBtcBalances = queryBtcBalances;
-    if (this.chainInfo.networkType === 'bitcoin') {
+    if (this.chainInfo.networkType === "bitcoin") {
       this.estimateFeeRate();
     }
     makeObservable(this);
@@ -87,16 +99,22 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
           try {
             const feeRate = await getFeeRate({
               url: this.chainInfo.rest,
-              blocksWillingToWait: this.chainInfo.gasPriceStep[item]
+              blocksWillingToWait: this.chainInfo.gasPriceStep[item],
             });
             this._feeRate[item] = feeRate;
           } catch (error) {
-            console.log('🚀 ~ file: fee.ts:94 ~ FeeConfig ~ Object.keys ~ error:', error);
+            console.log(
+              "🚀 ~ file: fee.ts:94 ~ FeeConfig ~ Object.keys ~ error:",
+              error
+            );
           }
         })
       );
     } catch (error) {
-      console.log('🚀 ~ file: fee.ts:101 ~ FeeConfig ~ estimateFeeRate ~ error:', error);
+      console.log(
+        "🚀 ~ file: fee.ts:101 ~ FeeConfig ~ estimateFeeRate ~ error:",
+        error
+      );
     }
   }
   @action
@@ -157,13 +175,13 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
     if (!amount) {
       return {
         gas: this.gasConfig.gas.toString(),
-        amount: []
+        amount: [],
       };
     }
 
     return {
       gas: this.gasConfig.gas.toString(),
-      amount: [amount]
+      amount: [amount],
     };
   }
 
@@ -203,53 +221,57 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
       // If fee is not set, just return with empty fee amount.
       return undefined;
     } catch (error) {
-      console.log('Error in getFeePrimitive:', error);
+      console.log("Error in getFeePrimitive:", error);
     }
   }
 
   protected getFeeTypePrimitive(feeType: FeeType): CoinPrimitive {
     try {
       if (!this.feeCurrency) {
-        throw new Error('Fee currency not set');
+        throw new Error("Fee currency not set");
       }
 
       const gasPriceStep = this.chainInfo.stakeCurrency.gasPriceStep
         ? this.chainInfo.stakeCurrency.gasPriceStep
         : DefaultGasPriceStep;
       const gasPrice = new Dec(gasPriceStep[feeType].toString());
-      if (this.chainInfo.networkType === 'bitcoin') {
-        const data = this.queryBtcBalances.getQueryBalance(this._sender)?.response?.data;
+      if (this.chainInfo.networkType === "bitcoin") {
+        const data = this.queryBtcBalances.getQueryBalance(this._sender)
+          ?.response?.data;
         const utxos = data?.utxos;
         const amount = calculatorFee({
           utxos: utxos,
           message: this.memoConfig.memo,
-          transactionFee: this.feeRate[feeType]
+          transactionFee: this.feeRate[feeType],
         });
         return {
           denom: this.feeCurrency.coinMinimalDenom,
-          amount: amount.toString()
+          amount: amount.toString(),
         };
       }
       const feeAmount = gasPrice.mul(new Dec(this.gasConfig.gas));
       return {
         denom: this.feeCurrency.coinMinimalDenom,
-        amount: feeAmount.roundUp().toString()
+        amount: feeAmount.roundUp().toString(),
       };
     } catch (error) {
-      console.log('Error in getFeeTypePrimitive:', error);
+      console.log("Error in getFeeTypePrimitive:", error);
     }
   }
 
   readonly getFeeTypePretty = computedFn((feeType: FeeType) => {
     if (!this.feeCurrency) {
-      throw new Error('Fee currency not set');
+      throw new Error("Fee currency not set");
     }
 
     const feeTypePrimitive = this.getFeeTypePrimitive(feeType);
 
     const feeCurrency = this.feeCurrency;
 
-    return new CoinPretty(feeCurrency, new Int(feeTypePrimitive.amount)).maxDecimals(feeCurrency.coinDecimals);
+    return new CoinPretty(
+      feeCurrency,
+      new Int(feeTypePrimitive.amount)
+    ).maxDecimals(feeCurrency.coinDecimals);
   });
 
   getError(): Error | undefined {
@@ -271,61 +293,84 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
 
       let need: Coin;
       if (this.additionAmountToNeedFee && fee && fee.denom === amount.denom) {
-        need = new Coin(fee.denom, new Int(fee.amount).add(new Int(amount.amount)));
+        need = new Coin(
+          fee.denom,
+          new Int(fee.amount).add(new Int(amount.amount))
+        );
       } else {
         need = new Coin(fee.denom, new Int(fee.amount));
       }
 
       if (need.amount.gt(new Int(0))) {
-        if (this.chainInfo.networkType === 'evm') {
+        if (this.chainInfo.networkType === "evm") {
           if (!this.queryEvmBalances) return;
-          const balance = this.queryEvmBalances.getQueryBalance(this._senderEvm).balance;
-          if (!balance) return new InsufficientFeeError('insufficient fee');
+          const balance = this.queryEvmBalances.getQueryBalance(
+            this._senderEvm
+          ).balance;
+          if (!balance) return new InsufficientFeeError("insufficient fee");
           else if (
             balance
               .toDec()
-              .mul(DecUtils.getTenExponentNInPrecisionRange(balance.currency.coinDecimals))
+              .mul(
+                DecUtils.getTenExponentNInPrecisionRange(
+                  balance.currency.coinDecimals
+                )
+              )
               .truncate()
               .lt(need.amount)
           )
-            return new InsufficientFeeError('insufficient fee');
-        } else if (this.chainInfo.networkType === 'bitcoin') {
+            return new InsufficientFeeError("insufficient fee");
+        } else if (this.chainInfo.networkType === "bitcoin") {
           if (!this.queryBtcBalances) return;
-          const balance = this.queryBtcBalances.getQueryBalance(this._sender)?.balance;
-          if (!balance) return new InsufficientFeeError('insufficient fee');
+          const balance = this.queryBtcBalances.getQueryBalance(
+            this._sender
+          )?.balance;
+          if (!balance) return new InsufficientFeeError("insufficient fee");
           else if (
             balance
               .toDec()
-              .mul(DecUtils.getTenExponentNInPrecisionRange(balance.currency.coinDecimals))
+              .mul(
+                DecUtils.getTenExponentNInPrecisionRange(
+                  balance.currency.coinDecimals
+                )
+              )
               .truncate()
               .lt(need.amount)
           ) {
-            return new InsufficientFeeError('insufficient fee');
+            return new InsufficientFeeError("insufficient fee");
           }
         } else {
-          const bal = this.queryBalances.getQueryBech32Address(this._sender).balances.find((bal) => {
-            return bal.currency.coinMinimalDenom === need.denom;
-          });
+          const bal = this.queryBalances
+            .getQueryBech32Address(this._sender)
+            .balances.find((bal) => {
+              return bal.currency.coinMinimalDenom === need.denom;
+            });
 
           if (!bal) {
-            return new InsufficientFeeError('insufficient fee');
+            return new InsufficientFeeError("insufficient fee");
           } else if (!bal.response && !bal.error) {
             // If fetching balance doesn't have the response nor error,
             // assume it is not loaded from KVStore(cache).
-            return new NotLoadedFeeError(`${bal.currency.coinDenom} is not loaded yet`);
+            return new NotLoadedFeeError(
+              `${bal.currency.coinDenom} is not loaded yet`
+            );
           } else if (
             bal.balance
               .toDec()
-              .mul(DecUtils.getTenExponentNInPrecisionRange(bal.currency.coinDecimals))
+              .mul(
+                DecUtils.getTenExponentNInPrecisionRange(
+                  bal.currency.coinDecimals
+                )
+              )
               .truncate()
               .lt(need.amount)
           ) {
-            return new InsufficientFeeError('insufficient fee');
+            return new InsufficientFeeError("insufficient fee");
           }
         }
       }
     } catch (error) {
-      console.log('Error on get fees: ', error);
+      console.log("Error on get fees: ", error);
     }
   }
 

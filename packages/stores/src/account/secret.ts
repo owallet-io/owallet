@@ -1,44 +1,47 @@
-import { AccountSetBase, AccountSetOpts, MsgOpt } from './base';
-import { HasSecretQueries, QueriesSetBase, QueriesStore } from '../query';
-import { Buffer } from 'buffer';
-import { ChainGetter, CoinPrimitive } from '../common';
-import { StdFee } from '@cosmjs/launchpad';
-import { DenomHelper } from '@owallet/common';
-import { Dec, DecUtils } from '@owallet/unit';
-import { AppCurrency, OWalletSignOptions } from '@owallet/types';
-import { DeepReadonly, Optional } from 'utility-types';
+import { AccountSetBase, AccountSetOpts, MsgOpt } from "./base";
+import { HasSecretQueries, QueriesSetBase, QueriesStore } from "../query";
+import { Buffer } from "buffer";
+import { ChainGetter, CoinPrimitive } from "../common";
+import { StdFee } from "@cosmjs/launchpad";
+import { DenomHelper } from "@owallet/common";
+import { Dec, DecUtils } from "@owallet/unit";
+import { AppCurrency, OWalletSignOptions } from "@owallet/types";
+import { DeepReadonly, Optional } from "utility-types";
 
-import { TxMsgData } from '@owallet/proto-types/cosmos/base/abci/v1beta1/abci';
+import { TxMsgData } from "@owallet/proto-types/cosmos/base/abci/v1beta1/abci";
 export interface HasSecretAccount {
   secret: DeepReadonly<SecretAccount>;
 }
 
 export interface SecretMsgOpts {
   readonly send: {
-    readonly secret20: Pick<MsgOpt, 'gas'>;
+    readonly secret20: Pick<MsgOpt, "gas">;
   };
 
-  readonly createSecret20ViewingKey: Pick<MsgOpt, 'gas'>;
-  readonly executeSecretWasm: Pick<MsgOpt, 'type'>;
+  readonly createSecret20ViewingKey: Pick<MsgOpt, "gas">;
+  readonly executeSecretWasm: Pick<MsgOpt, "type">;
 }
 
-export class AccountWithSecret extends AccountSetBase<SecretMsgOpts, HasSecretQueries> implements HasSecretAccount {
+export class AccountWithSecret
+  extends AccountSetBase<SecretMsgOpts, HasSecretQueries>
+  implements HasSecretAccount
+{
   public readonly secret: DeepReadonly<SecretAccount>;
 
   static readonly defaultMsgOpts: SecretMsgOpts = {
     send: {
       secret20: {
-        gas: 250000
-      }
+        gas: 250000,
+      },
     },
 
     createSecret20ViewingKey: {
-      gas: 150000
+      gas: 150000,
     },
 
     executeSecretWasm: {
-      type: 'wasm/MsgExecuteContract'
-    }
+      type: "wasm/MsgExecuteContract",
+    },
   };
 
   constructor(
@@ -48,7 +51,9 @@ export class AccountWithSecret extends AccountSetBase<SecretMsgOpts, HasSecretQu
     },
     protected readonly chainGetter: ChainGetter,
     protected readonly chainId: string,
-    protected readonly queriesStore: QueriesStore<QueriesSetBase & HasSecretQueries>,
+    protected readonly queriesStore: QueriesStore<
+      QueriesSetBase & HasSecretQueries
+    >,
     protected readonly opts: AccountSetOpts<SecretMsgOpts>
   ) {
     super(eventListener, chainGetter, chainId, queriesStore, opts);
@@ -62,7 +67,9 @@ export class SecretAccount {
     protected readonly base: AccountSetBase<SecretMsgOpts, HasSecretQueries>,
     protected readonly chainGetter: ChainGetter,
     protected readonly chainId: string,
-    protected readonly queriesStore: QueriesStore<QueriesSetBase & HasSecretQueries>
+    protected readonly queriesStore: QueriesStore<
+      QueriesSetBase & HasSecretQueries
+    >
   ) {
     this.base.registerSendTokenFn(this.processSendToken.bind(this));
   }
@@ -83,40 +90,47 @@ export class SecretAccount {
   ): Promise<boolean> {
     const denomHelper = new DenomHelper(currency.coinMinimalDenom);
 
-    if (signOptions.networkType === 'cosmos') {
+    if (signOptions.networkType === "cosmos") {
       switch (denomHelper.type) {
-        case 'secret20':
+        case "secret20":
           const actualAmount = (() => {
             let dec = new Dec(amount);
-            dec = dec.mul(DecUtils.getTenExponentNInPrecisionRange(currency.coinDecimals));
+            dec = dec.mul(
+              DecUtils.getTenExponentNInPrecisionRange(currency.coinDecimals)
+            );
             return dec.truncate().toString();
           })();
 
-          if (!('type' in currency) || currency.type !== 'secret20') {
-            throw new Error('Currency is not secret20');
+          if (!("type" in currency) || currency.type !== "secret20") {
+            throw new Error("Currency is not secret20");
           }
           await this.sendExecuteSecretContractMsg(
-            'send',
+            "send",
             currency.contractAddress || denomHelper.contractAddress,
             {
               transfer: {
                 recipient: recipient,
-                amount: actualAmount
-              }
+                amount: actualAmount,
+              },
             },
             [],
             memo,
             {
               amount: stdFee.amount ?? [],
-              gas: stdFee.gas ?? this.base.msgOpts.send.secret20.gas.toString()
+              gas: stdFee.gas ?? this.base.msgOpts.send.secret20.gas.toString(),
             },
             signOptions,
             this.txEventsWithPreOnFulfill(onTxEvents, (tx) => {
               if (tx.code == null || tx.code === 0) {
                 // After succeeding to send token, refresh the balance.
-                const queryBalance = this.queries.queryBalances.getQueryBech32Address(this.base.bech32Address).balances.find((bal) => {
-                  return bal.currency.coinMinimalDenom === currency.coinMinimalDenom;
-                });
+                const queryBalance = this.queries.queryBalances
+                  .getQueryBech32Address(this.base.bech32Address)
+                  .balances.find((bal) => {
+                    return (
+                      bal.currency.coinMinimalDenom ===
+                      currency.coinMinimalDenom
+                    );
+                  });
 
                 if (queryBalance) {
                   queryBalance.fetch();
@@ -132,40 +146,42 @@ export class SecretAccount {
 
   async createSecret20ViewingKey(
     contractAddress: string,
-    memo: string = '',
+    memo: string = "",
     stdFee: Partial<StdFee> = {},
     signOptions?: OWalletSignOptions,
     onFulfill?: (tx: any, viewingKey: string) => void
   ) {
     const random = new Uint8Array(15);
     crypto.getRandomValues(random);
-    const entropy = Buffer.from(random).toString('hex');
+    const entropy = Buffer.from(random).toString("hex");
 
     const encrypted = await this.sendExecuteSecretContractMsg(
-      'createSecret20ViewingKey',
+      "createSecret20ViewingKey",
       contractAddress,
       {
-        create_viewing_key: { entropy }
+        create_viewing_key: { entropy },
       },
       [],
       memo,
       {
         amount: stdFee.amount ?? [],
-        gas: stdFee.gas ?? this.base.msgOpts.createSecret20ViewingKey.gas.toString()
+        gas:
+          stdFee.gas ??
+          this.base.msgOpts.createSecret20ViewingKey.gas.toString(),
       },
       signOptions,
       async (tx) => {
-        let viewingKey = '';
-        if (tx && 'data' in tx && tx.data) {
-          const txData = Buffer.from(tx.data as any, 'base64');
+        let viewingKey = "";
+        if (tx && "data" in tx && tx.data) {
+          const txData = Buffer.from(tx.data as any, "base64");
           const dataFields = TxMsgData.decode(txData);
           if (dataFields.data.length !== 1) {
-            throw new Error('Invalid length of data fields');
+            throw new Error("Invalid length of data fields");
           }
 
           const dataField = dataFields.data[0];
           if (!dataField.data) {
-            throw new Error('Empty data');
+            throw new Error("Empty data");
           }
 
           const owallet = await this.base.getOWallet();
@@ -178,11 +194,16 @@ export class SecretAccount {
 
           const nonce = encrypted.slice(0, 32);
 
-          const dataOutput = Buffer.from(Buffer.from(await enigmaUtils.decrypt(dataField.data, nonce)).toString(), 'base64').toString();
+          const dataOutput = Buffer.from(
+            Buffer.from(
+              await enigmaUtils.decrypt(dataField.data, nonce)
+            ).toString(),
+            "base64"
+          ).toString();
 
           // Expected: {"create_viewing_key":{"key":"api_key_1k1T...btJQo="}}
           const data = JSON.parse(dataOutput);
-          viewingKey = data['create_viewing_key']['key'];
+          viewingKey = data["create_viewing_key"]["key"];
         }
 
         if (onFulfill) {
@@ -195,13 +216,13 @@ export class SecretAccount {
 
   async sendExecuteSecretContractMsg(
     // This arg can be used to override the type of sending tx if needed.
-    type: keyof SecretMsgOpts | 'unknown' = 'executeSecretWasm',
+    type: keyof SecretMsgOpts | "unknown" = "executeSecretWasm",
     contractAddress: string,
     // eslint-disable-next-line @typescript-eslint/ban-types
     obj: object,
     sentFunds: CoinPrimitive[],
-    memo: string = '',
-    stdFee: Optional<StdFee, 'amount'>,
+    memo: string = "",
+    stdFee: Optional<StdFee, "amount">,
     signOptions?: OWalletSignOptions,
     onTxEvents?:
       | ((tx: any) => void)
@@ -252,10 +273,15 @@ export class SecretAccount {
     // eslint-disable-next-line @typescript-eslint/ban-types
     obj: object
   ): Promise<Uint8Array> {
-    const queryContractCodeHashResponse = await this.queries.secret.querySecretContractCodeHash.getQueryContract(contractAddress).waitResponse();
+    const queryContractCodeHashResponse =
+      await this.queries.secret.querySecretContractCodeHash
+        .getQueryContract(contractAddress)
+        .waitResponse();
 
     if (!queryContractCodeHashResponse) {
-      throw new Error(`Can't get the code hash of the contract (${contractAddress})`);
+      throw new Error(
+        `Can't get the code hash of the contract (${contractAddress})`
+      );
     }
 
     const contractCodeHash = queryContractCodeHashResponse.data.result;
@@ -288,8 +314,10 @@ export class SecretAccount {
       return;
     }
 
-    const onBroadcasted = typeof onTxEvents === 'function' ? undefined : onTxEvents.onBroadcasted;
-    const onFulfill = typeof onTxEvents === 'function' ? onTxEvents : onTxEvents.onFulfill;
+    const onBroadcasted =
+      typeof onTxEvents === "function" ? undefined : onTxEvents.onBroadcasted;
+    const onFulfill =
+      typeof onTxEvents === "function" ? onTxEvents : onTxEvents.onFulfill;
 
     return {
       onBroadcasted,
@@ -301,7 +329,7 @@ export class SecretAccount {
 
             onFulfill(tx);
           }
-        : undefined
+        : undefined,
     };
   }
 

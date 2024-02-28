@@ -1,19 +1,29 @@
-import Transport from '@ledgerhq/hw-transport';
-import CosmosApp from '@ledgerhq/hw-app-cosmos';
-import EthApp from '@ledgerhq/hw-app-eth';
-import TrxApp from '@ledgerhq/hw-app-trx';
-import BtcApp from '@ledgerhq/hw-app-btc';
-import TransportWebHID from '@ledgerhq/hw-transport-webhid';
-import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
-import { signatureImport } from 'secp256k1';
-import { Buffer } from 'buffer';
-import { OWalletError } from '@owallet/router';
-import { EIP712MessageValidator, stringifyPath, ethSignatureToBytes, domainHash, messageHash } from '../utils/helper';
-import { LedgerAppType, keyDerivationToAddressType } from '@owallet/common';
-import * as Bitcoin from 'bitcoinjs-lib';
-import { buildTx, getAddressTypeByAddress, getCoinNetwork } from '@owallet/bitcoin';
-import { AddressBtcType, KeyDerivationTypeEnum } from '@owallet/types';
-import { Transaction } from '@ledgerhq/hw-app-btc/lib/types';
+import Transport from "@ledgerhq/hw-transport";
+import CosmosApp from "@ledgerhq/hw-app-cosmos";
+import EthApp from "@ledgerhq/hw-app-eth";
+import TrxApp from "@ledgerhq/hw-app-trx";
+import BtcApp from "@ledgerhq/hw-app-btc";
+import TransportWebHID from "@ledgerhq/hw-transport-webhid";
+import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
+import { signatureImport } from "secp256k1";
+import { Buffer } from "buffer";
+import { OWalletError } from "@owallet/router";
+import {
+  EIP712MessageValidator,
+  stringifyPath,
+  ethSignatureToBytes,
+  domainHash,
+  messageHash,
+} from "../utils/helper";
+import { LedgerAppType, keyDerivationToAddressType } from "@owallet/common";
+import * as Bitcoin from "bitcoinjs-lib";
+import {
+  buildTx,
+  getAddressTypeByAddress,
+  getCoinNetwork,
+} from "@owallet/bitcoin";
+import { AddressBtcType, KeyDerivationTypeEnum } from "@owallet/types";
+import { Transaction } from "@ledgerhq/hw-app-btc/lib/types";
 export type TransportIniter = (...args: any[]) => Promise<Transport>;
 export interface UTXO {
   txid: string;
@@ -27,7 +37,7 @@ export interface UTXO {
 export enum LedgerInitErrorOn {
   Transport,
   App,
-  Unknown
+  Unknown,
 }
 
 export class LedgerInitError extends Error {
@@ -39,22 +49,29 @@ export class LedgerInitError extends Error {
   }
 }
 
-export type TransportMode = 'webusb' | 'webhid' | 'ble';
+export type TransportMode = "webusb" | "webhid" | "ble";
 
 export class LedgerInternal {
-  constructor(private readonly ledgerApp: CosmosApp | EthApp | TrxApp | BtcApp, private readonly type: LedgerAppType) {}
+  constructor(
+    private readonly ledgerApp: CosmosApp | EthApp | TrxApp | BtcApp,
+    private readonly type: LedgerAppType
+  ) {}
 
   static transportIniters: Record<TransportMode, TransportIniter> = {
     webusb: TransportWebUSB.create.bind(TransportWebUSB),
     webhid: TransportWebHID.create.bind(TransportWebHID),
     // implemented in ReactNative
-    ble: () => Promise.resolve(null)
+    ble: () => Promise.resolve(null),
   };
 
-  static async init(mode: TransportMode, initArgs: any[] = [], ledgerAppType: LedgerAppType): Promise<LedgerInternal> {
+  static async init(
+    mode: TransportMode,
+    initArgs: any[] = [],
+    ledgerAppType: LedgerAppType
+  ): Promise<LedgerInternal> {
     const transportIniter = LedgerInternal.transportIniters[mode];
     if (!transportIniter) {
-      throw new OWalletError('ledger', 112, `Unknown mode: ${mode}`);
+      throw new OWalletError("ledger", 112, `Unknown mode: ${mode}`);
     }
 
     let app: CosmosApp | EthApp | TrxApp | BtcApp;
@@ -62,11 +79,11 @@ export class LedgerInternal {
     const transport = await transportIniter(...initArgs);
 
     try {
-      if (ledgerAppType === 'trx') {
+      if (ledgerAppType === "trx") {
         app = new TrxApp(transport);
-      } else if (ledgerAppType === 'eth') {
+      } else if (ledgerAppType === "eth") {
         app = new EthApp(transport);
-      } else if (ledgerAppType === 'btc') {
+      } else if (ledgerAppType === "btc") {
         app = new BtcApp(transport);
       } else {
         app = new CosmosApp(transport);
@@ -74,14 +91,14 @@ export class LedgerInternal {
 
       const ledger = new LedgerInternal(app, ledgerAppType);
 
-      if (ledgerAppType === 'cosmos') {
+      if (ledgerAppType === "cosmos") {
         const versionResponse = await ledger.getVersion();
 
         // In this case, device is on screen saver.
         // However, it is almost same as that the device is not unlocked to user-side.
         // So, handle this case as initializing failed in `Transport`.
         if (versionResponse.deviceLocked) {
-          throw new Error('Device is on screen saver');
+          throw new Error("Device is on screen saver");
         }
       }
 
@@ -90,7 +107,7 @@ export class LedgerInternal {
       if (transport) {
         await transport.close();
       }
-      if (e.message === 'Device is on screen saver') {
+      if (e.message === "Device is on screen saver") {
         throw new LedgerInitError(LedgerInitErrorOn.Transport, e.message);
       }
 
@@ -106,29 +123,30 @@ export class LedgerInternal {
   }> {
     const app = this.ledgerApp as CosmosApp;
     if (!app) {
-      throw new Error('Cosmos App not initialized');
+      throw new Error("Cosmos App not initialized");
     }
 
-    const { version, device_locked, major, test_mode } = await app.getAppConfiguration();
+    const { version, device_locked, major, test_mode } =
+      await app.getAppConfiguration();
 
     return {
       deviceLocked: device_locked,
       major,
       version,
-      testMode: test_mode
+      testMode: test_mode,
     };
   }
 
   public get LedgerAppTypeDesc(): string {
     switch (this.type) {
-      case 'cosmos':
-        return 'Cosmos App';
-      case 'eth':
-        return 'Ethereum App';
-      case 'trx':
-        return 'Tron App';
-      case 'btc':
-        return 'Bitcoin App';
+      case "cosmos":
+        return "Cosmos App";
+      case "eth":
+        return "Ethereum App";
+      case "trx":
+        return "Tron App";
+      case "btc":
+        return "Bitcoin App";
     }
   }
 
@@ -139,41 +157,52 @@ export class LedgerInternal {
 
     if (this.ledgerApp instanceof CosmosApp) {
       // make compartible with ledger-cosmos-js
-      const { publicKey, address } = await this.ledgerApp.getAddress(stringifyPath(path), 'cosmos');
-      return { publicKey: Buffer.from(publicKey, 'hex'), address };
+      const { publicKey, address } = await this.ledgerApp.getAddress(
+        stringifyPath(path),
+        "cosmos"
+      );
+      return { publicKey: Buffer.from(publicKey, "hex"), address };
     } else if (this.ledgerApp instanceof EthApp) {
-      const { publicKey, address } = await this.ledgerApp.getAddress(stringifyPath(path));
+      const { publicKey, address } = await this.ledgerApp.getAddress(
+        stringifyPath(path)
+      );
 
-      const pubKey = Buffer.from(publicKey, 'hex');
+      const pubKey = Buffer.from(publicKey, "hex");
       // Compress the public key
       return {
         // publicKey: publicKeyConvert(pubKey, true),
         address,
-        publicKey: pubKey
+        publicKey: pubKey,
       };
     } else if (this.ledgerApp instanceof BtcApp) {
       try {
         const pathBtc = stringifyPath(path);
         const keyDerivation = path[0].toString() as KeyDerivationTypeEnum;
         const format = keyDerivationToAddressType(keyDerivation);
-        const { publicKey, bitcoinAddress } = await this.ledgerApp.getWalletPublicKey(pathBtc, {
-          format: format,
-          verify: false
-        });
-        const pubKey = Buffer.from(publicKey, 'hex');
+        const { publicKey, bitcoinAddress } =
+          await this.ledgerApp.getWalletPublicKey(pathBtc, {
+            format: format,
+            verify: false,
+          });
+        const pubKey = Buffer.from(publicKey, "hex");
         // Compress the public key
         return {
           // publicKey: publicKeyConvert(pubKey, true),
           address: bitcoinAddress,
-          publicKey: pubKey
+          publicKey: pubKey,
         };
       } catch (error) {
-        console.log('🚀 ~ file: ledger-internal.ts:182 ~ LedgerInternal ~ getPublicKey ~ error:', error);
+        console.log(
+          "🚀 ~ file: ledger-internal.ts:182 ~ LedgerInternal ~ getPublicKey ~ error:",
+          error
+        );
       }
     } else {
-      const { publicKey, address } = await this.ledgerApp.getAddress(stringifyPath(path));
+      const { publicKey, address } = await this.ledgerApp.getAddress(
+        stringifyPath(path)
+      );
       // Compress the public key
-      return { publicKey: Buffer.from(publicKey, 'hex'), address };
+      return { publicKey: Buffer.from(publicKey, "hex"), address };
     }
   }
 
@@ -183,12 +212,15 @@ export class LedgerInternal {
     }
 
     if (this.ledgerApp instanceof CosmosApp) {
-      const { signature } = await this.ledgerApp.sign(stringifyPath(path), message);
+      const { signature } = await this.ledgerApp.sign(
+        stringifyPath(path),
+        message
+      );
 
       // Parse a DER ECDSA signature
       return signatureImport(signature);
     } else if (this.ledgerApp instanceof EthApp) {
-      const rawTxHex = Buffer.from(message).toString('hex');
+      const rawTxHex = Buffer.from(message).toString("hex");
 
       const signDoc = (() => {
         try {
@@ -198,7 +230,11 @@ export class LedgerInternal {
         }
       })();
 
-      if (signDoc && signDoc?.chain_id && signDoc?.chain_id?.startsWith('injective')) {
+      if (
+        signDoc &&
+        signDoc?.chain_id &&
+        signDoc?.chain_id?.startsWith("injective")
+      ) {
         const eip712 = { ...signDoc?.eip712 };
         delete signDoc.eip712;
         let data: any;
@@ -208,34 +244,46 @@ export class LedgerInternal {
               types: eip712.types,
               domain: eip712.domain,
               primaryType: eip712.primaryType,
-              message: signDoc
+              message: signDoc,
             })
           );
-          data = await EIP712MessageValidator.validateAsync(JSON.parse(Buffer.from(message).toString()));
+          data = await EIP712MessageValidator.validateAsync(
+            JSON.parse(Buffer.from(message).toString())
+          );
         } catch (e) {
-          console.log('🚀 ~ file: ledger-internal.ts:188 ~ LedgerInternal ~ sign ~ e:', e);
+          console.log(
+            "🚀 ~ file: ledger-internal.ts:188 ~ LedgerInternal ~ sign ~ e:",
+            e
+          );
           throw new Error(e.message || e.toString());
         }
         try {
           // Unfortunately, signEIP712Message not works on ledger yet.
           return ethSignatureToBytes(
-            await this.ledgerApp.signEIP712HashedMessage(stringifyPath(path), domainHash(data), messageHash(data))
+            await this.ledgerApp.signEIP712HashedMessage(
+              stringifyPath(path),
+              domainHash(data),
+              messageHash(data)
+            )
           );
         } catch (e) {
-          if (e?.message.includes('(0x6985)')) {
-            throw new Error('User rejected signing');
+          if (e?.message.includes("(0x6985)")) {
+            throw new Error("User rejected signing");
           }
           throw new Error(e.message || e.toString());
         }
       }
 
-      const signature = await this.ledgerApp.signTransaction(stringifyPath(path), rawTxHex);
+      const signature = await this.ledgerApp.signTransaction(
+        stringifyPath(path),
+        rawTxHex
+      );
       return signature;
       // return convertEthSignature(signature);
     } else if (this.ledgerApp instanceof BtcApp) {
-      const messageStr = Buffer.from(message).toString('utf-8');
+      const messageStr = Buffer.from(message).toString("utf-8");
       if (!messageStr) {
-        throw new Error('Not found messageStr for ledger app type BTC');
+        throw new Error("Not found messageStr for ledger app type BTC");
       }
       const msgObject = JSON.parse(messageStr);
       const data = (await this.getPublicKey(path)) as {
@@ -245,7 +293,7 @@ export class LedgerInternal {
 
       try {
         const keyPair = Bitcoin.ECPair.fromPublicKey(data.publicKey, {
-          network: getCoinNetwork(msgObject.msgs.selectedCrypto)
+          network: getCoinNetwork(msgObject.msgs.selectedCrypto),
         });
 
         return await this.signTransactionBtc(
@@ -261,7 +309,10 @@ export class LedgerInternal {
           keyPair
         );
       } catch (error) {
-        console.log('🚀 ~ file: ledger-internal.ts:240 ~ LedgerInternal ~ sign ~ error:', error);
+        console.log(
+          "🚀 ~ file: ledger-internal.ts:240 ~ LedgerInternal ~ sign ~ error:",
+          error
+        );
       }
     } else {
       const trxSignature = await this.ledgerApp.signTransactionHash(
@@ -269,7 +320,7 @@ export class LedgerInternal {
         message //rawTxHex
       );
 
-      return Buffer.from(trxSignature, 'hex');
+      return Buffer.from(trxSignature, "hex");
     }
   }
 
@@ -301,44 +352,49 @@ export class LedgerInternal {
       totalFee: feeAmount,
       transactionFee,
       keyPair,
-      isLedger: true
+      isLedger: true,
     });
-    const addressType = getAddressTypeByAddress(changeAddress) as AddressBtcType;
+    const addressType = getAddressTypeByAddress(
+      changeAddress
+    ) as AddressBtcType;
 
-    const inputs: Array<[Transaction, number, string | null, number | null]> = utxos.map(({ hex, txid, vout }) => {
-      if (!hex) {
-        throw Error(`Missing 'txHex' for UTXO (txHash ${txid})`);
-      }
-      // const utxoTx = Bitcoin.Transaction.fromHex(txid);
+    const inputs: Array<[Transaction, number, string | null, number | null]> =
+      utxos.map(({ hex, txid, vout }) => {
+        if (!hex) {
+          throw Error(`Missing 'txHex' for UTXO (txHash ${txid})`);
+        }
+        // const utxoTx = Bitcoin.Transaction.fromHex(txid);
 
-      const splittedTx = this.ledgerApp.splitTransaction(
-        hex,
-        addressType === AddressBtcType.Bech32 /* no segwit support */
-      );
-      return [splittedTx, vout, null, null];
-    });
+        const splittedTx = this.ledgerApp.splitTransaction(
+          hex,
+          addressType === AddressBtcType.Bech32 /* no segwit support */
+        );
+        return [splittedTx, vout, null, null];
+      });
 
     // const associatedKeysets: string[] = inputs.map((_) => path);
     const associatedKeysets = utxos.map((tx) => path);
-    const newTxHex = psbt.data.globalMap.unsignedTx.toBuffer().toString('hex');
+    const newTxHex = psbt.data.globalMap.unsignedTx.toBuffer().toString("hex");
     const newTx: Transaction = this.ledgerApp.splitTransaction(newTxHex, true);
-    const outputScriptHex = this.ledgerApp.serializeTransactionOutputs(newTx).toString('hex');
+    const outputScriptHex = this.ledgerApp
+      .serializeTransactionOutputs(newTx)
+      .toString("hex");
     const extraData =
       addressType === AddressBtcType.Legacy
         ? {
             // no additionals - similar to https://github.com/shapeshift/hdwallet/blob/a61234eb83081a4de54750b8965b873b15803a03/packages/hdwallet-ledger/src/bitcoin.ts#L222
-            additionals: []
+            additionals: [],
           }
         : {
             segwit: true,
             useTrustedInputForSegwit: true,
-            additionals: ['bech32']
+            additionals: ["bech32"],
           };
     const txHex = await this.ledgerApp.createPaymentTransactionNew({
       inputs,
       associatedKeysets,
       outputScriptHex,
-      ...extraData
+      ...extraData,
     });
 
     return txHex;

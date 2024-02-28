@@ -1,6 +1,6 @@
-import { Env, Handler, InternalHandler, Message } from '@owallet/router';
-import { ChainUpdaterService } from './service';
-import { TryUpdateChainMsg } from './messages';
+import { Env, Handler, InternalHandler, Message } from "@owallet/router";
+import { ChainUpdaterService } from "./service";
+import { TryUpdateChainMsg } from "./messages";
 
 export const getHandler: (service: ChainUpdaterService) => Handler = (
   service
@@ -10,7 +10,7 @@ export const getHandler: (service: ChainUpdaterService) => Handler = (
       case TryUpdateChainMsg:
         return handleTryUpdateChainMsg(service)(env, msg as TryUpdateChainMsg);
       default:
-        throw new Error('Unknown msg type');
+        throw new Error("Unknown msg type");
     }
   };
 };

@@ -1,9 +1,9 @@
-import { Message } from '@owallet/router';
-import { ROUTE } from './constants';
+import { Message } from "@owallet/router";
+import { ROUTE } from "./constants";
 
 export class LedgerGetWebHIDFlagMsg extends Message<boolean> {
   public static type() {
-    return 'ledger-get-webhid-flag';
+    return "ledger-get-webhid-flag";
   }
 
   constructor() {
@@ -25,7 +25,7 @@ export class LedgerGetWebHIDFlagMsg extends Message<boolean> {
 
 export class LedgerSetWebHIDFlagMsg extends Message<void> {
   public static type() {
-    return 'ledger-set-webhid-flag';
+    return "ledger-set-webhid-flag";
   }
 
   constructor(public readonly flag: boolean) {
@@ -34,7 +34,7 @@ export class LedgerSetWebHIDFlagMsg extends Message<void> {
 
   validateBasic(): void {
     if (this.flag == null) {
-      throw new Error('Flag is null');
+      throw new Error("Flag is null");
     }
   }
 

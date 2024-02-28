@@ -1,6 +1,6 @@
-import { Env, Handler, InternalHandler, Message } from '@owallet/router';
-import { PushEventDataMsg, PushInteractionDataMsg } from './messages';
-import { InteractionForegroundService } from './service';
+import { Env, Handler, InternalHandler, Message } from "@owallet/router";
+import { PushEventDataMsg, PushInteractionDataMsg } from "./messages";
+import { InteractionForegroundService } from "./service";
 
 export const getHandler: (service: InteractionForegroundService) => Handler = (
   service: InteractionForegroundService
@@ -15,7 +15,7 @@ export const getHandler: (service: InteractionForegroundService) => Handler = (
       case PushEventDataMsg:
         return handlePushEventDataMsg(service)(env, msg as PushEventDataMsg);
       default:
-        throw new Error('Unknown msg type');
+        throw new Error("Unknown msg type");
     }
   };
 };

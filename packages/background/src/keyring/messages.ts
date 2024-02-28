@@ -1,26 +1,33 @@
-import { EthermintChainIdHelper } from '@owallet/cosmos';
-import { Message, OWalletError } from '@owallet/router';
-import { ROUTE } from './constants';
-import { KeyRing, KeyRingStatus, MultiKeyStoreInfoWithSelected } from './keyring';
-import { ExportKeyRingData, SignEthereumTypedDataObject } from './types';
+import { EthermintChainIdHelper } from "@owallet/cosmos";
+import { Message, OWalletError } from "@owallet/router";
+import { ROUTE } from "./constants";
+import {
+  KeyRing,
+  KeyRingStatus,
+  MultiKeyStoreInfoWithSelected,
+} from "./keyring";
+import { ExportKeyRingData, SignEthereumTypedDataObject } from "./types";
 
-import { Bech32Address, checkAndValidateADR36AminoSignDoc } from '@owallet/cosmos';
-import { BIP44, OWalletSignOptions, Key, BIP44HDPath } from '@owallet/types';
-import Joi from 'joi';
-import { AminoSignResponse, StdSignature } from '@cosmjs/launchpad';
-import { StdSignDoc } from '@owallet/types';
-import Long from 'long';
-import { Int } from '@owallet/unit';
-import bigInteger from 'big-integer';
-const bip39 = require('bip39');
-import { SignDoc } from '@owallet/proto-types/cosmos/tx/v1beta1/tx';
-import { schemaRequestSignBitcoin } from './validates';
+import {
+  Bech32Address,
+  checkAndValidateADR36AminoSignDoc,
+} from "@owallet/cosmos";
+import { BIP44, OWalletSignOptions, Key, BIP44HDPath } from "@owallet/types";
+import Joi from "joi";
+import { AminoSignResponse, StdSignature } from "@cosmjs/launchpad";
+import { StdSignDoc } from "@owallet/types";
+import Long from "long";
+import { Int } from "@owallet/unit";
+import bigInteger from "big-integer";
+const bip39 = require("bip39");
+import { SignDoc } from "@owallet/proto-types/cosmos/tx/v1beta1/tx";
+import { schemaRequestSignBitcoin } from "./validates";
 export class RestoreKeyRingMsg extends Message<{
   status: KeyRingStatus;
   multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
 }> {
   public static type() {
-    return 'restore-keyring';
+    return "restore-keyring";
   }
 
   constructor() {
@@ -44,7 +51,7 @@ export class DeleteKeyRingMsg extends Message<{
   multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
 }> {
   public static type() {
-    return 'delete-keyring';
+    return "delete-keyring";
   }
 
   constructor(public readonly index: number, public readonly password: string) {
@@ -53,11 +60,11 @@ export class DeleteKeyRingMsg extends Message<{
 
   validateBasic(): void {
     if (!Number.isInteger(this.index)) {
-      throw new OWalletError('keyring', 201, 'Invalid index');
+      throw new OWalletError("keyring", 201, "Invalid index");
     }
 
     if (!this.password) {
-      throw new OWalletError('keyring', 274, 'password not set');
+      throw new OWalletError("keyring", 274, "password not set");
     }
   }
 
@@ -74,20 +81,24 @@ export class UpdateNameKeyRingMsg extends Message<{
   multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
 }> {
   public static type() {
-    return 'update-name-keyring';
+    return "update-name-keyring";
   }
 
-  constructor(public readonly index: number, public readonly name: string, public readonly email?: string) {
+  constructor(
+    public readonly index: number,
+    public readonly name: string,
+    public readonly email?: string
+  ) {
     super();
   }
 
   validateBasic(): void {
     if (!Number.isInteger(this.index)) {
-      throw new OWalletError('keyring', 201, 'Invalid index');
+      throw new OWalletError("keyring", 201, "Invalid index");
     }
 
     if (!this.name) {
-      throw new OWalletError('keyring', 273, 'name not set');
+      throw new OWalletError("keyring", 273, "name not set");
     }
   }
 
@@ -102,7 +113,7 @@ export class UpdateNameKeyRingMsg extends Message<{
 
 export class ShowKeyRingMsg extends Message<string> {
   public static type() {
-    return 'show-keyring';
+    return "show-keyring";
   }
 
   constructor(public readonly index: number, public readonly password: string) {
@@ -111,11 +122,11 @@ export class ShowKeyRingMsg extends Message<string> {
 
   validateBasic(): void {
     if (!Number.isInteger(this.index)) {
-      throw new OWalletError('keyring', 201, 'Invalid index');
+      throw new OWalletError("keyring", 201, "Invalid index");
     }
 
     if (!this.password) {
-      throw new OWalletError('keyring', 274, 'password not set');
+      throw new OWalletError("keyring", 274, "password not set");
     }
   }
 
@@ -133,11 +144,11 @@ export class CreateMnemonicKeyMsg extends Message<{
   multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
 }> {
   public static type() {
-    return 'create-mnemonic-key';
+    return "create-mnemonic-key";
   }
 
   constructor(
-    public readonly kdf: 'scrypt' | 'sha256' | 'pbkdf2',
+    public readonly kdf: "scrypt" | "sha256" | "pbkdf2",
     public readonly mnemonic: string,
     public readonly password: string,
     public readonly meta: Record<string, string>,
@@ -147,16 +158,20 @@ export class CreateMnemonicKeyMsg extends Message<{
   }
 
   validateBasic(): void {
-    if (this.kdf !== 'scrypt' && this.kdf !== 'sha256' && this.kdf !== 'pbkdf2') {
-      throw new OWalletError('keyring', 202, 'Invalid kdf');
+    if (
+      this.kdf !== "scrypt" &&
+      this.kdf !== "sha256" &&
+      this.kdf !== "pbkdf2"
+    ) {
+      throw new OWalletError("keyring", 202, "Invalid kdf");
     }
 
     if (!this.mnemonic) {
-      throw new OWalletError('keyring', 272, 'mnemonic not set');
+      throw new OWalletError("keyring", 272, "mnemonic not set");
     }
 
     if (!this.password) {
-      throw new OWalletError('keyring', 274, 'password not set');
+      throw new OWalletError("keyring", 274, "password not set");
     }
 
     // Validate mnemonic.
@@ -165,7 +180,7 @@ export class CreateMnemonicKeyMsg extends Message<{
     try {
       bip39.mnemonicToEntropy(this.mnemonic);
     } catch (e) {
-      if (e.message !== 'Invalid mnemonic checksum') {
+      if (e.message !== "Invalid mnemonic checksum") {
         throw e;
       }
     }
@@ -186,11 +201,11 @@ export class AddMnemonicKeyMsg extends Message<{
   multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
 }> {
   public static type() {
-    return 'add-mnemonic-key';
+    return "add-mnemonic-key";
   }
 
   constructor(
-    public readonly kdf: 'scrypt' | 'sha256' | 'pbkdf2',
+    public readonly kdf: "scrypt" | "sha256" | "pbkdf2",
     public readonly mnemonic: string,
     public readonly meta: Record<string, string>,
     public readonly bip44HDPath: BIP44HDPath
@@ -199,12 +214,16 @@ export class AddMnemonicKeyMsg extends Message<{
   }
 
   validateBasic(): void {
-    if (this.kdf !== 'scrypt' && this.kdf !== 'sha256' && this.kdf !== 'pbkdf2') {
-      throw new OWalletError('keyring', 202, 'Invalid kdf');
+    if (
+      this.kdf !== "scrypt" &&
+      this.kdf !== "sha256" &&
+      this.kdf !== "pbkdf2"
+    ) {
+      throw new OWalletError("keyring", 202, "Invalid kdf");
     }
 
     if (!this.mnemonic) {
-      throw new OWalletError('keyring', 272, 'mnemonic not set');
+      throw new OWalletError("keyring", 272, "mnemonic not set");
     }
 
     // Validate mnemonic.
@@ -213,7 +232,7 @@ export class AddMnemonicKeyMsg extends Message<{
     try {
       bip39.mnemonicToEntropy(this.mnemonic);
     } catch (e) {
-      if (e.message !== 'Invalid mnemonic checksum') {
+      if (e.message !== "Invalid mnemonic checksum") {
         throw e;
       }
     }
@@ -235,11 +254,11 @@ export class CreatePrivateKeyMsg extends Message<{
   multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
 }> {
   public static type() {
-    return 'create-private-key';
+    return "create-private-key";
   }
 
   constructor(
-    public readonly kdf: 'scrypt' | 'sha256' | 'pbkdf2',
+    public readonly kdf: "scrypt" | "sha256" | "pbkdf2",
     public readonly privateKey: Uint8Array,
     public readonly password: string,
     public readonly meta: Record<string, string>
@@ -248,20 +267,24 @@ export class CreatePrivateKeyMsg extends Message<{
   }
 
   validateBasic(): void {
-    if (this.kdf !== 'scrypt' && this.kdf !== 'sha256' && this.kdf !== 'pbkdf2') {
-      throw new Error('Invalid kdf');
+    if (
+      this.kdf !== "scrypt" &&
+      this.kdf !== "sha256" &&
+      this.kdf !== "pbkdf2"
+    ) {
+      throw new Error("Invalid kdf");
     }
 
     if (!this.privateKey || this.privateKey.length === 0) {
-      throw new OWalletError('keyring', 275, 'private key not set');
+      throw new OWalletError("keyring", 275, "private key not set");
     }
 
     if (this.privateKey.length !== 32) {
-      throw new OWalletError('keyring', 260, 'invalid length of private key');
+      throw new OWalletError("keyring", 260, "invalid length of private key");
     }
 
     if (!this.password) {
-      throw new OWalletError('keyring', 274, 'password not set');
+      throw new OWalletError("keyring", 274, "password not set");
     }
   }
 
@@ -279,11 +302,11 @@ export class CreateLedgerKeyMsg extends Message<{
   multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
 }> {
   public static type() {
-    return 'create-ledger-key';
+    return "create-ledger-key";
   }
 
   constructor(
-    public readonly kdf: 'scrypt' | 'sha256' | 'pbkdf2',
+    public readonly kdf: "scrypt" | "sha256" | "pbkdf2",
     public readonly password: string,
     public readonly meta: Record<string, string>,
     public readonly bip44HDPath: BIP44HDPath
@@ -292,12 +315,16 @@ export class CreateLedgerKeyMsg extends Message<{
   }
 
   validateBasic(): void {
-    if (this.kdf !== 'scrypt' && this.kdf !== 'sha256' && this.kdf !== 'pbkdf2') {
-      throw new OWalletError('keyring', 202, 'Invalid kdf');
+    if (
+      this.kdf !== "scrypt" &&
+      this.kdf !== "sha256" &&
+      this.kdf !== "pbkdf2"
+    ) {
+      throw new OWalletError("keyring", 202, "Invalid kdf");
     }
 
     if (!this.password) {
-      throw new OWalletError('keyring', 274, 'password not set');
+      throw new OWalletError("keyring", 274, "password not set");
     }
 
     KeyRing.validateBIP44Path(this.bip44HDPath);
@@ -316,11 +343,11 @@ export class AddPrivateKeyMsg extends Message<{
   multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
 }> {
   public static type() {
-    return 'add-private-key';
+    return "add-private-key";
   }
 
   constructor(
-    public readonly kdf: 'scrypt' | 'sha256' | 'pbkdf2',
+    public readonly kdf: "scrypt" | "sha256" | "pbkdf2",
     public readonly privateKey: Uint8Array,
     public readonly meta: Record<string, string>
   ) {
@@ -328,16 +355,20 @@ export class AddPrivateKeyMsg extends Message<{
   }
 
   validateBasic(): void {
-    if (this.kdf !== 'scrypt' && this.kdf !== 'sha256' && this.kdf !== 'pbkdf2') {
-      throw new OWalletError('keyring', 202, 'Invalid kdf');
+    if (
+      this.kdf !== "scrypt" &&
+      this.kdf !== "sha256" &&
+      this.kdf !== "pbkdf2"
+    ) {
+      throw new OWalletError("keyring", 202, "Invalid kdf");
     }
 
     if (!this.privateKey || this.privateKey.length === 0) {
-      throw new OWalletError('keyring', 275, 'private key not set');
+      throw new OWalletError("keyring", 275, "private key not set");
     }
 
     if (this.privateKey.length !== 32) {
-      throw new OWalletError('keyring', 260, 'invalid length of private key');
+      throw new OWalletError("keyring", 260, "invalid length of private key");
     }
   }
 
@@ -354,11 +385,11 @@ export class AddLedgerKeyMsg extends Message<{
   multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
 }> {
   public static type() {
-    return 'add-ledger-key';
+    return "add-ledger-key";
   }
 
   constructor(
-    public readonly kdf: 'scrypt' | 'sha256' | 'pbkdf2',
+    public readonly kdf: "scrypt" | "sha256" | "pbkdf2",
     public readonly meta: Record<string, string>,
     public readonly bip44HDPath: BIP44HDPath
   ) {
@@ -366,8 +397,12 @@ export class AddLedgerKeyMsg extends Message<{
   }
 
   validateBasic(): void {
-    if (this.kdf !== 'scrypt' && this.kdf !== 'sha256' && this.kdf !== 'pbkdf2') {
-      throw new OWalletError('keyring', 202, 'Invalid kdf');
+    if (
+      this.kdf !== "scrypt" &&
+      this.kdf !== "sha256" &&
+      this.kdf !== "pbkdf2"
+    ) {
+      throw new OWalletError("keyring", 202, "Invalid kdf");
     }
 
     KeyRing.validateBIP44Path(this.bip44HDPath);
@@ -384,7 +419,7 @@ export class AddLedgerKeyMsg extends Message<{
 
 export class LockKeyRingMsg extends Message<{ status: KeyRingStatus }> {
   public static type() {
-    return 'lock-keyring';
+    return "lock-keyring";
   }
 
   constructor() {
@@ -406,16 +441,16 @@ export class LockKeyRingMsg extends Message<{ status: KeyRingStatus }> {
 
 export class UnlockKeyRingMsg extends Message<{ status: KeyRingStatus }> {
   public static type() {
-    return 'unlock-keyring';
+    return "unlock-keyring";
   }
 
-  constructor(public readonly password = '', public readonly saving = false) {
+  constructor(public readonly password = "", public readonly saving = false) {
     super();
   }
 
   validateBasic(): void {
     if (!this.password) {
-      throw new OWalletError('keyring', 274, 'password not set');
+      throw new OWalletError("keyring", 274, "password not set");
     }
   }
 
@@ -430,7 +465,7 @@ export class UnlockKeyRingMsg extends Message<{ status: KeyRingStatus }> {
 
 export class GetKeyMsg extends Message<Key> {
   public static type() {
-    return 'get-key';
+    return "get-key";
   }
 
   constructor(public readonly chainId: string) {
@@ -439,7 +474,7 @@ export class GetKeyMsg extends Message<Key> {
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new OWalletError('keyring', 270, 'chain id not set');
+      throw new OWalletError("keyring", 270, "chain id not set");
     }
   }
 
@@ -458,7 +493,7 @@ export class GetKeyMsg extends Message<Key> {
 
 export class RequestSignAminoMsg extends Message<AminoSignResponse> {
   public static type() {
-    return 'request-sign-amino';
+    return "request-sign-amino";
   }
 
   constructor(
@@ -475,11 +510,11 @@ export class RequestSignAminoMsg extends Message<AminoSignResponse> {
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new OWalletError('keyring', 270, 'chain id not set');
+      throw new OWalletError("keyring", 270, "chain id not set");
     }
 
     if (!this.signer) {
-      throw new OWalletError('keyring', 230, 'signer not set');
+      throw new OWalletError("keyring", 230, "signer not set");
     }
 
     // Validate bech32 address.
@@ -489,16 +524,20 @@ export class RequestSignAminoMsg extends Message<AminoSignResponse> {
     // ADR-36 sign doc doesn't have the chain id
     if (!checkAndValidateADR36AminoSignDoc(this.signDoc)) {
       if (this.signDoc.chain_id !== this.chainId) {
-        throw new OWalletError('keyring', 234, 'Chain id in the message is not matched with the requested chain id');
+        throw new OWalletError(
+          "keyring",
+          234,
+          "Chain id in the message is not matched with the requested chain id"
+        );
       }
     } else {
       if (this.signDoc.msgs[0].value.signer !== this.signer) {
-        throw new OWalletError('keyring', 233, 'Unmatched signer in sign doc');
+        throw new OWalletError("keyring", 233, "Unmatched signer in sign doc");
       }
     }
 
     if (!this.signOptions) {
-      throw new OWalletError('keyring', 235, 'Sign options are null');
+      throw new OWalletError("keyring", 235, "Sign options are null");
     }
   }
 
@@ -516,7 +555,7 @@ export class RequestSignAminoMsg extends Message<AminoSignResponse> {
 }
 export class RequestSignEIP712CosmosTxMsg_v0 extends Message<AminoSignResponse> {
   public static type() {
-    return 'request-sign-eip-712-cosmos-tx-v0';
+    return "request-sign-eip-712-cosmos-tx-v0";
   }
 
   constructor(
@@ -535,11 +574,11 @@ export class RequestSignEIP712CosmosTxMsg_v0 extends Message<AminoSignResponse> 
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new OWalletError('keyring', 270, 'chain id not set');
+      throw new OWalletError("keyring", 270, "chain id not set");
     }
 
     if (!this.signer) {
-      throw new OWalletError('keyring', 230, 'signer not set');
+      throw new OWalletError("keyring", 230, "signer not set");
     }
 
     // Validate bech32 address.
@@ -549,21 +588,25 @@ export class RequestSignEIP712CosmosTxMsg_v0 extends Message<AminoSignResponse> 
     // ADR-36 sign doc doesn't have the chain id
     if (!checkAndValidateADR36AminoSignDoc(this.signDoc)) {
       if (this.signDoc.chain_id !== this.chainId) {
-        throw new OWalletError('keyring', 234, 'Chain id in the message is not matched with the requested chain id');
+        throw new OWalletError(
+          "keyring",
+          234,
+          "Chain id in the message is not matched with the requested chain id"
+        );
       }
 
       const { ethChainId } = EthermintChainIdHelper.parse(this.chainId);
 
       const ethChainIdInMsg: Int = (() => {
-        const value = this.eip712.domain['chainId'];
-        if (typeof value === 'string' && value.startsWith('0x')) {
-          return new Int(bigInteger(value.replace('0x', ''), 16).toString());
+        const value = this.eip712.domain["chainId"];
+        if (typeof value === "string" && value.startsWith("0x")) {
+          return new Int(bigInteger(value.replace("0x", ""), 16).toString());
         }
         return new Int(value);
       })();
       if (!ethChainIdInMsg.equals(new Int(ethChainId))) {
         throw new Error(
-          `Unmatched chain id for eth (expected: ${ethChainId}, actual: ${this.eip712.domain['chainId']})`
+          `Unmatched chain id for eth (expected: ${ethChainId}, actual: ${this.eip712.domain["chainId"]})`
         );
       }
     } else {
@@ -571,7 +614,7 @@ export class RequestSignEIP712CosmosTxMsg_v0 extends Message<AminoSignResponse> 
     }
 
     if (!this.signOptions) {
-      throw new OWalletError('keyring', 235, 'Sign options are null');
+      throw new OWalletError("keyring", 235, "Sign options are null");
     }
   }
 
@@ -598,7 +641,7 @@ export class RequestSignDirectMsg extends Message<{
   readonly signature: StdSignature;
 }> {
   public static type() {
-    return 'request-sign-direct';
+    return "request-sign-direct";
   }
 
   constructor(
@@ -617,11 +660,11 @@ export class RequestSignDirectMsg extends Message<{
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new OWalletError('keyring', 270, 'chain id not set');
+      throw new OWalletError("keyring", 270, "chain id not set");
     }
 
     if (!this.signer) {
-      throw new OWalletError('keyring', 230, 'signer not set');
+      throw new OWalletError("keyring", 230, "signer not set");
     }
 
     // Validate bech32 address.
@@ -631,15 +674,21 @@ export class RequestSignDirectMsg extends Message<{
       bodyBytes: this.signDoc.bodyBytes,
       authInfoBytes: this.signDoc.authInfoBytes,
       chainId: this.signDoc.chainId,
-      accountNumber: this.signDoc.accountNumber ? Long.fromString(this.signDoc.accountNumber) : undefined
+      accountNumber: this.signDoc.accountNumber
+        ? Long.fromString(this.signDoc.accountNumber)
+        : undefined,
     });
 
     if (signDoc.chainId !== this.chainId) {
-      throw new OWalletError('keyring', 234, 'Chain id in the message is not matched with the requested chain id');
+      throw new OWalletError(
+        "keyring",
+        234,
+        "Chain id in the message is not matched with the requested chain id"
+      );
     }
 
     if (!this.signOptions) {
-      throw new OWalletError('keyring', 235, 'Sign options are null');
+      throw new OWalletError("keyring", 235, "Sign options are null");
     }
   }
 
@@ -659,7 +708,7 @@ export class RequestSignDirectMsg extends Message<{
 // request sign tron goes here
 export class RequestSignTronMsg extends Message<{}> {
   public static type() {
-    return 'request-sign-tron';
+    return "request-sign-tron";
   }
 
   constructor(public readonly chainId: string, public readonly data: object) {
@@ -668,11 +717,11 @@ export class RequestSignTronMsg extends Message<{}> {
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new OWalletError('keyring', 270, 'chain id not set');
+      throw new OWalletError("keyring", 270, "chain id not set");
     }
 
     if (!this.data) {
-      throw new OWalletError('keyring', 231, 'data not set');
+      throw new OWalletError("keyring", 231, "data not set");
     }
   }
 
@@ -691,7 +740,7 @@ export class RequestSignTronMsg extends Message<{}> {
 
 export class RequestSendRawTransactionMsg extends Message<object> {
   public static type() {
-    return 'request-send-raw-transaction';
+    return "request-send-raw-transaction";
   }
 
   constructor(
@@ -708,11 +757,11 @@ export class RequestSendRawTransactionMsg extends Message<object> {
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new Error('chain id not set');
+      throw new Error("chain id not set");
     }
 
     if (!this.data) {
-      throw new Error('data not set');
+      throw new Error("data not set");
     }
   }
 
@@ -721,7 +770,7 @@ export class RequestSendRawTransactionMsg extends Message<object> {
   }
 
   route(): string {
-    return 'keyring';
+    return "keyring";
   }
 
   type(): string {
@@ -736,7 +785,7 @@ export class GetDefaultAddressTronMsg extends Message<{
   type?: number;
 }> {
   public static type() {
-    return 'get-default-address-tron';
+    return "get-default-address-tron";
   }
 
   constructor(public readonly chainId: string) {
@@ -745,7 +794,7 @@ export class GetDefaultAddressTronMsg extends Message<{
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new OWalletError('keyring', 270, 'chain id not set');
+      throw new OWalletError("keyring", 270, "chain id not set");
     }
   }
 
@@ -760,7 +809,7 @@ export class GetDefaultAddressTronMsg extends Message<{
 
 export class TriggerSmartContractMsg extends Message<{}> {
   public static type() {
-    return 'trigger-smart-contract-tron';
+    return "trigger-smart-contract-tron";
   }
 
   constructor(
@@ -778,16 +827,16 @@ export class TriggerSmartContractMsg extends Message<{}> {
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new OWalletError('keyring', 270, 'chain id not set');
+      throw new OWalletError("keyring", 270, "chain id not set");
     }
 
     if (!this.data) {
-      throw new OWalletError('keyring', 231, 'data not set');
+      throw new OWalletError("keyring", 231, "data not set");
     }
   }
 
   route(): string {
-    return 'keyring';
+    return "keyring";
   }
 
   type(): string {
@@ -800,7 +849,7 @@ export class RequestSignEthereumMsg extends Message<{
   readonly rawTxHex: string; // raw tx signature to broadcast
 }> {
   public static type() {
-    return 'request-sign-ethereum';
+    return "request-sign-ethereum";
   }
 
   constructor(
@@ -812,11 +861,11 @@ export class RequestSignEthereumMsg extends Message<{
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new OWalletError('keyring', 270, 'chain id not set');
+      throw new OWalletError("keyring", 270, "chain id not set");
     }
 
     if (!this.data) {
-      throw new OWalletError('keyring', 231, 'dât not set');
+      throw new OWalletError("keyring", 231, "dât not set");
     }
 
     // const signDoc = cosmos.tx.v1beta1.SignDoc.create({
@@ -858,7 +907,7 @@ export class RequestSignBitcoinMsg extends Message<{
   readonly rawTxHex: string; // raw tx signature to broadcast
 }> {
   public static type() {
-    return 'request-sign-bitcoin';
+    return "request-sign-bitcoin";
   }
 
   constructor(
@@ -870,16 +919,16 @@ export class RequestSignBitcoinMsg extends Message<{
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new OWalletError('keyring', 270, 'chain id not set');
+      throw new OWalletError("keyring", 270, "chain id not set");
     }
 
     if (!this.data) {
-      throw new OWalletError('keyring', 231, 'data not set');
+      throw new OWalletError("keyring", 231, "data not set");
     }
 
     const { value, error } = schemaRequestSignBitcoin.validate(this.data);
     if (!!error) {
-      throw new OWalletError('keyring', 231, error.message);
+      throw new OWalletError("keyring", 231, error.message);
     }
   }
 
@@ -900,7 +949,7 @@ export class RequestSignEthereumTypedDataMsg extends Message<{
   readonly result: string; // raw tx signature to broadcast
 }> {
   public static type() {
-    return 'request-sign-ethereum-typed-data';
+    return "request-sign-ethereum-typed-data";
   }
 
   constructor(
@@ -912,11 +961,11 @@ export class RequestSignEthereumTypedDataMsg extends Message<{
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new OWalletError('keyring', 270, 'chain id not set');
+      throw new OWalletError("keyring", 270, "chain id not set");
     }
 
     if (!this.data) {
-      throw new OWalletError('keyring', 231, 'dât not set');
+      throw new OWalletError("keyring", 231, "dât not set");
     }
 
     // if (!this.signOptions) {
@@ -941,7 +990,7 @@ export class RequestPublicKeyMsg extends Message<{
   readonly result: string; // raw tx signature to broadcast
 }> {
   public static type() {
-    return 'request-public-key';
+    return "request-public-key";
   }
 
   constructor(public readonly chainId: string) {
@@ -950,7 +999,7 @@ export class RequestPublicKeyMsg extends Message<{
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new OWalletError('keyring', 270, 'chain id not set');
+      throw new OWalletError("keyring", 270, "chain id not set");
     }
 
     // if (!this.signOptions) {
@@ -975,7 +1024,7 @@ export class RequestSignDecryptDataMsg extends Message<{
   readonly result: string; // raw tx signature to broadcast
 }> {
   public static type() {
-    return 'request-sign-proxy-deryption-data';
+    return "request-sign-proxy-deryption-data";
   }
 
   constructor(
@@ -987,11 +1036,11 @@ export class RequestSignDecryptDataMsg extends Message<{
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new OWalletError('keyring', 270, 'chain id not set');
+      throw new OWalletError("keyring", 270, "chain id not set");
     }
 
     if (!this.data) {
-      throw new OWalletError('keyring', 231, 'data not set');
+      throw new OWalletError("keyring", 231, "data not set");
     }
 
     // if (!this.signOptions) {
@@ -1016,7 +1065,7 @@ export class RequestSignProxyReEncryptionDataMsg extends Message<{
   readonly result: string; // raw tx signature to broadcast
 }> {
   public static type() {
-    return 'request-sign-proxy-re-encryption-data';
+    return "request-sign-proxy-re-encryption-data";
   }
 
   constructor(
@@ -1028,11 +1077,11 @@ export class RequestSignProxyReEncryptionDataMsg extends Message<{
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new OWalletError('keyring', 270, 'chain id not set');
+      throw new OWalletError("keyring", 270, "chain id not set");
     }
 
     if (!this.data) {
-      throw new OWalletError('keyring', 231, 'data not set');
+      throw new OWalletError("keyring", 231, "data not set");
     }
 
     // if (!this.signOptions) {
@@ -1057,7 +1106,7 @@ export class RequestSignProxyDecryptionDataMsg extends Message<{
   readonly result: string; // raw tx signature to broadcast
 }> {
   public static type() {
-    return 'request-sign-proxy-deryption-data';
+    return "request-sign-proxy-deryption-data";
   }
 
   constructor(
@@ -1069,11 +1118,11 @@ export class RequestSignProxyDecryptionDataMsg extends Message<{
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new OWalletError('keyring', 270, 'chain id not set');
+      throw new OWalletError("keyring", 270, "chain id not set");
     }
 
     if (!this.data) {
-      throw new OWalletError('keyring', 231, 'data not set');
+      throw new OWalletError("keyring", 231, "data not set");
     }
   }
 
@@ -1094,7 +1143,7 @@ export class RequestSignReEncryptDataMsg extends Message<{
   readonly result: string; // raw tx signature to broadcast
 }> {
   public static type() {
-    return 'request-sign-re-encrypt-data';
+    return "request-sign-re-encrypt-data";
   }
 
   constructor(
@@ -1106,11 +1155,11 @@ export class RequestSignReEncryptDataMsg extends Message<{
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new OWalletError('keyring', 270, 'chain id not set');
+      throw new OWalletError("keyring", 270, "chain id not set");
     }
 
     if (!this.data) {
-      throw new OWalletError('keyring', 231, 'data not set');
+      throw new OWalletError("keyring", 231, "data not set");
     }
 
     // if (!this.signOptions) {
@@ -1133,7 +1182,7 @@ export class RequestSignReEncryptDataMsg extends Message<{
 
 export class RequestVerifyADR36AminoSignDoc extends Message<boolean> {
   public static type() {
-    return 'request-verify-adr-36-amino-doc';
+    return "request-verify-adr-36-amino-doc";
   }
 
   constructor(
@@ -1147,15 +1196,15 @@ export class RequestVerifyADR36AminoSignDoc extends Message<boolean> {
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new OWalletError('keyring', 270, 'chain id not set');
+      throw new OWalletError("keyring", 270, "chain id not set");
     }
 
     if (!this.signer) {
-      throw new OWalletError('keyring', 230, 'signer not set');
+      throw new OWalletError("keyring", 230, "signer not set");
     }
 
     if (!this.signature) {
-      throw new OWalletError('keyring', 271, 'Signature not set');
+      throw new OWalletError("keyring", 271, "Signature not set");
     }
 
     // Validate bech32 address.
@@ -1179,7 +1228,7 @@ export class GetMultiKeyStoreInfoMsg extends Message<{
   multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
 }> {
   public static type() {
-    return 'get-multi-key-store-info';
+    return "get-multi-key-store-info";
   }
 
   constructor() {
@@ -1203,7 +1252,7 @@ export class ChangeKeyRingMsg extends Message<{
   multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
 }> {
   public static type() {
-    return 'change-keyring';
+    return "change-keyring";
   }
 
   constructor(public readonly index: number) {
@@ -1212,11 +1261,11 @@ export class ChangeKeyRingMsg extends Message<{
 
   validateBasic(): void {
     if (this.index < 0) {
-      throw new OWalletError('keyring', 200, 'Index is negative');
+      throw new OWalletError("keyring", 200, "Index is negative");
     }
 
     if (!Number.isInteger(this.index)) {
-      throw new OWalletError('keyring', 201, 'Invalid index');
+      throw new OWalletError("keyring", 201, "Invalid index");
     }
   }
 
@@ -1233,7 +1282,7 @@ export class ChangeChainMsg extends Message<{
   chainInfos?: object;
 }> {
   public static type() {
-    return 'change-chain';
+    return "change-chain";
   }
 
   constructor(public readonly chainInfos: object) {
@@ -1242,7 +1291,7 @@ export class ChangeChainMsg extends Message<{
 
   validateBasic(): void {
     if (!this.chainInfos) {
-      throw new OWalletError('keyring', 270, 'chain id not set');
+      throw new OWalletError("keyring", 270, "chain id not set");
     }
   }
 
@@ -1264,7 +1313,7 @@ export class GetIsKeyStoreCoinTypeSetMsg extends Message<
   }[]
 > {
   public static type() {
-    return 'get-is-keystore-coin-type-set';
+    return "get-is-keystore-coin-type-set";
   }
 
   constructor(public readonly chainId: string, public readonly paths: BIP44[]) {
@@ -1273,11 +1322,11 @@ export class GetIsKeyStoreCoinTypeSetMsg extends Message<
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new OWalletError('keyring', 270, 'chain id not set');
+      throw new OWalletError("keyring", 270, "chain id not set");
     }
 
     if (this.paths.length === 0) {
-      throw new OWalletError('keyring', 250, 'empty bip44 path list');
+      throw new OWalletError("keyring", 250, "empty bip44 path list");
     }
   }
 
@@ -1292,24 +1341,27 @@ export class GetIsKeyStoreCoinTypeSetMsg extends Message<
 
 export class SetKeyStoreCoinTypeMsg extends Message<KeyRingStatus> {
   public static type() {
-    return 'set-keystore-coin-type';
+    return "set-keystore-coin-type";
   }
 
-  constructor(public readonly chainId: string, public readonly coinType: number) {
+  constructor(
+    public readonly chainId: string,
+    public readonly coinType: number
+  ) {
     super();
   }
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new OWalletError('keyring', 270, 'chain id not set');
+      throw new OWalletError("keyring", 270, "chain id not set");
     }
 
     if (this.coinType < 0) {
-      throw new OWalletError('keyring', 240, 'coin type can not be negative');
+      throw new OWalletError("keyring", 240, "coin type can not be negative");
     }
 
     if (!Number.isInteger(this.coinType)) {
-      throw new OWalletError('keyring', 241, 'coin type should be integer');
+      throw new OWalletError("keyring", 241, "coin type should be integer");
     }
   }
 
@@ -1324,19 +1376,30 @@ export class SetKeyStoreCoinTypeMsg extends Message<KeyRingStatus> {
 
 export class SetKeyStoreLedgerAddressMsg extends Message<KeyRingStatus> {
   public static type() {
-    return 'set-keystore-ledger-address';
+    return "set-keystore-ledger-address";
   }
 
-  constructor(public readonly bip44HDPath: string, public readonly chainId: string | number) {
+  constructor(
+    public readonly bip44HDPath: string,
+    public readonly chainId: string | number
+  ) {
     super();
   }
 
   validateBasic(): void {
-    if (this.bip44HDPath === '') {
-      throw new OWalletError('keyring', 240, 'bip44HDPath address can not be empty');
+    if (this.bip44HDPath === "") {
+      throw new OWalletError(
+        "keyring",
+        240,
+        "bip44HDPath address can not be empty"
+      );
     }
-    if (this.chainId === '') {
-      throw new OWalletError('keyring', 240, 'chainId address can not be empty');
+    if (this.chainId === "") {
+      throw new OWalletError(
+        "keyring",
+        240,
+        "chainId address can not be empty"
+      );
     }
   }
 
@@ -1351,7 +1414,7 @@ export class SetKeyStoreLedgerAddressMsg extends Message<KeyRingStatus> {
 
 export class CheckPasswordMsg extends Message<boolean> {
   public static type() {
-    return 'check-keyring-password';
+    return "check-keyring-password";
   }
 
   constructor(public readonly password: string) {
@@ -1360,7 +1423,7 @@ export class CheckPasswordMsg extends Message<boolean> {
 
   validateBasic(): void {
     if (!this.password) {
-      throw new OWalletError('keyring', 274, 'password not set');
+      throw new OWalletError("keyring", 274, "password not set");
     }
   }
 
@@ -1375,7 +1438,7 @@ export class CheckPasswordMsg extends Message<boolean> {
 
 export class ExportKeyRingDatasMsg extends Message<ExportKeyRingData[]> {
   public static type() {
-    return 'export-keyring-datas';
+    return "export-keyring-datas";
   }
 
   constructor(public readonly password: string) {
@@ -1384,7 +1447,7 @@ export class ExportKeyRingDatasMsg extends Message<ExportKeyRingData[]> {
 
   validateBasic(): void {
     if (!this.password) {
-      throw new OWalletError('keyring', 274, 'password not set');
+      throw new OWalletError("keyring", 274, "password not set");
     }
   }
 
@@ -1401,7 +1464,7 @@ export class ExportKeyRingDatasMsg extends Message<ExportKeyRingData[]> {
 // request sign Oasis goes here
 export class RequestSignOasisMsg extends Message<{}> {
   public static type() {
-    return 'request-sign-oasis';
+    return "request-sign-oasis";
   }
 
   constructor(public readonly chainId: string, public readonly data: object) {
@@ -1410,11 +1473,11 @@ export class RequestSignOasisMsg extends Message<{}> {
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new OWalletError('keyring', 270, 'chain id not set');
+      throw new OWalletError("keyring", 270, "chain id not set");
     }
 
     if (!this.data) {
-      throw new OWalletError('keyring', 231, 'data not set');
+      throw new OWalletError("keyring", 231, "data not set");
     }
   }
 
@@ -1438,7 +1501,7 @@ export class GetDefaultAddressOasisMsg extends Message<{
   type?: number;
 }> {
   public static type() {
-    return 'get-default-address-oasis';
+    return "get-default-address-oasis";
   }
 
   constructor(public readonly chainId: string) {
@@ -1447,7 +1510,7 @@ export class GetDefaultAddressOasisMsg extends Message<{
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new OWalletError('keyring', 270, 'chain id not set');
+      throw new OWalletError("keyring", 270, "chain id not set");
     }
   }
 

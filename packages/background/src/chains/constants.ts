@@ -1,1 +1,1 @@
-export const ROUTE = 'chains';
+export const ROUTE = "chains";

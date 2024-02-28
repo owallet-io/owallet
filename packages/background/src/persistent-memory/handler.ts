@@ -1,6 +1,6 @@
-import { Env, Handler, InternalHandler, Message } from '@owallet/router';
-import { SetPersistentMemoryMsg, GetPersistentMemoryMsg } from './messages';
-import { PersistentMemoryService } from './service';
+import { Env, Handler, InternalHandler, Message } from "@owallet/router";
+import { SetPersistentMemoryMsg, GetPersistentMemoryMsg } from "./messages";
+import { PersistentMemoryService } from "./service";
 
 export const getHandler: (service: PersistentMemoryService) => Handler = (
   service
@@ -15,7 +15,7 @@ export const getHandler: (service: PersistentMemoryService) => Handler = (
       case GetPersistentMemoryMsg:
         return service.get();
       default:
-        throw new Error('Unknown msg type');
+        throw new Error("Unknown msg type");
     }
   };
 };
@@ -26,6 +26,6 @@ const handleSetPersistentMemoryMsg: (
   (service: PersistentMemoryService) => (_, msg) => {
     service.set(msg.data);
     return {
-      success: true
+      success: true,
     };
   };

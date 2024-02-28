@@ -1,11 +1,11 @@
-import utils from './utils';
-import providers from './lib/providers';
-import Plugin from './lib/plugin';
-import Event from './lib/event';
-import TransactionBuilder from './lib/transactionBuilder';
-import Trx from './lib/trx';
-import Contract from './lib/contract';
-import BigNumber from 'bignumber.js';
+import utils from "./utils";
+import providers from "./lib/providers";
+import Plugin from "./lib/plugin";
+import Event from "./lib/event";
+import TransactionBuilder from "./lib/transactionBuilder";
+import Trx from "./lib/trx";
+import Contract from "./lib/contract";
+import BigNumber from "bignumber.js";
 
 type Utils = typeof utils;
 type Providers = typeof providers;

@@ -1,10 +1,10 @@
-import { ChainGetter } from '../../../../common';
-import { ObservableChainQuery } from '../../../chain-query';
-import { EpochProvisions } from './types';
-import { KVStore } from '@owallet/common';
-import { computed, makeObservable } from 'mobx';
-import { CoinPretty, Int } from '@owallet/unit';
-import { ObservableQueryOsmosisMintParmas } from './params';
+import { ChainGetter } from "../../../../common";
+import { ObservableChainQuery } from "../../../chain-query";
+import { EpochProvisions } from "./types";
+import { KVStore } from "@owallet/common";
+import { computed, makeObservable } from "mobx";
+import { CoinPretty, Int } from "@owallet/unit";
+import { ObservableQueryOsmosisMintParmas } from "./params";
 
 export class ObservableQueryOsmosisEpochProvisions extends ObservableChainQuery<EpochProvisions> {
   constructor(
@@ -34,12 +34,12 @@ export class ObservableQueryOsmosisEpochProvisions extends ObservableChainQuery<
       (cur) => cur.coinMinimalDenom === this.queryMintParmas.mintDenom
     );
     if (!currency) {
-      throw new Error('Unknown currency');
+      throw new Error("Unknown currency");
     }
 
     let provision = this.response.data.epoch_provisions;
-    if (provision.includes('.')) {
-      provision = provision.slice(0, provision.indexOf('.'));
+    if (provision.includes(".")) {
+      provision = provision.slice(0, provision.indexOf("."));
     }
     return new CoinPretty(currency, new Int(provision));
   }

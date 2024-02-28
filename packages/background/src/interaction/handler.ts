@@ -1,6 +1,6 @@
-import { Env, Handler, InternalHandler, Message } from '@owallet/router';
-import { ApproveInteractionMsg, RejectInteractionMsg } from './messages';
-import { InteractionService } from './service';
+import { Env, Handler, InternalHandler, Message } from "@owallet/router";
+import { ApproveInteractionMsg, RejectInteractionMsg } from "./messages";
+import { InteractionService } from "./service";
 
 // finally here
 export const getHandler: (service: InteractionService) => Handler = (
@@ -19,7 +19,7 @@ export const getHandler: (service: InteractionService) => Handler = (
           msg as RejectInteractionMsg
         );
       default:
-        throw new Error('Unknown msg type');
+        throw new Error("Unknown msg type");
     }
   };
 };

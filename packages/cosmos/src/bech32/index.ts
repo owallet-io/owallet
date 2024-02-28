@@ -1,5 +1,5 @@
-import bech32, { fromWords } from 'bech32';
-import { Bech32Config } from '@owallet/types';
+import bech32, { fromWords } from "bech32";
+import { Bech32Config } from "@owallet/types";
 
 export class Bech32Address {
   static shortenAddress(bech32: string, maxCharacters: number): string {
@@ -7,7 +7,7 @@ export class Bech32Address {
       return bech32;
     }
 
-    const i = bech32.indexOf('1');
+    const i = bech32.indexOf("1");
     const prefix = bech32.slice(0, i);
     const address = bech32.slice(i + 1);
 
@@ -16,7 +16,7 @@ export class Bech32Address {
     maxCharacters -= 1; // For "1"
 
     if (maxCharacters <= 0) {
-      return '';
+      return "";
     }
 
     const mid = Math.floor(address.length / 2);
@@ -31,23 +31,23 @@ export class Bech32Address {
       }
     }
 
-    return prefix + '1' + former + '...' + latter;
+    return prefix + "1" + former + "..." + latter;
   }
 
   static fromBech32(bech32Address: string, prefix?: string): Bech32Address {
     const decoded = bech32.decode(bech32Address);
     if (prefix && decoded.prefix !== prefix) {
-      throw new Error('Unmatched prefix');
+      throw new Error("Unmatched prefix");
     }
     return new Bech32Address(new Uint8Array(fromWords(decoded.words)));
   }
   static fromBech32Btc(address: string, prefix?: string): Bech32Address {
     const decoded = bech32.decode(address);
     if (prefix && decoded.prefix !== prefix) {
-      throw new Error('Unmatched prefix');
+      throw new Error("Unmatched prefix");
     }
     const addressHex = new Uint8Array(fromWords(decoded.words.slice(1)));
-    
+
     return new Bech32Address(addressHex);
   }
   static validate(bech32Address: string, prefix?: string) {
@@ -61,10 +61,10 @@ export class Bech32Address {
 
   static defaultBech32Config(
     mainPrefix: string,
-    validatorPrefix: string = 'val',
-    consensusPrefix: string = 'cons',
-    publicPrefix: string = 'pub',
-    operatorPrefix: string = 'oper'
+    validatorPrefix: string = "val",
+    consensusPrefix: string = "cons",
+    publicPrefix: string = "pub",
+    operatorPrefix: string = "oper"
   ): Bech32Config {
     return {
       bech32PrefixAccAddr: mainPrefix,
@@ -74,7 +74,7 @@ export class Bech32Address {
         mainPrefix + validatorPrefix + operatorPrefix + publicPrefix,
       bech32PrefixConsAddr: mainPrefix + validatorPrefix + consensusPrefix,
       bech32PrefixConsPub:
-        mainPrefix + validatorPrefix + consensusPrefix + publicPrefix
+        mainPrefix + validatorPrefix + consensusPrefix + publicPrefix,
     };
   }
 
