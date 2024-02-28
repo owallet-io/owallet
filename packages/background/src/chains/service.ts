@@ -137,6 +137,7 @@ export class ChainsService {
     if (networkType) {
       if (networkType === "evm") {
         // need to check if network type is evm, then we will convert chain id to number from hex
+        if (chainId === "0x1") chainId = "0x01";
         chainInfo = (await this.getChainInfos()).find((chainInfo) => {
           return (
             ChainIdHelper.parse(Number(chainInfo.chainId)).identifier ===
