@@ -246,6 +246,7 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
     }
 
     const feeTypePrimitive = this.getFeeTypePrimitive(feeType);
+
     const feeCurrency = this.feeCurrency;
 
     return new CoinPretty(feeCurrency, new Int(feeTypePrimitive.amount)).maxDecimals(feeCurrency.coinDecimals);

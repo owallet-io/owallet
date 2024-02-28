@@ -45,10 +45,9 @@ import { StoreProvider, useStore } from './stores';
 
 import { NftDetailsPage } from './pages/nft/nft-details';
 
-// import * as BackgroundTxResult from "../../background/tx/foreground";
-import { AdditonalIntlMessages, AppIntlProvider, LanguageToFiatCurrency } from '@owallet/common';
+import { AdditonalIntlMessages, AppIntlProvider, ChainIdEnum, LanguageToFiatCurrency } from '@owallet/common';
 
-import { Ethereum, OWallet, TronWeb, Bitcoin } from '@owallet/provider';
+import { Ethereum, OWallet, TronWeb, Bitcoin, Oasis } from '@owallet/provider';
 import { InExtensionMessageRequester } from '@owallet/router-extension';
 import * as Sentry from '@sentry/react';
 import { BrowserTracing } from '@sentry/tracing';
@@ -67,21 +66,25 @@ import { TokenPage } from './pages/token';
 import { SendBtcPage } from './pages/send-btc';
 
 const owallet = new OWallet(manifest.version, 'core', new InExtensionMessageRequester());
-
+const oasis = new Oasis(manifest.version, 'core', ChainIdEnum.Oasis, new InExtensionMessageRequester());
 const ethereum = new Ethereum(manifest.version, 'core', '', new InExtensionMessageRequester());
 
 const tronWeb = new TronWeb(manifest.version, 'core', '0x2b6653dc', new InExtensionMessageRequester());
 
 const bitcoin = new Bitcoin(manifest.version, 'core', new InExtensionMessageRequester());
+
 Sentry.init({
   dsn: 'https://4ce54db1095b48ab8688e701d7cc8301@o1323226.ingest.sentry.io/4504615445725184',
   integrations: [new BrowserTracing()],
 
   // We recommend adjusting this value in production, or using tracesSampler
   // for finer control
-  tracesSampleRate: 1.0
+  tracesSampleRate: 1.0,
+  environment: 'production',
+  ignoreErrors: ['Request rejected', 'Failed to fetch', 'Load failed', 'User rejected the request']
 });
-
+//@ts-ignore
+window.oasis = oasis;
 //@ts-ignore
 window.owallet = owallet;
 //@ts-ignore

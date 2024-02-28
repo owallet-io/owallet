@@ -2,7 +2,7 @@ import React, { FunctionComponent, useEffect, useState } from 'react';
 import { AddressInput, FeeButtons, CoinInput, MemoInput } from '../../components/form';
 import { useStore } from '../../stores';
 
-import { HeaderLayout, LayoutSpace, LayoutHidePage } from '../../layouts';
+
 
 import { observer } from 'mobx-react-lite';
 
@@ -16,9 +16,8 @@ import { useHistory, useLocation } from 'react-router';
 import queryString from 'querystring';
 
 import { useSendTxConfig } from '@owallet/hooks';
-import { fitPopupWindow, openPopupWindow, PopupSize } from '@owallet/popup';
+import { fitPopupWindow,  } from '@owallet/popup';
 import { EthereumEndpoint } from '@owallet/common';
-import classNames from 'classnames';
 
 export const SendPage: FunctionComponent<{
   coinMinimalDenom?: string;

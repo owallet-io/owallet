@@ -14,7 +14,7 @@ import { OWSubTitleHeader } from '@src/components/header';
 import { SignOasisModal } from '@src/modals/sign/sign-oasis';
 import { useSmartNavigation } from '@src/navigation.provider';
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     sendInputRoot: {
       paddingHorizontal: spacing['20'],
@@ -60,10 +60,12 @@ export const SendOasisScreen: FunctionComponent = observer(() => {
   >();
 
   const chainId = route?.params?.chainId ? route?.params?.chainId : chainStore?.current?.chainId;
-  const maxAmount = route?.params?.maxAmount;
+  // const maxAmount = route?.params?.maxAmount;
 
   const account = accountStore.getAccount(chainId);
   const queries = queriesStore.get(chainId);
+  const balance = queries.evm.queryEvmBalance.getQueryBalance(account.bech32Address)?.balance;
+  let maxAmount = balance?.trim(true).shrink(true).maxDecimals(9).hideDenom(true).toString();
 
   const sendConfigs = useSendTxConfig(
     chainStore,
@@ -71,12 +73,13 @@ export const SendOasisScreen: FunctionComponent = observer(() => {
     account.msgOpts['send'],
     receiveAddress,
     queries.queryBalances,
-    chainStore.current.rpc
+    chainStore.current.rpc,
+    queriesStore.get(chainStore.current.chainId).evm.queryEvmBalance
   );
 
   useEffect(() => {
     if (route?.params?.currency) {
-      const currency = sendConfigs.amountConfig.sendableCurrencies.find(cur => {
+      const currency = sendConfigs.amountConfig.sendableCurrencies.find((cur) => {
         if (cur.coinDenom === route.params.currency) {
           return cur.coinDenom === route.params.currency;
         }
@@ -98,7 +101,7 @@ export const SendOasisScreen: FunctionComponent = observer(() => {
   return (
     <PageWithScrollView backgroundColor={colors['background']}>
       <View style={{ marginBottom: 99 }}>
-        <OWSubTitleHeader title="Send" />
+        {/* <OWSubTitleHeader title="Send" /> */}
         <OWBox>
           <CurrencySelector
             label="Select a token"

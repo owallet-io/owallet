@@ -15,7 +15,7 @@ export const AccountCard: FunctionComponent<{
 }> = observer(({ containerStyle }) => {
   const { chainStore, accountStore, queriesStore, priceStore, modalStore, keyRingStore } = useStore();
 
-  const selected = keyRingStore?.multiKeyStoreInfo.find(keyStore => keyStore?.selected);
+  const selected = keyRingStore?.multiKeyStoreInfo.find((keyStore) => keyStore?.selected);
   const smartNavigation = useSmartNavigation();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
@@ -71,7 +71,7 @@ export const AccountCard: FunctionComponent<{
     addressDisplay
   ]);
 
-  const onPressBtnMain = name => {
+  const onPressBtnMain = (name) => {
     if (name === 'Buy') {
       navigate(SCREENS.STACK.Others, {
         screen: SCREENS.BuyFiat
@@ -103,11 +103,11 @@ export const AccountCard: FunctionComponent<{
       totalBalance={totalBalance}
       addressComponent={<AddressCopyable address={addressDisplay} maxCharacters={22} />}
       name={account?.name || '..'}
-      coinType={`${
-        keyRingStore.keyRingType === 'ledger'
-          ? chainStore?.current?.bip44?.coinType
-          : selected?.bip44HDPath?.coinType ?? chainStore?.current?.bip44?.coinType
-      }`}
+      // coinType={`${
+      //   keyRingStore.keyRingType === 'ledger'
+      //     ? chainStore?.current?.bip44?.coinType
+      //     : selected?.bip44HDPath?.coinType ?? chainStore?.current?.bip44?.coinType
+      // }`}
       // networkType={'cosmos'}
       onPressBtnMain={onPressBtnMain}
     />

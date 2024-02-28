@@ -9,8 +9,8 @@ import { useStore } from '../../stores';
 import { useNotification } from '../../components/notification';
 import { useIntl } from 'react-intl';
 import { WalletStatus } from '@owallet/stores';
-import { ChainIdEnum, TRON_ID, getBase58Address, getKeyDerivationFromAddressType } from '@owallet/common';
-import { FormGroup, Input, Label } from 'reactstrap';
+import { ChainIdEnum, getKeyDerivationFromAddressType } from '@owallet/common';
+import { Input, Label } from 'reactstrap';
 import { AddressBtcType } from '@owallet/types';
 import { useBIP44Option } from '../register/advanced-bip44';
 
@@ -19,24 +19,12 @@ export const AccountView: FunctionComponent = observer(() => {
   const chainId = chainStore.current.chainId;
   const { networkType, bip44, coinType } = chainStore.current;
   const accountInfo = accountStore.getAccount(chainId);
-  const selected = keyRingStore?.multiKeyStoreInfo?.find((keyStore) => keyStore?.selected);
+
   const intl = useIntl();
   const bip44Option = useBIP44Option();
-  const checkTronNetwork = chainId === TRON_ID;
-  const addressDisplay = accountInfo.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
-  const ledgerAddress =
-    keyRingStore.keyRingType == 'ledger'
-      ? checkTronNetwork
-        ? keyRingStore?.keyRingLedgerAddresses?.trx
-        : keyRingStore?.keyRingLedgerAddresses?.eth
-      : '';
 
-  const evmAddress =
-    (accountInfo.hasEvmosHexAddress || chainStore.current.networkType === 'evm') && accountInfo.evmosHexAddress;
-  const tronAddress =
-    (accountInfo.hasEvmosHexAddress || chainStore.current.networkType === 'evm') && checkTronNetwork
-      ? getBase58Address(accountInfo.evmosHexAddress ?? '')
-      : null;
+  const addressDisplay = accountInfo.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
+
   const notification = useNotification();
 
   const copyAddress = useCallback(
@@ -100,73 +88,7 @@ export const AccountView: FunctionComponent = observer(() => {
           </div>
           <div style={{ flex: 1 }} />
         </div>
-      {/* )} */}
-      {/* {(accountInfo.hasEvmosHexAddress || networkType === 'evm') && (
-        <div
-          className={styleAccount.containerAccount}
-          style={{
-            marginTop: '2px',
-            flexDirection: 'column',
-            alignItems: 'center'
-          }}
-        >
-          <div style={{ flex: 1 }} />
-          <div
-            className={styleAccount.address}
-            style={{ marginBottom: '6px' }}
-            onClick={() => copyAddress(keyRingStore.keyRingType !== 'ledger' ? evmAddress : ledgerAddress)}
-          >
-            {checkTronNetwork && !accountInfo.isNanoLedger && (
-              <span
-                style={{
-                  fontWeight: 'bold'
-                }}
-              >
-                Evmos:
-              </span>
-            )}
-            <span className={styleAccount.addressText}>
-              {keyRingStore.keyRingType !== 'ledger' ? (
-                <Address isRaw={true} tooltipAddress={evmAddress}>
-                  {accountInfo.walletStatus === WalletStatus.Loaded &&
-                    accountInfo.evmosHexAddress &&
-                    Add.shortAddress(evmAddress)}
-                </Address>
-              ) : (
-                <Address isRaw={true} tooltipAddress={ledgerAddress}>
-                  {Add.shortAddress(ledgerAddress)}
-                </Address>
-              )}
-            </span>
-            <div style={{ width: 6 }} />
-            <img src={require('../../public/assets/img/filled.svg')} alt="filled" width={16} height={16} />
-          </div>
-          {checkTronNetwork && !accountInfo.isNanoLedger && tronAddress && (
-            <div
-              className={styleAccount.address}
-              style={{ marginBottom: '6px' }}
-              onClick={() => copyAddress(tronAddress)}
-            >
-              <span
-                style={{
-                  fontWeight: 'bold'
-                }}
-              >
-                Base58:
-              </span>
-              <span className={styleAccount.addressText}>
-                <Address isRaw={true} tooltipAddress={tronAddress}>
-                  {Add.shortAddress(tronAddress)}
-                </Address>
-              </span>
-              <div style={{ width: 6 }} />
-              <img src={require('../../public/assets/img/filled.svg')} alt="filled" width={16} height={16} />
-            </div>
-          )}
-
-          <div style={{ flex: 1 }} />
-        </div>
-      )} */}
+      
       {networkType === 'bitcoin' && (
         <div
           style={{

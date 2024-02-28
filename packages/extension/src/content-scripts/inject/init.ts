@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { OWallet, Ethereum, TronWeb, Bitcoin } from '@owallet/types';
+import { OWallet, Ethereum, TronWeb, Bitcoin, Oasis } from '@owallet/types';
 import { OfflineSigner } from '@cosmjs/launchpad';
 import { SecretUtils } from 'secretjs/types/enigmautils';
 import { OfflineDirectSigner } from '@cosmjs/proto-signing';
@@ -9,6 +9,7 @@ export function init(
   ethereum: Ethereum,
   tronWeb: TronWeb,
   bitcoin: Bitcoin,
+  oasis: Oasis,
   getOfflineSigner: (chainId: string) => OfflineSigner & OfflineDirectSigner,
   getOfflineSignerOnlyAmino: (chainId: string) => OfflineSigner,
   getOfflineSignerAuto: (chainId: string) => Promise<OfflineSigner | OfflineDirectSigner>,
@@ -24,6 +25,9 @@ export function init(
 
   if (!window.ethereum) {
     window.ethereum = ethereum;
+  }
+  if (!window.oasis) {
+    window.oasis = oasis;
   }
 
   if (ethereum) {

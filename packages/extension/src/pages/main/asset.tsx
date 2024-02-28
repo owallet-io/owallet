@@ -291,6 +291,7 @@ export const AssetChartViewEvm: FunctionComponent = observer(() => {
   </React.Fragment>
   );
 });
+
 export const AssetChartViewBtc: FunctionComponent = observer(() => {
   const { chainStore, accountStore, queriesStore, priceStore, keyRingStore } = useStore();
 

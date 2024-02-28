@@ -145,8 +145,11 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
   get amount(): string {
     if (this.fraction != null) {
       let balance = null;
-      if (!!this.queryBtcBalance) {
+      const networkType = this.chainGetter.getChain(this.chainId).networkType;
+      if (networkType === 'bitcoin') {
         balance = this.queryBtcBalance.getQueryBalance(this.sender)?.balance;
+      } else if (networkType === 'evm') {
+        balance = this.queryEvmBalances.getQueryBalance(this.sender)?.balance;
       } else {
         balance = this.queryBalances.getQueryBech32Address(this.sender).getBalanceFromCurrency(this.sendCurrency);
       }

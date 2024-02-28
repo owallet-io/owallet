@@ -67,15 +67,6 @@ export const MainPage: FunctionComponent = observer(() => {
   useEffect(() => {
     setHasSend(false);
   }, [chainStore.current]);
-  // const accountInfo = accountStore.getAccount(chainStore.current.chainId);
-
-  // const queryBalances = queriesStore
-  //   .get(chainStore.current.chainId)
-  //   .queryBalances.getQueryBech32Address(accountInfo.bech32Address);
-
-  // const tokens = queryBalances.unstakables;
-
-  // const hasTokens = tokens.length > 0;
 
   const renderAssetView = useMemo(() => {
     if (networkType === 'evm') {
@@ -163,20 +154,6 @@ export const MainPage: FunctionComponent = observer(() => {
           </Card>
         </>
       )}
-      {/* {hasTokens ? (
-        <Card className={classnames(style.card, 'shadow')}>
-          <CardBody>{<TokensView tokens={tokens} />}</CardBody>
-        </Card>
-      ) : null} */}
-
-      {/* {uiConfigStore.showAdvancedIBCTransfer &&
-      chainStore.current.features?.includes('ibc-transfer') ? (
-        <Card className={classnames(style.card, 'shadow')}>
-          <CardBody>
-            <IBCTransferView />
-          </CardBody>
-        </Card>
-      ) : null} */}
     </HeaderLayout>
   );
 });
