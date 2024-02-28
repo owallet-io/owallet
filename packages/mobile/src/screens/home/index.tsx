@@ -127,7 +127,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
 
   const loadTokenAmounts = useLoadTokens(universalSwapStore);
   // handle fetch all tokens of all chains
-  const handleFetchAmounts = async () => {
+  const handleFetchAmounts = async ({ orai, eth, tron, kwt }) => {
     let loadTokenParams = {};
     try {
       const cwStargate = {
@@ -137,10 +137,10 @@ export const HomeScreen: FunctionComponent = observer(props => {
       };
       loadTokenParams = {
         ...loadTokenParams,
-        oraiAddress: accountOrai.bech32Address,
-        metamaskAddress: accountEth.evmosHexAddress,
-        kwtAddress: accountKawaiiCosmos.bech32Address,
-        tronAddress: getBase58Address(accountTron.evmosHexAddress),
+        oraiAddress: orai,
+        metamaskAddress: eth,
+        kwtAddress: kwt,
+        tronAddress: getBase58Address(tron),
         cwStargate
       };
 
@@ -158,8 +158,21 @@ export const HomeScreen: FunctionComponent = observer(props => {
 
   useEffect(() => {
     universalSwapStore.clearAmounts();
-    if (accountEth.evmosHexAddress && accountTron.evmosHexAddress && accountKawaiiCosmos.bech32Address) {
-      handleFetchAmounts();
+
+    if (
+      accountOrai.bech32Address &&
+      accountEth.evmosHexAddress &&
+      accountTron.evmosHexAddress &&
+      accountKawaiiCosmos.bech32Address
+    ) {
+      setTimeout(() => {
+        handleFetchAmounts({
+          orai: accountOrai.bech32Address,
+          eth: accountEth.evmosHexAddress,
+          tron: accountTron.evmosHexAddress,
+          kwt: accountKawaiiCosmos.bech32Address
+        });
+      }, 2000);
     }
   }, [
     accountOrai.bech32Address,
