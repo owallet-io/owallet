@@ -11,8 +11,8 @@ import { TokenItemType, toDisplay } from '@oraichain/oraidex-common';
 import { useStore } from '@src/stores';
 import { ChainIdEnum } from '@owallet/common';
 import { CoinGeckoPrices } from '@owallet/hooks';
-import { tokenImg } from '../helpers';
 import { find } from 'lodash';
+import { tokensIcon } from '@oraichain/oraidex-common';
 
 export const SelectTokenModal: FunctionComponent<{
   onNetworkModal?: () => void;
@@ -71,7 +71,7 @@ export const SelectTokenModal: FunctionComponent<{
         // ) as AmountDetails;
         // const totalUsd = getTotalUsd(subAmounts, prices);
 
-        const tokenIcon = find(tokenImg, tk => tk.coinGeckoId === item.coinGeckoId);
+        const tokenIcon = find(tokensIcon, tk => tk.coinGeckoId === item.coinGeckoId);
 
         return (
           <TouchableOpacity

@@ -13,9 +13,9 @@ import { RightArrowIcon } from '@src/components/icon';
 import { ChainIdEnum } from '@owallet/common';
 import { API } from '@src/common/api';
 import moment from 'moment';
-import { chainIcons } from '../universal-swap/helpers';
 import { Bech32Address } from '@owallet/cosmos';
 import OWFlatList from '@src/components/page/ow-flat-list';
+import { chainIcons } from '@oraichain/oraidex-common';
 
 export const HistoryCard: FunctionComponent<{
   containerStyle?: ViewStyle;
