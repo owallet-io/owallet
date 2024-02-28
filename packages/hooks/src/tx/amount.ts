@@ -1,14 +1,14 @@
-import { IAmountConfig, IFeeConfig } from './types';
-import { TxChainSetter } from './chain';
+import { IAmountConfig, IFeeConfig } from "./types";
+import { TxChainSetter } from "./chain";
 import {
   ChainGetter,
   CoinPrimitive,
-  ObservableQueryBitcoinBalance
+  ObservableQueryBitcoinBalance,
   // ObservableQueryEvmBalance
-} from '@owallet/stores';
-import { action, computed, makeObservable, observable } from 'mobx';
-import { ObservableQueryBalances } from '@owallet/stores';
-import { AppCurrency } from '@owallet/types';
+} from "@owallet/stores";
+import { action, computed, makeObservable, observable } from "mobx";
+import { ObservableQueryBalances } from "@owallet/stores";
+import { AppCurrency } from "@owallet/types";
 import {
   EmptyAmountError,
   InsufficientAmountError,
@@ -148,8 +148,6 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
       const networkType = this.chainGetter.getChain(this.chainId).networkType;
       if (networkType === "bitcoin") {
         balance = this.queryBtcBalance.getQueryBalance(this.sender)?.balance;
-      } else if (networkType === "evm") {
-        balance = this.queryEvmBalances.getQueryBalance(this.sender)?.balance;
       } else {
         balance = this.queryBalances
           .getQueryBech32Address(this.sender)
@@ -254,15 +252,19 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
       return new NegativeAmountError("Amount is negative");
     }
 
-    if (this.chainInfo.networkType === 'bitcoin') {
-      const balance = this.queryBtcBalance.getQueryBalance(this.sender)?.balance;
+    if (this.chainInfo.networkType === "bitcoin") {
+      const balance = this.queryBtcBalance.getQueryBalance(
+        this.sender
+      )?.balance;
       const balanceDec = balance.toDec();
       if (dec.gt(balanceDec)) {
-        return new InsufficientAmountError('Insufficient amount');
+        return new InsufficientAmountError("Insufficient amount");
       }
       return;
     }
-    const balance = this.queryBalances.getQueryBech32Address(this.sender).getBalanceFromCurrency(this.sendCurrency);
+    const balance = this.queryBalances
+      .getQueryBech32Address(this.sender)
+      .getBalanceFromCurrency(this.sendCurrency);
     const balanceDec = balance.toDec();
     if (dec.gt(balanceDec)) {
       return new InsufficientAmountError("Insufficient amount");
