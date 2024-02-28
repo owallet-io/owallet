@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-20.04 #orai-self-hosted
     strategy:
       matrix:
-        node-version: [16.14.0]
+        node-version: [18.17.0]
     steps:
       - name: Cancel Previous Runs
         uses: styfle/cancel-workflow-action@0.8.0
