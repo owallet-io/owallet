@@ -29,7 +29,6 @@
   "scripts": {
     "git:update": "git submodule update --recursive && git pull",
     "bootstrap": "lerna bootstrap",
-    "test:package": "lerna run test --parallel --ignore @owallet/router-mock --ignore @owallet/unit --ignore @owallet/extension",
     "setup:mobile": "yarn && yarn build:libs && cd packages/mobile && yarn build:provider && yarn pod:install",
     "dev": "lerna run dev --parallel --ignore @owallet/extension --ignore @owallet/mobile --ignore @owallet/wc-client --ignore @owallet/wc-qrcode-modal",
     "clean:setup": "yarn clean:all && yarn setup:mobile",
