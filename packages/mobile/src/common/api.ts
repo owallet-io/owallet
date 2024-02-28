@@ -336,6 +336,10 @@ export const API = {
   getWalletHistory: ({ address, offset, limit }, config: AxiosRequestConfig) => {
     let url = `query-history/${address}?offset=${offset}&limit=${limit}`;
     return API.get(url, config);
+  },
+  getGroupHistory: ({ address, offset, limit }, config: AxiosRequestConfig) => {
+    let url = `history-chart/${address}?offset=${offset}&limit=${limit}`;
+    return API.get(url, config);
   }
 };
 const retryWrapper = (axios, options) => {

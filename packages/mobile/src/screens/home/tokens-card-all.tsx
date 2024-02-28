@@ -17,38 +17,8 @@ import { ChainIdEnum, getBase58Address, TRC20_LIST } from '@owallet/common';
 import { API } from '@src/common/api';
 import moment from 'moment';
 import { chainIcons } from '../universal-swap/helpers';
-import { Bech32Address } from '@owallet/cosmos';
 import { TokenItem } from '../tokens/components/token-item';
-
-const mockHistoryItems = [
-  {
-    type: 'Swap',
-    address: 'orai1hvr9d72r5um9lvt0rpkd4r75vrsqtw6yujhqs2',
-    amount: 43,
-    value: 103,
-    fromChainId: ChainIdEnum.Oraichain,
-    toChainId: ChainIdEnum.TRON,
-    asset: 'BNB'
-  },
-  {
-    type: 'Send',
-    address: 'orai1hvr9d72r5um9lvt0rpkd4r75vrsqtw6yujhqs2',
-    amount: 87,
-    value: 234,
-    fromChainId: ChainIdEnum.BNBChain,
-    toChainId: ChainIdEnum.Ethereum,
-    asset: 'ETH'
-  },
-  {
-    type: 'Receive',
-    address: 'orai1hvr9d72r5um9lvt0rpkd4r75vrsqtw6yujhqs2',
-    amount: 12,
-    value: 67,
-    fromChainId: ChainIdEnum.Oraichain,
-    toChainId: ChainIdEnum.Oraichain,
-    asset: 'ORAI'
-  }
-];
+import { HistoryCard } from './history-card';
 
 export const TokensCardAll: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -60,7 +30,6 @@ export const TokensCardAll: FunctionComponent<{
 
   const [more, setMore] = useState(true);
   const [activeTab, setActiveTab] = useState('tokens');
-  const [histories, setHistories] = useState([]);
   const [yesterdayAssets, setYesterdayAssets] = useState([]);
   const [queryBalances, setQueryBalances] = useState({});
 
@@ -84,7 +53,7 @@ export const TokensCardAll: FunctionComponent<{
   const [tronTokens, setTronTokens] = useState([]);
 
   const handleSaveTokenInfos = async tokenInfos => {
-    const res = await API.saveTokenInfos(
+    await API.saveTokenInfos(
       {
         address: accountOrai.bech32Address,
         tokesInfos: tokenInfos
@@ -96,8 +65,6 @@ export const TokensCardAll: FunctionComponent<{
   };
 
   const getYesterdayAssets = async () => {
-    console.log(' accountOrai.bech32Address', accountOrai.bech32Address);
-
     const res = await API.getYesterdayAssets(
       {
         address: accountOrai.bech32Address,
@@ -124,31 +91,9 @@ export const TokensCardAll: FunctionComponent<{
     }
   };
 
-  const getWalletHistory = async () => {
-    try {
-      const res = await API.getWalletHistory(
-        {
-          address: accountOrai.bech32Address,
-          offset: 0,
-          limit: 10
-        },
-        {
-          baseURL: 'https://staging.owallet.dev/'
-        }
-      );
-
-      if (res && res.status === 200) {
-        setHistories(res.data);
-      }
-    } catch (err) {
-      console.log('getWalletHistory err', err);
-    }
-  };
-
   useEffect(() => {
     setYesterdayAssets([]);
     getYesterdayAssets();
-    getWalletHistory();
   }, [accountOrai.bech32Address]);
 
   useEffect(() => {
@@ -243,58 +188,6 @@ export const TokensCardAll: FunctionComponent<{
       return <OWEmpty />;
     }
   };
-
-  const renderHistoryItem = useCallback(
-    item => {
-      if (item) {
-        const fromChainIcon = chainIcons.find(c => c.chainId === item.fromToken?.chainId ?? ChainIdEnum.Oraichain);
-        const toChainIcon = chainIcons.find(c => c.chainId === item.toToken?.chainId ?? ChainIdEnum.Oraichain);
-        return (
-          <TouchableOpacity onPress={() => {}} style={styles.btnItem}>
-            <View style={styles.leftBoxItem}>
-              <View style={styles.iconWrap}>
-                <OWIcon type="images" source={{ uri: fromChainIcon?.Icon }} size={28} />
-              </View>
-              <View style={styles.chainWrap}>
-                <OWIcon type="images" source={{ uri: toChainIcon?.Icon }} size={16} />
-              </View>
-
-              <View style={styles.pl10}>
-                <Text size={14} color={colors['neutral-text-heading']} weight="600">
-                  {item.type}
-                </Text>
-                <Text weight="400" color={colors['neutral-text-body']}>
-                  {Bech32Address.shortenAddress(item.fromAddress, 16)}
-                </Text>
-              </View>
-            </View>
-            <View style={styles.rightBoxItem}>
-              <View style={{ flexDirection: 'row' }}>
-                <View style={{ alignItems: 'flex-end' }}>
-                  <Text weight="500" color={colors['neutral-text-heading']}>
-                    {item.fromAmount} {item.fromToken?.asset ?? ''}
-                  </Text>
-                  <Text style={styles.profit} color={colors['success-text-body']}>
-                    {'+'}${item.value.toFixed(6)}
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    flex: 0.5,
-                    justifyContent: 'center',
-                    paddingLeft: 20
-                  }}
-                >
-                  <RightArrowIcon height={12} color={colors['neutral-text-heading']} />
-                </View>
-              </View>
-            </View>
-          </TouchableOpacity>
-        );
-      }
-    },
-    [theme]
-  );
 
   const renderTokenItem = useCallback(
     item => {
@@ -400,38 +293,7 @@ export const TokensCardAll: FunctionComponent<{
     } else {
       return (
         <>
-          <View style={{ paddingTop: 16 }}>
-            <Text size={14} color={colors['neutral-text-heading']} weight="600">
-              {'Dec 8, 2024'}
-            </Text>
-          </View>
-
-          <CardBody style={{ paddingHorizontal: 0, paddingTop: 8 }}>
-            {histories.length > 0 ? (
-              histories.map((token, index) => {
-                if (more) {
-                  if (index < 3) return renderHistoryItem(token);
-                } else {
-                  return renderHistoryItem(token);
-                }
-              })
-            ) : (
-              <OWEmpty type="cash" />
-            )}
-          </CardBody>
-          {mockHistoryItems.length > 3 ? (
-            <OWButton
-              style={{
-                marginTop: 16
-              }}
-              label={more ? 'View all' : 'Hide'}
-              size="medium"
-              type="secondary"
-              onPress={() => {
-                setMore(!more);
-              }}
-            />
-          ) : null}
+          <HistoryCard />
         </>
       );
     }

@@ -81,9 +81,8 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
       yesterdayAssets.map(y => {
         yesterdayBalance += y.value ?? 0;
       });
+      setProfit(Number(Number(totalUsd - yesterdayBalance).toFixed(6)));
     }
-
-    setProfit(Number(Number(totalUsd - yesterdayBalance).toFixed(6)));
   }, [totalUsd, accountOrai.bech32Address]);
 
   const renderTotalBalance = () => {
