@@ -1,5 +1,5 @@
-import React, { FunctionComponent } from 'react';
-import Svg, { Path, Rect } from 'react-native-svg';
+import React, { FunctionComponent } from "react";
+import Svg, { Path, Rect } from "react-native-svg";
 
 export const CopyIcon: FunctionComponent<{
   color: string;
@@ -12,7 +12,7 @@ export const CopyIcon: FunctionComponent<{
       viewBox="0 0 16 17"
       style={{
         width: size,
-        height: size
+        height: size,
       }}
     >
       <Path
@@ -38,7 +38,7 @@ export const CopyFillIcon: FunctionComponent<{
   color?: string;
   size?: number;
   onPress?: () => void;
-}> = ({ color = 'none', size = 16, onPress }) => {
+}> = ({ color = "none", size = 16, onPress }) => {
   return (
     <Svg
       width={size}
@@ -66,7 +66,7 @@ export const CopyAccountIcon: FunctionComponent<{
   color?: string;
   size?: number;
   onPress?: () => void;
-}> = ({ color = 'none', size = 16, onPress }) => {
+}> = ({ color = "none", size = 16, onPress }) => {
   return (
     <Svg
       width={size}
@@ -89,7 +89,7 @@ export const CopyTransactionIcon: FunctionComponent<{
   color?: string;
   size?: number;
   onPress?: () => void;
-}> = ({ color = 'none', size = 20, onPress }) => {
+}> = ({ color = "none", size = 20, onPress }) => {
   return (
     <Svg
       width={size}

@@ -1,20 +1,20 @@
-import React, { FunctionComponent } from 'react';
-import { registerModal } from '../../modals/base';
-import { CardModal } from '../../modals/card';
-import { View } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
-import { Text } from '@src/components/text';
-import { useStyle } from '../../styles';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../stores';
-import { RectButton } from '../rect-button';
-import FastImage from 'react-native-fast-image';
-import { VectorCharacter } from '../vector-character';
-import { BottomSheetProps } from '@gorhom/bottom-sheet';
+import React, { FunctionComponent } from "react";
+import { registerModal } from "../../modals/base";
+import { CardModal } from "../../modals/card";
+import { View } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
+import { Text } from "@src/components/text";
+import { useStyle } from "../../styles";
+import { observer } from "mobx-react-lite";
+import { useStore } from "../../stores";
+import { RectButton } from "../rect-button";
+import FastImage from "react-native-fast-image";
+import { VectorCharacter } from "../vector-character";
+import { BottomSheetProps } from "@gorhom/bottom-sheet";
 export const ChainSelectorModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
-  bottomSheetModalConfig?: Omit<BottomSheetProps, 'snapPoints' | 'children'>;
+  bottomSheetModalConfig?: Omit<BottomSheetProps, "snapPoints" | "children">;
   chainIds: string[];
   onSelectChain: (chainId: string) => void;
 }> = registerModal(
@@ -24,10 +24,16 @@ export const ChainSelectorModal: FunctionComponent<{
     const style = useStyle();
 
     return (
-      <CardModal disabledScrollView title="Select Chain" childrenContainerStyle={style.flatten(['padding-0'])}>
-        <ScrollView style={style.flatten(['max-height-600'])}>
+      <CardModal
+        disabledScrollView
+        title="Select Chain"
+        childrenContainerStyle={style.flatten(["padding-0"])}
+      >
+        <ScrollView style={style.flatten(["max-height-600"])}>
           {chainIds.map((chainId) => {
-            const chainName = chainStore.hasChain(chainId) ? chainStore.getChain(chainId).chainName : chainId;
+            const chainName = chainStore.hasChain(chainId)
+              ? chainStore.getChain(chainId).chainName
+              : chainId;
 
             const chainImage = chainStore.hasChain(chainId)
               ? chainStore.getChain(chainId).raw.chainSymbolImageUrl
@@ -36,38 +42,49 @@ export const ChainSelectorModal: FunctionComponent<{
             return (
               <RectButton
                 key={chainId}
-                style={style.flatten(['padding-x-20', 'padding-y-15', 'flex-row', 'items-center'])}
+                style={style.flatten([
+                  "padding-x-20",
+                  "padding-y-15",
+                  "flex-row",
+                  "items-center",
+                ])}
                 onPress={() => {
                   onSelectChain(chainId);
                 }}
               >
                 <View
                   style={style.flatten([
-                    'width-40',
-                    'height-40',
-                    'border-radius-64',
-                    'items-center',
-                    'justify-center',
-                    'background-color-primary',
-                    'margin-right-12'
+                    "width-40",
+                    "height-40",
+                    "border-radius-64",
+                    "items-center",
+                    "justify-center",
+                    "background-color-primary",
+                    "margin-right-12",
                   ])}
                 >
                   {chainImage ? (
                     <FastImage
                       style={{
                         width: 30,
-                        height: 30
+                        height: 30,
                       }}
                       resizeMode={FastImage.resizeMode.contain}
                       source={{
-                        uri: chainImage
+                        uri: chainImage,
                       }}
                     />
                   ) : (
-                    <VectorCharacter char={chainName} color="white" height={14} />
+                    <VectorCharacter
+                      char={chainName}
+                      color="white"
+                      height={14}
+                    />
                   )}
                 </View>
-                <Text style={style.flatten(['h5', 'color-text-black-medium'])}>{chainName}</Text>
+                <Text style={style.flatten(["h5", "color-text-black-medium"])}>
+                  {chainName}
+                </Text>
               </RectButton>
             );
           })}
@@ -76,6 +93,6 @@ export const ChainSelectorModal: FunctionComponent<{
     );
   }),
   {
-    disableSafeArea: true
+    disableSafeArea: true,
   }
 );

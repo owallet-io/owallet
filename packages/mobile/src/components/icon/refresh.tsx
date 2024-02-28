@@ -1,5 +1,5 @@
-import React, { FunctionComponent } from 'react';
-import Svg, { Path } from 'react-native-svg';
+import React, { FunctionComponent } from "react";
+import Svg, { Path } from "react-native-svg";
 
 export const RefreshIcon: FunctionComponent<{
   color: string;
@@ -15,7 +15,7 @@ export const RefreshIcon: FunctionComponent<{
       viewBox="0 0 24 24"
       style={{
         width: size,
-        height: size
+        height: size,
       }}
     >
       <Path

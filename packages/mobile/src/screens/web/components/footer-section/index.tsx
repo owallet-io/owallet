@@ -1,20 +1,20 @@
-import { useNavigation } from '@react-navigation/core';
-import React, { FunctionComponent } from 'react';
-import { Platform, TouchableOpacity, View } from 'react-native';
-import { Text } from '@src/components/text';
-import { useStyle } from '../../../../styles';
-import { useWebViewState } from '../context';
-import { observer } from 'mobx-react-lite';
+import { useNavigation } from "@react-navigation/core";
+import React, { FunctionComponent } from "react";
+import { Platform, TouchableOpacity, View } from "react-native";
+import { Text } from "@src/components/text";
+import { useStyle } from "../../../../styles";
+import { useWebViewState } from "../context";
+import { observer } from "mobx-react-lite";
 import {
   BrowserIcon,
   HomeLightIcon,
   LeftLightIcon,
   RefreshIcon,
-  RightLightIcon
-} from '../../../../components/icon';
-import { useStore } from '../../../../stores';
-import { colors, metrics } from '../../../../themes';
-import { useTheme } from '@src/themes/theme-provider';
+  RightLightIcon,
+} from "../../../../components/icon";
+import { useStore } from "../../../../stores";
+import { colors, metrics } from "../../../../themes";
+import { useTheme } from "@src/themes/theme-provider";
 
 export const BrowserFooterSection: FunctionComponent<{
   isSwitchTab: boolean;
@@ -31,23 +31,23 @@ export const BrowserFooterSection: FunctionComponent<{
   const onPress = (type: any) => {
     try {
       switch (type) {
-        case 'reload':
-          if (typeOf === 'webview') {
+        case "reload":
+          if (typeOf === "webview") {
             if (webViewState.webView) {
-              if (Platform.OS === 'android') {
+              if (Platform.OS === "android") {
                 webViewState.webView.clearCache(true);
               }
               webViewState.webView.reload();
             }
           }
           return;
-        case 'back':
+        case "back":
           if (isSwitchTab) {
             setIsSwitchTab(false);
             return;
           }
-          if (typeOf === 'browser') {
-            return navigation.navigate('Home', {});
+          if (typeOf === "browser") {
+            return navigation.navigate("Home", {});
           }
           if (!webViewState.canGoBack) {
             webViewState.clearWebViewContext();
@@ -56,63 +56,63 @@ export const BrowserFooterSection: FunctionComponent<{
             webViewState.webView.goBack();
           }
           return;
-        case 'next':
+        case "next":
           if (webViewState.webView) {
             webViewState.webView.goForward();
           } else {
             onHandleUrl();
           }
           return;
-        case 'tabs':
+        case "tabs":
           if (browserStore.getTabs.length === 0) {
             setIsSwitchTab(false);
           } else {
             setIsSwitchTab(!isSwitchTab);
           }
           return;
-        case 'home':
-          if (typeOf === 'browser') {
-            return navigation.navigate('Home', {});
+        case "home":
+          if (typeOf === "browser") {
+            return navigation.navigate("Home", {});
           }
-          return navigation.navigate('Browser', {});
+          return navigation.navigate("Browser", {});
       }
     } catch (error) {
       console.log({ error });
     }
   };
-  const arrayIcon = ['back', 'next', 'tabs', 'home', 'reload'];
-  const renderIcon = type => {
+  const arrayIcon = ["back", "next", "tabs", "home", "reload"];
+  const renderIcon = (type) => {
     switch (type) {
-      case 'back':
+      case "back":
         return (
           <TouchableOpacity
             style={{
               width: metrics.screenWidth / 5,
-              alignItems: 'center'
+              alignItems: "center",
             }}
             onPress={() => onPress(type)}
           >
-            <LeftLightIcon color={colors['icon']} />
+            <LeftLightIcon color={colors["icon"]} />
           </TouchableOpacity>
         );
-      case 'next':
+      case "next":
         return (
           <TouchableOpacity
             style={{
               width: metrics.screenWidth / 5,
-              alignItems: 'center'
+              alignItems: "center",
             }}
             onPress={() => onPress(type)}
           >
-            <RightLightIcon color={colors['icon']} />
+            <RightLightIcon color={colors["icon"]} />
           </TouchableOpacity>
         );
-      case 'tabs':
+      case "tabs":
         return (
           <TouchableOpacity
             style={{
               width: metrics.screenWidth / 5,
-              alignItems: 'center'
+              alignItems: "center",
             }}
             onPress={() => onPress(type)}
           >
@@ -121,46 +121,46 @@ export const BrowserFooterSection: FunctionComponent<{
                 padding: 1.5,
                 borderWidth: 0.5,
                 borderRadius: 4,
-                alignItems: 'center',
-                borderColor: colors['icon'],
+                alignItems: "center",
+                borderColor: colors["icon"],
                 width: 22,
-                height: 22
+                height: 22,
               }}
             >
-              <Text style={{ color: colors['icon'] }}>
+              <Text style={{ color: colors["icon"] }}>
                 {browserStore.getTabs.length > 9
-                  ? '9+'
+                  ? "9+"
                   : browserStore.getTabs.length}
               </Text>
             </View>
           </TouchableOpacity>
         );
-      case 'home':
+      case "home":
         return (
           <TouchableOpacity
             style={{
               width: metrics.screenWidth / 5,
-              alignItems: 'center'
+              alignItems: "center",
             }}
             onPress={() => onPress(type)}
           >
-            {typeOf === 'browser' ? (
-              <HomeLightIcon color={colors['icon']} size={22} />
+            {typeOf === "browser" ? (
+              <HomeLightIcon color={colors["icon"]} size={22} />
             ) : (
-              <BrowserIcon color={colors['icon']} size={22} />
+              <BrowserIcon color={colors["icon"]} size={22} />
             )}
           </TouchableOpacity>
         );
-      case 'reload':
+      case "reload":
         return (
           <TouchableOpacity
             style={{
               width: metrics.screenWidth / 5,
-              alignItems: 'center'
+              alignItems: "center",
             }}
             onPress={() => onPress(type)}
           >
-            <RefreshIcon color={colors['icon']} size={22} />
+            <RefreshIcon color={colors["icon"]} size={22} />
           </TouchableOpacity>
         );
     }
@@ -171,25 +171,25 @@ export const BrowserFooterSection: FunctionComponent<{
       style={[
         {
           bottom: 0,
-          borderTopColor: colors['gray-300'],
+          borderTopColor: colors["gray-300"],
           borderTopWidth: 0.2,
-          backgroundColor: colors['background']
+          backgroundColor: colors["background"],
         },
         style.flatten([
-          'width-full',
-          'height-80',
-          'flex-row',
-          'items-center',
-          'absolute'
-        ])
+          "width-full",
+          "height-80",
+          "flex-row",
+          "items-center",
+          "absolute",
+        ]),
       ]}
     >
       <View
         style={style.flatten([
-          'width-full',
-          'height-80',
-          'flex-row',
-          'items-center'
+          "width-full",
+          "height-80",
+          "flex-row",
+          "items-center",
         ])}
       >
         {arrayIcon.map((e, i) => {

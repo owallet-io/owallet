@@ -1,5 +1,5 @@
-import React, { FunctionComponent } from 'react';
-import { Rect, Svg, LinearGradient, Stop, Defs } from 'react-native-svg';
+import React, { FunctionComponent } from "react";
+import { Rect, Svg, LinearGradient, Stop, Defs } from "react-native-svg";
 
 export const GradientBackground: FunctionComponent = () => {
   return (

@@ -1,1 +1,1 @@
-export * from './my-wallet-modal';
+export * from "./my-wallet-modal";

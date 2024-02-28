@@ -2,24 +2,24 @@ import React, {
   FunctionComponent,
   useCallback,
   useEffect,
-  useState
-} from 'react';
-import { HeaderLayout } from '../../../layouts';
+  useState,
+} from "react";
+import { HeaderLayout } from "../../../layouts";
 
-import { useHistory, useLocation, useRouteMatch } from 'react-router';
-import { FormattedMessage, useIntl } from 'react-intl';
-import { PasswordInput } from '../../../components/form';
-import { Button, Form } from 'reactstrap';
-import useForm from 'react-hook-form';
-import { WarningView } from './warning-view';
+import { useHistory, useLocation, useRouteMatch } from "react-router";
+import { FormattedMessage, useIntl } from "react-intl";
+import { PasswordInput } from "../../../components/form";
+import { Button, Form } from "reactstrap";
+import useForm from "react-hook-form";
+import { WarningView } from "./warning-view";
 
-import classnames from 'classnames';
-import queryString from 'query-string';
+import classnames from "classnames";
+import queryString from "query-string";
 
-import style from './style.module.scss';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../../stores';
-import { flowResult } from 'mobx';
+import style from "./style.module.scss";
+import { observer } from "mobx-react-lite";
+import { useStore } from "../../../stores";
+import { flowResult } from "mobx";
 
 interface FormData {
   password: string;
@@ -39,15 +39,15 @@ export const ExportPage: FunctionComponent<{
 
   const query = queryString.parse(location.search);
 
-  const type = (keyStore || query.type) ?? 'mnemonic';
+  const type = (keyStore || query.type) ?? "mnemonic";
 
   const [loading, setLoading] = useState(false);
-  const [keyRing, setKeyRing] = useState('');
+  const [keyRing, setKeyRing] = useState("");
   const [showPass, setShowPass] = useState(false);
   const { register, handleSubmit, setError, errors } = useForm<FormData>({
     defaultValues: {
-      password: ''
-    }
+      password: "",
+    },
   });
 
   useEffect(() => {
@@ -55,7 +55,7 @@ export const ExportPage: FunctionComponent<{
       parseInt(indexExport || match.params.index).toString() !==
       (indexExport || match.params.index)
     ) {
-      throw new Error('Invalid index');
+      throw new Error("Invalid index");
     }
   }, [match?.params?.index, indexExport]);
 
@@ -76,7 +76,7 @@ export const ExportPage: FunctionComponent<{
         {keyRing ? (
           <div
             className={classnames(style.mnemonic, {
-              [style.altHex]: type !== 'mnemonic'
+              [style.altHex]: type !== "mnemonic",
             })}
           >
             {keyRing}
@@ -97,12 +97,12 @@ export const ExportPage: FunctionComponent<{
                     )
                   );
                 } catch (e) {
-                  console.log('Fail to decrypt: ' + e.message);
+                  console.log("Fail to decrypt: " + e.message);
                   setError(
-                    'password',
-                    'invalid',
+                    "password",
+                    "invalid",
                     intl.formatMessage({
-                      id: 'setting.export.input.password.error.invalid'
+                      id: "setting.export.input.password.error.invalid",
                     })
                   );
                 } finally {
@@ -112,22 +112,22 @@ export const ExportPage: FunctionComponent<{
             >
               <PasswordInput
                 label={intl.formatMessage({
-                  id: 'setting.export.input.password'
+                  id: "setting.export.input.password",
                 })}
-                typeInput={!showPass ? 'password' : 'text'}
+                typeInput={!showPass ? "password" : "text"}
                 styleInputGroup={{
-                  boxShadow: '0px 2px 4px 1px rgba(8, 4, 28, 0.12)'
+                  boxShadow: "0px 2px 4px 1px rgba(8, 4, 28, 0.12)",
                 }}
                 style={{
-                  boxShadow: 'none !important'
+                  boxShadow: "none !important",
                 }}
                 placeholder="Enter your password"
                 name="password"
                 error={errors.password && errors.password.message}
                 ref={register({
                   required: intl.formatMessage({
-                    id: 'setting.export.input.password.error.required'
-                  })
+                    id: "setting.export.input.password.error.required",
+                  }),
                 })}
                 append={
                   <Button
@@ -135,10 +135,10 @@ export const ExportPage: FunctionComponent<{
                     onClick={() => setShowPass(!showPass)}
                     outline={true}
                     disabled={false}
-                    style={{ boxShadow: 'none !important' }}
+                    style={{ boxShadow: "none !important" }}
                   >
                     <img
-                      src={require('../../../public/assets/svg/eyes.svg')}
+                      src={require("../../../public/assets/svg/eyes.svg")}
                       alt="logo"
                     />
                   </Button>

@@ -1,17 +1,17 @@
-import { DenomHelper } from '@owallet/common';
-import { Currency } from '@owallet/types';
-import { CoinPretty, PricePretty } from '@owallet/unit';
-import { Text } from '@src/components/text';
-import { useTheme } from '@src/themes/theme-provider';
-import { formatContractAddress } from '@src/utils/helper';
-import React, { FunctionComponent, useMemo } from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { RightArrowIcon } from '../../../components/icon';
-import { TokenSymbol } from '../../../components/token-symbol';
-import { useSmartNavigation } from '../../../navigation.provider';
-import { spacing, typography } from '../../../themes';
-import { formatBalance } from '@owallet/bitcoin';
+import { DenomHelper } from "@owallet/common";
+import { Currency } from "@owallet/types";
+import { CoinPretty, PricePretty } from "@owallet/unit";
+import { Text } from "@src/components/text";
+import { useTheme } from "@src/themes/theme-provider";
+import { formatContractAddress } from "@src/utils/helper";
+import React, { FunctionComponent, useMemo } from "react";
+import { StyleSheet, View, ViewStyle } from "react-native";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { RightArrowIcon } from "../../../components/icon";
+import { TokenSymbol } from "../../../components/token-symbol";
+import { useSmartNavigation } from "../../../navigation.provider";
+import { spacing, typography } from "../../../themes";
+import { formatBalance } from "@owallet/bitcoin";
 
 interface TokenItemBitcoinProps {
   containerStyle?: ViewStyle;
@@ -29,7 +29,7 @@ export const TokenItemBitcoin: FunctionComponent<TokenItemBitcoinProps> = ({
   containerStyle,
   chainInfo,
   balance,
-  priceBalance
+  priceBalance,
 }) => {
   const { colors } = useTheme();
   const smartNavigation = useSmartNavigation();
@@ -42,8 +42,8 @@ export const TokenItemBitcoin: FunctionComponent<TokenItemBitcoinProps> = ({
   const amountBalance = useMemo(() => {
     const amount = formatBalance({
       balance: Number(balance?.toCoin()?.amount),
-      cryptoUnit: 'BTC',
-      coin: chainInfo.chainId
+      cryptoUnit: "BTC",
+      coin: chainInfo.chainId,
     });
     return amount;
   }, [chainInfo.chainId, balance]);
@@ -55,12 +55,12 @@ export const TokenItemBitcoin: FunctionComponent<TokenItemBitcoinProps> = ({
       style={{ ...styles.containerToken, ...containerStyle }}
       onPress={() => {
         if (!!balance?.currency) {
-          smartNavigation.navigateSmart('Tokens.Detail', {
-            balanceCoinDenom: '',
+          smartNavigation.navigateSmart("Tokens.Detail", {
+            balanceCoinDenom: "",
             amountBalance,
             balanceCurrency: balance?.currency,
             priceBalance,
-            balanceCoinFull: balance?.currency.coinDenom
+            balanceCoinFull: balance?.currency.coinDenom,
           });
         }
       }}
@@ -68,16 +68,16 @@ export const TokenItemBitcoin: FunctionComponent<TokenItemBitcoinProps> = ({
       <View
         style={{
           flex: 1,
-          flexDirection: 'row',
-          justifyContent: 'flex-start',
-          alignItems: 'center'
+          flexDirection: "row",
+          justifyContent: "flex-start",
+          alignItems: "center",
         }}
       >
         {!!balance?.currency && (
           <TokenSymbol
             style={{
-              marginRight: spacing['12'],
-              backgroundColor: colors['bg-icon-token']
+              marginRight: spacing["12"],
+              backgroundColor: colors["bg-icon-token"],
             }}
             size={44}
             chainInfo={chainInfo}
@@ -87,15 +87,15 @@ export const TokenItemBitcoin: FunctionComponent<TokenItemBitcoinProps> = ({
         )}
         <View
           style={{
-            justifyContent: 'space-between'
+            justifyContent: "space-between",
           }}
         >
           <Text
             numberOfLines={1}
             style={{
               fontSize: 13,
-              color: colors['text-label-list'],
-              fontWeight: '700'
+              color: colors["text-label-list"],
+              fontWeight: "700",
             }}
           >
             {name}
@@ -103,8 +103,8 @@ export const TokenItemBitcoin: FunctionComponent<TokenItemBitcoinProps> = ({
           <Text
             style={{
               ...typography.subtitle2,
-              color: colors['primary-text'],
-              fontWeight: '700'
+              color: colors["primary-text"],
+              fontWeight: "700",
             }}
           >
             {amountBalance}
@@ -113,22 +113,22 @@ export const TokenItemBitcoin: FunctionComponent<TokenItemBitcoinProps> = ({
           <Text
             style={{
               ...typography.subtitle3,
-              color: colors['text-black-low'],
-              marginBottom: spacing['4']
+              color: colors["text-black-low"],
+              marginBottom: spacing["4"],
             }}
           >
-            {priceBalance?.toString() || '$0'}
+            {priceBalance?.toString() || "$0"}
           </Text>
         </View>
       </View>
       <View
         style={{
           flex: 0.5,
-          justifyContent: 'center',
-          alignItems: 'flex-end'
+          justifyContent: "center",
+          alignItems: "flex-end",
         }}
       >
-        <RightArrowIcon height={10} color={colors['primary-text']} />
+        <RightArrowIcon height={10} color={colors["primary-text"]} />
       </View>
     </TouchableOpacity>
   );
@@ -136,11 +136,11 @@ export const TokenItemBitcoin: FunctionComponent<TokenItemBitcoinProps> = ({
 
 const styles = StyleSheet.create({
   containerToken: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginHorizontal: spacing['4'],
-    marginVertical: spacing['8'],
-    paddingTop: spacing['10'],
-    paddingBottom: spacing['10']
-  }
+    flexDirection: "row",
+    alignItems: "center",
+    marginHorizontal: spacing["4"],
+    marginVertical: spacing["8"],
+    paddingTop: spacing["10"],
+    paddingBottom: spacing["10"],
+  },
 });

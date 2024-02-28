@@ -1,17 +1,17 @@
-import { DenomHelper } from '@owallet/common';
-import { Currency } from '@owallet/types';
-import { CoinPretty, PricePretty } from '@owallet/unit';
-import { Text } from '@src/components/text';
-import { useTheme } from '@src/themes/theme-provider';
-import { formatContractAddress } from '@src/utils/helper';
-import React, { FunctionComponent, useMemo } from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { RightArrowIcon } from '../../../components/icon';
-import { TokenSymbol } from '../../../components/token-symbol';
-import { useSmartNavigation } from '../../../navigation.provider';
-import { spacing, typography } from '../../../themes';
-import { formatBalance } from '@owallet/bitcoin';
+import { DenomHelper } from "@owallet/common";
+import { Currency } from "@owallet/types";
+import { CoinPretty, PricePretty } from "@owallet/unit";
+import { Text } from "@src/components/text";
+import { useTheme } from "@src/themes/theme-provider";
+import { formatContractAddress } from "@src/utils/helper";
+import React, { FunctionComponent, useMemo } from "react";
+import { StyleSheet, View, ViewStyle } from "react-native";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { RightArrowIcon } from "../../../components/icon";
+import { TokenSymbol } from "../../../components/token-symbol";
+import { useSmartNavigation } from "../../../navigation.provider";
+import { spacing, typography } from "../../../themes";
+import { formatBalance } from "@owallet/bitcoin";
 
 interface TokenItemProps {
   containerStyle?: ViewStyle;
@@ -25,7 +25,12 @@ interface TokenItemProps {
   priceBalance: PricePretty;
 }
 
-export const TokenItem: FunctionComponent<TokenItemProps> = ({ containerStyle, chainInfo, balance, priceBalance }) => {
+export const TokenItem: FunctionComponent<TokenItemProps> = ({
+  containerStyle,
+  chainInfo,
+  balance,
+  priceBalance,
+}) => {
   const { colors } = useTheme();
   const smartNavigation = useSmartNavigation();
 
@@ -34,27 +39,36 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({ containerStyle, c
   let balanceCoinDenom: string;
   let name = balance?.currency?.coinDenom;
 
-  if ('originCurrency' in balance?.currency && balance?.currency?.originCurrency) {
+  if (
+    "originCurrency" in balance?.currency &&
+    balance?.currency?.originCurrency
+  ) {
     balanceCoinDenom = balance.currency.originCurrency.coinDenom;
   } else {
     const denomHelper = new DenomHelper(balance?.currency?.coinMinimalDenom);
     balanceCoinDenom = balance?.currency?.coinDenom;
 
-    if (denomHelper?.contractAddress && denomHelper?.contractAddress !== '') {
+    if (denomHelper?.contractAddress && denomHelper?.contractAddress !== "") {
       name += ` (${formatContractAddress(denomHelper.contractAddress, 34)})`;
     }
   }
 
   const amountBalance = useMemo(() => {
-    if (chainInfo.networkType === 'bitcoin') {
+    if (chainInfo.networkType === "bitcoin") {
       const amount = formatBalance({
         balance: Number(balance?.toCoin()?.amount),
-        cryptoUnit: 'BTC',
-        coin: chainInfo.chainId
+        cryptoUnit: "BTC",
+        coin: chainInfo.chainId,
       });
       return amount;
     }
-    const amount = balance.trim(true).shrink(true).maxDecimals(6).upperCase(true).hideDenom(true).toString();
+    const amount = balance
+      .trim(true)
+      .shrink(true)
+      .maxDecimals(6)
+      .upperCase(true)
+      .hideDenom(true)
+      .toString();
     return `${amount} ${balanceCoinDenom}`;
   }, [chainInfo.networkType, chainInfo.chainId, balance, balanceCoinDenom]);
   return (
@@ -63,27 +77,27 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({ containerStyle, c
       activeOpacity={0.7}
       style={{ ...styles.containerToken, ...containerStyle }}
       onPress={() => {
-        smartNavigation.navigateSmart('Tokens.Detail', {
+        smartNavigation.navigateSmart("Tokens.Detail", {
           balanceCoinDenom,
           amountBalance,
           balanceCurrency: balance?.currency,
           priceBalance,
-          balanceCoinFull: balance?.currency.coinDenom ?? balanceCoinDenom
+          balanceCoinFull: balance?.currency.coinDenom ?? balanceCoinDenom,
         });
       }}
     >
       <View
         style={{
           flex: 1,
-          flexDirection: 'row',
-          justifyContent: 'flex-start',
-          alignItems: 'center'
+          flexDirection: "row",
+          justifyContent: "flex-start",
+          alignItems: "center",
         }}
       >
         <TokenSymbol
           style={{
-            marginRight: spacing['12'],
-            backgroundColor: colors['bg-icon-token']
+            marginRight: spacing["12"],
+            backgroundColor: colors["bg-icon-token"],
           }}
           size={44}
           chainInfo={chainInfo}
@@ -92,15 +106,15 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({ containerStyle, c
         />
         <View
           style={{
-            justifyContent: 'space-between'
+            justifyContent: "space-between",
           }}
         >
           <Text
             numberOfLines={1}
             style={{
               fontSize: 13,
-              color: colors['text-label-list'],
-              fontWeight: '700'
+              color: colors["text-label-list"],
+              fontWeight: "700",
             }}
           >
             {name}
@@ -108,8 +122,8 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({ containerStyle, c
           <Text
             style={{
               ...typography.subtitle2,
-              color: colors['primary-text'],
-              fontWeight: '700'
+              color: colors["primary-text"],
+              fontWeight: "700",
             }}
           >
             {amountBalance}
@@ -118,22 +132,22 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({ containerStyle, c
           <Text
             style={{
               ...typography.subtitle3,
-              color: colors['text-black-low'],
-              marginBottom: spacing['4']
+              color: colors["text-black-low"],
+              marginBottom: spacing["4"],
             }}
           >
-            {priceBalance?.toString() || '$0'}
+            {priceBalance?.toString() || "$0"}
           </Text>
         </View>
       </View>
       <View
         style={{
           flex: 0.5,
-          justifyContent: 'center',
-          alignItems: 'flex-end'
+          justifyContent: "center",
+          alignItems: "flex-end",
         }}
       >
-        <RightArrowIcon height={10} color={colors['primary-text']} />
+        <RightArrowIcon height={10} color={colors["primary-text"]} />
       </View>
       {/* <View
         style={{
@@ -169,11 +183,11 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({ containerStyle, c
 
 const styles = StyleSheet.create({
   containerToken: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginHorizontal: spacing['4'],
-    marginVertical: spacing['8'],
-    paddingTop: spacing['10'],
-    paddingBottom: spacing['10']
-  }
+    flexDirection: "row",
+    alignItems: "center",
+    marginHorizontal: spacing["4"],
+    marginVertical: spacing["8"],
+    paddingTop: spacing["10"],
+    paddingBottom: spacing["10"],
+  },
 });

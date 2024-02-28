@@ -1,11 +1,11 @@
-import React, { FunctionComponent } from 'react';
-import Svg, { Path } from 'react-native-svg';
+import React, { FunctionComponent } from "react";
+import Svg, { Path } from "react-native-svg";
 
 export const SearchLightIcon: FunctionComponent<{
   color?: string;
   size?: number;
   onPress?: () => void;
-}> = ({ color = '#AEAEB2', size = 20, onPress }) => {
+}> = ({ color = "#AEAEB2", size = 20, onPress }) => {
   return (
     <Svg width={size} height={size} viewBox="0 0 20 20" fill="none">
       <Path

@@ -1,24 +1,36 @@
-import React, { FunctionComponent, useEffect, useMemo, useRef, useState } from 'react';
-import style from '../style.module.scss';
-import { observer } from 'mobx-react-lite';
-import classnames from 'classnames';
-import { FormattedMessage, useIntl } from 'react-intl';
-import { Button } from 'reactstrap';
-import { useStore } from '../../../stores';
-import { BtcDataTab } from './btc-data-tab';
-import { BtcDetailsTab } from './btc-details-tab';
-import { useInteractionInfo } from '@owallet/hooks';
-import { useHistory } from 'react-router';
+import React, {
+  FunctionComponent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import style from "../style.module.scss";
+import { observer } from "mobx-react-lite";
+import classnames from "classnames";
+import { FormattedMessage, useIntl } from "react-intl";
+import { Button } from "reactstrap";
+import { useStore } from "../../../stores";
+import { BtcDataTab } from "./btc-data-tab";
+import { BtcDetailsTab } from "./btc-details-tab";
+import { useInteractionInfo } from "@owallet/hooks";
+import { useHistory } from "react-router";
 
 enum Tab {
   Details,
-  Data
+  Data,
 }
 
 export const SignBtcPage: FunctionComponent = observer(() => {
   const intl = useIntl();
   const [tab, setTab] = useState<Tab>(Tab.Details);
-  const { chainStore, keyRingStore, signInteractionStore, accountStore, queriesStore } = useStore();
+  const {
+    chainStore,
+    keyRingStore,
+    signInteractionStore,
+    accountStore,
+    queriesStore,
+  } = useStore();
   const history = useHistory();
   const interactionInfo = useInteractionInfo(() => {
     signInteractionStore.rejectAll();
@@ -37,20 +49,20 @@ export const SignBtcPage: FunctionComponent = observer(() => {
     <div
       style={{
         padding: 20,
-        backgroundColor: '#FFFFFF',
-        height: '100%',
-        overflowX: 'auto'
+        backgroundColor: "#FFFFFF",
+        height: "100%",
+        overflowX: "auto",
       }}
     >
       {
         <div className={style.container}>
           <div
             style={{
-              color: '#353945',
+              color: "#353945",
               fontSize: 24,
               fontWeight: 500,
-              textAlign: 'center',
-              paddingBottom: 24
+              textAlign: "center",
+              paddingBottom: 24,
             }}
           >
             Bitcoin Network
@@ -60,28 +72,28 @@ export const SignBtcPage: FunctionComponent = observer(() => {
               <li className={classnames({ activeTabs: tab === Tab.Details })}>
                 <a
                   className={classnames(style.tab, {
-                    activeText: tab === Tab.Details
+                    activeText: tab === Tab.Details,
                   })}
                   onClick={() => {
                     setTab(Tab.Details);
                   }}
                 >
                   {intl.formatMessage({
-                    id: 'sign.tab.details'
+                    id: "sign.tab.details",
                   })}
                 </a>
               </li>
               <li className={classnames({ activeTabs: tab === Tab.Data })}>
                 <a
                   className={classnames(style.tab, {
-                    activeText: tab === Tab.Data
+                    activeText: tab === Tab.Data,
                   })}
                   onClick={() => {
                     setTab(Tab.Data);
                   }}
                 >
                   {intl.formatMessage({
-                    id: 'sign.tab.data'
+                    id: "sign.tab.data",
                   })}
                 </a>
               </li>
@@ -89,17 +101,21 @@ export const SignBtcPage: FunctionComponent = observer(() => {
           </div>
           <div
             className={classnames(style.tabContainer, {
-              [style.dataTab]: tab === Tab.Data
+              [style.dataTab]: tab === Tab.Data,
             })}
           >
             {tab === Tab.Data && <BtcDataTab data={dataSign} />}
-            {tab === Tab.Details && <BtcDetailsTab intl={intl} dataSign={dataSign} />}
+            {tab === Tab.Details && (
+              <BtcDetailsTab intl={intl} dataSign={dataSign} />
+            )}
           </div>
           <div style={{ flex: 1 }} />
           <div className={style.buttons}>
-            {keyRingStore.keyRingType === 'ledger' && signInteractionStore.isLoading ? (
+            {keyRingStore.keyRingType === "ledger" &&
+            signInteractionStore.isLoading ? (
               <Button className={style.button} disabled={true} outline>
-                <FormattedMessage id="sign.button.confirm-ledger" /> <i className="fa fa-spinner fa-spin fa-fw" />
+                <FormattedMessage id="sign.button.confirm-ledger" />{" "}
+                <i className="fa fa-spinner fa-spin fa-fw" />
               </Button>
             ) : (
               <>
@@ -110,7 +126,10 @@ export const SignBtcPage: FunctionComponent = observer(() => {
                     e.preventDefault();
 
                     await signInteractionStore.reject();
-                    if (interactionInfo.interaction && !interactionInfo.interactionInternal) {
+                    if (
+                      interactionInfo.interaction &&
+                      !interactionInfo.interactionInternal
+                    ) {
                       window.close();
                     }
                     history.goBack();
@@ -118,7 +137,7 @@ export const SignBtcPage: FunctionComponent = observer(() => {
                   outline
                 >
                   {intl.formatMessage({
-                    id: 'sign.button.reject'
+                    id: "sign.button.reject",
                   })}
                 </Button>
                 <Button
@@ -132,14 +151,17 @@ export const SignBtcPage: FunctionComponent = observer(() => {
                     //@ts-ignore
                     await signInteractionStore.approveBitcoinAndWaitEnd();
 
-                    if (interactionInfo.interaction && !interactionInfo.interactionInternal) {
+                    if (
+                      interactionInfo.interaction &&
+                      !interactionInfo.interactionInternal
+                    ) {
                       window.close();
                     }
                     history.goBack();
                   }}
                 >
                   {intl.formatMessage({
-                    id: 'sign.button.approve'
+                    id: "sign.button.approve",
                   })}
                 </Button>
               </>

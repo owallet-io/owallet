@@ -1,6 +1,17 @@
-import { CwIcs20LatestClient, CwIcs20LatestReadOnlyInterface } from "@oraichain/common-contracts-sdk";
-import { CosmosWallet, EvmWallet, TokenItemType } from "@oraichain/oraidex-common";
-import { OraiswapRouterInterface, OraiswapRouterReadOnlyInterface, Uint128 } from "@oraichain/oraidex-contracts-sdk";
+import {
+  CwIcs20LatestClient,
+  CwIcs20LatestReadOnlyInterface,
+} from "@oraichain/common-contracts-sdk";
+import {
+  CosmosWallet,
+  EvmWallet,
+  TokenItemType,
+} from "@oraichain/oraidex-common";
+import {
+  OraiswapRouterInterface,
+  OraiswapRouterReadOnlyInterface,
+  Uint128,
+} from "@oraichain/oraidex-contracts-sdk";
 
 export type UniversalSwapType =
   | "other-networks-to-oraichain"
@@ -11,7 +22,7 @@ export type UniversalSwapType =
 
 export enum SwapDirection {
   From,
-  To
+  To,
 }
 
 export interface SimulateResponse {

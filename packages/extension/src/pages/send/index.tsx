@@ -1,30 +1,33 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
-import { AddressInput, FeeButtons, CoinInput, MemoInput } from '../../components/form';
-import { useStore } from '../../stores';
+import React, { FunctionComponent, useEffect, useState } from "react";
+import {
+  AddressInput,
+  FeeButtons,
+  CoinInput,
+  MemoInput,
+} from "../../components/form";
+import { useStore } from "../../stores";
 
+import { observer } from "mobx-react-lite";
 
+import style from "./style.module.scss";
+import { useNotification } from "../../components/notification";
 
-import { observer } from 'mobx-react-lite';
+import { useIntl } from "react-intl";
+import { Button } from "reactstrap";
 
-import style from './style.module.scss';
-import { useNotification } from '../../components/notification';
+import { useHistory, useLocation } from "react-router";
+import queryString from "querystring";
 
-import { useIntl } from 'react-intl';
-import { Button } from 'reactstrap';
-
-import { useHistory, useLocation } from 'react-router';
-import queryString from 'querystring';
-
-import { useSendTxConfig } from '@owallet/hooks';
-import { fitPopupWindow,  } from '@owallet/popup';
-import { EthereumEndpoint } from '@owallet/common';
+import { useSendTxConfig } from "@owallet/hooks";
+import { fitPopupWindow } from "@owallet/popup";
+import { EthereumEndpoint } from "@owallet/common";
 
 export const SendPage: FunctionComponent<{
   coinMinimalDenom?: string;
 }> = observer(({ coinMinimalDenom }) => {
   const history = useHistory();
-  let search = useLocation().search || coinMinimalDenom || '';
-  if (search.startsWith('?')) {
+  let search = useLocation().search || coinMinimalDenom || "";
+  if (search.startsWith("?")) {
     search = search.slice(1);
   }
   const query = queryString.parse(search) as {
@@ -66,7 +69,9 @@ export const SendPage: FunctionComponent<{
 
   useEffect(() => {
     if (query.defaultDenom) {
-      const currency = current.currencies.find((cur) => cur.coinMinimalDenom === query.defaultDenom);
+      const currency = current.currencies.find(
+        (cur) => cur.coinMinimalDenom === query.defaultDenom
+      );
 
       if (currency) {
         sendConfigs.amountConfig.setSendCurrency(currency);
@@ -74,7 +79,7 @@ export const SendPage: FunctionComponent<{
     }
   }, [current.currencies, query.defaultDenom, sendConfigs.amountConfig]);
 
-  const isDetachedPage = query.detached === 'true';
+  const isDetachedPage = query.detached === "true";
 
   useEffect(() => {
     if (isDetachedPage) {
@@ -124,59 +129,59 @@ export const SendPage: FunctionComponent<{
                   preferNoSetFee: true,
                   preferNoSetMemo: true,
                   networkType: chainStore.current.networkType,
-                  chainId: chainStore.current.chainId
+                  chainId: chainStore.current.chainId,
                 },
                 {
                   onBroadcasted: () => {
-                    analyticsStore.logEvent('Send token tx broadcasted', {
+                    analyticsStore.logEvent("Send token tx broadcasted", {
                       chainId: chainStore.current.chainId,
                       chainName: chainStore.current.chainName,
-                      feeType: sendConfigs.feeConfig.feeType
+                      feeType: sendConfigs.feeConfig.feeType,
                     });
                   },
                   onFulfill: (tx) => {
                     notification.push({
-                      placement: 'top-center',
-                      type: tx?.data ? 'success' : 'danger',
+                      placement: "top-center",
+                      type: tx?.data ? "success" : "danger",
                       duration: 5,
                       content: tx?.data
                         ? `Transaction successful with tx: ${tx?.hash}`
                         : `Transaction failed with tx: ${tx?.hash}`,
                       canDelete: true,
                       transition: {
-                        duration: 0.25
-                      }
+                        duration: 0.25,
+                      },
                     });
-                  }
+                  },
                 }
               );
               if (!isDetachedPage) {
-                history.replace('/');
+                history.replace("/");
               }
               notification.push({
-                placement: 'top-center',
-                type: 'success',
+                placement: "top-center",
+                type: "success",
                 duration: 5,
-                content: 'Transaction submitted!',
+                content: "Transaction submitted!",
                 canDelete: true,
                 transition: {
-                  duration: 0.25
-                }
+                  duration: 0.25,
+                },
               });
             } catch (e: any) {
               if (!isDetachedPage) {
-                history.replace('/');
+                history.replace("/");
               }
-              console.log(e.message, 'Catch Error on send!!!');
+              console.log(e.message, "Catch Error on send!!!");
               notification.push({
-                type: 'warning',
-                placement: 'top-center',
+                type: "warning",
+                placement: "top-center",
                 duration: 5,
                 content: `Fail to send token: ${e.message}`,
                 canDelete: true,
                 transition: {
-                  duration: 0.25
-                }
+                  duration: 0.25,
+                },
               });
             } finally {
               // XXX: If the page is in detached state,
@@ -194,51 +199,54 @@ export const SendPage: FunctionComponent<{
               inputRef={inputRef}
               recipientConfig={sendConfigs.recipientConfig}
               memoConfig={sendConfigs.memoConfig}
-              label={intl.formatMessage({ id: 'send.input.recipient' })}
+              label={intl.formatMessage({ id: "send.input.recipient" })}
               placeholder="Enter recipient address"
             />
             <CoinInput
               amountConfig={sendConfigs.amountConfig}
-              label={intl.formatMessage({ id: 'send.input.amount' })}
+              label={intl.formatMessage({ id: "send.input.amount" })}
               balanceText={intl.formatMessage({
-                id: 'send.input-button.balance'
+                id: "send.input-button.balance",
               })}
               placeholder="Enter your amount"
             />
             <MemoInput
               memoConfig={sendConfigs.memoConfig}
-              label={intl.formatMessage({ id: 'send.input.memo' })}
+              label={intl.formatMessage({ id: "send.input.memo" })}
               placeholder="Enter your memo message"
             />
             <FeeButtons
               feeConfig={sendConfigs.feeConfig}
               gasConfig={sendConfigs.gasConfig}
               priceStore={priceStore}
-              label={intl.formatMessage({ id: 'send.input.fee' })}
+              label={intl.formatMessage({ id: "send.input.fee" })}
               feeSelectLabels={{
-                low: intl.formatMessage({ id: 'fee-buttons.select.slow' }),
+                low: intl.formatMessage({ id: "fee-buttons.select.slow" }),
                 average: intl.formatMessage({
-                  id: 'fee-buttons.select.average'
+                  id: "fee-buttons.select.average",
                 }),
-                high: intl.formatMessage({ id: 'fee-buttons.select.fast' })
+                high: intl.formatMessage({ id: "fee-buttons.select.fast" }),
               }}
-              gasLabel={intl.formatMessage({ id: 'send.input.gas' })}
+              gasLabel={intl.formatMessage({ id: "send.input.gas" })}
             />
           </div>
           <div style={{ flex: 1 }} />
           <Button
             type="submit"
             block
-            data-loading={accountInfo.isSendingMsg === 'send'}
+            data-loading={accountInfo.isSendingMsg === "send"}
             disabled={!accountInfo.isReadyToSendMsgs || !txStateIsValid}
             className={style.sendBtn}
             style={{
-              cursor: accountInfo.isReadyToSendMsgs || !txStateIsValid ? '' : 'pointer'
+              cursor:
+                accountInfo.isReadyToSendMsgs || !txStateIsValid
+                  ? ""
+                  : "pointer",
             }}
           >
             <span className={style.sendBtnText}>
               {intl.formatMessage({
-                id: 'send.button.send'
+                id: "send.button.send",
               })}
             </span>
           </Button>

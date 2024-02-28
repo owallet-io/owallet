@@ -1,6 +1,6 @@
-import { EnvProducer, MessageSender, Result, Router } from '@owallet/router';
+import { EnvProducer, MessageSender, Result, Router } from "@owallet/router";
 
-import EventEmitter from 'eventemitter3';
+import EventEmitter from "eventemitter3";
 
 export class RNRouterBase extends Router {
   constructor(
@@ -12,16 +12,16 @@ export class RNRouterBase extends Router {
 
   listen(port: string): void {
     if (!port) {
-      throw new Error('Empty port');
+      throw new Error("Empty port");
     }
 
     this.port = port;
-    this.eventEmitter.addListener('message', this.onMessage);
+    this.eventEmitter.addListener("message", this.onMessage);
   }
 
   unlisten(): void {
-    this.port = '';
-    this.eventEmitter.removeListener('message', this.onMessage);
+    this.port = "";
+    this.eventEmitter.removeListener("message", this.onMessage);
   }
 
   // some how it get here
@@ -36,11 +36,9 @@ export class RNRouterBase extends Router {
       return;
     }
 
-    
-
     try {
       const result = await this.handleMessage(message, sender);
-    
+
       sender.resolver({
         return: result,
       });
@@ -55,7 +53,7 @@ export class RNRouterBase extends Router {
         });
       } else {
         sender.resolver({
-          error: 'Unknown error, and error is null',
+          error: "Unknown error, and error is null",
         });
       }
     }

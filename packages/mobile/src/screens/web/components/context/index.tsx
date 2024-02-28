@@ -1,5 +1,5 @@
-import React, { useContext } from 'react';
-import WebView from 'react-native-webview';
+import React, { useContext } from "react";
+import WebView from "react-native-webview";
 
 export interface WebViewState {
   webView: WebView | null;
@@ -17,7 +17,7 @@ export const WebViewStateContext = React.createContext<WebViewState | null>(
 export const useWebViewState = () => {
   const context = useContext(WebViewStateContext);
   if (!context) {
-    throw new Error('You forgot to use WebViewStateContext');
+    throw new Error("You forgot to use WebViewStateContext");
   }
   return context;
 };

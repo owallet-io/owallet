@@ -1,26 +1,26 @@
-import React, { FunctionComponent, useState } from 'react';
-import { observer } from 'mobx-react-lite';
-import { IFeeConfig, IGasConfig, NotLoadedFeeError } from '@owallet/hooks';
-import { View, TouchableWithoutFeedback, Keyboard } from 'react-native';
-import { Text } from '@src/components/text';
-import { useStore } from '../../stores';
-import { useStyle } from '../../styles';
-import { CoinPretty, Dec, DecUtils } from '@owallet/unit';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { OWalletSignOptions } from '@owallet/types';
-import { RightArrowIcon } from '../../components/icon';
-import { registerModal } from '../base';
-import { CardModal } from '../card';
-import { FeeButtons, getFeeErrorText, TextInput } from '../../components/input';
-import { LoadingSpinner } from '../../components/spinner';
-import { typography } from '../../themes';
-import { Toggle } from '../../components/toggle';
-import { useTheme } from '@src/themes/theme-provider';
-import { BottomSheetProps } from '@gorhom/bottom-sheet';
+import React, { FunctionComponent, useState } from "react";
+import { observer } from "mobx-react-lite";
+import { IFeeConfig, IGasConfig, NotLoadedFeeError } from "@owallet/hooks";
+import { View, TouchableWithoutFeedback, Keyboard } from "react-native";
+import { Text } from "@src/components/text";
+import { useStore } from "../../stores";
+import { useStyle } from "../../styles";
+import { CoinPretty, Dec, DecUtils } from "@owallet/unit";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { OWalletSignOptions } from "@owallet/types";
+import { RightArrowIcon } from "../../components/icon";
+import { registerModal } from "../base";
+import { CardModal } from "../card";
+import { FeeButtons, getFeeErrorText, TextInput } from "../../components/input";
+import { LoadingSpinner } from "../../components/spinner";
+import { typography } from "../../themes";
+import { Toggle } from "../../components/toggle";
+import { useTheme } from "@src/themes/theme-provider";
+import { BottomSheetProps } from "@gorhom/bottom-sheet";
 const FeeButtonsModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
-  bottomSheetModalConfig?: Omit<BottomSheetProps, 'snapPoints' | 'children'>;
+  bottomSheetModalConfig?: Omit<BottomSheetProps, "snapPoints" | "children">;
   feeConfig: IFeeConfig;
   gasConfig: IGasConfig;
 }> = registerModal(
@@ -31,28 +31,28 @@ const FeeButtonsModal: FunctionComponent<{
       <CardModal title="Set Fee">
         <View
           style={{
-            flexDirection: 'row',
+            flexDirection: "row",
             paddingBottom: 24,
-            alignItems: 'center'
+            alignItems: "center",
           }}
         >
           <Toggle
             on={customFee}
-            onChange={value => {
+            onChange={(value) => {
               setCustomFee(value);
               if (!value) {
                 if (feeConfig.feeCurrency && !feeConfig.fee) {
-                  feeConfig.setFeeType('average');
+                  feeConfig.setFeeType("average");
                 }
               }
             }}
           />
           <Text
             style={{
-              fontWeight: '700',
+              fontWeight: "700",
               fontSize: 16,
               lineHeight: 34,
-              paddingHorizontal: 8
+              paddingHorizontal: 8,
             }}
           >
             Custom Fee
@@ -63,25 +63,32 @@ const FeeButtonsModal: FunctionComponent<{
             <TextInput
               label="Fee"
               placeholder="Type your Fee here"
-              keyboardType={'numeric'}
+              keyboardType={"numeric"}
               labelStyle={{
                 fontSize: 16,
-                fontWeight: '700',
+                fontWeight: "700",
                 lineHeight: 22,
-                color: colors['gray-900'],
-                marginBottom: 8
+                color: colors["gray-900"],
+                marginBottom: 8,
               }}
-              onChangeText={text => {
-                const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(DecUtils.getTenExponentNInPrecisionRange(6));
+              onChangeText={(text) => {
+                const fee = new Dec(Number(text.replace(/,/g, "."))).mul(
+                  DecUtils.getTenExponentNInPrecisionRange(6)
+                );
 
                 feeConfig.setManualFee({
                   amount: fee.roundUp().toString(),
-                  denom: feeConfig.feeCurrency.coinMinimalDenom
+                  denom: feeConfig.feeCurrency.coinMinimalDenom,
                 });
               }}
             />
           ) : (
-            <FeeButtons label="Fee" gasLabel="Gas" feeConfig={feeConfig} gasConfig={gasConfig} />
+            <FeeButtons
+              label="Fee"
+              gasLabel="Gas"
+              feeConfig={feeConfig}
+              gasConfig={gasConfig}
+            />
           )}
         </TouchableWithoutFeedback>
 
@@ -90,17 +97,17 @@ const FeeButtonsModal: FunctionComponent<{
           style={{
             marginBottom: customFee ? 264 : 14,
             marginTop: 32,
-            backgroundColor: colors['primary-surface-default'],
-            borderRadius: 8
+            backgroundColor: colors["primary-surface-default"],
+            borderRadius: 8,
           }}
         >
           <Text
             style={{
-              color: 'white',
-              textAlign: 'center',
-              fontWeight: '700',
+              color: "white",
+              textAlign: "center",
+              fontWeight: "700",
               fontSize: 16,
-              padding: 16
+              padding: 16,
             }}
           >
             Confirm
@@ -110,7 +117,7 @@ const FeeButtonsModal: FunctionComponent<{
     );
   }),
   {
-    disableSafeArea: true
+    disableSafeArea: true,
   }
 );
 
@@ -128,7 +135,12 @@ export const FeeInSign: FunctionComponent<{
 
   const preferNoSetFee = signOptions?.preferNoSetFee ?? false;
 
-  const fee = feeConfig.fee ?? new CoinPretty(chainStore.getChain(feeConfig.chainId).stakeCurrency, new Dec('0'));
+  const fee =
+    feeConfig.fee ??
+    new CoinPretty(
+      chainStore.getChain(feeConfig.chainId).stakeCurrency,
+      new Dec("0")
+    );
 
   const feePrice = priceStore.calculatePrice(fee);
 
@@ -159,16 +171,20 @@ export const FeeInSign: FunctionComponent<{
         feeConfig={feeConfig}
         gasConfig={gasConfig}
       />
-      <View style={style.flatten(['padding-bottom-28'])}>
-        <View style={style.flatten(['flex-row', 'items-center', 'margin-bottom-4'])}>
-          <Text style={style.flatten(['subtitle3'])}>Fee</Text>
-          <View style={style.get('flex-1')} />
-          <Text style={style.flatten(['body3'])}>{feePrice ? feePrice.toString() : '-'}</Text>
+      <View style={style.flatten(["padding-bottom-28"])}>
+        <View
+          style={style.flatten(["flex-row", "items-center", "margin-bottom-4"])}
+        >
+          <Text style={style.flatten(["subtitle3"])}>Fee</Text>
+          <View style={style.get("flex-1")} />
+          <Text style={style.flatten(["body3"])}>
+            {feePrice ? feePrice.toString() : "-"}
+          </Text>
         </View>
-        <View style={style.flatten(['flex-row'])}>
-          <View style={style.get('flex-1')} />
+        <View style={style.flatten(["flex-row"])}>
+          <View style={style.get("flex-1")} />
           <TouchableOpacity
-            style={style.flatten(['flex-row', 'items-center'])}
+            style={style.flatten(["flex-row", "items-center"])}
             disabled={!canFeeEditable}
             onPress={() => {
               setIsSetFeeModalOpen(true);
@@ -176,29 +192,53 @@ export const FeeInSign: FunctionComponent<{
           >
             <Text
               style={{
-                ...typography['subtitle1'],
-                color: canFeeEditable ? colors['primary-surface-default'] : colors['primary-text']
+                ...typography["subtitle1"],
+                color: canFeeEditable
+                  ? colors["primary-surface-default"]
+                  : colors["primary-text"],
               }}
             >
               {fee.trim(true).toString()}
             </Text>
             {canFeeEditable ? (
-              <View style={style.flatten(['margin-left-6'])}>
-                <RightArrowIcon color={style.get('color-primary').color} height={12} />
+              <View style={style.flatten(["margin-left-6"])}>
+                <RightArrowIcon
+                  color={style.get("color-primary").color}
+                  height={12}
+                />
               </View>
             ) : null}
           </TouchableOpacity>
         </View>
         {isFeeLoading ? (
           <View>
-            <View style={style.flatten(['absolute', 'height-16', 'justify-center', 'margin-top-2', 'margin-left-4'])}>
-              <LoadingSpinner size={14} color={style.get('color-loading-spinner').color} />
+            <View
+              style={style.flatten([
+                "absolute",
+                "height-16",
+                "justify-center",
+                "margin-top-2",
+                "margin-left-4",
+              ])}
+            >
+              <LoadingSpinner
+                size={14}
+                color={style.get("color-loading-spinner").color}
+              />
             </View>
           </View>
         ) : null}
         {!isFeeLoading && errorText ? (
           <View>
-            <Text style={style.flatten(['absolute', 'text-caption1', 'color-error', 'margin-top-2', 'margin-left-4'])}>
+            <Text
+              style={style.flatten([
+                "absolute",
+                "text-caption1",
+                "color-error",
+                "margin-top-2",
+                "margin-left-4",
+              ])}
+            >
               {errorText}
             </Text>
           </View>

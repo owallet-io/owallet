@@ -1,6 +1,6 @@
-import React, { FunctionComponent, useEffect, useRef } from 'react';
-import { globalModalRendererState, ModalOptions } from './provider';
-import { BottomSheetProps } from '@gorhom/bottom-sheet';
+import React, { FunctionComponent, useEffect, useRef } from "react";
+import { globalModalRendererState, ModalOptions } from "./provider";
+import { BottomSheetProps } from "@gorhom/bottom-sheet";
 export const registerModal: <P>(
   element: React.ElementType<P>,
   options?: ModalOptions
@@ -35,9 +35,8 @@ export const registerModal: <P>(
           options
         );
       }
-      
+
       if (!props.isOpen && key.current) {
-        
         globalModalRendererState.closeModal(key.current);
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps

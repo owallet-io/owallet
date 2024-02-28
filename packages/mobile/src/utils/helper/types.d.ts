@@ -6,7 +6,7 @@ interface IDataTransaction {
   hash?: string;
   timestamp?: string;
   isRecipient?: boolean;
-  status?: 'success' | 'failed';
+  status?: "success" | "failed";
   isPlus?: boolean;
   isMinus?: boolean;
   recipient?: string;

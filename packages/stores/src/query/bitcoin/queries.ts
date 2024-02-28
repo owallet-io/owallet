@@ -32,11 +32,22 @@ export class QueriesWrappedBitcoin
 export class BitcoinQueries {
   public readonly queryBitcoinBalance: DeepReadonly<ObservableQueryBitcoinBalance>;
 
-  constructor(base: QueriesSetBase, kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
-    base.queryBalances.addBalanceRegistry(new ObservableQueryBitcoinBalanceRegistry(kvStore));
+  constructor(
+    base: QueriesSetBase,
+    kvStore: KVStore,
+    chainId: string,
+    chainGetter: ChainGetter
+  ) {
+    base.queryBalances.addBalanceRegistry(
+      new ObservableQueryBitcoinBalanceRegistry(kvStore)
+    );
 
     // queryBitcoinBalance, we need to seperate native balance from cosmos as it is default implementation
     // other implementations will require corresponding templates
-    this.queryBitcoinBalance = new ObservableQueryBitcoinBalance(kvStore, chainId, chainGetter);
+    this.queryBitcoinBalance = new ObservableQueryBitcoinBalance(
+      kvStore,
+      chainId,
+      chainGetter
+    );
   }
 }

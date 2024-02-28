@@ -1,10 +1,10 @@
-import { WEBPAGE_PORT } from '@owallet/router';
+import { WEBPAGE_PORT } from "@owallet/router";
 import {
   ContentScriptEnv,
   ContentScriptGuards,
   ExtensionRouter,
-  InExtensionMessageRequester
-} from '@owallet/router-extension';
+  InExtensionMessageRequester,
+} from "@owallet/router-extension";
 import {
   OWallet,
   InjectedOWallet,
@@ -13,19 +13,35 @@ import {
   InjectedTronWebOWallet,
   TronWeb,
   InjectedBitcoin,
-  Bitcoin
-} from '@owallet/provider';
-import { initEvents } from './events';
+  Bitcoin,
+} from "@owallet/provider";
+import { initEvents } from "./events";
 
-import manifest from '../manifest.json';
+import manifest from "../manifest.json";
 
-InjectedOWallet.startProxy(new OWallet(manifest.version, 'core', new InExtensionMessageRequester()));
+InjectedOWallet.startProxy(
+  new OWallet(manifest.version, "core", new InExtensionMessageRequester())
+);
 
-InjectedEthereum.startProxy(new Ethereum(manifest.version, 'core', '0x38', new InExtensionMessageRequester()));
-InjectedBitcoin.startProxy(new Bitcoin(manifest.version, 'core', new InExtensionMessageRequester()));
+InjectedEthereum.startProxy(
+  new Ethereum(
+    manifest.version,
+    "core",
+    "0x38",
+    new InExtensionMessageRequester()
+  )
+);
+InjectedBitcoin.startProxy(
+  new Bitcoin(manifest.version, "core", new InExtensionMessageRequester())
+);
 
 InjectedTronWebOWallet.startProxy(
-  new TronWeb(manifest.version, 'core', '0x2b6653dc', new InExtensionMessageRequester())
+  new TronWeb(
+    manifest.version,
+    "core",
+    "0x2b6653dc",
+    new InExtensionMessageRequester()
+  )
 );
 
 const router = new ExtensionRouter(ContentScriptEnv.produceEnv);
@@ -34,9 +50,9 @@ initEvents(router);
 router.listen(WEBPAGE_PORT);
 
 const container = document.head || document.documentElement;
-const scriptElement = document.createElement('script');
+const scriptElement = document.createElement("script");
 
-scriptElement.src = browser.runtime.getURL('injectedScript.bundle.js');
-scriptElement.type = 'text/javascript';
+scriptElement.src = browser.runtime.getURL("injectedScript.bundle.js");
+scriptElement.type = "text/javascript";
 container.insertBefore(scriptElement, container.children[0]);
 scriptElement.remove();

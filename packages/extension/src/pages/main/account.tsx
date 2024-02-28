@@ -1,18 +1,18 @@
-import React, { FunctionComponent, useCallback } from 'react';
+import React, { FunctionComponent, useCallback } from "react";
 
-import { Address } from '../../components/address';
-import { Address as Add } from '@owallet/crypto';
-import styleAccount from './account.module.scss';
+import { Address } from "../../components/address";
+import { Address as Add } from "@owallet/crypto";
+import styleAccount from "./account.module.scss";
 
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../stores';
-import { useNotification } from '../../components/notification';
-import { useIntl } from 'react-intl';
-import { WalletStatus } from '@owallet/stores';
-import { ChainIdEnum, getKeyDerivationFromAddressType } from '@owallet/common';
-import { Input, Label } from 'reactstrap';
-import { AddressBtcType } from '@owallet/types';
-import { useBIP44Option } from '../register/advanced-bip44';
+import { observer } from "mobx-react-lite";
+import { useStore } from "../../stores";
+import { useNotification } from "../../components/notification";
+import { useIntl } from "react-intl";
+import { WalletStatus } from "@owallet/stores";
+import { ChainIdEnum, getKeyDerivationFromAddressType } from "@owallet/common";
+import { Input, Label } from "reactstrap";
+import { AddressBtcType } from "@owallet/types";
+import { useBIP44Option } from "../register/advanced-bip44";
 
 export const AccountView: FunctionComponent = observer(() => {
   const { accountStore, chainStore, keyRingStore } = useStore();
@@ -23,7 +23,9 @@ export const AccountView: FunctionComponent = observer(() => {
   const intl = useIntl();
   const bip44Option = useBIP44Option();
 
-  const addressDisplay = accountInfo.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
+  const addressDisplay = accountInfo.getAddressDisplay(
+    keyRingStore.keyRingLedgerAddresses
+  );
 
   const notification = useNotification();
 
@@ -32,16 +34,16 @@ export const AccountView: FunctionComponent = observer(() => {
       if (accountInfo.walletStatus === WalletStatus.Loaded) {
         await navigator.clipboard.writeText(address);
         notification.push({
-          placement: 'top-center',
-          type: 'success',
+          placement: "top-center",
+          type: "success",
           duration: 2,
           content: intl.formatMessage({
-            id: 'main.address.copied'
+            id: "main.address.copied",
           }),
           canDelete: true,
           transition: {
-            duration: 0.25
-          }
+            duration: 0.25,
+          },
         });
       }
     },
@@ -54,9 +56,11 @@ export const AccountView: FunctionComponent = observer(() => {
       return keyMain;
     })();
     if (accountInfo.isNanoLedger) {
-      const path = `${keyDerivation}'/${bip44.coinType ?? coinType}'/${bip44Option.bip44HDPath.account}'/${
-        bip44Option.bip44HDPath.change
-      }/${bip44Option.bip44HDPath.addressIndex}`;
+      const path = `${keyDerivation}'/${bip44.coinType ?? coinType}'/${
+        bip44Option.bip44HDPath.account
+      }'/${bip44Option.bip44HDPath.change}/${
+        bip44Option.bip44HDPath.addressIndex
+      }`;
       keyRingStore.setKeyStoreLedgerAddress(path, chainId);
     }
   };
@@ -68,11 +72,11 @@ export const AccountView: FunctionComponent = observer(() => {
           {accountInfo.walletStatus === WalletStatus.Loaded
             ? accountInfo.name ||
               intl.formatMessage({
-                id: 'setting.keyring.unnamed-account'
+                id: "setting.keyring.unnamed-account",
               })
-            : 'Loading...'}
+            : "Loading..."}
         </div>
-        <div style={{ flex: 1, textAlign: 'right' }}></div>
+        <div style={{ flex: 1, textAlign: "right" }}></div>
       </div>
       {/* {(networkType === 'cosmos' || networkType === 'bitcoin') && ( */}
         <div className={styleAccount.containerAccount}>
@@ -92,10 +96,10 @@ export const AccountView: FunctionComponent = observer(() => {
       {networkType === 'bitcoin' && (
         <div
           style={{
-            display: 'flex',
-            justifyContent: 'space-around',
-            alignItems: 'center',
-            padding: '10px 0px'
+            display: "flex",
+            justifyContent: "space-around",
+            alignItems: "center",
+            padding: "10px 0px",
           }}
         >
           <Label check>
@@ -106,7 +110,7 @@ export const AccountView: FunctionComponent = observer(() => {
               type="radio"
               name="bech32"
               checked={accountInfo.addressType === AddressBtcType.Bech32}
-            />{' '}
+            />{" "}
             Segwit(Bech32)
           </Label>
           <Label check>
@@ -117,7 +121,7 @@ export const AccountView: FunctionComponent = observer(() => {
               type="radio"
               name="legacy"
               checked={accountInfo.addressType === AddressBtcType.Legacy}
-            />{' '}
+            />{" "}
             Bitcoin(LEGACY)
           </Label>
         </div>

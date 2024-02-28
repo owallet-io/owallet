@@ -1,4 +1,4 @@
-import { InteractionStore } from './interaction';
+import { InteractionStore } from "./interaction";
 import {
   getBasicAccessPermissionType,
   GetPermissionOriginsMsg,
@@ -10,12 +10,12 @@ import {
   splitSecret20ViewingKeyPermissionType,
   getSecret20ViewingKeyPermissionType,
   AddPermissionOrigin,
-  GetOriginPermittedChainsMsg
-} from '@owallet/background';
-import { computed, flow, makeObservable, observable, autorun } from 'mobx';
-import { HasMapStore } from '../../common';
-import { BACKGROUND_PORT, MessageRequester } from '@owallet/router';
-import { toGenerator } from '@owallet/common';
+  GetOriginPermittedChainsMsg,
+} from "@owallet/background";
+import { computed, flow, makeObservable, observable, autorun } from "mobx";
+import { HasMapStore } from "../../common";
+import { BACKGROUND_PORT, MessageRequester } from "@owallet/router";
+import { toGenerator } from "@owallet/common";
 
 export class Secret20ViewingKeyPermissionInnerStore {
   @observable.ref
@@ -120,7 +120,7 @@ export class BasicAccessPermissionInnerStore {
 }
 
 interface MapKeyData {
-  type: 'basicAccess' | 'viewingKey';
+  type: "basicAccess" | "viewingKey";
   chainId: string;
   contractAddress: string;
 }
@@ -137,7 +137,7 @@ export class PermissionStore extends HasMapStore<
   ) {
     super((key: string) => {
       const data = JSON.parse(key) as MapKeyData;
-      if (data.type === 'basicAccess') {
+      if (data.type === "basicAccess") {
         return new BasicAccessPermissionInnerStore(
           data.chainId,
           this.requester
@@ -155,9 +155,9 @@ export class PermissionStore extends HasMapStore<
 
   getBasicAccessInfo(chainId: string): BasicAccessPermissionInnerStore {
     const key = JSON.stringify({
-      type: 'basicAccess',
+      type: "basicAccess",
       chainId,
-      contractAddress: ''
+      contractAddress: "",
     });
     return this.get(key) as BasicAccessPermissionInnerStore;
   }
@@ -174,16 +174,16 @@ export class PermissionStore extends HasMapStore<
 
   protected isEnded(): boolean {
     return (
-      this.interactionStore.getEvents<void>('enable-access-end').length > 0
+      this.interactionStore.getEvents<void>("enable-access-end").length > 0
     );
   }
 
   protected clearEnded() {
-    this.interactionStore.clearEvent('enable-access-end');
-    this.interactionStore.clearEvent('request-sign-end');
-    this.interactionStore.clearEvent('request-sign-tron-end');
-    this.interactionStore.clearEvent('request-sign-ethereum-end');
-    this.interactionStore.clearEvent('request-sign-bitcoin-end');
+    this.interactionStore.clearEvent("enable-access-end");
+    this.interactionStore.clearEvent("request-sign-end");
+    this.interactionStore.clearEvent("request-sign-tron-end");
+    this.interactionStore.clearEvent("request-sign-ethereum-end");
+    this.interactionStore.clearEvent("request-sign-bitcoin-end");
   }
 
   protected waitEnd(): Promise<void> {
@@ -191,7 +191,7 @@ export class PermissionStore extends HasMapStore<
       return Promise.resolve();
     }
 
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       const disposer = autorun(() => {
         if (this.isEnded()) {
           resolve();
@@ -215,7 +215,7 @@ export class PermissionStore extends HasMapStore<
     } finally {
       yield this.waitEnd();
       this._isLoading = false;
-      this.interactionStore.removeData('enable-access', id);
+      this.interactionStore.removeData("enable-access", id);
     }
   }
 
@@ -224,9 +224,9 @@ export class PermissionStore extends HasMapStore<
     contractAddress: string
   ): Secret20ViewingKeyPermissionInnerStore {
     const key = JSON.stringify({
-      type: 'viewingKey',
+      type: "viewingKey",
       chainId,
-      contractAddress
+      contractAddress,
     });
     return this.get(key) as Secret20ViewingKeyPermissionInnerStore;
   }
@@ -248,8 +248,8 @@ export class PermissionStore extends HasMapStore<
           id: data.id,
           data: {
             chainIds: data.data.chainIds,
-            origins: data.data.origins
-          }
+            origins: data.data.origins,
+          },
         });
       }
     }
@@ -278,8 +278,8 @@ export class PermissionStore extends HasMapStore<
             contractAddress: splitSecret20ViewingKeyPermissionType(
               data.data.type
             ),
-            origins: data.data.origins
-          }
+            origins: data.data.origins,
+          },
         });
       }
     }

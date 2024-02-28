@@ -1,4 +1,4 @@
-import { Result } from './types';
+import { Result } from "./types";
 import {
   ChainIdEnum,
   KVStore,
@@ -6,22 +6,33 @@ import {
   OasisBalance,
   addressToPublicKey,
   getOasisNic,
-  parseRpcBalance
-} from '@owallet/common';
-import { ObservableChainQuery, ObservableChainQueryMap } from '../chain-query';
-import { ChainGetter, QueryResponse } from '../../common';
-import { computed } from 'mobx';
-import { CoinPretty, Int } from '@owallet/unit';
-import { CancelToken } from 'axios';
+  parseRpcBalance,
+} from "@owallet/common";
+import { ObservableChainQuery, ObservableChainQueryMap } from "../chain-query";
+import { ChainGetter, QueryResponse } from "../../common";
+import { computed } from "mobx";
+import { CoinPretty, Int } from "@owallet/unit";
+import { CancelToken } from "axios";
 
-export class ObservableQueryEvmBalanceInner extends ObservableChainQuery<Result | OasisBalance> {
-  constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter, protected readonly address: string) {
-    console.log('🚀 ~ ObservableQueryEvmBalanceInner ~ constructor ~ chainId:', chainId, address);
-    super(kvStore, chainId, chainGetter, '', {
-      jsonrpc: '2.0',
-      method: 'eth_getBalance',
-      params: [address, 'latest'],
-      id: 'evm-balance'
+export class ObservableQueryEvmBalanceInner extends ObservableChainQuery<
+  Result | OasisBalance
+> {
+  constructor(
+    kvStore: KVStore,
+    chainId: string,
+    chainGetter: ChainGetter,
+    protected readonly address: string
+  ) {
+    console.log(
+      "🚀 ~ ObservableQueryEvmBalanceInner ~ constructor ~ chainId:",
+      chainId,
+      address
+    );
+    super(kvStore, chainId, chainGetter, "", {
+      jsonrpc: "2.0",
+      method: "eth_getBalance",
+      params: [address, "latest"],
+      id: "evm-balance",
     });
   }
 
@@ -38,10 +49,15 @@ export class ObservableQueryEvmBalanceInner extends ObservableChainQuery<Result 
 
       return grpcBalance;
     } catch (error) {
-      console.log('🚀 ~ ObservableQueryEvmBalanceInner ~ getOasisBalance ~ error:', error);
+      console.log(
+        "🚀 ~ ObservableQueryEvmBalanceInner ~ getOasisBalance ~ error:",
+        error
+      );
     }
   }
-  protected async fetchResponse(cancelToken: CancelToken): Promise<QueryResponse<Result | OasisBalance>> {
+  protected async fetchResponse(
+    cancelToken: CancelToken
+  ): Promise<QueryResponse<Result | OasisBalance>> {
     const response = await super.fetchResponse(cancelToken);
 
     if (this._chainId === ChainIdEnum.Oasis) {
@@ -51,20 +67,20 @@ export class ObservableQueryEvmBalanceInner extends ObservableChainQuery<Result 
         data: oasisRs,
         status: response.status,
         staled: false,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
     }
     const evmResult = response.data;
 
     if (!evmResult) {
-      throw new Error('Failed to get the response from the contract');
+      throw new Error("Failed to get the response from the contract");
     }
 
     return {
       data: evmResult,
       status: response.status,
       staled: false,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
   }
 
@@ -77,7 +93,11 @@ export class ObservableQueryEvmBalanceInner extends ObservableChainQuery<Result 
     if (this.chainId === ChainIdEnum.Oasis) {
       return new CoinPretty(
         chainInfo.stakeCurrency,
-        new Int(new MyBigInt((this.response.data as OasisBalance).available).toString())
+        new Int(
+          new MyBigInt(
+            (this.response.data as OasisBalance).available
+          ).toString()
+        )
       );
     }
     return new CoinPretty(
@@ -87,14 +107,21 @@ export class ObservableQueryEvmBalanceInner extends ObservableChainQuery<Result 
   }
 }
 
-export class ObservableQueryEvmBalance extends ObservableChainQueryMap<Result | OasisBalance> {
+export class ObservableQueryEvmBalance extends ObservableChainQueryMap<
+  Result | OasisBalance
+> {
   constructor(
     protected readonly kvStore: KVStore,
     protected readonly chainId: string,
     protected readonly chainGetter: ChainGetter
   ) {
     super(kvStore, chainId, chainGetter, (address: string) => {
-      return new ObservableQueryEvmBalanceInner(this.kvStore, this.chainId, this.chainGetter, address);
+      return new ObservableQueryEvmBalanceInner(
+        this.kvStore,
+        this.chainId,
+        this.chainGetter,
+        address
+      );
     });
   }
 

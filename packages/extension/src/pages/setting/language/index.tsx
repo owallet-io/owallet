@@ -1,11 +1,11 @@
-import React, { FunctionComponent, useCallback, useMemo } from 'react';
-import { HeaderLayout } from '../../../layouts';
-import { PageButton } from '../page-button';
+import React, { FunctionComponent, useCallback, useMemo } from "react";
+import { HeaderLayout } from "../../../layouts";
+import { PageButton } from "../page-button";
 
-import style from '../style.module.scss';
-import { useLanguage } from '@owallet/common';
-import { useHistory } from 'react-router';
-import { useIntl } from 'react-intl';
+import style from "../style.module.scss";
+import { useLanguage } from "@owallet/common";
+import { useHistory } from "react-router";
+import { useIntl } from "react-intl";
 
 export const SettingLanguagePage: FunctionComponent = () => {
   const language = useLanguage();
@@ -22,7 +22,7 @@ export const SettingLanguagePage: FunctionComponent = () => {
       showChainName={false}
       canChangeChainInfo={false}
       alternativeTitle={intl.formatMessage({
-        id: 'setting.language'
+        id: "setting.language",
       })}
       onBackButton={useCallback(() => {
         history.goBack();
@@ -31,44 +31,44 @@ export const SettingLanguagePage: FunctionComponent = () => {
       <div className={style.container}>
         <PageButton
           title={intl.formatMessage({
-            id: 'setting.language.automatic'
+            id: "setting.language.automatic",
           })}
           onClick={useCallback(() => {
             language.clearLanguage();
             history.push({
-              pathname: '/'
+              pathname: "/",
             });
           }, [history, language])}
           icons={language.automatic ? selectedIcon : undefined}
         />
         <PageButton
           title={intl.formatMessage({
-            id: 'setting.language.en'
+            id: "setting.language.en",
           })}
           onClick={useCallback(() => {
-            language.setLanguage('en');
+            language.setLanguage("en");
             history.push({
-              pathname: '/'
+              pathname: "/",
             });
           }, [history, language])}
           icons={
-            !language.automatic && language.language == 'en'
+            !language.automatic && language.language == "en"
               ? selectedIcon
               : undefined
           }
         />
         <PageButton
           title={intl.formatMessage({
-            id: 'setting.language.ko'
+            id: "setting.language.ko",
           })}
           onClick={useCallback(() => {
-            language.setLanguage('ko');
+            language.setLanguage("ko");
             history.push({
-              pathname: '/'
+              pathname: "/",
             });
           }, [history, language])}
           icons={
-            !language.automatic && language.language == 'ko'
+            !language.automatic && language.language == "ko"
               ? selectedIcon
               : undefined
           }

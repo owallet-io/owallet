@@ -3,16 +3,16 @@ import React, {
   FunctionComponent,
   useEffect,
   useMemo,
-  useState
-} from 'react';
+  useState,
+} from "react";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import QRCode from 'qrcode.react';
+import QRCode from "qrcode.react";
 import {
   isMobile,
   isAndroid,
-  saveMobileLinkInfo
-} from '@walletconnect/browser-utils';
+  saveMobileLinkInfo,
+} from "@walletconnect/browser-utils";
 
 export type ModalUIOptions = {
   backdrop?: {
@@ -59,16 +59,16 @@ export const Modal: FunctionComponent<{
       if (checkAndroid) {
         // Save the mobile link.
         saveMobileLinkInfo({
-          name: 'OWallet',
-          href: 'intent://wcV1#Intent;package=com.io.owallet;scheme=owallet;end;'
+          name: "OWallet",
+          href: "intent://wcV1#Intent;package=com.io.owallet;scheme=owallet;end;",
         });
 
         return `intent://wcV1?${uri}#Intent;package=com.io.owallet;scheme=owallet;end;`;
       } else {
         // Save the mobile link.
         saveMobileLinkInfo({
-          name: 'OWallet',
-          href: 'owallet://wcV1'
+          name: "OWallet",
+          href: "owallet://wcV1",
         });
 
         return `owallet://wcV1?${uri}`;
@@ -91,18 +91,18 @@ export const Modal: FunctionComponent<{
           ...(uiOptions?.backdrop?.disableDefaultStyle
             ? {}
             : {
-                position: 'fixed',
+                position: "fixed",
                 top: 0,
                 bottom: 0,
                 left: 0,
                 right: 0,
-                backgroundColor: '#fff',
+                backgroundColor: "#fff",
 
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center'
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
               }),
-          ...uiOptions?.backdrop?.style
+          ...uiOptions?.backdrop?.style,
         }}
         onClick={(e) => {
           e.preventDefault();
@@ -119,9 +119,9 @@ export const Modal: FunctionComponent<{
               : {
                   padding: 20,
                   borderRadius: 10,
-                  backgroundColor: '#DDDDDD'
+                  backgroundColor: "#DDDDDD",
                 }),
-            ...uiOptions?.modalContainer?.style
+            ...uiOptions?.modalContainer?.style,
           }}
           onClick={(e) => {
             e.preventDefault();
@@ -138,9 +138,9 @@ export const Modal: FunctionComponent<{
                     : {
                         fontSize: 20,
                         margin: 0,
-                        marginBottom: 10
+                        marginBottom: 10,
                       }),
-                  ...uiOptions?.modalHeader?.style
+                  ...uiOptions?.modalHeader?.style,
                 }}
               >
                 Scan QR Code
@@ -162,9 +162,9 @@ export const Modal: FunctionComponent<{
                     : {
                         fontSize: 20,
                         margin: 0,
-                        marginBottom: 10
+                        marginBottom: 10,
                       }),
-                  ...uiOptions?.modalHeader?.style
+                  ...uiOptions?.modalHeader?.style,
                 }}
               >
                 Open App

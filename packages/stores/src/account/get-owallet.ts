@@ -1,4 +1,4 @@
-import { OWallet } from '@owallet/types';
+import { OWallet } from "@owallet/types";
 
 export const getOWalletFromWindow: () => Promise<
   OWallet | undefined
@@ -7,7 +7,7 @@ export const getOWalletFromWindow: () => Promise<
     return window.owallet;
   }
 
-  if (document.readyState === 'complete') {
+  if (document.readyState === "complete") {
     return window.owallet;
   }
 
@@ -15,13 +15,13 @@ export const getOWalletFromWindow: () => Promise<
     const documentStateChange = (event: Event) => {
       if (
         event.target &&
-        (event.target as Document).readyState === 'complete'
+        (event.target as Document).readyState === "complete"
       ) {
         resolve(window.owallet);
-        document.removeEventListener('readystatechange', documentStateChange);
+        document.removeEventListener("readystatechange", documentStateChange);
       }
     };
 
-    document.addEventListener('readystatechange', documentStateChange);
+    document.addEventListener("readystatechange", documentStateChange);
   });
 };

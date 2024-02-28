@@ -1,31 +1,35 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, { FunctionComponent, useEffect, useState } from "react";
 import {
   AddressInput,
   FeeButtons,
   // CoinInput,
   MemoInput,
-  CoinInputEvm
-} from '../../components/form';
+  CoinInputEvm,
+} from "../../components/form";
 
-import { Signer } from '@oasisprotocol/client/dist/signature';
-import { useStore } from '../../stores';
+import { Signer } from "@oasisprotocol/client/dist/signature";
+import { useStore } from "../../stores";
 
-import Big from 'big.js';
-import ERC20_ABI from './erc20.json';
+import Big from "big.js";
+import ERC20_ABI from "./erc20.json";
 
-import { observer } from 'mobx-react-lite';
+import { observer } from "mobx-react-lite";
 
-import style from './style.module.scss';
-import { useNotification } from '../../components/notification';
+import style from "./style.module.scss";
+import { useNotification } from "../../components/notification";
 
-import { useIntl } from 'react-intl';
-import { Button } from 'reactstrap';
+import { useIntl } from "react-intl";
+import { Button } from "reactstrap";
 
-import { useHistory, useLocation } from 'react-router';
-import queryString from 'querystring';
-import Web3 from 'web3';
-import { useFeeEthereumConfig, useGasEthereumConfig, useSendTxConfig } from '@owallet/hooks';
-import { fitPopupWindow } from '@owallet/popup';
+import { useHistory, useLocation } from "react-router";
+import queryString from "querystring";
+import Web3 from "web3";
+import {
+  useFeeEthereumConfig,
+  useGasEthereumConfig,
+  useSendTxConfig,
+} from "@owallet/hooks";
+import { fitPopupWindow } from "@owallet/popup";
 import {
   ChainIdEnum,
   EthereumEndpoint,
@@ -34,19 +38,19 @@ import {
   hex2uint,
   parseRoseStringToBigNumber,
   signerFromPrivateKey,
-  uint2hex
-} from '@owallet/common';
-import classNames from 'classnames';
-import { GasEthereumInput } from '../../components/form/gas-ethereum-input';
-import { FeeInput } from '../../components/form/fee-input';
-import axios from 'axios';
+  uint2hex,
+} from "@owallet/common";
+import classNames from "classnames";
+import { GasEthereumInput } from "../../components/form/gas-ethereum-input";
+import { FeeInput } from "../../components/form/fee-input";
+import axios from "axios";
 
 export const SendEvmPage: FunctionComponent<{
   coinMinimalDenom?: string;
 }> = observer(({ coinMinimalDenom }) => {
   const history = useHistory();
-  let search = useLocation().search || coinMinimalDenom || '';
-  if (search.startsWith('?')) {
+  let search = useLocation().search || coinMinimalDenom || "";
+  if (search.startsWith("?")) {
     search = search.slice(1);
   }
   const query = queryString.parse(search) as {
@@ -74,14 +78,23 @@ export const SendEvmPage: FunctionComponent<{
 
   const notification = useNotification();
 
-  const { chainStore, accountStore, queriesStore, analyticsStore, keyRingStore } = useStore();
+  const {
+    chainStore,
+    accountStore,
+    queriesStore,
+    analyticsStore,
+    keyRingStore,
+  } = useStore();
   const current = chainStore.current;
   const decimals = chainStore.current.feeCurrencies[0].coinDecimals;
-  console.log('🚀 ~ decimals:', decimals);
+  console.log("🚀 ~ decimals:", decimals);
 
   const accountInfo = accountStore.getAccount(current.chainId);
-  const [gasPrice, setGasPrice] = useState('0');
-  const address = accountInfo.getAddressDisplay(keyRingStore.keyRingLedgerAddresses, false);
+  const [gasPrice, setGasPrice] = useState("0");
+  const address = accountInfo.getAddressDisplay(
+    keyRingStore.keyRingLedgerAddresses,
+    false
+  );
 
   const sendConfigs = useSendTxConfig(
     chainStore,
@@ -113,15 +126,19 @@ export const SendEvmPage: FunctionComponent<{
   const getFee = async () => {
     try {
       const response = await axios.post(chainStore.current.rest, {
-        jsonrpc: '2.0',
+        jsonrpc: "2.0",
         id: 1,
-        method: 'eth_gasPrice',
+        method: "eth_gasPrice",
         headers: {
-          'x-api-key': ''
+          "x-api-key": "",
         },
-        params: []
+        params: [],
       });
-      setGasPrice(new Big(parseInt(response.data.result, 16)).div(new Big(10).pow(decimals)).toFixed(decimals));
+      setGasPrice(
+        new Big(parseInt(response.data.result, 16))
+          .div(new Big(10).pow(decimals))
+          .toFixed(decimals)
+      );
     } catch (error) {
       console.log(error);
     }
@@ -132,44 +149,52 @@ export const SendEvmPage: FunctionComponent<{
       try {
         if (chainStore.current.chainId === ChainIdEnum.Oasis) {
           gasConfig.setGas(0);
-          feeConfig.setFee('0');
+          feeConfig.setFee("0");
           return;
         }
         const web3 = new Web3(chainStore.current.rest);
         let estimate = 21000;
-        if (currency?.coinMinimalDenom?.includes('erc20')) {
+        if (currency?.coinMinimalDenom?.includes("erc20")) {
           const tokenInfo = new web3.eth.Contract(
             // @ts-ignore
             ERC20_ABI,
-            currency?.coinMinimalDenom?.split(':')?.[1]
+            currency?.coinMinimalDenom?.split(":")?.[1]
           );
 
           if (amount && recipient) {
-            estimate = await tokenInfo.methods.transfer(recipient, Web3.utils.toWei(amount)).estimateGas({
-              from: accountInfo?.evmosHexAddress
-            });
+            estimate = await tokenInfo.methods
+              .transfer(recipient, Web3.utils.toWei(amount))
+              .estimateGas({
+                from: accountInfo?.evmosHexAddress,
+              });
           }
         } else {
           if (recipient) {
             estimate = await web3.eth.estimateGas({
               to: recipient,
-              from: accountInfo?.evmosHexAddress
+              from: accountInfo?.evmosHexAddress,
             });
           }
         }
         gasConfig.setGas(estimate ?? 21000);
-        feeConfig.setFee(new Big(estimate ?? 21000).mul(new Big(gasPrice)).toFixed(decimals));
+        feeConfig.setFee(
+          new Big(estimate ?? 21000).mul(new Big(gasPrice)).toFixed(decimals)
+        );
       } catch (error) {
         gasConfig.setGas(50000);
-        feeConfig.setFee(new Big(50000).mul(new Big(gasPrice)).toFixed(decimals));
+        feeConfig.setFee(
+          new Big(50000).mul(new Big(gasPrice)).toFixed(decimals)
+        );
       }
     })();
   }, [gasPrice, amount, recipient, currency]);
 
-  console.log('🚀 ~ currency:', currency);
+  console.log("🚀 ~ currency:", currency);
   useEffect(() => {
     if (query.defaultDenom) {
-      const currency = current.currencies.find((cur) => cur.coinMinimalDenom === query.defaultDenom);
+      const currency = current.currencies.find(
+        (cur) => cur.coinMinimalDenom === query.defaultDenom
+      );
 
       if (currency) {
         sendConfigs.amountConfig.setSendCurrency(currency);
@@ -177,7 +202,7 @@ export const SendEvmPage: FunctionComponent<{
     }
   }, [current.currencies, query.defaultDenom, sendConfigs.amountConfig]);
 
-  const isDetachedPage = query.detached === 'true';
+  const isDetachedPage = query.detached === "true";
 
   useEffect(() => {
     if (isDetachedPage) {
@@ -213,25 +238,31 @@ export const SendEvmPage: FunctionComponent<{
     const nic = getOasisNic(chainStore.current.raw.grpc);
     const chainContext = await nic.consensusGetChainContext();
 
-    const tw = await OasisTransaction.buildTransfer(nic, signer as Signer, to, bigIntAmount);
+    const tw = await OasisTransaction.buildTransfer(
+      nic,
+      signer as Signer,
+      to,
+      bigIntAmount
+    );
 
     await OasisTransaction.sign(chainContext, signer as Signer, tw);
 
     await OasisTransaction.submit(nic, tw);
 
     notification.push({
-      placement: 'top-center',
-      type: 'success',
+      placement: "top-center",
+      type: "success",
       duration: 5,
-      content: 'Transaction successful',
+      content: "Transaction successful",
       canDelete: true,
       transition: {
-        duration: 0.25
-      }
+        duration: 0.25,
+      },
     });
   };
   const gasPriceToBig = () => {
-    if (parseFloat(feeConfig.feeRaw) <= 0 || parseFloat(gasConfig.gasRaw) <= 0) return '0';
+    if (parseFloat(feeConfig.feeRaw) <= 0 || parseFloat(gasConfig.gasRaw) <= 0)
+      return "0";
     return parseInt(
       new Big(parseFloat(feeConfig.feeRaw))
         .mul(new Big(10).pow(decimals))
@@ -240,9 +271,10 @@ export const SendEvmPage: FunctionComponent<{
     ).toString(16);
   };
   const stdFeeForGas = () => {
-    if (parseFloat(gasConfig.gasRaw) <= 0) return '0';
+    if (parseFloat(gasConfig.gasRaw) <= 0) return "0";
     return parseFloat(gasConfig.gasRaw).toString(16);
   };
+  console.log("test 2");
   return (
     <>
       <form
@@ -252,11 +284,11 @@ export const SendEvmPage: FunctionComponent<{
 
           if (accountInfo.isReadyToSendMsgs && txStateIsValid) {
             try {
-              const gasPrice = '0x' + gasPriceToBig();
+              const gasPrice = "0x" + gasPriceToBig();
 
               const stdFee = {
-                gas: '0x' + stdFeeForGas(),
-                gasPrice
+                gas: "0x" + stdFeeForGas(),
+                gasPrice,
               };
               (window as any).accountInfo = accountInfo;
               await accountInfo.sendToken(
@@ -269,77 +301,85 @@ export const SendEvmPage: FunctionComponent<{
                 {
                   preferNoSetFee: true,
                   preferNoSetMemo: true,
-                  networkType: chainStore.current.networkType
+                  networkType: chainStore.current.networkType,
                 },
                 {
                   onBroadcasted: () => {
-                    analyticsStore.logEvent('Send token tx broadcasted', {
+                    analyticsStore.logEvent("Send token tx broadcasted", {
                       chainId: chainStore.current.chainId,
                       chainName: chainStore.current.chainName,
-                      feeType: sendConfigs.feeConfig.feeType
+                      feeType: sendConfigs.feeConfig.feeType,
                     });
                   },
                   onFulfill: async (tx) => {
-                    console.log('🚀 ~ onSubmit={ ~ tx:', tx);
-                    if (tx && chainStore.current.chainId === ChainIdEnum.Oasis) {
+                    console.log("🚀 ~ onSubmit={ ~ tx:", tx);
+                    if (
+                      tx &&
+                      chainStore.current.chainId === ChainIdEnum.Oasis
+                    ) {
                       submitSignOasis(tx);
                       return;
                     }
                     if (tx?.status) {
                       notification.push({
-                        placement: 'top-center',
-                        type: tx?.status === '0x1' ? 'success' : 'danger',
+                        placement: "top-center",
+                        type: tx?.status === "0x1" ? "success" : "danger",
                         duration: 5,
                         content:
-                          tx?.status === '0x1'
+                          tx?.status === "0x1"
                             ? `Transaction successful with tx: ${tx?.transactionHash}`
                             : `Transaction failed with tx: ${tx?.transactionHash}`,
                         canDelete: true,
                         transition: {
-                          duration: 0.25
-                        }
+                          duration: 0.25,
+                        },
                       });
                     }
-                  }
+                  },
                 },
-                sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.startsWith('erc20')
+                sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.startsWith(
+                  "erc20"
+                )
                   ? {
-                      type: 'erc20',
+                      type: "erc20",
                       from: address,
-                      contract_addr: sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.split(':')[1],
+                      contract_addr:
+                        sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.split(
+                          ":"
+                        )[1],
                       recipient: sendConfigs.recipientConfig.recipient,
-                      amount: sendConfigs.amountConfig.amount
+                      amount: sendConfigs.amountConfig.amount,
                     }
                   : null
               );
               if (!isDetachedPage) {
-                history.replace('/');
+                history.replace("/");
               }
               notification.push({
-                placement: 'top-center',
-                type: 'success',
+                placement: "top-center",
+                type: "success",
                 duration: 5,
-                content: 'Transaction submitted!',
+                content: "Transaction submitted!",
                 canDelete: true,
                 transition: {
-                  duration: 0.25
-                }
+                  duration: 0.25,
+                },
               });
             } catch (e: any) {
-              console.log('🚀 ~ onSubmit={ ~ e:', e);
+              console.log("🚀 ~ onSubmit={ ~ e:", e);
               if (!isDetachedPage) {
-                history.replace('/');
+                history.replace("/");
               }
 
               notification.push({
-                type: 'warning',
-                placement: 'top-center',
+                type: "warning",
+                placement: "top-center",
                 duration: 5,
                 content: `Fail to send token: ${e.message}`,
                 canDelete: true,
                 transition: {
-                  duration: 0.25
-                }
+                  duration: 0.25,
+                },
               });
             } finally {
               // XXX: If the page is in detached state,
@@ -357,32 +397,32 @@ export const SendEvmPage: FunctionComponent<{
               inputRef={inputRef}
               recipientConfig={sendConfigs.recipientConfig}
               memoConfig={sendConfigs.memoConfig}
-              label={intl.formatMessage({ id: 'send.input.recipient' })}
+              label={intl.formatMessage({ id: "send.input.recipient" })}
               placeholder="Enter recipient address"
             />
             <CoinInputEvm
               amountConfig={sendConfigs.amountConfig}
               feeConfig={feeConfig.feeRaw}
-              label={intl.formatMessage({ id: 'send.input.amount' })}
+              label={intl.formatMessage({ id: "send.input.amount" })}
               balanceText={intl.formatMessage({
-                id: 'send.input-button.balance'
+                id: "send.input-button.balance",
               })}
               placeholder="Enter your amount"
             />
             <MemoInput
               memoConfig={sendConfigs.memoConfig}
-              label={intl.formatMessage({ id: 'send.input.memo' })}
+              label={intl.formatMessage({ id: "send.input.memo" })}
               placeholder="Enter your memo message"
             />
             <GasEthereumInput
-              label={intl.formatMessage({ id: 'sign.info.gas' })}
+              label={intl.formatMessage({ id: "sign.info.gas" })}
               gasConfig={gasConfig}
               // defaultValue={
               //   parseInt(dataSign?.data?.data?.data?.estimatedGasLimit) || 0
               // }
             />
             <FeeInput
-              label={intl.formatMessage({ id: 'sign.info.fee' })}
+              label={intl.formatMessage({ id: "sign.info.fee" })}
               gasConfig={gasConfig}
               feeConfig={feeConfig}
               gasPrice={gasPrice}
@@ -410,16 +450,19 @@ export const SendEvmPage: FunctionComponent<{
           <Button
             type="submit"
             block
-            data-loading={accountInfo.isSendingMsg === 'send'}
+            data-loading={accountInfo.isSendingMsg === "send"}
             disabled={!accountInfo.isReadyToSendMsgs || !txStateIsValid}
             className={style.sendBtn}
             style={{
-              cursor: accountInfo.isReadyToSendMsgs || !txStateIsValid ? 'default' : 'pointer'
+              cursor:
+                accountInfo.isReadyToSendMsgs || !txStateIsValid
+                  ? "default"
+                  : "pointer",
             }}
           >
             <span className={style.sendBtnText}>
               {intl.formatMessage({
-                id: 'send.button.send'
+                id: "send.button.send",
               })}
             </span>
           </Button>

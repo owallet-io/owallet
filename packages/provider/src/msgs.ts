@@ -1,6 +1,6 @@
-import { StdSignature } from '@cosmjs/launchpad';
-import { Message } from '@owallet/router';
-import { OWalletSignOptions, ChainInfoWithoutEndpoints } from '@owallet/types';
+import { StdSignature } from "@cosmjs/launchpad";
+import { Message } from "@owallet/router";
+import { OWalletSignOptions, ChainInfoWithoutEndpoints } from "@owallet/types";
 
 export class RequestSignDirectMsg extends Message<{
   readonly signed: {
@@ -12,7 +12,7 @@ export class RequestSignDirectMsg extends Message<{
   readonly signature: StdSignature;
 }> {
   public static type() {
-    return 'request-sign-direct';
+    return "request-sign-direct";
   }
 
   constructor(
@@ -31,20 +31,20 @@ export class RequestSignDirectMsg extends Message<{
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new Error('chain id not set');
+      throw new Error("chain id not set");
     }
 
     if (!this.signer) {
-      throw new Error('signer not set');
+      throw new Error("signer not set");
     }
 
     if (!this.signOptions) {
-      throw new Error('Sign options are null');
+      throw new Error("Sign options are null");
     }
   }
 
   route(): string {
-    return 'keyring';
+    return "keyring";
   }
 
   type(): string {
@@ -57,7 +57,7 @@ export class RequestSignBitcoinMsg extends Message<{
   readonly rawTxHex: string; // raw tx signature to broadcast
 }> {
   public static type() {
-    return 'request-sign-bitcoin';
+    return "request-sign-bitcoin";
   }
 
   constructor(public readonly chainId: string, public readonly data: object) {
@@ -66,11 +66,11 @@ export class RequestSignBitcoinMsg extends Message<{
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new Error('chain id not set');
+      throw new Error("chain id not set");
     }
 
     if (!this.data) {
-      throw new Error('data not set');
+      throw new Error("data not set");
     }
   }
 
@@ -79,7 +79,7 @@ export class RequestSignBitcoinMsg extends Message<{
   }
 
   route(): string {
-    return 'keyring';
+    return "keyring";
   }
 
   type(): string {
@@ -91,7 +91,7 @@ export class RequestSignEthereumMsg extends Message<{
   readonly rawTxHex: string; // raw tx signature to broadcast
 }> {
   public static type() {
-    return 'request-sign-ethereum';
+    return "request-sign-ethereum";
   }
 
   constructor(
@@ -103,11 +103,11 @@ export class RequestSignEthereumMsg extends Message<{
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new Error('chain id not set');
+      throw new Error("chain id not set");
     }
 
     if (!this.data) {
-      throw new Error('data not set');
+      throw new Error("data not set");
     }
   }
 
@@ -116,7 +116,7 @@ export class RequestSignEthereumMsg extends Message<{
   }
 
   route(): string {
-    return 'keyring';
+    return "keyring";
   }
 
   type(): string {
@@ -126,7 +126,7 @@ export class RequestSignEthereumMsg extends Message<{
 
 export class RequestSignOasisMsg extends Message<object> {
   public static type() {
-    return 'request-sign-oasis';
+    return "request-sign-oasis";
   }
 
   constructor(public readonly chainId: string, public readonly data: object) {
@@ -135,11 +135,11 @@ export class RequestSignOasisMsg extends Message<object> {
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new Error('chain id not set');
+      throw new Error("chain id not set");
     }
 
     if (!this.data) {
-      throw new Error('data not set');
+      throw new Error("data not set");
     }
   }
 
@@ -148,7 +148,7 @@ export class RequestSignOasisMsg extends Message<object> {
   }
 
   route(): string {
-    return 'keyring';
+    return "keyring";
   }
 
   type(): string {
@@ -158,7 +158,7 @@ export class RequestSignOasisMsg extends Message<object> {
 
 export class GetDefaultAddressOasisMsg extends Message<{}> {
   public static type() {
-    return 'get-default-address-oasis';
+    return "get-default-address-oasis";
   }
 
   constructor(public readonly chainId: string) {
@@ -167,12 +167,12 @@ export class GetDefaultAddressOasisMsg extends Message<{}> {
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new Error('chain id not set');
+      throw new Error("chain id not set");
     }
   }
 
   route(): string {
-    return 'keyring';
+    return "keyring";
   }
 
   type(): string {
@@ -183,7 +183,7 @@ export class GetDefaultAddressOasisMsg extends Message<{}> {
 // request sign tron
 export class RequestSignTronMsg extends Message<object> {
   public static type() {
-    return 'request-sign-tron';
+    return "request-sign-tron";
   }
 
   constructor(public readonly chainId: string, public readonly data: object) {
@@ -192,11 +192,11 @@ export class RequestSignTronMsg extends Message<object> {
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new Error('chain id not set');
+      throw new Error("chain id not set");
     }
 
     if (!this.data) {
-      throw new Error('data not set');
+      throw new Error("data not set");
     }
   }
 
@@ -205,7 +205,7 @@ export class RequestSignTronMsg extends Message<object> {
   }
 
   route(): string {
-    return 'keyring';
+    return "keyring";
   }
 
   type(): string {
@@ -215,7 +215,7 @@ export class RequestSignTronMsg extends Message<object> {
 
 export class RequestSendRawTransactionMsg extends Message<object> {
   public static type() {
-    return 'request-send-raw-transaction';
+    return "request-send-raw-transaction";
   }
 
   constructor(
@@ -232,11 +232,11 @@ export class RequestSendRawTransactionMsg extends Message<object> {
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new Error('chain id not set');
+      throw new Error("chain id not set");
     }
 
     if (!this.data) {
-      throw new Error('data not set');
+      throw new Error("data not set");
     }
   }
 
@@ -245,7 +245,7 @@ export class RequestSendRawTransactionMsg extends Message<object> {
   }
 
   route(): string {
-    return 'keyring';
+    return "keyring";
   }
 
   type(): string {
@@ -255,7 +255,7 @@ export class RequestSendRawTransactionMsg extends Message<object> {
 
 export class GetDefaultAddressTronMsg extends Message<{}> {
   public static type() {
-    return 'get-default-address-tron';
+    return "get-default-address-tron";
   }
 
   constructor(public readonly chainId: string) {
@@ -264,12 +264,12 @@ export class GetDefaultAddressTronMsg extends Message<{}> {
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new Error('chain id not set');
+      throw new Error("chain id not set");
     }
   }
 
   route(): string {
-    return 'keyring';
+    return "keyring";
   }
 
   type(): string {
@@ -287,7 +287,7 @@ export class TriggerSmartContractMsg extends Message<{
   };
 }> {
   public static type() {
-    return 'trigger-smart-contract-tron';
+    return "trigger-smart-contract-tron";
   }
 
   constructor(
@@ -305,16 +305,16 @@ export class TriggerSmartContractMsg extends Message<{
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new Error('chain id not set');
+      throw new Error("chain id not set");
     }
 
     if (!this.data) {
-      throw new Error('data not set');
+      throw new Error("data not set");
     }
   }
 
   route(): string {
-    return 'keyring';
+    return "keyring";
   }
 
   type(): string {
@@ -326,7 +326,7 @@ export class GetChainInfosWithoutEndpointsMsg extends Message<{
   chainInfos: ChainInfoWithoutEndpoints[];
 }> {
   public static type() {
-    return 'get-chain-infos-without-endpoints';
+    return "get-chain-infos-without-endpoints";
   }
 
   validateBasic(): void {
@@ -334,7 +334,7 @@ export class GetChainInfosWithoutEndpointsMsg extends Message<{
   }
 
   route(): string {
-    return 'chains';
+    return "chains";
   }
 
   type(): string {

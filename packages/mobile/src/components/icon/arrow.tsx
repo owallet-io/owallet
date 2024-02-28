@@ -1,5 +1,5 @@
-import React, { FunctionComponent } from 'react';
-import Svg, { Path } from 'react-native-svg';
+import React, { FunctionComponent } from "react";
+import Svg, { Path } from "react-native-svg";
 
 export interface IconProps {
   size?: number;
@@ -14,7 +14,7 @@ export const RightArrowIcon: FunctionComponent<
   }
 > = ({ color, height, type, onPress }) => {
   let transfromCss =
-    type === 'left' ? { transform: [{ rotate: '180deg' }] } : {};
+    type === "left" ? { transform: [{ rotate: "180deg" }] } : {};
   return (
     <Svg
       onPress={onPress}
@@ -26,7 +26,7 @@ export const RightArrowIcon: FunctionComponent<
       style={{
         height,
         aspectRatio: 8 / 14,
-        ...transfromCss
+        ...transfromCss,
       }}
     >
       <Path
@@ -49,7 +49,7 @@ export const DoubleRightArrowIcon: FunctionComponent<
       viewBox="0 0 18 19"
       style={{
         height,
-        aspectRatio: 18 / 19
+        aspectRatio: 18 / 19,
       }}
     >
       <Path
@@ -71,8 +71,8 @@ export const DoubleRightArrowIcon: FunctionComponent<
 };
 
 export const LeftArrowIcon: FunctionComponent<IconProps> = ({
-  color = '#5F5E77',
-  size = 24
+  color = "#5F5E77",
+  size = 24,
 }) => {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
@@ -98,7 +98,7 @@ export const LeftArrowIcon: FunctionComponent<IconProps> = ({
 
 export const ArrowOpsiteUpDownIcon: FunctionComponent<IconProps> = ({
   size = 24,
-  color = '#1C1B4B'
+  color = "#1C1B4B",
 }) => {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
@@ -116,7 +116,7 @@ export const ArrowOpsiteUpDownIcon: FunctionComponent<IconProps> = ({
 
 export const RightLightIcon: FunctionComponent<IconProps> = ({
   size = 24,
-  color = '#5F5E77'
+  color = "#5F5E77",
 }) => {
   return (
     <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -134,7 +134,7 @@ export const RightLightIcon: FunctionComponent<IconProps> = ({
 
 export const LeftLightIcon: FunctionComponent<IconProps> = ({
   size = 24,
-  color = '#5F5E77'
+  color = "#5F5E77",
 }) => {
   return (
     <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">

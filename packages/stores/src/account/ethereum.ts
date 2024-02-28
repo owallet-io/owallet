@@ -5,9 +5,14 @@ import { AppCurrency, OWalletSignOptions } from '@owallet/types';
 import { DenomHelper, EVMOS_NETWORKS } from '@owallet/common';
 import { Dec, DecUtils, Int } from '@owallet/unit';
 
-import { HasCosmosQueries, HasEvmQueries, QueriesSetBase, QueriesStore } from '../query';
-import { DeepReadonly } from 'utility-types';
-import { ChainGetter, StdFeeEthereum } from '../common';
+import {
+  HasCosmosQueries,
+  HasEvmQueries,
+  QueriesSetBase,
+  QueriesStore,
+} from "../query";
+import { DeepReadonly } from "utility-types";
+import { ChainGetter, StdFeeEthereum } from "../common";
 
 export interface HasEthereumAccount {
   ethereum: DeepReadonly<EthereumAccount>;
@@ -19,16 +24,19 @@ export interface EthereumMsgOpts {
   };
 }
 
-export class AccountWithEthereum extends AccountSetBase<EthereumMsgOpts, HasEvmQueries> implements HasEthereumAccount {
+export class AccountWithEthereum
+  extends AccountSetBase<EthereumMsgOpts, HasEvmQueries>
+  implements HasEthereumAccount
+{
   public readonly ethereum: DeepReadonly<EthereumAccount>;
 
   static readonly defaultMsgOpts: EthereumMsgOpts = {
     send: {
       native: {
-        type: 'send',
-        gas: 80000
-      }
-    }
+        type: "send",
+        gas: 80000,
+      },
+    },
   };
 
   constructor(
@@ -38,12 +46,19 @@ export class AccountWithEthereum extends AccountSetBase<EthereumMsgOpts, HasEvmQ
     },
     protected readonly chainGetter: ChainGetter,
     protected readonly chainId: string,
-    protected readonly queriesStore: QueriesStore<QueriesSetBase & HasEvmQueries>,
+    protected readonly queriesStore: QueriesStore<
+      QueriesSetBase & HasEvmQueries
+    >,
     protected readonly opts: AccountSetOpts<EthereumMsgOpts>
   ) {
     super(eventListener, chainGetter, chainId, queriesStore, opts);
 
-    this.ethereum = new EthereumAccount(this, chainGetter, chainId, queriesStore);
+    this.ethereum = new EthereumAccount(
+      this,
+      chainGetter,
+      chainId,
+      queriesStore
+    );
   }
 }
 
@@ -52,7 +67,9 @@ export class EthereumAccount {
     protected readonly base: AccountSetBase<EthereumMsgOpts, HasEvmQueries>,
     protected readonly chainGetter: ChainGetter,
     protected readonly chainId: string,
-    protected readonly queriesStore: QueriesStore<QueriesSetBase & HasEvmQueries>
+    protected readonly queriesStore: QueriesStore<
+      QueriesSetBase & HasEvmQueries
+    >
   ) {
     this.base.registerSendTokenFn(this.processSendToken.bind(this));
   }
@@ -73,31 +90,35 @@ export class EthereumAccount {
         },
     extraOptions?: ExtraOptionSendToken
   ): Promise<boolean> {
-    if (signOptions.networkType === 'evm' || EVMOS_NETWORKS.includes(signOptions.chainId)) {
+    if (
+      signOptions.networkType === "evm" ||
+      EVMOS_NETWORKS.includes(signOptions.chainId)
+    ) {
       const denomHelper = new DenomHelper(currency.coinMinimalDenom);
 
       switch (denomHelper.type) {
-        case 'erc20':
+        case "erc20":
           const realAmount = (() => {
             let dec = new Dec(amount);
-            dec = dec.mul(DecUtils.getTenExponentNInPrecisionRange(currency.coinDecimals));
+            dec = dec.mul(
+              DecUtils.getTenExponentNInPrecisionRange(currency.coinDecimals)
+            );
             return dec.truncate().toString();
           })();
 
           await this.base.sendEvmMsgs(
-            'send',
+            "send",
             {
-              type: 'erc20',
-              value: { ...extraOptions, amount: realAmount }
+              type: "erc20",
+              value: { ...extraOptions, amount: realAmount },
             },
             memo,
             {
-              gas: '0x' + parseInt(stdFee.gas).toString(16),
-              gasPrice: stdFee.gasPrice
+              gas: "0x" + parseInt(stdFee.gas).toString(16),
+              gasPrice: stdFee.gasPrice,
             },
             signOptions,
             this.txEventsWithPreOnFulfill(onTxEvents, (tx) => {
-              
               if (tx) {
                 // After succeeding to send token, refresh the balance.
 
@@ -114,10 +135,12 @@ export class EthereumAccount {
             })
           );
           return true;
-        case 'native':
+        case "native":
           const actualAmount = (() => {
             let dec = new Dec(amount);
-            dec = dec.mul(DecUtils.getTenExponentNInPrecisionRange(currency.coinDecimals));
+            dec = dec.mul(
+              DecUtils.getTenExponentNInPrecisionRange(currency.coinDecimals)
+            );
             return dec.truncate().toString();
           })();
 
@@ -129,23 +152,23 @@ export class EthereumAccount {
               amount: [
                 {
                   denom: currency.coinMinimalDenom,
-                  amount: actualAmount
-                }
-              ]
-            }
+                  amount: actualAmount,
+                },
+              ],
+            },
           };
 
           await this.base.sendEvmMsgs(
-            'send',
+            "send",
             msg,
             memo,
             {
-              gas: '0x' + parseInt(stdFee.gas).toString(16),
-              gasPrice: stdFee.gasPrice
+              gas: "0x" + parseInt(stdFee.gas).toString(16),
+              gasPrice: stdFee.gasPrice,
             },
             signOptions,
             this.txEventsWithPreOnFulfill(onTxEvents, (tx) => {
-              console.log('Tx on fullfill: ', tx);
+              console.log("Tx on fullfill: ", tx);
               if (tx) {
                 // After succeeding to send token, refresh the balance.
                 const queryBalance = this.queries.queryBalances
@@ -185,8 +208,10 @@ export class EthereumAccount {
       return;
     }
 
-    const onBroadcasted = typeof onTxEvents === 'function' ? undefined : onTxEvents.onBroadcasted;
-    const onFulfill = typeof onTxEvents === 'function' ? onTxEvents : onTxEvents.onFulfill;
+    const onBroadcasted =
+      typeof onTxEvents === "function" ? undefined : onTxEvents.onBroadcasted;
+    const onFulfill =
+      typeof onTxEvents === "function" ? onTxEvents : onTxEvents.onFulfill;
 
     return {
       onBroadcasted,
@@ -201,7 +226,7 @@ export class EthereumAccount {
                 onFulfill(tx);
               }
             }
-          : undefined
+          : undefined,
     };
   }
 
@@ -211,6 +236,9 @@ export class EthereumAccount {
 
   protected hasNoLegacyStdFeature(): boolean {
     const chainInfo = this.chainGetter.getChain(this.chainId);
-    return chainInfo.features != null && chainInfo.features.includes('no-legacy-stdTx');
+    return (
+      chainInfo.features != null &&
+      chainInfo.features.includes("no-legacy-stdTx")
+    );
   }
 }

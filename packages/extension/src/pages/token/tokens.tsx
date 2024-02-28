@@ -1,47 +1,58 @@
-import React, { FunctionComponent, useEffect, useRef } from 'react';
+import React, { FunctionComponent, useEffect, useRef } from "react";
 
-import { HeaderLayout, LayoutHidePage } from '../../layouts';
+import { HeaderLayout, LayoutHidePage } from "../../layouts";
 
-import { Card, CardBody } from 'reactstrap';
+import { Card, CardBody } from "reactstrap";
 
-import style from './token.module.scss';
-import { StakeView } from '../main/stake';
+import style from "./token.module.scss";
+import { StakeView } from "../main/stake";
 
-import classnames from 'classnames';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../stores';
-import { TokensView } from '../main/token';
-import { TokensTronView } from '../main/tokenTron';
-import { IBCTransferView } from '../main/ibc-transfer';
-import { IBCTransferPage } from '../../pages/ibc-transfer';
-import { SendPage } from '../send';
-import { SelectChain } from '../../layouts/header';
-import { SendEvmPage } from '../send-evm';
-import { SendTronEvmPage } from '../send-tron';
-import { getBase58Address, getEvmAddress, TRC20_LIST, TRON_ID } from '@owallet/common';
-import { TokensBtcView } from '../main/tokenBtc';
-import { SendBtcPage } from '../send-btc';
+import classnames from "classnames";
+import { observer } from "mobx-react-lite";
+import { useStore } from "../../stores";
+import { TokensView } from "../main/token";
+import { TokensTronView } from "../main/tokenTron";
+import { IBCTransferView } from "../main/ibc-transfer";
+import { IBCTransferPage } from "../../pages/ibc-transfer";
+import { SendPage } from "../send";
+import { SelectChain } from "../../layouts/header";
+import { SendEvmPage } from "../send-evm";
+import { SendTronEvmPage } from "../send-tron";
+import {
+  getBase58Address,
+  getEvmAddress,
+  TRC20_LIST,
+  TRON_ID,
+} from "@owallet/common";
+import { TokensBtcView } from "../main/tokenBtc";
+import { SendBtcPage } from "../send-btc";
 
 export const TokenPage: FunctionComponent = observer(() => {
-  const { chainStore, accountStore, queriesStore, uiConfigStore, keyRingStore } = useStore();
+  const {
+    chainStore,
+    accountStore,
+    queriesStore,
+    uiConfigStore,
+    keyRingStore,
+  } = useStore();
   const { chainId, networkType } = chainStore.current;
   const accountInfo = accountStore.getAccount(chainId);
   const [hasIBCTransfer, setHasIBCTransfer] = React.useState(false);
   const [hasSend, setHasSend] = React.useState(false);
-  const [coinMinimalDenom, setCoinMinimalDenom] = React.useState('');
+  const [coinMinimalDenom, setCoinMinimalDenom] = React.useState("");
 
   const checkTronNetwork = chainId === TRON_ID;
   const ledgerAddress =
-    keyRingStore.keyRingType === 'ledger'
+    keyRingStore.keyRingType === "ledger"
       ? checkTronNetwork
         ? keyRingStore?.keyRingLedgerAddresses?.trx
         : keyRingStore?.keyRingLedgerAddresses?.eth
-      : '';
+      : "";
   const queryBalances = queriesStore
     .get(chainId)
     .queryBalances.getQueryBech32Address(
-      networkType === 'evm'
-        ? keyRingStore.keyRingType !== 'ledger'
+      networkType === "evm"
+        ? keyRingStore.keyRingType !== "ledger"
           ? accountInfo.evmosHexAddress
           : ledgerAddress
         : accountInfo.bech32Address
@@ -63,7 +74,7 @@ export const TokenPage: FunctionComponent = observer(() => {
     try {
       fetch(
         `${chainStore.current.rpc}/v1/accounts/${getBase58Address(
-          keyRingStore.keyRingType !== 'ledger'
+          keyRingStore.keyRingType !== "ledger"
             ? accountInfo.evmosHexAddress
             : getEvmAddress(keyRingStore?.keyRingLedgerAddresses?.trx)
         )}`
@@ -73,7 +84,9 @@ export const TokenPage: FunctionComponent = observer(() => {
           if (data?.data[0].trc20) {
             const tokenArr = [];
             TRC20_LIST.forEach((tk) => {
-              let token = data?.data[0].trc20.find((t) => tk.contractAddress in t);
+              let token = data?.data[0].trc20.find(
+                (t) => tk.contractAddress in t
+              );
               if (token) {
                 tokenArr.push({ ...tk, amount: token[tk.contractAddress] });
               }
@@ -112,15 +125,18 @@ export const TokenPage: FunctionComponent = observer(() => {
     <HeaderLayout showChainName canChangeChainInfo>
       <SelectChain showChainName canChangeChainInfo />
       <div style={{ height: 10 }} />
-      {uiConfigStore.showAdvancedIBCTransfer && chainStore.current.features?.includes('ibc-transfer') ? (
+      {uiConfigStore.showAdvancedIBCTransfer &&
+      chainStore.current.features?.includes("ibc-transfer") ? (
         <>
-          <Card className={classnames(style.card, 'shadow')}>
+          <Card className={classnames(style.card, "shadow")}>
             <CardBody>
-              <IBCTransferView handleTransfer={() => setHasIBCTransfer(!hasIBCTransfer)} />
+              <IBCTransferView
+                handleTransfer={() => setHasIBCTransfer(!hasIBCTransfer)}
+              />
             </CardBody>
           </Card>
           {hasIBCTransfer && (
-            <Card className={classnames(style.card, 'shadow')}>
+            <Card className={classnames(style.card, "shadow")}>
               <CardBody>
                 <LayoutHidePage hidePage={() => setHasIBCTransfer(false)} />
                 <div style={{ height: 28 }} />
@@ -133,7 +149,7 @@ export const TokenPage: FunctionComponent = observer(() => {
         <></>
       )}
       {hasTokens ? (
-        <Card className={classnames(style.card, 'shadow')}>
+        <Card className={classnames(style.card, "shadow")}>
           <CardBody>
             {chainId === TRON_ID ? (
               <TokensTronView
@@ -142,7 +158,7 @@ export const TokenPage: FunctionComponent = observer(() => {
                 coinMinimalDenom={coinMinimalDenom}
                 handleClickToken={handleClickToken}
               />
-            ) : networkType === 'bitcoin' ? (
+            ) : networkType === "bitcoin" ? (
               <TokensBtcView handleClickToken={handleClickToken} />
             ) : (
               <TokensView
@@ -159,14 +175,14 @@ export const TokenPage: FunctionComponent = observer(() => {
                 className="my-3"
                 style={{
                   height: 1,
-                  borderTop: '1px solid #E6E8EC'
+                  borderTop: "1px solid #E6E8EC",
                 }}
               />
               <div style={{ paddingRight: 20, paddingLeft: 20 }}>
                 <LayoutHidePage
                   hidePage={() => {
                     setHasSend(false);
-                    setCoinMinimalDenom('');
+                    setCoinMinimalDenom("");
                   }}
                 />
                 {handleCheckSendPage()}

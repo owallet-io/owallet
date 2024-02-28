@@ -1,11 +1,11 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent } from "react";
 
-import { observer } from 'mobx-react-lite';
+import { observer } from "mobx-react-lite";
 
-import styleDetailsTab from '../details-tab.module.scss';
-import { FormattedMessage } from 'react-intl';
-import { Badge, Label } from 'reactstrap';
-import classnames from 'classnames';
+import styleDetailsTab from "../details-tab.module.scss";
+import { FormattedMessage } from "react-intl";
+import { Badge, Label } from "reactstrap";
+import classnames from "classnames";
 export const TronDetailsTab: FunctionComponent<{ dataSign; intl }> = observer(
   ({ dataSign, intl }) => {
     return (
@@ -13,10 +13,10 @@ export const TronDetailsTab: FunctionComponent<{ dataSign; intl }> = observer(
         <Label
           for="signing-messages"
           className="form-control-label"
-          style={{ display: 'flex' }}
+          style={{ display: "flex" }}
         >
           <FormattedMessage id="sign.list.messages.label" />
-          <Badge className={classnames('ml-2', styleDetailsTab.msgsBadge)}>
+          <Badge className={classnames("ml-2", styleDetailsTab.msgsBadge)}>
             {JSON.stringify(dataSign).length}
           </Badge>
         </Label>
@@ -24,9 +24,9 @@ export const TronDetailsTab: FunctionComponent<{ dataSign; intl }> = observer(
           <React.Fragment>
             {dataSign?.data?.currency && (
               <MsgRender
-                icon={'fas fa-paper-plane'}
+                icon={"fas fa-paper-plane"}
                 title={intl.formatMessage({
-                  id: 'sign.list.message.cosmos-sdk/MsgSend.title'
+                  id: "sign.list.message.cosmos-sdk/MsgSend.title",
                 })}
               >
                 <FormattedMessage
@@ -36,8 +36,8 @@ export const TronDetailsTab: FunctionComponent<{ dataSign; intl }> = observer(
                     recipient: dataSign?.data?.recipient,
                     amount:
                       dataSign?.data?.amount +
-                      ' ' +
-                      dataSign?.data?.currency?.coinDenom
+                      " " +
+                      dataSign?.data?.currency?.coinDenom,
                   }}
                 />
               </MsgRender>
@@ -57,11 +57,11 @@ export const TronDetailsTab: FunctionComponent<{ dataSign; intl }> = observer(
 export const MsgRender: FunctionComponent<{
   icon?: string;
   title: string;
-}> = ({ icon = 'fas fa-question', title, children }) => {
+}> = ({ icon = "fas fa-question", title, children }) => {
   return (
     <div className={styleDetailsTab.msg}>
       <div className={styleDetailsTab.icon}>
-        <div style={{ height: '2px' }} />
+        <div style={{ height: "2px" }} />
         <i className={icon} />
         <div style={{ flex: 1 }} />
       </div>

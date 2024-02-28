@@ -1,11 +1,11 @@
-import { KVStore, getUrlV1Beta } from '@owallet/common';
+import { KVStore, getUrlV1Beta } from "@owallet/common";
 import {
   ObservableChainQuery,
-  ObservableChainQueryMap
-} from '../../chain-query';
-import { ChainGetter } from '../../../common';
-import { ChannelResponse } from './types';
-import { autorun } from 'mobx';
+  ObservableChainQueryMap,
+} from "../../chain-query";
+import { ChainGetter } from "../../../common";
+import { ChannelResponse } from "./types";
+import { autorun } from "mobx";
 
 export class ObservableChainQueryIBCChannel extends ObservableChainQuery<ChannelResponse> {
   constructor(
@@ -25,7 +25,7 @@ export class ObservableChainQueryIBCChannel extends ObservableChainQuery<Channel
     autorun(() => {
       const chainInfo = this.chainGetter.getChain(this.chainId);
 
-      if (chainInfo.features && chainInfo.features.includes('ibc-go')) {
+      if (chainInfo.features && chainInfo.features.includes("ibc-go")) {
         this.setUrl(
           `/ibc/core/channel/${getUrlV1Beta(chainInfo.beta)}/channels/${
             this.channelId
@@ -56,7 +56,7 @@ export class ObservableQueryIBCChannel extends ObservableChainQueryMap<ChannelRe
   }
 
   getTransferChannel(channelId: string) {
-    return this.getChannel('transfer', channelId);
+    return this.getChannel("transfer", channelId);
   }
 
   getChannel(
@@ -66,7 +66,7 @@ export class ObservableQueryIBCChannel extends ObservableChainQueryMap<ChannelRe
     // Use key as the JSON encoded Object.
     const key = JSON.stringify({
       portId,
-      channelId
+      channelId,
     });
 
     return this.get(key);

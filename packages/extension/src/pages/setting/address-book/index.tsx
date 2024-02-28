@@ -1,9 +1,9 @@
-import React, { FunctionComponent, useState } from 'react';
-import { observer } from 'mobx-react-lite';
-import { HeaderLayout } from '../../../layouts';
-import { FormattedMessage, useIntl } from 'react-intl';
-import { useHistory } from 'react-router';
-import style from '../style.module.scss';
+import React, { FunctionComponent, useState } from "react";
+import { observer } from "mobx-react-lite";
+import { HeaderLayout } from "../../../layouts";
+import { FormattedMessage, useIntl } from "react-intl";
+import { useHistory } from "react-router";
+import style from "../style.module.scss";
 import {
   Button,
   ButtonDropdown,
@@ -13,15 +13,15 @@ import {
   Modal,
   ModalBody,
   Popover,
-  PopoverBody
-} from 'reactstrap';
-import styleAddressBook from './style.module.scss';
-import { useStore } from '../../../stores';
-import { PageButton } from '../page-button';
-import { AddAddressModal } from './add-address-modal';
-import { ExtensionKVStore, EthereumEndpoint } from '@owallet/common';
-import { Bech32Address } from '@owallet/cosmos';
-import { useConfirm } from '../../../components/confirm';
+  PopoverBody,
+} from "reactstrap";
+import styleAddressBook from "./style.module.scss";
+import { useStore } from "../../../stores";
+import { PageButton } from "../page-button";
+import { AddAddressModal } from "./add-address-modal";
+import { ExtensionKVStore, EthereumEndpoint } from "@owallet/common";
+import { Bech32Address } from "@owallet/cosmos";
+import { useConfirm } from "../../../components/confirm";
 import {
   AddressBookSelectHandler,
   IIBCChannelConfig,
@@ -29,9 +29,9 @@ import {
   IRecipientConfig,
   useAddressBookConfig,
   useMemoConfig,
-  useRecipientConfig
-} from '@owallet/hooks';
-import { Input } from '../../../components/form';
+  useRecipientConfig,
+} from "@owallet/hooks";
+import { Input } from "../../../components/form";
 
 export const AddressBookPage: FunctionComponent<{
   onBackButton?: () => void;
@@ -46,7 +46,7 @@ export const AddressBookPage: FunctionComponent<{
     hideChainDropdown,
     selectHandler,
     ibcChannelConfig,
-    isCloseIcon
+    isCloseIcon,
     //isInTransaction,
   }) => {
     const intl = useIntl();
@@ -69,7 +69,7 @@ export const AddressBookPage: FunctionComponent<{
     const memoConfig = useMemoConfig(chainStore, selectedChainId);
 
     const addressBookConfig = useAddressBookConfig(
-      new ExtensionKVStore('address-book'),
+      new ExtensionKVStore("address-book"),
       chainStore,
       selectedChainId,
       selectHandler
@@ -80,13 +80,13 @@ export const AddressBookPage: FunctionComponent<{
             },
             setMemo: (): void => {
               // noop
-            }
+            },
           }
     );
     const [addressBookList, setAddressBookList] = useState(
       addressBookConfig.addressBookDatas
     );
-    const [search, setSearch] = useState('');
+    const [search, setSearch] = useState("");
     React.useEffect(() => {
       if (search) {
         setAddressBookList(
@@ -103,7 +103,7 @@ export const AddressBookPage: FunctionComponent<{
     const [dropdownOpen, setOpen] = useState(false);
     const toggle = () => setOpen(!dropdownOpen);
 
-    const [typeAddress, setTypeAddress] = useState('Add');
+    const [typeAddress, setTypeAddress] = useState("Add");
     const [addAddressModalOpen, setAddAddressModalOpen] = useState(false);
     const [addAddressModalIndex, setAddAddressModalIndex] = useState(-1);
     // const [modalMore, setModalMore] = useState(false);
@@ -166,12 +166,12 @@ export const AddressBookPage: FunctionComponent<{
           <div
             onClick={onBackButton}
             style={{
-              cursor: 'pointer',
-              textAlign: 'right'
+              cursor: "pointer",
+              textAlign: "right",
             }}
           >
             <img
-              src={require('../../../public/assets/img/close.svg')}
+              src={require("../../../public/assets/img/close.svg")}
               alt="total-balance"
             />
           </div>
@@ -180,15 +180,15 @@ export const AddressBookPage: FunctionComponent<{
           <div
             className={styleAddressBook.innerTopContainer}
             style={{
-              display: 'flex',
-              justifyContent: 'space-between'
+              display: "flex",
+              justifyContent: "space-between",
             }}
           >
             {hideChainDropdown ? null : (
               <ButtonDropdown isOpen={dropdownOpen} toggle={toggle}>
                 <DropdownToggle
                   caret
-                  style={{ boxShadow: 'none', paddingLeft: 0 }}
+                  style={{ boxShadow: "none", paddingLeft: 0 }}
                 >
                   {chainStore.getChain(selectedChainId).chainName}
                 </DropdownToggle>
@@ -214,18 +214,18 @@ export const AddressBookPage: FunctionComponent<{
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  setTypeAddress('Add');
+                  setTypeAddress("Add");
                   setAddAddressModalOpen(true);
                   setAddAddressModalIndex(-1);
                 }}
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  cursor: 'pointer'
+                  display: "flex",
+                  alignItems: "center",
+                  cursor: "pointer",
                 }}
               >
                 <img
-                  src={require('../../../public/assets/svg/add-account.svg')}
+                  src={require("../../../public/assets/svg/add-account.svg")}
                   alt=""
                   style={{ marginRight: 4 }}
                 />
@@ -237,26 +237,26 @@ export const AddressBookPage: FunctionComponent<{
           </div>
           <div>
             <Input
-              type={'text'}
+              type={"text"}
               classNameInputGroup={styleAddressBook.inputGroup}
               className={styleAddressBook.input}
               value={search}
               onChange={(e) => {
                 setSearch(e.target.value);
               }}
-              placeholder={'Search Name/Address'}
+              placeholder={"Search Name/Address"}
               append={
                 <div
                   style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
                     width: 50,
-                    backgroundColor: 'rgba(230, 232, 236, 0.2)'
+                    backgroundColor: "rgba(230, 232, 236, 0.2)",
                   }}
                 >
                   <img
-                    src={require('../../../public/assets/img/light.svg')}
+                    src={require("../../../public/assets/img/light.svg")}
                     alt=""
                   />
                 </div>
@@ -291,7 +291,7 @@ export const AddressBookPage: FunctionComponent<{
               }
             /> */}
           </div>
-          <div style={{ flex: '1 1 0', overflowY: 'auto' }}>
+          <div style={{ flex: "1 1 0", overflowY: "auto" }}>
             {addressBookList.map((data, i) => {
               return (
                 <PageButton
@@ -310,12 +310,12 @@ export const AddressBookPage: FunctionComponent<{
                     maxWidth: 220,
                     fontWeight: 500,
                     fontSize: 14,
-                    color: '#777E90'
+                    color: "#777E90",
                   }}
                   styleTitle={{
                     fontWeight: 600,
                     fontSize: 14,
-                    color: '#353945'
+                    color: "#353945",
                   }}
                   // icons={addressBookIcons(i, data.name)}
                   data-index={i}
@@ -331,21 +331,21 @@ export const AddressBookPage: FunctionComponent<{
                         if (
                           await confirm.confirm({
                             styleYesBtn: {
-                              background: '#EF466F'
+                              background: "#EF466F",
                             },
                             styleModalBody: {
-                              backgroundColor: '#353945'
+                              backgroundColor: "#353945",
                             },
                             styleNoBtn: {
-                              backgroundColor: '#F8F8F9',
-                              color: '#777E90'
+                              backgroundColor: "#F8F8F9",
+                              color: "#777E90",
                             },
-                            yes: 'Delete',
-                            no: 'Cancel',
+                            yes: "Delete",
+                            no: "Cancel",
                             // title: name,
                             paragraph: intl.formatMessage({
-                              id: 'setting.address-book.confirm.delete-address.paragraph'
-                            })
+                              id: "setting.address-book.confirm.delete-address.paragraph",
+                            }),
                           })
                         ) {
                           setAddAddressModalOpen(false);
@@ -353,7 +353,7 @@ export const AddressBookPage: FunctionComponent<{
                           await addressBookConfig.removeAddressBook(i);
                         }
                       }}
-                    />
+                    />,
                   ]}
                   onClick={(e) => {
                     e.preventDefault();
@@ -365,7 +365,7 @@ export const AddressBookPage: FunctionComponent<{
                       onBackButton();
                     }
                   }}
-                  style={{ cursor: selectHandler ? undefined : 'auto' }}
+                  style={{ cursor: selectHandler ? undefined : "auto" }}
                 />
               );
             })}
@@ -377,7 +377,7 @@ export const AddressBookPage: FunctionComponent<{
               className="my-3"
               style={{
                 height: 1,
-                borderTop: '1px solid #E6E8EC'
+                borderTop: "1px solid #E6E8EC",
               }}
             />
             <AddAddressModal
@@ -410,7 +410,7 @@ const AddressBookTools: FunctionComponent<{
   handleDelete,
   index,
   setAddAddressModalIndex,
-  setTypeAddress
+  setTypeAddress,
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const toggleOpen = () => setIsOpen((isOpen) => !isOpen);
@@ -418,7 +418,7 @@ const AddressBookTools: FunctionComponent<{
   const [tooltipId] = useState(() => {
     const bytes = new Uint8Array(4);
     crypto.getRandomValues(bytes);
-    return `tools-${Buffer.from(bytes).toString('hex')}`;
+    return `tools-${Buffer.from(bytes).toString("hex")}`;
   });
 
   return (
@@ -438,7 +438,7 @@ const AddressBookTools: FunctionComponent<{
               e.preventDefault();
               e.stopPropagation();
               setIsOpen(false);
-              setTypeAddress('Edit');
+              setTypeAddress("Edit");
               setAddAddressModalIndex(index);
               setAddAddressModalOpen(true);
             }}
@@ -458,12 +458,12 @@ const AddressBookTools: FunctionComponent<{
       </Popover>
       <div
         style={{
-          display: 'flex',
-          alignItems: 'center',
-          height: '100%',
-          padding: '0 8px',
-          cursor: 'pointer',
-          color: '#353945'
+          display: "flex",
+          alignItems: "center",
+          height: "100%",
+          padding: "0 8px",
+          cursor: "pointer",
+          color: "#353945",
         }}
         onClick={(e) => {
           e.preventDefault();

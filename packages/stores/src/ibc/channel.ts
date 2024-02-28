@@ -1,9 +1,9 @@
-import { KVStore, toGenerator } from '@owallet/common';
-import { flow, makeObservable, observable, runInAction } from 'mobx';
-import { computedFn } from 'mobx-utils';
-import { Channel } from './types';
-import { HasMapStore } from '../common';
-import { ChainIdHelper } from '@owallet/cosmos';
+import { KVStore, toGenerator } from "@owallet/common";
+import { flow, makeObservable, observable, runInAction } from "mobx";
+import { computedFn } from "mobx-utils";
+import { Channel } from "./types";
+import { HasMapStore } from "../common";
+import { ChainIdHelper } from "@owallet/cosmos";
 
 export class IBCChannelStoreInner {
   // channelMap[portId][channelId]
@@ -20,7 +20,7 @@ export class IBCChannelStoreInner {
   }
 
   getTransferChannels(): Channel[] {
-    return this.getChannelsToPort('transfer');
+    return this.getChannelsToPort("transfer");
   }
 
   readonly getChannelsToPort = computedFn((portId: string) => {
@@ -31,7 +31,7 @@ export class IBCChannelStoreInner {
           observable.map(
             {},
             {
-              deep: false
+              deep: false,
             }
           )
         );
@@ -61,7 +61,7 @@ export class IBCChannelStoreInner {
         observable.map(
           {},
           {
-            deep: false
+            deep: false,
           }
         )
       );

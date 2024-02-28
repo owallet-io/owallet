@@ -1,17 +1,29 @@
-import React, { FunctionComponent, useMemo } from 'react';
+import React, { FunctionComponent, useMemo } from "react";
 
-import { Dec, DecUtils } from '@owallet/unit';
+import { Dec, DecUtils } from "@owallet/unit";
 
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../stores';
-import styleAsset from './asset.module.scss';
-import { ToolTip } from '../../components/tooltip';
-import { FormattedMessage, useIntl } from 'react-intl';
-import { useLanguage, toDisplay, TRON_ID, getEvmAddress } from '@owallet/common';
-import { useHistory } from 'react-router';
-import { formatBalance, getExchangeRate, getBalanceValue, getBaseDerivationPath } from '@owallet/bitcoin';
+import { observer } from "mobx-react-lite";
+import { useStore } from "../../stores";
+import styleAsset from "./asset.module.scss";
+import { ToolTip } from "../../components/tooltip";
+import { FormattedMessage, useIntl } from "react-intl";
+import {
+  useLanguage,
+  toDisplay,
+  TRON_ID,
+  getEvmAddress,
+} from "@owallet/common";
+import { useHistory } from "react-router";
+import {
+  formatBalance,
+  getExchangeRate,
+  getBalanceValue,
+  getBaseDerivationPath,
+} from "@owallet/bitcoin";
 const LazyDoughnut = React.lazy(async () => {
-  const module = await import(/* webpackChunkName: "reactChartJS" */ 'react-chartjs-2');
+  const module = await import(
+    /* webpackChunkName: "reactChartJS" */ "react-chartjs-2"
+  );
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -23,7 +35,7 @@ const LazyDoughnut = React.lazy(async () => {
         x: (chart.chartArea.left + chart.chartArea.right) / 2,
         y: (chart.chartArea.top + chart.chartArea.bottom) / 2,
         radius: (chart.outerRadius + chart.innerRadius) / 2,
-        thickness: (chart.outerRadius - chart.innerRadius) / 2
+        thickness: (chart.outerRadius - chart.innerRadius) / 2,
       };
 
       const ctx = chart.chart.ctx;
@@ -34,7 +46,7 @@ const LazyDoughnut = React.lazy(async () => {
       ctx.arc(round.x, round.y, round.radius, 0, 2 * Math.PI);
       ctx.closePath();
       ctx.lineWidth = round.thickness * 2;
-      ctx.strokeStyle = '#f4f5f7';
+      ctx.strokeStyle = "#f4f5f7";
       ctx.stroke();
       ctx.restore();
     },
@@ -45,7 +57,7 @@ const LazyDoughnut = React.lazy(async () => {
         x: (chart.chartArea.left + chart.chartArea.right) / 2,
         y: (chart.chartArea.top + chart.chartArea.bottom) / 2,
         radius: (chart.outerRadius + chart.innerRadius) / 2,
-        thickness: (chart.outerRadius - chart.innerRadius) / 2
+        thickness: (chart.outerRadius - chart.innerRadius) / 2,
       };
 
       const ctx = chart.chart.ctx;
@@ -55,7 +67,13 @@ const LazyDoughnut = React.lazy(async () => {
         ctx.translate(round.x, round.y);
         ctx.fillStyle = color;
         ctx.beginPath();
-        ctx.arc(round.radius * Math.sin(angle), round.radius * Math.cos(angle), round.thickness, 0, 2 * Math.PI);
+        ctx.arc(
+          round.radius * Math.sin(angle),
+          round.radius * Math.cos(angle),
+          round.thickness,
+          0,
+          2 * Math.PI
+        );
         ctx.closePath();
         ctx.fill();
         ctx.restore();
@@ -81,7 +99,10 @@ const LazyDoughnut = React.lazy(async () => {
           drawCircle(endAngle1, arc1._view.backgroundColor);
         }
 
-        if (Math.abs(startAngle2) > (Math.PI / 180) * 3 || Math.abs(endAngle2) > (Math.PI / 180) * 3) {
+        if (
+          Math.abs(startAngle2) > (Math.PI / 180) * 3 ||
+          Math.abs(endAngle2) > (Math.PI / 180) * 3
+        ) {
           drawCircle(startAngle2, arc2._view.backgroundColor);
           drawCircle(endAngle2, arc2._view.backgroundColor);
         }
@@ -90,7 +111,7 @@ const LazyDoughnut = React.lazy(async () => {
       if (data.length == 2) {
         drawCircleEndEachOther(data[0], data[1]);
       }
-    }
+    },
   });
 
   return { default: module.Doughnut };
@@ -127,9 +148,13 @@ export const AssetStakedChartView: FunctionComponent = observer(() => {
 
   const totalStake = stakable.add(stakedSum);
 
-  const tokens = queryBalances.positiveNativeUnstakables.concat(queryBalances.nonNativeBalances);
+  const tokens = queryBalances.positiveNativeUnstakables.concat(
+    queryBalances.nonNativeBalances
+  );
   const totalPrice = useMemo(() => {
-    const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
+    const fiatCurrency = priceStore.getFiatCurrency(
+      priceStore.defaultVsCurrency
+    );
     if (!fiatCurrency) {
       return undefined;
     }
@@ -155,43 +180,48 @@ export const AssetStakedChartView: FunctionComponent = observer(() => {
             <FormattedMessage id="main.account.chart.total-balance" />
           </div>
           <div className={styleAsset.small}>
-            {totalPrice ? totalPrice.toString() : totalStake.shrink(true).trim(true).maxDecimals(6).toString()}
+            {totalPrice
+              ? totalPrice.toString()
+              : totalStake.shrink(true).trim(true).maxDecimals(6).toString()}
           </div>
         </div>
-        <React.Suspense fallback={<div style={{ height: '150px' }} />}>
-          <img src={require('../../public/assets/img/total-balance.svg')} alt="total-balance" />
+        <React.Suspense fallback={<div style={{ height: "150px" }} />}>
+          <img
+            src={require("../../public/assets/img/total-balance.svg")}
+            alt="total-balance"
+          />
         </React.Suspense>
       </div>
-      <div style={{ marginTop: '12px', width: '100%' }}>
+      <div style={{ marginTop: "12px", width: "100%" }}>
         <div className={styleAsset.legend}>
-          <div className={styleAsset.label} style={{ color: '#777E90' }}>
+          <div className={styleAsset.label} style={{ color: "#777E90" }}>
             <span className="badge-dot badge badge-secondary">
               <i className="bg-gray" />
             </span>
             <FormattedMessage id="main.account.chart.available-balance" />
           </div>
-          <div style={{ minWidth: '20px' }} />
+          <div style={{ minWidth: "20px" }} />
           <div
             className={styleAsset.value}
             style={{
-              color: '#353945E5'
+              color: "#353945E5",
             }}
           >
             {stakable.shrink(true).maxDecimals(6).toString()}
           </div>
         </div>
         <div className={styleAsset.legend}>
-          <div className={styleAsset.label} style={{ color: '#777E90' }}>
+          <div className={styleAsset.label} style={{ color: "#777E90" }}>
             <span className="badge-dot badge badge-secondary">
               <i className="bg-gray" />
             </span>
             <FormattedMessage id="main.account.chart.staked-balance" />
           </div>
-          <div style={{ minWidth: '20px' }} />
+          <div style={{ minWidth: "20px" }} />
           <div
             className={styleAsset.value}
             style={{
-              color: '#353945E5'
+              color: "#353945E5",
             }}
           >
             {stakedSum.shrink(true).maxDecimals(6).toString()}
@@ -293,7 +323,8 @@ export const AssetChartViewEvm: FunctionComponent = observer(() => {
 });
 
 export const AssetChartViewBtc: FunctionComponent = observer(() => {
-  const { chainStore, accountStore, queriesStore, priceStore, keyRingStore } = useStore();
+  const { chainStore, accountStore, queriesStore, priceStore, keyRingStore } =
+    useStore();
 
   const language = useLanguage();
 
@@ -307,14 +338,17 @@ export const AssetChartViewBtc: FunctionComponent = observer(() => {
   // wait for account to be
   const networkType = chainStore.current.networkType;
   const chainId = chainStore.current.chainId;
-  let address = accountInfo.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
-  const balance = queries.bitcoin.queryBitcoinBalance.getQueryBalance(address)?.balance;
+  let address = accountInfo.getAddressDisplay(
+    keyRingStore.keyRingLedgerAddresses
+  );
+  const balance =
+    queries.bitcoin.queryBitcoinBalance.getQueryBalance(address)?.balance;
 
   const totalAmount = useMemo(() => {
     const amount = formatBalance({
       balance: Number(balance?.toCoin().amount),
-      cryptoUnit: 'BTC',
-      coin: chainId
+      cryptoUnit: "BTC",
+      coin: chainId,
     });
     return amount;
   }, [chainId, address, networkType, balance]);
@@ -328,23 +362,26 @@ export const AssetChartViewBtc: FunctionComponent = observer(() => {
           </div>
           <div className={styleAsset.small}>{totalAmount}</div>
         </div>
-        <React.Suspense fallback={<div style={{ height: '150px' }} />}>
-          <img src={require('../../public/assets/img/total-balance.svg')} alt="total-balance" />
+        <React.Suspense fallback={<div style={{ height: "150px" }} />}>
+          <img
+            src={require("../../public/assets/img/total-balance.svg")}
+            alt="total-balance"
+          />
         </React.Suspense>
       </div>
-      <div style={{ marginTop: '12px', width: '100%' }}>
+      <div style={{ marginTop: "12px", width: "100%" }}>
         <div className={styleAsset.legend}>
-          <div className={styleAsset.label} style={{ color: '#777E90' }}>
+          <div className={styleAsset.label} style={{ color: "#777E90" }}>
             <span className="badge-dot badge badge-secondary">
               <i className="bg-gray" />
             </span>
             <FormattedMessage id="main.account.chart.available-balance" />
           </div>
-          <div style={{ minWidth: '20px' }} />
+          <div style={{ minWidth: "20px" }} />
           <div
             className={styleAsset.value}
             style={{
-              color: '#353945E5'
+              color: "#353945E5",
             }}
           >
             {totalAmount}

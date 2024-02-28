@@ -1,16 +1,15 @@
-import React, { FunctionComponent } from 'react';
-import Svg, { Circle, Path } from 'react-native-svg';
+import React, { FunctionComponent } from "react";
+import Svg, { Circle, Path } from "react-native-svg";
 
 export const HistoryIcon: FunctionComponent<{
   color?: string;
   size?: number;
-}> = ({ color = 'none', size = 24 }) => {
+}> = ({ color = "none", size = 24 }) => {
   return (
     <Svg
       width={size}
       height={size}
       viewBox={`0 0 ${size} ${size}`}
-      
       fill={color}
     >
       <Path

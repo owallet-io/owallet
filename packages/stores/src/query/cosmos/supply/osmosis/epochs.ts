@@ -1,8 +1,8 @@
-import { KVStore } from '@owallet/common';
-import { ChainGetter } from '../../../../common';
-import { ObservableChainQuery } from '../../../chain-query';
-import { Epochs } from './types';
-import { computed, observable } from 'mobx';
+import { KVStore } from "@owallet/common";
+import { ChainGetter } from "../../../../common";
+import { ObservableChainQuery } from "../../../chain-query";
+import { Epochs } from "./types";
+import { computed, observable } from "mobx";
 
 export class ObservableQueryOsmosisEpochsInner {
   constructor(
@@ -11,7 +11,7 @@ export class ObservableQueryOsmosisEpochsInner {
   ) {}
 
   @computed
-  get epoch(): Epochs['epochs'][0] | undefined {
+  get epoch(): Epochs["epochs"][0] | undefined {
     return this.queryEpochs.response?.data.epochs.find(
       (epoch) => epoch.identifier === this.identifier
     );
@@ -24,7 +24,7 @@ export class ObservableQueryOsmosisEpochsInner {
     }
 
     // Actually, the date type of golang protobuf is returned by the unit of seconds.
-    return parseInt(this.epoch.duration.replace('s', ''));
+    return parseInt(this.epoch.duration.replace("s", ""));
   }
 
   @computed
@@ -52,7 +52,7 @@ export class ObservableQueryOsmosisEpochs extends ObservableChainQuery<Epochs> {
   protected map: Map<string, ObservableQueryOsmosisEpochsInner> = new Map();
 
   constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
-    super(kvStore, chainId, chainGetter, '/osmosis/epochs/v1beta1/epochs');
+    super(kvStore, chainId, chainGetter, "/osmosis/epochs/v1beta1/epochs");
   }
 
   getEpoch(identifier: string) {

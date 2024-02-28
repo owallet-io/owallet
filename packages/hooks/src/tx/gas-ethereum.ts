@@ -1,10 +1,13 @@
-import { IGasConfig, IGasEthereumConfig } from './types';
-import { TxChainSetter } from './chain';
-import { ChainGetter } from '@owallet/stores';
-import { action, makeObservable, observable } from 'mobx';
-import { useState } from 'react';
+import { IGasConfig, IGasEthereumConfig } from "./types";
+import { TxChainSetter } from "./chain";
+import { ChainGetter } from "@owallet/stores";
+import { action, makeObservable, observable } from "mobx";
+import { useState } from "react";
 
-export class GasEthereumConfig extends TxChainSetter implements IGasEthereumConfig {
+export class GasEthereumConfig
+  extends TxChainSetter
+  implements IGasEthereumConfig
+{
   /*
    This field is used to handle the value from the input more flexibly.
    We use string because there is no guarantee that only number is input in input component.
@@ -48,18 +51,18 @@ export class GasEthereumConfig extends TxChainSetter implements IGasEthereumConf
 
   @action
   setGas(gas: number | string) {
-    if (typeof gas === 'number') {
+    if (typeof gas === "number") {
       this._gasRaw = Math.floor(gas).toString();
       return;
     }
 
-    if (gas === '') {
+    if (gas === "") {
       this._gasRaw = gas;
       return;
     }
 
     // Gas must not be floated.
-    if (!gas.includes('.')) {
+    if (!gas.includes(".")) {
       if (!Number.isNaN(Number.parseInt(gas))) {
         this._gasRaw = gas;
         return;
@@ -68,20 +71,20 @@ export class GasEthereumConfig extends TxChainSetter implements IGasEthereumConf
   }
 
   getError(): Error | undefined {
-    if (this._gasRaw === '') {
-      return new Error('Gas not set');
+    if (this._gasRaw === "") {
+      return new Error("Gas not set");
     }
 
     if (this._gasRaw && Number.isNaN(this._gasRaw)) {
-      return new Error('Gas is not valid number');
+      return new Error("Gas is not valid number");
     }
 
     if (!Number.isInteger(this.gas)) {
-      return new Error('Gas is not integer');
+      return new Error("Gas is not integer");
     }
 
     if (this.gas <= 0) {
-      return new Error('Gas should be greater than 0');
+      return new Error("Gas should be greater than 0");
     }
     return;
   }

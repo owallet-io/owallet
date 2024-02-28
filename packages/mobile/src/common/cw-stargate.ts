@@ -1,4 +1,4 @@
-import * as cosmwasm from '@cosmjs/cosmwasm-stargate';
+import * as cosmwasm from "@cosmjs/cosmwasm-stargate";
 export class CWStargate {
   static async init(account: any, chainId: string, rpc: string) {
     const owallet = await account.getOWallet();

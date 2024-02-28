@@ -1,4 +1,4 @@
-import { Bitcoin } from '@owallet/types';
+import { Bitcoin } from "@owallet/types";
 
 export const getBitcoinFromWindow: () => Promise<
   Bitcoin | undefined
@@ -7,7 +7,7 @@ export const getBitcoinFromWindow: () => Promise<
     return window.bitcoin;
   }
 
-  if (document.readyState === 'complete') {
+  if (document.readyState === "complete") {
     return window.bitcoin;
   }
 
@@ -15,13 +15,13 @@ export const getBitcoinFromWindow: () => Promise<
     const documentStateChange = (event: Event) => {
       if (
         event.target &&
-        (event.target as Document).readyState === 'complete'
+        (event.target as Document).readyState === "complete"
       ) {
         resolve(window.bitcoin);
-        document.removeEventListener('readystatechange', documentStateChange);
+        document.removeEventListener("readystatechange", documentStateChange);
       }
     };
 
-    document.addEventListener('readystatechange', documentStateChange);
+    document.addEventListener("readystatechange", documentStateChange);
   });
 };

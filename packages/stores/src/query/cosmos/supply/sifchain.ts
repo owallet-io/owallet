@@ -1,8 +1,8 @@
-import { ObservableQuery } from '../../../common';
-import { KVStore } from '@owallet/common';
-import { fetchAdapter } from '@owallet/common';
-import Axios from 'axios';
-import { computed, makeObservable } from 'mobx';
+import { ObservableQuery } from "../../../common";
+import { KVStore } from "@owallet/common";
+import { fetchAdapter } from "@owallet/common";
+import Axios from "axios";
+import { computed, makeObservable } from "mobx";
 
 export type SifchainLiquidityAPYResult = { rate: number };
 
@@ -11,8 +11,8 @@ export class ObservableQuerySifchainLiquidityAPY extends ObservableQuery<Sifchai
 
   constructor(kvStore: KVStore, chainId: string) {
     const instance = Axios.create({
-      baseURL: 'https://data.sifchain.finance/',
-      adapter: fetchAdapter
+      baseURL: "https://data.sifchain.finance/",
+      adapter: fetchAdapter,
     });
 
     super(kvStore, instance, `beta/validator/stakingRewards`);
@@ -22,7 +22,7 @@ export class ObservableQuerySifchainLiquidityAPY extends ObservableQuery<Sifchai
   }
 
   protected canFetch(): boolean {
-    return this.chainId.startsWith('sifchain');
+    return this.chainId.startsWith("sifchain");
   }
 
   @computed

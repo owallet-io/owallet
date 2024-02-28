@@ -1,9 +1,9 @@
-import React, { FunctionComponent } from 'react';
-import Svg, { Path } from 'react-native-svg';
+import React, { FunctionComponent } from "react";
+import Svg, { Path } from "react-native-svg";
 
 export const USAIcon: FunctionComponent<{
   height: number;
-}> = ({ height = '24' }) => {
+}> = ({ height = "24" }) => {
   return (
     <Svg width={height} height={height} viewBox="0 0 24 24" fill="none">
       <Path
@@ -200,7 +200,7 @@ export const USAIcon: FunctionComponent<{
 
 export const EURIcon: FunctionComponent<{
   height: number;
-}> = ({ height = '24' }) => {
+}> = ({ height = "24" }) => {
   return (
     <Svg width={height} height={height} viewBox="0 0 24 24" fill="none">
       <Path
@@ -261,7 +261,7 @@ export const EURIcon: FunctionComponent<{
 
 export const GBPIcon: FunctionComponent<{
   height: number;
-}> = ({ height = '24' }) => {
+}> = ({ height = "24" }) => {
   return (
     <Svg width={height} height={height} viewBox="0 0 24 24" fill="none">
       <Path
@@ -298,7 +298,7 @@ export const GBPIcon: FunctionComponent<{
 
 export const CADIcon: FunctionComponent<{
   height: number;
-}> = ({ height = '24' }) => {
+}> = ({ height = "24" }) => {
   return (
     <Svg width={height} height={height} viewBox="0 0 24 24" fill="none">
       <Path
@@ -323,7 +323,7 @@ export const CADIcon: FunctionComponent<{
 
 export const AUDIcon: FunctionComponent<{
   height: number;
-}> = ({ height = '24' }) => {
+}> = ({ height = "24" }) => {
   return (
     <Svg width={height} height={height} viewBox="0 0 24 24" fill="none">
       <Path
@@ -384,7 +384,7 @@ export const AUDIcon: FunctionComponent<{
 
 export const RUBIcon: FunctionComponent<{
   height: number;
-}> = ({ height = '24' }) => {
+}> = ({ height = "24" }) => {
   return (
     <Svg width={height} height={height} viewBox="0 0 24 24" fill="none">
       <Path
@@ -402,7 +402,7 @@ export const RUBIcon: FunctionComponent<{
 
 export const KRWIcon: FunctionComponent<{
   height: number;
-}> = ({ height = '24' }) => {
+}> = ({ height = "24" }) => {
   return (
     <Svg width={height} height={height} viewBox="0 0 24 24" fill="none">
       <Path
@@ -495,7 +495,7 @@ export const KRWIcon: FunctionComponent<{
 
 export const HKDIcon: FunctionComponent<{
   height: number;
-}> = ({ height = '24' }) => {
+}> = ({ height = "24" }) => {
   return (
     <Svg width={height} height={height} viewBox="0 0 24 24" fill="none">
       <Path
@@ -528,7 +528,7 @@ export const HKDIcon: FunctionComponent<{
 
 export const CNYIcon: FunctionComponent<{
   height: number;
-}> = ({ height = '24' }) => {
+}> = ({ height = "24" }) => {
   return (
     <Svg width={height} height={height} viewBox="0 0 24 24" fill="none">
       <Path
@@ -561,7 +561,7 @@ export const CNYIcon: FunctionComponent<{
 
 export const JPYIcon: FunctionComponent<{
   height: number;
-}> = ({ height = '24' }) => {
+}> = ({ height = "24" }) => {
   return (
     <Svg width={height} height={height} viewBox="0 0 24 24" fill="none">
       <Path
@@ -578,7 +578,7 @@ export const JPYIcon: FunctionComponent<{
 
 export const INRIcon: FunctionComponent<{
   height: number;
-}> = ({ height = '24' }) => {
+}> = ({ height = "24" }) => {
   return (
     <Svg width={height} height={height} viewBox="0 0 24 24" fill="none">
       <Path

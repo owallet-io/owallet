@@ -1,19 +1,19 @@
-import React, { FunctionComponent } from 'react';
-import { RouteProp, useRoute } from '@react-navigation/native';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../stores';
-import { PageWithView } from '../../components/page';
-import { View, Image, TouchableOpacity } from 'react-native';
-import { Text } from '@src/components/text';
-import { useSmartNavigation } from '../../navigation.provider';
-import { OWBox } from '../../components/card';
-import { metrics } from '../../themes';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { CommonActions } from '@react-navigation/native';
-import { useTheme } from '@src/themes/theme-provider';
-import { openLink } from '../../utils/helper';
-import imagesAssets from '@src/assets/images';
-import { TRON_ID } from '@owallet/common';
+import React, { FunctionComponent } from "react";
+import { RouteProp, useRoute } from "@react-navigation/native";
+import { observer } from "mobx-react-lite";
+import { useStore } from "../../stores";
+import { PageWithView } from "../../components/page";
+import { View, Image, TouchableOpacity } from "react-native";
+import { Text } from "@src/components/text";
+import { useSmartNavigation } from "../../navigation.provider";
+import { OWBox } from "../../components/card";
+import { metrics } from "../../themes";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { CommonActions } from "@react-navigation/native";
+import { useTheme } from "@src/themes/theme-provider";
+import { openLink } from "../../utils/helper";
+import imagesAssets from "@src/assets/images";
+import { TRON_ID } from "@owallet/common";
 
 export const TxSuccessResultScreen: FunctionComponent = observer(() => {
   const { chainStore } = useStore();
@@ -34,7 +34,9 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
     >
   >();
 
-  const chainId = route.params?.chainId ? route.params?.chainId : chainStore.current?.chainId;
+  const chainId = route.params?.chainId
+    ? route.params?.chainId
+    : chainStore.current?.chainId;
   const txHash = route.params?.txHash;
 
   const smartNavigation = useSmartNavigation();
@@ -47,20 +49,20 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
         <View
           style={{
             height: metrics.screenHeight - bottom - 74,
-            paddingTop: 80
+            paddingTop: 80,
           }}
         >
           <View
             style={{
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center'
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
             }}
           >
             <Image
               style={{
                 width: 24,
-                height: 2
+                height: 2,
               }}
               fadeDuration={0}
               resizeMode="stretch"
@@ -71,7 +73,7 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
                 width: 140,
                 height: 32,
                 marginLeft: 8,
-                marginRight: 9
+                marginRight: 9,
               }}
               fadeDuration={0}
               resizeMode="stretch"
@@ -80,7 +82,7 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
             <Image
               style={{
                 width: metrics.screenWidth - 185,
-                height: 2
+                height: 2,
               }}
               fadeDuration={0}
               resizeMode="stretch"
@@ -90,46 +92,48 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
           <View
             style={{
               paddingLeft: 32,
-              paddingRight: 72
+              paddingRight: 72,
             }}
           >
             <Text
               style={{
-                fontWeight: '700',
+                fontWeight: "700",
                 fontSize: 24,
                 lineHeight: 34,
                 paddingTop: 44,
-                paddingBottom: 16
+                paddingBottom: 16,
               }}
-              color={colors['text-title-login']}
+              color={colors["text-title-login"]}
             >
               Transaction Completed!
             </Text>
             <Text
               style={{
-                fontWeight: '400',
+                fontWeight: "400",
                 fontSize: 14,
                 lineHeight: 20,
 
-                paddingTop: 6
+                paddingTop: 6,
               }}
             >
-              Your transaction has been confirmed by the blockchain. Congratulations!
+              Your transaction has been confirmed by the blockchain.
+              Congratulations!
             </Text>
             {chainInfo.raw.txExplorer && txHash ? (
               <TouchableOpacity
                 style={{
                   paddingTop: 32,
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center'
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
                 }}
                 onPress={async () => {
                   if (chainInfo.raw.txExplorer && txHash) {
                     await openLink(
                       chainInfo.raw.txExplorer.txUrl.replace(
-                        '{txHash}',
-                        chainInfo.chainId === TRON_ID || chainInfo.networkType === 'bitcoin'
+                        "{txHash}",
+                        chainInfo.chainId === TRON_ID ||
+                          chainInfo.networkType === "bitcoin"
                           ? txHash
                           : txHash.toUpperCase()
                       )
@@ -141,7 +145,7 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
                   style={{
                     width: 22,
                     height: 22,
-                    tintColor: colors['background-btn-primary']
+                    tintColor: colors["background-btn-primary"],
                   }}
                   fadeDuration={0}
                   resizeMode="stretch"
@@ -150,10 +154,10 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
                 <Text
                   style={{
                     paddingLeft: 6,
-                    color: colors['background-btn-primary'],
-                    fontWeight: '400',
+                    color: colors["background-btn-primary"],
+                    fontWeight: "400",
                     fontSize: 16,
-                    lineHeight: 22
+                    lineHeight: 22,
                   }}
                 >
                   View on Explorer
@@ -166,25 +170,25 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
               marginTop: 32,
               marginLeft: 25,
               marginRight: 25,
-              backgroundColor: colors['background-btn-primary'],
-              borderRadius: 8
+              backgroundColor: colors["background-btn-primary"],
+              borderRadius: 8,
             }}
             onPress={() => {
               smartNavigation.dispatch(
                 CommonActions.reset({
                   index: 1,
-                  routes: [{ name: 'MainTab' }]
+                  routes: [{ name: "MainTab" }],
                 })
               );
             }}
           >
             <Text
               style={{
-                color: 'white',
-                textAlign: 'center',
-                fontWeight: '700',
+                color: "white",
+                textAlign: "center",
+                fontWeight: "700",
                 fontSize: 16,
-                padding: 16
+                padding: 16,
               }}
             >
               Go Back

@@ -1,17 +1,17 @@
-import React, { FunctionComponent, useEffect } from 'react';
-import { useLocation } from 'react-router';
-import { useLanguage } from '@owallet/common';
-import { useStore } from '../../stores';
+import React, { FunctionComponent, useEffect } from "react";
+import { useLocation } from "react-router";
+import { useLanguage } from "@owallet/common";
+import { useStore } from "../../stores";
 
 type PathnameToPageName = {
   [pathname: string]: string | undefined;
 };
 
 const pathnameToPageName: PathnameToPageName = {
-  '/': 'Home dashboard',
-  '/register': 'Register',
-  '/setting/address-book': 'Address book',
-  '/setting/set-keyring': 'Select account'
+  "/": "Home dashboard",
+  "/register": "Register",
+  "/setting/address-book": "Address book",
+  "/setting/set-keyring": "Select account",
 };
 
 export const LogPageViewWrapper: FunctionComponent = ({ children }) => {
@@ -25,12 +25,12 @@ export const LogPageViewWrapper: FunctionComponent = ({ children }) => {
     if (loggingPageName) {
       const eventProperties = {
         chainId: chainStore.current.chainId,
-        chainName: chainStore.current.chainName
+        chainName: chainStore.current.chainName,
       };
 
       analyticsStore.setUserProperties({
         currency: language.fiatCurrency,
-        language: language.language
+        language: language.language,
       });
       analyticsStore.logPageView(loggingPageName, eventProperties);
     }
@@ -39,7 +39,7 @@ export const LogPageViewWrapper: FunctionComponent = ({ children }) => {
     chainStore,
     language.fiatCurrency,
     language.language,
-    loggingPageName
+    loggingPageName,
   ]);
 
   return <React.Fragment>{children}</React.Fragment>;

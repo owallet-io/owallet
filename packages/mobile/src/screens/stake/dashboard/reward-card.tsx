@@ -1,17 +1,17 @@
-import { Dec } from '@owallet/unit';
-import { Text } from '@src/components/text';
-import { useTheme } from '@src/themes/theme-provider';
-import { observer } from 'mobx-react-lite';
-import React, { FunctionComponent } from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
-import { Button, OWButton } from '../../../components/button';
-import { OWBox } from '../../../components/card';
-import { DownArrowIcon } from '../../../components/icon';
-import { useSmartNavigation } from '../../../navigation.provider';
-import { useStore } from '../../../stores';
-import { spacing, typography } from '../../../themes';
-import OWIcon from '@src/components/ow-icon/ow-icon';
-import { showToast } from '@src/utils/helper';
+import { Dec } from "@owallet/unit";
+import { Text } from "@src/components/text";
+import { useTheme } from "@src/themes/theme-provider";
+import { observer } from "mobx-react-lite";
+import React, { FunctionComponent } from "react";
+import { StyleSheet, View, ViewStyle } from "react-native";
+import { Button, OWButton } from "../../../components/button";
+import { OWBox } from "../../../components/card";
+import { DownArrowIcon } from "../../../components/icon";
+import { useSmartNavigation } from "../../../navigation.provider";
+import { useStore } from "../../../stores";
+import { spacing, typography } from "../../../themes";
+import OWIcon from "@src/components/ow-icon/ow-icon";
+import { showToast } from "@src/utils/helper";
 export const MyRewardCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
@@ -22,9 +22,14 @@ export const MyRewardCard: FunctionComponent<{
   const account = accountStore.getAccount(chainId);
   const queries = queriesStore.get(chainId);
 
-  const queryReward = queries.cosmos.queryRewards.getQueryBech32Address(account.bech32Address);
+  const queryReward = queries.cosmos.queryRewards.getQueryBech32Address(
+    account.bech32Address
+  );
 
-  const pendingStakableReward = queries.cosmos.queryRewards.getQueryBech32Address(account.bech32Address).stakableReward;
+  const pendingStakableReward =
+    queries.cosmos.queryRewards.getQueryBech32Address(
+      account.bech32Address
+    ).stakableReward;
   const stakingReward = queryReward.stakableReward;
   const apy = queries.cosmos.queryInflation.inflation;
 
@@ -39,22 +44,22 @@ export const MyRewardCard: FunctionComponent<{
     <OWBox
       style={{
         padding: 0,
-        margin: 0
+        margin: 0,
       }}
     >
       <View>
         <Text
           style={{
             ...styles.textInfo,
-            fontWeight: '700',
-            color: colors['sub-primary-text']
+            fontWeight: "700",
+            color: colors["sub-primary-text"],
           }}
         >
           My Pending Rewards
           <Text
             style={{
-              ...typography['h7'],
-              color: colors['primary-surface-default']
+              ...typography["h7"],
+              color: colors["primary-surface-default"],
             }}
           >
             {`(${apy.maxDecimals(2).trim(true).toString()}% per year)`}
@@ -65,49 +70,57 @@ export const MyRewardCard: FunctionComponent<{
           <Text
             style={{
               ...styles.textInfo,
-              marginTop: spacing['4'],
-              fontWeight: '400',
+              marginTop: spacing["4"],
+              fontWeight: "400",
               fontSize: 20,
-              color: colors['sub-primary-text']
+              color: colors["sub-primary-text"],
             }}
           >
             {pendingStakableReward.toDec().gt(new Dec(0.001))
-              ? pendingStakableReward.shrink(true).maxDecimals(6).trim(true).upperCase(true).toString()
+              ? pendingStakableReward
+                  .shrink(true)
+                  .maxDecimals(6)
+                  .trim(true)
+                  .upperCase(true)
+                  .toString()
               : `< 0.001 ${pendingStakableReward.toCoin().denom.toUpperCase()}`}
           </Text>
           <View
             style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              marginTop: spacing['8']
+              flexDirection: "row",
+              alignItems: "center",
+              marginTop: spacing["8"],
             }}
           >
             <OWButton
               label="Claim"
               size="small"
               disabled={isDisable}
-              colorLoading={colors['primary-surface-default']}
-              loading={account.isSendingMsg === 'withdrawRewards'}
+              colorLoading={colors["primary-surface-default"]}
+              loading={account.isSendingMsg === "withdrawRewards"}
               onPress={async () => {
                 try {
                   await account.cosmos.sendWithdrawDelegationRewardMsgs(
                     queryReward.getDescendingPendingRewardValidatorAddresses(8),
-                    '',
+                    "",
                     {},
                     {},
                     {
-                      onFulfill: tx => {
-                        console.log(tx, 'TX INFO ON SEND PAGE!!!!!!!!!!!!!!!!!!!!!');
+                      onFulfill: (tx) => {
+                        console.log(
+                          tx,
+                          "TX INFO ON SEND PAGE!!!!!!!!!!!!!!!!!!!!!"
+                        );
                       },
-                      onBroadcasted: txHash => {
-                        analyticsStore.logEvent('Claim reward tx broadcasted', {
+                      onBroadcasted: (txHash) => {
+                        analyticsStore.logEvent("Claim reward tx broadcasted", {
                           chainId: chainStore.current.chainId,
-                          chainName: chainStore.current.chainName
+                          chainName: chainStore.current.chainName,
                         });
-                        smartNavigation.pushSmart('TxPendingResult', {
-                          txHash: Buffer.from(txHash).toString('hex')
+                        smartNavigation.pushSmart("TxPendingResult", {
+                          txHash: Buffer.from(txHash).toString("hex"),
                         });
-                      }
+                      },
                     },
                     stakingReward.currency.coinMinimalDenom
                   );
@@ -121,8 +134,10 @@ export const MyRewardCard: FunctionComponent<{
                   //   return;
                   // }
                   showToast({
-                    message: e?.message ?? 'Something went wrong! Please try again later.',
-                    type: 'danger'
+                    message:
+                      e?.message ??
+                      "Something went wrong! Please try again later.",
+                    type: "danger",
                   });
 
                   return;
@@ -139,13 +154,17 @@ export const MyRewardCard: FunctionComponent<{
                 <OWIcon
                   name="rewards"
                   size={20}
-                  color={isDisable ? colors['white'] : colors['primary-surface-default']}
+                  color={
+                    isDisable
+                      ? colors["white"]
+                      : colors["primary-surface-default"]
+                  }
                 />
               }
               fullWidth={false}
               style={{
                 width: 100,
-                borderWidth: isDisable ? 0 : 0.5
+                borderWidth: isDisable ? 0 : 0.5,
               }}
             />
           </View>
@@ -155,24 +174,24 @@ export const MyRewardCard: FunctionComponent<{
   );
 });
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     textInfo: {
       ...typography.h6,
-      color: colors['text-black-medium']
+      color: colors["text-black-medium"],
     },
     containerBtn: {
       borderWidth: 0,
-      backgroundColor: colors['transparent'],
+      backgroundColor: colors["transparent"],
       paddingLeft: 0,
       marginLeft: 0,
       marginTop: 0,
-      paddingTop: 0
+      paddingTop: 0,
     },
     btn: {
-      flexDirection: 'row',
+      flexDirection: "row",
       paddingHorizontal: 0,
-      justifyContent: 'flex-start',
-      paddingVertical: 0
-    }
+      justifyContent: "flex-start",
+      paddingVertical: 0,
+    },
   });

@@ -7,14 +7,14 @@ import {
   observable,
   onBecomeObserved,
   onBecomeUnobserved,
-  reaction
-} from 'mobx';
+  reaction,
+} from "mobx";
 
-import Axios, { AxiosInstance, CancelToken, CancelTokenSource } from 'axios';
-import { KVStore, toGenerator } from '@owallet/common';
-import { DeepReadonly } from 'utility-types';
-import { HasMapStore } from '../map';
-import EventEmitter from 'eventemitter3';
+import Axios, { AxiosInstance, CancelToken, CancelTokenSource } from "axios";
+import { KVStore, toGenerator } from "@owallet/common";
+import { DeepReadonly } from "utility-types";
+import { HasMapStore } from "../map";
+import EventEmitter from "eventemitter3";
 
 export type QueryOptions = {
   // millisec
@@ -28,7 +28,7 @@ export type QueryOptions = {
 export const defaultOptions: QueryOptions = {
   cacheMaxAge: Number.MAX_VALUE,
   fetchingInterval: 0,
-  data: null
+  data: null,
 };
 
 export type QueryError<E> = {
@@ -59,8 +59,8 @@ type TokenInfo = {
  */
 export abstract class ObservableQueryBase<T = unknown, E = unknown> {
   protected static suspectedResponseDatasWithInvalidValue: string[] = [
-    'The network connection was lost.',
-    'The request timed out.'
+    "The network connection was lost.",
+    "The request timed out.",
   ];
 
   protected options: QueryOptions;
@@ -93,20 +93,20 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
   protected constructor(instance: AxiosInstance, options: Partial<QueryOptions>) {
     this.options = {
       ...defaultOptions,
-      ...options
+      ...options,
     };
 
     this._instance = instance;
 
     makeObservable(this);
 
-    onBecomeObserved(this, '_response', this.becomeObserved);
-    onBecomeObserved(this, '_isFetching', this.becomeObserved);
-    onBecomeObserved(this, '_error', this.becomeObserved);
+    onBecomeObserved(this, "_response", this.becomeObserved);
+    onBecomeObserved(this, "_isFetching", this.becomeObserved);
+    onBecomeObserved(this, "_error", this.becomeObserved);
 
-    onBecomeUnobserved(this, '_response', this.becomeUnobserved);
-    onBecomeUnobserved(this, '_isFetching', this.becomeUnobserved);
-    onBecomeUnobserved(this, '_error', this.becomeUnobserved);
+    onBecomeUnobserved(this, "_response", this.becomeUnobserved);
+    onBecomeUnobserved(this, "_isFetching", this.becomeUnobserved);
+    onBecomeUnobserved(this, "_error", this.becomeUnobserved);
   }
 
   private becomeObserved = (): void => {
@@ -216,7 +216,7 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
       // Make the existing response as staled.
       this.setResponse({
         ...this._response,
-        staled: true
+        staled: true,
       });
     }
 
@@ -267,7 +267,7 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
           status: e.response.status,
           statusText: e.response.statusText,
           message: e.response.statusText,
-          data: e.response.data
+          data: e.response.data,
         };
 
         this.setError(error);
@@ -275,8 +275,8 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
         // if can't get the response.
         const error: QueryError<E> = {
           status: 0,
-          statusText: 'Failed to get response',
-          message: 'Failed to get response'
+          statusText: "Failed to get response",
+          message: "Failed to get response",
         };
 
         this.setError(error);
@@ -285,7 +285,7 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
           status: 0,
           statusText: e.message,
           message: e.message,
-          data: e
+          data: e,
         };
 
         this.setError(error);
@@ -355,7 +355,7 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
         }
       },
       {
-        fireImmediately: true
+        fireImmediately: true,
       }
     );
 
@@ -389,17 +389,17 @@ export class ObservableQuery<T = unknown, E = unknown> extends ObservableQueryBa
   protected static eventListener: EventEmitter = new EventEmitter();
 
   public static refreshAllObserved() {
-    ObservableQuery.eventListener.emit('refresh');
+    ObservableQuery.eventListener.emit("refresh");
   }
 
   public static refreshAllObservedIfError() {
-    ObservableQuery.eventListener.emit('refresh', {
-      ifError: true
+    ObservableQuery.eventListener.emit("refresh", {
+      ifError: true,
     });
   }
 
   @observable
-  protected _url: string = '';
+  protected _url: string = "";
 
   @observable
   protected _data: { [key: string]: any } = null;
@@ -420,13 +420,13 @@ export class ObservableQuery<T = unknown, E = unknown> extends ObservableQueryBa
   protected onStart() {
     super.onStart();
 
-    ObservableQuery.eventListener.addListener('refresh', this.refreshHandler);
+    ObservableQuery.eventListener.addListener("refresh", this.refreshHandler);
   }
 
   protected onStop() {
     super.onStop();
 
-    ObservableQuery.eventListener.addListener('refresh', this.refreshHandler);
+    ObservableQuery.eventListener.addListener("refresh", this.refreshHandler);
   }
 
   protected readonly refreshHandler = (data: any) => {
@@ -464,24 +464,24 @@ export class ObservableQuery<T = unknown, E = unknown> extends ObservableQueryBa
     // may be post method in case of ethereum
     const result = this.options.data
       ? await this.instance.post<T>(this.url, this.options.data, {
-          cancelToken
+          cancelToken,
         })
       : await this.instance.get<T>(this.url, {
-          cancelToken
+          cancelToken,
         });
 
     return {
       data: result.data,
       status: result.status,
       staled: false,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
   }
 
   protected getCacheKey(): string {
     return `${this.instance.name}-${this.instance.defaults.baseURL}${this.instance.getUri({
       url: this.url,
-      params: this.options.data
+      params: this.options.data,
     })}`;
   }
 
@@ -497,7 +497,7 @@ export class ObservableQuery<T = unknown, E = unknown> extends ObservableQueryBa
     if (response) {
       return {
         ...response,
-        staled: true
+        staled: true,
       };
     }
     return undefined;

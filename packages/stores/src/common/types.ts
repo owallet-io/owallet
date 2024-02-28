@@ -1,4 +1,4 @@
-import { AppCurrency, ChainInfo } from '@owallet/types';
+import { AppCurrency, ChainInfo } from "@owallet/types";
 
 export interface ChainGetter {
   // Return the chain info matched with chain id.

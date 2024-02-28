@@ -5,13 +5,13 @@ import React, {
   useCallback,
   useContext,
   useMemo,
-  useState
-} from 'react';
-import { ModalBody, Modal } from 'reactstrap';
+  useState,
+} from "react";
+import { ModalBody, Modal } from "reactstrap";
 
-import { ConfirmDialog } from './dialog';
+import { ConfirmDialog } from "./dialog";
 
-import style from './style.module.scss';
+import style from "./style.module.scss";
 
 export interface ConfirmOptions {
   img?: React.ReactElement;
@@ -73,7 +73,7 @@ export const ConfirmProvider: FunctionComponent = ({ children }) => {
         setCurrentConfirm(
           Object.assign({}, options, {
             resolve: resolver,
-            reject: rejector
+            reject: rejector,
           })
         );
         setIsDialogOpen(true);
@@ -110,7 +110,7 @@ export const ConfirmProvider: FunctionComponent = ({ children }) => {
             paragraph={
               currentConfirm?.paragraph
                 ? currentConfirm.paragraph
-                : 'Unexpected. Something is wrong.'
+                : "Unexpected. Something is wrong."
             }
             yes={currentConfirm?.yes}
             no={currentConfirm?.no}
@@ -133,6 +133,6 @@ export const ConfirmProvider: FunctionComponent = ({ children }) => {
  */
 export function useConfirm() {
   const state = useContext(ConfirmContext);
-  if (!state) throw new Error('You probably forgot to use ConfirmProvider');
+  if (!state) throw new Error("You probably forgot to use ConfirmProvider");
   return state;
 }

@@ -18,7 +18,7 @@ type MsgOpts = CosmosMsgOpts & SecretMsgOpts & CosmwasmMsgOpts;
 export const useSendTxConfig = (
   chainGetter: ChainGetter,
   chainId: string,
-  sendMsgOpts: MsgOpts['send'],
+  sendMsgOpts: MsgOpts["send"],
   sender: string,
   queryBalances: ObservableQueryBalances,
   ensEndpoint?: string,
@@ -38,7 +38,12 @@ export const useSendTxConfig = (
   );
 
   const memoConfig = useMemoConfig(chainGetter, chainId);
-  const gasConfig = useSendGasConfig(chainGetter, chainId, amountConfig, sendMsgOpts);
+  const gasConfig = useSendGasConfig(
+    chainGetter,
+    chainId,
+    amountConfig,
+    sendMsgOpts
+  );
   const feeConfig = useFeeConfig(
     chainGetter,
     chainId,
@@ -63,6 +68,6 @@ export const useSendTxConfig = (
     memoConfig,
     gasConfig,
     feeConfig,
-    recipientConfig
+    recipientConfig,
   };
 };

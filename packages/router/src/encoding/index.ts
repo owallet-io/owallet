@@ -1,4 +1,4 @@
-import { Message } from '../message';
+import { Message } from "../message";
 
 export class MessageRegistry {
   private registeredMsgType: Map<string, { new (): Message<unknown> }> =
@@ -16,7 +16,7 @@ export class MessageRegistry {
 
   parseMessage(message: { type?: string; msg: any }): Message<unknown> {
     if (!message.type) {
-      throw new Error('Null type');
+      throw new Error("Null type");
     }
 
     const msgCls = this.registeredMsgType.get(message.type);

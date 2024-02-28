@@ -1,6 +1,6 @@
-import { handleError, parseObjectToQueryString } from '@src/utils/helper';
-import axios, { AxiosRequestConfig } from 'axios';
-import moment from 'moment';
+import { handleError, parseObjectToQueryString } from "@src/utils/helper";
+import axios, { AxiosRequestConfig } from "axios";
+import moment from "moment";
 
 export const API = {
   post: (path: string, params: any, config: AxiosRequestConfig) => {
@@ -18,13 +18,16 @@ export const API = {
   delete: (path: string, config: AxiosRequestConfig) => {
     return axios.delete(path, config);
   },
-  requestRpc: async ({ method, params, url }, config: AxiosRequestConfig = null) => {
+  requestRpc: async (
+    { method, params, url },
+    config: AxiosRequestConfig = null
+  ) => {
     try {
       let rpcConfig = {
         method,
         params,
         id: 1,
-        jsonrpc: '2.0'
+        jsonrpc: "2.0",
       };
       retryWrapper(axios, { retry_time: 3 });
       const rs = await axios.post(url, rpcConfig, config);
@@ -42,7 +45,7 @@ export const API = {
   getByLCD: async ({ lcdUrl, prefix, method, params = null }) => {
     try {
       retryWrapper(axios, { retry_time: 3 });
-      let qs = params ? parseObjectToQueryString(params) : '';
+      let qs = params ? parseObjectToQueryString(params) : "";
       let url = `${prefix}${method}${qs}`;
       const rs = await API.get(url, { baseURL: lcdUrl });
       return Promise.resolve(rs?.data);
@@ -51,42 +54,52 @@ export const API = {
       return Promise.reject(error);
     }
   },
-  getTxsByLCD: async <T>({ url, params = null, prefix = '/cosmos/tx/v1beta1', method = '/txs' }): Promise<T> => {
+  getTxsByLCD: async <T>({
+    url,
+    params = null,
+    prefix = "/cosmos/tx/v1beta1",
+    method = "/txs",
+  }): Promise<T> => {
     try {
       const rs = await API.getByLCD({
         lcdUrl: url,
         prefix,
         method,
-        params
+        params,
       });
       return Promise.resolve(rs);
     } catch (error) {
       return Promise.reject(error);
     }
   },
-  getTxsByRPC: async ({ url, params = null, method = 'tx_search' }) => {
+  getTxsByRPC: async ({ url, params = null, method = "tx_search" }) => {
     try {
       const rs = await API.requestRpc({
         url: url,
         params,
-        method
+        method,
       });
       return Promise.resolve(rs);
     } catch (error) {
       return Promise.reject(error);
     }
   },
-  getTxsLcdCosmos: async (url, query, perPage = 10, currentPage = 1): Promise<ResLcdCosmos> => {
+  getTxsLcdCosmos: async (
+    url,
+    query,
+    perPage = 10,
+    currentPage = 1
+  ): Promise<ResLcdCosmos> => {
     try {
       const rs = await API.getTxsByLCD<ResLcdCosmos>({
         url,
         params: {
           events: query,
-          ['pagination.count_total']: true,
-          ['pagination.limit']: perPage,
-          ['pagination.offset']: currentPage,
-          order_by: '2'
-        }
+          ["pagination.count_total"]: true,
+          ["pagination.limit"]: perPage,
+          ["pagination.offset"]: currentPage,
+          order_by: "2",
+        },
       });
       return Promise.resolve(rs);
     } catch (error) {
@@ -111,7 +124,12 @@ export const API = {
       return Promise.reject(error);
     }
   },
-  getTxsRpcCosmos: async (url, query, perPage = 10, currentPage = 1): Promise<ResTxsRpcCosmos> => {
+  getTxsRpcCosmos: async (
+    url,
+    query,
+    perPage = 10,
+    currentPage = 1
+  ): Promise<ResTxsRpcCosmos> => {
     try {
       const rs = await API.getTxsByRPC({
         url,
@@ -119,8 +137,8 @@ export const API = {
           query,
           page: `${currentPage}`,
           per_page: `${perPage}`,
-          order_by: 'desc'
-        }
+          order_by: "desc",
+        },
       });
       return Promise.resolve(rs);
     } catch (error) {
@@ -129,11 +147,14 @@ export const API = {
   },
   getTotalTxsEthAndBscPage: async (url, addressAcc, apiKey) => {
     try {
-      const rs = await API.get(`/api?module=account&action=txlist&address=${addressAcc}&sort=desc&apikey=${apiKey}`, {
-        baseURL: url
-      });
+      const rs = await API.get(
+        `/api?module=account&action=txlist&address=${addressAcc}&sort=desc&apikey=${apiKey}`,
+        {
+          baseURL: url,
+        }
+      );
       const data: txsEthAndBscResult = rs.data;
-      if (data?.status === '1') {
+      if (data?.status === "1") {
         return Promise.resolve(data);
       }
       return Promise.reject(data);
@@ -141,7 +162,7 @@ export const API = {
       handleError(
         error,
         `${url}/api?module=account&action=txlist&address=${addressAcc}&sort=desc&apikey=${apiKey}`,
-        'getTotalTxsEthAndBscPage'
+        "getTotalTxsEthAndBscPage"
       );
       return Promise.reject(error);
     }
@@ -158,7 +179,7 @@ export const API = {
         { baseURL: url }
       );
       const data: ResTxsEthAndBscByToken = rs.data;
-      if (data?.status === '1') {
+      if (data?.status === "1") {
         return Promise.resolve(data);
       }
       return Promise.reject(data);
@@ -166,7 +187,7 @@ export const API = {
       handleError(
         error,
         `${url}/api?module=account&action=txlist&address=${addressAcc}&sort=desc&apikey=${apiKey}`,
-        'getTotalTxsEthAndBscPage'
+        "getTotalTxsEthAndBscPage"
       );
       return Promise.reject(error);
     }
@@ -178,7 +199,7 @@ export const API = {
         { baseURL: url }
       );
       const data: txsEthAndBscResult = rs.data;
-      if (data?.status === '1') {
+      if (data?.status === "1") {
         return Promise.resolve(data);
       }
       return Promise.reject(data);
@@ -186,7 +207,7 @@ export const API = {
       handleError(
         error,
         `${url}/api?module=account&action=txlist&address=${addressAccount}&sort=desc&page=${current_page}&offset=${page}&apikey=${apiKey}`,
-        'getTxsEthAndBsc'
+        "getTxsEthAndBsc"
       );
       return Promise.reject(error);
     }
@@ -194,36 +215,40 @@ export const API = {
   checkStatusTxBitcoinTestNet: async (url: string, txHash: string) => {
     try {
       const rs = await API.get(`/api/tx/${txHash}/status`, {
-        baseURL: url
+        baseURL: url,
       });
 
       return Promise.reject(rs?.data);
     } catch (error) {
-      handleError(error, `${url}/api/tx/${txHash}/status`, 'checkStatusBitcoinTestNet');
+      handleError(
+        error,
+        `${url}/api/tx/${txHash}/status`,
+        "checkStatusBitcoinTestNet"
+      );
       return Promise.reject(error);
     }
   },
   getTxsBitcoin: async (url, addressAccount) => {
     try {
       const rs = await API.get(`/address/${addressAccount}/txs`, {
-        baseURL: url
+        baseURL: url,
       });
       const data: txBitcoinResult[] = rs.data;
       return Promise.resolve(data);
     } catch (error) {
-      handleError(error, `/address/${addressAccount}/txs`, 'getTxsBitcoin');
+      handleError(error, `/address/${addressAccount}/txs`, "getTxsBitcoin");
       return Promise.reject(error);
     }
   },
   getCountTxsBitcoin: async (url, addressAccount) => {
     try {
       const rs = await API.get(`/address/${addressAccount}`, {
-        baseURL: url
+        baseURL: url,
       });
       const data: InfoAddressBtc = rs.data;
       return Promise.resolve(data);
     } catch (error) {
-      handleError(error, `/address/${addressAccount}`, 'getCountTxsBitcoin');
+      handleError(error, `/address/${addressAccount}`, "getCountTxsBitcoin");
       return Promise.reject(error);
     }
   },
@@ -243,27 +268,36 @@ export const API = {
       handleError(
         error,
         `${url}/api/transaction?sort=-timestamp&count=true&limit=${page}&start=${current_page}&address=${addressAccount}`,
-        'getTxsTron'
+        "getTxsTron"
       );
       return Promise.reject(error);
     }
   },
-  getHistory: ({ address, offset = 0, limit = 10, isRecipient, isAll = false }, config: AxiosRequestConfig) => {
+  getHistory: (
+    { address, offset = 0, limit = 10, isRecipient, isAll = false },
+    config: AxiosRequestConfig
+  ) => {
     let url = `cosmos/tx/v1beta1/txs?events=message.sender%3D%27${address}%27&pagination.offset=${offset}&pagination.limit=${limit}&orderBy=2`;
     if (isAll) {
       return API.get(url, config);
     }
     if (isRecipient) {
-      url = url.replace(`events=message.sender`, `events=message.action%3D'send'&events=transfer.recipient`);
+      url = url.replace(
+        `events=message.sender`,
+        `events=message.action%3D'send'&events=transfer.recipient`
+      );
     } else {
       url += `&events=message.action%3D%27send%27`;
     }
     return API.get(url, config);
   },
 
-  getTransactions: ({ address, page = 1, limit = 10, type = 'native' }, config: AxiosRequestConfig) => {
+  getTransactions: (
+    { address, page = 1, limit = 10, type = "native" },
+    config: AxiosRequestConfig
+  ) => {
     let url = `/v1/txs-account/${address}?limit=${limit}&page_id=${page}`;
-    if (type === 'cw20') {
+    if (type === "cw20") {
       url = `/v1/ow20_smart_contracts/${address}?limit=${limit}&page_id=${page}`;
     }
     return API.get(url, config);
@@ -273,7 +307,7 @@ export const API = {
     let url = `api/v1/news/list`;
     let params = {
       page,
-      size: limit
+      size: limit,
     };
     return API.post(url, params, config);
   },
@@ -283,12 +317,15 @@ export const API = {
     return API.get(url, config);
   },
 
-  getMarketChartRange: ({ id, from, to }: { id: string; from?: number; to?: number }, config: AxiosRequestConfig) => {
+  getMarketChartRange: (
+    { id, from, to }: { id: string; from?: number; to?: number },
+    config: AxiosRequestConfig
+  ) => {
     if (!to) {
       to = moment().unix();
     }
     if (!from) {
-      from = moment().subtract(1, 'days').unix();
+      from = moment().subtract(1, "days").unix();
     }
 
     let url = `/coins/${id}/market_chart/range?vs_currency=usd&from=${from}&to=${to}`;
@@ -320,7 +357,7 @@ export const API = {
   unsubcribeTopic: ({ topic, subcriber }, config: AxiosRequestConfig) => {
     let url = `api/v1/topics`;
     return API.put(url, { topic, subcriber }, config);
-  }
+  },
 };
 const retryWrapper = (axios, options) => {
   const max_time = 1;

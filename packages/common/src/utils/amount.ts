@@ -10,7 +10,7 @@ export const toAmount = (amount: number, decimals = 6): bigint => {
 };
 
 export const validateNumber = (amount: number | string): number => {
-  if (typeof amount === 'string') return validateNumber(Number(amount));
+  if (typeof amount === "string") return validateNumber(Number(amount));
   if (Number.isNaN(amount) || !Number.isFinite(amount)) return 0;
   return amount;
 };
@@ -28,7 +28,7 @@ export const toDisplay = (
   if (!amount) return 0;
   // guarding conditions to prevent crashing
   const validatedAmount =
-    typeof amount === 'string' ? BigInt(amount || '0') : amount;
+    typeof amount === "string" ? BigInt(amount || "0") : amount;
   const displayDecimals = Math.min(truncDecimals, desDecimals);
   const returnAmount =
     validatedAmount / BigInt(10 ** (sourceDecimals - displayDecimals));

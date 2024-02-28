@@ -1,17 +1,17 @@
-import React, { FunctionComponent, useState } from 'react';
-import { observer } from 'mobx-react-lite';
-import { HeaderLayout, LayoutSpace } from '../../layouts';
-import { useHistory } from 'react-router';
+import React, { FunctionComponent, useState } from "react";
+import { observer } from "mobx-react-lite";
+import { HeaderLayout, LayoutSpace } from "../../layouts";
+import { useHistory } from "react-router";
 
-import style from './style.module.scss';
-import { Alert, Button } from 'reactstrap';
+import style from "./style.module.scss";
+import { Alert, Button } from "reactstrap";
 import {
   AddressInput,
   CoinInput,
   FeeButtons,
   MemoInput,
-  DestinationChainSelector
-} from '../../components/form';
+  DestinationChainSelector,
+} from "../../components/form";
 import {
   IAmountConfig,
   IFeeConfig,
@@ -19,17 +19,17 @@ import {
   IIBCChannelConfig,
   IMemoConfig,
   IRecipientConfig,
-  useIBCTransferConfig
-} from '@owallet/hooks';
-import { useStore } from '../../stores';
-import { useNotification } from '../../components/notification';
-import { FormattedMessage, useIntl } from 'react-intl';
-import { EthereumEndpoint } from '@owallet/common';
+  useIBCTransferConfig,
+} from "@owallet/hooks";
+import { useStore } from "../../stores";
+import { useNotification } from "../../components/notification";
+import { FormattedMessage, useIntl } from "react-intl";
+import { EthereumEndpoint } from "@owallet/common";
 
 export const IBCTransferPage: FunctionComponent = observer(() => {
   const history = useHistory();
 
-  const [phase, setPhase] = useState<'channel' | 'amount'>('channel');
+  const [phase, setPhase] = useState<"channel" | "amount">("channel");
 
   const { chainStore, accountStore, queriesStore, analyticsStore } = useStore();
   const accountInfo = accountStore.getAccount(chainStore.current.chainId);
@@ -51,9 +51,9 @@ export const IBCTransferPage: FunctionComponent = observer(() => {
       ibcTransferConfigs.channelConfig &&
       ibcTransferConfigs.channelConfig.channel &&
       ibcTransferConfigs.channelConfig.channel.counterpartyChainId) ||
-    '';
+    "";
   const toChainName =
-    (toChainId && chainStore.getChain(toChainId).chainName) || '';
+    (toChainId && chainStore.getChain(toChainId).chainName) || "";
 
   return (
     // <HeaderLayout
@@ -64,17 +64,17 @@ export const IBCTransferPage: FunctionComponent = observer(() => {
     //   }}
     // >
     <>
-      {phase === 'channel' ? (
+      {phase === "channel" ? (
         <IBCTransferPageChannel
           channelConfig={ibcTransferConfigs.channelConfig}
           recipientConfig={ibcTransferConfigs.recipientConfig}
           memoConfig={ibcTransferConfigs.memoConfig}
           onNext={() => {
-            setPhase('amount');
+            setPhase("amount");
           }}
         />
       ) : null}
-      {phase === 'amount' ? (
+      {phase === "amount" ? (
         <IBCTransferPageAmount
           amountConfig={ibcTransferConfigs.amountConfig}
           feeConfig={ibcTransferConfigs.feeConfig}
@@ -91,33 +91,33 @@ export const IBCTransferPage: FunctionComponent = observer(() => {
                   ibcTransferConfigs.feeConfig.toStdFee(),
                   {
                     preferNoSetFee: true,
-                    preferNoSetMemo: true
+                    preferNoSetMemo: true,
                   },
                   {
                     onBroadcasted: () => {
-                      analyticsStore.logEvent('Send token tx broadCasted', {
+                      analyticsStore.logEvent("Send token tx broadCasted", {
                         chainId: chainStore.current.chainId,
                         chainName: chainStore.current.chainName,
                         feeType: ibcTransferConfigs.feeConfig.feeType,
                         isIbc: true,
                         toChainId,
-                        toChainName
+                        toChainName,
                       });
-                    }
+                    },
                   }
                 );
-                history.push('/');
+                history.push("/");
               } catch (e: any) {
-                history.replace('/');
+                history.replace("/");
                 notification.push({
-                  type: 'warning',
-                  placement: 'top-center',
+                  type: "warning",
+                  placement: "top-center",
                   duration: 5,
                   content: `Fail to transfer token: ${e.message}`,
                   canDelete: true,
                   transition: {
-                    duration: 0.25
-                  }
+                    duration: 0.25,
+                  },
                 });
               }
             }
@@ -149,7 +149,7 @@ export const IBCTransferPageChannel: FunctionComponent<{
         <DestinationChainSelector ibcChannelConfig={channelConfig} />
         <AddressInput
           label={intl.formatMessage({
-            id: 'send.input.recipient'
+            id: "send.input.recipient",
           })}
           recipientConfig={recipientConfig}
           memoConfig={memoConfig}
@@ -158,7 +158,7 @@ export const IBCTransferPageChannel: FunctionComponent<{
         />
         <MemoInput
           label={intl.formatMessage({
-            id: 'send.input.memo'
+            id: "send.input.memo",
           })}
           memoConfig={memoConfig}
           disabled={!isChannelSet}
@@ -214,14 +214,14 @@ export const IBCTransferPageAmount: FunctionComponent<{
       <div className={style.formInnerContainer}>
         <CoinInput
           label={intl.formatMessage({
-            id: 'send.input.amount'
+            id: "send.input.amount",
           })}
           amountConfig={amountConfig}
         />
         <div style={{ flex: 1 }} />
         <FeeButtons
           label={intl.formatMessage({
-            id: 'send.input.fee'
+            id: "send.input.fee",
           })}
           feeConfig={feeConfig}
           gasConfig={gasConfig}
@@ -232,7 +232,7 @@ export const IBCTransferPageAmount: FunctionComponent<{
           color="primary"
           block
           disabled={!isValid}
-          data-loading={accountInfo.isSendingMsg === 'ibcTransfer'}
+          data-loading={accountInfo.isSendingMsg === "ibcTransfer"}
           onClick={(e) => {
             e.preventDefault();
 

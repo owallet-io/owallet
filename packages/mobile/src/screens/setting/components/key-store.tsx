@@ -1,9 +1,9 @@
-import { Text } from '@src/components/text';
-import { useTheme } from '@src/themes/theme-provider';
-import React, { FunctionComponent } from 'react';
-import { StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import Svg, { Path } from 'react-native-svg';
+import { Text } from "@src/components/text";
+import { useTheme } from "@src/themes/theme-provider";
+import React, { FunctionComponent } from "react";
+import { StyleSheet, TextStyle, View, ViewStyle } from "react-native";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import Svg, { Path } from "react-native-svg";
 import {
   AUDIcon,
   CADIcon,
@@ -16,9 +16,9 @@ import {
   KRWIcon,
   NoteIcon,
   RUBIcon,
-  USAIcon
-} from '../../../components/icon';
-import { spacing, typography } from '../../../themes';
+  USAIcon,
+} from "../../../components/icon";
+import { spacing, typography } from "../../../themes";
 
 export const KeyStoreSectionTitle: FunctionComponent<{
   title: string;
@@ -28,18 +28,21 @@ export const KeyStoreSectionTitle: FunctionComponent<{
   return (
     <View
       style={{
-        ...styles.containerSectionTitle
+        ...styles.containerSectionTitle,
       }}
     >
-      <NoteIcon color={colors['primary-surface-default']} height={20} />
+      <NoteIcon color={colors["primary-surface-default"]} height={20} />
       <Text
         style={{
-          ...typography['subtitle1'],
-          color: colors['sub-primary-text'],
-          marginLeft: spacing['6']
+          ...typography["subtitle1"],
+          color: colors["sub-primary-text"],
+          marginLeft: spacing["6"],
         }}
       >
-        {title && title.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase())}
+        {title &&
+          title.replace(/(^\w{1})|(\s+\w{1})/g, (letter) =>
+            letter.toUpperCase()
+          )}
       </Text>
     </View>
   );
@@ -55,7 +58,7 @@ export const WalletIcon: FunctionComponent<{
       viewBox="0 0 44 45"
       style={{
         height,
-        aspectRatio: 44 / 45
+        aspectRatio: 44 / 45,
       }}
     >
       <Path
@@ -68,29 +71,32 @@ export const WalletIcon: FunctionComponent<{
   );
 };
 
-export const renderFlag = (flagName: string = 'usd', heightFlag: number = 32) => {
+export const renderFlag = (
+  flagName: string = "usd",
+  heightFlag: number = 32
+) => {
   switch (flagName.toLowerCase()) {
-    case 'usd':
+    case "usd":
       return <USAIcon height={heightFlag} />;
-    case 'eur':
+    case "eur":
       return <EURIcon height={heightFlag} />;
-    case 'gbp':
+    case "gbp":
       return <GBPIcon height={heightFlag} />;
-    case 'cad':
+    case "cad":
       return <CADIcon height={heightFlag} />;
-    case 'aud':
+    case "aud":
       return <AUDIcon height={heightFlag} />;
-    case 'rub':
+    case "rub":
       return <RUBIcon height={heightFlag} />;
-    case 'krw':
+    case "krw":
       return <KRWIcon height={heightFlag} />;
-    case 'hkd':
+    case "hkd":
       return <HKDIcon height={heightFlag} />;
-    case 'cny':
+    case "cny":
       return <CNYIcon height={heightFlag} />;
-    case 'jpy':
+    case "jpy":
       return <JPYIcon height={heightFlag} />;
-    case 'inr':
+    case "inr":
       return <INRIcon height={heightFlag} />;
     default:
       return <></>;
@@ -110,26 +116,26 @@ export const KeyStoreItem: FunctionComponent<{
     return (
       <View
         style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between'
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
         }}
       >
         <View
           style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            flex: 1
+            flexDirection: "row",
+            alignItems: "center",
+            flex: 1,
           }}
         >
           {renderFlag(label)}
           <Text
             style={{
               ...typography.h5,
-              color: colors['sub-primary-text'],
-              fontWeight: '700',
-              marginLeft: spacing['12'],
-              ...labelStyle
+              color: colors["sub-primary-text"],
+              fontWeight: "700",
+              marginLeft: spacing["12"],
+              ...labelStyle,
             }}
           >
             {label}
@@ -138,27 +144,29 @@ export const KeyStoreItem: FunctionComponent<{
 
         <View
           style={{
-            flexDirection: 'row',
+            flexDirection: "row",
             flex: 1,
-            justifyContent: 'flex-end'
+            justifyContent: "flex-end",
           }}
         >
           <View
             style={{
               width: 24,
               height: 24,
-              borderRadius: spacing['32'],
-              backgroundColor: active ? colors['primary-surface-default'] : colors['bg-circle-select-modal'],
-              justifyContent: 'center',
-              alignItems: 'center'
+              borderRadius: spacing["32"],
+              backgroundColor: active
+                ? colors["primary-surface-default"]
+                : colors["bg-circle-select-modal"],
+              justifyContent: "center",
+              alignItems: "center",
             }}
           >
             <View
               style={{
                 width: 12,
                 height: 12,
-                borderRadius: spacing['32'],
-                backgroundColor: colors['background-item-list']
+                borderRadius: spacing["32"],
+                backgroundColor: colors["background-item-list"],
               }}
             />
           </View>
@@ -172,7 +180,7 @@ export const KeyStoreItem: FunctionComponent<{
     <TouchableOpacity
       style={{
         ...styles.containerItem,
-        ...containerStyle
+        ...containerStyle,
       }}
       onPress={onPress}
     >
@@ -181,30 +189,30 @@ export const KeyStoreItem: FunctionComponent<{
   );
 };
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     selectBtn: {
       height: 54,
-      flexDirection: 'row',
-      alignItems: 'center'
+      flexDirection: "row",
+      alignItems: "center",
     },
     containerItem: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      backgroundColor: colors['background-box'],
-      borderRadius: spacing['12'],
-      marginVertical: spacing['8'],
-      paddingHorizontal: spacing['20'],
-      paddingVertical: spacing['20'],
-      marginHorizontal: spacing['24']
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      backgroundColor: colors["background-box"],
+      borderRadius: spacing["12"],
+      marginVertical: spacing["8"],
+      paddingHorizontal: spacing["20"],
+      paddingVertical: spacing["20"],
+      marginHorizontal: spacing["24"],
     },
     containerSectionTitle: {
-      marginHorizontal: spacing['20'],
-      paddingTop: spacing['16'],
-      paddingBottom: spacing['12'],
-      marginTop: spacing['16'],
-      flexDirection: 'row',
-      alignItems: 'center'
-    }
+      marginHorizontal: spacing["20"],
+      paddingTop: spacing["16"],
+      paddingBottom: spacing["12"],
+      marginTop: spacing["16"],
+      flexDirection: "row",
+      alignItems: "center",
+    },
   });

@@ -4,21 +4,21 @@ import {
   computed,
   makeObservable,
   observable,
-  runInAction
-} from 'mobx';
+  runInAction,
+} from "mobx";
 import {
   AppCurrency,
   Bech32Config,
   BIP44,
   ChainInfo,
   Currency,
-  NetworkType
-} from '@owallet/types';
-import { ChainGetter } from '../common';
-import { ChainIdHelper } from '@owallet/cosmos';
-import { DeepReadonly } from 'utility-types';
-import { AxiosRequestConfig } from 'axios';
-import { keepAlive } from 'mobx-utils';
+  NetworkType,
+} from "@owallet/types";
+import { ChainGetter } from "../common";
+import { ChainIdHelper } from "@owallet/cosmos";
+import { DeepReadonly } from "utility-types";
+import { AxiosRequestConfig } from "axios";
+import { keepAlive } from "mobx-utils";
 
 type CurrencyRegistrar = (
   coinMinimalDenom: string
@@ -52,7 +52,7 @@ export class ChainInfoInner<C extends ChainInfo = ChainInfo>
 
     makeObservable(this);
 
-    keepAlive(this, 'currencyMap');
+    keepAlive(this, "currencyMap");
   }
 
   protected getCurrencyFromRegistrars(
@@ -63,7 +63,7 @@ export class ChainInfoInner<C extends ChainInfo = ChainInfo>
       const currency = registrar(coinMinimalDenom);
       if (currency) {
         // AppCurrency일 경우
-        if ('coinMinimalDenom' in currency) {
+        if ("coinMinimalDenom" in currency) {
           return [currency, true];
         }
         return currency;
@@ -133,7 +133,7 @@ export class ChainInfoInner<C extends ChainInfo = ChainInfo>
   }
 
   get networkType(): NetworkType {
-    return this._chainInfo.networkType || 'cosmos';
+    return this._chainInfo.networkType || "cosmos";
   }
 
   get chainId(): string {
@@ -198,7 +198,7 @@ export class ChainInfoInner<C extends ChainInfo = ChainInfo>
       return {
         coinMinimalDenom,
         coinDenom: coinMinimalDenom,
-        coinDecimals: 0
+        coinDecimals: 0,
       };
     }
     return currency;
@@ -229,7 +229,7 @@ export class ChainInfoInner<C extends ChainInfo = ChainInfo>
   get bech32Config(): Bech32Config {
     return this.raw.bech32Config;
   }
-get beta(): boolean | undefined {
+  get beta(): boolean | undefined {
     return this.raw.beta;
   }
 
@@ -303,8 +303,8 @@ export class ChainStore<C extends ChainInfo = ChainInfo>
   }
 
   getChain(chainId: string): ChainInfoInner<C> {
-    if (chainId === '' || !chainId) {
-      chainId = 'Oraichain';
+    if (chainId === "" || !chainId) {
+      chainId = "Oraichain";
     }
     const chainIdentifier = ChainIdHelper.parse(chainId);
 

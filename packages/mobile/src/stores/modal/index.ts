@@ -1,12 +1,9 @@
-import { observable, action, makeObservable, computed } from 'mobx';
-import { ReactElement, ReactNode } from 'react';
-import { BottomSheetProps } from '@gorhom/bottom-sheet';
+import { observable, action, makeObservable, computed } from "mobx";
+import { ReactElement, ReactNode } from "react";
+import { BottomSheetProps } from "@gorhom/bottom-sheet";
 interface IOptions {
   isOpen?: boolean;
-  bottomSheetModalConfig: Omit<
-    BottomSheetProps,
-    'snapPoints' | 'children'
-  >;
+  bottomSheetModalConfig: Omit<BottomSheetProps, "snapPoints" | "children">;
 }
 export class ModalStore {
   @observable
@@ -16,7 +13,7 @@ export class ModalStore {
   constructor() {
     this.options = {
       isOpen: false,
-      bottomSheetModalConfig: null
+      bottomSheetModalConfig: null,
     };
 
     makeObservable(this);
@@ -26,7 +23,7 @@ export class ModalStore {
   setOptions(options?: IOptions) {
     this.options = {
       ...options,
-      isOpen: true
+      isOpen: true,
     };
   }
 
@@ -49,7 +46,7 @@ export class ModalStore {
   close() {
     this.options = {
       isOpen: false,
-      bottomSheetModalConfig: null
+      bottomSheetModalConfig: null,
     };
     this.children = null;
   }

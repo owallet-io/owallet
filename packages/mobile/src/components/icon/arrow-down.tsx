@@ -4,7 +4,7 @@ import Svg, { Path } from "react-native-svg";
 export const DownArrowIcon: FunctionComponent<{
   color?: string;
   height?: number;
-}> = ({ color= 'none', height = 24 }) => {
+}> = ({ color = "none", height = 24 }) => {
   return (
     <Svg
       fillRule="evenodd"

@@ -20,7 +20,7 @@ export class ObservableQueryBalanceNative extends ObservableQueryBalanceInner {
       chainId,
       chainGetter,
       // No need to set the url
-      '',
+      "",
       denomHelper
     );
 
@@ -108,7 +108,7 @@ export class ObservableQueryCosmosBalances extends ObservableChainQuery<Balances
 export class ObservableQueryCosmosBalanceRegistry implements BalanceRegistry {
   protected nativeBalances: Map<string, ObservableQueryCosmosBalances> = new Map();
 
-  readonly type: BalanceRegistryType = 'cosmos';
+  readonly type: BalanceRegistryType = "cosmos";
 
   constructor(protected readonly kvStore: KVStore) {}
 
@@ -119,7 +119,7 @@ export class ObservableQueryCosmosBalanceRegistry implements BalanceRegistry {
     minimalDenom: string
   ): ObservableQueryBalanceInner | undefined {
     const denomHelper = new DenomHelper(minimalDenom);
-    if (denomHelper.type !== 'native') {
+    if (denomHelper.type !== "native") {
       return;
     }
     const networkType = chainGetter.getChain(chainId).networkType;

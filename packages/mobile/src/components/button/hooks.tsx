@@ -1,5 +1,5 @@
-import { useTheme } from '@src/themes/theme-provider';
-import { TextStyle, ViewStyle } from 'react-native';
+import { useTheme } from "@src/themes/theme-provider";
+import { TextStyle, ViewStyle } from "react-native";
 interface IMapStyle {
   btn: ViewStyle;
   text: TextStyle;
@@ -8,129 +8,146 @@ interface IMapStyle {
 const useSize = ({ size }): IMapStyle => {
   let sizeStyle: IMapStyle;
   switch (size) {
-    case 'small':
+    case "small":
       sizeStyle = {
         btn: {
           borderRadius: 8,
-          height: 32
+          height: 32,
         },
         text: {
           fontSize: 14,
-          fontWeight: '700'
-        }
+          fontWeight: "700",
+        },
       };
       break;
-    case 'medium':
+    case "medium":
       sizeStyle = {
         btn: {
           borderRadius: 12,
-          height: 40
+          height: 40,
         },
         text: {
           fontSize: 14,
-          fontWeight: '400'
-        }
+          fontWeight: "400",
+        },
       };
       break;
-    case 'large':
+    case "large":
       sizeStyle = {
         btn: {
           borderRadius: 8,
-          height: 55
+          height: 55,
         },
         text: {
           fontSize: 16,
-          fontWeight: '700'
-        }
+          fontWeight: "700",
+        },
       };
       break;
-    case 'default':
+    case "default":
       sizeStyle = {
         btn: {
           borderRadius: 8,
-          height: 48
+          height: 48,
         },
         text: {
           fontSize: 14,
-          fontWeight: '600'
-        }
+          fontWeight: "600",
+        },
       };
       break;
     default:
       sizeStyle = {
         btn: {
           borderRadius: 8,
-          height: 55
+          height: 55,
         },
         text: {
           fontSize: 16,
-          fontWeight: '700'
-        }
+          fontWeight: "700",
+        },
       };
       break;
   }
   return sizeStyle;
 };
 
-export const useMapStyles = ({ type, disabled, size, contentAlign }): IMapStyle => {
+export const useMapStyles = ({
+  type,
+  disabled,
+  size,
+  contentAlign,
+}): IMapStyle => {
   const { colors } = useTheme();
   const formatSize = useSize({ size });
   let typeStyleBtn: IMapStyle;
   switch (type) {
-    case 'danger':
+    case "danger":
       typeStyleBtn = {
         btn: {
           borderRadius: formatSize.btn.borderRadius,
           height: formatSize.btn.height,
-          backgroundColor: disabled ? colors['background-btn-disable-danger'] : colors['orange-800']
+          backgroundColor: disabled
+            ? colors["background-btn-disable-danger"]
+            : colors["orange-800"],
         },
         text: {
-          color: disabled ? colors['text-btn-disable-danger'] : colors['white'],
+          color: disabled ? colors["text-btn-disable-danger"] : colors["white"],
           fontSize: formatSize.text.fontSize,
-          fontWeight: formatSize.text.fontWeight
-        }
+          fontWeight: formatSize.text.fontWeight,
+        },
       };
       break;
-    case 'primary':
+    case "primary":
       typeStyleBtn = {
         btn: {
           borderRadius: formatSize.btn.borderRadius,
           height: formatSize.btn.height,
-          backgroundColor: disabled ? colors['btn-disable-background'] : colors['primary-surface-default']
+          backgroundColor: disabled
+            ? colors["btn-disable-background"]
+            : colors["primary-surface-default"],
         },
         text: {
-          color: disabled ? colors['neutral-text-action-on-dark-bg'] : colors['white'],
+          color: disabled
+            ? colors["neutral-text-action-on-dark-bg"]
+            : colors["white"],
           fontSize: formatSize.text.fontSize,
-          fontWeight: formatSize.text.fontWeight
-        }
+          fontWeight: formatSize.text.fontWeight,
+        },
       };
       break;
-    case 'secondary':
+    case "secondary":
       typeStyleBtn = {
         btn: {
           borderRadius: formatSize.btn.borderRadius,
           height: formatSize.btn.height,
-          backgroundColor: disabled ? colors['btn-disable-background'] : colors['neutral-surface-action3']
+          backgroundColor: disabled
+            ? colors["btn-disable-background"]
+            : colors["neutral-surface-action3"],
         },
         text: {
-          color: disabled ? colors['text-btn-disable-color'] : colors['neutral-text-action-on-light-bg'],
+          color: disabled
+            ? colors["text-btn-disable-color"]
+            : colors["neutral-text-action-on-light-bg"],
           fontSize: formatSize.text.fontSize,
-          fontWeight: formatSize.text.fontWeight
-        }
+          fontWeight: formatSize.text.fontWeight,
+        },
       };
       break;
-    case 'link':
+    case "link":
       typeStyleBtn = {
         btn: {
           borderRadius: formatSize.btn.borderRadius,
           height: formatSize.btn.height,
-          backgroundColor: 'transparent'
+          backgroundColor: "transparent",
         },
         text: {
-          color: disabled ? colors['text-btn-disable-color'] : colors['btn-primary-background'],
+          color: disabled
+            ? colors["text-btn-disable-color"]
+            : colors["btn-primary-background"],
           fontSize: formatSize.text.fontSize,
-          fontWeight: formatSize.text.fontWeight
-        }
+          fontWeight: formatSize.text.fontWeight,
+        },
       };
       break;
 
@@ -139,42 +156,44 @@ export const useMapStyles = ({ type, disabled, size, contentAlign }): IMapStyle 
         btn: {
           borderRadius: formatSize.btn.borderRadius,
           height: formatSize.btn.height,
-          backgroundColor: disabled ? colors['primary-surface-disable'] : colors['primary-surface-default']
+          backgroundColor: disabled
+            ? colors["primary-surface-disable"]
+            : colors["primary-surface-default"],
         },
         text: {
-          color: disabled ? colors['neutral-text-disable'] : colors['white'],
+          color: disabled ? colors["neutral-text-disable"] : colors["white"],
           fontSize: formatSize.text.fontSize,
-          fontWeight: formatSize.text.fontWeight
-        }
+          fontWeight: formatSize.text.fontWeight,
+        },
       };
       break;
   }
   switch (contentAlign) {
-    case 'left':
+    case "left":
       typeStyleBtn = {
         ...typeStyleBtn,
         btn: {
           ...typeStyleBtn.btn,
-          justifyContent: 'flex-start'
-        }
+          justifyContent: "flex-start",
+        },
       };
       break;
-    case 'center':
+    case "center":
       typeStyleBtn = {
         ...typeStyleBtn,
         btn: {
           ...typeStyleBtn.btn,
-          justifyContent: 'center'
-        }
+          justifyContent: "center",
+        },
       };
       break;
-    case 'right':
+    case "right":
       typeStyleBtn = {
         ...typeStyleBtn,
         btn: {
           ...typeStyleBtn.btn,
-          justifyContent: 'flex-end'
-        }
+          justifyContent: "flex-end",
+        },
       };
       break;
     default:
@@ -182,8 +201,8 @@ export const useMapStyles = ({ type, disabled, size, contentAlign }): IMapStyle 
         ...typeStyleBtn,
         btn: {
           ...typeStyleBtn.btn,
-          justifyContent: 'center'
-        }
+          justifyContent: "center",
+        },
       };
       break;
   }

@@ -1,9 +1,9 @@
-import { observable, action, makeObservable, computed } from 'mobx';
-import { create, persist } from 'mobx-persist';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { observable, action, makeObservable, computed } from "mobx";
+import { create, persist } from "mobx-persist";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export class Notification {
-  @persist('list')
+  @persist("list")
   @observable
   protected readNotifications: Array<any>;
   @observable
@@ -62,11 +62,11 @@ export class Notification {
 
 const hydrate = create({
   storage: AsyncStorage, // or AsyncStorage in react-native.
-  jsonify: true // if you use AsyncStorage, here shoud be true
+  jsonify: true, // if you use AsyncStorage, here shoud be true
 });
 
 export const notification = new Notification();
 
-hydrate('notification', notification).then(() =>
-  console.log('notification hydrated')
+hydrate("notification", notification).then(() =>
+  console.log("notification hydrated")
 );

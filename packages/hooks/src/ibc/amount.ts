@@ -1,10 +1,10 @@
-import { AmountConfig, IFeeConfig } from '../tx';
-import { ChainGetter } from '@owallet/stores';
-import { ObservableQueryBalances } from '@owallet/stores';
-import { AppCurrency } from '@owallet/types';
-import { computed, makeObservable } from 'mobx';
-import { DenomHelper } from '@owallet/common';
-import { useState } from 'react';
+import { AmountConfig, IFeeConfig } from "../tx";
+import { ChainGetter } from "@owallet/stores";
+import { ObservableQueryBalances } from "@owallet/stores";
+import { AppCurrency } from "@owallet/types";
+import { computed, makeObservable } from "mobx";
+import { DenomHelper } from "@owallet/common";
+import { useState } from "react";
 
 export class IBCAmountConfig extends AmountConfig {
   constructor(
@@ -23,7 +23,7 @@ export class IBCAmountConfig extends AmountConfig {
   get sendableCurrencies(): AppCurrency[] {
     // Only native currencies can be sent by IBC transfer.
     return super.sendableCurrencies.filter(
-      (cur) => new DenomHelper(cur.coinMinimalDenom).type === 'native'
+      (cur) => new DenomHelper(cur.coinMinimalDenom).type === "native"
     );
   }
 }

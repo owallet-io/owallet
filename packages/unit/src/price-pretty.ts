@@ -1,9 +1,9 @@
-import { IntPretty, IntPrettyOptions } from './int-pretty';
-import { Dec } from './decimal';
-import { FiatCurrency } from '@owallet/types';
-import { DeepReadonly } from 'utility-types';
-import { DecUtils } from './dec-utils';
-import bigInteger from 'big-integer';
+import { IntPretty, IntPrettyOptions } from "./int-pretty";
+import { Dec } from "./decimal";
+import { FiatCurrency } from "@owallet/types";
+import { DeepReadonly } from "utility-types";
+import { DecUtils } from "./dec-utils";
+import bigInteger from "big-integer";
 
 export type PricePrettyOptions = {
   separator: string;
@@ -16,10 +16,10 @@ export class PricePretty {
   protected intPretty: IntPretty;
 
   protected _options: PricePrettyOptions = {
-    separator: '',
+    separator: "",
     upperCase: false,
     lowerCase: false,
-    locale: 'en-US'
+    locale: "en-US",
   };
 
   constructor(
@@ -37,11 +37,11 @@ export class PricePretty {
   }
 
   get options(): DeepReadonly<
-    Omit<IntPrettyOptions, 'locale'> & PricePrettyOptions
+    Omit<IntPrettyOptions, "locale"> & PricePrettyOptions
   > {
     return {
       ...this.intPretty.options,
-      ...this._options
+      ...this._options,
     };
   }
 
@@ -199,23 +199,23 @@ export class PricePretty {
     ) {
       return this.intPretty.toStringWithSymbols(
         `${symbol}${this._options.separator}`,
-        ''
+        ""
       );
     }
 
     let localeString = parseFloat(this.intPretty.toString()).toLocaleString(
       options.locale,
       {
-        maximumFractionDigits: options.maxDecimals
+        maximumFractionDigits: options.maxDecimals,
       }
     );
 
-    const isNeg = localeString.charAt(0) === '-';
+    const isNeg = localeString.charAt(0) === "-";
     if (isNeg) {
       localeString = localeString.slice(1);
     }
 
-    return `${isNeg ? '-' : ''}${symbol}${
+    return `${isNeg ? "-" : ""}${symbol}${
       this._options.separator
     }${localeString}`;
   }
@@ -223,7 +223,7 @@ export class PricePretty {
   clone(): PricePretty {
     const pretty = new PricePretty(this._fiatCurrency, this.amount);
     pretty._options = {
-      ...this._options
+      ...this._options,
     };
     pretty.intPretty = this.intPretty.clone();
     return pretty;

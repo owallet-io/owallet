@@ -1,2 +1,2 @@
-export * from './deeplink';
-export * from './browser';
+export * from "./deeplink";
+export * from "./browser";

@@ -1,13 +1,13 @@
-import React, { FunctionComponent, useMemo } from 'react';
-import { HeaderLayout } from '../../../layouts';
-import { PageButton } from '../page-button';
+import React, { FunctionComponent, useMemo } from "react";
+import { HeaderLayout } from "../../../layouts";
+import { PageButton } from "../page-button";
 
-import style from '../style.module.scss';
-import { useHistory } from 'react-router';
-import { useIntl } from 'react-intl';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../../stores';
-import { useLanguage } from '@owallet/common';
+import style from "../style.module.scss";
+import { useHistory } from "react-router";
+import { useIntl } from "react-intl";
+import { observer } from "mobx-react-lite";
+import { useStore } from "../../../stores";
+import { useLanguage } from "@owallet/common";
 
 export const SettingFiatPage: FunctionComponent = observer(() => {
   const history = useHistory();
@@ -27,7 +27,7 @@ export const SettingFiatPage: FunctionComponent = observer(() => {
       showChainName={false}
       canChangeChainInfo={false}
       alternativeTitle={intl.formatMessage({
-        id: 'setting.fiat'
+        id: "setting.fiat",
       })}
       onBackButton={() => {
         history.goBack();
@@ -36,12 +36,12 @@ export const SettingFiatPage: FunctionComponent = observer(() => {
       <div className={style.container}>
         <PageButton
           title={intl.formatMessage({
-            id: 'setting.fiat.automatic'
+            id: "setting.fiat.automatic",
           })}
           onClick={() => {
             language.setFiatCurrency(null);
             history.push({
-              pathname: '/'
+              pathname: "/",
             });
           }}
           icons={language.isFiatCurrencyAutomatic ? selectedIcon : undefined}
@@ -59,7 +59,7 @@ export const SettingFiatPage: FunctionComponent = observer(() => {
               onClick={() => {
                 language.setFiatCurrency(fiatCurrency.currency);
                 history.push({
-                  pathname: '/'
+                  pathname: "/",
                 });
               }}
               icons={

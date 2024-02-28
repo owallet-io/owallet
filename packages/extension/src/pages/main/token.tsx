@@ -1,23 +1,28 @@
-import React, { FunctionComponent, useCallback, useMemo, useState } from 'react';
+import React, {
+  FunctionComponent,
+  useCallback,
+  useMemo,
+  useState,
+} from "react";
 
-import styleToken from './token.module.scss';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../stores';
-import { useHistory } from 'react-router';
-import { Hash } from '@owallet/crypto';
-import { ObservableQueryBalanceInner } from '@owallet/stores';
-import classmames from 'classnames';
-import { Input } from '../../components/form';
-import { UncontrolledTooltip } from 'reactstrap';
-import { WrongViewingKeyError } from '@owallet/stores';
-import { useNotification } from '../../components/notification';
-import { useLoadingIndicator } from '../../components/loading-indicator';
-import { DenomHelper } from '@owallet/common';
+import styleToken from "./token.module.scss";
+import { observer } from "mobx-react-lite";
+import { useStore } from "../../stores";
+import { useHistory } from "react-router";
+import { Hash } from "@owallet/crypto";
+import { ObservableQueryBalanceInner } from "@owallet/stores";
+import classmames from "classnames";
+import { Input } from "../../components/form";
+import { UncontrolledTooltip } from "reactstrap";
+import { WrongViewingKeyError } from "@owallet/stores";
+import { useNotification } from "../../components/notification";
+import { useLoadingIndicator } from "../../components/loading-indicator";
+import { DenomHelper } from "@owallet/common";
 
-import { useLanguage } from '@owallet/common';
-import { Bech32Address } from '@owallet/cosmos';
-import { NetworkType } from '@owallet/types';
-import { NftPage } from '../nft';
+import { useLanguage } from "@owallet/common";
+import { Bech32Address } from "@owallet/cosmos";
+import { NetworkType } from "@owallet/types";
+import { NftPage } from "../nft";
 
 const TokenView: FunctionComponent<{
   balance: ObservableQueryBalanceInner;
@@ -27,10 +32,10 @@ const TokenView: FunctionComponent<{
   const { chainStore, accountStore, tokensStore, priceStore } = useStore();
   const language = useLanguage();
   const [colors] = useState([
-    ['#5e72e4', '#ffffff'],
-    ['#11cdef', '#ffffff'],
-    ['#2dce89', '#ffffff'],
-    ['#F6F7FB', '#0e0314']
+    ["#5e72e4", "#ffffff"],
+    ["#11cdef", "#ffffff"],
+    ["#2dce89", "#ffffff"],
+    ["#F6F7FB", "#0e0314"],
   ]);
 
   let name = balance.currency.coinDenom;
@@ -53,8 +58,8 @@ const TokenView: FunctionComponent<{
   // But, it is hard to ensure that the id is valid selector because the currency can be suggested from the webpages.
   // So, just hash the minimal denom and encode it to the hex and remove the numbers.
   const validSelector = Buffer.from(Hash.sha256(Buffer.from(minimalDenom)))
-    .toString('hex')
-    .replace(/\d+/g, '')
+    .toString("hex")
+    .replace(/\d+/g, "")
     .slice(0, 20);
 
   const history = useHistory();
@@ -65,17 +70,23 @@ const TokenView: FunctionComponent<{
   const accountInfo = accountStore.getAccount(chainStore.current.chainId);
 
   const createViewingKey = async (): Promise<string | undefined> => {
-    if ('type' in balance.currency && balance.currency.type === 'secret20') {
+    if ("type" in balance.currency && balance.currency.type === "secret20") {
       const contractAddress = balance.currency.contractAddress;
       return new Promise((resolve) => {
         accountInfo.secret
-          .createSecret20ViewingKey(contractAddress, '', {}, {}, (_, viewingKey) => {
-            loadingIndicator.setIsLoading('create-veiwing-key', false);
+          .createSecret20ViewingKey(
+            contractAddress,
+            "",
+            {},
+            {},
+            (_, viewingKey) => {
+              loadingIndicator.setIsLoading("create-veiwing-key", false);
 
-            resolve(viewingKey);
-          })
+              resolve(viewingKey);
+            }
+          )
           .then(() => {
-            loadingIndicator.setIsLoading('create-veiwing-key', true);
+            loadingIndicator.setIsLoading("create-veiwing-key", true);
           });
       });
     }
@@ -84,12 +95,15 @@ const TokenView: FunctionComponent<{
   // If the currency is the IBC Currency.
   // Show the amount as slightly different with other currencies.
   // Show the actual coin denom to the top and just show the coin denom without channel info to the bottom.
-  if ('originCurrency' in amount.currency && amount.currency.originCurrency) {
+  if ("originCurrency" in amount.currency && amount.currency.originCurrency) {
     amount = amount.setCurrency(amount.currency.originCurrency);
   } else {
     const denomHelper = new DenomHelper(amount.currency.coinMinimalDenom);
     if (denomHelper.contractAddress) {
-      name += ` (${Bech32Address.shortenAddress(denomHelper.contractAddress, 24)})`;
+      name += ` (${Bech32Address.shortenAddress(
+        denomHelper.contractAddress,
+        24
+      )})`;
     }
   }
 
@@ -107,18 +121,18 @@ const TokenView: FunctionComponent<{
       <div className={styleToken.icon}>
         <div
           style={{
-            width: '100%',
-            height: '100%',
-            borderRadius: '100000px',
+            width: "100%",
+            height: "100%",
+            borderRadius: "100000px",
             backgroundColor,
             borderWidth: 1,
-            borderStyle: 'solid',
+            borderStyle: "solid",
             borderColor: backgroundColor,
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
             color,
-            fontSize: '16px'
+            fontSize: "16px",
           }}
         >
           {balance.currency.coinImageUrl ? (
@@ -126,7 +140,7 @@ const TokenView: FunctionComponent<{
           ) : name.length > 0 ? (
             name[0]
           ) : (
-            '?'
+            "?"
           )}
         </div>
       </div>
@@ -134,62 +148,76 @@ const TokenView: FunctionComponent<{
         <div className={styleToken.content}>
           <div
             className={classmames(styleToken.name, {
-              activeToken: active
+              activeToken: active,
             })}
           >
             {name}
           </div>
           <div className={styleToken.amount}>
             {amount.maxDecimals(6).toString()}
-            {balance.isFetching ? <i className="fas fa-spinner fa-spin ml-1" /> : null}
+            {balance.isFetching ? (
+              <i className="fas fa-spinner fa-spin ml-1" />
+            ) : null}
           </div>
-          {tokenPrice && <div className={styleToken.price}>{tokenPrice.toString()}</div>}
+          {tokenPrice && (
+            <div className={styleToken.price}>{tokenPrice.toString()}</div>
+          )}
         </div>
         <div style={{ flex: 1 }} />
         {error ? (
-          <div className={classmames(styleToken.rightIcon, 'mr-2')}>
-            <i className="fas fa-exclamation-circle text-danger" id={validSelector} />
-            <UncontrolledTooltip target={validSelector}>{error.message}</UncontrolledTooltip>
+          <div className={classmames(styleToken.rightIcon, "mr-2")}>
+            <i
+              className="fas fa-exclamation-circle text-danger"
+              id={validSelector}
+            />
+            <UncontrolledTooltip target={validSelector}>
+              {error.message}
+            </UncontrolledTooltip>
           </div>
         ) : null}
         {error?.data && error.data instanceof WrongViewingKeyError ? (
           <div
-            className={classmames(styleToken.rightIcon, 'mr-2')}
+            className={classmames(styleToken.rightIcon, "mr-2")}
             onClick={async (e) => {
               e.preventDefault();
               e.stopPropagation();
 
-              if ('type' in balance.currency && balance.currency.type === 'secret20') {
+              if (
+                "type" in balance.currency &&
+                balance.currency.type === "secret20"
+              ) {
                 const viewingKey = await createViewingKey();
                 if (!viewingKey) {
                   notification.push({
-                    placement: 'top-center',
-                    type: 'danger',
+                    placement: "top-center",
+                    type: "danger",
                     duration: 2,
-                    content: 'Failed to create the viewing key',
+                    content: "Failed to create the viewing key",
                     canDelete: true,
                     transition: {
-                      duration: 0.25
-                    }
+                      duration: 0.25,
+                    },
                   });
 
                   return;
                 }
 
-                const tokenOf = tokensStore.getTokensOf(chainStore.current.chainId);
+                const tokenOf = tokensStore.getTokensOf(
+                  chainStore.current.chainId
+                );
 
                 await tokenOf.addToken({
                   ...balance.currency,
-                  viewingKey
+                  viewingKey,
                 });
 
                 history.push({
-                  pathname: '/'
+                  pathname: "/",
                 });
               }
             }}
           >
-            {accountInfo.isSendingMsg === 'createSecret20ViewingKey' ? (
+            {accountInfo.isSendingMsg === "createSecret20ViewingKey" ? (
               <i className="fa fa-spinner fa-spin fa-fw" />
             ) : (
               <i className="fas fa-wrench" />
@@ -217,7 +245,11 @@ export const TokensView: FunctionComponent<{
   const displayTokens = tokens
     .filter((v, i, obj) => {
       return (
-        v?.balance && obj.findIndex((v2) => v2.balance.currency?.coinDenom === v.balance.currency?.coinDenom) === i
+        v?.balance &&
+        obj.findIndex(
+          (v2) =>
+            v2.balance.currency?.coinDenom === v.balance.currency?.coinDenom
+        ) === i
       );
     })
     .sort((a, b) => {
@@ -235,16 +267,16 @@ export const TokensView: FunctionComponent<{
     });
 
   const history = useHistory();
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
 
   return (
     <div className={styleToken.tokensContainer}>
       <div className={styleToken.tabsContainer}>
-        {['Tokens', 'SoulBound NFTs'].map((nft, i) => (
+        {["Tokens", "SoulBound NFTs"].map((nft, i) => (
           <div className={styleToken.tab}>
             <h1
               style={{
-                color: tab == i && '#7664E4'
+                color: tab == i && "#7664E4",
               }}
               className={styleToken.title}
               onClick={() => {
@@ -268,23 +300,26 @@ export const TokensView: FunctionComponent<{
         <>
           <div>
             <Input
-              type={'text'}
+              type={"text"}
               value={search}
               onChange={(e) => {
                 setSearch(e.target.value);
               }}
               classNameInputGroup={styleToken.inputGroup}
-              placeholder={'Search Chain Coin'}
+              placeholder={"Search Chain Coin"}
               append={
                 <div
                   style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    width: 50
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    width: 50,
                   }}
                 >
-                  <img src={require('../../public/assets/img/light.svg')} alt="" />
+                  <img
+                    src={require("../../public/assets/img/light.svg")}
+                    alt=""
+                  />
                 </div>
               }
             />
@@ -292,10 +327,14 @@ export const TokensView: FunctionComponent<{
           {displayTokens
             .filter(
               (token) =>
-                token?.currency?.coinMinimalDenom?.includes(search.toUpperCase()) ||
+                token?.currency?.coinMinimalDenom?.includes(
+                  search.toUpperCase()
+                ) ||
                 token?.currency?.coinDenom?.includes(search.toUpperCase()) ||
                 token?.currency?.coinGeckoId?.includes(search.toUpperCase()) ||
-                token?.currency?.coinMinimalDenom?.includes(search.toLowerCase()) ||
+                token?.currency?.coinMinimalDenom?.includes(
+                  search.toLowerCase()
+                ) ||
                 token?.currency?.coinDenom?.includes(search.toLowerCase()) ||
                 token?.currency?.coinGeckoId?.includes(search.toLowerCase())
             )
@@ -304,15 +343,20 @@ export const TokensView: FunctionComponent<{
                 <TokenView
                   key={i.toString()}
                   balance={token}
-                  active={`?defaultDenom=${token.currency.coinMinimalDenom}` == coinMinimalDenom}
+                  active={
+                    `?defaultDenom=${token.currency.coinMinimalDenom}` ==
+                    coinMinimalDenom
+                  }
                   onClick={() => {
                     if (handleClickToken) {
-                      handleClickToken(`?defaultDenom=${token.currency.coinMinimalDenom}`);
+                      handleClickToken(
+                        `?defaultDenom=${token.currency.coinMinimalDenom}`
+                      );
                       return;
                     }
                     history.push({
-                      pathname: '/send',
-                      search: `?defaultDenom=${token.currency.coinMinimalDenom}`
+                      pathname: "/send",
+                      search: `?defaultDenom=${token.currency.coinMinimalDenom}`,
                     });
                   }}
                 />

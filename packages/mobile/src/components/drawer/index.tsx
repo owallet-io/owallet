@@ -1,22 +1,22 @@
-import React, { FunctionComponent, useCallback, useState } from 'react';
-import { observer } from 'mobx-react-lite';
+import React, { FunctionComponent, useCallback, useState } from "react";
+import { observer } from "mobx-react-lite";
 import {
   DrawerContentComponentProps,
   DrawerContentOptions,
   DrawerContentScrollView,
-} from '@react-navigation/drawer';
-import { useStore } from '../../stores';
-import { DrawerActions, useNavigation } from '@react-navigation/native';
-import { Alert, StyleSheet, View } from 'react-native';
-import { Text } from '@src/components/text';
-import { useStyle } from '../../styles';
-import { RectButton } from '../rect-button';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { VectorCharacter } from '../vector-character';
-import FastImage from 'react-native-fast-image';
-import { Hash } from '@owallet/crypto';
-import { BrowserIcon } from '../icon/browser';
-import { colors, spacing, typography } from '../../themes';
+} from "@react-navigation/drawer";
+import { useStore } from "../../stores";
+import { DrawerActions, useNavigation } from "@react-navigation/native";
+import { Alert, StyleSheet, View } from "react-native";
+import { Text } from "@src/components/text";
+import { useStyle } from "../../styles";
+import { RectButton } from "../rect-button";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { VectorCharacter } from "../vector-character";
+import FastImage from "react-native-fast-image";
+import { Hash } from "@owallet/crypto";
+import { BrowserIcon } from "../icon/browser";
+import { colors, spacing, typography } from "../../themes";
 
 export type DrawerContentProps =
   DrawerContentComponentProps<DrawerContentOptions>;
@@ -40,19 +40,19 @@ export const DrawerContent: FunctionComponent<DrawerContentProps> = observer(
     const profileColor = useCallback(
       (chainInfo) => {
         const colors = [
-          'sky-blue',
-          'mint',
-          'red',
-          'orange',
-          'blue-violet',
-          'green',
-          'sky-blue',
-          'mint',
-          'red',
-          'purple',
-          'red',
-          'orange',
-          'yellow',
+          "sky-blue",
+          "mint",
+          "red",
+          "orange",
+          "blue-violet",
+          "green",
+          "sky-blue",
+          "mint",
+          "red",
+          "purple",
+          "red",
+          "orange",
+          "yellow",
         ];
 
         return colors[deterministicNumber(chainInfo) % colors.length];
@@ -69,15 +69,15 @@ export const DrawerContent: FunctionComponent<DrawerContentProps> = observer(
         >
           <View
             style={{
-              justifyContent: 'center',
+              justifyContent: "center",
               height: 50,
             }}
           >
             <Text
               style={{
                 ...typography.h3,
-                color: colors['text-black-high'],
-                marginLeft: spacing['24'],
+                color: colors["text-black-high"],
+                marginLeft: spacing["24"],
               }}
             >
               Networks
@@ -93,9 +93,9 @@ export const DrawerContent: FunctionComponent<DrawerContentProps> = observer(
                   <RectButton
                     key={chainInfo.chainId}
                     onPress={() => {
-                      if (!chainInfo.chainName.includes('soon')) {
+                      if (!chainInfo.chainName.includes("soon")) {
                         navigation.dispatch(DrawerActions.closeDrawer());
-                        analyticsStore.logEvent('Chain changed', {
+                        analyticsStore.logEvent("Chain changed", {
                           chainId: chainStore.current.chainId,
                           chainName: chainStore.current.chainName,
                           toChainId: chainInfo.chainId,
@@ -104,25 +104,25 @@ export const DrawerContent: FunctionComponent<DrawerContentProps> = observer(
                         chainStore.selectChain(chainInfo.chainId);
                         chainStore.saveLastViewChainId();
                       } else {
-                        Alert.alert('Coming soon!');
+                        Alert.alert("Coming soon!");
                       }
                     }}
                     style={{
-                      flexDirection: 'row',
+                      flexDirection: "row",
                       height: 84,
-                      alignItems: 'center',
-                      paddingHorizontal: spacing['20'],
+                      alignItems: "center",
+                      paddingHorizontal: spacing["20"],
                     }}
                     activeOpacity={1}
                     underlayColor={
-                      style.get('color-drawer-rect-button-underlay').color
+                      style.get("color-drawer-rect-button-underlay").color
                     }
                   >
                     <View
                       style={{
                         ...styles.containerImage,
                         backgroundColor: selected
-                          ? colors['black']
+                          ? colors["black"]
                           : profileColor(chainInfo),
                       }}
                     >
@@ -149,8 +149,8 @@ export const DrawerContent: FunctionComponent<DrawerContentProps> = observer(
                       style={{
                         ...typography.h5,
                         color: selected
-                          ? colors['text-black-medium']
-                          : colors['text-black-very-very-low'],
+                          ? colors["text-black-medium"]
+                          : colors["text-black-very-very-low"],
                       }}
                     >
                       {chainInfo.chainName}
@@ -168,28 +168,28 @@ export const DrawerContent: FunctionComponent<DrawerContentProps> = observer(
 
 const styles = StyleSheet.create({
   containerBrowser: {
-    width: spacing['32'],
-    height: spacing['32'],
-    borderRadius: spacing['64'],
-    alignItems: 'center',
-    overflow: 'hidden',
-    marginRight: spacing['16'],
-    backgroundColor: colors['profile-green'],
+    width: spacing["32"],
+    height: spacing["32"],
+    borderRadius: spacing["64"],
+    alignItems: "center",
+    overflow: "hidden",
+    marginRight: spacing["16"],
+    backgroundColor: colors["profile-green"],
   },
   containerBtn: {
-    flexDirection: 'row',
+    flexDirection: "row",
     height: 84,
-    alignItems: 'center',
-    paddingHorizontal: spacing['20'],
+    alignItems: "center",
+    paddingHorizontal: spacing["20"],
     borderTopWidth: 1,
   },
   containerImage: {
-    width: spacing['32'],
-    height: spacing['32'],
-    borderRadius: spacing['64'],
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
-    marginRight: spacing['16'],
+    width: spacing["32"],
+    height: spacing["32"],
+    borderRadius: spacing["64"],
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
+    marginRight: spacing["16"],
   },
 });

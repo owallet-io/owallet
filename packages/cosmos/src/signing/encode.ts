@@ -1,7 +1,10 @@
-import { PubKey, StdSignature, StdSignDoc } from '@owallet/types';
-import { Buffer } from 'buffer';
+import { PubKey, StdSignature, StdSignDoc } from "@owallet/types";
+import { Buffer } from "buffer";
 function escapeHTML(str: string): string {
-  return str.replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026');
+  return str
+    .replace(/</g, "\\u003c")
+    .replace(/>/g, "\\u003e")
+    .replace(/&/g, "\\u0026");
 }
 
 /**
@@ -11,7 +14,7 @@ function escapeHTML(str: string): string {
  * @param str
  */
 function sortObjectByKey(obj: Record<string, any>): any {
-  if (typeof obj !== 'object' || obj === null) {
+  if (typeof obj !== "object" || obj === null) {
     return obj;
   }
   if (Array.isArray(obj)) {
@@ -31,22 +34,29 @@ export function sortedJsonByKeyStringify(obj: Record<string, any>): string {
 
 export function encodeSecp256k1Pubkey(pubkey: Uint8Array): PubKey {
   if (pubkey.length !== 33 || (pubkey[0] !== 0x02 && pubkey[0] !== 0x03)) {
-    throw new Error('Public key must be compressed secp256k1, i.e. 33 bytes starting with 0x02 or 0x03');
+    throw new Error(
+      "Public key must be compressed secp256k1, i.e. 33 bytes starting with 0x02 or 0x03"
+    );
   }
   return {
-    type: 'tendermint/PubKeySecp256k1',
-    value: Buffer.from(pubkey).toString('base64')
+    type: "tendermint/PubKeySecp256k1",
+    value: Buffer.from(pubkey).toString("base64"),
   };
 }
 
-export function encodeSecp256k1Signature(pubkey: Uint8Array, signature: Uint8Array): StdSignature {
+export function encodeSecp256k1Signature(
+  pubkey: Uint8Array,
+  signature: Uint8Array
+): StdSignature {
   if (signature.length !== 64) {
-    throw new Error('Signature must be 64 bytes long. Cosmos SDK uses a 2x32 byte fixed length encoding for the secp256k1 signature integers r and s.');
+    throw new Error(
+      "Signature must be 64 bytes long. Cosmos SDK uses a 2x32 byte fixed length encoding for the secp256k1 signature integers r and s."
+    );
   }
 
   return {
     pub_key: encodeSecp256k1Pubkey(pubkey),
-    signature: Buffer.from(signature).toString('base64')
+    signature: Buffer.from(signature).toString("base64"),
   };
 }
 

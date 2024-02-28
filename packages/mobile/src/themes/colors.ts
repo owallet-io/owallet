@@ -1,11 +1,15 @@
-import { DarkModeColorsTheme, LightModeColorsTheme, colorsCode } from './mode-colors';
+import {
+  DarkModeColorsTheme,
+  LightModeColorsTheme,
+  colorsCode,
+} from "./mode-colors";
 
 export const colors = {
   ...colorsCode,
-  ...DarkModeColorsTheme
+  ...DarkModeColorsTheme,
 };
 
 export const lightColors = {
   ...colorsCode,
-  ...LightModeColorsTheme
+  ...LightModeColorsTheme,
 };

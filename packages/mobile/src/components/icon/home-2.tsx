@@ -1,11 +1,11 @@
-import React, { FunctionComponent } from 'react';
-import Svg, { Path } from 'react-native-svg';
+import React, { FunctionComponent } from "react";
+import Svg, { Path } from "react-native-svg";
 
 export const HomeLightIcon: FunctionComponent<{
   color?: string;
   size?: number;
   onPress?: () => void;
-}> = ({ color = '#636366', size = 20, onPress }) => {
+}> = ({ color = "#636366", size = 20, onPress }) => {
   return (
     <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
       <Path

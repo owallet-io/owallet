@@ -1,7 +1,7 @@
-import { AppCurrency, Currency } from '@owallet/types';
-import { StdFee } from '@cosmjs/launchpad';
-import { CoinPretty } from '@owallet/unit';
-import { CoinPrimitive } from '@owallet/stores';
+import { AppCurrency, Currency } from "@owallet/types";
+import { StdFee } from "@cosmjs/launchpad";
+import { CoinPretty } from "@owallet/unit";
+import { CoinPrimitive } from "@owallet/stores";
 
 export interface ITxChainSetter {
   chainId: string;
@@ -109,7 +109,7 @@ export const DefaultGasPriceStep: {
 } = {
   low: 0.01,
   average: 0.025,
-  high: 0.04
+  high: 0.04,
 };
 
-export type FeeType = 'high' | 'average' | 'low';
+export type FeeType = "high" | "average" | "low";

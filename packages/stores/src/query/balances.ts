@@ -1,11 +1,11 @@
-import { ObservableChainQuery } from './chain-query';
-import { DenomHelper, KVStore } from '@owallet/common';
-import { ChainGetter } from '../common';
-import { computed, makeObservable, observable, runInAction } from 'mobx';
-import { CoinPretty, Dec, Int } from '@owallet/unit';
-import { AppCurrency, NetworkType } from '@owallet/types';
-import { HasMapStore } from '../common';
-import { computedFn } from 'mobx-utils';
+import { ObservableChainQuery } from "./chain-query";
+import { DenomHelper, KVStore } from "@owallet/common";
+import { ChainGetter } from "../common";
+import { computed, makeObservable, observable, runInAction } from "mobx";
+import { CoinPretty, Dec, Int } from "@owallet/unit";
+import { AppCurrency, NetworkType } from "@owallet/types";
+import { HasMapStore } from "../common";
+import { computedFn } from "mobx-utils";
 
 export abstract class ObservableQueryBalanceInner<T = unknown, E = unknown> extends ObservableChainQuery<T, E> {
   protected constructor(
@@ -37,7 +37,7 @@ export abstract class ObservableQueryBalanceInner<T = unknown, E = unknown> exte
   }
 }
 
-export type BalanceRegistryType = NetworkType | 'erc20' | 'cw20';
+export type BalanceRegistryType = NetworkType | "erc20" | "cw20";
 
 export interface BalanceRegistry {
   type: BalanceRegistryType;
@@ -159,7 +159,7 @@ export class ObservableQueryBalancesInner {
     const balances = this.balances;
     return balances.filter(
       (bal) =>
-        new DenomHelper(bal.currency.coinMinimalDenom).type === 'native' &&
+        new DenomHelper(bal.currency.coinMinimalDenom).type === "native" &&
         bal.balance.toDec().gt(new Dec(0)) &&
         bal.currency.coinMinimalDenom !== chainInfo.stakeCurrency.coinMinimalDenom
     );

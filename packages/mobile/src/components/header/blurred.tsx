@@ -1,23 +1,23 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent } from "react";
 import {
   Header,
   StackHeaderProps,
-  TransitionPresets
-} from '@react-navigation/stack';
-import { Animated, Platform, StyleSheet, View } from 'react-native';
-import { BlurView } from '@react-native-community/blur';
-import { usePageScrollPosition } from '../../providers/page-scroll-position';
-import { useRoute } from '@react-navigation/native';
-import { HeaderLeftBackButton } from './button';
-import { colors } from '../../themes';
-import { useStore } from '../../stores';
+  TransitionPresets,
+} from "@react-navigation/stack";
+import { Animated, Platform, StyleSheet, View } from "react-native";
+import { BlurView } from "@react-native-community/blur";
+import { usePageScrollPosition } from "../../providers/page-scroll-position";
+import { useRoute } from "@react-navigation/native";
+import { HeaderLeftBackButton } from "./button";
+import { colors } from "../../themes";
+import { useStore } from "../../stores";
 
 export const BlurredHeaderScreenOptionsPreset = {
-  headerTitleAlign: 'center' as 'left' | 'center',
+  headerTitleAlign: "center" as "left" | "center",
   headerStyle: {
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
     elevation: 0,
-    shadowOpacity: 0
+    shadowOpacity: 0,
   },
   headerBackground: undefined,
   headerBackTitleVisible: false,
@@ -26,21 +26,21 @@ export const BlurredHeaderScreenOptionsPreset = {
     return <BlurredHeader {...props} />;
   },
   headerLeftContainerStyle: {
-    marginLeft: 10
+    marginLeft: 10,
   },
   headerRightContainerStyle: {
-    marginRight: 10
+    marginRight: 10,
   },
   // eslint-disable-next-line react/display-name
   headerLeft: (props: any) => <HeaderLeftBackButton {...props} />,
-  ...TransitionPresets.SlideFromRightIOS
+  ...TransitionPresets.SlideFromRightIOS,
 };
 
-export const BlurredHeader: FunctionComponent<StackHeaderProps> = props => {
+export const BlurredHeader: FunctionComponent<StackHeaderProps> = (props) => {
   const { appInitStore } = useStore();
   const scheme = appInitStore.getInitApp.theme;
 
-  if (Platform.OS !== 'ios') {
+  if (Platform.OS !== "ios") {
     return <AndroidAlternativeBlurredHeader {...props} />;
   }
 
@@ -60,17 +60,17 @@ export const BlurredHeader: FunctionComponent<StackHeaderProps> = props => {
     >
       <Animated.View
         style={{
-          position: 'absolute',
+          position: "absolute",
           top: 0,
           bottom: 0,
           left: 0,
           right: 0,
-          backgroundColor: scheme === 'dark' ? '#01040D' : 'white',
+          backgroundColor: scheme === "dark" ? "#01040D" : "white",
           opacity: scrollY.interpolate({
             inputRange: [0, 35],
             outputRange: [1, 0.65],
-            extrapolate: 'clamp'
-          })
+            extrapolate: "clamp",
+          }),
         }}
       />
       <Header {...props} />
@@ -78,9 +78,9 @@ export const BlurredHeader: FunctionComponent<StackHeaderProps> = props => {
   );
 };
 
-const AndroidAlternativeBlurredHeader: FunctionComponent<
-  StackHeaderProps
-> = props => {
+const AndroidAlternativeBlurredHeader: FunctionComponent<StackHeaderProps> = (
+  props
+) => {
   const { appInitStore } = useStore();
   const scheme = appInitStore.getInitApp.theme;
   return (
@@ -88,8 +88,8 @@ const AndroidAlternativeBlurredHeader: FunctionComponent<
       <View
         style={{
           ...styles.container,
-          backgroundColor: scheme === 'dark' ? '#01040D' : colors['white'],
-          borderColor: scheme === 'dark' ? '#01040D' : colors['border-white']
+          backgroundColor: scheme === "dark" ? "#01040D" : colors["white"],
+          borderColor: scheme === "dark" ? "#01040D" : colors["border-white"],
         }}
       />
       <Header {...props} />
@@ -99,11 +99,11 @@ const AndroidAlternativeBlurredHeader: FunctionComponent<
 
 const styles = StyleSheet.create({
   container: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     bottom: 0,
     left: 0,
     right: 0,
-    borderBottomWidth: 0.5
-  }
+    borderBottomWidth: 0.5,
+  },
 });

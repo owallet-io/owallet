@@ -1,20 +1,20 @@
-import { observable, action, computed, makeObservable, flow } from 'mobx';
+import { observable, action, computed, makeObservable, flow } from "mobx";
 
-import { ChainInfoInner, ChainStore as BaseChainStore } from '@owallet/stores';
+import { ChainInfoInner, ChainStore as BaseChainStore } from "@owallet/stores";
 
-import { ChainInfo } from '@owallet/types';
+import { ChainInfo } from "@owallet/types";
 import {
   ChainInfoWithEmbed,
   SetPersistentMemoryMsg,
   GetPersistentMemoryMsg,
   GetChainInfosMsg,
   RemoveSuggestedChainInfoMsg,
-  TryUpdateChainMsg
-} from '@owallet/background';
-import { BACKGROUND_PORT } from '@owallet/router';
+  TryUpdateChainMsg,
+} from "@owallet/background";
+import { BACKGROUND_PORT } from "@owallet/router";
 
-import { MessageRequester } from '@owallet/router';
-import { toGenerator } from '@owallet/common';
+import { MessageRequester } from "@owallet/router";
+import { toGenerator } from "@owallet/common";
 
 export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
   @observable
@@ -22,16 +22,20 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
 
   @observable
   protected _isInitializing: boolean = false;
-  protected deferChainIdSelect: string = '';
+  protected deferChainIdSelect: string = "";
 
-  constructor(embedChainInfos: ChainInfo[], protected readonly requester: MessageRequester, initChain?: string) {
+  constructor(
+    embedChainInfos: ChainInfo[],
+    protected readonly requester: MessageRequester,
+    initChain?: string
+  ) {
     super(
       embedChainInfos.map((chainInfo) => {
         return {
           ...chainInfo,
           ...{
-            embeded: true
-          }
+            embeded: true,
+          },
         };
       })
     );
@@ -72,7 +76,7 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
   *saveLastViewChainId() {
     // Save last view chain id to persistent background
     const msg = new SetPersistentMemoryMsg({
-      lastViewChainId: this._selectedChainId
+      lastViewChainId: this._selectedChainId,
     });
     yield this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
@@ -84,7 +88,9 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
 
     // Get last view chain id to persistent background
     const msg = new GetPersistentMemoryMsg();
-    const result = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
+    const result = yield* toGenerator(
+      this.requester.sendMessage(BACKGROUND_PORT, msg)
+    );
 
     if (!this.deferChainIdSelect) {
       if (result && result.lastViewChainId) {
@@ -95,21 +101,25 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
 
     if (this.deferChainIdSelect) {
       this.selectChain(this.deferChainIdSelect);
-      this.deferChainIdSelect = '';
+      this.deferChainIdSelect = "";
     }
   }
 
   @flow
   protected *getChainInfosFromBackground() {
     const msg = new GetChainInfosMsg();
-    const result = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
+    const result = yield* toGenerator(
+      this.requester.sendMessage(BACKGROUND_PORT, msg)
+    );
     this.setChainInfos(result.chainInfos);
   }
 
   @flow
   *removeChainInfo(chainId: string) {
     const msg = new RemoveSuggestedChainInfoMsg(chainId);
-    const chainInfos = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
+    const chainInfos = yield* toGenerator(
+      this.requester.sendMessage(BACKGROUND_PORT, msg)
+    );
 
     this.setChainInfos(chainInfos);
   }

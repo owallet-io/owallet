@@ -1,24 +1,24 @@
-import React, { FunctionComponent, useEffect, useRef, useState } from 'react';
-import { registerModal } from '../base';
-import { CardModal } from '../card';
-import { Text, View, KeyboardAvoidingView, Platform } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
-import { useStyle } from '../../styles';
-import { useStore } from '../../stores';
-import { Button } from '../../components/button';
-import { colors, typography } from '../../themes';
+import React, { FunctionComponent, useEffect, useRef, useState } from "react";
+import { registerModal } from "../base";
+import { CardModal } from "../card";
+import { Text, View, KeyboardAvoidingView, Platform } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
+import { useStyle } from "../../styles";
+import { useStore } from "../../stores";
+import { Button } from "../../components/button";
+import { colors, typography } from "../../themes";
 
-import { observer } from 'mobx-react-lite';
-import { useUnmount } from '../../hooks';
-import { BottomSheetProps } from '@gorhom/bottom-sheet';
-import { navigationRef } from '../../router/root';
+import { observer } from "mobx-react-lite";
+import { useUnmount } from "../../hooks";
+import { BottomSheetProps } from "@gorhom/bottom-sheet";
+import { navigationRef } from "../../router/root";
 
-const keyboardVerticalOffset = Platform.OS === 'ios' ? 130 : 0;
+const keyboardVerticalOffset = Platform.OS === "ios" ? 130 : 0;
 
 export const SignTronModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
-  bottomSheetModalConfig?: Omit<BottomSheetProps, 'snapPoints' | 'children'>;
+  bottomSheetModalConfig?: Omit<BottomSheetProps, "snapPoints" | "children">;
 }> = registerModal(
   observer(() => {
     const { chainStore, signInteractionStore } = useStore();
@@ -47,24 +47,36 @@ export const SignTronModal: FunctionComponent<{
 
     return (
       <CardModal>
-        <KeyboardAvoidingView behavior="position" keyboardVerticalOffset={keyboardVerticalOffset}>
-          <View style={style.flatten(['margin-bottom-16'])}>
-            <Text style={style.flatten(['margin-bottom-3'])}>
-              <Text style={style.flatten(['subtitle3', 'color-primary'])}>{`1 `}</Text>
-              <Text style={style.flatten(['subtitle3', 'color-text-black-medium'])}>Message</Text>
+        <KeyboardAvoidingView
+          behavior="position"
+          keyboardVerticalOffset={keyboardVerticalOffset}
+        >
+          <View style={style.flatten(["margin-bottom-16"])}>
+            <Text style={style.flatten(["margin-bottom-3"])}>
+              <Text
+                style={style.flatten(["subtitle3", "color-primary"])}
+              >{`1 `}</Text>
+              <Text
+                style={style.flatten(["subtitle3", "color-text-black-medium"])}
+              >
+                Message
+              </Text>
             </Text>
             <View
               style={style.flatten([
-                'border-radius-8',
-                'border-width-1',
-                'border-color-border-white',
-                'overflow-hidden'
+                "border-radius-8",
+                "border-width-1",
+                "border-color-border-white",
+                "overflow-hidden",
               ])}
             >
-              <ScrollView style={style.flatten(['max-height-214'])} persistentScrollbar={true}>
+              <ScrollView
+                style={style.flatten(["max-height-214"])}
+                persistentScrollbar={true}
+              >
                 <Text
                   style={{
-                    color: colors['sub-text']
+                    color: colors["sub-text"],
                   }}
                 >
                   {JSON.stringify(dataSign, null, 2)}
@@ -75,23 +87,23 @@ export const SignTronModal: FunctionComponent<{
 
           <View
             style={{
-              flexDirection: 'row',
-              justifyContent: 'space-evenly'
+              flexDirection: "row",
+              justifyContent: "space-evenly",
             }}
           >
             <Button
               text="Reject"
               size="large"
               containerStyle={{
-                width: '40%'
+                width: "40%",
               }}
               style={{
-                backgroundColor: colors['red-500']
+                backgroundColor: colors["red-500"],
               }}
               textStyle={{
-                color: colors['white']
+                color: colors["white"],
               }}
-              underlayColor={colors['danger-400']}
+              underlayColor={colors["danger-400"]}
               loading={signInteractionStore.isLoading}
               disabled={signInteractionStore.isLoading}
               onPress={_onPressReject}
@@ -101,27 +113,29 @@ export const SignTronModal: FunctionComponent<{
               size="large"
               disabled={signInteractionStore.isLoading}
               containerStyle={{
-                width: '40%'
+                width: "40%",
               }}
               textStyle={{
-                color: colors['white']
+                color: colors["white"],
               }}
               style={{
-                backgroundColor: signInteractionStore.isLoading ? colors['gray-400'] : colors['purple-900']
+                backgroundColor: signInteractionStore.isLoading
+                  ? colors["gray-400"]
+                  : colors["purple-900"],
               }}
               loading={signInteractionStore.isLoading}
               onPress={async () => {
                 try {
                   await signInteractionStore.approveTronAndWaitEnd();
                   if (
-                    navigationRef.current.getCurrentRoute().name === 'Send' ||
-                    navigationRef.current.getCurrentRoute().name === 'SendTron'
+                    navigationRef.current.getCurrentRoute().name === "Send" ||
+                    navigationRef.current.getCurrentRoute().name === "SendTron"
                   ) {
-                    navigationRef.current.navigate('TxSuccessResult', {});
+                    navigationRef.current.navigate("TxSuccessResult", {});
                   }
                 } catch (error) {
                   signInteractionStore.rejectAll();
-                  console.log('error approveTronAndWaitEnd', error);
+                  console.log("error approveTronAndWaitEnd", error);
                 }
               }}
             />
@@ -131,6 +145,6 @@ export const SignTronModal: FunctionComponent<{
     );
   }),
   {
-    disableSafeArea: true
+    disableSafeArea: true,
   }
 );

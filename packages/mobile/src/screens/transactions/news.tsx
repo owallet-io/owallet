@@ -3,26 +3,26 @@ import React, {
   useCallback,
   useEffect,
   useRef,
-  useState
-} from 'react';
+  useState,
+} from "react";
 import {
   ActivityIndicator,
   FlatList,
   RefreshControl,
   TouchableOpacity,
-  View
-} from 'react-native';
-import FastImage from 'react-native-fast-image';
-import { Text } from '@src/components/text';
-import { metrics, spacing, typography } from '../../themes';
-import { _keyExtract } from '../../utils/helper';
-import crashlytics from '@react-native-firebase/crashlytics';
-import { API } from '../../common/api';
-import { useIsFocused } from '@react-navigation/native';
-import moment from 'moment';
-import { useStore } from '../../stores';
-import { observer } from 'mobx-react-lite';
-import { useTheme } from '@src/themes/theme-provider';
+  View,
+} from "react-native";
+import FastImage from "react-native-fast-image";
+import { Text } from "@src/components/text";
+import { metrics, spacing, typography } from "../../themes";
+import { _keyExtract } from "../../utils/helper";
+import crashlytics from "@react-native-firebase/crashlytics";
+import { API } from "../../common/api";
+import { useIsFocused } from "@react-navigation/native";
+import moment from "moment";
+import { useStore } from "../../stores";
+import { observer } from "mobx-react-lite";
+import { useTheme } from "@src/themes/theme-provider";
 const limit = 5;
 
 export const NewsTab: FunctionComponent<{}> = observer(() => {
@@ -41,16 +41,16 @@ export const NewsTab: FunctionComponent<{}> = observer(() => {
   const page = useRef(1);
   const hasMore = useRef(true);
   const fetchData = async (isLoadMore = false) => {
-    crashlytics().log('transactions - home - fetchData');
+    crashlytics().log("transactions - home - fetchData");
 
     if (hasMore.current) {
       try {
         const res = await API.getNews(
           {
             page: page.current,
-            limit: limit
+            limit: limit,
           },
-          { baseURL: 'https://tracking-tx.orai.io' }
+          { baseURL: "https://tracking-tx.orai.io" }
         );
 
         const value = res.data?.news || [];
@@ -93,14 +93,14 @@ export const NewsTab: FunctionComponent<{}> = observer(() => {
         <TouchableOpacity
           style={{
             padding: 8,
-            flexDirection: 'row',
+            flexDirection: "row",
             backgroundColor: notificationStore?.getReadNotifications?.includes(
               item?.id
             )
-              ? colors['primary']
-              : colors['background-item-list'],
+              ? colors["primary"]
+              : colors["background-item-list"],
             marginVertical: 8,
-            borderRadius: 8
+            borderRadius: 8,
           }}
           key={item?.id}
           onPress={() => {
@@ -113,39 +113,39 @@ export const NewsTab: FunctionComponent<{}> = observer(() => {
                 width: 70,
                 height: 70,
                 borderRadius: 8,
-                backgroundColor: colors['white']
+                backgroundColor: colors["white"],
               }}
-              source={require('../../assets/image/webpage/orai_logo.png')}
+              source={require("../../assets/image/webpage/orai_logo.png")}
             />
           </View>
-          <View style={{ paddingLeft: 12, maxWidth: '75%' }}>
+          <View style={{ paddingLeft: 12, maxWidth: "75%" }}>
             <Text
               style={{
-                fontWeight: '700',
+                fontWeight: "700",
                 fontSize: 16,
-                color: colors['label']
+                color: colors["label"],
               }}
               numberOfLines={2}
             >
-              {item?.title ?? '-'}
+              {item?.title ?? "-"}
             </Text>
             <Text
               style={{
-                color: colors['blue-300'],
-                paddingTop: 8
+                color: colors["blue-300"],
+                paddingTop: 8,
               }}
               numberOfLines={3}
             >
-              {item?.body ?? '-'}
+              {item?.body ?? "-"}
             </Text>
             <Text
               style={{
-                color: colors['blue-300'],
+                color: colors["blue-300"],
                 paddingTop: 8,
-                fontWeight: '700'
+                fontWeight: "700",
               }}
             >
-              {moment(item?.created_at).format('MMM DD, YYYY [at] HH:mm')}
+              {moment(item?.created_at).format("MMM DD, YYYY [at] HH:mm")}
             </Text>
           </View>
         </TouchableOpacity>
@@ -158,10 +158,10 @@ export const NewsTab: FunctionComponent<{}> = observer(() => {
     <View style={{ height: metrics.screenHeight }}>
       <View
         style={{
-          backgroundColor: colors['background'],
+          backgroundColor: colors["background"],
           borderRadius: 16,
           padding: 16,
-          paddingBottom: metrics.screenHeight / 4.2
+          paddingBottom: metrics.screenHeight / 4.2,
         }}
       >
         <FlatList
@@ -177,22 +177,22 @@ export const NewsTab: FunctionComponent<{}> = observer(() => {
             setLoadMore(true);
             fetchData(true);
           }}
-          ListFooterComponent={<View style={{ height: spacing['12'] }} />}
+          ListFooterComponent={<View style={{ height: spacing["12"] }} />}
           ListEmptyComponent={
             <View
               style={{
-                justifyContent: 'center',
-                alignItems: 'center',
-                marginTop: metrics.screenHeight / 4
+                justifyContent: "center",
+                alignItems: "center",
+                marginTop: metrics.screenHeight / 4,
               }}
             >
               <Text
                 style={{
                   ...typography.subtitle1,
-                  color: colors['gray-300']
+                  color: colors["gray-300"],
                 }}
               >
-                {'Nothing new'}
+                {"Nothing new"}
               </Text>
             </View>
           }

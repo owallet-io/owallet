@@ -2,8 +2,8 @@ import React, {
   CSSProperties,
   FunctionComponent,
   useMemo,
-  useState
-} from 'react';
+  useState,
+} from "react";
 import {
   FormGroup,
   Label,
@@ -13,13 +13,13 @@ import {
   InputGroup,
   Button,
   FormText,
-  ModalBody
-} from 'reactstrap';
+  ModalBody,
+} from "reactstrap";
 // import Modal from 'react-modal';
-import { AddressBookPage } from '../../pages/setting/address-book';
+import { AddressBookPage } from "../../pages/setting/address-book";
 
-import styleAddressInput from './address-input.module.scss';
-import classnames from 'classnames';
+import styleAddressInput from "./address-input.module.scss";
+import classnames from "classnames";
 import {
   InvalidBech32Error,
   EmptyAddressError,
@@ -30,11 +30,11 @@ import {
   ENSIsFetchingError,
   IIBCChannelConfig,
   InvalidEvmAddressError,
-  InvalidTronAddressError
-} from '@owallet/hooks';
-import { observer } from 'mobx-react-lite';
-import { useIntl } from 'react-intl';
-import { ObservableEnsFetcher } from '@owallet/ens';
+  InvalidTronAddressError,
+} from "@owallet/hooks";
+import { observer } from "mobx-react-lite";
+import { useIntl } from "react-intl";
+import { ObservableEnsFetcher } from "@owallet/ens";
 
 export interface AddressInputProps {
   recipientConfig: IRecipientConfig;
@@ -63,7 +63,7 @@ export const AddressInput: FunctionComponent<AddressInputProps> = observer(
     disabled = false,
     placeholder,
     inputStyle,
-    inputRef
+    inputRef,
   }) => {
     const intl = useIntl();
 
@@ -72,7 +72,7 @@ export const AddressInput: FunctionComponent<AddressInputProps> = observer(
     const [inputId] = useState(() => {
       const bytes = new Uint8Array(4);
       crypto.getRandomValues(bytes);
-      return `input-${Buffer.from(bytes).toString('hex')}`;
+      return `input-${Buffer.from(bytes).toString("hex")}`;
     });
 
     const isENSAddress = ObservableEnsFetcher.isValidENS(
@@ -88,28 +88,28 @@ export const AddressInput: FunctionComponent<AddressInputProps> = observer(
             return;
           case InvalidBech32Error:
             return intl.formatMessage({
-              id: 'input.recipient.error.invalid-bech32'
+              id: "input.recipient.error.invalid-bech32",
             });
           case InvalidEvmAddressError:
             return intl.formatMessage({
-              id: 'input.recipient.error.invalid-evm-address'
+              id: "input.recipient.error.invalid-evm-address",
             });
           case InvalidTronAddressError:
             return intl.formatMessage({
-              id: 'input.recipient.error.invalid-tron-address'
+              id: "input.recipient.error.invalid-tron-address",
             });
           case ENSNotSupportedError:
             return intl.formatMessage({
-              id: 'input.recipient.error.ens-not-supported'
+              id: "input.recipient.error.ens-not-supported",
             });
           case ENSFailedToFetchError:
             return intl.formatMessage({
-              id: 'input.recipient.error.ens-failed-to-fetch'
+              id: "input.recipient.error.ens-failed-to-fetch",
             });
           case ENSIsFetchingError:
             return;
           default:
-            return intl.formatMessage({ id: 'input.recipient.error.unknown' });
+            return intl.formatMessage({ id: "input.recipient.error.unknown" });
         }
       }
     }, [intl, error]);
@@ -124,7 +124,7 @@ export const AddressInput: FunctionComponent<AddressInputProps> = observer(
         if (memoConfig) {
           memoConfig.setMemo(memo);
         }
-      }
+      },
     };
 
     return (
@@ -154,7 +154,7 @@ export const AddressInput: FunctionComponent<AddressInputProps> = observer(
             <Input
               id={inputId}
               className={classnames(
-                'form-control-alternative',
+                "form-control-alternative",
                 styleAddressInput.input
               )}
               innerRef={inputRef}
@@ -177,7 +177,7 @@ export const AddressInput: FunctionComponent<AddressInputProps> = observer(
               >
                 {/* <i className="fas fa-address-book" /> */}
                 <img
-                  src={require('../../public/assets/svg/address-book.svg')}
+                  src={require("../../public/assets/svg/address-book.svg")}
                   alt="logo"
                 />
               </Button>
@@ -192,7 +192,7 @@ export const AddressInput: FunctionComponent<AddressInputProps> = observer(
             <FormText>{recipientConfig.recipient}</FormText>
           ) : null}
           {errorText != null ? (
-            <FormFeedback style={{ display: 'block' }}>
+            <FormFeedback style={{ display: "block" }}>
               {errorText}
             </FormFeedback>
           ) : null}

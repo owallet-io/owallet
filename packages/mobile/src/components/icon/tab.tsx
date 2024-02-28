@@ -1,5 +1,5 @@
-import React, { FunctionComponent } from 'react';
-import Svg, { Path, Rect } from 'react-native-svg';
+import React, { FunctionComponent } from "react";
+import Svg, { Path, Rect } from "react-native-svg";
 
 export const TabIcon: FunctionComponent<{
   color: string;

@@ -1,5 +1,5 @@
-import { SecretUtils } from 'secretjs/types/enigmautils';
-import { OWallet } from '@owallet/types';
+import { SecretUtils } from "secretjs/types/enigmautils";
+import { OWallet } from "@owallet/types";
 
 /**
  * OWalletEnigmaUtils duplicates the public methods that are supported on secretjs's EnigmaUtils class.

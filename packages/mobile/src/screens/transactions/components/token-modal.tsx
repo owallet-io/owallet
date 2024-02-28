@@ -1,14 +1,14 @@
-import { StyleSheet, Text, View } from 'react-native';
-import React, { useMemo } from 'react';
-import { useTheme } from '@src/themes/theme-provider';
-import { useStore } from '@src/stores';
-import { ContainerModal, ItemModal } from './type-modal';
-import { TokenSymbol } from '@src/components/token-symbol';
-import { spacing } from '@src/themes';
-import { DenomHelper } from '@owallet/common';
-import { Bech32Address } from '@owallet/cosmos';
-import OWIcon from '@src/components/ow-icon/ow-icon';
-import { defaultAll } from '@src/common/constants';
+import { StyleSheet, Text, View } from "react-native";
+import React, { useMemo } from "react";
+import { useTheme } from "@src/themes/theme-provider";
+import { useStore } from "@src/stores";
+import { ContainerModal, ItemModal } from "./type-modal";
+import { TokenSymbol } from "@src/components/token-symbol";
+import { spacing } from "@src/themes";
+import { DenomHelper } from "@owallet/common";
+import { Bech32Address } from "@owallet/cosmos";
+import OWIcon from "@src/components/ow-icon/ow-icon";
+import { defaultAll } from "@src/common/constants";
 
 const TokenModal = ({ onActionCoin, active }) => {
   const { chainStore, queriesStore, accountStore, priceStore } = useStore();
@@ -17,7 +17,7 @@ const TokenModal = ({ onActionCoin, active }) => {
   const queryBalances = queriesStore
     .get(chainStore.current.chainId)
     .queryBalances.getQueryBech32Address(
-      chainStore.current.networkType === 'evm'
+      chainStore.current.networkType === "evm"
         ? account.evmosHexAddress
         : account.bech32Address
     );
@@ -48,7 +48,7 @@ const TokenModal = ({ onActionCoin, active }) => {
             <View
               style={{
                 marginRight: 20,
-                marginLeft: 10
+                marginLeft: 10,
               }}
             >
               <OWIcon type="images" source={item?.image} size={30} />
@@ -58,11 +58,11 @@ const TokenModal = ({ onActionCoin, active }) => {
               style={{
                 marginRight: 20,
                 marginLeft: 10,
-                backgroundColor: colors['bg-icon-token']
+                backgroundColor: colors["bg-icon-token"],
               }}
               size={30}
               chainInfo={{
-                stakeCurrency: chainStore.current.stakeCurrency
+                stakeCurrency: chainStore.current.stakeCurrency,
               }}
               currency={item.balance?.currency}
             />
@@ -89,7 +89,7 @@ export const getCoinDenom = (item) => {
   if (!item?.label) {
     const balance = item?.balance;
     if (
-      'originCurrency' in balance.currency &&
+      "originCurrency" in balance.currency &&
       balance.currency.originCurrency
     ) {
       return balance.currency.originCurrency.coinDenom;

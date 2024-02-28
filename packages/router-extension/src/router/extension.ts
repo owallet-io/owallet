@@ -3,8 +3,8 @@ import {
   MessageSender,
   Result,
   EnvProducer,
-  OWalletError
-} from '@owallet/router';
+  OWalletError,
+} from "@owallet/router";
 
 export class ExtensionRouter extends Router {
   constructor(envProducer: EnvProducer) {
@@ -13,7 +13,7 @@ export class ExtensionRouter extends Router {
 
   listen(port: string): void {
     if (!port) {
-      throw new Error('Empty port');
+      throw new Error("Empty port");
     }
 
     this.port = port;
@@ -29,7 +29,7 @@ export class ExtensionRouter extends Router {
   }
 
   unlisten(): void {
-    this.port = '';
+    this.port = "";
     browser.runtime.onMessage.removeListener(this.onMessage);
     // Although security considerations cross-extension communication are in place,
     // we have put in additional security measures by disbling extension-to-extension communication until a formal security audit has taken place.
@@ -61,7 +61,7 @@ export class ExtensionRouter extends Router {
     try {
       const result = await this.handleMessage(message, sender);
       return {
-        return: result
+        return: result,
       };
     } catch (e) {
       console.log(
@@ -73,16 +73,16 @@ export class ExtensionRouter extends Router {
           error: {
             code: e.code,
             module: e.module,
-            message: e.message || e.toString()
-          }
+            message: e.message || e.toString(),
+          },
         });
       } else if (e) {
         return Promise.resolve({
-          error: e.message || e.toString()
+          error: e.message || e.toString(),
         });
       } else {
         return Promise.resolve({
-          error: 'Unknown error, and error is null'
+          error: "Unknown error, and error is null",
         });
       }
     }

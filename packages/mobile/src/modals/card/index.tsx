@@ -1,12 +1,12 @@
-import React, { FunctionComponent } from 'react';
-import { StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
-import { Text } from '@src/components/text';
-import { useStyle } from '../../styles';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import React, { FunctionComponent } from "react";
+import { StyleSheet, TextStyle, View, ViewStyle } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
+import { Text } from "@src/components/text";
+import { useStyle } from "../../styles";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { useStore } from '../../stores';
-import { useTheme } from '@src/themes/theme-provider';
+import { useStore } from "../../stores";
+import { useTheme } from "@src/themes/theme-provider";
 
 // CONTRACT: Use with { disableSafeArea: true, align: "bottom" } modal options.
 export const CardModal: FunctionComponent<{
@@ -16,7 +16,14 @@ export const CardModal: FunctionComponent<{
   disableGesture?: boolean;
   labelStyle?: TextStyle;
   disabledScrollView?: boolean;
-}> = ({ title, right, children, childrenContainerStyle, labelStyle, disabledScrollView = true }) => {
+}> = ({
+  title,
+  right,
+  children,
+  childrenContainerStyle,
+  labelStyle,
+  disabledScrollView = true,
+}) => {
   const style = useStyle();
   const { colors } = useTheme();
   const safeAreaInsets = useSafeAreaInsets();
@@ -30,26 +37,39 @@ export const CardModal: FunctionComponent<{
       keyboardShouldPersistTaps="handled"
       style={[
         StyleSheet.flatten([
-          style.flatten(['border-radius-top-left-8', 'border-radius-top-right-8', 'overflow-hidden']),
+          style.flatten([
+            "border-radius-top-left-8",
+            "border-radius-top-right-8",
+            "overflow-hidden",
+          ]),
           {
-            paddingBottom: safeAreaInsets.bottom
-          }
+            paddingBottom: safeAreaInsets.bottom,
+          },
         ]),
         {
-          backgroundColor: colors['background-box']
-        }
+          backgroundColor: colors["background-box"],
+        },
       ]}
     >
       {/* Below view is not animated, but to let the gesture handler to accept the animated block, you should set the children of the gesture handler as the Animated.View */}
-      <View style={style.flatten(['padding-x-page'])}>
+      <View style={style.flatten(["padding-x-page"])}>
         {title ? (
           <React.Fragment>
-            <View style={style.flatten(['flex-row', 'items-center', 'margin-bottom-16'])}>
+            <View
+              style={style.flatten([
+                "flex-row",
+                "items-center",
+                "margin-bottom-16",
+              ])}
+            >
               <Text
                 style={{
-                  ...style.flatten(['h4']),
-                  color: scheme === 'dark' ? colors['white'] : colors['text-black-high'],
-                  ...labelStyle
+                  ...style.flatten(["h4"]),
+                  color:
+                    scheme === "dark"
+                      ? colors["white"]
+                      : colors["text-black-high"],
+                  ...labelStyle,
                 }}
               >
                 {title}
@@ -58,17 +78,22 @@ export const CardModal: FunctionComponent<{
             </View>
             <View
               style={[
-                style.flatten(['height-1']),
+                style.flatten(["height-1"]),
                 {
                   // borderColor: colors['border']
-                }
+                },
               ]}
             />
           </React.Fragment>
         ) : null}
       </View>
 
-      <View style={StyleSheet.flatten([style.flatten(['padding-page', 'padding-top-16']), childrenContainerStyle])}>
+      <View
+        style={StyleSheet.flatten([
+          style.flatten(["padding-page", "padding-top-16"]),
+          childrenContainerStyle,
+        ])}
+      >
         {children}
       </View>
     </ContainerElement>
