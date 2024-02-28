@@ -127,7 +127,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
 
   const loadTokenAmounts = useLoadTokens(universalSwapStore);
   // handle fetch all tokens of all chains
-  const handleFetchAmounts = async ({ orai, eth, tron, kwt }) => {
+  const handleFetchAmounts = async (orai?, eth?, tron?, kwt?) => {
     let loadTokenParams = {};
     try {
       const cwStargate = {
@@ -137,10 +137,10 @@ export const HomeScreen: FunctionComponent = observer(props => {
       };
       loadTokenParams = {
         ...loadTokenParams,
-        oraiAddress: orai,
-        metamaskAddress: eth,
-        kwtAddress: kwt,
-        tronAddress: getBase58Address(tron),
+        oraiAddress: orai ?? accountOrai.bech32Address,
+        metamaskAddress: eth ?? accountEth.evmosHexAddress,
+        kwtAddress: kwt ?? accountKawaiiCosmos.bech32Address,
+        tronAddress: getBase58Address(tron ?? accountTron.evmosHexAddress),
         cwStargate
       };
 
@@ -165,13 +165,13 @@ export const HomeScreen: FunctionComponent = observer(props => {
     ) {
       setTimeout(() => {
         universalSwapStore.clearAmounts();
-        handleFetchAmounts({
-          orai: accountOrai.bech32Address,
-          eth: accountEth.evmosHexAddress,
-          tron: accountTron.evmosHexAddress,
-          kwt: accountKawaiiCosmos.bech32Address
-        });
-      }, 2000);
+        handleFetchAmounts(
+          accountOrai.bech32Address,
+          accountEth.evmosHexAddress,
+          accountTron.evmosHexAddress,
+          accountKawaiiCosmos.bech32Address
+        );
+      }, 1400);
     }
   }, [
     accountOrai.bech32Address,
