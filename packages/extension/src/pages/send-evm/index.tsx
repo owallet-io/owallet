@@ -102,7 +102,7 @@ export const SendEvmPage: FunctionComponent<{
     accountInfo.msgOpts.send,
     address,
     queriesStore.get(current.chainId).queryBalances,
-    EthereumEndpoint,
+    EthereumEndpoint
   );
   const initGasDefault = current.chainId !== ChainIdEnum.Oasis ? 21000 : 0;
   const recipient = sendConfigs.recipientConfig.recipient;
