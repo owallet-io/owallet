@@ -100,7 +100,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
       });
       return;
     }
-  }, [newMnemonicConfig]);
+  }, [newMnemonicConfig, wordSet]);
 
   return (
     <View style={styles.container}>
