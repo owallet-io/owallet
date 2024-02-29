@@ -4,10 +4,15 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { PageWithScrollView } from "../../../components/page";
-import { Platform, StyleSheet, View } from "react-native";
+import {
+  Platform,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  ScrollView,
+} from "react-native";
 import { Text } from "@src/components/text";
-import { WordChip } from "../../../components/mnemonic";
+import { BackupWordChip } from "../../../components/mnemonic";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
 import { NewMnemonicConfig } from "./hook";
@@ -15,13 +20,13 @@ import { RegisterConfig } from "@owallet/hooks";
 import { observer } from "mobx-react-lite";
 import { RectButton } from "../../../components/rect-button";
 import { BIP44HDPath } from "@owallet/types";
-import { useStore } from "../../../stores";
-import { navigate, checkRouter } from "../../../router/root";
-import { spacing, typography } from "../../../themes";
-import { OWalletLogo } from "../owallet-logo";
+import { navigate } from "../../../router/root";
+import { metrics, spacing, typography } from "../../../themes";
 import OWButton from "@src/components/button/OWButton";
 import { SCREENS } from "@src/common/constants";
-import { LRRedact } from "@logrocket/react-native";
+import OWIcon from "@src/components/ow-icon/ow-icon";
+import OWText from "@src/components/text/ow-text";
+import { showToast } from "@src/utils/helper";
 
 export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
   const route = useRoute<
@@ -32,18 +37,19 @@ export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
           registerConfig: RegisterConfig;
           newMnemonicConfig: NewMnemonicConfig;
           bip44HDPath: BIP44HDPath;
+          walletName?: string;
         }
       >,
       string
     >
   >();
 
-  const { analyticsStore } = useStore();
   const { colors } = useTheme();
 
   // const smartNavigation = useSmartNavigation();
   const navigation = useNavigation();
   const registerConfig = route.params.registerConfig;
+  const walletName = route.params.walletName;
   const newMnemonicConfig = route.params.newMnemonicConfig;
 
   const [candidateWords, setCandidateWords] = useState<
@@ -78,139 +84,122 @@ export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
     (word) => word === undefined
   );
 
-  const [isCreating, setIsCreating] = useState(false);
   const styles = useStyles();
-  const onVerifyMnemonic = useCallback(async () => {
-    if (isCreating) return;
-    setIsCreating(true);
-    await registerConfig.createMnemonic(
-      newMnemonicConfig.name,
-      newMnemonicConfig.mnemonic,
-      newMnemonicConfig.password,
-      route.params.bip44HDPath
-    );
 
-    analyticsStore.setUserProperties({
-      registerType: "seed",
-      accountType: "mnemonic",
-    });
-    if (checkRouter(props?.route?.name, "RegisterVerifyMnemonicMain")) {
-      navigate(SCREENS.RegisterDone, {
-        password: newMnemonicConfig.password,
-        type: "new",
+  const onVerifyMnemonic = useCallback(async () => {
+    if (wordSet.join(" ") === newMnemonicConfig.mnemonic) {
+      navigate(SCREENS.RegisterNewPincode, {
+        registerConfig,
+        walletName: walletName,
+        words: newMnemonicConfig.mnemonic,
       });
     } else {
-      navigation.reset({
-        index: 0,
-        routes: [
-          {
-            name: "Register.Done",
-            params: {
-              password: newMnemonicConfig.password,
-              type: "new",
-            },
-          },
-        ],
+      showToast({
+        message: "Mnemonic is not match",
+        type: "danger",
       });
+      return;
     }
-  }, [newMnemonicConfig, isCreating]);
+  }, [newMnemonicConfig]);
+
   return (
-    <PageWithScrollView
-      contentContainerStyle={styles.containerContentScroll}
-      backgroundColor={colors["plain-background"]}
-    >
-      <LRRedact>
-        <View style={styles.headerView}>
-          <Text style={styles.titleHeaderView}>Create new wallet</Text>
-          <View>
-            <OWalletLogo size={72} />
-          </View>
-        </View>
-        <Text
-          style={{
-            ...typography["h7"],
-            color: colors["text-label-input"],
-            marginTop: 32,
-            marginBottom: 4,
-          }}
+    <View style={styles.container}>
+      <ScrollView>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.goBack}
         >
-          Confirm your mnemonic
-        </Text>
-        <WordsCard
-          wordSet={wordSet.map((word, i) => {
-            return {
-              word: word ?? "",
-              empty: word === undefined,
-              dashed: i === firstEmptyWordSetIndex,
-            };
-          })}
-        />
-        <View
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            flexWrap: "wrap",
-          }}
-        >
-          {candidateWords.map(({ word, usedIndex }, i) => {
-            return (
-              <WordButton
-                key={i.toString()}
-                word={word}
-                used={usedIndex >= 0}
-                onPress={() => {
-                  const newWordSet = wordSet.slice();
-                  const newCandiateWords = candidateWords.slice();
-                  if (usedIndex < 0) {
-                    if (firstEmptyWordSetIndex < 0) {
-                      return;
+          <OWIcon
+            size={16}
+            color={colors["neutral-icon-on-light"]}
+            name="arrow-left"
+          />
+        </TouchableOpacity>
+        <View style={[styles.aic, styles.title]}>
+          <OWText variant="heading" style={{ textAlign: "center" }} typo="bold">
+            Confirm your mnemonic
+          </OWText>
+
+          <View
+            style={{
+              paddingLeft: 20,
+              paddingRight: 20,
+              paddingTop: 32,
+            }}
+          />
+          <WordsCard
+            wordSet={wordSet.map((word, i) => {
+              return {
+                word: word ?? "",
+                empty: word === undefined,
+                dashed: i === firstEmptyWordSetIndex,
+              };
+            })}
+          />
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              flexWrap: "wrap",
+            }}
+          >
+            {candidateWords.map(({ word, usedIndex }, i) => {
+              return (
+                <WordButton
+                  key={i.toString()}
+                  word={word}
+                  used={usedIndex >= 0}
+                  onPress={() => {
+                    const newWordSet = wordSet.slice();
+                    const newCandiateWords = candidateWords.slice();
+                    if (usedIndex < 0) {
+                      if (firstEmptyWordSetIndex < 0) {
+                        return;
+                      }
+
+                      newWordSet[firstEmptyWordSetIndex] = word;
+                      setWordSet(newWordSet);
+
+                      newCandiateWords[i].usedIndex = firstEmptyWordSetIndex;
+                      setCandidateWords(newCandiateWords);
+                    } else {
+                      newWordSet[usedIndex] = undefined;
+                      setWordSet(newWordSet);
+
+                      newCandiateWords[i].usedIndex = -1;
+                      setCandidateWords(newCandiateWords);
                     }
-
-                    newWordSet[firstEmptyWordSetIndex] = word;
-                    setWordSet(newWordSet);
-
-                    newCandiateWords[i].usedIndex = firstEmptyWordSetIndex;
-                    setCandidateWords(newCandiateWords);
-                  } else {
-                    newWordSet[usedIndex] = undefined;
-                    setWordSet(newWordSet);
-
-                    newCandiateWords[i].usedIndex = -1;
-                    setCandidateWords(newCandiateWords);
-                  }
-                }}
-              />
-            );
-          })}
+                  }}
+                />
+              );
+            })}
+          </View>
+          <View
+            style={{
+              flex: 1,
+            }}
+          />
         </View>
-        <View
-          style={{
-            flex: 1,
-          }}
-        />
+      </ScrollView>
 
-        <OWButton
-          label="Next"
-          loading={isCreating}
-          disabled={wordSet.join(" ") !== newMnemonicConfig.mnemonic}
-          onPress={onVerifyMnemonic}
-        />
-
-        <OWButton
-          label="Go back"
-          type="link"
-          onPress={() => {
-            navigation.goBack();
-          }}
-        />
-        {/* Mock element for bottom padding */}
-        <View
-          style={{
-            height: 20,
-          }}
-        />
-      </LRRedact>
-    </PageWithScrollView>
+      <View style={styles.aic}>
+        <View style={styles.signIn}>
+          <OWButton
+            style={{
+              borderRadius: 32,
+            }}
+            label={"Next"}
+            onPress={() => {
+              console.log(
+                "wordSet",
+                wordSet.join(" ") === newMnemonicConfig.mnemonic
+              );
+              onVerifyMnemonic();
+            }}
+          />
+        </View>
+      </View>
+    </View>
   );
 });
 
@@ -283,7 +272,7 @@ const WordsCard: FunctionComponent<{
     >
       {wordSet.map((word, i) => {
         return (
-          <WordChip
+          <BackupWordChip
             key={i.toString()}
             index={i + 1}
             word={word.word}
@@ -316,6 +305,56 @@ const useStyles = () => {
     containerContentScroll: {
       paddingTop: Platform.OS == "android" ? 50 : 0,
       paddingHorizontal: spacing["page-pad"],
+    },
+    headerContainer: {
+      height: 72,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+    },
+    container: {
+      paddingTop: metrics.screenHeight / 14,
+      justifyContent: "space-between",
+      height: "100%",
+      backgroundColor: colors["neutral-surface-card"],
+    },
+    signIn: {
+      width: "100%",
+      alignItems: "center",
+      borderTopWidth: 1,
+      borderTopColor: colors["neutral-border-default"],
+      padding: 16,
+    },
+    aic: {
+      alignItems: "center",
+      paddingBottom: 20,
+    },
+    rc: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    goBack: {
+      backgroundColor: colors["neutral-surface-action3"],
+      borderRadius: 999,
+      width: 44,
+      height: 44,
+      alignItems: "center",
+      justifyContent: "center",
+      marginLeft: 16,
+    },
+    borderInput: {
+      borderColor: colors["border-purple-100-gray-800"],
+      backgroundColor: "transparent",
+      borderWidth: 1,
+      paddingLeft: 11,
+      paddingRight: 11,
+      paddingTop: 12,
+      paddingBottom: 12,
+      borderRadius: 8,
+    },
+    title: {
+      paddingHorizontal: 16,
+      paddingTop: 24,
     },
   });
 };

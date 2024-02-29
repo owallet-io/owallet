@@ -4,28 +4,24 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { View, StyleSheet, Platform, Clipboard } from "react-native";
+import { View, StyleSheet, Clipboard, TouchableOpacity } from "react-native";
 import { observer } from "mobx-react-lite";
 import { RouteProp, useIsFocused, useRoute } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
 import { RegisterConfig } from "@owallet/hooks";
 import { useNewMnemonicConfig } from "./hook";
-import { PageWithScrollView } from "../../../components/page";
 import { CheckIcon } from "../../../components/icon";
-import { WordChip } from "../../../components/mnemonic";
-import { Text } from "@src/components/text";
+import { BackupWordChip } from "../../../components/mnemonic";
 import { TextInput } from "../../../components/input";
 import { Controller, useForm } from "react-hook-form";
 import { useSmartNavigation } from "../../../navigation.provider";
 import { useSimpleTimer } from "../../../hooks";
-import { BIP44AdvancedButton, useBIP44Option } from "../bip44";
+import { useBIP44Option } from "../bip44";
 import { navigate, checkRouter } from "../../../router/root";
-import { OWalletLogo } from "../owallet-logo";
 import OWButton from "../../../components/button/OWButton";
 import OWIcon from "../../../components/ow-icon/ow-icon";
-import { spacing } from "../../../themes";
-import OWButtonIcon from "@src/components/button/ow-button-icon";
-import { LRRedact } from "@logrocket/react-native";
+import { metrics } from "../../../themes";
+import OWText from "@src/components/text/ow-text";
 
 interface FormData {
   name: string;
@@ -53,23 +49,17 @@ export const NewMnemonicScreen: FunctionComponent = observer((props) => {
 
   const newMnemonicConfig = useNewMnemonicConfig(registerConfig);
   const [mode] = useState(registerConfig.mode);
-  const [statusPass, setStatusPass] = useState(false);
-  const [statusConfirmPass, setStatusConfirmPass] = useState(false);
 
   const words = newMnemonicConfig.mnemonic.split(" ");
 
   const {
     control,
     handleSubmit,
-    setFocus,
     getValues,
     formState: { errors },
   } = useForm<FormData>();
 
   const submit = handleSubmit(() => {
-    newMnemonicConfig.setName(getValues("name"));
-    newMnemonicConfig.setPassword(getValues("password"));
-
     if (checkRouter(props?.route?.name, "RegisterMain")) {
       navigate("RegisterVerifyMnemonicMain", {
         registerConfig,
@@ -81,6 +71,7 @@ export const NewMnemonicScreen: FunctionComponent = observer((props) => {
         registerConfig,
         newMnemonicConfig,
         bip44HDPath: bip44Option.bip44HDPath,
+        walletName: getValues("name"),
       });
     }
   });
@@ -91,169 +82,90 @@ export const NewMnemonicScreen: FunctionComponent = observer((props) => {
       smartNavigation.navigateSmart("Register.Intro", {});
     }
   };
-  const onSubmitEditingUserName = () => {
-    if (mode === "add") {
-      submit();
-    }
-    if (mode === "create") {
-      setFocus("password");
-    }
-  };
-  const renderUserName = ({ field: { onChange, onBlur, value, ref } }) => {
+
+  const renderWalletName = ({ field: { onChange, onBlur, value, ref } }) => {
     return (
       <TextInput
-        label="Username"
+        label=""
+        topInInputContainer={
+          <View style={{ paddingBottom: 4 }}>
+            <OWText>Wallet Name</OWText>
+          </View>
+        }
+        returnKeyType="next"
         inputStyle={{
-          ...styles.borderInput,
+          width: metrics.screenWidth - 32,
+          borderColor: colors["neutral-border-strong"],
         }}
-        returnKeyType={mode === "add" ? "done" : "next"}
-        onSubmitEditing={onSubmitEditingUserName}
+        style={{ fontWeight: "600", paddingLeft: 4, fontSize: 15 }}
+        inputLeft={
+          <OWIcon
+            size={20}
+            name="wallet-outline"
+            color={colors["primary-text-action"]}
+          />
+        }
         error={errors.name?.message}
         onBlur={onBlur}
         onChangeText={onChange}
         value={value}
         ref={ref}
-      />
-    );
-  };
-  const onSubmitEditingPassword = () => {
-    setFocus("confirmPassword");
-  };
-  const showPass = () => setStatusPass(!statusPass);
-  const renderPassword = ({ field: { onChange, onBlur, value, ref } }) => {
-    return (
-      <TextInput
-        label="Password"
-        returnKeyType="next"
-        inputStyle={{
-          ...styles.borderInput,
-        }}
-        secureTextEntry={true}
-        onSubmitEditing={onSubmitEditingPassword}
-        inputRight={
-          <OWButtonIcon
-            style={styles.padIcon}
-            onPress={showPass}
-            name={!statusPass ? "eye" : "eye-slash"}
-            colorIcon={colors["icon-primary-surface-default-gray"]}
-            sizeIcon={22}
-          />
-        }
-        secureTextEntry={!statusPass}
-        error={errors.password?.message}
-        onBlur={onBlur}
-        onChangeText={onChange}
-        value={value}
-        ref={ref}
-      />
-    );
-  };
-  const validatePassword = (value: string) => {
-    if (value.length < 8) {
-      return "Password must be longer than 8 characters";
-    }
-  };
-  const showConfirmPass = useCallback(
-    () => setStatusConfirmPass(!statusConfirmPass),
-    [statusConfirmPass]
-  );
-
-  const renderConfirmPassword = ({
-    field: { onChange, onBlur, value, ref },
-  }) => {
-    return (
-      <TextInput
-        label="Confirm password"
-        returnKeyType="done"
-        inputRight={
-          <OWButton
-            style={styles.padIcon}
-            type="link"
-            onPress={showConfirmPass}
-            icon={
-              <OWIcon
-                name={!statusConfirmPass ? "eye" : "eye-slash"}
-                color={colors["icon-primary-surface-default-gray"]}
-                size={22}
-              />
-            }
-          />
-        }
-        secureTextEntry={!statusConfirmPass}
         onSubmitEditing={submit}
-        inputStyle={{
-          ...styles.borderInput,
-        }}
-        error={errors.confirmPassword?.message}
-        onBlur={onBlur}
-        onChangeText={onChange}
-        value={value}
-        ref={ref}
       />
     );
   };
-  const validateConfirmPassword = (value: string) => {
-    if (value.length < 8) {
-      return "Password must be longer than 8 characters";
-    }
-    if (getValues("password") !== value) {
-      return "Password doesn't match";
-    }
-  };
+
   const styles = useStyles();
 
   return (
-    <PageWithScrollView
-      contentContainerStyle={styles.container}
-      backgroundColor={colors["plain-background"]}
-    >
-      {/* Mock for flexible margin top */}
-      <LRRedact>
-        <View style={styles.headerContainer}>
-          <Text style={styles.title}>Create new wallet</Text>
-          <View>
-            <OWalletLogo size={72} />
-          </View>
+    <View style={styles.container}>
+      <View>
+        <TouchableOpacity onPress={onGoBack} style={styles.goBack}>
+          <OWIcon
+            size={16}
+            color={colors["neutral-icon-on-light"]}
+            name="arrow-left"
+          />
+        </TouchableOpacity>
+        <View style={[styles.aic, styles.title]}>
+          <OWText variant="heading" style={{ textAlign: "center" }} typo="bold">
+            Create new wallet
+          </OWText>
+
+          <View
+            style={{
+              paddingLeft: 20,
+              paddingRight: 20,
+              paddingTop: 32,
+            }}
+          />
+          <WordsCard words={words} />
+          <Controller
+            control={control}
+            rules={{
+              required: "Wallet name is required",
+            }}
+            render={renderWalletName}
+            name="name"
+            defaultValue={`OWallet-${
+              Math.floor(Math.random() * (100 - 1)) + 1
+            }`}
+          />
         </View>
-        <WordsCard words={words} />
-        <Controller
-          control={control}
-          rules={{
-            required: "Name is required",
-          }}
-          render={renderUserName}
-          name="name"
-          defaultValue={`OWallet-${Math.floor(Math.random() * 100)}`}
-        />
-        {mode === "create" ? (
-          <React.Fragment>
-            <Controller
-              control={control}
-              rules={{
-                required: "Password is required",
-                validate: validatePassword,
-              }}
-              render={renderPassword}
-              name="password"
-              defaultValue=""
-            />
-            <Controller
-              control={control}
-              rules={{
-                required: "Confirm password is required",
-                validate: validateConfirmPassword,
-              }}
-              render={renderConfirmPassword}
-              name="confirmPassword"
-              defaultValue=""
-            />
-          </React.Fragment>
-        ) : null}
-        <BIP44AdvancedButton bip44Option={bip44Option} />
-        <OWButton onPress={submit} label="Next" />
-        <OWButton onPress={onGoBack} label="Go back" type="link" />
-      </LRRedact>
-    </PageWithScrollView>
+      </View>
+
+      <View style={styles.aic}>
+        <View style={styles.signIn}>
+          <OWButton
+            style={{
+              borderRadius: 32,
+            }}
+            label={mode === "add" ? "Import" : " Next"}
+            onPress={submit}
+          />
+        </View>
+      </View>
+    </View>
   );
 });
 
@@ -289,11 +201,12 @@ const WordsCard: FunctionComponent<{
     <View style={styles.containerWord}>
       {words.map((word, i) => {
         return (
-          <WordChip
+          <BackupWordChip
             key={i.toString()}
             index={i + 1}
             word={word}
             hideWord={hideWord}
+            colors={colors}
           />
         );
       })}
@@ -361,12 +274,7 @@ const useStyles = () => {
       flexDirection: "row",
       flexWrap: "wrap",
     },
-    title: {
-      fontSize: 24,
-      lineHeight: 34,
-      fontWeight: "700",
-      color: colors["text-title"],
-    },
+
     headerContainer: {
       height: 72,
       flexDirection: "row",
@@ -374,9 +282,34 @@ const useStyles = () => {
       justifyContent: "space-between",
     },
     container: {
-      paddingHorizontal: spacing["page-pad"],
-      // flexGrow: 1,
-      paddingTop: Platform.OS == "android" ? 50 : 0,
+      paddingTop: metrics.screenHeight / 14,
+      justifyContent: "space-between",
+      height: "100%",
+      backgroundColor: colors["neutral-surface-card"],
+    },
+    signIn: {
+      width: "100%",
+      alignItems: "center",
+      borderTopWidth: 1,
+      borderTopColor: colors["neutral-border-default"],
+      padding: 16,
+    },
+    aic: {
+      alignItems: "center",
+      paddingBottom: 20,
+    },
+    rc: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    goBack: {
+      backgroundColor: colors["neutral-surface-action3"],
+      borderRadius: 999,
+      width: 44,
+      height: 44,
+      alignItems: "center",
+      justifyContent: "center",
+      marginLeft: 16,
     },
     borderInput: {
       borderColor: colors["border-purple-100-gray-800"],
@@ -388,5 +321,14 @@ const useStyles = () => {
       paddingBottom: 12,
       borderRadius: 8,
     },
+    title: {
+      paddingHorizontal: 16,
+      paddingTop: 24,
+    },
+    input: {
+      width: metrics.screenWidth - 32,
+      borderColor: colors["neutral-border-strong"],
+    },
+    textInput: { fontWeight: "600", paddingLeft: 4, fontSize: 15 },
   });
 };
