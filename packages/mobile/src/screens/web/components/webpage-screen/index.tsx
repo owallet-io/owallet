@@ -24,33 +24,16 @@ import {
 } from "../../../../injected/injected-provider";
 import { RNMessageRequesterExternal } from "../../../../router";
 import { useStore } from "../../../../stores";
-import { InjectedProviderUrl } from "../../config";
 import { WebViewStateContext } from "../context";
 import { BrowserFooterSection } from "../footer-section";
 import { OnScreenWebpageScreenHeader } from "../header";
 import { SwtichTab } from "../switch-tabs";
 import { LRRedactProps } from "@logrocket/react-native";
 
-export const useInjectedSourceCode = () => {
-  const [code, setCode] = useState<string | undefined>();
-
-  useEffect(() => {
-    fetch(InjectedProviderUrl)
-      .then((res) => {
-        return res.text();
-      })
-      .then((res) => {
-        setCode(res);
-      })
-      .catch((err) => console.log(err));
-  }, []);
-
-  return code;
-};
-
 export const WebpageScreen: FunctionComponent<
   React.ComponentProps<typeof WebView> & {
     name: string;
+    sourceCode: string;
   }
 > = observer((props) => {
   const { keyRingStore, chainStore, browserStore } = useStore();
@@ -293,8 +276,6 @@ export const WebpageScreen: FunctionComponent<
     }
   }, [canGoBack, navigation]);
 
-  const sourceCode = useInjectedSourceCode();
-
   return (
     <PageWithView backgroundColor={colors["background"]} disableSafeArea>
       {isSwitchTab ? (
@@ -335,7 +316,7 @@ export const WebpageScreen: FunctionComponent<
           >
             <OnScreenWebpageScreenHeader />
           </WebViewStateContext.Provider>
-          {sourceCode ? (
+          {props.sourceCode ? (
             <>
               <WebView
                 originWhitelist={["*"]} // to allowing WebView to load blob
@@ -344,7 +325,7 @@ export const WebpageScreen: FunctionComponent<
                 style={pageLoaded ? {} : { flex: 0, height: 0, opacity: 0 }}
                 containerStyle={{ marginBottom: bottomHeight }}
                 cacheEnabled={true}
-                injectedJavaScriptBeforeContentLoaded={sourceCode}
+                injectedJavaScriptBeforeContentLoaded={props.sourceCode}
                 onLoad={handleWebViewLoaded}
                 onMessage={onMessage}
                 onNavigationStateChange={(e) => {

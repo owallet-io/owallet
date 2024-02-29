@@ -20,12 +20,29 @@ import { observer } from "mobx-react-lite";
 import { SearchLightIcon, XIcon } from "../../components/icon";
 import { useTheme } from "@src/themes/theme-provider";
 import OWFlatList from "@src/components/page/ow-flat-list";
+import { InjectedProviderUrl } from "./config";
 
 interface BrowserProps extends ReactPropTypes {
   route: {
     params: { url?: string };
   };
 }
+export const useInjectedSourceCode = () => {
+  const [code, setCode] = useState<string | undefined>();
+
+  useEffect(() => {
+    fetch(InjectedProviderUrl)
+      .then((res) => {
+        return res.text();
+      })
+      .then((res) => {
+        setCode(res);
+      })
+      .catch((err) => console.log(err));
+  }, []);
+
+  return code;
+};
 
 export const BrowserBookmark: FunctionComponent<{}> = ({}) => {
   const style = useStyle();
@@ -98,6 +115,16 @@ export const Browser: FunctionComponent<BrowserProps> = observer((props) => {
   const [url, setUrl] = useState("");
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
 
+  const sourceCode = useInjectedSourceCode();
+
+  const handleNavigateDapp = ({ name, uri }) => {
+    navigation.navigate("Web.dApp", {
+      name: name,
+      uri: uri,
+      sourceCode,
+    });
+  };
+
   useEffect(() => {
     setTimeout(function () {
       if (checkValidDomain(props?.route?.params?.url?.toLowerCase())) {
@@ -105,10 +132,8 @@ export const Browser: FunctionComponent<BrowserProps> = observer((props) => {
           props.route.params.url?.toLowerCase().indexOf("http") >= 0
             ? props.route.params.url?.toLowerCase()
             : "https://" + props.route.params?.url?.toLowerCase();
-        navigation.navigate("Web.dApp", {
-          name: tabUri,
-          uri: tabUri,
-        });
+
+        handleNavigateDapp({ name: tabUri, uri: tabUri });
       }
     }, 1000);
   }, [props?.route?.params?.url]);
@@ -121,10 +146,7 @@ export const Browser: FunctionComponent<BrowserProps> = observer((props) => {
           deepLinkUriStore.link?.toLowerCase().indexOf("http") >= 0
             ? deepLinkUriStore.link?.toLowerCase()
             : "https://" + deepLinkUriStore.link?.toLowerCase();
-        navigation.navigate("Web.dApp", {
-          name: tabUri,
-          uri: tabUri,
-        });
+        handleNavigateDapp({ name: tabUri, uri: tabUri });
       }
     }, 1000);
   }, []);
@@ -149,26 +171,16 @@ export const Browser: FunctionComponent<BrowserProps> = observer((props) => {
           browserStore.addTab(tab);
         }
         setUrl(currentUri);
-        navigation.navigate("Web.dApp", tab);
+        handleNavigateDapp(tab);
       } else {
         let uri = `https://www.google.com/search?q=${currentUri ?? ""}`;
-        navigation.navigate("Web.dApp", {
-          name: "Google",
-          uri,
-        });
+        handleNavigateDapp({ name: "Google", uri: uri });
       }
     }
   };
 
-  const handleClickUri = (uri: string, name: string) => {
-    navigation.navigate("Web.dApp", {
-      name,
-      uri,
-    });
-  };
-
   const handlePressItem = ({ name, uri }) => {
-    handleClickUri(uri, name);
+    handleNavigateDapp({ name: name, uri: uri });
     setIsSwitchTab(false);
     setUrl(uri);
   };
@@ -275,53 +287,55 @@ export const Browser: FunctionComponent<BrowserProps> = observer((props) => {
           </TouchableOpacity>
         </View> */}
 
-        <OWFlatList
-          style={{
-            paddingHorizontal: 20,
-            // paddingTop: 20
-          }}
-          data={browserStore.getBookmarks}
-          keyExtractor={_keyExtract}
-          renderItem={({ item }) => {
-            const e = item;
-            return (
-              <TouchableOpacity
-                key={e.id ?? e.uri}
-                style={style.flatten([
-                  "height-44",
-                  "margin-bottom-15",
-                  "flex-row",
-                ])}
-                onPress={() => onHandleUrl(e.uri)}
-              >
-                <View style={style.flatten(["padding-top-5"])}>
-                  <Image
-                    style={{
-                      width: 20,
-                      height: 22,
-                    }}
-                    source={e.logo}
-                    fadeDuration={0}
-                  />
-                </View>
-                <View style={style.flatten(["padding-x-15"])}>
-                  <Text
-                    style={{
-                      fontSize: 16,
-                      fontWeight: "700",
-                      color: colors["label"],
-                    }}
-                  >
-                    {e.name}
-                  </Text>
-                  <Text style={{ color: colors["sub-text"], fontSize: 14 }}>
-                    {e.uri}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            );
-          }}
-        />
+        {sourceCode ? (
+          <OWFlatList
+            style={{
+              paddingHorizontal: 20,
+              // paddingTop: 20
+            }}
+            data={browserStore.getBookmarks}
+            keyExtractor={_keyExtract}
+            renderItem={({ item }) => {
+              const e = item;
+              return (
+                <TouchableOpacity
+                  key={e.id ?? e.uri}
+                  style={style.flatten([
+                    "height-44",
+                    "margin-bottom-15",
+                    "flex-row",
+                  ])}
+                  onPress={() => onHandleUrl(e.uri)}
+                >
+                  <View style={style.flatten(["padding-top-5"])}>
+                    <Image
+                      style={{
+                        width: 20,
+                        height: 22,
+                      }}
+                      source={e.logo}
+                      fadeDuration={0}
+                    />
+                  </View>
+                  <View style={style.flatten(["padding-x-15"])}>
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        fontWeight: "700",
+                        color: colors["label"],
+                      }}
+                    >
+                      {e.name}
+                    </Text>
+                    <Text style={{ color: colors["sub-text"], fontSize: 14 }}>
+                      {e.uri}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              );
+            }}
+          />
+        ) : null}
       </View>
     );
   };

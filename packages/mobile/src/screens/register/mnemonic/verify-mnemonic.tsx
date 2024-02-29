@@ -86,7 +86,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
 
   const styles = useStyles();
 
-  const onVerifyMnemonic = useCallback(async () => {
+  const onVerifyMnemonic = async () => {
     if (wordSet.join(" ") === newMnemonicConfig.mnemonic) {
       navigate(SCREENS.RegisterNewPincode, {
         registerConfig,
@@ -100,7 +100,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
       });
       return;
     }
-  }, [newMnemonicConfig, wordSet]);
+  };
 
   return (
     <View style={styles.container}>
