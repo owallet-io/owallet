@@ -18,11 +18,16 @@ import { Button } from "reactstrap";
 import { useHistory, useLocation } from "react-router";
 import queryString from "querystring";
 
-import { useRecipientConfig, useSendTxEvmConfig } from "@owallet/hooks";
+import {
+  useAmountConfig,
+  useRecipientConfig,
+  useSendTxEvmConfig,
+} from "@owallet/hooks";
 import { fitPopupWindow } from "@owallet/popup";
 import { EthereumEndpoint } from "@owallet/common";
 import { FeeInput } from "../../components/form/fee-input";
 import { Dec } from "@owallet/unit";
+import { Currency } from "@owallet/types";
 
 export const SendEvmPage: FunctionComponent<{
   coinMinimalDenom?: string;
@@ -70,40 +75,46 @@ export const SendEvmPage: FunctionComponent<{
     keyRingStore.keyRingLedgerAddresses,
     true
   );
-  const { gasPrice } = queriesStore
-    .get(current.chainId)
-    .evm.queryGasPrice.getGasPrice();
-  const recipientConfig = useRecipientConfig(
-    chainStore,
-    current.chainId,
-    EthereumEndpoint
-  );
-  console.log("🚀 ~ recipientConfig:", recipientConfig.recipient);
-
-  const { gas } = queriesStore.get(current.chainId).evm.queryGas.getGas({
-    to: recipientConfig.recipient ?? walletAddress,
-    from: walletAddress,
-  });
-  console.log("🚀 ~ const{gas}=queriesStore.get ~ gas:", gas);
-  console.log("🚀 ~ gasPrice:", gasPrice);
-
   const sendConfigs = useSendTxEvmConfig(
     chainStore,
     current.chainId,
-    {
-      //@ts-ignore
-      native: {
-        gas: gas ?? 21000,
-      },
-      erc20: {
-        gas: gas ?? 21000,
-      },
-    },
+    accountInfo.msgOpts.send,
     walletAddress,
     queriesStore.get(current.chainId).queryBalances,
     queriesStore.get(current.chainId),
     EthereumEndpoint
   );
+  const { gas: gasErc20 } = queriesStore
+    .get(current.chainId)
+    .evmContract.queryGas.getGas({
+      to: sendConfigs.recipientConfig.recipient,
+      from: walletAddress,
+      contract_address:
+        sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.split(":")[1],
+      amount: sendConfigs.amountConfig.amount,
+    });
+  const { gas: gasNative } = queriesStore
+    .get(current.chainId)
+    .evm.queryGas.getGas({
+      to: sendConfigs.recipientConfig.recipient,
+      from: walletAddress,
+    });
+
+  useEffect(() => {
+    if (
+      sendConfigs.amountConfig?.sendCurrency?.coinMinimalDenom?.startsWith(
+        "erc20"
+      )
+    ) {
+      if (!gasErc20) return;
+      sendConfigs.gasConfig.setGas(gasErc20);
+      return;
+    }
+    if (!gasNative) return;
+    sendConfigs.gasConfig.setGas(gasNative);
+    return () => {};
+  }, [gasNative, gasErc20, sendConfigs.amountConfig?.sendCurrency]);
+
   useEffect(() => {
     if (query.defaultDenom) {
       const currency = current.currencies.find(
@@ -126,7 +137,7 @@ export const SendEvmPage: FunctionComponent<{
 
   useEffect(() => {
     if (query.defaultRecipient) {
-      recipientConfig.setRawRecipient(query.defaultRecipient);
+      sendConfigs.recipientConfig.setRawRecipient(query.defaultRecipient);
     }
     if (query.defaultAmount) {
       sendConfigs.amountConfig.setAmount(query.defaultAmount);
@@ -138,7 +149,7 @@ export const SendEvmPage: FunctionComponent<{
   }, [query.defaultAmount, query.defaultMemo, query.defaultRecipient]);
 
   const sendConfigError =
-    recipientConfig.getError() ??
+    sendConfigs.recipientConfig.getError() ??
     sendConfigs.amountConfig.getError() ??
     sendConfigs.memoConfig.getError() ??
     sendConfigs.gasConfig.getError() ??
@@ -159,7 +170,7 @@ export const SendEvmPage: FunctionComponent<{
                 sendConfigs.amountConfig.amount,
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 sendConfigs.amountConfig.sendCurrency!,
-                recipientConfig.recipient,
+                sendConfigs.recipientConfig.recipient,
                 sendConfigs.memoConfig.memo,
                 stdFee,
                 {
@@ -234,7 +245,7 @@ export const SendEvmPage: FunctionComponent<{
           <div>
             <AddressInput
               inputRef={inputRef}
-              recipientConfig={recipientConfig}
+              recipientConfig={sendConfigs.recipientConfig}
               memoConfig={sendConfigs.memoConfig}
               label={intl.formatMessage({ id: "send.input.recipient" })}
               placeholder="Enter recipient address"

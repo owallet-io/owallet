@@ -15,6 +15,7 @@ import { useSendGasConfig } from "./send-gas";
 import { useAmountConfig } from "./amount";
 import { FeeEvmConfig, useFeeEvmConfig } from "./fee-evm";
 import { Int } from "@owallet/unit";
+import { useEffect, useState } from "react";
 
 type MsgOpts = CosmosMsgOpts & SecretMsgOpts & CosmwasmMsgOpts & Erc20MsgOpts;
 
@@ -24,10 +25,11 @@ export const useSendTxEvmConfig = (
   sendMsgOpts: MsgOpts["send"],
   sender: string,
   queryBalances: ObservableQueryBalances,
-  queryStore: QueriesWrappedBitcoin,
+  queriesStore: QueriesWrappedBitcoin,
   ensEndpoint?: string,
   queryBtcBalances?: ObservableQueryBitcoinBalance
 ) => {
+  const recipientConfig = useRecipientConfig(chainGetter, chainId, ensEndpoint);
   const amountConfig = useAmountConfig(
     chainGetter,
     chainId,
@@ -37,6 +39,7 @@ export const useSendTxEvmConfig = (
   );
 
   const memoConfig = useMemoConfig(chainGetter, chainId);
+
   const gasConfig = useSendGasConfig(
     chainGetter,
     chainId,
@@ -51,14 +54,12 @@ export const useSendTxEvmConfig = (
     amountConfig,
     gasConfig,
     true,
-    queryStore,
+    queriesStore,
     memoConfig
   );
   // Due to the circular references between the amount config and gas/fee configs,
   // set the fee config of the amount config after initing the gas/fee configs.
   amountConfig.setFeeConfig(feeConfig);
-
-  const recipientConfig = useRecipientConfig(chainGetter, chainId, ensEndpoint);
 
   return {
     amountConfig,

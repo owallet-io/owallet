@@ -46,13 +46,19 @@ export interface TxButtonViewProps {
 
 export const TxButtonView: FunctionComponent<TxButtonViewProps> = observer(
   ({ setHasSend, hasSend }) => {
-    const { accountStore, chainStore, queriesStore } = useStore();
+    const { accountStore, chainStore, queriesStore, keyRingStore } = useStore();
 
     const accountInfo = accountStore.getAccount(chainStore.current.chainId);
-    const queries = queriesStore.get(chainStore.current.chainId);
-    const queryBalances = queries.queryBalances.getQueryBech32Address(
-      accountInfo.bech32Address
+    const walletAddress = accountInfo.getAddressDisplay(
+      keyRingStore.keyRingLedgerAddresses
     );
+    const walletAddressFetch = accountInfo.getAddressDisplay(
+      keyRingStore.keyRingLedgerAddresses,
+      true
+    );
+    const queries = queriesStore.get(chainStore.current.chainId);
+    const queryBalances =
+      queries.queryBalances.getQueryBech32Address(walletAddressFetch);
 
     const hasAssets =
       queryBalances.balances.find((bal) =>
@@ -78,7 +84,7 @@ export const TxButtonView: FunctionComponent<TxButtonViewProps> = observer(
           }}
         >
           <ModalBody>
-            <DepositModal bech32Address={accountInfo.bech32Address} />
+            <DepositModal bech32Address={walletAddress} />
           </ModalBody>
         </Modal>
         <Button

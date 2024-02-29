@@ -7,6 +7,7 @@ import { ObservableQueryErc20BalanceRegistry } from "./erc20-balance";
 
 import { OWallet } from "@owallet/types";
 import { QueriesWrappedEvm } from "../evm/queries";
+import { ObservableQueryGasEvmContract } from "./gas";
 
 export interface HasEvmContractQueries {
   evmContract: EvmContractQueries;
@@ -37,7 +38,7 @@ export class QueriesWrappedEvmContract
 
 export class EvmContractQueries {
   public readonly queryErc20ContractInfo: DeepReadonly<ObservableQueryErc20ContractInfo>;
-
+  public readonly queryGas: DeepReadonly<ObservableQueryGasEvmContract>;
   constructor(
     base: QueriesSetBase,
     kvStore: KVStore,
@@ -49,6 +50,12 @@ export class EvmContractQueries {
     );
 
     this.queryErc20ContractInfo = new ObservableQueryErc20ContractInfo(
+      kvStore,
+      chainId,
+      chainGetter
+    );
+
+    this.queryGas = new ObservableQueryGasEvmContract(
       kvStore,
       chainId,
       chainGetter

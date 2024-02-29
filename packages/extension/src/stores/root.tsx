@@ -145,6 +145,9 @@ export class RootStore {
               native: {
                 gas: 21000,
               },
+              erc20: {
+                gas: 21000,
+              },
             },
           },
         };

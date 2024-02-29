@@ -26,7 +26,7 @@ export interface EthereumMsgOpts {
 
 export interface Erc20MsgOpts {
   readonly send: {
-    readonly erc20: Pick<MsgOpt, "gas">;
+    readonly erc20: MsgOpt;
   };
 }
 
