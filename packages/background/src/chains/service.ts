@@ -7,7 +7,7 @@ import {
   ChainInfoWithEmbed,
 } from "./types";
 import { ChainInfo, ChainInfoWithoutEndpoints } from "@owallet/types";
-import { KVStore, Debouncer } from "@owallet/common";
+import { KVStore, Debouncer, ChainIdEnum } from "@owallet/common";
 import { ChainUpdaterService } from "../updater";
 import { InteractionService } from "../interaction";
 import { Env } from "@owallet/router";
@@ -137,6 +137,7 @@ export class ChainsService {
     if (networkType) {
       if (networkType === "evm") {
         // need to check if network type is evm, then we will convert chain id to number from hex
+        if (chainId === "0x1") chainId = ChainIdEnum.Ethereum;
         chainInfo = (await this.getChainInfos()).find((chainInfo) => {
           return (
             ChainIdHelper.parse(Number(chainInfo.chainId)).identifier ===
