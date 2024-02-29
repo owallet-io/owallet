@@ -10,9 +10,9 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { Text } from "@src/components/text";
 import { BalanceText } from "./BalanceText";
 import { TypeTheme, useTheme } from "@src/themes/theme-provider";
-import { tokenImg } from "../helpers";
 import { find } from "lodash";
 import _debounce from "lodash/debounce";
+import { tokensIcon } from "@oraichain/oraidex-common";
 
 const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
   tokenActive,
@@ -38,7 +38,7 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
 
   useEffect(() => {
     const tokenIcon = find(
-      tokenImg,
+      tokensIcon,
       (tk) => tk.coinGeckoId === tokenActive.coinGeckoId
     );
     setTokenIcon(tokenIcon);

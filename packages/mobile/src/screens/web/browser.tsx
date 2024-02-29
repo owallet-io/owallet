@@ -28,7 +28,6 @@ import { useTheme } from "@src/themes/theme-provider";
 import OWFlatList from "@src/components/page/ow-flat-list";
 import { InjectedProviderUrl } from "./config";
 import { SCREENS } from "@src/common/constants";
-import { LoadingSpinner } from "@src/components/spinner";
 
 interface BrowserProps extends ReactPropTypes {
   route: {
