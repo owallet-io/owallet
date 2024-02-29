@@ -21,6 +21,7 @@ import { SearchLightIcon, XIcon } from "../../components/icon";
 import { useTheme } from "@src/themes/theme-provider";
 import OWFlatList from "@src/components/page/ow-flat-list";
 import { InjectedProviderUrl } from "./config";
+import { SCREENS } from "@src/common/constants";
 
 interface BrowserProps extends ReactPropTypes {
   route: {
@@ -118,11 +119,21 @@ export const Browser: FunctionComponent<BrowserProps> = observer((props) => {
   const sourceCode = useInjectedSourceCode();
 
   const handleNavigateDapp = ({ name, uri }) => {
-    navigation.navigate("Web.dApp", {
-      name: name,
-      uri: uri,
-      sourceCode,
-    });
+    if (sourceCode) {
+      navigation.navigate(SCREENS.WebDApp, {
+        name: name,
+        uri: uri,
+        sourceCode,
+      });
+    } else {
+      setTimeout(() => {
+        navigation.navigate(SCREENS.WebDApp, {
+          name: name,
+          uri: uri,
+          sourceCode,
+        });
+      }, 1000);
+    }
   };
 
   useEffect(() => {
