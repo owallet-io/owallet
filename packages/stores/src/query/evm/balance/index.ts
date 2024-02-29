@@ -21,7 +21,6 @@ export class ObservableQueryBalanceNative extends ObservableQueryBalanceInner {
     denomHelper: DenomHelper,
     protected readonly nativeBalances: ObservableQueryEvmBalances
   ) {
-    console.log("hup");
     super(
       kvStore,
       chainId,
@@ -110,10 +109,6 @@ export class ObservableQueryEvmBalances extends ObservableChainQuery<Balances> {
     try {
       const web3 = new Web3(this.chainGetter.getChain(this.chainId).rest);
       const ethBalance = await web3.eth.getBalance(this.walletAddress);
-      console.log(
-        "🚀 ~ ObservableQueryEvmBalances ~ fetchResponse ~ ethBalance:",
-        ethBalance
-      );
       const denomNative = this.chainGetter.getChain(this.chainId).stakeCurrency
         .coinMinimalDenom;
       const balances: CoinPrimitive[] = [

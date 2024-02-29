@@ -8,5 +8,6 @@ export * from "./secret";
 export * from "./cosmos-secret";
 export * from "./store";
 export * from "./cosmwasm";
+export * from "./ethereum";
 export * from "./all";
 export * from "./bitcoin";

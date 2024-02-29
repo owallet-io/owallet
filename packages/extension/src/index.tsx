@@ -67,7 +67,7 @@ import { LogPageViewWrapper } from "./components/analytics";
 import "./ledger";
 import manifest from "./manifest.json";
 import { Menu } from "./pages/main/menu";
-import { SendEvmPage } from "./pages/send-evm";
+import { SendEvmPage } from "./pages/send-evm/send-evm";
 import { ExportToMobilePage } from "./pages/setting/export-to-mobile";
 import { SignEthereumPage } from "./pages/sign/sign-ethereum";
 import { SignTronPage } from "./pages/sign/sign-tron";

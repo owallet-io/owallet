@@ -31,11 +31,13 @@ import { GasInput } from "../gas-input";
 import { action, makeObservable, observable } from "mobx";
 import classNames from "classnames";
 import { useStore } from "../../../stores";
+import { FeeInput } from "../fee-input";
 
 export interface FeeButtonsProps {
   feeConfig: IFeeConfig;
   gasConfig: IGasConfig;
   priceStore: CoinGeckoPriceStore;
+  customFee: boolean;
 
   className?: string;
   label?: string;
@@ -76,14 +78,21 @@ export const FeeButtons: FunctionComponent<FeeButtonsProps> = observer(
     feeSelectLabels = { low: "Low", average: "Average", high: "High" },
     gasLabel,
     isGasInput = true,
+    customFee,
   }) => {
     // This may be not the good way to handle the states across the components.
     // But, rather than using the context API with boilerplate code, just use the mobx state to simplify the logic.
     const [feeButtonState] = useState(() => new FeeButtonState());
-
+    const intl = useIntl();
     return (
       <React.Fragment>
-        {feeConfig.feeCurrency ? (
+        {customFee ? (
+          <FeeInput
+            label={intl.formatMessage({ id: "sign.info.fee" })}
+            feeConfig={feeConfig}
+            priceStore={priceStore}
+          />
+        ) : (
           <FeeButtonsInner
             feeConfig={feeConfig}
             priceStore={priceStore}
@@ -91,7 +100,7 @@ export const FeeButtons: FunctionComponent<FeeButtonsProps> = observer(
             feeSelectLabels={feeSelectLabels}
             feeButtonState={feeButtonState}
           />
-        ) : null}
+        )}
         {/* {feeButtonState.isGasInputOpen || !feeConfig.feeCurrency ? (
           <GasInput label={gasLabel} gasConfig={gasConfig} />
         ) : null} */}

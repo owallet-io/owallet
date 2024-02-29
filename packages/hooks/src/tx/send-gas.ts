@@ -5,12 +5,13 @@ import {
   CosmosMsgOpts,
   SecretMsgOpts,
   CosmwasmMsgOpts,
+  Erc20MsgOpts,
 } from "@owallet/stores";
 import { IAmountConfig } from "./types";
 import { useState } from "react";
 import { action, makeObservable, observable } from "mobx";
 
-type MsgOpts = CosmosMsgOpts & SecretMsgOpts & CosmwasmMsgOpts;
+type MsgOpts = CosmosMsgOpts & SecretMsgOpts & CosmwasmMsgOpts & Erc20MsgOpts;
 
 export class SendGasConfig extends GasConfig {
   @observable.ref
@@ -47,6 +48,8 @@ export class SendGasConfig extends GasConfig {
           return this.sendMsgOpts.secret20.gas;
         case "cw20":
           return this.sendMsgOpts.cw20.gas;
+        case "erc20":
+          return this.sendMsgOpts.erc20.gas;
         default:
           return this.sendMsgOpts.native.gas;
       }

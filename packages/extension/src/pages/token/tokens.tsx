@@ -16,7 +16,7 @@ import { IBCTransferView } from "../main/ibc-transfer";
 import { IBCTransferPage } from "../../pages/ibc-transfer";
 import { SendPage } from "../send";
 import { SelectChain } from "../../layouts/header";
-import { SendEvmPage } from "../send-evm";
+import { SendEvmPage } from "../send-evm/send-evm";
 import { SendTronEvmPage } from "../send-tron";
 import {
   getBase58Address,
@@ -110,13 +110,17 @@ export const TokenPage: FunctionComponent = observer(() => {
     setHasSend(false);
   }, [chainStore.current]);
   const handleCheckSendPage = () => {
-    // if (networkType === 'evm') {
-    if (chainId === TRON_ID) {
-      return <SendTronEvmPage coinMinimalDenom={coinMinimalDenom} tokensTrc20Tron={tokensTron} />;
-    }
-    // return <SendEvmPage coinMinimalDenom={coinMinimalDenom} />;
-    // }
-    else if (networkType === 'bitcoin') {
+    if (networkType === "evm") {
+      if (chainId === TRON_ID) {
+        return (
+          <SendTronEvmPage
+            coinMinimalDenom={coinMinimalDenom}
+            tokensTrc20Tron={tokensTron}
+          />
+        );
+      }
+      return <SendEvmPage coinMinimalDenom={coinMinimalDenom} />;
+    } else if (networkType === "bitcoin") {
       return <SendBtcPage />;
     }
     return <SendPage coinMinimalDenom={coinMinimalDenom} />;

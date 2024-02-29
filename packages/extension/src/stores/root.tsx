@@ -136,6 +136,19 @@ export class RootStore {
     );
 
     const chainOpts = this.chainStore.chainInfos.map((chainInfo) => {
+      // In evm network, default gas for sending
+      if (chainInfo.networkType.startsWith("evm")) {
+        return {
+          chainId: chainInfo.chainId,
+          msgOpts: {
+            send: {
+              native: {
+                gas: 21000,
+              },
+            },
+          },
+        };
+      }
       // In osmosis, increase the default gas for sending
       if (chainInfo.chainId.startsWith("osmosis-")) {
         return {

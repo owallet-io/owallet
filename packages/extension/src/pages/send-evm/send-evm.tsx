@@ -18,11 +18,13 @@ import { Button } from "reactstrap";
 import { useHistory, useLocation } from "react-router";
 import queryString from "querystring";
 
-import { useSendTxConfig } from "@owallet/hooks";
+import { useRecipientConfig, useSendTxEvmConfig } from "@owallet/hooks";
 import { fitPopupWindow } from "@owallet/popup";
 import { EthereumEndpoint } from "@owallet/common";
+import { FeeInput } from "../../components/form/fee-input";
+import { Dec } from "@owallet/unit";
 
-export const SendPage: FunctionComponent<{
+export const SendEvmPage: FunctionComponent<{
   coinMinimalDenom?: string;
 }> = observer(({ coinMinimalDenom }) => {
   const history = useHistory();
@@ -68,19 +70,40 @@ export const SendPage: FunctionComponent<{
     keyRingStore.keyRingLedgerAddresses,
     true
   );
-  const sendConfigs = useSendTxConfig(
+  const { gasPrice } = queriesStore
+    .get(current.chainId)
+    .evm.queryGasPrice.getGasPrice();
+  const recipientConfig = useRecipientConfig(
     chainStore,
     current.chainId,
-    accountInfo.msgOpts.send,
-    walletAddress,
-    queriesStore.get(current.chainId).queryBalances,
     EthereumEndpoint
   );
+  console.log("🚀 ~ recipientConfig:", recipientConfig.recipient);
+
   const { gas } = queriesStore.get(current.chainId).evm.queryGas.getGas({
-    to: sendConfigs.recipientConfig.recipient,
+    to: recipientConfig.recipient ?? walletAddress,
     from: walletAddress,
   });
   console.log("🚀 ~ const{gas}=queriesStore.get ~ gas:", gas);
+  console.log("🚀 ~ gasPrice:", gasPrice);
+
+  const sendConfigs = useSendTxEvmConfig(
+    chainStore,
+    current.chainId,
+    {
+      //@ts-ignore
+      native: {
+        gas: gas ?? 21000,
+      },
+      erc20: {
+        gas: gas ?? 21000,
+      },
+    },
+    walletAddress,
+    queriesStore.get(current.chainId).queryBalances,
+    queriesStore.get(current.chainId),
+    EthereumEndpoint
+  );
   useEffect(() => {
     if (query.defaultDenom) {
       const currency = current.currencies.find(
@@ -103,7 +126,7 @@ export const SendPage: FunctionComponent<{
 
   useEffect(() => {
     if (query.defaultRecipient) {
-      sendConfigs.recipientConfig.setRawRecipient(query.defaultRecipient);
+      recipientConfig.setRawRecipient(query.defaultRecipient);
     }
     if (query.defaultAmount) {
       sendConfigs.amountConfig.setAmount(query.defaultAmount);
@@ -115,7 +138,7 @@ export const SendPage: FunctionComponent<{
   }, [query.defaultAmount, query.defaultMemo, query.defaultRecipient]);
 
   const sendConfigError =
-    sendConfigs.recipientConfig.getError() ??
+    recipientConfig.getError() ??
     sendConfigs.amountConfig.getError() ??
     sendConfigs.memoConfig.getError() ??
     sendConfigs.gasConfig.getError() ??
@@ -136,7 +159,7 @@ export const SendPage: FunctionComponent<{
                 sendConfigs.amountConfig.amount,
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 sendConfigs.amountConfig.sendCurrency!,
-                sendConfigs.recipientConfig.recipient,
+                recipientConfig.recipient,
                 sendConfigs.memoConfig.memo,
                 stdFee,
                 {
@@ -211,7 +234,7 @@ export const SendPage: FunctionComponent<{
           <div>
             <AddressInput
               inputRef={inputRef}
-              recipientConfig={sendConfigs.recipientConfig}
+              recipientConfig={recipientConfig}
               memoConfig={sendConfigs.memoConfig}
               label={intl.formatMessage({ id: "send.input.recipient" })}
               placeholder="Enter recipient address"
@@ -232,6 +255,7 @@ export const SendPage: FunctionComponent<{
             <FeeButtons
               feeConfig={sendConfigs.feeConfig}
               gasConfig={sendConfigs.gasConfig}
+              customFee={true}
               priceStore={priceStore}
               label={intl.formatMessage({ id: "send.input.fee" })}
               feeSelectLabels={{

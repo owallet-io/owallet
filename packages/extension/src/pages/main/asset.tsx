@@ -118,7 +118,8 @@ const LazyDoughnut = React.lazy(async () => {
 });
 
 export const AssetStakedChartView: FunctionComponent = observer(() => {
-  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
+  const { chainStore, accountStore, queriesStore, priceStore, keyRingStore } =
+    useStore();
   const intl = useIntl();
   const language = useLanguage();
 
@@ -129,19 +130,23 @@ export const AssetStakedChartView: FunctionComponent = observer(() => {
   const queries = queriesStore.get(current.chainId);
 
   const accountInfo = accountStore.getAccount(current.chainId);
+  const walletAddress = accountInfo.getAddressDisplay(
+    keyRingStore.keyRingLedgerAddresses
+  );
 
-  const queryBalances = queries.queryBalances.getQueryBech32Address(accountInfo.bech32Address);
+  const queryBalances =
+    queries.queryBalances.getQueryBech32Address(walletAddress);
 
   const balanceStakableQuery = queryBalances.stakable;
 
   const stakable = balanceStakableQuery?.balance;
 
   const delegated = queries.cosmos.queryDelegations
-    .getQueryBech32Address(accountInfo.bech32Address)
+    .getQueryBech32Address(walletAddress)
     .total.upperCase(true);
 
   const unbonding = queries.cosmos.queryUnbondingDelegations
-    .getQueryBech32Address(accountInfo.bech32Address)
+    .getQueryBech32Address(walletAddress)
     .total.upperCase(true);
 
   const stakedSum = delegated.add(unbonding);
@@ -233,7 +238,8 @@ export const AssetStakedChartView: FunctionComponent = observer(() => {
 });
 
 export const AssetChartViewEvm: FunctionComponent = observer(() => {
-  const { chainStore, accountStore, queriesStore, priceStore, keyRingStore } = useStore();
+  const { chainStore, accountStore, queriesStore, priceStore, keyRingStore } =
+    useStore();
   const intl = useIntl();
   const language = useLanguage();
 
@@ -244,7 +250,10 @@ export const AssetChartViewEvm: FunctionComponent = observer(() => {
   const queries = queriesStore.get(current.chainId);
 
   const accountInfo = accountStore.getAccount(current.chainId);
-  const evmAddress = accountInfo.getAddressDisplay(keyRingStore.keyRingLedgerAddresses,true)
+  const evmAddress = accountInfo.getAddressDisplay(
+    keyRingStore.keyRingLedgerAddresses,
+    true
+  );
   const queryBalances = queries.queryBalances.getQueryBech32Address(evmAddress);
 
   const balanceStakableQuery = queryBalances.stakable;
@@ -263,9 +272,13 @@ export const AssetChartViewEvm: FunctionComponent = observer(() => {
 
   // const totalStake = stakable.add(stakedSum);
 
-  const tokens = queryBalances.positiveNativeUnstakables.concat(queryBalances.nonNativeBalances);
+  const tokens = queryBalances.positiveNativeUnstakables.concat(
+    queryBalances.nonNativeBalances
+  );
   const totalPrice = useMemo(() => {
-    const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
+    const fiatCurrency = priceStore.getFiatCurrency(
+      priceStore.defaultVsCurrency
+    );
     if (!fiatCurrency) {
       return undefined;
     }
@@ -285,40 +298,44 @@ export const AssetChartViewEvm: FunctionComponent = observer(() => {
 
   return (
     <React.Fragment>
-    <div className={styleAsset.containerChart}>
-      <div className={styleAsset.centerText}>
-        <div className={styleAsset.big}>
-          <FormattedMessage id="main.account.chart.total-balance" />
+      <div className={styleAsset.containerChart}>
+        <div className={styleAsset.centerText}>
+          <div className={styleAsset.big}>
+            <FormattedMessage id="main.account.chart.total-balance" />
+          </div>
+          <div className={styleAsset.small}>
+            {totalPrice
+              ? totalPrice.toString()
+              : stakable.shrink(true).trim(true).maxDecimals(6).toString()}
+          </div>
         </div>
-        <div className={styleAsset.small}>
-          {totalPrice ? totalPrice.toString() : stakable.shrink(true).trim(true).maxDecimals(6).toString()}
+        <React.Suspense fallback={<div style={{ height: "150px" }} />}>
+          <img
+            src={require("../../public/assets/img/total-balance.svg")}
+            alt="total-balance"
+          />
+        </React.Suspense>
+      </div>
+      <div style={{ marginTop: "12px", width: "100%" }}>
+        <div className={styleAsset.legend}>
+          <div className={styleAsset.label} style={{ color: "#777E90" }}>
+            <span className="badge-dot badge badge-secondary">
+              <i className="bg-gray" />
+            </span>
+            <FormattedMessage id="main.account.chart.available-balance" />
+          </div>
+          <div style={{ minWidth: "20px" }} />
+          <div
+            className={styleAsset.value}
+            style={{
+              color: "#353945E5",
+            }}
+          >
+            {stakable.shrink(true).maxDecimals(6).toString()}
+          </div>
         </div>
       </div>
-      <React.Suspense fallback={<div style={{ height: '150px' }} />}>
-        <img src={require('../../public/assets/img/total-balance.svg')} alt="total-balance" />
-      </React.Suspense>
-    </div>
-    <div style={{ marginTop: '12px', width: '100%' }}>
-      <div className={styleAsset.legend}>
-        <div className={styleAsset.label} style={{ color: '#777E90' }}>
-          <span className="badge-dot badge badge-secondary">
-            <i className="bg-gray" />
-          </span>
-          <FormattedMessage id="main.account.chart.available-balance" />
-        </div>
-        <div style={{ minWidth: '20px' }} />
-        <div
-          className={styleAsset.value}
-          style={{
-            color: '#353945E5'
-          }}
-        >
-          {stakable.shrink(true).maxDecimals(6).toString()}
-        </div>
-      </div>
-      
-    </div>
-  </React.Fragment>
+    </React.Fragment>
   );
 });
 

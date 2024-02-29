@@ -24,6 +24,12 @@ export interface EthereumMsgOpts {
   };
 }
 
+export interface Erc20MsgOpts {
+  readonly send: {
+    readonly erc20: Pick<MsgOpt, "gas">;
+  };
+}
+
 export class AccountWithEthereum
   extends AccountSetBase<EthereumMsgOpts, HasEvmQueries>
   implements HasEthereumAccount

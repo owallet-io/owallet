@@ -100,7 +100,6 @@ export class ObservableQueryErc20BalanceInner extends ObservableQueryBalanceInne
       (cur) => cur.coinMinimalDenom === denom
     );
 
-    // TODO: Infer the currency according to its denom (such if denom is `uatom` -> `Atom` with decimal 6)?
     if (!currency) {
       throw new Error(`Unknown currency: ${denom}`);
     }

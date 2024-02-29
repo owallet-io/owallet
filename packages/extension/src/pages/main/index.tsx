@@ -19,7 +19,7 @@ import { useConfirm } from "../../components/confirm";
 import { SelectChain } from "../../layouts/header";
 import { useStore } from "../../stores";
 import { SendPage } from "../send";
-import { SendEvmPage } from "../send-evm";
+import { SendEvmPage } from "../send-evm/send-evm";
 import { SendTronEvmPage } from "../send-tron";
 import { BIP44SelectModal } from "./bip44-select-modal";
 import { SendBtcPage } from "../send-btc";
@@ -92,13 +92,12 @@ export const MainPage: FunctionComponent = observer(() => {
   }, [networkType]);
 
   const handleCheckSendPage = () => {
-    // if (networkType === 'evm') {
-    if (chainId === TRON_ID) {
-      return <SendTronEvmPage />;
-    }
-    // return <SendEvmPage />;
-    // }
-    else if (networkType === 'bitcoin') {
+    if (networkType === "evm") {
+      if (chainId === TRON_ID) {
+        return <SendTronEvmPage />;
+      }
+      return <SendEvmPage />;
+    } else if (networkType === "bitcoin") {
       return <SendBtcPage />;
     }
     return <SendPage />;
@@ -115,7 +114,7 @@ export const MainPage: FunctionComponent = observer(() => {
               <AccountView />
               {renderAssetView}
             </div>
-            {networkType === 'bitcoin' ? (
+            {networkType === "bitcoin" ? (
               <div style={{ marginTop: 24 }}>
                 <TxButtonBtcView hasSend={hasSend} setHasSend={setHasSend} />
               </div>
