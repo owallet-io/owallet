@@ -4,7 +4,13 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { Image, View, Keyboard, StyleSheet } from "react-native";
+import {
+  Image,
+  View,
+  Keyboard,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native";
 import { Text } from "@src/components/text";
 import { useStyle } from "../../styles";
 import { TextInput } from "../../components/input";
@@ -22,6 +28,7 @@ import { useTheme } from "@src/themes/theme-provider";
 import OWFlatList from "@src/components/page/ow-flat-list";
 import { InjectedProviderUrl } from "./config";
 import { SCREENS } from "@src/common/constants";
+import { LoadingSpinner } from "@src/components/spinner";
 
 interface BrowserProps extends ReactPropTypes {
   route: {
@@ -346,7 +353,11 @@ export const Browser: FunctionComponent<BrowserProps> = observer((props) => {
               );
             }}
           />
-        ) : null}
+        ) : (
+          <View style={style.flatten(["padding-top-5"])}>
+            <ActivityIndicator size={"small"} />
+          </View>
+        )}
       </View>
     );
   };
