@@ -68,7 +68,7 @@ export const TokensCardAll: FunctionComponent<{
         tokesInfos: tokenInfos,
       },
       {
-        baseURL: "https://staging.owallet.dev/",
+        baseURL: "http://10.10.20.183:4000/",
       }
     );
   };
@@ -80,7 +80,7 @@ export const TokensCardAll: FunctionComponent<{
         time: "YESTERDAY",
       },
       {
-        baseURL: "https://staging.owallet.dev/",
+        baseURL: "http://10.10.20.183:4000/",
       }
     );
 
@@ -114,12 +114,24 @@ export const TokensCardAll: FunctionComponent<{
           ? ""
           : chainStore.current.chainId,
       });
+
       if (tokens.length > 0) {
         setTokenInfos(tokens);
-        handleSaveTokenInfos(tokens);
       }
     }, 3000);
-  }, [accountOrai.bech32Address]);
+  }, [
+    accountOrai.bech32Address,
+    chainStore.current.chainId,
+    universalSwapStore.getAmount,
+  ]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (tokenInfos.length > 0) {
+        handleSaveTokenInfos(tokenInfos);
+      }
+    }, 3000);
+  }, [accountOrai.bech32Address, tokenInfos]);
 
   useEffect(() => {
     (async function get() {

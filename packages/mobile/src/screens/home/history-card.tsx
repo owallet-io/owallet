@@ -8,7 +8,7 @@ import React, {
   useState,
 } from "react";
 import { StyleSheet, TouchableOpacity, View, ViewStyle } from "react-native";
-import { CardBody, OWBox } from "../../components/card";
+import { CardBody } from "../../components/card";
 import { useStore } from "../../stores";
 import { _keyExtract } from "../../utils/helper";
 import OWIcon from "@src/components/ow-icon/ow-icon";
@@ -29,18 +29,20 @@ export const HistoryCard: FunctionComponent<{
   const { colors } = useTheme();
   const theme = appInitStore.getInitApp.theme;
 
-  const [histories, setHistories] = useState([]);
+  const [histories, setHistories] = useState({});
   const [loading, setLoading] = useState(false);
   const [loadMore, setLoadMore] = useState(false);
+  const [offset, setOffset] = useState(0);
 
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
 
   const getWalletHistory = async () => {
     try {
+      setLoading(true);
       const res = await API.getGroupHistory(
         {
           address: accountOrai.bech32Address,
-          offset: 0,
+          offset,
           limit: 10,
         },
         {
@@ -49,16 +51,21 @@ export const HistoryCard: FunctionComponent<{
       );
 
       if (res && res.status === 200) {
-        setHistories(res.data);
+        setHistories({ histories, ...res.data });
+        setLoadMore(false);
+        setLoading(false);
+        setOffset(offset + 10);
       }
     } catch (err) {
+      setLoadMore(false);
+      setLoading(false);
       console.log("getWalletHistory err", err);
     }
   };
 
   useEffect(() => {
     getWalletHistory();
-  }, [accountOrai.bech32Address]);
+  }, [accountOrai.bech32Address, offset]);
 
   const styles = styling(colors);
 
@@ -139,18 +146,23 @@ export const HistoryCard: FunctionComponent<{
   );
 
   const renderListHistoryItem = ({ item }) => {
+    console.log("item", item);
+
     return (
       <View style={{ paddingTop: 16 }}>
         <Text size={14} color={colors["neutral-text-heading"]} weight="600">
-          {item}
+          {moment(Number(item)).format("DD/MM/YY")}
         </Text>
+        {/* {histories?.[item]?.map(h => {
+          return renderHistoryItem(h);
+        })} */}
       </View>
     );
   };
 
   const onEndReached = () => {
     console.log("reached the end");
-    setLoadMore(true);
+    getWalletHistory();
   };
 
   const onRefresh = () => {
@@ -165,8 +177,8 @@ export const HistoryCard: FunctionComponent<{
           data={Object.keys(histories)}
           onEndReached={onEndReached}
           renderItem={renderListHistoryItem}
-          loadMore={loadMore}
           loading={loading}
+          loadMore={loadMore}
           onRefresh={onRefresh}
           refreshing={loading}
           ListEmptyComponent={() => {

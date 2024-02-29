@@ -1,6 +1,6 @@
 {
   "typescript.tsdk": "node_modules/typescript/lib",
-  "prettier.singleQuote": true,
+  "prettier.singleQuote": false,
   "prettier.jsxSingleQuote": false,
   "prettier.trailingComma": "none",
   "editor.defaultFormatter": "esbenp.prettier-vscode",
