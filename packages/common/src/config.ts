@@ -1130,15 +1130,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinGeckoId: "oraidex",
         coinImageUrl: "https://i.ibb.co/VmMJtf7/oraix.png",
       },
-      {
-        coinDenom: "ORAIX",
-        coinMinimalDenom:
-          "erc20:0x2d869aE129e308F94Cc47E66eaefb448CEe0d03e:ORAIX Token",
-        contractAddress: "0x2d869aE129e308F94Cc47E66eaefb448CEe0d03e",
-        coinDecimals: 18,
-        coinGeckoId: "oraidex",
-        coinImageUrl: "https://i.ibb.co/VmMJtf7/oraix.png",
-      },
     ],
     get feeCurrencies() {
       return [this.stakeCurrency];
