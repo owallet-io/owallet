@@ -7,7 +7,7 @@ import {
   ChainInfoWithEmbed,
 } from "./types";
 import { ChainInfo, ChainInfoWithoutEndpoints } from "@owallet/types";
-import { KVStore, Debouncer } from "@owallet/common";
+import { KVStore, Debouncer, ChainIdEnum } from "@owallet/common";
 import { ChainUpdaterService } from "../updater";
 import { InteractionService } from "../interaction";
 import { Env } from "@owallet/router";

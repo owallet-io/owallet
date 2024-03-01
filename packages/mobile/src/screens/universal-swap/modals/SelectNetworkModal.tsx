@@ -7,7 +7,8 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { TypeTheme, useTheme } from "@src/themes/theme-provider";
 import { TouchableOpacity } from "@gorhom/bottom-sheet";
 import { metrics } from "@src/themes";
-import { chainIcons } from "../helpers";
+import { chainIcons } from "@oraichain/oraidex-common";
+import { KADOChainNameEnum } from "@owallet/common";
 
 //@ts-ignore
 export const SelectNetworkModal: FunctionComponent<{
@@ -71,7 +72,7 @@ export const SelectNetworkModal: FunctionComponent<{
                     weight="500"
                     color={colors["gray-500"]}
                   >
-                    {item.chainName}
+                    {KADOChainNameEnum[item.chainId]}
                   </Text>
                 </View>
                 {selectedChainFilter === item.chainId && (

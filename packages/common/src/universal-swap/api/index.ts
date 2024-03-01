@@ -1,5 +1,6 @@
 import { MulticallQueryClient } from "@oraichain/common-contracts-sdk";
 import { fromBinary, toBinary } from "@cosmjs/cosmwasm-stargate";
+import { swapEvmRoutes } from "@oraichain/oraidex-universal-swap";
 import {
   TokenItemType,
   TokenInfo,
@@ -10,7 +11,6 @@ import {
   OraiswapTokenQueryClient,
   OraiswapTokenTypes,
 } from "@oraichain/oraidex-contracts-sdk";
-import { swapEvmRoutes } from "../config/constants";
 
 async function fetchTokenInfo(
   token: TokenItemType,

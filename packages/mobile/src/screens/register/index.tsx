@@ -35,12 +35,12 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
     analyticsStore.logEvent("Create account started", {
       registerType: "seed",
     });
-    // smartNavigation.navigateSmart('Register.NewMnemonic', {
-    //   registerConfig
-    // });
-    smartNavigation.navigateSmart("Register.NewPincode", {
+    smartNavigation.navigateSmart("Register.NewMnemonic", {
       registerConfig,
     });
+    // smartNavigation.navigateSmart("Register.NewPincode", {
+    //   registerConfig,
+    // });
   };
   const styles = useStyles();
 

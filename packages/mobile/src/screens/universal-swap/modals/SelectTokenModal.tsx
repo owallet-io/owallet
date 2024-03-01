@@ -21,8 +21,8 @@ import {
 import { useStore } from "@src/stores";
 import { ChainIdEnum } from "@owallet/common";
 import { CoinGeckoPrices } from "@owallet/hooks";
-import { tokenImg } from "../helpers";
 import { find } from "lodash";
+import { tokensIcon } from "@oraichain/oraidex-common";
 
 export const SelectTokenModal: FunctionComponent<{
   onNetworkModal?: () => void;
@@ -87,7 +87,7 @@ export const SelectTokenModal: FunctionComponent<{
           // ) as AmountDetails;
 
           const tokenIcon = find(
-            tokenImg,
+            tokensIcon,
             (tk) => tk.coinGeckoId === item.coinGeckoId
           );
 
