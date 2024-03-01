@@ -34,6 +34,14 @@ export class ChainsService {
 
   readonly getChainInfos: () => Promise<ChainInfoWithEmbed[]> =
     Debouncer.promise(async () => {
+      console.log(
+        "🚀 ~ ChainsService ~ chainInfos ~ this.embedChainInfos:",
+        this.embedChainInfos
+      );
+      console.log(
+        "🚀 ~ ChainsService ~ readonlygetChainInfos: ~ this.cachedChainInfos:",
+        this.cachedChainInfos
+      );
       if (this.cachedChainInfos) {
         return this.cachedChainInfos;
       }
@@ -44,6 +52,7 @@ export class ChainsService {
           embeded: true,
         };
       });
+
       const embedChainInfoIdentifierMap: Map<string, true | undefined> =
         new Map();
       for (const embedChainInfo of chainInfos) {
@@ -132,27 +141,31 @@ export class ChainsService {
     chainId: string,
     networkType?: string
   ): Promise<ChainInfoWithEmbed> {
+    console.log("🚀 ~ ChainsService ~ getChainInfo ~ chainId:", chainId);
+    console.log(
+      "🚀 ~ ChainsService ~ chainInfo= ~ ChainIdHelper.parse(chainId).identifier:",
+      ChainIdHelper.parse(chainId).identifier
+    );
     var chainInfo: ChainInfoWithEmbed;
-
+    console.log(
+      "🚀 ~ ChainsService ~ getChainInfo ~ networkType:",
+      networkType
+    );
     if (networkType) {
-      if (networkType === "evm") {
-        // need to check if network type is evm, then we will convert chain id to number from hex
-        chainInfo = (await this.getChainInfos()).find((chainInfo) => {
+      chainInfo = (await this.getChainInfos()).find((chainInfo) => {
+        if (networkType === "evm") {
           return (
-            ChainIdHelper.parse(Number(chainInfo.chainId)).identifier ===
-              ChainIdHelper.parse(Number(chainId)).identifier &&
+            Number(ChainIdHelper.parse(chainInfo.chainId).identifier) ===
+              Number(ChainIdHelper.parse(chainId).identifier) &&
             chainInfo.networkType === networkType
           );
-        });
-      } else {
-        chainInfo = (await this.getChainInfos()).find((chainInfo) => {
-          return (
-            ChainIdHelper.parse(chainInfo.chainId).identifier ===
-              ChainIdHelper.parse(chainId).identifier &&
-            chainInfo.networkType === networkType
-          );
-        });
-      }
+        }
+        return (
+          ChainIdHelper.parse(chainInfo.chainId).identifier ===
+            ChainIdHelper.parse(chainId).identifier &&
+          chainInfo.networkType === networkType
+        );
+      });
     } else {
       chainInfo = (await this.getChainInfos()).find((chainInfo) => {
         return (
@@ -161,12 +174,7 @@ export class ChainsService {
         );
       });
     }
-    chainInfo = (await this.getChainInfos()).find((chainInfo) => {
-      return (
-        ChainIdHelper.parse(chainInfo.chainId).identifier ===
-        ChainIdHelper.parse(chainId).identifier
-      );
-    });
+    console.log("🚀 ~ ChainsService ~ chainInfo= ~ chainInfo:", chainInfo);
     if (!chainInfo) {
       throw new Error(`There is no chain info for ${chainId}`);
     }
