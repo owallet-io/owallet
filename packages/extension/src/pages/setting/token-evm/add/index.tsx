@@ -66,7 +66,7 @@ export const AddEvmTokenPage: FunctionComponent = observer(() => {
   const isSecret20 = false;
 
   const queries = queriesStore.get(chainStore.current.chainId);
-  const query = queries.evm.queryErc20ContractInfo;
+  const query = queries.evmContract.queryErc20ContractInfo;
   const queryContractInfo = query.getQueryContract(contractAddress);
 
   const tokenInfo = queryContractInfo.tokenInfo;
