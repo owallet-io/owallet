@@ -1096,9 +1096,9 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinImageUrl:
         "https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png",
       gasPriceStep: {
-        low: 10000000000,
-        average: 25000000000,
-        high: 40000000000,
+        low: 1,
+        average: 1.25,
+        high: 1.5,
       },
     },
     bech32Config: Bech32Address.defaultBech32Config("evmos"),
@@ -1170,9 +1170,9 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinImageUrl:
         "https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png",
       gasPriceStep: {
-        low: 10000000000,
-        average: 25000000000,
-        high: 40000000000,
+        low: 1,
+        average: 1.07,
+        high: 1.1,
       },
     },
     bech32Config: Bech32Address.defaultBech32Config("evmos"),

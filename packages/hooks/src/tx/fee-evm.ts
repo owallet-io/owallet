@@ -15,7 +15,7 @@ import {
 } from "@owallet/stores";
 import { action, computed, makeObservable, observable } from "mobx";
 import { Coin, CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
-import { Currency } from "@owallet/types";
+import { AppCurrency, Currency } from "@owallet/types";
 import { computedFn } from "mobx-utils";
 import { StdFee } from "@cosmjs/launchpad";
 import { useState } from "react";
@@ -162,7 +162,7 @@ export class FeeEvmConfig extends TxChainSetter implements IFeeConfig {
         return this.getFeeTypePrimitive(this.feeType);
       }
 
-      return this.getAutoFeeGasPrimitive();
+      // return this.getAutoFeeGasPrimitive();
 
       // If fee is not set, just return with empty fee amount.
       return undefined;
@@ -195,12 +195,21 @@ export class FeeEvmConfig extends TxChainSetter implements IFeeConfig {
       if (!this.feeCurrency) {
         throw new Error("Fee currency not set");
       }
-
+      const { gasPrice } = this.queryStore.evm.queryGasPrice.getGasPrice();
       const gasPriceStep = this.chainInfo.stakeCurrency.gasPriceStep
         ? this.chainInfo.stakeCurrency.gasPriceStep
         : DefaultGasPriceStep;
-      const gasPrice = new Dec(gasPriceStep[feeType].toString());
-      const feeAmount = gasPrice.mul(new Dec(this.gasConfig.gas));
+      const gasPriceStepChanged: AppCurrency["gasPriceStep"] = {
+        ...DefaultGasPriceStep,
+      };
+      for (const key in gasPriceStepChanged) {
+        gasPriceStepChanged[key] = gasPrice
+          .toDec()
+          .mul(new Dec(gasPriceStep[key]));
+      }
+      const gasPriceLast = gasPriceStepChanged[feeType];
+      //@ts-ignore
+      const feeAmount = gasPriceLast.mul(new Dec(this.gasConfig.gas));
       return {
         denom: this.feeCurrency.coinMinimalDenom,
         amount: feeAmount.roundUp().toString(),
@@ -222,7 +231,7 @@ export class FeeEvmConfig extends TxChainSetter implements IFeeConfig {
     return new CoinPretty(
       feeCurrency,
       new Int(feeTypePrimitive.amount)
-    ).maxDecimals(feeCurrency.coinDecimals);
+    ).maxDecimals(9);
   });
 
   getError(): Error | undefined {

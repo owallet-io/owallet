@@ -18,16 +18,9 @@ import { Button } from "reactstrap";
 import { useHistory, useLocation } from "react-router";
 import queryString from "querystring";
 
-import {
-  useAmountConfig,
-  useRecipientConfig,
-  useSendTxEvmConfig,
-} from "@owallet/hooks";
+import { useSendTxEvmConfig } from "@owallet/hooks";
 import { fitPopupWindow } from "@owallet/popup";
 import { EthereumEndpoint } from "@owallet/common";
-import { FeeInput } from "../../components/form/fee-input";
-import { Dec } from "@owallet/unit";
-import { Currency } from "@owallet/types";
 
 export const SendEvmPage: FunctionComponent<{
   coinMinimalDenom?: string;
@@ -266,7 +259,7 @@ export const SendEvmPage: FunctionComponent<{
             <FeeButtons
               feeConfig={sendConfigs.feeConfig}
               gasConfig={sendConfigs.gasConfig}
-              customFee={true}
+              //   customFee={true}
               priceStore={priceStore}
               label={intl.formatMessage({ id: "send.input.fee" })}
               feeSelectLabels={{
