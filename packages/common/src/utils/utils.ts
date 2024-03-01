@@ -55,7 +55,7 @@ export const getCoinTypeByChainId = (chainId) => {
 export const getChainInfoOrThrow = (chainId: string): ChainInfo => {
   const chainInfo = EmbedChainInfos.find((nw) => nw.chainId == chainId);
   if (!chainInfo) {
-    throw new Error(`There is no chain info4 for ${chainId}`);
+    throw new Error(`There is no chain info for ${chainId}`);
   }
   return chainInfo;
 };

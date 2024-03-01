@@ -34,14 +34,6 @@ export class ChainsService {
 
   readonly getChainInfos: () => Promise<ChainInfoWithEmbed[]> =
     Debouncer.promise(async () => {
-      console.log(
-        "🚀 ~ ChainsService ~ chainInfos ~ this.embedChainInfos:",
-        this.embedChainInfos
-      );
-      console.log(
-        "🚀 ~ ChainsService ~ readonlygetChainInfos: ~ this.cachedChainInfos:",
-        this.cachedChainInfos
-      );
       if (this.cachedChainInfos) {
         return this.cachedChainInfos;
       }
@@ -141,16 +133,7 @@ export class ChainsService {
     chainId: string,
     networkType?: string
   ): Promise<ChainInfoWithEmbed> {
-    console.log("🚀 ~ ChainsService ~ getChainInfo ~ chainId:", chainId);
-    console.log(
-      "🚀 ~ ChainsService ~ chainInfo= ~ ChainIdHelper.parse(chainId).identifier:",
-      ChainIdHelper.parse(chainId).identifier
-    );
     var chainInfo: ChainInfoWithEmbed;
-    console.log(
-      "🚀 ~ ChainsService ~ getChainInfo ~ networkType:",
-      networkType
-    );
     if (networkType) {
       chainInfo = (await this.getChainInfos()).find((chainInfo) => {
         if (networkType === "evm") {
@@ -174,7 +157,6 @@ export class ChainsService {
         );
       });
     }
-    console.log("🚀 ~ ChainsService ~ chainInfo= ~ chainInfo:", chainInfo);
     if (!chainInfo) {
       throw new Error(`There is no chain info for ${chainId}`);
     }
