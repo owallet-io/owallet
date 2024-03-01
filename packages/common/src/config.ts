@@ -1133,14 +1133,13 @@ export const EmbedChainInfos: AppChainInfo[] = [
           "https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png",
       },
       {
-        coinDenom: "OCH",
+        coinDenom: "ORAIX",
         coinMinimalDenom:
-          "erc20:0x19373EcBB4B8cC2253D70F2a246fa299303227Ba:OCH",
-        contractAddress: "0x19373EcBB4B8cC2253D70F2a246fa299303227Ba",
+          "erc20:0x2d869aE129e308F94Cc47E66eaefb448CEe0d03e:ORAIX Token",
+        contractAddress: "0x2d869aE129e308F94Cc47E66eaefb448CEe0d03e",
         coinDecimals: 18,
-        coinGeckoId: "och",
-        coinImageUrl:
-          "https://assets.coingecko.com/coins/images/34236/standard/orchai_logo_white_copy_4x-8_%281%29.png",
+        coinGeckoId: "oraidex",
+        coinImageUrl: "https://i.ibb.co/VmMJtf7/oraix.png",
       },
       {
         coinDenom: "ORAIX",

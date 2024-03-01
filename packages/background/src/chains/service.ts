@@ -44,6 +44,7 @@ export class ChainsService {
           embeded: true,
         };
       });
+
       const embedChainInfoIdentifierMap: Map<string, true | undefined> =
         new Map();
       for (const embedChainInfo of chainInfos) {
@@ -133,27 +134,21 @@ export class ChainsService {
     networkType?: string
   ): Promise<ChainInfoWithEmbed> {
     var chainInfo: ChainInfoWithEmbed;
-
     if (networkType) {
-      if (networkType === "evm") {
-        // need to check if network type is evm, then we will convert chain id to number from hex
-        if (chainId === "0x1") chainId = ChainIdEnum.Ethereum;
-        chainInfo = (await this.getChainInfos()).find((chainInfo) => {
+      chainInfo = (await this.getChainInfos()).find((chainInfo) => {
+        if (networkType === "evm") {
           return (
-            ChainIdHelper.parse(Number(chainInfo.chainId)).identifier ===
-              ChainIdHelper.parse(Number(chainId)).identifier &&
+            Number(ChainIdHelper.parse(chainInfo.chainId).identifier) ===
+              Number(ChainIdHelper.parse(chainId).identifier) &&
             chainInfo.networkType === networkType
           );
-        });
-      } else {
-        chainInfo = (await this.getChainInfos()).find((chainInfo) => {
-          return (
-            ChainIdHelper.parse(chainInfo.chainId).identifier ===
-              ChainIdHelper.parse(chainId).identifier &&
-            chainInfo.networkType === networkType
-          );
-        });
-      }
+        }
+        return (
+          ChainIdHelper.parse(chainInfo.chainId).identifier ===
+            ChainIdHelper.parse(chainId).identifier &&
+          chainInfo.networkType === networkType
+        );
+      });
     } else {
       chainInfo = (await this.getChainInfos()).find((chainInfo) => {
         return (
@@ -162,12 +157,6 @@ export class ChainsService {
         );
       });
     }
-    chainInfo = (await this.getChainInfos()).find((chainInfo) => {
-      return (
-        ChainIdHelper.parse(chainInfo.chainId).identifier ===
-        ChainIdHelper.parse(chainId).identifier
-      );
-    });
     if (!chainInfo) {
       throw new Error(`There is no chain info for ${chainId}`);
     }
