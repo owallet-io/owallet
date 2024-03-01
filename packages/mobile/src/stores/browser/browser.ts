@@ -30,13 +30,7 @@ export const DAppInfos = [
     logo: require("../../assets/image/webpage/osmosis_logo.png"),
   },
   {
-    id: 2,
-    name: "Osmosis",
-    uri: "https://app.osmosis.zone",
-    logo: require("../../assets/image/webpage/osmosis_logo.png"),
-  },
-  {
-    id: 3,
+    id: 6,
     name: "Oraiscan",
     uri: "https://scan.orai.io",
     logo: oraiLogo,
