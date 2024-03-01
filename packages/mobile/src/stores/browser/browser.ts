@@ -15,13 +15,13 @@ export const DAppInfos = [
     id: 3,
     name: "Orderbook",
     uri: "https://orderbook.orai.io",
-    logo: require("../../assets/image/webpage/osmosis_logo.png"),
+    logo: oraiLogo,
   },
   {
     id: 4,
     name: "Futures",
     uri: "https://futures.oraidex.io",
-    logo: require("../../assets/image/webpage/osmosis_logo.png"),
+    logo: oraiLogo,
   },
   {
     id: 2,
