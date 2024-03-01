@@ -1142,6 +1142,15 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinImageUrl:
           "https://assets.coingecko.com/coins/images/34236/standard/orchai_logo_white_copy_4x-8_%281%29.png",
       },
+      {
+        coinDenom: "ORAIX",
+        coinMinimalDenom:
+          "erc20:0x2d869aE129e308F94Cc47E66eaefb448CEe0d03e:ORAIX Token",
+        contractAddress: "0x2d869aE129e308F94Cc47E66eaefb448CEe0d03e",
+        coinDecimals: 18,
+        coinGeckoId: "oraidex",
+        coinImageUrl: "https://i.ibb.co/VmMJtf7/oraix.png",
+      },
     ],
     get feeCurrencies() {
       return [this.stakeCurrency];
