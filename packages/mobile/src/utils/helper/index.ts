@@ -665,3 +665,28 @@ export const LRRedactProps = (redactionTag = "lr-hide") =>
     : { testID: redactionTag };
 
 export { get };
+
+export function isPrivateKey(str: string): boolean {
+  if (str?.startsWith("0x") || str?.startsWith("zs")) {
+    return true;
+  }
+
+  if (str.length === 64) {
+    try {
+      return Buffer.from(str, "hex").length === 32;
+    } catch {
+      return false;
+    }
+  }
+  return false;
+}
+
+export function trimWordsStr(str: string): string {
+  str = str.trim();
+  // Split on the whitespace or new line.
+  const splited = str.split(/\s+/);
+  const words = splited
+    .map((word) => word.trim())
+    .filter((word) => word.trim().length > 0);
+  return words.join(" ");
+}

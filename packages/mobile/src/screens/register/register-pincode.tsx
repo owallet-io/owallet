@@ -30,7 +30,7 @@ import { TextInput } from "@src/components/input";
 import { OWButton } from "@src/components/button";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { LoadingWalletScreen } from "./loading-wallet";
-import { showToast } from "@src/utils/helper";
+import { isPrivateKey, showToast, trimWordsStr } from "@src/utils/helper";
 import { useStore } from "@src/stores";
 
 interface FormData {
@@ -87,12 +87,47 @@ export const NewPincodeScreen: FunctionComponent = observer((props) => {
     try {
       const newWalletName =
         walletName ?? `OWallet-${Math.floor(Math.random() * (100 - 1)) + 1}`;
-      await registerConfig.createMnemonic(
-        newWalletName,
-        words ?? newMnemonicConfig.mnemonic,
-        newMnemonicConfig.password,
-        bip44Option.bip44HDPath
-      );
+      // await registerConfig.createMnemonic(
+      //   newWalletName,
+      //   words ?? newMnemonicConfig.mnemonic,
+      //   newMnemonicConfig.password,
+      //   bip44Option.bip44HDPath
+      // );
+
+      // navigation.reset({
+      //   index: 0,
+      //   routes: [
+      //     {
+      //       name: "Register.Done",
+      //       params: {
+      //         password: newMnemonicConfig.password,
+      //         type: "new",
+      //         walletName,
+      //       },
+      //     },
+      //   ],
+      // });
+      const mnemonic = trimWordsStr(words ?? newMnemonicConfig.mnemonic);
+      console.log("words", words);
+
+      if (!isPrivateKey(mnemonic)) {
+        await registerConfig.createMnemonic(
+          newWalletName,
+          mnemonic,
+          newMnemonicConfig.password,
+          bip44Option.bip44HDPath
+        );
+      } else {
+        const privateKey = Buffer.from(
+          mnemonic.trim().replace("0x", ""),
+          "hex"
+        );
+        await registerConfig.createPrivateKey(
+          newWalletName,
+          privateKey,
+          newMnemonicConfig.password
+        );
+      }
 
       navigation.reset({
         index: 0,
