@@ -21,6 +21,8 @@ import moment from "moment";
 import { Bech32Address } from "@owallet/cosmos";
 import OWFlatList from "@src/components/page/ow-flat-list";
 import { chainIcons } from "@oraichain/oraidex-common";
+import { SCREENS } from "@src/common/constants";
+import { navigate } from "@src/router/root";
 
 export const HistoryCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -46,11 +48,9 @@ export const HistoryCard: FunctionComponent<{
           limit: 2,
         },
         {
-          baseURL: "http://10.10.20.183:4000/",
+          baseURL: "https://staging.owallet.dev/",
         }
       );
-
-      console.log("res", res);
 
       if (res && res.status === 200) {
         setHistories({ ...histories, ...res.data.data });
@@ -73,8 +73,6 @@ export const HistoryCard: FunctionComponent<{
 
   const styles = styling(colors);
 
-  const smartNavigation = useSmartNavigation();
-
   const renderHistoryItem = useCallback(
     (item) => {
       if (item) {
@@ -85,7 +83,16 @@ export const HistoryCard: FunctionComponent<{
           (c) => c.chainId === item.toToken?.chainId ?? ChainIdEnum.Oraichain
         );
         return (
-          <TouchableOpacity onPress={() => {}} style={styles.btnItem}>
+          <TouchableOpacity
+            onPress={() => {
+              console.log("ote,", item);
+
+              navigate(SCREENS.HistoryDetail, {
+                item,
+              });
+            }}
+            style={styles.btnItem}
+          >
             <View style={styles.leftBoxItem}>
               <View style={styles.iconWrap}>
                 <OWIcon

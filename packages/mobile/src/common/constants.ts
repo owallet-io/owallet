@@ -23,6 +23,7 @@ export const SCREENS = {
   Nfts: "Nfts",
   TokenDetail: "Tokens.Detail",
   NftsDetail: "Nfts.Detail",
+  HistoryDetail: "History.Detail",
   TransferTokensScreen: "TransferTokensScreen",
   UniversalSwapScreen: "UniversalSwapScreen",
   RegisterIntro: "Register.Intro",

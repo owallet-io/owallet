@@ -20,6 +20,7 @@ import { BackupMnemonicScreen } from "@src/screens/register/mnemonic/backup-mnem
 import { RecoverPhraseScreen } from "@src/screens/register/mnemonic/recover-phrase";
 import { RegisterDoneScreen } from "@src/screens/register/done";
 import { UniversalSwapScreen } from "@src/screens/universal-swap";
+import { HistoryDetail } from "@src/screens/home/history-detail";
 
 const Stack = createStackNavigator();
 
@@ -89,6 +90,7 @@ export const MainNavigation: FC = observer(() => {
       <Stack.Screen name={SCREENS.Nfts} component={NftsScreen} />
       <Stack.Screen name={SCREENS.TokenDetail} component={TokenDetailScreen} />
       <Stack.Screen name={SCREENS.NftsDetail} component={NftDetailScreen} />
+      <Stack.Screen name={SCREENS.HistoryDetail} component={HistoryDetail} />
     </Stack.Navigator>
   );
 });
