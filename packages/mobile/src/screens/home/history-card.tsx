@@ -43,18 +43,22 @@ export const HistoryCard: FunctionComponent<{
         {
           address: accountOrai.bech32Address,
           offset,
-          limit: 10,
+          limit: 2,
         },
         {
           baseURL: "http://10.10.20.183:4000/",
         }
       );
 
+      console.log("res", res);
+
       if (res && res.status === 200) {
-        setHistories({ histories, ...res.data });
+        setHistories({ ...histories, ...res.data.data });
         setLoadMore(false);
         setLoading(false);
-        setOffset(offset + 10);
+        if (res.data.total > offset) {
+          setOffset(offset + 2);
+        }
       }
     } catch (err) {
       setLoadMore(false);
@@ -65,7 +69,7 @@ export const HistoryCard: FunctionComponent<{
 
   useEffect(() => {
     getWalletHistory();
-  }, [accountOrai.bech32Address, offset]);
+  }, [accountOrai.bech32Address]);
 
   const styles = styling(colors);
 
@@ -146,18 +150,18 @@ export const HistoryCard: FunctionComponent<{
   );
 
   const renderListHistoryItem = ({ item }) => {
-    console.log("item", item);
-
-    return (
-      <View style={{ paddingTop: 16 }}>
-        <Text size={14} color={colors["neutral-text-heading"]} weight="600">
-          {moment(Number(item)).format("DD/MM/YY")}
-        </Text>
-        {/* {histories?.[item]?.map(h => {
-          return renderHistoryItem(h);
-        })} */}
-      </View>
-    );
+    if (item) {
+      return (
+        <View style={{ paddingTop: 16 }}>
+          <Text size={14} color={colors["neutral-text-heading"]} weight="600">
+            {moment(Number(item)).format("DD/MM/YY")}
+          </Text>
+          {histories?.[item]?.map((h) => {
+            return renderHistoryItem(h);
+          })}
+        </View>
+      );
+    }
   };
 
   const onEndReached = () => {

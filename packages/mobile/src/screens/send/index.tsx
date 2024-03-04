@@ -23,6 +23,7 @@ import { spacing } from "../../themes";
 import { Text } from "@src/components/text";
 import { Toggle } from "../../components/toggle";
 import { OWBox } from "@src/components/card";
+import { handleSaveHistory } from "@src/utils/helper";
 
 const styling = (colors) =>
   StyleSheet.create({
@@ -310,7 +311,7 @@ export const SendScreen: FunctionComponent = observer(() => {
 
                     {
                       onFulfill: (tx) => {},
-                      onBroadcasted: (txHash) => {
+                      onBroadcasted: async (txHash) => {
                         analyticsStore.logEvent("Send token tx broadcasted", {
                           chainId: chainStore.current.chainId,
                           chainName: chainStore.current.chainName,
@@ -319,6 +320,34 @@ export const SendScreen: FunctionComponent = observer(() => {
                         smartNavigation.pushSmart("TxPendingResult", {
                           txHash: Buffer.from(txHash).toString("hex"),
                         });
+                        const fromAddress =
+                          chainStore.current.networkType === "evm"
+                            ? account.evmosHexAddress
+                            : account.bech32Address;
+                        const historyInfos = {
+                          fromAddress: fromAddress,
+                          toAddress: sendConfigs.recipientConfig.recipient,
+                          hash: Buffer.from(txHash).toString("hex"),
+                          memo: "",
+                          fromAmount: sendConfigs.amountConfig.amount,
+                          toAmount: sendConfigs.amountConfig.amount,
+                          value: sendConfigs.amountConfig.amount,
+                          fee: sendConfigs.feeConfig.toStdFee(),
+                          type: "SWAP",
+                          fromToken: {
+                            asset:
+                              sendConfigs.amountConfig.sendCurrency.coinDenom,
+                            chainId: chainStore.current.chainId,
+                          },
+                          toToken: {
+                            asset:
+                              sendConfigs.amountConfig.sendCurrency.coinDenom,
+                            chainId: chainStore.current.chainId,
+                          },
+                          status: "SUCCESS",
+                        };
+
+                        await handleSaveHistory(fromAddress, historyInfos);
                       },
                     },
                     // In case send erc20 in evm network

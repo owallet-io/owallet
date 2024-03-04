@@ -1,4 +1,4 @@
-import { StyleSheet, TextInput, View } from "react-native";
+import { StyleSheet, Text, TextInput, View } from "react-native";
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import OWFlatList from "@src/components/page/ow-flat-list";
@@ -6,7 +6,8 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { TypeTheme, useTheme } from "@src/themes/theme-provider";
 import { metrics } from "@src/themes";
 import { CustomAddressCopyable } from "@src/components/address-copyable/custom";
-import { chainIcons } from "@src/screens/universal-swap/helpers";
+import { chainIcons } from "@oraichain/oraidex-common";
+import { ChainIdEnum, ChainNameEnum } from "@owallet/common";
 
 export const CopyAddressModal: FunctionComponent<{
   accounts: object;
@@ -61,16 +62,25 @@ export const CopyAddressModal: FunctionComponent<{
         keyboardShouldPersistTaps="handled"
         data={addresses}
         renderItem={({ item }) => {
-          const chainIcon = chainIcons.find((c) => c.chainName === item.name);
+          const chainNameKey = Object.keys(ChainNameEnum).find(
+            (key) => ChainNameEnum[key] === item.name
+          );
+          const chainId = ChainIdEnum[chainNameKey];
+
+          const chainIcon = chainIcons.find((c) => c.chainId === chainId);
 
           return (
             <CustomAddressCopyable
               icon={
-                <OWIcon
-                  type="images"
-                  source={{ uri: chainIcon?.Icon }}
-                  size={28}
-                />
+                chainIcon ? (
+                  <OWIcon
+                    type="images"
+                    source={{ uri: chainIcon.Icon }}
+                    size={28}
+                  />
+                ) : (
+                  <Text>{item.name.charAt(0)}</Text>
+                )
               }
               chain={item.name}
               address={item.address}

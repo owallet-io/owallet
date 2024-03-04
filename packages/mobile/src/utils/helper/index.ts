@@ -16,6 +16,7 @@ import {
   toSumDisplay,
   tokensIcon,
 } from "@oraichain/oraidex-common";
+import { API } from "@src/common/api";
 const SCHEME_IOS = "owallet://open_url?url=";
 const SCHEME_ANDROID = "app.owallet.oauth://google/open_url?url=";
 export const ORAICHAIN_ID = "Oraichain";
@@ -661,3 +662,17 @@ export const LRRedactProps = (redactionTag = "lr-hide") =>
     : { testID: redactionTag };
 
 export { get };
+
+export const handleSaveHistory = async (address, infos) => {
+  try {
+    const res = await API.saveHistory(
+      { address: address, infos },
+      {
+        baseURL: "https://staging.owallet.dev/",
+      }
+    );
+    return res;
+  } catch (err) {
+    console.log("err handleSaveHistory ", err);
+  }
+};

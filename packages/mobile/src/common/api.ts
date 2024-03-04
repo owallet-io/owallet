@@ -377,8 +377,11 @@ export const API = {
     let url = `query-history/${address}?offset=${offset}&limit=${limit}`;
     return API.get(url, config);
   },
-  getGroupHistory: ({ address, offset, limit }, config: AxiosRequestConfig) => {
-    let url = `history-chart/${address}?offset=${offset}&limit=${limit}`;
+  getGroupHistory: (
+    { address, offset, limit = 1 },
+    config: AxiosRequestConfig
+  ) => {
+    let url = `history/${address}?offset=${offset}&limit=${limit}`;
     return API.get(url, config);
   },
 };

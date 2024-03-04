@@ -68,7 +68,7 @@ export const TokensCardAll: FunctionComponent<{
         tokesInfos: tokenInfos,
       },
       {
-        baseURL: "http://10.10.20.183:4000/",
+        baseURL: "https://staging.owallet.dev/",
       }
     );
   };
@@ -80,7 +80,7 @@ export const TokensCardAll: FunctionComponent<{
         time: "YESTERDAY",
       },
       {
-        baseURL: "http://10.10.20.183:4000/",
+        baseURL: "https://staging.owallet.dev/",
       }
     );
 

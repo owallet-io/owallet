@@ -10,7 +10,12 @@ import { OWButton } from "@src/components/button";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { BalanceText } from "./components/BalanceText";
 import { SelectNetworkModal, SelectTokenModal, SlippageModal } from "./modals/";
-import { getTokenInfos, showToast, _keyExtract } from "@src/utils/helper";
+import {
+  getTokenInfos,
+  handleSaveHistory,
+  showToast,
+  _keyExtract,
+} from "@src/utils/helper";
 import {
   DEFAULT_SLIPPAGE,
   GAS_ESTIMATION_SWAP_DEFAULT,
@@ -501,19 +506,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     );
   };
 
-  const handleSaveHistory = async (infos) => {
-    try {
-      const res = await API.saveHistory(
-        { address: accountOrai.bech32Address, infos },
-        {
-          baseURL: "https://staging.owallet.dev/",
-        }
-      );
-    } catch (err) {
-      console.log("err handleSaveHistory ", err);
-    }
-  };
-
   const handleSubmit = async () => {
     if (fromAmountToken <= 0) {
       showToast({
@@ -628,7 +620,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           status: "SUCCESS",
         };
 
-        await handleSaveHistory(historyInfos);
+        await handleSaveHistory(accountOrai.bech32Address, historyInfos);
         setSwapLoading(false);
         showToast({
           message: "Successful transaction. View on scan",
