@@ -87,26 +87,7 @@ export const NewPincodeScreen: FunctionComponent = observer((props) => {
     try {
       const newWalletName =
         walletName ?? `OWallet-${Math.floor(Math.random() * (100 - 1)) + 1}`;
-      // await registerConfig.createMnemonic(
-      //   newWalletName,
-      //   words ?? newMnemonicConfig.mnemonic,
-      //   newMnemonicConfig.password,
-      //   bip44Option.bip44HDPath
-      // );
 
-      // navigation.reset({
-      //   index: 0,
-      //   routes: [
-      //     {
-      //       name: "Register.Done",
-      //       params: {
-      //         password: newMnemonicConfig.password,
-      //         type: "new",
-      //         walletName,
-      //       },
-      //     },
-      //   ],
-      // });
       const mnemonic = trimWordsStr(words ?? newMnemonicConfig.mnemonic);
       console.log("words", words);
 
