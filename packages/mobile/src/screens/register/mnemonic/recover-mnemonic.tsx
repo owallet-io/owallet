@@ -169,6 +169,8 @@ export const RecoverMnemonicScreen: FunctionComponent = observer((props) => {
   const validateMnemonic = (value: string) => {
     value = trimWordsStr(value);
     if (!isPrivateKey(value)) {
+      console.log("value", value);
+
       if (value.split(" ").length < 8) {
         return "Too short mnemonic";
       }

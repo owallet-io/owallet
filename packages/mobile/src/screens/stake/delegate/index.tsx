@@ -7,6 +7,7 @@ import { OWBox } from "@src/components/card";
 import { OWSubTitleHeader } from "@src/components/header";
 import { Text } from "@src/components/text";
 import { useTheme } from "@src/themes/theme-provider";
+import { handleSaveHistory } from "@src/utils/helper";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
@@ -234,6 +235,30 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                       smartNavigation.pushSmart("TxPendingResult", {
                         txHash: Buffer.from(txHash).toString("hex"),
                       });
+                      const historyInfos = {
+                        fromAddress: account.bech32Address,
+                        toAddress: sendConfigs.recipientConfig.recipient,
+                        hash: Buffer.from(txHash).toString("hex"),
+                        memo: "",
+                        fromAmount: sendConfigs.amountConfig.amount,
+                        toAmount: sendConfigs.amountConfig.amount,
+                        value: sendConfigs.amountConfig.amount,
+                        fee: sendConfigs.feeConfig.toStdFee(),
+                        type: "STAKE",
+                        fromToken: {
+                          asset:
+                            sendConfigs.amountConfig.sendCurrency.coinDenom,
+                          chainId: chainStore.current.chainId,
+                        },
+                        toToken: {
+                          asset:
+                            sendConfigs.amountConfig.sendCurrency.coinDenom,
+                          chainId: chainStore.current.chainId,
+                        },
+                        status: "SUCCESS",
+                      };
+
+                      handleSaveHistory(account.bech32Address, historyInfos);
                     },
                   }
                 );

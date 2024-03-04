@@ -5,7 +5,7 @@ import { OWButton } from "@src/components/button";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { Text } from "@src/components/text";
 import { useTheme } from "@src/themes/theme-provider";
-import { showToast } from "@src/utils/helper";
+import { handleSaveHistory, showToast } from "@src/utils/helper";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 import { StyleSheet, TouchableOpacity, View, ViewStyle } from "react-native";
@@ -50,6 +50,28 @@ export const EarningCardNew: FunctionComponent<{
             smartNavigation.pushSmart("TxPendingResult", {
               txHash: Buffer.from(txHash).toString("hex"),
             });
+            const historyInfos = {
+              fromAddress: account.bech32Address,
+              toAddress: account.bech32Address,
+              hash: Buffer.from(txHash).toString("hex"),
+              memo: "",
+              fromAmount: totalStakingReward,
+              toAmount: totalStakingReward,
+              value: totalStakingReward,
+              fee: "0",
+              type: "CLAIM",
+              fromToken: {
+                asset: stakingReward.toCoin().denom.toUpperCase(),
+                chainId: chainStore.current.chainId,
+              },
+              toToken: {
+                asset: stakingReward.toCoin().denom.toUpperCase(),
+                chainId: chainStore.current.chainId,
+              },
+              status: "SUCCESS",
+            };
+
+            handleSaveHistory(account.bech32Address, historyInfos);
           },
         },
         stakingReward.currency.coinMinimalDenom

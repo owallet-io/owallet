@@ -333,7 +333,7 @@ export const SendScreen: FunctionComponent = observer(() => {
                           toAmount: sendConfigs.amountConfig.amount,
                           value: sendConfigs.amountConfig.amount,
                           fee: sendConfigs.feeConfig.toStdFee(),
-                          type: "SWAP",
+                          type: "SEND",
                           fromToken: {
                             asset:
                               sendConfigs.amountConfig.sendCurrency.coinDenom,

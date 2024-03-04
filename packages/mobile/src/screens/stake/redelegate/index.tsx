@@ -26,7 +26,11 @@ import { DownArrowIcon } from "../../../components/icon";
 import { Toggle } from "../../../components/toggle";
 import { useTheme } from "@src/themes/theme-provider";
 import { OWSubTitleHeader } from "@src/components/header";
-import { capitalizedText, showToast } from "@src/utils/helper";
+import {
+  capitalizedText,
+  handleSaveHistory,
+  showToast,
+} from "@src/utils/helper";
 export const RedelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
     RouteProp<
@@ -148,6 +152,28 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
               smartNavigation.pushSmart("TxPendingResult", {
                 txHash: Buffer.from(txHash).toString("hex"),
               });
+              const historyInfos = {
+                fromAddress: sendConfigs.srcValidatorAddress,
+                toAddress: sendConfigs.dstValidatorAddress,
+                hash: Buffer.from(txHash).toString("hex"),
+                memo: "",
+                fromAmount: sendConfigs.amountConfig.amount,
+                toAmount: sendConfigs.amountConfig.amount,
+                value: sendConfigs.amountConfig.amount,
+                fee: sendConfigs.feeConfig.toStdFee(),
+                type: "STAKE",
+                fromToken: {
+                  asset: sendConfigs.amountConfig.sendCurrency.coinDenom,
+                  chainId: chainStore.current.chainId,
+                },
+                toToken: {
+                  asset: sendConfigs.amountConfig.sendCurrency.coinDenom,
+                  chainId: chainStore.current.chainId,
+                },
+                status: "SUCCESS",
+              };
+
+              handleSaveHistory(account.bech32Address, historyInfos);
             },
           }
         );

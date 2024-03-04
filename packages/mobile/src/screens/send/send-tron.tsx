@@ -15,6 +15,7 @@ import { spacing } from "../../themes";
 import { Text } from "@src/components/text";
 import { Toggle } from "../../components/toggle";
 import { useTheme } from "@src/themes/theme-provider";
+import { handleSaveHistory } from "@src/utils/helper";
 
 const styling = (colors) =>
   StyleSheet.create({
@@ -241,10 +242,35 @@ export const SendTronScreen: FunctionComponent = observer((props) => {
                   receiveAddress,
                   address,
                   {
-                    onBroadcasted: (txHash) => {
+                    onBroadcasted: async (txHash) => {
                       smartNavigation.pushSmart("TxPendingResult", {
                         txHash: Buffer.from(txHash).toString("hex"),
                       });
+
+                      const historyInfos = {
+                        fromAddress: address,
+                        toAddress: receiveAddress,
+                        hash: Buffer.from(txHash).toString("hex"),
+                        memo: "",
+                        fromAmount: sendConfigs.amountConfig.amount,
+                        toAmount: sendConfigs.amountConfig.amount,
+                        value: sendConfigs.amountConfig.amount,
+                        fee: sendConfigs.feeConfig.toStdFee(),
+                        type: "SEND",
+                        fromToken: {
+                          asset:
+                            sendConfigs.amountConfig.sendCurrency.coinDenom,
+                          chainId: chainStore.current.chainId,
+                        },
+                        toToken: {
+                          asset:
+                            sendConfigs.amountConfig.sendCurrency.coinDenom,
+                          chainId: chainStore.current.chainId,
+                        },
+                        status: "SUCCESS",
+                      };
+
+                      await handleSaveHistory(address, historyInfos);
                     },
                   },
                   route?.params?.item
