@@ -295,7 +295,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
       setTimeout(() => {
         loadTokenAmounts(loadTokenParams);
-      }, 2000);
+      }, 1000);
     } catch (error) {
       console.log("error loadTokenAmounts", error);
       showToast({

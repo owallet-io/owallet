@@ -37,6 +37,11 @@ export enum KADOChainNameEnum {
   "injective-1" = "INJECTIVE",
   "osmosis-1" = "OSMOSIS",
   "bitcoin" = "BITCOIN",
+  "kawaii_6886-1" = "KAWAIIVERSE COSMOS",
+  "0x1ae6" = "KAWAIIVERSE EVM",
+  "0x2b6653dc" = "TRON",
+  "0x38" = "BNB",
+  "noble-1" = "NOBLE",
 }
 
 export enum ChainNameEnum {

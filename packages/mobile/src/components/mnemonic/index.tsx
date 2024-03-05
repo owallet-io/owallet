@@ -1,6 +1,7 @@
 import React, { FunctionComponent } from "react";
 import { View } from "react-native";
 import { Text } from "@src/components/text";
+import { useTheme } from "@react-navigation/native";
 
 export const WordChip: FunctionComponent<{
   index: number;
@@ -10,7 +11,7 @@ export const WordChip: FunctionComponent<{
 
   empty?: boolean;
   dashedBorder?: boolean;
-}> = ({ index, word, hideWord, empty, colors, dashedBorder }) => {
+}> = ({ index, word, hideWord, empty, dashedBorder, colors }) => {
   return (
     <View
       style={{

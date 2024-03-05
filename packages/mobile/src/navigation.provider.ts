@@ -190,6 +190,7 @@ const { SmartNavigatorProvider, useSmartNavigation } =
         registerConfig: RegisterConfig;
         newMnemonicConfig: NewMnemonicConfig;
         bip44HDPath: BIP44HDPath;
+        walletName?: string;
       };
       "Register.RecoverMnemonic": {
         registerConfig: RegisterConfig;

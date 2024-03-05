@@ -23,6 +23,7 @@ import { useStore } from "@src/stores";
 import { ChainIdEnum } from "@owallet/common";
 import { CoinGeckoPrices } from "@owallet/hooks";
 import { find } from "lodash";
+import { tokensIcon } from "@oraichain/oraidex-common";
 
 export const SelectTokenModal: FunctionComponent<{
   onNetworkModal?: () => void;

@@ -118,7 +118,7 @@ const styling = (colors: TypeTheme["colors"]) =>
     },
     textInput: {
       width: "100%",
-      fontSize: 34,
+      fontSize: 22,
       paddingVertical: 0,
     },
     containerInput: {

@@ -1,7 +1,5 @@
 import { TypeTextAndCustomizeComponent } from "./types";
 import {
-  TokenItemType,
-  CustomChainInfo,
   Networks,
   BSC_SCAN,
   ETHEREUM_SCAN,
