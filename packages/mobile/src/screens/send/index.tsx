@@ -23,7 +23,7 @@ import { spacing } from "../../themes";
 import { Text } from "@src/components/text";
 import { Toggle } from "../../components/toggle";
 import { OWBox } from "@src/components/card";
-import { handleSaveHistory } from "@src/utils/helper";
+import { handleSaveHistory, HISTORY_STATUS } from "@src/utils/helper";
 
 const styling = (colors) =>
   StyleSheet.create({
@@ -333,7 +333,7 @@ export const SendScreen: FunctionComponent = observer(() => {
                           toAmount: sendConfigs.amountConfig.amount,
                           value: sendConfigs.amountConfig.amount,
                           fee: sendConfigs.feeConfig.toStdFee(),
-                          type: "SEND",
+                          type: HISTORY_STATUS.SEND,
                           fromToken: {
                             asset:
                               sendConfigs.amountConfig.sendCurrency.coinDenom,

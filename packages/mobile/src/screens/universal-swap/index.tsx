@@ -13,6 +13,7 @@ import { SelectNetworkModal, SelectTokenModal, SlippageModal } from "./modals/";
 import {
   getTokenInfos,
   handleSaveHistory,
+  HISTORY_STATUS,
   showToast,
   _keyExtract,
 } from "@src/utils/helper";
@@ -608,7 +609,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           toAmount: toAmountToken,
           value: toAmountToken,
           fee: relayerFeeAmount,
-          type: "SWAP",
+          type: HISTORY_STATUS.SWAP,
           fromToken: {
             asset: originalFromToken.denom,
             chainId: originalFromToken.chainId,

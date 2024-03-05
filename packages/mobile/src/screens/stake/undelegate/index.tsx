@@ -5,7 +5,7 @@ import { Dec, DecUtils } from "@owallet/unit";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { Text } from "@src/components/text";
 import { useTheme } from "@src/themes/theme-provider";
-import { handleSaveHistory } from "@src/utils/helper";
+import { handleSaveHistory, HISTORY_STATUS } from "@src/utils/helper";
 import { Buffer } from "buffer";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useState } from "react";
@@ -291,7 +291,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
                         toAmount: sendConfigs.amountConfig.amount,
                         value: sendConfigs.amountConfig.amount,
                         fee: sendConfigs.feeConfig.toStdFee(),
-                        type: "UNSTAKE",
+                        type: HISTORY_STATUS.UNSTAKE,
                         fromToken: {
                           asset:
                             sendConfigs.amountConfig.sendCurrency.coinDenom,

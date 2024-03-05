@@ -7,7 +7,7 @@ import { OWBox } from "@src/components/card";
 import { OWSubTitleHeader } from "@src/components/header";
 import { Text } from "@src/components/text";
 import { useTheme } from "@src/themes/theme-provider";
-import { handleSaveHistory } from "@src/utils/helper";
+import { handleSaveHistory, HISTORY_STATUS } from "@src/utils/helper";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
@@ -244,7 +244,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                         toAmount: sendConfigs.amountConfig.amount,
                         value: sendConfigs.amountConfig.amount,
                         fee: sendConfigs.feeConfig.toStdFee(),
-                        type: "STAKE",
+                        type: HISTORY_STATUS.STAKE,
                         fromToken: {
                           asset:
                             sendConfigs.amountConfig.sendCurrency.coinDenom,

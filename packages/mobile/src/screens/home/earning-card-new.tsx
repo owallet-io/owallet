@@ -5,7 +5,11 @@ import { OWButton } from "@src/components/button";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { Text } from "@src/components/text";
 import { useTheme } from "@src/themes/theme-provider";
-import { handleSaveHistory, showToast } from "@src/utils/helper";
+import {
+  handleSaveHistory,
+  HISTORY_STATUS,
+  showToast,
+} from "@src/utils/helper";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 import { StyleSheet, TouchableOpacity, View, ViewStyle } from "react-native";
@@ -59,7 +63,7 @@ export const EarningCardNew: FunctionComponent<{
               toAmount: totalStakingReward,
               value: totalStakingReward,
               fee: "0",
-              type: "CLAIM",
+              type: HISTORY_STATUS.CLAIM,
               fromToken: {
                 asset: stakingReward.toCoin().denom.toUpperCase(),
                 chainId: chainStore.current.chainId,

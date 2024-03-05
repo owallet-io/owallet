@@ -676,3 +676,11 @@ export const handleSaveHistory = async (address, infos) => {
     console.log("err handleSaveHistory ", err);
   }
 };
+
+export enum HISTORY_STATUS {
+  SWAP = "SWAP",
+  SEND = "SEND",
+  STAKE = "STAKE",
+  CLAIM = "CLAIM",
+  UNSTAKE = "UNSTAKE",
+}

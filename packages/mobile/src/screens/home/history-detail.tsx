@@ -2,20 +2,69 @@ import React, { FunctionComponent, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
-import { StyleSheet, View, TouchableOpacity, Image } from "react-native";
+import {
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  Image,
+  ActivityIndicator,
+} from "react-native";
 import OWText from "@src/components/text/ow-text";
 import { useSmartNavigation } from "@src/navigation.provider";
 import { useStore } from "@src/stores";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { OWButton } from "@src/components/button";
-import { checkRouter } from "@src/router/root";
 import { metrics } from "@src/themes";
 import { ScrollView } from "react-native-gesture-handler";
-import { CopyFillIcon } from "@src/components/icon";
+import { CopyFillIcon, DownArrowIcon } from "@src/components/icon";
+import { API } from "@src/common/api";
+import { HISTORY_STATUS } from "@src/utils/helper";
+import { Bech32Address } from "@owallet/cosmos";
 
 export const HistoryDetail: FunctionComponent = observer((props) => {
-  const route = useRoute<RouteProp<Record<string, {}>, string>>();
+  const route = useRoute<
+    RouteProp<
+      Record<
+        string,
+        {
+          item: any;
+        }
+      >,
+      string
+    >
+  >();
+  const [detail, setDetail] = useState<any>();
+  const [loading, setLoading] = useState(false);
+  const history = route.params.item;
+  const getHistoryDetail = async () => {
+    try {
+      setLoading(true);
+      const res = await API.getHistoryDetail(
+        {
+          id: history._id,
+        },
+        {
+          baseURL: "https://staging.owallet.dev/",
+        }
+      );
 
+      if (res && res.status === 200) {
+        setDetail(res.data);
+        setLoading(false);
+      }
+    } catch (err) {
+      setLoading(false);
+      console.log("getHistoryDetail err", err);
+    }
+  };
+
+  useEffect(() => {
+    setDetail(history);
+  }, [history]);
+
+  useEffect(() => {
+    getHistoryDetail();
+  }, [history]);
   const { colors } = useTheme();
 
   const styles = useStyles(colors);
@@ -26,7 +75,13 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
     smartNavigation.goBack();
   };
 
-  const renderTransactionDetail = (title, content, copyable = true) => {
+  console.log("history", history);
+
+  const renderTransactionDetail = (
+    title,
+    content,
+    action?: { type: "copy" | "share"; callback }
+  ) => {
     return (
       <View
         style={{
@@ -45,8 +100,17 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
           </OWText>
         </View>
 
-        {copyable ? (
+        {action?.type === "copy" ? (
           <CopyFillIcon size={24} color={colors["neutral-icon-on-light"]} />
+        ) : null}
+        {action?.type === "share" ? (
+          <TouchableOpacity>
+            <OWIcon
+              name="share"
+              size={15}
+              color={colors["neutral-icon-on-light"]}
+            />
+          </TouchableOpacity>
         ) : null}
       </View>
     );
@@ -64,13 +128,15 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
         showsVerticalScrollIndicator={false}
       >
         <View>
-          <TouchableOpacity onPress={onGoBack} style={styles.goBack}>
-            <OWIcon
-              size={16}
-              color={colors["neutral-icon-on-light"]}
-              name="arrow-left"
-            />
-          </TouchableOpacity>
+          <View style={styles.goBack}>
+            <TouchableOpacity onPress={onGoBack}>
+              <OWIcon
+                size={16}
+                color={colors["neutral-icon-on-light"]}
+                name="arrow-left"
+              />
+            </TouchableOpacity>
+          </View>
           <View style={[styles.aic, styles.title]}>
             <OWText
               variant="heading"
@@ -80,6 +146,7 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
               Transaction Detail
             </OWText>
           </View>
+
           <View
             style={{
               backgroundColor: colors["neutral-surface-card"],
@@ -102,61 +169,115 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
               resizeMode="cover"
               fadeDuration={0}
             />
-            <OWText style={{ fontSize: 16, fontWeight: "500" }}>Receive</OWText>
-            <View
-              style={{
-                backgroundColor: colors["hightlight-surface-subtle"],
-                paddingHorizontal: 12,
-                paddingVertical: 2,
-                borderRadius: 12,
-                marginBottom: 10,
-              }}
-            >
-              <OWText
+            {!detail ? (
+              <View
                 style={{
-                  fontSize: 14,
-                  fontWeight: "500",
-                  color: colors["hightlight-text-title"],
+                  height: metrics.screenHeight / 7,
+                  justifyContent: "center",
+                  alignItems: "center",
                 }}
               >
-                Success
-              </OWText>
-            </View>
+                <ActivityIndicator />
+              </View>
+            ) : (
+              <View
+                style={{
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <OWText style={{ fontSize: 16, fontWeight: "500" }}>
+                  {detail.type}
+                </OWText>
+                <View
+                  style={{
+                    backgroundColor: colors["hightlight-surface-subtle"],
+                    paddingHorizontal: 12,
+                    paddingVertical: 2,
+                    borderRadius: 12,
+                    marginBottom: 10,
+                  }}
+                >
+                  <OWText
+                    style={{
+                      fontSize: 14,
+                      fontWeight: "500",
+                      color: colors["hightlight-text-title"],
+                    }}
+                  >
+                    {detail.status}
+                  </OWText>
+                </View>
+                <OWText
+                  style={{
+                    fontSize: 28,
+                    fontWeight: "500",
+                  }}
+                >
+                  -{detail.fromAmount} {detail.fromToken.asset.toUpperCase()}
+                </OWText>
+                {detail.type === HISTORY_STATUS.SWAP ? (
+                  <>
+                    <DownArrowIcon height={20} color={colors["primary-text"]} />
+                    <OWText
+                      style={{
+                        fontSize: 28,
+                        fontWeight: "500",
+                        color: colors["success-text-body"],
+                      }}
+                    >
+                      +{detail.toAmount} {detail.toToken.asset.toUpperCase()}
+                    </OWText>
+                  </>
+                ) : null}
 
-            <OWText
+                <OWText
+                  style={{ fontSize: 14, color: colors["neutral-text-body"] }}
+                >
+                  ${detail.toAmount}
+                </OWText>
+              </View>
+            )}
+          </View>
+          {!detail ? null : (
+            <View
               style={{
-                fontSize: 28,
-                fontWeight: "500",
-                color: colors["success-text-body"],
+                backgroundColor: colors["neutral-surface-card"],
+                width: metrics.screenWidth - 32,
+                borderRadius: 24,
+                marginTop: 1,
+                padding: 16,
               }}
             >
-              +100 ORAI
-            </OWText>
-            <OWText
-              style={{ fontSize: 14, color: colors["neutral-text-body"] }}
-            >
-              $524.23
-            </OWText>
-          </View>
-          <View
-            style={{
-              backgroundColor: colors["neutral-surface-card"],
-              width: metrics.screenWidth - 32,
-              borderRadius: 24,
-              marginTop: 1,
-              padding: 16,
-            }}
-          >
-            {renderTransactionDetail("From", "asdasdasdasdasd")}
-            {renderTransactionDetail("From", "asdasdasdasdasd")}
-            {renderTransactionDetail("From", "asdasdasdasdasd")}
-            {renderTransactionDetail("From", "asdasdasdasdasd")}
-            {renderTransactionDetail("From", "asdasdasdasdasd")}
-            {renderTransactionDetail("From", "asdasdasdasdasd")}
-            {renderTransactionDetail("From", "asdasdasdasdasd")}
-            {renderTransactionDetail("From", "asdasdasdasdasd")}
-            {renderTransactionDetail("From", "asdasdasdasdasd")}
-          </View>
+              {renderTransactionDetail(
+                "From",
+                Bech32Address.shortenAddress(detail.fromAddress, 24),
+                {
+                  type: "copy",
+                  callback: () => {},
+                }
+              )}
+              {renderTransactionDetail(
+                "To",
+                Bech32Address.shortenAddress(detail.toAddress, 24),
+                {
+                  type: "copy",
+                  callback: () => {},
+                }
+              )}
+              {renderTransactionDetail("Network", detail.fromToken.chainId)}
+              {detail.type === HISTORY_STATUS.SWAP
+                ? renderTransactionDetail("To Network", detail.toToken.chainId)
+                : null}
+              {renderTransactionDetail("Fee", detail.fee)}
+              {renderTransactionDetail("Time", detail.createdAt)}
+              {renderTransactionDetail("Memo", detail.memo)}
+              {renderTransactionDetail("Hash", detail.hash, {
+                type: "share",
+                callback: () => {},
+              })}
+            </View>
+          )}
         </View>
       </ScrollView>
 
@@ -215,7 +336,6 @@ const useStyles = (colors) => {
       height: 44,
       alignItems: "center",
       justifyContent: "center",
-      marginLeft: 16,
     },
     title: {
       paddingHorizontal: 16,

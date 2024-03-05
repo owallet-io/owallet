@@ -29,6 +29,7 @@ import { OWSubTitleHeader } from "@src/components/header";
 import {
   capitalizedText,
   handleSaveHistory,
+  HISTORY_STATUS,
   showToast,
 } from "@src/utils/helper";
 export const RedelegateScreen: FunctionComponent = observer(() => {
@@ -161,7 +162,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                 toAmount: sendConfigs.amountConfig.amount,
                 value: sendConfigs.amountConfig.amount,
                 fee: sendConfigs.feeConfig.toStdFee(),
-                type: "STAKE",
+                type: HISTORY_STATUS.STAKE,
                 fromToken: {
                   asset: sendConfigs.amountConfig.sendCurrency.coinDenom,
                   chainId: chainStore.current.chainId,

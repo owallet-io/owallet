@@ -384,6 +384,10 @@ export const API = {
     let url = `history/${address}?offset=${offset}&limit=${limit}`;
     return API.get(url, config);
   },
+  getHistoryDetail: ({ id }, config: AxiosRequestConfig) => {
+    let url = `history-detail/${id}?`;
+    return API.get(url, config);
+  },
 };
 const retryWrapper = (axios, options) => {
   const max_time = 1;

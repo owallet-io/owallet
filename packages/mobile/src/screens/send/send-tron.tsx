@@ -15,7 +15,7 @@ import { spacing } from "../../themes";
 import { Text } from "@src/components/text";
 import { Toggle } from "../../components/toggle";
 import { useTheme } from "@src/themes/theme-provider";
-import { handleSaveHistory } from "@src/utils/helper";
+import { handleSaveHistory, HISTORY_STATUS } from "@src/utils/helper";
 
 const styling = (colors) =>
   StyleSheet.create({
@@ -256,7 +256,7 @@ export const SendTronScreen: FunctionComponent = observer((props) => {
                         toAmount: sendConfigs.amountConfig.amount,
                         value: sendConfigs.amountConfig.amount,
                         fee: sendConfigs.feeConfig.toStdFee(),
-                        type: "SEND",
+                        type: HISTORY_STATUS.SEND,
                         fromToken: {
                           asset:
                             sendConfigs.amountConfig.sendCurrency.coinDenom,

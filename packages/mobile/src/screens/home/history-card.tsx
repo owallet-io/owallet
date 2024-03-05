@@ -33,17 +33,17 @@ export const HistoryCard: FunctionComponent<{
 
   const [histories, setHistories] = useState({});
   const [loading, setLoading] = useState(false);
-  const [loadMore, setLoadMore] = useState(false);
   const [offset, setOffset] = useState(0);
 
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
 
-  const getWalletHistory = async () => {
+  const getWalletHistory = async (address) => {
     try {
       setLoading(true);
+
       const res = await API.getGroupHistory(
         {
-          address: accountOrai.bech32Address,
+          address,
           offset,
           limit: 2,
         },
@@ -51,24 +51,23 @@ export const HistoryCard: FunctionComponent<{
           baseURL: "https://staging.owallet.dev/",
         }
       );
-
       if (res && res.status === 200) {
         setHistories({ ...histories, ...res.data.data });
-        setLoadMore(false);
         setLoading(false);
-        if (res.data.total > offset) {
+        if (Number(res.data.total) > offset) {
           setOffset(offset + 2);
         }
       }
     } catch (err) {
-      setLoadMore(false);
       setLoading(false);
       console.log("getWalletHistory err", err);
     }
   };
 
   useEffect(() => {
-    getWalletHistory();
+    if (accountOrai.bech32Address) {
+      getWalletHistory(accountOrai.bech32Address);
+    }
   }, [accountOrai.bech32Address]);
 
   const styles = styling(colors);
@@ -85,8 +84,6 @@ export const HistoryCard: FunctionComponent<{
         return (
           <TouchableOpacity
             onPress={() => {
-              console.log("ote,", item);
-
               navigate(SCREENS.HistoryDetail, {
                 item,
               });
@@ -172,8 +169,7 @@ export const HistoryCard: FunctionComponent<{
   };
 
   const onEndReached = () => {
-    console.log("reached the end");
-    getWalletHistory();
+    getWalletHistory(accountOrai.bech32Address);
   };
 
   const onRefresh = () => {
@@ -189,9 +185,7 @@ export const HistoryCard: FunctionComponent<{
           onEndReached={onEndReached}
           renderItem={renderListHistoryItem}
           loading={loading}
-          loadMore={loadMore}
           onRefresh={onRefresh}
-          refreshing={loading}
           ListEmptyComponent={() => {
             return (
               <CardBody style={{ paddingHorizontal: 0, paddingTop: 8 }}>
