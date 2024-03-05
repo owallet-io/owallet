@@ -268,41 +268,6 @@ export const Browser: FunctionComponent<BrowserProps> = observer((props) => {
         />
 
         <BrowserBookmark />
-        {/* <View
-          style={{
-            paddingHorizontal: 20,
-            paddingTop: 20
-          }}
-        >
-          <TouchableOpacity
-            key={`https://orderbook.oraidex.io/`}
-            style={style.flatten(['height-44', 'margin-bottom-15', 'flex-row'])}
-            onPress={() => onHandleUrl(`https://orderbook.oraidex.io/`)}
-          >
-            <View style={style.flatten(['padding-top-5'])}>
-              <Image
-                style={{
-                  width: 20,
-                  height: 22
-                }}
-                source={require('../../assets/image/webpage/orai_logo.png')}
-                fadeDuration={0}
-              />
-            </View>
-            <View style={style.flatten(['padding-x-15'])}>
-              <Text
-                style={{
-                  fontSize: 16,
-                  fontWeight: '700',
-                  color: colors['label']
-                }}
-              >
-                {`Orderbook`}
-              </Text>
-              <Text style={{ color: colors['sub-text'], fontSize: 14 }}>{`https://orderbook.oraidex.io/`}</Text>
-            </View>
-          </TouchableOpacity>
-        </View> */}
 
         {sourceCode ? (
           <OWFlatList
@@ -312,6 +277,83 @@ export const Browser: FunctionComponent<BrowserProps> = observer((props) => {
             }}
             data={browserStore.getBookmarks}
             keyExtractor={_keyExtract}
+            ListHeaderComponent={() => (
+              <>
+                <View style={{}}>
+                  <TouchableOpacity
+                    key={`https://orderbook.oraidex.io/`}
+                    style={style.flatten([
+                      "height-44",
+                      "margin-bottom-15",
+                      "flex-row",
+                    ])}
+                    onPress={() => onHandleUrl(`https://orderbook.oraidex.io/`)}
+                  >
+                    <View style={style.flatten(["padding-top-5"])}>
+                      <Image
+                        style={{
+                          width: 20,
+                          height: 22,
+                        }}
+                        source={require("../../assets/image/webpage/orai_logo.png")}
+                        fadeDuration={0}
+                      />
+                    </View>
+                    <View style={style.flatten(["padding-x-15"])}>
+                      <Text
+                        style={{
+                          fontSize: 16,
+                          fontWeight: "700",
+                          color: colors["label"],
+                        }}
+                      >
+                        {`Orderbook`}
+                      </Text>
+                      <Text
+                        style={{ color: colors["sub-text"], fontSize: 14 }}
+                      >{`https://orderbook.oraidex.io/`}</Text>
+                    </View>
+                  </TouchableOpacity>
+                </View>
+
+                <View style={{}}>
+                  <TouchableOpacity
+                    key={`https://futures.oraidex.io/`}
+                    style={style.flatten([
+                      "height-44",
+                      "margin-bottom-15",
+                      "flex-row",
+                    ])}
+                    onPress={() => onHandleUrl(`https://futures.oraidex.io/`)}
+                  >
+                    <View style={style.flatten(["padding-top-5"])}>
+                      <Image
+                        style={{
+                          width: 20,
+                          height: 22,
+                        }}
+                        source={require("../../assets/image/webpage/orai_logo.png")}
+                        fadeDuration={0}
+                      />
+                    </View>
+                    <View style={style.flatten(["padding-x-15"])}>
+                      <Text
+                        style={{
+                          fontSize: 16,
+                          fontWeight: "700",
+                          color: colors["label"],
+                        }}
+                      >
+                        {`Futures`}
+                      </Text>
+                      <Text
+                        style={{ color: colors["sub-text"], fontSize: 14 }}
+                      >{`https://futures.oraidex.io/`}</Text>
+                    </View>
+                  </TouchableOpacity>
+                </View>
+              </>
+            )}
             renderItem={({ item }) => {
               const e = item;
               return (
