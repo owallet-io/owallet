@@ -51,6 +51,9 @@ export const HistoryCard: FunctionComponent<{
           baseURL: "https://staging.owallet.dev/",
         }
       );
+
+      console.log("res", res);
+
       if (res && res.status === 200) {
         setHistories({ ...histories, ...res.data.data });
         setLoading(false);
@@ -65,6 +68,8 @@ export const HistoryCard: FunctionComponent<{
   };
 
   useEffect(() => {
+    console.log("accountOrai.bech32Address", accountOrai.bech32Address);
+
     if (accountOrai.bech32Address) {
       getWalletHistory(accountOrai.bech32Address);
     }

@@ -14,16 +14,13 @@ import { TypeTheme, useTheme } from "@src/themes/theme-provider";
 import { metrics } from "@src/themes";
 import {
   TokenItemType,
-  tokenMap,
   toDisplay,
-  AmountDetails,
   tokensIcon,
 } from "@oraichain/oraidex-common";
 import { useStore } from "@src/stores";
 import { ChainIdEnum } from "@owallet/common";
 import { CoinGeckoPrices } from "@owallet/hooks";
 import { find } from "lodash";
-import { tokensIcon } from "@oraichain/oraidex-common";
 
 export const SelectTokenModal: FunctionComponent<{
   onNetworkModal?: () => void;

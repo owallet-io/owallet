@@ -41,7 +41,6 @@ export const TokensCardAll: FunctionComponent<{
   const theme = appInitStore.getInitApp.theme;
 
   const [more, setMore] = useState(true);
-  const [tokenInfos, setTokenInfos] = useState([]);
   const [activeTab, setActiveTab] = useState("tokens");
   const [yesterdayAssets, setYesterdayAssets] = useState([]);
   const [queryBalances, setQueryBalances] = useState({});
@@ -61,19 +60,8 @@ export const TokensCardAll: FunctionComponent<{
 
   const [tronTokens, setTronTokens] = useState([]);
 
-  const handleSaveTokenInfos = async (tokenInfos) => {
-    await API.saveTokenInfos(
-      {
-        address: accountOrai.bech32Address,
-        tokesInfos: tokenInfos,
-      },
-      {
-        baseURL: "https://staging.owallet.dev/",
-      }
-    );
-  };
-
   const getYesterdayAssets = async () => {
+    appInitStore.updateYesterdayPriceFeed({});
     const res = await API.getYesterdayAssets(
       {
         address: accountOrai.bech32Address,
@@ -86,13 +74,13 @@ export const TokensCardAll: FunctionComponent<{
 
     if (res && res.status === 200) {
       const dataKeys = Object.keys(res.data);
-
       const yesterday = dataKeys.find((k) => {
         const isToday = moment(Number(k)).isSame(moment(), "day");
         return !isToday;
       });
 
       if (yesterday) {
+        setYesterdayAssets([]);
         const yesterdayData = res.data[yesterday];
         setYesterdayAssets(yesterdayData);
         appInitStore.updateYesterdayPriceFeed(yesterdayData);
@@ -101,37 +89,35 @@ export const TokensCardAll: FunctionComponent<{
   };
 
   useEffect(() => {
-    setYesterdayAssets([]);
     getYesterdayAssets();
   }, [accountOrai.bech32Address]);
 
+  const handleSaveTokenInfos = async (tokenInfos) => {
+    await API.saveTokenInfos(
+      {
+        address: accountOrai.bech32Address,
+        tokesInfos: tokenInfos,
+      },
+      {
+        baseURL: "https://staging.owallet.dev/",
+      }
+    );
+  };
+  const tokens = getTokenInfos({
+    tokens: universalSwapStore.getAmount,
+    prices: appInitStore.getInitApp.prices,
+    networkFilter: appInitStore.getInitApp.isAllNetworks
+      ? ""
+      : chainStore.current.chainId,
+  });
+
   useEffect(() => {
     setTimeout(() => {
-      const tokens = getTokenInfos({
-        tokens: universalSwapStore.getAmount,
-        prices: appInitStore.getInitApp.prices,
-        networkFilter: appInitStore.getInitApp.isAllNetworks
-          ? ""
-          : chainStore.current.chainId,
-      });
-
       if (tokens.length > 0) {
-        setTokenInfos(tokens);
+        handleSaveTokenInfos(tokens);
       }
     }, 3000);
-  }, [
-    accountOrai.bech32Address,
-    chainStore.current.chainId,
-    universalSwapStore.getAmount,
-  ]);
-
-  useEffect(() => {
-    setTimeout(() => {
-      if (tokenInfos.length > 0) {
-        handleSaveTokenInfos(tokenInfos);
-      }
-    }, 3000);
-  }, [accountOrai.bech32Address, tokenInfos]);
+  }, [accountOrai.bech32Address]);
 
   useEffect(() => {
     (async function get() {
@@ -316,8 +302,8 @@ export const TokensCardAll: FunctionComponent<{
         <>
           <CardBody style={{ paddingHorizontal: 0, paddingTop: 16 }}>
             {/* {renderTokensFromQueryBalances()} */}
-            {tokenInfos.length > 0 ? (
-              tokenInfos.map((token, index) => {
+            {tokens.length > 0 ? (
+              tokens.map((token, index) => {
                 if (more) {
                   if (index < 3) return renderTokenItem(token);
                 } else {
@@ -328,7 +314,7 @@ export const TokensCardAll: FunctionComponent<{
               <OWEmpty type="cash" />
             )}
           </CardBody>
-          {tokenInfos.length > 3 ? (
+          {tokens.length > 3 ? (
             <OWButton
               style={{
                 marginTop: 16,
