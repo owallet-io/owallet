@@ -205,7 +205,7 @@ export const DetailsTabEvm: FunctionComponent<{
             }
           </React.Fragment>
         ) : null}
-        {!preferNoSetMemo ? (
+        {/* {!preferNoSetMemo ? (
           <MemoInput
             memoConfig={memoConfig}
             label={intl.formatMessage({ id: "sign.info.memo" })}
@@ -226,7 +226,7 @@ export const DetailsTabEvm: FunctionComponent<{
         //     <div>{memoConfig.memo ? memoConfig.memo : intl.formatMessage({ id: 'sign.info.warning.empty-memo' })}</div>
         //   </div>
         // </React.Fragment>
-        null}
+        null} */}
       </div>
     );
   }
