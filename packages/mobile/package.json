@@ -54,7 +54,6 @@
     "@formatjs/intl-displaynames": "^5.1.6",
     "@formatjs/intl-getcanonicallocales": "^1.7.1",
     "@formatjs/intl-listformat": "^6.2.6",
-    "@logrocket/react-native":"1.26.2",
     "@formatjs/intl-locale": "^2.4.33",
     "@formatjs/intl-numberformat": "^7.1.5",
     "@formatjs/intl-pluralrules": "^4.0.28",

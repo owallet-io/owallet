@@ -28,7 +28,6 @@ import { WebViewStateContext } from "../context";
 import { BrowserFooterSection } from "../footer-section";
 import { OnScreenWebpageScreenHeader } from "../header";
 import { SwtichTab } from "../switch-tabs";
-import { LRRedactProps } from "@logrocket/react-native";
 
 export const WebpageScreen: FunctionComponent<
   React.ComponentProps<typeof WebView> & {
