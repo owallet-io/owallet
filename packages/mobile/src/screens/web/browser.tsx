@@ -4,7 +4,13 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { Image, View, Keyboard, StyleSheet } from "react-native";
+import {
+  Image,
+  View,
+  Keyboard,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native";
 import { Text } from "@src/components/text";
 import { useStyle } from "../../styles";
 import { TextInput } from "../../components/input";
@@ -20,12 +26,30 @@ import { observer } from "mobx-react-lite";
 import { SearchLightIcon, XIcon } from "../../components/icon";
 import { useTheme } from "@src/themes/theme-provider";
 import OWFlatList from "@src/components/page/ow-flat-list";
+import { InjectedProviderUrl } from "./config";
+import { SCREENS } from "@src/common/constants";
 
 interface BrowserProps extends ReactPropTypes {
   route: {
     params: { url?: string };
   };
 }
+export const useInjectedSourceCode = () => {
+  const [code, setCode] = useState<string | undefined>();
+
+  useEffect(() => {
+    fetch(InjectedProviderUrl)
+      .then((res) => {
+        return res.text();
+      })
+      .then((res) => {
+        setCode(res);
+      })
+      .catch((err) => console.log(err));
+  }, []);
+
+  return code;
+};
 
 export const BrowserBookmark: FunctionComponent<{}> = ({}) => {
   const style = useStyle();
@@ -98,6 +122,26 @@ export const Browser: FunctionComponent<BrowserProps> = observer((props) => {
   const [url, setUrl] = useState("");
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
 
+  const sourceCode = useInjectedSourceCode();
+
+  const handleNavigateDapp = ({ name, uri }) => {
+    if (sourceCode) {
+      navigation.navigate(SCREENS.WebDApp, {
+        name: name,
+        uri: uri,
+        sourceCode,
+      });
+    } else {
+      setTimeout(() => {
+        navigation.navigate(SCREENS.WebDApp, {
+          name: name,
+          uri: uri,
+          sourceCode,
+        });
+      }, 1000);
+    }
+  };
+
   useEffect(() => {
     setTimeout(function () {
       if (checkValidDomain(props?.route?.params?.url?.toLowerCase())) {
@@ -105,10 +149,8 @@ export const Browser: FunctionComponent<BrowserProps> = observer((props) => {
           props.route.params.url?.toLowerCase().indexOf("http") >= 0
             ? props.route.params.url?.toLowerCase()
             : "https://" + props.route.params?.url?.toLowerCase();
-        navigation.navigate("Web.dApp", {
-          name: tabUri,
-          uri: tabUri,
-        });
+
+        handleNavigateDapp({ name: tabUri, uri: tabUri });
       }
     }, 1000);
   }, [props?.route?.params?.url]);
@@ -121,10 +163,7 @@ export const Browser: FunctionComponent<BrowserProps> = observer((props) => {
           deepLinkUriStore.link?.toLowerCase().indexOf("http") >= 0
             ? deepLinkUriStore.link?.toLowerCase()
             : "https://" + deepLinkUriStore.link?.toLowerCase();
-        navigation.navigate("Web.dApp", {
-          name: tabUri,
-          uri: tabUri,
-        });
+        handleNavigateDapp({ name: tabUri, uri: tabUri });
       }
     }, 1000);
   }, []);
@@ -149,26 +188,16 @@ export const Browser: FunctionComponent<BrowserProps> = observer((props) => {
           browserStore.addTab(tab);
         }
         setUrl(currentUri);
-        navigation.navigate("Web.dApp", tab);
+        handleNavigateDapp(tab);
       } else {
         let uri = `https://www.google.com/search?q=${currentUri ?? ""}`;
-        navigation.navigate("Web.dApp", {
-          name: "Google",
-          uri,
-        });
+        handleNavigateDapp({ name: "Google", uri: uri });
       }
     }
   };
 
-  const handleClickUri = (uri: string, name: string) => {
-    navigation.navigate("Web.dApp", {
-      name,
-      uri,
-    });
-  };
-
   const handlePressItem = ({ name, uri }) => {
-    handleClickUri(uri, name);
+    handleNavigateDapp({ name: name, uri: uri });
     setIsSwitchTab(false);
     setUrl(uri);
   };
@@ -239,89 +268,137 @@ export const Browser: FunctionComponent<BrowserProps> = observer((props) => {
         />
 
         <BrowserBookmark />
-        {/* <View
-          style={{
-            paddingHorizontal: 20,
-            paddingTop: 20
-          }}
-        >
-          <TouchableOpacity
-            key={`https://orderbook.oraidex.io/`}
-            style={style.flatten(['height-44', 'margin-bottom-15', 'flex-row'])}
-            onPress={() => onHandleUrl(`https://orderbook.oraidex.io/`)}
-          >
-            <View style={style.flatten(['padding-top-5'])}>
-              <Image
-                style={{
-                  width: 20,
-                  height: 22
-                }}
-                source={require('../../assets/image/webpage/orai_logo.png')}
-                fadeDuration={0}
-              />
-            </View>
-            <View style={style.flatten(['padding-x-15'])}>
-              <Text
-                style={{
-                  fontSize: 16,
-                  fontWeight: '700',
-                  color: colors['label']
-                }}
-              >
-                {`Orderbook`}
-              </Text>
-              <Text style={{ color: colors['sub-text'], fontSize: 14 }}>{`https://orderbook.oraidex.io/`}</Text>
-            </View>
-          </TouchableOpacity>
-        </View> */}
 
-        <OWFlatList
-          style={{
-            paddingHorizontal: 20,
-            // paddingTop: 20
-          }}
-          data={browserStore.getBookmarks}
-          keyExtractor={_keyExtract}
-          renderItem={({ item }) => {
-            const e = item;
-            return (
-              <TouchableOpacity
-                key={e.id ?? e.uri}
-                style={style.flatten([
-                  "height-44",
-                  "margin-bottom-15",
-                  "flex-row",
-                ])}
-                onPress={() => onHandleUrl(e.uri)}
-              >
-                <View style={style.flatten(["padding-top-5"])}>
-                  <Image
-                    style={{
-                      width: 20,
-                      height: 22,
-                    }}
-                    source={e.logo}
-                    fadeDuration={0}
-                  />
-                </View>
-                <View style={style.flatten(["padding-x-15"])}>
-                  <Text
-                    style={{
-                      fontSize: 16,
-                      fontWeight: "700",
-                      color: colors["label"],
-                    }}
+        {sourceCode ? (
+          <OWFlatList
+            style={{
+              paddingHorizontal: 20,
+              // paddingTop: 20
+            }}
+            data={browserStore.getBookmarks}
+            keyExtractor={_keyExtract}
+            ListHeaderComponent={() => (
+              <>
+                <View style={{}}>
+                  <TouchableOpacity
+                    key={`https://orderbook.oraidex.io/`}
+                    style={style.flatten([
+                      "height-44",
+                      "margin-bottom-15",
+                      "flex-row",
+                    ])}
+                    onPress={() => onHandleUrl(`https://orderbook.oraidex.io/`)}
                   >
-                    {e.name}
-                  </Text>
-                  <Text style={{ color: colors["sub-text"], fontSize: 14 }}>
-                    {e.uri}
-                  </Text>
+                    <View style={style.flatten(["padding-top-5"])}>
+                      <Image
+                        style={{
+                          width: 20,
+                          height: 22,
+                        }}
+                        source={require("../../assets/image/webpage/orai_logo.png")}
+                        fadeDuration={0}
+                      />
+                    </View>
+                    <View style={style.flatten(["padding-x-15"])}>
+                      <Text
+                        style={{
+                          fontSize: 16,
+                          fontWeight: "700",
+                          color: colors["label"],
+                        }}
+                      >
+                        {`Orderbook`}
+                      </Text>
+                      <Text
+                        style={{ color: colors["sub-text"], fontSize: 14 }}
+                      >{`https://orderbook.oraidex.io/`}</Text>
+                    </View>
+                  </TouchableOpacity>
                 </View>
-              </TouchableOpacity>
-            );
-          }}
-        />
+
+                <View style={{}}>
+                  <TouchableOpacity
+                    key={`https://futures.oraidex.io/`}
+                    style={style.flatten([
+                      "height-44",
+                      "margin-bottom-15",
+                      "flex-row",
+                    ])}
+                    onPress={() => onHandleUrl(`https://futures.oraidex.io/`)}
+                  >
+                    <View style={style.flatten(["padding-top-5"])}>
+                      <Image
+                        style={{
+                          width: 20,
+                          height: 22,
+                        }}
+                        source={require("../../assets/image/webpage/orai_logo.png")}
+                        fadeDuration={0}
+                      />
+                    </View>
+                    <View style={style.flatten(["padding-x-15"])}>
+                      <Text
+                        style={{
+                          fontSize: 16,
+                          fontWeight: "700",
+                          color: colors["label"],
+                        }}
+                      >
+                        {`Futures`}
+                      </Text>
+                      <Text
+                        style={{ color: colors["sub-text"], fontSize: 14 }}
+                      >{`https://futures.oraidex.io/`}</Text>
+                    </View>
+                  </TouchableOpacity>
+                </View>
+              </>
+            )}
+            renderItem={({ item }) => {
+              const e = item;
+              return (
+                <TouchableOpacity
+                  key={e.id ?? e.uri}
+                  style={style.flatten([
+                    "height-44",
+                    "margin-bottom-15",
+                    "flex-row",
+                  ])}
+                  onPress={() => onHandleUrl(e.uri)}
+                >
+                  <View style={style.flatten(["padding-top-5"])}>
+                    <Image
+                      style={{
+                        width: 20,
+                        height: 22,
+                      }}
+                      source={e.logo}
+                      fadeDuration={0}
+                    />
+                  </View>
+                  <View style={style.flatten(["padding-x-15"])}>
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        fontWeight: "700",
+                        color: colors["label"],
+                      }}
+                    >
+                      {e.name}
+                    </Text>
+                    <Text style={{ color: colors["sub-text"], fontSize: 14 }}>
+                      {e.uri}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              );
+            }}
+          />
+        ) : (
+          <View style={style.flatten(["padding-top-5"])}>
+            <ActivityIndicator size={"small"} />
+          </View>
+        )}
       </View>
     );
   };

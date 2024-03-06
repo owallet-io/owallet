@@ -13,12 +13,11 @@ import {
 import flatten from "lodash/flatten";
 import { ContractCallResults, Multicall } from "@oraichain/ethereum-multicall";
 import {
-  evmTokens,
   isEvmNetworkNativeSwapSupported,
   getEvmAddress,
   tronToEthAddress,
 } from "@owallet/common";
-import { network, chainInfos } from "@oraichain/oraidex-common";
+import { network, chainInfos, evmTokens } from "@oraichain/oraidex-common";
 import {
   cosmosTokens,
   oraichainTokens,

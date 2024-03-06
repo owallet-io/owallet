@@ -36,7 +36,7 @@ const config = {
 
 firebase.initializeApp(config);
 
-messaging().setBackgroundMessageHandler(async (remoteMessage) => {
+messaging().setBackgroundMessageHandler(async remoteMessage => {
   console.log('remoteMessage background', remoteMessage);
 });
 
@@ -47,7 +47,15 @@ if (!__DEV__) {
     dsn: 'https://ab29c6e64d65418cb3b9f133dc601c23@o1323226.ingest.sentry.io/4504632450023424',
     tracesSampleRate: 0.7,
     environment: 'production',
-    ignoreErrors: ['Request rejected', 'Failed to fetch', 'Load failed', 'User rejected the request']
+    ignoreErrors: [
+      'Request rejected',
+      'Failed to fetch',
+      'Load failed',
+      'User rejected the request',
+      'SIGABRT',
+      'ApplicationNotResponding',
+      'Abort'
+    ]
   });
 }
 if (__DEV__ && Platform.OS === 'ios') {

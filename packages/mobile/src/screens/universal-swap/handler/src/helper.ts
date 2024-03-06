@@ -1,14 +1,5 @@
 import {
   CoinGeckoId,
-  WRAP_BNB_CONTRACT,
-  USDT_BSC_CONTRACT,
-  USDT_TRON_CONTRACT,
-  ORAI_ETH_CONTRACT,
-  ORAI_BSC_CONTRACT,
-  AIRI_BSC_CONTRACT,
-  WRAP_ETH_CONTRACT,
-  USDC_ETH_CONTRACT,
-  USDT_ETH_CONTRACT,
   EvmChainId,
   proxyContractInfo,
   CosmosChainId,
@@ -61,6 +52,7 @@ import {
 } from "@oraichain/common-contracts-sdk";
 import { CosmWasmClient, toBinary } from "@cosmjs/cosmwasm-stargate";
 import { swapFromTokens, swapToTokens } from "./swap-filter";
+import { swapEvmRoutes } from "@oraichain/oraidex-universal-swap";
 
 const caseSwapNativeAndWrapNative = (fromCoingecko, toCoingecko) => {
   const arr = ["ethereum", "weth"];
@@ -86,69 +78,6 @@ export const isEvmNetworkNativeSwapSupported = (chainId: NetworkChainId) => {
     default:
       return false;
   }
-};
-
-export const swapEvmRoutes: {
-  [network: string]: {
-    [pair: string]: string[];
-  };
-} = {
-  "0x38": {
-    [`${WRAP_BNB_CONTRACT}-${USDT_BSC_CONTRACT}`]: [
-      WRAP_BNB_CONTRACT,
-      USDT_BSC_CONTRACT,
-    ],
-    [`${WRAP_BNB_CONTRACT}-${USDT_TRON_CONTRACT}`]: [
-      WRAP_BNB_CONTRACT,
-      USDT_BSC_CONTRACT,
-    ],
-    [`${WRAP_BNB_CONTRACT}-${ORAI_ETH_CONTRACT}`]: [
-      WRAP_BNB_CONTRACT,
-      ORAI_BSC_CONTRACT,
-    ],
-    [`${WRAP_BNB_CONTRACT}-${ORAI_BSC_CONTRACT}`]: [
-      WRAP_BNB_CONTRACT,
-      ORAI_BSC_CONTRACT,
-    ],
-    [`${WRAP_BNB_CONTRACT}-${AIRI_BSC_CONTRACT}`]: [
-      WRAP_BNB_CONTRACT,
-      AIRI_BSC_CONTRACT,
-    ],
-    [`${USDT_BSC_CONTRACT}-${AIRI_BSC_CONTRACT}`]: [
-      USDT_BSC_CONTRACT,
-      WRAP_BNB_CONTRACT,
-      AIRI_BSC_CONTRACT,
-    ],
-    [`${USDT_BSC_CONTRACT}-${ORAI_BSC_CONTRACT}`]: [
-      USDT_BSC_CONTRACT,
-      WRAP_BNB_CONTRACT,
-      ORAI_BSC_CONTRACT,
-    ],
-    [`${ORAI_BSC_CONTRACT}-${AIRI_BSC_CONTRACT}`]: [
-      ORAI_BSC_CONTRACT,
-      WRAP_BNB_CONTRACT,
-      AIRI_BSC_CONTRACT,
-    ],
-  },
-  "0x01": {
-    [`${WRAP_ETH_CONTRACT}-${USDC_ETH_CONTRACT}`]: [
-      WRAP_ETH_CONTRACT,
-      USDC_ETH_CONTRACT,
-    ],
-    [`${WRAP_ETH_CONTRACT}-${ORAI_ETH_CONTRACT}`]: [
-      WRAP_ETH_CONTRACT,
-      ORAI_ETH_CONTRACT,
-    ],
-    [`${WRAP_ETH_CONTRACT}-${USDT_ETH_CONTRACT}`]: [
-      WRAP_ETH_CONTRACT,
-      USDT_ETH_CONTRACT,
-    ],
-    // TODO: hardcode fix eth -> weth (oraichain)
-    [`${WRAP_ETH_CONTRACT}-${WRAP_ETH_CONTRACT}`]: [
-      WRAP_ETH_CONTRACT,
-      WRAP_ETH_CONTRACT,
-    ],
-  },
 };
 
 export const buildSwapRouterKey = (

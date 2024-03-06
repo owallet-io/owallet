@@ -22,34 +22,9 @@ import OWButton from "../../../components/button/OWButton";
 import OWIcon from "../../../components/ow-icon/ow-icon";
 import { SCREENS } from "@src/common/constants";
 import OWText from "@src/components/text/ow-text";
-import { showToast } from "@src/utils/helper";
+import { isPrivateKey, showToast, trimWordsStr } from "@src/utils/helper";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require("bip39");
-
-function isPrivateKey(str: string): boolean {
-  if (str?.startsWith("0x") || str?.startsWith("zs")) {
-    return true;
-  }
-
-  if (str.length === 64) {
-    try {
-      return Buffer.from(str, "hex").length === 32;
-    } catch {
-      return false;
-    }
-  }
-  return false;
-}
-
-function trimWordsStr(str: string): string {
-  str = str.trim();
-  // Split on the whitespace or new line.
-  const splited = str.split(/\s+/);
-  const words = splited
-    .map((word) => word.trim())
-    .filter((word) => word.trim().length > 0);
-  return words.join(" ");
-}
 
 interface FormData {
   mnemonic: string;

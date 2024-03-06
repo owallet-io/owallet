@@ -10,7 +10,7 @@ import React, {
   useState,
 } from "react";
 import { useTheme } from "@src/themes/theme-provider";
-import { BackHandler, Platform, View } from "react-native";
+import { ActivityIndicator, BackHandler, Platform, View } from "react-native";
 import DeviceInfo from "react-native-device-info";
 import { URL } from "react-native-url-polyfill";
 import WebView, { WebViewMessageEvent } from "react-native-webview";
@@ -24,39 +24,22 @@ import {
 } from "../../../../injected/injected-provider";
 import { RNMessageRequesterExternal } from "../../../../router";
 import { useStore } from "../../../../stores";
-import { InjectedProviderUrl } from "../../config";
 import { WebViewStateContext } from "../context";
 import { BrowserFooterSection } from "../footer-section";
 import { OnScreenWebpageScreenHeader } from "../header";
 import { SwtichTab } from "../switch-tabs";
 import { LRRedactProps } from "@logrocket/react-native";
 
-export const useInjectedSourceCode = () => {
-  const [code, setCode] = useState<string | undefined>();
-
-  useEffect(() => {
-    fetch(InjectedProviderUrl)
-      .then((res) => {
-        return res.text();
-      })
-      .then((res) => {
-        setCode(res);
-      })
-      .catch((err) => console.log(err));
-  }, []);
-
-  return code;
-};
-
 export const WebpageScreen: FunctionComponent<
   React.ComponentProps<typeof WebView> & {
     name: string;
+    sourceCode: string;
   }
 > = observer((props) => {
   const { keyRingStore, chainStore, browserStore } = useStore();
   const { colors } = useTheme();
   const bottomHeight = 80;
-  const [pageLoaded, setLoaded] = useState(false);
+  // const [pageLoaded, setLoaded] = useState(false);
   const [isSwitchTab, setIsSwitchTab] = useState(false);
   // const scrollY = new Animated.Value(0);
   // const diffClamp = Animated.diffClamp(scrollY, 0, bottomHeight);
@@ -198,9 +181,9 @@ export const WebpageScreen: FunctionComponent<
     },
   };
 
-  const handleWebViewLoaded = () => {
-    setLoaded(true);
-  };
+  // const handleWebViewLoaded = () => {
+  //   setLoaded(true);
+  // };
 
   // Start proxy for webview
   useEffect(() => {
@@ -293,8 +276,6 @@ export const WebpageScreen: FunctionComponent<
     }
   }, [canGoBack, navigation]);
 
-  const sourceCode = useInjectedSourceCode();
-
   return (
     <PageWithView backgroundColor={colors["background"]} disableSafeArea>
       {isSwitchTab ? (
@@ -335,17 +316,31 @@ export const WebpageScreen: FunctionComponent<
           >
             <OnScreenWebpageScreenHeader />
           </WebViewStateContext.Provider>
-          {sourceCode ? (
+          {props.sourceCode ? (
             <>
               <WebView
                 originWhitelist={["*"]} // to allowing WebView to load blob
                 ref={webviewRef}
                 // incognito={true}
-                style={pageLoaded ? {} : { flex: 0, height: 0, opacity: 0 }}
+                // style={pageLoaded ? {} : { flex: 0, height: 0, opacity: 0 }}
+                renderLoading={() => {
+                  return (
+                    <View
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <ActivityIndicator />
+                    </View>
+                  );
+                }}
                 containerStyle={{ marginBottom: bottomHeight }}
                 cacheEnabled={true}
-                injectedJavaScriptBeforeContentLoaded={sourceCode}
-                onLoad={handleWebViewLoaded}
+                injectedJavaScriptBeforeContentLoaded={props.sourceCode}
+                // onLoad={handleWebViewLoaded}
                 onMessage={onMessage}
                 onNavigationStateChange={(e) => {
                   // Strangely, `onNavigationStateChange` is only invoked whenever page changed only in IOS.
@@ -368,7 +363,6 @@ export const WebpageScreen: FunctionComponent<
                 decelerationRate="normal"
                 allowsBackForwardNavigationGestures={true}
                 // onScroll={_onScroll}
-                {...LRRedactProps()}
                 {...props}
               />
               <WebViewStateContext.Provider
