@@ -72,6 +72,10 @@ export const SignEvmPage: FunctionComponent = observer(() => {
     keyRingStore.keyRingLedgerAddresses,
     true
   );
+  console.log(
+    "🚀 ~ constSignEvmPage:FunctionComponent=observer ~ signer:",
+    signer
+  );
   // Make the gas config with 1 gas initially to prevent the temporary 0 gas error at the beginning.
   const gasConfig = useGasEvmConfig(chainStore, current.chainId, 1);
   const { gasPrice } = queriesStore
@@ -97,7 +101,7 @@ export const SignEvmPage: FunctionComponent = observer(() => {
     queriesStore.get(current.chainId),
     memoConfig
   );
-  console.log(feeConfig.feeType, "fee type");
+  console.log(feeConfig.getError(), "err kaka");
   // const signDocHelper = useSignDocHelper(feeConfig, memoConfig);
   // amountConfig.setSignDocHelper(signDocHelper);
   const { gas: gasErc20 } = queriesStore
@@ -131,24 +135,30 @@ export const SignEvmPage: FunctionComponent = observer(() => {
   useEffect(() => {
     if (signInteractionStore.waitingEthereumData) {
       const data = signInteractionStore.waitingEthereumData;
-      chainStore.selectChain(data.data.chainId);
       //@ts-ignore
-      gasConfig.setGas(Web3.utils.hexToNumber(data?.data?.data?.data?.gas));
+      const gasDataSign = data?.data?.data?.data?.gas;
+      //@ts-ignore
+      const gasPriceDataSign = data?.data?.data?.data?.gasPrice;
+      chainStore.selectChain(data.data.chainId);
+
+      gasConfig.setGas(Web3.utils.hexToNumber(gasDataSign));
+
+      gasConfig.setGasPrice(Web3.utils.hexToNumberString(gasPriceDataSign));
       if (preferNoSetFee && gasConfig.gas) {
-        const gas = new Dec(
-          new Int(Web3.utils.hexToNumberString(data?.data?.data?.data?.gas))
-        );
+        const gas = new Dec(new Int(Web3.utils.hexToNumberString(gasDataSign)));
         const gasPrice = new Dec(
-          new Int(
-            Web3.utils.hexToNumberString(data?.data?.data?.data?.gasPrice)
-          )
+          new Int(Web3.utils.hexToNumberString(gasPriceDataSign))
         );
         const feeAmount = gasPrice.mul(gas);
         feeConfig.setManualFee({
           amount: feeAmount.roundUp().toString(),
-          denom: chainStore.current.feeCurrencies[0].coinDenom,
+          denom: chainStore.current.feeCurrencies[0].coinMinimalDenom,
         });
       }
+      // amountConfig.setDisableBalanceCheck(
+      //   !!data.data.signOptions.disableBalanceCheck
+      // );
+
       // memoConfig.setMemo(data.data.signDocWrapper.memo);
       // setOrigin(data.data.msgOrigin);
       setDataSign(signInteractionStore.waitingEthereumData);
@@ -273,8 +283,15 @@ export const SignEvmPage: FunctionComponent = observer(() => {
     // if (signDocHelper.signDocWrapper.isADR36SignDoc) {
     //   return false;
     // }
-
-    return memoConfig.getError() != null || feeConfig.getError() != null;
+    console.log(
+      "🚀 ~ approveIsDisabled ~ feeConfig.getError():",
+      feeConfig.getError()
+    );
+    console.log(
+      "🚀 ~ approveIsDisabled ~ gasConfig.getError():",
+      gasConfig.getError()
+    );
+    return feeConfig.getError() != null || gasConfig.getError() != null;
   })();
 
   return (
@@ -417,22 +434,12 @@ export const SignEvmPage: FunctionComponent = observer(() => {
                       if (needSetIsProcessing) {
                         setIsProcessing(true);
                       }
-
-                      // if (signDocHelper.signDocWrapper) {
-                      //   await signInteractionStore.approveAndWaitEnd(
-                      //     signDocHelper.signDocWrapper
-                      //   );
-                      // }
+                      if (!dataSign) return;
                       await signInteractionStore.approveEthereumAndWaitEnd({
-                        gasPrice: Web3.utils.toHex(
-                          gasConfig.gasPriceStep[feeConfig.feeType]
-                        ),
+                        gasPrice: Web3.utils.toHex(gasConfig.gasPrice),
                         gasLimit: Web3.utils.toHex(gasConfig.gas),
-                        // `0x${parseFloat(gasConfig.gasRaw).toString(
-                        //   16
-                        // )}`
-                        // fees: `0x${parseFloat(feeConfig.feeRaw).toString(16)}`
                       });
+
                       history.goBack();
 
                       if (

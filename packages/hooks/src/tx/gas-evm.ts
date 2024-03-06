@@ -17,6 +17,8 @@ export class GasEvmConfig extends TxChainSetter implements IGasConfig {
 
   @observable
   protected _gasPriceStep: any | undefined = undefined;
+  @observable
+  protected _gasPrice: number | undefined = undefined;
 
   constructor(
     chainGetter: ChainGetter,
@@ -26,6 +28,7 @@ export class GasEvmConfig extends TxChainSetter implements IGasConfig {
     super(chainGetter, initialChainId);
 
     this._gasRaw = initialGas?.toString();
+    this._gasPrice = 0;
     //@ts-ignore
     this._gasPriceStep = {
       low: new Dec("0"),
@@ -55,6 +58,16 @@ export class GasEvmConfig extends TxChainSetter implements IGasConfig {
 
     const r = parseInt(this._gasRaw);
     return Number.isNaN(r) ? 0 : r;
+  }
+  get gasPrice(): number {
+    // If the gasRaw is undefined,
+    // it means that the user never input something yet.
+    // In this case, it should be handled as gas is 0.
+    // But, it can be overridden on the child class if it is needed.
+    if (!this._gasPrice) {
+      return 0;
+    }
+    return this._gasPrice;
   }
   get gasPriceStep(): AppCurrency["gasPriceStep"] {
     // If the gasRaw is undefined,
@@ -89,16 +102,24 @@ export class GasEvmConfig extends TxChainSetter implements IGasConfig {
     }
   }
   @action
+  setGasPrice(gasPrice: number | string) {
+    if (typeof gasPrice === "string") {
+      this._gasPrice = Number(gasPrice);
+      return;
+    }
+    if (!gasPrice) {
+      this._gasPrice = 0;
+      return;
+    }
+    this._gasPrice = gasPrice;
+  }
+  @action
   setGasPriceStep(gasPrice: Int) {
     if (gasPrice.isZero()) return;
     if (gasPrice.gt(new Int("0"))) {
       const gasPriceStep = this.chainInfo.stakeCurrency.gasPriceStep
         ? this.chainInfo.stakeCurrency.gasPriceStep
         : DefaultGasPriceStep;
-      console.log(
-        "🚀 ~ GasEvmConfig ~ setGasPriceStep ~ gasPriceStep:",
-        gasPriceStep
-      );
       const gasPriceStepChanged: AppCurrency["gasPriceStep"] = {
         ...DefaultGasPriceStep,
       };
@@ -120,6 +141,13 @@ export class GasEvmConfig extends TxChainSetter implements IGasConfig {
 
     if (this._gasRaw && Number.isNaN(this._gasRaw)) {
       return new Error("Gas is not valid number");
+    }
+    if (!this._gasPrice) {
+      return new Error("Gas Price not found");
+    }
+
+    if (this._gasPrice && Number.isNaN(this._gasPrice)) {
+      return new Error("GasPrice is not valid number");
     }
 
     if (!Number.isInteger(this.gas)) {

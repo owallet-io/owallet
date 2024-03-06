@@ -231,7 +231,8 @@ export class FeeEvmConfig extends TxChainSetter implements IFeeConfig {
       //     .mul(new Dec(gasPriceStep[key]));
       // }
       const gasPriceLast = this.gasConfig.gasPriceStep[feeType];
-
+      //@ts-ignore
+      this.gasConfig.setGasPrice(gasPriceLast.roundUp().toString());
       //@ts-ignore
       const feeAmount = gasPriceLast.mul(new Dec(this.gasConfig.gas));
       return {
@@ -274,7 +275,12 @@ export class FeeEvmConfig extends TxChainSetter implements IFeeConfig {
       }
 
       const amount = this.amountConfig.getAmountPrimitive();
-
+      console.log("🚀 ~ FeeEvmConfig ~ getError ~ amount:", amount);
+      console.log("🚀 ~ FeeEvmConfig ~ getError ~ fee:", fee);
+      console.log(
+        "🚀 ~ FeeEvmConfig ~ getError ~ this.additionAmountToNeedFee:",
+        this.additionAmountToNeedFee
+      );
       let need: Coin;
       if (this.additionAmountToNeedFee && fee && fee.denom === amount.denom) {
         need = new Coin(
@@ -284,13 +290,27 @@ export class FeeEvmConfig extends TxChainSetter implements IFeeConfig {
       } else {
         need = new Coin(fee.denom, new Int(fee.amount));
       }
-
+      console.log("🚀 ~ FeeEvmConfig ~ getError ~ need:", need);
       if (need.amount.gt(new Int(0))) {
+        console.log(
+          "🚀 ~ FeeEvmConfig ~ .balances.find ~ need.denom:",
+          need.denom
+        );
+        console.log(
+          "🚀 ~ FeeEvmConfig ~ getError ~ this._sender:",
+          this._sender
+        );
         const bal = this.queryBalances
           .getQueryBech32Address(this._sender)
           .balances.find((bal) => {
+            console.log(
+              "🚀 ~ FeeEvmConfig ~ .balances.find ~ bal:",
+              bal.currency
+            );
             return bal.currency.coinMinimalDenom === need.denom;
           });
+
+        console.log("🚀 ~ FeeEvmConfig ~ getError ~ bal:", bal);
 
         if (!bal) {
           return new InsufficientFeeError("insufficient fee");
@@ -340,6 +360,7 @@ export const useFeeEvmConfig = (
   queryStore: QueriesWrappedBitcoin,
   memoConfig?: IMemoConfig
 ) => {
+  console.log("🚀 ~ sender:", sender);
   const [config] = useState(
     () =>
       new FeeEvmConfig(
