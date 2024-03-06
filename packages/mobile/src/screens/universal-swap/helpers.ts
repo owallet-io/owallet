@@ -36,7 +36,7 @@ export const handleErrorSwap = (message) => {
 };
 
 export const getTransactionUrl = (
-  chainId: NetworkChainId,
+  chainId: NetworkChainId | string,
   transactionHash: string
 ) => {
   switch (Number(chainId)) {

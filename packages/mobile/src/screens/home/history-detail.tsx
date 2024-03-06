@@ -18,10 +18,13 @@ import { metrics } from "@src/themes";
 import { ScrollView } from "react-native-gesture-handler";
 import { CopyFillIcon, DownArrowIcon } from "@src/components/icon";
 import { API } from "@src/common/api";
-import { HISTORY_STATUS } from "@src/utils/helper";
+import { HISTORY_STATUS, openLink } from "@src/utils/helper";
 import { Bech32Address } from "@owallet/cosmos";
+import { getTransactionUrl } from "../universal-swap/helpers";
 
 export const HistoryDetail: FunctionComponent = observer((props) => {
+  const { chainStore } = useStore();
+
   const route = useRoute<
     RouteProp<
       Record<
@@ -75,24 +78,13 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
     smartNavigation.goBack();
   };
 
-  console.log("history", history);
-
   const renderTransactionDetail = (
     title,
     content,
     action?: { type: "copy" | "share"; callback }
   ) => {
     return (
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-          borderBottomColor: colors["neutral-border-default"],
-          borderBottomWidth: 1,
-          paddingBottom: 8,
-        }}
-      >
+      <View style={styles.wrapperDetail}>
         <View>
           <OWText weight="600">{title}</OWText>
           <OWText color={colors["neutral-text-body"]} style={{ paddingTop: 4 }}>
@@ -104,7 +96,7 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
           <CopyFillIcon size={24} color={colors["neutral-icon-on-light"]} />
         ) : null}
         {action?.type === "share" ? (
-          <TouchableOpacity>
+          <TouchableOpacity onPress={action.callback}>
             <OWIcon
               name="share"
               size={15}
@@ -119,11 +111,7 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
   return (
     <View>
       <ScrollView
-        contentContainerStyle={{
-          alignItems: "center",
-          justifyContent: "center",
-          paddingBottom: 160,
-        }}
+        contentContainerStyle={styles.wrapper}
         style={styles.container}
         showsVerticalScrollIndicator={false}
       >
@@ -147,18 +135,7 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
             </OWText>
           </View>
 
-          <View
-            style={{
-              backgroundColor: colors["neutral-surface-card"],
-              width: metrics.screenWidth - 32,
-              borderRadius: 24,
-              position: "relative",
-              justifyContent: "center",
-              alignItems: "center",
-              padding: 16,
-              overflow: "hidden",
-            }}
-          >
+          <View style={styles.headerCard}>
             <Image
               style={{
                 width: metrics.screenWidth - 32,
@@ -189,15 +166,7 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
                 <OWText style={{ fontSize: 16, fontWeight: "500" }}>
                   {detail.type}
                 </OWText>
-                <View
-                  style={{
-                    backgroundColor: colors["hightlight-surface-subtle"],
-                    paddingHorizontal: 12,
-                    paddingVertical: 2,
-                    borderRadius: 12,
-                    marginBottom: 10,
-                  }}
-                >
+                <View style={styles.status}>
                   <OWText
                     style={{
                       fontSize: 14,
@@ -240,15 +209,7 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
             )}
           </View>
           {!detail ? null : (
-            <View
-              style={{
-                backgroundColor: colors["neutral-surface-card"],
-                width: metrics.screenWidth - 32,
-                borderRadius: 24,
-                marginTop: 1,
-                padding: 16,
-              }}
-            >
+            <View style={styles.txDetail}>
               {renderTransactionDetail(
                 "From",
                 Bech32Address.shortenAddress(detail.fromAddress, 24),
@@ -274,7 +235,13 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
               {renderTransactionDetail("Memo", detail.memo)}
               {renderTransactionDetail("Hash", detail.hash, {
                 type: "share",
-                callback: () => {},
+                callback: async () => {
+                  if (chainStore.current.raw.txExplorer && detail.hash) {
+                    await openLink(
+                      getTransactionUrl(chainStore.current.chainId, detail.hash)
+                    );
+                  }
+                },
               })}
             </View>
           )}
@@ -290,7 +257,13 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
             label={"View on Explorer"}
             loading={false}
             disabled={false}
-            onPress={() => {}}
+            onPress={async () => {
+              if (chainStore.current.raw.txExplorer && detail.hash) {
+                await openLink(
+                  getTransactionUrl(chainStore.current.chainId, detail.hash)
+                );
+              }
+            }}
           />
         </View>
       </View>
@@ -304,7 +277,19 @@ const useStyles = (colors) => {
       width: 22,
       height: 22,
     },
-
+    wrapper: {
+      alignItems: "center",
+      justifyContent: "center",
+      paddingBottom: 160,
+    },
+    wrapperDetail: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      borderBottomColor: colors["neutral-border-default"],
+      borderBottomWidth: 1,
+      paddingBottom: 8,
+    },
     container: {
       paddingTop: metrics.screenHeight / 14,
       height: "100%",
@@ -346,5 +331,29 @@ const useStyles = (colors) => {
       borderColor: colors["neutral-border-strong"],
     },
     textInput: { fontWeight: "600", paddingLeft: 4, fontSize: 15 },
+    txDetail: {
+      backgroundColor: colors["neutral-surface-card"],
+      width: metrics.screenWidth - 32,
+      borderRadius: 24,
+      marginTop: 1,
+      padding: 16,
+    },
+    status: {
+      backgroundColor: colors["hightlight-surface-subtle"],
+      paddingHorizontal: 12,
+      paddingVertical: 2,
+      borderRadius: 12,
+      marginBottom: 10,
+    },
+    headerCard: {
+      backgroundColor: colors["neutral-surface-card"],
+      width: metrics.screenWidth - 32,
+      borderRadius: 24,
+      position: "relative",
+      justifyContent: "center",
+      alignItems: "center",
+      padding: 16,
+      overflow: "hidden",
+    },
   });
 };

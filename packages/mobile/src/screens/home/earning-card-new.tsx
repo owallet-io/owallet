@@ -89,7 +89,13 @@ export const EarningCardNew: FunctionComponent<{
     }
   };
   return (
-    <OWBox style={{ marginHorizontal: 16, width: metrics.screenWidth - 32 }}>
+    <OWBox
+      style={{
+        marginHorizontal: 16,
+        width: metrics.screenWidth - 32,
+        marginTop: 2,
+      }}
+    >
       <TouchableOpacity
         onPress={() => {
           navigation.dispatch(

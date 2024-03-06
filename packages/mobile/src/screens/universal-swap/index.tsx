@@ -598,30 +598,40 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
       const result = await universalSwapHandler.processUniversalSwap();
 
+      console.log("processUniversalSwap", result);
+
       if (result) {
         const { transactionHash } = result;
-        const historyInfos = {
-          fromAddress: accounts[originalFromToken.chainId],
-          toAddress: accounts[originalToToken.chainId],
-          hash: transactionHash,
-          memo: "",
-          fromAmount: fromAmountToken,
-          toAmount: toAmountToken,
-          value: toAmountToken,
-          fee: relayerFeeAmount,
-          type: HISTORY_STATUS.SWAP,
-          fromToken: {
-            asset: originalFromToken.denom,
-            chainId: originalFromToken.chainId,
-          },
-          toToken: {
-            asset: originalToToken.denom,
-            chainId: originalToToken.chainId,
-          },
-          status: "SUCCESS",
-        };
+        try {
+          const historyInfos = {
+            fromAddress: accounts[originalFromToken.chainId],
+            toAddress: accounts[originalToToken.chainId],
+            hash: transactionHash,
+            memo: "",
+            fromAmount: fromAmountToken,
+            toAmount: toAmountToken,
+            value: toAmountToken,
+            fee: relayerFeeAmount,
+            type: HISTORY_STATUS.SWAP,
+            fromToken: {
+              asset: originalFromToken.denom,
+              chainId: originalFromToken.chainId,
+            },
+            toToken: {
+              asset: originalToToken.denom,
+              chainId: originalToToken.chainId,
+            },
+            status: "SUCCESS",
+          };
 
-        await handleSaveHistory(accountOrai.bech32Address, historyInfos);
+          const res = await handleSaveHistory(
+            accountOrai.bech32Address,
+            historyInfos
+          );
+        } catch (err) {
+          console.log("err on handleSaveHistory", err);
+        }
+
         setSwapLoading(false);
         showToast({
           message: "Successful transaction. View on scan",

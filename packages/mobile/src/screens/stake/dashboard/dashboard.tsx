@@ -1,17 +1,17 @@
 import { OWButton } from "@src/components/button";
-import { OWBox } from "@src/components/card";
-import { OWEmpty } from "@src/components/empty";
-import { OWSubTitleHeader } from "@src/components/header";
-import { Text } from "@src/components/text";
+import OWIcon from "@src/components/ow-icon/ow-icon";
+import OWText from "@src/components/text/ow-text";
+import { EarningCardNew } from "@src/screens/home/earning-card-new";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useState } from "react";
-import { Image, StyleSheet, View } from "react-native";
+import { Image, StyleSheet, View, ActivityIndicator } from "react-native";
 import { API } from "../../../common/api";
 import { PageWithScrollViewInBottomTabView } from "../../../components/page";
 import { useSmartNavigation } from "../../../navigation.provider";
 import { useStore } from "../../../stores";
 import { metrics, spacing, typography } from "../../../themes";
+import { ValidatorList } from "../validator-list/new-list";
 import { DelegationsCard } from "./delegations-card";
 import { MyRewardCard } from "./reward-card";
 export const StakingDashboardScreen: FunctionComponent = observer(() => {
@@ -45,10 +45,62 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
       : null;
 
   return (
-    <PageWithScrollViewInBottomTabView backgroundColor={colors["background"]}>
-      <View>
-        <OWSubTitleHeader title="My staking" />
-        <OWBox>
+    <PageWithScrollViewInBottomTabView
+      contentContainerStyle={styles.container}
+      backgroundColor={colors["background"]}
+    >
+      <View style={styles.headerCard}>
+        <Image
+          style={{
+            width: metrics.screenWidth - 32,
+            height: 260,
+            position: "absolute",
+          }}
+          source={require("../../../assets/image/img-bg.png")}
+          resizeMode="cover"
+          fadeDuration={0}
+        />
+
+        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+          <View>
+            <View style={{ flexDirection: "row" }}>
+              <View style={styles["claim-title"]}>
+                <OWIcon
+                  name={"trending-outline"}
+                  size={14}
+                  color={colors["neutral-text-title"]}
+                />
+              </View>
+              <OWText style={[{ ...styles["text-earn"] }]}>Staked</OWText>
+            </View>
+
+            <OWText
+              style={[
+                {
+                  ...styles["text-amount"],
+                  paddingTop: 8,
+                },
+              ]}
+            >
+              {"$0.00"}
+            </OWText>
+            <OWText style={[styles["amount"]]}>{`< 0.001 ORAI`}</OWText>
+          </View>
+          <Image
+            style={{
+              width: 120,
+              height: 68,
+            }}
+            source={require("../../../assets/images/img_invest.png")}
+            resizeMode="contain"
+            fadeDuration={0}
+          />
+        </View>
+      </View>
+      <EarningCardNew containerStyle={styles.containerEarnStyle} />
+      <ValidatorList />
+      {/* <MyRewardCard /> */}
+      {/* <OWBox>
           {chainStore.current.networkType === "cosmos" ? (
             <MyRewardCard />
           ) : (
@@ -93,9 +145,8 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
               />
             ) : null}
           </View>
-        </OWBox>
-
-        <View>
+        </OWBox> */}
+      {/* <View>
           {chainStore.current.networkType === "cosmos" ? (
             <View
               style={{
@@ -123,8 +174,7 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
           {chainStore.current.networkType === "cosmos" ? (
             <DelegationsCard validatorList={validators} />
           ) : null}
-        </View>
-      </View>
+        </View> */}
     </PageWithScrollViewInBottomTabView>
   );
 });
@@ -132,35 +182,45 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
 const styling = (colors) =>
   StyleSheet.create({
     container: {},
-    title: {
-      ...typography.h3,
-      fontWeight: "700",
-      textAlign: "center",
-      color: colors["gray-900"],
-      marginTop: spacing["12"],
-      marginBottom: spacing["12"],
+    headerCard: {
+      backgroundColor: colors["neutral-surface-card"],
+      width: metrics.screenWidth - 32,
+      borderRadius: 24,
+      position: "relative",
+      padding: 16,
+      overflow: "hidden",
+      alignSelf: "center",
     },
-    containerMyStaking: {
-      marginTop: spacing["32"],
+    containerEarnStyle: {
       backgroundColor: colors["background-box"],
-      borderRadius: spacing["24"],
-      width: metrics.screenWidth,
-      paddingVertical: spacing["20"],
-      paddingHorizontal: spacing["24"],
+      margin: 0,
     },
-    containerBtnClaim: {
-      justifyContent: "center",
-      paddingHorizontal: spacing["24"],
-      paddingVertical: spacing["10"],
-      borderRadius: spacing["8"],
-      backgroundColor: colors["primary-surface-default"],
+    "text-earn": {
+      fontWeight: "600",
+      fontSize: 16,
+      lineHeight: 24,
+      color: colors["neutral-text-title"],
     },
-    containerTitle: {
-      marginHorizontal: spacing["24"],
-      marginTop: spacing["32"],
-      marginBottom: spacing["16"],
-      flexDirection: "row",
-      justifyContent: "flex-start",
+    "claim-title": {
+      width: 24,
+      height: 24,
+      borderRadius: 24,
+      backgroundColor: colors["neutral-surface-action"],
+      marginRight: 5,
       alignItems: "center",
+      justifyContent: "center",
+    },
+
+    "text-amount": {
+      fontWeight: "500",
+      fontSize: 28,
+      lineHeight: 34,
+    },
+
+    amount: {
+      fontWeight: "400",
+      fontSize: 14,
+      lineHeight: 20,
+      color: colors["neutral-text-title"],
     },
   });
