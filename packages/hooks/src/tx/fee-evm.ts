@@ -21,6 +21,7 @@ import { StdFee } from "@cosmjs/launchpad";
 import { useState } from "react";
 import { ObservableQueryBalances } from "@owallet/stores";
 import { InsufficientFeeError, NotLoadedFeeError } from "./errors";
+import { GasEvmConfig } from "./gas-evm";
 
 export class FeeEvmConfig extends TxChainSetter implements IFeeConfig {
   @observable.ref
@@ -35,8 +36,8 @@ export class FeeEvmConfig extends TxChainSetter implements IFeeConfig {
   @observable
   protected _manualFee: CoinPrimitive | undefined = undefined;
 
-  @observable
-  protected _autoFeeByGas: CoinPrimitive | undefined = undefined;
+  // @observable
+  // protected _autoFeeByGas: CoinPrimitive | undefined = undefined;
 
   /**
    * `additionAmountToNeedFee` indicated that the fee config should consider the amount config's amount
@@ -57,7 +58,7 @@ export class FeeEvmConfig extends TxChainSetter implements IFeeConfig {
     sender: string,
     queryBalances: ObservableQueryBalances,
     protected readonly amountConfig: IAmountConfig,
-    protected readonly gasConfig: IGasConfig,
+    protected readonly gasConfig: GasEvmConfig,
     additionAmountToNeedFee: boolean = true,
     protected readonly queryStore: QueriesWrappedBitcoin,
     protected readonly memoConfig?: IMemoConfig
@@ -93,7 +94,7 @@ export class FeeEvmConfig extends TxChainSetter implements IFeeConfig {
   setFeeType(feeType: FeeType | undefined) {
     this._feeType = feeType;
     this._manualFee = undefined;
-    this._autoFeeByGas = undefined;
+    // this._autoFeeByGas = undefined;
   }
 
   get isManual(): boolean {
@@ -108,7 +109,7 @@ export class FeeEvmConfig extends TxChainSetter implements IFeeConfig {
   setManualFee(fee: CoinPrimitive) {
     this._manualFee = fee;
     this._feeType = undefined;
-    this._autoFeeByGas = undefined;
+    // this._autoFeeByGas = undefined;
   }
 
   get feeCurrencies(): Currency[] {
@@ -131,6 +132,28 @@ export class FeeEvmConfig extends TxChainSetter implements IFeeConfig {
     return {
       gas: this.gasConfig.gas.toString(),
       amount: [amount],
+    };
+  }
+  toStdEvmFee(): object {
+    // const amount = this.getFeePrimitive();
+    // if (!amount) {
+    //   return {
+    //     gas: this.gasConfig.gas.toString(),
+    //     gasPrice: this.gasConfig.gasPriceStep[this.feeType].toString()
+    //     // amount: [],
+    //   };
+    // }
+
+    if (!this.feeType) throw Error("Not set fee type");
+    if (!this.gasConfig.gasPriceStep[this.feeType])
+      throw Error("Not found gas price for evm");
+
+    return {
+      gas: this.gasConfig.gas.toString(),
+      //@ts-ignore
+      gasPrice: (this.gasConfig.gasPriceStep[this.feeType] as Dec)
+        .roundUp()
+        .toString(),
     };
   }
 
@@ -170,44 +193,45 @@ export class FeeEvmConfig extends TxChainSetter implements IFeeConfig {
       console.log("Error in getFeePrimitive:", error);
     }
   }
-  protected getAutoFeeGasPrimitive(): CoinPrimitive {
-    try {
-      if (!this.feeCurrency) {
-        throw new Error("Fee currency not set");
-      }
-      const { gasPrice } = this.queryStore.evm.queryGasPrice.getGasPrice();
-      const feeAmount = gasPrice.toDec().mul(new Dec(this.gasConfig.gas));
+  // protected getAutoFeeGasPrimitive(): CoinPrimitive {
+  //   try {
+  //     if (!this.feeCurrency) {
+  //       throw new Error("Fee currency not set");
+  //     }
+  //     const { gasPrice } = this.queryStore.evm.queryGasPrice.getGasPrice();
+  //     const feeAmount = gasPrice.toDec().mul(new Dec(this.gasConfig.gas));
 
-      console.log(
-        "🚀 ~ FeeEvmConfig ~ getAutoFeeGasPrimitive ~ feeAmount:",
-        feeAmount
-      );
-      return {
-        denom: this.feeCurrency.coinMinimalDenom,
-        amount: feeAmount.roundUp().toString(),
-      };
-    } catch (error) {
-      console.log("Error in getAutoFeeGasPrimitive:", error);
-    }
-  }
+  //     console.log(
+  //       "🚀 ~ FeeEvmConfig ~ getAutoFeeGasPrimitive ~ feeAmount:",
+  //       feeAmount
+  //     );
+  //     return {
+  //       denom: this.feeCurrency.coinMinimalDenom,
+  //       amount: feeAmount.roundUp().toString(),
+  //     };
+  //   } catch (error) {
+  //     console.log("Error in getAutoFeeGasPrimitive:", error);
+  //   }
+  // }
   protected getFeeTypePrimitive(feeType: FeeType): CoinPrimitive {
     try {
       if (!this.feeCurrency) {
         throw new Error("Fee currency not set");
       }
-      const { gasPrice } = this.queryStore.evm.queryGasPrice.getGasPrice();
-      const gasPriceStep = this.chainInfo.stakeCurrency.gasPriceStep
-        ? this.chainInfo.stakeCurrency.gasPriceStep
-        : DefaultGasPriceStep;
-      const gasPriceStepChanged: AppCurrency["gasPriceStep"] = {
-        ...DefaultGasPriceStep,
-      };
-      for (const key in gasPriceStepChanged) {
-        gasPriceStepChanged[key] = gasPrice
-          .toDec()
-          .mul(new Dec(gasPriceStep[key]));
-      }
-      const gasPriceLast = gasPriceStepChanged[feeType];
+      // const { gasPrice } = this.queryStore.evm.queryGasPrice.getGasPrice();
+      // const gasPriceStep = this.chainInfo.stakeCurrency.gasPriceStep
+      //   ? this.chainInfo.stakeCurrency.gasPriceStep
+      //   : DefaultGasPriceStep;
+      // const gasPriceStepChanged: AppCurrency["gasPriceStep"] = {
+      //   ...DefaultGasPriceStep,
+      // };
+      // for (const key in gasPriceStepChanged) {
+      //   gasPriceStepChanged[key] = gasPrice
+      //     .toDec()
+      //     .mul(new Dec(gasPriceStep[key]));
+      // }
+      const gasPriceLast = this.gasConfig.gasPriceStep[feeType];
+
       //@ts-ignore
       const feeAmount = gasPriceLast.mul(new Dec(this.gasConfig.gas));
       return {

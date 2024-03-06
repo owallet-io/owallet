@@ -58,7 +58,7 @@ export class KeyringHelper {
       nonce,
       chainId,
     };
-
+    console.log("🚀 ~ KeyringHelper ~ finalMessage:", finalMessage);
     delete finalMessage?.from;
     delete finalMessage?.type;
 

@@ -16,6 +16,7 @@ import { useAmountConfig } from "./amount";
 import { FeeEvmConfig, useFeeEvmConfig } from "./fee-evm";
 import { Int } from "@owallet/unit";
 import { useEffect, useState } from "react";
+import { useSendGasEvmConfig } from "./send-gas-evm";
 
 type MsgOpts = CosmosMsgOpts & SecretMsgOpts & CosmwasmMsgOpts & Erc20MsgOpts;
 
@@ -40,12 +41,13 @@ export const useSendTxEvmConfig = (
 
   const memoConfig = useMemoConfig(chainGetter, chainId);
 
-  const gasConfig = useSendGasConfig(
+  const gasConfig = useSendGasEvmConfig(
     chainGetter,
     chainId,
     amountConfig,
     sendMsgOpts
   );
+
   const feeConfig = useFeeEvmConfig(
     chainGetter,
     chainId,

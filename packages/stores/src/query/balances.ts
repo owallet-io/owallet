@@ -231,10 +231,6 @@ export class ObservableQueryBalances extends HasMapStore<ObservableQueryBalances
   }
 
   getQueryBech32Address(bech32Address: string): ObservableQueryBalancesInner {
-    console.log(
-      "🚀 ~ ObservableQueryBalances ~ addBalanceRegistry ~ this.balanceRegistries:",
-      this.balanceRegistries
-    );
     return this.get(bech32Address) as ObservableQueryBalancesInner;
   }
 }

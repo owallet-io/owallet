@@ -13,6 +13,7 @@ import {
 } from "../query";
 import { DeepReadonly } from "utility-types";
 import { ChainGetter, StdFeeEthereum } from "../common";
+import Web3 from "web3";
 
 export interface HasEthereumAccount {
   ethereum: DeepReadonly<EthereumAccount>;
@@ -120,8 +121,8 @@ export class EthereumAccount {
             },
             memo,
             {
-              gas: "0x" + parseInt(stdFee.gas).toString(16),
-              gasPrice: stdFee.gasPrice,
+              gas: Web3.utils.toHex(stdFee.gas),
+              gasPrice: Web3.utils.toHex(stdFee.gasPrice),
             },
             signOptions,
             this.txEventsWithPreOnFulfill(onTxEvents, (tx) => {
@@ -172,8 +173,8 @@ export class EthereumAccount {
             msg,
             memo,
             {
-              gas: "0x" + parseInt(stdFee.gas).toString(16),
-              gasPrice: stdFee.gasPrice,
+              gas: Web3.utils.toHex(stdFee.gas),
+              gasPrice: Web3.utils.toHex(stdFee.gasPrice),
             },
             signOptions,
             this.txEventsWithPreOnFulfill(onTxEvents, (tx) => {

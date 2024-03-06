@@ -71,6 +71,7 @@ import { SendEvmPage } from "./pages/send-evm/send-evm";
 import { ExportToMobilePage } from "./pages/setting/export-to-mobile";
 import { SignEthereumPage } from "./pages/sign/sign-ethereum";
 import { SignTronPage } from "./pages/sign/sign-tron";
+import { SignEvmPage } from "./pages/sign/sign-evm";
 import { SignBtcPage } from "./pages/sign/sign-btc";
 import { ValidatorListPage } from "./pages/stake/validator-list";
 import { TokenPage } from "./pages/token";
@@ -375,7 +376,7 @@ ReactDOM.render(
                   />
                   <Route path="/sign" component={SignPage} />
                   <Route path="/sign-bitcoin" component={SignBtcPage} />
-                  <Route path="/sign-ethereum" component={SignEthereumPage} />
+                  <Route path="/sign-ethereum" component={SignEvmPage} />
                   <Route path="/sign-tron" component={SignTronPage} />
                   <Route path="/suggest-chain" component={ChainSuggestedPage} />
                 </LogPageViewWrapper>

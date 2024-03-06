@@ -47,10 +47,6 @@ export class ObservableQueryErc20ContactInfoInner extends ObservableChainQuery<E
         total_supply: total_supply,
       },
     };
-    console.log(
-      "🚀 ~ ObservableQueryErc20ContactInfoInner ~ tokenInfoData:",
-      tokenInfoData
-    );
 
     return {
       data: tokenInfoData,

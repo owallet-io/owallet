@@ -605,6 +605,7 @@ export class KeyRingService {
     chainId: string,
     data: object
   ): Promise<string> {
+    console.log("🚀 ~ KeyRingService ~ data:", data);
     const coinType = await this.chainsService.getChainCoinType(chainId);
     const rpc = await this.chainsService.getChainInfo(chainId);
     const rpcCustom = EVMOS_NETWORKS.includes(chainId) ? rpc.evmRpc : rpc.rest;
@@ -777,24 +778,25 @@ export class KeyRingService {
     rpc: string,
     data: object
   ): Promise<object> {
-    const decimals = (await this.chainsService.getChainInfo(chainId))
-      .feeCurrencies?.[0].coinDecimals;
-    const estimatedGasPrice = await request(rpc, "eth_gasPrice", []);
-    let estimatedGasLimit = "0x5028";
-    try {
-      estimatedGasLimit = await request(rpc, "eth_estimateGas", [
-        {
-          ...data,
-          maxFeePerGas: undefined,
-          maxPriorityFeePerGas: undefined,
-        },
-      ]);
-    } catch (error) {
-      console.log(
-        "🚀 ~ file: service.ts ~ line 396 ~ KeyRingService ~ error",
-        error
-      );
-    }
+    console.log("🚀 ~ KeyRingService ~ data:", data);
+    // const decimals = (await this.chainsService.getChainInfo(chainId))
+    //   .feeCurrencies?.[0].coinDecimals;
+    // const estimatedGasPrice = await request(rpc, "eth_gasPrice", []);
+    // let estimatedGasLimit = "0x5028";
+    // try {
+    //   estimatedGasLimit = await request(rpc, "eth_estimateGas", [
+    //     {
+    //       ...data,
+    //       maxFeePerGas: undefined,
+    //       maxPriorityFeePerGas: undefined,
+    //     },
+    //   ]);
+    // } catch (error) {
+    //   console.log(
+    //     "🚀 ~ file: service.ts ~ line 396 ~ KeyRingService ~ error",
+    //     error
+    //   );
+    // }
 
     const approveData = (await this.interactionService.waitApprove(
       env,
@@ -806,21 +808,21 @@ export class KeyRingService {
         mode: "direct",
         data: {
           ...data,
-          estimatedGasPrice: (data as any)?.gasPrice || estimatedGasPrice,
-          estimatedGasLimit: (data as any)?.gas || estimatedGasLimit,
-          decimals,
+          // estimatedGasPrice: (data as any)?.gasPrice ,
+          // estimatedGasLimit: (data as any)?.gas ,
+          // decimals,
         },
       }
     )) as any;
 
-    const { gasPrice, gasLimit, memo, fees } = {
+    const { gasPrice, gasLimit, memo } = {
       gasPrice: approveData.gasPrice ?? "0x0",
       memo: approveData.memo ?? "",
       gasLimit: approveData.gasLimit,
-      fees: approveData.fees,
+      // fees: approveData.fees,
     };
 
-    return { ...data, gasPrice, gasLimit, memo, fees };
+    return { ...data, gasPrice, gasLimit, memo };
   }
 
   async verifyADR36AminoSignDoc(

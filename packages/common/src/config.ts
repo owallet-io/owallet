@@ -1026,9 +1026,9 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinImageUrl:
         "https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png",
       gasPriceStep: {
-        low: 10000000000,
-        average: 25000000000,
-        high: 40000000000,
+        low: 1,
+        average: 1.25,
+        high: 1.5,
       },
     },
     bech32Config: Bech32Address.defaultBech32Config("evmos"),
@@ -1132,16 +1132,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinImageUrl:
           "https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png",
       },
-      {
-        coinDenom: "OCH",
-        coinMinimalDenom:
-          "erc20:0x19373EcBB4B8cC2253D70F2a246fa299303227Ba:OCH",
-        contractAddress: "0x19373EcBB4B8cC2253D70F2a246fa299303227Ba",
-        coinDecimals: 18,
-        coinGeckoId: "och",
-        coinImageUrl:
-          "https://assets.coingecko.com/coins/images/34236/standard/orchai_logo_white_copy_4x-8_%281%29.png",
-      },
     ],
     get feeCurrencies() {
       return [this.stakeCurrency];
@@ -1171,8 +1161,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
         "https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png",
       gasPriceStep: {
         low: 1,
-        average: 1.07,
-        high: 1.1,
+        average: 1.25,
+        high: 1.5,
       },
     },
     bech32Config: Bech32Address.defaultBech32Config("evmos"),

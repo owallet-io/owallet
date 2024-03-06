@@ -20,8 +20,15 @@ import queryString from "querystring";
 
 import { useSendTxEvmConfig } from "@owallet/hooks";
 import { fitPopupWindow } from "@owallet/popup";
-import { EthereumEndpoint } from "@owallet/common";
-
+import {
+  ChainIdEnum,
+  EthereumEndpoint,
+  OasisTransaction,
+  getOasisNic,
+  parseRoseStringToBigNumber,
+  signerFromPrivateKey,
+} from "@owallet/common";
+import { Signer } from "@oasisprotocol/client/dist/signature";
 export const SendEvmPage: FunctionComponent<{
   coinMinimalDenom?: string;
 }> = observer(({ coinMinimalDenom }) => {
@@ -68,6 +75,7 @@ export const SendEvmPage: FunctionComponent<{
     keyRingStore.keyRingLedgerAddresses,
     true
   );
+
   const sendConfigs = useSendTxEvmConfig(
     chainStore,
     current.chainId,
@@ -77,6 +85,7 @@ export const SendEvmPage: FunctionComponent<{
     queriesStore.get(current.chainId),
     EthereumEndpoint
   );
+  console.log(sendConfigs.gasConfig.gas, "gass");
   const { gas: gasErc20 } = queriesStore
     .get(current.chainId)
     .evmContract.queryGas.getGas({
@@ -92,8 +101,12 @@ export const SendEvmPage: FunctionComponent<{
       to: sendConfigs.recipientConfig.recipient,
       from: walletAddress,
     });
-
+  const { gasPrice } = queriesStore
+    .get(current.chainId)
+    .evm.queryGasPrice.getGasPrice();
   useEffect(() => {
+    if (!gasPrice) return;
+    sendConfigs.gasConfig.setGasPriceStep(gasPrice);
     if (
       sendConfigs.amountConfig?.sendCurrency?.coinMinimalDenom?.startsWith(
         "erc20"
@@ -104,9 +117,10 @@ export const SendEvmPage: FunctionComponent<{
       return;
     }
     if (!gasNative) return;
+
     sendConfigs.gasConfig.setGas(gasNative);
     return () => {};
-  }, [gasNative, gasErc20, sendConfigs.amountConfig?.sendCurrency]);
+  }, [gasNative, gasPrice, gasErc20, sendConfigs.amountConfig?.sendCurrency]);
 
   useEffect(() => {
     if (query.defaultDenom) {
@@ -148,7 +162,36 @@ export const SendEvmPage: FunctionComponent<{
     sendConfigs.gasConfig.getError() ??
     sendConfigs.feeConfig.getError();
   const txStateIsValid = sendConfigError == null;
+  const submitSignOasis = async (tx) => {
+    const { bytes, amount, to } = tx;
+    const signer = signerFromPrivateKey(bytes);
 
+    const bigIntAmount = BigInt(parseRoseStringToBigNumber(amount).toString());
+    const nic = getOasisNic(chainStore.current.raw.grpc);
+    const chainContext = await nic.consensusGetChainContext();
+
+    const tw = await OasisTransaction.buildTransfer(
+      nic,
+      signer as Signer,
+      to,
+      bigIntAmount
+    );
+
+    await OasisTransaction.sign(chainContext, signer as Signer, tw);
+
+    await OasisTransaction.submit(nic, tw);
+
+    notification.push({
+      placement: "top-center",
+      type: "success",
+      duration: 5,
+      content: "Transaction successful",
+      canDelete: true,
+      transition: {
+        duration: 0.25,
+      },
+    });
+  };
   return (
     <>
       <form
@@ -157,7 +200,8 @@ export const SendEvmPage: FunctionComponent<{
           e.preventDefault();
           if (accountInfo.isReadyToSendMsgs && txStateIsValid) {
             try {
-              const stdFee = sendConfigs.feeConfig.toStdFee();
+              const stdFee = sendConfigs.feeConfig.toStdEvmFee();
+              console.log("🚀 ~ onSubmit={ ~ stdFee:", stdFee);
               (window as any).accountInfo = accountInfo;
               await accountInfo.sendToken(
                 sendConfigs.amountConfig.amount,
@@ -181,6 +225,14 @@ export const SendEvmPage: FunctionComponent<{
                     });
                   },
                   onFulfill: (tx) => {
+                    if (
+                      tx &&
+                      chainStore.current.chainId === ChainIdEnum.Oasis
+                    ) {
+                      submitSignOasis(tx);
+                      return;
+                    }
+                    if (!tx?.status) return;
                     notification.push({
                       placement: "top-center",
                       type: tx?.data ? "success" : "danger",
@@ -194,7 +246,21 @@ export const SendEvmPage: FunctionComponent<{
                       },
                     });
                   },
-                }
+                },
+                sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.startsWith(
+                  "erc20"
+                )
+                  ? {
+                      type: "erc20",
+                      from: walletAddress,
+                      contract_addr:
+                        sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.split(
+                          ":"
+                        )[1],
+                      recipient: sendConfigs.recipientConfig.recipient,
+                      amount: sendConfigs.amountConfig.amount,
+                    }
+                  : null
               );
               if (!isDetachedPage) {
                 history.replace("/");
@@ -251,11 +317,11 @@ export const SendEvmPage: FunctionComponent<{
               })}
               placeholder="Enter your amount"
             />
-            <MemoInput
+            {/* <MemoInput
               memoConfig={sendConfigs.memoConfig}
-              label={intl.formatMessage({ id: "send.input.memo" })}
+              label={intl.formatMessage({ id: 'send.input.memo' })}
               placeholder="Enter your memo message"
-            />
+            /> */}
             <FeeButtons
               feeConfig={sendConfigs.feeConfig}
               gasConfig={sendConfigs.gasConfig}
