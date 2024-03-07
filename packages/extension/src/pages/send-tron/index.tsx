@@ -1,9 +1,5 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
-import {
-  AddressInput,
-  CoinInputEvm,
-  CoinInputTronEvm,
-} from "../../components/form";
+import { AddressInput, CoinInputTronEvm } from "../../components/form";
 import { useStore } from "../../stores";
 import { observer } from "mobx-react-lite";
 

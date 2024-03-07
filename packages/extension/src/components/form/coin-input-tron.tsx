@@ -117,11 +117,11 @@ export const CoinInputTronEvm: FunctionComponent<CoinInputTronProps> = observer(
       ) {
         if (!accountInfo.evmosHexAddress) return null;
 
-        const evmBalance = queries.evm.queryEvmBalance.getQueryBalance(
+        const evmBalance = queries.queryBalances.getQueryBech32Address(
           keyRingStore.keyRingType === "ledger"
             ? getEvmAddress(keyRingStore?.keyRingLedgerAddresses?.trx)
             : accountInfo.evmosHexAddress
-        )?.balance;
+        )?.stakable.balance;
         setBalance(evmBalance);
       }
     }, [tokenDenom, chainStore.current.chainId]);

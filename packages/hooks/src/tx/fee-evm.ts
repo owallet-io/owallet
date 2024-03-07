@@ -231,11 +231,7 @@ export class FeeEvmConfig extends TxChainSetter implements IFeeConfig {
       //     .mul(new Dec(gasPriceStep[key]));
       // }
       const gasPriceLast = this.gasConfig.gasPriceStep[feeType];
-      //@ts-ignore
-      console.log(
-        "🚀 ~ FeeEvmConfig ~ getFeeTypePrimitive ~ gasPriceLast:",
-        gasPriceLast.roundUp().toString()
-      );
+
       //@ts-ignore
       this.gasConfig.setGasPrice(gasPriceLast.roundUp().toString());
       //@ts-ignore
@@ -360,7 +356,7 @@ export const useFeeEvmConfig = (
   sender: string,
   queryBalances: ObservableQueryBalances,
   amountConfig: IAmountConfig,
-  gasConfig: IGasConfig,
+  gasConfig: GasEvmConfig,
   additionAmountToNeedFee: boolean = true,
   queryStore: QueriesWrappedBitcoin,
   memoConfig?: IMemoConfig
