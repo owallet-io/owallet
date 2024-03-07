@@ -7,115 +7,9 @@ import { useStore } from "../../stores";
 import styleAsset from "./asset.module.scss";
 import { ToolTip } from "../../components/tooltip";
 import { FormattedMessage, useIntl } from "react-intl";
-import {
-  useLanguage,
-  toDisplay,
-  TRON_ID,
-  getEvmAddress,
-} from "@owallet/common";
+import { useLanguage } from "@owallet/common";
 import { useHistory } from "react-router";
-import {
-  formatBalance,
-  getExchangeRate,
-  getBalanceValue,
-  getBaseDerivationPath,
-} from "@owallet/bitcoin";
-const LazyDoughnut = React.lazy(async () => {
-  const module = await import(
-    /* webpackChunkName: "reactChartJS" */ "react-chartjs-2"
-  );
-
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  const chartJS = module.Chart as any;
-
-  chartJS.pluginService.register({
-    beforeDraw: function (chart: any): void {
-      const round = {
-        x: (chart.chartArea.left + chart.chartArea.right) / 2,
-        y: (chart.chartArea.top + chart.chartArea.bottom) / 2,
-        radius: (chart.outerRadius + chart.innerRadius) / 2,
-        thickness: (chart.outerRadius - chart.innerRadius) / 2,
-      };
-
-      const ctx = chart.chart.ctx;
-
-      // Draw the background circle.
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(round.x, round.y, round.radius, 0, 2 * Math.PI);
-      ctx.closePath();
-      ctx.lineWidth = round.thickness * 2;
-      ctx.strokeStyle = "#f4f5f7";
-      ctx.stroke();
-      ctx.restore();
-    },
-    beforeTooltipDraw: function (chart: any): void {
-      const data = chart.getDatasetMeta(0).data;
-
-      const round = {
-        x: (chart.chartArea.left + chart.chartArea.right) / 2,
-        y: (chart.chartArea.top + chart.chartArea.bottom) / 2,
-        radius: (chart.outerRadius + chart.innerRadius) / 2,
-        thickness: (chart.outerRadius - chart.innerRadius) / 2,
-      };
-
-      const ctx = chart.chart.ctx;
-
-      const drawCircle = (angle: number, color: string) => {
-        ctx.save();
-        ctx.translate(round.x, round.y);
-        ctx.fillStyle = color;
-        ctx.beginPath();
-        ctx.arc(
-          round.radius * Math.sin(angle),
-          round.radius * Math.cos(angle),
-          round.thickness,
-          0,
-          2 * Math.PI
-        );
-        ctx.closePath();
-        ctx.fill();
-        ctx.restore();
-      };
-
-      const drawCircleEndEachOther = (arc1: any, arc2: any) => {
-        const startAngle1 = Math.PI / 2 - arc1._view.startAngle;
-        const endAngle1 = Math.PI / 2 - arc1._view.endAngle;
-
-        const startAngle2 = Math.PI / 2 - arc2._view.startAngle;
-        // Nomalize
-        const endAngle2 = Math.atan2(
-          Math.sin(Math.PI / 2 - arc2._view.endAngle),
-          Math.cos(Math.PI / 2 - arc2._view.endAngle)
-        );
-
-        // If the end of the first arc and the end of the second arc overlap,
-        // Don't draw the first arc's end because it overlaps and looks weird.
-        if (Math.abs(startAngle1 - endAngle2) > (Math.PI / 180) * 3) {
-          drawCircle(startAngle1, arc1._view.backgroundColor);
-        }
-        if (Math.abs(endAngle1 - startAngle2) > (Math.PI / 180) * 3) {
-          drawCircle(endAngle1, arc1._view.backgroundColor);
-        }
-
-        if (
-          Math.abs(startAngle2) > (Math.PI / 180) * 3 ||
-          Math.abs(endAngle2) > (Math.PI / 180) * 3
-        ) {
-          drawCircle(startAngle2, arc2._view.backgroundColor);
-          drawCircle(endAngle2, arc2._view.backgroundColor);
-        }
-      };
-
-      if (data.length == 2) {
-        drawCircleEndEachOther(data[0], data[1]);
-      }
-    },
-  });
-
-  return { default: module.Doughnut };
-});
+import { formatBalance } from "@owallet/bitcoin";
 
 export const AssetStakedChartView: FunctionComponent = observer(() => {
   const { chainStore, accountStore, queriesStore, priceStore, keyRingStore } =
@@ -252,25 +146,17 @@ export const AssetChartViewEvm: FunctionComponent = observer(() => {
   const accountInfo = accountStore.getAccount(current.chainId);
   const evmAddress = accountInfo.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses,
-    true
+    false
   );
   const queryBalances = queries.queryBalances.getQueryBech32Address(evmAddress);
 
   const balanceStakableQuery = queryBalances.stakable;
 
   const stakable = balanceStakableQuery?.balance;
-
-  // const delegated = queries.cosmos.queryDelegations
-  //   .getQueryBech32Address(accountInfo.bech32Address)
-  //   .total.upperCase(true);
-
-  // const unbonding = queries.cosmos.queryUnbondingDelegations
-  //   .getQueryBech32Address(accountInfo.bech32Address)
-  //   .total.upperCase(true);
-
-  // const stakedSum = delegated.add(unbonding);
-
-  // const totalStake = stakable.add(stakedSum);
+  console.log(
+    "🚀 ~ constAssetChartViewEvm:FunctionComponent=observer ~ stakable:",
+    stakable
+  );
 
   const tokens = queryBalances.positiveNativeUnstakables.concat(
     queryBalances.nonNativeBalances
@@ -331,7 +217,7 @@ export const AssetChartViewEvm: FunctionComponent = observer(() => {
               color: "#353945E5",
             }}
           >
-            {stakable.shrink(true).maxDecimals(6).toString()}
+            {stakable.shrink(true).trim(true).maxDecimals(6).toString()}
           </div>
         </div>
       </div>

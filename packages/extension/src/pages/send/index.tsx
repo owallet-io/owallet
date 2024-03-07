@@ -65,8 +65,7 @@ export const SendPage: FunctionComponent<{
   const current = chainStore.current;
   const accountInfo = accountStore.getAccount(current.chainId);
   const walletAddress = accountInfo.getAddressDisplay(
-    keyRingStore.keyRingLedgerAddresses,
-    true
+    keyRingStore.keyRingLedgerAddresses
   );
   const sendConfigs = useSendTxConfig(
     chainStore,

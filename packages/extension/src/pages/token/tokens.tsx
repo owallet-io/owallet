@@ -11,19 +11,12 @@ import classnames from "classnames";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
 import { TokensView } from "../main/token";
-import { TokensTronView } from "../main/tokenTron";
 import { IBCTransferView } from "../main/ibc-transfer";
 import { IBCTransferPage } from "../../pages/ibc-transfer";
 import { SendPage } from "../send";
 import { SelectChain } from "../../layouts/header";
 import { SendEvmPage } from "../send-evm/send-evm";
-import { SendTronEvmPage } from "../send-tron";
-import {
-  getBase58Address,
-  getEvmAddress,
-  TRC20_LIST,
-  TRON_ID,
-} from "@owallet/common";
+import { TRON_ID } from "@owallet/common";
 import { TokensBtcView } from "../main/tokenBtc";
 import { SendBtcPage } from "../send-btc";
 
@@ -60,47 +53,49 @@ export const TokenPage: FunctionComponent = observer(() => {
 
   const tokens = queryBalances.balances;
 
-  const [tokensTron, setTokensTron] = React.useState(tokens);
+  // const [tokensTron, setTokensTron] = React.useState(tokens);
 
-  useEffect(() => {
-    if (chainId == TRON_ID) {
-      // call api get token tron network
-      getTokenTron();
-    }
-    return () => {};
-  }, [accountInfo.evmosHexAddress]);
+  // useEffect(() => {
+  //   if (chainId == TRON_ID) {
+  //     // call api get token tron network
+  //     getTokenTron();
+  //   }
+  //   return () => {};
+  // }, [accountInfo.evmosHexAddress]);
 
-  const getTokenTron = async () => {
-    try {
-      fetch(
-        `${chainStore.current.rpc}/v1/accounts/${getBase58Address(
-          keyRingStore.keyRingType !== "ledger"
-            ? accountInfo.evmosHexAddress
-            : getEvmAddress(keyRingStore?.keyRingLedgerAddresses?.trx)
-        )}`
-      ).then(async (res) => {
-        const data = await res.json();
-        if (data?.data.length > 0) {
-          if (data?.data[0].trc20) {
-            const tokenArr = [];
-            TRC20_LIST.forEach((tk) => {
-              let token = data?.data[0].trc20.find(
-                (t) => tk.contractAddress in t
-              );
-              if (token) {
-                tokenArr.push({ ...tk, amount: token[tk.contractAddress] });
-              }
-            });
-            setTokensTron(tokenArr);
-          }
-        }
-      });
-    } catch (error) {
-      console.log({ error });
-    }
-  };
+  // const getTokenTron = async () => {
+  //   try {
+  //     fetch(
+  //       `${chainStore.current.rpc}/v1/accounts/${getBase58Address(
+  //         keyRingStore.keyRingType !== "ledger"
+  //           ? accountInfo.evmosHexAddress
+  //           : getEvmAddress(keyRingStore?.keyRingLedgerAddresses?.trx)
+  //       )}`
+  //     ).then(async (res) => {
+  //       const data = await res.json();
+  //       console.log("🚀 ~ ).then ~ data:", data)
+  //       if (data?.data.length > 0) {
+  //         if (data?.data[0].trc20) {
+  //           const tokenArr = [];
+  //           TRC20_LIST.forEach((tk) => {
+  //             let token = data?.data[0].trc20.find(
+  //               (t) => tk.contractAddress in t
+  //             );
+  //             if (token) {
+  //               tokenArr.push({ ...tk, amount: token[tk.contractAddress] });
+  //             }
+  //           });
+  //           setTokensTron(tokenArr);
+  //         }
+  //       }
+  //     });
+  //   } catch (error) {
+  //     console.log({ error });
+  //   }
+  // };
 
-  const hasTokens = tokens.length > 0 || tokensTron.length > 0;
+  const hasTokens = tokens.length > 0;
+  // console.log("🚀 ~ constTokenPage:FunctionComponent=observer ~ tokensTron:", tokensTron);
   const handleClickToken = (token) => {
     if (!hasSend) setHasSend(true);
     setCoinMinimalDenom(token);
@@ -111,14 +106,14 @@ export const TokenPage: FunctionComponent = observer(() => {
   }, [chainStore.current]);
   const handleCheckSendPage = () => {
     if (networkType === "evm") {
-      if (chainId === TRON_ID) {
-        return (
-          <SendTronEvmPage
-            coinMinimalDenom={coinMinimalDenom}
-            tokensTrc20Tron={tokensTron}
-          />
-        );
-      }
+      // if (chainId === TRON_ID) {
+      //   return (
+      //     <SendTronEvmPage
+      //       coinMinimalDenom={coinMinimalDenom}
+      //       tokensTrc20Tron={tokensTron}
+      //     />
+      //   );
+      // }
       return <SendEvmPage coinMinimalDenom={coinMinimalDenom} />;
     } else if (networkType === "bitcoin") {
       return <SendBtcPage />;
@@ -155,23 +150,26 @@ export const TokenPage: FunctionComponent = observer(() => {
       {hasTokens ? (
         <Card className={classnames(style.card, "shadow")}>
           <CardBody>
-            {chainId === TRON_ID ? (
-              <TokensTronView
-                //@ts-ignore
-                tokens={tokensTron}
-                coinMinimalDenom={coinMinimalDenom}
-                handleClickToken={handleClickToken}
-              />
-            ) : networkType === "bitcoin" ? (
-              <TokensBtcView handleClickToken={handleClickToken} />
-            ) : (
-              <TokensView
-                setHasSend={setHasSend}
-                tokens={tokens}
-                coinMinimalDenom={coinMinimalDenom}
-                handleClickToken={handleClickToken}
-              />
-            )}
+            {
+              // chainId === TRON_ID ? (
+              //   <TokensTronView
+              //     //@ts-ignore
+              //     tokens={tokensTron}
+              //     coinMinimalDenom={coinMinimalDenom}
+              //     handleClickToken={handleClickToken}
+              //   />
+              // ) :
+              networkType === "bitcoin" ? (
+                <TokensBtcView handleClickToken={handleClickToken} />
+              ) : (
+                <TokensView
+                  setHasSend={setHasSend}
+                  tokens={tokens}
+                  coinMinimalDenom={coinMinimalDenom}
+                  handleClickToken={handleClickToken}
+                />
+              )
+            }
           </CardBody>
           {hasSend ? (
             <>

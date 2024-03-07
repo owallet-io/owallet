@@ -70,7 +70,7 @@ export const SignEvmPage: FunctionComponent = observer(() => {
   const account = accountStore.getAccount(current.chainId);
   const signer = account.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses,
-    true
+    false
   );
   console.log(
     "🚀 ~ constSignEvmPage:FunctionComponent=observer ~ signer:",

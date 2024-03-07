@@ -73,7 +73,7 @@ export const SendEvmPage: FunctionComponent<{
   const accountInfo = accountStore.getAccount(current.chainId);
   const walletAddress = accountInfo.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses,
-    true
+    false
   );
 
   const sendConfigs = useSendTxEvmConfig(

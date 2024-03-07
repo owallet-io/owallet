@@ -1241,7 +1241,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     stakeCurrency: {
       coinDenom: "TRX",
       coinMinimalDenom: "trx",
-      coinDecimals: 18,
+      coinDecimals: 6,
       coinGeckoId: "tron",
       coinImageUrl:
         "https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png",
@@ -1255,7 +1255,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       {
         coinDenom: "TRX",
         coinMinimalDenom: "trx",
-        coinDecimals: 18,
+        coinDecimals: 6,
         coinGeckoId: "tron",
         coinImageUrl:
           "https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png",
@@ -1263,7 +1263,9 @@ export const EmbedChainInfos: AppChainInfo[] = [
       {
         contractAddress: "TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8",
         coinDenom: "USDC",
-        coinMinimalDenom: "usdc",
+        coinMinimalDenom:
+          "erc20:0x3487b63D30B5B2C87fb7fFa8bcfADE38EAaC1abe:USDC Token",
+        // coinMinimalDenom: "usdc",
         coinGeckoId: "usd-coin",
         coinImageUrl:
           "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png",
@@ -1271,12 +1273,25 @@ export const EmbedChainInfos: AppChainInfo[] = [
       },
       {
         contractAddress: "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+        coinMinimalDenom:
+          "erc20:0xa614f803B6FD780986A42c78Ec9c7f77e6DeD13C:USDT Token",
         coinDenom: "USDT",
-        coinMinimalDenom: "usdt",
+        // coinMinimalDenom: "usdt",
         coinDecimals: 6,
         coinGeckoId: "tether",
         coinImageUrl:
           "https://s2.coinmarketcap.com/static/img/coins/64x64/825.png",
+      },
+      {
+        contractAddress: "TNUC9Qb1rRpS5CbWLmNMxXBjyFoydXjWFR",
+        coinMinimalDenom:
+          "erc20:0x891cdb91d149f23B1a45D9c5Ca78a88d0cB44C18:WTRX Token",
+        coinDenom: "WTRX",
+        // coinMinimalDenom: "usdt",
+        coinDecimals: 6,
+        coinGeckoId: "tron",
+        coinImageUrl:
+          "https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png",
       },
     ],
     restConfig: {

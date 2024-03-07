@@ -109,6 +109,10 @@ export class ObservableQueryEvmBalances extends ObservableChainQuery<Balances> {
     try {
       const web3 = new Web3(this.chainGetter.getChain(this.chainId).rest);
       const ethBalance = await web3.eth.getBalance(this.walletAddress);
+      console.log(
+        "🚀 ~ ObservableQueryEvmBalances ~ fetchResponse ~ ethBalance:",
+        ethBalance
+      );
       const denomNative = this.chainGetter.getChain(this.chainId).stakeCurrency
         .coinMinimalDenom;
       const balances: CoinPrimitive[] = [
@@ -117,6 +121,10 @@ export class ObservableQueryEvmBalances extends ObservableChainQuery<Balances> {
           denom: denomNative,
         },
       ];
+      console.log(
+        "🚀 ~ ObservableQueryEvmBalances ~ fetchResponse ~ balances:",
+        balances
+      );
 
       const data = {
         balances,

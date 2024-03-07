@@ -29,25 +29,32 @@ export class ObservableQueryErc20Balance extends ObservableChainQuery<Erc20Contr
   protected async fetchResponse(): Promise<
     QueryResponse<Erc20ContractBalance>
   > {
-    const web3 = new Web3(this.chainGetter.getChain(this.chainId).rest);
-    // @ts-ignore
-    const contract = new web3.eth.Contract(ERC20_ABI, this.contractAddress);
+    try {
+      const web3 = new Web3(this.chainGetter.getChain(this.chainId).rest);
+      // @ts-ignore
+      const contract = new web3.eth.Contract(ERC20_ABI, this.contractAddress);
 
-    const balance = await contract.methods.balanceOf(this.walletAddress).call();
-    if (!balance) {
-      throw new Error("Failed to get the response from the contract");
+      const balance = await contract.methods
+        .balanceOf(this.walletAddress)
+        .call();
+
+      if (!balance) {
+        throw new Error("Failed to get the response from the contract");
+      }
+      const data: Erc20ContractBalance = {
+        balance: balance,
+      };
+      console.log("🚀 ~ ObservableQueryErc20Balance ~ data:", data);
+
+      return {
+        data,
+        status: 1,
+        staled: false,
+        timestamp: Date.now(),
+      };
+    } catch (error) {
+      console.log("🚀 ~ ObservableQueryErc20Balance ~ error:", error);
     }
-    const data: Erc20ContractBalance = {
-      balance: balance,
-    };
-    console.log("🚀 ~ ObservableQueryErc20Balance ~ data:", data);
-
-    return {
-      data,
-      status: 1,
-      staled: false,
-      timestamp: Date.now(),
-    };
   }
 }
 
@@ -130,7 +137,12 @@ export class ObservableQueryErc20BalanceRegistry implements BalanceRegistry {
     minimalDenom: string
   ): ObservableQueryBalanceInner | undefined {
     const denomHelper = new DenomHelper(minimalDenom);
+
     if (denomHelper.type === "erc20") {
+      console.log(
+        "🚀 ~ ObservableQueryErc20BalanceRegistry ~ denomHelper:",
+        denomHelper
+      );
       return new ObservableQueryErc20BalanceInner(
         this.kvStore,
         chainId,

@@ -54,7 +54,7 @@ export const TxButtonView: FunctionComponent<TxButtonViewProps> = observer(
     );
     const walletAddressFetch = accountInfo.getAddressDisplay(
       keyRingStore.keyRingLedgerAddresses,
-      true
+      false
     );
     const queries = queriesStore.get(chainStore.current.chainId);
     const queryBalances =
