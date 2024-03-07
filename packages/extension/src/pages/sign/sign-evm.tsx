@@ -104,66 +104,22 @@ export const SignEvmPage: FunctionComponent = observer(() => {
   console.log(feeConfig.getError(), "err kaka");
   // const signDocHelper = useSignDocHelper(feeConfig, memoConfig);
   // amountConfig.setSignDocHelper(signDocHelper);
-  const { gas: gasErc20 } = queriesStore
-    .get(current.chainId)
-    .evmContract.queryGas.getGas({
-      to: dataSign?.data?.data?.data?.to,
-      from: signer,
-      contract_address:
-        amountConfig.sendCurrency.coinMinimalDenom.split(":")[1],
-      amount: amountConfig.amount,
-    });
-  const { gas: gasNative } = queriesStore
-    .get(current.chainId)
-    .evm.queryGas.getGas({
-      to: dataSign?.data?.data?.data?.to,
-      from: signer,
-    });
+  // const { gas: gasErc20 } = queriesStore
+  //   .get(current.chainId)
+  //   .evmContract.queryGas.getGas({
+  //     to: dataSign?.data?.data?.data?.to,
+  //     from: signer,
+  //     contract_address:
+  //       amountConfig.sendCurrency.coinMinimalDenom.split(":")[1],
+  //     amount: amountConfig.amount,
+  //   });
+  // const { gas: gasNative } = queriesStore
+  //   .get(current.chainId)
+  //   .evm.queryGas.getGas({
+  //     to: dataSign?.data?.data?.data?.to,
+  //     from: signer,
+  //   });
 
-  useEffect(() => {
-    if (!gasPrice) return;
-    gasConfig.setGasPriceStep(gasPrice);
-    if (amountConfig?.sendCurrency?.coinMinimalDenom?.startsWith("erc20")) {
-      if (!gasErc20) return;
-      gasConfig.setGas(gasErc20);
-      return;
-    }
-    if (!gasNative) return;
-    gasConfig.setGas(gasNative);
-    return () => {};
-  }, [gasNative, gasErc20, gasPrice, amountConfig?.sendCurrency]);
-  useEffect(() => {
-    if (signInteractionStore.waitingEthereumData) {
-      const data = signInteractionStore.waitingEthereumData;
-      //@ts-ignore
-      const gasDataSign = data?.data?.data?.data?.gas;
-      //@ts-ignore
-      const gasPriceDataSign = data?.data?.data?.data?.gasPrice;
-      chainStore.selectChain(data.data.chainId);
-
-      gasConfig.setGas(Web3.utils.hexToNumber(gasDataSign));
-
-      gasConfig.setGasPrice(Web3.utils.hexToNumberString(gasPriceDataSign));
-      if (preferNoSetFee && gasConfig.gas) {
-        const gas = new Dec(new Int(Web3.utils.hexToNumberString(gasDataSign)));
-        const gasPrice = new Dec(
-          new Int(Web3.utils.hexToNumberString(gasPriceDataSign))
-        );
-        const feeAmount = gasPrice.mul(gas);
-        feeConfig.setManualFee({
-          amount: feeAmount.roundUp().toString(),
-          denom: chainStore.current.feeCurrencies[0].coinMinimalDenom,
-        });
-      }
-      // amountConfig.setDisableBalanceCheck(
-      //   !!data.data.signOptions.disableBalanceCheck
-      // );
-
-      // memoConfig.setMemo(data.data.signDocWrapper.memo);
-      // setOrigin(data.data.msgOrigin);
-      setDataSign(signInteractionStore.waitingEthereumData);
-    }
-  }, [signInteractionStore.waitingEthereumData]);
   // useEffect(() => {
   //   if (signInteractionStore.waitingEthereumData) {
   //     const data = signInteractionStore.waitingEthereumData;
@@ -227,6 +183,7 @@ export const SignEvmPage: FunctionComponent = observer(() => {
   // Thus, without this state, the fee buttons/memo input would be shown after clicking the approve buttion.
   const [isProcessing, setIsProcessing] = useState(false);
   const needSetIsProcessing = !!account.isSendingMsg;
+  console.log("🚀 ~ needSetIsProcessing:", needSetIsProcessing);
 
   const preferNoSetFee = !!account.isSendingMsg || isProcessing;
   const preferNoSetMemo = !!account.isSendingMsg || isProcessing;
@@ -240,7 +197,51 @@ export const SignEvmPage: FunctionComponent = observer(() => {
     }
     signInteractionStore.rejectAll();
   });
+  useEffect(() => {
+    if (!needSetIsProcessing) {
+      if (!gasPrice) return;
+      gasConfig.setGasPriceStep(gasPrice);
+      // if (amountConfig?.sendCurrency?.coinMinimalDenom?.startsWith("erc20")) {
+      //   if (!gasErc20) return;
+      //   gasConfig.setGas(gasErc20);
+      //   return;
+      // }
+      // if (!gasNative) return;
+      // gasConfig.setGas(gasNative);
+    }
 
+    return () => {};
+  }, [gasPrice, amountConfig?.sendCurrency]);
+  useEffect(() => {
+    if (signInteractionStore.waitingEthereumData) {
+      const data = signInteractionStore.waitingEthereumData;
+      //@ts-ignore
+      const gasDataSign = data?.data?.data?.data?.gas;
+      //@ts-ignore
+      const gasPriceDataSign = data?.data?.data?.data?.gasPrice;
+      chainStore.selectChain(data.data.chainId);
+      gasConfig.setGas(Web3.utils.hexToNumber(gasDataSign));
+      gasConfig.setGasPrice(Web3.utils.hexToNumberString(gasPriceDataSign));
+      if (preferNoSetFee && gasConfig.gas) {
+        const gas = new Dec(new Int(Web3.utils.hexToNumberString(gasDataSign)));
+        const gasPrice = new Dec(
+          new Int(Web3.utils.hexToNumberString(gasPriceDataSign))
+        );
+        const feeAmount = gasPrice.mul(gas);
+        feeConfig.setManualFee({
+          amount: feeAmount.roundUp().toString(),
+          denom: chainStore.current.feeCurrencies[0].coinMinimalDenom,
+        });
+      }
+      // amountConfig.setDisableBalanceCheck(
+      //   !!data.data.signOptions.disableBalanceCheck
+      // );
+
+      // memoConfig.setMemo(data.data.signDocWrapper.memo);
+      // setOrigin(data.data.msgOrigin);
+      setDataSign(signInteractionStore.waitingEthereumData);
+    }
+  }, [signInteractionStore.waitingEthereumData]);
   // Check that the request is delivered
   // and the chain is selected properly.
   // The chain store loads the saved chain infos including the suggested chain asynchronously on init.
@@ -439,6 +440,14 @@ export const SignEvmPage: FunctionComponent = observer(() => {
                         gasPrice: Web3.utils.toHex(gasConfig.gasPrice),
                         gasLimit: Web3.utils.toHex(gasConfig.gas),
                       });
+                      console.log(
+                        "🚀 ~ onClick={ ~ gasConfig.gas:",
+                        gasConfig.gas
+                      );
+                      console.log(
+                        "🚀 ~ onClick={ ~ gasConfig.gasPrice:",
+                        gasConfig.gasPrice
+                      );
 
                       history.goBack();
 

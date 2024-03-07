@@ -232,6 +232,11 @@ export class FeeEvmConfig extends TxChainSetter implements IFeeConfig {
       // }
       const gasPriceLast = this.gasConfig.gasPriceStep[feeType];
       //@ts-ignore
+      console.log(
+        "🚀 ~ FeeEvmConfig ~ getFeeTypePrimitive ~ gasPriceLast:",
+        gasPriceLast.roundUp().toString()
+      );
+      //@ts-ignore
       this.gasConfig.setGasPrice(gasPriceLast.roundUp().toString());
       //@ts-ignore
       const feeAmount = gasPriceLast.mul(new Dec(this.gasConfig.gas));
