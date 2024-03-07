@@ -628,6 +628,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             accountOrai.bech32Address,
             historyInfos
           );
+
+          console.log("res handleSaveHistory", res);
         } catch (err) {
           console.log("err on handleSaveHistory", err);
         }

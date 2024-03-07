@@ -1,16 +1,16 @@
-import { OWButton } from "@src/components/button";
+import { PageHeader } from "@src/components/header/header-new";
+import OWCard from "@src/components/card/ow-card";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import OWText from "@src/components/text/ow-text";
 import { EarningCardNew } from "@src/screens/home/earning-card-new";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useState } from "react";
-import { Image, StyleSheet, View, ActivityIndicator } from "react-native";
+import { Image, StyleSheet, View } from "react-native";
 import { API } from "../../../common/api";
 import { PageWithScrollViewInBottomTabView } from "../../../components/page";
 import { useSmartNavigation } from "../../../navigation.provider";
 import { useStore } from "../../../stores";
-import { metrics, spacing, typography } from "../../../themes";
 import { ValidatorList } from "../validator-list/new-list";
 import { DelegationsCard } from "./delegations-card";
 import { MyRewardCard } from "./reward-card";
@@ -49,18 +49,26 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
       contentContainerStyle={styles.container}
       backgroundColor={colors["background"]}
     >
-      <View style={styles.headerCard}>
-        <Image
-          style={{
-            width: metrics.screenWidth - 32,
-            height: 260,
-            position: "absolute",
-          }}
-          source={require("../../../assets/image/img-bg.png")}
-          resizeMode="cover"
-          fadeDuration={0}
-        />
-
+      <PageHeader
+        title="Validator detail"
+        colors={colors}
+        onPress={async () => {}}
+        right={
+          <View
+            style={{
+              borderRadius: 999,
+              backgroundColor: colors["error-surface-default"],
+              paddingHorizontal: 12,
+              paddingVertical: 8,
+            }}
+          >
+            <OWText color={colors["neutral-icon-on-dark"]} weight="600">
+              Unstake
+            </OWText>
+          </View>
+        }
+      />
+      <OWCard>
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <View>
             <View style={{ flexDirection: "row" }}>
@@ -96,7 +104,7 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
             fadeDuration={0}
           />
         </View>
-      </View>
+      </OWCard>
       <EarningCardNew containerStyle={styles.containerEarnStyle} />
       <ValidatorList />
       {/* <MyRewardCard /> */}
@@ -182,15 +190,7 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
 const styling = (colors) =>
   StyleSheet.create({
     container: {},
-    headerCard: {
-      backgroundColor: colors["neutral-surface-card"],
-      width: metrics.screenWidth - 32,
-      borderRadius: 24,
-      position: "relative",
-      padding: 16,
-      overflow: "hidden",
-      alignSelf: "center",
-    },
+
     containerEarnStyle: {
       backgroundColor: colors["background-box"],
       margin: 0,

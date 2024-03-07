@@ -224,7 +224,7 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: HEADER_KEY.showNetworkHeader,
   },
   [SCREENS.ValidatorDetails]: {
-    title: HEADER_KEY.showNetworkHeader,
+    title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.ValidatorList]: {
     title: HEADER_KEY.showNetworkHeader,

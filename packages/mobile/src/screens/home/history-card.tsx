@@ -52,8 +52,6 @@ export const HistoryCard: FunctionComponent<{
         }
       );
 
-      console.log("res", res);
-
       if (res && res.status === 200) {
         setHistories({ ...histories, ...res.data.data });
         setLoading(false);
@@ -68,12 +66,10 @@ export const HistoryCard: FunctionComponent<{
   };
 
   useEffect(() => {
-    console.log("accountOrai.bech32Address", accountOrai.bech32Address);
-
     if (accountOrai.bech32Address) {
       getWalletHistory(accountOrai.bech32Address);
     }
-  }, [accountOrai.bech32Address]);
+  }, [accountOrai.bech32Address, offset]);
 
   const styles = styling(colors);
 
@@ -178,8 +174,8 @@ export const HistoryCard: FunctionComponent<{
   };
 
   const onRefresh = () => {
-    console.log("refresh");
     setLoading(true);
+    getWalletHistory(accountOrai.bech32Address);
   };
 
   const renderContent = () => {

@@ -320,7 +320,7 @@ const ValidatorItem: FunctionComponent<{
               color: colors["neutral-text-body2"],
             }}
           >
-            {`Uptime: ${(uptime * 100).toFixed(2)}%`}
+            {`Uptime: ${uptime ? (uptime * 100).toFixed(2) : 0}%`}
           </OWText>
         </View>
       </RectButton>
