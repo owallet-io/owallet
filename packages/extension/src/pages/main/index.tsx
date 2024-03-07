@@ -8,7 +8,7 @@ import { AccountView } from "./account";
 import { AssetView, AssetViewBtc, AssetViewEvm } from "./asset";
 import { LinkStakeView, StakeView } from "./stake";
 import style from "./style.module.scss";
-import { TxButtonBtcView, TxButtonEvmView, TxButtonView } from "./tx-button";
+import { TxButtonBtcView, TxButtonView } from "./tx-button";
 
 import { ChainUpdaterService } from "@owallet/background";
 import { TRON_ID } from "@owallet/common";

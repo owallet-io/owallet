@@ -60,10 +60,7 @@ export const SendTronEvmPage: FunctionComponent<{
     accountInfo.msgOpts.send,
     accountInfo.evmosHexAddress,
     queriesStore.get(current.chainId).queryBalances,
-    EthereumEndpoint,
-    chainStore.current.networkType === "evm" &&
-      queriesStore.get(current.chainId).evm.queryEvmBalance,
-    chainStore.current.networkType === "evm" && accountInfo.evmosHexAddress
+    EthereumEndpoint
   );
 
   useEffect(() => {

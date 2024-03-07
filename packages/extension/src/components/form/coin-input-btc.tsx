@@ -92,47 +92,6 @@ export const CoinInputBtc: FunctionComponent<CoinInputBtcProps> = observer(
     const balance = queries.bitcoin.queryBitcoinBalance.getQueryBalance(
       amountConfig.sender
     )?.balance;
-    // const queryBalances = queriesStore
-    //   .get(amountConfig.chainId)
-    //   .queryBalances.getQueryBech32Address(amountConfig.sender);
-    // const [balance, setBalance] = useState(
-    //   new CoinPretty(amountConfig.sendCurrency, new Int(0))
-    // );
-
-    // let balance = new CoinPretty(amountConfig.sendCurrency, new Int(0));
-    // const tokenDenom = new CoinPretty(amountConfig.sendCurrency, new Int(0))
-    //   .currency.coinDenom;
-
-    // useEffect(() => {
-    //   if (chainStore.current.networkType === 'evm') {
-    //     if (!accountInfo.evmosHexAddress) return null;
-
-    //     const evmBalance = queries.evm.queryEvmBalance.getQueryBalance(
-    //       accountInfo.evmosHexAddress
-    //     ).balance;
-    //     setBalance(evmBalance);
-    //   } else {
-    //     const queryBalance = queryBalances.balances.find(
-    //       (bal) =>
-    //         amountConfig.sendCurrency.coinMinimalDenom ===
-    //         bal.currency.coinMinimalDenom
-    //     );
-    //     setBalance(
-    //       queryBalance
-    //         ? queryBalance.balance
-    //         : new CoinPretty(amountConfig.sendCurrency, new Int(0))
-    //     );
-    //   }
-    // }, [tokenDenom, chainStore.current.chainId]);
-
-    // const selectableCurrencies = amountConfig.sendableCurrencies
-    //   .filter((cur) => {
-    //     const bal = queryBalances.getBalanceFromCurrency(cur);
-    //     return !bal?.toDec()?.isZero();
-    //   })
-    //   .sort((a, b) => {
-    //     return a.coinDenom < b.coinDenom ? -1 : 1;
-    //   });
 
     const denomHelper = new DenomHelper(
       amountConfig.sendCurrency.coinMinimalDenom

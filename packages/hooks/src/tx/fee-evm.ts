@@ -185,34 +185,12 @@ export class FeeEvmConfig extends TxChainSetter implements IFeeConfig {
         return this.getFeeTypePrimitive(this.feeType);
       }
 
-      // return this.getAutoFeeGasPrimitive();
-
       // If fee is not set, just return with empty fee amount.
       return undefined;
     } catch (error) {
       console.log("Error in getFeePrimitive:", error);
     }
   }
-  // protected getAutoFeeGasPrimitive(): CoinPrimitive {
-  //   try {
-  //     if (!this.feeCurrency) {
-  //       throw new Error("Fee currency not set");
-  //     }
-  //     const { gasPrice } = this.queryStore.evm.queryGasPrice.getGasPrice();
-  //     const feeAmount = gasPrice.toDec().mul(new Dec(this.gasConfig.gas));
-
-  //     console.log(
-  //       "🚀 ~ FeeEvmConfig ~ getAutoFeeGasPrimitive ~ feeAmount:",
-  //       feeAmount
-  //     );
-  //     return {
-  //       denom: this.feeCurrency.coinMinimalDenom,
-  //       amount: feeAmount.roundUp().toString(),
-  //     };
-  //   } catch (error) {
-  //     console.log("Error in getAutoFeeGasPrimitive:", error);
-  //   }
-  // }
   protected getFeeTypePrimitive(feeType: FeeType): CoinPrimitive {
     try {
       if (!this.feeCurrency) {

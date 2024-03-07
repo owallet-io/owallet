@@ -100,14 +100,6 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
       .currency.coinDenom;
 
     useEffect(() => {
-      // if (chainStore.current.networkType === 'evm') {
-      //   if (!accountInfo.evmosHexAddress) return null;
-
-      //   const evmBalance = queries.evm.queryEvmBalance.getQueryBalance(
-      //     accountInfo.evmosHexAddress
-      //   ).balance;
-      //   setBalance(evmBalance);
-      // } else {
       const queryBalance = queryBalances.balances.find(
         (bal) =>
           amountConfig.sendCurrency.coinMinimalDenom ===
