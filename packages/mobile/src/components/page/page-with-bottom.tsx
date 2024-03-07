@@ -1,6 +1,12 @@
 import React, { FunctionComponent, ReactElement } from "react";
 import { useTheme } from "@src/themes/theme-provider";
-import { ViewProps, StyleSheet, View } from "react-native";
+import {
+  ViewProps,
+  StyleSheet,
+  View,
+  StyleProp,
+  ViewStyle,
+} from "react-native";
 import { metrics } from "@src/themes";
 import { PageHeader } from "../header/header-new";
 
@@ -9,15 +15,25 @@ export const PageWithBottom: FunctionComponent<
     disableSafeArea?: boolean;
     backgroundColor?: string;
     bottomGroup: ReactElement;
+    style?: object;
+    showHeader?: boolean;
   }
-> = ({ children, bottomGroup }) => {
+> = ({ children, bottomGroup, style, backgroundColor, showHeader }) => {
   const { colors } = useTheme();
   const styles = useStyle();
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        {
+          ...styles.container,
+          ...style,
+          backgroundColor: backgroundColor ?? colors["neutral-surface-card"],
+        },
+      ]}
+    >
       <View>
-        <PageHeader title="" colors={colors} />
+        {showHeader ? <PageHeader title="" colors={colors} /> : null}
         <View>{children}</View>
       </View>
 
@@ -35,7 +51,6 @@ const useStyle = () => {
       paddingTop: metrics.screenHeight / 14,
       justifyContent: "space-between",
       height: "100%",
-      backgroundColor: colors["neutral-surface-card"],
     },
     bottom: {
       width: "100%",

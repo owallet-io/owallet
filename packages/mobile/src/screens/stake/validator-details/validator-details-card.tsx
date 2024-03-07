@@ -19,6 +19,8 @@ import {
 import { ValidatorThumbnail } from "../../../components/thumbnail";
 import { useSmartNavigation } from "../../../navigation.provider";
 import { metrics, spacing, typography } from "../../../themes";
+import { PageHeader } from "@src/components/header/header-new";
+import OWText from "@src/components/text/ow-text";
 
 const renderIconValidator = (label: string, size?: number, styles?: any) => {
   switch (label) {
@@ -143,7 +145,26 @@ export const ValidatorDetailsCard: FunctionComponent<{
 
   return (
     <View>
-      <OWSubTitleHeader title="Validator detail" />
+      {/* <OWSubTitleHeader title="Validator detail" /> */}
+      <PageHeader
+        title="Validator detail"
+        colors={colors}
+        onPress={async () => {}}
+        right={
+          <View
+            style={{
+              borderRadius: 999,
+              backgroundColor: colors["error-surface-default"],
+              paddingHorizontal: 12,
+              paddingVertical: 8,
+            }}
+          >
+            <OWText color={colors["neutral-icon-on-dark"]} weight="600">
+              Unstake
+            </OWText>
+          </View>
+        }
+      />
       {validator ? (
         <OWBox>
           <View

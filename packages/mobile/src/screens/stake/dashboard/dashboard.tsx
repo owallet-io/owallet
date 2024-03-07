@@ -49,25 +49,6 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
       contentContainerStyle={styles.container}
       backgroundColor={colors["background"]}
     >
-      <PageHeader
-        title="Validator detail"
-        colors={colors}
-        onPress={async () => {}}
-        right={
-          <View
-            style={{
-              borderRadius: 999,
-              backgroundColor: colors["error-surface-default"],
-              paddingHorizontal: 12,
-              paddingVertical: 8,
-            }}
-          >
-            <OWText color={colors["neutral-icon-on-dark"]} weight="600">
-              Unstake
-            </OWText>
-          </View>
-        }
-      />
       <OWCard>
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <View>
