@@ -80,6 +80,7 @@ export const SendBtcPage: FunctionComponent<{
   const sendConfigs = useSendTxConfig(
     chainStore,
     chainId,
+    //@ts-ignore
     accountInfo.msgOpts["send"],
     address,
     queries.queryBalances,

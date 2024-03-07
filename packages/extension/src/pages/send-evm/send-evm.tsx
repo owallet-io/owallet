@@ -79,6 +79,7 @@ export const SendEvmPage: FunctionComponent<{
   const sendConfigs = useSendTxEvmConfig(
     chainStore,
     current.chainId,
+    //@ts-ignore
     accountInfo.msgOpts.send,
     walletAddress,
     queriesStore.get(current.chainId).queryBalances,

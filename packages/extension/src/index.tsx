@@ -69,7 +69,6 @@ import manifest from "./manifest.json";
 import { Menu } from "./pages/main/menu";
 import { SendEvmPage } from "./pages/send-evm/send-evm";
 import { ExportToMobilePage } from "./pages/setting/export-to-mobile";
-import { SignEthereumPage } from "./pages/sign/sign-ethereum";
 import { SignTronPage } from "./pages/sign/sign-tron";
 import { SignEvmPage } from "./pages/sign/sign-evm";
 import { SignBtcPage } from "./pages/sign/sign-btc";

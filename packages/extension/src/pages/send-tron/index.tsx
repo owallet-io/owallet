@@ -57,6 +57,7 @@ export const SendTronEvmPage: FunctionComponent<{
   const sendConfigs = useSendTxConfig(
     chainStore,
     current.chainId,
+    //@ts-ignore
     accountInfo.msgOpts.send,
     accountInfo.evmosHexAddress,
     queriesStore.get(current.chainId).queryBalances,

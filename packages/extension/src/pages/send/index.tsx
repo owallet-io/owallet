@@ -71,6 +71,7 @@ export const SendPage: FunctionComponent<{
   const sendConfigs = useSendTxConfig(
     chainStore,
     current.chainId,
+    //@ts-ignore
     accountInfo.msgOpts.send,
     walletAddress,
     queriesStore.get(current.chainId).queryBalances,
