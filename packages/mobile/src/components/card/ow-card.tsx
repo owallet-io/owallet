@@ -19,6 +19,7 @@ const useStyleType = ({ type }) => {
         padding: 16,
         overflow: "hidden",
         alignSelf: "center",
+        marginTop: 2,
       };
       break;
   }

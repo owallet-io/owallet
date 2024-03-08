@@ -93,7 +93,7 @@ export default OWButton;
 const styling = () => {
   const { colors } = useTheme();
   return StyleSheet.create({
-    paddingHaveIconAndNotFullwidth: { paddingHorizontal: 12 },
+    paddingHaveIconAndNotFullwidth: { paddingHorizontal: 8 },
     iconInBtn: { paddingLeft: 6 },
     dashed: {
       borderWidth: 1,

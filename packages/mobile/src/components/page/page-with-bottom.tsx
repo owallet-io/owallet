@@ -1,12 +1,6 @@
 import React, { FunctionComponent, ReactElement } from "react";
 import { useTheme } from "@src/themes/theme-provider";
-import {
-  ViewProps,
-  StyleSheet,
-  View,
-  StyleProp,
-  ViewStyle,
-} from "react-native";
+import { ViewProps, StyleSheet, View } from "react-native";
 import { metrics } from "@src/themes";
 import { PageHeader } from "../header/header-new";
 
@@ -18,7 +12,7 @@ export const PageWithBottom: FunctionComponent<
     style?: object;
     showHeader?: boolean;
   }
-> = ({ children, bottomGroup, style, backgroundColor, showHeader }) => {
+> = ({ children, bottomGroup, style, backgroundColor, showHeader = false }) => {
   const { colors } = useTheme();
   const styles = useStyle();
 
@@ -28,11 +22,11 @@ export const PageWithBottom: FunctionComponent<
         {
           ...styles.container,
           ...style,
-          backgroundColor: backgroundColor ?? colors["neutral-surface-card"],
+          backgroundColor: backgroundColor ?? colors["neutral-surface-bg2"],
         },
       ]}
     >
-      <View>
+      <View style={{ marginBottom: 100 }}>
         {showHeader ? <PageHeader title="" colors={colors} /> : null}
         <View>{children}</View>
       </View>
@@ -53,15 +47,18 @@ const useStyle = () => {
       height: "100%",
     },
     bottom: {
-      width: "100%",
-      alignItems: "center",
       borderTopWidth: 1,
       borderTopColor: colors["neutral-border-default"],
-      padding: 16,
+      paddingBottom: 20,
+      width: metrics.screenWidth,
+      alignItems: "center",
     },
     aic: {
-      alignItems: "center",
-      paddingBottom: 20,
+      position: "absolute",
+
+      bottom: 0,
+      backgroundColor: colors["neutral-surface-card"],
+      width: metrics.screenWidth,
     },
     rc: {
       flexDirection: "row",
