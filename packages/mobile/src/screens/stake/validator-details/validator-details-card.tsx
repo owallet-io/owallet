@@ -269,8 +269,65 @@ export const ValidatorDetailsCard: FunctionComponent<{
                 </View>
               </View>
             </OWCard>
-            <OWCard type="normal">
+            <OWCard style={{ paddingTop: 0 }} type="normal">
               <View>
+                <View
+                  style={{
+                    ...styles.containerItem,
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <View>
+                    <View style={{ flexDirection: "row", paddingBottom: 6 }}>
+                      <View
+                        style={{
+                          ...styles.containerIcon,
+                        }}
+                      >
+                        <ValidatorCommissionIcon color={"#1E1E1E"} size={16} />
+                      </View>
+                      <Text style={[styles.label]}>{"My staked"}</Text>
+                    </View>
+
+                    <OWText
+                      size={16}
+                      weight="500"
+                      color={colors["neutral-text-heading"]}
+                    >
+                      {staked.trim(true).shrink(true).maxDecimals(6).toString()}
+                    </OWText>
+                  </View>
+                  <View>
+                    <View
+                      style={{ alignContent: "flex-end", paddingBottom: 6 }}
+                    >
+                      <Text
+                        style={[
+                          styles.label,
+                          {
+                            marginBottom: 10,
+                          },
+                        ]}
+                      >
+                        {"Claimable"}
+                      </Text>
+                    </View>
+
+                    <OWText
+                      size={16}
+                      weight="500"
+                      color={colors["success-text-body"]}
+                    >
+                      +
+                      {rewards
+                        .trim(true)
+                        .shrink(true)
+                        .maxDecimals(6)
+                        .toString()}
+                    </OWText>
+                  </View>
+                </View>
                 {["Voting power", "Commission"].map(
                   (label: string, index: number) => (
                     <View
@@ -280,17 +337,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
                     >
                       <View style={{ flexDirection: "row", paddingBottom: 6 }}>
                         {renderIconValidator(label, 12, styles)}
-                        <Text
-                          style={{
-                            ...typography.h7,
-                            fontWeight: "700",
-                            textAlign: "center",
-                            marginTop: spacing["6"],
-                            color: colors["primary-text"],
-                          }}
-                        >
-                          {label}
-                        </Text>
+                        <Text style={styles.label}>{label}</Text>
                       </View>
 
                       {renderTextDetail(label)}
@@ -370,5 +417,11 @@ const styling = (colors) =>
       width: metrics.screenWidth / 2.3,
       borderRadius: 999,
       marginLeft: 12,
+    },
+    label: {
+      fontWeight: "600",
+      textAlign: "center",
+      marginTop: spacing["6"],
+      color: colors["neutral-text-title"],
     },
   });
