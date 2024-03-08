@@ -73,9 +73,10 @@ export const ValidatorDetailsCard: FunctionComponent<{
   validatorAddress: string;
   apr?: number;
 }> = observer(({ containerStyle, validatorAddress, apr }) => {
-  const { chainStore, queriesStore } = useStore();
+  const { chainStore, queriesStore, accountStore } = useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
+  const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
   const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
     BondStatus.Bonded
@@ -103,6 +104,20 @@ export const ValidatorDetailsCard: FunctionComponent<{
     unbondingValidators.getValidatorThumbnail(validatorAddress) ||
     unbondedValidators.getValidatorThumbnail(validatorAddress) ||
     ValidatorThumbnails[validatorAddress];
+
+  const rewards = queries.cosmos.queryRewards
+    .getQueryBech32Address(account.bech32Address)
+    .getStakableRewardOf(validatorAddress);
+
+  const staked = queries.cosmos.queryDelegations
+    .getQueryBech32Address(account.bech32Address)
+    .getDelegationTo(validatorAddress);
+
+  const isStakedValidator = useMemo(() => {
+    return (
+      Number(staked.trim(true).shrink(true).hideDenom(true).maxDecimals(6)) > 0
+    );
+  }, [validatorAddress]);
 
   const renderTextDetail = (label: string) => {
     switch (label) {
@@ -135,19 +150,58 @@ export const ValidatorDetailsCard: FunctionComponent<{
   return (
     <PageWithBottom
       bottomGroup={
-        <OWButton
-          label="Stake"
-          onPress={() => {
-            smartNavigation.navigateSmart("Delegate", {
-              validatorAddress,
-            });
-          }}
-          style={{
-            marginTop: 20,
-            width: metrics.screenWidth - 32,
-            borderRadius: 999,
-          }}
-        />
+        isStakedValidator ? (
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+          >
+            <OWButton
+              label="Switch Validator"
+              type="secondary"
+              onPress={() => {
+                smartNavigation.navigateSmart("Delegate", {
+                  validatorAddress,
+                });
+              }}
+              style={styles.bottomBtn}
+              textStyle={{
+                fontSize: 14,
+                fontWeight: "600",
+              }}
+            />
+            <OWButton
+              label="Stake"
+              onPress={() => {
+                smartNavigation.navigateSmart("Delegate", {
+                  validatorAddress,
+                });
+              }}
+              style={styles.bottomBtn}
+              textStyle={{
+                fontSize: 14,
+                fontWeight: "600",
+              }}
+            />
+          </View>
+        ) : (
+          <OWButton
+            label="Stake"
+            onPress={() => {
+              smartNavigation.navigateSmart("Delegate", {
+                validatorAddress,
+              });
+            }}
+            style={[
+              styles.bottomBtn,
+              {
+                width: metrics.screenWidth - 32,
+              },
+            ]}
+            textStyle={{
+              fontSize: 14,
+              fontWeight: "600",
+            }}
+          />
+        )
       }
     >
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -156,18 +210,20 @@ export const ValidatorDetailsCard: FunctionComponent<{
           colors={colors}
           onPress={async () => {}}
           right={
-            <View
-              style={{
-                borderRadius: 999,
-                backgroundColor: colors["error-surface-default"],
-                paddingHorizontal: 12,
-                paddingVertical: 8,
-              }}
-            >
-              <OWText color={colors["neutral-icon-on-dark"]} weight="600">
-                Unstake
-              </OWText>
-            </View>
+            isStakedValidator ? (
+              <View
+                style={{
+                  borderRadius: 999,
+                  backgroundColor: colors["error-surface-default"],
+                  paddingHorizontal: 12,
+                  paddingVertical: 8,
+                }}
+              >
+                <OWText color={colors["neutral-icon-on-dark"]} weight="600">
+                  Unstake
+                </OWText>
+              </View>
+            ) : null
           }
         />
         {validator ? (
@@ -308,5 +364,11 @@ const styling = (colors) =>
       marginTop: 4,
       marginRight: 8,
       flexDirection: "row",
+    },
+    bottomBtn: {
+      marginTop: 20,
+      width: metrics.screenWidth / 2.3,
+      borderRadius: 999,
+      marginLeft: 12,
     },
   });
