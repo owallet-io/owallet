@@ -4,11 +4,16 @@ import { Text } from "@src/components/text";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useMemo } from "react";
-import { StyleSheet, View, ViewStyle, ScrollView } from "react-native";
+import {
+  StyleSheet,
+  View,
+  ViewStyle,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
 import { useStore } from "../../../stores";
 import { ValidatorThumbnails } from "@owallet/common";
 import { OWButton } from "@src/components/button";
-import { OWBox } from "@src/components/card";
 import {
   ValidatorAPYIcon,
   ValidatorBlockIcon,
@@ -17,7 +22,7 @@ import {
 } from "../../../components/icon";
 import { ValidatorThumbnail } from "../../../components/thumbnail";
 import { useSmartNavigation } from "../../../navigation.provider";
-import { metrics, spacing, typography } from "../../../themes";
+import { metrics, spacing } from "../../../themes";
 import { PageHeader } from "@src/components/header/header-new";
 import OWText from "@src/components/text/ow-text";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
@@ -158,7 +163,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
               label="Switch Validator"
               type="secondary"
               onPress={() => {
-                smartNavigation.navigateSmart("Delegate", {
+                smartNavigation.navigateSmart("Redelegate", {
                   validatorAddress,
                 });
               }}
@@ -211,7 +216,12 @@ export const ValidatorDetailsCard: FunctionComponent<{
           onPress={async () => {}}
           right={
             isStakedValidator ? (
-              <View
+              <TouchableOpacity
+                onPress={() => {
+                  smartNavigation.navigateSmart("Undelegate", {
+                    validatorAddress,
+                  });
+                }}
                 style={{
                   borderRadius: 999,
                   backgroundColor: colors["error-surface-default"],
@@ -222,7 +232,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
                 <OWText color={colors["neutral-icon-on-dark"]} weight="600">
                   Unstake
                 </OWText>
-              </View>
+              </TouchableOpacity>
             ) : null
           }
         />
@@ -271,63 +281,73 @@ export const ValidatorDetailsCard: FunctionComponent<{
             </OWCard>
             <OWCard style={{ paddingTop: 0 }} type="normal">
               <View>
-                <View
-                  style={{
-                    ...styles.containerItem,
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <View>
-                    <View style={{ flexDirection: "row", paddingBottom: 6 }}>
-                      <View
-                        style={{
-                          ...styles.containerIcon,
-                        }}
-                      >
-                        <ValidatorCommissionIcon color={"#1E1E1E"} size={16} />
+                {isStakedValidator ? (
+                  <View
+                    style={{
+                      ...styles.containerItem,
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <View>
+                      <View style={{ flexDirection: "row", paddingBottom: 6 }}>
+                        <View
+                          style={{
+                            ...styles.containerIcon,
+                          }}
+                        >
+                          <ValidatorCommissionIcon
+                            color={"#1E1E1E"}
+                            size={16}
+                          />
+                        </View>
+                        <Text style={[styles.label]}>{"My staked"}</Text>
                       </View>
-                      <Text style={[styles.label]}>{"My staked"}</Text>
-                    </View>
 
-                    <OWText
-                      size={16}
-                      weight="500"
-                      color={colors["neutral-text-heading"]}
-                    >
-                      {staked.trim(true).shrink(true).maxDecimals(6).toString()}
-                    </OWText>
-                  </View>
-                  <View>
-                    <View
-                      style={{ alignContent: "flex-end", paddingBottom: 6 }}
-                    >
-                      <Text
-                        style={[
-                          styles.label,
-                          {
-                            marginBottom: 10,
-                          },
-                        ]}
+                      <OWText
+                        size={16}
+                        weight="500"
+                        color={colors["neutral-text-heading"]}
                       >
-                        {"Claimable"}
-                      </Text>
+                        {staked
+                          .trim(true)
+                          .shrink(true)
+                          .maxDecimals(6)
+                          .toString()}
+                      </OWText>
                     </View>
+                    <View>
+                      <View
+                        style={{ alignContent: "flex-end", paddingBottom: 6 }}
+                      >
+                        <Text
+                          style={[
+                            styles.label,
+                            {
+                              marginBottom: 10,
+                            },
+                          ]}
+                        >
+                          {"Claimable"}
+                        </Text>
+                      </View>
 
-                    <OWText
-                      size={16}
-                      weight="500"
-                      color={colors["success-text-body"]}
-                    >
-                      +
-                      {rewards
-                        .trim(true)
-                        .shrink(true)
-                        .maxDecimals(6)
-                        .toString()}
-                    </OWText>
+                      <OWText
+                        size={16}
+                        weight="500"
+                        color={colors["success-text-body"]}
+                      >
+                        +
+                        {rewards
+                          .trim(true)
+                          .shrink(true)
+                          .maxDecimals(6)
+                          .toString()}
+                      </OWText>
+                    </View>
                   </View>
-                </View>
+                ) : null}
+
                 {["Voting power", "Commission"].map(
                   (label: string, index: number) => (
                     <View
