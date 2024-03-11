@@ -94,8 +94,11 @@ export const TokenPage: FunctionComponent = observer(() => {
     }
   };
 
-  const hasTokens = tokens.length > 0;
-  // console.log("🚀 ~ constTokenPage:FunctionComponent=observer ~ tokensTron:", tokensTron);
+  const hasTokens = tokens.length > 0 || tokensTron.length > 0;
+  console.log(
+    "🚀 ~ constTokenPage:FunctionComponent=observer ~ tokensTron:",
+    tokensTron
+  );
   const handleClickToken = (token) => {
     if (!hasSend) setHasSend(true);
     setCoinMinimalDenom(token);
