@@ -54,13 +54,16 @@ export const AssetStakedChartView: FunctionComponent = observer(() => {
     const fiatCurrency = priceStore.getFiatCurrency(
       priceStore.defaultVsCurrency
     );
+    console.log(fiatCurrency, "fiatCurrency");
     if (!fiatCurrency) {
       return undefined;
     }
-    if (!totalStake.isReady) {
-      return undefined;
-    }
+    // console.log(totalStake, "totalStake");
+    // if (!totalStake.isReady) {
+    //   return undefined;
+    // }
     let res = priceStore.calculatePrice(totalStake, fiat);
+    console.log(res, "res");
     for (const token of tokens) {
       const price = priceStore.calculatePrice(token.balance, fiat);
       if (price) {
@@ -70,7 +73,7 @@ export const AssetStakedChartView: FunctionComponent = observer(() => {
 
     return res;
   }, [totalStake, fiat]);
-
+  console.log(totalPrice, "totalPrice");
   return (
     <React.Fragment>
       <div className={styleAsset.containerChart}>
@@ -171,9 +174,9 @@ export const AssetChartViewEvm: FunctionComponent = observer(() => {
     if (!fiatCurrency) {
       return undefined;
     }
-    if (!stakable.isReady) {
-      return undefined;
-    }
+    // if (!stakable.isReady) {
+    //   return undefined;
+    // }
     let res = priceStore.calculatePrice(stakable, fiat);
     for (const token of tokens) {
       const price = priceStore.calculatePrice(token.balance, fiat);

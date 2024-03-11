@@ -1380,7 +1380,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinImageUrl:
         "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
       gasPriceStep: {
-        low: 0,
+        low: 0.01,
         average: 0.025,
         high: 0.04,
       },
@@ -1426,7 +1426,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinImageUrl:
         "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
       gasPriceStep: {
-        low: 0,
+        low: 0.01,
         average: 0.025,
         high: 0.04,
       },
