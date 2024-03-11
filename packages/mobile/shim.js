@@ -1,5 +1,6 @@
 import "./polyfill/crypto";
 import { chainInfos } from "@oraichain/oraidex-common";
+import { Tendermint37Client } from "@cosmjs/tendermint-rpc";
 // polyfill
 Tendermint37Client.detectVersion = () => {};
 Tendermint37Client.prototype.status = function () {
