@@ -16,12 +16,17 @@ import { DelegationsCard } from "./delegations-card";
 import { MyRewardCard } from "./reward-card";
 export const StakingDashboardScreen: FunctionComponent = observer(() => {
   const smartNavigation = useSmartNavigation();
-  const { chainStore, accountStore, queriesStore } = useStore();
+  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
   const [validators, setValidators] = useState([]);
   const { colors } = useTheme();
   const styles = styling(colors);
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
+
+  const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(
+    account.bech32Address
+  );
+  const delegated = queryDelegated.total;
 
   useEffect(() => {
     (async function get() {
@@ -71,9 +76,17 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
                 },
               ]}
             >
-              {"$0.00"}
+              {delegated
+                .shrink(true)
+                .maxDecimals(6)
+                .trim(true)
+                .upperCase(true)
+                .toString()}
             </OWText>
-            <OWText style={[styles["amount"]]}>{`< 0.001 ORAI`}</OWText>
+            <OWText style={[styles["amount"]]}>
+              {" "}
+              {priceStore.calculatePrice(delegated).toString()}
+            </OWText>
           </View>
           <Image
             style={{

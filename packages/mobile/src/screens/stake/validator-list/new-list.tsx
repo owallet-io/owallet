@@ -29,7 +29,8 @@ type Sort = "APR" | "Amount Staked" | "Name";
 export const ValidatorList: FunctionComponent = observer(() => {
   const route = useRoute<RouteProp<Record<string, {}>, string>>();
 
-  const { chainStore, queriesStore } = useStore();
+  const { chainStore, queriesStore, accountStore } = useStore();
+
   const queries = queriesStore.get(chainStore.current.chainId);
   const { colors } = useTheme();
   const styles = styling(colors);
