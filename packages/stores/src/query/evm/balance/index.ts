@@ -1,4 +1,13 @@
-import { DenomHelper, KVStore, Web3Provider } from "@owallet/common";
+import {
+  addressToPublicKey,
+  ChainIdEnum,
+  DenomHelper,
+  getOasisNic,
+  KVStore,
+  MyBigInt,
+  parseRpcBalance,
+  Web3Provider,
+} from "@owallet/common";
 import { ChainGetter, CoinPrimitive, QueryResponse } from "../../../common";
 import { computed, makeObservable, override } from "mobx";
 import { CoinPretty, Int } from "@owallet/unit";
@@ -105,8 +114,47 @@ export class ObservableQueryEvmBalances extends ObservableChainQuery<Balances> {
       yield super.fetch();
     }
   }
+  protected async getOasisBalance() {
+    try {
+      const chainInfo = this.chainGetter.getChain(this._chainId);
+      const nic = getOasisNic(chainInfo.raw.grpc);
+      const publicKey = await addressToPublicKey(this.walletAddress);
+      const account = await nic.stakingAccount({ owner: publicKey, height: 0 });
+      const grpcBalance = parseRpcBalance(account);
+
+      return grpcBalance;
+    } catch (error) {
+      console.log(
+        "🚀 ~ ObservableQueryEvmBalanceInner ~ getOasisBalance ~ error:",
+        error
+      );
+    }
+  }
   protected async fetchResponse(): Promise<QueryResponse<Balances>> {
     try {
+      if (this._chainId === ChainIdEnum.Oasis) {
+        const oasisRs = await this.getOasisBalance();
+        console.log(oasisRs, "oasis rs");
+        const denomNative = this.chainGetter.getChain(this.chainId)
+          .stakeCurrency.coinMinimalDenom;
+        console.log(denomNative, oasisRs.available, "available kaka");
+        const balances: CoinPrimitive[] = [
+          {
+            amount: oasisRs.available,
+            denom: denomNative,
+          },
+        ];
+
+        const data = {
+          balances,
+        };
+        return {
+          status: 1,
+          staled: false,
+          data,
+          timestamp: Date.now(),
+        };
+      }
       const web3 = new Web3(this.chainGetter.getChain(this.chainId).rest);
       const ethBalance = await web3.eth.getBalance(this.walletAddress);
       console.log(
@@ -121,10 +169,6 @@ export class ObservableQueryEvmBalances extends ObservableChainQuery<Balances> {
           denom: denomNative,
         },
       ];
-      console.log(
-        "🚀 ~ ObservableQueryEvmBalances ~ fetchResponse ~ balances:",
-        balances
-      );
 
       const data = {
         balances,

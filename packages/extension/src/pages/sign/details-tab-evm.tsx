@@ -16,6 +16,7 @@ import {
   SignDocHelper,
 } from "@owallet/hooks";
 import { useLanguage } from "@owallet/common";
+import { ChainIdEnum } from "@owallet/common";
 import { Badge, Button, Label } from "reactstrap";
 import { renderDirectMessage } from "./direct";
 import classnames from "classnames";
@@ -114,9 +115,11 @@ export const DetailsTabEvm: FunctionComponent<{
                 coin: msgs?.selectedCrypto,
               }) || "0 BTC"} */}
 
-                {`${Web3.utils.fromWei(amount, "ether")} ${
-                  chainStore.current.feeCurrencies[0].coinDenom
-                }`}
+                {`${
+                  chainStore.current.chainId === ChainIdEnum.Oasis
+                    ? Web3.utils.fromWei(amount, "gwei")
+                    : Web3.utils.fromWei(amount, "ether")
+                } ${chainStore.current.feeCurrencies[0].coinDenom}`}
               </b>{" "}
               to <b>{msgs?.to && Bech32Address.shortenAddress(msgs?.to, 20)}</b>{" "}
               on <b>{chainStore.current.chainName}</b>

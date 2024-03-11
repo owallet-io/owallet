@@ -149,7 +149,10 @@ export const AssetChartViewEvm: FunctionComponent = observer(() => {
     false
   );
   const queryBalances = queries.queryBalances.getQueryBech32Address(evmAddress);
-
+  console.log(
+    "🚀 ~ constAssetChartViewEvm:FunctionComponent=observer ~ queryBalances:",
+    queryBalances
+  );
   const balanceStakableQuery = queryBalances.stakable;
 
   const stakable = balanceStakableQuery?.balance;

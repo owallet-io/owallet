@@ -37,7 +37,7 @@ const TokenView: FunctionComponent<{
     ["#2dce89", "#ffffff"],
     ["#F6F7FB", "#0e0314"],
   ]);
-
+  console.log(balance, "balancebalance");
   let name = balance.currency.coinDenom;
   const minimalDenom = balance.currency.coinMinimalDenom;
 

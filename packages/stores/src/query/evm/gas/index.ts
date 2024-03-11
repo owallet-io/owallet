@@ -2,7 +2,7 @@ import {
   ObservableChainQuery,
   ObservableChainQueryMap,
 } from "../../chain-query";
-import { KVStore } from "@owallet/common";
+import { ChainIdEnum, KVStore } from "@owallet/common";
 import { ChainGetter, QueryResponse } from "../../../common";
 import { computed, makeObservable } from "mobx";
 import { CoinPretty, Int } from "@owallet/unit";
@@ -29,6 +29,9 @@ export class ObservableQueryGasInner extends ObservableChainQuery<number> {
    */
   @computed
   get gas(): number {
+    if (this.chainId === ChainIdEnum.Oasis) {
+      return 0;
+    }
     if (!this.response?.data) {
       //TODO: default gas for eth is 21000
       return 21000;

@@ -136,6 +136,21 @@ export class RootStore {
     );
 
     const chainOpts = this.chainStore.chainInfos.map((chainInfo) => {
+      if (chainInfo.chainId.startsWith("native-0x5afe")) {
+        return {
+          chainId: chainInfo.chainId,
+          msgOpts: {
+            send: {
+              native: {
+                gas: 0,
+              },
+              erc20: {
+                gas: 21000,
+              },
+            },
+          },
+        };
+      }
       // In evm network, default gas for sending
       if (chainInfo.networkType.startsWith("evm")) {
         return {

@@ -142,9 +142,9 @@ export class GasEvmConfig extends TxChainSetter implements IGasConfig {
     if (this._gasRaw && Number.isNaN(this._gasRaw)) {
       return new Error("Gas is not valid number");
     }
-    if (!this._gasPrice) {
-      return new Error("Gas Price not found");
-    }
+    // if (!this._gasPrice) {
+    //   return new Error("Gas Price not found");
+    // }
 
     if (this._gasPrice && Number.isNaN(this._gasPrice)) {
       return new Error("GasPrice is not valid number");
