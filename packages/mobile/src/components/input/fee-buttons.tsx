@@ -115,6 +115,8 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
     }
 
     const lowFee = feeConfig.getFeeTypePretty("low");
+    console.log("lowFee", lowFee);
+
     const lowFeePrice = priceStore.calculatePrice(lowFee);
 
     const averageFee = feeConfig.getFeeTypePretty("average");

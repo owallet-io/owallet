@@ -5,9 +5,15 @@ import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 import { BondStatus } from "@owallet/stores";
 import { useRedelegateTxConfig } from "@owallet/hooks";
-import { Dec, DecUtils } from "@owallet/unit";
+import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
 import { PageWithScrollView } from "../../../components/page";
-import { Image, View } from "react-native";
+import {
+  Image,
+  View,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
 import { Text } from "@src/components/text";
 import { ValidatorThumbnail } from "../../../components/thumbnail";
 import {
@@ -18,11 +24,10 @@ import {
 } from "../../../components/input";
 import { OWButton } from "../../../components/button";
 import { useSmartNavigation } from "../../../navigation.provider";
-import { spacing } from "../../../themes";
-import { ValidatorThumbnails } from "@owallet/common";
+import { metrics, spacing } from "../../../themes";
+import { toAmount, ValidatorThumbnails } from "@owallet/common";
 import ValidatorsList from "./validators-list";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { DownArrowIcon } from "../../../components/icon";
+import { AlertIcon, DownArrowIcon } from "../../../components/icon";
 import { Toggle } from "../../../components/toggle";
 import { useTheme } from "@src/themes/theme-provider";
 import { OWSubTitleHeader } from "@src/components/header";
@@ -32,6 +37,14 @@ import {
   HISTORY_STATUS,
   showToast,
 } from "@src/utils/helper";
+import OWText from "@src/components/text/ow-text";
+import OWIcon from "@src/components/ow-icon/ow-icon";
+import { PageHeader } from "@src/components/header/header-new";
+import { chainIcons } from "@oraichain/oraidex-common";
+import OWCard from "@src/components/card/ow-card";
+import { StakeAmountInput } from "@src/components/input/stake-amount";
+import { PageWithBottom } from "@src/components/page/page-with-bottom";
+
 export const RedelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
     RouteProp<
@@ -50,10 +63,17 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
   const smartNavigation = useSmartNavigation();
   const [customFee, setCustomFee] = useState(false);
   const { colors } = useTheme();
-  const { chainStore, accountStore, queriesStore, analyticsStore, modalStore } =
-    useStore();
+  const {
+    chainStore,
+    accountStore,
+    queriesStore,
+    analyticsStore,
+    modalStore,
+    priceStore,
+  } = useStore();
 
-  const style = useStyle();
+  const styles = styling(colors);
+
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
 
@@ -128,6 +148,14 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
 
   const isDisable = !account.isReadyToSendMsgs || !txStateIsValid;
 
+  const amount = new CoinPretty(
+    chainStore.current.feeCurrencies[0],
+    new Int(toAmount(Number(sendConfigs.amountConfig.amount)))
+  );
+  const chainIcon = chainIcons.find(
+    (c) => c.chainId === chainStore.current.chainId
+  );
+
   const _onPressSwitchValidator = async () => {
     if (account.isReadyToSendMsgs && txStateIsValid) {
       try {
@@ -179,11 +207,17 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
           }
         );
       } catch (e) {
-        if (e?.message === "Request rejected") {
+        if (e?.message.toLowerCase().includes("rejected")) {
           return;
-        }
-        if (e?.message.includes("Cannot read properties of undefined")) {
+        } else if (e?.message.includes("Cannot read properties of undefined")) {
           return;
+        } else {
+          console.log(e);
+          // smartNavigation.navigate("Home", {});
+          showToast({
+            message: JSON.stringify(e),
+            type: "danger",
+          });
         }
         if (e?.response && e?.response?.data?.message) {
           const inputString = e?.response?.data?.message;
@@ -211,11 +245,6 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
           // const parsedObject = JSON.parse(`{${validJsonString}}`);
         }
         console.log(e);
-        if (smartNavigation.canGoBack) {
-          smartNavigation.goBack();
-        } else {
-          smartNavigation.navigateSmart("Home", {});
-        }
       }
     }
   };
@@ -228,297 +257,626 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
     });
     modalStore.close();
   };
+
   return (
-    <PageWithScrollView
-      contentContainerStyle={{
-        flexGrow: 1,
-      }}
-      backgroundColor={colors["background"]}
-    >
-      <OWSubTitleHeader title="Switch validator" />
-      <View
-        style={{
-          borderRadius: spacing["8"],
-          marginTop: spacing["top-pad"],
-          backgroundColor: colors["primary"],
-          marginLeft: 20,
-          marginRight: 20,
-        }}
-      >
-        <View
-          style={{
-            backgroundColor: "inherit",
-            borderRadius: 8,
-            padding: 10,
-            borderWidth: 1,
-            borderColor: colors["purple-400"],
-            borderStyle: "dashed",
+    <PageWithBottom
+      bottomGroup={
+        <OWButton
+          label="Switch"
+          disabled={isDisable}
+          loading={account.isSendingMsg === "redelegate"}
+          onPress={_onPressSwitchValidator}
+          style={[
+            styles.bottomBtn,
+            {
+              width: metrics.screenWidth - 32,
+            },
+          ]}
+          textStyle={{
+            fontSize: 14,
+            fontWeight: "600",
           }}
-        >
-          <View style={{ display: "flex", flexDirection: "row" }}>
-            <View style={{ width: 40, height: 40 }}>
-              <ValidatorThumbnail
-                style={{
-                  marginRight: spacing["8"],
-                  backgroundColor: colors["border"],
-                }}
-                size={36}
-                url={srcValidatorThumbnail}
-              />
-            </View>
-            <View style={{ paddingLeft: 12 }}>
-              <Text
-                style={{
-                  fontSize: 18,
-                  lineHeight: 22,
-                  fontWeight: "700",
-                  color: colors["primary-text"],
-                }}
-              >
-                {srcValidator ? srcValidator?.description?.moniker : "..."}
-              </Text>
-              <Text
-                style={{
-                  color: colors["blue-300"],
-                  fontWeight: "700",
-                  fontSize: 14,
-                  lineHeight: 16,
-                }}
-              >
-                Staked{" "}
-                {staked.trim(true).shrink(true).maxDecimals(6).toString()}
-              </Text>
-            </View>
-          </View>
-        </View>
-      </View>
-      <View
-        style={{
-          paddingTop: 5,
-          paddingBottom: 5,
-          alignItems: "center",
-        }}
-      >
-        <Image
-          style={{
-            width: spacing["24"],
-            height: spacing["24"],
-          }}
-          source={require("../../../assets/image/back.png")}
-          fadeDuration={0}
         />
-      </View>
-      <View
-        style={{
-          marginBottom: spacing["12"],
-          borderRadius: spacing["8"],
-          backgroundColor: colors["primary"],
-          marginLeft: 20,
-          marginRight: 20,
-        }}
-      >
-        <TouchableOpacity
-          style={{
-            borderRadius: 8,
-            padding: 10,
-            borderWidth: 0.5,
-            borderColor: colors["border-input-login"],
-          }}
-          onPress={() => {
-            modalStore.setOptions();
-            modalStore.setChildren(
-              <ValidatorsList
-                onPressSelectValidator={onPressSelectValidator}
-                dstValidatorAddress={dstValidatorAddress}
-              />
-            );
-          }}
-        >
-          <View
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
+      }
+    >
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <PageHeader
+          title="Redelegate"
+          subtitle={"Oraichain"}
+          colors={colors}
+          onPress={async () => {}}
+        />
+        {
+          <View>
+            {srcValidator ? (
+              <OWCard>
+                <OWText
+                  style={{ paddingBottom: 8 }}
+                  color={colors["neutral-text-title"]}
+                  size={12}
+                >
+                  From
+                </OWText>
+                <View
+                  style={{
+                    flexDirection: "row",
+                  }}
+                >
+                  <ValidatorThumbnail size={20} url={srcValidatorThumbnail} />
+                  <OWText
+                    style={{ paddingLeft: 8 }}
+                    color={colors["neutral-text-title"]}
+                    weight="500"
+                  >
+                    {srcValidator?.description.moniker}
+                  </OWText>
+                </View>
+              </OWCard>
+            ) : null}
+
             <View
               style={{
-                display: "flex",
-                flexDirection: "row",
+                paddingTop: 5,
+                paddingBottom: 5,
                 alignItems: "center",
               }}
             >
-              {dstValidatorAddress ? (
-                <View
-                  style={{
-                    width: 40,
-                    height: 40,
-                  }}
-                >
-                  <ValidatorThumbnail
-                    style={{
-                      marginRight: spacing["8"],
-                    }}
-                    size={38}
-                    url={switchValidator.avatar}
-                  />
-                </View>
-              ) : (
-                <View
-                  style={{
-                    width: 40,
-                    height: 40,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    backgroundColor: colors["background-item-list"],
-                    borderRadius: 8,
-                  }}
-                >
-                  <Image
-                    style={{
-                      width: spacing["24"],
-                      height: spacing["24"],
-                    }}
-                    source={require("../../../assets/image/user-square.png")}
-                    fadeDuration={0}
-                  />
-                </View>
-              )}
-              {dstValidatorAddress ? (
-                <View style={{ display: "flex", paddingLeft: 12 }}>
-                  <Text
-                    style={{
-                      color: colors["gray-900"],
-                      fontSize: 18,
-                      lineHeight: 22,
-                      fontWeight: "700",
-                    }}
-                  >
-                    {switchValidator ? switchValidator.moniker : "..."}
-                  </Text>
-                  <Text
-                    style={{
-                      color: colors["blue-300"],
-                      fontWeight: "700",
-                      fontSize: 14,
-                      lineHeight: 16,
-                    }}
-                  >
-                    Staked{" "}
-                    {stakedDst
-                      .trim(true)
-                      .shrink(true)
-                      .maxDecimals(6)
-                      .toString()}
-                  </Text>
-                </View>
-              ) : (
-                <Text
-                  style={{
-                    fontWeight: "700",
-                    fontSize: 16,
-                    lineHeight: 22,
-                    paddingLeft: 12,
-                    color: colors["primary-text"],
-                  }}
-                >
-                  Select validator
-                </Text>
-              )}
+              <Image
+                style={{
+                  width: spacing["24"],
+                  height: spacing["24"],
+                }}
+                source={require("../../../assets/image/back.png")}
+                fadeDuration={0}
+              />
             </View>
-            <DownArrowIcon height={15} color={colors["gray-150"]} />
-          </View>
-        </TouchableOpacity>
-      </View>
 
-      {dstValidatorAddress ? (
-        <View
-          style={{
-            marginTop: 20,
-            padding: 20,
-            backgroundColor: colors["primary"],
-            borderRadius: 24,
-          }}
-        >
-          <AmountInput label="Amount" amountConfig={sendConfigs.amountConfig} />
-          <MemoInput
-            label="Memo (Optional)"
-            memoConfig={sendConfigs.memoConfig}
-          />
-          <View
-            style={{
-              flexDirection: "row",
-              paddingBottom: 24,
-              alignItems: "center",
-            }}
-          >
-            <Toggle
-              on={customFee}
-              onChange={(value) => {
-                setCustomFee(value);
-                if (!value) {
-                  if (
-                    sendConfigs.feeConfig.feeCurrency &&
-                    !sendConfigs.feeConfig.fee
-                  ) {
-                    sendConfigs.feeConfig.setFeeType("average");
-                  }
-                }
-              }}
-            />
-            <Text
-              style={{
-                fontWeight: "700",
-                fontSize: 16,
-                lineHeight: 34,
-                paddingHorizontal: 8,
-                color: colors["primary-text"],
-              }}
-            >
-              Custom Fee
-            </Text>
+            {
+              <OWCard>
+                {dstValidatorAddress ? (
+                  <TouchableOpacity
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                    onPress={() => {
+                      modalStore.setOptions();
+                      modalStore.setChildren(
+                        <ValidatorsList
+                          onPressSelectValidator={onPressSelectValidator}
+                          dstValidatorAddress={dstValidatorAddress}
+                        />
+                      );
+                    }}
+                  >
+                    <View>
+                      <OWText
+                        style={{ paddingBottom: 8 }}
+                        color={colors["neutral-text-title"]}
+                        size={12}
+                      >
+                        To
+                      </OWText>
+                      <View
+                        style={{
+                          flexDirection: "row",
+                        }}
+                      >
+                        <ValidatorThumbnail
+                          size={20}
+                          url={switchValidator.avatar}
+                        />
+                        <OWText
+                          style={{ paddingLeft: 8 }}
+                          color={colors["neutral-text-title"]}
+                          weight="500"
+                        >
+                          {switchValidator?.moniker ?? ""}
+                        </OWText>
+                      </View>
+                    </View>
+                    <DownArrowIcon height={15} color={colors["gray-150"]} />
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                    onPress={() => {
+                      modalStore.setOptions();
+                      modalStore.setChildren(
+                        <ValidatorsList
+                          onPressSelectValidator={onPressSelectValidator}
+                          dstValidatorAddress={dstValidatorAddress}
+                        />
+                      );
+                    }}
+                  >
+                    <View>
+                      <OWText
+                        style={{ paddingBottom: 8 }}
+                        color={colors["neutral-text-title"]}
+                        size={12}
+                      >
+                        To
+                      </OWText>
+                      <View
+                        style={{
+                          flexDirection: "row",
+                        }}
+                      >
+                        <ValidatorThumbnail
+                          size={20}
+                          url={switchValidator.avatar}
+                        />
+                        <OWText
+                          style={{ paddingLeft: 8 }}
+                          color={colors["neutral-text-title"]}
+                          weight="500"
+                        >
+                          {"Select Validator"}
+                        </OWText>
+                      </View>
+                    </View>
+                    <DownArrowIcon height={15} color={colors["gray-150"]} />
+                  </TouchableOpacity>
+                )}
+              </OWCard>
+            }
+            {dstValidatorAddress ? (
+              <View>
+                <OWCard style={{ paddingTop: 22 }} type="normal">
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <View style={{}}>
+                      <OWText style={{ paddingTop: 8 }} size={12}>
+                        Staked :{" "}
+                        {staked
+                          .trim(true)
+                          .shrink(true)
+                          .maxDecimals(6)
+                          .toString()}
+                      </OWText>
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          backgroundColor: colors["neutral-surface-action3"],
+                          borderRadius: 999,
+                          paddingHorizontal: 14,
+                          paddingVertical: 12,
+                          maxWidth: metrics.screenWidth / 4.5,
+                          marginTop: 12,
+                        }}
+                      >
+                        <OWIcon
+                          type="images"
+                          source={{ uri: chainIcon?.Icon }}
+                          size={16}
+                        />
+                        <OWText
+                          style={{ paddingLeft: 4 }}
+                          weight="600"
+                          size={14}
+                        >
+                          ORAI
+                        </OWText>
+                      </View>
+                    </View>
+                    <View
+                      style={{
+                        alignItems: "flex-end",
+                        marginBottom: -12,
+                      }}
+                    >
+                      <StakeAmountInput
+                        colors={colors}
+                        inputContainerStyle={{
+                          borderWidth: 0,
+                          width: metrics.screenWidth / 2,
+                        }}
+                        amountConfig={sendConfigs.amountConfig}
+                        placeholder={"0.0"}
+                      />
+                    </View>
+                  </View>
+                  <View
+                    style={{
+                      alignSelf: "flex-end",
+                      flexDirection: "row",
+                      alignItems: "center",
+                    }}
+                  >
+                    <OWIcon name="tdesign_swap" size={16} />
+                    <OWText
+                      style={{ paddingLeft: 4 }}
+                      color={colors["neutral-text-body"]}
+                      size={14}
+                    >
+                      {priceStore.calculatePrice(amount).toString()}
+                    </OWText>
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      borderRadius: 12,
+                      backgroundColor: colors["warning-surface-subtle"],
+                      padding: 12,
+                    }}
+                  >
+                    <AlertIcon color={colors["warning-text-body"]} size={16} />
+                    <OWText style={{ paddingLeft: 8 }} weight="600" size={14}>
+                      {`When you unstake, a 14-day cooldown period is required before your stake \nreturns to your wallet.`}
+                    </OWText>
+                  </View>
+                </OWCard>
+                <OWCard>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      borderBottomColor: colors["neutral-border-default"],
+                      borderBottomWidth: 1,
+                      paddingVertical: 16,
+                    }}
+                  >
+                    <OWText color={colors["neutral-text-title"]} weight="600">
+                      Transaction fee
+                    </OWText>
+                    <TouchableOpacity>
+                      <OWText
+                        color={colors["primary-text-action"]}
+                        weight="600"
+                      >
+                        {/* Fast: $0.01 */}
+                      </OWText>
+                    </TouchableOpacity>
+                  </View>
+                  <FeeButtons
+                    label=""
+                    gasLabel="gas"
+                    feeConfig={sendConfigs.feeConfig}
+                    gasConfig={sendConfigs.gasConfig}
+                  />
+                </OWCard>
+              </View>
+            ) : null}
           </View>
-          {customFee && chainStore.current.networkType !== "evm" ? (
-            <TextInput
-              label="Fee"
-              placeholder="Type your Fee here"
-              keyboardType={"numeric"}
-              labelStyle={{
-                fontSize: 16,
-                fontWeight: "700",
-                lineHeight: 22,
-                color: colors["gray-900"],
-                marginBottom: spacing["8"],
-              }}
-              onChangeText={(text) => {
-                const fee = new Dec(Number(text.replace(/,/g, "."))).mul(
-                  DecUtils.getTenExponentNInPrecisionRange(6)
-                );
-                sendConfigs.feeConfig.setManualFee({
-                  amount: fee.roundUp().toString(),
-                  denom: sendConfigs.feeConfig.feeCurrency.coinMinimalDenom,
-                });
-              }}
-            />
-          ) : chainStore.current.networkType !== "evm" ? (
-            <FeeButtons
-              label="Fee"
-              gasLabel="gas"
-              feeConfig={sendConfigs.feeConfig}
-              gasConfig={sendConfigs.gasConfig}
-            />
-          ) : null}
-
-          <OWButton
-            label="Switch"
-            disabled={isDisable}
-            loading={account.isSendingMsg === "redelegate"}
-            onPress={_onPressSwitchValidator}
-          />
-        </View>
-      ) : null}
-      <View style={style.flatten(["height-page-pad"])} />
-    </PageWithScrollView>
+        }
+      </ScrollView>
+    </PageWithBottom>
   );
+
+  // return (
+  //   <PageWithScrollView
+  //     contentContainerStyle={{
+  //       flexGrow: 1
+  //     }}
+  //     backgroundColor={colors["background"]}
+  //   >
+  //     <OWSubTitleHeader title="Switch validator" />
+  //     <View
+  //       style={{
+  //         borderRadius: spacing["8"],
+  //         marginTop: spacing["top-pad"],
+  //         backgroundColor: colors["primary"],
+  //         marginLeft: 20,
+  //         marginRight: 20
+  //       }}
+  //     >
+  //       <View
+  //         style={{
+  //           backgroundColor: "inherit",
+  //           borderRadius: 8,
+  //           padding: 10,
+  //           borderWidth: 1,
+  //           borderColor: colors["purple-400"],
+  //           borderStyle: "dashed"
+  //         }}
+  //       >
+  //         <View style={{ display: "flex", flexDirection: "row" }}>
+  //           <View style={{ width: 40, height: 40 }}>
+  //             <ValidatorThumbnail
+  //               style={{
+  //                 marginRight: spacing["8"],
+  //                 backgroundColor: colors["border"]
+  //               }}
+  //               size={36}
+  //               url={srcValidatorThumbnail}
+  //             />
+  //           </View>
+  //           <View style={{ paddingLeft: 12 }}>
+  //             <Text
+  //               style={{
+  //                 fontSize: 18,
+  //                 lineHeight: 22,
+  //                 fontWeight: "700",
+  //                 color: colors["primary-text"]
+  //               }}
+  //             >
+  //               {srcValidator ? srcValidator?.description?.moniker : "..."}
+  //             </Text>
+  //             <Text
+  //               style={{
+  //                 color: colors["blue-300"],
+  //                 fontWeight: "700",
+  //                 fontSize: 14,
+  //                 lineHeight: 16
+  //               }}
+  //             >
+  //               Staked {staked.trim(true).shrink(true).maxDecimals(6).toString()}
+  //             </Text>
+  //           </View>
+  //         </View>
+  //       </View>
+  //     </View>
+  //     <View
+  //       style={{
+  //         paddingTop: 5,
+  //         paddingBottom: 5,
+  //         alignItems: "center"
+  //       }}
+  //     >
+  //       <Image
+  //         style={{
+  //           width: spacing["24"],
+  //           height: spacing["24"]
+  //         }}
+  //         source={require("../../../assets/image/back.png")}
+  //         fadeDuration={0}
+  //       />
+  //     </View>
+  //     <View
+  //       style={{
+  //         marginBottom: spacing["12"],
+  //         borderRadius: spacing["8"],
+  //         backgroundColor: colors["primary"],
+  //         marginLeft: 20,
+  //         marginRight: 20
+  //       }}
+  //     >
+  //       <TouchableOpacity
+  //         style={{
+  //           borderRadius: 8,
+  //           padding: 10,
+  //           borderWidth: 0.5,
+  //           borderColor: colors["border-input-login"]
+  //         }}
+  //         onPress={() => {
+  //           modalStore.setOptions();
+  //           modalStore.setChildren(
+  //             <ValidatorsList
+  //               onPressSelectValidator={onPressSelectValidator}
+  //               dstValidatorAddress={dstValidatorAddress}
+  //             />
+  //           );
+  //         }}
+  //       >
+  //         <View
+  //           style={{
+  //             display: "flex",
+  //             flexDirection: "row",
+  //             justifyContent: "space-between",
+  //             alignItems: "center"
+  //           }}
+  //         >
+  //           <View
+  //             style={{
+  //               display: "flex",
+  //               flexDirection: "row",
+  //               alignItems: "center"
+  //             }}
+  //           >
+  //             {dstValidatorAddress ? (
+  //               <View
+  //                 style={{
+  //                   width: 40,
+  //                   height: 40
+  //                 }}
+  //               >
+  //                 <ValidatorThumbnail
+  //                   style={{
+  //                     marginRight: spacing["8"]
+  //                   }}
+  //                   size={38}
+  //                   url={switchValidator.avatar}
+  //                 />
+  //               </View>
+  //             ) : (
+  //               <View
+  //                 style={{
+  //                   width: 40,
+  //                   height: 40,
+  //                   alignItems: "center",
+  //                   justifyContent: "center",
+  //                   backgroundColor: colors["background-item-list"],
+  //                   borderRadius: 8
+  //                 }}
+  //               >
+  //                 <Image
+  //                   style={{
+  //                     width: spacing["24"],
+  //                     height: spacing["24"]
+  //                   }}
+  //                   source={require("../../../assets/image/user-square.png")}
+  //                   fadeDuration={0}
+  //                 />
+  //               </View>
+  //             )}
+  //             {dstValidatorAddress ? (
+  //               <View style={{ display: "flex", paddingLeft: 12 }}>
+  //                 <Text
+  //                   style={{
+  //                     color: colors["gray-900"],
+  //                     fontSize: 18,
+  //                     lineHeight: 22,
+  //                     fontWeight: "700"
+  //                   }}
+  //                 >
+  //                   {switchValidator ? switchValidator.moniker : "..."}
+  //                 </Text>
+  //                 <Text
+  //                   style={{
+  //                     color: colors["blue-300"],
+  //                     fontWeight: "700",
+  //                     fontSize: 14,
+  //                     lineHeight: 16
+  //                   }}
+  //                 >
+  //                   Staked {stakedDst.trim(true).shrink(true).maxDecimals(6).toString()}
+  //                 </Text>
+  //               </View>
+  //             ) : (
+  //               <Text
+  //                 style={{
+  //                   fontWeight: "700",
+  //                   fontSize: 16,
+  //                   lineHeight: 22,
+  //                   paddingLeft: 12,
+  //                   color: colors["primary-text"]
+  //                 }}
+  //               >
+  //                 Select validator
+  //               </Text>
+  //             )}
+  //           </View>
+  //           <DownArrowIcon height={15} color={colors["gray-150"]} />
+  //         </View>
+  //       </TouchableOpacity>
+  //     </View>
+
+  //     {dstValidatorAddress ? (
+  //       <View
+  //         style={{
+  //           marginTop: 20,
+  //           padding: 20,
+  //           backgroundColor: colors["primary"],
+  //           borderRadius: 24
+  //         }}
+  //       >
+  //         <AmountInput label="Amount" amountConfig={sendConfigs.amountConfig} />
+  //         <MemoInput label="Memo (Optional)" memoConfig={sendConfigs.memoConfig} />
+  //         <View
+  //           style={{
+  //             flexDirection: "row",
+  //             paddingBottom: 24,
+  //             alignItems: "center"
+  //           }}
+  //         >
+  //           <Toggle
+  //             on={customFee}
+  //             onChange={value => {
+  //               setCustomFee(value);
+  //               if (!value) {
+  //                 if (sendConfigs.feeConfig.feeCurrency && !sendConfigs.feeConfig.fee) {
+  //                   sendConfigs.feeConfig.setFeeType("average");
+  //                 }
+  //               }
+  //             }}
+  //           />
+  //           <Text
+  //             style={{
+  //               fontWeight: "700",
+  //               fontSize: 16,
+  //               lineHeight: 34,
+  //               paddingHorizontal: 8,
+  //               color: colors["primary-text"]
+  //             }}
+  //           >
+  //             Custom Fee
+  //           </Text>
+  //         </View>
+  //         {customFee && chainStore.current.networkType !== "evm" ? (
+  //           <TextInput
+  //             label="Fee"
+  //             placeholder="Type your Fee here"
+  //             keyboardType={"numeric"}
+  //             labelStyle={{
+  //               fontSize: 16,
+  //               fontWeight: "700",
+  //               lineHeight: 22,
+  //               color: colors["gray-900"],
+  //               marginBottom: spacing["8"]
+  //             }}
+  //             onChangeText={text => {
+  //               const fee = new Dec(Number(text.replace(/,/g, "."))).mul(DecUtils.getTenExponentNInPrecisionRange(6));
+  //               sendConfigs.feeConfig.setManualFee({
+  //                 amount: fee.roundUp().toString(),
+  //                 denom: sendConfigs.feeConfig.feeCurrency.coinMinimalDenom
+  //               });
+  //             }}
+  //           />
+  //         ) : chainStore.current.networkType !== "evm" ? (
+  //           <FeeButtons
+  //             label="Fee"
+  //             gasLabel="gas"
+  //             feeConfig={sendConfigs.feeConfig}
+  //             gasConfig={sendConfigs.gasConfig}
+  //           />
+  //         ) : null}
+
+  //         <OWButton
+  //           label="Switch"
+  //           disabled={isDisable}
+  //           loading={account.isSendingMsg === "redelegate"}
+  //           onPress={_onPressSwitchValidator}
+  //         />
+  //       </View>
+  //     ) : null}
+  //     <View style={style.flatten(["height-page-pad"])} />
+  //   </PageWithScrollView>
+  // );
 });
+
+const styling = (colors) =>
+  StyleSheet.create({
+    containerStaking: {
+      borderRadius: spacing["24"],
+      backgroundColor: colors["primary"],
+      marginBottom: spacing["24"],
+    },
+    listLabel: {
+      paddingVertical: 16,
+      borderBottomColor: colors["neutral-border-default"],
+      borderBottomWidth: 1,
+    },
+    title: {
+      color: colors["neutral-text-body"],
+    },
+    topSubInfo: {
+      backgroundColor: colors["neutral-surface-bg2"],
+      borderRadius: 8,
+      paddingHorizontal: 6,
+      paddingVertical: 4,
+      marginTop: 4,
+      marginRight: 8,
+      flexDirection: "row",
+    },
+    bottomBtn: {
+      marginTop: 20,
+      width: metrics.screenWidth / 2.3,
+      borderRadius: 999,
+      marginLeft: 12,
+    },
+    label: {
+      fontWeight: "600",
+      textAlign: "center",
+      marginTop: spacing["6"],
+      color: colors["neutral-text-title"],
+    },
+    percentBtn: {
+      backgroundColor: colors["primary-surface-default"],
+      borderRadius: 999,
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      alignItems: "center",
+      justifyContent: "center",
+      marginLeft: 4,
+    },
+  });

@@ -47,7 +47,7 @@ export interface OWTextProps extends TextProps {
 const OWText = ({ ...props }: OWTextProps) => {
   const { colors } = useTheme();
   const {
-    color = colors["primary-text"],
+    color = colors["neutral-text-title"],
     variant,
     typo = "regular",
     size,

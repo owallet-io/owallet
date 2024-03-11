@@ -283,16 +283,19 @@ export const SCREENS_OPTIONS: IScreenOption = {
     showTabBar: true,
   },
   [SCREENS.Delegate]: {
-    title: HEADER_KEY.showNetworkHeader,
+    // title: HEADER_KEY.showNetworkHeader,
+    title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.DelegateDetail]: {
     title: HEADER_KEY.showNetworkHeader,
   },
   [SCREENS.Redelegate]: {
-    title: HEADER_KEY.showNetworkHeader,
+    // title: HEADER_KEY.showNetworkHeader,
+    title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.Undelegate]: {
-    title: HEADER_KEY.showNetworkHeader,
+    // title: HEADER_KEY.showNetworkHeader,
+    title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.STACK.Unlock]: {
     title: "",

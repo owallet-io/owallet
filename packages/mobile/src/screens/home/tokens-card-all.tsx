@@ -75,13 +75,15 @@ export const TokensCardAll: FunctionComponent<{
     if (res && res.status === 200) {
       const dataKeys = Object.keys(res.data);
       const yesterday = dataKeys.find((k) => {
-        const isToday = moment(Number(k)).isSame(moment(), "day");
-        return !isToday;
+        // const isToday = moment(Number(k)).isSame(moment(), "day");
+        // return !isToday;
+        return true;
       });
 
       if (yesterday) {
         setYesterdayAssets([]);
         const yesterdayData = res.data[yesterday];
+
         setYesterdayAssets(yesterdayData);
         appInitStore.updateYesterdayPriceFeed(yesterdayData);
       }
@@ -110,6 +112,9 @@ export const TokensCardAll: FunctionComponent<{
       ? ""
       : chainStore.current.chainId,
   });
+
+  console.log("tokens yesterday", yesterdayAssets);
+  console.log("tokens", tokens);
 
   useEffect(() => {
     setTimeout(() => {

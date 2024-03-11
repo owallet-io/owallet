@@ -7,12 +7,13 @@ import { useSmartNavigation } from "@src/navigation.provider";
 
 export const PageHeader: FunctionComponent<{
   title: string;
+  subtitle: string;
   colors: any;
   left?: ReactElement;
   onPress?: () => void;
   onGoBack?: () => void;
   right?: ReactElement;
-}> = ({ title, right, left, onGoBack, colors }) => {
+}> = ({ title, subtitle, right, left, onGoBack, colors }) => {
   const smartNavigation = useSmartNavigation();
 
   const goBack = () => {
@@ -54,7 +55,7 @@ export const PageHeader: FunctionComponent<{
         <View
           style={{
             justifyContent: "center",
-            paddingLeft: spacing["8"],
+            alignItems: "center",
           }}
         >
           <Text
@@ -68,11 +69,26 @@ export const PageHeader: FunctionComponent<{
           >
             {title}
           </Text>
+          <Text
+            style={{
+              fontSize: 13,
+              lineHeight: 18,
+              color: colors["neutral-text-title"],
+            }}
+          >
+            {subtitle}
+          </Text>
         </View>
-      ) : null}
+      ) : (
+        <View />
+      )}
 
       <View>
-        {right && <View style={{ marginRight: spacing["16"] }}>{right}</View>}
+        {right ? (
+          <View style={{ marginRight: spacing["16"] }}>{right}</View>
+        ) : (
+          <View style={{ marginRight: spacing["32"] }} />
+        )}
       </View>
     </View>
   );
