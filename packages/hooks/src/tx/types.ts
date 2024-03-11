@@ -87,12 +87,6 @@ export interface IAmountConfig extends ITxChainSetter {
   setIsMax(isMax: boolean): void;
 
   /**
-   * @deprecated Use `setFraction(1)`
-   * @param isHalf
-   */
-  setIsHalf(isHalf: boolean): void;
-
-  /**
    * @deprecated
    */
   toggleIsMax(): void;
