@@ -64,7 +64,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
           accounts[ChainNameEnum[key]] = defaultCosmosAddress;
         }
       });
-    }, 2000);
+    }, 3000);
 
     accounts[ChainNameEnum.TRON] = getBase58Address(
       accountStore.getAccount(ChainIdEnum.TRON).evmosHexAddress

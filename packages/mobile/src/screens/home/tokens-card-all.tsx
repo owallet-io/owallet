@@ -113,9 +113,6 @@ export const TokensCardAll: FunctionComponent<{
       : chainStore.current.chainId,
   });
 
-  console.log("tokens yesterday", yesterdayAssets);
-  console.log("tokens", tokens);
-
   useEffect(() => {
     setTimeout(() => {
       if (tokens.length > 0) {
