@@ -97,10 +97,10 @@ export const SendScreen: FunctionComponent = observer(() => {
 
     // address
   );
-  console.log(
-    "🚀 ~ constSendScreen:FunctionComponent=observer ~ chainStore.current.chainId:",
-    chainStore.current.chainId
-  );
+  // console.log(
+  //   "🚀 ~ constSendScreen:FunctionComponent=observer ~ chainStore.current.chainId:",
+  //   chainStore.current.chainId
+  // );
   useEffect(() => {
     if (route?.params?.currency) {
       const currency = sendConfigs.amountConfig.sendableCurrencies.find(
@@ -173,7 +173,7 @@ export const SendScreen: FunctionComponent = observer(() => {
           <AmountInput
             placeholder={`ex. 1000 ${chainStore.current.stakeCurrency.coinDenom}`}
             label="Amount"
-            // allowMax={chainStore.current.networkType !== 'evm' ? true : false}
+            allowMax={true}
             amountConfig={sendConfigs.amountConfig}
             labelStyle={styles.sendlabelInput}
             inputContainerStyle={{
@@ -181,43 +181,41 @@ export const SendScreen: FunctionComponent = observer(() => {
             }}
           />
 
-          {chainStore.current.networkType !== "evm" ? (
-            <View
+          <View
+            style={{
+              flexDirection: "row",
+              paddingBottom: 24,
+              alignItems: "center",
+            }}
+          >
+            <Toggle
+              on={customFee}
+              onChange={(value) => {
+                setCustomFee(value);
+                if (!value) {
+                  if (
+                    sendConfigs.feeConfig.feeCurrency &&
+                    !sendConfigs.feeConfig.fee
+                  ) {
+                    sendConfigs.feeConfig.setFeeType("average");
+                  }
+                }
+              }}
+            />
+            <Text
               style={{
-                flexDirection: "row",
-                paddingBottom: 24,
-                alignItems: "center",
+                fontWeight: "700",
+                fontSize: 16,
+                lineHeight: 34,
+                paddingHorizontal: 8,
+                color: colors["primary-text"],
               }}
             >
-              <Toggle
-                on={customFee}
-                onChange={(value) => {
-                  setCustomFee(value);
-                  if (!value) {
-                    if (
-                      sendConfigs.feeConfig.feeCurrency &&
-                      !sendConfigs.feeConfig.fee
-                    ) {
-                      sendConfigs.feeConfig.setFeeType("average");
-                    }
-                  }
-                }}
-              />
-              <Text
-                style={{
-                  fontWeight: "700",
-                  fontSize: 16,
-                  lineHeight: 34,
-                  paddingHorizontal: 8,
-                  color: colors["primary-text"],
-                }}
-              >
-                Custom Fee
-              </Text>
-            </View>
-          ) : null}
+              Custom Fee
+            </Text>
+          </View>
 
-          {customFee && chainStore.current.networkType !== "evm" ? (
+          {customFee ? (
             <TextInput
               label="Fee"
               inputContainerStyle={{
@@ -237,7 +235,7 @@ export const SendScreen: FunctionComponent = observer(() => {
                 });
               }}
             />
-          ) : chainStore.current.networkType !== "evm" ? (
+          ) : (
             <FeeButtons
               label="Transaction Fee"
               gasLabel="gas"
@@ -245,7 +243,7 @@ export const SendScreen: FunctionComponent = observer(() => {
               gasConfig={sendConfigs.gasConfig}
               labelStyle={styles.sendlabelInput}
             />
-          ) : null}
+          )}
 
           <MemoInput
             label="Memo (Optional)"
@@ -263,22 +261,6 @@ export const SendScreen: FunctionComponent = observer(() => {
             onPress={async () => {
               if (account.isReadyToSendMsgs && txStateIsValid) {
                 try {
-                  if (
-                    sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.startsWith(
-                      "erc20"
-                    )
-                  ) {
-                    sendStore.updateSendObject({
-                      type: "erc20",
-                      from: account.evmosHexAddress,
-                      contract_addr:
-                        sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.split(
-                          ":"
-                        )[1],
-                      recipient: sendConfigs.recipientConfig.recipient,
-                      amount: sendConfigs.amountConfig.amount,
-                    });
-                  }
                   await account.sendToken(
                     sendConfigs.amountConfig.amount,
                     sendConfigs.amountConfig.sendCurrency,
@@ -304,22 +286,8 @@ export const SendScreen: FunctionComponent = observer(() => {
                           txHash: Buffer.from(txHash).toString("hex"),
                         });
                       },
-                    },
+                    }
                     // In case send erc20 in evm network
-                    sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.startsWith(
-                      "erc20"
-                    )
-                      ? {
-                          type: "erc20",
-                          from: account.evmosHexAddress,
-                          contract_addr:
-                            sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.split(
-                              ":"
-                            )[1],
-                          recipient: sendConfigs.recipientConfig.recipient,
-                          amount: sendConfigs.amountConfig.amount,
-                        }
-                      : null
                   );
                 } catch (e) {
                   if (e?.message === "Request rejected") {

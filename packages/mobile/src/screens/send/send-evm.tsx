@@ -256,15 +256,6 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
             isGasInputOpen={customFee}
           />
 
-          {/* <MemoInput
-            label="Memo (Optional)"
-            placeholder="Type your memo here"
-            inputContainerStyle={{
-              backgroundColor: colors["background-box"],
-            }}
-            memoConfig={sendConfigs.memoConfig}
-            labelStyle={styles.sendlabelInput}
-          /> */}
           <OWButton
             label="Send"
             disabled={!account.isReadyToSendMsgs || !txStateIsValid}
@@ -284,7 +275,6 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
                       networkType: chainStore.current.networkType,
                       chainId: chainStore.current.chainId,
                     },
-
                     {
                       onFulfill: (tx) => {},
                       onBroadcasted: (txHash) => {
