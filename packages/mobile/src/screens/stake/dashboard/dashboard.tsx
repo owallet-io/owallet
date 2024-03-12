@@ -14,6 +14,7 @@ import { useStore } from "../../../stores";
 import { ValidatorList } from "../validator-list/new-list";
 import { DelegationsCard } from "./delegations-card";
 import { MyRewardCard } from "./reward-card";
+import { OWEmpty } from "@src/components/empty";
 export const StakingDashboardScreen: FunctionComponent = observer(() => {
   const smartNavigation = useSmartNavigation();
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
@@ -54,53 +55,64 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
       contentContainerStyle={styles.container}
       backgroundColor={colors["background"]}
     >
-      <OWCard>
-        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-          <View>
-            <View style={{ flexDirection: "row" }}>
-              <View style={styles["claim-title"]}>
-                <OWIcon
-                  name={"trending-outline"}
-                  size={14}
-                  color={colors["neutral-text-title"]}
-                />
-              </View>
-              <OWText style={[{ ...styles["text-earn"] }]}>Staked</OWText>
-            </View>
-
-            <OWText
-              style={[
-                {
-                  ...styles["text-amount"],
-                  paddingTop: 8,
-                },
-              ]}
+      {chainStore.current.networkType === "cosmos" ? (
+        <>
+          <OWCard>
+            <View
+              style={{ flexDirection: "row", justifyContent: "space-between" }}
             >
-              {delegated
-                .shrink(true)
-                .maxDecimals(6)
-                .trim(true)
-                .upperCase(true)
-                .toString()}
-            </OWText>
-            <OWText style={[styles["amount"]]}>
-              {" "}
-              {priceStore.calculatePrice(delegated).toString()}
-            </OWText>
-          </View>
-          <Image
-            style={{
-              width: 120,
-              height: 68,
-            }}
-            source={require("../../../assets/images/img_invest.png")}
-            resizeMode="contain"
-            fadeDuration={0}
-          />
-        </View>
-      </OWCard>
-      <EarningCardNew containerStyle={styles.containerEarnStyle} />
-      <ValidatorList />
+              <View>
+                <View style={{ flexDirection: "row" }}>
+                  <View style={styles["claim-title"]}>
+                    <OWIcon
+                      name={"trending-outline"}
+                      size={14}
+                      color={colors["neutral-text-title"]}
+                    />
+                  </View>
+                  <OWText style={[{ ...styles["text-earn"] }]}>Staked</OWText>
+                </View>
+
+                <OWText
+                  style={[
+                    {
+                      ...styles["text-amount"],
+                      paddingTop: 8,
+                    },
+                  ]}
+                >
+                  {delegated
+                    .shrink(true)
+                    .maxDecimals(6)
+                    .trim(true)
+                    .upperCase(true)
+                    .toString()}
+                </OWText>
+                <OWText style={[styles["amount"]]}>
+                  {" "}
+                  {priceStore.calculatePrice(delegated).toString()}
+                </OWText>
+              </View>
+              <Image
+                style={{
+                  width: 120,
+                  height: 68,
+                }}
+                source={require("../../../assets/images/img_invest.png")}
+                resizeMode="contain"
+                fadeDuration={0}
+              />
+            </View>
+          </OWCard>
+          <EarningCardNew containerStyle={styles.containerEarnStyle} />
+          <ValidatorList />
+        </>
+      ) : (
+        <OWCard type="ink">
+          <OWEmpty />
+        </OWCard>
+      )}
+
       {/* <MyRewardCard /> */}
       {/* <OWBox>
           {chainStore.current.networkType === "cosmos" ? (

@@ -183,7 +183,7 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
                     fontWeight: "500",
                   }}
                 >
-                  -{detail.fromAmount} {detail.fromToken.asset.toUpperCase()}
+                  -{detail.fromAmount} {detail.fromToken?.asset.toUpperCase()}
                 </OWText>
                 {detail.type === HISTORY_STATUS.SWAP ? (
                   <>
@@ -226,7 +226,7 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
                   callback: () => {},
                 }
               )}
-              {renderTransactionDetail("Network", detail.fromToken.chainId)}
+              {renderTransactionDetail("Network", detail.fromToken?.chainId)}
               {detail.type === HISTORY_STATUS.SWAP
                 ? renderTransactionDetail("To Network", detail.toToken.chainId)
                 : null}

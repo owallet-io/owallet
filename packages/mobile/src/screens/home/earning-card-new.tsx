@@ -96,48 +96,51 @@ export const EarningCardNew: FunctionComponent<{
         marginTop: 2,
       }}
     >
-      <TouchableOpacity
-        onPress={() => {
-          navigation.dispatch(
-            StackActions.replace("MainTab", { screen: SCREENS.TABS.Invest })
-          );
-        }}
-      >
+      <View>
         <View style={styles.cardBody}>
-          <View style={{ flexDirection: "row", paddingBottom: 6 }}>
-            <View style={styles["claim-title"]}>
-              <OWIcon
-                name={"trending-outline"}
-                size={14}
-                color={colors["neutral-text-title"]}
-              />
-            </View>
-            <Text style={[{ ...styles["text-earn"] }]}>Claimable rewards</Text>
-          </View>
-
-          <Text
-            style={[
-              {
-                ...styles["text-amount"],
-              },
-            ]}
+          <TouchableOpacity
+            onPress={() => {
+              navigation.dispatch(
+                StackActions.replace("MainTab", { screen: SCREENS.TABS.Invest })
+              );
+            }}
           >
-            +
-            {totalStakingReward
-              ? totalStakingReward.toString()
-              : stakingReward.shrink(true).maxDecimals(6).toString()}
-          </Text>
-          <Text style={[styles["amount"]]}>
-            {stakingReward.toDec().gt(new Dec(0.001))
-              ? stakingReward
-                  .shrink(true)
-                  .maxDecimals(6)
-                  .trim(true)
-                  .upperCase(true)
-                  .toString()
-              : `< 0.001 ${stakingReward.toCoin().denom.toUpperCase()}`}
-          </Text>
+            <View style={{ flexDirection: "row", paddingBottom: 6 }}>
+              <View style={styles["claim-title"]}>
+                <OWIcon
+                  name={"trending-outline"}
+                  size={14}
+                  color={colors["neutral-text-title"]}
+                />
+              </View>
+              <Text style={[{ ...styles["text-earn"] }]}>
+                Claimable rewards
+              </Text>
+            </View>
 
+            <Text
+              style={[
+                {
+                  ...styles["text-amount"],
+                },
+              ]}
+            >
+              +
+              {totalStakingReward
+                ? totalStakingReward.toString()
+                : stakingReward.shrink(true).maxDecimals(6).toString()}
+            </Text>
+            <Text style={[styles["amount"]]}>
+              {stakingReward.toDec().gt(new Dec(0.001))
+                ? stakingReward
+                    .shrink(true)
+                    .maxDecimals(6)
+                    .trim(true)
+                    .upperCase(true)
+                    .toString()
+                : `< 0.001 ${stakingReward.toCoin().denom.toUpperCase()}`}
+            </Text>
+          </TouchableOpacity>
           <OWButton
             style={styles["btn-claim"]}
             textStyle={{
@@ -155,7 +158,7 @@ export const EarningCardNew: FunctionComponent<{
             }
           />
         </View>
-      </TouchableOpacity>
+      </View>
     </OWBox>
   );
 });

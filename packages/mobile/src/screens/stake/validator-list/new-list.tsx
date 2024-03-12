@@ -180,41 +180,41 @@ export const ValidatorList: FunctionComponent = observer(() => {
       />
     </View>
   );
-  return (
-    <View>
-      <SelectorModal
-        close={() => {
-          setIsSortModalOpen(false);
-        }}
-        isOpen={isSortModalOpen}
-        items={items}
-        selectedKey={sort}
-        setSelectedKey={(key) => setSort(key as Sort)}
-      />
-      <View>
-        <View style={styles.containerHeader}>
-          <TextInput
-            label="Search"
-            placeholder="Search"
-            labelStyle={{
-              display: "none",
-            }}
-            containerStyle={styles.containerSearch}
-            value={search}
-            onChangeText={(text) => {
-              setSearch(text);
-            }}
-            paragraph={paragraph}
-          />
-        </View>
-      </View>
-      <OWFlatList
-        data={data}
-        renderItem={renderItem}
-        ItemSeparatorComponent={separateComponentItem}
-      />
-    </View>
-  );
+  // return (
+  //   <View>
+  //     <SelectorModal
+  //       close={() => {
+  //         setIsSortModalOpen(false);
+  //       }}
+  //       isOpen={isSortModalOpen}
+  //       items={items}
+  //       selectedKey={sort}
+  //       setSelectedKey={(key) => setSort(key as Sort)}
+  //     />
+  //     <View>
+  //       <View style={styles.containerHeader}>
+  //         <TextInput
+  //           label="Search"
+  //           placeholder="Search"
+  //           labelStyle={{
+  //             display: "none",
+  //           }}
+  //           containerStyle={styles.containerSearch}
+  //           value={search}
+  //           onChangeText={(text) => {
+  //             setSearch(text);
+  //           }}
+  //           paragraph={paragraph}
+  //         />
+  //       </View>
+  //     </View>
+  //     <OWFlatList
+  //       data={data}
+  //       renderItem={renderItem}
+  //       ItemSeparatorComponent={separateComponentItem}
+  //     />
+  //   </View>
+  // );
 });
 
 const ValidatorItem: FunctionComponent<{
@@ -279,29 +279,32 @@ const ValidatorItem: FunctionComponent<{
           >
             {validator?.description.moniker}
           </OWText>
-          <View
-            style={{
-              backgroundColor: colors["neutral-surface-bg2"],
-              borderRadius: 8,
-              paddingHorizontal: 6,
-              paddingVertical: 4,
-              marginTop: 4,
-            }}
-          >
-            <OWText
+          {apr && apr > 0 ? (
+            <View
               style={{
-                color: colors["neutral-text-body2"],
+                backgroundColor: colors["neutral-surface-bg2"],
+                borderRadius: 8,
+                paddingHorizontal: 6,
+                paddingVertical: 4,
+                marginTop: 4,
               }}
             >
-              APR: {apr && apr > 0 ? apr.toFixed(2).toString() + "%" : ""}
-            </OWText>
-          </View>
+              <OWText
+                style={{
+                  color: colors["neutral-text-body2"],
+                }}
+              >
+                APR: {apr && apr > 0 ? apr.toFixed(2).toString() + "%" : ""}
+              </OWText>
+            </View>
+          ) : null}
         </View>
         <View
           style={{
             flex: 1,
           }}
         />
+
         <View>
           <OWText
             style={{
@@ -316,13 +319,15 @@ const ValidatorItem: FunctionComponent<{
               .maxDecimals(0)
               .toString()}
           </OWText>
-          <OWText
-            style={{
-              color: colors["neutral-text-body2"],
-            }}
-          >
-            {`Uptime: ${uptime ? (uptime * 100).toFixed(2) : 0}%`}
-          </OWText>
+          {uptime ? (
+            <OWText
+              style={{
+                color: colors["neutral-text-body2"],
+              }}
+            >
+              {`Uptime: ${uptime ? (uptime * 100).toFixed(2) : 0}%`}
+            </OWText>
+          ) : null}
         </View>
       </RectButton>
       {uptime < 0.9 ? (
@@ -392,8 +397,6 @@ const styling = (colors) =>
     container: {
       backgroundColor: colors["neutral-surface-card"],
       marginTop: spacing["16"],
-      borderTopLeftRadius: 24,
-      borderTopRightRadius: 24,
     },
     containerInfo: {
       marginLeft: spacing["8"],
