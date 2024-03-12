@@ -15,10 +15,13 @@ import { ValidatorList } from "../validator-list/new-list";
 import { DelegationsCard } from "./delegations-card";
 import { MyRewardCard } from "./reward-card";
 import { OWEmpty } from "@src/components/empty";
+import { metrics } from "@src/themes";
+import { OWButton } from "@src/components/button";
 export const StakingDashboardScreen: FunctionComponent = observer(() => {
-  const smartNavigation = useSmartNavigation();
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
   const [validators, setValidators] = useState([]);
+  const smartNavigation = useSmartNavigation();
+
   const { colors } = useTheme();
   const styles = styling(colors);
   const account = accountStore.getAccount(chainStore.current.chainId);
@@ -43,17 +46,11 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
     })();
   }, []);
 
-  const staked =
-    chainStore.current.networkType === "cosmos"
-      ? queries.cosmos.queryDelegations.getQueryBech32Address(
-          account.bech32Address
-        ).total
-      : null;
-
   return (
     <PageWithScrollViewInBottomTabView
+      scrollEnabled={chainStore.current.networkType === "cosmos"}
       contentContainerStyle={styles.container}
-      backgroundColor={colors["background"]}
+      backgroundColor={colors["neutral-surface-bg"]}
     >
       {chainStore.current.networkType === "cosmos" ? (
         <>
@@ -108,9 +105,70 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
           <ValidatorList />
         </>
       ) : (
-        <OWCard type="ink">
-          <OWEmpty />
-        </OWCard>
+        <View
+          style={{
+            position: "relative",
+          }}
+        >
+          <Image
+            style={{
+              width: metrics.screenWidth,
+              height: metrics.screenHeight / 3,
+              position: "absolute",
+              top: 0,
+            }}
+            source={require("../../../assets/image/img-bg.png")}
+          />
+          <View
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              width: metrics.screenWidth,
+              height: metrics.screenHeight / 1.4,
+            }}
+          >
+            <Image
+              style={{
+                width: 140,
+                height: 140,
+              }}
+              source={require("../../../assets/image/img_search.png")}
+              resizeMode="contain"
+              fadeDuration={0}
+            />
+            <View
+              style={{ alignItems: "center", margin: 24, marginBottom: 32 }}
+            >
+              <OWText size={22} weight={"700"}>{`NOT SUPPORTED YET`}</OWText>
+              <OWText
+                size={14}
+                color={colors["neutral-text-body"]}
+                weight={"500"}
+                style={{
+                  textAlign: "center",
+                  paddingTop: 4,
+                }}
+              >{`Please try switching networks or exploring other functions.`}</OWText>
+            </View>
+
+            <OWButton
+              textStyle={{
+                color: colors["neutral-text-action-on-dark-bg"],
+                fontSize: 14,
+                fontWeight: "500",
+              }}
+              style={{
+                width: metrics.screenWidth / 3.3,
+                borderRadius: 999,
+                padding: 8,
+              }}
+              label="Go back"
+              onPress={() => {
+                smartNavigation.goBack();
+              }}
+            />
+          </View>
+        </View>
       )}
 
       {/* <MyRewardCard /> */}

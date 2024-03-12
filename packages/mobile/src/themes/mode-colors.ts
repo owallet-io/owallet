@@ -219,7 +219,7 @@ const modeColors = {
   // New UI Colors(28.12.2023)
   // We gonna use this colors from now on
   // I.Neutral
-  "neutral-surface-bg": [, "#121511", "#F5F5F7"],
+  "neutral-surface-bg": ["#121511", "#F5F5F7"],
   "neutral-surface-bg2": ["#323133", "#F5F5F7"],
   "neutral-surface-card": ["#242325", "#FFFFFF"],
   "neutral-surface-action": ["#323133", "#EBEDF2"],
