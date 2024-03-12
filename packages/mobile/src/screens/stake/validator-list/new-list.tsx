@@ -2,46 +2,45 @@ import { ValidatorThumbnails } from "@owallet/common";
 import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../../stores";
-import { PageWithView } from "../../../components/page";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
-import { Text } from "@src/components/text";
+import { StyleSheet, TouchableOpacity, View, TextInput } from "react-native";
 import { BondStatus, Validator } from "@owallet/stores";
 import { CoinPretty, Dec } from "@owallet/unit";
-import { RouteProp, useRoute } from "@react-navigation/native";
-import { OWSubTitleHeader } from "@src/components/header";
 import { useTheme } from "@src/themes/theme-provider";
 import { API } from "../../../common/api";
 import { CardDivider } from "../../../components/card";
-import {
-  AlertIcon,
-  ArrowOpsiteUpDownIcon,
-  ValidatorOutlineIcon,
-} from "../../../components/icon";
-import { SelectorModal, TextInput } from "../../../components/input";
+import { AlertIcon, DownArrowIcon } from "../../../components/icon";
+import { SelectorModal } from "../../../components/input";
 import { RectButton } from "../../../components/rect-button";
 import { useSmartNavigation } from "../../../navigation.provider";
-import { spacing, typography } from "../../../themes";
+import { metrics, spacing } from "../../../themes";
 import OWFlatList from "@src/components/page/ow-flat-list";
 import { ValidatorThumbnail } from "@src/components/thumbnail";
 import OWText from "@src/components/text/ow-text";
-type Sort = "APR" | "Amount Staked" | "Name";
+import OWIcon from "@src/components/ow-icon/ow-icon";
 
 export const ValidatorList: FunctionComponent = observer(() => {
-  const route = useRoute<RouteProp<Record<string, {}>, string>>();
-
   const { chainStore, queriesStore, accountStore } = useStore();
+  const account = accountStore.getAccount(chainStore.current.chainId);
 
   const queries = queriesStore.get(chainStore.current.chainId);
   const { colors } = useTheme();
   const styles = styling(colors);
+
   const [search, setSearch] = useState("");
+  const [active, setActive] = useState("all");
   const [validators, setValidators] = useState([]);
-  const [sort, setSort] = useState<Sort>("Amount Staked");
+  const [sort, setSort] = useState<string>("Voting Power");
   const [isSortModalOpen, setIsSortModalOpen] = useState(false);
 
   const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
     BondStatus.Bonded
   );
+
+  const queryDelegations =
+    queries.cosmos.queryDelegations.getQueryBech32Address(
+      account.bech32Address
+    );
+  const delegations = queryDelegations.delegations;
 
   useEffect(() => {
     (async function get() {
@@ -58,7 +57,19 @@ export const ValidatorList: FunctionComponent = observer(() => {
   }, []);
 
   const data = useMemo(() => {
-    let data = bondedValidators.validators;
+    let data: Validator[] = [];
+
+    if (active === "my") {
+      delegations.map((de) => {
+        const foundData = bondedValidators.validators.find((d) => {
+          return d.operator_address === de.validator_address;
+        });
+        data.push(foundData);
+      });
+    } else {
+      data = bondedValidators.validators;
+    }
+
     if (search) {
       data = data.filter((val) =>
         val?.description?.moniker?.toLowerCase().includes(search.toLowerCase())
@@ -86,57 +97,28 @@ export const ValidatorList: FunctionComponent = observer(() => {
           return val1?.description.moniker > val2?.description.moniker ? -1 : 1;
         });
         break;
-      case "Amount Staked":
+      case "Voting Power":
         data.sort((val1, val2) => {
           return new Dec(val1.tokens).gt(new Dec(val2.tokens)) ? -1 : 1;
+        });
+        break;
+      case "Voting Power Increase":
+        data.sort((val1, val2) => {
+          return new Dec(val1.tokens).gt(new Dec(val2.tokens)) ? 1 : -1;
         });
         break;
     }
 
     return data;
-  }, [bondedValidators.validators, search, sort]);
+  }, [bondedValidators.validators, search, sort, delegations, active]);
 
   const items = useMemo(() => {
     return [
       { label: "APR", key: "APR" },
-      { label: "Amount Staked", key: "Amount Staked" },
+      { label: "Voting Power", key: "Voting Power" },
       { label: "Name", key: "Name" },
     ];
   }, []);
-
-  const sortItem = useMemo(() => {
-    const item = items.find((item) => item.key === sort);
-    if (!item) {
-      throw new Error(`Can't find the item for sort (${sort})`);
-    }
-    return item;
-  }, [items, sort]);
-  const paragraph = () => {
-    return (
-      <View style={styles.containerParagraph}>
-        <TouchableOpacity
-          style={styles.sortBtn}
-          onPress={() => {
-            setIsSortModalOpen(true);
-          }}
-        >
-          <OWText
-            style={[
-              styles.title,
-              ,
-              {
-                color: colors["sub-primary-text"],
-              },
-              styles.titleLabel,
-            ]}
-          >
-            {sortItem.label}
-          </OWText>
-          <ArrowOpsiteUpDownIcon size={24} color={colors["border"]} />
-        </TouchableOpacity>
-      </View>
-    );
-  };
 
   const renderItem = ({ item, index }: { item: Validator; index: number }) => {
     const foundValidator = validators.find(
@@ -145,8 +127,8 @@ export const ValidatorList: FunctionComponent = observer(() => {
     return (
       <View
         style={{
-          marginHorizontal: spacing["24"],
-          marginVertical: spacing["8"],
+          marginHorizontal: spacing["16"],
+          marginBottom: spacing["8"],
           borderRadius: spacing["8"],
         }}
       >
@@ -166,13 +148,121 @@ export const ValidatorList: FunctionComponent = observer(() => {
   );
   return (
     <View style={styles.container}>
+      <SelectorModal
+        close={() => {
+          setIsSortModalOpen(false);
+        }}
+        isOpen={isSortModalOpen}
+        items={items}
+        selectedKey={sort}
+        setSelectedKey={(key) => setSort(key as string)}
+      />
       <View style={styles.listLabel}>
-        <OWText
-          size={16}
-          weight={"500"}
-          style={[styles["title"]]}
-        >{`All Validators`}</OWText>
+        <TouchableOpacity onPress={() => setActive("all")}>
+          <OWText
+            size={16}
+            weight={"500"}
+            style={[active === "all" ? styles.active : {}]}
+          >{`All Validators`}</OWText>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => setActive("my")}>
+          <OWText
+            size={16}
+            weight={"500"}
+            style={[
+              active !== "all"
+                ? styles.active
+                : { color: colors["neutral-text-body"] },
+            ]}
+          >{`My Validators`}</OWText>
+        </TouchableOpacity>
       </View>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          paddingHorizontal: 16,
+          paddingTop: 16,
+        }}
+      >
+        <View
+          style={{
+            flexDirection: "row",
+            backgroundColor: colors["neutral-surface-action"],
+            height: 40,
+            borderRadius: 999,
+            width: metrics.screenWidth / 1.8,
+            alignItems: "center",
+            paddingHorizontal: 12,
+          }}
+        >
+          <View style={{ paddingRight: 4 }}>
+            <OWIcon
+              color={colors["neutral-icon-on-light"]}
+              name="search"
+              size={16}
+            />
+          </View>
+          <TextInput
+            style={{
+              fontFamily: "SpaceGrotesk-Regular",
+            }}
+            value={search}
+            placeholderTextColor={colors["neutral-text-body"]}
+            placeholder="Search by name"
+            onChangeText={(t) => setSearch(t)}
+          />
+        </View>
+        <TouchableOpacity
+          style={{
+            flexDirection: "row",
+            backgroundColor: colors["neutral-surface-action"],
+            height: 40,
+            borderRadius: 999,
+            width: metrics.screenWidth / 3,
+            alignItems: "center",
+            paddingHorizontal: 12,
+            justifyContent: "space-between",
+          }}
+          onPress={() => setIsSortModalOpen(true)}
+        >
+          <OWText weight="600">{sort}</OWText>
+          <View>
+            <DownArrowIcon
+              height={15}
+              color={colors["neutral-icon-on-light"]}
+            />
+          </View>
+        </TouchableOpacity>
+      </View>
+      <TouchableOpacity
+        style={{
+          flexDirection: "row",
+          borderRadius: 999,
+          width: metrics.screenWidth / 3,
+          alignItems: "center",
+          paddingHorizontal: 12,
+          justifyContent: "space-between",
+          alignSelf: "flex-end",
+          paddingTop: 16,
+        }}
+        onPress={() => {
+          if (sort === "Voting Power") {
+            setSort("Voting Power Increase");
+          } else {
+            setSort("Voting Power");
+          }
+        }}
+      >
+        <OWText weight="600">{"Voting Power"}</OWText>
+        <View>
+          <OWIcon
+            color={colors["neutral-icon-on-light"]}
+            name="double-arrow"
+            size={18}
+          />
+        </View>
+      </TouchableOpacity>
       <OWFlatList
         data={data}
         renderItem={renderItem}
@@ -180,48 +270,13 @@ export const ValidatorList: FunctionComponent = observer(() => {
       />
     </View>
   );
-  // return (
-  //   <View>
-  //     <SelectorModal
-  //       close={() => {
-  //         setIsSortModalOpen(false);
-  //       }}
-  //       isOpen={isSortModalOpen}
-  //       items={items}
-  //       selectedKey={sort}
-  //       setSelectedKey={(key) => setSort(key as Sort)}
-  //     />
-  //     <View>
-  //       <View style={styles.containerHeader}>
-  //         <TextInput
-  //           label="Search"
-  //           placeholder="Search"
-  //           labelStyle={{
-  //             display: "none",
-  //           }}
-  //           containerStyle={styles.containerSearch}
-  //           value={search}
-  //           onChangeText={(text) => {
-  //             setSearch(text);
-  //           }}
-  //           paragraph={paragraph}
-  //         />
-  //       </View>
-  //     </View>
-  //     <OWFlatList
-  //       data={data}
-  //       renderItem={renderItem}
-  //       ItemSeparatorComponent={separateComponentItem}
-  //     />
-  //   </View>
-  // );
 });
 
 const ValidatorItem: FunctionComponent<{
   validatorAddress: string;
   apr: number;
   index: number;
-  sort: Sort;
+  sort: string;
   uptime: number;
   onSelectValidator?: (validatorAddress: string) => void;
 }> = observer(({ validatorAddress, apr, onSelectValidator, uptime }) => {
@@ -243,6 +298,7 @@ const ValidatorItem: FunctionComponent<{
           flexDirection: "row",
           backgroundColor: colors["background-box"],
           alignItems: "center",
+          justifyContent: "space-between",
         }}
         onPress={() => {
           if (onSelectValidator) {
@@ -256,60 +312,60 @@ const ValidatorItem: FunctionComponent<{
           }
         }}
       >
-        <ValidatorThumbnail
-          style={{}}
-          size={40}
-          url={
-            ValidatorThumbnails[validator.operator_address] ??
-            bondedValidators.getValidatorThumbnail(validator.operator_address)
-          }
-        />
-
         <View
           style={{
             ...styles.containerInfo,
           }}
         >
-          <OWText
-            style={{
-              ...styles.textInfo,
-            }}
-            numberOfLines={1}
-            ellipsizeMode="tail"
-          >
-            {validator?.description.moniker}
-          </OWText>
-          {apr && apr > 0 ? (
-            <View
+          <ValidatorThumbnail
+            style={{}}
+            size={40}
+            url={
+              ValidatorThumbnails[validator.operator_address] ??
+              bondedValidators.getValidatorThumbnail(validator.operator_address)
+            }
+          />
+          <View style={{ marginLeft: 8 }}>
+            <OWText
               style={{
-                backgroundColor: colors["neutral-surface-bg2"],
-                borderRadius: 8,
-                paddingHorizontal: 6,
-                paddingVertical: 4,
-                marginTop: 4,
+                ...styles.textInfo,
               }}
+              numberOfLines={1}
+              ellipsizeMode="tail"
             >
-              <OWText
+              {validator?.description.moniker}
+            </OWText>
+            {apr && apr > 0 ? (
+              <View
                 style={{
-                  color: colors["neutral-text-body2"],
+                  backgroundColor: colors["neutral-surface-bg2"],
+                  borderRadius: 8,
+                  paddingHorizontal: 6,
+                  paddingVertical: 4,
+                  marginTop: 4,
                 }}
               >
-                APR: {apr && apr > 0 ? apr.toFixed(2).toString() + "%" : ""}
-              </OWText>
-            </View>
-          ) : null}
+                <OWText
+                  style={{
+                    color: colors["neutral-text-body2"],
+                  }}
+                >
+                  APR: {apr && apr > 0 ? apr.toFixed(2).toString() + "%" : ""}
+                </OWText>
+              </View>
+            ) : null}
+          </View>
         </View>
+
         <View
           style={{
-            flex: 1,
+            justifyContent: "flex-end",
           }}
-        />
-
-        <View>
+        >
           <OWText
             style={{
               ...styles.textInfo,
-              color: colors["primary-text"],
+              alignSelf: "flex-end",
             }}
           >
             {new CoinPretty(
@@ -323,6 +379,7 @@ const ValidatorItem: FunctionComponent<{
             <OWText
               style={{
                 color: colors["neutral-text-body2"],
+                paddingTop: 4,
               }}
             >
               {`Uptime: ${uptime ? (uptime * 100).toFixed(2) : 0}%`}
@@ -399,7 +456,8 @@ const styling = (colors) =>
       marginTop: spacing["16"],
     },
     containerInfo: {
-      marginLeft: spacing["8"],
+      flexDirection: "row",
+      alignItems: "center",
     },
     textInfo: {
       fontWeight: "600",
@@ -410,5 +468,26 @@ const styling = (colors) =>
       paddingVertical: 16,
       borderBottomColor: colors["neutral-border-default"],
       borderBottomWidth: 1,
+      flexDirection: "row",
+      justifyContent: "space-evenly",
+    },
+    active: {
+      color: colors["primary-surface-default"],
+    },
+    iconSearch: {
+      position: "absolute",
+      left: 22,
+      top: 34,
+    },
+    textInput: {
+      paddingVertical: 0,
+      height: 40,
+      backgroundColor: colors["box-nft"],
+      borderRadius: 8,
+      paddingLeft: 35,
+      fontSize: 14,
+      color: colors["neutral-text-body"],
+      marginVertical: 10,
+      fontWeight: "500",
     },
   });

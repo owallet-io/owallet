@@ -149,6 +149,22 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     }
     setRefreshing(false);
     setRefreshDate(Date.now());
+    if (
+      accountOrai.bech32Address &&
+      accountEth.evmosHexAddress &&
+      accountTron.evmosHexAddress &&
+      accountKawaiiCosmos.bech32Address
+    ) {
+      setTimeout(() => {
+        universalSwapStore.clearAmounts();
+        handleFetchAmounts(
+          accountOrai.bech32Address,
+          accountEth.evmosHexAddress,
+          accountTron.evmosHexAddress,
+          accountKawaiiCosmos.bech32Address
+        );
+      }, 1400);
+    }
   }, [chainStore.current.chainId]);
 
   // This section for getting all tokens of all chains
