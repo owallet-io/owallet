@@ -159,7 +159,7 @@ export const SendEvmPage: FunctionComponent<{
   const sendConfigError =
     sendConfigs.recipientConfig.getError() ??
     sendConfigs.amountConfig.getError() ??
-    sendConfigs.memoConfig.getError() ??
+    // sendConfigs.memoConfig.getError() ??
     sendConfigs.gasConfig.getError() ??
     sendConfigs.feeConfig.getError();
   const txStateIsValid = sendConfigError == null;
@@ -203,7 +203,7 @@ export const SendEvmPage: FunctionComponent<{
             try {
               const stdFee = sendConfigs.feeConfig.toStdEvmFee();
               console.log("🚀 ~ onSubmit={ ~ stdFee:", stdFee);
-              (window as any).accountInfo = accountInfo;
+              // (window as any).accountInfo = accountInfo;
               await accountInfo.sendToken(
                 sendConfigs.amountConfig.amount,
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

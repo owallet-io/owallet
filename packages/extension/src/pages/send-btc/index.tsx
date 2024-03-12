@@ -157,7 +157,7 @@ export const SendBtcPage: FunctionComponent<{
           e.preventDefault();
           if (accountInfo.isReadyToSendMsgs && txStateIsValid) {
             try {
-              (window as any).accountInfo = accountInfo;
+              // (window as any).accountInfo = accountInfo;
               await accountInfo.sendToken(
                 sendConfigs.amountConfig.amount,
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

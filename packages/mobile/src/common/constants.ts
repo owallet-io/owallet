@@ -35,6 +35,7 @@ export const SCREENS = {
   RegisterRecoverPhrase: "Register.RecoverPhrase",
   RegisterNewLedger: "Register.NewLedger",
   Send: "Send",
+  SendEvm: "SendEvm",
   SendOasis: "SendOasis",
   TransferNFT: "TransferNFT",
   Transactions: "Transactions",
@@ -257,6 +258,9 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: "About",
   },
   [SCREENS.SendBtc]: {
+    title: "Send",
+  },
+  [SCREENS.SendEvm]: {
     title: "Send",
   },
   [SCREENS.AddressBook]: {
