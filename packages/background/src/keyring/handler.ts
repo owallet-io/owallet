@@ -354,7 +354,9 @@ const handleGetKeyMsg: (
     // hereeee
 
     const isInj = msg.chainId?.startsWith("injective");
+    const isBtc = msg.chainId?.startsWith("bitcoin");
     const pubkeyLedger = service.getKeyRingLedgerPubKey();
+    const addressesLedger = service.getKeyRingLedgerAddresses();
     const bech32Address = new Bech32Address(key.address);
 
     const { bech32PrefixAccAddr } = (
@@ -374,6 +376,11 @@ const handleGetKeyMsg: (
       bech32Address: (() => {
         if (isInj && key.isNanoLedger) {
           return pubkeyLedger && pubkeyLedger["eth"] ? bech32Convert : "";
+        }
+        if (isBtc && key.isNanoLedger) {
+          return addressesLedger && addressesLedger["btc84"]
+            ? addressesLedger["btc84"]
+            : "";
         }
         return bech32Convert;
       })(),
