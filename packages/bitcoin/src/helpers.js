@@ -653,8 +653,7 @@ const buildTx = async ({
   if (!fee) throw new Error("Not Found Fee");
   const MIN_FEE = 600;
   const maxFee = Math.max(fee + 100, MIN_FEE);
-  const minFee = Math.max(fee - 100, MIN_FEE);
-  if (totalFee > maxFee || totalFee < minFee) throw new Error("Fee not match");
+  if (totalFee > maxFee) throw new Error("Fee not match");
   // .inputs and .outputs will be undefined if no solution was found
   if (!inputs || !outputs)
     throw new Error("Insufficient Balance for transaction");
