@@ -6,10 +6,13 @@ export class UniversalSwapStore {
   @persist("object")
   @observable
   protected amounts: { string: string } | {};
+  @observable
+  protected loadStatus: { isLoad: boolean; time: Date };
 
   constructor() {
     makeAutoObservable(this);
     this.amounts = {};
+    this.loadStatus = { isLoad: false, time: new Date() };
   }
 
   @computed
@@ -17,9 +20,19 @@ export class UniversalSwapStore {
     return this.amounts;
   }
 
+  @computed
+  get getLoadStatus() {
+    return this.loadStatus;
+  }
+
   @action
   updateAmounts(amounts) {
     this.amounts = { ...this.amounts, ...amounts };
+  }
+
+  @action
+  setLoaded(loaded: boolean) {
+    this.loadStatus = { ...this.loadStatus, isLoad: loaded, time: new Date() };
   }
 
   @action

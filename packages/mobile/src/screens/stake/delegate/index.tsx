@@ -56,7 +56,6 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
-  const [customFee, setCustomFee] = useState(false);
 
   const smartNavigation = useSmartNavigation();
 

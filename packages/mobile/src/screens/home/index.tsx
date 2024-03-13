@@ -206,6 +206,10 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   };
 
   useEffect(() => {
+    universalSwapStore.setLoaded(false);
+  }, [account.bech32Address]);
+
+  useEffect(() => {
     if (
       accountOrai.bech32Address &&
       accountEth.evmosHexAddress &&

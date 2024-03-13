@@ -285,6 +285,9 @@ async function loadEvmAmounts(
   );
 
   universalSwapStore.updateAmounts(amountDetails);
+  setTimeout(() => {
+    universalSwapStore.setLoaded(true);
+  }, 3000);
 }
 
 export async function loadKawaiiSubnetAmount(

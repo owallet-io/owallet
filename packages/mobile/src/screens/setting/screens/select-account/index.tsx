@@ -53,7 +53,7 @@ export const getKeyStoreParagraph = (keyStore: MultiKeyStoreInfoElem) => {
 };
 
 export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
-  const { keyRingStore, analyticsStore } = useStore();
+  const { keyRingStore, analyticsStore, universalSwapStore } = useStore();
 
   const { colors } = useTheme();
 
@@ -90,6 +90,7 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
   };
   const handleOnKeyStore = useCallback(async (keyStore) => {
     loadingScreen.setIsLoading(true);
+    universalSwapStore.setLoaded(false);
     analyticsStore.logEvent("Account changed");
     await selectKeyStore(keyStore);
     loadingScreen.setIsLoading(false);

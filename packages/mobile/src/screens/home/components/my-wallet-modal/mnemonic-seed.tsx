@@ -5,7 +5,6 @@ import { RectButton } from "../../../../components/rect-button";
 import { useStore } from "../../../../stores";
 import { metrics, spacing, typography } from "../../../../themes";
 import { _keyExtract } from "../../../../utils/helper";
-import { MultiKeyStoreInfoWithSelectedElem } from "@owallet/background";
 import { LoadingSpinner } from "../../../../components/spinner";
 import { useTheme } from "@src/themes/theme-provider";
 import { useStyleMyWallet } from "./styles";
@@ -13,7 +12,13 @@ import OWFlatList from "@src/components/page/ow-flat-list";
 
 const MnemonicSeed = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const { keyRingStore, analyticsStore, modalStore, chainStore } = useStore();
+  const {
+    keyRingStore,
+    analyticsStore,
+    modalStore,
+    chainStore,
+    universalSwapStore,
+  } = useStore();
   const styles = useStyleMyWallet();
   const { colors } = useTheme();
   const mnemonicKeyStores = useMemo(() => {
@@ -34,15 +39,12 @@ const MnemonicSeed = () => {
     );
   }, [keyRingStore.multiKeyStoreInfo]);
 
-  const selectKeyStore = useCallback(
-    async (keyStore: MultiKeyStoreInfoWithSelectedElem) => {
-      const index = keyRingStore.multiKeyStoreInfo.indexOf(keyStore);
-      if (index >= 0) {
-        await keyRingStore.changeKeyRing(index);
-      }
-    },
-    []
-  );
+  const selectKeyStore = useCallback(async (keyStore: any) => {
+    const index = keyRingStore.multiKeyStoreInfo.indexOf(keyStore);
+    if (index >= 0) {
+      await keyRingStore.changeKeyRing(index);
+    }
+  }, []);
 
   const renderItem = ({ item }) => {
     return (
@@ -52,6 +54,7 @@ const MnemonicSeed = () => {
             ...styles.containerAccount,
           }}
           onPress={async () => {
+            universalSwapStore.setLoaded(false);
             setIsLoading(true);
             await modalStore.close();
             analyticsStore.logEvent("Account changed");

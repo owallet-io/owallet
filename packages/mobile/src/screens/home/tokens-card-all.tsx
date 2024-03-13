@@ -105,6 +105,7 @@ export const TokensCardAll: FunctionComponent<{
       }
     );
   };
+
   const tokens = getTokenInfos({
     tokens: universalSwapStore.getAmount,
     prices: appInitStore.getInitApp.prices,
@@ -112,10 +113,14 @@ export const TokensCardAll: FunctionComponent<{
   });
 
   useEffect(() => {
-    setTimeout(() => {
+    if (universalSwapStore.getLoadStatus.isLoad) {
       handleSaveTokenInfos(tokens);
-    }, 3000);
-  }, [accountOrai.bech32Address]);
+    }
+  }, [
+    accountOrai.bech32Address,
+    tokens,
+    universalSwapStore.getLoadStatus.isLoad,
+  ]);
 
   useEffect(() => {
     (async function get() {
