@@ -76,7 +76,7 @@ export const DelegationsCard: FunctionComponent<{
         if (res?.data?.data) {
           res.data.data.map((v) => {
             if (v.uptime < 0.9) {
-              tmpList.push(v);
+              // tmpList.push(v);
             }
           });
         }
