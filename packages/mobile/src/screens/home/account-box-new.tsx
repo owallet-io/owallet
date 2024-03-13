@@ -97,8 +97,10 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
         yesterdayBalance += y.value ?? 0;
       });
       setProfit(Number(Number(totalUsd - yesterdayBalance).toFixed(6)));
+    } else {
+      setProfit(0);
     }
-  }, [totalUsd, accountOrai.bech32Address]);
+  }, [totalUsd, accountOrai.bech32Address, appInitStore]);
 
   const renderTotalBalance = () => {
     const chainIcon = chainIcons.find(

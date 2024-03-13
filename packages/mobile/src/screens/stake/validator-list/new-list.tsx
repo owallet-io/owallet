@@ -32,9 +32,14 @@ export const ValidatorList: FunctionComponent = observer(() => {
   const [sort, setSort] = useState<string>("Voting Power");
   const [isSortModalOpen, setIsSortModalOpen] = useState(false);
 
-  const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(BondStatus.Bonded);
+  const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
+    BondStatus.Bonded
+  );
 
-  const queryDelegations = queries.cosmos.queryDelegations.getQueryBech32Address(account.bech32Address);
+  const queryDelegations =
+    queries.cosmos.queryDelegations.getQueryBech32Address(
+      account.bech32Address
+    );
   const delegations = queryDelegations.delegations;
 
   useEffect(() => {
@@ -43,7 +48,7 @@ export const ValidatorList: FunctionComponent = observer(() => {
         const res = await API.getValidatorList(
           {},
           {
-            baseURL: "https://api.scan.orai.io"
+            baseURL: "https://api.scan.orai.io",
           }
         );
         setValidators(res.data.data);
@@ -55,8 +60,8 @@ export const ValidatorList: FunctionComponent = observer(() => {
     let data: Validator[] = [];
 
     if (active === "my") {
-      delegations.map(de => {
-        const foundData = bondedValidators.validators.find(d => {
+      delegations.map((de) => {
+        const foundData = bondedValidators.validators.find((d) => {
           return d.operator_address === de.validator_address;
         });
         data.push(foundData);
@@ -66,13 +71,17 @@ export const ValidatorList: FunctionComponent = observer(() => {
     }
 
     if (search) {
-      data = data.filter(val => val?.description?.moniker?.toLowerCase().includes(search.toLowerCase()));
+      data = data.filter((val) =>
+        val?.description?.moniker?.toLowerCase().includes(search.toLowerCase())
+      );
     }
 
     switch (sort) {
       case "APR":
         data.sort((val1, val2) => {
-          return new Dec(val1.commission.commission_rates.rate).gt(new Dec(val2.commission.commission_rates.rate))
+          return new Dec(val1.commission.commission_rates.rate).gt(
+            new Dec(val2.commission.commission_rates.rate)
+          )
             ? 1
             : -1;
         });
@@ -107,18 +116,20 @@ export const ValidatorList: FunctionComponent = observer(() => {
     return [
       { label: "APR", key: "APR" },
       { label: "Voting Power", key: "Voting Power" },
-      { label: "Name", key: "Name" }
+      { label: "Name", key: "Name" },
     ];
   }, []);
 
   const renderItem = ({ item, index }: { item: Validator; index: number }) => {
-    const foundValidator = validators.find(v => v.operator_address === item.operator_address);
+    const foundValidator = validators.find(
+      (v) => v.operator_address === item.operator_address
+    );
     return (
       <View
         style={{
           marginHorizontal: spacing["16"],
           marginBottom: spacing["8"],
-          borderRadius: spacing["8"]
+          borderRadius: spacing["8"],
         }}
       >
         <ValidatorItem
@@ -132,7 +143,9 @@ export const ValidatorList: FunctionComponent = observer(() => {
       </View>
     );
   };
-  const separateComponentItem = () => <CardDivider backgroundColor={colors["border-input-login"]} />;
+  const separateComponentItem = () => (
+    <CardDivider backgroundColor={colors["border-input-login"]} />
+  );
   return (
     <View style={styles.container}>
       <SelectorModal
@@ -142,17 +155,25 @@ export const ValidatorList: FunctionComponent = observer(() => {
         isOpen={isSortModalOpen}
         items={items}
         selectedKey={sort}
-        setSelectedKey={key => setSort(key as string)}
+        setSelectedKey={(key) => setSort(key as string)}
       />
       <View style={styles.listLabel}>
         <TouchableOpacity onPress={() => setActive("all")}>
-          <OWText size={16} weight={"500"} style={[active === "all" ? styles.active : {}]}>{`All Validators`}</OWText>
+          <OWText
+            size={16}
+            weight={"500"}
+            style={[active === "all" ? styles.active : {}]}
+          >{`All Validators`}</OWText>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => setActive("my")}>
           <OWText
             size={16}
             weight={"500"}
-            style={[active !== "all" ? styles.active : { color: colors["neutral-text-body"] }]}
+            style={[
+              active !== "all"
+                ? styles.active
+                : { color: colors["neutral-text-body"] },
+            ]}
           >{`My Validators`}</OWText>
         </TouchableOpacity>
       </View>
@@ -161,7 +182,7 @@ export const ValidatorList: FunctionComponent = observer(() => {
           flexDirection: "row",
           justifyContent: "space-between",
           paddingHorizontal: 16,
-          paddingTop: 16
+          paddingTop: 16,
         }}
       >
         <View
@@ -172,20 +193,24 @@ export const ValidatorList: FunctionComponent = observer(() => {
             borderRadius: 999,
             width: metrics.screenWidth / 1.8,
             alignItems: "center",
-            paddingHorizontal: 12
+            paddingHorizontal: 12,
           }}
         >
           <View style={{ paddingRight: 4 }}>
-            <OWIcon color={colors["neutral-icon-on-light"]} name="search" size={16} />
+            <OWIcon
+              color={colors["neutral-icon-on-light"]}
+              name="search"
+              size={16}
+            />
           </View>
           <TextInput
             style={{
-              fontFamily: "SpaceGrotesk-Regular"
+              fontFamily: "SpaceGrotesk-Regular",
             }}
             value={search}
             placeholderTextColor={colors["neutral-text-body"]}
             placeholder="Search by name"
-            onChangeText={t => setSearch(t)}
+            onChangeText={(t) => setSearch(t)}
           />
         </View>
         <TouchableOpacity
@@ -197,13 +222,16 @@ export const ValidatorList: FunctionComponent = observer(() => {
             width: metrics.screenWidth / 3,
             alignItems: "center",
             paddingHorizontal: 12,
-            justifyContent: "space-between"
+            justifyContent: "space-between",
           }}
           onPress={() => setIsSortModalOpen(true)}
         >
           <OWText weight="600">{sort}</OWText>
           <View>
-            <DownArrowIcon height={15} color={colors["neutral-icon-on-light"]} />
+            <DownArrowIcon
+              height={15}
+              color={colors["neutral-icon-on-light"]}
+            />
           </View>
         </TouchableOpacity>
       </View>
@@ -216,7 +244,7 @@ export const ValidatorList: FunctionComponent = observer(() => {
           paddingHorizontal: 12,
           justifyContent: "space-between",
           alignSelf: "flex-end",
-          paddingTop: 16
+          paddingTop: 16,
         }}
         onPress={() => {
           if (sort === "Voting Power") {
@@ -228,10 +256,18 @@ export const ValidatorList: FunctionComponent = observer(() => {
       >
         <OWText weight="600">{"Voting Power"}</OWText>
         <View>
-          <OWIcon color={colors["neutral-icon-on-light"]} name="double-arrow" size={18} />
+          <OWIcon
+            color={colors["neutral-icon-on-light"]}
+            name="double-arrow"
+            size={18}
+          />
         </View>
       </TouchableOpacity>
-      <OWFlatList data={data} renderItem={renderItem} ItemSeparatorComponent={separateComponentItem} />
+      <OWFlatList
+        data={data}
+        renderItem={renderItem}
+        ItemSeparatorComponent={separateComponentItem}
+      />
     </View>
   );
 });
@@ -248,7 +284,9 @@ const ValidatorItem: FunctionComponent<{
   const { colors } = useTheme();
   const styles = styling(colors);
   const queries = queriesStore.get(chainStore.current.chainId);
-  const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(BondStatus.Bonded);
+  const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
+    BondStatus.Bonded
+  );
   const validator = bondedValidators.getValidator(validatorAddress);
   const smartNavigation = useSmartNavigation();
 
@@ -260,7 +298,7 @@ const ValidatorItem: FunctionComponent<{
           flexDirection: "row",
           backgroundColor: colors["background-box"],
           alignItems: "center",
-          justifyContent: "space-between"
+          justifyContent: "space-between",
         }}
         onPress={() => {
           if (onSelectValidator) {
@@ -269,14 +307,14 @@ const ValidatorItem: FunctionComponent<{
           } else {
             smartNavigation.navigateSmart("Validator.Details", {
               validatorAddress,
-              apr
+              apr,
             });
           }
         }}
       >
         <View
           style={{
-            ...styles.containerInfo
+            ...styles.containerInfo,
           }}
         >
           <ValidatorThumbnail
@@ -290,7 +328,7 @@ const ValidatorItem: FunctionComponent<{
           <View style={{ marginLeft: 8 }}>
             <OWText
               style={{
-                ...styles.textInfo
+                ...styles.textInfo,
               }}
               numberOfLines={1}
               ellipsizeMode="tail"
@@ -304,12 +342,12 @@ const ValidatorItem: FunctionComponent<{
                   borderRadius: 8,
                   paddingHorizontal: 6,
                   paddingVertical: 4,
-                  marginTop: 4
+                  marginTop: 4,
                 }}
               >
                 <OWText
                   style={{
-                    color: colors["neutral-text-body2"]
+                    color: colors["neutral-text-body2"],
                   }}
                 >
                   APR: {apr && apr > 0 ? apr.toFixed(2).toString() + "%" : ""}
@@ -321,22 +359,27 @@ const ValidatorItem: FunctionComponent<{
 
         <View
           style={{
-            justifyContent: "flex-end"
+            justifyContent: "flex-end",
           }}
         >
           <OWText
             style={{
               ...styles.textInfo,
-              alignSelf: "flex-end"
+              alignSelf: "flex-end",
             }}
           >
-            {new CoinPretty(chainStore.current.stakeCurrency, new Dec(validator.tokens)).maxDecimals(0).toString()}
+            {new CoinPretty(
+              chainStore.current.stakeCurrency,
+              new Dec(validator.tokens)
+            )
+              .maxDecimals(0)
+              .toString()}
           </OWText>
           {uptime ? (
             <OWText
               style={{
                 color: colors["neutral-text-body2"],
-                paddingTop: 4
+                paddingTop: 4,
               }}
             >
               {`Uptime: ${uptime ? (uptime * 100).toFixed(2) : 0}%`}
@@ -353,15 +396,18 @@ const ValidatorItem: FunctionComponent<{
             paddingVertical: 4,
             marginTop: 12,
             flexDirection: "row",
-            alignItems: "center"
+            alignItems: "center",
           }}
         >
-          <AlertIcon color={colors["neutral-text-action-on-dark-bg"]} size={16} />
+          <AlertIcon
+            color={colors["neutral-text-action-on-dark-bg"]}
+            size={16}
+          />
           <OWText
             weight="500"
             style={{
               color: colors["neutral-text-action-on-dark-bg"],
-              paddingLeft: 4
+              paddingLeft: 4,
             }}
           >
             Validators are about to be jailed
@@ -372,50 +418,50 @@ const ValidatorItem: FunctionComponent<{
   ) : null;
 });
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     containerSearch: {
-      padding: 0
+      padding: 0,
     },
     titleLabel: {
       marginRight: spacing["10"],
       textTransform: "uppercase",
 
-      marginBottom: spacing["8"]
+      marginBottom: spacing["8"],
     },
     sortBtn: {
       flexDirection: "row",
       alignItems: "center",
       paddingHorizontal: spacing["2"],
       position: "absolute",
-      right: -25
+      right: -25,
     },
     flexRow: {
       flex: 1,
-      flexDirection: "row"
+      flexDirection: "row",
     },
     containerParagraph: {
       flexDirection: "row",
-      marginTop: spacing["32"]
+      marginTop: spacing["32"],
     },
     containerHeader: {
       paddingHorizontal: spacing["24"],
-      paddingBottom: spacing["4"]
+      paddingBottom: spacing["4"],
     },
     title: {
-      color: colors["neutral-text-body"]
+      color: colors["neutral-text-body"],
     },
     container: {
       backgroundColor: colors["neutral-surface-card"],
-      marginTop: spacing["16"]
+      marginTop: spacing["16"],
     },
     containerInfo: {
       flexDirection: "row",
-      alignItems: "center"
+      alignItems: "center",
     },
     textInfo: {
       fontWeight: "600",
-      color: colors["neutral-text-title"]
+      color: colors["neutral-text-title"],
     },
     listLabel: {
       paddingHorizontal: 24,
@@ -423,15 +469,15 @@ const styling = colors =>
       borderBottomColor: colors["neutral-border-default"],
       borderBottomWidth: 1,
       flexDirection: "row",
-      justifyContent: "space-evenly"
+      justifyContent: "space-evenly",
     },
     active: {
-      color: colors["primary-surface-default"]
+      color: colors["primary-surface-default"],
     },
     iconSearch: {
       position: "absolute",
       left: 22,
-      top: 34
+      top: 34,
     },
     textInput: {
       paddingVertical: 0,
@@ -442,6 +488,6 @@ const styling = colors =>
       fontSize: 14,
       color: colors["neutral-text-body"],
       marginVertical: 10,
-      fontWeight: "500"
-    }
+      fontWeight: "500",
+    },
   });

@@ -20,7 +20,6 @@ import { navigate } from "@src/router/root";
 import { RightArrowIcon } from "@src/components/icon";
 import { ChainIdEnum, getBase58Address, TRC20_LIST } from "@owallet/common";
 import { API } from "@src/common/api";
-import moment from "moment";
 import { chainIcons } from "@oraichain/oraidex-common";
 import { TokenItem } from "../tokens/components/token-item";
 import { HistoryCard } from "./history-card";
@@ -81,11 +80,12 @@ export const TokensCardAll: FunctionComponent<{
       });
 
       if (yesterday) {
-        setYesterdayAssets([]);
         const yesterdayData = res.data[yesterday];
-
         setYesterdayAssets(yesterdayData);
         appInitStore.updateYesterdayPriceFeed(yesterdayData);
+      } else {
+        setYesterdayAssets([]);
+        appInitStore.updateYesterdayPriceFeed([]);
       }
     }
   };

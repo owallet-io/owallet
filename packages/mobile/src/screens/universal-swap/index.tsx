@@ -10,8 +10,20 @@ import { OWButton } from "@src/components/button";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { BalanceText } from "./components/BalanceText";
 import { SelectNetworkModal, SelectTokenModal, SlippageModal } from "./modals/";
-import { getTokenInfos, handleSaveHistory, HISTORY_STATUS, showToast, _keyExtract } from "@src/utils/helper";
-import { DEFAULT_SLIPPAGE, GAS_ESTIMATION_SWAP_DEFAULT, ORAI, toDisplay, getBase58Address } from "@owallet/common";
+import {
+  getTokenInfos,
+  handleSaveHistory,
+  HISTORY_STATUS,
+  showToast,
+  _keyExtract,
+} from "@src/utils/helper";
+import {
+  DEFAULT_SLIPPAGE,
+  GAS_ESTIMATION_SWAP_DEFAULT,
+  ORAI,
+  toDisplay,
+  getBase58Address,
+} from "@owallet/common";
 import {
   TokenItemType,
   NetworkChainId,
@@ -24,11 +36,15 @@ import {
   toSubAmount,
   oraichainTokens,
   getTokenOnOraichain,
-  tokenMap
+  tokenMap,
 } from "@oraichain/oraidex-common";
 import { openLink } from "../../utils/helper";
 import { feeEstimate, getTransferTokenFee } from "@owallet/common";
-import { handleSimulateSwap, filterNonPoolEvmTokens, SwapDirection } from "@oraichain/oraidex-universal-swap";
+import {
+  handleSimulateSwap,
+  filterNonPoolEvmTokens,
+  SwapDirection,
+} from "@oraichain/oraidex-universal-swap";
 import { fetchTokenInfos, ChainIdEnum } from "@owallet/common";
 import { calculateMinReceive } from "@oraichain/oraidex-common";
 import {
@@ -36,13 +52,19 @@ import {
   isEvmSwappable,
   isSupportedNoPoolSwapEvm,
   UniversalSwapData,
-  UniversalSwapHandler
+  UniversalSwapHandler,
 } from "@oraichain/oraidex-universal-swap";
 import { SwapCosmosWallet, SwapEvmWallet } from "./wallet";
 import { styling } from "./styles";
 import { BalanceType, MAX, balances } from "./types";
 import { OraiswapRouterQueryClient } from "@oraichain/oraidex-contracts-sdk";
-import { useLoadTokens, useCoinGeckoPrices, useClient, useRelayerFee, useTaxRate } from "@owallet/hooks";
+import {
+  useLoadTokens,
+  useCoinGeckoPrices,
+  useClient,
+  useRelayerFee,
+  useTaxRate,
+} from "@owallet/hooks";
 import { getTransactionUrl, handleErrorSwap } from "./helpers";
 import { useQuery } from "@tanstack/react-query";
 import { Mixpanel } from "mixpanel-react-native";
@@ -52,7 +74,8 @@ const mixpanel = globalThis.mixpanel as Mixpanel;
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
 
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
-  const { accountStore, universalSwapStore, chainStore, appInitStore } = useStore();
+  const { accountStore, universalSwapStore, chainStore, appInitStore } =
+    useStore();
   const { colors } = useTheme();
   const { data: prices } = useCoinGeckoPrices();
 
@@ -77,11 +100,17 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const [isWarningSlippage, setIsWarningSlippage] = useState(false);
   const [loadingRefresh, setLoadingRefresh] = useState(false);
   const [searchTokenName, setSearchTokenName] = useState("");
-  const [filteredToTokens, setFilteredToTokens] = useState([] as TokenItemType[]);
-  const [filteredFromTokens, setFilteredFromTokens] = useState([] as TokenItemType[]);
+  const [filteredToTokens, setFilteredToTokens] = useState(
+    [] as TokenItemType[]
+  );
+  const [filteredFromTokens, setFilteredFromTokens] = useState(
+    [] as TokenItemType[]
+  );
   const [selectedChainFilter, setChainFilter] = useState(null);
 
-  const [[fromTokenDenom, toTokenDenom], setSwapTokens] = useState<[string, string]>(["orai", "usdt"]);
+  const [[fromTokenDenom, toTokenDenom], setSwapTokens] = useState<
+    [string, string]
+  >(["orai", "usdt"]);
 
   const [fromTokenFee, setFromTokenFee] = useState<number>(0);
   const [toTokenFee, setToTokenFee] = useState<number>(0);
@@ -109,14 +138,22 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const originalFromToken = tokenMap[fromTokenDenom];
   const originalToToken = tokenMap[toTokenDenom];
 
-  const subAmountFrom = toSubAmount(universalSwapStore.getAmount, originalFromToken);
-  const subAmountTo = toSubAmount(universalSwapStore.getAmount, originalToToken);
+  const subAmountFrom = toSubAmount(
+    universalSwapStore.getAmount,
+    originalFromToken
+  );
+  const subAmountTo = toSubAmount(
+    universalSwapStore.getAmount,
+    originalToToken
+  );
   const fromTokenBalance = originalFromToken
-    ? BigInt(universalSwapStore.getAmount?.[originalFromToken.denom] ?? "0") + subAmountFrom
+    ? BigInt(universalSwapStore.getAmount?.[originalFromToken.denom] ?? "0") +
+      subAmountFrom
     : BigInt(0);
 
   const toTokenBalance = originalToToken
-    ? BigInt(universalSwapStore.getAmount?.[originalToToken.denom] ?? "0") + subAmountTo
+    ? BigInt(universalSwapStore.getAmount?.[originalToToken.denom] ?? "0") +
+      subAmountTo
     : BigInt(0);
 
   const onMaxFromAmount = (amount: bigint, type: string) => {
@@ -125,12 +162,22 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
     // hardcode fee when swap token orai
     if (fromTokenDenom === ORAI) {
-      const estimatedFee = feeEstimate(originalFromToken, GAS_ESTIMATION_SWAP_DEFAULT);
-      const fromTokenBalanceDisplay = toDisplay(fromTokenBalance, originalFromToken?.decimals);
+      const estimatedFee = feeEstimate(
+        originalFromToken,
+        GAS_ESTIMATION_SWAP_DEFAULT
+      );
+      const fromTokenBalanceDisplay = toDisplay(
+        fromTokenBalance,
+        originalFromToken?.decimals
+      );
       if (type === MAX) {
-        finalAmount = estimatedFee > displayAmount ? 0 : displayAmount - estimatedFee;
+        finalAmount =
+          estimatedFee > displayAmount ? 0 : displayAmount - estimatedFee;
       } else {
-        finalAmount = estimatedFee > fromTokenBalanceDisplay - displayAmount ? 0 : displayAmount;
+        finalAmount =
+          estimatedFee > fromTokenBalanceDisplay - displayAmount
+            ? 0
+            : displayAmount;
       }
     }
     setSwapAmount([finalAmount, toAmountToken]);
@@ -140,13 +187,14 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     fromChainId: originalFromToken.chainId,
     toChainId: originalToToken.chainId,
     fromContractAddr: originalFromToken.contractAddress,
-    toContractAddr: originalToToken.contractAddress
+    toContractAddr: originalToToken.contractAddress,
   });
   const relayerFeeToken = useMemo(() => {
     return relayerFee.reduce((acc, cur) => {
       if (
         originalFromToken?.chainId !== originalToToken?.chainId &&
-        (cur.prefix === originalFromToken?.prefix || cur.prefix === originalToToken?.prefix)
+        (cur.prefix === originalFromToken?.prefix ||
+          cur.prefix === originalToToken?.prefix)
       ) {
         return +cur?.amount + acc;
       }
@@ -157,11 +205,13 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   // if evm swappable then no need to get token on oraichain because we can swap on evm. Otherwise, get token on oraichain. If cannot find => fallback to original token
   const fromToken = isEvmSwap
     ? tokenMap[fromTokenDenom]
-    : getTokenOnOraichain(tokenMap[fromTokenDenom].coinGeckoId) ?? tokenMap[fromTokenDenom];
+    : getTokenOnOraichain(tokenMap[fromTokenDenom].coinGeckoId) ??
+      tokenMap[fromTokenDenom];
 
   const toToken = isEvmSwap
     ? tokenMap[toTokenDenom]
-    : getTokenOnOraichain(tokenMap[toTokenDenom].coinGeckoId) ?? tokenMap[toTokenDenom];
+    : getTokenOnOraichain(tokenMap[toTokenDenom].coinGeckoId) ??
+      tokenMap[toTokenDenom];
 
   const getTokenFee = async (
     remoteTokenDenom: string,
@@ -170,7 +220,11 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     type: "from" | "to"
   ) => {
     // since we have supported evm swap, tokens that are on the same supported evm chain id don't have any token fees (because they are not bridged to Oraichain)
-    if (isEvmNetworkNativeSwapSupported(fromChainId) && fromChainId === toChainId) return;
+    if (
+      isEvmNetworkNativeSwapSupported(fromChainId) &&
+      fromChainId === toChainId
+    )
+      return;
     if (remoteTokenDenom) {
       let tokenFee = 0;
       const ratio = await getTransferTokenFee({ remoteTokenDenom, client });
@@ -188,7 +242,12 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   };
 
   useEffect(() => {
-    getTokenFee(originalToToken.prefix + originalToToken.contractAddress, fromToken.chainId, toToken.chainId, "to");
+    getTokenFee(
+      originalToToken.prefix + originalToToken.contractAddress,
+      fromToken.chainId,
+      toToken.chainId,
+      "to"
+    );
   }, [originalToToken, fromToken, toToken, originalToToken, client]);
 
   useEffect(() => {
@@ -201,13 +260,13 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   }, [originalToToken, fromToken, toToken, originalToToken, client]);
 
   const {
-    data: [fromTokenInfoData, toTokenInfoData]
+    data: [fromTokenInfoData, toTokenInfoData],
   } = useQuery({
     queryKey: ["token-infos", fromToken, toToken],
     queryFn: () => fetchTokenInfos([fromToken!, toToken!], client),
     ...{
-      initialData: []
-    }
+      initialData: [],
+    },
   });
 
   const [isSelectFromTokenModal, setIsSelectFromTokenModal] = useState(false);
@@ -223,7 +282,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       const cwStargate = {
         account: accountOrai,
         chainId: ChainIdEnum.Oraichain,
-        rpc: oraichainNetwork.rpc
+        rpc: oraichainNetwork.rpc,
       };
       loadTokenParams = {
         ...loadTokenParams,
@@ -231,7 +290,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         metamaskAddress: eth ?? accountEth.evmosHexAddress,
         kwtAddress: kwt ?? accountKawaiiCosmos.bech32Address,
         tronAddress: getBase58Address(tron ?? accountTron.evmosHexAddress),
-        cwStargate
+        cwStargate,
       };
 
       setTimeout(() => {
@@ -241,7 +300,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       console.log("error loadTokenAmounts", error);
       showToast({
         message: error?.message ?? error?.ex?.message,
-        type: "danger"
+        type: "danger",
       });
     }
   };
@@ -267,7 +326,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     accountOrai.bech32Address,
     accountEth.evmosHexAddress,
     accountTron.evmosHexAddress,
-    accountKawaiiCosmos.bech32Address
+    accountKawaiiCosmos.bech32Address,
   ]);
 
   useEffect(() => {
@@ -293,18 +352,29 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   }, [fromToken, toToken, toTokenDenom, fromTokenDenom]);
 
   // TODO: use this constant so we can temporary simulate for all pair (specifically AIRI/USDC, ORAIX/USDC), update later after migrate contract
-  const isFromAiriToUsdc = originalFromToken.coinGeckoId === "airight" && originalToToken.coinGeckoId === "usd-coin";
-  const isFromOraixToUsdc = originalFromToken.coinGeckoId === "oraidex" && originalToToken.coinGeckoId === "usd-coin";
+  const isFromAiriToUsdc =
+    originalFromToken.coinGeckoId === "airight" &&
+    originalToToken.coinGeckoId === "usd-coin";
+  const isFromOraixToUsdc =
+    originalFromToken.coinGeckoId === "oraidex" &&
+    originalToToken.coinGeckoId === "usd-coin";
   const isFromUsdc = originalFromToken.coinGeckoId === "usd-coin";
 
   const INIT_SIMULATE_AIRI_TO_USDC = 1000;
   const INIT_SIMULATE_FROM_USDC = 10;
   const INIT_AMOUNT =
-    isFromAiriToUsdc || isFromOraixToUsdc ? INIT_SIMULATE_AIRI_TO_USDC : isFromUsdc ? INIT_SIMULATE_FROM_USDC : 1;
+    isFromAiriToUsdc || isFromOraixToUsdc
+      ? INIT_SIMULATE_AIRI_TO_USDC
+      : isFromUsdc
+      ? INIT_SIMULATE_FROM_USDC
+      : 1;
 
   const getSimulateSwap = async (initAmount?) => {
     if (client) {
-      const routerClient = new OraiswapRouterQueryClient(client, network.router);
+      const routerClient = new OraiswapRouterQueryClient(
+        client,
+        network.router
+      );
       let simulateAmount = INIT_AMOUNT;
       if (fromAmountToken > 0) {
         simulateAmount = fromAmountToken;
@@ -314,7 +384,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         originalFromInfo: originalFromToken,
         originalToInfo: originalToToken,
         originalAmount: initAmount ?? simulateAmount,
-        routerClient
+        routerClient,
       });
 
       setAmountLoading(false);
@@ -325,15 +395,20 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const convertRelayerFee = async () => {
     if (client && relayerFeeToken) {
-      const routerClient = new OraiswapRouterQueryClient(client, network.router);
-      const oraiToken = oraichainTokens.find(token => token.coinGeckoId === "oraichain-token");
+      const routerClient = new OraiswapRouterQueryClient(
+        client,
+        network.router
+      );
+      const oraiToken = oraichainTokens.find(
+        (token) => token.coinGeckoId === "oraichain-token"
+      );
 
       const data = await handleSimulateSwap({
         // @ts-ignore
         originalFromInfo: oraiToken,
         originalToInfo: originalToToken,
         originalAmount: toDisplay(relayerFeeToken.toString()),
-        routerClient
+        routerClient,
       });
 
       setRelayerFeeAmount(data?.displayAmount);
@@ -352,15 +427,19 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setRatio(data);
   };
 
-  const estimateSwapAmount = async fromAmountBalance => {
+  const estimateSwapAmount = async (fromAmountBalance) => {
     setAmountLoading(true);
     try {
       const data = await getSimulateSwap();
       const minimumReceive = Number(
-        data?.displayAmount - (data?.displayAmount * userSlippage) / 100 - relayerFeeAmount
+        data?.displayAmount -
+          (data?.displayAmount * userSlippage) / 100 -
+          relayerFeeAmount
       );
 
-      const fromAmountTokenBalance = fromTokenInfoData && toAmount(fromAmountToken, fromTokenInfoData!.decimals);
+      const fromAmountTokenBalance =
+        fromTokenInfoData &&
+        toAmount(fromAmountToken, fromTokenInfoData!.decimals);
       const warningMinimumReceive =
         ratio && ratio.amount
           ? calculateMinReceive(
@@ -394,24 +473,36 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     if (fromAmountToken > 0) {
       estimateSwapAmount(fromAmountToken);
     }
-  }, [originalFromToken, toTokenInfoData, fromTokenInfoData, originalToToken, fromAmountToken]);
+  }, [
+    originalFromToken,
+    toTokenInfoData,
+    fromTokenInfoData,
+    originalToToken,
+    fromAmountToken,
+  ]);
 
   useEffect(() => {
     estimateAverageRatio();
-  }, [originalFromToken, toTokenInfoData, fromTokenInfoData, originalToToken, client]);
+  }, [
+    originalFromToken,
+    toTokenInfoData,
+    fromTokenInfoData,
+    originalToToken,
+    client,
+  ]);
 
   const handleBalanceActive = (item: BalanceType) => {
     setBalanceActive(item);
   };
 
-  const handleSaveTokenInfos = async tokenInfos => {
+  const handleSaveTokenInfos = async (tokenInfos) => {
     await API.saveTokenInfos(
       {
         address: accountOrai.bech32Address,
-        tokesInfos: tokenInfos
+        tokesInfos: tokenInfos,
       },
       {
-        baseURL: "https://staging.owallet.dev/"
+        baseURL: "https://staging.owallet.dev/",
       }
     );
   };
@@ -420,15 +511,19 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     if (fromAmountToken <= 0) {
       showToast({
         message: "From amount should be higher than 0!",
-        type: "danger"
+        type: "danger",
       });
       return;
     }
 
     setSwapLoading(true);
-    let defaultEvmAddress = accountStore.getAccount(ChainIdEnum.Ethereum).evmosHexAddress;
-    Object.keys(ChainIdEnum).map(key => {
-      let defaultCosmosAddress = accountStore.getAccount(ChainIdEnum[key]).bech32Address;
+    let defaultEvmAddress = accountStore.getAccount(
+      ChainIdEnum.Ethereum
+    ).evmosHexAddress;
+    Object.keys(ChainIdEnum).map((key) => {
+      let defaultCosmosAddress = accountStore.getAccount(
+        ChainIdEnum[key]
+      ).bech32Address;
 
       if (defaultCosmosAddress.startsWith("evmos")) {
         accounts[ChainIdEnum[key]] = defaultEvmAddress;
@@ -437,9 +532,13 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       }
     });
 
-    accounts[ChainIdEnum.TRON] = getBase58Address(accountStore.getAccount(ChainIdEnum.TRON).evmosHexAddress);
+    accounts[ChainIdEnum.TRON] = getBase58Address(
+      accountStore.getAccount(ChainIdEnum.TRON).evmosHexAddress
+    );
 
-    const fromNetwork = chainStore.getChain(originalFromToken.chainId).chainName;
+    const fromNetwork = chainStore.getChain(
+      originalFromToken.chainId
+    ).chainName;
 
     const toNetwork = chainStore.getChain(originalToToken.chainId).chainName;
 
@@ -450,7 +549,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       toToken: originalToToken.name,
       toAmount: `${toAmountToken}`,
       fromNetwork,
-      toNetwork
+      toNetwork,
     };
 
     try {
@@ -465,33 +564,35 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
       const relayerFee = relayerFeeToken && {
         relayerAmount: relayerFeeToken.toString(),
-        relayerDecimals: RELAYER_DECIMAL
+        relayerDecimals: RELAYER_DECIMAL,
       };
 
       const universalSwapData: UniversalSwapData = {
         sender: {
           cosmos: cosmosAddress,
           evm: accounts[ChainIdEnum.Ethereum],
-          tron: accounts[ChainIdEnum.TRON]
+          tron: accounts[ChainIdEnum.TRON],
         },
         originalFromToken: originalFromToken,
         originalToToken: originalToToken,
         simulateAmount: toAmountTokenString,
         // @ts-ignore
-        simulatePrice: ratio?.amount && Math.trunc(new BigDecimal(ratio.amount) / INIT_AMOUNT).toString(),
+        simulatePrice:
+          ratio?.amount &&
+          Math.trunc(new BigDecimal(ratio.amount) / INIT_AMOUNT).toString(),
         userSlippage: userSlippage,
         fromAmount: fromAmountToken,
-        relayerFee
+        relayerFee,
       };
 
       const universalSwapHandler = new UniversalSwapHandler(
         {
-          ...universalSwapData
+          ...universalSwapData,
         },
         {
           cosmosWallet,
           //@ts-ignore
-          evmWallet
+          evmWallet,
         }
       );
 
@@ -512,16 +613,19 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             type: HISTORY_STATUS.SWAP,
             fromToken: {
               asset: originalFromToken.denom,
-              chainId: originalFromToken.chainId
+              chainId: originalFromToken.chainId,
             },
             toToken: {
               asset: originalToToken.denom,
-              chainId: originalToToken.chainId
+              chainId: originalToToken.chainId,
             },
-            status: "SUCCESS"
+            status: "SUCCESS",
           };
 
-          const res = await handleSaveHistory(accountOrai.bech32Address, historyInfos);
+          const res = await handleSaveHistory(
+            accountOrai.bech32Address,
+            historyInfos
+          );
 
           console.log("res handleSaveHistory", res);
         } catch (err) {
@@ -534,15 +638,19 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           type: "success",
           onPress: async () => {
             if (chainInfo.raw.txExplorer && transactionHash) {
-              await openLink(getTransactionUrl(originalFromToken.chainId, transactionHash));
+              await openLink(
+                getTransactionUrl(originalFromToken.chainId, transactionHash)
+              );
             }
-          }
+          },
         });
         await handleFetchAmounts();
         const tokens = getTokenInfos({
           tokens: universalSwapStore.getAmount,
           prices: appInitStore.getInitApp.prices,
-          networkFilter: appInitStore.getInitApp.isAllNetworks ? "" : chainStore.current.chainId
+          networkFilter: appInitStore.getInitApp.isAllNetworks
+            ? ""
+            : chainStore.current.chainId,
         });
         if (tokens.length > 0) {
           handleSaveTokenInfos(tokens);
@@ -570,15 +678,22 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   };
 
   const handleReverseDirection = () => {
-    if (isSupportedNoPoolSwapEvm(fromToken.coinGeckoId) && !isEvmNetworkNativeSwapSupported(toToken.chainId)) return;
+    if (
+      isSupportedNoPoolSwapEvm(fromToken.coinGeckoId) &&
+      !isEvmNetworkNativeSwapSupported(toToken.chainId)
+    )
+      return;
     setSwapTokens([toTokenDenom, fromTokenDenom]);
     setSwapAmount([0, 0]);
     setBalanceActive(null);
   };
 
-  const handleActiveAmount = item => {
+  const handleActiveAmount = (item) => {
     handleBalanceActive(item);
-    onMaxFromAmount((fromTokenBalance * BigInt(item.value)) / BigInt(MAX), item.value);
+    onMaxFromAmount(
+      (fromTokenBalance * BigInt(item.value)) / BigInt(MAX),
+      item.value
+    );
   };
 
   return (
@@ -586,7 +701,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       backgroundColor={colors["plain-background"]}
       style={[styles.container, styles.pt30]}
       showsVerticalScrollIndicator={false}
-      refreshControl={<RefreshControl refreshing={loadingRefresh} onRefresh={onRefresh} />}
+      refreshControl={
+        <RefreshControl refreshing={loadingRefresh} onRefresh={onRefresh} />
+      }
     >
       <SlippageModal
         close={() => {
@@ -600,7 +717,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       <SelectTokenModal
         bottomSheetModalConfig={{
           snapPoints: ["50%", "90%"],
-          index: 1
+          index: 1,
         }}
         prices={prices}
         data={filteredFromTokens}
@@ -612,7 +729,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           setIsNetworkModal(true);
         }}
         selectedChainFilter={selectedChainFilter}
-        setToken={denom => {
+        setToken={(denom) => {
           setSwapTokens([denom, toTokenDenom]);
           setSwapAmount([0, 0]);
           setBalanceActive(null);
@@ -623,7 +740,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       <SelectTokenModal
         bottomSheetModalConfig={{
           snapPoints: ["50%", "90%"],
-          index: 1
+          index: 1,
         }}
         prices={prices}
         data={filteredToTokens}
@@ -635,7 +752,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         onNetworkModal={() => {
           setIsNetworkModal(true);
         }}
-        setToken={denom => {
+        setToken={(denom) => {
           setSwapTokens([fromTokenDenom, denom]);
           setSwapAmount([0, 0]);
           setBalanceActive(null);
@@ -682,7 +799,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           <View>
             <SwapBox
               amount={fromAmountToken?.toString() ?? "0"}
-              balanceValue={toDisplay(fromTokenBalance, originalFromToken?.decimals)}
+              balanceValue={toDisplay(
+                fromTokenBalance,
+                originalFromToken?.decimals
+              )}
               onChangeAmount={onChangeFromAmount}
               tokenActive={originalFromToken}
               onOpenTokenModal={() => setIsSelectFromTokenModal(true)}
@@ -690,7 +810,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             />
             <SwapBox
               amount={toAmountToken.toString() ?? "0"}
-              balanceValue={toDisplay(toTokenBalance, originalToToken?.decimals)}
+              balanceValue={toDisplay(
+                toTokenBalance,
+                originalToToken?.decimals
+              )}
               tokenActive={originalToToken}
               onOpenTokenModal={() => setIsSelectToTokenModal(true)}
               editable={false}
@@ -717,8 +840,16 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                 key={item.id ?? index}
                 size="small"
                 disabled={amountLoading || swapLoading}
-                style={balanceActive?.id === item.id ? styles.btnBalanceActive : styles.btnBalanceInactive}
-                textStyle={balanceActive?.id === item.id ? styles.textBtnBalanceAtive : styles.textBtnBalanceInActive}
+                style={
+                  balanceActive?.id === item.id
+                    ? styles.btnBalanceActive
+                    : styles.btnBalanceInactive
+                }
+                textStyle={
+                  balanceActive?.id === item.id
+                    ? styles.textBtnBalanceAtive
+                    : styles.textBtnBalanceInActive
+                }
                 label={`${item.value}%`}
                 fullWidth={false}
                 onPress={() => handleActiveAmount(item)}
@@ -738,23 +869,32 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           <View style={styles.itemBottom}>
             <BalanceText>Quote</BalanceText>
             <BalanceText>
-              {`1 ${originalFromToken.name} ≈ ${ratio ? Number((ratio.displayAmount / INIT_AMOUNT).toFixed(6)) : "0"} ${
-                originalToToken.name
-              }`}
+              {`1 ${originalFromToken.name} ≈ ${
+                ratio
+                  ? Number((ratio.displayAmount / INIT_AMOUNT).toFixed(6))
+                  : "0"
+              } ${originalToToken.name}`}
             </BalanceText>
           </View>
-          {!swapLoading && (!fromAmountToken || !toAmountToken) && fromToken.denom === TRON_DENOM ? (
+          {!swapLoading &&
+          (!fromAmountToken || !toAmountToken) &&
+          fromToken.denom === TRON_DENOM ? (
             <View style={styles.itemBottom}>
               <BalanceText>Minimum Amount</BalanceText>
-              <BalanceText>{(fromToken.minAmountSwap || "0") + " " + fromToken.name}</BalanceText>
+              <BalanceText>
+                {(fromToken.minAmountSwap || "0") + " " + fromToken.name}
+              </BalanceText>
             </View>
           ) : null}
 
           <View style={styles.itemBottom}>
             <BalanceText>Minimum Received</BalanceText>
-            <BalanceText>{(minimumReceive || "0") + " " + toToken.name}</BalanceText>
+            <BalanceText>
+              {(minimumReceive || "0") + " " + toToken.name}
+            </BalanceText>
           </View>
-          {(!fromTokenFee && !toTokenFee) || (fromTokenFee === 0 && toTokenFee === 0) ? null : (
+          {(!fromTokenFee && !toTokenFee) ||
+          (fromTokenFee === 0 && toTokenFee === 0) ? null : (
             <View style={styles.itemBottom}>
               <BalanceText>Token fee</BalanceText>
               <BalanceText>{Number(taxRate) * 100}%</BalanceText>
@@ -764,19 +904,23 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             <View style={styles.itemBottom}>
               <BalanceText>Relayer Fee</BalanceText>
               <BalanceText>
-                {toDisplay(relayerFeeToken.toString(), RELAYER_DECIMAL)} ORAI ≈ {relayerFeeAmount}{" "}
-                {originalToToken.name}
+                {toDisplay(relayerFeeToken.toString(), RELAYER_DECIMAL)} ORAI ≈{" "}
+                {relayerFeeAmount} {originalToToken.name}
               </BalanceText>
             </View>
           )}
           {minimumReceive < 0 && (
             <View style={styles.itemBottom}>
-              <BalanceText color={colors["danger"]}>Current swap amount is too small</BalanceText>
+              <BalanceText color={colors["danger"]}>
+                Current swap amount is too small
+              </BalanceText>
             </View>
           )}
           {!fromTokenFee && !toTokenFee && isWarningSlippage && (
             <View style={styles.itemBottom}>
-              <BalanceText color={colors["danger"]}>Current slippage exceed configuration!</BalanceText>
+              <BalanceText color={colors["danger"]}>
+                Current slippage exceed configuration!
+              </BalanceText>
             </View>
           )}
           <View style={styles.itemBottom}>

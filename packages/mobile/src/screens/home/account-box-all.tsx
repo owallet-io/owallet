@@ -5,7 +5,6 @@ import { View, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { Text } from "@src/components/text";
 import { useStore } from "../../stores";
 import { useTheme } from "@src/themes/theme-provider";
-import { useCoinGeckoPrices } from "@owallet/hooks";
 import { getTotalUsd } from "@oraichain/oraidex-common";
 import { DownArrowIcon } from "@src/components/icon";
 import { AddressCopyable } from "@src/components/address-copyable";
