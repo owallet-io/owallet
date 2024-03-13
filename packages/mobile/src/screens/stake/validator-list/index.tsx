@@ -248,7 +248,7 @@ const ValidatorItem: FunctionComponent<{
         backgroundColor: colors["background-box"],
         alignItems: "center",
         borderWidth: 0.5,
-        borderColor: uptime < 0.9 ? colors["danger"] : colors["background"],
+        // borderColor: uptime < 0.9 ? colors["danger"] : colors["background"],
       }}
       onPress={() => {
         if (onSelectValidator) {
@@ -281,13 +281,14 @@ const ValidatorItem: FunctionComponent<{
         <Text
           style={{
             ...styles.textInfo,
-            color: uptime < 0.9 ? colors["danger"] : colors["primary-text"],
+            color: colors["primary-text"],
+            // color: uptime < 0.9 ? colors['danger'] : colors['primary-text']
           }}
           numberOfLines={1}
           ellipsizeMode="tail"
         >
           {validator?.description.moniker}{" "}
-          {uptime < 0.9 ? <AlertIcon color={colors.danger} size={16} /> : null}
+          {/* {uptime < 0.9 ? <AlertIcon color={colors.danger} size={16} /> : null} */}
         </Text>
 
         <Text
@@ -307,7 +308,8 @@ const ValidatorItem: FunctionComponent<{
         <Text
           style={{
             ...styles.textInfo,
-            color: uptime < 0.9 ? colors["danger"] : colors["primary-text"],
+            color: colors["primary-text"],
+            // color: uptime < 0.9 ? colors['danger'] : colors['primary-text']
           }}
         >
           {`Uptime: ${(uptime * 100).toFixed(2)}%`}
