@@ -6,7 +6,6 @@ import { ScrollView } from "react-native-gesture-handler";
 import { Text } from "@src/components/text";
 import { useStyle } from "../../styles";
 import { useStore } from "../../stores";
-import { AmountInput, MemoInput } from "../../components/input";
 import {
   useFeeConfig,
   useGasConfig,
@@ -40,7 +39,6 @@ export const SignModal: FunctionComponent<{
     useUnmount(() => {
       signInteractionStore.rejectAll();
     });
-    const scheme = appInitStore.getInitApp.theme;
 
     const style = useStyle();
 

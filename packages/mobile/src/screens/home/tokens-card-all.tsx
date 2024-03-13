@@ -108,16 +108,12 @@ export const TokensCardAll: FunctionComponent<{
   const tokens = getTokenInfos({
     tokens: universalSwapStore.getAmount,
     prices: appInitStore.getInitApp.prices,
-    networkFilter: appInitStore.getInitApp.isAllNetworks
-      ? ""
-      : chainStore.current.chainId,
+    networkFilter: "",
   });
 
   useEffect(() => {
     setTimeout(() => {
-      if (tokens.length > 0) {
-        handleSaveTokenInfos(tokens);
-      }
+      handleSaveTokenInfos(tokens);
     }, 3000);
   }, [accountOrai.bech32Address]);
 
@@ -305,13 +301,15 @@ export const TokensCardAll: FunctionComponent<{
           <CardBody style={{ paddingHorizontal: 0, paddingTop: 16 }}>
             {/* {renderTokensFromQueryBalances()} */}
             {tokens.length > 0 ? (
-              tokens.map((token, index) => {
-                if (more) {
-                  if (index < 3) return renderTokenItem(token);
-                } else {
-                  return renderTokenItem(token);
-                }
-              })
+              tokens
+                .filter((t) => t.chainId === chainStore.current.chainId)
+                .map((token, index) => {
+                  if (more) {
+                    if (index < 3) return renderTokenItem(token);
+                  } else {
+                    return renderTokenItem(token);
+                  }
+                })
             ) : (
               <OWEmpty type="cash" />
             )}
