@@ -1311,20 +1311,19 @@ export class KeyRing {
       if (res.error) {
         throw Error(res?.data?.message || "Transaction Failed");
       }
-      // const txRes = await wallet.pushtx.default({
-      //   rawTx: res.data,
-      //   selectedCrypto: chainId,
-      //   service: "fallback",
-      // });
+      const txRes = await wallet.pushtx.default({
+        rawTx: res.data,
+        selectedCrypto: chainId,
+        service: "fallback",
+      });
 
-      // if (txRes?.error) {
-      //   throw Error(txRes?.data?.message || "Transaction Failed");
-      // }
-      // if (txRes?.data?.code) {
-      //   throw Error(txRes?.data?.message || "Transaction Failed");
-      // }
-      // return txRes?.data;
-      return;
+      if (txRes?.error) {
+        throw Error(txRes?.data?.message || "Transaction Failed");
+      }
+      if (txRes?.data?.code) {
+        throw Error(txRes?.data?.message || "Transaction Failed");
+      }
+      return txRes?.data;
     }
   }
 
