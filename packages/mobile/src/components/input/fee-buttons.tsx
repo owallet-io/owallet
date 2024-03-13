@@ -231,7 +231,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
               color: colors["sub-primary-text"],
             }}
           >
-            {chainStore.current.networkType === "bitcoin" ? "≤" : null}{" "}
+            {chainStore.current.networkType === "bitcoin" ? "≈" : null}{" "}
             {amount
               .maxDecimals(
                 chainStore?.current?.stakeCurrency?.coinDecimals || 6
@@ -248,7 +248,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
                 color: colors["sub-primary-text"],
               }}
             >
-              {chainStore.current.networkType === "bitcoin" ? "≤" : null}{" "}
+              {chainStore.current.networkType === "bitcoin" ? "≈" : null}{" "}
               {price.toString()}
             </Text>
           ) : null}
