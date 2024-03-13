@@ -650,10 +650,14 @@ const buildTx = async ({
     feeRateWhole
   );
 
-  if (!fee) throw new Error("Not Found Fee");
+  if (!fee || isNaN(Number(fee))) throw new Error("Not Found Actual Fee");
+  if (!totalFee || isNaN(Number(totalFee)))
+    throw new Error("Not Found Fee Estimated");
+
   const MIN_FEE = 600;
-  const maxFee = Math.max(fee + 100, MIN_FEE);
-  if (totalFee > maxFee) throw new Error("Fee not match");
+  const maxEstimateFee = Math.max(totalFee + 100, MIN_FEE);
+
+  if (fee > maxEstimateFee) throw new Error("Fee not match");
   // .inputs and .outputs will be undefined if no solution was found
   if (!inputs || !outputs)
     throw new Error("Insufficient Balance for transaction");
