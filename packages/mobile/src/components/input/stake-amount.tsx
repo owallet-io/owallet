@@ -9,8 +9,6 @@ import {
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useMemo } from "react";
 import { TextStyle, View, ViewStyle, TouchableOpacity } from "react-native";
-import { spacing } from "../../themes";
-import { Button } from "../button";
 import OWText from "../text/ow-text";
 import { TextInput } from "./input";
 
@@ -104,7 +102,7 @@ export const StakeAmountInput: FunctionComponent<{
             </OWText>
           </TouchableOpacity>
         </View>
-        <View style={{ flex: 1 }}>
+        <View>
           <TextInput
             label={""}
             labelStyle={labelStyle}
@@ -120,7 +118,7 @@ export const StakeAmountInput: FunctionComponent<{
             placeholderTextColor={placeholderTextColor}
             error={errorText}
             keyboardType="numeric"
-            style={{ fontSize: 16 }}
+            style={{ fontSize: 24 }}
           />
         </View>
       </>

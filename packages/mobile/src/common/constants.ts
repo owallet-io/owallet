@@ -63,6 +63,7 @@ export const SCREENS = {
   WebDApp: "Web.dApp",
   Invest: "Invest",
   Delegate: "Delegate",
+  NewSend: "NewSend",
   SendTron: "SendTron",
   SendBtc: "SendBtc",
   Notifications: "Notifications",
@@ -207,6 +208,9 @@ export const SCREENS_OPTIONS: IScreenOption = {
   },
   [SCREENS.Dashboard]: {
     title: HEADER_KEY.showNetworkHeader,
+  },
+  [SCREENS.NewSend]: {
+    title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.SendTron]: {
     title: "Send",

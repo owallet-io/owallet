@@ -62,6 +62,9 @@ const { SmartNavigatorProvider, useSmartNavigation } =
       Send: {
         upperScreenName: "Others",
       },
+      NewSend: {
+        upperScreenName: "Others",
+      },
       SendTron: {
         upperScreenName: "Others",
       },

@@ -14,6 +14,7 @@ import { OWButton } from "@src/components/button";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { CopyAddressModal } from "./components/copy-address/copy-address-modal";
 import { getTokenInfos } from "@src/utils/helper";
+import { useSmartNavigation } from "@src/navigation.provider";
 
 export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
   const { colors } = useTheme();
@@ -26,6 +27,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
   } = useStore();
   const [profit, setProfit] = useState(0);
   const [accountAddresses, settAddresses] = useState({});
+  const smartNavigation = useSmartNavigation();
 
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
@@ -232,7 +234,11 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
             }}
             style={styles.getStarted}
             label="Send"
-            onPress={() => {}}
+            onPress={() => {
+              smartNavigation.navigateSmart("NewSend", {
+                currency: chainStore.current.stakeCurrency.coinMinimalDenom,
+              });
+            }}
           />
         </View>
       </OWBox>

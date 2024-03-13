@@ -20,8 +20,6 @@ import { TextInput } from "./input";
 import { ObservableEnsFetcher } from "@owallet/ens";
 import { LoadingSpinner } from "../spinner";
 import { useStyle } from "../../styles";
-import { useSmartNavigation } from "../../navigation.provider";
-import { colors } from "../../themes";
 import { NoteIcon } from "../icon";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
@@ -39,9 +37,6 @@ const styles = StyleSheet.create({
   "margin-top-2": {
     marginTop: 2,
   },
-  "margin-left-4": {
-    marginLeft: 4,
-  },
 });
 
 export const AddressInput: FunctionComponent<{
@@ -51,7 +46,7 @@ export const AddressInput: FunctionComponent<{
   errorLabelStyle?: TextStyle;
 
   label: string;
-
+  colors?: any;
   inputRight?: React.ReactNode;
 
   recipientConfig: IRecipientConfig;
@@ -74,6 +69,7 @@ export const AddressInput: FunctionComponent<{
     placeholder,
     placeholderTextColor,
     inputRight,
+    colors,
   }) => {
     const style = useStyle();
 
@@ -128,7 +124,6 @@ export const AddressInput: FunctionComponent<{
                     styles["height-16"],
                     styles["justify-center"],
                     styles["margin-top-2"],
-                    styles["margin-left-4"],
                   ]}
                 >
                   <LoadingSpinner size={14} color={"#83838F"} />
@@ -164,7 +159,7 @@ export const AddressInput: FunctionComponent<{
                   }}
                 >
                   <NoteIcon
-                    color={colors["primary-surface-default"]}
+                    color={colors ? colors["neutral-icon-on-light"] : "#7C00DB"}
                     height={18}
                   />
                 </TouchableOpacity>
