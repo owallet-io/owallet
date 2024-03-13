@@ -122,7 +122,7 @@ export const ValidatorList: FunctionComponent = observer(() => {
 
   const renderItem = ({ item, index }: { item: Validator; index: number }) => {
     const foundValidator = validators.find(
-      (v) => v.operator_address === item.operator_address
+      (v) => v?.operator_address === item?.operator_address
     );
     return (
       <View
@@ -133,7 +133,7 @@ export const ValidatorList: FunctionComponent = observer(() => {
         }}
       >
         <ValidatorItem
-          validatorAddress={item.operator_address}
+          validatorAddress={item?.operator_address}
           uptime={foundValidator?.uptime}
           apr={foundValidator?.apr ?? 0}
           index={index}

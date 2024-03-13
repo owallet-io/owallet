@@ -11,7 +11,6 @@ export const FeeModal: FunctionComponent<{
   colors;
 }> = ({ sendConfigs, colors }) => {
   const [customFee, setCustomFee] = useState(false);
-  console.log("get here");
 
   const { chainStore } = useStore();
   return (
