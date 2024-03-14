@@ -7,7 +7,7 @@ import React, {
 import { observer } from "mobx-react-lite";
 import { useSendTxConfig } from "@owallet/hooks";
 import { useStore } from "../../stores";
-import { EthereumEndpoint } from "@owallet/common";
+import { EthereumEndpoint, toAmount } from "@owallet/common";
 import { StyleSheet, View, TouchableOpacity, ScrollView } from "react-native";
 import {
   AddressInput,
@@ -28,6 +28,7 @@ import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import { chainIcons } from "@oraichain/oraidex-common";
 import { useSmartNavigation } from "@src/navigation.provider";
 import { FeeModal } from "@src/modals/fee";
+import { CoinPretty, Int } from "@owallet/unit";
 
 const styling = (colors) =>
   StyleSheet.create({
@@ -63,6 +64,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
     sendStore,
     keyRingStore,
     modalStore,
+    priceStore,
   } = useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
@@ -104,6 +106,39 @@ export const NewSendScreen: FunctionComponent = observer(() => {
 
     address
   );
+
+  const [balance, setBalance] = useState("0");
+  const [fee, setFee] = useState({});
+
+  const fetchBalance = async () => {
+    const queryBalance = queries.queryBalances
+      .getQueryBech32Address(account.bech32Address)
+      .balances.find((bal) => {
+        return (
+          bal.currency.coinMinimalDenom ===
+          sendConfigs.amountConfig.sendCurrency.coinMinimalDenom //currency.coinMinimalDenom
+        );
+      });
+
+    if (queryBalance) {
+      queryBalance.fetch();
+      setBalance(
+        queryBalance.balance
+          .shrink(true)
+          .maxDecimals(6)
+          .trim(true)
+          .upperCase(true)
+          .toString()
+      );
+    }
+  };
+
+  useEffect(() => {
+    fetchBalance();
+    const averageFee = sendConfigs.feeConfig.getFeeTypePretty("average");
+    const averageFeePrice = priceStore.calculatePrice(averageFee);
+    setFee({ type: "Avarage", value: averageFeePrice.toString() });
+  }, [account.bech32Address, sendConfigs.amountConfig.sendCurrency]);
 
   useEffect(() => {
     if (route?.params?.currency) {
@@ -154,6 +189,11 @@ export const NewSendScreen: FunctionComponent = observer(() => {
     (c) => c.chainId === chainStore.current.chainId
   );
 
+  const amount = new CoinPretty(
+    sendConfigs.amountConfig.sendCurrency,
+    new Int(toAmount(Number(sendConfigs.amountConfig.amount)))
+  );
+
   useEffect(() => {
     if (route?.params?.recipient) {
       sendConfigs.recipientConfig.setRawRecipient(route.params.recipient);
@@ -176,7 +216,12 @@ export const NewSendScreen: FunctionComponent = observer(() => {
       },
     });
     modalStore.setChildren(
-      <FeeModal sendConfigs={sendConfigs} colors={colors} />
+      <FeeModal
+        vertical={true}
+        sendConfigs={sendConfigs}
+        colors={colors}
+        setFee={setFee}
+      />
     );
   };
 
@@ -289,7 +334,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
           onPress={async () => {}}
         />
         <View>
-          <OWCard>
+          <OWCard type="normal">
             <OWText color={colors["neutral-text-title"]} size={12}>
               Recipient
             </OWText>
@@ -301,9 +346,13 @@ export const NewSendScreen: FunctionComponent = observer(() => {
               recipientConfig={sendConfigs.recipientConfig}
               memoConfig={sendConfigs.memoConfig}
               labelStyle={styles.sendlabelInput}
+              containerStyle={{
+                marginBottom: 12,
+              }}
               inputContainerStyle={{
                 backgroundColor: colors["neutral-surface-card"],
                 borderWidth: 0,
+                paddingHorizontal: 0,
               }}
             />
           </OWCard>
@@ -316,7 +365,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
             >
               <View style={{}}>
                 <OWText style={{ paddingTop: 8 }} size={12}>
-                  Balance : 0
+                  Balance : {balance}
                 </OWText>
                 <View
                   style={{
@@ -335,7 +384,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
                     size={16}
                   />
                   <OWText style={{ paddingLeft: 4 }} weight="600" size={14}>
-                    ORAI
+                    {sendConfigs.amountConfig.sendCurrency.coinDenom}
                   </OWText>
                 </View>
               </View>
@@ -368,11 +417,11 @@ export const NewSendScreen: FunctionComponent = observer(() => {
                 color={colors["neutral-text-body"]}
                 size={14}
               >
-                0
+                {priceStore.calculatePrice(amount).toString()}
               </OWText>
             </View>
           </OWCard>
-          <OWCard>
+          <OWCard type="normal">
             <View
               style={{
                 flexDirection: "row",
@@ -388,7 +437,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
               </OWText>
               <TouchableOpacity onPress={_onPressFee}>
                 <OWText color={colors["primary-text-action"]} weight="600">
-                  Fast: $0.01
+                  {fee.type}: {fee.value}
                 </OWText>
               </TouchableOpacity>
             </View>
@@ -403,6 +452,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
               inputContainerStyle={{
                 backgroundColor: colors["neutral-surface-card"],
                 borderWidth: 0,
+                paddingHorizontal: 0,
               }}
               memoConfig={sendConfigs.memoConfig}
               labelStyle={styles.sendlabelInput}

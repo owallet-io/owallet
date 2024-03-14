@@ -81,6 +81,7 @@ export const TokensCardAll: FunctionComponent<{
 
       if (yesterday) {
         const yesterdayData = res.data[yesterday];
+
         setYesterdayAssets(yesterdayData);
         appInitStore.updateYesterdayPriceFeed(yesterdayData);
       } else {
@@ -307,7 +308,12 @@ export const TokensCardAll: FunctionComponent<{
             {/* {renderTokensFromQueryBalances()} */}
             {tokens.length > 0 ? (
               tokens
-                .filter((t) => t.chainId === chainStore.current.chainId)
+                .filter((t) => {
+                  if (appInitStore.getInitApp.isAllNetworks) {
+                    return true;
+                  }
+                  return t.chainId === chainStore.current.chainId;
+                })
                 .map((token, index) => {
                   if (more) {
                     if (index < 3) return renderTokenItem(token);

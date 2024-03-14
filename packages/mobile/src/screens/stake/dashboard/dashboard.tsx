@@ -86,8 +86,7 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
                     .toString()}
                 </OWText>
                 <OWText style={[styles["amount"]]}>
-                  {" "}
-                  {priceStore.calculatePrice(delegated).toString()}
+                  {priceStore.calculatePrice(delegated)?.toString() ?? 0}
                 </OWText>
               </View>
               <Image

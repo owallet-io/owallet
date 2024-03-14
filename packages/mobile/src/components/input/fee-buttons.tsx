@@ -13,26 +13,30 @@ import React, { FunctionComponent, useEffect, useState } from "react";
 import {
   StyleSheet,
   TextStyle,
+  TouchableOpacity,
   View,
   ViewProps,
   ViewStyle,
 } from "react-native";
+import { RadioButton } from "react-native-radio-buttons-group";
 import { useStore } from "../../stores";
 import { useStyle } from "../../styles";
 import { spacing, typography } from "../../themes";
 import { AverageIconFill, FastIconFill, LowIconFill } from "../icon";
 import { RectButton } from "../rect-button";
 import { LoadingSpinner } from "../spinner";
+import OWText from "../text/ow-text";
 import { GasInput } from "./gas";
+
 export interface FeeButtonsProps {
   labelStyle?: TextStyle;
   containerStyle?: ViewStyle;
   buttonsContainerStyle?: ViewProps;
   errorLabelStyle?: TextStyle;
-
+  setFee?: Function;
   label: string;
   gasLabel: string;
-
+  vertical?: boolean;
   feeConfig: IFeeConfig;
   gasConfig: IGasConfig;
 }
@@ -90,6 +94,8 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
     errorLabelStyle,
     label,
     feeConfig,
+    vertical,
+    setFee,
   }) => {
     const { priceStore, chainStore } = useStore();
     const style = useStyle();
@@ -115,7 +121,6 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
     }
 
     const lowFee = feeConfig.getFeeTypePretty("low");
-    console.log("lowFee", lowFee);
 
     const lowFeePrice = priceStore.calculatePrice(lowFee);
 
@@ -140,8 +145,9 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
 
     const renderIconTypeFee = (
       label: string,
-      selected?: boolean,
-      size = 16
+      round: boolean = true,
+      size = 16,
+      selected?: boolean
     ) => {
       switch (label) {
         case "Slow":
@@ -149,6 +155,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
             <View
               style={{
                 ...styles.containerIcon,
+                borderRadius: round ? 44 : 0,
                 backgroundColor: colors["gray-10"],
               }}
             >
@@ -160,6 +167,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
             <View
               style={{
                 ...styles.containerIcon,
+                borderRadius: round ? 44 : 0,
                 backgroundColor: colors["yellow-10"],
               }}
             >
@@ -171,6 +179,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
             <View
               style={{
                 ...styles.containerIcon,
+                borderRadius: round ? 44 : 0,
                 backgroundColor: colors["red-10"],
               }}
             >
@@ -216,7 +225,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
         >
           <View>
             {renderIconTypeFee(label)}
-            <Text
+            <OWText
               style={{
                 ...typography.h7,
                 fontWeight: "700",
@@ -224,9 +233,9 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
               }}
             >
               {label}
-            </Text>
+            </OWText>
           </View>
-          <Text
+          <OWText
             style={{
               fontSize: 10,
               fontWeight: "700",
@@ -241,9 +250,9 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
               .trim(true)
               .separator(" ")
               .toString()}
-          </Text>
+          </OWText>
           {price ? (
-            <Text
+            <OWText
               style={{
                 fontSize: 10,
                 lineHeight: 16,
@@ -252,13 +261,129 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
             >
               {chainStore.current.networkType === "bitcoin" ? "≤" : null}{" "}
               {price.toString()}
-            </Text>
+            </OWText>
           ) : null}
         </RectButton>
       );
     };
 
-    return (
+    const renderVerticalButton: (
+      label: string,
+      price: PricePretty | undefined,
+      amount: CoinPretty,
+      selected: boolean,
+      onPress: () => void
+    ) => React.ReactElement = (label, price, amount, selected, onPress) => {
+      return (
+        <TouchableOpacity
+          style={{
+            flexDirection: "row",
+            backgroundColor: selected ? colors["neutral-surface-bg2"] : null,
+            paddingHorizontal: 16,
+            paddingVertical: 8,
+            marginVertical: 8,
+            borderRadius: 8,
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+          onPress={() => {
+            onPress();
+            setFee({
+              type: label,
+              value: price.toString(),
+            });
+          }}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            <View>{renderIconTypeFee(label)}</View>
+            <View style={{ paddingLeft: 8 }}>
+              <OWText
+                style={{
+                  fontWeight: "600",
+                  color: colors["neutral-text-title"],
+                }}
+              >
+                {label}
+              </OWText>
+              <OWText
+                style={{
+                  color: colors["neutral-text-body"],
+                }}
+              >
+                {chainStore.current.networkType === "bitcoin" ? "≤" : null}{" "}
+                {amount
+                  .maxDecimals(
+                    chainStore?.current?.stakeCurrency?.coinDecimals || 6
+                  )
+                  .trim(true)
+                  .separator(" ")
+                  .toString()}
+                {price ? (
+                  <OWText
+                    style={{
+                      color: colors["neutral-text-body"],
+                    }}
+                  >
+                    ({chainStore.current.networkType === "bitcoin" ? "≤" : null}{" "}
+                    {price.toString()})
+                  </OWText>
+                ) : null}
+              </OWText>
+            </View>
+          </View>
+
+          <View>
+            <RadioButton
+              color={
+                selected
+                  ? colors["hightlight-surface-active"]
+                  : colors["neutral-text-body"]
+              }
+              id={label}
+              selected={selected}
+              onPress={onPress}
+            />
+          </View>
+        </TouchableOpacity>
+      );
+    };
+
+    return vertical ? (
+      <View style={{}}>
+        {renderVerticalButton(
+          "Slow",
+          lowFeePrice,
+          lowFee,
+          feeConfig.feeType === "low",
+          () => {
+            feeConfig.setFeeType("low");
+          }
+        )}
+        {renderVerticalButton(
+          "Average",
+          averageFeePrice,
+          averageFee,
+          feeConfig.feeType === "average",
+          () => {
+            feeConfig.setFeeType("average");
+          }
+        )}
+        {renderVerticalButton(
+          "Fast",
+          highFeePrice,
+          highFee,
+          feeConfig.feeType === "high",
+          () => {
+            feeConfig.setFeeType("high");
+          }
+        )}
+      </View>
+    ) : (
       <View
         style={{
           paddingBottom: spacing["28"],
@@ -370,6 +495,8 @@ const styling = (colors) =>
       borderRadius: spacing["8"],
       padding: spacing["10"],
       width: 44,
+      height: 44,
       alignItems: "center",
+      justifyContent: "center",
     },
   });

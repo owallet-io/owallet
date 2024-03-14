@@ -109,7 +109,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   // };
 
   const amount = new CoinPretty(
-    chainStore.current.feeCurrencies[0],
+    sendConfigs.amountConfig.sendCurrency,
     new Int(toAmount(Number(sendConfigs.amountConfig.amount)))
   );
 
