@@ -7,7 +7,7 @@ import { useSmartNavigation } from "@src/navigation.provider";
 
 export const PageHeader: FunctionComponent<{
   title: string;
-  subtitle: string;
+  subtitle?: string;
   colors: any;
   left?: ReactElement;
   onPress?: () => void;
@@ -27,10 +27,11 @@ export const PageHeader: FunctionComponent<{
         alignItems: "center",
         paddingVertical: spacing["card-vertical"],
         justifyContent: "space-between",
+        marginHorizontal: 16,
       }}
     >
       {left ? (
-        <View style={{ marginRight: spacing["16"] }}>{left}</View>
+        <View>{left}</View>
       ) : (
         <TouchableOpacity
           onPress={onGoBack ?? goBack}
@@ -41,7 +42,6 @@ export const PageHeader: FunctionComponent<{
             height: 44,
             alignItems: "center",
             justifyContent: "center",
-            marginLeft: spacing["16"],
           }}
         >
           <OWIcon
@@ -69,15 +69,17 @@ export const PageHeader: FunctionComponent<{
           >
             {title}
           </Text>
-          <Text
-            style={{
-              fontSize: 13,
-              lineHeight: 18,
-              color: colors["neutral-text-title"],
-            }}
-          >
-            {subtitle}
-          </Text>
+          {subtitle ? (
+            <Text
+              style={{
+                fontSize: 13,
+                lineHeight: 18,
+                color: colors["neutral-text-title"],
+              }}
+            >
+              {subtitle}
+            </Text>
+          ) : null}
         </View>
       ) : (
         <View />
@@ -85,9 +87,9 @@ export const PageHeader: FunctionComponent<{
 
       <View>
         {right ? (
-          <View style={{ marginRight: spacing["16"] }}>{right}</View>
+          <View>{right}</View>
         ) : (
-          <View style={{ marginRight: spacing["32"] }} />
+          <View style={{ width: 44, height: 44 }} />
         )}
       </View>
     </View>

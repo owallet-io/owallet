@@ -277,6 +277,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                     inputContainerStyle={{
                       borderWidth: 0,
                       width: metrics.screenWidth / 2,
+                      marginBottom: 8,
                     }}
                     amountConfig={sendConfigs.amountConfig}
                     placeholder={"0.0"}
@@ -305,6 +306,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                   borderRadius: 12,
                   backgroundColor: colors["warning-surface-subtle"],
                   padding: 12,
+                  marginTop: 8,
                 }}
               >
                 <AlertIcon color={colors["warning-text-body"]} size={16} />
