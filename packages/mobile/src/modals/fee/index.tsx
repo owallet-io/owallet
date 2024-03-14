@@ -107,7 +107,7 @@ export const FeeModal: FunctionComponent<{
               });
               setFee({
                 type: "Custom",
-                value: `${sendConfigs.feeConfig.fee} ${sendConfigs.feeConfig.feeCurrency.coinDenom}`,
+                value: `${sendConfigs.feeConfig.fee} `,
               });
             }}
           />

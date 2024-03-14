@@ -372,6 +372,7 @@ const ValidatorItem: FunctionComponent<{
               chainStore.current.stakeCurrency,
               new Dec(validator.tokens)
             )
+              .shrink(true)
               .maxDecimals(0)
               .toString()}
           </OWText>

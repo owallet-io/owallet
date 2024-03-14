@@ -71,6 +71,35 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     EthereumEndpoint
   );
 
+  const [balance, setBalance] = useState("0");
+
+  const fetchBalance = async () => {
+    const queryBalance = queries.queryBalances
+      .getQueryBech32Address(account.bech32Address)
+      .balances.find((bal) => {
+        return (
+          bal.currency.coinMinimalDenom ===
+          sendConfigs.amountConfig.sendCurrency.coinMinimalDenom //currency.coinMinimalDenom
+        );
+      });
+
+    if (queryBalance) {
+      queryBalance.fetch();
+      setBalance(
+        queryBalance.balance
+          .shrink(true)
+          .maxDecimals(6)
+          .trim(true)
+          .upperCase(true)
+          .toString()
+      );
+    }
+  };
+
+  useEffect(() => {
+    fetchBalance();
+  }, [account.bech32Address, sendConfigs.amountConfig.sendCurrency]);
+
   useEffect(() => {
     sendConfigs.recipientConfig.setRawRecipient(validatorAddress);
   }, [sendConfigs.recipientConfig, validatorAddress]);
@@ -242,8 +271,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
               >
                 <View style={{}}>
                   <OWText style={{ paddingTop: 8 }} size={12}>
-                    Staked :{" "}
-                    {staked.trim(true).shrink(true).maxDecimals(6).toString()}
+                    Balance : {balance}
                   </OWText>
                   <View
                     style={{
@@ -292,7 +320,6 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                 <View
                   style={{
                     alignItems: "flex-end",
-                    marginBottom: -12,
                   }}
                 >
                   <StakeAmountInput

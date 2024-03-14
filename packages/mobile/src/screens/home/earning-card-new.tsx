@@ -1,9 +1,15 @@
 import { Dec } from "@owallet/unit";
-import { StackActions, useNavigation } from "@react-navigation/native";
+import {
+  RouteProp,
+  StackActions,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 import { SCREENS } from "@src/common/constants";
 import { OWButton } from "@src/components/button";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { Text } from "@src/components/text";
+import { checkRouter } from "@src/router/root";
 import { useTheme } from "@src/themes/theme-provider";
 import {
   handleSaveHistory,
@@ -21,6 +27,7 @@ import { metrics } from "../../themes";
 export const EarningCardNew: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({}) => {
+  const route = useRoute<RouteProp<Record<string, {}>, string>>();
   const smartNavigation = useSmartNavigation();
   const { chainStore, accountStore, queriesStore, priceStore, analyticsStore } =
     useStore();
@@ -100,6 +107,9 @@ export const EarningCardNew: FunctionComponent<{
         <View style={styles.cardBody}>
           <TouchableOpacity
             onPress={() => {
+              if (checkRouter(route?.name, SCREENS.Invest)) {
+                return;
+              }
               navigation.dispatch(
                 StackActions.replace("MainTab", { screen: SCREENS.TABS.Invest })
               );
