@@ -254,15 +254,38 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                       paddingVertical: 12,
                       maxWidth: metrics.screenWidth / 4.5,
                       marginTop: 12,
+                      alignItems: "center",
                     }}
                   >
-                    <OWIcon
-                      type="images"
-                      source={{ uri: chainIcon?.Icon }}
-                      size={16}
-                    />
+                    {chainIcon ? (
+                      <OWIcon
+                        type="images"
+                        source={{ uri: chainIcon?.Icon }}
+                        size={16}
+                      />
+                    ) : (
+                      <View
+                        style={{
+                          width: 22,
+                          height: 22,
+                          borderRadius: 33,
+                          alignItems: "center",
+                          backgroundColor: colors["primary-surface-default"],
+                          justifyContent: "center",
+                        }}
+                      >
+                        <OWText
+                          weight="400"
+                          color={colors["neutral-text-action-on-dark-bg"]}
+                          size={12}
+                        >
+                          {chainStore.current.stakeCurrency.coinDenom.charAt(0)}
+                        </OWText>
+                      </View>
+                    )}
+
                     <OWText style={{ paddingLeft: 4 }} weight="600" size={14}>
-                      ORAI
+                      {chainStore.current.stakeCurrency.coinDenom}
                     </OWText>
                   </View>
                 </View>

@@ -211,7 +211,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
     >
       <ScrollView showsVerticalScrollIndicator={false}>
         <PageHeader
-          title="Validator detail"
+          title="Validator details"
           colors={colors}
           onPress={async () => {}}
           right={
