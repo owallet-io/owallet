@@ -114,6 +114,11 @@ export const TokensCardAll: FunctionComponent<{
   });
 
   useEffect(() => {
+    console.log(
+      "universalSwapStore.getLoadStatus.isLoad",
+      universalSwapStore.getLoadStatus.isLoad
+    );
+
     if (universalSwapStore.getLoadStatus.isLoad) {
       handleSaveTokenInfos(tokens);
     }

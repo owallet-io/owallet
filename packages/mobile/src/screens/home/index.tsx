@@ -157,6 +157,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     ) {
       setTimeout(() => {
         universalSwapStore.clearAmounts();
+        universalSwapStore.setLoaded(false);
         handleFetchAmounts(
           accountOrai.bech32Address,
           accountEth.evmosHexAddress,

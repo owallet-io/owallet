@@ -1,9 +1,4 @@
-import React, {
-  FunctionComponent,
-  useEffect,
-  useState,
-  useCallback,
-} from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { useSendTxConfig } from "@owallet/hooks";
 import { useStore } from "../../stores";
@@ -11,9 +6,8 @@ import { EthereumEndpoint, toAmount } from "@owallet/common";
 import { StyleSheet, View, TouchableOpacity, ScrollView } from "react-native";
 import {
   AddressInput,
-  FeeButtons,
+  CurrencySelector,
   MemoInput,
-  TextInput,
 } from "../../components/input";
 import { OWButton } from "../../components/button";
 import { RouteProp, useRoute } from "@react-navigation/native";
@@ -29,6 +23,7 @@ import { chainIcons } from "@oraichain/oraidex-common";
 import { useSmartNavigation } from "@src/navigation.provider";
 import { FeeModal } from "@src/modals/fee";
 import { CoinPretty, Int } from "@owallet/unit";
+import { DownArrowIcon } from "@src/components/icon";
 
 const styling = (colors) =>
   StyleSheet.create({
@@ -108,7 +103,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
   );
 
   const [balance, setBalance] = useState("0");
-  const [fee, setFee] = useState({});
+  const [fee, setFee] = useState({ type: "", value: "" });
 
   const fetchBalance = async () => {
     const queryBalance = queries.queryBalances
@@ -335,6 +330,18 @@ export const NewSendScreen: FunctionComponent = observer(() => {
         />
         <View>
           <OWCard type="normal">
+            <CurrencySelector
+              chainId={chainStore.current.chainId}
+              type="new"
+              label="Select a token"
+              placeHolder="Select Token"
+              amountConfig={sendConfigs.amountConfig}
+              labelStyle={styles.sendlabelInput}
+              containerStyle={styles.containerStyle}
+              selectorContainerStyle={{
+                backgroundColor: colors["neutral-surface-card"],
+              }}
+            />
             <OWText color={colors["neutral-text-title"]} size={12}>
               Recipient
             </OWText>
@@ -363,11 +370,11 @@ export const NewSendScreen: FunctionComponent = observer(() => {
                 justifyContent: "space-between",
               }}
             >
-              <View style={{}}>
+              <View>
                 <OWText style={{ paddingTop: 8 }} size={12}>
                   Balance : {balance}
                 </OWText>
-                <View
+                <TouchableOpacity
                   style={{
                     flexDirection: "row",
                     backgroundColor: colors["neutral-surface-action3"],
@@ -376,6 +383,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
                     paddingVertical: 12,
                     maxWidth: metrics.screenWidth / 4.5,
                     marginTop: 12,
+                    alignItems: "center",
                   }}
                 >
                   <OWIcon
@@ -383,10 +391,15 @@ export const NewSendScreen: FunctionComponent = observer(() => {
                     source={{ uri: chainIcon?.Icon }}
                     size={16}
                   />
-                  <OWText style={{ paddingLeft: 4 }} weight="600" size={14}>
+                  <OWText
+                    style={{ paddingHorizontal: 4 }}
+                    weight="600"
+                    size={14}
+                  >
                     {sendConfigs.amountConfig.sendCurrency.coinDenom}
                   </OWText>
-                </View>
+                  <DownArrowIcon height={11} color={colors["primary-text"]} />
+                </TouchableOpacity>
               </View>
               <View
                 style={{
@@ -436,10 +449,17 @@ export const NewSendScreen: FunctionComponent = observer(() => {
               <OWText color={colors["neutral-text-title"]} weight="600">
                 Transaction fee
               </OWText>
-              <TouchableOpacity onPress={_onPressFee}>
+              <TouchableOpacity
+                style={{ flexDirection: "row" }}
+                onPress={_onPressFee}
+              >
                 <OWText color={colors["primary-text-action"]} weight="600">
-                  {fee.type}: {fee.value}
+                  {fee.type}: {fee.value}{" "}
                 </OWText>
+                <DownArrowIcon
+                  height={11}
+                  color={colors["primary-text-action"]}
+                />
               </TouchableOpacity>
             </View>
 
