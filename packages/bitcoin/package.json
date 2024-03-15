@@ -12,7 +12,7 @@
     "clean": "rimraf node_modules build",
     "build": "tsc --project tsconfig.build.json",
     "rebuild": "rimraf build && yarn build",
-    "start:dev": "tsc -w",
+    "dev": "tsc -w",
     "test": "jest --passWithNoTests",
     "lint-test": "eslint \"src/**/*\" && prettier --check \"src/**/*\"",
     "lint-fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\""
@@ -37,9 +37,9 @@
     "uuid": "^8.3.0",
     "wif": "^2.0.6",
     "websocket": "^1.0.34",
-    "ecpair":"2.1.0",
-    "bitcoin-address-validation":"2.2.3",
-    "coinselect":"3.1.13"
+    "ecpair": "2.1.0",
+    "bitcoin-address-validation": "2.2.3",
+    "coinselect": "3.1.13"
   },
   "devDependencies": {
     "@types/node": "^14.0.27"
