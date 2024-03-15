@@ -12,7 +12,7 @@ import { TextStyle, View, ViewStyle, TouchableOpacity } from "react-native";
 import OWText from "../text/ow-text";
 import { TextInput } from "./input";
 
-export const StakeAmountInput: FunctionComponent<{
+export const NewAmountInput: FunctionComponent<{
   labelStyle?: TextStyle;
   colors: any;
   containerStyle?: ViewStyle;
@@ -21,6 +21,7 @@ export const StakeAmountInput: FunctionComponent<{
   placeholder?: string;
   placeholderTextColor?: string;
   allowMax?: boolean;
+  maxBalance?: string;
   amountConfig: IAmountConfig;
 }> = observer(
   ({
@@ -32,6 +33,7 @@ export const StakeAmountInput: FunctionComponent<{
     placeholder,
     placeholderTextColor,
     allowMax = true,
+    maxBalance,
     colors,
   }) => {
     const error = amountConfig.getError();
@@ -55,8 +57,8 @@ export const StakeAmountInput: FunctionComponent<{
     }, [error]);
 
     return (
-      <>
-        <View style={{ flexDirection: "row" }}>
+      <View style={{ marginBottom: errorText ? 24 : 0 }}>
+        <View style={{ flexDirection: "row", alignSelf: "flex-end" }}>
           <TouchableOpacity
             style={{
               backgroundColor: colors["primary-surface-default"],
@@ -112,7 +114,15 @@ export const StakeAmountInput: FunctionComponent<{
             errorLabelStyle={errorLabelStyle}
             value={amountConfig.amount}
             onChangeText={(text) => {
-              amountConfig.setAmount(text.replace(/,/g, "."));
+              if (maxBalance) {
+                if (Number(maxBalance) >= Number(text.replace(/,/g, "."))) {
+                  amountConfig.setAmount(text.replace(/,/g, "."));
+                } else {
+                  amountConfig.setAmount(maxBalance.replace(/,/g, "."));
+                }
+              } else {
+                amountConfig.setAmount(text.replace(/,/g, "."));
+              }
             }}
             placeholder={placeholder}
             placeholderTextColor={placeholderTextColor}
@@ -121,7 +131,7 @@ export const StakeAmountInput: FunctionComponent<{
             style={{ fontSize: 24 }}
           />
         </View>
-      </>
+      </View>
     );
   }
 );

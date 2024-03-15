@@ -6,7 +6,7 @@ import { RouteProp, useRoute } from "@react-navigation/native";
 import OWCard from "@src/components/card/ow-card";
 import { PageHeader } from "@src/components/header/header-new";
 import { AlertIcon } from "@src/components/icon";
-import { StakeAmountInput } from "@src/components/input/stake-amount";
+import { NewAmountInput } from "@src/components/input/amount-input";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import { Text } from "@src/components/text";
@@ -284,7 +284,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
                     marginBottom: -12,
                   }}
                 >
-                  <StakeAmountInput
+                  <NewAmountInput
                     colors={colors}
                     inputContainerStyle={{
                       borderWidth: 0,
@@ -292,6 +292,14 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
                       marginBottom: 8,
                     }}
                     amountConfig={sendConfigs.amountConfig}
+                    maxBalance={
+                      staked
+                        .trim(true)
+                        .shrink(true)
+                        .maxDecimals(6)
+                        .toString()
+                        .split(" ")[0]
+                    }
                     placeholder={"0.0"}
                   />
                 </View>

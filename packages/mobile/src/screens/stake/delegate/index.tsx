@@ -22,20 +22,13 @@ import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { StyleSheet, View, ScrollView, TouchableOpacity } from "react-native";
 import { OWButton } from "../../../components/button";
-import {
-  AmountInput,
-  FeeButtons,
-  MemoInput,
-  TextInput,
-} from "../../../components/input";
-import { PageWithScrollView } from "../../../components/page";
-import { Toggle } from "../../../components/toggle";
+import { FeeButtons } from "../../../components/input";
 import { useSmartNavigation } from "../../../navigation.provider";
 import { useStore } from "../../../stores";
 import { metrics, spacing, typography } from "../../../themes";
 import { chainIcons } from "@oraichain/oraidex-common";
 import OWIcon from "@src/components/ow-icon/ow-icon";
-import { StakeAmountInput } from "@src/components/input/stake-amount";
+import { NewAmountInput } from "@src/components/input/amount-input";
 
 export const DelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -322,7 +315,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                     alignItems: "flex-end",
                   }}
                 >
-                  <StakeAmountInput
+                  <NewAmountInput
                     colors={colors}
                     inputContainerStyle={{
                       borderWidth: 0,
@@ -330,6 +323,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                       marginBottom: 8,
                     }}
                     amountConfig={sendConfigs.amountConfig}
+                    maxBalance={balance.split(" ")[0]}
                     placeholder={"0.0"}
                   />
                 </View>

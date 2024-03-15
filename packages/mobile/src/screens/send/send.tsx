@@ -23,7 +23,7 @@ import OWText from "@src/components/text/ow-text";
 import OWCard from "@src/components/card/ow-card";
 import { PageHeader } from "@src/components/header/header-new";
 import OWIcon from "@src/components/ow-icon/ow-icon";
-import { StakeAmountInput } from "@src/components/input/stake-amount";
+import { NewAmountInput } from "@src/components/input/amount-input";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import { chainIcons } from "@oraichain/oraidex-common";
 import { useSmartNavigation } from "@src/navigation.provider";
@@ -393,7 +393,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
                   alignItems: "flex-end",
                 }}
               >
-                <StakeAmountInput
+                <NewAmountInput
                   colors={colors}
                   inputContainerStyle={{
                     borderWidth: 0,
@@ -401,6 +401,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
                   }}
                   amountConfig={sendConfigs.amountConfig}
                   placeholder={"0.0"}
+                  maxBalance={balance.split(" ")[0]}
                 />
               </View>
             </View>

@@ -42,7 +42,7 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { PageHeader } from "@src/components/header/header-new";
 import { chainIcons } from "@oraichain/oraidex-common";
 import OWCard from "@src/components/card/ow-card";
-import { StakeAmountInput } from "@src/components/input/stake-amount";
+import { NewAmountInput } from "@src/components/input/amount-input";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 
 export const RedelegateScreen: FunctionComponent = observer(() => {
@@ -474,7 +474,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                         alignItems: "flex-end",
                       }}
                     >
-                      <StakeAmountInput
+                      <NewAmountInput
                         colors={colors}
                         inputContainerStyle={{
                           borderWidth: 0,
@@ -482,6 +482,14 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                           marginBottom: 8,
                         }}
                         amountConfig={sendConfigs.amountConfig}
+                        maxBalance={
+                          staked
+                            .trim(true)
+                            .shrink(true)
+                            .maxDecimals(6)
+                            .toString()
+                            .split(" ")[0]
+                        }
                         placeholder={"0.0"}
                       />
                     </View>
