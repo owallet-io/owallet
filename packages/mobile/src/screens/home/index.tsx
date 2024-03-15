@@ -30,6 +30,8 @@ import { TronTokensCard } from "./tron-tokens-card";
 import { AccountCardBitcoin } from "./account-card-bitcoin";
 import { TokensBitcoinCard } from "./tokens-bitcoin-card";
 import { TRON_ID } from "@owallet/common";
+import { InjectedProviderUrl } from "../web/config";
+import { InteractionManager } from "react-native";
 
 export const HomeScreen: FunctionComponent = observer((props) => {
   const [refreshing, setRefreshing] = React.useState(false);
@@ -37,7 +39,8 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   const { colors } = useTheme();
 
   const styles = styling(colors);
-  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
+  const { chainStore, accountStore, queriesStore, priceStore, browserStore } =
+    useStore();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
 
@@ -50,6 +53,18 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     chainStoreIsInitializing,
     true
   );
+  useEffect(() => {
+    InteractionManager.runAfterInteractions(() => {
+      fetch(InjectedProviderUrl)
+        .then((res) => {
+          return res.text();
+        })
+        .then((res) => {
+          browserStore.update_inject(res);
+        })
+        .catch((err) => console.log(err));
+    });
+  }, []);
   const checkAndUpdateChainInfo = useCallback(() => {
     if (!chainStoreIsInitializing) {
       (async () => {
