@@ -644,8 +644,12 @@ export class KeyRingService {
       env,
       "/sign-bitcoin",
       "request-sign-bitcoin",
-      data
+      {
+        ...data,
+        chainId,
+      }
     )) as any;
+    console.log(newData, "newData");
     // Need to check ledger here and ledger app type by chainId
     try {
       const txHash = await this.keyRing.signAndBroadcastBitcoin(

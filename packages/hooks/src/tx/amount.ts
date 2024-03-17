@@ -106,6 +106,7 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
 
   @action
   setAmount(amount: string) {
+    console.log(amount, "kakak");
     if (amount.startsWith(".")) {
       amount = "0" + amount;
     }

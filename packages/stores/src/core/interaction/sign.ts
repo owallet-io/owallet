@@ -368,7 +368,7 @@ export class SignInteractionStore {
     }
   }
   @flow
-  *approveBitcoinAndWaitEnd() {
+  *approveBitcoinAndWaitEnd(newData: object) {
     if (this.waitingBitcoinDatas?.length === 0) {
       return;
     }
@@ -377,9 +377,10 @@ export class SignInteractionStore {
     const idBitcoin = this.waitingBitcoinDatas?.[0]?.id;
     try {
       if (this.waitingBitcoinDatas?.length > 0) {
-        yield this.interactionStore.approveWithoutRemovingData(idBitcoin, {
-          ...this.waitingBitcoinDatas[0].data,
-        });
+        yield this.interactionStore.approveWithoutRemovingData(
+          idBitcoin,
+          newData
+        );
       }
     } finally {
       yield this.waitBitcoinEnd();
