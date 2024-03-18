@@ -47,11 +47,7 @@ export const SignBtcPage: FunctionComponent = observer(() => {
   });
   const [dataSign, setDataSign] = useState(null);
   //TODO: Hard code for chainID with bitcoin;
-  const chainId =
-    chainStore.current.networkType === "bitcoin"
-      ? chainStore.current.chainId
-      : "bitcoin";
-
+  const chainId = "bitcoin";
   const accountInfo = accountStore.getAccount(chainId);
   const signer = accountInfo.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses,
