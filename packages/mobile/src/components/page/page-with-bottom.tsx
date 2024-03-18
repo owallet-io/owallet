@@ -26,7 +26,7 @@ export const PageWithBottom: FunctionComponent<
         },
       ]}
     >
-      <View style={{ marginBottom: 100 }}>
+      <View style={{ paddingBottom: 100 }}>
         {showHeader ? <PageHeader title="" colors={colors} /> : null}
         <View>{children}</View>
       </View>

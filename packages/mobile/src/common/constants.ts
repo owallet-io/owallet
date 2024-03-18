@@ -213,10 +213,12 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.SendTron]: {
-    title: "Send",
+    // title: "Send",
+    title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.SendOasis]: {
-    title: "Send",
+    // title: "Send",
+    title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.Notifications]: {
     title: HEADER_KEY.showNetworkHeader,
@@ -262,7 +264,8 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: "About",
   },
   [SCREENS.SendBtc]: {
-    title: "Send",
+    // title: "Send",
+    title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.AddressBook]: {
     title: HEADER_KEY.showNetworkHeader,

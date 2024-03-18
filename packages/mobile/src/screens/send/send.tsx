@@ -180,10 +180,6 @@ export const NewSendScreen: FunctionComponent = observer(() => {
     route?.params?.contractAddress,
   ]);
 
-  const chainIcon = chainIcons.find(
-    (c) => c.chainId === chainStore.current.chainId
-  );
-
   const amount = new CoinPretty(
     sendConfigs.amountConfig.sendCurrency,
     new Int(toAmount(Number(sendConfigs.amountConfig.amount)))
@@ -314,13 +310,8 @@ export const NewSendScreen: FunctionComponent = observer(() => {
         />
       }
     >
+      <PageHeader title="Send" subtitle={"Oraichain"} colors={colors} />
       <ScrollView showsVerticalScrollIndicator={false}>
-        <PageHeader
-          title="Send"
-          subtitle={"Oraichain"}
-          colors={colors}
-          onPress={async () => {}}
-        />
         <View>
           <OWCard type="normal">
             <OWText color={colors["neutral-text-title"]} size={12}>
