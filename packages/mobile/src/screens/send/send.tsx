@@ -330,18 +330,6 @@ export const NewSendScreen: FunctionComponent = observer(() => {
         />
         <View>
           <OWCard type="normal">
-            <CurrencySelector
-              chainId={chainStore.current.chainId}
-              type="new"
-              label="Select a token"
-              placeHolder="Select Token"
-              amountConfig={sendConfigs.amountConfig}
-              labelStyle={styles.sendlabelInput}
-              containerStyle={styles.containerStyle}
-              selectorContainerStyle={{
-                backgroundColor: colors["neutral-surface-card"],
-              }}
-            />
             <OWText color={colors["neutral-text-title"]} size={12}>
               Recipient
             </OWText>
@@ -374,32 +362,18 @@ export const NewSendScreen: FunctionComponent = observer(() => {
                 <OWText style={{ paddingTop: 8 }} size={12}>
                   Balance : {balance}
                 </OWText>
-                <TouchableOpacity
-                  style={{
-                    flexDirection: "row",
-                    backgroundColor: colors["neutral-surface-action3"],
-                    borderRadius: 999,
-                    paddingHorizontal: 14,
-                    paddingVertical: 12,
-                    maxWidth: metrics.screenWidth / 4.5,
-                    marginTop: 12,
-                    alignItems: "center",
+                <CurrencySelector
+                  chainId={chainStore.current.chainId}
+                  type="new"
+                  label="Select a token"
+                  placeHolder="Select Token"
+                  amountConfig={sendConfigs.amountConfig}
+                  labelStyle={styles.sendlabelInput}
+                  containerStyle={styles.containerStyle}
+                  selectorContainerStyle={{
+                    backgroundColor: colors["neutral-surface-card"],
                   }}
-                >
-                  <OWIcon
-                    type="images"
-                    source={{ uri: chainIcon?.Icon }}
-                    size={16}
-                  />
-                  <OWText
-                    style={{ paddingHorizontal: 4 }}
-                    weight="600"
-                    size={14}
-                  >
-                    {sendConfigs.amountConfig.sendCurrency.coinDenom}
-                  </OWText>
-                  <DownArrowIcon height={11} color={colors["primary-text"]} />
-                </TouchableOpacity>
+                />
               </View>
               <View
                 style={{

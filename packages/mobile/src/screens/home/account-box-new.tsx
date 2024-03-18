@@ -98,6 +98,8 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
       yesterdayAssets.map((y) => {
         yesterdayBalance += y.value ?? 0;
       });
+      console.log("yesterdayBalance", yesterdayBalance);
+
       setProfit(Number(Number(totalUsd - yesterdayBalance).toFixed(6)));
     } else {
       setProfit(0);

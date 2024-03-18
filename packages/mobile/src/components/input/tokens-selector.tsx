@@ -1,31 +1,23 @@
 import React, { FunctionComponent, useMemo, useRef, useState } from "react";
-import {
-  StyleSheet,
-  TextStyle,
-  TouchableOpacity,
-  View,
-  ViewStyle,
-} from "react-native";
+import { TextStyle, TouchableOpacity, View, ViewStyle } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
-import { Text } from "@src/components/text";
-import { useStyle } from "../../styles";
 import { registerModal } from "../../modals/base";
 import { RectButton } from "../rect-button";
-import { metrics, spacing, typography } from "../../themes";
+import { metrics, spacing } from "../../themes";
 import { useTheme } from "@src/themes/theme-provider";
 import { BottomSheetProps } from "@gorhom/bottom-sheet";
 import { chainIcons } from "@oraichain/oraidex-common";
 import OWIcon from "../ow-icon/ow-icon";
 import OWText from "../text/ow-text";
 import { DownArrowIcon } from "../icon";
+import { RadioButton } from "react-native-radio-buttons-group";
+import { Bech32Address } from "@owallet/cosmos";
+import { TextInput } from "./input";
 export const SelectorModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
   bottomSheetModalConfig?: Omit<BottomSheetProps, "snapPoints" | "children">;
-  items: {
-    label: string;
-    key: string;
-  }[];
+  items: any[];
   maxItemsToShow?: number;
   selectedKey: string | undefined;
   setSelectedKey: (key: string | undefined) => void;
@@ -41,45 +33,7 @@ export const SelectorModal: FunctionComponent<{
   }) => {
     const { colors } = useTheme();
 
-    const renderBall = (selected: boolean) => {
-      if (selected) {
-        return (
-          <View
-            style={{
-              ...styles.ball,
-              backgroundColor: colors["primary-surface-default"],
-            }}
-          >
-            <View
-              style={{
-                height: spacing["12"],
-                width: spacing["12"],
-                borderRadius: spacing["32"],
-                backgroundColor: colors["white"],
-              }}
-            />
-          </View>
-        );
-      } else {
-        return (
-          <View
-            style={{
-              ...styles.ball,
-              backgroundColor: colors["gray-100"],
-            }}
-          >
-            <View
-              style={{
-                height: spacing["12"],
-                width: spacing["12"],
-                borderRadius: spacing["32"],
-                backgroundColor: colors["white"],
-              }}
-            />
-          </View>
-        );
-      }
-    };
+    const [keyword, setKeyword] = useState("");
 
     const scrollViewRef = useRef<ScrollView | null>(null);
     const initOnce = useRef<boolean>(false);
@@ -118,6 +72,33 @@ export const SelectorModal: FunctionComponent<{
           paddingVertical: spacing["16"],
         }}
       >
+        <View>
+          <TextInput
+            style={{
+              paddingVertical: 0,
+              height: 40,
+              backgroundColor: colors["neutral-surface-action"],
+              borderRadius: 999,
+              paddingLeft: 35,
+              fontSize: 16,
+              color: colors["neutral-text-body"],
+            }}
+            inputContainerStyle={{
+              borderWidth: 0,
+            }}
+            placeholderTextColor={colors["neutral-text-body"]}
+            placeholder="Search for a token"
+            onChangeText={(t) => setKeyword(t)}
+            value={keyword}
+          />
+          <View style={{ position: "absolute", left: 24, top: 24 }}>
+            <OWIcon
+              color={colors["neutral-icon-on-light"]}
+              name="search"
+              size={16}
+            />
+          </View>
+        </View>
         <ScrollView
           style={{
             maxHeight: maxItemsToShow ? 64 * maxItemsToShow : undefined,
@@ -127,42 +108,100 @@ export const SelectorModal: FunctionComponent<{
           persistentScrollbar={true}
           onLayout={onInit}
         >
-          {items.map((item) => {
-            return (
-              <View
-                style={{
-                  backgroundColor: colors["background-item-list"],
-                  borderRadius: spacing["12"],
-                  marginTop: spacing["8"],
-                  marginBottom: spacing["8"],
-                  paddingHorizontal: spacing["18"],
-                }}
-              >
-                <RectButton
-                  key={item.key}
-                  style={{
-                    height: 64,
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                  }}
-                  onPress={() => {
-                    setSelectedKey(item.key);
-                    if (!modalPersistent) {
-                      close();
-                    }
-                  }}
-                >
-                  <Text
-                    style={{ ...styles.label, color: colors["primary-text"] }}
+          {items
+            .filter((i) => i.denom.includes(keyword))
+            .map((item) => {
+              if (item) {
+                const selected = item.key === selectedKey;
+
+                let subtitle;
+                const channel = item.denom.split(" (")?.[1];
+                if (channel) {
+                  subtitle = `(${channel}`;
+                }
+                if (item.contractAddress) {
+                  subtitle = Bech32Address.shortenAddress(
+                    item.contractAddress,
+                    24
+                  );
+                }
+
+                return (
+                  <View
+                    style={{
+                      marginVertical: 16,
+                    }}
                   >
-                    {item.label}
-                  </Text>
-                  {renderBall(item.key === selectedKey)}
-                </RectButton>
-              </View>
-            );
-          })}
+                    <RectButton
+                      key={item.key}
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                      }}
+                      onPress={() => {
+                        setSelectedKey(item.key);
+                        if (!modalPersistent) {
+                          close();
+                        }
+                      }}
+                    >
+                      <View
+                        style={{ flexDirection: "row", alignItems: "center" }}
+                      >
+                        <View
+                          style={{
+                            marginRight: 8,
+                            borderRadius: 999,
+                            width: 40,
+                            height: 40,
+                            backgroundColor: colors["neutral-surface-action2"],
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <OWIcon
+                            type="images"
+                            source={{ uri: item.image }}
+                            size={28}
+                          />
+                        </View>
+                        <View>
+                          <OWText size={16} weight="500">
+                            {item.denom.replace(/(.{16})..+/, "$1…")}
+                          </OWText>
+                          {subtitle ? (
+                            <OWText
+                              color={colors["neutral-text-body"]}
+                              size={14}
+                              weight="400"
+                            >
+                              {subtitle}
+                            </OWText>
+                          ) : null}
+                        </View>
+                      </View>
+
+                      <RadioButton
+                        color={
+                          selected
+                            ? colors["hightlight-surface-active"]
+                            : colors["neutral-text-body"]
+                        }
+                        id={item.key}
+                        selected={selected}
+                        onPress={() => {
+                          setSelectedKey(item.key);
+                          if (!modalPersistent) {
+                            close();
+                          }
+                        }}
+                      />
+                    </RectButton>
+                  </View>
+                );
+              }
+            })}
         </ScrollView>
       </View>
     );
@@ -202,8 +241,6 @@ export const TokensSelector: FunctionComponent<{
   const selected = useMemo(() => {
     return items.find((item) => item.key === selectedKey);
   }, [items, selectedKey]);
-
-  console.log("items", items);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -247,20 +284,16 @@ export const SelectorButtonWithoutModal: FunctionComponent<{
         label: string;
         key: string;
       }
+    | {
+        contractAddress: string;
+        denom: string;
+        image: string;
+        key: string;
+      }
     | undefined;
 
   onPress: () => void;
-}> = ({
-  containerStyle,
-  labelStyle,
-  selectorContainerStyle,
-  textStyle,
-  label,
-  placeHolder,
-  selected,
-  onPress,
-  chainId,
-}) => {
+}> = ({ selected, onPress, chainId }) => {
   const { colors } = useTheme();
 
   const chainIcon = chainIcons.find((c) => c.chainId === chainId);
@@ -279,25 +312,15 @@ export const SelectorButtonWithoutModal: FunctionComponent<{
         alignItems: "center",
       }}
     >
-      <OWIcon type="images" source={{ uri: chainIcon?.Icon }} size={16} />
+      <OWIcon
+        type="images"
+        source={{ uri: selected.image ?? chainIcon?.Icon }}
+        size={16}
+      />
       <OWText style={{ paddingHorizontal: 4 }} weight="600" size={14}>
-        {selected ? selected.label : chainId ?? ""}
+        {selected ? selected.denom : chainId ?? ""}
       </OWText>
       <DownArrowIcon height={11} color={colors["primary-text"]} />
     </TouchableOpacity>
   );
 };
-
-const styles = StyleSheet.create({
-  ball: {
-    width: spacing["24"],
-    height: spacing["24"],
-    borderRadius: spacing["32"],
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  label: {
-    ...typography.h5,
-    fontWeight: "700",
-  },
-});

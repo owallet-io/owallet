@@ -83,6 +83,8 @@ export const TokensCardAll: FunctionComponent<{
         const yesterdayData = res.data[yesterday];
 
         setYesterdayAssets(yesterdayData);
+        console.log("yesterdayData", yesterdayData);
+
         appInitStore.updateYesterdayPriceFeed(yesterdayData);
       } else {
         setYesterdayAssets([]);
@@ -96,6 +98,8 @@ export const TokensCardAll: FunctionComponent<{
   }, [accountOrai.bech32Address]);
 
   const handleSaveTokenInfos = async (tokenInfos) => {
+    console.log("tokenInfos", accountOrai.bech32Address, tokenInfos);
+
     await API.saveTokenInfos(
       {
         address: accountOrai.bech32Address,

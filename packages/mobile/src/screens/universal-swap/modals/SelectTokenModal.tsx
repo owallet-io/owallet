@@ -117,22 +117,26 @@ export const SelectTokenModal: FunctionComponent<{
                   />
                 </View>
                 <View style={styles.pl10}>
-                  <Text size={16} color={colors["text-title"]} weight="500">
+                  <Text
+                    size={16}
+                    color={colors["neutral-text-title"]}
+                    weight="500"
+                  >
                     {item.name}
                   </Text>
-                  <Text weight="500" color={colors["blue-400"]}>
+                  <Text weight="500" color={colors["neutral-text-body"]}>
                     {item.org}
                   </Text>
                 </View>
               </View>
               <View style={styles.rightBoxItem}>
-                <Text color={colors["text-title"]}>
+                <Text color={colors["neutral-text-title"]}>
                   {toDisplay(
                     universalSwapStore?.getAmount?.[item.denom],
                     item.decimals
                   )}
                 </Text>
-                {/* <Text weight="500" color={colors['blue-400']}>
+                {/* <Text weight="500" color={colors['neutral-icon-on-light']}>
                 ${totalUsd.toFixed(2) ?? 0}
               </Text> */}
               </View>
@@ -153,18 +157,22 @@ export const SelectTokenModal: FunctionComponent<{
         <View>
           <TextInput
             style={styles.textInput}
-            placeholderTextColor={colors["text-place-holder"]}
+            placeholderTextColor={colors["neutral-text-body"]}
             placeholder="Search Token"
             onChangeText={(t) => setKeyword(t)}
             value={keyword}
           />
           <View style={styles.iconSearch}>
-            <OWIcon color={colors["blue-400"]} text name="search" size={16} />
+            <OWIcon
+              color={colors["neutral-icon-on-light"]}
+              name="search"
+              size={16}
+            />
           </View>
         </View>
 
         <View style={styles.containerTitle}>
-          <Text color={colors["blue-400"]} weight="500">
+          <Text color={colors["neutral-icon-on-light"]} weight="500">
             List Token
           </Text>
           <TouchableOpacity
@@ -176,14 +184,18 @@ export const SelectTokenModal: FunctionComponent<{
             <OWIcon name="browser-bold" size={16} />
             <Text
               style={styles.txtNetwork}
-              color={colors["blue-400"]}
+              color={colors["neutral-icon-on-light"]}
               weight="500"
             >
               {Object.keys(ChainIdEnum).find(
                 (key) => ChainIdEnum[key] === selectedChainFilter
               ) ?? "Network"}
             </Text>
-            <OWIcon size={16} color={colors["blue-400"]} name="down" />
+            <OWIcon
+              size={16}
+              color={colors["neutral-icon-on-light"]}
+              name="down"
+            />
           </TouchableOpacity>
         </View>
         <OWFlatList
@@ -238,11 +250,11 @@ const styling = (colors: TypeTheme["colors"]) =>
     textInput: {
       paddingVertical: 0,
       height: 40,
-      backgroundColor: colors["box-nft"],
+      backgroundColor: colors["neutral-surface-action"],
       borderRadius: 8,
       paddingLeft: 35,
       fontSize: 16,
-      color: colors["text-title"],
+      color: colors["neutral-text-body"],
       marginVertical: 10,
     },
     containerModal: {
