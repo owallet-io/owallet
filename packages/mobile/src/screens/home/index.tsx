@@ -55,6 +55,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   );
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
+      console.log(InjectedProviderUrl, "InjectedProviderUrl");
       fetch(InjectedProviderUrl)
         .then((res) => {
           return res.text();
