@@ -46,8 +46,9 @@ export const SignBtcPage: FunctionComponent = observer(() => {
     signInteractionStore.rejectAll();
   });
   const [dataSign, setDataSign] = useState(null);
+  //TODO: Hard code for chainID with bitcoin;
+  const chainId = "bitcoin";
 
-  const { chainId } = chainStore.current;
   const accountInfo = accountStore.getAccount(chainId);
   const signer = accountInfo.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses,
@@ -90,12 +91,13 @@ export const SignBtcPage: FunctionComponent = observer(() => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       const msgs = data.data.data?.msgs;
+
       chainStore.selectChain(data.data.chainId);
       setDataSign(data);
       if (msgs?.amount) {
         amountConfig.setAmount(`${satsToBtc(msgs?.amount)}`);
       }
-      memoConfig.setChain(msgs?.message);
+      memoConfig.setMemo(msgs?.message);
     }
   }, [signInteractionStore.waitingBitcoinData]);
   const dataBalance =
