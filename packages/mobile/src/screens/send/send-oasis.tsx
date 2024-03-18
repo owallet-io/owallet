@@ -3,20 +3,30 @@ import { observer } from "mobx-react-lite";
 import { useSendTxConfig } from "@owallet/hooks";
 import { useStore } from "../../stores";
 import { PageWithScrollView } from "../../components/page";
-import { StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import {
+  AddressInput,
   AmountInput,
   CurrencySelector,
+  MemoInput,
   TextInput,
 } from "../../components/input";
 import { OWButton } from "../../components/button";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
-import { spacing } from "../../themes";
+import { metrics, spacing } from "../../themes";
 import { OWBox } from "@src/components/card";
 import { OWSubTitleHeader } from "@src/components/header";
 import { SignOasisModal } from "@src/modals/sign/sign-oasis";
 import { useSmartNavigation } from "@src/navigation.provider";
+import { PageWithBottom } from "@src/components/page/page-with-bottom";
+import { PageHeader } from "@src/components/header/header-new";
+import OWCard from "@src/components/card/ow-card";
+import OWText from "@src/components/text/ow-text";
+import { NewAmountInput } from "@src/components/input/amount-input";
+import OWIcon from "@src/components/ow-icon/ow-icon";
+import { ChainIdEnum } from "@owallet/common";
+import Big from "big.js";
 
 const styling = (colors) =>
   StyleSheet.create({
@@ -27,20 +37,30 @@ const styling = (colors) =>
       borderRadius: 24,
     },
     sendlabelInput: {
-      fontSize: 16,
-      fontWeight: "700",
-      lineHeight: 22,
-      color: colors["sub-primary-text"],
-      marginBottom: spacing["8"],
+      fontSize: 14,
+      fontWeight: "500",
+      lineHeight: 20,
+      color: colors["neutral-Text-body"],
     },
-
     containerStyle: {
       backgroundColor: colors["background-box"],
+    },
+    bottomBtn: {
+      marginTop: 20,
+      width: metrics.screenWidth / 2.3,
+      borderRadius: 999,
     },
   });
 
 export const SendOasisScreen: FunctionComponent = observer(() => {
-  const { chainStore, accountStore, queriesStore, modalStore } = useStore();
+  const {
+    chainStore,
+    accountStore,
+    queriesStore,
+    modalStore,
+    keyRingStore,
+    priceStore,
+  } = useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
   const [receiveAddress, setReceiveAddress] = useState("");
@@ -66,7 +86,6 @@ export const SendOasisScreen: FunctionComponent = observer(() => {
   const chainId = route?.params?.chainId
     ? route?.params?.chainId
     : chainStore?.current?.chainId;
-  // const maxAmount = route?.params?.maxAmount;
 
   const account = accountStore.getAccount(chainId);
   const queries = queriesStore.get(chainId);
@@ -79,6 +98,21 @@ export const SendOasisScreen: FunctionComponent = observer(() => {
     .maxDecimals(9)
     .hideDenom(true)
     .toString();
+
+  const addressCore = account.getAddressDisplay(
+    keyRingStore.keyRingLedgerAddresses,
+    false
+  );
+  let total: any =
+    queries.evm.queryEvmBalance.getQueryBalance(addressCore)?.balance;
+
+  const totalAmount = () => {
+    if (chainStore.current.chainId !== ChainIdEnum.TRON && total) {
+      return priceStore?.calculatePrice(total).toString();
+    }
+
+    return 0;
+  };
 
   const sendConfigs = useSendTxConfig(
     chainStore,
@@ -112,6 +146,138 @@ export const SendOasisScreen: FunctionComponent = observer(() => {
       sendConfigs.recipientConfig.setRawRecipient(route.params.recipient);
     }
   }, [route?.params?.recipient, sendConfigs.recipientConfig]);
+
+  return (
+    <PageWithBottom
+      bottomGroup={
+        <OWButton
+          label="Send"
+          loading={account.isSendingMsg === "send"}
+          onPress={async () => {
+            modalStore.setOptions({
+              bottomSheetModalConfig: {
+                enablePanDownToClose: false,
+                enableOverDrag: false,
+              },
+            });
+            if (receiveAddress && Number(sendConfigs.amountConfig.amount) > 0) {
+              modalStore.setChildren(
+                <SignOasisModal
+                  isOpen={true}
+                  onSuccess={() => {
+                    smartNavigation.replaceSmart("TxSuccessResult", {
+                      chainId,
+                      txHash: "",
+                    });
+                  }}
+                  data={{
+                    amount: sendConfigs.amountConfig.amount,
+                    address: receiveAddress,
+                    maxAmount,
+                  }}
+                  close={async () => await modalStore.close()}
+                />
+              );
+            }
+          }}
+          style={[
+            styles.bottomBtn,
+            {
+              width: metrics.screenWidth - 32,
+            },
+          ]}
+          textStyle={{
+            fontSize: 14,
+            fontWeight: "600",
+          }}
+        />
+      }
+    >
+      <PageHeader title="Send" subtitle={"Oraichain"} colors={colors} />
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View>
+          <OWCard type="normal">
+            <OWText color={colors["neutral-text-title"]} size={12}>
+              Recipient
+            </OWText>
+
+            <TextInput
+              placeholder="Enter receiving address"
+              label=""
+              labelStyle={styles.sendlabelInput}
+              containerStyle={{
+                marginBottom: 12,
+              }}
+              inputContainerStyle={{
+                backgroundColor: colors["neutral-surface-card"],
+                borderWidth: 0,
+                paddingHorizontal: 0,
+              }}
+              value={receiveAddress}
+              onChange={({ nativeEvent: { text } }) => setReceiveAddress(text)}
+              autoCorrect={false}
+              autoCapitalize="none"
+              autoCompleteType="off"
+            />
+          </OWCard>
+          <OWCard style={{ paddingTop: 22 }} type="normal">
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+              }}
+            >
+              <View>
+                <OWText style={{ paddingTop: 8 }} size={12}>
+                  Balance : {totalAmount()}
+                </OWText>
+                <CurrencySelector
+                  chainId={chainStore.current.chainId}
+                  type="new"
+                  label="Select a token"
+                  placeHolder="Select Token"
+                  amountConfig={sendConfigs.amountConfig}
+                  labelStyle={styles.sendlabelInput}
+                  containerStyle={styles.containerStyle}
+                  selectorContainerStyle={{
+                    backgroundColor: colors["neutral-surface-card"],
+                  }}
+                />
+              </View>
+              <View
+                style={{
+                  alignItems: "flex-end",
+                }}
+              >
+                <NewAmountInput
+                  colors={colors}
+                  inputContainerStyle={{
+                    borderWidth: 0,
+                    width: metrics.screenWidth / 2,
+                  }}
+                  amountConfig={sendConfigs.amountConfig}
+                  placeholder={"0.0"}
+                  maxBalance={maxAmount}
+                />
+              </View>
+            </View>
+            {/* <View
+              style={{
+                alignSelf: "flex-end",
+                flexDirection: "row",
+                alignItems: "center"
+              }}
+            >
+              <OWIcon name="tdesign_swap" size={16} />
+              <OWText style={{ paddingLeft: 4 }} color={colors["neutral-text-body"]} size={14}>
+                {price}
+              </OWText>
+            </View> */}
+          </OWCard>
+        </View>
+      </ScrollView>
+    </PageWithBottom>
+  );
 
   return (
     <PageWithScrollView backgroundColor={colors["background"]}>

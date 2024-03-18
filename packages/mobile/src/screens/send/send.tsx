@@ -46,7 +46,6 @@ const styling = (colors) =>
       marginTop: 20,
       width: metrics.screenWidth / 2.3,
       borderRadius: 999,
-      marginLeft: 12,
     },
   });
 

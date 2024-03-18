@@ -55,7 +55,6 @@ const useStyle = () => {
     },
     aic: {
       position: "absolute",
-
       bottom: 0,
       backgroundColor: colors["neutral-surface-card"],
       width: metrics.screenWidth,
