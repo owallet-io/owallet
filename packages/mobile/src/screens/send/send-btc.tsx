@@ -315,6 +315,16 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
                   placeholder={"0.0"}
                   maxBalance={balance.split(" ")[0]}
                 />
+                <AmountInput
+                  placeholder="ex. 1000 BTC"
+                  label="Amount"
+                  allowMax={true}
+                  amountConfig={sendConfigs.amountConfig}
+                  labelStyle={styles.sendlabelInput}
+                  inputContainerStyle={{
+                    backgroundColor: colors["background-box"],
+                  }}
+                />
               </View>
             </View>
             <View

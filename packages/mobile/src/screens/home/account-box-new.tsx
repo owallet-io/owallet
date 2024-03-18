@@ -15,6 +15,8 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { CopyAddressModal } from "./components/copy-address/copy-address-modal";
 import { getTokenInfos } from "@src/utils/helper";
 import { useSmartNavigation } from "@src/navigation.provider";
+import { SCREENS } from "@src/common/constants";
+import { navigate } from "@src/router/root";
 
 export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
   const { colors } = useTheme();
@@ -246,6 +248,10 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
               } else if (chainStore.current.chainId === ChainIdEnum.Oasis) {
                 smartNavigation.navigateSmart("SendOasis", {
                   currency: chainStore.current.stakeCurrency.coinMinimalDenom,
+                });
+              } else if (chainStore.current.networkType === "bitcoin") {
+                navigate(SCREENS.STACK.Others, {
+                  screen: SCREENS.SendBtc,
                 });
               } else {
                 smartNavigation.navigateSmart("NewSend", {
