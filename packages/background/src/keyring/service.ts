@@ -640,7 +640,6 @@ export class KeyRingService {
     data: object
   ): Promise<string> {
     // here
-    console.log("this is request sign bitcoin");
     const newData = (await this.interactionService.waitApprove(
       env,
       "/sign-bitcoin",
@@ -650,16 +649,14 @@ export class KeyRingService {
         chainId,
       }
     )) as any;
-    console.log(newData, "newData");
-    // Need to check ledger here and ledger app type by chainId
+
     try {
-      // const txHash = await this.keyRing.signAndBroadcastBitcoin(
-      //   env,
-      //   chainId,
-      //   newData
-      // );
-      // return txHash;
-      return;
+      const txHash = await this.keyRing.signAndBroadcastBitcoin(
+        env,
+        chainId,
+        newData
+      );
+      return txHash;
     } catch (error) {
       console.log({ error });
       throw error;
