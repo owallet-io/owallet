@@ -12,7 +12,7 @@ import {
   MemoInput,
 } from "@src/components/input";
 import { OWButton } from "@src/components/button";
-import { BtcToSats } from "@owallet/bitcoin";
+import { BtcToSats, formatBalance } from "@owallet/bitcoin";
 import { useSendTxConfig } from "@owallet/hooks";
 import { useStore } from "@src/stores";
 import { useTheme } from "@src/themes/theme-provider";
@@ -117,29 +117,20 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
   }, [route?.params?.recipient, sendConfigs.recipientConfig]);
 
   const [balance, setBalance] = useState("0");
+  const [price, setPrice] = useState("0");
   const [fee, setFee] = useState({ type: "", value: "" });
 
   const fetchBalance = async () => {
-    const queryBalance = queries.queryBalances
-      .getQueryBech32Address(account.bech32Address)
-      .balances.find((bal) => {
-        return (
-          bal.currency.coinMinimalDenom ===
-          sendConfigs.amountConfig.sendCurrency.coinMinimalDenom //currency.coinMinimalDenom
-        );
-      });
-
-    if (queryBalance) {
-      queryBalance.fetch();
-      setBalance(
-        queryBalance.balance
-          .shrink(true)
-          .maxDecimals(6)
-          .trim(true)
-          .upperCase(true)
-          .toString()
-      );
-    }
+    const balanceBtc =
+      queries.bitcoin.queryBitcoinBalance.getQueryBalance(address)?.balance;
+    const priceBalance = priceStore.calculatePrice(balanceBtc);
+    const amount = formatBalance({
+      balance: Number(balanceBtc?.toCoin().amount),
+      cryptoUnit: "BTC",
+      coin: chainStore.current.chainId,
+    });
+    setPrice(priceBalance?.toString() || "$0");
+    setBalance(amount);
   };
 
   useEffect(() => {
@@ -148,11 +139,6 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
     const averageFeePrice = priceStore.calculatePrice(averageFee);
     setFee({ type: "Avarage", value: averageFeePrice.toString() });
   }, [account.bech32Address, sendConfigs.amountConfig.sendCurrency]);
-
-  const amount = new CoinPretty(
-    sendConfigs.amountConfig.sendCurrency,
-    new Int(toAmount(Number(sendConfigs.amountConfig.amount)))
-  );
 
   const _onPressFee = () => {
     modalStore.setOptions({
@@ -344,7 +330,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
                 color={colors["neutral-text-body"]}
                 size={14}
               >
-                {priceStore.calculatePrice(amount).toString()}
+                {price}
               </OWText>
             </View>
           </OWCard>
