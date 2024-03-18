@@ -12,6 +12,8 @@ import { formatBalance } from "@owallet/bitcoin";
 import { FeeButtons } from "../../../components/form";
 import { CoinGeckoPriceStore } from "@owallet/stores";
 import { FeeConfig, GasConfig } from "@owallet/hooks";
+import { CoinPretty, Dec } from "@owallet/unit";
+import { useStore } from "../../../stores";
 
 export const BtcDetailsTab: FunctionComponent<{
   dataSign;
@@ -23,7 +25,7 @@ export const BtcDetailsTab: FunctionComponent<{
 }> = observer(
   ({ dataSign, intl, feeConfig, isNoSetFee, gasConfig, priceStore }) => {
     const msgs = dataSign?.data?.data?.msgs;
-
+    const { chainStore } = useStore();
     return (
       <div className={styleDetailsTab.container}>
         <Label
@@ -45,11 +47,12 @@ export const BtcDetailsTab: FunctionComponent<{
           >
             Send{" "}
             <b>
-              {formatBalance({
-                balance: Number(msgs?.amount),
-                cryptoUnit: "BTC",
-                coin: msgs?.selectedCrypto,
-              }) || "0 BTC"}
+              {new CoinPretty(
+                chainStore.current.stakeCurrency,
+                new Dec(msgs?.amount)
+              )
+                ?.trim(true)
+                ?.toString()}
             </b>{" "}
             to{" "}
             <b>
@@ -66,13 +69,12 @@ export const BtcDetailsTab: FunctionComponent<{
           </Label>
           <div id="fee-price">
             <div className={styleDetailsTab.feePrice}>
-              {`≈ ${
-                formatBalance({
-                  balance: Number(msgs?.totalFee),
-                  cryptoUnit: "BTC",
-                  coin: msgs?.selectedCrypto,
-                }) || "0 BTC"
-              }`}
+              {`≈ ${new CoinPretty(
+                chainStore.current.stakeCurrency,
+                new Dec(msgs?.totalFee)
+              )
+                ?.trim(true)
+                ?.toString()}`}
             </div>
           </div>
         </React.Fragment>
