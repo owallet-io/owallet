@@ -236,9 +236,22 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
             style={styles.getStarted}
             label="Send"
             onPress={() => {
-              smartNavigation.navigateSmart("NewSend", {
-                currency: chainStore.current.stakeCurrency.coinMinimalDenom,
-              });
+              // smartNavigation.navigateSmart("NewSend", {
+              //   currency: chainStore.current.stakeCurrency.coinMinimalDenom,
+              // });
+              if (chainStore.current.chainId === ChainIdEnum.TRON) {
+                smartNavigation.navigateSmart("SendTron", {
+                  currency: chainStore.current.stakeCurrency.coinMinimalDenom,
+                });
+              } else if (chainStore.current.chainId === ChainIdEnum.Oasis) {
+                smartNavigation.navigateSmart("SendOasis", {
+                  currency: chainStore.current.stakeCurrency.coinMinimalDenom,
+                });
+              } else {
+                smartNavigation.navigateSmart("NewSend", {
+                  currency: chainStore.current.stakeCurrency.coinMinimalDenom,
+                });
+              }
             }}
           />
         </View>
