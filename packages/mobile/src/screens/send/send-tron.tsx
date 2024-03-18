@@ -3,24 +3,14 @@ import { observer } from "mobx-react-lite";
 import { useSendTxConfig } from "@owallet/hooks";
 import { useStore } from "../../stores";
 import { EthereumEndpoint, toAmount } from "@owallet/common";
-import { PageWithScrollView } from "../../components/page";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
-import {
-  AddressInput,
-  AmountInput,
-  CurrencySelector,
-  FeeButtons,
-  MemoInput,
-  TextInput,
-} from "../../components/input";
+import { CurrencySelector, MemoInput, TextInput } from "../../components/input";
 import { OWButton } from "../../components/button";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { useSmartNavigation } from "../../navigation.provider";
 import { Buffer } from "buffer";
 import { metrics, spacing } from "../../themes";
-import { Text } from "@src/components/text";
-import { Toggle } from "../../components/toggle";
 import { useTheme } from "@src/themes/theme-provider";
 import { handleSaveHistory, HISTORY_STATUS } from "@src/utils/helper";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
@@ -32,7 +22,7 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { DownArrowIcon } from "@src/components/icon";
 import { FeeModal } from "@src/modals/fee";
 
-export const SendTronScreen: FunctionComponent = observer((props) => {
+export const SendTronScreen: FunctionComponent = observer(() => {
   const {
     chainStore,
     accountStore,
@@ -41,9 +31,7 @@ export const SendTronScreen: FunctionComponent = observer((props) => {
     keyRingStore,
     modalStore,
   } = useStore();
-
   const [receiveAddress, setReceiveAddress] = useState("");
-  const [customFee, setCustomFee] = useState(false);
   const { colors } = useTheme();
   const styles = styling(colors);
   const route = useRoute<
@@ -271,9 +259,7 @@ export const SendTronScreen: FunctionComponent = observer((props) => {
                 paddingHorizontal: 0,
               }}
               value={receiveAddress}
-              onChange={({ nativeEvent: { eventCount, target, text } }) =>
-                setReceiveAddress(text)
-              }
+              onChange={({ nativeEvent: { text } }) => setReceiveAddress(text)}
               autoCorrect={false}
               autoCapitalize="none"
               autoCompleteType="off"

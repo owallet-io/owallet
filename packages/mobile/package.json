@@ -40,7 +40,7 @@
     "@oasisprotocol/client": "^1.0.0",
     "@oasisprotocol/client-rt": "^1.0.0",
     "@oraichain/common-contracts-sdk": "^1.0.31",
-    "@oraichain/oraidex-common": "=1.0.74",
+    "@oraichain/oraidex-common": "^1.0.77",
     "@oraichain/oraidex-contracts-sdk": "^1.0.33",
     "@oraichain/cw-simulate": "^2.8.76",
     "@oraichain/oraidex-universal-swap": "^1.0.57",
