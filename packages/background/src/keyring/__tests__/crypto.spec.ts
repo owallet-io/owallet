@@ -131,7 +131,7 @@ describe("Crypto", () => {
         );
 
         expect(mockRng).toHaveBeenCalled();
-        expect(mockRng).toBeCalledTimes(2);
+        expect(mockRng).toBeCalledTimes(3);
         expect(scryptSpy).toHaveBeenCalledWith(mockPassword, scryptParams);
         expect(result.version).toBe("1.2");
         expect(result.type).toBe("privateKey");
