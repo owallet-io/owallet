@@ -1,14 +1,68 @@
-import React, { FunctionComponent, useState } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { View } from "react-native";
 import { useStore } from "../../stores";
 import { FeeButtons, TextInput } from "@src/components/input";
 import OWText from "@src/components/text/ow-text";
-import { Dec, DecUtils } from "@owallet/unit";
+import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
 import { Toggle } from "@src/components/toggle";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { metrics } from "@src/themes";
 import { OWButton } from "@src/components/button";
+import { toAmount } from "@owallet/common";
 
+export const CustomFee: FunctionComponent<{
+  sendConfigs;
+  colors;
+  setFee;
+}> = ({ sendConfigs, colors, setFee }) => {
+  return (
+    <View style={{ paddingBottom: metrics.screenHeight / 5 }}>
+      <TextInput
+        label=""
+        inputContainerStyle={{
+          backgroundColor: colors["background-box"],
+          borderRadius: 8,
+          borderColor: colors["primary-surface-default"],
+        }}
+        placeholder="Fee amount"
+        keyboardType={"numeric"}
+        labelStyle={{
+          fontSize: 14,
+          fontWeight: "500",
+          lineHeight: 20,
+          color: colors["neutral-text-body"],
+        }}
+        onChangeText={(text) => {
+          const fee = new Dec(Number(text.replace(/,/g, "."))).mul(
+            DecUtils.getTenExponentNInPrecisionRange(6)
+          );
+          sendConfigs.feeConfig.setManualFee({
+            amount: fee.roundUp().toString(),
+            denom: sendConfigs.feeConfig.feeCurrency.coinMinimalDenom,
+          });
+
+          setFee({
+            type: "Custom",
+            value: `${sendConfigs.feeConfig.fee} `,
+          });
+        }}
+      />
+      {/* <View
+        style={{
+          alignSelf: "flex-end",
+          flexDirection: "row",
+          alignItems: "center",
+          marginTop: 8
+        }}
+      >
+        <OWIcon name="tdesign_swap" size={16} />
+        <OWText style={{ paddingLeft: 4 }} color={colors["neutral-text-body"]} size={14}>
+          {"0"}
+        </OWText>
+      </View> */}
+    </View>
+  );
+};
 export const FeeModal: FunctionComponent<{
   sendConfigs;
   colors;
@@ -17,7 +71,13 @@ export const FeeModal: FunctionComponent<{
 }> = ({ sendConfigs, colors, vertical, setFee }) => {
   const [customFee, setCustomFee] = useState(false);
 
-  const { chainStore, modalStore } = useStore();
+  const { chainStore, modalStore, priceStore } = useStore();
+
+  const amount = new CoinPretty(
+    sendConfigs.amountConfig.sendCurrency,
+    new Int(toAmount(Number(sendConfigs.amountConfig.amount)))
+  );
+
   return (
     <View>
       {chainStore.current.networkType !== "evm" ? (
@@ -67,7 +127,6 @@ export const FeeModal: FunctionComponent<{
             on={customFee}
             onChange={(value) => {
               setCustomFee(value);
-
               if (!value) {
                 if (
                   sendConfigs.feeConfig.feeCurrency &&
@@ -81,37 +140,7 @@ export const FeeModal: FunctionComponent<{
         </View>
       ) : null}
       {customFee && chainStore.current.networkType !== "evm" ? (
-        <View style={{ paddingBottom: metrics.screenHeight / 5 }}>
-          <TextInput
-            label=""
-            inputContainerStyle={{
-              backgroundColor: colors["background-box"],
-              borderRadius: 8,
-              borderColor: colors["primary-surface-default"],
-            }}
-            placeholder="Fee amount"
-            keyboardType={"numeric"}
-            labelStyle={{
-              fontSize: 14,
-              fontWeight: "500",
-              lineHeight: 20,
-              color: colors["neutral-text-body"],
-            }}
-            onChangeText={(text) => {
-              const fee = new Dec(Number(text.replace(/,/g, "."))).mul(
-                DecUtils.getTenExponentNInPrecisionRange(6)
-              );
-              sendConfigs.feeConfig.setManualFee({
-                amount: fee.roundUp().toString(),
-                denom: sendConfigs.feeConfig.feeCurrency.coinMinimalDenom,
-              });
-              setFee({
-                type: "Custom",
-                value: `${sendConfigs.feeConfig.fee} `,
-              });
-            }}
-          />
-        </View>
+        <CustomFee sendConfigs={sendConfigs} colors={colors} setFee={setFee} />
       ) : chainStore.current.networkType !== "evm" ? (
         <FeeButtons
           setFee={setFee}

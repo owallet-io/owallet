@@ -293,13 +293,6 @@ export const NewSendScreen: FunctionComponent = observer(() => {
                   return;
                 }
 
-                // if (
-                //   e?.message?.includes('Cannot read properties of undefined')
-                // ) {
-                //   return;
-                // }
-
-                // alert(e.message);
                 if (smartNavigation.canGoBack) {
                   smartNavigation.goBack();
                 } else {

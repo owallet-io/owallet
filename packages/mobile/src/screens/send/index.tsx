@@ -96,10 +96,7 @@ export const SendScreen: FunctionComponent = observer(() => {
 
     address
   );
-  console.log(
-    "🚀 ~ constSendScreen:FunctionComponent=observer ~ chainStore.current.chainId:",
-    chainStore.current.chainId
-  );
+
   useEffect(() => {
     if (route?.params?.currency) {
       const currency = sendConfigs.amountConfig.sendableCurrencies.find(

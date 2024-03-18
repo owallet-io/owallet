@@ -206,6 +206,7 @@ export const ValidatorList: FunctionComponent = observer(() => {
           <TextInput
             style={{
               fontFamily: "SpaceGrotesk-Regular",
+              width: "100%",
             }}
             value={search}
             placeholderTextColor={colors["neutral-text-body"]}
