@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useMemo, useState } from "react";
+import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { Clipboard, Image, Share, StyleSheet, View } from "react-native";
 import QRCode from "react-native-qrcode-svg";
 import { AccountWithAll, KeyRingStore } from "@owallet/stores";
@@ -18,6 +18,8 @@ import { useTheme } from "@src/themes/theme-provider";
 import { CheckIcon, DownArrowIcon } from "@src/components/icon";
 import { chainIcons } from "@oraichain/oraidex-common";
 import { useSimpleTimer } from "@src/hooks";
+import { CopyAddressModal } from "../home/components/copy-address/copy-address-modal";
+import { ChainIdEnum, ChainNameEnum, getBase58Address } from "@owallet/common";
 
 const styling = (colors) =>
   StyleSheet.create({
@@ -44,20 +46,93 @@ const styling = (colors) =>
   });
 
 export const AddressQRScreen: FunctionComponent<{}> = ({}) => {
-  const { chainStore, keyRingStore, accountStore } = useStore();
+  const { chainStore, keyRingStore, accountStore, modalStore } = useStore();
   const account = accountStore.getAccount(chainStore.current.chainId);
 
   const addressToShow = account.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses
   );
-  const [address, setAddress] = useState(addressToShow);
+  const [networkAddress, setNetworkAddress] = useState();
+  const [address, setAddress] = useState("");
+  const [accountAddresses, setAddresses] = useState({});
+
   const { colors } = useTheme();
   const styles = styling(colors);
   const { isTimedOut, setTimer } = useSimpleTimer();
+  const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
 
   const chainIcon = chainIcons.find(
     (c) => c.chainId === chainStore.current.chainId
   );
+
+  useEffect(() => {
+    let accounts = {};
+    let defaultEvmAddress = accountStore.getAccount(
+      ChainIdEnum.Ethereum
+    ).evmosHexAddress;
+    setTimeout(() => {
+      Object.keys(ChainIdEnum).map((key) => {
+        let defaultCosmosAddress = accountStore.getAccount(
+          ChainIdEnum[key]
+        ).bech32Address;
+
+        if (defaultCosmosAddress.startsWith("evmos")) {
+          accounts[ChainNameEnum[key]] = defaultEvmAddress;
+        } else {
+          accounts[ChainNameEnum[key]] = defaultCosmosAddress;
+        }
+      });
+    }, 3000);
+
+    accounts[ChainNameEnum.TRON] = getBase58Address(
+      accountStore.getAccount(ChainIdEnum.TRON).evmosHexAddress
+    );
+
+    setAddresses(accounts);
+  }, [accountEth.evmosHexAddress]);
+
+  useEffect(() => {
+    setAddress(addressToShow);
+  }, [addressToShow]);
+
+  const onPressAddress = (item) => {
+    setNetworkAddress(item);
+    modalStore.close();
+  };
+
+  const _onPressAddressModal = () => {
+    modalStore.setOptions();
+    modalStore.setChildren(
+      <CopyAddressModal
+        copyable={false}
+        onPress={(item) => {
+          onPressAddress(item);
+          setAddress(item.address);
+        }}
+        accounts={accountAddresses}
+      />
+    );
+  };
+
+  const renderNetworkIcon = () => {
+    if (networkAddress) {
+      if (networkAddress.chainIcon) {
+        return (
+          <OWIcon
+            type="images"
+            source={{ uri: networkAddress.chainIcon }}
+            size={16}
+          />
+        );
+      } else {
+        return <OWText>{networkAddress.name.charAt(0)}</OWText>;
+      }
+    } else {
+      return (
+        <OWIcon type="images" source={{ uri: chainIcon?.Icon }} size={16} />
+      );
+    }
+  };
 
   return (
     <PageWithBottom
@@ -99,7 +174,9 @@ export const AddressQRScreen: FunctionComponent<{}> = ({}) => {
             }}
           >
             <TouchableOpacity
-              onPress={() => {}}
+              onPress={() => {
+                _onPressAddressModal();
+              }}
               style={{
                 flexDirection: "row",
                 backgroundColor: colors["neutral-surface-action3"],
@@ -111,13 +188,11 @@ export const AddressQRScreen: FunctionComponent<{}> = ({}) => {
                 alignItems: "center",
               }}
             >
-              <OWIcon
-                type="images"
-                source={{ uri: chainIcon?.Icon }}
-                size={16}
-              />
+              {renderNetworkIcon()}
               <OWText style={{ paddingHorizontal: 4 }} weight="600" size={14}>
-                {chainStore.current.chainName}
+                {networkAddress
+                  ? networkAddress.name
+                  : chainStore.current.chainName}
               </OWText>
               <DownArrowIcon height={11} color={colors["primary-text"]} />
             </TouchableOpacity>
@@ -139,7 +214,7 @@ export const AddressQRScreen: FunctionComponent<{}> = ({}) => {
                 />
               </View>
               <View style={{ marginTop: 24 }}>
-                <QRCode size={200} value={addressToShow} />
+                <QRCode size={200} value={address} />
               </View>
             </View>
           </View>
@@ -159,7 +234,7 @@ export const AddressQRScreen: FunctionComponent<{}> = ({}) => {
               }}
             >
               <OWText color={colors["neutral-text-body"]} size={13}>
-                {addressToShow}
+                {address}
               </OWText>
             </View>
 
@@ -169,7 +244,7 @@ export const AddressQRScreen: FunctionComponent<{}> = ({}) => {
                 alignItems: "center",
               }}
               onPress={() => {
-                Clipboard.setString(addressToShow);
+                Clipboard.setString(address);
                 setTimer(2000);
               }}
             >

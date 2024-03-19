@@ -13,6 +13,7 @@ export const CustomAddressCopyable: FunctionComponent<{
   style?: ViewStyle;
   address: string;
   chain?: string;
+  onPress?: Function;
   networkType?: string;
   maxCharacters: number;
   icon?: any;
@@ -23,6 +24,7 @@ export const CustomAddressCopyable: FunctionComponent<{
   networkType,
   chain,
   icon,
+  onPress,
 }) => {
   const { isTimedOut, setTimer } = useSimpleTimer();
   const { colors } = useTheme();
@@ -43,6 +45,7 @@ export const CustomAddressCopyable: FunctionComponent<{
       onPress={() => {
         Clipboard.setString(address);
         setTimer(300);
+        onPress?.();
       }}
     >
       <View

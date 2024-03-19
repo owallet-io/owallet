@@ -8,10 +8,13 @@ import { metrics } from "@src/themes";
 import { CustomAddressCopyable } from "@src/components/address-copyable/custom";
 import { chainIcons } from "@oraichain/oraidex-common";
 import { ChainIdEnum, ChainNameEnum } from "@owallet/common";
+import OWText from "@src/components/text/ow-text";
 
 export const CopyAddressModal: FunctionComponent<{
   accounts: object;
-}> = ({ accounts }) => {
+  copyable?: boolean;
+  onPress?: Function;
+}> = ({ accounts, copyable = true, onPress }) => {
   const safeAreaInsets = useSafeAreaInsets();
   const [keyword, setKeyword] = useState("");
   const [addresses, setAddresses] = useState([]);
@@ -54,7 +57,7 @@ export const CopyAddressModal: FunctionComponent<{
           value={keyword}
         />
         <View style={styles.iconSearch}>
-          <OWIcon color={colors["blue-400"]} text name="search" size={16} />
+          <OWIcon color={colors["blue-400"]} name="search" size={16} />
         </View>
       </View>
       <OWFlatList
@@ -71,6 +74,7 @@ export const CopyAddressModal: FunctionComponent<{
 
           return (
             <CustomAddressCopyable
+              onPress={() => onPress({ ...item, chainIcon: chainIcon?.Icon })}
               icon={
                 chainIcon ? (
                   <OWIcon
@@ -79,7 +83,7 @@ export const CopyAddressModal: FunctionComponent<{
                     size={28}
                   />
                 ) : (
-                  <Text>{item.name.charAt(0)}</Text>
+                  <OWText>{item.name.charAt(0)}</OWText>
                 )
               }
               chain={item.name}

@@ -17,7 +17,6 @@ import { getTokenInfos } from "@src/utils/helper";
 import { useSmartNavigation } from "@src/navigation.provider";
 import { SCREENS } from "@src/common/constants";
 import { navigate } from "@src/router/root";
-import { useNavigation } from "@react-navigation/native";
 
 export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
   const { colors } = useTheme();
@@ -29,9 +28,8 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
     appInitStore,
   } = useStore();
   const [profit, setProfit] = useState(0);
-  const [accountAddresses, settAddresses] = useState({});
+  const [accountAddresses, setAddresses] = useState({});
   const smartNavigation = useSmartNavigation();
-  const navigation = useNavigation();
 
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
@@ -76,7 +74,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
       accountStore.getAccount(ChainIdEnum.TRON).evmosHexAddress
     );
 
-    settAddresses(accounts);
+    setAddresses(accounts);
   }, [accountEth.evmosHexAddress]);
 
   const _onPressMyWallet = () => {
