@@ -17,6 +17,7 @@ import { getTokenInfos } from "@src/utils/helper";
 import { useSmartNavigation } from "@src/navigation.provider";
 import { SCREENS } from "@src/common/constants";
 import { navigate } from "@src/router/root";
+import { useNavigation } from "@react-navigation/native";
 
 export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
   const { colors } = useTheme();
@@ -30,6 +31,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
   const [profit, setProfit] = useState(0);
   const [accountAddresses, settAddresses] = useState({});
   const smartNavigation = useSmartNavigation();
+  const navigation = useNavigation();
 
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
@@ -227,7 +229,12 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
               color: colors["neutral-text-action-on-dark-bg"],
             }}
             label="Receive"
-            onPress={() => {}}
+            onPress={() => {
+              navigate(SCREENS.STACK.Others, {
+                screen: SCREENS.QRScreen,
+              });
+              return;
+            }}
           />
           <OWButton
             textStyle={{

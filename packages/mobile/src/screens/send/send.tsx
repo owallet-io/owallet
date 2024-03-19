@@ -37,7 +37,7 @@ const styling = (colors) =>
       fontSize: 14,
       fontWeight: "500",
       lineHeight: 20,
-      color: colors["neutral-Text-body"],
+      color: colors["neutral-text-body"],
     },
     containerStyle: {
       backgroundColor: colors["background-box"],

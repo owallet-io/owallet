@@ -31,6 +31,7 @@ import BtcFaucet from "@src/screens/home/btc-faucet";
 import BuyFiat from "@src/screens/home/buy-fiat";
 import { SendOasisScreen } from "@src/screens/send/send-oasis";
 import { NewSendScreen } from "@src/screens/send/send";
+import { AddressQRScreen } from "@src/screens/qr";
 const Stack = createStackNavigator();
 export const OtherNavigation: FC = () => {
   const handleScreenOptions = ({ route, navigation }) => {
@@ -61,6 +62,14 @@ export const OtherNavigation: FC = () => {
         }}
         name={SCREENS.Camera}
         component={CameraScreen}
+      />
+
+      <Stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name={SCREENS.QRScreen}
+        component={AddressQRScreen}
       />
 
       <Stack.Screen name={SCREENS.Governance} component={GovernanceScreen} />

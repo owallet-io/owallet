@@ -41,6 +41,7 @@ export const SCREENS = {
   Transactions: "Transactions",
   Dashboard: "Dashboard",
   Camera: "Camera",
+  QRScreen: "QRScreen",
   Governance: "Governance",
   GovernanceDetails: "Governance.Details",
   NetworkSelect: "Network.select",
@@ -198,6 +199,9 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: "Transaction History",
   },
   [SCREENS.Camera]: {
+    title: HEADER_KEY.notShowHeader,
+  },
+  [SCREENS.QRScreen]: {
     title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.Governance]: {

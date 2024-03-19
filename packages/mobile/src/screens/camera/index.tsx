@@ -20,12 +20,15 @@ import { TRON_ID } from "@owallet/common";
 import { checkValidDomain } from "@src/utils/helper";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
+import { useTheme } from "@src/themes/theme-provider";
 interface keyable {
   [key: string]: any;
 }
 
 export const CameraScreen: FunctionComponent = observer((props) => {
   const { chainStore, keyRingStore } = useStore();
+  const { colors } = useTheme();
+
   const navigation = useNavigation();
   const smartNavigation = useSmartNavigation();
 
