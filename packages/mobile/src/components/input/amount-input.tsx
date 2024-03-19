@@ -21,6 +21,7 @@ export const NewAmountInput: FunctionComponent<{
   placeholder?: string;
   placeholderTextColor?: string;
   allowMax?: boolean;
+  manually?: boolean;
   maxBalance?: string;
   amountConfig: IAmountConfig;
 }> = observer(
@@ -32,7 +33,7 @@ export const NewAmountInput: FunctionComponent<{
     amountConfig,
     placeholder,
     placeholderTextColor,
-    allowMax = true,
+    manually = false,
     maxBalance,
     colors,
   }) => {
@@ -70,7 +71,14 @@ export const NewAmountInput: FunctionComponent<{
               marginLeft: 4,
             }}
             onPress={() => {
-              amountConfig.setFraction(0.5);
+              if (!manually) {
+                amountConfig.setFraction(0.5);
+              } else {
+                if (maxBalance)
+                  amountConfig.setAmount(
+                    (Number(maxBalance) / 2).toString().replace(/,/g, ".")
+                  );
+              }
             }}
           >
             <OWText
@@ -93,6 +101,12 @@ export const NewAmountInput: FunctionComponent<{
             }}
             onPress={() => {
               amountConfig.setFraction(1);
+              if (!manually) {
+                amountConfig.setFraction(1);
+              } else {
+                if (maxBalance)
+                  amountConfig.setAmount(maxBalance.replace(/,/g, "."));
+              }
             }}
           >
             <OWText

@@ -187,7 +187,13 @@ export const TokensCardAll: FunctionComponent<{
         smartNavigation.navigateSmart("SendTron", { item: itemTron });
         return;
       }
-      smartNavigation.navigateSmart("Send", {
+      if (item.chainId === ChainIdEnum.Oasis) {
+        smartNavigation.navigateSmart("SendOasis", {
+          currency: chainStore.current.stakeCurrency.coinMinimalDenom,
+        });
+        return;
+      }
+      smartNavigation.navigateSmart("NewSend", {
         currency: item.denom,
         contractAddress: item.contractAddress,
         coinGeckoId: item.coinGeckoId,

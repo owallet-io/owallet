@@ -251,7 +251,11 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
         />
       }
     >
-      <PageHeader title="Send" subtitle={"Oraichain"} colors={colors} />
+      <PageHeader
+        title="Send"
+        subtitle={chainStore.current.chainName}
+        colors={colors}
+      />
       <ScrollView showsVerticalScrollIndicator={false}>
         <View>
           <OWCard type="normal">
@@ -314,16 +318,6 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
                   amountConfig={sendConfigs.amountConfig}
                   placeholder={"0.0"}
                   maxBalance={balance.split(" ")[0]}
-                />
-                <AmountInput
-                  placeholder="ex. 1000 BTC"
-                  label="Amount"
-                  allowMax={true}
-                  amountConfig={sendConfigs.amountConfig}
-                  labelStyle={styles.sendlabelInput}
-                  inputContainerStyle={{
-                    backgroundColor: colors["background-box"],
-                  }}
                 />
               </View>
             </View>

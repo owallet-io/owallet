@@ -309,7 +309,11 @@ export const NewSendScreen: FunctionComponent = observer(() => {
         />
       }
     >
-      <PageHeader title="Send" subtitle={"Oraichain"} colors={colors} />
+      <PageHeader
+        title="Send"
+        subtitle={chainStore.current.chainName}
+        colors={colors}
+      />
       <ScrollView showsVerticalScrollIndicator={false}>
         <View>
           <OWCard type="normal">

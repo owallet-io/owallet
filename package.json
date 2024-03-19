@@ -22,8 +22,7 @@
       "**/@ledgerhq/react-native-hw-transport-ble",
       "**/jetifier",
       "**/@bugsnag/**",
-      "**/@gorhom/**",
-      "**/@logrocket/**"
+      "**/@gorhom/**"
     ]
   },
   "scripts": {

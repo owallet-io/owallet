@@ -3,12 +3,10 @@ import { observer } from "mobx-react-lite";
 import { useSendTxConfig } from "@owallet/hooks";
 import { useStore } from "../../stores";
 import { PageWithScrollView } from "../../components/page";
-import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import {
-  AddressInput,
   AmountInput,
   CurrencySelector,
-  MemoInput,
   TextInput,
 } from "../../components/input";
 import { OWButton } from "../../components/button";
@@ -16,7 +14,6 @@ import { RouteProp, useRoute } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
 import { metrics, spacing } from "../../themes";
 import { OWBox } from "@src/components/card";
-import { OWSubTitleHeader } from "@src/components/header";
 import { SignOasisModal } from "@src/modals/sign/sign-oasis";
 import { useSmartNavigation } from "@src/navigation.provider";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
@@ -25,8 +22,8 @@ import OWCard from "@src/components/card/ow-card";
 import OWText from "@src/components/text/ow-text";
 import { NewAmountInput } from "@src/components/input/amount-input";
 import OWIcon from "@src/components/ow-icon/ow-icon";
-import { ChainIdEnum } from "@owallet/common";
-import Big from "big.js";
+import { toAmount } from "@owallet/common";
+import { CoinPretty, Int } from "@owallet/unit";
 
 const styling = (colors) =>
   StyleSheet.create({
@@ -106,12 +103,9 @@ export const SendOasisScreen: FunctionComponent = observer(() => {
   let total: any =
     queries.evm.queryEvmBalance.getQueryBalance(addressCore)?.balance;
 
-  const totalAmount = () => {
-    if (chainStore.current.chainId !== ChainIdEnum.TRON && total) {
-      return priceStore?.calculatePrice(total).toString();
-    }
-
-    return 0;
+  const totalBalance = () => {
+    if (!total) return "0";
+    return total?.trim(true).shrink(true).maxDecimals(6).toString();
   };
 
   const sendConfigs = useSendTxConfig(
@@ -121,7 +115,7 @@ export const SendOasisScreen: FunctionComponent = observer(() => {
     receiveAddress,
     queries.queryBalances,
     chainStore.current.rpc,
-    queriesStore.get(chainStore.current.chainId).evm.queryEvmBalance
+    queries.evm.queryEvmBalance
   );
 
   useEffect(() => {
@@ -146,6 +140,11 @@ export const SendOasisScreen: FunctionComponent = observer(() => {
       sendConfigs.recipientConfig.setRawRecipient(route.params.recipient);
     }
   }, [route?.params?.recipient, sendConfigs.recipientConfig]);
+
+  // const amount = new CoinPretty(
+  //   sendConfigs.amountConfig.sendCurrency,
+  //   new Int(toAmount(Number(sendConfigs.amountConfig.amount)))
+  // );
 
   return (
     <PageWithBottom
@@ -193,7 +192,11 @@ export const SendOasisScreen: FunctionComponent = observer(() => {
         />
       }
     >
-      <PageHeader title="Send" subtitle={"Oraichain"} colors={colors} />
+      <PageHeader
+        title="Send"
+        subtitle={chainStore.current.chainName}
+        colors={colors}
+      />
       <ScrollView showsVerticalScrollIndicator={false}>
         <View>
           <OWCard type="normal">
@@ -229,7 +232,7 @@ export const SendOasisScreen: FunctionComponent = observer(() => {
             >
               <View>
                 <OWText style={{ paddingTop: 8 }} size={12}>
-                  Balance : {totalAmount()}
+                  Balance : {totalBalance()}
                 </OWText>
                 <CurrencySelector
                   chainId={chainStore.current.chainId}
@@ -258,6 +261,7 @@ export const SendOasisScreen: FunctionComponent = observer(() => {
                   amountConfig={sendConfigs.amountConfig}
                   placeholder={"0.0"}
                   maxBalance={maxAmount}
+                  manually={true}
                 />
               </View>
             </View>
@@ -270,7 +274,7 @@ export const SendOasisScreen: FunctionComponent = observer(() => {
             >
               <OWIcon name="tdesign_swap" size={16} />
               <OWText style={{ paddingLeft: 4 }} color={colors["neutral-text-body"]} size={14}>
-                {price}
+              {priceStore.calculatePrice(amount).toString()}
               </OWText>
             </View> */}
           </OWCard>
