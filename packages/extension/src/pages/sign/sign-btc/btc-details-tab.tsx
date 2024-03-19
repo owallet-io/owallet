@@ -3,15 +3,29 @@ import React, { FunctionComponent } from "react";
 import { observer } from "mobx-react-lite";
 
 import styleDetailsTab from "../details-tab.module.scss";
-import { FormattedMessage, useIntl } from "react-intl";
+import { FormattedMessage } from "react-intl";
 import { Badge, Label } from "reactstrap";
 import classnames from "classnames";
 import { MsgRender } from "../details-tab";
 import { Bech32Address } from "@owallet/cosmos";
 import { formatBalance } from "@owallet/bitcoin";
-export const BtcDetailsTab: FunctionComponent<{ dataSign; intl }> = observer(
-  ({ dataSign, intl }) => {
+import { FeeButtons } from "../../../components/form";
+import { CoinGeckoPriceStore } from "@owallet/stores";
+import { FeeConfig, GasConfig } from "@owallet/hooks";
+import { CoinPretty, Dec } from "@owallet/unit";
+import { useStore } from "../../../stores";
+
+export const BtcDetailsTab: FunctionComponent<{
+  dataSign;
+  priceStore: CoinGeckoPriceStore;
+  feeConfig: FeeConfig;
+  gasConfig: GasConfig;
+  intl;
+  isNoSetFee: boolean;
+}> = observer(
+  ({ dataSign, intl, feeConfig, isNoSetFee, gasConfig, priceStore }) => {
     const msgs = dataSign?.data?.data?.msgs;
+    const { chainStore } = useStore();
     return (
       <div className={styleDetailsTab.container}>
         <Label
@@ -33,11 +47,12 @@ export const BtcDetailsTab: FunctionComponent<{ dataSign; intl }> = observer(
           >
             Send{" "}
             <b>
-              {formatBalance({
-                balance: Number(msgs?.amount),
-                cryptoUnit: "BTC",
-                coin: msgs?.selectedCrypto,
-              }) || "0 BTC"}
+              {new CoinPretty(
+                chainStore.current.stakeCurrency,
+                new Dec(msgs?.amount)
+              )
+                ?.trim(true)
+                ?.toString()}
             </b>{" "}
             to{" "}
             <b>
@@ -54,12 +69,12 @@ export const BtcDetailsTab: FunctionComponent<{ dataSign; intl }> = observer(
           </Label>
           <div id="fee-price">
             <div className={styleDetailsTab.feePrice}>
-              {"≈ "}
-              {formatBalance({
-                balance: Number(msgs?.totalFee),
-                cryptoUnit: "BTC",
-                coin: msgs?.selectedCrypto,
-              }) || "0 BTC"}
+              {`≈ ${new CoinPretty(
+                chainStore.current.stakeCurrency,
+                new Dec(msgs?.totalFee)
+              )
+                ?.trim(true)
+                ?.toString()}`}
             </div>
           </div>
         </React.Fragment>
@@ -82,6 +97,23 @@ export const BtcDetailsTab: FunctionComponent<{ dataSign; intl }> = observer(
                 : intl.formatMessage({ id: "sign.info.warning.empty-memo" })}
             </div>
           </div>
+          {!isNoSetFee && (
+            <FeeButtons
+              feeConfig={feeConfig}
+              gasConfig={gasConfig}
+              priceStore={priceStore}
+              label={intl.formatMessage({ id: "send.input.fee" })}
+              feeSelectLabels={{
+                low: intl.formatMessage({ id: "fee-buttons.select.slow" }),
+                average: intl.formatMessage({
+                  id: "fee-buttons.select.average",
+                }),
+                high: intl.formatMessage({ id: "fee-buttons.select.fast" }),
+              }}
+              isGasInput={false}
+              gasLabel={intl.formatMessage({ id: "send.input.gas" })}
+            />
+          )}
         </React.Fragment>
       </div>
     );

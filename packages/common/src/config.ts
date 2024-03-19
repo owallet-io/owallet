@@ -911,49 +911,49 @@ export const EmbedChainInfos: AppChainInfo[] = [
       accountUrl: "https://www.mintscan.io/noble/address/{address}",
     },
   },
-  {
-    rest: "https://blockstream.info/testnet/api",
-    chainId: "bitcoinTestnet",
-    chainName: "Bitcoin Testnet",
-    bip44: {
-      coinType: 1,
-    },
-    coinType: 1,
-    stakeCurrency: {
-      coinDenom: "BTC",
-      coinMinimalDenom: "btc",
-      coinDecimals: 8,
-      coinGeckoId: "bitcoin",
-      coinImageUrl:
-        "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
-      gasPriceStep: {
-        low: 25,
-        average: 18,
-        high: 1,
-      },
-    },
-    bech32Config: Bech32Address.defaultBech32Config("tb"),
-    networkType: "bitcoin",
-    currencies: [
-      {
-        coinDenom: "BTC",
-        coinMinimalDenom: "btc",
-        coinDecimals: 8,
-        coinGeckoId: "bitcoin",
-        coinImageUrl:
-          "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
-      },
-    ],
-    get feeCurrencies() {
-      return this.currencies;
-    },
-    features: ["isBtc"],
-    txExplorer: {
-      name: "BlockStream",
-      txUrl: "https://blockstream.info/testnet/tx/{txHash}",
-      accountUrl: "https://blockstream.info/testnet/address/{address}",
-    },
-  },
+  // {
+  //   rest: "https://blockstream.info/testnet/api",
+  //   chainId: "bitcoinTestnet",
+  //   chainName: "Bitcoin Testnet",
+  //   bip44: {
+  //     coinType: 1,
+  //   },
+  //   coinType: 1,
+  //   stakeCurrency: {
+  //     coinDenom: "BTC",
+  //     coinMinimalDenom: "btc",
+  //     coinDecimals: 8,
+  //     coinGeckoId: "bitcoin",
+  //     coinImageUrl:
+  //       "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
+  //     gasPriceStep: {
+  //       low: 25,
+  //       average: 18,
+  //       high: 1,
+  //     },
+  //   },
+  //   bech32Config: Bech32Address.defaultBech32Config("tb"),
+  //   networkType: "bitcoin",
+  //   currencies: [
+  //     {
+  //       coinDenom: "BTC",
+  //       coinMinimalDenom: "btc",
+  //       coinDecimals: 8,
+  //       coinGeckoId: "bitcoin",
+  //       coinImageUrl:
+  //         "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
+  //     },
+  //   ],
+  //   get feeCurrencies() {
+  //     return this.currencies;
+  //   },
+  //   features: ["isBtc"],
+  //   txExplorer: {
+  //     name: "BlockStream",
+  //     txUrl: "https://blockstream.info/testnet/tx/{txHash}",
+  //     accountUrl: "https://blockstream.info/testnet/address/{address}",
+  //   },
+  // },
   {
     rest: "https://blockstream.info/api",
     chainId: "bitcoin",
