@@ -170,6 +170,8 @@ export const TokensCardAll: FunctionComponent<{
   const smartNavigation = useSmartNavigation();
 
   const onPressToken = async (item) => {
+    console.log("item", item);
+
     chainStore.selectChain(item?.chainId);
     await chainStore.saveLastViewChainId();
     if (!account.isNanoLedger) {
@@ -197,6 +199,7 @@ export const TokensCardAll: FunctionComponent<{
         currency: item.denom,
         contractAddress: item.contractAddress,
         coinGeckoId: item.coinGeckoId,
+        maxBalance: item.balance,
       });
     }
   };

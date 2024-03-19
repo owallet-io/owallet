@@ -72,6 +72,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
           currency?: string;
           recipient?: string;
           contractAddress?: string;
+          maxBalance?: Number;
         }
       >,
       string
@@ -81,6 +82,8 @@ export const NewSendScreen: FunctionComponent = observer(() => {
   const chainId = route?.params?.chainId
     ? route?.params?.chainId
     : chainStore?.current?.chainId;
+  const maxBalance = route?.params?.maxBalance;
+
   const smartNavigation = useSmartNavigation();
 
   const account = accountStore.getAccount(chainId);
@@ -97,7 +100,6 @@ export const NewSendScreen: FunctionComponent = observer(() => {
     EthereumEndpoint,
     chainStore.current.networkType === "evm" &&
       queriesStore.get(chainStore.current.chainId).evm.queryEvmBalance,
-
     address
   );
 
@@ -132,7 +134,10 @@ export const NewSendScreen: FunctionComponent = observer(() => {
     const averageFee = sendConfigs.feeConfig.getFeeTypePretty("average");
     const averageFeePrice = priceStore.calculatePrice(averageFee);
     setFee({ type: "Avarage", value: averageFeePrice.toString() });
-  }, [account.bech32Address, sendConfigs.amountConfig.sendCurrency]);
+  }, [
+    account.bech32Address,
+    sendConfigs.amountConfig.sendCurrency.coinGeckoId,
+  ]);
 
   useEffect(() => {
     if (route?.params?.currency) {
@@ -347,7 +352,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
             >
               <View>
                 <OWText style={{ paddingTop: 8 }} size={12}>
-                  Balance : {balance}
+                  Balance : {maxBalance ?? balance.toString()}
                 </OWText>
                 <CurrencySelector
                   chainId={chainStore.current.chainId}
@@ -375,7 +380,10 @@ export const NewSendScreen: FunctionComponent = observer(() => {
                   }}
                   amountConfig={sendConfigs.amountConfig}
                   placeholder={"0.0"}
-                  maxBalance={balance.split(" ")[0]}
+                  maxBalance={
+                    maxBalance ? maxBalance.toString() : balance.split(" ")[0]
+                  }
+                  manually={!!maxBalance}
                 />
               </View>
             </View>

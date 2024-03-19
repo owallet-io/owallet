@@ -307,7 +307,7 @@ export const SelectorButtonWithoutModal: FunctionComponent<{
         borderRadius: 999,
         paddingHorizontal: 14,
         paddingVertical: 12,
-        maxWidth: metrics.screenWidth / 4.5,
+        maxWidth: metrics.screenWidth / 4,
         marginTop: 12,
         alignItems: "center",
       }}
