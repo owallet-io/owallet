@@ -3,6 +3,7 @@ import { useTheme } from "@src/themes/theme-provider";
 import { ViewProps, StyleSheet, View } from "react-native";
 import { metrics } from "@src/themes";
 import { PageHeader } from "../header/header-new";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export const PageWithBottom: FunctionComponent<
   ViewProps & {
@@ -14,7 +15,9 @@ export const PageWithBottom: FunctionComponent<
   }
 > = ({ children, bottomGroup, style, backgroundColor, showHeader = false }) => {
   const { colors } = useTheme();
-  const styles = useStyle();
+  const safeAreaInsets = useSafeAreaInsets();
+
+  const styles = useStyle(safeAreaInsets, colors);
 
   return (
     <View
@@ -38,11 +41,10 @@ export const PageWithBottom: FunctionComponent<
   );
 };
 
-const useStyle = () => {
-  const { colors } = useTheme();
+const useStyle = (safeAreaInsets, colors) => {
   return StyleSheet.create({
     container: {
-      paddingTop: metrics.screenHeight / 14,
+      paddingTop: safeAreaInsets.top,
       justifyContent: "space-between",
       height: "100%",
     },
