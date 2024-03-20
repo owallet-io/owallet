@@ -10,6 +10,7 @@ import { DAppWebpageScreen } from "@src/screens/web/webpages";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { useNavigation } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
+import HomeBrowserScreen from "@src/screens/browser/home-browser-screen";
 export const WebpageHeaderOptions = ({ navigation, title }): any => {
   const { colors } = useTheme();
   return {
@@ -57,11 +58,11 @@ export const WebNavigation: FC = () => {
       headerMode="screen"
     >
       <Stack.Screen
-        options={({ navigation }) =>
-          WebpageHeaderOptions({ navigation, title: SCREENS.Browser })
-        }
+        // options={({ navigation }) =>
+        //   WebpageHeaderOptions({ navigation, title: SCREENS.Browser })
+        // }
         name={SCREENS.Browser}
-        component={Browser}
+        component={HomeBrowserScreen}
       />
       <Stack.Screen
         options={({ navigation }) =>
