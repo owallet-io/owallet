@@ -42,7 +42,7 @@ import { openLink } from "../../utils/helper";
 import { feeEstimate, getTransferTokenFee } from "@owallet/common";
 import {
   handleSimulateSwap,
-  filterNonPoolEvmTokens,
+  // filterNonPoolEvmTokens,
   SwapDirection,
 } from "@oraichain/oraidex-universal-swap";
 import { fetchTokenInfos, ChainIdEnum } from "@owallet/common";
@@ -69,6 +69,7 @@ import { getTransactionUrl, handleErrorSwap } from "./helpers";
 import { useQuery } from "@tanstack/react-query";
 import { Mixpanel } from "mixpanel-react-native";
 import { API } from "@src/common/api";
+import { filterNonPoolEvmTokens } from "./handler/src/helper";
 const mixpanel = globalThis.mixpanel as Mixpanel;
 
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
@@ -337,6 +338,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       searchTokenName,
       SwapDirection.To
     );
+    console.log("filteredToTokens", filteredToTokens);
+
     setFilteredToTokens(filteredToTokens);
 
     const filteredFromTokens = filterNonPoolEvmTokens(

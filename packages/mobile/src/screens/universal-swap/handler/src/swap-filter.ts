@@ -4,6 +4,7 @@ const notAllowSwapCoingeckoIds = [
   "kawaii-islands",
   "milky-token",
   "injective-protocol",
+  "bitcoin",
 ];
 // universal swap. Currently we dont support from tokens that are not using the ibc wasm channel
 const notAllowSwapFromChainIds = [

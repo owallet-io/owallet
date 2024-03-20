@@ -968,7 +968,6 @@ export class KeyRing {
     const nic = await getOasisNic(chainInfo.grpc);
     const signer = signerFromPrivateKey(bytes);
     const bigIntAmount = BigInt(parseRoseStringToBigNumber(amount).toString());
-    console.log("bigIntAmount", bigIntAmount);
     const chainContext = await nic.consensusGetChainContext();
 
     const tw = await OasisTransaction.buildTransfer(

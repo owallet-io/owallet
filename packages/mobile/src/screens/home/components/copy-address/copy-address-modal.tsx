@@ -14,7 +14,7 @@ export const CopyAddressModal: FunctionComponent<{
   accounts: object;
   copyable?: boolean;
   onPress?: Function;
-}> = ({ accounts, copyable = true, onPress }) => {
+}> = ({ accounts, onPress }) => {
   const safeAreaInsets = useSafeAreaInsets();
   const [keyword, setKeyword] = useState("");
   const [addresses, setAddresses] = useState([]);
@@ -74,7 +74,9 @@ export const CopyAddressModal: FunctionComponent<{
 
           return (
             <CustomAddressCopyable
-              onPress={() => onPress({ ...item, chainIcon: chainIcon?.Icon })}
+              onPress={() =>
+                onPress && onPress({ ...item, chainIcon: chainIcon?.Icon })
+              }
               icon={
                 chainIcon ? (
                   <OWIcon
@@ -117,6 +119,6 @@ const styling = (colors: TypeTheme["colors"]) =>
       paddingRight: 12,
     },
     containerModal: {
-      height: metrics.screenHeight / 1.3,
+      height: metrics.screenHeight / 1.6,
     },
   });
