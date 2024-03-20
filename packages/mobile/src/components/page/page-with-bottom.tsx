@@ -1,9 +1,17 @@
 import React, { FunctionComponent, ReactElement } from "react";
 import { useTheme } from "@src/themes/theme-provider";
-import { ViewProps, StyleSheet, View } from "react-native";
+import {
+  ViewProps,
+  StyleSheet,
+  View,
+  KeyboardAvoidingView,
+  StatusBar,
+} from "react-native";
 import { metrics } from "@src/themes";
 import { PageHeader } from "../header/header-new";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useHeaderHeight } from "@react-navigation/elements";
+import { isAndroid } from "@src/common/constants";
 
 export const PageWithBottom: FunctionComponent<
   ViewProps & {
@@ -18,9 +26,12 @@ export const PageWithBottom: FunctionComponent<
   const safeAreaInsets = useSafeAreaInsets();
 
   const styles = useStyle(safeAreaInsets, colors);
-
+  const headerHeight = useHeaderHeight();
+  const Wrapper = isAndroid ? View : KeyboardAvoidingView;
   return (
-    <View
+    <Wrapper
+      keyboardVerticalOffset={headerHeight + StatusBar.currentHeight}
+      behavior="padding"
       style={[
         {
           ...styles.container,
@@ -29,15 +40,16 @@ export const PageWithBottom: FunctionComponent<
         },
       ]}
     >
-      <View style={{ paddingBottom: 100 }}>
-        {showHeader ? <PageHeader title="" colors={colors} /> : null}
-        <View>{children}</View>
-      </View>
+      {/*<View >*/}
+      {showHeader ? <PageHeader title="" colors={colors} /> : null}
+      {children}
+      {/*  <View>{children}</View>*/}
+      {/*</View>*/}
 
       <View style={styles.aic}>
         <View style={styles.bottom}>{bottomGroup}</View>
       </View>
-    </View>
+    </Wrapper>
   );
 };
 
@@ -46,7 +58,8 @@ const useStyle = (safeAreaInsets, colors) => {
     container: {
       paddingTop: safeAreaInsets.top,
       justifyContent: "space-between",
-      height: "100%",
+      flex: 1,
+      // height: "100%",
     },
     bottom: {
       borderTopWidth: 1,
@@ -56,8 +69,8 @@ const useStyle = (safeAreaInsets, colors) => {
       alignItems: "center",
     },
     aic: {
-      position: "absolute",
-      bottom: 0,
+      // position: "absolute",
+      // bottom: 0,
       backgroundColor: colors["neutral-surface-card"],
       width: metrics.screenWidth,
     },

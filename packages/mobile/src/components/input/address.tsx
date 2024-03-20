@@ -112,6 +112,9 @@ export const AddressInput: FunctionComponent<{
         onChangeText={(text) => {
           recipientConfig.setRawRecipient(text.replace(/\s/g, ""));
         }}
+        style={{
+          fontSize: 16,
+        }}
         placeholder={placeholder}
         placeholderTextColor={placeholderTextColor}
         paragraph={

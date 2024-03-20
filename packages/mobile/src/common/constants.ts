@@ -1,9 +1,12 @@
 import images from "@src/assets/images";
+import { Platform } from "react-native";
 
 export const HEADER_KEY = {
   notShowHeader: "NOT_SHOW_HEADER",
   showNetworkHeader: "SHOW_NETWORK_HEADER",
 };
+export const isAndroid = Platform.OS === "android";
+export const isIos = Platform.OS === "ios";
 export const defaultAll = { label: "All", value: "All", image: images.crypto };
 export const SCREENS = {
   Home: "Home",

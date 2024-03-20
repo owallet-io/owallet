@@ -36,6 +36,9 @@ export const MemoInput: FunctionComponent<{
         inputContainerStyle={inputContainerStyle}
         inputStyle={inputStyle}
         multiline={multiline}
+        style={{
+          fontSize: 16,
+        }}
         errorLabelStyle={errorLabelStyle}
         value={memoConfig.memo}
         placeholder={placeholder}
