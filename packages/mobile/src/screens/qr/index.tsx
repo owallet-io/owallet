@@ -179,8 +179,6 @@ export const AddressQRScreen: FunctionComponent<{}> = ({}) => {
           >
             <TouchableOpacity
               onPress={() => {
-                console.log("isTimedOut", isTimedOut);
-
                 if (!isTimedOut) {
                   _onPressAddressModal();
                 }

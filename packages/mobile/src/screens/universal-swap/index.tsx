@@ -315,6 +315,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     ) {
       setTimeout(() => {
         universalSwapStore.clearAmounts();
+        universalSwapStore.setLoaded(false);
         handleFetchAmounts(
           accountOrai.bech32Address,
           accountEth.evmosHexAddress,

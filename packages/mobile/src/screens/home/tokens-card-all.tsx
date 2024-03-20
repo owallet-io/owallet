@@ -81,10 +81,7 @@ export const TokensCardAll: FunctionComponent<{
 
       if (yesterday) {
         const yesterdayData = res.data[yesterday];
-
         setYesterdayAssets(yesterdayData);
-        console.log("yesterdayData", yesterdayData);
-
         appInitStore.updateYesterdayPriceFeed(yesterdayData);
       } else {
         setYesterdayAssets([]);
@@ -98,8 +95,6 @@ export const TokensCardAll: FunctionComponent<{
   }, [accountOrai.bech32Address]);
 
   const handleSaveTokenInfos = async (tokenInfos) => {
-    console.log("tokenInfos", accountOrai.bech32Address, tokenInfos);
-
     await API.saveTokenInfos(
       {
         address: accountOrai.bech32Address,
@@ -170,8 +165,6 @@ export const TokensCardAll: FunctionComponent<{
   const smartNavigation = useSmartNavigation();
 
   const onPressToken = async (item) => {
-    console.log("item", item);
-
     chainStore.selectChain(item?.chainId);
     await chainStore.saveLastViewChainId();
     if (!account.isNanoLedger) {
