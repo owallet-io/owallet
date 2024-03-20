@@ -100,6 +100,10 @@ export const AddressQRScreen: FunctionComponent<{}> = ({}) => {
     modalStore.close();
   };
 
+  useEffect(() => {
+    setTimer(3000);
+  }, []);
+
   const _onPressAddressModal = () => {
     modalStore.setOptions();
     modalStore.setChildren(
@@ -175,7 +179,11 @@ export const AddressQRScreen: FunctionComponent<{}> = ({}) => {
           >
             <TouchableOpacity
               onPress={() => {
-                _onPressAddressModal();
+                console.log("isTimedOut", isTimedOut);
+
+                if (!isTimedOut) {
+                  _onPressAddressModal();
+                }
               }}
               style={{
                 flexDirection: "row",
@@ -214,7 +222,7 @@ export const AddressQRScreen: FunctionComponent<{}> = ({}) => {
                 />
               </View>
               <View style={{ marginTop: 24 }}>
-                <QRCode size={200} value={address} />
+                {address ? <QRCode size={200} value={address} /> : null}
               </View>
             </View>
           </View>
