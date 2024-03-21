@@ -73,7 +73,7 @@ export const WalletIcon: FunctionComponent<{
 
 export const renderFlag = (
   flagName: string = "usd",
-  heightFlag: number = 32
+  heightFlag: number = 24
 ) => {
   switch (flagName.toLowerCase()) {
     case "usd":

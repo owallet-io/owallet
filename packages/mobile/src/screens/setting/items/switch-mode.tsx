@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
-import { SettingItem } from "../components";
+import { BasicSettingItem, SettingItem } from "../components";
 import { Toggle } from "../../../components/toggle";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../../stores";
@@ -28,8 +28,9 @@ export const SettingSwitchModeItem: FunctionComponent<{
   };
   return (
     <React.Fragment>
-      <SettingItem
-        label="Dark mode"
+      <BasicSettingItem
+        icon="tdesign_moon"
+        paragraph="Dark mode"
         right={
           <Toggle
             on={toggle}

@@ -1,6 +1,11 @@
 import React, { FunctionComponent, useCallback, useMemo } from "react";
 import { PageWithScrollViewInBottomTabView } from "../../components/page";
-import { renderFlag, SettingItem, SettingSectionTitle } from "./components";
+import {
+  BasicSettingItem,
+  renderFlag,
+  SettingItem,
+  SettingSectionTitle,
+} from "./components";
 import { useSmartNavigation } from "../../navigation.provider";
 import { OWBox } from "@src/components/card";
 import { Text } from "@src/components/text";
@@ -136,26 +141,6 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
     );
   }, []);
 
-  const renderItem = () => {
-    return (
-      <View style={styles.itemWrapper}>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <View style={styles.icon}>
-            <OWIcon name="wallet" size={16} />
-          </View>
-          <OWText size={16} weight="600">
-            Manage wallet
-          </OWText>
-        </View>
-        <TouchableOpacity>
-          <OWIcon name="chevron_right" size={16} />
-        </TouchableOpacity>
-      </View>
-    );
-  };
-
-  const renderSettingItem = ({ type, title, onPress }) => {};
-
   return (
     <PageWithScrollViewInBottomTabView
       showsVerticalScrollIndicator={false}
@@ -164,156 +149,76 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
     >
       <PageHeader title="Settings" colors={colors} />
       <View>
-        {renderItem()}
-        {renderItem()}
-        {renderItem()}
-        <View style={styles.border} />
-        {renderItem()}
-        {renderItem()}
-        {renderItem()}
-        <View style={styles.border} />
-        {renderItem()}
-        {renderItem()}
-        {renderItem()}
-        {renderRating()}
-        <View style={styles.border} />
-        {renderItem()}
-      </View>
-    </PageWithScrollViewInBottomTabView>
-  );
-
-  return (
-    <PageWithScrollViewInBottomTabView backgroundColor={colors["background"]}>
-      <ImageBackground
-        style={{
-          ...styles.containerScreen,
-        }}
-        resizeMode="cover"
-        source={require("../../assets/image/bg_gradient.png")}
-      >
-        <Text
-          style={{
-            ...styles.title,
-          }}
-        >
-          Settings
-        </Text>
-        <OWBox
-          type="shadow"
-          style={{
-            ...styles.containerInfo,
-          }}
-        >
-          <TouchableOpacity
-            onPress={() =>
-              smartNavigation.navigateSmart("SettingSelectAccount", {})
-            }
-            style={{
-              flexDirection: "row",
-              alignContent: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <View>
-              <Text
-                style={{
-                  ...typography["text-caption2"],
-                  color: colors["primary-text"],
-                }}
-              >
-                WALLET
-              </Text>
-              <Text
-                style={{
-                  ...typography["h6"],
-                  color: colors["primary-text"],
-                  fontWeight: "bold",
-                }}
-              >
-                {selected
-                  ? selected.meta?.name || "OWallet Account"
-                  : "No Account"}
-              </Text>
-            </View>
-            <DownArrowIcon color={colors["primary-text"]} height={12} />
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={_onPressCountryModal}
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              paddingTop: spacing["20"],
-            }}
-          >
-            <View>
-              <Text
-                style={{
-                  ...typography["text-caption2"],
-                  color: colors["primary-text"],
-                }}
-              >
-                CURRENCY
-              </Text>
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                {renderFlag(priceStore.defaultVsCurrency)}
-                <Text
-                  style={{
-                    ...typography["h6"],
-                    color: colors["primary-text"],
-                    fontWeight: "bold",
-                    marginHorizontal: spacing["8"],
-                  }}
-                >
-                  {priceStore.defaultVsCurrency.toUpperCase()}
-                </Text>
-              </View>
-            </View>
-            <DownArrowIcon color={colors["primary-text"]} height={12} />
-          </TouchableOpacity>
-        </OWBox>
-      </ImageBackground>
-
-      <OWBox
-        style={{
-          marginTop: 0,
-          marginBottom: 20,
-          paddingHorizontal: 0,
-        }}
-      >
-        <SettingSectionTitle title="Security" />
-        {canShowPrivateData(keyRingStore.keyRingType) && (
-          <SettingViewPrivateDataItem />
-        )}
-
-        <SettingItem
-          label="Address book"
+        <BasicSettingItem
+          paragraph="Manage wallet"
+          onPress={() =>
+            smartNavigation.navigateSmart("SettingSelectAccount", {})
+          }
+        />
+        <BasicSettingItem
+          icon="tdesign_book"
+          paragraph="Address book"
           onPress={() => {
             smartNavigation.navigateSmart("AddressBook", {});
           }}
         />
 
-        {keychainStore.isBiometrySupported || keychainStore.isBiometryOn ? (
-          <SettingBiometricLockItem
-          // topBorder={!canShowPrivateData(keyRingStore.keyRingType)}
-          />
-        ) : null}
-        {/* <SettingSectionTitle title="Others" /> */}
+        <View style={styles.border} />
+        <BasicSettingItem
+          icon="tdesign_money"
+          paragraph="Currency"
+          onPress={_onPressCountryModal}
+          right={
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              {renderFlag(priceStore.defaultVsCurrency, 20)}
+              <OWText
+                style={{ paddingHorizontal: 8 }}
+                weight="600"
+                color={colors["neutral-text-body"]}
+              >
+                {priceStore.defaultVsCurrency.toUpperCase()}
+              </OWText>
+              <OWIcon name="chevron_right" size={16} />
+            </View>
+          }
+        />
         <SettingSwitchModeItem />
-        <SettingItem
-          label="About OWallet"
+        {keychainStore.isBiometrySupported || keychainStore.isBiometryOn ? (
+          <SettingBiometricLockItem />
+        ) : null}
+        <View style={styles.border} />
+        {canShowPrivateData(keyRingStore.keyRingType) && (
+          <SettingViewPrivateDataItem />
+        )}
+        <BasicSettingItem
+          left={
+            <View style={{ padding: 12 }}>
+              <Image
+                style={{ width: 24, height: 24 }}
+                source={require("../../assets/image/logo_owallet.png")}
+                fadeDuration={0}
+                resizeMode="contain"
+              />
+            </View>
+          }
+          icon="owallet"
+          paragraph="About OWallet"
           onPress={() => {
             smartNavigation.navigateSmart("Setting.Version", {});
           }}
         />
+        <View style={styles.border} />
+        {renderRating()}
+        <View style={styles.border} />
+
         <SettingRemoveAccountItem />
-      </OWBox>
+      </View>
     </PageWithScrollViewInBottomTabView>
   );
 });

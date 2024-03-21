@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useState } from "react";
 import { observer } from "mobx-react-lite";
-import { RightArrow, SettingItem } from "../components";
+import { BasicSettingItem } from "../components";
 import { PasswordInputModal } from "../../../modals/password-input/modal";
 import { useStore } from "../../../stores";
 import { getPrivateDataTitle } from "../screens/view-private-data";
@@ -17,13 +17,12 @@ export const SettingViewPrivateDataItem: FunctionComponent<{
 
   return (
     <React.Fragment>
-      <SettingItem
-        label={"Mnemonic"}
+      <BasicSettingItem
+        icon="tdesign_search"
+        paragraph={"Mnemonic"}
         onPress={() => {
           setIsOpenModal(true);
         }}
-        right={<RightArrow />}
-        topBorder={topBorder}
       />
       <PasswordInputModal
         isOpen={isOpenModal}
