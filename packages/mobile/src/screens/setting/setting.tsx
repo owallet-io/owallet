@@ -1,27 +1,13 @@
 import React, { FunctionComponent, useCallback, useMemo } from "react";
 import { PageWithScrollViewInBottomTabView } from "../../components/page";
-import {
-  BasicSettingItem,
-  renderFlag,
-  SettingItem,
-  SettingSectionTitle,
-} from "./components";
+import { BasicSettingItem, renderFlag } from "./components";
 import { useSmartNavigation } from "../../navigation.provider";
-import { OWBox } from "@src/components/card";
-import { Text } from "@src/components/text";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
-import {
-  Image,
-  ImageBackground,
-  Platform,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import { DownArrowIcon } from "../../components/icon";
 import { useStore } from "../../stores";
-import { metrics, spacing, typography } from "../../themes";
+import { metrics } from "../../themes";
 import { CountryModal } from "./components/country-modal";
 import { SettingBiometricLockItem } from "./items/biometric-lock";
 import { SettingRemoveAccountItem } from "./items/remove-account";
@@ -33,10 +19,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import OWText from "@src/components/text/ow-text";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import OWCard from "@src/components/card/ow-card";
-
-const mockSetting = [
-  { type: "manage", title: "Manage Wallet", onPress: () => {} },
-];
 
 export const NewSettingScreen: FunctionComponent = observer(() => {
   const { keychainStore, keyRingStore, priceStore, modalStore } = useStore();
@@ -189,13 +171,19 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
           }
         />
         <SettingSwitchModeItem />
+
+        <View style={styles.border} />
         {keychainStore.isBiometrySupported || keychainStore.isBiometryOn ? (
           <SettingBiometricLockItem />
         ) : null}
-        <View style={styles.border} />
         {canShowPrivateData(keyRingStore.keyRingType) && (
           <SettingViewPrivateDataItem />
         )}
+        <SettingRemoveAccountItem />
+
+        <View style={styles.border} />
+        {renderRating()}
+        <View style={styles.border} />
         <BasicSettingItem
           left={
             <View style={{ padding: 12 }}>
@@ -213,11 +201,6 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
             smartNavigation.navigateSmart("Setting.Version", {});
           }}
         />
-        <View style={styles.border} />
-        {renderRating()}
-        <View style={styles.border} />
-
-        <SettingRemoveAccountItem />
       </View>
     </PageWithScrollViewInBottomTabView>
   );

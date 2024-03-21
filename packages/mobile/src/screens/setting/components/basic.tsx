@@ -50,7 +50,15 @@ export const BasicSettingItem: FunctionComponent<{
   right?: React.ReactElement;
   onPress?: () => void;
   topBorder?: boolean;
-}> = ({ containerStyle, icon, paragraph, right, left, onPress }) => {
+}> = ({
+  containerStyle,
+  paragraphStyle,
+  icon,
+  paragraph,
+  right,
+  left,
+  onPress,
+}) => {
   const { colors } = useTheme();
   const styles = styling(colors);
 
@@ -70,7 +78,7 @@ export const BasicSettingItem: FunctionComponent<{
                 }
               </View>
             )}
-            <OWText size={16} weight="600">
+            <OWText style={paragraphStyle} size={16} weight="600">
               {paragraph ?? ""}
             </OWText>
           </View>

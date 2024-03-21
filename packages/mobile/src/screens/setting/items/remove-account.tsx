@@ -78,7 +78,9 @@ export const SettingRemoveAccountItem: FunctionComponent<{
             />
           </View>
         }
+        right={<View />}
         paragraph="Remove current wallet"
+        paragraphStyle={{ color: colors["error-text-action"] }}
         onPress={() => {
           setIsOpenModal(true);
         }}

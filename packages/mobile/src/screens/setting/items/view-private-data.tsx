@@ -18,8 +18,8 @@ export const SettingViewPrivateDataItem: FunctionComponent<{
   return (
     <React.Fragment>
       <BasicSettingItem
-        icon="tdesign_search"
-        paragraph={"Mnemonic"}
+        icon="md_key"
+        paragraph={"Reveal secret phrase"}
         onPress={() => {
           setIsOpenModal(true);
         }}

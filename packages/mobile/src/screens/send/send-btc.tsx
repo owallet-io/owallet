@@ -257,7 +257,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
         colors={colors}
       />
       <ScrollView
-        contentContainerStyle={{ height: metrics.screenHeight }}
+        style={{ height: metrics.screenHeight / 1.4 }}
         showsVerticalScrollIndicator={false}
       >
         <View>
