@@ -9,6 +9,8 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { metrics } from "@src/themes";
 import { OWButton } from "@src/components/button";
 import { toAmount } from "@owallet/common";
+import { CardModal } from "@src/modals/card";
+import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
 
 export const CustomFee: FunctionComponent<{
   sendConfigs;
@@ -69,7 +71,7 @@ export const FeeModal: FunctionComponent<{
   vertical;
   setFee;
 }> = ({ sendConfigs, colors, vertical, setFee }) => {
-  const [customFee, setCustomFee] = useState(false);
+  const [customGas, setCustomGas] = useState(false);
 
   const { chainStore, modalStore, priceStore } = useStore();
 
@@ -79,8 +81,17 @@ export const FeeModal: FunctionComponent<{
   );
 
   return (
-    <View>
-      {chainStore.current.networkType !== "evm" ? (
+    <WrapViewModal
+      style={{
+        paddingHorizontal: 0,
+      }}
+      title="SET FEE"
+      subTitle={"The fee required to successfully conduct a transaction"}
+    >
+      <View>
+        {/*{chainStore.current.networkType !== "evm" ? (*/}
+        {/* */}
+        {/*) : null}*/}
         <View
           style={{
             flexDirection: "row",
@@ -108,7 +119,7 @@ export const FeeModal: FunctionComponent<{
                 alignItems: "center",
               }}
             >
-              <OWIcon name={"edit"} size={16} />
+              <OWIcon name={"send"} size={16} />
             </View>
 
             <OWText
@@ -120,59 +131,63 @@ export const FeeModal: FunctionComponent<{
                 color: colors["primary-text"],
               }}
             >
-              Custom Fee
+              Custom Gas
             </OWText>
           </View>
           <Toggle
-            on={customFee}
+            on={customGas}
             onChange={(value) => {
-              setCustomFee(value);
-              if (!value) {
-                if (
-                  sendConfigs.feeConfig.feeCurrency &&
-                  !sendConfigs.feeConfig.fee
-                ) {
-                  sendConfigs.feeConfig.setFeeType("average");
-                }
-              }
+              setCustomGas(value);
+              // if (!value) {
+              //   if (
+              //     sendConfigs.feeConfig.feeCurrency &&
+              //     !sendConfigs.feeConfig.fee
+              //   ) {
+              //     sendConfigs.feeConfig.setFeeType("average");
+              //   }
+              // }
             }}
           />
         </View>
-      ) : null}
-      {customFee && chainStore.current.networkType !== "evm" ? (
-        <CustomFee sendConfigs={sendConfigs} colors={colors} setFee={setFee} />
-      ) : chainStore.current.networkType !== "evm" ? (
-        <FeeButtons
-          setFee={setFee}
-          vertical={vertical}
-          label="Transaction Fee"
-          gasLabel="gas"
-          feeConfig={sendConfigs.feeConfig}
-          gasConfig={sendConfigs.gasConfig}
-          labelStyle={{
+        {customGas && chainStore.current.networkType !== "evm" ? (
+          <CustomFee
+            sendConfigs={sendConfigs}
+            colors={colors}
+            setFee={setFee}
+          />
+        ) : chainStore.current.networkType !== "evm" ? (
+          <FeeButtons
+            setFee={setFee}
+            vertical={vertical}
+            label="Transaction Fee"
+            gasLabel="gas"
+            feeConfig={sendConfigs.feeConfig}
+            gasConfig={sendConfigs.gasConfig}
+            labelStyle={{
+              fontSize: 14,
+              fontWeight: "500",
+              lineHeight: 20,
+              color: colors["neutral-Text-body"],
+            }}
+          />
+        ) : null}
+        <OWButton
+          label="Confirm"
+          onPress={async () => {
+            modalStore.close();
+          }}
+          style={[
+            {
+              marginTop: 20,
+              borderRadius: 999,
+            },
+          ]}
+          textStyle={{
             fontSize: 14,
-            fontWeight: "500",
-            lineHeight: 20,
-            color: colors["neutral-Text-body"],
+            fontWeight: "600",
           }}
         />
-      ) : null}
-      <OWButton
-        label="Confirm"
-        onPress={async () => {
-          modalStore.close();
-        }}
-        style={[
-          {
-            marginTop: 20,
-            borderRadius: 999,
-          },
-        ]}
-        textStyle={{
-          fontSize: 14,
-          fontWeight: "600",
-        }}
-      />
-    </View>
+      </View>
+    </WrapViewModal>
   );
 };

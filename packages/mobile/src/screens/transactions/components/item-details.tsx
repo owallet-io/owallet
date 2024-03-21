@@ -21,9 +21,13 @@ const ItemDetail: FC<{
 }) => {
   const { colors } = useTheme();
   return (
-    <View>
+    <View
+      style={{
+        backgroundColor: colors["neutral-surface-card"],
+      }}
+    >
       <View style={styles.containerItemDetail}>
-        <Text color={colors["blue-300"]} variant="body2">
+        <Text color={colors["neutral-text-title"]} size={16} weight={"600"}>
           {label}
         </Text>
         <View style={styles.wrapRightItem}>
@@ -38,6 +42,7 @@ const ItemDetail: FC<{
           )}
           {typeof value === "string" ? (
             <Text
+              size={16}
               color={colors["text-title-login"]}
               variant="body1"
               {...valueProps}
@@ -65,6 +70,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    height: 50,
+    height: 56,
   },
 });

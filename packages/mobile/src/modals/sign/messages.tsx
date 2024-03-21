@@ -1,10 +1,10 @@
 /* eslint-disable react/display-name */
 
 import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
-import { CoinUtils, Coin } from "@owallet/unit";
+import { CoinUtils, Coin, CoinPretty } from "@owallet/unit";
 import { AppCurrency, Currency } from "@owallet/types";
 import yaml from "js-yaml";
-import { CoinPrimitive } from "@owallet/stores";
+import { CoinGeckoPriceStore, CoinPrimitive } from "@owallet/stores";
 import { Text } from "@src/components/text";
 import { useStyle } from "../../styles";
 import { Bech32Address } from "@owallet/cosmos";
@@ -19,8 +19,15 @@ import { Buffer } from "buffer";
 import { observer } from "mobx-react-lite";
 import { FormattedMessage, IntlShape } from "react-intl";
 import { Badge } from "../../components/badge";
-import { StyleSheet, View } from "react-native";
+import { ImageBackground, StyleSheet, View } from "react-native";
 import { typography } from "../../themes";
+import ItemDetail from "@src/screens/transactions/components/item-details";
+import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
+import images from "@src/assets/images";
+import { useTheme } from "@src/themes/theme-provider";
+import OWCard from "@src/components/card/ow-card";
+import OWText from "@src/components/text/ow-text";
+import FastImage from "react-native-fast-image";
 
 const h = new Hypher(english);
 
@@ -181,11 +188,13 @@ export function renderUnknownMessage(msg: object) {
   };
 }
 
-export function renderMsgSend(
+export const renderMsgSend = (
   currencies: AppCurrency[],
   amount: CoinPrimitive[],
-  toAddress: string
-) {
+  toAddress: string,
+  fromAddress: string,
+  priceStore: CoinGeckoPriceStore
+) => {
   const receives: CoinPrimitive[] = [];
   for (const coinPrimitive of amount) {
     const coin = new Coin(coinPrimitive.denom, coinPrimitive.amount);
@@ -196,44 +205,112 @@ export function renderMsgSend(
       denom: parsed.denom,
     });
   }
+  const checkPrice = () => {
+    if (amount?.length === 1) {
+      const fiat = priceStore.defaultVsCurrency;
+      const fiatCurrency = priceStore.getFiatCurrency(fiat);
+      if (!fiatCurrency) {
+        return undefined;
+      }
+      const coin = CoinUtils.convertCoinPrimitiveToCoinPretty(
+        currencies,
+        amount[0].denom,
+        amount[0].amount
+      );
+      const totalPrice = priceStore.calculatePrice(coin, fiat);
+      return totalPrice?.toString();
+    }
+    return null;
+  };
 
+  const checkImageCoin = () => {
+    if (amount?.length === 1) {
+      const coin = CoinUtils.convertCoinPrimitiveToCoinPretty(
+        currencies,
+        amount[0].denom,
+        amount[0].amount
+      );
+
+      if (coin?.currency?.coinImageUrl)
+        return (
+          <View
+            style={{
+              alignSelf: "center",
+              paddingVertical: 8,
+            }}
+          >
+            <FastImage
+              style={{
+                height: 30,
+                width: 30,
+              }}
+              source={{
+                uri: coin?.currency?.coinImageUrl,
+              }}
+            />
+          </View>
+        );
+      return null;
+    }
+    return null;
+  };
+  const { colors } = useTheme();
   return {
     title: "Send",
     content: (
-      <View style={{}}>
-        <View
+      <View>
+        <OWCard
           style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
+            height: 143,
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
-          <Text style={{ ...styles.textInfo }}>Send to </Text>
-          <Text style={{ fontWeight: "bold" }}>
-            {hyphen(Bech32Address.shortenAddress(toAddress, 20))}
-          </Text>
-        </View>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-          }}
-        >
-          <Text style={{ ...styles.textInfo }}>Amount </Text>
-          <Text style={{ fontWeight: "bold" }}>
+          {checkImageCoin()}
+          <OWText size={28} color={colors["neutral-text-title"]} weight={"500"}>
             {hyphen(
               receives
                 .map((coin) => {
-                  return `${coin.amount} ${coin.denom}`;
+                  return `-${coin.amount} ${coin.denom}`;
                 })
                 .join(",")
             )}
-          </Text>
+          </OWText>
+          <OWText
+            style={{
+              textAlign: "center",
+            }}
+            color={colors["neutral-text-body2"]}
+            weight={"400"}
+          >
+            {checkPrice()}
+          </OWText>
+        </OWCard>
+        <View
+          style={{
+            backgroundColor: colors["neutral-surface-card"],
+            paddingHorizontal: 16,
+            marginTop: 16,
+            borderTopLeftRadius: 24,
+            borderTopRightRadius: 24,
+            paddingTop: 16,
+          }}
+        >
+          <ItemReceivedToken
+            label={"From"}
+            valueDisplay={hyphen(Bech32Address.shortenAddress(fromAddress, 20))}
+            value={fromAddress}
+          />
+          <ItemReceivedToken
+            label={"To"}
+            valueDisplay={hyphen(Bech32Address.shortenAddress(toAddress, 20))}
+            value={toAddress}
+          />
         </View>
-        {/* <Text>{' will receive '}</Text> */}
       </View>
     ),
   };
-}
+};
 
 export function renderMsgTransfer(
   currencies: AppCurrency[],

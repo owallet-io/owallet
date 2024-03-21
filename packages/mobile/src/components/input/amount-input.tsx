@@ -126,17 +126,10 @@ export const NewAmountInput: FunctionComponent<{
             inputContainerStyle={inputContainerStyle}
             textAlign="right"
             errorLabelStyle={errorLabelStyle}
+            maxLength={20}
             value={amountConfig.amount}
             onChangeText={(text) => {
-              if (maxBalance) {
-                if (Number(maxBalance) >= Number(text.replace(/,/g, "."))) {
-                  amountConfig.setAmount(text.replace(/,/g, "."));
-                } else {
-                  amountConfig.setAmount(maxBalance.replace(/,/g, "."));
-                }
-              } else {
-                amountConfig.setAmount(text.replace(/,/g, "."));
-              }
+              amountConfig.setAmount(text.replace(/,/g, "."));
             }}
             placeholder={placeholder}
             placeholderTextColor={placeholderTextColor}

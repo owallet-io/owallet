@@ -31,19 +31,24 @@ const ItemReceivedToken: FC<{
     setTimer(2000);
   }, [value]);
   return (
-    <View>
+    <View
+      style={{
+        backgroundColor: colors["neutral-surface-card"],
+      }}
+    >
       <View style={styles.containerItemReceivedToken}>
         <View style={styles.flex_1}>
-          <Text color={colors["blue-300"]} variant="body2">
+          <Text weight={"600"} size={16} color={colors["neutral-text-title"]}>
             {label}
           </Text>
           {typeof valueDisplay == "string" ? (
             <Text
-              color={colors["text-title-login"]}
-              variant="body1"
+              size={16}
+              weight={"600"}
+              color={colors["neutral-text-body"]}
               {...valueProps}
             >
-              {valueDisplay}
+              {valueDisplay || "--"}
             </Text>
           ) : (
             valueDisplay
@@ -83,7 +88,7 @@ const styling = () => {
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
-      height: 60,
+      height: 56,
     },
     flex_1: {
       flex: 1,

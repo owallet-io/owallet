@@ -17,6 +17,8 @@ import { typography } from "../../themes";
 import { Toggle } from "../../components/toggle";
 import { useTheme } from "@src/themes/theme-provider";
 import { BottomSheetProps } from "@gorhom/bottom-sheet";
+import ItemDetail from "@src/screens/transactions/components/item-details";
+
 const FeeButtonsModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
@@ -171,18 +173,10 @@ export const FeeInSign: FunctionComponent<{
         feeConfig={feeConfig}
         gasConfig={gasConfig}
       />
-      <View style={style.flatten(["padding-bottom-28"])}>
-        <View
-          style={style.flatten(["flex-row", "items-center", "margin-bottom-4"])}
-        >
-          <Text style={style.flatten(["subtitle3"])}>Fee</Text>
-          <View style={style.get("flex-1")} />
-          <Text style={style.flatten(["body3"])}>
-            {feePrice ? feePrice.toString() : "-"}
-          </Text>
-        </View>
-        <View style={style.flatten(["flex-row"])}>
-          <View style={style.get("flex-1")} />
+
+      <ItemDetail
+        label={"Transaction fee"}
+        value={
           <TouchableOpacity
             style={style.flatten(["flex-row", "items-center"])}
             disabled={!canFeeEditable}
@@ -191,59 +185,40 @@ export const FeeInSign: FunctionComponent<{
             }}
           >
             <Text
-              style={{
-                ...typography["subtitle1"],
-                color: canFeeEditable
-                  ? colors["primary-surface-default"]
-                  : colors["primary-text"],
-              }}
+              weight={"600"}
+              color={colors["primary-text-action"]}
+              size={16}
             >
-              {fee.trim(true).toString()}
+              {feeConfig.feeType ? `${feeConfig.feeType} :` : ""}{" "}
+              {feePrice ? feePrice.toString() : "-"}
             </Text>
             {canFeeEditable ? (
               <View style={style.flatten(["margin-left-6"])}>
                 <RightArrowIcon
-                  color={style.get("color-primary").color}
-                  height={12}
+                  color={colors["primary-text-action"]}
+                  height={14}
                 />
               </View>
             ) : null}
           </TouchableOpacity>
+        }
+      />
+
+      {!isFeeLoading && errorText ? (
+        <View>
+          <Text
+            style={style.flatten([
+              "absolute",
+              "text-caption1",
+              "color-error",
+              "margin-top-2",
+              "margin-left-4",
+            ])}
+          >
+            {errorText}
+          </Text>
         </View>
-        {isFeeLoading ? (
-          <View>
-            <View
-              style={style.flatten([
-                "absolute",
-                "height-16",
-                "justify-center",
-                "margin-top-2",
-                "margin-left-4",
-              ])}
-            >
-              <LoadingSpinner
-                size={14}
-                color={style.get("color-loading-spinner").color}
-              />
-            </View>
-          </View>
-        ) : null}
-        {!isFeeLoading && errorText ? (
-          <View>
-            <Text
-              style={style.flatten([
-                "absolute",
-                "text-caption1",
-                "color-error",
-                "margin-top-2",
-                "margin-left-4",
-              ])}
-            >
-              {errorText}
-            </Text>
-          </View>
-        ) : null}
-      </View>
+      ) : null}
     </React.Fragment>
   );
 });

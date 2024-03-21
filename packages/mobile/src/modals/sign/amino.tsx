@@ -1,5 +1,10 @@
 import React from "react";
-import { AccountSetOpts, CosmosMsgOpts, SecretMsgOpts } from "@owallet/stores";
+import {
+  AccountSetOpts,
+  CoinGeckoPriceStore,
+  CosmosMsgOpts,
+  SecretMsgOpts,
+} from "@owallet/stores";
 import {
   MessageObj,
   MsgBeginRedelegate,
@@ -25,7 +30,8 @@ import { AppCurrency } from "@owallet/types";
 export function renderAminoMessage(
   msgOpts: AccountSetOpts<CosmosMsgOpts & SecretMsgOpts>["msgOpts"],
   msg: MessageObj,
-  currencies: AppCurrency[]
+  currencies: AppCurrency[],
+  priceStore: CoinGeckoPriceStore
 ): {
   title: string;
   content: React.ReactElement;
@@ -33,7 +39,14 @@ export function renderAminoMessage(
 } {
   if (msg.type === msgOpts.send.native.type) {
     const value = msg.value as MsgSend["value"];
-    return renderMsgSend(currencies, value.amount, value.to_address);
+
+    return renderMsgSend(
+      currencies,
+      value.amount,
+      value.to_address,
+      value.from_address,
+      priceStore
+    );
   }
 
   if (msg.type === msgOpts.ibcTransfer.type) {

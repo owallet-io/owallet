@@ -33,7 +33,7 @@ export interface FeeButtonsProps {
   containerStyle?: ViewStyle;
   buttonsContainerStyle?: ViewProps;
   errorLabelStyle?: TextStyle;
-  setFee?: Function;
+  setFee?: void;
   label: string;
   gasLabel: string;
   vertical?: boolean;

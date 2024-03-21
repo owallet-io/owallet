@@ -312,11 +312,11 @@ export const NewSendScreen: FunctionComponent = observer(() => {
           return;
         }
 
-        if (smartNavigation.canGoBack) {
-          smartNavigation.goBack();
-        } else {
-          smartNavigation.navigateSmart("Home", {});
-        }
+        // if (smartNavigation.canGoBack) {
+        //   smartNavigation.goBack();
+        // } else {
+        //   smartNavigation.navigateSmart("Home", {});
+        // }
       }
     }
   };

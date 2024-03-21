@@ -3,9 +3,9 @@ module.exports = {
   extends: [
     'plugin:@typescript-eslint/recommended',
     'plugin:react/recommended',
-    'plugin:prettier/recommended',
-    'prettier/react',
-    'prettier/standard',
+    // 'plugin:prettier/recommended',
+    // 'prettier/react',
+    // 'prettier/standard',
     'plugin:import/typescript',
   ],
   plugins: ['react-hooks', 'unicorn', 'import'],
@@ -17,7 +17,7 @@ module.exports = {
     },
   },
   rules: {
-    'prettier/prettier': 'error',
+    // 'prettier/prettier': 'error',
     'react/prop-types': 'off',
     'react/self-closing-comp': 'error',
     '@typescript-eslint/explicit-function-return-type': 'off',
@@ -29,7 +29,7 @@ module.exports = {
     '@typescript-eslint/camelcase': 'off',
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'warn',
-    'prettier/prettier': ['error', { singleQuote: true }],
+    // 'prettier/prettier': ['error', { singleQuote: true }],
     'unicorn/filename-case': [
       'error',
       {

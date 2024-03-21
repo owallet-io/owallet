@@ -23,6 +23,15 @@ import { renderDirectMessage } from "./direct";
 import crashlytics from "@react-native-firebase/crashlytics";
 import { colors } from "../../themes";
 import { BottomSheetProps } from "@gorhom/bottom-sheet";
+import OWText from "@src/components/text/ow-text";
+import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
+import { MemoInput } from "@src/components/input";
+import { Bech32Address } from "@owallet/cosmos";
+import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
+import { useTheme } from "@src/themes/theme-provider";
+import { OWButton } from "@src/components/button";
+import OWButtonGroup from "@src/components/button/OWButtonGroup";
+
 export const SignModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
@@ -34,6 +43,7 @@ export const SignModal: FunctionComponent<{
       accountStore,
       queriesStore,
       signInteractionStore,
+      priceStore,
       appInitStore,
     } = useStore();
     useUnmount(() => {
@@ -148,14 +158,25 @@ export const SignModal: FunctionComponent<{
         return (msgs as readonly AminoMsg[]).map((msg, i) => {
           const account = accountStore.getAccount(chainId);
           const chainInfo = chainStore.getChain(chainId);
-          const { content, scrollViewHorizontal } = renderAminoMessage(
+          const { content, scrollViewHorizontal, title } = renderAminoMessage(
             account.msgOpts,
             msg,
-            chainInfo.currencies
+            chainInfo.currencies,
+            priceStore
           );
 
           return (
             <View key={i.toString()}>
+              <OWText
+                size={16}
+                weight={"700"}
+                style={{
+                  textAlign: "center",
+                  paddingBottom: 20,
+                }}
+              >
+                {`${title} confirmation`.toUpperCase()}
+              </OWText>
               {scrollViewHorizontal ? (
                 <ScrollView horizontal={true}>
                   <Text style={style.flatten(["body3"])}>{content}</Text>
@@ -180,76 +201,59 @@ export const SignModal: FunctionComponent<{
         return null;
       }
     })();
-
+    const { colors } = useTheme();
     return (
-      <CardModal title="Confirm Transaction">
-        <View style={style.flatten(["margin-bottom-16"])}>
+      <WrapViewModal
+        style={{
+          backgroundColor: colors["neutral-surface-bg"],
+        }}
+      >
+        <View>
+          <View>{renderedMsgs}</View>
+
           <View
-            style={style.flatten([
-              "border-radius-8",
-              "border-color-border-white",
-              // 'overflow-hidden'
-            ])}
+            style={{
+              backgroundColor: colors["neutral-surface-card"],
+              paddingHorizontal: 16,
+              borderBottomLeftRadius: 24,
+              borderBottomRightRadius: 24,
+              marginBottom: 24,
+            }}
           >
-            <ScrollView
-              style={style.flatten(["max-height-214"])}
-              persistentScrollbar={true}
-            >
-              {renderedMsgs}
-            </ScrollView>
+            <FeeInSign
+              feeConfig={feeConfig}
+              gasConfig={gasConfig}
+              signOptions={signInteractionStore.waitingData?.data.signOptions}
+              isInternal={isInternal}
+            />
+            {/*<MemoInput label="Memo" memoConfig={memoConfig} />*/}
+            <ItemReceivedToken
+              label={"Memo"}
+              valueDisplay={memoConfig.memo}
+              value={memoConfig.memo}
+              btnCopy={false}
+            />
           </View>
         </View>
-        {/* <MemoInput label="To" memoConfig={memoConfig} /> */}
-        <FeeInSign
-          feeConfig={feeConfig}
-          gasConfig={gasConfig}
-          signOptions={signInteractionStore.waitingData?.data.signOptions}
-          isInternal={isInternal}
-        />
 
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-evenly",
+        <OWButtonGroup
+          labelApprove={"Confirm"}
+          labelClose={"Cancel"}
+          disabledApprove={isDisable}
+          disabledClose={signInteractionStore.isLoading}
+          loadingApprove={signInteractionStore.isLoading}
+          styleApprove={{
+            borderRadius: 24,
+            backgroundColor: colors["primary-surface-default"],
           }}
-        >
-          <Button
-            text="Reject"
-            size="large"
-            containerStyle={{
-              width: "40%",
-            }}
-            style={{
-              backgroundColor: colors["red-500"],
-            }}
-            textStyle={{
-              color: colors["white"],
-            }}
-            underlayColor={colors["danger-400"]}
-            loading={signInteractionStore.isLoading}
-            onPress={_onPressReject}
-          />
-          <Button
-            text="Approve"
-            containerStyle={{
-              width: "40%",
-            }}
-            style={{
-              backgroundColor: isDisable
-                ? colors["gray-400"]
-                : colors["primary-surface-default"],
-            }}
-            textStyle={{
-              color: isDisable ? colors["gray-10"] : colors["white"],
-            }}
-            underlayColor={colors["purple-400"]}
-            size="large"
-            disabled={isDisable}
-            loading={signInteractionStore.isLoading}
-            onPress={_onPressApprove}
-          />
-        </View>
-      </CardModal>
+          onPressClose={_onPressReject}
+          onPressApprove={_onPressApprove}
+          styleClose={{
+            borderRadius: 24,
+            backgroundColor: colors["neutral-surface-action3"],
+          }}
+        />
+      </WrapViewModal>
     );
   }),
   {

@@ -2,7 +2,10 @@ import { Coin } from "./coin";
 import { Int } from "./int";
 import { Dec } from "./decimal";
 import { DecUtils } from "./dec-utils";
-import { Currency } from "@owallet/types";
+import { AppCurrency, Currency } from "@owallet/types";
+import { CoinPrimitive } from "@owallet/stores";
+import { CoinPretty } from "./coin-pretty";
+import bigInteger from "big-integer";
 
 export class CoinUtils {
   static createCoinsFromPrimitives(
@@ -183,5 +186,29 @@ export class CoinUtils {
     );
 
     return `${DecUtils.trim(dec)}${separator}${currency.coinDenom}`;
+  }
+
+  static convertCoinPrimitiveToCoinPretty(
+    currencies: AppCurrency[],
+    denom: string,
+    amount:
+      | Dec
+      | {
+          toDec(): Dec;
+        }
+      | bigInteger.BigNumber
+  ) {
+    let currency = currencies.find((currency) => {
+      return currency.coinMinimalDenom === denom;
+    });
+    if (!currency) {
+      // If the currency is unknown, just use the raw currency.
+      currency = {
+        coinDecimals: 0,
+        coinDenom: denom,
+        coinMinimalDenom: denom,
+      };
+    }
+    return new CoinPretty(currency, amount);
   }
 }
