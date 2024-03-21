@@ -253,7 +253,7 @@ export const SCREENS_OPTIONS: IScreenOption = {
     showTabBar: true,
   },
   [SCREENS.SettingSelectAccount]: {
-    title: "Select Account",
+    title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.SettingViewPrivateData]: {
     title: "Mnemonic Seed",

@@ -197,7 +197,10 @@ export const SendOasisScreen: FunctionComponent = observer(() => {
         subtitle={chainStore.current.chainName}
         colors={colors}
       />
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={{ height: metrics.screenHeight }}
+        showsVerticalScrollIndicator={false}
+      >
         <View>
           <OWCard type="normal">
             <OWText color={colors["neutral-text-title"]} size={12}>

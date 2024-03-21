@@ -9,9 +9,15 @@ import {
   MultiKeyStoreInfoElem,
   MultiKeyStoreInfoWithSelectedElem,
 } from "@owallet/background";
-import { View } from "react-native";
+import { ScrollView, View } from "react-native";
 import { useSmartNavigation } from "../../../../navigation.provider";
 import { useTheme } from "@src/themes/theme-provider";
+import { PageWithBottom } from "@src/components/page/page-with-bottom";
+import { OWButton } from "@src/components/button";
+import { metrics } from "@src/themes";
+import { PageHeader } from "@src/components/header/header-new";
+import OWCard from "@src/components/card/ow-card";
+import OWText from "@src/components/text/ow-text";
 
 export const getKeyStoreParagraph = (keyStore: MultiKeyStoreInfoElem) => {
   const bip44HDPath = keyStore.bip44HDPath
@@ -95,6 +101,7 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
     await selectKeyStore(keyStore);
     loadingScreen.setIsLoading(false);
   }, []);
+
   const renderKeyStores = (
     title: string,
     keyStores: MultiKeyStoreInfoWithSelectedElem[]
@@ -123,6 +130,57 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
       </React.Fragment>
     );
   };
+
+  return (
+    <PageWithBottom
+      bottomGroup={
+        <OWButton
+          label="Add wallets"
+          onPress={() => {}}
+          style={{
+            marginTop: 20,
+            borderRadius: 999,
+            width: metrics.screenWidth - 32,
+          }}
+          textStyle={{
+            fontSize: 14,
+            fontWeight: "600",
+          }}
+        />
+      }
+    >
+      <PageHeader title="Manage wallet" colors={colors} />
+      <ScrollView
+        contentContainerStyle={{ height: metrics.screenHeight }}
+        showsVerticalScrollIndicator={false}
+      >
+        <View>
+          <OWCard type="normal">
+            <OWText color={colors["neutral-text-title"]} size={12}>
+              Recipient
+            </OWText>
+          </OWCard>
+
+          <OWCard type="normal">
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                borderBottomColor: colors["neutral-border-default"],
+                borderBottomWidth: 1,
+                paddingVertical: 16,
+                marginBottom: 8,
+              }}
+            ></View>
+
+            <OWText color={colors["neutral-text-title"]} size={12}>
+              Memo
+            </OWText>
+          </OWCard>
+        </View>
+      </ScrollView>
+    </PageWithBottom>
+  );
 
   return (
     <PageWithScrollViewInBottomTabView backgroundColor={colors["background"]}>
