@@ -243,13 +243,13 @@ export const SignModal: FunctionComponent<{
           disabledClose={signInteractionStore.isLoading}
           loadingApprove={signInteractionStore.isLoading}
           styleApprove={{
-            borderRadius: 24,
+            borderRadius: 99,
             backgroundColor: colors["primary-surface-default"],
           }}
           onPressClose={_onPressReject}
           onPressApprove={_onPressApprove}
           styleClose={{
-            borderRadius: 24,
+            borderRadius: 99,
             backgroundColor: colors["neutral-surface-action3"],
           }}
         />

@@ -6,6 +6,7 @@ import {
   View,
   KeyboardAvoidingView,
   StatusBar,
+  SafeAreaView,
 } from "react-native";
 import { metrics } from "@src/themes";
 import { PageHeader } from "../header/header-new";
@@ -41,14 +42,15 @@ export const PageWithBottom: FunctionComponent<
       ]}
     >
       {/*<View >*/}
-      {showHeader ? <PageHeader title="" colors={colors} /> : null}
-      {children}
-      {/*  <View>{children}</View>*/}
-      {/*</View>*/}
+      {/*{showHeader ? <PageHeader title="" colors={colors} /> : null}*/}
 
+      {children}
       <View style={styles.aic}>
         <View style={styles.bottom}>{bottomGroup}</View>
       </View>
+
+      {/*  <View>{children}</View>*/}
+      {/*</View>*/}
     </Wrapper>
   );
 };
@@ -64,7 +66,7 @@ const useStyle = (safeAreaInsets, colors) => {
     bottom: {
       borderTopWidth: 1,
       borderTopColor: colors["neutral-border-default"],
-      paddingBottom: 20,
+      paddingBottom: 40,
       width: metrics.screenWidth,
       alignItems: "center",
     },

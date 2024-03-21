@@ -36,11 +36,11 @@ const useSize = ({ size }): IMapStyle => {
       sizeStyle = {
         btn: {
           borderRadius: 8,
-          height: 55,
+          height: 48,
         },
         text: {
-          fontSize: 16,
-          fontWeight: "700",
+          fontSize: 14,
+          fontWeight: "600",
         },
       };
       break;
