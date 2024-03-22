@@ -46,6 +46,7 @@ export const BasicSettingItem: FunctionComponent<{
   paragraphStyle?: TextStyle;
   icon?: string;
   paragraph?: string;
+  subtitle?: string;
   left?: React.ReactElement;
   right?: React.ReactElement;
   onPress?: () => void;
@@ -55,6 +56,7 @@ export const BasicSettingItem: FunctionComponent<{
   paragraphStyle,
   icon,
   paragraph,
+  subtitle,
   right,
   left,
   onPress,
@@ -78,10 +80,16 @@ export const BasicSettingItem: FunctionComponent<{
                 }
               </View>
             )}
-            <OWText style={paragraphStyle} size={16} weight="600">
-              {paragraph ?? ""}
-            </OWText>
+            <View>
+              <OWText style={paragraphStyle} size={16} weight="600">
+                {paragraph ?? ""}
+              </OWText>
+              {subtitle ? (
+                <OWText color={colors["neutral-text-body"]}>{subtitle}</OWText>
+              ) : null}
+            </View>
           </View>
+
           <TouchableOpacity onPress={onPress}>
             {right ?? <OWIcon name="chevron_right" size={16} />}
           </TouchableOpacity>

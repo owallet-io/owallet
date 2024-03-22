@@ -19,10 +19,19 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import OWText from "@src/components/text/ow-text";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import OWCard from "@src/components/card/ow-card";
+import { Bech32Address } from "@owallet/cosmos";
 
 export const NewSettingScreen: FunctionComponent = observer(() => {
-  const { keychainStore, keyRingStore, priceStore, modalStore } = useStore();
+  const {
+    keychainStore,
+    keyRingStore,
+    priceStore,
+    modalStore,
+    accountStore,
+    chainStore,
+  } = useStore();
   const safeAreaInsets = useSafeAreaInsets();
+  const account = accountStore.getAccount(chainStore.current.chainId);
 
   const { colors } = useTheme();
   const styles = styling(colors);
@@ -132,18 +141,32 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
       <PageHeader title="Settings" colors={colors} />
       <View>
         <BasicSettingItem
-          paragraph="Manage wallet"
+          left={
+            <View style={{ paddingRight: 12 }}>
+              <Image
+                style={{ width: 44, height: 44, borderRadius: 44 }}
+                source={require("../../assets/images/default-avatar.png")}
+                fadeDuration={0}
+                resizeMode="contain"
+              />
+            </View>
+          }
+          icon="owallet"
+          paragraph={
+            selected ? selected.meta?.name || "OWallet Account" : "No Account"
+          }
+          subtitle={Bech32Address.shortenAddress(account.bech32Address, 24)}
           onPress={() =>
             smartNavigation.navigateSmart("SettingSelectAccount", {})
           }
         />
-        <BasicSettingItem
-          icon="tdesign_book"
-          paragraph="Address book"
-          onPress={() => {
-            smartNavigation.navigateSmart("AddressBook", {});
-          }}
-        />
+        {keychainStore.isBiometrySupported || keychainStore.isBiometryOn ? (
+          <SettingBiometricLockItem />
+        ) : null}
+        {canShowPrivateData(keyRingStore.keyRingType) && (
+          <SettingViewPrivateDataItem />
+        )}
+        <SettingRemoveAccountItem />
 
         <View style={styles.border} />
         <BasicSettingItem
@@ -171,15 +194,14 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
           }
         />
         <SettingSwitchModeItem />
-
         <View style={styles.border} />
-        {keychainStore.isBiometrySupported || keychainStore.isBiometryOn ? (
-          <SettingBiometricLockItem />
-        ) : null}
-        {canShowPrivateData(keyRingStore.keyRingType) && (
-          <SettingViewPrivateDataItem />
-        )}
-        <SettingRemoveAccountItem />
+        <BasicSettingItem
+          icon="tdesign_book"
+          paragraph="Address book"
+          onPress={() => {
+            smartNavigation.navigateSmart("AddressBook", {});
+          }}
+        />
 
         <View style={styles.border} />
         {renderRating()}

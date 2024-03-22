@@ -19,6 +19,7 @@ import { PageHeader } from "@src/components/header/header-new";
 import OWCard from "@src/components/card/ow-card";
 import OWText from "@src/components/text/ow-text";
 import { RadioButton } from "react-native-radio-buttons-group";
+import { useNavigation } from "@react-navigation/native";
 
 export const getKeyStoreParagraph = (keyStore: MultiKeyStoreInfoElem) => {
   const bip44HDPath = keyStore.bip44HDPath
@@ -65,6 +66,7 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
   const { colors } = useTheme();
 
   const smartNavigation = useSmartNavigation();
+  const navigation = useNavigation();
 
   const mnemonicKeyStores = useMemo(() => {
     return keyRingStore.multiKeyStoreInfo.filter(
@@ -109,7 +111,7 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
         style={{
           flexDirection: "row",
           justifyContent: "space-between",
-          paddingVertical: 6,
+          paddingVertical: 12,
         }}
         key={i.toString()}
       >
@@ -185,7 +187,11 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
       bottomGroup={
         <OWButton
           label="Add wallets"
-          onPress={() => {}}
+          onPress={() => {
+            navigation.navigate("Register", {
+              screen: "Register.Intro",
+            });
+          }}
           style={{
             marginTop: 20,
             borderRadius: 999,
