@@ -49,10 +49,10 @@ export const SelectorModal: FunctionComponent<{
             );
 
             if (selectedIndex) {
-              const scrollViewHeight = maxItemsToShow * 64;
+              const scrollViewHeight = maxItemsToShow * 110;
 
               scrollViewRef.current.scrollTo({
-                y: selectedIndex * 64 - scrollViewHeight / 2 + 32,
+                y: selectedIndex * 110 - scrollViewHeight / 2 + 32,
                 animated: false,
               });
             }
@@ -101,7 +101,7 @@ export const SelectorModal: FunctionComponent<{
         </View>
         <ScrollView
           style={{
-            maxHeight: maxItemsToShow ? 64 * maxItemsToShow : undefined,
+            maxHeight: maxItemsToShow ? maxItemsToShow * 110 : undefined,
             paddingHorizontal: spacing["24"],
           }}
           ref={scrollViewRef}
