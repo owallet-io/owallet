@@ -78,6 +78,8 @@ export const ValidatorDetailsCard: FunctionComponent<{
   validatorAddress: string;
   apr?: number;
 }> = observer(({ containerStyle, validatorAddress, apr }) => {
+  console.log("get here");
+
   const { chainStore, queriesStore, accountStore } = useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
@@ -209,7 +211,10 @@ export const ValidatorDetailsCard: FunctionComponent<{
         )
       }
     >
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={{ height: metrics.screenHeight / 1.4 }}
+        showsVerticalScrollIndicator={false}
+      >
         <PageHeader
           title="Validator details"
           colors={colors}

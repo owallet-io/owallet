@@ -30,7 +30,6 @@ export const PageWithBottom: FunctionComponent<
   const headerHeight = useHeaderHeight();
   const Wrapper = isAndroid ? View : KeyboardAvoidingView;
   const { bottom } = useSafeAreaInsets();
-  console.log(bottom, "bottom");
   return (
     <Wrapper
       keyboardVerticalOffset={headerHeight + StatusBar.currentHeight}
@@ -64,13 +63,11 @@ const useStyle = (safeAreaInsets, colors) => {
     container: {
       paddingTop: safeAreaInsets.top,
       justifyContent: "space-between",
-      flex: 1,
-      // height: "100%",
+      height: "100%",
     },
     bottom: {
       borderTopWidth: 1,
       borderTopColor: colors["neutral-border-default"],
-
       width: metrics.screenWidth,
       alignItems: "center",
     },

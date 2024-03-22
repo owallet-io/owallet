@@ -17,6 +17,7 @@ import { MyRewardCard } from "./reward-card";
 import { OWEmpty } from "@src/components/empty";
 import { metrics } from "@src/themes";
 import { OWButton } from "@src/components/button";
+import { UndelegationsCard } from "./undelegations-card";
 export const StakingDashboardScreen: FunctionComponent = observer(() => {
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
   const [validators, setValidators] = useState([]);
@@ -99,7 +100,9 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
                 fadeDuration={0}
               />
             </View>
+            <UndelegationsCard />
           </OWCard>
+
           <EarningCardNew containerStyle={styles.containerEarnStyle} />
           <ValidatorList />
         </>
