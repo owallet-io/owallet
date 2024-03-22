@@ -8,8 +8,9 @@ const images = {
   crypto: require("./crypto.png"),
   default_avatar: require("./default-avatar.png"),
   empty: require("./empty.png"),
-  empty_dark: require("./empty_dark.png"),
-  empty_img: require("./empty_img.png"),
+  swap: require("./swap.png"),
+  empty_dark: require("./img_search.png"),
+  empty_img: require("./img_search.png"),
   eye: require("./eye.png"),
   fail: require("./fail.png"),
   fail_dark: require("./fail_dark.png"),
@@ -39,6 +40,5 @@ const images = {
   scroll_top_dark: require("./scroll_top_dark.png"),
   success: require("./success.png"),
   success_dark: require("./success_dark.png"),
-  swap: require("./swap.png"),
 };
 export default images;

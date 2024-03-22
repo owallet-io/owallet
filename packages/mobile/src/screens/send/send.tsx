@@ -3,10 +3,6 @@ import { observer } from "mobx-react-lite";
 import {
   EmptyAddressError,
   EmptyAmountError,
-  ENSFailedToFetchError,
-  ENSIsFetchingError,
-  ENSNotSupportedError,
-  InvalidBech32Error,
   useSendTxConfig,
 } from "@owallet/hooks";
 import { useStore } from "../../stores";
@@ -27,7 +23,7 @@ import { PageHeader } from "@src/components/header/header-new";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { NewAmountInput } from "@src/components/input/amount-input";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
-import { chainIcons } from "@oraichain/oraidex-common";
+
 import { useSmartNavigation } from "@src/navigation.provider";
 import { FeeModal } from "@src/modals/fee";
 import { CoinPretty, Int } from "@owallet/unit";
@@ -448,7 +444,6 @@ export const NewSendScreen: FunctionComponent = observer(() => {
               <OWText
                 style={{ paddingLeft: 4 }}
                 color={colors["neutral-text-body"]}
-                // size={14}
               >
                 {priceStore.calculatePrice(amount).toString()}
               </OWText>

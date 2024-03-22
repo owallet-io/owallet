@@ -199,7 +199,7 @@ export const ValidatorList: FunctionComponent = observer(() => {
           <View style={{ paddingRight: 4 }}>
             <OWIcon
               color={colors["neutral-icon-on-light"]}
-              name="search"
+              name="tdesign_search"
               size={16}
             />
           </View>

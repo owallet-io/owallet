@@ -256,7 +256,10 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
         subtitle={chainStore.current.chainName}
         colors={colors}
       />
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={{ height: metrics.screenHeight / 1.4 }}
+        showsVerticalScrollIndicator={false}
+      >
         <View>
           <OWCard type="normal">
             <OWText color={colors["neutral-text-title"]} size={12}>

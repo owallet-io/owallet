@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useState } from "react";
-import { SettingItem } from "../components";
+import { BasicSettingItem, SettingItem } from "../components";
 import { Toggle } from "../../../components/toggle";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../../stores";
@@ -45,8 +45,9 @@ export const SettingBiometricLockItem: FunctionComponent<{
           }
         }}
       />
-      <SettingItem
-        label="Biometric authentication"
+      <BasicSettingItem
+        icon="face"
+        paragraph="Sign in with Face ID"
         right={
           <Toggle
             on={keychainStore.isBiometryOn}

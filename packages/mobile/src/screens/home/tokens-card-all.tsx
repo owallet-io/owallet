@@ -61,6 +61,7 @@ export const TokensCardAll: FunctionComponent<{
 
   const getYesterdayAssets = async () => {
     appInitStore.updateYesterdayPriceFeed({});
+    setYesterdayAssets([]);
     const res = await API.getYesterdayAssets(
       {
         address: accountOrai.bech32Address,
@@ -113,11 +114,6 @@ export const TokensCardAll: FunctionComponent<{
   });
 
   useEffect(() => {
-    console.log(
-      "universalSwapStore.getLoadStatus.isLoad",
-      universalSwapStore.getLoadStatus.isLoad
-    );
-
     if (universalSwapStore.getLoadStatus.isLoad) {
       handleSaveTokenInfos(tokens);
     }
