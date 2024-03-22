@@ -52,9 +52,9 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
     >
   >();
   const { current } = chainStore;
-  const { chainId } = current;
+  const chainId = current.chainId;
   const { params } = route;
-  console.log(route, "route");
+
   const txHash = params?.txHash;
   const chainInfo = chainStore.getChain(chainId);
 
@@ -88,14 +88,14 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
                   });
                 } else {
                   smartNavigation.pushSmart("TxFailedResult", {
-                    chainId: chainStore.current.chainId,
+                    chainId: current.chainId,
                     txHash: transaction.id,
                   });
                 }
               }
               if (retry === 0) {
                 smartNavigation.pushSmart("TxFailedResult", {
-                  chainId: chainStore.current.chainId,
+                  chainId: current.chainId,
                   txHash: txHash,
                 });
               }
@@ -103,7 +103,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
           }, 33000);
         } else {
           smartNavigation.pushSmart("TxFailedResult", {
-            chainId: chainStore.current.chainId,
+            chainId: current.chainId,
             txHash: txHash,
           });
         }
@@ -137,15 +137,25 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
         txTracer
           .traceTx(Buffer.from(txHash, "hex"))
           .then((tx) => {
+            const data = {
+              memo: params.data?.memo,
+              toAddress: params.data?.toAddress,
+              amount: params.data?.amount,
+              fromAddress: params.data?.fromAddress,
+              fee: params.data?.fee,
+              currency: params.data?.currency,
+            };
             if (tx.code == null || tx.code === 0) {
               smartNavigation.replaceSmart("TxSuccessResult", {
                 chainId,
                 txHash,
+                data,
               });
             } else {
               smartNavigation.replaceSmart("TxFailedResult", {
                 chainId,
                 txHash,
+                data,
               });
             }
           })

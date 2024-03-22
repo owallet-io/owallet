@@ -1,33 +1,30 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
-import { PageWithView } from "../../components/page";
 import { View, Image, TouchableOpacity, ScrollView } from "react-native";
 import { Text } from "@src/components/text";
 import { useSmartNavigation } from "../../navigation.provider";
-import { OWBox } from "../../components/card";
-import { metrics } from "../../themes";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { CommonActions } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
-import { openLink } from "../../utils/helper";
-import imagesAssets from "@src/assets/images";
-import { TRON_ID } from "@owallet/common";
+import { formatContractAddress, openLink } from "../../utils/helper";
+import { ChainIdEnum, TRON_ID } from "@owallet/common";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import OWButtonGroup from "@src/components/button/OWButtonGroup";
-import OWIcon from "@src/components/ow-icon/ow-icon";
 import { PageHeader } from "@src/components/header/header-new";
 import image from "@src/assets/images";
 import OWCard from "@src/components/card/ow-card";
 import OWText from "@src/components/text/ow-text";
 import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
+import { CoinPretty, Dec } from "@owallet/unit";
+import { AppCurrency, StdFee } from "@owallet/types";
+import { CoinPrimitive } from "@owallet/stores";
+import { Bech32Address } from "@owallet/cosmos";
 
 export const TxSuccessResultScreen: FunctionComponent = observer(() => {
-  const { chainStore } = useStore();
-  // // const [successAnimProgress] = React.useState(new Animated.Value(0));
-  // // const [pangpareAnimProgress] = React.useState(new Animated.Value(0));
+  const { chainStore, priceStore, txsStore, accountStore, keyRingStore } =
+    useStore();
   const { colors, images } = useTheme();
   const route = useRoute<
     RouteProp<
@@ -37,24 +34,82 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
           chainId?: string;
           // Hex encoded bytes.
           txHash?: string;
+          data?: {
+            memo: string;
+            fee: StdFee;
+            fromAddress: string;
+            toAddress: string;
+            amount: CoinPrimitive;
+            currency: AppCurrency;
+          };
         }
       >,
       string
     >
   >();
 
-  const chainId = route.params?.chainId
-    ? route.params?.chainId
-    : chainStore.current?.chainId;
-  const txHash = route.params?.txHash;
+  const chainTxs =
+    chainStore.current.chainId === ChainIdEnum.KawaiiEvm
+      ? chainStore.getChain(ChainIdEnum.KawaiiCosmos)
+      : chainStore.current;
+  const { current } = chainStore;
+  const chainId = current.chainId;
 
+  const { params } = route;
+  const txHash = params?.txHash;
+  const [data, setData] = useState<Partial<ResTxsInfo>>();
+  const account = accountStore.getAccount(chainStore?.current?.chainId);
+  const address = account.getAddressDisplay(
+    keyRingStore.keyRingLedgerAddresses,
+    false
+  );
+  const txs = txsStore(chainTxs);
   const smartNavigation = useSmartNavigation();
 
   const chainInfo = chainStore.getChain(chainId);
 
-  const onExplorer = () => {
-    alert("on explorer");
+  const handleOnExplorer = async () => {
+    if (chainInfo.raw.txExplorer && txHash) {
+      await openLink(
+        chainInfo.raw.txExplorer.txUrl.replace(
+          "{txHash}",
+          chainInfo.chainId === TRON_ID || chainInfo.networkType === "bitcoin"
+            ? txHash
+            : txHash.toUpperCase()
+        )
+      );
+    }
   };
+
+  const onDone = () => {
+    smartNavigation.dispatch(
+      CommonActions.reset({
+        index: 1,
+        routes: [{ name: "MainTab" }],
+      })
+    );
+  };
+  const amount = new CoinPretty(
+    params?.data?.currency,
+    new Dec(params?.data?.amount?.amount)
+  );
+  const fee = new CoinPretty(
+    chainInfo.stakeCurrency,
+    new Dec(params?.data?.fee.amount?.[0]?.amount)
+  );
+  const getDetailByHash = async (txHash) => {
+    try {
+      const tx = await txs.getTxsByHash(txHash, address);
+      setData(tx);
+    } catch (error) {
+      console.log("error: ", error);
+    }
+  };
+  useEffect(() => {
+    if (txHash) {
+      getDetailByHash(txHash);
+    }
+  }, [txHash]);
   return (
     <PageWithBottom
       bottomGroup={
@@ -72,8 +127,8 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
               borderRadius: 99,
               backgroundColor: colors["primary-surface-default"],
             }}
-            // onPressClose={_onPressReject}
-            // onPressApprove={_onPressApprove}
+            onPressClose={handleOnExplorer}
+            onPressApprove={onDone}
             styleClose={{
               borderRadius: 99,
               backgroundColor: colors["neutral-surface-action3"],
@@ -165,7 +220,7 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
               size={28}
               weight={"500"}
             >
-              -157,088.99 ORAI
+              {`${amount?.shrink(true)?.trim(true)?.toString()}`}
             </Text>
             <Text
               color={colors["neutral-text-body"]}
@@ -173,7 +228,7 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
                 textAlign: "center",
               }}
             >
-              $524.23
+              {priceStore.calculatePrice(amount)?.toString()}
             </Text>
           </OWCard>
           <View
@@ -186,13 +241,19 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
           >
             <ItemReceivedToken
               label={"From"}
-              valueDisplay={"orai1gh8...kszasmp"}
-              value={"orai1gh8...kszasmp"}
+              valueDisplay={
+                params?.data?.fromAddress &&
+                Bech32Address.shortenAddress(params?.data?.fromAddress, 20)
+              }
+              value={params?.data?.fromAddress}
             />
             <ItemReceivedToken
               label={"To"}
-              valueDisplay={"orai1gh8...kszasmp"}
-              value={"orai1gh8...kszasmp"}
+              valueDisplay={
+                params?.data?.toAddress &&
+                Bech32Address.shortenAddress(params?.data?.toAddress, 20)
+              }
+              value={params?.data?.toAddress}
             />
             <ItemReceivedToken
               label={"Network"}
@@ -203,15 +264,17 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
                     paddingTop: 6,
                   }}
                 >
-                  <Image
-                    style={{
-                      height: 20,
-                      width: 20,
-                    }}
-                    source={{
-                      uri: "https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png",
-                    }}
-                  />
+                  {chainInfo?.raw?.chainSymbolImageUrl && (
+                    <Image
+                      style={{
+                        height: 20,
+                        width: 20,
+                      }}
+                      source={{
+                        uri: chainInfo?.raw?.chainSymbolImageUrl,
+                      }}
+                    />
+                  )}
                   <Text
                     size={16}
                     color={colors["neutral-text-body"]}
@@ -220,47 +283,42 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
                       paddingLeft: 3,
                     }}
                   >
-                    Oraichain
+                    {chainInfo?.chainName}
                   </Text>
                 </View>
               }
-              value={"orai1gh8...kszasmp"}
               btnCopy={false}
             />
             <ItemReceivedToken
               label={"Fee"}
-              valueDisplay={"0.006 ORAI ($0.042)"}
-              value={"orai1gh8...kszasmp"}
+              valueDisplay={`${fee
+                ?.shrink(true)
+                ?.trim(true)
+                ?.toString()} (${priceStore.calculatePrice(fee)})`}
               btnCopy={false}
             />
             <ItemReceivedToken
               label={"Time"}
-              valueDisplay={"Dec 8, 2023 at 05:43"}
-              value={"orai1gh8...kszasmp"}
+              valueDisplay={data?.time?.timeLong}
               btnCopy={false}
             />
             <ItemReceivedToken
               label={"Memo"}
-              valueDisplay={"-"}
-              value={"orai1gh8...kszasmp"}
+              valueDisplay={params?.data?.memo || "-"}
               btnCopy={false}
             />
             <ItemReceivedToken
               label={"Hash"}
-              valueDisplay={"38DH83O...D92H9KL"}
-              value={"orai1gh8...kszasmp"}
+              valueDisplay={formatContractAddress(txHash)}
+              value={txHash}
               btnCopy={false}
               IconRightComponent={
                 <View>
                   <OWButtonIcon
                     name="copy"
-                    // style={{
-                    //   width: 20,
-                    //   height: 20
-                    // }}
                     sizeIcon={20}
                     fullWidth={false}
-                    onPress={onExplorer}
+                    onPress={onDone}
                     colorIcon={colors["neutral-text-action-on-light-bg"]}
                   />
                 </View>

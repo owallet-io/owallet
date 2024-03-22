@@ -32,193 +32,61 @@ import OWText from "@src/components/text/ow-text";
 import OWButtonGroup from "@src/components/button/OWButtonGroup";
 import owIcon from "@src/components/ow-icon/ow-icon";
 import OWIcon from "@src/components/ow-icon/ow-icon";
+import { AppCurrency, StdFee } from "@owallet/types";
+import { CoinPrimitive } from "@owallet/stores";
+import { CoinPretty, Dec } from "@owallet/unit";
+import { Bech32Address } from "@owallet/cosmos";
 
 export const TxFailedResultScreen: FunctionComponent = observer(() => {
-  // const { chainStore } = useStore();
-  //
-  // const route = useRoute<
-  //   RouteProp<
-  //     Record<
-  //       string,
-  //       {
-  //         chainId?: string;
-  //         // Hex encoded bytes.
-  //         txHash: string;
-  //       }
-  //     >,
-  //     string
-  //   >
-  // >();
-  //
-  // const chainId = route.params?.chainId
-  //   ? route.params?.chainId
-  //   : chainStore.current.chainId;
-  // const txHash = route.params?.txHash;
-  // const { colors, images } = useTheme();
-  // const smartNavigation = useSmartNavigation();
-  // const chainInfo = chainStore.getChain(chainId);
-  // const { bottom } = useSafeAreaInsets();
-  const { colors } = useTheme();
+  const { chainStore, priceStore } = useStore();
+
+  const route = useRoute<
+    RouteProp<
+      Record<
+        string,
+        {
+          chainId?: string;
+          // Hex encoded bytes.
+          txHash: string;
+          data?: {
+            memo: string;
+            fee: StdFee;
+            fromAddress: string;
+            toAddress: string;
+            amount: CoinPrimitive;
+            currency: AppCurrency;
+          };
+        }
+      >,
+      string
+    >
+  >();
+
+  const { current } = chainStore;
+  const chainId = current.chainId;
+  const { params } = route;
+
+  const { colors, images } = useTheme();
+  const smartNavigation = useSmartNavigation();
+  const chainInfo = chainStore.getChain(chainId);
+
+  const onDone = () => {
+    smartNavigation.dispatch(
+      CommonActions.reset({
+        index: 1,
+        routes: [{ name: "MainTab" }],
+      })
+    );
+  };
+  const amount = new CoinPretty(
+    params?.data?.currency,
+    new Dec(params?.data?.amount?.amount)
+  );
+  const fee = new CoinPretty(
+    chainInfo.stakeCurrency,
+    new Dec(params?.data?.fee.amount?.[0]?.amount)
+  );
   return (
-    // <PageWithView>
-    //   <OWBox>
-    //     <View
-    //       style={{
-    //         height: metrics.screenHeight - bottom - 74,
-    //         paddingTop: 80,
-    //       }}
-    //     >
-    //       <View
-    //         style={{
-    //           display: "flex",
-    //           flexDirection: "row",
-    //           alignItems: "center",
-    //         }}
-    //       >
-    //         <Image
-    //           style={{
-    //             width: 24,
-    //             height: 2,
-    //           }}
-    //           fadeDuration={0}
-    //           resizeMode="stretch"
-    //           source={images.line_fail_short}
-    //         />
-    //         <Image
-    //           style={{
-    //             width: 140,
-    //             height: 32,
-    //             marginLeft: 8,
-    //             marginRight: 9,
-    //           }}
-    //           fadeDuration={0}
-    //           resizeMode="stretch"
-    //           source={images.fail}
-    //         />
-    //         <Image
-    //           style={{
-    //             width: metrics.screenWidth - 185,
-    //             height: 2,
-    //           }}
-    //           fadeDuration={0}
-    //           resizeMode="stretch"
-    //           source={images.line_fail_long}
-    //         />
-    //       </View>
-    //       <View
-    //         style={{
-    //           paddingLeft: 32,
-    //           paddingRight: 72,
-    //         }}
-    //       >
-    //         <Text
-    //           style={{
-    //             fontWeight: "700",
-    //             fontSize: 24,
-    //             lineHeight: 34,
-    //             paddingTop: 44,
-    //             paddingBottom: 16,
-    //           }}
-    //           color={colors["text-title-login"]}
-    //         >
-    //           Transaction fail
-    //         </Text>
-    //         <Text
-    //           style={{
-    //             fontWeight: "400",
-    //             fontSize: 14,
-    //             lineHeight: 20,
-    //             color: colors["primary-text"],
-    //           }}
-    //         >
-    //           Please try again!
-    //         </Text>
-    //         <Text
-    //           style={{
-    //             fontWeight: "400",
-    //             fontSize: 14,
-    //             lineHeight: 20,
-    //             color: colors["primary-text"],
-    //             paddingTop: 6,
-    //           }}
-    //         >
-    //           The transaction cannot be completed.
-    //         </Text>
-    //         {chainInfo.raw.txExplorer ? (
-    //           <TouchableOpacity
-    //             style={{
-    //               paddingTop: 32,
-    //               display: "flex",
-    //               flexDirection: "row",
-    //               alignItems: "center",
-    //             }}
-    //             onPress={async () => {
-    //               if (chainInfo.raw.txExplorer) {
-    //                 await openLink(
-    //                   chainInfo.raw.txExplorer.txUrl.replace(
-    //                     "{txHash}",
-    //                     txHash.toUpperCase()
-    //                   )
-    //                 );
-    //               }
-    //             }}
-    //           >
-    //             <Image
-    //               style={{
-    //                 width: 22,
-    //                 height: 22,
-    //                 tintColor: colors["background-btn-primary"],
-    //               }}
-    //               fadeDuration={0}
-    //               resizeMode="stretch"
-    //               source={imagesAssets.eye}
-    //             />
-    //             <Text
-    //               style={{
-    //                 paddingLeft: 6,
-    //                 color: colors["background-btn-primary"],
-    //                 fontWeight: "400",
-    //                 fontSize: 16,
-    //                 lineHeight: 22,
-    //               }}
-    //             >
-    //               View on Explorer
-    //             </Text>
-    //           </TouchableOpacity>
-    //         ) : null}
-    //       </View>
-    //       <TouchableOpacity
-    //         style={{
-    //           marginTop: 32,
-    //           marginLeft: 25,
-    //           marginRight: 25,
-    //           backgroundColor: colors["background-btn-primary"],
-    //           borderRadius: 8,
-    //         }}
-    //         onPress={() => {
-    //           smartNavigation.dispatch(
-    //             CommonActions.reset({
-    //               index: 1,
-    //               routes: [{ name: "MainTab" }],
-    //             })
-    //           );
-    //         }}
-    //       >
-    //         <Text
-    //           style={{
-    //             color: "white",
-    //             textAlign: "center",
-    //             fontWeight: "700",
-    //             fontSize: 16,
-    //             padding: 16,
-    //           }}
-    //         >
-    //           Go Home
-    //         </Text>
-    //       </TouchableOpacity>
-    //     </View>
-    //   </OWBox>
-    // </PageWithView>
     <PageWithBottom
       bottomGroup={
         <View
@@ -237,7 +105,7 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
               backgroundColor: colors["primary-surface-default"],
             }}
             // onPressClose={_onPressReject}
-            // onPressApprove={_onPressApprove}
+            onPressApprove={onDone}
             styleClose={{
               borderRadius: 99,
               backgroundColor: colors["neutral-surface-action3"],
@@ -329,7 +197,7 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
               size={28}
               weight={"500"}
             >
-              -157,088.99 ORAI
+              {`${amount?.shrink(true)?.trim(true)?.toString()}`}
             </Text>
             <Text
               color={colors["neutral-text-body"]}
@@ -337,7 +205,7 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
                 textAlign: "center",
               }}
             >
-              $524.23
+              {priceStore.calculatePrice(amount)?.toString()}
             </Text>
           </OWCard>
           <View
@@ -350,24 +218,31 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
           >
             <ItemReceivedToken
               label={"From"}
-              valueDisplay={"orai1gh8...kszasmp"}
-              value={"orai1gh8...kszasmp"}
+              valueDisplay={
+                params?.data?.fromAddress &&
+                Bech32Address.shortenAddress(params?.data?.fromAddress, 20)
+              }
+              value={params?.data?.fromAddress}
             />
             <ItemReceivedToken
               label={"To"}
-              valueDisplay={"orai1gh8...kszasmp"}
-              value={"orai1gh8...kszasmp"}
+              valueDisplay={
+                params?.data?.toAddress &&
+                Bech32Address.shortenAddress(params?.data?.toAddress, 20)
+              }
+              value={params?.data?.toAddress}
             />
             <ItemReceivedToken
               label={"Fee"}
-              valueDisplay={"0.006 ORAI ($0.042)"}
-              value={"orai1gh8...kszasmp"}
+              valueDisplay={`${fee
+                ?.shrink(true)
+                ?.trim(true)
+                ?.toString()} (${priceStore.calculatePrice(fee)})`}
               btnCopy={false}
             />
             <ItemReceivedToken
               label={"Memo"}
-              valueDisplay={"-"}
-              value={"orai1gh8...kszasmp"}
+              valueDisplay={params?.data?.memo || "-"}
               btnCopy={false}
             />
           </View>

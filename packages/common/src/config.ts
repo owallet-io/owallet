@@ -263,7 +263,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
       return [this.stakeCurrency];
     },
     features: ["stargate", "ibc-transfer", "cosmwasm", "no-legacy-stdTx"],
-    chainSymbolImageUrl: "https://orai.io/images/logos/logomark-dark.png",
+    chainSymbolImageUrl:
+      "https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png",
     txExplorer: {
       name: "Oraiscan",
       txUrl: "https://scan.orai.io/txs/{txHash}",

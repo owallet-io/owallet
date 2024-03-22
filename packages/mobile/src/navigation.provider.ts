@@ -282,10 +282,26 @@ const { SmartNavigatorProvider, useSmartNavigation } =
       TxSuccessResult: {
         chainId?: string;
         txHash?: string;
+        data?: {
+          memo: string;
+          fee: CoinPretty | StdFee;
+          fromAddress: string;
+          toAddress: string;
+          amount: CoinPrimitive;
+          currency: AppCurrency;
+        };
       };
       TxFailedResult: {
         chainId?: string;
         txHash: string;
+        data?: {
+          memo: string;
+          fee: CoinPretty | StdFee;
+          fromAddress: string;
+          toAddress: string;
+          amount: CoinPrimitive;
+          currency: AppCurrency;
+        };
       };
     }>()
   );
