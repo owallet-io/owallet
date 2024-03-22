@@ -155,18 +155,27 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       accountTron.evmosHexAddress &&
       accountKawaiiCosmos.bech32Address
     ) {
-      setTimeout(() => {
-        universalSwapStore.clearAmounts();
-        universalSwapStore.setLoaded(false);
-        handleFetchAmounts(
-          accountOrai.bech32Address,
-          accountEth.evmosHexAddress,
-          accountTron.evmosHexAddress,
-          accountKawaiiCosmos.bech32Address
-        );
-      }, 1400);
+      const currentDate = Date.now();
+
+      const differenceInMilliseconds = Math.abs(currentDate - refreshDate);
+      const differenceInSeconds = differenceInMilliseconds / 1000;
+
+      if (differenceInSeconds > 15) {
+        setTimeout(() => {
+          universalSwapStore.clearAmounts();
+          universalSwapStore.setLoaded(false);
+          handleFetchAmounts(
+            accountOrai.bech32Address,
+            accountEth.evmosHexAddress,
+            accountTron.evmosHexAddress,
+            accountKawaiiCosmos.bech32Address
+          );
+        }, 1400);
+      } else {
+        console.log("The dates are 30 seconds or less apart.");
+      }
     }
-  }, [chainStore.current.chainId]);
+  }, [chainStore.current.chainId, refreshDate]);
 
   // This section for getting all tokens of all chains
 
@@ -179,6 +188,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   // handle fetch all tokens of all chains
   const handleFetchAmounts = async (orai?, eth?, tron?, kwt?) => {
     let loadTokenParams = {};
+
     try {
       const cwStargate = {
         account: accountOrai,

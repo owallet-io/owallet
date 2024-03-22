@@ -24,7 +24,6 @@ const OWEmpty = ({
     crash: images.crash_empty,
     cash: images.money_empty,
   };
-  console.log("imgList[type]", [type]);
 
   return (
     <View style={[styles.container, style]} {...props}>
