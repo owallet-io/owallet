@@ -161,12 +161,12 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
       >
         <OWBox>
           <TextInput
-            label="User name"
+            label="Username"
             value={name}
             onChangeText={(text) => setName(text)}
             labelStyle={styles.addNewBookLabel}
             inputContainerStyle={styles.addNewBookInput}
-            placeholder="Type your user name"
+            placeholder="Username"
           />
           <AddressInput
             label="Wallet address"
