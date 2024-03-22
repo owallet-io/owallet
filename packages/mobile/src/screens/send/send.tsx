@@ -28,6 +28,7 @@ import { useSmartNavigation } from "@src/navigation.provider";
 import { FeeModal } from "@src/modals/fee";
 import { CoinPretty, Int } from "@owallet/unit";
 import { DownArrowIcon } from "@src/components/icon";
+import { capitalizedText } from "@src/utils/helper";
 
 const styling = (colors) =>
   StyleSheet.create({
@@ -80,7 +81,6 @@ export const NewSendScreen: FunctionComponent = observer(() => {
           currency?: string;
           recipient?: string;
           contractAddress?: string;
-          maxBalance?: Number;
         }
       >,
       string
@@ -90,7 +90,6 @@ export const NewSendScreen: FunctionComponent = observer(() => {
   const chainId = route?.params?.chainId
     ? route?.params?.chainId
     : chainStore?.current?.chainId;
-  const maxBalance = route?.params?.maxBalance;
 
   const smartNavigation = useSmartNavigation();
 
@@ -107,42 +106,6 @@ export const NewSendScreen: FunctionComponent = observer(() => {
     queries.queryBalances,
     EthereumEndpoint
   );
-
-  const [balance, setBalance] = useState("0");
-  const [fee, setFee] = useState({ type: "", value: "" });
-
-  const fetchBalance = async () => {
-    const queryBalance = queries.queryBalances
-      .getQueryBech32Address(account.bech32Address)
-      .balances.find((bal) => {
-        return (
-          bal.currency.coinMinimalDenom ===
-          sendConfigs.amountConfig.sendCurrency.coinMinimalDenom //currency.coinMinimalDenom
-        );
-      });
-
-    if (queryBalance) {
-      queryBalance.fetch();
-      setBalance(
-        queryBalance.balance
-          .shrink(true)
-          .maxDecimals(6)
-          .trim(true)
-          .upperCase(true)
-          .toString()
-      );
-    }
-  };
-
-  useEffect(() => {
-    fetchBalance();
-    const averageFee = sendConfigs.feeConfig.getFeeTypePretty("average");
-    const averageFeePrice = priceStore.calculatePrice(averageFee);
-    setFee({ type: "Avarage", value: averageFeePrice.toString() });
-  }, [
-    account.bech32Address,
-    sendConfigs.amountConfig.sendCurrency.coinGeckoId,
-  ]);
 
   useEffect(() => {
     if (route?.params?.currency) {
@@ -215,12 +178,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
       },
     });
     modalStore.setChildren(
-      <FeeModal
-        vertical={true}
-        sendConfigs={sendConfigs}
-        colors={colors}
-        setFee={setFee}
-      />
+      <FeeModal vertical={true} sendConfigs={sendConfigs} colors={colors} />
     );
   };
   const recipientError = sendConfigs.recipientConfig.getError();
@@ -296,7 +254,9 @@ export const NewSendScreen: FunctionComponent = observer(() => {
     }
     return;
   }, [sendConfigs.feeConfig]);
-
+  const balance = queries.queryBalances
+    .getQueryBech32Address(address)
+    .getBalanceFromCurrency(sendConfigs.amountConfig.sendCurrency);
   return (
     <PageWithBottom
       bottomGroup={
@@ -363,7 +323,12 @@ export const NewSendScreen: FunctionComponent = observer(() => {
             >
               <View>
                 <OWText style={{ paddingTop: 8 }}>
-                  Balance : {maxBalance ?? balance.toString()}
+                  Balance :{" "}
+                  {balance
+                    ?.trim(true)
+                    ?.maxDecimals(6)
+                    ?.hideDenom(true)
+                    ?.toString()}
                 </OWText>
                 <CurrencySelector
                   chainId={chainStore.current.chainId}
@@ -391,10 +356,6 @@ export const NewSendScreen: FunctionComponent = observer(() => {
                   }}
                   amountConfig={sendConfigs.amountConfig}
                   placeholder={"0.0"}
-                  maxBalance={
-                    maxBalance ? maxBalance.toString() : balance.split(" ")[0]
-                  }
-                  manually={!!maxBalance}
                 />
               </View>
             </View>
@@ -441,7 +402,10 @@ export const NewSendScreen: FunctionComponent = observer(() => {
                   weight="600"
                   size={16}
                 >
-                  {fee.type}: {fee.value}{" "}
+                  {capitalizedText(sendConfigs.feeConfig.feeType)}:{" "}
+                  {priceStore
+                    .calculatePrice(sendConfigs.feeConfig.fee)
+                    ?.toString()}{" "}
                 </OWText>
                 <DownArrowIcon
                   height={11}
