@@ -15,8 +15,7 @@ import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
 export const CustomFee: FunctionComponent<{
   sendConfigs;
   colors;
-  setFee;
-}> = ({ sendConfigs, colors, setFee }) => {
+}> = ({ sendConfigs, colors }) => {
   return (
     <View style={{ paddingBottom: metrics.screenHeight / 5 }}>
       <TextInput
@@ -42,11 +41,6 @@ export const CustomFee: FunctionComponent<{
             amount: fee.roundUp().toString(),
             denom: sendConfigs.feeConfig.feeCurrency.coinMinimalDenom,
           });
-
-          setFee({
-            type: "Custom",
-            value: `${sendConfigs.feeConfig.fee} `,
-          });
         }}
       />
       {/* <View
@@ -69,8 +63,7 @@ export const FeeModal: FunctionComponent<{
   sendConfigs;
   colors;
   vertical;
-  setFee;
-}> = ({ sendConfigs, colors, vertical, setFee }) => {
+}> = ({ sendConfigs, colors, vertical }) => {
   const [customGas, setCustomGas] = useState(false);
 
   const { chainStore, modalStore, priceStore } = useStore();
@@ -89,9 +82,6 @@ export const FeeModal: FunctionComponent<{
       subTitle={"The fee required to successfully conduct a transaction"}
     >
       <View>
-        {/*{chainStore.current.networkType !== "evm" ? (*/}
-        {/* */}
-        {/*) : null}*/}
         <View
           style={{
             flexDirection: "row",
@@ -149,15 +139,10 @@ export const FeeModal: FunctionComponent<{
             }}
           />
         </View>
-        {customGas && chainStore.current.networkType !== "evm" ? (
-          <CustomFee
-            sendConfigs={sendConfigs}
-            colors={colors}
-            setFee={setFee}
-          />
-        ) : chainStore.current.networkType !== "evm" ? (
+        {customGas ? (
+          <CustomFee sendConfigs={sendConfigs} colors={colors} />
+        ) : (
           <FeeButtons
-            setFee={setFee}
             vertical={vertical}
             label="Transaction Fee"
             gasLabel="gas"
@@ -170,7 +155,7 @@ export const FeeModal: FunctionComponent<{
               color: colors["neutral-Text-body"],
             }}
           />
-        ) : null}
+        )}
         <OWButton
           label="Confirm"
           onPress={async () => {

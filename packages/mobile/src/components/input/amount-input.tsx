@@ -71,14 +71,7 @@ export const NewAmountInput: FunctionComponent<{
               marginLeft: 4,
             }}
             onPress={() => {
-              if (!manually) {
-                amountConfig.setFraction(0.5);
-              } else {
-                if (maxBalance)
-                  amountConfig.setAmount(
-                    (Number(maxBalance) / 2).toString().replace(/,/g, ".")
-                  );
-              }
+              amountConfig.setFraction(0.5);
             }}
           >
             <OWText
@@ -101,12 +94,6 @@ export const NewAmountInput: FunctionComponent<{
             }}
             onPress={() => {
               amountConfig.setFraction(1);
-              if (!manually) {
-                amountConfig.setFraction(1);
-              } else {
-                if (maxBalance)
-                  amountConfig.setAmount(maxBalance.replace(/,/g, "."));
-              }
             }}
           >
             <OWText

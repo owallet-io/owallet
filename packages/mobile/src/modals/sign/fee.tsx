@@ -18,6 +18,7 @@ import { Toggle } from "../../components/toggle";
 import { useTheme } from "@src/themes/theme-provider";
 import { BottomSheetProps } from "@gorhom/bottom-sheet";
 import ItemDetail from "@src/screens/transactions/components/item-details";
+import { capitalizedText } from "@src/utils/helper";
 
 const FeeButtonsModal: FunctionComponent<{
   isOpen: boolean;
@@ -189,7 +190,9 @@ export const FeeInSign: FunctionComponent<{
               color={colors["primary-text-action"]}
               size={16}
             >
-              {feeConfig.feeType ? `${feeConfig.feeType} :` : ""}{" "}
+              {feeConfig.feeType
+                ? `${capitalizedText(feeConfig.feeType)} :`
+                : ""}{" "}
               {feePrice ? feePrice.toString() : "-"}
             </Text>
             {canFeeEditable ? (

@@ -106,9 +106,6 @@ export const NewSendScreen: FunctionComponent = observer(() => {
     address,
     queries.queryBalances,
     EthereumEndpoint
-    // chainStore.current.networkType === "evm" &&
-    //   queriesStore.get(chainStore.current.chainId).evm.queryEvmBalance,
-    // address
   );
 
   const [balance, setBalance] = useState("0");
@@ -206,8 +203,8 @@ export const NewSendScreen: FunctionComponent = observer(() => {
     sendConfigs.recipientConfig.getError() ??
     sendConfigs.amountConfig.getError() ??
     sendConfigs.memoConfig.getError() ??
-    sendConfigs.gasConfig.getError();
-  // ?? sendConfigs.feeConfig.getError();
+    sendConfigs.gasConfig.getError() ??
+    sendConfigs.feeConfig.getError();
   const txStateIsValid = sendConfigError == null;
 
   const _onPressFee = () => {
@@ -241,26 +238,10 @@ export const NewSendScreen: FunctionComponent = observer(() => {
       return true;
     }
   }, [amountError]);
-  console.log(sendConfigs.feeConfig.toStdFee(), "to std fee");
+
   const submitSend = async () => {
     if (account.isReadyToSendMsgs && txStateIsValid) {
       try {
-        if (
-          sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.startsWith(
-            "erc20"
-          )
-        ) {
-          sendStore.updateSendObject({
-            type: "erc20",
-            from: account.evmosHexAddress,
-            contract_addr:
-              sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.split(
-                ":"
-              )[1],
-            recipient: sendConfigs.recipientConfig.recipient,
-            amount: sendConfigs.amountConfig.amount,
-          });
-        }
         await account.sendToken(
           sendConfigs.amountConfig.amount,
           sendConfigs.amountConfig.sendCurrency,
@@ -294,22 +275,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
                 },
               });
             },
-          },
-          // In case send erc20 in evm network
-          sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.startsWith(
-            "erc20"
-          )
-            ? {
-                type: "erc20",
-                from: account.evmosHexAddress,
-                contract_addr:
-                  sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.split(
-                    ":"
-                  )[1],
-                recipient: sendConfigs.recipientConfig.recipient,
-                amount: sendConfigs.amountConfig.amount,
-              }
-            : null
+          }
         );
       } catch (e) {
         if (e?.message === "Request rejected") {
@@ -337,7 +303,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
         <OWButton
           label="Send"
           disabled={!account.isReadyToSendMsgs || !txStateIsValid}
-          loading={account.isSendingMsg === "delegate"}
+          loading={account.isSendingMsg === "send"}
           onPress={submitSend}
           style={[
             styles.bottomBtn,

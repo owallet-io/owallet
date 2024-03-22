@@ -276,7 +276,7 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.SendEvm]: {
-    title: "Send",
+    title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.AddressBook]: {
     title: HEADER_KEY.notShowHeader,

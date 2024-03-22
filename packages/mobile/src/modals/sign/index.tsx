@@ -257,6 +257,6 @@ export const SignModal: FunctionComponent<{
     );
   }),
   {
-    disableSafeArea: true,
+    disableSafeArea: false,
   }
 );

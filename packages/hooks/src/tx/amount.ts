@@ -92,11 +92,6 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
     this._sender = sender;
   }
 
-  // @action
-  // setSenderEvm(senderEvm: string) {
-  //   this._senderEvm = senderEvm;
-  // }
-
   @action
   setSendCurrency(currency: AppCurrency | undefined) {
     this._sendCurrency = currency;
@@ -168,6 +163,7 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
         .trim(true)
         .locale(false)
         .hideDenom(true)
+        .maxDecimals(9)
         .toString();
     }
 

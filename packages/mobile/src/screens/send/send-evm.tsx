@@ -1,11 +1,16 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
-import { useSendTxConfig, useSendTxEvmConfig } from "@owallet/hooks";
+import {
+  EmptyAddressError,
+  EmptyAmountError,
+  useSendTxConfig,
+  useSendTxEvmConfig,
+} from "@owallet/hooks";
 import { useStore } from "../../stores";
-import { EthereumEndpoint } from "@owallet/common";
+import { EthereumEndpoint, toAmount } from "@owallet/common";
 import { PageWithScrollView } from "../../components/page";
-import { StyleSheet, View } from "react-native";
-import { Dec, DecUtils } from "@owallet/unit";
+import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
 
 import {
   AddressInput,
@@ -20,31 +25,20 @@ import { RouteProp, useRoute } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
 import { useSmartNavigation } from "../../navigation.provider";
 import { Buffer } from "buffer";
-import { spacing } from "../../themes";
+import { metrics, spacing } from "../../themes";
 import { Text } from "@src/components/text";
 import { Toggle } from "../../components/toggle";
 import { OWBox } from "@src/components/card";
 import { OWSubTitleHeader } from "@src/components/header";
-
-const styling = (colors) =>
-  StyleSheet.create({
-    sendInputRoot: {
-      paddingHorizontal: spacing["20"],
-      paddingVertical: spacing["24"],
-      backgroundColor: colors["primary"],
-      borderRadius: 24,
-    },
-    sendlabelInput: {
-      fontSize: 16,
-      fontWeight: "700",
-      lineHeight: 22,
-      color: colors["sub-primary-text"],
-      marginBottom: spacing["8"],
-    },
-    containerStyle: {
-      backgroundColor: colors["background-box"],
-    },
-  });
+import { PageHeader } from "@src/components/header/header-new";
+import OWCard from "@src/components/card/ow-card";
+import OWText from "@src/components/text/ow-text";
+import { NewAmountInput } from "@src/components/input/amount-input";
+import OWIcon from "@src/components/ow-icon/ow-icon";
+import { DownArrowIcon } from "@src/components/icon";
+import { PageWithBottom } from "@src/components/page/page-with-bottom";
+import { FeeModal } from "@src/modals/fee";
+import { capitalizedText } from "@src/utils/helper";
 
 export const SendEvmScreen: FunctionComponent = observer(() => {
   const {
@@ -54,6 +48,8 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
     analyticsStore,
     sendStore,
     keyRingStore,
+    priceStore,
+    modalStore,
   } = useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
@@ -95,29 +91,17 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
     queries.queryBalances,
     queries,
     EthereumEndpoint
-    // chainStore.current.networkType === "evm" &&
-    //   queriesStore.get(chainStore.current.chainId).evm.queryEvmBalance,
-
-    // address
   );
 
   useEffect(() => {
     if (route?.params?.currency) {
       const currency = sendConfigs.amountConfig.sendableCurrencies.find(
         (cur) => {
-          // if (cur?.contractAddress?.includes(route?.params?.contractAddress)) {
-          //   return cur?.contractAddress?.includes(
-          //     route?.params?.contractAddress
-          //   );
-          // }
           if (cur?.coinMinimalDenom.includes(route?.params?.contractAddress)) {
             return cur?.coinMinimalDenom.includes(
               route?.params?.contractAddress
             );
           }
-          // if (cur?.type === "erc20") {
-          //   return cur.coinDenom == route.params.currency;
-          // }
           if (cur.coinDenom === route.params.currency) {
             return cur.coinDenom === route.params.currency;
           }
@@ -173,160 +157,318 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
   const sendConfigError =
     sendConfigs.recipientConfig.getError() ??
     sendConfigs.amountConfig.getError() ??
-    // sendConfigs.memoConfig.getError() ??
+    sendConfigs.memoConfig.getError() ??
     sendConfigs.gasConfig.getError() ??
     sendConfigs.feeConfig.getError();
   const txStateIsValid = sendConfigError == null;
+  const recipientError = sendConfigs.recipientConfig.getError();
+  const isRecipientError: boolean = useMemo(() => {
+    if (recipientError) {
+      if (recipientError.constructor == EmptyAddressError) return false;
+      return true;
+    }
+  }, [recipientError]);
 
+  const amountError = sendConfigs.amountConfig.getError();
+  const isAmountError: boolean = useMemo(() => {
+    if (amountError) {
+      if (amountError.constructor == EmptyAmountError) return false;
+      return true;
+    }
+  }, [amountError]);
+  const onSubmit = async () => {
+    if (account.isReadyToSendMsgs && txStateIsValid) {
+      try {
+        await account.sendToken(
+          sendConfigs.amountConfig.amount,
+          sendConfigs.amountConfig.sendCurrency,
+          sendConfigs.recipientConfig.recipient,
+          sendConfigs.memoConfig.memo,
+          sendConfigs.feeConfig.toStdEvmFee(),
+          {
+            preferNoSetFee: true,
+            preferNoSetMemo: true,
+            networkType: chainStore.current.networkType,
+            chainId: chainStore.current.chainId,
+          },
+          {
+            onFulfill: (tx) => {},
+            onBroadcasted: (txHash) => {
+              analyticsStore.logEvent("Send token tx broadcasted", {
+                chainId: chainStore.current.chainId,
+                chainName: chainStore.current.chainName,
+                feeType: sendConfigs.feeConfig.feeType,
+              });
+              smartNavigation.pushSmart("TxPendingResult", {
+                txHash: Buffer.from(txHash).toString("hex"),
+              });
+            },
+          },
+          // In case send erc20 in evm network
+          sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.startsWith(
+            "erc20"
+          )
+            ? {
+                type: "erc20",
+                from: address,
+                contract_addr:
+                  sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.split(
+                    ":"
+                  )[1],
+                recipient: sendConfigs.recipientConfig.recipient,
+                amount: sendConfigs.amountConfig.amount,
+              }
+            : null
+        );
+      } catch (e) {
+        if (e?.message === "Request rejected") {
+          return;
+        }
+
+        // if (
+        //   e?.message?.includes('Cannot read properties of undefined')
+        // ) {
+        //   return;
+        // }
+
+        // alert(e.message);
+        if (smartNavigation.canGoBack) {
+          smartNavigation.goBack();
+        } else {
+          smartNavigation.navigateSmart("Home", {});
+        }
+      }
+    }
+  };
+  const amount = new CoinPretty(
+    sendConfigs.amountConfig.sendCurrency,
+    new Dec(sendConfigs.amountConfig.getAmountPrimitive().amount)
+  );
+  const _onPressFee = () => {
+    modalStore.setOptions({
+      bottomSheetModalConfig: {
+        enablePanDownToClose: false,
+        enableOverDrag: false,
+      },
+    });
+    modalStore.setChildren(
+      <FeeModal
+        vertical={true}
+        sendConfigs={sendConfigs}
+        colors={colors}
+        // setFee={setFee}
+      />
+    );
+  };
+  useEffect(() => {
+    if (sendConfigs.feeConfig.feeCurrency && !sendConfigs.feeConfig.fee) {
+      sendConfigs.feeConfig.setFeeType("average");
+    }
+    return;
+  }, [sendConfigs.feeConfig]);
+  const balance = queries.queryBalances
+    .getQueryBech32Address(address)
+    .getBalanceFromCurrency(sendConfigs.amountConfig.sendCurrency);
   return (
-    <PageWithScrollView backgroundColor={colors["background"]}>
-      <View style={{ marginBottom: 99 }}>
-        {/* <OWSubTitleHeader title="Send" /> */}
-        <OWBox>
-          <CurrencySelector
-            label="Select a token"
-            placeHolder="Select Token"
-            amountConfig={sendConfigs.amountConfig}
-            labelStyle={styles.sendlabelInput}
-            containerStyle={styles.containerStyle}
-            selectorContainerStyle={{
-              backgroundColor: colors["background-box"],
-            }}
-          />
-          <AddressInput
-            placeholder="Enter receiving address"
-            label="Send to"
-            recipientConfig={sendConfigs.recipientConfig}
-            memoConfig={sendConfigs.memoConfig}
-            labelStyle={styles.sendlabelInput}
-            inputContainerStyle={{
-              backgroundColor: colors["background-box"],
-            }}
-          />
-          <AmountInput
-            placeholder={`ex. 1000 ${chainStore.current.stakeCurrency.coinDenom}`}
-            label="Amount"
-            allowMax={true}
-            amountConfig={sendConfigs.amountConfig}
-            labelStyle={styles.sendlabelInput}
-            inputContainerStyle={{
-              backgroundColor: colors["background-box"],
-            }}
-          />
-          <View
-            style={{
-              flexDirection: "row",
-              paddingBottom: 24,
-              alignItems: "center",
-            }}
+    <PageWithBottom
+      bottomGroup={
+        <OWButton
+          label="Send"
+          disabled={!account.isReadyToSendMsgs || !txStateIsValid}
+          loading={account.isSendingMsg === "send"}
+          onPress={onSubmit}
+          style={[
+            styles.bottomBtn,
+            {
+              width: metrics.screenWidth - 32,
+            },
+          ]}
+          textStyle={{
+            fontSize: 16,
+            fontWeight: "600",
+          }}
+        />
+      }
+    >
+      <PageHeader
+        title="Send"
+        subtitle={chainStore.current.chainName}
+        colors={colors}
+      />
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <View>
+          <OWCard
+            type="normal"
+            style={isRecipientError ? styles.errorBorder : null}
           >
-            <Toggle
-              on={customFee}
-              onChange={(value) => {
-                setCustomFee(value);
-                if (!value) {
-                  if (
-                    sendConfigs.feeConfig.feeCurrency &&
-                    !sendConfigs.feeConfig.fee
-                  ) {
-                    sendConfigs.feeConfig.setFeeType("average");
-                  }
-                }
+            <OWText color={colors["neutral-text-title"]}>Recipient</OWText>
+
+            <AddressInput
+              colors={colors}
+              placeholder="Enter address"
+              label=""
+              recipientConfig={sendConfigs.recipientConfig}
+              memoConfig={sendConfigs.memoConfig}
+              labelStyle={styles.sendlabelInput}
+              containerStyle={{
+                marginBottom: 12,
+              }}
+              inputContainerStyle={{
+                backgroundColor: colors["neutral-surface-card"],
+                borderWidth: 0,
+                paddingHorizontal: 0,
               }}
             />
-            <Text
+          </OWCard>
+          <OWCard
+            style={[{ paddingTop: 22 }, isAmountError && styles.errorBorder]}
+            type="normal"
+          >
+            <View
               style={{
-                fontWeight: "700",
-                fontSize: 16,
-                lineHeight: 34,
-                paddingHorizontal: 8,
-                color: colors["primary-text"],
+                flexDirection: "row",
+                justifyContent: "space-between",
               }}
             >
-              Custom gas
-            </Text>
-          </View>
+              <View>
+                <OWText style={{ paddingTop: 8 }}>
+                  Balance :{" "}
+                  {balance
+                    ?.trim(true)
+                    ?.maxDecimals(6)
+                    ?.hideDenom(true)
+                    ?.toString()}
+                </OWText>
+                <CurrencySelector
+                  chainId={chainStore.current.chainId}
+                  type="new"
+                  label="Select a token"
+                  placeHolder="Select Token"
+                  amountConfig={sendConfigs.amountConfig}
+                  labelStyle={styles.sendlabelInput}
+                  containerStyle={styles.containerStyle}
+                  selectorContainerStyle={{
+                    backgroundColor: colors["neutral-surface-card"],
+                  }}
+                />
+              </View>
+              <View
+                style={{
+                  alignItems: "flex-end",
+                }}
+              >
+                <NewAmountInput
+                  colors={colors}
+                  inputContainerStyle={{
+                    borderWidth: 0,
+                    width: metrics.screenWidth / 2,
+                  }}
+                  amountConfig={sendConfigs.amountConfig}
+                  placeholder={"0.0"}
+                />
+              </View>
+            </View>
+            <View
+              style={{
+                alignSelf: "flex-end",
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
+              <OWIcon name="tdesign_swap" size={16} />
+              <OWText
+                style={{ paddingLeft: 4 }}
+                color={colors["neutral-text-body"]}
+              >
+                {priceStore.calculatePrice(amount).toString()}
+              </OWText>
+            </View>
+          </OWCard>
+          <OWCard type="normal">
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                borderBottomColor: colors["neutral-border-default"],
+                borderBottomWidth: 1,
+                paddingVertical: 16,
+                marginBottom: 8,
+              }}
+            >
+              <OWText
+                color={colors["neutral-text-title"]}
+                weight="600"
+                size={16}
+              >
+                Transaction fee
+              </OWText>
+              <TouchableOpacity
+                style={{ flexDirection: "row" }}
+                onPress={_onPressFee}
+              >
+                <OWText
+                  color={colors["primary-text-action"]}
+                  weight="600"
+                  size={16}
+                >
+                  {capitalizedText(sendConfigs.feeConfig.feeType)}:{" "}
+                  {priceStore
+                    .calculatePrice(sendConfigs.feeConfig.fee)
+                    ?.toString()}{" "}
+                </OWText>
+                <DownArrowIcon
+                  height={11}
+                  color={colors["primary-text-action"]}
+                />
+              </TouchableOpacity>
+            </View>
 
-          <FeeButtons
-            label="Transaction Fee"
-            gasLabel="Gas"
-            feeConfig={sendConfigs.feeConfig}
-            gasConfig={sendConfigs.gasConfig}
-            labelStyle={styles.sendlabelInput}
-            isGasInputOpen={customFee}
-          />
+            <OWText color={colors["neutral-text-title"]}>Memo</OWText>
 
-          <OWButton
-            label="Send"
-            disabled={!account.isReadyToSendMsgs || !txStateIsValid}
-            loading={account.isSendingMsg === "send"}
-            onPress={async () => {
-              if (account.isReadyToSendMsgs && txStateIsValid) {
-                try {
-                  await account.sendToken(
-                    sendConfigs.amountConfig.amount,
-                    sendConfigs.amountConfig.sendCurrency,
-                    sendConfigs.recipientConfig.recipient,
-                    sendConfigs.memoConfig.memo,
-                    sendConfigs.feeConfig.toStdEvmFee(),
-                    {
-                      preferNoSetFee: true,
-                      preferNoSetMemo: true,
-                      networkType: chainStore.current.networkType,
-                      chainId: chainStore.current.chainId,
-                    },
-                    {
-                      onFulfill: (tx) => {},
-                      onBroadcasted: (txHash) => {
-                        analyticsStore.logEvent("Send token tx broadcasted", {
-                          chainId: chainStore.current.chainId,
-                          chainName: chainStore.current.chainName,
-                          feeType: sendConfigs.feeConfig.feeType,
-                        });
-                        smartNavigation.pushSmart("TxPendingResult", {
-                          txHash: Buffer.from(txHash).toString("hex"),
-                        });
-                      },
-                    },
-                    // In case send erc20 in evm network
-                    sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.startsWith(
-                      "erc20"
-                    )
-                      ? {
-                          type: "erc20",
-                          from: address,
-                          contract_addr:
-                            sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.split(
-                              ":"
-                            )[1],
-                          recipient: sendConfigs.recipientConfig.recipient,
-                          amount: sendConfigs.amountConfig.amount,
-                        }
-                      : null
-                  );
-                } catch (e) {
-                  if (e?.message === "Request rejected") {
-                    return;
-                  }
-
-                  // if (
-                  //   e?.message?.includes('Cannot read properties of undefined')
-                  // ) {
-                  //   return;
-                  // }
-
-                  // alert(e.message);
-                  if (smartNavigation.canGoBack) {
-                    smartNavigation.goBack();
-                  } else {
-                    smartNavigation.navigateSmart("Home", {});
-                  }
-                }
-              }
-            }}
-          />
-        </OWBox>
-      </View>
-    </PageWithScrollView>
+            <MemoInput
+              label=""
+              placeholder="Required if send to CEX"
+              inputContainerStyle={{
+                backgroundColor: colors["neutral-surface-card"],
+                borderWidth: 0,
+                paddingHorizontal: 0,
+              }}
+              memoConfig={sendConfigs.memoConfig}
+              labelStyle={styles.sendlabelInput}
+            />
+          </OWCard>
+        </View>
+      </ScrollView>
+    </PageWithBottom>
   );
 });
+const styling = (colors) =>
+  StyleSheet.create({
+    sendInputRoot: {
+      paddingHorizontal: spacing["20"],
+      paddingVertical: spacing["24"],
+      backgroundColor: colors["primary"],
+      borderRadius: 24,
+    },
+    sendlabelInput: {
+      fontSize: 14,
+      fontWeight: "500",
+      lineHeight: 20,
+      color: colors["neutral-text-body"],
+    },
+    containerStyle: {
+      backgroundColor: colors["background-box"],
+    },
+    bottomBtn: {
+      marginTop: 20,
+      width: metrics.screenWidth / 2.3,
+      borderRadius: 999,
+    },
+    errorBorder: {
+      borderWidth: 2,
+      borderColor: colors["error-border-default"],
+    },
+  });

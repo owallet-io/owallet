@@ -33,7 +33,6 @@ export interface FeeButtonsProps {
   containerStyle?: ViewStyle;
   buttonsContainerStyle?: ViewProps;
   errorLabelStyle?: TextStyle;
-  setFee?: void;
   label: string;
   gasLabel: string;
   vertical?: boolean;
@@ -100,7 +99,6 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
     label,
     feeConfig,
     vertical,
-    setFee,
   }) => {
     const { priceStore, chainStore } = useStore();
     const style = useStyle();
@@ -286,10 +284,6 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
           }}
           onPress={() => {
             onPress();
-            setFee({
-              type: label,
-              value: price.toString(),
-            });
           }}
         >
           <View

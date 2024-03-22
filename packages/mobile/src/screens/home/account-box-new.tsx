@@ -258,6 +258,10 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
                 navigate(SCREENS.STACK.Others, {
                   screen: SCREENS.SendBtc,
                 });
+              } else if (chainStore.current.networkType === "evm") {
+                navigate(SCREENS.STACK.Others, {
+                  screen: SCREENS.SendEvm,
+                });
               } else {
                 smartNavigation.navigateSmart("NewSend", {
                   currency: chainStore.current.stakeCurrency.coinMinimalDenom,
