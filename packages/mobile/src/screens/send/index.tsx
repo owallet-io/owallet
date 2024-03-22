@@ -90,11 +90,6 @@ export const SendScreen: FunctionComponent = observer(() => {
     account.msgOpts["send"],
     address,
     queries.queryBalances
-    // EthereumEndpoint
-    // chainStore.current.networkType === "evm" &&
-    //   queriesStore.get(chainStore.current.chainId).evm.queryEvmBalance,
-
-    // address
   );
 
   useEffect(() => {

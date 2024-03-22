@@ -74,8 +74,8 @@ export const SendTronScreen: FunctionComponent = observer(() => {
     account.msgOpts["send"],
     account.bech32Address,
     queries.queryBalances,
-    EthereumEndpoint,
-    queriesStore.get(chainStore.current.chainId).evm.queryEvmBalance
+    EthereumEndpoint
+    // queriesStore.get(chainStore.current.chainId).evm.queryEvmBalance
   );
 
   const [balance, setBalance] = useState("0");

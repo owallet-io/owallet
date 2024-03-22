@@ -1,19 +1,13 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
-import { useSendTxConfig } from "@owallet/hooks";
+import { useSendTxEvmConfig } from "@owallet/hooks";
 import { useStore } from "../../stores";
-import { PageWithScrollView } from "../../components/page";
 import { ScrollView, StyleSheet, View } from "react-native";
-import {
-  AmountInput,
-  CurrencySelector,
-  TextInput,
-} from "../../components/input";
+import { CurrencySelector, TextInput } from "../../components/input";
 import { OWButton } from "../../components/button";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
 import { metrics, spacing } from "../../themes";
-import { OWBox } from "@src/components/card";
 import { SignOasisModal } from "@src/modals/sign/sign-oasis";
 import { useSmartNavigation } from "@src/navigation.provider";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
@@ -21,9 +15,7 @@ import { PageHeader } from "@src/components/header/header-new";
 import OWCard from "@src/components/card/ow-card";
 import OWText from "@src/components/text/ow-text";
 import { NewAmountInput } from "@src/components/input/amount-input";
-import OWIcon from "@src/components/ow-icon/ow-icon";
-import { toAmount } from "@owallet/common";
-import { CoinPretty, Int } from "@owallet/unit";
+import { EthereumEndpoint, toAmount } from "@owallet/common";
 
 const styling = (colors) =>
   StyleSheet.create({
@@ -86,36 +78,34 @@ export const SendOasisScreen: FunctionComponent = observer(() => {
 
   const account = accountStore.getAccount(chainId);
   const queries = queriesStore.get(chainId);
-  const balance = queries.evm.queryEvmBalance.getQueryBalance(
-    account.bech32Address
-  )?.balance;
-  let maxAmount = balance
+  const addressCore = account.getAddressDisplay(
+    keyRingStore.keyRingLedgerAddresses,
+    false
+  );
+  const balance =
+    queries.queryBalances.getQueryBech32Address(addressCore).stakable.balance;
+
+  const maxAmount = balance
     ?.trim(true)
     .shrink(true)
     .maxDecimals(9)
     .hideDenom(true)
     .toString();
 
-  const addressCore = account.getAddressDisplay(
-    keyRingStore.keyRingLedgerAddresses,
-    false
-  );
-  let total: any =
-    queries.evm.queryEvmBalance.getQueryBalance(addressCore)?.balance;
-
   const totalBalance = () => {
-    if (!total) return "0";
-    return total?.trim(true).shrink(true).maxDecimals(6).toString();
+    if (!balance) return "0";
+    return balance?.trim(true).shrink(true).maxDecimals(6).toString();
   };
 
-  const sendConfigs = useSendTxConfig(
+  const sendConfigs = useSendTxEvmConfig(
     chainStore,
     chainId,
-    account.msgOpts["send"],
-    receiveAddress,
-    queries.queryBalances,
-    chainStore.current.rpc,
-    queries.evm.queryEvmBalance
+    //@ts-ignore
+    accountInfo.msgOpts.send,
+    addressCore,
+    queriesStore.get(chainId).queryBalances,
+    queriesStore.get(chainId),
+    EthereumEndpoint
   );
 
   useEffect(() => {
@@ -284,78 +274,5 @@ export const SendOasisScreen: FunctionComponent = observer(() => {
         </View>
       </ScrollView>
     </PageWithBottom>
-  );
-
-  return (
-    <PageWithScrollView backgroundColor={colors["background"]}>
-      <View style={{ marginBottom: 99 }}>
-        <OWBox>
-          <CurrencySelector
-            label="Select a token"
-            placeHolder="Select Token"
-            amountConfig={sendConfigs.amountConfig}
-            labelStyle={styles.sendlabelInput}
-            containerStyle={styles.containerStyle}
-            selectorContainerStyle={{
-              backgroundColor: colors["background-box"],
-            }}
-          />
-          <TextInput
-            placeholder="Enter receiving address"
-            label="Send to"
-            labelStyle={styles.sendlabelInput}
-            value={receiveAddress}
-            onChange={({ nativeEvent: { text } }) => setReceiveAddress(text)}
-            autoCorrect={false}
-            autoCapitalize="none"
-          />
-          <AmountInput
-            placeholder={`ex. 1000 ${chainStore.current.stakeCurrency.coinDenom}`}
-            label="Amount"
-            allowMax={false}
-            amountConfig={sendConfigs.amountConfig}
-            labelStyle={styles.sendlabelInput}
-            inputContainerStyle={{
-              backgroundColor: colors["background-box"],
-            }}
-          />
-
-          <OWButton
-            label="Send"
-            loading={account.isSendingMsg === "send"}
-            onPress={async () => {
-              modalStore.setOptions({
-                bottomSheetModalConfig: {
-                  enablePanDownToClose: false,
-                  enableOverDrag: false,
-                },
-              });
-              if (
-                receiveAddress &&
-                Number(sendConfigs.amountConfig.amount) > 0
-              ) {
-                modalStore.setChildren(
-                  <SignOasisModal
-                    isOpen={true}
-                    onSuccess={() => {
-                      smartNavigation.replaceSmart("TxSuccessResult", {
-                        chainId,
-                        txHash: "",
-                      });
-                    }}
-                    data={{
-                      amount: sendConfigs.amountConfig.amount,
-                      address: receiveAddress,
-                      maxAmount,
-                    }}
-                    close={async () => await modalStore.close()}
-                  />
-                );
-              }
-            }}
-          />
-        </OWBox>
-      </View>
-    </PageWithScrollView>
   );
 });

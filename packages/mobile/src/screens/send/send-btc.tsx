@@ -70,8 +70,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
     address,
     queries.queryBalances,
     EthereumEndpoint,
-    queriesStore.get(chainStore.current.chainId).evm.queryEvmBalance,
-    address,
+
     queries.bitcoin.queryBitcoinBalance
   );
 

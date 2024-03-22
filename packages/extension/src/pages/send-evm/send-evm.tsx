@@ -86,7 +86,7 @@ export const SendEvmPage: FunctionComponent<{
     queriesStore.get(current.chainId),
     EthereumEndpoint
   );
-  console.log(sendConfigs.gasConfig.gas, "gass");
+
   const { gas: gasErc20 } = queriesStore
     .get(current.chainId)
     .evmContract.queryGas.getGas({

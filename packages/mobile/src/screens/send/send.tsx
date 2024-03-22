@@ -105,10 +105,10 @@ export const NewSendScreen: FunctionComponent = observer(() => {
     account.msgOpts["send"],
     address,
     queries.queryBalances,
-    EthereumEndpoint,
-    chainStore.current.networkType === "evm" &&
-      queriesStore.get(chainStore.current.chainId).evm.queryEvmBalance,
-    address
+    EthereumEndpoint
+    // chainStore.current.networkType === "evm" &&
+    //   queriesStore.get(chainStore.current.chainId).evm.queryEvmBalance,
+    // address
   );
 
   const [balance, setBalance] = useState("0");
@@ -171,7 +171,6 @@ export const NewSendScreen: FunctionComponent = observer(() => {
             );
           }
           //@ts-ignore
-
           if (cur?.type === "cw20") {
             return cur.coinDenom == route.params.currency;
           }
