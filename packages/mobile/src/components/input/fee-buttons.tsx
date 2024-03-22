@@ -39,6 +39,7 @@ export interface FeeButtonsProps {
   vertical?: boolean;
   feeConfig: IFeeConfig;
   gasConfig: IGasConfig;
+  isGasInputOpen?: boolean;
 }
 
 class FeeButtonState {
@@ -67,8 +68,12 @@ export const FeeButtons: FunctionComponent<FeeButtonsProps> = observer(
     return (
       <React.Fragment>
         {props.feeConfig.feeCurrency ? <FeeButtonsInner {...props} /> : null}
-        {feeButtonState.isGasInputOpen || !props.feeConfig.feeCurrency ? (
-          <GasInput label={props.gasLabel} gasConfig={props.gasConfig} />
+        {props?.isGasInputOpen || !props.feeConfig.feeCurrency ? (
+          <GasInput
+            labelStyle={props.labelStyle}
+            label={props.gasLabel}
+            gasConfig={props.gasConfig}
+          />
         ) : null}
       </React.Fragment>
     );
@@ -121,7 +126,6 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
     }
 
     const lowFee = feeConfig.getFeeTypePretty("low");
-
     const lowFeePrice = priceStore.calculatePrice(lowFee);
 
     const averageFee = feeConfig.getFeeTypePretty("average");
@@ -243,13 +247,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
             }}
           >
             {chainStore.current.networkType === "bitcoin" ? "≤" : null}{" "}
-            {amount
-              .maxDecimals(
-                chainStore?.current?.stakeCurrency?.coinDecimals || 6
-              )
-              .trim(true)
-              .separator(" ")
-              .toString()}
+            {amount.maxDecimals(6).trim(true).separator(" ").toString()}
           </OWText>
           {price ? (
             <OWText

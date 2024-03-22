@@ -61,9 +61,9 @@ export const AccountCard: FunctionComponent<{
     if (!fiatCurrency) {
       return undefined;
     }
-    if (!totalStake.isReady) {
-      return undefined;
-    }
+    // if (!totalStake.isReady) {
+    //   return undefined;
+    // }
     let res = priceStore.calculatePrice(totalStake, fiat);
     for (const token of tokens) {
       const price = priceStore.calculatePrice(token.balance, fiat);

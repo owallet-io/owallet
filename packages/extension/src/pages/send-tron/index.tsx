@@ -1,9 +1,5 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
-import {
-  AddressInput,
-  CoinInputEvm,
-  CoinInputTronEvm,
-} from "../../components/form";
+import { AddressInput, CoinInputTronEvm } from "../../components/form";
 import { useStore } from "../../stores";
 import { observer } from "mobx-react-lite";
 
@@ -61,13 +57,11 @@ export const SendTronEvmPage: FunctionComponent<{
   const sendConfigs = useSendTxConfig(
     chainStore,
     current.chainId,
+    //@ts-ignore
     accountInfo.msgOpts.send,
     accountInfo.evmosHexAddress,
     queriesStore.get(current.chainId).queryBalances,
-    EthereumEndpoint,
-    chainStore.current.networkType === "evm" &&
-      queriesStore.get(current.chainId).evm.queryEvmBalance,
-    chainStore.current.networkType === "evm" && accountInfo.evmosHexAddress
+    EthereumEndpoint
   );
 
   useEffect(() => {

@@ -6,7 +6,7 @@ import {
   AccountStore,
   SignInteractionStore,
   TokensStore,
-  QueriesWithCosmosAndSecretAndCosmwasmAndEvmAndBitcoin,
+  QueriesWrappedBitcoin,
   AccountWithAll,
   LedgerInitStore,
   IBCCurrencyRegsitrar,
@@ -52,7 +52,7 @@ export class RootStore {
   public readonly ledgerInitStore: LedgerInitStore;
   public readonly signInteractionStore: SignInteractionStore;
 
-  public readonly queriesStore: QueriesStore<QueriesWithCosmosAndSecretAndCosmwasmAndEvmAndBitcoin>;
+  public readonly queriesStore: QueriesStore<QueriesWrappedBitcoin>;
   public readonly accountStore: AccountStore<AccountWithAll>;
   public readonly priceStore: CoinGeckoPriceStore;
   public readonly tokensStore: TokensStore<ChainInfoWithEmbed>;
@@ -147,7 +147,7 @@ export class RootStore {
           new RNMessageRequesterInternal()
         );
       },
-      QueriesWithCosmosAndSecretAndCosmwasmAndEvmAndBitcoin
+      QueriesWrappedBitcoin
     );
 
     this.accountStore = new AccountStore<AccountWithAll>(
@@ -199,6 +199,22 @@ export class RootStore {
           },
         },
         chainOpts: this.chainStore.chainInfos.map((chainInfo) => {
+          // In evm network, default gas for sending
+          if (chainInfo.networkType.startsWith("evm")) {
+            return {
+              chainId: chainInfo.chainId,
+              msgOpts: {
+                send: {
+                  native: {
+                    gas: 21000,
+                  },
+                  erc20: {
+                    gas: 21000,
+                  },
+                },
+              },
+            };
+          }
           if (chainInfo.chainId.startsWith("osmosis")) {
             return {
               chainId: chainInfo.chainId,

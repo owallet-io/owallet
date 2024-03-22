@@ -1,7 +1,7 @@
 import { ExtraOptionSendToken, MsgOpt } from "./base";
 import { AccountSetBase, AccountSetOpts } from "./base";
 import { AppCurrency, OWalletSignOptions } from "@owallet/types";
-import { StdFee } from "@cosmjs/launchpad";
+
 import { DenomHelper, EVMOS_NETWORKS } from "@owallet/common";
 import { Dec, DecUtils, Int } from "@owallet/unit";
 
@@ -13,6 +13,7 @@ import {
 } from "../query";
 import { DeepReadonly } from "utility-types";
 import { ChainGetter, StdFeeEthereum } from "../common";
+import Web3 from "web3";
 
 export interface HasEthereumAccount {
   ethereum: DeepReadonly<EthereumAccount>;
@@ -21,6 +22,12 @@ export interface HasEthereumAccount {
 export interface EthereumMsgOpts {
   readonly send: {
     readonly native: MsgOpt;
+  };
+}
+
+export interface Erc20MsgOpts {
+  readonly send: {
+    readonly erc20: MsgOpt;
   };
 }
 
@@ -114,20 +121,25 @@ export class EthereumAccount {
             },
             memo,
             {
-              gas: "0x" + parseInt(stdFee.gas).toString(16),
-              gasPrice: stdFee.gasPrice,
+              gas: Web3.utils.toHex(stdFee.gas),
+              gasPrice: Web3.utils.toHex(stdFee.gasPrice),
             },
             signOptions,
             this.txEventsWithPreOnFulfill(onTxEvents, (tx) => {
               if (tx) {
                 // After succeeding to send token, refresh the balance.
-                const queryEvmBalance =
-                  this.queries.evm.queryEvmBalance.getQueryBalance(
-                    this.base.evmosHexAddress
-                  );
 
-                if (queryEvmBalance) {
-                  queryEvmBalance.fetch();
+                const queryBalance = this.queries.queryBalances
+                  .getQueryBech32Address(this.base.evmosHexAddress)
+                  .balances.find((bal) => {
+                    return (
+                      bal.currency.coinMinimalDenom ===
+                      currency.coinMinimalDenom
+                    );
+                  });
+
+                if (queryBalance) {
+                  queryBalance.fetch();
                 }
               }
             })
@@ -161,21 +173,25 @@ export class EthereumAccount {
             msg,
             memo,
             {
-              gas: "0x" + parseInt(stdFee.gas).toString(16),
-              gasPrice: stdFee.gasPrice,
+              gas: Web3.utils.toHex(stdFee.gas),
+              gasPrice: Web3.utils.toHex(stdFee.gasPrice),
             },
             signOptions,
             this.txEventsWithPreOnFulfill(onTxEvents, (tx) => {
               console.log("Tx on fullfill: ", tx);
               if (tx) {
                 // After succeeding to send token, refresh the balance.
-                const queryEvmBalance =
-                  this.queries.evm.queryEvmBalance.getQueryBalance(
-                    this.base.evmosHexAddress
-                  );
+                const queryBalance = this.queries.queryBalances
+                  .getQueryBech32Address(this.base.evmosHexAddress)
+                  .balances.find((bal) => {
+                    return (
+                      bal.currency.coinMinimalDenom ===
+                      currency.coinMinimalDenom
+                    );
+                  });
 
-                if (queryEvmBalance) {
-                  queryEvmBalance.fetch();
+                if (queryBalance) {
+                  queryBalance.fetch();
                 }
               }
             })

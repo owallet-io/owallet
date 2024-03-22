@@ -1,17 +1,23 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
-import { FormGroup, Input, Label } from "reactstrap";
+import { FormGroup, Label } from "reactstrap";
 import {
+  FeeConfig,
+  GasConfig,
   IFeeConfig,
   IFeeEthereumConfig,
   IGasEthereumConfig,
+  InsufficientFeeError,
+  NotLoadedFeeError,
 } from "@owallet/hooks";
 import { observer } from "mobx-react-lite";
 import Big from "big.js";
-import { Input as InputEvm } from "../../components/form";
+import { Input } from "../../components/form";
+import { Dec, DecUtils } from "@owallet/unit";
+import { useIntl } from "react-intl";
 
 export interface GasInputProps {
-  feeConfig: IFeeEthereumConfig;
-  gasConfig: IGasEthereumConfig;
+  feeConfig: FeeConfig;
+  gasConfig: GasConfig;
   decimals: number;
 
   label?: string;
@@ -43,21 +49,38 @@ export const FeeInput: FunctionComponent<GasInputProps> = observer(
       crypto.getRandomValues(bytes);
       return `input-${Buffer.from(bytes).toString("hex")}`;
     });
-
-    useEffect(() => {
-      try {
-        if (gasConfig.gasRaw !== "NaN" && gasPrice != "NaN") {
-          feeConfig.setFee(
-            new Big(parseInt(gasConfig.gasRaw)).mul(gasPrice).toFixed(decimals)
-          );
-        } else {
-          feeConfig.setFee(parseFloat(feeConfig.feeRaw).toString());
+    const intl = useIntl();
+    // useEffect(() => {
+    //   try {
+    //     if (gasConfig.gasRaw !== "NaN" && gasPrice != "NaN") {
+    //       feeConfig.setFee(
+    //         new Big(parseInt(gasConfig.gasRaw)).mul(gasPrice).toFixed(decimals)
+    //       );
+    //     } else {
+    //       feeConfig.setFee(parseFloat(feeConfig.feeRaw).toString());
+    //     }
+    //   } catch (error) {
+    //     feeConfig.setFee(parseFloat(feeConfig.feeRaw).toString());
+    //   }
+    // }, [gasConfig.gasRaw, gasPrice]);
+    const error = feeConfig.getError();
+    const errorText: string | undefined = (() => {
+      if (error) {
+        switch (error.constructor) {
+          case InsufficientFeeError:
+            return intl.formatMessage({
+              id: "input.fee.error.insufficient",
+            });
+          case NotLoadedFeeError:
+            return undefined;
+          default:
+            return (
+              error.message ||
+              intl.formatMessage({ id: "input.fee.error.unknown" })
+            );
         }
-      } catch (error) {
-        feeConfig.setFee(parseFloat(feeConfig.feeRaw).toString());
       }
-    }, [gasConfig.gasRaw, gasPrice]);
-
+    })();
     return (
       <FormGroup className={className}>
         {label ? (
@@ -65,18 +88,33 @@ export const FeeInput: FunctionComponent<GasInputProps> = observer(
             {label}
           </Label>
         ) : null}
-        <InputEvm
-          type="number"
+        <Input
+          // type="number"
           classNameInputGroup={classNameInputGroup}
-          value={parseFloat(feeConfig.feeRaw)}
+          value={feeConfig.fee
+            ?.shrink(true)
+            ?.trim(true)
+            ?.hideDenom(true)
+            ?.toString()}
           className={classNameInput}
+          disabled
           // style={{
           //   backgroundColor: 'rgba(230, 232, 236, 0.2)'
           // }}
-          onChange={(e) => {
-            feeConfig.setFee(e.target.value);
-            e.preventDefault();
-          }}
+          // onChange={(e) => {
+          //   // feeConfig.setManualFee(e.target.value);
+          //   const fee = new Dec(Number(e.target.value.replace(/,/g, '.'))).mul(
+          //     DecUtils.getTenExponentNInPrecisionRange(feeConfig.feeCurrency.coinDecimals)
+          //   );
+          //   console.log('🚀 ~ fee.roundUp().toString():', fee.roundUp().toString());
+          //   feeConfig.setManualFee({
+          //     amount: fee.roundUp().toString(),
+          //     denom: feeConfig.feeCurrency.coinMinimalDenom
+          //   });
+
+          //   e.preventDefault();
+          // }}
+          error={errorText}
           id={inputId}
           append={
             <span
@@ -86,26 +124,10 @@ export const FeeInput: FunctionComponent<GasInputProps> = observer(
                 textTransform: "uppercase",
               }}
             >
-              {denom?.feeCurrency?.coinDenom ?? denom ?? "ORAI"}
+              {feeConfig.feeCurrency.coinDenom}
             </span>
           }
         />
-        {/* <Input
-          id={inputId}
-          className="form-control-alternative"
-          type="number"
-          value={
-            parseFloat(feeConfig.feeRaw).toString() +
-            ' ' +
-            denom?.feeCurrency?.coinDenom
-          }
-          onChange={(e) => {
-            feeConfig.setFee(e.target.value);
-            e.preventDefault();
-          }}
-          defaultValue={defaultValue}
-          autoComplete="off"
-        /> */}
       </FormGroup>
     );
   }

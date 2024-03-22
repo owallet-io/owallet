@@ -140,7 +140,8 @@ export class ObservableQueryCosmosBalanceRegistry implements BalanceRegistry {
     if (denomHelper.type !== "native") {
       return;
     }
-
+    const networkType = chainGetter.getChain(chainId).networkType;
+    if (networkType !== "cosmos") return;
     const key = `${chainId}/${bech32Address}`;
 
     if (!this.nativeBalances.has(key)) {

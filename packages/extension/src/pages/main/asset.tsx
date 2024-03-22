@@ -7,118 +7,13 @@ import { useStore } from "../../stores";
 import styleAsset from "./asset.module.scss";
 import { ToolTip } from "../../components/tooltip";
 import { FormattedMessage, useIntl } from "react-intl";
-import {
-  useLanguage,
-  toDisplay,
-  TRON_ID,
-  getEvmAddress,
-} from "@owallet/common";
+import { useLanguage } from "@owallet/common";
 import { useHistory } from "react-router";
-import {
-  formatBalance,
-  getExchangeRate,
-  getBalanceValue,
-  getBaseDerivationPath,
-} from "@owallet/bitcoin";
-const LazyDoughnut = React.lazy(async () => {
-  const module = await import(
-    /* webpackChunkName: "reactChartJS" */ "react-chartjs-2"
-  );
-
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  const chartJS = module.Chart as any;
-
-  chartJS.pluginService.register({
-    beforeDraw: function (chart: any): void {
-      const round = {
-        x: (chart.chartArea.left + chart.chartArea.right) / 2,
-        y: (chart.chartArea.top + chart.chartArea.bottom) / 2,
-        radius: (chart.outerRadius + chart.innerRadius) / 2,
-        thickness: (chart.outerRadius - chart.innerRadius) / 2,
-      };
-
-      const ctx = chart.chart.ctx;
-
-      // Draw the background circle.
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(round.x, round.y, round.radius, 0, 2 * Math.PI);
-      ctx.closePath();
-      ctx.lineWidth = round.thickness * 2;
-      ctx.strokeStyle = "#f4f5f7";
-      ctx.stroke();
-      ctx.restore();
-    },
-    beforeTooltipDraw: function (chart: any): void {
-      const data = chart.getDatasetMeta(0).data;
-
-      const round = {
-        x: (chart.chartArea.left + chart.chartArea.right) / 2,
-        y: (chart.chartArea.top + chart.chartArea.bottom) / 2,
-        radius: (chart.outerRadius + chart.innerRadius) / 2,
-        thickness: (chart.outerRadius - chart.innerRadius) / 2,
-      };
-
-      const ctx = chart.chart.ctx;
-
-      const drawCircle = (angle: number, color: string) => {
-        ctx.save();
-        ctx.translate(round.x, round.y);
-        ctx.fillStyle = color;
-        ctx.beginPath();
-        ctx.arc(
-          round.radius * Math.sin(angle),
-          round.radius * Math.cos(angle),
-          round.thickness,
-          0,
-          2 * Math.PI
-        );
-        ctx.closePath();
-        ctx.fill();
-        ctx.restore();
-      };
-
-      const drawCircleEndEachOther = (arc1: any, arc2: any) => {
-        const startAngle1 = Math.PI / 2 - arc1._view.startAngle;
-        const endAngle1 = Math.PI / 2 - arc1._view.endAngle;
-
-        const startAngle2 = Math.PI / 2 - arc2._view.startAngle;
-        // Nomalize
-        const endAngle2 = Math.atan2(
-          Math.sin(Math.PI / 2 - arc2._view.endAngle),
-          Math.cos(Math.PI / 2 - arc2._view.endAngle)
-        );
-
-        // If the end of the first arc and the end of the second arc overlap,
-        // Don't draw the first arc's end because it overlaps and looks weird.
-        if (Math.abs(startAngle1 - endAngle2) > (Math.PI / 180) * 3) {
-          drawCircle(startAngle1, arc1._view.backgroundColor);
-        }
-        if (Math.abs(endAngle1 - startAngle2) > (Math.PI / 180) * 3) {
-          drawCircle(endAngle1, arc1._view.backgroundColor);
-        }
-
-        if (
-          Math.abs(startAngle2) > (Math.PI / 180) * 3 ||
-          Math.abs(endAngle2) > (Math.PI / 180) * 3
-        ) {
-          drawCircle(startAngle2, arc2._view.backgroundColor);
-          drawCircle(endAngle2, arc2._view.backgroundColor);
-        }
-      };
-
-      if (data.length == 2) {
-        drawCircleEndEachOther(data[0], data[1]);
-      }
-    },
-  });
-
-  return { default: module.Doughnut };
-});
+import { formatBalance } from "@owallet/bitcoin";
 
 export const AssetStakedChartView: FunctionComponent = observer(() => {
-  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
+  const { chainStore, accountStore, queriesStore, priceStore, keyRingStore } =
+    useStore();
   const intl = useIntl();
   const language = useLanguage();
 
@@ -129,20 +24,23 @@ export const AssetStakedChartView: FunctionComponent = observer(() => {
   const queries = queriesStore.get(current.chainId);
 
   const accountInfo = accountStore.getAccount(current.chainId);
-
-  const queryBalances = queries.queryBalances.getQueryBech32Address(
-    accountInfo.bech32Address
+  const walletAddress = accountInfo.getAddressDisplay(
+    keyRingStore.keyRingLedgerAddresses
   );
+
+  const queryBalances =
+    queries.queryBalances.getQueryBech32Address(walletAddress);
+
   const balanceStakableQuery = queryBalances.stakable;
 
   const stakable = balanceStakableQuery?.balance;
 
   const delegated = queries.cosmos.queryDelegations
-    .getQueryBech32Address(accountInfo.bech32Address)
+    .getQueryBech32Address(walletAddress)
     .total.upperCase(true);
 
   const unbonding = queries.cosmos.queryUnbondingDelegations
-    .getQueryBech32Address(accountInfo.bech32Address)
+    .getQueryBech32Address(walletAddress)
     .total.upperCase(true);
 
   const stakedSum = delegated.add(unbonding);
@@ -156,13 +54,16 @@ export const AssetStakedChartView: FunctionComponent = observer(() => {
     const fiatCurrency = priceStore.getFiatCurrency(
       priceStore.defaultVsCurrency
     );
+    console.log(fiatCurrency, "fiatCurrency");
     if (!fiatCurrency) {
       return undefined;
     }
-    if (!totalStake.isReady) {
-      return undefined;
-    }
+    // console.log(totalStake, "totalStake");
+    // if (!totalStake.isReady) {
+    //   return undefined;
+    // }
     let res = priceStore.calculatePrice(totalStake, fiat);
+    console.log(res, "res");
     for (const token of tokens) {
       const price = priceStore.calculatePrice(token.balance, fiat);
       if (price) {
@@ -172,7 +73,7 @@ export const AssetStakedChartView: FunctionComponent = observer(() => {
 
     return res;
   }, [totalStake, fiat]);
-
+  console.log(totalPrice, "totalPrice");
   return (
     <React.Fragment>
       <div className={styleAsset.containerChart}>
@@ -236,43 +137,57 @@ export const AssetStakedChartView: FunctionComponent = observer(() => {
 export const AssetChartViewEvm: FunctionComponent = observer(() => {
   const { chainStore, accountStore, queriesStore, priceStore, keyRingStore } =
     useStore();
-
+  const intl = useIntl();
   const language = useLanguage();
 
-  const fiatCurrency = language.fiatCurrency;
+  const fiat = language.fiatCurrency;
 
   const current = chainStore.current;
 
   const queries = queriesStore.get(current.chainId);
 
   const accountInfo = accountStore.getAccount(current.chainId);
-
-  const addressCore = accountInfo.getAddressDisplay(
+  const evmAddress = accountInfo.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses,
     false
   );
+  const queryBalances = queries.queryBalances.getQueryBech32Address(evmAddress);
+  console.log(
+    "🚀 ~ constAssetChartViewEvm:FunctionComponent=observer ~ queryBalances:",
+    queryBalances
+  );
+  const balanceStakableQuery = queryBalances.stakable;
 
-  // wait for account to be
-  if (!addressCore) return null;
+  const stakable = balanceStakableQuery?.balance;
+  console.log(
+    "🚀 ~ constAssetChartViewEvm:FunctionComponent=observer ~ stakable:",
+    stakable
+  );
 
-  const isTronNetwork = chainStore.current.chainId === TRON_ID;
-
-  let total: any =
-    queries.evm.queryEvmBalance.getQueryBalance(addressCore)?.balance;
-
-  let totalPrice;
-  // let total;
-  if (addressCore) {
-    if (total) {
-      totalPrice =
-        isTronNetwork && total
-          ? toDisplay(total.amount.int.value, 24) *
-            priceStore?.getPrice(
-              chainStore?.current?.stakeCurrency?.coinGeckoId
-            )
-          : priceStore?.calculatePrice(total, fiatCurrency);
+  const tokens = queryBalances.positiveNativeUnstakables.concat(
+    queryBalances.nonNativeBalances
+  );
+  const totalPrice = useMemo(() => {
+    const fiatCurrency = priceStore.getFiatCurrency(
+      priceStore.defaultVsCurrency
+    );
+    if (!fiatCurrency) {
+      return undefined;
     }
-  }
+    // if (!stakable.isReady) {
+    //   return undefined;
+    // }
+    let res = priceStore.calculatePrice(stakable, fiat);
+    for (const token of tokens) {
+      const price = priceStore.calculatePrice(token.balance, fiat);
+      if (price) {
+        res = res.add(price);
+      }
+    }
+
+    return res;
+  }, [stakable, fiat]);
+
   return (
     <React.Fragment>
       <div className={styleAsset.containerChart}>
@@ -281,15 +196,9 @@ export const AssetChartViewEvm: FunctionComponent = observer(() => {
             <FormattedMessage id="main.account.chart.total-balance" />
           </div>
           <div className={styleAsset.small}>
-            {!isTronNetwork
-              ? totalPrice
-                ? totalPrice.toString()
-                : total?.shrink(true).maxDecimals(6).toString()
-              : null}
-
-            {isTronNetwork &&
-              totalPrice &&
-              parseFloat(totalPrice).toFixed(2) + " $"}
+            {totalPrice
+              ? totalPrice.toString()
+              : stakable.shrink(true).trim(true).maxDecimals(6).toString()}
           </div>
         </div>
         <React.Suspense fallback={<div style={{ height: "150px" }} />}>
@@ -314,13 +223,7 @@ export const AssetChartViewEvm: FunctionComponent = observer(() => {
               color: "#353945E5",
             }}
           >
-            {!isTronNetwork &&
-              total?.trim(true).shrink(true).maxDecimals(6).toString()}
-
-            {isTronNetwork && total
-              ? toDisplay(total.amount.int.value, 24) +
-                ` ${chainStore.current?.stakeCurrency.coinDenom}`
-              : null}
+            {stakable.shrink(true).trim(true).maxDecimals(6).toString()}
           </div>
         </div>
       </div>

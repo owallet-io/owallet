@@ -44,6 +44,7 @@ export class KeyringHelper {
     nonce: string,
     message: object
   ) {
+    console.log("🚀 ~ KeyringHelper ~ message:", message);
     const chainIdNumber = this.validateChainId(chainId);
     const customCommon = Common.custom({
       name: chainId,
@@ -58,7 +59,7 @@ export class KeyringHelper {
       nonce,
       chainId,
     };
-
+    console.log("🚀 ~ KeyringHelper ~ finalMessage:", finalMessage);
     delete finalMessage?.from;
     delete finalMessage?.type;
 

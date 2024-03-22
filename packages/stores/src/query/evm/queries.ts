@@ -1,19 +1,19 @@
 import { QueriesSetBase } from "../queries";
 import { ChainGetter } from "../../common";
 import { KVStore } from "@owallet/common";
-import { ObservableQueryErc20ContractInfo } from "./erc20-contract-info";
-import { DeepReadonly } from "utility-types";
-import { ObservableQueryErc20BalanceRegistry } from "./erc20-balance";
-import { QueriesWithCosmosAndSecretAndCosmwasm } from "../cosmwasm";
+import { QueriesWrappedCosmwasm } from "../cosmwasm";
 import { OWallet } from "@owallet/types";
-import { ObservableQueryEvmBalance } from "./evm-balance";
+import { ObservableQueryEvmBalanceRegistry } from "./balance";
+import { DeepReadonly } from "utility-types";
+import { ObservableQueryGasPrice } from "./gas-price";
+import { ObservableQueryGas } from "./gas";
 
 export interface HasEvmQueries {
   evm: EvmQueries;
 }
 
-export class QueriesWithCosmosAndSecretAndCosmwasmAndEvm
-  extends QueriesWithCosmosAndSecretAndCosmwasm
+export class QueriesWrappedEvm
+  extends QueriesWrappedCosmwasm
   implements HasEvmQueries
 {
   public evm: EvmQueries;
@@ -31,9 +31,8 @@ export class QueriesWithCosmosAndSecretAndCosmwasmAndEvm
 }
 
 export class EvmQueries {
-  public readonly queryErc20ContractInfo: DeepReadonly<ObservableQueryErc20ContractInfo>;
-  public readonly queryEvmBalance: DeepReadonly<ObservableQueryEvmBalance>;
-
+  public readonly queryGasPrice: DeepReadonly<ObservableQueryGasPrice>;
+  public readonly queryGas: DeepReadonly<ObservableQueryGas>;
   constructor(
     base: QueriesSetBase,
     kvStore: KVStore,
@@ -41,21 +40,13 @@ export class EvmQueries {
     chainGetter: ChainGetter
   ) {
     base.queryBalances.addBalanceRegistry(
-      new ObservableQueryErc20BalanceRegistry(kvStore)
+      new ObservableQueryEvmBalanceRegistry(kvStore)
     );
-
-    // queryEvmBalance, we need to seperate native balance from cosmos as it is default implementation
-    // other implementations will require corresponding templates
-    this.queryEvmBalance = new ObservableQueryEvmBalance(
+    this.queryGasPrice = new ObservableQueryGasPrice(
       kvStore,
       chainId,
       chainGetter
     );
-
-    this.queryErc20ContractInfo = new ObservableQueryErc20ContractInfo(
-      kvStore,
-      chainId,
-      chainGetter
-    );
+    this.queryGas = new ObservableQueryGas(kvStore, chainId, chainGetter);
   }
 }

@@ -46,13 +46,19 @@ export interface TxButtonViewProps {
 
 export const TxButtonView: FunctionComponent<TxButtonViewProps> = observer(
   ({ setHasSend, hasSend }) => {
-    const { accountStore, chainStore, queriesStore } = useStore();
+    const { accountStore, chainStore, queriesStore, keyRingStore } = useStore();
 
     const accountInfo = accountStore.getAccount(chainStore.current.chainId);
-    const queries = queriesStore.get(chainStore.current.chainId);
-    const queryBalances = queries.queryBalances.getQueryBech32Address(
-      accountInfo.bech32Address
+    const walletAddress = accountInfo.getAddressDisplay(
+      keyRingStore.keyRingLedgerAddresses
     );
+    const walletAddressFetch = accountInfo.getAddressDisplay(
+      keyRingStore.keyRingLedgerAddresses,
+      false
+    );
+    const queries = queriesStore.get(chainStore.current.chainId);
+    const queryBalances =
+      queries.queryBalances.getQueryBech32Address(walletAddressFetch);
 
     const hasAssets =
       queryBalances.balances.find((bal) =>
@@ -78,7 +84,7 @@ export const TxButtonView: FunctionComponent<TxButtonViewProps> = observer(
           }}
         >
           <ModalBody>
-            <DepositModal bech32Address={accountInfo.bech32Address} />
+            <DepositModal bech32Address={walletAddress} />
           </ModalBody>
         </Modal>
         <Button
@@ -113,103 +119,6 @@ export const TxButtonView: FunctionComponent<TxButtonViewProps> = observer(
             if (hasAssets) {
               setHasSend(!hasSend);
               // history.push('/send');
-            }
-          }}
-        >
-          <FormattedMessage id="main.account.button.send" />
-        </Button>
-        {!hasAssets ? (
-          <Tooltip
-            placement="bottom"
-            isOpen={tooltipOpen}
-            target={sendBtnRef}
-            toggle={() => setTooltipOpen((value) => !value)}
-            fade
-          >
-            <FormattedMessage id="main.account.tooltip.no-asset" />
-          </Tooltip>
-        ) : null}
-      </div>
-    );
-  }
-);
-
-export const TxButtonEvmView: FunctionComponent<TxButtonViewProps> = observer(
-  ({ setHasSend, hasSend }) => {
-    const { accountStore, chainStore, queriesStore, keyRingStore } = useStore();
-
-    const accountInfo = accountStore.getAccount(chainStore.current.chainId);
-    const queries = queriesStore.get(chainStore.current.chainId);
-    // const queryBalances = queries.queryBalances.getQueryBech32Address(
-    //   accountInfo.bech32Address
-    // );
-
-    const [isDepositOpen, setIsDepositOpen] = useState(false);
-
-    const [tooltipOpen, setTooltipOpen] = useState(false);
-
-    const history = useHistory();
-
-    const sendBtnRef = useRef<HTMLButtonElement>(null);
-    const addressCore = accountInfo.getAddressDisplay(
-      keyRingStore.keyRingLedgerAddresses,
-      false
-    );
-    const addressDisplay = accountInfo.getAddressDisplay(
-      keyRingStore.keyRingLedgerAddresses
-    );
-    if (!addressCore) return null;
-    let evmBalance;
-    evmBalance =
-      queries.evm.queryEvmBalance.getQueryBalance(addressCore)?.balance;
-
-    const isTronNetwork = chainStore.current.chainId === TRON_ID;
-    const hasAssets = isTronNetwork
-      ? evmBalance && toDisplay(evmBalance.amount.int.value, 24)
-      : parseFloat(
-          evmBalance?.trim(true).shrink(true).maxDecimals(6).toString()
-        ) > 0;
-
-    return (
-      <div className={styleTxButton.containerTxButton}>
-        <Modal
-          toggle={() => setIsDepositOpen(false)}
-          centered
-          isOpen={isDepositOpen}
-        >
-          <DepositModal bech32Address={addressDisplay} />
-        </Modal>
-        <Button
-          className={classnames(styleTxButton.button, styleTxButton.btnReceive)}
-          outline
-          onClick={(e) => {
-            e.preventDefault();
-
-            setIsDepositOpen(true);
-          }}
-        >
-          <FormattedMessage id="main.account.button.receive" />
-        </Button>
-        {/*
-        "Disabled" property in button tag will block the mouse enter/leave events.
-        So, tooltip will not work as expected.
-        To solve this problem, don't add "disabled" property to button tag and just add "disabled" class manually.
-       */}
-        <Button
-          innerRef={sendBtnRef}
-          className={classnames(
-            styleTxButton.button,
-            {
-              disabled: !hasAssets,
-            },
-            styleTxButton.btnSend
-          )}
-          data-loading={accountInfo.isSendingMsg === "send"}
-          onClick={(e) => {
-            e.preventDefault();
-
-            if (hasAssets) {
-              setHasSend(!hasSend);
             }
           }}
         >

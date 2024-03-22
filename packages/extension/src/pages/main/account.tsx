@@ -78,6 +78,7 @@ export const AccountView: FunctionComponent = observer(() => {
         </div>
         <div style={{ flex: 1, textAlign: "right" }}></div>
       </div>
+      {/* {(networkType === 'cosmos' || networkType === 'bitcoin') && ( */}
       <div className={styleAccount.containerAccount}>
         <div style={{ flex: 1 }} />
         <div

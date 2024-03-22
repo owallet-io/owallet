@@ -11,13 +11,11 @@ import classnames from "classnames";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
 import { TokensView } from "../main/token";
-import { TokensTronView } from "../main/tokenTron";
 import { IBCTransferView } from "../main/ibc-transfer";
 import { IBCTransferPage } from "../../pages/ibc-transfer";
 import { SendPage } from "../send";
 import { SelectChain } from "../../layouts/header";
-import { SendEvmPage } from "../send-evm";
-import { SendTronEvmPage } from "../send-tron";
+import { SendEvmPage } from "../send-evm/send-evm";
 import {
   getBase58Address,
   getEvmAddress,
@@ -26,6 +24,8 @@ import {
 } from "@owallet/common";
 import { TokensBtcView } from "../main/tokenBtc";
 import { SendBtcPage } from "../send-btc";
+import { SendTronEvmPage } from "../send-tron";
+import { TokensTronView } from "../main/tokenTron";
 
 export const TokenPage: FunctionComponent = observer(() => {
   const {
@@ -42,21 +42,14 @@ export const TokenPage: FunctionComponent = observer(() => {
   const [coinMinimalDenom, setCoinMinimalDenom] = React.useState("");
 
   const checkTronNetwork = chainId === TRON_ID;
-  const ledgerAddress =
-    keyRingStore.keyRingType === "ledger"
-      ? checkTronNetwork
-        ? keyRingStore?.keyRingLedgerAddresses?.trx
-        : keyRingStore?.keyRingLedgerAddresses?.eth
-      : "";
+
+  const addressToFetch = accountInfo.getAddressDisplay(
+    keyRingStore?.keyRingLedgerAddresses,
+    false
+  );
   const queryBalances = queriesStore
     .get(chainId)
-    .queryBalances.getQueryBech32Address(
-      networkType === "evm"
-        ? keyRingStore.keyRingType !== "ledger"
-          ? accountInfo.evmosHexAddress
-          : ledgerAddress
-        : accountInfo.bech32Address
-    );
+    .queryBalances.getQueryBech32Address(addressToFetch);
 
   const tokens = queryBalances.balances;
 
@@ -80,6 +73,7 @@ export const TokenPage: FunctionComponent = observer(() => {
         )}`
       ).then(async (res) => {
         const data = await res.json();
+        console.log("🚀 ~ ).then ~ data:", data);
         if (data?.data.length > 0) {
           if (data?.data[0].trc20) {
             const tokenArr = [];
@@ -101,6 +95,10 @@ export const TokenPage: FunctionComponent = observer(() => {
   };
 
   const hasTokens = tokens.length > 0 || tokensTron.length > 0;
+  console.log(
+    "🚀 ~ constTokenPage:FunctionComponent=observer ~ tokensTron:",
+    tokensTron
+  );
   const handleClickToken = (token) => {
     if (!hasSend) setHasSend(true);
     setCoinMinimalDenom(token);

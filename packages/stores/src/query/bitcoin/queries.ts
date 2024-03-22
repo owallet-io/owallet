@@ -1,4 +1,3 @@
-import { QueriesWithCosmosAndSecretAndCosmwasmAndEvm } from "./../evm/queries";
 import { QueriesSetBase } from "../queries";
 import { ChainGetter } from "../../common";
 import { KVStore } from "@owallet/common";
@@ -6,13 +5,14 @@ import { DeepReadonly } from "utility-types";
 import { OWallet } from "@owallet/types";
 import { ObservableQueryBitcoinBalanceRegistry } from "./bitcoin-balance";
 import { ObservableQueryBitcoinBalance } from "./bitcoin-query";
+import { QueriesWrappedEvmContract } from "../evm-contract";
 
 export interface HasBtcQueries {
   bitcoin: BitcoinQueries;
 }
 
-export class QueriesWithCosmosAndSecretAndCosmwasmAndEvmAndBitcoin
-  extends QueriesWithCosmosAndSecretAndCosmwasmAndEvm
+export class QueriesWrappedBitcoin
+  extends QueriesWrappedEvmContract
   implements HasBtcQueries
 {
   public bitcoin: BitcoinQueries;

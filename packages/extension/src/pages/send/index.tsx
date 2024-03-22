@@ -54,24 +54,33 @@ export const SendPage: FunctionComponent<{
 
   const notification = useNotification();
 
-  const { chainStore, accountStore, priceStore, queriesStore, analyticsStore } =
-    useStore();
+  const {
+    chainStore,
+    accountStore,
+    priceStore,
+    queriesStore,
+    analyticsStore,
+    keyRingStore,
+  } = useStore();
   const current = chainStore.current;
-
   const accountInfo = accountStore.getAccount(current.chainId);
-
+  const walletAddress = accountInfo.getAddressDisplay(
+    keyRingStore.keyRingLedgerAddresses
+  );
   const sendConfigs = useSendTxConfig(
     chainStore,
     current.chainId,
+    //@ts-ignore
     accountInfo.msgOpts.send,
-    accountInfo.bech32Address,
+    walletAddress,
     queriesStore.get(current.chainId).queryBalances,
-    EthereumEndpoint,
-    chainStore.current.networkType === "evm" &&
-      queriesStore.get(current.chainId).evm.queryEvmBalance,
-    chainStore.current.networkType === "evm" && accountInfo.evmosHexAddress
+    EthereumEndpoint
   );
-
+  const { gas } = queriesStore.get(current.chainId).evm.queryGas.getGas({
+    to: sendConfigs.recipientConfig.recipient,
+    from: walletAddress,
+  });
+  console.log("🚀 ~ const{gas}=queriesStore.get ~ gas:", gas);
   useEffect(() => {
     if (query.defaultDenom) {
       const currency = current.currencies.find(
@@ -122,7 +131,7 @@ export const SendPage: FunctionComponent<{
           if (accountInfo.isReadyToSendMsgs && txStateIsValid) {
             try {
               const stdFee = sendConfigs.feeConfig.toStdFee();
-              (window as any).accountInfo = accountInfo;
+              // (window as any).accountInfo = accountInfo;
               await accountInfo.sendToken(
                 sendConfigs.amountConfig.amount,
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

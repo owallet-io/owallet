@@ -78,23 +78,11 @@ export class ObservableQueryBalancesInner {
     currency: AppCurrency
   ): ObservableQueryBalanceInner {
     let key = currency.coinMinimalDenom;
-    // If the currency is secret20, it will be different according to not only the minimal denom but also the viewing key of the currency.
-    if ("type" in currency && currency.type === "secret20") {
-      key = currency.coinMinimalDenom + "/" + currency.viewingKey;
-    }
-
-    const chainInfo = this.chainGetter.getChain(this.chainId);
 
     if (!this.balanceMap.has(key)) {
       runInAction(() => {
         let balanceInner: ObservableQueryBalanceInner | undefined;
-        const chainInfo = this.chainGetter.getChain(this.chainId);
         for (const registry of this.balanceRegistries) {
-          // if is evm then do not use ObservableQueryBalanceNative
-          if (chainInfo.networkType === "evm" && registry.type !== "erc20") {
-            continue;
-          }
-
           balanceInner = registry.getBalanceInner(
             this.chainId,
             this.chainGetter,
@@ -124,6 +112,10 @@ export class ObservableQueryBalancesInner {
   @computed
   get stakable(): ObservableQueryBalanceInner {
     const chainInfo = this.chainGetter.getChain(this.chainId);
+    console.log(
+      "🚀 ~ ObservableQueryBalancesInner ~ getstakable ~ chainInfo.stakeCurrency:",
+      chainInfo.stakeCurrency
+    );
     return this.getBalanceInner(chainInfo.stakeCurrency);
   }
 
@@ -142,7 +134,10 @@ export class ObservableQueryBalancesInner {
         result.push(balanceInner);
       }
     }
-
+    console.log(
+      "🚀 ~ ObservableQueryBalancesInner ~ getbalances ~ result:",
+      result
+    );
     return result;
   }
 

@@ -100,25 +100,16 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
       .currency.coinDenom;
 
     useEffect(() => {
-      if (chainStore.current.networkType === "evm") {
-        if (!accountInfo.evmosHexAddress) return null;
-
-        const evmBalance = queries.evm.queryEvmBalance.getQueryBalance(
-          accountInfo.evmosHexAddress
-        ).balance;
-        setBalance(evmBalance);
-      } else {
-        const queryBalance = queryBalances.balances.find(
-          (bal) =>
-            amountConfig.sendCurrency.coinMinimalDenom ===
-            bal.currency.coinMinimalDenom
-        );
-        setBalance(
-          queryBalance
-            ? queryBalance.balance
-            : new CoinPretty(amountConfig.sendCurrency, new Int(0))
-        );
-      }
+      const queryBalance = queryBalances.balances.find(
+        (bal) =>
+          amountConfig.sendCurrency.coinMinimalDenom ===
+          bal.currency.coinMinimalDenom
+      );
+      setBalance(
+        queryBalance
+          ? queryBalance.balance
+          : new CoinPretty(amountConfig.sendCurrency, new Int(0))
+      );
     }, [tokenDenom, chainStore.current.chainId]);
 
     const selectableCurrencies = amountConfig.sendableCurrencies

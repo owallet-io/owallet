@@ -39,7 +39,7 @@ import {
   getEvmAddress,
 } from "@owallet/common";
 import Web3 from "web3";
-import ERC20_ABI from "../query/evm/erc20";
+import ERC20_ABI from "../query/evm-contract/erc20";
 import {
   BroadcastMode,
   makeSignDoc,
@@ -610,6 +610,8 @@ export class AccountSetBase<MsgOpts, Queries> {
     let txHash: string;
 
     try {
+      console.log("🚀 ~ AccountSetBase<MsgOpts, ~ fee:", fee);
+      console.log("🚀 ~ AccountSetBase<MsgOpts, ~ msgs.type:", msgs.type);
       if (msgs.type === "erc20") {
         const { value } = msgs;
         const provider = this.chainGetter.getChain(this.chainId).rest;
@@ -1127,7 +1129,7 @@ export class AccountSetBase<MsgOpts, Queries> {
       if (this.walletStatus !== WalletStatus.Loaded) {
         throw new Error(`Wallet is not loaded: ${this.walletStatus}`);
       }
-
+      console.log("🚀 ~ AccountSetBase<MsgOpts, ~ fee:", fee);
       if (Object.values(msgs).length === 0) {
         throw new Error("There is no msg to send");
       }

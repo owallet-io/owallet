@@ -23,11 +23,6 @@ export class ObservableQueryEvmBalanceInner extends ObservableChainQuery<
     chainGetter: ChainGetter,
     protected readonly address: string
   ) {
-    console.log(
-      "🚀 ~ ObservableQueryEvmBalanceInner ~ constructor ~ chainId:",
-      chainId,
-      address
-    );
     super(kvStore, chainId, chainGetter, "", {
       jsonrpc: "2.0",
       method: "eth_getBalance",

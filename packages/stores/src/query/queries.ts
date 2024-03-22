@@ -4,23 +4,15 @@ import { DeepReadonly } from "utility-types";
 import { ObservableQueryBalances } from "./balances";
 import { ChainGetter } from "../common";
 import { OWallet } from "@owallet/types";
-import { ObservableQueryEvmBalance } from "./evm";
 
 export class QueriesSetBase {
   public readonly queryBalances: DeepReadonly<ObservableQueryBalances>;
-  // public readonly queryEvmBalances: DeepReadonly<ObservableQueryEvmBalance>
-
   constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
     this.queryBalances = new ObservableQueryBalances(
       kvStore,
       chainId,
       chainGetter
     );
-    // this.queryEvmBalances = new ObservableQueryEvmBalance(
-    //   kvStore,
-    //   chainId,
-    //   chainGetter
-    // )
   }
 }
 
