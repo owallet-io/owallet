@@ -89,10 +89,12 @@ export const useMapStyles = ({
           height: formatSize.btn.height,
           backgroundColor: disabled
             ? colors["background-btn-disable-danger"]
-            : colors["orange-800"],
+            : colors["error-surface-default"],
         },
         text: {
-          color: disabled ? colors["text-btn-disable-danger"] : colors["white"],
+          color: disabled
+            ? colors["text-btn-disable-danger"]
+            : colors["neutral-icon-on-dark"],
           fontSize: formatSize.text.fontSize,
           fontWeight: formatSize.text.fontWeight,
         },
