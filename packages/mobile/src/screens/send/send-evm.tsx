@@ -252,12 +252,7 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
       },
     });
     modalStore.setChildren(
-      <FeeModal
-        vertical={true}
-        sendConfigs={sendConfigs}
-        colors={colors}
-        // setFee={setFee}
-      />
+      <FeeModal vertical={true} sendConfigs={sendConfigs} colors={colors} />
     );
   };
   useEffect(() => {

@@ -308,13 +308,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
                 }}
               >
                 {chainStore.current.networkType === "bitcoin" ? "≤" : null}{" "}
-                {amount
-                  .maxDecimals(
-                    chainStore?.current?.stakeCurrency?.coinDecimals || 6
-                  )
-                  .trim(true)
-                  .separator(" ")
-                  .toString()}
+                {amount.maxDecimals(6).trim(true).separator(" ").toString()}
                 {price ? (
                   <OWText
                     style={{

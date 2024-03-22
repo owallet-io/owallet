@@ -68,11 +68,6 @@ export const FeeModal: FunctionComponent<{
 
   const { chainStore, modalStore, priceStore } = useStore();
 
-  const amount = new CoinPretty(
-    sendConfigs.amountConfig.sendCurrency,
-    new Int(toAmount(Number(sendConfigs.amountConfig.amount)))
-  );
-
   return (
     <WrapViewModal
       style={{
