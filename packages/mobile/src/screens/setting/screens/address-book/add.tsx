@@ -7,10 +7,13 @@ import {
 } from "@owallet/hooks";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { OWBox } from "@src/components/card";
+import { PageHeader } from "@src/components/header/header-new";
+import OWIcon from "@src/components/ow-icon/ow-icon";
+import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useState } from "react";
-import { StyleSheet } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { AsyncKVStore } from "../../../../common";
 import { OWButton } from "../../../../components/button";
@@ -23,7 +26,7 @@ import {
 import { PageWithScrollView } from "../../../../components/page";
 import { useSmartNavigation } from "../../../../navigation.provider";
 import { useStore } from "../../../../stores";
-import { spacing } from "../../../../themes";
+import { metrics, spacing } from "../../../../themes";
 
 const styling = (colors) =>
   StyleSheet.create({
@@ -111,6 +114,96 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
 
   const memoConfig = useMemoConfig(chainStore, route.params.chainId);
   // const keyboardVerticalOffset = Platform.OS === 'ios' ? -50 : 0;
+
+  return (
+    <PageWithBottom
+      bottomGroup={
+        <OWButton
+          label="Save"
+          disabled={
+            !name ||
+            recipientConfig.getError() != null ||
+            memoConfig.getError() != null
+          }
+          onPress={async () => {
+            if (
+              name &&
+              recipientConfig.getError() == null &&
+              memoConfig.getError() == null
+            ) {
+              await addressBookConfig.addAddressBook({
+                name,
+                address: recipientConfig.rawRecipient,
+                memo: memoConfig.memo,
+              });
+              smartNavigation.goBack();
+              // smartNavigation.navigateSmart('AddressBook', {});
+            }
+          }}
+          style={[
+            {
+              width: metrics.screenWidth - 32,
+              marginTop: 20,
+              borderRadius: 999,
+            },
+          ]}
+          textStyle={{
+            fontSize: 14,
+            fontWeight: "600",
+          }}
+        />
+      }
+    >
+      <PageHeader title="add new contact" colors={colors} />
+      <ScrollView
+        contentContainerStyle={{ height: metrics.screenHeight }}
+        showsVerticalScrollIndicator={false}
+      >
+        <OWBox>
+          <TextInput
+            label="User name"
+            value={name}
+            onChangeText={(text) => setName(text)}
+            labelStyle={styles.addNewBookLabel}
+            inputContainerStyle={styles.addNewBookInput}
+            placeholder="Type your user name"
+          />
+          <AddressInput
+            label="Wallet address"
+            recipientConfig={recipientConfig}
+            memoConfig={memoConfig}
+            disableAddressBook={false}
+            labelStyle={styles.addNewBookLabel}
+            inputContainerStyle={styles.addNewBookInput}
+            placeholder="Tap to paste"
+            inputRight={
+              <TouchableOpacity
+                onPress={() => {
+                  smartNavigation.navigateSmart("Camera", {
+                    screenCurrent: "addressbook",
+                    name,
+                  });
+                }}
+              >
+                <Scanner color={colors["primary-surface-default"]} />
+              </TouchableOpacity>
+            }
+          />
+          <MemoInput
+            label="Memo (optional)"
+            memoConfig={memoConfig}
+            labelStyle={styles.addNewBookLabel}
+            inputContainerStyle={{
+              ...styles.addNewBookInput,
+              height: 190,
+            }}
+            multiline={false}
+            placeholder="Type memo here"
+          />
+        </OWBox>
+      </ScrollView>
+    </PageWithBottom>
+  );
 
   return (
     // <PageWithScrollView behavior='position' keyboardVerticalOffset={keyboardVerticalOffset}>

@@ -18,7 +18,7 @@ export const AddressBookStackScreen: FC = () => {
     return headerOptions;
   };
   return (
-    <Stack.Navigator screenOptions={handleScreenOptions} headerMode="screen">
+    <Stack.Navigator screenOptions={handleScreenOptions}>
       <Stack.Screen name={SCREENS.AddressBook} component={AddressBookScreen} />
       <Stack.Screen
         name={SCREENS.AddAddressBook}

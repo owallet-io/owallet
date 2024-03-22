@@ -272,10 +272,10 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.AddressBook]: {
-    title: HEADER_KEY.showNetworkHeader,
+    title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.AddAddressBook]: {
-    title: "Add new contract",
+    title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.Browser]: {
     title: "Browser",

@@ -94,7 +94,7 @@ export const SelectorModal: FunctionComponent<{
           <View style={{ position: "absolute", left: 24, top: 24 }}>
             <OWIcon
               color={colors["neutral-icon-on-light"]}
-              name="search"
+              name="tdesign_search"
               size={16}
             />
           </View>

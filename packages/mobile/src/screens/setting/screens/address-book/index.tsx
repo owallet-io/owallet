@@ -8,24 +8,25 @@ import { RouteProp, useRoute } from "@react-navigation/native";
 import { OWButton } from "@src/components/button";
 import { OWBox } from "@src/components/card";
 import { OWEmpty } from "@src/components/empty";
+import { PageHeader } from "@src/components/header/header-new";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { Text } from "@src/components/text";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useCallback, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, TextInput, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AsyncKVStore } from "../../../../common";
 import { OWSubTitleHeader } from "../../../../components/header";
 import { SearchIcon, TrashCanIcon } from "../../../../components/icon";
-import { TextInput } from "../../../../components/input";
 import { PageWithScrollView } from "../../../../components/page";
 import { RectButton } from "../../../../components/rect-button";
 import { useSmartNavigation } from "../../../../navigation.provider";
 import { useConfirmModal } from "../../../../providers/confirm-modal";
 import { useStore } from "../../../../stores";
 import { useStyle } from "../../../../styles";
-import { spacing } from "../../../../themes";
+import { metrics, spacing } from "../../../../themes";
 
 const addressBookItemComponent = {
   inTransaction: RectButton,
@@ -64,6 +65,7 @@ const debounce = (fn, delay) => {
 
 export const AddressBookScreen: FunctionComponent = observer(() => {
   const [nameSearch, setNameSearch] = useState<string>("");
+  const safeAreaInsets = useSafeAreaInsets();
   const [contractList, setContractList] = useState<any[]>([]);
   const { chainStore } = useStore();
   const { colors } = useTheme();
@@ -140,99 +142,99 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
       : addressBookConfig.addressBookDatas;
 
   return (
-    <PageWithScrollView backgroundColor={colors["background"]}>
-      <OWSubTitleHeader title="Address book" />
-      <OWBox>
-        <View>
-          <TextInput
-            inputRight={
-              <RectButton onPress={onNameSearch}>
-                <SearchIcon color={colors["text-place-holder"]} size={20} />
-              </RectButton>
-            }
-            placeholder="Search by address, namespace"
-            inputContainerStyle={{
-              borderColor: colors["purple-400"],
-              borderTopLeftRadius: spacing["8"],
-              borderTopRightRadius: spacing["8"],
-              borderBottomLeftRadius: spacing["8"],
-              borderBottomRightRadius: spacing["8"],
-            }}
-            value={nameSearch}
-            onChangeText={(text) => {
-              setNameSearch(text);
-              debouncedHandler(text);
-            }}
+    <PageWithScrollView
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{}}
+      backgroundColor={colors["neutral-surface-bg"]}
+    >
+      <PageHeader title="Address book" colors={colors} />
+      <View
+        style={{
+          flexDirection: "row",
+          backgroundColor: colors["neutral-surface-action"],
+          height: 40,
+          borderRadius: 999,
+          alignItems: "center",
+          paddingHorizontal: 12,
+        }}
+      >
+        <View style={{ paddingRight: 4 }}>
+          <OWIcon
+            color={colors["neutral-icon-on-light"]}
+            name="tdesign_search"
+            size={16}
           />
         </View>
-        <View style={styles.addressBookAdd}>
-          <Text
-            style={{
-              fontWeight: "400",
-              fontSize: 16,
-              color: colors["text-label-list"],
-            }}
-          >
-            Contact list
-          </Text>
-          <OWButton
-            onPress={() => {
-              smartNavigation.navigateSmart("AddAddressBook", {
-                chainId,
-                addressBookConfig,
-                recipient: "",
-              });
-            }}
-            label="Add new contract"
-            fullWidth={false}
-            type="link"
-            style={{
-              height: "auto",
-            }}
-            size="medium"
-            icon={
-              <OWIcon
-                name="add"
-                color={colors["primary-surface-default"]}
-                size={16}
-              />
-            }
+        <TextInput
+          style={{
+            fontFamily: "SpaceGrotesk-Regular",
+            width: "100%",
+          }}
+          value={nameSearch}
+          onChangeText={(text) => {
+            setNameSearch(text);
+            debouncedHandler(text);
+          }}
+          placeholderTextColor={colors["neutral-text-body"]}
+          placeholder="Search by address or contact name"
+        />
+      </View>
+      <OWButton
+        onPress={() => {
+          smartNavigation.navigateSmart("AddAddressBook", {
+            chainId,
+            addressBookConfig,
+            recipient: "",
+          });
+        }}
+        label="Add new contact"
+        fullWidth={false}
+        type="link"
+        style={{
+          height: "auto",
+        }}
+        size="medium"
+        icon={
+          <OWIcon
+            name="add"
+            color={colors["primary-surface-default"]}
+            size={16}
           />
-        </View>
-
-        <View
-          style={
-            {
-              // flex: 1
-            }
+        }
+      />
+      <View
+        style={
+          {
+            // flex: 1
           }
-        >
-          {contractData?.length > 0 ? (
-            contractData.map((data, i) => {
-              return (
-                <React.Fragment key={i.toString()}>
-                  <AddressBookItem
-                    style={styles.addressBookItem}
-                    enabled={isInTransaction}
-                    onPress={() => {
-                      if (isInTransaction) {
-                        addressBookConfig.selectAddressAt(i);
-                        smartNavigation.goBack();
-                      }
-                    }}
+        }
+      >
+        {contractData?.length > 0 ? (
+          contractData.map((data, i) => {
+            return (
+              <React.Fragment key={i.toString()}>
+                <AddressBookItem
+                  style={styles.addressBookItem}
+                  enabled={isInTransaction}
+                  onPress={() => {
+                    if (isInTransaction) {
+                      addressBookConfig.selectAddressAt(i);
+                      smartNavigation.goBack();
+                    }
+                  }}
+                >
+                  <View
+                    style={style.flatten([
+                      "flex-row",
+                      "justify-between",
+                      "items-center",
+                    ])}
                   >
-                    <View
-                      style={style.flatten([
-                        "flex-row",
-                        "justify-between",
-                        "items-center",
-                      ])}
-                    >
-                      <View>
-                        <Text variant="body1" typo="bold">
-                          {data.name}
-                        </Text>
-                        {/* <Text
+                    <View>
+                      <Text variant="body1" typo="bold">
+                        {data.name}
+                      </Text>
+                      {/* <Text
                         style={style.flatten([
                           'body3',
                           'color-text-black-low',
@@ -241,66 +243,65 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
                       >
                         {data.memo}
                       </Text> */}
-                        <Text
-                          variant="caption"
-                          typo="bold"
-                          color={colors["gray-300"]}
-                        >
-                          {Bech32Address.shortenAddress(data.address, 30)}
-                        </Text>
-                      </View>
-                      <TouchableOpacity
-                        style={{
-                          alignItems: "flex-start",
-                        }}
-                        onPress={async () => {
-                          if (
-                            await confirmModal.confirm({
-                              title: "Remove contact",
-                              paragraph:
-                                "Are you sure you want to remove this address?",
-                              yesButtonText: "Remove",
-                              noButtonText: "Cancel",
-                              titleStyleCustom: {
-                                color: colors["orange-800"],
-                              },
-                              modalRootCustom: {
-                                alignItems: "flex-start",
-                              },
-                              contentStyleCustom: {
-                                textAlign: "left",
-                              },
-                              noBtnStyleCustom: {
-                                backgroundColor: colors["gray-10"],
-                                color: colors["primary-surface-default"],
-                                borderColor: "transparent",
-                              },
-                              yesBtnStyleCustom: {
-                                backgroundColor: colors["orange-800"],
-                              },
-                            })
-                          ) {
-                            await addressBookConfig.removeAddressBook(i);
-                          }
-                        }}
+                      <Text
+                        variant="caption"
+                        typo="bold"
+                        color={colors["gray-300"]}
                       >
-                        <TrashCanIcon
-                          color={
-                            style.get("color-text-black-very-very-low").color
-                          }
-                          size={24}
-                        />
-                      </TouchableOpacity>
+                        {Bech32Address.shortenAddress(data.address, 30)}
+                      </Text>
                     </View>
-                  </AddressBookItem>
-                </React.Fragment>
-              );
-            })
-          ) : (
-            <OWEmpty />
-          )}
-        </View>
-      </OWBox>
+                    <TouchableOpacity
+                      style={{
+                        alignItems: "flex-start",
+                      }}
+                      onPress={async () => {
+                        if (
+                          await confirmModal.confirm({
+                            title: "Remove contact",
+                            paragraph:
+                              "Are you sure you want to remove this address?",
+                            yesButtonText: "Remove",
+                            noButtonText: "Cancel",
+                            titleStyleCustom: {
+                              color: colors["orange-800"],
+                            },
+                            modalRootCustom: {
+                              alignItems: "flex-start",
+                            },
+                            contentStyleCustom: {
+                              textAlign: "left",
+                            },
+                            noBtnStyleCustom: {
+                              backgroundColor: colors["gray-10"],
+                              color: colors["primary-surface-default"],
+                              borderColor: "transparent",
+                            },
+                            yesBtnStyleCustom: {
+                              backgroundColor: colors["orange-800"],
+                            },
+                          })
+                        ) {
+                          await addressBookConfig.removeAddressBook(i);
+                        }
+                      }}
+                    >
+                      <TrashCanIcon
+                        color={
+                          style.get("color-text-black-very-very-low").color
+                        }
+                        size={24}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                </AddressBookItem>
+              </React.Fragment>
+            );
+          })
+        ) : (
+          <OWEmpty />
+        )}
+      </View>
     </PageWithScrollView>
   );
 });

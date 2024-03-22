@@ -57,7 +57,7 @@ export const CopyAddressModal: FunctionComponent<{
           value={keyword}
         />
         <View style={styles.iconSearch}>
-          <OWIcon color={colors["blue-400"]} name="search" size={16} />
+          <OWIcon color={colors["blue-400"]} name="tdesign_search" size={16} />
         </View>
       </View>
       <OWFlatList
