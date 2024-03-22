@@ -1,5 +1,5 @@
 import { ExportKeyRingData } from "@owallet/background";
-import { BIP44HDPath } from "@owallet/types";
+import { AppCurrency, BIP44HDPath, StdFee } from "@owallet/types";
 import { NewMnemonicConfig } from "./screens/register/mnemonic";
 import {
   AddressBookConfig,
@@ -10,6 +10,8 @@ import {
 } from "@owallet/hooks";
 
 import { createSmartNavigatorProvider, SmartNavigator } from "./hooks";
+import { CoinPretty } from "@owallet/unit";
+import { CoinPrimitive } from "@owallet/stores";
 
 const { SmartNavigatorProvider, useSmartNavigation } =
   createSmartNavigatorProvider(
@@ -268,6 +270,14 @@ const { SmartNavigatorProvider, useSmartNavigation } =
         chainId?: string;
         txHash: string;
         tronWeb?: any;
+        data?: {
+          memo: string;
+          fee: CoinPretty | StdFee;
+          fromAddress: string;
+          toAddress: string;
+          amount: CoinPrimitive;
+          currency: AppCurrency;
+        };
       };
       TxSuccessResult: {
         chainId?: string;

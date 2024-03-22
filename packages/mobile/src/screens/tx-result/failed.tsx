@@ -9,6 +9,7 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
+  ScrollView,
 } from "react-native";
 import { Text } from "@src/components/text";
 import { useSmartNavigation } from "../../navigation.provider";
@@ -254,7 +255,7 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
           title={"Transaction detail"}
           colors={colors["neutral-text-title"]}
         />
-        <View>
+        <ScrollView showsVerticalScrollIndicator={false}>
           <View
             style={{
               flexDirection: "row",
@@ -370,7 +371,7 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
               btnCopy={false}
             />
           </View>
-        </View>
+        </ScrollView>
       </View>
     </PageWithBottom>
   );

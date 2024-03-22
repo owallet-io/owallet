@@ -8,7 +8,7 @@ import { useStyle } from "../../styles";
 import { CoinPretty, Dec, DecUtils } from "@owallet/unit";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { OWalletSignOptions } from "@owallet/types";
-import { RightArrowIcon } from "../../components/icon";
+import { DownArrowIcon, RightArrowIcon } from "../../components/icon";
 import { registerModal } from "../base";
 import { CardModal } from "../card";
 import { FeeButtons, getFeeErrorText, TextInput } from "../../components/input";
@@ -194,7 +194,7 @@ export const FeeInSign: FunctionComponent<{
             </Text>
             {canFeeEditable ? (
               <View style={style.flatten(["margin-left-6"])}>
-                <RightArrowIcon
+                <DownArrowIcon
                   color={colors["primary-text-action"]}
                   height={14}
                 />

@@ -246,6 +246,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
       return true;
     }
   }, [amountError]);
+  console.log(sendConfigs.feeConfig.toStdFee(), "to std fee");
   const submitSend = async () => {
     if (account.isReadyToSendMsgs && txStateIsValid) {
       try {
@@ -288,6 +289,14 @@ export const NewSendScreen: FunctionComponent = observer(() => {
               });
               smartNavigation.pushSmart("TxPendingResult", {
                 txHash: Buffer.from(txHash).toString("hex"),
+                data: {
+                  memo: sendConfigs.memoConfig.memo,
+                  toAddress: sendConfigs.recipientConfig.recipient,
+                  amount: sendConfigs.amountConfig.getAmountPrimitive(),
+                  fromAddress: address,
+                  fee: sendConfigs.feeConfig.toStdFee(),
+                  currency: sendConfigs.amountConfig.sendCurrency,
+                },
               });
             },
           },
@@ -320,6 +329,13 @@ export const NewSendScreen: FunctionComponent = observer(() => {
       }
     }
   };
+  useEffect(() => {
+    if (sendConfigs.feeConfig.feeCurrency && !sendConfigs.feeConfig.fee) {
+      sendConfigs.feeConfig.setFeeType("average");
+    }
+    return;
+  }, [sendConfigs.feeConfig]);
+
   return (
     <PageWithBottom
       bottomGroup={

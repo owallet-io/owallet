@@ -155,7 +155,7 @@ export const SendScreen: FunctionComponent = observer(() => {
     sendConfigs.gasConfig.getError();
   // ?? sendConfigs.feeConfig.getError();
   const txStateIsValid = sendConfigError == null;
-
+  console.log(sendConfigs.feeConfig.toStdFee(), "sendConfigs.feeConfig");
   return (
     <PageWithScrollView backgroundColor={colors["background"]}>
       <View style={{ marginBottom: 99 }}>
@@ -316,13 +316,18 @@ export const SendScreen: FunctionComponent = observer(() => {
                         });
                         smartNavigation.pushSmart("TxPendingResult", {
                           txHash: Buffer.from(txHash).toString("hex"),
+                          data: {
+                            memo: sendConfigs.memoConfig.memo,
+                            toAddress: sendConfigs.recipientConfig.recipient,
+                            amount: sendConfigs.amountConfig.amount,
+                            fromAddress: address,
+                            fee: sendConfigs.feeConfig.toStdFee(),
+                            currency: sendConfigs.amountConfig.sendCurrency,
+                          },
                         });
-                        const fromAddress =
-                          chainStore.current.networkType === "evm"
-                            ? account.evmosHexAddress
-                            : account.bech32Address;
+
                         const historyInfos = {
-                          fromAddress: fromAddress,
+                          fromAddress: address,
                           toAddress: sendConfigs.recipientConfig.recipient,
                           hash: Buffer.from(txHash).toString("hex"),
                           memo: "",

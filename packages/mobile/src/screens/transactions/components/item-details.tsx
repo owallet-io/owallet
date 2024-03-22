@@ -44,7 +44,7 @@ const ItemDetail: FC<{
             <Text
               size={16}
               color={colors["text-title-login"]}
-              variant="body1"
+              // variant="body1"
               {...valueProps}
             >
               {value}

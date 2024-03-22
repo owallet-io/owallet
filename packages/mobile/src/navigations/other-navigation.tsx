@@ -45,7 +45,7 @@ export const OtherNavigation: FC = () => {
     <Stack.Navigator screenOptions={handleScreenOptions}>
       <Stack.Screen name={SCREENS.Send} component={SendScreen} />
       {/*<Stack.Screen name={SCREENS.NewSend} component={NewSendScreen} />*/}
-      <Stack.Screen name={SCREENS.NewSend} component={TxFailedResultScreen} />
+      <Stack.Screen name={SCREENS.NewSend} component={NewSendScreen} />
       <Stack.Screen name={SCREENS.SendOasis} component={SendOasisScreen} />
       <Stack.Screen name={SCREENS.TransferNFT} component={TransferNFTScreen} />
       <Stack.Screen

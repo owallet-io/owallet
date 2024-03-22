@@ -13,6 +13,7 @@ const ItemReceivedToken: FC<{
   value?: string;
   borderBottom?: boolean;
   btnCopy?: boolean;
+  IconRightComponent?: ReactNode;
   valueProps?: OWTextProps;
   valueDisplay?: string | ReactNode;
 }> = ({
@@ -22,6 +23,7 @@ const ItemReceivedToken: FC<{
   borderBottom = true,
   btnCopy = true,
   valueProps,
+  IconRightComponent,
 }) => {
   const { colors } = useTheme();
   const styles = styling();
@@ -44,7 +46,7 @@ const ItemReceivedToken: FC<{
           {typeof valueDisplay == "string" ? (
             <Text
               size={16}
-              weight={"600"}
+              weight={"400"}
               color={colors["neutral-text-body"]}
               {...valueProps}
             >
@@ -74,6 +76,7 @@ const ItemReceivedToken: FC<{
             )}
           </View>
         )}
+        {IconRightComponent && IconRightComponent}
       </View>
       {borderBottom && <ItemDivided />}
     </View>

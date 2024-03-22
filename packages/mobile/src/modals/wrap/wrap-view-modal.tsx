@@ -3,6 +3,7 @@ import { FC, ReactNode } from "react";
 import { Text } from "@src/components/text";
 import { OWTextProps } from "@src/components/text/ow-text";
 import { useTheme } from "@src/themes/theme-provider";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface IWrapViewModal extends ViewProps {
   title?: string;
@@ -22,6 +23,7 @@ const WrapViewModal: FC<IWrapViewModal> = ({
   ...props
 }) => {
   const { colors } = useTheme();
+  const { bottom } = useSafeAreaInsets();
   return (
     <View
       {...props}
@@ -30,6 +32,7 @@ const WrapViewModal: FC<IWrapViewModal> = ({
           backgroundColor: colors["neutral-surface-card"],
           flex: 1,
           padding: 16,
+          paddingBottom: 16 + (bottom || 0),
         },
         style,
       ]}
