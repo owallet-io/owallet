@@ -134,6 +134,7 @@ export class FeeEvmConfig extends TxChainSetter implements IFeeConfig {
       amount: [amount],
     };
   }
+
   toStdEvmFee(): object {
     // const amount = this.getFeePrimitive();
     // if (!amount) {
@@ -191,6 +192,7 @@ export class FeeEvmConfig extends TxChainSetter implements IFeeConfig {
       console.log("Error in getFeePrimitive:", error);
     }
   }
+
   protected getFeeTypePrimitive(feeType: FeeType): CoinPrimitive {
     try {
       if (!this.feeCurrency) {
@@ -243,23 +245,14 @@ export class FeeEvmConfig extends TxChainSetter implements IFeeConfig {
       if (this.gasConfig.getError()) {
         return this.gasConfig.getError();
       }
-
       if (this.disableBalanceCheck) {
         return undefined;
       }
-
       const fee = this.getFeePrimitive();
       if (!fee) {
         return undefined;
       }
-
       const amount = this.amountConfig.getAmountPrimitive();
-      console.log("🚀 ~ FeeEvmConfig ~ getError ~ amount:", amount);
-      console.log("🚀 ~ FeeEvmConfig ~ getError ~ fee:", fee);
-      console.log(
-        "🚀 ~ FeeEvmConfig ~ getError ~ this.additionAmountToNeedFee:",
-        this.additionAmountToNeedFee
-      );
       let need: Coin;
       if (this.additionAmountToNeedFee && fee && fee.denom === amount.denom) {
         need = new Coin(
@@ -269,28 +262,12 @@ export class FeeEvmConfig extends TxChainSetter implements IFeeConfig {
       } else {
         need = new Coin(fee.denom, new Int(fee.amount));
       }
-      console.log("🚀 ~ FeeEvmConfig ~ getError ~ need:", need);
       if (need.amount.gt(new Int(0))) {
-        console.log(
-          "🚀 ~ FeeEvmConfig ~ .balances.find ~ need.denom:",
-          need.denom
-        );
-        console.log(
-          "🚀 ~ FeeEvmConfig ~ getError ~ this._sender:",
-          this._sender
-        );
         const bal = this.queryBalances
           .getQueryBech32Address(this._sender)
           .balances.find((bal) => {
-            console.log(
-              "🚀 ~ FeeEvmConfig ~ .balances.find ~ bal:",
-              bal.currency
-            );
             return bal.currency.coinMinimalDenom === need.denom;
           });
-
-        console.log("🚀 ~ FeeEvmConfig ~ getError ~ bal:", bal);
-
         if (!bal) {
           return new InsufficientFeeError("insufficient fee");
         } else if (!bal.response && !bal.error) {
@@ -339,7 +316,6 @@ export const useFeeEvmConfig = (
   queryStore: QueriesWrappedBitcoin,
   memoConfig?: IMemoConfig
 ) => {
-  console.log("🚀 ~ sender:", sender);
   const [config] = useState(
     () =>
       new FeeEvmConfig(

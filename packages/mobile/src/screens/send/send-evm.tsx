@@ -192,15 +192,26 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
             chainId: chainStore.current.chainId,
           },
           {
-            onFulfill: (tx) => {},
+            onFulfill: (tx) => {
+              console.log(tx, "tx evm");
+            },
             onBroadcasted: (txHash) => {
               analyticsStore.logEvent("Send token tx broadcasted", {
                 chainId: chainStore.current.chainId,
                 chainName: chainStore.current.chainName,
                 feeType: sendConfigs.feeConfig.feeType,
               });
+              console.log(txHash, "txHash evm");
               smartNavigation.pushSmart("TxPendingResult", {
                 txHash: Buffer.from(txHash).toString("hex"),
+                data: {
+                  memo: sendConfigs.memoConfig.memo,
+                  toAddress: sendConfigs.recipientConfig.recipient,
+                  amount: sendConfigs.amountConfig.getAmountPrimitive(),
+                  fromAddress: address,
+                  fee: sendConfigs.feeConfig.toStdFee(),
+                  currency: sendConfigs.amountConfig.sendCurrency,
+                },
               });
             },
           },
@@ -221,6 +232,7 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
             : null
         );
       } catch (e) {
+        console.log(e, "errr");
         if (e?.message === "Request rejected") {
           return;
         }

@@ -76,10 +76,12 @@ import { AddressesLedger } from "@owallet/types";
 import { wallet } from "@owallet/bitcoin";
 
 import { getEip712TypedDataBasedOnChainId } from "./utils";
+
 export interface Coin {
   readonly denom: string;
   readonly amount: string;
 }
+
 export enum WalletStatus {
   NotInit = "NotInit",
   Loading = "Loading",
@@ -87,6 +89,7 @@ export enum WalletStatus {
   NotExist = "NotExist",
   Rejected = "Rejected",
 }
+
 export type ExtraOptionSendToken = {
   type: string;
   from?: string;
@@ -347,13 +350,16 @@ export class AccountSetBase<MsgOpts, Queries> {
     this._address = null;
     this.pubKey = new Uint8Array(0);
   }
+
   @action
   public setAddressTypeBtc(type: AddressBtcType): void {
     this._addressType = type;
   }
+
   get walletVersion(): string | undefined {
     return this._walletVersion;
   }
+
   get address(): Uint8Array | null {
     return this._address;
   }
@@ -364,6 +370,7 @@ export class AccountSetBase<MsgOpts, Queries> {
       this.walletStatus === WalletStatus.Loaded && this.bech32Address !== ""
     );
   }
+
   getAddressDisplay(
     keyRingLedgerAddresses: AddressesLedger,
     toDisplay: boolean = true
@@ -402,6 +409,7 @@ export class AccountSetBase<MsgOpts, Queries> {
     }
     return this._bech32Address;
   }
+
   async sendMsgs(
     type: string | "unknown",
     msgs:
@@ -664,7 +672,7 @@ export class AccountSetBase<MsgOpts, Queries> {
 
     let onBroadcasted: ((txHash: Uint8Array) => void) | undefined;
     let onFulfill: ((tx: any) => void) | undefined;
-
+    console.log(txHash);
     if (onTxEvents) {
       if (typeof onTxEvents === "function") {
         onFulfill = onTxEvents;
@@ -733,6 +741,7 @@ export class AccountSetBase<MsgOpts, Queries> {
 
     waitForPendingTransaction(rpc, txHash, onFulfill);
   }
+
   async sendBtcMsgs(
     type: string | "unknown",
     msgs: any,
@@ -857,6 +866,7 @@ export class AccountSetBase<MsgOpts, Queries> {
     }
     return parseInt(chainId);
   }
+
   protected async processSignedTxCosmos(
     msgs: AminoMsgsOrWithProtoMsgs,
     fee: StdFee,
@@ -1055,6 +1065,7 @@ export class AccountSetBase<MsgOpts, Queries> {
     }).finish();
     return signedTx;
   }
+
   // TODO; do we have to add a new broadcast msg for Ethereum? -- Update: Added done
   // Return the tx hash.
   protected async broadcastMsgs(
@@ -1084,6 +1095,7 @@ export class AccountSetBase<MsgOpts, Queries> {
       txHash: await sendTx(this.chainId, signedTx, mode as BroadcastMode),
     };
   }
+
   protected async broadcastBtcMsgs(
     msgs: any,
     fee: StdFee,
@@ -1117,6 +1129,7 @@ export class AccountSetBase<MsgOpts, Queries> {
       throw error;
     }
   }
+
   // Return the tx hash.
   protected async broadcastEvmMsgs(
     msgs: Msg,
@@ -1223,13 +1236,16 @@ export class AccountSetBase<MsgOpts, Queries> {
   get bech32Address(): string {
     return this._bech32Address;
   }
+
   get legacyAddress(): string {
     return this._legacyAddress;
   }
+
   @computed
   get addressType(): AddressBtcType {
     return this._addressType;
   }
+
   @computed
   get btcAddress(): string {
     if (this._addressType === AddressBtcType.Legacy) {
@@ -1237,6 +1253,7 @@ export class AccountSetBase<MsgOpts, Queries> {
     }
     return this._bech32Address;
   }
+
   get isNanoLedger(): boolean {
     return this._isNanoLedger;
   }
