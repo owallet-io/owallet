@@ -129,7 +129,7 @@ export const SignEthereumModal: FunctionComponent<{
 
         //@ts-ignore
         const gasDataSign = data?.data?.data?.data?.gas;
-        console.log(gasDataSign);
+
         //@ts-ignore
         const gasPriceDataSign = data?.data?.data?.data?.gasPrice;
         chainStore.selectChain(data.data.chainId);
@@ -163,8 +163,7 @@ export const SignEthereumModal: FunctionComponent<{
             const token = hstInterface.parseTransaction({ data });
             const to = token?.args?._to || token?.args?.[0];
             const value = token?.args?._value || token?.args?.[1];
-            console.log(to, value?.toString(), "to");
-            console.log(token, "token data");
+
             setInfoSign({
               ...dataSigning,
               value: Web3.utils.toHex(value?.toString()),
@@ -251,7 +250,7 @@ export const SignEthereumModal: FunctionComponent<{
         ?.trim(true)
         ?.toString();
     };
-    console.log(infoSign, "infosign");
+
     return (
       <WrapViewModal
         style={{
