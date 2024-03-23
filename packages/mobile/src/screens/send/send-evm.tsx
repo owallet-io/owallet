@@ -232,11 +232,11 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
         // }
 
         // alert(e.message);
-        if (smartNavigation.canGoBack) {
-          smartNavigation.goBack();
-        } else {
-          smartNavigation.navigateSmart("Home", {});
-        }
+        // if (smartNavigation.canGoBack) {
+        //   smartNavigation.goBack();
+        // } else {
+        //   smartNavigation.navigateSmart("Home", {});
+        // }
       }
     }
   };
@@ -431,6 +431,7 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
                 borderWidth: 0,
                 paddingHorizontal: 0,
               }}
+              editable={false}
               memoConfig={sendConfigs.memoConfig}
               labelStyle={styles.sendlabelInput}
             />

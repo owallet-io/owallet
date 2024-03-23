@@ -4,7 +4,7 @@ import { ObservableChainQuery, ObservableChainQueryMap } from "../chain-query";
 import { ChainGetter, QueryResponse } from "../../common";
 import { computed } from "mobx";
 import Web3 from "web3";
-import ERC20_ABI from "./erc20";
+import ERC20_ABI from "human-standard-token-abi";
 
 export class ObservableQueryErc20ContactInfoInner extends ObservableChainQuery<Erc20ContractTokenInfo> {
   constructor(

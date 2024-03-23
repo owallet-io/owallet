@@ -39,7 +39,7 @@ import {
   getEvmAddress,
 } from "@owallet/common";
 import Web3 from "web3";
-import ERC20_ABI from "../query/evm-contract/erc20";
+import ERC20_ABI from "human-standard-token-abi";
 import {
   BroadcastMode,
   makeSignDoc,

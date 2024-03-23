@@ -40,10 +40,7 @@ export const SignEvmPage: FunctionComponent = observer(() => {
 
   const [tab, setTab] = useState<Tab>(Tab.Details);
   const [dataSign, setDataSign] = useState(null);
-  console.log(
-    "🚀 ~ constSignEvmPage:FunctionComponent=observer ~ dataSign:",
-    dataSign
-  );
+
   const intl = useIntl();
 
   useEffect(() => {
@@ -60,22 +57,14 @@ export const SignEvmPage: FunctionComponent = observer(() => {
     queriesStore,
   } = useStore();
 
-  // const [signer, setSigner] = useState("");
-  const [origin, setOrigin] = useState<string | undefined>();
-  const [isADR36WithString, setIsADR36WithString] = useState<
-    boolean | undefined
-  >();
   const current = chainStore.current;
-  // const current = chainStore.current;
+
   const account = accountStore.getAccount(current.chainId);
   const signer = account.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses,
     false
   );
-  console.log(
-    "🚀 ~ constSignEvmPage:FunctionComponent=observer ~ signer:",
-    signer
-  );
+
   // Make the gas config with 1 gas initially to prevent the temporary 0 gas error at the beginning.
   const gasConfig = useGasEvmConfig(chainStore, current.chainId, 1);
   const { gasPrice } = queriesStore
@@ -101,86 +90,7 @@ export const SignEvmPage: FunctionComponent = observer(() => {
     queriesStore.get(current.chainId),
     memoConfig
   );
-  console.log(feeConfig.getError(), "err kaka");
-  // const signDocHelper = useSignDocHelper(feeConfig, memoConfig);
-  // amountConfig.setSignDocHelper(signDocHelper);
-  // const { gas: gasErc20 } = queriesStore
-  //   .get(current.chainId)
-  //   .evmContract.queryGas.getGas({
-  //     to: dataSign?.data?.data?.data?.to,
-  //     from: signer,
-  //     contract_address:
-  //       amountConfig.sendCurrency.coinMinimalDenom.split(":")[1],
-  //     amount: amountConfig.amount,
-  //   });
-  // const { gas: gasNative } = queriesStore
-  //   .get(current.chainId)
-  //   .evm.queryGas.getGas({
-  //     to: dataSign?.data?.data?.data?.to,
-  //     from: signer,
-  //   });
 
-  // useEffect(() => {
-  //   if (signInteractionStore.waitingEthereumData) {
-  //     const data = signInteractionStore.waitingEthereumData;
-  //     chainStore.selectChain(data.data.chainId);
-  //     if (data.data.signDocWrapper.isADR36SignDoc) {
-  //       setIsADR36WithString(data.data.isADR36WithString);
-  //     }
-  //     setOrigin(data.data.msgOrigin);
-  //     if (
-  //       !data.data.signDocWrapper.isADR36SignDoc &&
-  //       data.data.chainId !== data.data.signDocWrapper.chainId
-  //     ) {
-  //       // Validate the requested chain id and the chain id in the sign doc are same.
-  //       // If the sign doc is for ADR-36, there is no chain id in the sign doc, so no need to validate.
-  //       throw new Error("Chain id unmatched");
-  //     }
-  //     // signDocHelper.setSignDocWrapper(data.data.signDocWrapper);
-  //     gasConfig.setGas(data.data.signDocWrapper.gas);
-  //     memoConfig.setMemo(data.data.signDocWrapper.memo);
-  //     if (
-  //       data.data.signOptions.preferNoSetFee &&
-  //       data.data.signDocWrapper.fees[0]
-  //     ) {
-  //       feeConfig.setManualFee(data.data.signDocWrapper.fees[0]);
-  //     }
-  //     amountConfig.setDisableBalanceCheck(
-  //       !!data.data.signOptions.disableBalanceCheck
-  //     );
-  //     feeConfig.setDisableBalanceCheck(
-  //       !!data.data.signOptions.disableBalanceCheck
-  //     );
-  //     // We can't check the fee balance if the payer is not the signer.
-  //     if (
-  //       data.data.signDocWrapper.payer &&
-  //       data.data.signDocWrapper.payer !== data.data.signer
-  //     ) {
-  //       feeConfig.setDisableBalanceCheck(true);
-  //     }
-  //     // We can't check the fee balance if the granter is not the signer.
-  //     if (
-  //       data.data.signDocWrapper.granter &&
-  //       data.data.signDocWrapper.granter !== data.data.signer
-  //     ) {
-  //       feeConfig.setDisableBalanceCheck(true);
-  //     }
-  //     setSigner(data.data.signer);
-  //   }
-  // }, [
-  //   amountConfig,
-  //   chainStore,
-  //   gasConfig,
-  //   memoConfig,
-  //   feeConfig,
-  //   // signDocHelper,
-  //   signInteractionStore.waitingEthereumData,
-  // ]);
-
-  // If the preferNoSetFee or preferNoSetMemo in sign options is true,
-  // don't show the fee buttons/memo input by default
-  // But, the sign options would be removed right after the users click the approve/reject button.
-  // Thus, without this state, the fee buttons/memo input would be shown after clicking the approve buttion.
   const [isProcessing, setIsProcessing] = useState(false);
   const needSetIsProcessing = !!account.isSendingMsg;
   console.log("🚀 ~ needSetIsProcessing:", needSetIsProcessing);
@@ -233,12 +143,7 @@ export const SignEvmPage: FunctionComponent = observer(() => {
           denom: chainStore.current.feeCurrencies[0].coinMinimalDenom,
         });
       }
-      // amountConfig.setDisableBalanceCheck(
-      //   !!data.data.signOptions.disableBalanceCheck
-      // );
 
-      // memoConfig.setMemo(data.data.signDocWrapper.memo);
-      // setOrigin(data.data.msgOrigin);
       setDataSign(signInteractionStore.waitingEthereumData);
     }
   }, [signInteractionStore.waitingEthereumData]);
@@ -253,45 +158,10 @@ export const SignEvmPage: FunctionComponent = observer(() => {
     );
   }, [chainStore.current.chainId, chainStore.selectedChainId]);
 
-  // If this is undefined, show the chain name on the header.
-  // If not, show the alternative title.
-  // const alternativeTitle = (() => {
-  //   if (!isLoaded) {
-  //     return "";
-  //   }
-
-  //   if (
-  //     signDocHelper.signDocWrapper &&
-  //     signDocHelper.signDocWrapper.isADR36SignDoc
-  //   ) {
-  //     return "Prove Ownership";
-  //   }
-
-  //   return undefined;
-  // })();
-
   const approveIsDisabled = (() => {
     if (!isLoaded) {
       return true;
     }
-
-    // if (!signDocHelper.signDocWrapper) {
-    //   return true;
-    // }
-
-    // If the sign doc is for ADR-36,
-    // there is no error related to the fee or memo...
-    // if (signDocHelper.signDocWrapper.isADR36SignDoc) {
-    //   return false;
-    // }
-    console.log(
-      "🚀 ~ approveIsDisabled ~ feeConfig.getError():",
-      feeConfig.getError()
-    );
-    console.log(
-      "🚀 ~ approveIsDisabled ~ gasConfig.getError():",
-      gasConfig.getError()
-    );
     return feeConfig.getError() != null || gasConfig.getError() != null;
   })();
 
@@ -440,17 +310,7 @@ export const SignEvmPage: FunctionComponent = observer(() => {
                         gasPrice: Web3.utils.toHex(gasConfig.gasPrice),
                         gasLimit: Web3.utils.toHex(gasConfig.gas),
                       });
-                      console.log(
-                        "🚀 ~ onClick={ ~ gasConfig.gas:",
-                        gasConfig.gas
-                      );
-                      console.log(
-                        "🚀 ~ onClick={ ~ gasConfig.gasPrice:",
-                        gasConfig.gasPrice
-                      );
-
                       history.goBack();
-
                       if (
                         interactionInfo.interaction &&
                         !interactionInfo.interactionInternal

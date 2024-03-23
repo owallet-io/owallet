@@ -199,7 +199,7 @@ export const FeeInSign: FunctionComponent<{
               <View style={style.flatten(["margin-left-6"])}>
                 <DownArrowIcon
                   color={colors["primary-text-action"]}
-                  height={14}
+                  height={20}
                 />
               </View>
             ) : null}

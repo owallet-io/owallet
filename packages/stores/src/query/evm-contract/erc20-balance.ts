@@ -8,7 +8,7 @@ import {
   ObservableQueryBalanceInner,
 } from "../balances";
 import { Erc20ContractBalance } from "./types";
-import ERC20_ABI from "./erc20";
+import ERC20_ABI from "human-standard-token-abi";
 import { ObservableChainQuery } from "../chain-query";
 import Web3 from "web3";
 

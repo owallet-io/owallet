@@ -1,4 +1,10 @@
-import React, { FunctionComponent, useEffect, useRef, useState } from "react";
+import React, {
+  FunctionComponent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { registerModal } from "../base";
 import { CardModal } from "../card";
 import { Text, View, KeyboardAvoidingView, Platform } from "react-native";
@@ -9,15 +15,34 @@ import { Button } from "../../components/button";
 import Big from "big.js";
 import { observer } from "mobx-react-lite";
 import { useUnmount } from "../../hooks";
-import ERC20_ABI from "./erc20.json";
+
+import ERC20_ABI from "human-standard-token-abi";
 import { ScrollView } from "react-native-gesture-handler";
 import { TextInput } from "../../components/input";
-import { useFeeEthereumConfig, useGasEthereumConfig } from "@owallet/hooks";
+import {
+  useAmountConfig,
+  useGasEvmConfig,
+  useMemoConfig,
+} from "@owallet/hooks";
 import { FeeEthereumInSign } from "./fee-ethereum";
 import { navigationRef } from "../../router/root";
 import axios from "axios";
 import { colors } from "../../themes";
 import { BottomSheetProps } from "@gorhom/bottom-sheet";
+import { ethers } from "ethers";
+import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
+import { FeeInSign } from "@src/modals/sign/fee";
+import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
+import OWButtonGroup from "@src/components/button/OWButtonGroup";
+import { CoinPretty, CoinUtils, Dec, Int } from "@owallet/unit";
+import { useFeeEvmConfig } from "@owallet/hooks/build/tx/fee-evm";
+import { useTheme } from "@src/themes/theme-provider";
+import OWText from "@src/components/text/ow-text";
+import OWCard from "@src/components/card/ow-card";
+import FastImage from "react-native-fast-image";
+import { DenomHelper } from "@owallet/common";
+import { Bech32Address } from "@owallet/cosmos";
+
 const keyboardVerticalOffset = Platform.OS === "ios" ? 130 : 0;
 
 export const SignEthereumModal: FunctionComponent<{
@@ -26,133 +51,70 @@ export const SignEthereumModal: FunctionComponent<{
   bottomSheetModalConfig?: Omit<BottomSheetProps, "snapPoints" | "children">;
 }> = registerModal(
   observer(({}) => {
+    useEffect(() => {
+      return () => {
+        signInteractionStore.reject();
+      };
+    }, []);
     const {
       chainStore,
       signInteractionStore,
       accountStore,
       sendStore,
       appInitStore,
+      queriesStore,
+      keyRingStore,
+      priceStore,
     } = useStore();
-    useUnmount(() => {
-      signInteractionStore.rejectAll();
-    });
-
-    const chainId = chainStore?.current?.chainId;
-    const scheme = appInitStore.getInitApp.theme;
-
-    const account = accountStore.getAccount(chainId);
-
-    const current = chainStore.current;
-    // Make the gas config with 1 gas initially to prevent the temporary 0 gas error at the beginning.
     const [dataSign, setDataSign] = useState(null);
-    const [gasPrice, setGasPrice] = useState("0");
-    const gasConfig = useGasEthereumConfig(
+    const [infoSign, setInfoSign] = useState<{
+      to: string;
+      value: string;
+      data: string;
+      gas: string;
+      gasPrice: string;
+      from: string;
+      type: string;
+      contractAddress: string;
+    }>(null);
+    const current = chainStore.current;
+
+    const account = accountStore.getAccount(current.chainId);
+    const signer = account.getAddressDisplay(
+      keyRingStore.keyRingLedgerAddresses,
+      false
+    );
+    const gasConfig = useGasEvmConfig(chainStore, current.chainId, 1);
+    const { gasPrice } = queriesStore
+      .get(current.chainId)
+      .evm.queryGasPrice.getGasPrice();
+    const amountConfig = useAmountConfig(
       chainStore,
       current.chainId,
-      parseInt(dataSign?.data?.data?.data?.estimatedGasLimit, 16)
+      signer,
+      queriesStore.get(current.chainId).queryBalances,
+      null
     );
-    const feeConfig = useFeeEthereumConfig(chainStore, current.chainId);
-    const decimals = useRef(chainStore.current.feeCurrencies[0].coinDecimals);
 
+    const memoConfig = useMemoConfig(chainStore, current.chainId);
+    const feeConfig = useFeeEvmConfig(
+      chainStore,
+      current.chainId,
+      signer,
+      queriesStore.get(current.chainId).queryBalances,
+      amountConfig,
+      gasConfig,
+      true,
+      queriesStore.get(current.chainId),
+      memoConfig
+    );
+    const preferNoSetFee = !!account.isSendingMsg;
     useEffect(() => {
-      const getGasPrice = async () => {
-        const response = await axios.post(chainStore.current.rest, {
-          jsonrpc: "2.0",
-          id: "eth_gasPrice",
-          method: "eth_gasPrice",
-          params: [],
-        });
-
-        setGasPrice(
-          new Big(parseInt(response.data.result, 16))
-            .div(new Big(10).pow(decimals.current))
-            .toFixed(decimals.current)
-        );
-      };
-      getGasPrice();
-    }, []);
-
-    useEffect(() => {
-      const estimateGas = async () => {
-        try {
-          if (dataSign) {
-            decimals.current = dataSign?.data?.data?.data?.decimals;
-            let chainIdSign = dataSign?.data?.chainId;
-            if (!chainIdSign?.toString()?.startsWith("0x"))
-              chainIdSign = "0x" + Number(chainIdSign).toString(16);
-            chainStore.selectChain(chainIdSign);
-          }
-          if (gasPrice !== "" && sendStore.sendObj) {
-            // @ts-ignore
-            const web3 = new Web3(chainStore.current.rest);
-            const tokenInfo = new web3.eth.Contract(
-              ERC20_ABI as any,
-              sendStore.sendObj?.contract_addr
-            );
-
-            const estimate = await tokenInfo.methods
-              .transfer(
-                sendStore.sendObj?.recipient,
-                "0x" +
-                  parseFloat(
-                    new Big(sendStore.sendObj?.amount)
-                      .mul(new Big(10).pow(decimals.current))
-                      .toString()
-                  ).toString(16)
-              )
-              .estimateGas({
-                from: sendStore.sendObj?.from,
-              });
-            gasConfig.setGas(estimate);
-            feeConfig.setFee(
-              new Big(estimate).mul(gasPrice).toFixed(decimals.current)
-            );
-          } else {
-            decimals.current = dataSign?.data?.data?.data?.decimals;
-            let chainIdSign = dataSign?.data?.chainId;
-            if (!chainIdSign?.toString()?.startsWith("0x"))
-              chainIdSign = "0x" + Number(chainIdSign).toString(16);
-            chainStore.selectChain(chainIdSign);
-
-            const estimatedGasLimit = parseInt(
-              dataSign?.data?.data?.data?.estimatedGasLimit,
-              16
-            );
-            const estimatedGasPrice = new Big(
-              parseInt(dataSign?.data?.data?.data?.estimatedGasPrice, 16)
-            )
-              .div(new Big(10).pow(decimals.current))
-              .toFixed(decimals.current);
-
-            if (!isNaN(estimatedGasLimit) && estimatedGasPrice !== "NaN") {
-              setGasPrice(estimatedGasPrice);
-              gasConfig.setGas(estimatedGasLimit);
-              feeConfig.setFee(
-                new Big(estimatedGasLimit)
-                  .mul(estimatedGasPrice)
-                  .toFixed(decimals.current)
-              );
-            }
-          }
-        } catch (error) {
-          gasConfig.setGas(80000);
-          feeConfig.setFee(
-            new Big(80000).mul(new Big(gasPrice)).toFixed(decimals.current)
-          );
-        }
-      };
-      estimateGas();
-    }, [gasPrice, dataSign]);
-
-    useEffect(() => {
-      if (signInteractionStore.waitingEthereumData) {
-        setDataSign(signInteractionStore.waitingEthereumData);
-      }
-    }, [signInteractionStore.waitingEthereumData]);
-
-    const [memo, setMemo] = useState<string>("");
-
-    const style = useStyle();
+      if (!gasPrice) return;
+      gasConfig.setGasPriceStep(gasPrice);
+      return () => {};
+    }, [gasPrice]);
+    const preferNoSetMemo = !!account.isSendingMsg;
 
     const _onPressReject = () => {
       try {
@@ -161,128 +123,232 @@ export const SignEthereumModal: FunctionComponent<{
         console.error(error);
       }
     };
+    useEffect(() => {
+      if (signInteractionStore.waitingEthereumData) {
+        const data = signInteractionStore.waitingEthereumData;
 
-    return (
-      <CardModal title="Confirm Transaction">
-        <KeyboardAvoidingView
-          behavior="position"
-          keyboardVerticalOffset={keyboardVerticalOffset}
-        >
-          <View style={style.flatten(["margin-bottom-16"])}>
-            <Text style={style.flatten(["margin-bottom-3"])}>
-              <Text
-                style={style.flatten(["subtitle3", "color-primary"])}
-              >{`1 `}</Text>
-              <Text
-                style={style.flatten(["subtitle3", "color-text-black-medium"])}
-              >
-                Message
-              </Text>
-            </Text>
-            <View
-              style={style.flatten([
-                "border-radius-8",
-                "border-width-1",
-                "border-color-border-white",
-                "overflow-hidden",
-              ])}
-            >
-              <ScrollView
-                style={style.flatten(["max-height-214"])}
-                persistentScrollbar={true}
-              >
-                <Text
-                  style={{
-                    color: colors["sub-text"],
-                  }}
-                >
-                  {JSON.stringify(dataSign, null, 2)}
-                </Text>
-              </ScrollView>
-            </View>
-          </View>
-          <TextInput
-            label="Memo"
-            onChangeText={(txt) => {
-              setMemo(txt);
-            }}
-            defaultValue={""}
-          />
+        //@ts-ignore
+        const gasDataSign = data?.data?.data?.data?.gas;
+        console.log(gasDataSign);
+        //@ts-ignore
+        const gasPriceDataSign = data?.data?.data?.data?.gasPrice;
+        chainStore.selectChain(data.data.chainId);
+        gasConfig.setGas(Web3.utils.hexToNumber(gasDataSign));
+        gasConfig.setGasPrice(Web3.utils.hexToNumberString(gasPriceDataSign));
+        if (preferNoSetFee && gasConfig.gas) {
+          const gas = new Dec(
+            new Int(Web3.utils.hexToNumberString(gasDataSign))
+          );
+          const gasPrice = new Dec(
+            new Int(Web3.utils.hexToNumberString(gasPriceDataSign))
+          );
+          const feeAmount = gasPrice.mul(gas);
+          feeConfig.setManualFee({
+            amount: feeAmount.roundUp().toString(),
+            denom: chainStore.current.feeCurrencies[0].coinMinimalDenom,
+          });
+        }
 
-          <FeeEthereumInSign
-            feeConfig={feeConfig}
-            gasConfig={gasConfig}
-            gasPrice={gasPrice}
-            decimals={decimals.current}
-          />
-
+        setDataSign(signInteractionStore.waitingEthereumData);
+        const dataSigning = data?.data?.data?.data;
+        const hstInterface = new ethers.utils.Interface(ERC20_ABI);
+        try {
+          const { data, type } = dataSigning;
+          if (!data || (type && type !== "erc20")) {
+            setInfoSign({
+              ...dataSigning,
+              from: account.evmosHexAddress,
+            });
+          } else if (data && type && type === "erc20") {
+            const token = hstInterface.parseTransaction({ data });
+            const to = token?.args?._to || token?.args?.[0];
+            const value = token?.args?._value || token?.args?.[1];
+            console.log(to, value?.toString(), "to");
+            console.log(token, "token data");
+            setInfoSign({
+              ...dataSigning,
+              value: Web3.utils.toHex(value?.toString()),
+              contractAddress: dataSigning.to,
+              to,
+              from: dataSigning?.from || account.evmosHexAddress,
+            });
+          }
+        } catch (error) {
+          console.log("error", error);
+          // return undefined;
+        }
+      }
+    }, [signInteractionStore.waitingEthereumData]);
+    const approveIsDisabled = (() => {
+      return feeConfig.getError() != null || gasConfig.getError() != null;
+    })();
+    const _onPressApprove = async () => {
+      if (!dataSign) return;
+      await signInteractionStore.approveEthereumAndWaitEnd({
+        gasPrice: Web3.utils.toHex(gasConfig.gasPrice),
+        gasLimit: Web3.utils.toHex(gasConfig.gas),
+      });
+      return;
+    };
+    const { colors } = useTheme();
+    const currencies = chainStore.current.currencies;
+    const currency = useMemo(() => {
+      if (!infoSign || !currencies?.length) return;
+      const currency = currencies.find((item, index) => {
+        const denom = new DenomHelper(item.coinMinimalDenom)?.contractAddress;
+        if (denom && infoSign?.type === "erc20") {
+          if (!infoSign.contractAddress) return;
+          return denom === infoSign.contractAddress;
+        } else if (!infoSign?.type || infoSign?.type !== "erc20") {
+          return (
+            item.coinMinimalDenom ===
+            chainStore.current.stakeCurrency.coinMinimalDenom
+          );
+        }
+      });
+      return currency;
+    }, [infoSign, currencies]);
+    const checkPrice = () => {
+      if (!currency || !infoSign?.value) return;
+      const coin = new CoinPretty(
+        currency,
+        new Dec(Web3.utils.hexToNumberString(infoSign?.value))
+      );
+      const totalPrice = priceStore.calculatePrice(coin);
+      return totalPrice?.toString();
+    };
+    const checkImageCoin = () => {
+      if (!currency) return;
+      if (currency?.coinImageUrl)
+        return (
           <View
             style={{
-              flexDirection: "row",
-              justifyContent: "space-evenly",
+              alignSelf: "center",
+              paddingVertical: 8,
             }}
           >
-            <Button
-              text="Reject"
-              size="large"
-              containerStyle={{
-                width: "40%",
-              }}
+            <FastImage
               style={{
-                backgroundColor: colors["red-500"],
+                height: 30,
+                width: 30,
               }}
-              textStyle={{
-                color: colors["white"],
-              }}
-              underlayColor={colors["danger-400"]}
-              loading={signInteractionStore.isLoading}
-              disabled={signInteractionStore.isLoading}
-              onPress={_onPressReject}
-            />
-            <Button
-              text="Approve"
-              size="large"
-              disabled={signInteractionStore.isLoading}
-              containerStyle={{
-                width: "40%",
-              }}
-              textStyle={{
-                color: colors["white"],
-              }}
-              style={{
-                backgroundColor: signInteractionStore.isLoading
-                  ? colors["gray-400"]
-                  : colors["primary-surface-default"],
-              }}
-              loading={signInteractionStore.isLoading}
-              onPress={async () => {
-                try {
-                  const gasPrice =
-                    "0x" +
-                    parseInt(
-                      new Big(parseFloat(feeConfig.feeRaw))
-                        .mul(new Big(10).pow(decimals.current))
-                        .div(parseFloat(gasConfig.gasRaw))
-                        .toFixed(decimals.current)
-                    ).toString(16);
-
-                  await signInteractionStore.approveEthereumAndWaitEnd({
-                    gasPrice: gasPrice,
-                    gasLimit: `0x${parseFloat(gasConfig.gasRaw).toString(16)}`,
-                    memo,
-                  });
-                  if (navigationRef.current.getCurrentRoute().name === "Send") {
-                    navigationRef.current.navigate("TxSuccessResult", {});
-                  }
-                } catch (error) {
-                  signInteractionStore.rejectAll();
-                  console.log("error approveEthereumAndWaitEnd", error);
-                }
+              source={{
+                uri: currency?.coinImageUrl,
               }}
             />
           </View>
-        </KeyboardAvoidingView>
-      </CardModal>
+        );
+      return null;
+    };
+
+    const renderAmount = () => {
+      if (!currency || !infoSign?.value) return;
+      return new CoinPretty(
+        currency,
+        new Dec(Web3.utils.hexToNumberString(infoSign?.value))
+      )
+        ?.maxDecimals(9)
+        ?.trim(true)
+        ?.toString();
+    };
+    console.log(infoSign, "infosign");
+    return (
+      <WrapViewModal
+        style={{
+          backgroundColor: colors["neutral-surface-bg"],
+        }}
+      >
+        <View>
+          {/*<View>{renderedMsgs}</View>*/}
+          <OWText
+            size={16}
+            weight={"700"}
+            style={{
+              textAlign: "center",
+              paddingBottom: 20,
+            }}
+          >
+            {`Send confirmation`.toUpperCase()}
+          </OWText>
+          <OWCard
+            style={{
+              height: 143,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {checkImageCoin()}
+            <OWText
+              size={28}
+              color={colors["neutral-text-title"]}
+              weight={"500"}
+            >
+              {renderAmount()}
+            </OWText>
+            <OWText
+              style={{
+                textAlign: "center",
+              }}
+              color={colors["neutral-text-body2"]}
+              weight={"400"}
+            >
+              {checkPrice()}
+            </OWText>
+          </OWCard>
+          <View
+            style={{
+              backgroundColor: colors["neutral-surface-card"],
+              paddingHorizontal: 16,
+              paddingTop: 16,
+              borderRadius: 24,
+              marginBottom: 24,
+              marginTop: 2,
+            }}
+          >
+            <ItemReceivedToken
+              label={"From"}
+              valueDisplay={
+                infoSign?.from &&
+                Bech32Address.shortenAddress(infoSign?.from, 20)
+              }
+              value={infoSign?.from}
+            />
+            <ItemReceivedToken
+              label={"To"}
+              valueDisplay={
+                infoSign?.to && Bech32Address.shortenAddress(infoSign?.to, 20)
+              }
+              value={infoSign?.to}
+            />
+            <FeeInSign
+              feeConfig={feeConfig}
+              gasConfig={gasConfig}
+              signOptions={{ preferNoSetFee: true }}
+              isInternal={true}
+            />
+
+            <ItemReceivedToken label={"Memo"} btnCopy={false} />
+          </View>
+        </View>
+
+        <OWButtonGroup
+          labelApprove={"Confirm"}
+          labelClose={"Cancel"}
+          disabledApprove={approveIsDisabled}
+          disabledClose={signInteractionStore.isLoading}
+          loadingApprove={signInteractionStore.isLoading}
+          styleApprove={{
+            borderRadius: 99,
+            backgroundColor: colors["primary-surface-default"],
+          }}
+          onPressClose={_onPressReject}
+          onPressApprove={_onPressApprove}
+          styleClose={{
+            borderRadius: 99,
+            backgroundColor: colors["neutral-surface-action3"],
+          }}
+        />
+      </WrapViewModal>
     );
   }),
   {

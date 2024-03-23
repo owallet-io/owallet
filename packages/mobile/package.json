@@ -38,6 +38,7 @@
     "@cosmjs/proto-signing": "^0.29.3",
     "@cosmjs/stargate": "^0.31.0",
     "@oasisprotocol/client": "^1.0.0",
+    "human-standard-token-abi": "2.0.0",
     "@oasisprotocol/client-rt": "^1.0.0",
     "@oraichain/common-contracts-sdk": "^1.0.31",
     "@oraichain/oraidex-common": "=1.0.74",

@@ -15,6 +15,7 @@ export const MemoInput: FunctionComponent<{
   placeholderTextColor?: string;
   memoConfig: IMemoConfig;
   multiline?: boolean;
+  editable?: boolean;
 }> = observer(
   ({
     labelStyle,
@@ -27,6 +28,7 @@ export const MemoInput: FunctionComponent<{
     placeholderTextColor,
     inputStyle,
     multiline,
+    editable,
   }) => {
     return (
       <TextInput
@@ -39,6 +41,7 @@ export const MemoInput: FunctionComponent<{
         style={{
           fontSize: 16,
         }}
+        editable={editable}
         errorLabelStyle={errorLabelStyle}
         value={memoConfig.memo}
         placeholder={placeholder}

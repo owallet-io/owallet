@@ -6,7 +6,8 @@ import { KVStore } from "@owallet/common";
 import { ChainGetter, QueryResponse } from "../../../common";
 import { computed, makeObservable } from "mobx";
 import Web3 from "web3";
-import ERC20_ABI from "../erc20";
+
+import ERC20_ABI from "human-standard-token-abi";
 type GasEvmRequest = {
   to: string;
   from: string;

@@ -207,17 +207,12 @@ export const renderMsgSend = (
   }
   const checkPrice = () => {
     if (amount?.length === 1) {
-      const fiat = priceStore.defaultVsCurrency;
-      const fiatCurrency = priceStore.getFiatCurrency(fiat);
-      if (!fiatCurrency) {
-        return undefined;
-      }
       const coin = CoinUtils.convertCoinPrimitiveToCoinPretty(
         currencies,
         amount[0].denom,
         amount[0].amount
       );
-      const totalPrice = priceStore.calculatePrice(coin, fiat);
+      const totalPrice = priceStore.calculatePrice(coin);
       return totalPrice?.toString();
     }
     return null;
