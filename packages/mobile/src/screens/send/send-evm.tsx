@@ -39,6 +39,8 @@ import { DownArrowIcon } from "@src/components/icon";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import { FeeModal } from "@src/modals/fee";
 import { capitalizedText } from "@src/utils/helper";
+import { navigate } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
 
 export const SendEvmScreen: FunctionComponent = observer(() => {
   const {
@@ -202,15 +204,18 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
                 feeType: sendConfigs.feeConfig.feeType,
               });
               console.log(txHash, "txHash evm");
-              smartNavigation.pushSmart("TxPendingResult", {
-                txHash: Buffer.from(txHash).toString("hex"),
-                data: {
-                  memo: sendConfigs.memoConfig.memo,
-                  toAddress: sendConfigs.recipientConfig.recipient,
-                  amount: sendConfigs.amountConfig.getAmountPrimitive(),
-                  fromAddress: address,
-                  fee: sendConfigs.feeConfig.toStdFee(),
-                  currency: sendConfigs.amountConfig.sendCurrency,
+              navigate("Others", {
+                screen: "TxPendingResult",
+                params: {
+                  txHash: txHash,
+                  data: {
+                    memo: sendConfigs.memoConfig.memo,
+                    toAddress: sendConfigs.recipientConfig.recipient,
+                    amount: sendConfigs.amountConfig.getAmountPrimitive(),
+                    fromAddress: address,
+                    fee: sendConfigs.feeConfig.toStdFee(),
+                    currency: sendConfigs.amountConfig.sendCurrency,
+                  },
                 },
               });
             },
@@ -281,7 +286,11 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
       bottomGroup={
         <OWButton
           label="Send"
-          disabled={!account.isReadyToSendMsgs || !txStateIsValid}
+          disabled={
+            !account.isReadyToSendMsgs ||
+            !txStateIsValid ||
+            account.isSendingMsg === "send"
+          }
           loading={account.isSendingMsg === "send"}
           onPress={onSubmit}
           style={[

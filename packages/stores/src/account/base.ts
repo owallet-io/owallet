@@ -671,8 +671,9 @@ export class AccountSetBase<MsgOpts, Queries> {
     }
 
     let onBroadcasted: ((txHash: Uint8Array) => void) | undefined;
+
     let onFulfill: ((tx: any) => void) | undefined;
-    console.log(txHash);
+    console.log(txHash, "result result");
     if (onTxEvents) {
       if (typeof onTxEvents === "function") {
         onFulfill = onTxEvents;
@@ -687,6 +688,14 @@ export class AccountSetBase<MsgOpts, Queries> {
     runInAction(() => {
       this._isSendingMsg = false;
     });
+    if (this.opts.preTxEvents?.onBroadcasted) {
+      //@ts-ignore
+      this.opts.preTxEvents.onBroadcasted(txHash);
+    }
+    if (onBroadcasted) {
+      //@ts-ignore
+      onBroadcasted(txHash);
+    }
 
     if (this.chainId === ChainIdEnum.Oasis) {
       console.log(txHash, "txHash");
@@ -709,7 +718,10 @@ export class AccountSetBase<MsgOpts, Queries> {
       onFulfill,
       count = 0
     ) => {
-      if (count > 10) return;
+      if (count > 10) {
+        OwalletEvent.txHashEmit(txHash, { code: 1 });
+        return;
+      }
 
       try {
         let expectedBlockTime = 3000;
@@ -720,11 +732,14 @@ export class AccountSetBase<MsgOpts, Queries> {
           transactionReceipt = await request(rpc, "eth_getTransactionReceipt", [
             txHash,
           ]);
+          console.log(transactionReceipt, "tran receipt");
 
           retryCount += 1;
           if (retryCount === 10) break;
           await sleep(expectedBlockTime);
         }
+
+        OwalletEvent.txHashEmit(txHash, { code: 0 });
 
         if (this.opts.preTxEvents?.onFulfill) {
           this.opts.preTxEvents.onFulfill(transactionReceipt);

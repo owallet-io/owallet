@@ -17,7 +17,7 @@ export const CustomFee: FunctionComponent<{
   colors;
 }> = ({ sendConfigs, colors }) => {
   return (
-    <View style={{ paddingBottom: metrics.screenHeight / 5 }}>
+    <View style={{ paddingBottom: 5 }}>
       <TextInput
         label=""
         inputContainerStyle={{
@@ -33,29 +33,11 @@ export const CustomFee: FunctionComponent<{
           lineHeight: 20,
           color: colors["neutral-text-body"],
         }}
+        defaultValue={sendConfigs.gasConfig.gasRaw}
         onChangeText={(text) => {
-          const fee = new Dec(Number(text.replace(/,/g, "."))).mul(
-            DecUtils.getTenExponentNInPrecisionRange(6)
-          );
-          sendConfigs.feeConfig.setManualFee({
-            amount: fee.roundUp().toString(),
-            denom: sendConfigs.feeConfig.feeCurrency.coinMinimalDenom,
-          });
+          sendConfigs.gasConfig.setGas(text);
         }}
       />
-      {/* <View
-        style={{
-          alignSelf: "flex-end",
-          flexDirection: "row",
-          alignItems: "center",
-          marginTop: 8
-        }}
-      >
-        <OWIcon name="tdesign_swap" size={16} />
-        <OWText style={{ paddingLeft: 4 }} color={colors["neutral-text-body"]} size={14}>
-          {"0"}
-        </OWText>
-      </View> */}
     </View>
   );
 };
@@ -134,23 +116,20 @@ export const FeeModal: FunctionComponent<{
             }}
           />
         </View>
-        {customGas ? (
-          <CustomFee sendConfigs={sendConfigs} colors={colors} />
-        ) : (
-          <FeeButtons
-            vertical={vertical}
-            label="Transaction Fee"
-            gasLabel="gas"
-            feeConfig={sendConfigs.feeConfig}
-            gasConfig={sendConfigs.gasConfig}
-            labelStyle={{
-              fontSize: 14,
-              fontWeight: "500",
-              lineHeight: 20,
-              color: colors["neutral-Text-body"],
-            }}
-          />
-        )}
+        {customGas && <CustomFee sendConfigs={sendConfigs} colors={colors} />}
+        <FeeButtons
+          vertical={vertical}
+          label="Transaction Fee"
+          gasLabel="gas"
+          feeConfig={sendConfigs.feeConfig}
+          gasConfig={sendConfigs.gasConfig}
+          labelStyle={{
+            fontSize: 14,
+            fontWeight: "500",
+            lineHeight: 20,
+            color: colors["neutral-Text-body"],
+          }}
+        />
         <OWButton
           label="Confirm"
           onPress={async () => {

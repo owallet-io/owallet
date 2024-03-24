@@ -117,18 +117,32 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
             }
           })
           .catch((err) => console.log(err, "err data"));
-      } else if (chainId.startsWith("injective")) {
+      } else if (
+        chainId.startsWith("injective") ||
+        chainStore.current.networkType === "evm"
+      ) {
+        const data = {
+          memo: params.data?.memo,
+          toAddress: params.data?.toAddress,
+          amount: params.data?.amount,
+          fromAddress: params.data?.fromAddress,
+          fee: params.data?.fee,
+          currency: params.data?.currency,
+        };
         OwalletEvent.txHashListener(txHash, (txInfo) => {
+          console.log(txHash, txInfo, "txInfo");
           if (txInfo?.code === 0) {
             smartNavigation.replaceSmart("TxSuccessResult", {
               chainId,
               txHash,
+              data,
             });
             return;
           } else {
             smartNavigation.replaceSmart("TxFailedResult", {
               chainId,
               txHash,
+              data,
             });
           }
         });
