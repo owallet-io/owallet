@@ -13,11 +13,136 @@ import { DownArrowIcon } from "../icon";
 import { RadioButton } from "react-native-radio-buttons-group";
 import { Bech32Address } from "@owallet/cosmos";
 import { TextInput } from "./input";
-export const SelectorModal: FunctionComponent<{
+import { DenomHelper, formatAddress } from "@owallet/common";
+import { Text } from "@src/components/text";
+import { ObservableQueryBalanceInner } from "@owallet/stores";
+import { observer } from "mobx-react-lite";
+import { useStore } from "@src/stores";
+import {
+  extractDataInParentheses,
+  removeDataInParentheses,
+} from "@src/utils/helper";
+import { AppCurrency } from "@owallet/types";
+
+export const TokenView: FunctionComponent<{
+  balance: ObservableQueryBalanceInner;
+  onClick: () => void;
+  coinMinimalDenom: string;
+}> = observer(({ coinMinimalDenom, onClick, balance }) => {
+  const { priceStore, chainStore } = useStore();
+  const { colors } = useTheme();
+
+  const name = balance.currency.coinDenom;
+  const getName = () => {
+    return removeDataInParentheses(name);
+  };
+  const image = balance.currency?.coinImageUrl;
+  let contractAddress: string = "";
+  let amount = balance.balance
+    .trim(true)
+    .shrink(true)
+    ?.maxDecimals(6)
+    ?.hideDenom(true);
+
+  // If the currency is the IBC Currency.
+  // Show the amount as slightly different with other currencies.
+  // Show the actual coin denom to the top and just show the coin denom without channel info to the bottom.
+  if ("originCurrency" in amount.currency && amount.currency.originCurrency) {
+    amount = amount.setCurrency(amount.currency.originCurrency);
+  } else {
+    const denomHelper = new DenomHelper(amount.currency.coinMinimalDenom);
+    if (denomHelper.contractAddress) {
+      contractAddress = formatAddress(denomHelper.contractAddress, 8);
+    }
+  }
+  if (extractDataInParentheses(name)) {
+    contractAddress = extractDataInParentheses(name);
+  }
+  const tokenPrice = priceStore.calculatePrice(amount);
+  return (
+    <View
+      style={{
+        paddingVertical: 16,
+        paddingHorizontal: 8,
+        marginHorizontal: 8,
+        borderRadius: 12,
+        backgroundColor:
+          coinMinimalDenom === balance.currency?.coinMinimalDenom
+            ? colors["neutral-surface-action2"]
+            : colors["neutral-surface-background2"],
+      }}
+    >
+      <RectButton
+        // key={}
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+        onPress={onClick}
+      >
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <View
+            style={{
+              marginRight: 8,
+              borderRadius: 999,
+              width: 40,
+              height: 40,
+              backgroundColor: colors["neutral-surface-action2"],
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {image && (
+              <OWIcon type="images" source={{ uri: image }} size={28} />
+            )}
+          </View>
+          <View>
+            <OWText size={16} weight="500">
+              {getName()}
+            </OWText>
+            {contractAddress ? (
+              <OWText
+                color={colors["neutral-text-body"]}
+                size={14}
+                weight="400"
+              >
+                {contractAddress}
+              </OWText>
+            ) : null}
+          </View>
+        </View>
+        <View>
+          <Text
+            color={colors["neutral-text-title"]}
+            size={16}
+            weight={"500"}
+            style={{
+              textAlign: "right",
+            }}
+          >
+            {amount?.toString()}
+          </Text>
+          <Text
+            color={colors["neutral-text-body"]}
+            size={14}
+            weight={"400"}
+            style={{
+              textAlign: "right",
+            }}
+          >
+            {tokenPrice?.toString()}
+          </Text>
+        </View>
+      </RectButton>
+    </View>
+  );
+});
+export const TokenSelectorModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
   bottomSheetModalConfig?: Omit<BottomSheetProps, "snapPoints" | "children">;
-  items: any[];
+  items: ObservableQueryBalanceInner[];
   maxItemsToShow?: number;
   selectedKey: string | undefined;
   setSelectedKey: (key: string | undefined) => void;
@@ -33,35 +158,7 @@ export const SelectorModal: FunctionComponent<{
   }) => {
     const { colors } = useTheme();
 
-    const [keyword, setKeyword] = useState("");
-
-    const scrollViewRef = useRef<ScrollView | null>(null);
-    const initOnce = useRef<boolean>(false);
-
-    const onInit = () => {
-      if (!initOnce.current) {
-        if (scrollViewRef.current) {
-          scrollViewRef.current.flashScrollIndicators();
-
-          if (maxItemsToShow) {
-            const selectedIndex = items.findIndex(
-              (item) => item.key === selectedKey
-            );
-
-            if (selectedIndex) {
-              const scrollViewHeight = maxItemsToShow * 110;
-
-              scrollViewRef.current.scrollTo({
-                y: selectedIndex * 110 - scrollViewHeight / 2 + 32,
-                animated: false,
-              });
-            }
-          }
-
-          initOnce.current = true;
-        }
-      }
-    };
+    const [search, setSearch] = useState("");
 
     return (
       <View
@@ -86,10 +183,11 @@ export const SelectorModal: FunctionComponent<{
             inputContainerStyle={{
               borderWidth: 0,
             }}
+            isBottomSheet={true}
             placeholderTextColor={colors["neutral-text-body"]}
             placeholder="Search for a token"
-            onChangeText={(t) => setKeyword(t)}
-            value={keyword}
+            onChangeText={(t) => setSearch(t)}
+            defaultValue={search}
           />
           <View style={{ position: "absolute", left: 24, top: 24 }}>
             <OWIcon
@@ -101,106 +199,36 @@ export const SelectorModal: FunctionComponent<{
         </View>
         <ScrollView
           style={{
-            maxHeight: maxItemsToShow ? maxItemsToShow * 110 : undefined,
-            paddingHorizontal: spacing["24"],
+            maxHeight: maxItemsToShow ? maxItemsToShow * 70 : undefined,
           }}
-          ref={scrollViewRef}
           persistentScrollbar={true}
-          onLayout={onInit}
         >
           {items
-            .filter((i) => i.denom.includes(keyword))
-            .map((item) => {
-              if (item) {
-                const selected = item.key === selectedKey;
-
-                let subtitle;
-                const channel = item.denom.split(" (")?.[1];
-                if (channel) {
-                  subtitle = `(${channel}`;
-                }
-                if (item.contractAddress) {
-                  subtitle = Bech32Address.shortenAddress(
-                    item.contractAddress,
-                    24
-                  );
-                }
-
-                return (
-                  <View
-                    style={{
-                      marginVertical: 16,
-                    }}
-                  >
-                    <RectButton
-                      key={item.key}
-                      style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                      }}
-                      onPress={() => {
-                        setSelectedKey(item.key);
-                        if (!modalPersistent) {
-                          close();
-                        }
-                      }}
-                    >
-                      <View
-                        style={{ flexDirection: "row", alignItems: "center" }}
-                      >
-                        <View
-                          style={{
-                            marginRight: 8,
-                            borderRadius: 999,
-                            width: 40,
-                            height: 40,
-                            backgroundColor: colors["neutral-surface-action2"],
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                        >
-                          <OWIcon
-                            type="images"
-                            source={{ uri: item.image }}
-                            size={28}
-                          />
-                        </View>
-                        <View>
-                          <OWText size={16} weight="500">
-                            {item.denom.replace(/(.{16})..+/, "$1…")}
-                          </OWText>
-                          {subtitle ? (
-                            <OWText
-                              color={colors["neutral-text-body"]}
-                              size={14}
-                              weight="400"
-                            >
-                              {subtitle}
-                            </OWText>
-                          ) : null}
-                        </View>
-                      </View>
-
-                      <RadioButton
-                        color={
-                          selected
-                            ? colors["hightlight-surface-active"]
-                            : colors["neutral-text-body"]
-                        }
-                        id={item.key}
-                        selected={selected}
-                        onPress={() => {
-                          setSelectedKey(item.key);
-                          if (!modalPersistent) {
-                            close();
-                          }
-                        }}
-                      />
-                    </RectButton>
-                  </View>
-                );
-              }
+            .filter(
+              (token) =>
+                token?.currency?.coinMinimalDenom?.includes(
+                  search.toUpperCase()
+                ) ||
+                token?.currency?.coinDenom?.includes(search.toUpperCase()) ||
+                token?.currency?.coinGeckoId?.includes(search.toUpperCase()) ||
+                token?.currency?.coinMinimalDenom?.includes(
+                  search.toLowerCase()
+                ) ||
+                token?.currency?.coinDenom?.includes(search.toLowerCase()) ||
+                token?.currency?.coinGeckoId?.includes(search.toLowerCase())
+            )
+            .map((token, i) => {
+              return (
+                <TokenView
+                  key={i.toString()}
+                  balance={token}
+                  coinMinimalDenom={selectedKey}
+                  onClick={() => {
+                    setSelectedKey(token.currency.coinMinimalDenom);
+                    close();
+                  }}
+                />
+              );
             })}
         </ScrollView>
       </View>
@@ -217,6 +245,7 @@ export const TokensSelector: FunctionComponent<{
   chainId: string;
   placeHolder?: string;
   maxItemsToShow?: number;
+  currencyActive: AppCurrency;
 
   items: any[];
 
@@ -237,6 +266,7 @@ export const TokensSelector: FunctionComponent<{
   setSelectedKey,
   chainId,
   modalPersistent,
+  currencyActive,
 }) => {
   const selected = useMemo(() => {
     return items.find((item) => item.key === selectedKey);
@@ -246,7 +276,7 @@ export const TokensSelector: FunctionComponent<{
 
   return (
     <React.Fragment>
-      <SelectorModal
+      <TokenSelectorModal
         isOpen={isModalOpen}
         close={() => setIsModalOpen(false)}
         items={items}
@@ -264,6 +294,7 @@ export const TokensSelector: FunctionComponent<{
         placeHolder={placeHolder}
         selected={selected}
         chainId={chainId}
+        currencyActive={currencyActive}
         onPress={() => setIsModalOpen(true)}
       />
     </React.Fragment>
@@ -278,7 +309,7 @@ export const SelectorButtonWithoutModal: FunctionComponent<{
   chainId: string;
   label: string;
   placeHolder?: string;
-
+  currencyActive: AppCurrency;
   selected:
     | {
         label: string;
@@ -293,10 +324,8 @@ export const SelectorButtonWithoutModal: FunctionComponent<{
     | undefined;
 
   onPress: () => void;
-}> = ({ selected, onPress, chainId }) => {
+}> = ({ selected, currencyActive, onPress, chainId }) => {
   const { colors } = useTheme();
-
-  const chainIcon = chainIcons.find((c) => c.chainId === chainId);
 
   return (
     <TouchableOpacity
@@ -312,13 +341,17 @@ export const SelectorButtonWithoutModal: FunctionComponent<{
         alignItems: "center",
       }}
     >
-      <OWIcon
-        type="images"
-        source={{ uri: selected.image ?? chainIcon?.Icon }}
-        size={16}
-      />
+      {currencyActive?.coinImageUrl && (
+        <OWIcon
+          size={20}
+          type={"images"}
+          source={{
+            uri: currencyActive?.coinImageUrl,
+          }}
+        />
+      )}
       <OWText style={{ paddingHorizontal: 4 }} weight="600" size={14}>
-        {selected ? selected.denom : chainId ?? ""}
+        {removeDataInParentheses(currencyActive?.coinDenom)}
       </OWText>
       <DownArrowIcon height={11} color={colors["primary-text"]} />
     </TouchableOpacity>

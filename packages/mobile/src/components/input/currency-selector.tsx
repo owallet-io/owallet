@@ -6,6 +6,7 @@ import { Bech32Address } from "@owallet/cosmos";
 import { TextStyle, ViewStyle } from "react-native";
 import { Selector } from "./selector";
 import { TokensSelector } from "./tokens-selector";
+import { useStore } from "@src/stores";
 
 export const CurrencySelector: FunctionComponent<{
   labelStyle?: TextStyle;
@@ -30,6 +31,10 @@ export const CurrencySelector: FunctionComponent<{
     amountConfig,
     type = "legacy",
   }) => {
+    const { queriesStore, accountStore, keyRingStore } = useStore();
+    const addressToFetch = accountStore
+      .getAccount(chainId)
+      .getAddressDisplay(keyRingStore.keyRingLedgerAddresses, false);
     const items = amountConfig.sendableCurrencies.map((currency) => {
       let label = currency.coinDenom;
 
@@ -50,30 +55,33 @@ export const CurrencySelector: FunctionComponent<{
         label,
       };
     });
+    const queryBalances = queriesStore
+      .get(chainId)
+      .queryBalances.getQueryBech32Address(addressToFetch);
+    const tokens = queryBalances.balances;
+    const displayTokens = tokens
+      .filter((v, i, obj) => {
+        return (
+          v?.balance &&
+          obj.findIndex(
+            (v2) =>
+              v2.balance.currency?.coinDenom === v.balance.currency?.coinDenom
+          ) === i
+        );
+      })
+      .sort((a, b) => {
+        const aDecIsZero = a.balance?.toDec()?.isZero();
+        const bDecIsZero = b.balance?.toDec()?.isZero();
 
-    const tokens = amountConfig.sendableCurrencies.map((currency) => {
-      let label = currency.coinDenom;
-      let contractAddress;
-      // if is cw20 contract
-      if ("originCurrency" in currency === false) {
-        // show address if needed, maybe erc20 address so need check networkType later
-        const denomHelper = new DenomHelper(currency.coinMinimalDenom);
-        if (denomHelper.contractAddress) {
-          label += `(${Bech32Address.shortenAddress(
-            denomHelper.contractAddress,
-            24
-          )})`;
-          contractAddress = denomHelper.contractAddress;
+        if (aDecIsZero && !bDecIsZero) {
+          return 1;
         }
-      }
+        if (!aDecIsZero && bDecIsZero) {
+          return -1;
+        }
 
-      return {
-        key: currency.coinMinimalDenom,
-        denom: currency.coinDenom,
-        image: currency.coinImageUrl,
-        contractAddress: contractAddress ?? "",
-      };
-    });
+        return a.currency.coinDenom < b.currency.coinDenom ? -1 : 1;
+      });
 
     const selectedKey = amountConfig.sendCurrency.coinMinimalDenom;
     const setSelectedKey = (key: string | undefined) => {
@@ -94,8 +102,9 @@ export const CurrencySelector: FunctionComponent<{
         label={label}
         placeHolder={placeHolder}
         maxItemsToShow={4}
-        items={tokens}
+        items={displayTokens}
         selectedKey={selectedKey}
+        currencyActive={amountConfig.sendCurrency}
         setSelectedKey={setSelectedKey}
       />
     ) : (
