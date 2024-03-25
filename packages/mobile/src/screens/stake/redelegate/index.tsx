@@ -293,7 +293,6 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                 <OWText
                   style={{ paddingBottom: 8 }}
                   color={colors["neutral-text-title"]}
-                  size={12}
                 >
                   From
                 </OWText>
@@ -354,7 +353,6 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                       <OWText
                         style={{ paddingBottom: 8 }}
                         color={colors["neutral-text-title"]}
-                        size={12}
                       >
                         To
                       </OWText>
@@ -399,7 +397,6 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                       <OWText
                         style={{ paddingBottom: 8 }}
                         color={colors["neutral-text-title"]}
-                        size={12}
                       >
                         To
                       </OWText>
@@ -436,7 +433,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                     }}
                   >
                     <View style={{}}>
-                      <OWText style={{ paddingTop: 8 }} size={12}>
+                      <OWText style={{ paddingTop: 8 }}>
                         Staked :{" "}
                         {staked
                           .trim(true)

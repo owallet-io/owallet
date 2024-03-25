@@ -5,7 +5,7 @@ import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import OWCard from "@src/components/card/ow-card";
 import { PageHeader } from "@src/components/header/header-new";
-import { AlertIcon } from "@src/components/icon";
+import { AlertIcon, DownArrowIcon } from "@src/components/icon";
 import { NewAmountInput } from "@src/components/input/amount-input";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
@@ -13,6 +13,7 @@ import { Text } from "@src/components/text";
 import OWText from "@src/components/text/ow-text";
 import { useTheme } from "@src/themes/theme-provider";
 import {
+  capitalizedText,
   handleSaveHistory,
   HISTORY_STATUS,
   showToast,
@@ -33,6 +34,7 @@ import { useSmartNavigation } from "../../../navigation.provider";
 import { useStore } from "../../../stores";
 import { metrics, spacing } from "../../../themes";
 import { chainIcons } from "@oraichain/oraidex-common";
+import { FeeModal } from "@src/modals/fee";
 
 export const UndelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -49,8 +51,14 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
 
   const validatorAddress = route.params.validatorAddress;
 
-  const { chainStore, accountStore, queriesStore, analyticsStore, priceStore } =
-    useStore();
+  const {
+    chainStore,
+    modalStore,
+    accountStore,
+    queriesStore,
+    analyticsStore,
+    priceStore,
+  } = useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
   const smartNavigation = useSmartNavigation();
@@ -117,7 +125,17 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
   const txStateIsValid = sendConfigError == null;
 
   const isDisable = !account.isReadyToSendMsgs || !txStateIsValid;
-
+  const _onPressFee = () => {
+    modalStore.setOptions({
+      bottomSheetModalConfig: {
+        enablePanDownToClose: false,
+        enableOverDrag: false,
+      },
+    });
+    modalStore.setChildren(
+      <FeeModal vertical={true} sendConfigs={sendConfigs} colors={colors} />
+    );
+  };
   return (
     <PageWithBottom
       bottomGroup={
@@ -226,7 +244,6 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
               <OWText
                 style={{ paddingBottom: 8 }}
                 color={colors["neutral-text-title"]}
-                size={12}
               >
                 Validator
               </OWText>
@@ -253,7 +270,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
                 }}
               >
                 <View style={{}}>
-                  <OWText style={{ paddingTop: 8 }} size={12}>
+                  <OWText style={{ paddingTop: 8 }}>
                     Staked :{" "}
                     {staked.trim(true).shrink(true).maxDecimals(6).toString()}
                   </OWText>
@@ -348,18 +365,32 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
                 <OWText color={colors["neutral-text-title"]} weight="600">
                   Transaction fee
                 </OWText>
-                <TouchableOpacity>
-                  <OWText color={colors["primary-text-action"]} weight="600">
-                    {/* Fast: $0.01 */}
+                <TouchableOpacity
+                  style={{ flexDirection: "row" }}
+                  onPress={_onPressFee}
+                >
+                  <OWText
+                    color={colors["primary-text-action"]}
+                    weight="600"
+                    size={16}
+                  >
+                    {capitalizedText(sendConfigs.feeConfig.feeType)}:{" "}
+                    {priceStore
+                      .calculatePrice(sendConfigs.feeConfig.fee)
+                      ?.toString()}{" "}
                   </OWText>
+                  <DownArrowIcon
+                    height={11}
+                    color={colors["primary-text-action"]}
+                  />
                 </TouchableOpacity>
               </View>
-              <FeeButtons
-                label=""
-                gasLabel="gas"
-                feeConfig={sendConfigs.feeConfig}
-                gasConfig={sendConfigs.gasConfig}
-              />
+              {/*<FeeButtons*/}
+              {/*  label=""*/}
+              {/*  gasLabel="gas"*/}
+              {/*  feeConfig={sendConfigs.feeConfig}*/}
+              {/*  gasConfig={sendConfigs.gasConfig}*/}
+              {/*/>*/}
             </OWCard>
           </View>
         ) : null}

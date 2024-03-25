@@ -265,7 +265,6 @@ export const DelegateScreen: FunctionComponent = observer(() => {
               <OWText
                 style={{ paddingBottom: 8 }}
                 color={colors["neutral-text-title"]}
-                size={12}
               >
                 Validator
               </OWText>
@@ -292,9 +291,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                 }}
               >
                 <View style={{}}>
-                  <OWText style={{ paddingTop: 8 }} size={12}>
-                    Balance : {balance}
-                  </OWText>
+                  <OWText style={{ paddingTop: 8 }}>Balance : {balance}</OWText>
                   <View
                     style={{
                       flexDirection: "row",
@@ -327,7 +324,6 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                         <OWText
                           weight="400"
                           color={colors["neutral-text-action-on-dark-bg"]}
-                          size={12}
                         >
                           {chainStore.current.stakeCurrency.coinDenom.charAt(0)}
                         </OWText>

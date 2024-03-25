@@ -2,7 +2,7 @@ import React, { FunctionComponent, useEffect } from "react";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
-
+import _ from "lodash";
 import {
   View,
   Animated,
@@ -21,7 +21,11 @@ import { CommonActions } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
 import { PageWithView } from "@src/components/page";
 import imagesAssets from "@src/assets/images";
-import { openLink } from "@src/utils/helper";
+import {
+  capitalizedText,
+  formatContractAddress,
+  openLink,
+} from "@src/utils/helper";
 import { OWButton } from "@src/components/button";
 import { PageHeader } from "@src/components/header/header-new";
 import image from "@src/assets/images";
@@ -86,6 +90,17 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
     chainInfo.stakeCurrency,
     new Dec(params?.data?.fee.amount?.[0]?.amount)
   );
+  const dataItem =
+    params?.data &&
+    _.pickBy(params?.data, function (value, key) {
+      return (
+        key !== "memo" &&
+        key !== "fee" &&
+        key !== "amount" &&
+        key !== "currency"
+      );
+    });
+
   return (
     <PageWithBottom
       bottomGroup={
@@ -216,22 +231,19 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
               backgroundColor: colors["neutral-surface-card"],
             }}
           >
-            <ItemReceivedToken
-              label={"From"}
-              valueDisplay={
-                params?.data?.fromAddress &&
-                Bech32Address.shortenAddress(params?.data?.fromAddress, 20)
-              }
-              value={params?.data?.fromAddress}
-            />
-            <ItemReceivedToken
-              label={"To"}
-              valueDisplay={
-                params?.data?.toAddress &&
-                Bech32Address.shortenAddress(params?.data?.toAddress, 20)
-              }
-              value={params?.data?.toAddress}
-            />
+            {dataItem &&
+              Object.keys(dataItem).map(function (key) {
+                return (
+                  <ItemReceivedToken
+                    label={capitalizedText(key)}
+                    valueDisplay={
+                      dataItem?.[key] &&
+                      formatContractAddress(dataItem?.[key], 20)
+                    }
+                    value={dataItem?.[key]}
+                  />
+                );
+              })}
             <ItemReceivedToken
               label={"Fee"}
               valueDisplay={`${fee

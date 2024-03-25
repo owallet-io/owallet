@@ -226,9 +226,9 @@ export const NewSendScreen: FunctionComponent = observer(() => {
                 txHash: Buffer.from(txHash).toString("hex"),
                 data: {
                   memo: sendConfigs.memoConfig.memo,
-                  toAddress: sendConfigs.recipientConfig.recipient,
+                  from: address,
+                  to: sendConfigs.recipientConfig.recipient,
                   amount: sendConfigs.amountConfig.getAmountPrimitive(),
-                  fromAddress: address,
                   fee: sendConfigs.feeConfig.toStdFee(),
                   currency: sendConfigs.amountConfig.sendCurrency,
                 },

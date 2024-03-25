@@ -13,7 +13,11 @@ import { Text } from "@src/components/text";
 import { useSmartNavigation } from "../../navigation.provider";
 import { CommonActions } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
-import { formatContractAddress, openLink } from "../../utils/helper";
+import {
+  capitalizedText,
+  formatContractAddress,
+  openLink,
+} from "../../utils/helper";
 import { ChainIdEnum, TRON_ID } from "@owallet/common";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import OWButtonGroup from "@src/components/button/OWButtonGroup";
@@ -27,7 +31,7 @@ import { CoinPretty, Dec } from "@owallet/unit";
 import { AppCurrency, StdFee } from "@owallet/types";
 import { CoinPrimitive } from "@owallet/stores";
 import { Bech32Address } from "@owallet/cosmos";
-
+import _ from "lodash";
 export const TxSuccessResultScreen: FunctionComponent = observer(() => {
   const { chainStore, priceStore, txsStore, accountStore, keyRingStore } =
     useStore();
@@ -118,6 +122,16 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
       });
     }
   }, [txHash]);
+  const dataItem =
+    params?.data &&
+    _.pickBy(params?.data, function (value, key) {
+      return (
+        key !== "memo" &&
+        key !== "fee" &&
+        key !== "amount" &&
+        key !== "currency"
+      );
+    });
   return (
     <PageWithBottom
       bottomGroup={
@@ -247,22 +261,35 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
               backgroundColor: colors["neutral-surface-card"],
             }}
           >
-            <ItemReceivedToken
-              label={"From"}
-              valueDisplay={
-                params?.data?.fromAddress &&
-                Bech32Address.shortenAddress(params?.data?.fromAddress, 20)
-              }
-              value={params?.data?.fromAddress}
-            />
-            <ItemReceivedToken
-              label={"To"}
-              valueDisplay={
-                params?.data?.toAddress &&
-                Bech32Address.shortenAddress(params?.data?.toAddress, 20)
-              }
-              value={params?.data?.toAddress}
-            />
+            {dataItem &&
+              Object.keys(dataItem).map(function (key) {
+                return (
+                  <ItemReceivedToken
+                    label={capitalizedText(key)}
+                    valueDisplay={
+                      dataItem?.[key] &&
+                      formatContractAddress(dataItem?.[key], 20)
+                    }
+                    value={dataItem?.[key]}
+                  />
+                );
+              })}
+            {/*<ItemReceivedToken*/}
+            {/*  label={"From"}*/}
+            {/*  valueDisplay={*/}
+            {/*    params?.data?.fromAddress &&*/}
+            {/*    Bech32Address.shortenAddress(params?.data?.fromAddress, 20)*/}
+            {/*  }*/}
+            {/*  value={params?.data?.fromAddress}*/}
+            {/*/>*/}
+            {/*<ItemReceivedToken*/}
+            {/*  label={"To"}*/}
+            {/*  valueDisplay={*/}
+            {/*    params?.data?.toAddress &&*/}
+            {/*    Bech32Address.shortenAddress(params?.data?.toAddress, 20)*/}
+            {/*  }*/}
+            {/*  value={params?.data?.toAddress}*/}
+            {/*/>*/}
             <ItemReceivedToken
               label={"Network"}
               valueDisplay={

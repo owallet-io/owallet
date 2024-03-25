@@ -472,65 +472,17 @@ export function renderMsgBeginRedelegate(
       </View>
     ),
   };
-
-  // return {
-  //   title: "Switch Validator",
-  //   content: (
-  //     <View style={{}}>
-  //       <View
-  //         style={{
-  //           flexDirection: "row",
-  //           justifyContent: "space-between",
-  //         }}
-  //       >
-  //         <Text style={{ ...styles.textInfo }}>From </Text>
-  //         <Text style={{ fontWeight: "bold" }}>
-  //           {hyphen(Bech32Address.shortenAddress(validatorSrcAddress, 24))}
-  //         </Text>
-  //       </View>
-  //       <View
-  //         style={{
-  //           flexDirection: "row",
-  //           justifyContent: "space-between",
-  //         }}
-  //       >
-  //         <Text style={{ ...styles.textInfo }}>To </Text>
-  //         <Text style={{ fontWeight: "bold" }}>
-  //           {hyphen(Bech32Address.shortenAddress(validatorDstAddress, 24))}
-  //         </Text>
-  //       </View>
-  //       <View
-  //         style={{
-  //           flexDirection: "row",
-  //           justifyContent: "space-between",
-  //         }}
-  //       >
-  //         <Text style={{ ...styles.textInfo }}>Amount </Text>
-  //         <Text style={{ fontWeight: "bold" }}>
-  //           {hyphen(`${amount.amount} ${amount.denom}`)}
-  //         </Text>
-  //       </View>
-  //     </View>
-  //   ),
-  // };
 }
 
-export function renderMsgUndelegate(
-  currencies: AppCurrency[],
-  amount: CoinPrimitive,
-  validatorAddress: string,
-  walletAddress: string,
-  priceStore: CoinGeckoPriceStore
-) {
-  const parsed = CoinUtils.parseDecAndDenomFromCoin(
-    currencies,
-    new Coin(amount.denom, amount.amount)
-  );
-
-  amount = {
-    amount: clearDecimals(parsed.amount),
-    denom: parsed.denom,
-  };
+const UnDelegateView: FunctionComponent<{
+  amount: CoinPrimitive;
+  validatorAddress: string;
+}> = observer(({ amount, validatorAddress }) => {
+  const { priceStore, accountStore, chainStore } = useStore();
+  const walletAddress = accountStore.getAccount(
+    chainStore.current.chainId
+  ).bech32Address;
+  const currencies = chainStore.current.currencies;
   const checkPrice = () => {
     const coin = CoinUtils.convertCoinPrimitiveToCoinPretty(
       currencies,
@@ -569,60 +521,75 @@ export function renderMsgUndelegate(
     return null;
   };
   const { colors } = useTheme();
+  return (
+    <View>
+      <OWCard
+        style={{
+          height: 143,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        {checkImageCoin()}
+        <OWText size={28} color={colors["neutral-text-title"]} weight={"500"}>
+          {hyphen(`${amount.amount} ${removeDataInParentheses(amount.denom)}`)}
+        </OWText>
+        <OWText
+          style={{
+            textAlign: "center",
+          }}
+          color={colors["neutral-text-body2"]}
+          weight={"400"}
+        >
+          {checkPrice()}
+        </OWText>
+      </OWCard>
+      <View
+        style={{
+          backgroundColor: colors["neutral-surface-card"],
+          paddingHorizontal: 16,
+          marginTop: 16,
+          borderTopLeftRadius: 24,
+          borderTopRightRadius: 24,
+          paddingTop: 16,
+        }}
+      >
+        <ItemReceivedToken
+          label={"Wallet"}
+          valueDisplay={hyphen(Bech32Address.shortenAddress(walletAddress, 20))}
+          value={walletAddress}
+        />
+        <ItemReceivedToken
+          label={"Validator"}
+          valueDisplay={hyphen(
+            Bech32Address.shortenAddress(validatorAddress, 24)
+          )}
+          value={validatorAddress}
+        />
+      </View>
+    </View>
+  );
+});
+
+export function renderMsgUndelegate(
+  currencies: AppCurrency[],
+  amount: CoinPrimitive,
+  validatorAddress: string
+) {
+  const parsed = CoinUtils.parseDecAndDenomFromCoin(
+    currencies,
+    new Coin(amount.denom, amount.amount)
+  );
+
+  amount = {
+    amount: clearDecimals(parsed.amount),
+    denom: parsed.denom,
+  };
 
   return {
     title: "Unstake",
     content: (
-      <View>
-        <OWCard
-          style={{
-            height: 143,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          {checkImageCoin()}
-          <OWText size={28} color={colors["neutral-text-title"]} weight={"500"}>
-            {hyphen(
-              `${amount.amount} ${removeDataInParentheses(amount.denom)}`
-            )}
-          </OWText>
-          <OWText
-            style={{
-              textAlign: "center",
-            }}
-            color={colors["neutral-text-body2"]}
-            weight={"400"}
-          >
-            {checkPrice()}
-          </OWText>
-        </OWCard>
-        <View
-          style={{
-            backgroundColor: colors["neutral-surface-card"],
-            paddingHorizontal: 16,
-            marginTop: 16,
-            borderTopLeftRadius: 24,
-            borderTopRightRadius: 24,
-            paddingTop: 16,
-          }}
-        >
-          <ItemReceivedToken
-            label={"Wallet"}
-            valueDisplay={hyphen(
-              Bech32Address.shortenAddress(walletAddress, 20)
-            )}
-            value={walletAddress}
-          />
-          <ItemReceivedToken
-            label={"Validator"}
-            valueDisplay={hyphen(
-              Bech32Address.shortenAddress(validatorAddress, 24)
-            )}
-            value={validatorAddress}
-          />
-        </View>
-      </View>
+      <UnDelegateView amount={amount} validatorAddress={validatorAddress} />
     ),
   };
 }

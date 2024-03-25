@@ -271,10 +271,13 @@ const { SmartNavigatorProvider, useSmartNavigation } =
         txHash: string;
         tronWeb?: any;
         data?: {
+          type: string;
           memo: string;
           fee: CoinPretty | StdFee;
           fromAddress: string;
           toAddress: string;
+          walletAddress: string;
+          validatorAddress: string;
           amount: CoinPrimitive;
           currency: AppCurrency;
         };
@@ -283,6 +286,7 @@ const { SmartNavigatorProvider, useSmartNavigation } =
         chainId?: string;
         txHash?: string;
         data?: {
+          type: string;
           memo: string;
           fee: CoinPretty | StdFee;
           fromAddress: string;
