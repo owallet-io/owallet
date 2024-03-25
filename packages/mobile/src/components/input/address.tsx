@@ -42,12 +42,13 @@ const styles = StyleSheet.create({
 export const AddressInput: FunctionComponent<{
   labelStyle?: TextStyle;
   containerStyle?: ViewStyle;
-  inputContainerStyle?: ViewStyle;
   errorLabelStyle?: TextStyle;
-
+  inputContainerStyle?: ViewStyle;
+  topInInputContainer?: React.ReactNode;
   label: string;
   colors?: any;
   inputRight?: React.ReactNode;
+  inputLeft?: React.ReactNode;
 
   recipientConfig: IRecipientConfig;
   memoConfig: IMemoConfig;
@@ -60,6 +61,7 @@ export const AddressInput: FunctionComponent<{
   ({
     labelStyle,
     containerStyle,
+    inputLeft,
     inputContainerStyle,
     errorLabelStyle,
     label,
@@ -70,6 +72,7 @@ export const AddressInput: FunctionComponent<{
     placeholderTextColor,
     inputRight,
     colors,
+    topInInputContainer,
   }) => {
     const style = useStyle();
 
@@ -103,6 +106,7 @@ export const AddressInput: FunctionComponent<{
     return (
       <TextInput
         label={label}
+        topInInputContainer={topInInputContainer}
         labelStyle={labelStyle}
         containerStyle={containerStyle}
         inputContainerStyle={inputContainerStyle}
@@ -137,6 +141,7 @@ export const AddressInput: FunctionComponent<{
             )
           ) : undefined
         }
+        inputLeft={inputLeft}
         inputRight={
           disableAddressBook ? null : (
             <View
