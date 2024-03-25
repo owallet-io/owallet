@@ -1,15 +1,12 @@
 import { EthereumEndpoint, toAmount } from "@owallet/common";
 import { useDelegateTxConfig } from "@owallet/hooks";
 import { BondStatus } from "@owallet/stores";
-import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
+import { CoinPretty, Int } from "@owallet/unit";
 import { RouteProp, useRoute } from "@react-navigation/native";
-import { OWBox } from "@src/components/card";
 import OWCard from "@src/components/card/ow-card";
-import { OWSubTitleHeader } from "@src/components/header";
 import { PageHeader } from "@src/components/header/header-new";
 import { AlertIcon } from "@src/components/icon";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
-import { Text } from "@src/components/text";
 import OWText from "@src/components/text/ow-text";
 import { ValidatorThumbnail } from "@src/components/thumbnail";
 import { useTheme } from "@src/themes/theme-provider";
@@ -77,7 +74,6 @@ export const DelegateScreen: FunctionComponent = observer(() => {
       });
 
     if (queryBalance) {
-      queryBalance.fetch();
       setBalance(
         queryBalance.balance
           .shrink(true)
@@ -117,9 +113,9 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     (c) => c.chainId === chainStore.current.chainId
   );
 
-  const staked = queries.cosmos.queryDelegations
-    .getQueryBech32Address(account.bech32Address)
-    .getDelegationTo(validatorAddress);
+  // const staked = queries.cosmos.queryDelegations
+  //   .getQueryBech32Address(account.bech32Address)
+  //   .getDelegationTo(validatorAddress);
 
   // const _onOpenStakeModal = () => {
   //   modalStore.setOpen();
@@ -130,10 +126,10 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   //   );
   // };
 
-  const amount = new CoinPretty(
-    sendConfigs.amountConfig.sendCurrency,
-    new Int(toAmount(Number(sendConfigs.amountConfig.amount)))
-  );
+  // const amount = new CoinPretty(
+  //   sendConfigs.amountConfig.sendCurrency,
+  //   new Int(toAmount(Number(sendConfigs.amountConfig.amount)))
+  // );
 
   return (
     <PageWithBottom
@@ -335,14 +331,10 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                   alignItems: "center",
                 }}
               >
-                <OWIcon name="tdesign_swap" size={16} />
-                <OWText
-                  style={{ paddingLeft: 4 }}
-                  color={colors["neutral-text-body"]}
-                  size={14}
-                >
+                {/* <OWIcon name="tdesign_swap" size={16} /> */}
+                {/* <OWText style={{ paddingLeft: 4 }} color={colors["neutral-text-body"]} size={14}>
                   {priceStore.calculatePrice(amount).toString()}
-                </OWText>
+                </OWText> */}
               </View>
               <View
                 style={{

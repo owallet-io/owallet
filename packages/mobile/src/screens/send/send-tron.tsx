@@ -92,7 +92,7 @@ export const SendTronScreen: FunctionComponent = observer(() => {
       });
 
     if (queryBalance) {
-      queryBalance.fetch();
+      // queryBalance.fetch();
       setBalance(
         queryBalance.balance
           .shrink(true)

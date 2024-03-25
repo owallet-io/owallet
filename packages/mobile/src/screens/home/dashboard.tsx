@@ -225,7 +225,7 @@ export const DashboardCard: FunctionComponent<{
         <OWEmpty
           style={styles.emptyChart}
           type="crash"
-          label={`Something went wrong with the chart.\nPlease pull to refresh.`}
+          label={`Empty data.\nPlease pull to refresh.`}
         />
       ) : null}
       {!isNetworkError && active === "price" ? (
