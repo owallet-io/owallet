@@ -17,6 +17,7 @@ import { getTokenInfos } from "@src/utils/helper";
 import { useSmartNavigation } from "@src/navigation.provider";
 import { SCREENS } from "@src/common/constants";
 import { navigate } from "@src/router/root";
+import { LoadingSpinner } from "@src/components/spinner";
 
 export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
   const { colors } = useTheme();
@@ -186,6 +187,11 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
     <View>
       <OWBox style={styles.containerOWBox}>
         <View style={styles.containerInfoAccount}>
+          {universalSwapStore.getLoadStatus.isLoad && (
+            <View style={styles.containerLoading}>
+              <LoadingSpinner color={colors["gray-150"]} size={22} />
+            </View>
+          )}
           <TouchableOpacity onPress={_onPressMyWallet} style={styles.btnAcc}>
             <Image
               style={styles.infoIcon}
@@ -329,5 +335,15 @@ const styling = (colors) =>
     btnGroup: {
       flexDirection: "row",
       justifyContent: "space-between",
+    },
+    containerLoading: {
+      position: "absolute",
+      bottom: 0,
+      left: 0,
+      right: 0,
+      top: 0,
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 1000,
     },
   });
