@@ -91,7 +91,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
       string
     >
   >();
-  console.log(balance, "balance");
+
   const chainId = route?.params?.chainId
     ? route?.params?.chainId
     : chainStore?.current?.chainId;

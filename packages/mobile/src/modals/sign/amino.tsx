@@ -31,11 +31,13 @@ export function renderAminoMessage(
   msgOpts: AccountSetOpts<CosmosMsgOpts & SecretMsgOpts>["msgOpts"],
   msg: MessageObj,
   currencies: AppCurrency[],
-  priceStore: CoinGeckoPriceStore
+  priceStore: CoinGeckoPriceStore,
+  walletAddress: string
 ): {
   title: string;
   content: React.ReactElement;
   scrollViewHorizontal?: boolean;
+  walletAddress?: string;
 } {
   if (msg.type === msgOpts.send.native.type) {
     const value = msg.value as MsgSend["value"];
@@ -80,7 +82,13 @@ export function renderAminoMessage(
 
   if (msg.type === msgOpts.delegate.type) {
     const value = msg.value as MsgDelegate["value"];
-    return renderMsgDelegate(currencies, value.amount, value.validator_address);
+    return renderMsgDelegate(
+      currencies,
+      value.amount,
+      value.validator_address,
+      walletAddress,
+      priceStore
+    );
   }
 
   if (msg.type === msgOpts.withdrawRewards.type) {

@@ -157,12 +157,14 @@ export const SignModal: FunctionComponent<{
       if (mode === "amino") {
         return (msgs as readonly AminoMsg[]).map((msg, i) => {
           const account = accountStore.getAccount(chainId);
+          const walletAddress = account.bech32Address;
           const chainInfo = chainStore.getChain(chainId);
           const { content, scrollViewHorizontal, title } = renderAminoMessage(
             account.msgOpts,
             msg,
             chainInfo.currencies,
-            priceStore
+            priceStore,
+            walletAddress
           );
 
           return (
@@ -227,12 +229,14 @@ export const SignModal: FunctionComponent<{
               isInternal={isInternal}
             />
             {/*<MemoInput label="Memo" memoConfig={memoConfig} />*/}
-            <ItemReceivedToken
-              label={"Memo"}
-              valueDisplay={memoConfig.memo}
-              value={memoConfig.memo}
-              btnCopy={false}
-            />
+            {memoConfig.memo && (
+              <ItemReceivedToken
+                label={"Memo"}
+                valueDisplay={memoConfig.memo}
+                value={memoConfig.memo}
+                btnCopy={false}
+              />
+            )}
           </View>
         </View>
 
@@ -250,7 +254,7 @@ export const SignModal: FunctionComponent<{
           onPressApprove={_onPressApprove}
           styleClose={{
             borderRadius: 99,
-            backgroundColor: colors["neutral-surface-action3"],
+            backgroundColor: colors["neutral-surface-action2"],
           }}
         />
       </WrapViewModal>
