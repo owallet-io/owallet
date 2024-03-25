@@ -67,7 +67,9 @@ export function renderAminoMessage(
       currencies,
       value.amount,
       value.validator_src_address,
-      value.validator_dst_address
+      value.validator_dst_address,
+      walletAddress,
+      priceStore
     );
   }
 
@@ -76,7 +78,9 @@ export function renderAminoMessage(
     return renderMsgUndelegate(
       currencies,
       value.amount,
-      value.validator_address
+      value.validator_address,
+      walletAddress,
+      priceStore
     );
   }
 
