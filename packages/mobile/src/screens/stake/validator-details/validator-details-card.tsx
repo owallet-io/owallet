@@ -78,8 +78,6 @@ export const ValidatorDetailsCard: FunctionComponent<{
   validatorAddress: string;
   apr?: number;
 }> = observer(({ containerStyle, validatorAddress, apr }) => {
-  console.log("get here");
-
   const { chainStore, queriesStore, accountStore } = useStore();
   const { colors } = useTheme();
   const styles = styling(colors);

@@ -200,11 +200,11 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
                   </>
                 ) : null}
 
-                <OWText
+                {/* <OWText
                   style={{ fontSize: 14, color: colors["neutral-text-body"] }}
                 >
                   ${detail.toAmount}
-                </OWText>
+                </OWText> */}
               </View>
             )}
           </View>
@@ -288,7 +288,7 @@ const useStyles = (colors) => {
       alignItems: "center",
       borderBottomColor: colors["neutral-border-default"],
       borderBottomWidth: 1,
-      paddingBottom: 8,
+      paddingVertical: 8,
     },
     container: {
       paddingTop: metrics.screenHeight / 14,

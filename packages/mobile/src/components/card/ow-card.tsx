@@ -36,7 +36,7 @@ const OWCard = ({ children, style, type = "ink", ...props }: IOWBoxProps) => {
         <Image
           style={{
             width: metrics.screenWidth - 32,
-            height: 170,
+            height: 260,
             position: "absolute",
           }}
           source={require("../../assets/image/img-bg.png")}
