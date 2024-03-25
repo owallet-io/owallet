@@ -42,7 +42,7 @@ export const UndelegationsCard: FunctionComponent<{
 
   return (
     <View>
-      {unbondings.length > 0 ? null : <OWEmpty style={{ paddingBottom: 20 }} />}
+      {/* {unbondings.length > 0 ? null : <OWEmpty style={{ paddingBottom: 20 }} />} */}
       {unbondings.map((unbonding, unbondingIndex) => {
         const validator = bondedValidators.validators
           .concat(unbondingValidators.validators)
