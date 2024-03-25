@@ -281,7 +281,10 @@ export const SendTronScreen: FunctionComponent = observer(() => {
               }}
             >
               <View>
-                <OWText style={{ paddingTop: 8 }} size={12}>
+                <OWText
+                  style={{ paddingTop: 8, maxWidth: metrics.screenWidth / 2.5 }}
+                  size={12}
+                >
                   Balance : {balance}
                 </OWText>
                 <CurrencySelector
