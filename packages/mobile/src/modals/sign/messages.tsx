@@ -19,15 +19,14 @@ import { Buffer } from "buffer";
 import { observer } from "mobx-react-lite";
 import { FormattedMessage, IntlShape } from "react-intl";
 import { Badge } from "../../components/badge";
-import { ImageBackground, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { typography } from "../../themes";
-import ItemDetail from "@src/screens/transactions/components/item-details";
 import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
-import images from "@src/assets/images";
 import { useTheme } from "@src/themes/theme-provider";
 import OWCard from "@src/components/card/ow-card";
 import OWText from "@src/components/text/ow-text";
 import FastImage from "react-native-fast-image";
+import { removeDataInParentheses } from "@src/utils/helper";
 
 const h = new Hypher(english);
 
@@ -266,7 +265,9 @@ export const renderMsgSend = (
             {hyphen(
               receives
                 .map((coin) => {
-                  return `-${coin.amount} ${coin.denom}`;
+                  return `-${coin.amount} ${removeDataInParentheses(
+                    coin.denom
+                  )}`;
                 })
                 .join(",")
             )}
