@@ -310,7 +310,7 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
         setBalance(balance);
       }
     });
-  }, [address, sendConfigs.amountConfig.sendCurrency]);
+  }, [isReadyBalance, address, sendConfigs.amountConfig.sendCurrency]);
   return (
     <PageWithBottom
       bottomGroup={
