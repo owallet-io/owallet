@@ -56,6 +56,7 @@ const styling = (colors) =>
     input: {
       width: metrics.screenWidth - 32,
       borderColor: colors["neutral-border-strong"],
+      borderRadius: 12,
     },
     textInput: { fontWeight: "600", paddingLeft: 4, fontSize: 15 },
   });

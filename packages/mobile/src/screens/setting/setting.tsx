@@ -169,7 +169,7 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
         <SettingRemoveAccountItem />
 
         <View style={styles.border} />
-        <BasicSettingItem
+        {/* <BasicSettingItem
           icon="tdesign_money"
           paragraph="Currency"
           onPress={_onPressCountryModal}
@@ -192,7 +192,7 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
               <OWIcon name="chevron_right" size={16} />
             </View>
           }
-        />
+        /> */}
         <SettingSwitchModeItem />
         <View style={styles.border} />
         <BasicSettingItem
