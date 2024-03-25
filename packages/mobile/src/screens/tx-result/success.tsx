@@ -311,18 +311,18 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
               label={"Hash"}
               valueDisplay={formatContractAddress(txHash)}
               value={txHash}
-              btnCopy={false}
-              IconRightComponent={
-                <View>
-                  <OWButtonIcon
-                    name="copy"
-                    sizeIcon={20}
-                    fullWidth={false}
-                    onPress={onDone}
-                    colorIcon={colors["neutral-text-action-on-light-bg"]}
-                  />
-                </View>
-              }
+              // btnCopy={false}
+              // IconRightComponent={
+              //   <View>
+              //     <OWButtonIcon
+              //       name="copy"
+              //       sizeIcon={20}
+              //       fullWidth={false}
+              //       onPress={onDone}
+              //       colorIcon={colors["neutral-text-action-on-light-bg"]}
+              //     />
+              //   </View>
+              // }
             />
           </View>
         </ScrollView>

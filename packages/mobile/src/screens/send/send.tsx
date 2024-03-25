@@ -26,7 +26,7 @@ import { PageWithBottom } from "@src/components/page/page-with-bottom";
 
 import { useSmartNavigation } from "@src/navigation.provider";
 import { FeeModal } from "@src/modals/fee";
-import { CoinPretty, Int } from "@owallet/unit";
+import { CoinPretty, Dec, Int } from "@owallet/unit";
 import { DownArrowIcon } from "@src/components/icon";
 import { capitalizedText } from "@src/utils/helper";
 
@@ -111,33 +111,29 @@ export const NewSendScreen: FunctionComponent = observer(() => {
     if (route?.params?.currency) {
       const currency = sendConfigs.amountConfig.sendableCurrencies.find(
         (cur) => {
-          if (cur?.contractAddress?.includes(route?.params?.contractAddress)) {
-            return cur?.contractAddress?.includes(
-              route?.params?.contractAddress
-            );
-          }
-          //@ts-ignore
-
           if (
-            cur?.contractAddress?.includes(
-              route?.params?.contractAddress?.toLowerCase()
-            )
+            cur?.coinMinimalDenom
+              ?.toLowerCase()
+              ?.includes(route?.params?.contractAddress?.toLowerCase())
+          )
+            return true;
+          if (
+            cur.coinDenom?.toLowerCase() ===
+            route.params.currency?.toLowerCase()
           ) {
             return true;
           }
-          if (cur?.coinMinimalDenom) {
-            return cur?.coinMinimalDenom.includes(
-              route?.params?.contractAddress
-            );
-          }
           //@ts-ignore
-          if (cur?.type === "cw20") {
-            return cur.coinDenom == route.params.currency;
-          }
-          if (cur.coinDenom === route.params.currency) {
-            return cur.coinDenom === route.params.currency;
-          }
-          return cur.coinMinimalDenom == route.params.currency;
+          if (
+            cur?.coinGeckoId
+              ?.toLowerCase()
+              ?.includes(route?.params?.coinGeckoId?.toLowerCase())
+          )
+            return true;
+          return (
+            cur.coinMinimalDenom?.toLowerCase() ==
+            route.params.currency?.toLowerCase()
+          );
         }
       );
 
@@ -153,7 +149,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
 
   const amount = new CoinPretty(
     sendConfigs.amountConfig.sendCurrency,
-    new Int(toAmount(Number(sendConfigs.amountConfig.amount)))
+    new Dec(sendConfigs.amountConfig.amount)
   );
 
   useEffect(() => {
@@ -371,7 +367,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
                 style={{ paddingLeft: 4 }}
                 color={colors["neutral-text-body"]}
               >
-                {priceStore.calculatePrice(amount).toString()}
+                {priceStore.calculatePrice(amount)?.toString()}
               </OWText>
             </View>
           </OWCard>

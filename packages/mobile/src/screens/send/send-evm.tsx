@@ -99,15 +99,29 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
     if (route?.params?.currency) {
       const currency = sendConfigs.amountConfig.sendableCurrencies.find(
         (cur) => {
-          if (cur?.coinMinimalDenom.includes(route?.params?.contractAddress)) {
-            return cur?.coinMinimalDenom.includes(
-              route?.params?.contractAddress
-            );
+          if (
+            cur?.coinMinimalDenom
+              ?.toLowerCase()
+              ?.includes(route?.params?.contractAddress?.toLowerCase())
+          )
+            return true;
+          if (
+            cur.coinDenom?.toLowerCase() ===
+            route.params.currency?.toLowerCase()
+          ) {
+            return true;
           }
-          if (cur.coinDenom === route.params.currency) {
-            return cur.coinDenom === route.params.currency;
-          }
-          return cur.coinMinimalDenom == route.params.currency;
+          //@ts-ignore
+          if (
+            cur?.coinGeckoId
+              ?.toLowerCase()
+              ?.includes(route?.params?.coinGeckoId?.toLowerCase())
+          )
+            return true;
+          return (
+            cur.coinMinimalDenom?.toLowerCase() ==
+            route.params.currency?.toLowerCase()
+          );
         }
       );
 
