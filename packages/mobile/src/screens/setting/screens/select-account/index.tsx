@@ -103,6 +103,7 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
     analyticsStore.logEvent("Account changed");
     await selectKeyStore(keyStore);
     loadingScreen.setIsLoading(false);
+    universalSwapStore.setLoaded(true);
   }, []);
 
   const renderKeyStoreItem = (keyStore, i) => {

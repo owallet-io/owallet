@@ -215,7 +215,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
 
   useEffect(() => {
     universalSwapStore.setLoaded(false);
-  }, [account.bech32Address]);
+  }, [accountOrai.bech32Address]);
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
