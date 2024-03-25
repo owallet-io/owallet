@@ -386,7 +386,7 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
                     ?.trim(true)
                     ?.maxDecimals(6)
                     ?.hideDenom(true)
-                    ?.toString()}
+                    ?.toString() || "0"}
                 </OWText>
                 <CurrencySelector
                   chainId={chainStore.current.chainId}
