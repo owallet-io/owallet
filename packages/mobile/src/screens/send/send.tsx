@@ -7,7 +7,13 @@ import {
 } from "@owallet/hooks";
 import { useStore } from "../../stores";
 import { EthereumEndpoint, toAmount } from "@owallet/common";
-import { StyleSheet, View, TouchableOpacity, ScrollView } from "react-native";
+import {
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  ScrollView,
+  InteractionManager,
+} from "react-native";
 import {
   AddressInput,
   CurrencySelector,
@@ -71,7 +77,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
   } = useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
-
+  const [balance, setBalance] = useState<CoinPretty>(null);
   const route = useRoute<
     RouteProp<
       Record<
@@ -250,9 +256,15 @@ export const NewSendScreen: FunctionComponent = observer(() => {
     }
     return;
   }, [sendConfigs.feeConfig]);
-  const balance = queries.queryBalances
-    .getQueryBech32Address(address)
-    .getBalanceFromCurrency(sendConfigs.amountConfig.sendCurrency);
+  useEffect(() => {
+    InteractionManager.runAfterInteractions(() => {
+      const balance = queries.queryBalances
+        .getQueryBech32Address(address)
+        .getBalanceFromCurrency(sendConfigs.amountConfig.sendCurrency);
+      setBalance(balance);
+    });
+  }, [address, sendConfigs.amountConfig.sendCurrency]);
+
   return (
     <PageWithBottom
       bottomGroup={

@@ -9,7 +9,13 @@ import {
 import { useStore } from "../../stores";
 import { EthereumEndpoint, toAmount } from "@owallet/common";
 import { PageWithScrollView } from "../../components/page";
-import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  InteractionManager,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
 
 import {
@@ -56,7 +62,7 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
   const { colors } = useTheme();
   const styles = styling(colors);
   const [customFee, setCustomFee] = useState(false);
-
+  const [balance, setBalance] = useState<CoinPretty>(null);
   const route = useRoute<
     RouteProp<
       Record<
@@ -292,9 +298,15 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
     }
     return;
   }, [sendConfigs.feeConfig]);
-  const balance = queries.queryBalances
-    .getQueryBech32Address(address)
-    .getBalanceFromCurrency(sendConfigs.amountConfig.sendCurrency);
+
+  useEffect(() => {
+    InteractionManager.runAfterInteractions(() => {
+      const balance = queries.queryBalances
+        .getQueryBech32Address(address)
+        .getBalanceFromCurrency(sendConfigs.amountConfig.sendCurrency);
+      setBalance(balance);
+    });
+  }, [address, sendConfigs.amountConfig.sendCurrency]);
   return (
     <PageWithBottom
       bottomGroup={

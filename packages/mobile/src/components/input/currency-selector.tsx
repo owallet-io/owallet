@@ -1,12 +1,16 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { IAmountConfig } from "@owallet/hooks";
 import { DenomHelper } from "@owallet/common";
 import { Bech32Address } from "@owallet/cosmos";
-import { TextStyle, ViewStyle } from "react-native";
+import { InteractionManager, TextStyle, ViewStyle } from "react-native";
 import { Selector } from "./selector";
 import { TokensSelector } from "./tokens-selector";
 import { useStore } from "@src/stores";
+import {
+  ObservableQueryBalanceInner,
+  ObservableQueryBalancesInner,
+} from "@owallet/stores";
 
 export const CurrencySelector: FunctionComponent<{
   labelStyle?: TextStyle;
@@ -32,6 +36,9 @@ export const CurrencySelector: FunctionComponent<{
     type = "legacy",
   }) => {
     const { queriesStore, accountStore, keyRingStore } = useStore();
+    const [displayTokens, setDisplayTokens] = useState<
+      ObservableQueryBalanceInner[]
+    >([]);
     const addressToFetch = accountStore
       .getAccount(chainId)
       .getAddressDisplay(keyRingStore.keyRingLedgerAddresses, false);
@@ -55,33 +62,39 @@ export const CurrencySelector: FunctionComponent<{
         label,
       };
     });
-    const queryBalances = queriesStore
-      .get(chainId)
-      .queryBalances.getQueryBech32Address(addressToFetch);
-    const tokens = queryBalances.balances;
-    const displayTokens = tokens
-      .filter((v, i, obj) => {
-        return (
-          v?.balance &&
-          obj.findIndex(
-            (v2) =>
-              v2.balance.currency?.coinDenom === v.balance.currency?.coinDenom
-          ) === i
-        );
-      })
-      .sort((a, b) => {
-        const aDecIsZero = a.balance?.toDec()?.isZero();
-        const bDecIsZero = b.balance?.toDec()?.isZero();
+    useEffect(() => {
+      InteractionManager.runAfterInteractions(() => {
+        const queryBalances = queriesStore
+          .get(chainId)
+          .queryBalances.getQueryBech32Address(addressToFetch);
+        const tokens = queryBalances.balances;
+        const displayTokens = tokens
+          .filter((v, i, obj) => {
+            return (
+              v?.balance &&
+              obj.findIndex(
+                (v2) =>
+                  v2.balance.currency?.coinDenom ===
+                  v.balance.currency?.coinDenom
+              ) === i
+            );
+          })
+          .sort((a, b) => {
+            const aDecIsZero = a.balance?.toDec()?.isZero();
+            const bDecIsZero = b.balance?.toDec()?.isZero();
 
-        if (aDecIsZero && !bDecIsZero) {
-          return 1;
-        }
-        if (!aDecIsZero && bDecIsZero) {
-          return -1;
-        }
+            if (aDecIsZero && !bDecIsZero) {
+              return 1;
+            }
+            if (!aDecIsZero && bDecIsZero) {
+              return -1;
+            }
 
-        return a.currency.coinDenom < b.currency.coinDenom ? -1 : 1;
+            return a.currency.coinDenom < b.currency.coinDenom ? -1 : 1;
+          });
+        setDisplayTokens(displayTokens);
       });
+    }, [chainId, addressToFetch]);
 
     const selectedKey = amountConfig.sendCurrency.coinMinimalDenom;
     const setSelectedKey = (key: string | undefined) => {
