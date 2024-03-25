@@ -1,31 +1,38 @@
 import { EthereumEndpoint, toAmount } from "@owallet/common";
 import { useDelegateTxConfig } from "@owallet/hooks";
 import { BondStatus } from "@owallet/stores";
-import { CoinPretty, Int } from "@owallet/unit";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import OWCard from "@src/components/card/ow-card";
 import { PageHeader } from "@src/components/header/header-new";
-import { AlertIcon } from "@src/components/icon";
+import { AlertIcon, DownArrowIcon } from "@src/components/icon";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import OWText from "@src/components/text/ow-text";
 import { ValidatorThumbnail } from "@src/components/thumbnail";
 import { useTheme } from "@src/themes/theme-provider";
 import {
+  capitalizedText,
   handleSaveHistory,
   HISTORY_STATUS,
   showToast,
 } from "@src/utils/helper";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useState } from "react";
-import { StyleSheet, View, ScrollView, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  View,
+  ScrollView,
+  TouchableOpacity,
+  InteractionManager,
+} from "react-native";
 import { OWButton } from "../../../components/button";
-import { FeeButtons } from "../../../components/input";
 import { useSmartNavigation } from "../../../navigation.provider";
 import { useStore } from "../../../stores";
 import { metrics, spacing, typography } from "../../../themes";
 import { chainIcons } from "@oraichain/oraidex-common";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { NewAmountInput } from "@src/components/input/amount-input";
+import { FeeModal } from "@src/modals/fee";
+import { CoinPretty, Int } from "@owallet/unit";
 
 export const DelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -42,8 +49,14 @@ export const DelegateScreen: FunctionComponent = observer(() => {
 
   const validatorAddress = route.params.validatorAddress;
 
-  const { chainStore, accountStore, queriesStore, analyticsStore, priceStore } =
-    useStore();
+  const {
+    chainStore,
+    accountStore,
+    queriesStore,
+    analyticsStore,
+    priceStore,
+    modalStore,
+  } = useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
 
@@ -62,6 +75,13 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   );
 
   const [balance, setBalance] = useState("0");
+
+  useEffect(() => {
+    if (sendConfigs.feeConfig.feeCurrency && !sendConfigs.feeConfig.fee) {
+      sendConfigs.feeConfig.setFeeType("average");
+    }
+    return;
+  }, [sendConfigs.feeConfig]);
 
   const fetchBalance = async () => {
     const queryBalance = queries.queryBalances
@@ -86,7 +106,9 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   };
 
   useEffect(() => {
-    fetchBalance();
+    InteractionManager.runAfterInteractions(() => {
+      fetchBalance();
+    });
   }, [account.bech32Address, sendConfigs.amountConfig.sendCurrency]);
 
   useEffect(() => {
@@ -112,6 +134,17 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   const chainIcon = chainIcons.find(
     (c) => c.chainId === chainStore.current.chainId
   );
+  const _onPressFee = () => {
+    modalStore.setOptions({
+      bottomSheetModalConfig: {
+        enablePanDownToClose: false,
+        enableOverDrag: false,
+      },
+    });
+    modalStore.setChildren(
+      <FeeModal vertical={true} sendConfigs={sendConfigs} colors={colors} />
+    );
+  };
 
   // const staked = queries.cosmos.queryDelegations
   //   .getQueryBech32Address(account.bech32Address)
@@ -126,10 +159,10 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   //   );
   // };
 
-  // const amount = new CoinPretty(
-  //   sendConfigs.amountConfig.sendCurrency,
-  //   new Int(toAmount(Number(sendConfigs.amountConfig.amount)))
-  // );
+  const amount = new CoinPretty(
+    sendConfigs.amountConfig.sendCurrency,
+    new Int(toAmount(Number(sendConfigs.amountConfig.amount)))
+  );
 
   return (
     <PageWithBottom
@@ -331,10 +364,14 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                   alignItems: "center",
                 }}
               >
-                {/* <OWIcon name="tdesign_swap" size={16} /> */}
-                {/* <OWText style={{ paddingLeft: 4 }} color={colors["neutral-text-body"]} size={14}>
+                <OWIcon name="tdesign_swap" size={16} />
+                <OWText
+                  style={{ paddingLeft: 4 }}
+                  color={colors["neutral-text-body"]}
+                  size={14}
+                >
                   {priceStore.calculatePrice(amount).toString()}
-                </OWText> */}
+                </OWText>
               </View>
               <View
                 style={{
@@ -351,7 +388,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                 </OWText>
               </View>
             </OWCard>
-            <OWCard>
+            <OWCard type="normal">
               <View
                 style={{
                   flexDirection: "row",
@@ -359,23 +396,36 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                   borderBottomColor: colors["neutral-border-default"],
                   borderBottomWidth: 1,
                   paddingVertical: 16,
+                  marginBottom: 8,
                 }}
               >
-                <OWText color={colors["neutral-text-title"]} weight="600">
+                <OWText
+                  color={colors["neutral-text-title"]}
+                  weight="600"
+                  size={16}
+                >
                   Transaction fee
                 </OWText>
-                <TouchableOpacity>
-                  <OWText color={colors["primary-text-action"]} weight="600">
-                    {/* Fast: $0.01 */}
+                <TouchableOpacity
+                  style={{ flexDirection: "row" }}
+                  onPress={_onPressFee}
+                >
+                  <OWText
+                    color={colors["primary-text-action"]}
+                    weight="600"
+                    size={16}
+                  >
+                    {capitalizedText(sendConfigs.feeConfig.feeType)}:{" "}
+                    {priceStore
+                      .calculatePrice(sendConfigs.feeConfig.fee)
+                      ?.toString()}{" "}
                   </OWText>
+                  <DownArrowIcon
+                    height={11}
+                    color={colors["primary-text-action"]}
+                  />
                 </TouchableOpacity>
               </View>
-              <FeeButtons
-                label=""
-                gasLabel="gas"
-                feeConfig={sendConfigs.feeConfig}
-                gasConfig={sendConfigs.gasConfig}
-              />
             </OWCard>
           </View>
         ) : null}

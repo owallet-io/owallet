@@ -3,7 +3,7 @@ import { PageWithScrollViewInBottomTabView } from "../../components/page";
 import { Text } from "@src/components/text";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
-import { RefreshControl, View } from "react-native";
+import { InteractionManager, RefreshControl, View } from "react-native";
 import { useStore } from "../../stores";
 import { SwapBox } from "./components/SwapBox";
 import { OWButton } from "@src/components/button";
@@ -307,23 +307,25 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   };
 
   useEffect(() => {
-    if (
-      accountOrai.bech32Address &&
-      accountEth.evmosHexAddress &&
-      accountTron.evmosHexAddress &&
-      accountKawaiiCosmos.bech32Address
-    ) {
-      setTimeout(() => {
-        universalSwapStore.clearAmounts();
-        universalSwapStore.setLoaded(false);
-        handleFetchAmounts(
-          accountOrai.bech32Address,
-          accountEth.evmosHexAddress,
-          accountTron.evmosHexAddress,
-          accountKawaiiCosmos.bech32Address
-        );
-      }, 1000);
-    }
+    InteractionManager.runAfterInteractions(() => {
+      if (
+        accountOrai.bech32Address &&
+        accountEth.evmosHexAddress &&
+        accountTron.evmosHexAddress &&
+        accountKawaiiCosmos.bech32Address
+      ) {
+        setTimeout(() => {
+          universalSwapStore.clearAmounts();
+          universalSwapStore.setLoaded(false);
+          handleFetchAmounts(
+            accountOrai.bech32Address,
+            accountEth.evmosHexAddress,
+            accountTron.evmosHexAddress,
+            accountKawaiiCosmos.bech32Address
+          );
+        }, 1000);
+      }
+    });
   }, [
     accountOrai.bech32Address,
     accountEth.evmosHexAddress,
@@ -509,8 +511,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       }
     );
   };
-
-  console.log("originalToToken", originalToToken);
 
   const handleSubmit = async () => {
     setSwapLoading(true);
