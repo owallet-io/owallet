@@ -298,13 +298,17 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
     }
     return;
   }, [sendConfigs.feeConfig]);
-
+  const isReadyBalance = queries.queryBalances
+    .getQueryBech32Address(address)
+    .getBalanceFromCurrency(sendConfigs.amountConfig.sendCurrency).isReady;
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
-      const balance = queries.queryBalances
-        .getQueryBech32Address(address)
-        .getBalanceFromCurrency(sendConfigs.amountConfig.sendCurrency);
-      setBalance(balance);
+      if (isReadyBalance) {
+        const balance = queries.queryBalances
+          .getQueryBech32Address(address)
+          .getBalanceFromCurrency(sendConfigs.amountConfig.sendCurrency);
+        setBalance(balance);
+      }
     });
   }, [address, sendConfigs.amountConfig.sendCurrency]);
   return (

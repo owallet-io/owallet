@@ -134,10 +134,6 @@ export class ObservableQueryBalancesInner {
         result.push(balanceInner);
       }
     }
-    console.log(
-      "🚀 ~ ObservableQueryBalancesInner ~ getbalances ~ result:",
-      result
-    );
     return result;
   }
 

@@ -92,7 +92,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
       string
     >
   >();
-
+  console.log(balance, "balance");
   const chainId = route?.params?.chainId
     ? route?.params?.chainId
     : chainStore?.current?.chainId;
@@ -256,15 +256,20 @@ export const NewSendScreen: FunctionComponent = observer(() => {
     }
     return;
   }, [sendConfigs.feeConfig]);
+
+  const isReadyBalance = queries.queryBalances
+    .getQueryBech32Address(address)
+    .getBalanceFromCurrency(sendConfigs.amountConfig.sendCurrency).isReady;
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
-      const balance = queries.queryBalances
-        .getQueryBech32Address(address)
-        .getBalanceFromCurrency(sendConfigs.amountConfig.sendCurrency);
-      setBalance(balance);
+      if (isReadyBalance && sendConfigs.amountConfig.sendCurrency && address) {
+        const balance = queries.queryBalances
+          .getQueryBech32Address(address)
+          .getBalanceFromCurrency(sendConfigs.amountConfig.sendCurrency);
+        setBalance(balance);
+      }
     });
-  }, [address, sendConfigs.amountConfig.sendCurrency]);
-
+  }, [isReadyBalance, address, sendConfigs.amountConfig.sendCurrency]);
   return (
     <PageWithBottom
       bottomGroup={
