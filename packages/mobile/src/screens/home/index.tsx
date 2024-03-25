@@ -10,6 +10,7 @@ import { AccountCard } from "./account-card";
 import {
   AppState,
   AppStateStatus,
+  InteractionManager,
   RefreshControl,
   ScrollView,
   StyleSheet,
@@ -106,13 +107,9 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   );
 
   useEffect(() => {
-    if (scrollViewRef.current) {
-      scrollViewRef.current.scrollTo({ y: 0 });
-    }
-  }, [chainStore.current.chainId]);
-
-  useEffect(() => {
-    onRefresh();
+    InteractionManager.runAfterInteractions(() => {
+      onRefresh();
+    });
     return () => {};
   }, []);
 
@@ -136,15 +133,15 @@ export const HomeScreen: FunctionComponent = observer((props) => {
           .balances.map((bal) => {
             return bal.waitFreshResponse();
           }),
-        queries.cosmos.queryRewards
-          .getQueryBech32Address(account.bech32Address)
-          .waitFreshResponse(),
-        queries.cosmos.queryDelegations
-          .getQueryBech32Address(account.bech32Address)
-          .waitFreshResponse(),
-        queries.cosmos.queryUnbondingDelegations
-          .getQueryBech32Address(account.bech32Address)
-          .waitFreshResponse(),
+        // queries.cosmos.queryRewards
+        //   .getQueryBech32Address(account.bech32Address)
+        //   .waitFreshResponse(),
+        // queries.cosmos.queryDelegations
+        //   .getQueryBech32Address(account.bech32Address)
+        //   .waitFreshResponse(),
+        // queries.cosmos.queryUnbondingDelegations
+        //   .getQueryBech32Address(account.bech32Address)
+        //   .waitFreshResponse(),
       ]);
     }
     setRefreshing(false);
@@ -221,23 +218,24 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   }, [account.bech32Address]);
 
   useEffect(() => {
-    if (
-      accountOrai.bech32Address &&
-      accountEth.evmosHexAddress &&
-      accountTron.evmosHexAddress &&
-      accountKawaiiCosmos.bech32Address
-    ) {
-      setTimeout(() => {
-        universalSwapStore.clearAmounts();
-
-        handleFetchAmounts(
-          accountOrai.bech32Address,
-          accountEth.evmosHexAddress,
-          accountTron.evmosHexAddress,
-          accountKawaiiCosmos.bech32Address
-        );
-      }, 1400);
-    }
+    InteractionManager.runAfterInteractions(() => {
+      if (
+        accountOrai.bech32Address &&
+        accountEth.evmosHexAddress &&
+        accountTron.evmosHexAddress &&
+        accountKawaiiCosmos.bech32Address
+      ) {
+        setTimeout(() => {
+          universalSwapStore.clearAmounts();
+          handleFetchAmounts(
+            accountOrai.bech32Address,
+            accountEth.evmosHexAddress,
+            accountTron.evmosHexAddress,
+            accountKawaiiCosmos.bech32Address
+          );
+        }, 1400);
+      }
+    });
   }, [
     accountOrai.bech32Address,
     accountEth.evmosHexAddress,

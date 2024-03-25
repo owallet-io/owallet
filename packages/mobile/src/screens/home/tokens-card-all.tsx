@@ -8,7 +8,13 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { StyleSheet, TouchableOpacity, View, ViewStyle } from "react-native";
+import {
+  InteractionManager,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from "react-native";
 import { CardBody, OWBox } from "../../components/card";
 import { useStore } from "../../stores";
 import { getTokenInfos, _keyExtract } from "../../utils/helper";
@@ -49,12 +55,14 @@ export const TokensCardAll: FunctionComponent<{
   const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
 
   useEffect(() => {
-    const queries = queriesStore.get(chainStore.current.chainId);
-    const address = account.getAddressDisplay(
-      keyRingStore.keyRingLedgerAddresses
-    );
-    const balances = queries.queryBalances.getQueryBech32Address(address);
-    setQueryBalances(balances);
+    InteractionManager.runAfterInteractions(() => {
+      const queries = queriesStore.get(chainStore.current.chainId);
+      const address = account.getAddressDisplay(
+        keyRingStore.keyRingLedgerAddresses
+      );
+      const balances = queries.queryBalances.getQueryBech32Address(address);
+      setQueryBalances(balances);
+    });
   }, [chainStore.current.chainId]);
 
   const [tronTokens, setTronTokens] = useState([]);
@@ -92,7 +100,9 @@ export const TokensCardAll: FunctionComponent<{
   };
 
   useEffect(() => {
-    getYesterdayAssets();
+    InteractionManager.runAfterInteractions(() => {
+      getYesterdayAssets();
+    });
   }, [accountOrai.bech32Address]);
 
   const handleSaveTokenInfos = async (tokenInfos) => {
@@ -114,9 +124,11 @@ export const TokensCardAll: FunctionComponent<{
   });
 
   useEffect(() => {
-    if (universalSwapStore.getLoadStatus.isLoad) {
-      handleSaveTokenInfos(tokens);
-    }
+    InteractionManager.runAfterInteractions(() => {
+      if (universalSwapStore.getLoadStatus.isLoad) {
+        handleSaveTokenInfos(tokens);
+      }
+    });
   }, [
     accountOrai.bech32Address,
     tokens,
@@ -124,36 +136,38 @@ export const TokensCardAll: FunctionComponent<{
   ]);
 
   useEffect(() => {
-    (async function get() {
-      try {
-        if (accountTron.evmosHexAddress) {
-          const res = await API.getTronAccountInfo(
-            {
-              address: getBase58Address(accountTron.evmosHexAddress),
-            },
-            {
-              baseURL: chainStore.current.rpc,
-            }
-          );
+    InteractionManager.runAfterInteractions(() => {
+      (async function get() {
+        try {
+          if (accountTron.evmosHexAddress) {
+            const res = await API.getTronAccountInfo(
+              {
+                address: getBase58Address(accountTron.evmosHexAddress),
+              },
+              {
+                baseURL: chainStore.current.rpc,
+              }
+            );
 
-          if (res.data?.data.length > 0) {
-            if (res.data?.data[0].trc20) {
-              const tokenArr = [];
-              TRC20_LIST.map((tk) => {
-                let token = res.data?.data[0].trc20.find(
-                  (t) => tk.contractAddress in t
-                );
-                if (token) {
-                  tokenArr.push({ ...tk, amount: token[tk.contractAddress] });
-                }
-              });
+            if (res.data?.data.length > 0) {
+              if (res.data?.data[0].trc20) {
+                const tokenArr = [];
+                TRC20_LIST.map((tk) => {
+                  let token = res.data?.data[0].trc20.find(
+                    (t) => tk.contractAddress in t
+                  );
+                  if (token) {
+                    tokenArr.push({ ...tk, amount: token[tk.contractAddress] });
+                  }
+                });
 
-              setTronTokens(tokenArr);
+                setTronTokens(tokenArr);
+              }
             }
           }
-        }
-      } catch (error) {}
-    })();
+        } catch (error) {}
+      })();
+    });
   }, [accountTron.evmosHexAddress]);
 
   const styles = styling(colors);

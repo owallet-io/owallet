@@ -2,7 +2,13 @@ import React, { FunctionComponent, useEffect, useState } from "react";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
-import { View, Image, TouchableOpacity, ScrollView } from "react-native";
+import {
+  View,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+  InteractionManager,
+} from "react-native";
 import { Text } from "@src/components/text";
 import { useSmartNavigation } from "../../navigation.provider";
 import { CommonActions } from "@react-navigation/native";
@@ -107,7 +113,9 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
   };
   useEffect(() => {
     if (txHash) {
-      getDetailByHash(txHash);
+      InteractionManager.runAfterInteractions(() => {
+        getDetailByHash(txHash);
+      });
     }
   }, [txHash]);
   return (
