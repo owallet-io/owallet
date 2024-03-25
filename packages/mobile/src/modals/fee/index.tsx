@@ -48,7 +48,7 @@ export const FeeModal: FunctionComponent<{
 }> = ({ sendConfigs, colors, vertical }) => {
   const [customGas, setCustomGas] = useState(false);
 
-  const { chainStore, modalStore, priceStore } = useStore();
+  const { modalStore } = useStore();
 
   return (
     <WrapViewModal

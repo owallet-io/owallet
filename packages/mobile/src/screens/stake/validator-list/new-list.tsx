@@ -2,7 +2,13 @@ import { ValidatorThumbnails } from "@owallet/common";
 import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../../stores";
-import { StyleSheet, TouchableOpacity, View, TextInput } from "react-native";
+import {
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  TextInput,
+  InteractionManager,
+} from "react-native";
 import { BondStatus, Validator } from "@owallet/stores";
 import { CoinPretty, Dec } from "@owallet/unit";
 import { useTheme } from "@src/themes/theme-provider";
@@ -43,17 +49,19 @@ export const ValidatorList: FunctionComponent = observer(() => {
   const delegations = queryDelegations.delegations;
 
   useEffect(() => {
-    (async function get() {
-      try {
-        const res = await API.getValidatorList(
-          {},
-          {
-            baseURL: "https://api.scan.orai.io",
-          }
-        );
-        setValidators(res.data.data);
-      } catch (error) {}
-    })();
+    InteractionManager.runAfterInteractions(() => {
+      (async function get() {
+        try {
+          const res = await API.getValidatorList(
+            {},
+            {
+              baseURL: "https://api.scan.orai.io",
+            }
+          );
+          setValidators(res.data.data);
+        } catch (error) {}
+      })();
+    });
   }, []);
 
   const data = useMemo(() => {
@@ -374,6 +382,7 @@ const ValidatorItem: FunctionComponent<{
               new Dec(validator.tokens)
             )
               .shrink(true)
+              .separator(" ")
               .maxDecimals(0)
               .toString()}
           </OWText>

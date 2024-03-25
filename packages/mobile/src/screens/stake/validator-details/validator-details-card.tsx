@@ -434,6 +434,8 @@ const styling = (colors) =>
       marginTop: 4,
       marginRight: 8,
       flexDirection: "row",
+      maxWidth: metrics.screenWidth / 2.6,
+      overflow: "scroll",
     },
     bottomBtn: {
       marginTop: 20,

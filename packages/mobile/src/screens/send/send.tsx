@@ -70,7 +70,6 @@ export const NewSendScreen: FunctionComponent = observer(() => {
     accountStore,
     queriesStore,
     analyticsStore,
-    sendStore,
     keyRingStore,
     modalStore,
     priceStore,
