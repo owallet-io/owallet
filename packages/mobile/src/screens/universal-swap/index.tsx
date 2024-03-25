@@ -512,15 +512,16 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   };
 
   const handleSubmit = async () => {
+    setSwapLoading(true);
     if (fromAmountToken <= 0) {
       showToast({
         message: "From amount should be higher than 0!",
         type: "danger",
       });
+      setSwapLoading(false);
       return;
     }
 
-    setSwapLoading(true);
     let defaultEvmAddress = accountStore.getAccount(
       ChainIdEnum.Ethereum
     ).evmosHexAddress;
