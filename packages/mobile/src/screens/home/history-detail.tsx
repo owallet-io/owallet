@@ -200,11 +200,11 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
                   </>
                 ) : null}
 
-                <OWText
+                {/* <OWText
                   style={{ fontSize: 14, color: colors["neutral-text-body"] }}
                 >
                   ${detail.toAmount}
-                </OWText>
+                </OWText> */}
               </View>
             )}
           </View>

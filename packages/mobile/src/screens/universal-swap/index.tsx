@@ -339,7 +339,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       searchTokenName,
       SwapDirection.To
     );
-    console.log("filteredToTokens", filteredToTokens);
 
     setFilteredToTokens(filteredToTokens);
 
@@ -511,6 +510,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     );
   };
 
+  console.log("originalToToken", originalToToken);
+
   const handleSubmit = async () => {
     setSwapLoading(true);
     if (fromAmountToken <= 0) {
@@ -581,9 +582,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         originalFromToken: originalFromToken,
         originalToToken: originalToToken,
         simulateAmount: toAmountTokenString,
-        // @ts-ignore
         simulatePrice:
           ratio?.amount &&
+          // @ts-ignore
           Math.trunc(new BigDecimal(ratio.amount) / INIT_AMOUNT).toString(),
         userSlippage: userSlippage,
         fromAmount: fromAmountToken,
@@ -614,14 +615,16 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             fromAmount: fromAmountToken,
             toAmount: toAmountToken,
             value: toAmountToken,
-            fee: relayerFeeAmount,
+            fee: `${(toAmountToken - minimumReceive).toFixed(6)} ${
+              originalToToken.name
+            }`,
             type: HISTORY_STATUS.SWAP,
             fromToken: {
-              asset: originalFromToken.denom,
+              asset: originalFromToken.name,
               chainId: originalFromToken.chainId,
             },
             toToken: {
-              asset: originalToToken.denom,
+              asset: originalToToken.name,
               chainId: originalToToken.chainId,
             },
             status: "SUCCESS",
