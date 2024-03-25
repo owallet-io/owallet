@@ -187,7 +187,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
     <View>
       <OWBox style={styles.containerOWBox}>
         <View style={styles.containerInfoAccount}>
-          {universalSwapStore.getLoadStatus.isLoad && (
+          {!universalSwapStore.getLoadStatus.isLoad && (
             <View style={styles.containerLoading}>
               <LoadingSpinner color={colors["gray-150"]} size={22} />
             </View>
@@ -341,7 +341,7 @@ const styling = (colors) =>
       bottom: 0,
       left: 0,
       right: 0,
-      top: 0,
+      top: 30,
       justifyContent: "center",
       alignItems: "center",
       zIndex: 1000,
