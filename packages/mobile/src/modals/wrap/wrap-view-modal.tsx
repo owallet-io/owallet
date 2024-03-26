@@ -4,13 +4,14 @@ import { Text } from "@src/components/text";
 import { OWTextProps } from "@src/components/text/ow-text";
 import { useTheme } from "@src/themes/theme-provider";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
+import { ScrollView } from "react-native-gesture-handler";
 interface IWrapViewModal extends ViewProps {
   title?: string;
   subTitle?: string;
   TitleComponent?: ReactNode;
   titleProps?: OWTextProps;
   subTitleProps?: OWTextProps;
+  disabledScrollView?: boolean;
 }
 
 const WrapViewModal: FC<IWrapViewModal> = ({
@@ -20,13 +21,16 @@ const WrapViewModal: FC<IWrapViewModal> = ({
   subTitleProps,
   style,
   TitleComponent,
+  disabledScrollView = true,
   ...props
 }) => {
   const { colors } = useTheme();
   const { bottom } = useSafeAreaInsets();
+  const ContainerElement = disabledScrollView ? View : ScrollView;
   return (
-    <View
+    <ContainerElement
       {...props}
+      keyboardDismissMode={"interactive"}
       style={[
         {
           backgroundColor: colors["neutral-surface-card"],
@@ -74,7 +78,7 @@ const WrapViewModal: FC<IWrapViewModal> = ({
         </Text>
       )}
       {props.children}
-    </View>
+    </ContainerElement>
   );
 };
 export default WrapViewModal;

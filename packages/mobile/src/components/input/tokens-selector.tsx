@@ -284,6 +284,7 @@ export const TokensSelector: FunctionComponent<{
         setSelectedKey={setSelectedKey}
         maxItemsToShow={maxItemsToShow}
         modalPersistent={modalPersistent}
+        bottomSheetModalConfig={{}}
       />
       <SelectorButtonWithoutModal
         labelStyle={labelStyle}

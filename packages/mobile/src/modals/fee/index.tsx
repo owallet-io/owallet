@@ -17,9 +17,10 @@ export const CustomFee: FunctionComponent<{
   colors;
 }> = ({ sendConfigs, colors }) => {
   return (
-    <View style={{ paddingBottom: 5 }}>
+    <View style={{ paddingBottom: 5, paddingHorizontal: 1 }}>
       <TextInput
         label=""
+        // isBottomSheet={true}
         inputContainerStyle={{
           backgroundColor: colors["background-box"],
           borderRadius: 8,
@@ -56,6 +57,7 @@ export const FeeModal: FunctionComponent<{
         paddingHorizontal: 0,
       }}
       title="SET FEE"
+      disabledScrollView={false}
       subTitle={"The fee required to successfully conduct a transaction"}
     >
       <View>
