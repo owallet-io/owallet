@@ -1,18 +1,14 @@
-import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { Clipboard, Image, Share, StyleSheet, View } from "react-native";
 import QRCode from "react-native-qrcode-svg";
-import { AccountWithAll, KeyRingStore } from "@owallet/stores";
-import { Text } from "@src/components/text";
 import { metrics, spacing } from "@src/themes";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import { PageHeader } from "@src/components/header/header-new";
 import { ScrollView } from "react-native-gesture-handler";
-import OWCard from "@src/components/card/ow-card";
 import OWText from "@src/components/text/ow-text";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { TouchableOpacity } from "@gorhom/bottom-sheet";
 import { OWButton } from "@src/components/button";
-import { AddressCopyable } from "@src/components/address-copyable";
 import { useStore } from "@src/stores";
 import { useTheme } from "@src/themes/theme-provider";
 import { CheckIcon, DownArrowIcon } from "@src/components/icon";
@@ -52,7 +48,7 @@ export const AddressQRScreen: FunctionComponent<{}> = ({}) => {
   const addressToShow = account.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses
   );
-  const [networkAddress, setNetworkAddress] = useState();
+  const [networkAddress, setNetworkAddress] = useState<any>();
   const [address, setAddress] = useState("");
   const [accountAddresses, setAddresses] = useState({});
 
@@ -60,7 +56,7 @@ export const AddressQRScreen: FunctionComponent<{}> = ({}) => {
   const styles = styling(colors);
   const { isTimedOut, setTimer } = useSimpleTimer();
   const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
-
+  const accountBtc = accountStore.getAccount(ChainIdEnum.Bitcoin);
   const chainIcon = chainIcons.find(
     (c) => c.chainId === chainStore.current.chainId
   );
@@ -87,12 +83,17 @@ export const AddressQRScreen: FunctionComponent<{}> = ({}) => {
     accounts[ChainNameEnum.TRON] = getBase58Address(
       accountStore.getAccount(ChainIdEnum.TRON).evmosHexAddress
     );
+    accounts[ChainNameEnum.BitcoinLegacy] = accountBtc.allBtcAddresses.legacy;
+    accounts[ChainNameEnum.BitcoinSegWit] = accountBtc.allBtcAddresses.bech32;
+
+    console.log("accounts", accounts);
 
     setAddresses(accounts);
   }, [accountEth.evmosHexAddress]);
 
   useEffect(() => {
     setAddress(addressToShow);
+    Clipboard.setString(addressToShow);
   }, [addressToShow]);
 
   const onPressAddress = (item) => {
@@ -143,11 +144,11 @@ export const AddressQRScreen: FunctionComponent<{}> = ({}) => {
       bottomGroup={
         <OWButton
           label="Share Address"
-          loading={addressToShow === ""}
-          disabled={addressToShow === ""}
+          loading={address === ""}
+          disabled={address === ""}
           onPress={() => {
             Share.share({
-              message: addressToShow,
+              message: address,
             }).catch((e) => {
               console.log(e);
             });
@@ -278,60 +279,4 @@ export const AddressQRScreen: FunctionComponent<{}> = ({}) => {
       </ScrollView>
     </PageWithBottom>
   );
-
-  // return (
-  //   <View
-  //     style={{
-  //       alignItems: "center",
-  //     }}
-  //   >
-  //     <Text
-  //       style={{
-  //         ...typography.h6,
-  //         fontWeight: "900",
-  //       }}
-  //     >{`Receive`}</Text>
-  //     <View style={{ alignItems: "center" }}>
-  //       <Text
-  //         style={{
-  //           ...typography.h6,
-  //           color: colors["gray-400"],
-  //           fontWeight: "900",
-  //           marginVertical: spacing["16"],
-  //         }}
-  //       >{`Scan QR Code or copy below address`}</Text>
-  //       <AddressCopyable
-  //         address={address ?? addressToShow}
-  //         maxCharacters={22}
-  //       />
-  //       <View style={{ marginVertical: spacing["32"] }}>
-  //         {!!addressToShow ? (
-  //           <QRCode size={200} value={address ?? addressToShow} />
-  //         ) : (
-  //           <View
-  //             style={{
-  //               height: 200,
-  //               width: 200,
-  //               backgroundColor: colors["disabled"],
-  //             }}
-  //           />
-  //         )}
-  //       </View>
-  //       <View style={{ flexDirection: "row" }}>
-  //         <OWButton
-  //           label="Share Address"
-  //           loading={addressToShow === ""}
-  //           disabled={addressToShow === ""}
-  //           onPress={() => {
-  //             Share.share({
-  //               message: address ?? addressToShow,
-  //             }).catch((e) => {
-  //               console.log(e);
-  //             });
-  //           }}
-  //         />
-  //       </View>
-  //     </View>
-  //   </View>
-  // );
 };

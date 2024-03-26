@@ -12,10 +12,12 @@ export const MemoInput: FunctionComponent<{
   errorLabelStyle?: TextStyle;
   placeholder?: string;
   label: string;
+  inputLeft?: React.ReactNode;
   placeholderTextColor?: string;
   memoConfig: IMemoConfig;
   multiline?: boolean;
   editable?: boolean;
+  topInInputContainer?: React.ReactNode;
 }> = observer(
   ({
     labelStyle,
@@ -27,11 +29,14 @@ export const MemoInput: FunctionComponent<{
     placeholder,
     placeholderTextColor,
     inputStyle,
+    inputLeft,
     multiline,
+    topInInputContainer,
     editable,
   }) => {
     return (
       <TextInput
+        topInInputContainer={topInInputContainer}
         label={label}
         labelStyle={labelStyle}
         containerStyle={containerStyle}
@@ -49,6 +54,7 @@ export const MemoInput: FunctionComponent<{
         onChangeText={(text) => {
           memoConfig.setMemo(text);
         }}
+        inputLeft={inputLeft}
       />
     );
   }

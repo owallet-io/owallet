@@ -5,7 +5,6 @@ import { useSmartNavigation } from "../../navigation.provider";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
-import { DownArrowIcon } from "../../components/icon";
 import { useStore } from "../../stores";
 import { metrics } from "../../themes";
 import { CountryModal } from "./components/country-modal";
@@ -169,7 +168,7 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
         <SettingRemoveAccountItem />
 
         <View style={styles.border} />
-        <BasicSettingItem
+        {/* <BasicSettingItem
           icon="tdesign_money"
           paragraph="Currency"
           onPress={_onPressCountryModal}
@@ -192,7 +191,7 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
               <OWIcon name="chevron_right" size={16} />
             </View>
           }
-        />
+        /> */}
         <SettingSwitchModeItem />
         <View style={styles.border} />
         <BasicSettingItem

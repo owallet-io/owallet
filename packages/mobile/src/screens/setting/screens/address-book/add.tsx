@@ -10,6 +10,7 @@ import { OWBox } from "@src/components/card";
 import { PageHeader } from "@src/components/header/header-new";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
+import OWText from "@src/components/text/ow-text";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useState } from "react";
@@ -50,7 +51,14 @@ const styling = (colors) =>
       borderBottomRightRadius: spacing["8"],
       color: colors["sub-text"],
       backgroundColor: colors["background-box"],
+      borderWidth: 0,
     },
+    input: {
+      width: metrics.screenWidth - 32,
+      borderColor: colors["neutral-border-strong"],
+      borderRadius: 12,
+    },
+    textInput: { fontWeight: "600", paddingLeft: 4, fontSize: 15 },
   });
 
 export const AddAddressBookScreen: FunctionComponent = observer(() => {
@@ -161,21 +169,50 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
       >
         <OWBox>
           <TextInput
-            label="Username"
-            value={name}
+            label=""
+            topInInputContainer={
+              <View style={{ paddingBottom: 4 }}>
+                <OWText>Contact name</OWText>
+              </View>
+            }
+            returnKeyType="next"
+            onSubmitEditing={() => {}}
+            inputStyle={styles.input}
+            style={styles.textInput}
+            inputLeft={
+              <OWIcon
+                size={22}
+                name="tdesign_book"
+                color={colors["neutral-icon-on-light"]}
+              />
+            }
             onChangeText={(text) => setName(text)}
-            labelStyle={styles.addNewBookLabel}
-            inputContainerStyle={styles.addNewBookInput}
-            placeholder="Username"
+            value={name}
+            placeholder="Enter contact name"
           />
+
           <AddressInput
-            label="Wallet address"
+            label=""
+            topInInputContainer={
+              <View style={{ paddingBottom: 4 }}>
+                <OWText>Address</OWText>
+              </View>
+            }
             recipientConfig={recipientConfig}
             memoConfig={memoConfig}
             disableAddressBook={false}
+            inputContainerStyle={styles.input}
             labelStyle={styles.addNewBookLabel}
-            inputContainerStyle={styles.addNewBookInput}
-            placeholder="Tap to paste"
+            placeholder="Enter address"
+            inputLeft={
+              <View style={{ paddingRight: 6 }}>
+                <OWIcon
+                  size={22}
+                  name="wallet"
+                  color={colors["neutral-icon-on-light"]}
+                />
+              </View>
+            }
             inputRight={
               <TouchableOpacity
                 onPress={() => {
@@ -185,18 +222,33 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
                   });
                 }}
               >
-                <Scanner color={colors["primary-surface-default"]} />
+                <OWIcon
+                  size={22}
+                  name="tdesign_scan"
+                  color={colors["neutral-icon-on-light"]}
+                />
               </TouchableOpacity>
             }
           />
           <MemoInput
-            label="Memo (optional)"
+            label=""
+            topInInputContainer={
+              <View style={{ paddingBottom: 4 }}>
+                <OWText>Memo(Optional)</OWText>
+              </View>
+            }
+            inputLeft={
+              <View style={{ paddingRight: 6 }}>
+                <OWIcon
+                  size={22}
+                  name="tdesign_mail"
+                  color={colors["neutral-icon-on-light"]}
+                />
+              </View>
+            }
+            inputContainerStyle={styles.input}
             memoConfig={memoConfig}
             labelStyle={styles.addNewBookLabel}
-            inputContainerStyle={{
-              ...styles.addNewBookInput,
-              height: 190,
-            }}
             multiline={false}
             placeholder="Type memo here"
           />
@@ -237,7 +289,7 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
                 });
               }}
             >
-              <Scanner color={colors["primary-surface-default"]} />
+              <Scanner color={colors["neutral-icon-on-light"]} />
             </TouchableOpacity>
           }
         />

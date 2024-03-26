@@ -1269,6 +1269,11 @@ export class AccountSetBase<MsgOpts, Queries> {
     return this._bech32Address;
   }
 
+  @computed
+  get allBtcAddresses(): { bech32: string; legacy: string } {
+    return { bech32: this._bech32Address, legacy: this.legacyAddress };
+  }
+
   get isNanoLedger(): boolean {
     return this._isNanoLedger;
   }
