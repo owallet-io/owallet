@@ -156,8 +156,10 @@ export const useAddressBookConfig = (
     () => new AddressBookConfigMap(kvStore, chainGetter)
   );
 
-  const config = configMap.getAddressBookConfig(chainId);
-  config.setSelectHandler(handler);
+  if (configMap) {
+    const config = configMap.getAddressBookConfig(chainId);
+    config.setSelectHandler(handler);
 
-  return config;
+    return config;
+  }
 };
