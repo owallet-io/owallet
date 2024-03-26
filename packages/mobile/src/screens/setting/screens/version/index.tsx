@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useEffect, useRef, useState } from "react";
-import { PageWithScrollViewInBottomTabView } from "../../../../components/page";
+import { PageWithScrollView } from "../../../../components/page";
 import { observer } from "mobx-react-lite";
 import DeviceInfo from "react-native-device-info";
 import codePush from "react-native-code-push";
@@ -7,10 +7,10 @@ import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { spacing, typography } from "../../../../themes";
 import { View, Text } from "react-native";
 import { useStyle } from "../../../../styles";
-// import { Divider } from '@rneui/base';
 import { useStore } from "../../../../stores";
 import moment from "moment";
 import { useTheme } from "@src/themes/theme-provider";
+import { PageHeader } from "@src/components/header/header-new";
 export const OWalletVersionScreen: FunctionComponent = observer(() => {
   const [appVersion] = useState(() => DeviceInfo.getVersion());
   const { colors } = useTheme();
@@ -79,10 +79,15 @@ export const OWalletVersionScreen: FunctionComponent = observer(() => {
   }
 
   return (
-    <PageWithScrollViewInBottomTabView backgroundColor={colors["background"]}>
+    <PageWithScrollView
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{}}
+      backgroundColor={colors["neutral-surface-bg"]}
+    >
+      <PageHeader title="About" colors={colors} />
       <View
         style={{
-          marginTop: spacing["32"],
+          marginTop: spacing["16"],
           marginBottom: spacing["12"],
         }}
       />
@@ -148,7 +153,7 @@ export const OWalletVersionScreen: FunctionComponent = observer(() => {
           paragraph={parseVersion(pendingCodeVersion)}
         />
       </TouchableWithoutFeedback>
-    </PageWithScrollViewInBottomTabView>
+    </PageWithScrollView>
   );
 });
 

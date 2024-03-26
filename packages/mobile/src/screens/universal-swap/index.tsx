@@ -523,9 +523,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       return;
     }
 
-    let defaultEvmAddress = accountStore.getAccount(
-      ChainIdEnum.Ethereum
-    ).evmosHexAddress;
+    let defaultEvmAddress = accountEth.evmosHexAddress;
     Object.keys(ChainIdEnum).map((key) => {
       let defaultCosmosAddress = accountStore.getAccount(
         ChainIdEnum[key]

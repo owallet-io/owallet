@@ -15,7 +15,6 @@ import { CheckIcon, DownArrowIcon } from "@src/components/icon";
 import { chainIcons } from "@oraichain/oraidex-common";
 import { useSimpleTimer } from "@src/hooks";
 import { CopyAddressModal } from "../home/components/copy-address/copy-address-modal";
-import { ChainIdEnum, ChainNameEnum, getBase58Address } from "@owallet/common";
 
 const styling = (colors) =>
   StyleSheet.create({
@@ -50,44 +49,14 @@ export const AddressQRScreen: FunctionComponent<{}> = ({}) => {
   );
   const [networkAddress, setNetworkAddress] = useState<any>();
   const [address, setAddress] = useState("");
-  const [accountAddresses, setAddresses] = useState({});
 
   const { colors } = useTheme();
   const styles = styling(colors);
   const { isTimedOut, setTimer } = useSimpleTimer();
-  const accountBtc = accountStore.getAccount(ChainIdEnum.Bitcoin);
-  const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
+
   const chainIcon = chainIcons.find(
     (c) => c.chainId === chainStore.current.chainId
   );
-
-  useEffect(() => {
-    let accounts = {};
-    let defaultEvmAddress = accountEth.evmosHexAddress;
-    setTimeout(() => {
-      Object.keys(ChainIdEnum).map((key) => {
-        let defaultCosmosAddress = accountStore.getAccount(
-          ChainIdEnum[key]
-        ).bech32Address;
-
-        if (defaultCosmosAddress.startsWith("evmos")) {
-          accounts[ChainNameEnum[key]] = defaultEvmAddress;
-        } else if (key === "TRON") {
-          return;
-        } else {
-          accounts[ChainNameEnum[key]] = defaultCosmosAddress;
-        }
-      });
-      accounts[ChainNameEnum.TRON] = getBase58Address(
-        accountStore.getAccount(ChainIdEnum.TRON).evmosHexAddress
-      );
-    }, 3000);
-
-    accounts[ChainNameEnum.BitcoinLegacy] = accountBtc.allBtcAddresses.legacy;
-    accounts[ChainNameEnum.BitcoinSegWit] = accountBtc.allBtcAddresses.bech32;
-
-    setAddresses(accounts);
-  }, [accountEth.evmosHexAddress]);
 
   useEffect(() => {
     setAddress(addressToShow);
@@ -99,10 +68,6 @@ export const AddressQRScreen: FunctionComponent<{}> = ({}) => {
     modalStore.close();
   };
 
-  useEffect(() => {
-    setTimer(3000);
-  }, []);
-
   const _onPressAddressModal = () => {
     modalStore.setOptions();
     modalStore.setChildren(
@@ -112,7 +77,6 @@ export const AddressQRScreen: FunctionComponent<{}> = ({}) => {
           onPressAddress(item);
           setAddress(item.address);
         }}
-        accounts={accountAddresses}
       />
     );
   };
@@ -178,9 +142,7 @@ export const AddressQRScreen: FunctionComponent<{}> = ({}) => {
           >
             <TouchableOpacity
               onPress={() => {
-                if (!isTimedOut) {
-                  _onPressAddressModal();
-                }
+                _onPressAddressModal();
               }}
               style={{
                 flexDirection: "row",

@@ -199,7 +199,7 @@ export const ValidatorList: FunctionComponent = observer(() => {
             backgroundColor: colors["neutral-surface-action"],
             height: 40,
             borderRadius: 999,
-            width: metrics.screenWidth / 1.8,
+            width: metrics.screenWidth - 32,
             alignItems: "center",
             paddingHorizontal: 12,
           }}
@@ -222,7 +222,7 @@ export const ValidatorList: FunctionComponent = observer(() => {
             onChangeText={(t) => setSearch(t)}
           />
         </View>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={{
             flexDirection: "row",
             backgroundColor: colors["neutral-surface-action"],
@@ -242,7 +242,7 @@ export const ValidatorList: FunctionComponent = observer(() => {
               color={colors["neutral-icon-on-light"]}
             />
           </View>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
       <TouchableOpacity
         style={{
