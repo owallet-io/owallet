@@ -105,8 +105,17 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
                 width: metrics.screenWidth / 3,
               }}
             >
-              <OWIcon name="tdesign_despise" size={32} />
-              <OWText style={{ paddingTop: 8 }} size={16} weight="600">
+              <OWIcon
+                name="tdesign_despise"
+                color={colors["neutral-text-title"]}
+                size={32}
+              />
+              <OWText
+                style={{ paddingTop: 8 }}
+                color={colors["neutral-text-title"]}
+                size={16}
+                weight="600"
+              >
                 Nah
               </OWText>
             </TouchableOpacity>
@@ -120,8 +129,17 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
                 width: metrics.screenWidth / 3,
               }}
             >
-              <OWIcon name="tdesign_excited" size={32} />
-              <OWText style={{ paddingTop: 8 }} size={16} weight="600">
+              <OWIcon
+                name="tdesign_excited"
+                color={colors["neutral-text-title"]}
+                size={32}
+              />
+              <OWText
+                style={{ paddingTop: 8 }}
+                color={colors["neutral-text-title"]}
+                size={16}
+                weight="600"
+              >
                 I love it!
               </OWText>
             </TouchableOpacity>

@@ -27,32 +27,28 @@ export const CopyAddressModal: FunctionComponent<{
   useEffect(() => {
     let accounts = {};
 
-    setTimeout(() => {
-      let defaultEvmAddress = accountEth.evmosHexAddress;
+    let defaultEvmAddress = accountEth.evmosHexAddress;
 
-      Object.keys(ChainIdEnum).map((key) => {
-        if (key && key !== undefined && key !== "undefined") {
-          let defaultCosmosAddress = accountStore.getAccount(
-            ChainIdEnum[key]
-          ).bech32Address;
+    Object.keys(ChainIdEnum).map((key) => {
+      let defaultCosmosAddress = accountStore.getAccount(
+        ChainIdEnum[key]
+      ).bech32Address;
 
-          if (defaultCosmosAddress.startsWith("evmos")) {
-            accounts[ChainNameEnum[key]] = defaultEvmAddress;
-          } else if (key === "TRON") {
-            return;
-          } else {
-            accounts[ChainNameEnum[key]] = defaultCosmosAddress;
-          }
-        }
-      });
-      accounts[ChainNameEnum.TRON] = getBase58Address(
-        accountStore.getAccount(ChainIdEnum.TRON).evmosHexAddress
-      );
-      accounts[ChainNameEnum.BitcoinLegacy] = accountBtc.allBtcAddresses.legacy;
-      accounts[ChainNameEnum.BitcoinSegWit] = accountBtc.allBtcAddresses.bech32;
+      if (defaultCosmosAddress.startsWith("evmos")) {
+        accounts[ChainNameEnum[key]] = defaultEvmAddress;
+      } else if (key === "TRON") {
+        return;
+      } else {
+        accounts[ChainNameEnum[key]] = defaultCosmosAddress;
+      }
+    });
+    accounts[ChainNameEnum.TRON] = getBase58Address(
+      accountStore.getAccount(ChainIdEnum.TRON).evmosHexAddress
+    );
+    accounts[ChainNameEnum.BitcoinLegacy] = accountBtc.allBtcAddresses.legacy;
+    accounts[ChainNameEnum.BitcoinSegWit] = accountBtc.allBtcAddresses.bech32;
 
-      setAddresses(accounts);
-    }, 2000);
+    setAddresses(accounts);
   }, [accountOrai.bech32Address, accountEth.evmosHexAddress]);
 
   const { colors } = useTheme();
@@ -84,56 +80,59 @@ export const CopyAddressModal: FunctionComponent<{
             const chainId = ChainIdEnum[chainNameKey];
 
             const chainIcon = chainIcons.find((c) => c.chainId === chainId);
+            if (key !== "undefined") {
+              if (keyword === "") {
+                return (
+                  <CustomAddressCopyable
+                    onPress={() =>
+                      onPress &&
+                      onPress({ ...item, chainIcon: chainIcon?.Icon })
+                    }
+                    icon={
+                      chainIcon ? (
+                        <OWIcon
+                          type="images"
+                          source={{ uri: chainIcon.Icon }}
+                          size={28}
+                        />
+                      ) : (
+                        <OWText>{item.name.charAt(0)}</OWText>
+                      )
+                    }
+                    chain={item.name}
+                    address={item.address}
+                    maxCharacters={22}
+                  />
+                );
+              }
 
-            if (keyword === "") {
-              return (
-                <CustomAddressCopyable
-                  onPress={() =>
-                    onPress && onPress({ ...item, chainIcon: chainIcon?.Icon })
-                  }
-                  icon={
-                    chainIcon ? (
-                      <OWIcon
-                        type="images"
-                        source={{ uri: chainIcon.Icon }}
-                        size={28}
-                      />
-                    ) : (
-                      <OWText>{item.name.charAt(0)}</OWText>
-                    )
-                  }
-                  chain={item.name}
-                  address={item.address}
-                  maxCharacters={22}
-                />
-              );
-            }
-
-            if (
-              keyword !== "" &&
-              key.toString().toLowerCase().includes(keyword.toLowerCase())
-            ) {
-              return (
-                <CustomAddressCopyable
-                  onPress={() =>
-                    onPress && onPress({ ...item, chainIcon: chainIcon?.Icon })
-                  }
-                  icon={
-                    chainIcon ? (
-                      <OWIcon
-                        type="images"
-                        source={{ uri: chainIcon.Icon }}
-                        size={28}
-                      />
-                    ) : (
-                      <OWText>{item.name.charAt(0)}</OWText>
-                    )
-                  }
-                  chain={item.name}
-                  address={item.address}
-                  maxCharacters={22}
-                />
-              );
+              if (
+                keyword !== "" &&
+                key.toString().toLowerCase().includes(keyword.toLowerCase())
+              ) {
+                return (
+                  <CustomAddressCopyable
+                    onPress={() =>
+                      onPress &&
+                      onPress({ ...item, chainIcon: chainIcon?.Icon })
+                    }
+                    icon={
+                      chainIcon ? (
+                        <OWIcon
+                          type="images"
+                          source={{ uri: chainIcon.Icon }}
+                          size={28}
+                        />
+                      ) : (
+                        <OWText>{item.name.charAt(0)}</OWText>
+                      )
+                    }
+                    chain={item.name}
+                    address={item.address}
+                    maxCharacters={22}
+                  />
+                );
+              }
             }
           })
         ) : (

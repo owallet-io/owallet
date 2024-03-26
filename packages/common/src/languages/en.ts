@@ -96,7 +96,7 @@ export default {
   "setting.keyring.change.input.name.error.invalid": "Account name is invalid",
   "setting.keyring.change.name.button.save": "Save",
 
-  "setting.export": "View Mnemonic Seed",
+  "setting.export": "Reveal secret phrase",
   "setting.export.private-key": "View Private Key",
   "setting.export.warning": "Input your password to proceed",
   "setting.export.input.password": "Password",

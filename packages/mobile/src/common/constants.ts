@@ -269,7 +269,7 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: "Buy",
   },
   [SCREENS.SettingVersion]: {
-    title: "About",
+    title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.SendBtc]: {
     // title: "Send",
