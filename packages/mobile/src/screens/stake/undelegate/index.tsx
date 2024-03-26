@@ -123,7 +123,12 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
     sendConfigs.gasConfig.getError() ??
     sendConfigs.feeConfig.getError();
   const txStateIsValid = sendConfigError == null;
-
+  useEffect(() => {
+    if (sendConfigs.feeConfig.feeCurrency && !sendConfigs.feeConfig.fee) {
+      sendConfigs.feeConfig.setFeeType("average");
+    }
+    return;
+  }, [sendConfigs.feeConfig]);
   const isDisable = !account.isReadyToSendMsgs || !txStateIsValid;
   const _onPressFee = () => {
     modalStore.setOptions({
@@ -172,6 +177,13 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
                       });
                       smartNavigation.pushSmart("TxPendingResult", {
                         txHash: Buffer.from(txHash).toString("hex"),
+                        data: {
+                          wallet: account.bech32Address,
+                          validator: sendConfigs.recipientConfig.recipient,
+                          amount: sendConfigs.amountConfig.getAmountPrimitive(),
+                          fee: sendConfigs.feeConfig.toStdFee(),
+                          currency: sendConfigs.amountConfig.sendCurrency,
+                        },
                       });
                       const historyInfos = {
                         fromAddress: account.bech32Address,

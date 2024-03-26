@@ -705,25 +705,47 @@ export function renderMsgDelegate(
     ),
   };
 }
+const WithdrawDelegateView: FunctionComponent<{
+  validatorAddress: string;
+}> = observer(({ validatorAddress }) => {
+  const { priceStore, accountStore, chainStore } = useStore();
+  const walletAddress = accountStore.getAccount(
+    chainStore.current.chainId
+  ).bech32Address;
 
+  const { colors } = useTheme();
+  return (
+    <View>
+      <View
+        style={{
+          backgroundColor: colors["neutral-surface-card"],
+          paddingHorizontal: 16,
+          // marginTop: 16,
+          // borderTopLeftRadius: 24,
+          // borderTopRightRadius: 24,
+          // paddingTop: 16,
+        }}
+      >
+        {/*<ItemReceivedToken*/}
+        {/*  label={"Wallet"}*/}
+        {/*  valueDisplay={hyphen(Bech32Address.shortenAddress(walletAddress, 20))}*/}
+        {/*  value={walletAddress}*/}
+        {/*/>*/}
+        <ItemReceivedToken
+          label={"Validator"}
+          valueDisplay={hyphen(
+            Bech32Address.shortenAddress(validatorAddress, 24)
+          )}
+          value={validatorAddress}
+        />
+      </View>
+    </View>
+  );
+});
 export function renderMsgWithdrawDelegatorReward(validatorAddress: string) {
   return {
     title: "Claim Staking Reward",
-    content: (
-      <View style={{}}>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-          }}
-        >
-          <Text style={{ ...styles.textInfo }}>Claim From </Text>
-          <Text style={{ fontWeight: "bold" }}>
-            {hyphen(Bech32Address.shortenAddress(validatorAddress ?? "", 20))}
-          </Text>
-        </View>
-      </View>
-    ),
+    content: <WithdrawDelegateView validatorAddress={validatorAddress} />,
   };
 }
 

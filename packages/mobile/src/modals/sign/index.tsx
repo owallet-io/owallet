@@ -169,16 +169,18 @@ export const SignModal: FunctionComponent<{
 
           return (
             <View key={i.toString()}>
-              <OWText
-                size={16}
-                weight={"700"}
-                style={{
-                  textAlign: "center",
-                  paddingBottom: 20,
-                }}
-              >
-                {`${title} confirmation`.toUpperCase()}
-              </OWText>
+              {msg.type !== account.msgOpts.withdrawRewards.type && (
+                <OWText
+                  size={16}
+                  weight={"700"}
+                  style={{
+                    textAlign: "center",
+                    paddingBottom: 20,
+                  }}
+                >
+                  {`${title} confirmation`.toUpperCase()}
+                </OWText>
+              )}
               {scrollViewHorizontal ? (
                 <ScrollView horizontal={true}>
                   <Text style={style.flatten(["body3"])}>{content}</Text>

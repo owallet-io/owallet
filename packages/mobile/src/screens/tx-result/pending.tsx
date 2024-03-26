@@ -44,6 +44,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
           // Hex encoded bytes.
           txHash: string;
           tronWeb?: any;
+          title: string;
           data?: {
             memo: string;
             fee: StdFee;
