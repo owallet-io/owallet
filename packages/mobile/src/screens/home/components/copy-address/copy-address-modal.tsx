@@ -31,16 +31,18 @@ export const CopyAddressModal: FunctionComponent<{
       let defaultEvmAddress = accountEth.evmosHexAddress;
 
       Object.keys(ChainIdEnum).map((key) => {
-        let defaultCosmosAddress = accountStore.getAccount(
-          ChainIdEnum[key]
-        ).bech32Address;
+        if (key && key !== undefined && key !== "undefined") {
+          let defaultCosmosAddress = accountStore.getAccount(
+            ChainIdEnum[key]
+          ).bech32Address;
 
-        if (defaultCosmosAddress.startsWith("evmos")) {
-          accounts[ChainNameEnum[key]] = defaultEvmAddress;
-        } else if (key === "TRON") {
-          return;
-        } else {
-          accounts[ChainNameEnum[key]] = defaultCosmosAddress;
+          if (defaultCosmosAddress.startsWith("evmos")) {
+            accounts[ChainNameEnum[key]] = defaultEvmAddress;
+          } else if (key === "TRON") {
+            return;
+          } else {
+            accounts[ChainNameEnum[key]] = defaultCosmosAddress;
+          }
         }
       });
       accounts[ChainNameEnum.TRON] = getBase58Address(

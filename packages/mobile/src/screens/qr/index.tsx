@@ -15,7 +15,6 @@ import { CheckIcon, DownArrowIcon } from "@src/components/icon";
 import { chainIcons } from "@oraichain/oraidex-common";
 import { useSimpleTimer } from "@src/hooks";
 import { CopyAddressModal } from "../home/components/copy-address/copy-address-modal";
-import { ChainIdEnum, ChainNameEnum, getBase58Address } from "@owallet/common";
 
 const styling = (colors) =>
   StyleSheet.create({
