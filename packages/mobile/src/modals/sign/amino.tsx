@@ -30,14 +30,11 @@ import { AppCurrency } from "@owallet/types";
 export function renderAminoMessage(
   msgOpts: AccountSetOpts<CosmosMsgOpts & SecretMsgOpts>["msgOpts"],
   msg: MessageObj,
-  currencies: AppCurrency[],
-  priceStore: CoinGeckoPriceStore,
-  walletAddress: string
+  currencies: AppCurrency[]
 ): {
   title: string;
   content: React.ReactElement;
   scrollViewHorizontal?: boolean;
-  walletAddress?: string;
 } {
   if (msg.type === msgOpts.send.native.type) {
     const value = msg.value as MsgSend["value"];
@@ -46,8 +43,7 @@ export function renderAminoMessage(
       currencies,
       value.amount,
       value.to_address,
-      value.from_address,
-      priceStore
+      value.from_address
     );
   }
 
@@ -67,9 +63,7 @@ export function renderAminoMessage(
       currencies,
       value.amount,
       value.validator_src_address,
-      value.validator_dst_address,
-      walletAddress,
-      priceStore
+      value.validator_dst_address
     );
   }
 
@@ -78,21 +72,13 @@ export function renderAminoMessage(
     return renderMsgUndelegate(
       currencies,
       value.amount,
-      value.validator_address,
-      walletAddress,
-      priceStore
+      value.validator_address
     );
   }
 
   if (msg.type === msgOpts.delegate.type) {
     const value = msg.value as MsgDelegate["value"];
-    return renderMsgDelegate(
-      currencies,
-      value.amount,
-      value.validator_address,
-      walletAddress,
-      priceStore
-    );
+    return renderMsgDelegate(currencies, value.amount, value.validator_address);
   }
 
   if (msg.type === msgOpts.withdrawRewards.type) {

@@ -37,7 +37,8 @@ export function renderDirectMessage(msg: any, currencies: AppCurrency[]) {
       return renderMsgSend(
         currencies,
         sendMsg.amount as CoinPrimitive[],
-        sendMsg.toAddress
+        sendMsg.toAddress,
+        sendMsg.fromAddress
       );
     }
 
