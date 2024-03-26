@@ -86,10 +86,12 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
     params?.data?.currency,
     new Dec(params?.data?.amount?.amount)
   );
-  const fee = new CoinPretty(
-    chainInfo.stakeCurrency,
-    new Dec(params?.data?.fee.amount?.[0]?.amount)
-  );
+  const fee = params?.data?.fee?.amount?.[0]?.amount
+    ? new CoinPretty(
+        chainInfo.stakeCurrency,
+        new Dec(params?.data?.fee?.amount?.[0]?.amount)
+      )
+    : new CoinPretty(chainInfo.stakeCurrency, new Dec(0));
   const dataItem =
     params?.data &&
     _.pickBy(params?.data, function (value, key) {

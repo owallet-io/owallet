@@ -103,10 +103,23 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
     params?.data?.currency,
     new Dec(params?.data?.amount?.amount)
   );
-  const fee = new CoinPretty(
-    chainInfo.stakeCurrency,
-    new Dec(params?.data?.fee.amount?.[0]?.amount)
-  );
+
+  const fee = () => {
+    if (params?.data?.fee) {
+      return new CoinPretty(
+        chainInfo.stakeCurrency,
+        new Dec(params?.data?.fee.amount?.[0]?.amount)
+      );
+    } else {
+      if (data?.stdFee?.amount?.[0]?.amount) {
+        return new CoinPretty(
+          chainInfo.stakeCurrency,
+          new Dec(data?.stdFee?.amount?.[0]?.amount)
+        );
+      }
+      return new CoinPretty(chainInfo.stakeCurrency, new Dec(0));
+    }
+  };
   const getDetailByHash = async (txHash) => {
     try {
       const tx = await txs.getTxsByHash(txHash, address);
@@ -274,22 +287,6 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
                   />
                 );
               })}
-            {/*<ItemReceivedToken*/}
-            {/*  label={"From"}*/}
-            {/*  valueDisplay={*/}
-            {/*    params?.data?.fromAddress &&*/}
-            {/*    Bech32Address.shortenAddress(params?.data?.fromAddress, 20)*/}
-            {/*  }*/}
-            {/*  value={params?.data?.fromAddress}*/}
-            {/*/>*/}
-            {/*<ItemReceivedToken*/}
-            {/*  label={"To"}*/}
-            {/*  valueDisplay={*/}
-            {/*    params?.data?.toAddress &&*/}
-            {/*    Bech32Address.shortenAddress(params?.data?.toAddress, 20)*/}
-            {/*  }*/}
-            {/*  value={params?.data?.toAddress}*/}
-            {/*/>*/}
             <ItemReceivedToken
               label={"Network"}
               valueDisplay={
@@ -326,10 +323,10 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
             />
             <ItemReceivedToken
               label={"Fee"}
-              valueDisplay={`${fee
+              valueDisplay={`${fee()
                 ?.shrink(true)
                 ?.trim(true)
-                ?.toString()} (${priceStore.calculatePrice(fee)})`}
+                ?.toString()} (${priceStore.calculatePrice(fee())})`}
               btnCopy={false}
             />
             <ItemReceivedToken

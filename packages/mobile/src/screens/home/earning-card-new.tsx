@@ -74,7 +74,6 @@ export const EarningCardNew: FunctionComponent<{
               data: {
                 ...validatorObject,
                 amount: stakingReward?.toCoin(),
-                // fee: feeConfig.toStdFee(),
                 currency: chainStore.current.stakeCurrency,
               },
             });

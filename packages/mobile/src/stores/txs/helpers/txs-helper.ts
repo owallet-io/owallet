@@ -977,6 +977,7 @@ export class TxsHelper {
         )
       )
     );
+    item.stdFee = data?.tx?.auth_info?.fee;
     item.denomFee = currentChain?.feeCurrencies[0]?.coinDenom?.toUpperCase();
     item.gasUsed = this.formatNumberSeparateThousand(data?.gas_used);
     item.gasWanted = this.formatNumberSeparateThousand(data?.gas_wanted);

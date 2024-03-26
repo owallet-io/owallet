@@ -27,6 +27,7 @@ import { PageHeader } from "@src/components/header/header-new";
 import OWText from "@src/components/text/ow-text";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import OWCard from "@src/components/card/ow-card";
+import { convertArrToObject, showToast } from "@src/utils/helper";
 
 const renderIconValidator = (label: string, size?: number, styles?: any) => {
   switch (label) {
@@ -152,6 +153,37 @@ export const ValidatorDetailsCard: FunctionComponent<{
     }
   };
 
+  const _onPressClaim = async () => {
+    try {
+      await account.cosmos.sendWithdrawDelegationRewardMsgs(
+        [validatorAddress],
+        "",
+        {},
+        {},
+        {
+          onBroadcasted: (txHash) => {
+            const validatorObject = convertArrToObject([validatorAddress]);
+            console.log(validatorObject, "validatorObject");
+            smartNavigation.pushSmart("TxPendingResult", {
+              txHash: Buffer.from(txHash).toString("hex"),
+              data: {
+                ...validatorObject,
+                amount: rewards?.toCoin(),
+                currency: rewards.currency,
+              },
+            });
+          },
+        },
+        rewards.currency.coinMinimalDenom
+      );
+    } catch (e) {
+      console.error({ errorClaim: e });
+      showToast({
+        message: e?.message ?? "Something went wrong! Please try again later.",
+        type: "danger",
+      });
+    }
+  };
   return (
     <PageWithBottom
       bottomGroup={
@@ -320,21 +352,18 @@ export const ValidatorDetailsCard: FunctionComponent<{
                       </OWText>
                     </View>
                     <View>
-                      <View
-                        style={{ alignContent: "flex-end", paddingBottom: 6 }}
-                      >
-                        <Text
-                          style={[
-                            styles.label,
-                            {
-                              marginBottom: 10,
-                            },
-                          ]}
-                        >
-                          {"Claimable"}
-                        </Text>
-                      </View>
-
+                      <OWButton
+                        style={{
+                          borderRadius: 999,
+                          marginBottom: 10,
+                        }}
+                        size={"small"}
+                        fullWidth={false}
+                        label={"Claimable"}
+                        type={"primary"}
+                        disabled={rewards.toDec().lte(new Dec(0))}
+                        onPress={_onPressClaim}
+                      />
                       <OWText
                         size={16}
                         weight="500"

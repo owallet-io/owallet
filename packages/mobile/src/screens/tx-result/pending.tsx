@@ -2,7 +2,13 @@ import React, { FunctionComponent, useEffect, useState } from "react";
 import { RouteProp, useIsFocused, useRoute } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
-import { View, StyleSheet, Image, ScrollView } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Image,
+  ScrollView,
+  InteractionManager,
+} from "react-native";
 import { Text } from "@src/components/text";
 import { useSmartNavigation } from "../../navigation.provider";
 import { Bech32Address, TendermintTxTracer } from "@owallet/cosmos";
@@ -35,6 +41,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
 
   const [retry, setRetry] = useState(3);
   const { colors, images } = useTheme();
+  const [data, setData] = useState<Partial<ResTxsInfo>>();
   const route = useRoute<
     RouteProp<
       Record<
@@ -58,10 +65,13 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
       string
     >
   >();
+
   const { current } = chainStore;
   const chainId = current.chainId;
   const { params } = route;
-
+  const accountAddress = accountStore
+    .getAccount(chainId)
+    .getAddressDisplay(keyRingStore.keyRingLedgerAddresses, false);
   const txHash = params?.txHash;
   const chainInfo = chainStore.getChain(chainId);
 
@@ -205,10 +215,52 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
     params?.data?.currency,
     new Dec(params?.data?.amount?.amount)
   );
-  const fee = new CoinPretty(
-    chainInfo.stakeCurrency,
-    new Dec(params?.data?.fee.amount?.[0]?.amount)
-  );
+  const chainTxs =
+    chainStore.current.chainId === ChainIdEnum.KawaiiEvm
+      ? chainStore.getChain(ChainIdEnum.KawaiiCosmos)
+      : chainStore.current;
+  const txs = txsStore(chainTxs);
+  const getDetailByHash = async (txHash) => {
+    try {
+      const tx = await txs.getTxsByHash(txHash, accountAddress);
+      setData(tx);
+    } catch (error) {
+      console.log("error: ", error);
+    }
+  };
+  useEffect(() => {
+    if (txHash) {
+      InteractionManager.runAfterInteractions(() => {
+        const restApi = chainInfo?.rest;
+        const restConfig = chainInfo?.restConfig;
+        const txRestCosmos = new TxRestCosmosClient(restApi, restConfig);
+        txRestCosmos
+          .fetchTxPoll(txHash, 1000)
+          .then((res) => {
+            if (res) {
+              getDetailByHash(txHash);
+            }
+          })
+          .catch((err) => console.log(err));
+      });
+    }
+  }, [txHash]);
+  const fee = () => {
+    if (params?.data?.fee) {
+      return new CoinPretty(
+        chainInfo.stakeCurrency,
+        new Dec(params?.data?.fee.amount?.[0]?.amount)
+      );
+    } else {
+      if (data?.stdFee?.amount?.[0]?.amount) {
+        return new CoinPretty(
+          chainInfo.stakeCurrency,
+          new Dec(data?.stdFee?.amount?.[0]?.amount)
+        );
+      }
+      return new CoinPretty(chainInfo.stakeCurrency, new Dec(0));
+    }
+  };
   const dataItem =
     params?.data &&
     _.pickBy(params?.data, function (value, key) {
@@ -363,10 +415,10 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
 
             <ItemReceivedToken
               label={"Fee"}
-              valueDisplay={`${fee
+              valueDisplay={`${fee()
                 ?.shrink(true)
                 ?.trim(true)
-                ?.toString()} (${priceStore.calculatePrice(fee)})`}
+                ?.toString()} (${priceStore.calculatePrice(fee())})`}
               btnCopy={false}
             />
             <ItemReceivedToken
