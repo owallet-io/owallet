@@ -24,6 +24,8 @@ export enum ChainIdEnum {
   BNBChainTestNet = "0x61",
   TRON = "0x2b6653dc",
   Oasis = "native-0x5afe",
+  OasisSapphire = "0x5afe",
+  OasisEmerald = "0xa516",
   BitcoinTestnet = "bitcoinTestnet",
   Bitcoin = "bitcoin",
   Injective = "injective-1",
@@ -58,7 +60,9 @@ export enum ChainNameEnum {
   BNBChain = "BNB Chain",
   TRON = "Tron Network",
   Injective = "Injective",
-  Oasis = "Oasis Sapphire",
+  Oasis = "Oasis",
+  OasisSapphire = "Oasis Sapphire",
+  OasisEmerald = "Oasis Emerald",
   Neutaro = "Neutaro",
 }
 
