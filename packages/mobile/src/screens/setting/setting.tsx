@@ -5,7 +5,6 @@ import { useSmartNavigation } from "../../navigation.provider";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
-import { DownArrowIcon } from "../../components/icon";
 import { useStore } from "../../stores";
 import { metrics } from "../../themes";
 import { CountryModal } from "./components/country-modal";
