@@ -1270,7 +1270,7 @@ export class AccountSetBase<MsgOpts, Queries> {
   }
 
   @computed
-  get allBtcAddresses(): object {
+  get allBtcAddresses(): { bech32: string; legacy: string } {
     return { bech32: this._bech32Address, legacy: this.legacyAddress };
   }
 

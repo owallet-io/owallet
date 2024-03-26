@@ -59,6 +59,8 @@ export enum ChainNameEnum {
   Juno = "Juno",
   BNBChain = "BNB Chain",
   TRON = "Tron Network",
+  BitcoinLegacy = "Bitcoin(Legacy)",
+  BitcoinSegWit = "Bitcoin SegWit(BECH32)",
   Injective = "Injective",
   Oasis = "Oasis",
   OasisSapphire = "Oasis Sapphire",

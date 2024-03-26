@@ -56,7 +56,7 @@ export const AddressQRScreen: FunctionComponent<{}> = ({}) => {
   const styles = styling(colors);
   const { isTimedOut, setTimer } = useSimpleTimer();
   const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
-
+  const accountBtc = accountStore.getAccount(ChainIdEnum.Bitcoin);
   const chainIcon = chainIcons.find(
     (c) => c.chainId === chainStore.current.chainId
   );
@@ -83,6 +83,10 @@ export const AddressQRScreen: FunctionComponent<{}> = ({}) => {
     accounts[ChainNameEnum.TRON] = getBase58Address(
       accountStore.getAccount(ChainIdEnum.TRON).evmosHexAddress
     );
+    accounts[ChainNameEnum.BitcoinLegacy] = accountBtc.allBtcAddresses.legacy;
+    accounts[ChainNameEnum.BitcoinSegWit] = accountBtc.allBtcAddresses.bech32;
+
+    console.log("accounts", accounts);
 
     setAddresses(accounts);
   }, [accountEth.evmosHexAddress]);
