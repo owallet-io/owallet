@@ -1,18 +1,14 @@
-import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { Clipboard, Image, Share, StyleSheet, View } from "react-native";
 import QRCode from "react-native-qrcode-svg";
-import { AccountWithAll, KeyRingStore } from "@owallet/stores";
-import { Text } from "@src/components/text";
 import { metrics, spacing } from "@src/themes";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import { PageHeader } from "@src/components/header/header-new";
 import { ScrollView } from "react-native-gesture-handler";
-import OWCard from "@src/components/card/ow-card";
 import OWText from "@src/components/text/ow-text";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { TouchableOpacity } from "@gorhom/bottom-sheet";
 import { OWButton } from "@src/components/button";
-import { AddressCopyable } from "@src/components/address-copyable";
 import { useStore } from "@src/stores";
 import { useTheme } from "@src/themes/theme-provider";
 import { CheckIcon, DownArrowIcon } from "@src/components/icon";
@@ -52,7 +48,7 @@ export const AddressQRScreen: FunctionComponent<{}> = ({}) => {
   const addressToShow = account.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses
   );
-  const [networkAddress, setNetworkAddress] = useState();
+  const [networkAddress, setNetworkAddress] = useState<any>();
   const [address, setAddress] = useState("");
   const [accountAddresses, setAddresses] = useState({});
 
