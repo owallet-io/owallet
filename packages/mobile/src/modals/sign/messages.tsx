@@ -173,7 +173,6 @@ export function renderUnknownMessage(msg: object) {
     icon: undefined,
     title: "Custom",
     content: <UnknownMsgView msg={msg} />,
-    scrollViewHorizontal: true,
   };
 }
 
@@ -297,10 +296,11 @@ export function renderMsgWithdrawDelegatorReward(validatorAddress: string) {
   };
 }
 
-export function renderMsgIBCMsgTransfer(msg: MsgTransfer) {
+export function renderMsgIBCMsgTransfer(msg: MsgTransfer["value"]) {
+  console.log(msg, "msggg");
   return {
     title: "IBC Transfer",
-    content: <IBCMsgTransferView {...msg["value"]} />,
+    content: <IBCMsgTransferView {...msg} />,
   };
 }
 

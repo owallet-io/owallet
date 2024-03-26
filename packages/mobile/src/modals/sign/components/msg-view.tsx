@@ -22,6 +22,8 @@ import { Text } from "@src/components/text";
 import yaml from "js-yaml";
 import { Badge } from "@src/components/badge";
 import { FormattedMessage } from "react-intl";
+import { formatAddress } from "@owallet/common";
+import { ScrollView } from "react-native-gesture-handler";
 
 const styles = StyleSheet.create({
   container: {
@@ -325,28 +327,37 @@ export const MsgExecuteContractView: FunctionComponent<{
 }> = observer(({ sent, currencies, contract, callbackCodeHash, msg }) => {
   const { priceStore, accountStore, chainStore } = useStore();
   const totalPrice =
-    sent?.length === 1 ? getPrice(sent[0], currencies, priceStore) : "$0";
+    sent?.length === 1 ? getPrice(sent[0], currencies, priceStore) : null;
   const imageCoin =
     sent?.length === 1 ? renderImageCoin(sent[0], currencies) : null;
   const { colors } = useTheme();
   const isSecretWasm = callbackCodeHash != null;
   return (
     <View>
-      <AmountCard
-        imageCoin={imageCoin}
-        amountStr={
-          sent?.length > 0
-            ? hyphen(
-                sent
-                  .map((coin) => {
-                    return `${coin.amount} ${coin.denom}`;
-                  })
-                  .join(",")
-              )
-            : null
-        }
-        totalPrice={totalPrice}
-      />
+      {sent?.length > 0 ? (
+        <AmountCard
+          imageCoin={imageCoin}
+          amountStr={hyphen(
+            sent
+              .map((coin) => {
+                return `${coin.amount} ${coin.denom}`;
+              })
+              .join(",")
+          )}
+          totalPrice={totalPrice}
+        />
+      ) : (
+        <ScrollView
+          style={{
+            backgroundColor: colors["neutral-surface-bg"],
+            padding: 16,
+            borderRadius: 24,
+            maxHeight: 300,
+          }}
+        >
+          <WasmExecutionMsgView msg={msg} />
+        </ScrollView>
+      )}
       <View
         style={[
           styles.container,
@@ -368,7 +379,6 @@ export const MsgExecuteContractView: FunctionComponent<{
           valueDisplay={hyphen(Bech32Address.shortenAddress(contract, 26))}
           value={contract}
         />
-        {/*<WasmExecutionMsgView msg={msg} />*/}
       </View>
     </View>
   );
@@ -377,27 +387,20 @@ export const IBCMsgTransferView: FunctionComponent<MsgTransfer["value"]> =
   observer(({ sender, receiver, token, source_channel, source_port }) => {
     const { priceStore, accountStore, chainStore } = useStore();
     const currencies = chainStore.current.currencies;
-    const totalPrice = getPrice(token, currencies, priceStore);
-    const imageCoin = renderImageCoin(token, currencies);
-    const parsed = CoinUtils.parseDecAndDenomFromCoin(
-      currencies,
-      new Coin(token.denom, token.amount)
-    );
-
-    const amount = {
-      amount: clearDecimals(parsed.amount),
-      denom: parsed.denom,
-    };
+    // const totalPrice = getPrice(token, currencies, priceStore);
+    // const imageCoin = renderImageCoin(token, currencies);
+    // const parsed = (token?.amount && token?.denom) ? CoinUtils.parseDecAndDenomFromCoin(
+    //   currencies,
+    //   new Coin(token?.denom, token?.amount)
+    // ) : null;
+    //
+    // const amount = {
+    //   amount: parsed ? clearDecimals(parsed?.amount) : '0',
+    //   denom: parsed ? parsed?.denom : ''
+    // };
     const { colors } = useTheme();
     return (
       <View>
-        <AmountCard
-          imageCoin={imageCoin}
-          amountStr={hyphen(
-            `${amount?.amount} ${removeDataInParentheses(amount?.denom)}`
-          )}
-          totalPrice={totalPrice}
-        />
         <View
           style={[
             styles.container,
@@ -405,23 +408,38 @@ export const IBCMsgTransferView: FunctionComponent<MsgTransfer["value"]> =
           ]}
         >
           <ItemReceivedToken
+            label={"Amount"}
+            valueDisplay={`${token?.amount}`}
+            // value={token?.amount}
+            btnCopy={false}
+          />
+          <ItemReceivedToken
+            label={"Denom"}
+            valueDisplay={`${removeDataInParentheses(token?.denom)}`}
+            // value={token?.amount}
+            valueProps={{
+              size: token?.denom?.length > 20 ? 12 : 16,
+            }}
+            btnCopy={false}
+          />
+          <ItemReceivedToken
             label={"From"}
-            valueDisplay={hyphen(Bech32Address.shortenAddress(sender, 20))}
+            valueDisplay={formatAddress(sender)}
             value={sender}
           />
           <ItemReceivedToken
             label={"To"}
-            valueDisplay={hyphen(Bech32Address.shortenAddress(receiver, 20))}
+            valueDisplay={formatAddress(receiver)}
             value={receiver}
           />
           <ItemReceivedToken
             label={"Channel"}
-            valueDisplay={hyphen(source_channel)}
+            valueDisplay={source_channel}
             btnCopy={false}
           />
           <ItemReceivedToken
             label={"Port"}
-            valueDisplay={hyphen(source_port)}
+            valueDisplay={source_port}
             btnCopy={false}
           />
         </View>
@@ -510,10 +528,26 @@ export const UnknownMsgView: FunctionComponent<{ msg: object }> = ({ msg }) => {
       return "Failed to decode the msg";
     }
   }, [msg]);
-
+  const { colors } = useTheme();
   return (
-    <Text style={style.flatten(["body3", "color-text-black-low"])}>
-      {prettyMsg}
-    </Text>
+    <View
+      style={{
+        flex: 1,
+      }}
+    >
+      <ScrollView
+        horizontal={true}
+        style={{
+          backgroundColor: colors["neutral-surface-bg"],
+          padding: 16,
+          borderRadius: 24,
+          maxHeight: 300,
+        }}
+      >
+        <Text style={style.flatten(["body3", "color-text-black-low"])}>
+          {prettyMsg}
+        </Text>
+      </ScrollView>
+    </View>
   );
 };

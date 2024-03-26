@@ -25,6 +25,8 @@ import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
 import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
 import { useTheme } from "@src/themes/theme-provider";
 import OWButtonGroup from "@src/components/button/OWButtonGroup";
+import { metrics } from "@src/themes";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export const SignModal: FunctionComponent<{
   isOpen: boolean;
@@ -160,19 +162,13 @@ export const SignModal: FunctionComponent<{
                   weight={"700"}
                   style={{
                     textAlign: "center",
-                    paddingBottom: 20,
+                    paddingVertical: 20,
                   }}
                 >
                   {`${title} confirmation`.toUpperCase()}
                 </OWText>
               )}
-              {scrollViewHorizontal ? (
-                <ScrollView horizontal={true}>
-                  <Text style={style.flatten(["body3"])}>{content}</Text>
-                </ScrollView>
-              ) : (
-                <View>{content}</View>
-              )}
+              <View>{content}</View>
             </View>
           );
         });
@@ -191,7 +187,7 @@ export const SignModal: FunctionComponent<{
                   weight={"700"}
                   style={{
                     textAlign: "center",
-                    paddingBottom: 20,
+                    paddingVertical: 20,
                   }}
                 >
                   {`${title} confirmation`.toUpperCase()}
@@ -206,13 +202,21 @@ export const SignModal: FunctionComponent<{
       }
     })();
     const { colors } = useTheme();
+    const { bottom } = useSafeAreaInsets();
     return (
       <WrapViewModal
+        disabledScrollView={false}
         style={{
-          backgroundColor: colors["neutral-surface-bg"],
+          backgroundColor: colors["neutral-surface-card"],
+          maxHeight: metrics.screenHeight - 100,
+          // paddingBottom:0,
         }}
       >
-        <View>
+        <View
+          style={{
+            paddingBottom: 50,
+          }}
+        >
           <View>{renderedMsgs}</View>
 
           <View
@@ -240,25 +244,24 @@ export const SignModal: FunctionComponent<{
               />
             )}
           </View>
+          <OWButtonGroup
+            labelApprove={"Confirm"}
+            labelClose={"Cancel"}
+            disabledApprove={isDisable}
+            disabledClose={signInteractionStore.isLoading}
+            loadingApprove={signInteractionStore.isLoading}
+            styleApprove={{
+              borderRadius: 99,
+              backgroundColor: colors["primary-surface-default"],
+            }}
+            onPressClose={_onPressReject}
+            onPressApprove={_onPressApprove}
+            styleClose={{
+              borderRadius: 99,
+              backgroundColor: colors["neutral-surface-bg"],
+            }}
+          />
         </View>
-
-        <OWButtonGroup
-          labelApprove={"Confirm"}
-          labelClose={"Cancel"}
-          disabledApprove={isDisable}
-          disabledClose={signInteractionStore.isLoading}
-          loadingApprove={signInteractionStore.isLoading}
-          styleApprove={{
-            borderRadius: 99,
-            backgroundColor: colors["primary-surface-default"],
-          }}
-          onPressClose={_onPressReject}
-          onPressApprove={_onPressApprove}
-          styleClose={{
-            borderRadius: 99,
-            backgroundColor: colors["neutral-surface-action2"],
-          }}
-        />
       </WrapViewModal>
     );
   }),
