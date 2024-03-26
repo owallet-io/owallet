@@ -1,7 +1,6 @@
 import { EthereumEndpoint } from "@owallet/common";
 import {
   AddressBookConfig,
-  useAddressBookConfig,
   useMemoConfig,
   useRecipientConfig,
 } from "@owallet/hooks";
@@ -16,7 +15,6 @@ import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { AsyncKVStore } from "../../../../common";
 import { OWButton } from "../../../../components/button";
 import { Scanner } from "../../../../components/icon";
 import {
@@ -88,27 +86,7 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
   );
 
   const smartNavigation = useSmartNavigation();
-  // const addressBookConfig = route.params.addressBookConfig;
-
-  const addressBookConfig = route.params.addressBookConfig
-    ? route.params.addressBookConfig
-    : useAddressBookConfig(
-        new AsyncKVStore("address_book"),
-        chainStore,
-        chainStore.current.chainId,
-        {
-          setRecipient: (recipient: string) => {
-            if (recipientConfig) {
-              recipientConfig.setRawRecipient(recipient);
-            }
-          },
-          setMemo: (memo: string) => {
-            if (memoConfig) {
-              memoConfig.setMemo(memo);
-            }
-          },
-        }
-      );
+  const addressBookConfig = route.params.addressBookConfig;
 
   const [name, setName] = useState("");
   useEffect(() => {

@@ -1,8 +1,5 @@
 import React, { FunctionComponent, useEffect, useRef, useState } from "react";
-import {
-  PageWithScrollView,
-  PageWithScrollViewInBottomTabView,
-} from "../../../../components/page";
+import { PageWithScrollView } from "../../../../components/page";
 import { observer } from "mobx-react-lite";
 import DeviceInfo from "react-native-device-info";
 import codePush from "react-native-code-push";
@@ -10,7 +7,6 @@ import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { spacing, typography } from "../../../../themes";
 import { View, Text } from "react-native";
 import { useStyle } from "../../../../styles";
-// import { Divider } from '@rneui/base';
 import { useStore } from "../../../../stores";
 import moment from "moment";
 import { useTheme } from "@src/themes/theme-provider";
