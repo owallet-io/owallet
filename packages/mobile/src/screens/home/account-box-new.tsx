@@ -34,6 +34,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
 
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
+  const accountBtc = accountStore.getAccount(ChainIdEnum.Bitcoin);
 
   const chainAssets = getTokenInfos({
     tokens: universalSwapStore.getAmount,
@@ -54,29 +55,32 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
 
   useEffect(() => {
     let accounts = {};
-    let defaultEvmAddress = accountStore.getAccount(
-      ChainIdEnum.Ethereum
-    ).evmosHexAddress;
+    let defaultEvmAddress = accountEth.evmosHexAddress;
     setTimeout(() => {
       Object.keys(ChainIdEnum).map((key) => {
+        console.log("key", key, key === "TRON");
         let defaultCosmosAddress = accountStore.getAccount(
           ChainIdEnum[key]
         ).bech32Address;
 
         if (defaultCosmosAddress.startsWith("evmos")) {
           accounts[ChainNameEnum[key]] = defaultEvmAddress;
+        } else if (key === "TRON") {
+          return;
         } else {
           accounts[ChainNameEnum[key]] = defaultCosmosAddress;
         }
       });
+      accounts[ChainNameEnum.TRON] = getBase58Address(
+        accountStore.getAccount(ChainIdEnum.TRON).evmosHexAddress
+      );
     }, 3000);
 
-    accounts[ChainNameEnum.TRON] = getBase58Address(
-      accountStore.getAccount(ChainIdEnum.TRON).evmosHexAddress
-    );
+    accounts[ChainNameEnum.BitcoinLegacy] = accountBtc.allBtcAddresses.legacy;
+    accounts[ChainNameEnum.BitcoinSegWit] = accountBtc.allBtcAddresses.bech32;
 
     setAddresses(accounts);
-  }, [accountEth.evmosHexAddress]);
+  }, [accountOrai.bech32Address, accountEth.evmosHexAddress]);
 
   const _onPressMyWallet = () => {
     modalStore.setOptions({
