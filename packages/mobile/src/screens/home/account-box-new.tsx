@@ -71,11 +71,11 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
           accounts[ChainNameEnum[key]] = defaultCosmosAddress;
         }
       });
+      accounts[ChainNameEnum.TRON] = getBase58Address(
+        accountStore.getAccount(ChainIdEnum.TRON).evmosHexAddress
+      );
     }, 3000);
 
-    accounts[ChainNameEnum.TRON] = getBase58Address(
-      accountStore.getAccount(ChainIdEnum.TRON).evmosHexAddress
-    );
     accounts[ChainNameEnum.BitcoinLegacy] = accountBtc.allBtcAddresses.legacy;
     accounts[ChainNameEnum.BitcoinSegWit] = accountBtc.allBtcAddresses.bech32;
 
