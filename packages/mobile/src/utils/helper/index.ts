@@ -708,7 +708,7 @@ export enum HISTORY_STATUS {
   SEND = "SEND",
   STAKE = "STAKE",
   CLAIM = "CLAIM",
-  UNSTAKE = "UNSTAKE",
+  UNSTAKE = "UN_STAKE",
 }
 
 export function isPrivateKey(str: string): boolean {

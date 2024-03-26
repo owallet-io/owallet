@@ -312,7 +312,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
         }}
       >
         <PageHeader
-          title={"Transaction detail"}
+          title={"Transaction details"}
           colors={colors["neutral-text-title"]}
         />
         <ScrollView showsVerticalScrollIndicator={false}>

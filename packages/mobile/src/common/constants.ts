@@ -123,7 +123,7 @@ export const SCREENS_OPTIONS: IScreenOption = {
     showTabBar: true,
   },
   [SCREENS.TransactionDetail]: {
-    title: "Transaction Detail",
+    title: "Transaction Details",
   },
   [SCREENS.BackupMnemonic]: {
     showTabBar: false,

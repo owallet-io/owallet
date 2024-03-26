@@ -131,7 +131,7 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
               style={{ textAlign: "center" }}
               typo="bold"
             >
-              Transaction Detail
+              Transaction Details
             </OWText>
           </View>
 

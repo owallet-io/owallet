@@ -34,7 +34,12 @@ import { useSmartNavigation } from "@src/navigation.provider";
 import { FeeModal } from "@src/modals/fee";
 import { CoinPretty, Dec, Int } from "@owallet/unit";
 import { DownArrowIcon } from "@src/components/icon";
-import { capitalizedText } from "@src/utils/helper";
+import {
+  capitalizedText,
+  handleSaveHistory,
+  HISTORY_STATUS,
+} from "@src/utils/helper";
+import { Buffer } from "buffer";
 
 const styling = (colors) =>
   StyleSheet.create({
@@ -216,12 +221,34 @@ export const NewSendScreen: FunctionComponent = observer(() => {
 
           {
             onFulfill: (tx) => {},
-            onBroadcasted: (txHash) => {
+            onBroadcasted: async (txHash) => {
               analyticsStore.logEvent("Send token tx broadcasted", {
                 chainId: chainStore.current.chainId,
                 chainName: chainStore.current.chainName,
                 feeType: sendConfigs.feeConfig.feeType,
               });
+
+              const historyInfos = {
+                fromAddress: address,
+                toAddress: sendConfigs.recipientConfig.recipient,
+                hash: Buffer.from(txHash).toString("hex"),
+                memo: "",
+                fromAmount: sendConfigs.amountConfig.amount,
+                toAmount: sendConfigs.amountConfig.amount,
+                value: sendConfigs.amountConfig.amount,
+                fee: 0,
+                type: HISTORY_STATUS.SEND,
+                fromToken: {
+                  asset: sendConfigs.amountConfig.sendCurrency.coinDenom,
+                  chainId: chainStore.current.chainId,
+                },
+                toToken: {
+                  asset: sendConfigs.amountConfig.sendCurrency.coinDenom,
+                  chainId: chainStore.current.chainId,
+                },
+                status: "SUCCESS",
+              };
+              await handleSaveHistory(address, historyInfos);
               smartNavigation.pushSmart("TxPendingResult", {
                 txHash: Buffer.from(txHash).toString("hex"),
                 data: {
