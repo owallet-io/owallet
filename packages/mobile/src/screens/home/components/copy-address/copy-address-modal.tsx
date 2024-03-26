@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { StyleSheet, TextInput, View } from "react-native";
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import OWFlatList from "@src/components/page/ow-flat-list";
