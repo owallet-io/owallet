@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, TextInput, View } from "react-native";
+import { Image, ScrollView, StyleSheet, TextInput, View } from "react-native";
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import OWIcon from "@src/components/ow-icon/ow-icon";
@@ -73,70 +73,80 @@ export const CopyAddressModal: FunctionComponent<{
         </View>
       </View>
       <ScrollView showsVerticalScrollIndicator={false}>
-        {addresses && Object.keys(addresses).length > 0
-          ? Object.keys(addresses).map((key) => {
-              const item = { name: key, address: addresses[key] };
-              const chainNameKey = Object.keys(ChainNameEnum).find(
-                (k) => ChainNameEnum[k] === key
+        {addresses && Object.keys(addresses).length > 0 ? (
+          Object.keys(addresses).map((key) => {
+            const item = { name: key, address: addresses[key] };
+            const chainNameKey = Object.keys(ChainNameEnum).find(
+              (k) => ChainNameEnum[k] === key
+            );
+            const chainId = ChainIdEnum[chainNameKey];
+
+            const chainIcon = chainIcons.find((c) => c.chainId === chainId);
+
+            if (keyword === "") {
+              return (
+                <CustomAddressCopyable
+                  onPress={() =>
+                    onPress && onPress({ ...item, chainIcon: chainIcon?.Icon })
+                  }
+                  icon={
+                    chainIcon ? (
+                      <OWIcon
+                        type="images"
+                        source={{ uri: chainIcon.Icon }}
+                        size={28}
+                      />
+                    ) : (
+                      <OWText>{item.name.charAt(0)}</OWText>
+                    )
+                  }
+                  chain={item.name}
+                  address={item.address}
+                  maxCharacters={22}
+                />
               );
-              const chainId = ChainIdEnum[chainNameKey];
+            }
 
-              const chainIcon = chainIcons.find((c) => c.chainId === chainId);
-
-              if (keyword === "") {
-                return (
-                  <CustomAddressCopyable
-                    onPress={() =>
-                      onPress &&
-                      onPress({ ...item, chainIcon: chainIcon?.Icon })
-                    }
-                    icon={
-                      chainIcon ? (
-                        <OWIcon
-                          type="images"
-                          source={{ uri: chainIcon.Icon }}
-                          size={28}
-                        />
-                      ) : (
-                        <OWText>{item.name.charAt(0)}</OWText>
-                      )
-                    }
-                    chain={item.name}
-                    address={item.address}
-                    maxCharacters={22}
-                  />
-                );
-              }
-
-              if (
-                keyword !== "" &&
-                key.toString().toLowerCase().includes(keyword.toLowerCase())
-              ) {
-                return (
-                  <CustomAddressCopyable
-                    onPress={() =>
-                      onPress &&
-                      onPress({ ...item, chainIcon: chainIcon?.Icon })
-                    }
-                    icon={
-                      chainIcon ? (
-                        <OWIcon
-                          type="images"
-                          source={{ uri: chainIcon.Icon }}
-                          size={28}
-                        />
-                      ) : (
-                        <OWText>{item.name.charAt(0)}</OWText>
-                      )
-                    }
-                    chain={item.name}
-                    address={item.address}
-                    maxCharacters={22}
-                  />
-                );
-              }
-            })
-          : null}
+            if (
+              keyword !== "" &&
+              key.toString().toLowerCase().includes(keyword.toLowerCase())
+            ) {
+              return (
+                <CustomAddressCopyable
+                  onPress={() =>
+                    onPress && onPress({ ...item, chainIcon: chainIcon?.Icon })
+                  }
+                  icon={
+                    chainIcon ? (
+                      <OWIcon
+                        type="images"
+                        source={{ uri: chainIcon.Icon }}
+                        size={28}
+                      />
+                    ) : (
+                      <OWText>{item.name.charAt(0)}</OWText>
+                    )
+                  }
+                  chain={item.name}
+                  address={item.address}
+                  maxCharacters={22}
+                />
+              );
+            }
+          })
+        ) : (
+          <View style={{ justifyContent: "center", alignItems: "center" }}>
+            <Image
+              style={{
+                width: metrics.screenWidth / 1.7,
+                height: metrics.screenWidth / 1.7,
+              }}
+              source={require("../../../../assets/image/img_planet.png")}
+              resizeMode="contain"
+              fadeDuration={0}
+            />
+          </View>
+        )}
       </ScrollView>
     </View>
   );
