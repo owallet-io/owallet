@@ -1,45 +1,57 @@
-import { StyleSheet, TextInput, View } from "react-native";
+import { ScrollView, StyleSheet, TextInput, View } from "react-native";
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import OWFlatList from "@src/components/page/ow-flat-list";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { TypeTheme, useTheme } from "@src/themes/theme-provider";
 import { metrics } from "@src/themes";
 import { CustomAddressCopyable } from "@src/components/address-copyable/custom";
 import { chainIcons } from "@oraichain/oraidex-common";
-import { ChainIdEnum, ChainNameEnum } from "@owallet/common";
+import { ChainIdEnum, ChainNameEnum, getBase58Address } from "@owallet/common";
 import OWText from "@src/components/text/ow-text";
+import { useStore } from "@src/stores";
 
 export const CopyAddressModal: FunctionComponent<{
-  accounts: object;
   copyable?: boolean;
   onPress?: Function;
-}> = ({ accounts, onPress }) => {
+}> = ({ onPress }) => {
   const safeAreaInsets = useSafeAreaInsets();
   const [keyword, setKeyword] = useState("");
-  const [addresses, setAddresses] = useState([]);
+  const [addresses, setAddresses] = useState({});
+
+  const { accountStore } = useStore();
+
+  const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
+  const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
+  const accountBtc = accountStore.getAccount(ChainIdEnum.Bitcoin);
 
   useEffect(() => {
-    const data = [];
-    Object.keys(accounts).map((k) => {
-      if (k && k !== undefined && k !== "undefined") {
-        data.push({
-          name: k,
-          address: accounts[k],
-        });
-      }
-    });
+    let accounts = {};
 
-    if (keyword === "" || !keyword) {
-      setAddresses(data);
-    } else {
-      const tmpData = data.filter((d) => {
-        return d.name.toString().toLowerCase().includes(keyword.toLowerCase());
+    setTimeout(() => {
+      let defaultEvmAddress = accountEth.evmosHexAddress;
+
+      Object.keys(ChainIdEnum).map((key) => {
+        let defaultCosmosAddress = accountStore.getAccount(
+          ChainIdEnum[key]
+        ).bech32Address;
+
+        if (defaultCosmosAddress.startsWith("evmos")) {
+          accounts[ChainNameEnum[key]] = defaultEvmAddress;
+        } else if (key === "TRON") {
+          return;
+        } else {
+          accounts[ChainNameEnum[key]] = defaultCosmosAddress;
+        }
       });
+      accounts[ChainNameEnum.TRON] = getBase58Address(
+        accountStore.getAccount(ChainIdEnum.TRON).evmosHexAddress
+      );
+      accounts[ChainNameEnum.BitcoinLegacy] = accountBtc.allBtcAddresses.legacy;
+      accounts[ChainNameEnum.BitcoinSegWit] = accountBtc.allBtcAddresses.bech32;
 
-      setAddresses(tmpData);
-    }
-  }, [keyword]);
+      setAddresses(accounts);
+    }, 2000);
+  }, [accountOrai.bech32Address, accountEth.evmosHexAddress]);
 
   const { colors } = useTheme();
   const styles = styling(colors);
@@ -60,41 +72,72 @@ export const CopyAddressModal: FunctionComponent<{
           <OWIcon color={colors["blue-400"]} name="tdesign_search" size={16} />
         </View>
       </View>
-      <OWFlatList
-        isBottomSheet
-        keyboardShouldPersistTaps="handled"
-        data={addresses}
-        renderItem={({ item }) => {
-          const chainNameKey = Object.keys(ChainNameEnum).find(
-            (key) => ChainNameEnum[key] === item.name
-          );
-          const chainId = ChainIdEnum[chainNameKey];
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {addresses && Object.keys(addresses).length > 0
+          ? Object.keys(addresses).map((key) => {
+              const item = { name: key, address: addresses[key] };
+              const chainNameKey = Object.keys(ChainNameEnum).find(
+                (k) => ChainNameEnum[k] === key
+              );
+              const chainId = ChainIdEnum[chainNameKey];
 
-          const chainIcon = chainIcons.find((c) => c.chainId === chainId);
+              const chainIcon = chainIcons.find((c) => c.chainId === chainId);
 
-          return (
-            <CustomAddressCopyable
-              onPress={() =>
-                onPress && onPress({ ...item, chainIcon: chainIcon?.Icon })
-              }
-              icon={
-                chainIcon ? (
-                  <OWIcon
-                    type="images"
-                    source={{ uri: chainIcon.Icon }}
-                    size={28}
+              if (keyword === "") {
+                return (
+                  <CustomAddressCopyable
+                    onPress={() =>
+                      onPress &&
+                      onPress({ ...item, chainIcon: chainIcon?.Icon })
+                    }
+                    icon={
+                      chainIcon ? (
+                        <OWIcon
+                          type="images"
+                          source={{ uri: chainIcon.Icon }}
+                          size={28}
+                        />
+                      ) : (
+                        <OWText>{item.name.charAt(0)}</OWText>
+                      )
+                    }
+                    chain={item.name}
+                    address={item.address}
+                    maxCharacters={22}
                   />
-                ) : (
-                  <OWText>{item.name.charAt(0)}</OWText>
-                )
+                );
               }
-              chain={item.name}
-              address={item.address}
-              maxCharacters={22}
-            />
-          );
-        }}
-      />
+
+              if (
+                keyword !== "" &&
+                key.toString().toLowerCase().includes(keyword.toLowerCase())
+              ) {
+                return (
+                  <CustomAddressCopyable
+                    onPress={() =>
+                      onPress &&
+                      onPress({ ...item, chainIcon: chainIcon?.Icon })
+                    }
+                    icon={
+                      chainIcon ? (
+                        <OWIcon
+                          type="images"
+                          source={{ uri: chainIcon.Icon }}
+                          size={28}
+                        />
+                      ) : (
+                        <OWText>{item.name.charAt(0)}</OWText>
+                      )
+                    }
+                    chain={item.name}
+                    address={item.address}
+                    maxCharacters={22}
+                  />
+                );
+              }
+            })
+          : null}
+      </ScrollView>
     </View>
   );
 };
