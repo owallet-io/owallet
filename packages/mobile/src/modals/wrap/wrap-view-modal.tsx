@@ -38,13 +38,49 @@ const WrapViewModal: FC<IWrapViewModal> = ({
         {
           flex: 1,
           paddingHorizontal: 16,
-          paddingTop: 16,
+          // paddingTop: 16,
 
           // paddingBottom: 16 + (bottom || 0)
         },
         containerStyle,
       ]}
     >
+      {typeof title === "function" ? (
+        TitleComponent
+      ) : title?.length > 0 ? (
+        <Text
+          size={16}
+          color={colors["neutral-text-title"]}
+          weight={"700"}
+          {...titleProps}
+          style={[
+            {
+              textAlign: "center",
+              paddingVertical: 8,
+            },
+            titleProps?.style,
+          ]}
+        >
+          {title}
+        </Text>
+      ) : null}
+      {subTitle && (
+        <Text
+          color={colors["neutral-text-body"]}
+          size={14}
+          weight={"500"}
+          {...subTitleProps}
+          style={[
+            {
+              textAlign: "center",
+              paddingVertical: 8,
+            },
+            subTitleProps?.style,
+          ]}
+        >
+          {subTitle}
+        </Text>
+      )}
       <ContainerElement
         {...props}
         showsVerticalScrollIndicator={false}
@@ -58,42 +94,6 @@ const WrapViewModal: FC<IWrapViewModal> = ({
           style,
         ]}
       >
-        {typeof title === "function" ? (
-          TitleComponent
-        ) : title?.length > 0 ? (
-          <Text
-            size={16}
-            color={colors["neutral-text-title"]}
-            weight={"700"}
-            {...titleProps}
-            style={[
-              {
-                textAlign: "center",
-                paddingVertical: 8,
-              },
-              titleProps?.style,
-            ]}
-          >
-            {title}
-          </Text>
-        ) : null}
-        {subTitle && (
-          <Text
-            color={colors["neutral-text-body"]}
-            size={14}
-            weight={"500"}
-            {...subTitleProps}
-            style={[
-              {
-                textAlign: "center",
-                paddingVertical: 8,
-              },
-              subTitleProps?.style,
-            ]}
-          >
-            {subTitle}
-          </Text>
-        )}
         {props.children}
       </ContainerElement>
       {buttonBottom ? buttonBottom : null}
