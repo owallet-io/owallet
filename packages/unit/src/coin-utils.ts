@@ -199,7 +199,7 @@ export class CoinUtils {
       | bigInteger.BigNumber
   ) {
     let currency = currencies.find((currency) => {
-      return currency.coinMinimalDenom === denom;
+      return currency.coinMinimalDenom.includes(denom);
     });
     if (!currency) {
       // If the currency is unknown, just use the raw currency.

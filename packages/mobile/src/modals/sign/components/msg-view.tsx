@@ -385,19 +385,6 @@ export const MsgExecuteContractView: FunctionComponent<{
 });
 export const IBCMsgTransferView: FunctionComponent<MsgTransfer["value"]> =
   observer(({ sender, receiver, token, source_channel, source_port }) => {
-    const { priceStore, accountStore, chainStore } = useStore();
-    const currencies = chainStore.current.currencies;
-    // const totalPrice = getPrice(token, currencies, priceStore);
-    // const imageCoin = renderImageCoin(token, currencies);
-    // const parsed = (token?.amount && token?.denom) ? CoinUtils.parseDecAndDenomFromCoin(
-    //   currencies,
-    //   new Coin(token?.denom, token?.amount)
-    // ) : null;
-    //
-    // const amount = {
-    //   amount: parsed ? clearDecimals(parsed?.amount) : '0',
-    //   denom: parsed ? parsed?.denom : ''
-    // };
     const { colors } = useTheme();
     return (
       <View>
@@ -410,13 +397,11 @@ export const IBCMsgTransferView: FunctionComponent<MsgTransfer["value"]> =
           <ItemReceivedToken
             label={"Amount"}
             valueDisplay={`${token?.amount}`}
-            // value={token?.amount}
             btnCopy={false}
           />
           <ItemReceivedToken
             label={"Denom"}
             valueDisplay={`${removeDataInParentheses(token?.denom)}`}
-            // value={token?.amount}
             valueProps={{
               size: token?.denom?.length > 20 ? 12 : 16,
             }}
@@ -432,16 +417,20 @@ export const IBCMsgTransferView: FunctionComponent<MsgTransfer["value"]> =
             valueDisplay={formatAddress(receiver)}
             value={receiver}
           />
-          <ItemReceivedToken
-            label={"Channel"}
-            valueDisplay={source_channel}
-            btnCopy={false}
-          />
-          <ItemReceivedToken
-            label={"Port"}
-            valueDisplay={source_port}
-            btnCopy={false}
-          />
+          {source_channel && (
+            <ItemReceivedToken
+              label={"Channel"}
+              valueDisplay={source_channel}
+              btnCopy={false}
+            />
+          )}
+          {source_port && (
+            <ItemReceivedToken
+              label={"Port"}
+              valueDisplay={source_port}
+              btnCopy={false}
+            />
+          )}
         </View>
       </View>
     );
@@ -517,37 +506,111 @@ export const WasmExecutionMsgView: FunctionComponent<{
 });
 
 // eslint-disable-next-line @typescript-eslint/ban-types
-export const UnknownMsgView: FunctionComponent<{ msg: object }> = ({ msg }) => {
-  const style = useStyle();
-
-  const prettyMsg = useMemo(() => {
-    try {
-      return yaml.dump(msg);
-    } catch (e) {
-      console.log(e);
-      return "Failed to decode the msg";
+export const UnknownMsgView: FunctionComponent<{ msg: object }> = observer(
+  ({ msg }) => {
+    const style = useStyle();
+    const { priceStore, chainStore } = useStore();
+    const prettyMsg = useMemo(() => {
+      try {
+        return yaml.dump(msg);
+      } catch (e) {
+        console.log(e);
+        return "Failed to decode the msg";
+      }
+    }, [msg]);
+    const { colors } = useTheme();
+    console.log(msg, "msg kaka");
+    if (msg?.value?.msg?.transfer) {
+      const currencies = chainStore.current.currencies;
+      const contract = msg?.value?.contract;
+      const balance = msg?.value?.msg?.transfer?.amount;
+      const amount = {
+        denom: contract,
+        amount: balance,
+      };
+      const totalPrice =
+        amount?.denom && amount?.amount
+          ? getPrice(amount, currencies, priceStore)
+          : null;
+      const imageCoin =
+        amount?.denom && amount?.amount
+          ? renderImageCoin(amount, currencies)
+          : null;
+      const { colors } = useTheme();
+      const recipient = msg?.value?.msg?.transfer?.recipient;
+      const sender = msg?.value?.sender;
+      const coin =
+        amount.denom && amount.amount
+          ? CoinUtils.convertCoinPrimitiveToCoinPretty(
+              currencies,
+              amount.denom?.toLowerCase(),
+              amount.amount
+            )
+          : null;
+      return (
+        <View>
+          {coin && (
+            <AmountCard
+              imageCoin={imageCoin}
+              amountStr={hyphen(`-${coin?.toString()}`)}
+              totalPrice={totalPrice}
+            />
+          )}
+          <View
+            style={[
+              styles.container,
+              { backgroundColor: colors["neutral-surface-card"] },
+            ]}
+          >
+            {sender && (
+              <ItemReceivedToken
+                label={"From"}
+                valueDisplay={hyphen(Bech32Address.shortenAddress(sender, 20))}
+                value={sender}
+              />
+            )}
+            {recipient && (
+              <ItemReceivedToken
+                label={"To"}
+                valueDisplay={hyphen(
+                  Bech32Address.shortenAddress(recipient, 20)
+                )}
+                value={recipient}
+              />
+            )}
+            {contract && (
+              <ItemReceivedToken
+                label={"Contract"}
+                valueDisplay={hyphen(
+                  Bech32Address.shortenAddress(contract, 20)
+                )}
+                value={contract}
+              />
+            )}
+          </View>
+        </View>
+      );
     }
-  }, [msg]);
-  const { colors } = useTheme();
-  return (
-    <View
-      style={{
-        flex: 1,
-      }}
-    >
-      <ScrollView
-        horizontal={true}
+    return (
+      <View
         style={{
-          backgroundColor: colors["neutral-surface-bg"],
-          padding: 16,
-          borderRadius: 24,
-          maxHeight: 300,
+          flex: 1,
         }}
       >
-        <Text style={style.flatten(["body3", "color-text-black-low"])}>
-          {prettyMsg}
-        </Text>
-      </ScrollView>
-    </View>
-  );
-};
+        <ScrollView
+          horizontal={true}
+          style={{
+            backgroundColor: colors["neutral-surface-bg"],
+            padding: 16,
+            borderRadius: 24,
+            maxHeight: 300,
+          }}
+        >
+          <Text style={style.flatten(["body3", "color-text-black-low"])}>
+            {prettyMsg}
+          </Text>
+        </ScrollView>
+      </View>
+    );
+  }
+);

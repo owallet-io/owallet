@@ -19,7 +19,14 @@ export const AmountCard: FC<{
       }}
     >
       {imageCoin}
-      <OWText size={28} color={colors["neutral-text-title"]} weight={"500"}>
+      <OWText
+        style={{
+          textAlign: "center",
+        }}
+        size={28}
+        color={colors["neutral-text-title"]}
+        weight={"500"}
+      >
         {amountStr}
       </OWText>
       <OWText
