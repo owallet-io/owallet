@@ -181,6 +181,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
               smartNavigation.pushSmart("TxPendingResult", {
                 txHash: Buffer.from(txHash).toString("hex"),
                 data: {
+                  type: "redelegate",
                   wallet: account.bech32Address,
                   validator: sendConfigs.recipientConfig.recipient,
                   amount: sendConfigs.amountConfig.getAmountPrimitive(),

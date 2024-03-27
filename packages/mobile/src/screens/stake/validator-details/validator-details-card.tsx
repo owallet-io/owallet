@@ -168,6 +168,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
               txHash: Buffer.from(txHash).toString("hex"),
               data: {
                 ...validatorObject,
+                type: "claim",
                 amount: rewards?.toCoin(),
                 currency: rewards.currency,
               },

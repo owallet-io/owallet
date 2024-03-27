@@ -194,6 +194,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                       smartNavigation.pushSmart("TxPendingResult", {
                         txHash: Buffer.from(txHash).toString("hex"),
                         data: {
+                          type: "stake",
                           wallet: account.bech32Address,
                           validator: sendConfigs.recipientConfig.recipient,
                           amount: sendConfigs.amountConfig.getAmountPrimitive(),

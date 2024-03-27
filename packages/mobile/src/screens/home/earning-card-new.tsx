@@ -68,6 +68,7 @@ export const EarningCardNew: FunctionComponent<{
                 ...validatorObject,
                 amount: stakingReward?.toCoin(),
                 currency: chainStore.current.stakeCurrency,
+                type: "claim",
               },
             });
             const historyInfos = {

@@ -278,6 +278,7 @@ export const SendScreen: FunctionComponent = observer(() => {
                             fromAddress: address,
                             fee: sendConfigs.feeConfig.toStdFee(),
                             currency: sendConfigs.amountConfig.sendCurrency,
+                            type: "send",
                           },
                         });
 

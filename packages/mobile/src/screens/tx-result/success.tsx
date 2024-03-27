@@ -142,7 +142,8 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
         key !== "memo" &&
         key !== "fee" &&
         key !== "amount" &&
-        key !== "currency"
+        key !== "currency" &&
+        key !== "type"
       );
     });
   return (
@@ -226,7 +227,7 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
               size={16}
               weight={"500"}
             >
-              Send
+              {capitalizedText(params?.data?.type) || "Send"}
             </Text>
             <View
               style={{
@@ -255,7 +256,10 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
               size={28}
               weight={"500"}
             >
-              {`${amount?.shrink(true)?.trim(true)?.toString()}`}
+              {`${params?.data?.type === "send" ? "-" : ""}${amount
+                ?.shrink(true)
+                ?.trim(true)
+                ?.toString()}`}
             </Text>
             <Text
               color={colors["neutral-text-body"]}

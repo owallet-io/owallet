@@ -236,7 +236,10 @@ export const NewSendScreen: FunctionComponent = observer(() => {
                 fromAmount: sendConfigs.amountConfig.amount,
                 toAmount: sendConfigs.amountConfig.amount,
                 value: sendConfigs.amountConfig.amount,
-                fee: 0,
+                fee: sendConfigs.feeConfig.fee
+                  ?.trim(true)
+                  ?.hideDenom(true)
+                  ?.toString(),
                 type: HISTORY_STATUS.SEND,
                 fromToken: {
                   asset: sendConfigs.amountConfig.sendCurrency.coinDenom,
@@ -254,6 +257,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
                 data: {
                   memo: sendConfigs.memoConfig.memo,
                   from: address,
+                  type: "send",
                   to: sendConfigs.recipientConfig.recipient,
                   amount: sendConfigs.amountConfig.getAmountPrimitive(),
                   fee: sendConfigs.feeConfig.toStdFee(),

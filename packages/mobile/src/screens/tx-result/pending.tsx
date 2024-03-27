@@ -87,7 +87,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
   };
 
   useEffect(() => {
-    let txTracer: TendermintTxTracer | undefined;
+    // let txTracer: TendermintTxTracer | undefined;
     if (isFocused && chainId && chainInfo) {
       if (chainId === TRON_ID) {
         // It may take a while to confirm transaction in TRON, show we make retry few times until it is done
@@ -158,38 +158,39 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
             });
           }
         });
-      } else {
-        txTracer = new TendermintTxTracer(chainInfo.rpc, "/websocket");
-        txTracer
-          .traceTx(Buffer.from(txHash, "hex"))
-          .then((tx) => {
-            const data = {
-              ...params?.data,
-            };
-            if (tx.code == null || tx.code === 0) {
-              smartNavigation.replaceSmart("TxSuccessResult", {
-                chainId,
-                txHash,
-                data,
-              });
-            } else {
-              smartNavigation.replaceSmart("TxFailedResult", {
-                chainId,
-                txHash,
-                data,
-              });
-            }
-          })
-          .catch((e) => {
-            console.log(`Failed to trace the tx (${txHash})`, e);
-          });
       }
+      // else {
+      //   txTracer = new TendermintTxTracer(chainInfo.rpc, "/websocket");
+      //   txTracer
+      //     .traceTx(Buffer.from(txHash, "hex"))
+      //     .then((tx) => {
+      //       const data = {
+      //         ...params?.data,
+      //       };
+      //       if (tx.code == null || tx.code === 0) {
+      //         smartNavigation.replaceSmart("TxSuccessResult", {
+      //           chainId,
+      //           txHash,
+      //           data,
+      //         });
+      //       } else {
+      //         smartNavigation.replaceSmart("TxFailedResult", {
+      //           chainId,
+      //           txHash,
+      //           data,
+      //         });
+      //       }
+      //     })
+      //     .catch((e) => {
+      //       console.log(`Failed to trace the tx (${txHash})`, e);
+      //     });
+      // }
     }
 
     return () => {
-      if (txTracer) {
-        txTracer.close();
-      }
+      // if (txTracer) {
+      //   txTracer.close();
+      // }
     };
   }, [
     chainId,
@@ -231,17 +232,33 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
   useEffect(() => {
     if (txHash) {
       InteractionManager.runAfterInteractions(() => {
-        const restApi = chainInfo?.rest;
-        const restConfig = chainInfo?.restConfig;
-        const txRestCosmos = new TxRestCosmosClient(restApi, restConfig);
-        txRestCosmos
-          .fetchTxPoll(txHash, 1000)
-          .then((res) => {
-            if (res) {
-              getDetailByHash(txHash);
-            }
-          })
-          .catch((err) => console.log(err));
+        if (chainInfo.networkType === "cosmos") {
+          const restApi = chainInfo?.rest;
+          const restConfig = chainInfo?.restConfig;
+          const txRestCosmos = new TxRestCosmosClient(restApi, restConfig);
+          txRestCosmos
+            .fetchTxPoll(txHash)
+            .then((tx) => {
+              const data = {
+                ...params?.data,
+              };
+              if (tx.code == null || tx.code === 0) {
+                smartNavigation.replaceSmart("TxSuccessResult", {
+                  chainId,
+                  txHash,
+                  data,
+                });
+              } else {
+                smartNavigation.replaceSmart("TxFailedResult", {
+                  chainId,
+                  txHash,
+                  data,
+                });
+              }
+            })
+            .catch((err) => console.log(err));
+        }
+        getDetailByHash(txHash);
       });
     }
   }, [txHash]);
@@ -268,7 +285,8 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
         key !== "memo" &&
         key !== "fee" &&
         key !== "amount" &&
-        key !== "currency"
+        key !== "currency" &&
+        key !== "type"
       );
     });
 
@@ -360,7 +378,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
               size={16}
               weight={"500"}
             >
-              Send
+              {capitalizedText(params?.data?.type) || "Send"}
             </Text>
             <Image
               style={{
@@ -380,7 +398,10 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
               size={28}
               weight={"500"}
             >
-              {`${amount?.shrink(true)?.trim(true)?.toString()}`}
+              {`${params?.data?.type === "send" ? "-" : ""}${amount
+                ?.shrink(true)
+                ?.trim(true)
+                ?.toString()}`}
             </Text>
             <Text
               color={colors["neutral-text-body"]}
