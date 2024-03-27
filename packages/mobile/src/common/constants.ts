@@ -110,7 +110,7 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: "Assets",
   },
   [SCREENS.TABS.Browser]: {
-    title: "Browser",
+    title: HEADER_KEY.showNetworkHeader,
   },
   [SCREENS.TABS.Settings]: {
     title: "Settings",

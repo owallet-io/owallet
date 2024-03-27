@@ -52,13 +52,17 @@ export const WebNavigation: FC = () => {
     <Stack.Navigator
       initialRouteName={SCREENS.Browser}
       screenOptions={{
-        ...WebpageScreenScreenOptionsPreset,
+        headerShown: false,
+        // ...WebpageScreenScreenOptionsPreset,
       }}
       headerMode="screen"
     >
       <Stack.Screen
-        options={({ navigation }) =>
-          WebpageHeaderOptions({ navigation, title: SCREENS.Browser })
+        options={
+          ({ navigation }) => ({
+            headerShown: false,
+          })
+          // WebpageHeaderOptions({ navigation, title: SCREENS.Browser })
         }
         name={SCREENS.Browser}
         component={Browser}

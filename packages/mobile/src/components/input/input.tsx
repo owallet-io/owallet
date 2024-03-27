@@ -74,7 +74,7 @@ export const TextInput = React.forwardRef<
             [
               "background-color-white",
               "padding-y-12",
-              "border-radius-4",
+              // "border-radius-4",
               "border-width-1",
               "border-color-border-white",
             ],
