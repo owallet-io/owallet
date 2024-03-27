@@ -52,7 +52,6 @@ const styling = (colors) =>
       borderWidth: 0,
     },
     input: {
-      width: metrics.screenWidth - 32,
       borderColor: colors["neutral-border-strong"],
       borderRadius: 12,
     },

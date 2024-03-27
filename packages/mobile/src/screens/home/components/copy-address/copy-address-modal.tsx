@@ -17,12 +17,19 @@ export const CopyAddressModal: FunctionComponent<{
   const safeAreaInsets = useSafeAreaInsets();
   const [keyword, setKeyword] = useState("");
   const [addresses, setAddresses] = useState({});
+  const [refresh, setRefresh] = useState(Date.now());
 
   const { accountStore } = useStore();
 
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
   const accountBtc = accountStore.getAccount(ChainIdEnum.Bitcoin);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setRefresh(Date.now());
+    }, 2000);
+  }, []);
 
   useEffect(() => {
     let accounts = {};
@@ -49,7 +56,7 @@ export const CopyAddressModal: FunctionComponent<{
     accounts[ChainNameEnum.BitcoinSegWit] = accountBtc.allBtcAddresses.bech32;
 
     setAddresses(accounts);
-  }, [accountOrai.bech32Address, accountEth.evmosHexAddress]);
+  }, [accountOrai.bech32Address, accountEth.evmosHexAddress, refresh]);
 
   const { colors } = useTheme();
   const styles = styling(colors);

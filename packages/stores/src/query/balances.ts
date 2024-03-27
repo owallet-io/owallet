@@ -112,10 +112,7 @@ export class ObservableQueryBalancesInner {
   @computed
   get stakable(): ObservableQueryBalanceInner {
     const chainInfo = this.chainGetter.getChain(this.chainId);
-    console.log(
-      "🚀 ~ ObservableQueryBalancesInner ~ getstakable ~ chainInfo.stakeCurrency:",
-      chainInfo.stakeCurrency
-    );
+
     return this.getBalanceInner(chainInfo.stakeCurrency);
   }
 
@@ -134,10 +131,6 @@ export class ObservableQueryBalancesInner {
         result.push(balanceInner);
       }
     }
-    console.log(
-      "🚀 ~ ObservableQueryBalancesInner ~ getbalances ~ result:",
-      result
-    );
     return result;
   }
 
