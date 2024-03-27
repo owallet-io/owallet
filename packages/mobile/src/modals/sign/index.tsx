@@ -206,61 +206,66 @@ export const SignModal: FunctionComponent<{
     return (
       <WrapViewModal
         disabledScrollView={false}
+        buttonBottom={
+          <>
+            <View
+              style={{
+                backgroundColor: colors["neutral-surface-card"],
+                paddingHorizontal: 16,
+                borderBottomLeftRadius: 24,
+                borderBottomRightRadius: 24,
+                marginBottom: 24,
+              }}
+            >
+              <FeeInSign
+                feeConfig={feeConfig}
+                gasConfig={gasConfig}
+                signOptions={signInteractionStore.waitingData?.data.signOptions}
+                isInternal={isInternal}
+              />
+              {/*<MemoInput label="Memo" memoConfig={memoConfig} />*/}
+              {memoConfig.memo && (
+                <ItemReceivedToken
+                  label={"Memo"}
+                  valueDisplay={memoConfig.memo}
+                  value={memoConfig.memo}
+                  btnCopy={false}
+                />
+              )}
+            </View>
+            <OWButtonGroup
+              labelApprove={"Confirm"}
+              labelClose={"Cancel"}
+              disabledApprove={isDisable}
+              disabledClose={signInteractionStore.isLoading}
+              loadingApprove={signInteractionStore.isLoading}
+              styleApprove={{
+                borderRadius: 99,
+                backgroundColor: colors["primary-surface-default"],
+              }}
+              onPressClose={_onPressReject}
+              onPressApprove={_onPressApprove}
+              styleClose={{
+                borderRadius: 99,
+                backgroundColor: colors["neutral-surface-bg"],
+              }}
+            />
+          </>
+        }
         style={{
           backgroundColor: colors["neutral-surface-card"],
-          maxHeight: metrics.screenHeight - 100,
-          // paddingBottom:0,
+          maxHeight: metrics.screenHeight - 250,
+        }}
+        containerStyle={{
+          paddingBottom: 16,
         }}
       >
         <View
-          style={{
-            paddingBottom: 50,
-          }}
+        // style={{
+        //   paddingBottom: 20
+        // }}
         >
           <View>{renderedMsgs}</View>
-
-          <View
-            style={{
-              backgroundColor: colors["neutral-surface-card"],
-              paddingHorizontal: 16,
-              borderBottomLeftRadius: 24,
-              borderBottomRightRadius: 24,
-              marginBottom: 24,
-            }}
-          >
-            <FeeInSign
-              feeConfig={feeConfig}
-              gasConfig={gasConfig}
-              signOptions={signInteractionStore.waitingData?.data.signOptions}
-              isInternal={isInternal}
-            />
-            {/*<MemoInput label="Memo" memoConfig={memoConfig} />*/}
-            {memoConfig.memo && (
-              <ItemReceivedToken
-                label={"Memo"}
-                valueDisplay={memoConfig.memo}
-                value={memoConfig.memo}
-                btnCopy={false}
-              />
-            )}
-          </View>
-          <OWButtonGroup
-            labelApprove={"Confirm"}
-            labelClose={"Cancel"}
-            disabledApprove={isDisable}
-            disabledClose={signInteractionStore.isLoading}
-            loadingApprove={signInteractionStore.isLoading}
-            styleApprove={{
-              borderRadius: 99,
-              backgroundColor: colors["primary-surface-default"],
-            }}
-            onPressClose={_onPressReject}
-            onPressApprove={_onPressApprove}
-            styleClose={{
-              borderRadius: 99,
-              backgroundColor: colors["neutral-surface-bg"],
-            }}
-          />
         </View>
       </WrapViewModal>
     );

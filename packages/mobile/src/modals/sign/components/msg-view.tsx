@@ -519,7 +519,7 @@ export const UnknownMsgView: FunctionComponent<{ msg: object }> = observer(
       }
     }, [msg]);
     const { colors } = useTheme();
-    console.log(msg, "msg kaka");
+
     if (msg?.value?.msg?.transfer) {
       const currencies = chainStore.current.currencies;
       const contract = msg?.value?.contract;
@@ -552,7 +552,7 @@ export const UnknownMsgView: FunctionComponent<{ msg: object }> = observer(
           {coin && (
             <AmountCard
               imageCoin={imageCoin}
-              amountStr={hyphen(`-${coin?.toString()}`)}
+              amountStr={hyphen(`-${coin?.trim(true)?.toString()}`)}
               totalPrice={totalPrice}
             />
           )}
