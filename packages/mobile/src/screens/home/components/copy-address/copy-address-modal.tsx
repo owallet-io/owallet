@@ -17,12 +17,19 @@ export const CopyAddressModal: FunctionComponent<{
   const safeAreaInsets = useSafeAreaInsets();
   const [keyword, setKeyword] = useState("");
   const [addresses, setAddresses] = useState({});
+  const [refresh, setRefresh] = useState(Date.now());
 
   const { accountStore } = useStore();
 
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
   const accountBtc = accountStore.getAccount(ChainIdEnum.Bitcoin);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setRefresh(Date.now());
+    }, 2000);
+  }, []);
 
   useEffect(() => {
     let accounts = {};
@@ -49,7 +56,7 @@ export const CopyAddressModal: FunctionComponent<{
     accounts[ChainNameEnum.BitcoinSegWit] = accountBtc.allBtcAddresses.bech32;
 
     setAddresses(accounts);
-  }, [accountOrai.bech32Address, accountEth.evmosHexAddress]);
+  }, [accountOrai.bech32Address, accountEth.evmosHexAddress, refresh]);
 
   const { colors } = useTheme();
   const styles = styling(colors);
@@ -79,7 +86,27 @@ export const CopyAddressModal: FunctionComponent<{
             );
             const chainId = ChainIdEnum[chainNameKey];
 
-            const chainIcon = chainIcons.find((c) => c.chainId === chainId);
+            let chainIcon = chainIcons.find((c) => c.chainId === chainId);
+            if (!chainIcon) {
+              chainIcon = chainIcons.find(
+                (c) => c.chainId === ChainIdEnum.Oraichain
+              );
+            }
+            // Hardcode for Oasis because oraidex-common dos not have icon yet
+            if (item.name.includes("Oasis")) {
+              chainIcon = {
+                chainId: chainId,
+                Icon: "https://s2.coinmarketcap.com/static/img/coins/200x200/7653.png",
+              };
+            }
+            // Hardcode for BTC because oraidex-common dos not have icon yet
+            if (item.name.includes("Bit")) {
+              chainIcon = {
+                chainId: chainId,
+                Icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Bitcoin.svg/1200px-Bitcoin.svg.png",
+              };
+            }
+
             if (key !== "undefined") {
               if (keyword === "") {
                 return (
