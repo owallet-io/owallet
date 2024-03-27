@@ -19,6 +19,8 @@ import { useTheme } from "@src/themes/theme-provider";
 import { BottomSheetProps } from "@gorhom/bottom-sheet";
 import ItemDetail from "@src/screens/transactions/components/item-details";
 import { capitalizedText } from "@src/utils/helper";
+import { CustomFee } from "@src/modals/fee";
+import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
 
 const FeeButtonsModal: FunctionComponent<{
   isOpen: boolean;
@@ -28,10 +30,10 @@ const FeeButtonsModal: FunctionComponent<{
   gasConfig: IGasConfig;
 }> = registerModal(
   observer(({ close, feeConfig, gasConfig }) => {
-    const [customFee, setCustomFee] = useState(false);
+    const [customGas, setCustomGas] = useState(false);
     const { colors } = useTheme();
     return (
-      <CardModal title="Set Fee">
+      <WrapViewModal title="Set Fee" disabledScrollView={false}>
         <View
           style={{
             flexDirection: "row",
@@ -40,9 +42,9 @@ const FeeButtonsModal: FunctionComponent<{
           }}
         >
           <Toggle
-            on={customFee}
+            on={customGas}
             onChange={(value) => {
-              setCustomFee(value);
+              setCustomGas(value);
               if (!value) {
                 if (feeConfig.feeCurrency && !feeConfig.fee) {
                   feeConfig.setFeeType("average");
@@ -58,47 +60,26 @@ const FeeButtonsModal: FunctionComponent<{
               paddingHorizontal: 8,
             }}
           >
-            Custom Fee
+            Custom Gas
           </Text>
         </View>
-        <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-          {customFee ? (
-            <TextInput
-              label="Fee"
-              placeholder="Type your Fee here"
-              keyboardType={"numeric"}
-              labelStyle={{
-                fontSize: 16,
-                fontWeight: "700",
-                lineHeight: 22,
-                color: colors["gray-900"],
-                marginBottom: 8,
-              }}
-              onChangeText={(text) => {
-                const fee = new Dec(Number(text.replace(/,/g, "."))).mul(
-                  DecUtils.getTenExponentNInPrecisionRange(6)
-                );
+        {/*<TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>*/}
+        {customGas && <CustomFee gasConfig={gasConfig} colors={colors} />}
 
-                feeConfig.setManualFee({
-                  amount: fee.roundUp().toString(),
-                  denom: feeConfig.feeCurrency.coinMinimalDenom,
-                });
-              }}
-            />
-          ) : (
-            <FeeButtons
-              label="Fee"
-              gasLabel="Gas"
-              feeConfig={feeConfig}
-              gasConfig={gasConfig}
-            />
-          )}
-        </TouchableWithoutFeedback>
+        <FeeButtons
+          label="Fee"
+          gasLabel="Gas"
+          feeConfig={feeConfig}
+          vertical
+          gasConfig={gasConfig}
+        />
+
+        {/*</TouchableWithoutFeedback>*/}
 
         <TouchableOpacity
           onPress={close}
           style={{
-            marginBottom: customFee ? 264 : 14,
+            marginBottom: 16,
             marginTop: 32,
             backgroundColor: colors["primary-surface-default"],
             borderRadius: 8,
@@ -116,7 +97,7 @@ const FeeButtonsModal: FunctionComponent<{
             Confirm
           </Text>
         </TouchableOpacity>
-      </CardModal>
+      </WrapViewModal>
     );
   }),
   {

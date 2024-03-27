@@ -13,9 +13,9 @@ import { CardModal } from "@src/modals/card";
 import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
 
 export const CustomFee: FunctionComponent<{
-  sendConfigs;
+  gasConfig;
   colors;
-}> = ({ sendConfigs, colors }) => {
+}> = ({ gasConfig, colors }) => {
   return (
     <View style={{ paddingBottom: 5, paddingHorizontal: 1 }}>
       <TextInput
@@ -34,9 +34,9 @@ export const CustomFee: FunctionComponent<{
           lineHeight: 20,
           color: colors["neutral-text-body"],
         }}
-        defaultValue={sendConfigs.gasConfig.gasRaw}
+        defaultValue={gasConfig.gasRaw}
         onChangeText={(text) => {
-          sendConfigs.gasConfig.setGas(text);
+          gasConfig.setGas(text);
         }}
       />
     </View>
@@ -107,18 +107,20 @@ export const FeeModal: FunctionComponent<{
             on={customGas}
             onChange={(value) => {
               setCustomGas(value);
-              // if (!value) {
-              //   if (
-              //     sendConfigs.feeConfig.feeCurrency &&
-              //     !sendConfigs.feeConfig.fee
-              //   ) {
-              //     sendConfigs.feeConfig.setFeeType("average");
-              //   }
-              // }
+              if (!value) {
+                if (
+                  sendConfigs.feeConfig.feeCurrency &&
+                  !sendConfigs.feeConfig.fee
+                ) {
+                  sendConfigs.feeConfig.setFeeType("average");
+                }
+              }
             }}
           />
         </View>
-        {customGas && <CustomFee sendConfigs={sendConfigs} colors={colors} />}
+        {customGas && (
+          <CustomFee gasConfig={sendConfigs.gasConfig} colors={colors} />
+        )}
         <FeeButtons
           vertical={vertical}
           label="Transaction Fee"

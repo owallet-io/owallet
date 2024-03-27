@@ -33,6 +33,8 @@ import OWCard from "@src/components/card/ow-card";
 import FastImage from "react-native-fast-image";
 import { DenomHelper } from "@owallet/common";
 import { Bech32Address } from "@owallet/cosmos";
+import { AmountCard, WasmExecutionMsgView } from "@src/modals/sign/components";
+import { ScrollView } from "react-native-gesture-handler";
 
 export const SignEthereumModal: FunctionComponent<{
   isOpen: boolean;
@@ -84,7 +86,7 @@ export const SignEthereumModal: FunctionComponent<{
       queriesStore.get(current.chainId).queryBalances,
       null
     );
-
+    console.log(gasPrice, "gasPrice");
     const memoConfig = useMemoConfig(chainStore, current.chainId);
     const feeConfig = useFeeEvmConfig(
       chainStore,
@@ -103,7 +105,6 @@ export const SignEthereumModal: FunctionComponent<{
       gasConfig.setGasPriceStep(gasPrice);
       return () => {};
     }, [gasPrice]);
-    const preferNoSetMemo = !!account.isSendingMsg;
 
     const _onPressReject = () => {
       try {
@@ -118,26 +119,30 @@ export const SignEthereumModal: FunctionComponent<{
 
         //@ts-ignore
         const gasDataSign = data?.data?.data?.data?.gas;
-
+        console.log(gasDataSign, "gasDataSign");
         //@ts-ignore
         const gasPriceDataSign = data?.data?.data?.data?.gasPrice;
+
         chainStore.selectChain(data.data.chainId);
-        gasConfig.setGas(Web3.utils.hexToNumber(gasDataSign));
-        gasConfig.setGasPrice(Web3.utils.hexToNumberString(gasPriceDataSign));
-        if (preferNoSetFee && gasConfig.gas) {
-          const gas = new Dec(
-            new Int(Web3.utils.hexToNumberString(gasDataSign))
-          );
-          const gasPrice = new Dec(
-            new Int(Web3.utils.hexToNumberString(gasPriceDataSign))
-          );
-          const feeAmount = gasPrice.mul(gas);
+        if (gasDataSign) {
+          gasConfig.setGas(Web3.utils.hexToNumber(gasDataSign));
+        }
+        if (gasPriceDataSign) {
+          gasConfig.setGasPrice(Web3.utils.hexToNumberString(gasPriceDataSign));
+        }
+        const gas = new Dec(new Int(Web3.utils.hexToNumberString(gasDataSign)));
+        const gasPrice = new Dec(
+          new Int(Web3.utils.hexToNumberString(gasPriceDataSign))
+        );
+        const feeAmount = gasPrice.mul(gas);
+        if (feeAmount.lte(new Dec(0))) {
+          feeConfig.setFeeType("average");
+        } else {
           feeConfig.setManualFee({
             amount: feeAmount.roundUp().toString(),
             denom: chainStore.current.feeCurrencies[0].coinMinimalDenom,
           });
         }
-
         setDataSign(signInteractionStore.waitingEthereumData);
         const dataSigning = data?.data?.data?.data;
         const hstInterface = new ethers.utils.Interface(ERC20_ABI);
@@ -230,7 +235,7 @@ export const SignEthereumModal: FunctionComponent<{
     };
 
     const renderAmount = () => {
-      if (!currency || !infoSign?.value) return;
+      if (!currency || !infoSign?.value) return null;
       return new CoinPretty(
         currency,
         new Dec(Web3.utils.hexToNumberString(infoSign?.value))
@@ -243,7 +248,7 @@ export const SignEthereumModal: FunctionComponent<{
     return (
       <WrapViewModal
         style={{
-          backgroundColor: colors["neutral-surface-bg"],
+          backgroundColor: colors["neutral-surface-card"],
         }}
       >
         <View>
@@ -258,31 +263,28 @@ export const SignEthereumModal: FunctionComponent<{
           >
             {`Send confirmation`.toUpperCase()}
           </OWText>
-          <OWCard
-            style={{
-              height: 143,
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            {checkImageCoin()}
-            <OWText
-              size={28}
-              color={colors["neutral-text-title"]}
-              weight={"500"}
-            >
-              {renderAmount()}
-            </OWText>
-            <OWText
-              style={{
-                textAlign: "center",
-              }}
-              color={colors["neutral-text-body2"]}
-              weight={"400"}
-            >
-              {checkPrice()}
-            </OWText>
-          </OWCard>
+
+          {renderAmount() ? (
+            <AmountCard
+              imageCoin={checkImageCoin()}
+              amountStr={renderAmount()}
+              totalPrice={checkPrice()}
+            />
+          ) : (
+            dataSign && (
+              <ScrollView
+                style={{
+                  backgroundColor: colors["neutral-surface-bg"],
+                  padding: 16,
+                  borderRadius: 24,
+                  maxHeight: 300,
+                }}
+              >
+                <WasmExecutionMsgView msg={dataSign} />
+              </ScrollView>
+            )
+          )}
+
           <View
             style={{
               backgroundColor: colors["neutral-surface-card"],
@@ -293,29 +295,28 @@ export const SignEthereumModal: FunctionComponent<{
               marginTop: 2,
             }}
           >
-            <ItemReceivedToken
-              label={"From"}
-              valueDisplay={
-                infoSign?.from &&
-                Bech32Address.shortenAddress(infoSign?.from, 20)
-              }
-              value={infoSign?.from}
-            />
-            <ItemReceivedToken
-              label={"To"}
-              valueDisplay={
-                infoSign?.to && Bech32Address.shortenAddress(infoSign?.to, 20)
-              }
-              value={infoSign?.to}
-            />
+            {infoSign?.from && (
+              <ItemReceivedToken
+                label={"From"}
+                valueDisplay={Bech32Address.shortenAddress(infoSign?.from, 20)}
+                value={infoSign?.from}
+              />
+            )}
+            {infoSign?.to && (
+              <ItemReceivedToken
+                label={"To"}
+                valueDisplay={
+                  infoSign?.to && Bech32Address.shortenAddress(infoSign?.to, 20)
+                }
+                value={infoSign?.to}
+              />
+            )}
             <FeeInSign
               feeConfig={feeConfig}
               gasConfig={gasConfig}
-              signOptions={{ preferNoSetFee: true }}
+              signOptions={{ preferNoSetFee }}
               isInternal={true}
             />
-
-            <ItemReceivedToken label={"Memo"} btnCopy={false} />
           </View>
         </View>
 

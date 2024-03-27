@@ -42,15 +42,8 @@ export const EarningCardNew: FunctionComponent<{
   const queryReward = queries.cosmos.queryRewards.getQueryBech32Address(
     account.bech32Address
   );
-
   const stakingReward = queryReward.stakableReward;
-  console.log(stakingReward?.toCoin(), "staking reward");
-
   const totalStakingReward = priceStore.calculatePrice(stakingReward);
-  console.log(
-    queryReward.pendingRewardValidatorAddresses,
-    "queryReward.pendingRewardValidatorAddresses"
-  );
   const _onPressClaim = async () => {
     try {
       await account.cosmos.sendWithdrawDelegationRewardMsgs(

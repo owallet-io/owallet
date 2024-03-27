@@ -65,7 +65,7 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
   } = useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
-  const [customFee, setCustomFee] = useState(false);
+
   const [balance, setBalance] = useState<CoinPretty>(null);
   const route = useRoute<
     RouteProp<
