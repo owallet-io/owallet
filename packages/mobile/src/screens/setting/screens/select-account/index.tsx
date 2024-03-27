@@ -100,6 +100,7 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
   const handleOnKeyStore = useCallback(async (keyStore) => {
     loadingScreen.setIsLoading(true);
     universalSwapStore.setLoaded(false);
+    universalSwapStore.clearAmounts();
     analyticsStore.logEvent("Account changed");
     await selectKeyStore(keyStore);
     loadingScreen.setIsLoading(false);

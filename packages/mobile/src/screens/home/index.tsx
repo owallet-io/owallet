@@ -183,7 +183,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
 
   const loadTokenAmounts = useLoadTokens(universalSwapStore);
   // handle fetch all tokens of all chains
-  const handleFetchAmounts = async (orai?, eth?, tron?, kwt?) => {
+  const handleFetchAmounts = async (tokenReload?, orai?, eth?, tron?, kwt?) => {
     let loadTokenParams = {};
 
     try {
@@ -199,6 +199,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         kwtAddress: kwt ?? accountKawaiiCosmos.bech32Address,
         tronAddress: getBase58Address(tron ?? accountTron.evmosHexAddress),
         cwStargate,
+        tokenReload,
       };
 
       setTimeout(() => {
@@ -226,8 +227,8 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         accountKawaiiCosmos.bech32Address
       ) {
         setTimeout(() => {
-          universalSwapStore.clearAmounts();
           handleFetchAmounts(
+            [ChainIdEnum.Oraichain],
             accountOrai.bech32Address,
             accountEth.evmosHexAddress,
             accountTron.evmosHexAddress,
