@@ -3,12 +3,10 @@ import { observer } from "mobx-react-lite";
 import {
   EmptyAddressError,
   EmptyAmountError,
-  useSendTxConfig,
   useSendTxEvmConfig,
 } from "@owallet/hooks";
 import { useStore } from "../../stores";
 import { EthereumEndpoint, toAmount } from "@owallet/common";
-import { PageWithScrollView } from "../../components/page";
 import {
   InteractionManager,
   ScrollView,
@@ -16,15 +14,12 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
+import { CoinPretty, Dec } from "@owallet/unit";
 
 import {
   AddressInput,
-  AmountInput,
   MemoInput,
   CurrencySelector,
-  FeeButtons,
-  TextInput,
 } from "../../components/input";
 import { OWButton } from "../../components/button";
 import { RouteProp, useRoute } from "@react-navigation/native";
@@ -32,10 +27,6 @@ import { useTheme } from "@src/themes/theme-provider";
 import { useSmartNavigation } from "../../navigation.provider";
 import { Buffer } from "buffer";
 import { metrics, spacing } from "../../themes";
-import { Text } from "@src/components/text";
-import { Toggle } from "../../components/toggle";
-import { OWBox } from "@src/components/card";
-import { OWSubTitleHeader } from "@src/components/header";
 import { PageHeader } from "@src/components/header/header-new";
 import OWCard from "@src/components/card/ow-card";
 import OWText from "@src/components/text/ow-text";
@@ -50,7 +41,6 @@ import {
   HISTORY_STATUS,
 } from "@src/utils/helper";
 import { navigate } from "@src/router/root";
-import { SCREENS } from "@src/common/constants";
 
 export const SendEvmScreen: FunctionComponent = observer(() => {
   const {
@@ -287,19 +277,6 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
         if (e?.message === "Request rejected") {
           return;
         }
-
-        // if (
-        //   e?.message?.includes('Cannot read properties of undefined')
-        // ) {
-        //   return;
-        // }
-
-        // alert(e.message);
-        // if (smartNavigation.canGoBack) {
-        //   smartNavigation.goBack();
-        // } else {
-        //   smartNavigation.navigateSmart("Home", {});
-        // }
       }
     }
   };
@@ -436,7 +413,7 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
                   colors={colors}
                   inputContainerStyle={{
                     borderWidth: 0,
-                    width: metrics.screenWidth / 2,
+                    width: metrics.screenWidth / 2.3,
                   }}
                   amountConfig={sendConfigs.amountConfig}
                   placeholder={"0.0"}

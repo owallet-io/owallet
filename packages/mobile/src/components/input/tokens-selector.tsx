@@ -327,7 +327,6 @@ export const SelectorButtonWithoutModal: FunctionComponent<{
   onPress: () => void;
 }> = ({ selected, currencyActive, onPress, chainId }) => {
   const { colors } = useTheme();
-
   return (
     <TouchableOpacity
       onPress={onPress}
