@@ -6,28 +6,19 @@ import React, {
   useState,
 } from "react";
 import { registerModal } from "../base";
-import { CardModal } from "../card";
-import { Text, View, KeyboardAvoidingView, Platform } from "react-native";
-import { useStyle } from "../../styles";
+import { View, Platform } from "react-native";
 import { useStore } from "../../stores";
 import Web3 from "web3";
-import { Button } from "../../components/button";
-import Big from "big.js";
+
 import { observer } from "mobx-react-lite";
-import { useUnmount } from "../../hooks";
 
 import ERC20_ABI from "human-standard-token-abi";
-import { ScrollView } from "react-native-gesture-handler";
-import { TextInput } from "../../components/input";
+
 import {
   useAmountConfig,
   useGasEvmConfig,
   useMemoConfig,
 } from "@owallet/hooks";
-import { FeeEthereumInSign } from "./fee-ethereum";
-import { navigationRef } from "../../router/root";
-import axios from "axios";
-import { colors } from "../../themes";
 import { BottomSheetProps } from "@gorhom/bottom-sheet";
 import { ethers } from "ethers";
 import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
@@ -42,8 +33,6 @@ import OWCard from "@src/components/card/ow-card";
 import FastImage from "react-native-fast-image";
 import { DenomHelper } from "@owallet/common";
 import { Bech32Address } from "@owallet/cosmos";
-
-const keyboardVerticalOffset = Platform.OS === "ios" ? 130 : 0;
 
 export const SignEthereumModal: FunctionComponent<{
   isOpen: boolean;
