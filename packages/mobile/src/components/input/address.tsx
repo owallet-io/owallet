@@ -105,6 +105,7 @@ export const AddressInput: FunctionComponent<{
 
     return (
       <TextInput
+        multiline
         label={label}
         topInInputContainer={topInInputContainer}
         labelStyle={labelStyle}
