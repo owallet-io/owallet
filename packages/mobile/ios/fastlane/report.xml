@@ -5,77 +5,27 @@
     
     
       
-      <testcase classname="fastlane.lanes" name="00: default_platform" time="0.00022">
+      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.000203">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="01: app_store_connect_api_key" time="0.001878">
+      <testcase classname="fastlane.lanes" name="1: app_store_connect_api_key" time="0.001757">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="02: create_keychain" time="0.079683">
+      <testcase classname="fastlane.lanes" name="2: create_keychain" time="0.08249">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="03: match" time="2.034273">
+      <testcase classname="fastlane.lanes" name="3: match" time="2.042944">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="04: latest_testflight_build_number" time="2.193153">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="05: get_build_number_from_xcodeproj" time="0.080963">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="06: get_version_number_from_xcodeproj" time="7.130089">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="07: increment_build_number_in_xcodeproj" time="0.022887">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="08: get_build_number_from_xcodeproj" time="0.011988">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="09: get_version_number_from_xcodeproj" time="1.316263">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="10: update_code_signing_settings" time="0.016103">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="11: sentry_upload_dif" time="24.743822">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="12: build_app" time="233.533247">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="13: pilot" time="787.313329">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="14: discord_notifier" time="0.583838">
+      <testcase classname="fastlane.lanes" name="4: latest_testflight_build_number" time="0.825162">
         
       </testcase>
     

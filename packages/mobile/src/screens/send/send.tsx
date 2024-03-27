@@ -389,13 +389,14 @@ export const NewSendScreen: FunctionComponent = observer(() => {
               <View
                 style={{
                   alignItems: "flex-end",
+                  flex: 1,
                 }}
               >
                 <NewAmountInput
                   colors={colors}
                   inputContainerStyle={{
                     borderWidth: 0,
-                    width: metrics.screenWidth / 2,
+                    width: metrics.screenWidth / 2.3,
                   }}
                   amountConfig={sendConfigs.amountConfig}
                   placeholder={"0.0"}
