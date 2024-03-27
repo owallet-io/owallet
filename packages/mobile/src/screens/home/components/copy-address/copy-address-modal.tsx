@@ -86,7 +86,27 @@ export const CopyAddressModal: FunctionComponent<{
             );
             const chainId = ChainIdEnum[chainNameKey];
 
-            const chainIcon = chainIcons.find((c) => c.chainId === chainId);
+            let chainIcon = chainIcons.find((c) => c.chainId === chainId);
+            if (!chainIcon) {
+              chainIcon = chainIcons.find(
+                (c) => c.chainId === ChainIdEnum.Oraichain
+              );
+            }
+            // Hardcode for Oasis because oraidex-common dos not have icon yet
+            if (item.name.includes("Oasis")) {
+              chainIcon = {
+                chainId: chainId,
+                Icon: "https://s2.coinmarketcap.com/static/img/coins/200x200/7653.png",
+              };
+            }
+            // Hardcode for BTC because oraidex-common dos not have icon yet
+            if (item.name.includes("Bit")) {
+              chainIcon = {
+                chainId: chainId,
+                Icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Bitcoin.svg/1200px-Bitcoin.svg.png",
+              };
+            }
+
             if (key !== "undefined") {
               if (keyword === "") {
                 return (
