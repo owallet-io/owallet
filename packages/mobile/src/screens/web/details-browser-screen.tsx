@@ -22,6 +22,7 @@ import { Bitcoin, Ethereum, OWallet, TronWeb } from "@owallet/provider";
 import { RNMessageRequesterExternal } from "@src/router";
 import { URL } from "react-native-url-polyfill";
 import DeviceInfo from "react-native-device-info";
+import { SCREENS } from "@src/common/constants";
 
 export const DetailsBrowserScreen = observer(() => {
   const { top } = useSafeAreaInsets();
@@ -234,6 +235,14 @@ export const DetailsBrowserScreen = observer(() => {
       });
     }
   }, [canGoBack, navigation]);
+
+  const onHomeBrowser = () => {
+    navigation.navigate(SCREENS.Browser);
+    return;
+  };
+  const onReload = () => {
+    webviewRef.current.reload();
+  };
   return (
     <PageWithViewInBottomTabView
       style={{
@@ -304,6 +313,7 @@ export const DetailsBrowserScreen = observer(() => {
               editable={false}
               inputRight={
                 <OWButtonIcon
+                  onPress={onReload}
                   fullWidth={false}
                   name={"tdesignrefresh"}
                   sizeIcon={18}
@@ -326,6 +336,7 @@ export const DetailsBrowserScreen = observer(() => {
           />
           <OWButtonIcon
             size={"medium"}
+            onPress={onHomeBrowser}
             style={{
               width: 44,
               height: 44,
@@ -358,8 +369,6 @@ export const DetailsBrowserScreen = observer(() => {
                       height: "100%",
                       justifyContent: "center",
                       alignItems: "center",
-                      flex: 1,
-                      backgroundColor: "red",
                     }}
                   >
                     <ActivityIndicator />
@@ -392,7 +401,6 @@ export const DetailsBrowserScreen = observer(() => {
               decelerationRate="normal"
               allowsBackForwardNavigationGestures={true}
               // onScroll={_onScroll}
-
               source={{ uri: "https://oraidex.io" }}
             />
           ) : null}
