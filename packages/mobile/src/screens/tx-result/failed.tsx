@@ -2,7 +2,7 @@ import React, { FunctionComponent, useEffect } from "react";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
-
+import _ from "lodash";
 import {
   View,
   Animated,
@@ -21,7 +21,11 @@ import { CommonActions } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
 import { PageWithView } from "@src/components/page";
 import imagesAssets from "@src/assets/images";
-import { openLink } from "@src/utils/helper";
+import {
+  capitalizedText,
+  formatContractAddress,
+  openLink,
+} from "@src/utils/helper";
 import { OWButton } from "@src/components/button";
 import { PageHeader } from "@src/components/header/header-new";
 import image from "@src/assets/images";
@@ -82,10 +86,24 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
     params?.data?.currency,
     new Dec(params?.data?.amount?.amount)
   );
-  const fee = new CoinPretty(
-    chainInfo.stakeCurrency,
-    new Dec(params?.data?.fee.amount?.[0]?.amount)
-  );
+  const fee = params?.data?.fee?.amount?.[0]?.amount
+    ? new CoinPretty(
+        chainInfo.stakeCurrency,
+        new Dec(params?.data?.fee?.amount?.[0]?.amount)
+      )
+    : new CoinPretty(chainInfo.stakeCurrency, new Dec(0));
+  const dataItem =
+    params?.data &&
+    _.pickBy(params?.data, function (value, key) {
+      return (
+        key !== "memo" &&
+        key !== "fee" &&
+        key !== "amount" &&
+        key !== "currency" &&
+        key !== "type"
+      );
+    });
+
   return (
     <PageWithBottom
       bottomGroup={
@@ -120,7 +138,7 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
         }}
       >
         <PageHeader
-          title={"Transaction detail"}
+          title={"Transaction details"}
           colors={colors["neutral-text-title"]}
         />
         <ScrollView showsVerticalScrollIndicator={false}>
@@ -168,7 +186,7 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
               size={16}
               weight={"500"}
             >
-              Send
+              {capitalizedText(params?.data?.type) || "Send"}
             </Text>
             <View
               style={{
@@ -197,7 +215,10 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
               size={28}
               weight={"500"}
             >
-              {`${amount?.shrink(true)?.trim(true)?.toString()}`}
+              {`${params?.data?.type === "send" ? "-" : ""}${amount
+                ?.shrink(true)
+                ?.trim(true)
+                ?.toString()}`}
             </Text>
             <Text
               color={colors["neutral-text-body"]}
@@ -216,22 +237,19 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
               backgroundColor: colors["neutral-surface-card"],
             }}
           >
-            <ItemReceivedToken
-              label={"From"}
-              valueDisplay={
-                params?.data?.fromAddress &&
-                Bech32Address.shortenAddress(params?.data?.fromAddress, 20)
-              }
-              value={params?.data?.fromAddress}
-            />
-            <ItemReceivedToken
-              label={"To"}
-              valueDisplay={
-                params?.data?.toAddress &&
-                Bech32Address.shortenAddress(params?.data?.toAddress, 20)
-              }
-              value={params?.data?.toAddress}
-            />
+            {dataItem &&
+              Object.keys(dataItem).map(function (key) {
+                return (
+                  <ItemReceivedToken
+                    label={capitalizedText(key)}
+                    valueDisplay={
+                      dataItem?.[key] &&
+                      formatContractAddress(dataItem?.[key], 20)
+                    }
+                    value={dataItem?.[key]}
+                  />
+                );
+              })}
             <ItemReceivedToken
               label={"Fee"}
               valueDisplay={`${fee

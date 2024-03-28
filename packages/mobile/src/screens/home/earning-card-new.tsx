@@ -12,6 +12,7 @@ import { Text } from "@src/components/text";
 import { checkRouter } from "@src/router/root";
 import { useTheme } from "@src/themes/theme-provider";
 import {
+  convertArrToObject,
   handleSaveHistory,
   HISTORY_STATUS,
   showToast,
@@ -41,10 +42,8 @@ export const EarningCardNew: FunctionComponent<{
   const queryReward = queries.cosmos.queryRewards.getQueryBech32Address(
     account.bech32Address
   );
-
   const stakingReward = queryReward.stakableReward;
   const totalStakingReward = priceStore.calculatePrice(stakingReward);
-
   const _onPressClaim = async () => {
     try {
       await account.cosmos.sendWithdrawDelegationRewardMsgs(
@@ -58,8 +57,19 @@ export const EarningCardNew: FunctionComponent<{
               chainId: chainId,
               chainName: chainStore.current.chainName,
             });
+
+            const validatorObject = convertArrToObject(
+              queryReward.pendingRewardValidatorAddresses
+            );
             smartNavigation.pushSmart("TxPendingResult", {
               txHash: Buffer.from(txHash).toString("hex"),
+              title: "Withdraw rewards",
+              data: {
+                ...validatorObject,
+                amount: stakingReward?.toCoin(),
+                currency: chainStore.current.stakeCurrency,
+                type: "claim",
+              },
             });
             const historyInfos = {
               fromAddress: account.bech32Address,

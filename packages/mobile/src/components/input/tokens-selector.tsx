@@ -284,6 +284,7 @@ export const TokensSelector: FunctionComponent<{
         setSelectedKey={setSelectedKey}
         maxItemsToShow={maxItemsToShow}
         modalPersistent={modalPersistent}
+        bottomSheetModalConfig={{}}
       />
       <SelectorButtonWithoutModal
         labelStyle={labelStyle}
@@ -326,34 +327,38 @@ export const SelectorButtonWithoutModal: FunctionComponent<{
   onPress: () => void;
 }> = ({ selected, currencyActive, onPress, chainId }) => {
   const { colors } = useTheme();
-
   return (
     <TouchableOpacity
       onPress={onPress}
       style={{
         flexDirection: "row",
-        backgroundColor: colors["neutral-surface-action3"],
-        borderRadius: 999,
-        paddingHorizontal: 14,
-        paddingVertical: 12,
-        maxWidth: metrics.screenWidth / 4,
-        marginTop: 12,
-        alignItems: "center",
       }}
     >
-      {currencyActive?.coinImageUrl && (
-        <OWIcon
-          size={20}
-          type={"images"}
-          source={{
-            uri: currencyActive?.coinImageUrl,
-          }}
-        />
-      )}
-      <OWText style={{ paddingHorizontal: 4 }} weight="600" size={14}>
-        {removeDataInParentheses(currencyActive?.coinDenom)}
-      </OWText>
-      <DownArrowIcon height={11} color={colors["primary-text"]} />
+      <View
+        style={{
+          flexDirection: "row",
+          backgroundColor: colors["neutral-surface-action3"],
+          alignItems: "center",
+          borderRadius: 999,
+          paddingHorizontal: 14,
+          paddingVertical: 12,
+          marginTop: 12,
+        }}
+      >
+        {currencyActive?.coinImageUrl && (
+          <OWIcon
+            size={20}
+            type={"images"}
+            source={{
+              uri: currencyActive?.coinImageUrl,
+            }}
+          />
+        )}
+        <OWText style={{ paddingHorizontal: 4 }} weight="600" size={14}>
+          {removeDataInParentheses(currencyActive?.coinDenom)}
+        </OWText>
+        <DownArrowIcon height={11} color={colors["primary-text"]} />
+      </View>
     </TouchableOpacity>
   );
 };

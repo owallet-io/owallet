@@ -33,13 +33,12 @@ export const WarningView: FunctionComponent = observer(() => {
         if (res?.data?.data) {
           res.data.data.map((v) => {
             if (v.uptime < 0.9) {
-              const foundValidator = find(delegations, (val) => {
-                return val.validator_address === v.operator_address;
-              });
-
-              if (foundValidator) {
-                tmpList.push(v);
-              }
+              // const foundValidator = find(delegations, (val) => {
+              //   return val.validator_address === v.operator_address;
+              // });
+              // if (foundValidator) {
+              //   tmpList.push(v);
+              // }
             }
           });
         }

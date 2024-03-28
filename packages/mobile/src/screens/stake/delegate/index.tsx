@@ -193,6 +193,14 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                       });
                       smartNavigation.pushSmart("TxPendingResult", {
                         txHash: Buffer.from(txHash).toString("hex"),
+                        data: {
+                          type: "stake",
+                          wallet: account.bech32Address,
+                          validator: sendConfigs.recipientConfig.recipient,
+                          amount: sendConfigs.amountConfig.getAmountPrimitive(),
+                          fee: sendConfigs.feeConfig.toStdFee(),
+                          currency: sendConfigs.amountConfig.sendCurrency,
+                        },
                       });
                       const historyInfos = {
                         fromAddress: account.bech32Address,
@@ -265,7 +273,6 @@ export const DelegateScreen: FunctionComponent = observer(() => {
               <OWText
                 style={{ paddingBottom: 8 }}
                 color={colors["neutral-text-title"]}
-                size={12}
               >
                 Validator
               </OWText>
@@ -292,9 +299,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                 }}
               >
                 <View style={{}}>
-                  <OWText style={{ paddingTop: 8 }} size={12}>
-                    Balance : {balance}
-                  </OWText>
+                  <OWText style={{ paddingTop: 8 }}>Balance : {balance}</OWText>
                   <View
                     style={{
                       flexDirection: "row",
@@ -327,7 +332,6 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                         <OWText
                           weight="400"
                           color={colors["neutral-text-action-on-dark-bg"]}
-                          size={12}
                         >
                           {chainStore.current.stakeCurrency.coinDenom.charAt(0)}
                         </OWText>
@@ -432,185 +436,6 @@ export const DelegateScreen: FunctionComponent = observer(() => {
       </ScrollView>
     </PageWithBottom>
   );
-
-  // return (
-  //   <PageWithScrollView backgroundColor={colors["background"]}>
-  //     <OWSubTitleHeader title="Staking" />
-  //     <OWBox
-  //       style={{
-  //         marginBottom: 24
-  //       }}
-  //     >
-  //       <AmountInput label={"Amount"} amountConfig={sendConfigs.amountConfig} />
-  //       <MemoInput label={"Memo (Optional)"} memoConfig={sendConfigs.memoConfig} />
-
-  //       {/* Need to some custom fee here */}
-
-  //       <View
-  //         style={{
-  //           flexDirection: "row",
-  //           paddingBottom: 24,
-  //           alignItems: "center"
-  //         }}
-  //       >
-  //         <Toggle
-  //           on={customFee}
-  //           onChange={value => {
-  //             setCustomFee(value);
-  //             if (!value) {
-  //               if (sendConfigs.feeConfig.feeCurrency && !sendConfigs.feeConfig.fee) {
-  //                 sendConfigs.feeConfig.setFeeType("average");
-  //               }
-  //             }
-  //           }}
-  //         />
-  //         <Text
-  //           style={{
-  //             fontWeight: "700",
-  //             fontSize: 16,
-  //             lineHeight: 34,
-  //             paddingHorizontal: 8,
-  //             color: colors["primary-text"]
-  //           }}
-  //         >
-  //           Custom Fee
-  //         </Text>
-  //       </View>
-
-  //       {customFee && chainStore.current.networkType !== "evm" ? (
-  //         <TextInput
-  //           label="Fee"
-  //           placeholder="Type your Fee here"
-  //           keyboardType={"numeric"}
-  //           labelStyle={styles.sendlabelInput}
-  //           onChangeText={text => {
-  //             const fee = new Dec(Number(text.replace(/,/g, "."))).mul(DecUtils.getTenExponentNInPrecisionRange(6));
-
-  //             sendConfigs.feeConfig.setManualFee({
-  //               amount: fee.roundUp().toString(),
-  //               denom: sendConfigs.feeConfig.feeCurrency.coinMinimalDenom
-  //             });
-  //           }}
-  //         />
-  //       ) : chainStore.current.networkType !== "evm" ? (
-  //         <FeeButtons label="Fee" gasLabel="gas" feeConfig={sendConfigs.feeConfig} gasConfig={sendConfigs.gasConfig} />
-  //       ) : null}
-
-  //       {/* <TouchableOpacity
-  //         style={{
-  //           flexDirection: 'row',
-  //           alignItems: 'center'
-  //         }}
-  //         onPress={_onOpenStakeModal}
-  //       >
-  //         <Text
-  //           style={{
-  //             ...typography.h7,
-  //             color: colors['primary-surface-default'],
-  //             marginRight: 4
-  //           }}
-  //         >{`Advance options`}</Text>
-  //         <DownArrowIcon color={colors['primary-surface-default']} height={10} />
-  //       </TouchableOpacity> */}
-
-  //       <View
-  //         style={{
-  //           flexDirection: "row",
-  //           justifyContent: "space-between",
-  //           marginTop: spacing["16"],
-  //           paddingTop: spacing["4"]
-  //         }}
-  //       >
-  //         <View>
-  //           <Text
-  //             style={{
-  //               ...styles.textNormal,
-  //               marginBottom: spacing["4"],
-  //               color: colors["sub-primary-text"]
-  //             }}
-  //           >{`Gas limit`}</Text>
-  //           {/* Gas limit now fixed at 0.00004 ORAI for every transactions */}
-  //           <Text
-  //             style={{
-  //               ...styles.textNormal,
-  //               color: colors["sub-primary-text"]
-  //             }}
-  //           >{`200000`}</Text>
-  //         </View>
-  //         <View />
-  //       </View>
-  //       <OWButton
-  //         style={{
-  //           marginTop: 20
-  //         }}
-  //         label="Stake"
-  //         fullWidth={false}
-  //         disabled={!account.isReadyToSendMsgs || !txStateIsValid}
-  //         loading={account.isSendingMsg === "delegate"}
-  //         onPress={async () => {
-  //           if (account.isReadyToSendMsgs && txStateIsValid) {
-  //             try {
-  //               await account.cosmos.sendDelegateMsg(
-  //                 sendConfigs.amountConfig.amount,
-  //                 sendConfigs.recipientConfig.recipient,
-  //                 sendConfigs.memoConfig.memo,
-  //                 sendConfigs.feeConfig.toStdFee(),
-  //                 {
-  //                   preferNoSetMemo: true,
-  //                   preferNoSetFee: true
-  //                 },
-  //                 {
-  //                   onBroadcasted: txHash => {
-  //                     analyticsStore.logEvent("Delegate tx broadcasted", {
-  //                       chainId: chainStore.current.chainId,
-  //                       chainName: chainStore.current.chainName,
-  //                       validatorName: validator?.description.moniker ?? "...",
-  //                       feeType: sendConfigs.feeConfig.feeType
-  //                     });
-  //                     smartNavigation.pushSmart("TxPendingResult", {
-  //                       txHash: Buffer.from(txHash).toString("hex")
-  //                     });
-  //                     const historyInfos = {
-  //                       fromAddress: account.bech32Address,
-  //                       toAddress: sendConfigs.recipientConfig.recipient,
-  //                       hash: Buffer.from(txHash).toString("hex"),
-  //                       memo: "",
-  //                       fromAmount: sendConfigs.amountConfig.amount,
-  //                       toAmount: sendConfigs.amountConfig.amount,
-  //                       value: sendConfigs.amountConfig.amount,
-  //                       fee: sendConfigs.feeConfig.toStdFee(),
-  //                       type: HISTORY_STATUS.STAKE,
-  //                       fromToken: {
-  //                         asset: sendConfigs.amountConfig.sendCurrency.coinDenom,
-  //                         chainId: chainStore.current.chainId
-  //                       },
-  //                       toToken: {
-  //                         asset: sendConfigs.amountConfig.sendCurrency.coinDenom,
-  //                         chainId: chainStore.current.chainId
-  //                       },
-  //                       status: "SUCCESS"
-  //                     };
-
-  //                     handleSaveHistory(account.bech32Address, historyInfos);
-  //                   }
-  //                 }
-  //               );
-  //             } catch (e) {
-  //               if (e?.message === "Request rejected") {
-  //                 return;
-  //               }
-  //               if (e?.message.includes("Cannot read properties of undefined")) {
-  //                 return;
-  //               }
-  //               console.log(e);
-  //               smartNavigation.navigate("Home", {});
-  //             }
-  //           }
-  //         }}
-  //       />
-  //     </OWBox>
-  //   </PageWithScrollView>
-  // );
 });
 
 const styling = (colors) =>

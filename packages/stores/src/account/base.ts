@@ -493,50 +493,14 @@ export class AccountSetBase<MsgOpts, Queries> {
       onBroadcasted(txHash);
     }
     const isInj = this.chainId.startsWith("injective");
-    if (isInj) {
-      const chainInfo = this.chainGetter.getChain(this.chainId);
-      const restApi = chainInfo?.rest;
-      const restConfig = chainInfo?.restConfig;
-      const txRestCosmos = new TxRestCosmosClient(restApi, restConfig);
-      const txHashRoot = Buffer.from(txHash).toString("hex");
-      try {
-        const res = await txRestCosmos.fetchTxPoll(txHashRoot);
-        // After sending tx, the balances is probably changed due to the fee.
-        for (const feeAmount of fee.amount) {
-          const bal = this.queries.queryBalances
-            .getQueryBech32Address(this.bech32Address)
-            .balances.find(
-              (bal) => bal.currency.coinMinimalDenom === feeAmount.denom
-            );
 
-          if (bal) {
-            bal.fetch();
-          }
-        }
-        OwalletEvent.txHashEmit(txHashRoot, res);
-      } catch (error) {
-        OwalletEvent.txHashEmit(txHashRoot, null);
-      } finally {
-        runInAction(() => {
-          this._isSendingMsg = false;
-        });
-      }
-    }
-
-    const txTracer = new TendermintTxTracer(
-      this.chainGetter.getChain(this.chainId).rpc,
-      "/websocket",
-      {
-        wsObject: this.opts.wsObject,
-      }
-    );
-    txTracer.traceTx(txHash).then((tx) => {
-      txTracer.close();
-
-      runInAction(() => {
-        this._isSendingMsg = false;
-      });
-
+    const chainInfo = this.chainGetter.getChain(this.chainId);
+    const restApi = chainInfo?.rest;
+    const restConfig = chainInfo?.restConfig;
+    const txRestCosmos = new TxRestCosmosClient(restApi, restConfig);
+    const txHashRoot = Buffer.from(txHash).toString("hex");
+    try {
+      const tx = await txRestCosmos.fetchTxPoll(txHashRoot);
       // After sending tx, the balances is probably changed due to the fee.
       for (const feeAmount of fee.amount) {
         const bal = this.queries.queryBalances
@@ -551,10 +515,11 @@ export class AccountSetBase<MsgOpts, Queries> {
       }
 
       // Always add the tx hash data.
+      //@ts-ignore
       if (tx && !tx.hash) {
+        //@ts-ignore
         tx.hash = Buffer.from(txHash).toString("hex");
       }
-
       if (this.opts.preTxEvents?.onFulfill) {
         this.opts.preTxEvents.onFulfill(tx);
       }
@@ -562,7 +527,60 @@ export class AccountSetBase<MsgOpts, Queries> {
       if (onFulfill) {
         onFulfill(tx);
       }
-    });
+      if (isInj) {
+        OwalletEvent.txHashEmit(txHashRoot, tx);
+      }
+    } catch (error) {
+      console.log(error, "error");
+      if (isInj) {
+        OwalletEvent.txHashEmit(txHashRoot, null);
+      }
+    } finally {
+      runInAction(() => {
+        this._isSendingMsg = false;
+      });
+    }
+
+    // const txTracer = new TendermintTxTracer(
+    //   this.chainGetter.getChain(this.chainId).rpc,
+    //   "/websocket",
+    //   {
+    //     wsObject: this.opts.wsObject,
+    //   }
+    // );
+    // txTracer.traceTx(txHash).then((tx) => {
+    //   txTracer.close();
+    //
+    //   runInAction(() => {
+    //     this._isSendingMsg = false;
+    //   });
+    //
+    //   // After sending tx, the balances is probably changed due to the fee.
+    //   for (const feeAmount of fee.amount) {
+    //     const bal = this.queries.queryBalances
+    //       .getQueryBech32Address(this.bech32Address)
+    //       .balances.find(
+    //         (bal) => bal.currency.coinMinimalDenom === feeAmount.denom
+    //       );
+    //
+    //     if (bal) {
+    //       bal.fetch();
+    //     }
+    //   }
+    //
+    //   // Always add the tx hash data.
+    //   if (tx && !tx.hash) {
+    //     tx.hash = Buffer.from(txHash).toString("hex");
+    //   }
+    //
+    //   if (this.opts.preTxEvents?.onFulfill) {
+    //     this.opts.preTxEvents.onFulfill(tx);
+    //   }
+    //
+    //   if (onFulfill) {
+    //     onFulfill(tx);
+    //   }
+    // });
   }
 
   async sendTronToken(

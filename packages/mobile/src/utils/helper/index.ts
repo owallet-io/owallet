@@ -153,6 +153,12 @@ export const formatContractAddress = (address: string, limitFirst = 10) => {
 
   return `${fristLetter}...${lastLetter}`;
 };
+export const convertArrToObject = (arr, label = `Validator`) => {
+  if (!arr?.length) return;
+  var rv = {};
+  for (var i = 0; i < arr.length; ++i) rv[`${label}${i + 1}`] = arr[i];
+  return rv;
+};
 export const removeDataInParentheses = (inputString: string): string => {
   if (!inputString) return;
   return inputString.replace(/\([^)]*\)/g, "");
@@ -702,7 +708,7 @@ export enum HISTORY_STATUS {
   SEND = "SEND",
   STAKE = "STAKE",
   CLAIM = "CLAIM",
-  UNSTAKE = "UNSTAKE",
+  UNSTAKE = "UN_STAKE",
 }
 
 export function isPrivateKey(str: string): boolean {

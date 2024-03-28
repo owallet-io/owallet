@@ -831,7 +831,7 @@ export class InjectedBitcoin implements Bitcoin {
       // filter proxy-request by namespace
       if (
         !message ||
-        message.type !== "proxy-request" ||
+        message.type !== NAMESPACE_BITCOIN + "proxy-request" ||
         message.namespace !== NAMESPACE_BITCOIN
       ) {
         return;
@@ -897,7 +897,7 @@ export class InjectedBitcoin implements Bitcoin {
       .join("");
 
     const proxyMessage: ProxyRequest = {
-      type: "proxy-request",
+      type: (NAMESPACE_BITCOIN + "proxy-request") as any,
       namespace: NAMESPACE_BITCOIN,
       id,
       method,

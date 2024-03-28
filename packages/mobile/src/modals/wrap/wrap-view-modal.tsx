@@ -4,6 +4,7 @@ import { Text } from "@src/components/text";
 import { OWTextProps } from "@src/components/text/ow-text";
 import { useTheme } from "@src/themes/theme-provider";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { ScrollView } from "react-native-gesture-handler";
 
 interface IWrapViewModal extends ViewProps {
   title?: string;
@@ -11,6 +12,9 @@ interface IWrapViewModal extends ViewProps {
   TitleComponent?: ReactNode;
   titleProps?: OWTextProps;
   subTitleProps?: OWTextProps;
+  disabledScrollView?: boolean;
+  buttonBottom?: ReactNode | null;
+  containerStyle?: ViewProps["style"];
 }
 
 const WrapViewModal: FC<IWrapViewModal> = ({
@@ -20,21 +24,25 @@ const WrapViewModal: FC<IWrapViewModal> = ({
   subTitleProps,
   style,
   TitleComponent,
+  disabledScrollView = true,
+  buttonBottom,
+  containerStyle,
   ...props
 }) => {
   const { colors } = useTheme();
   const { bottom } = useSafeAreaInsets();
+  const ContainerElement = disabledScrollView ? View : ScrollView;
   return (
     <View
-      {...props}
       style={[
         {
-          backgroundColor: colors["neutral-surface-card"],
           flex: 1,
-          padding: 16,
-          paddingBottom: 16 + (bottom || 0),
+          paddingHorizontal: 16,
+          // paddingTop: 16,
+
+          // paddingBottom: 16 + (bottom || 0)
         },
-        style,
+        containerStyle,
       ]}
     >
       {typeof title === "function" ? (
@@ -73,7 +81,22 @@ const WrapViewModal: FC<IWrapViewModal> = ({
           {subTitle}
         </Text>
       )}
-      {props.children}
+      <ContainerElement
+        {...props}
+        showsVerticalScrollIndicator={false}
+        keyboardDismissMode={"interactive"}
+        style={[
+          {
+            backgroundColor: colors["neutral-surface-card"],
+            flex: 1,
+            paddingBottom: 16 + (bottom || 0),
+          },
+          style,
+        ]}
+      >
+        {props.children}
+      </ContainerElement>
+      {buttonBottom ? buttonBottom : null}
     </View>
   );
 };

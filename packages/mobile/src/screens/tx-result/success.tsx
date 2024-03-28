@@ -13,7 +13,11 @@ import { Text } from "@src/components/text";
 import { useSmartNavigation } from "../../navigation.provider";
 import { CommonActions } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
-import { formatContractAddress, openLink } from "../../utils/helper";
+import {
+  capitalizedText,
+  formatContractAddress,
+  openLink,
+} from "../../utils/helper";
 import { ChainIdEnum, TRON_ID } from "@owallet/common";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import OWButtonGroup from "@src/components/button/OWButtonGroup";
@@ -27,7 +31,7 @@ import { CoinPretty, Dec } from "@owallet/unit";
 import { AppCurrency, StdFee } from "@owallet/types";
 import { CoinPrimitive } from "@owallet/stores";
 import { Bech32Address } from "@owallet/cosmos";
-
+import _ from "lodash";
 export const TxSuccessResultScreen: FunctionComponent = observer(() => {
   const { chainStore, priceStore, txsStore, accountStore, keyRingStore } =
     useStore();
@@ -99,10 +103,23 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
     params?.data?.currency,
     new Dec(params?.data?.amount?.amount)
   );
-  const fee = new CoinPretty(
-    chainInfo.stakeCurrency,
-    new Dec(params?.data?.fee.amount?.[0]?.amount)
-  );
+
+  const fee = () => {
+    if (params?.data?.fee) {
+      return new CoinPretty(
+        chainInfo.stakeCurrency,
+        new Dec(params?.data?.fee.amount?.[0]?.amount)
+      );
+    } else {
+      if (data?.stdFee?.amount?.[0]?.amount) {
+        return new CoinPretty(
+          chainInfo.stakeCurrency,
+          new Dec(data?.stdFee?.amount?.[0]?.amount)
+        );
+      }
+      return new CoinPretty(chainInfo.stakeCurrency, new Dec(0));
+    }
+  };
   const getDetailByHash = async (txHash) => {
     try {
       const tx = await txs.getTxsByHash(txHash, address);
@@ -118,6 +135,17 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
       });
     }
   }, [txHash]);
+  const dataItem =
+    params?.data &&
+    _.pickBy(params?.data, function (value, key) {
+      return (
+        key !== "memo" &&
+        key !== "fee" &&
+        key !== "amount" &&
+        key !== "currency" &&
+        key !== "type"
+      );
+    });
   return (
     <PageWithBottom
       bottomGroup={
@@ -151,7 +179,7 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
         }}
       >
         <PageHeader
-          title={"Transaction detail"}
+          title={"Transaction details"}
           colors={colors["neutral-text-title"]}
         />
         <ScrollView showsVerticalScrollIndicator={false}>
@@ -199,7 +227,7 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
               size={16}
               weight={"500"}
             >
-              Send
+              {capitalizedText(params?.data?.type) || "Send"}
             </Text>
             <View
               style={{
@@ -228,7 +256,10 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
               size={28}
               weight={"500"}
             >
-              {`${amount?.shrink(true)?.trim(true)?.toString()}`}
+              {`${params?.data?.type === "send" ? "-" : ""}${amount
+                ?.shrink(true)
+                ?.trim(true)
+                ?.toString()}`}
             </Text>
             <Text
               color={colors["neutral-text-body"]}
@@ -247,22 +278,19 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
               backgroundColor: colors["neutral-surface-card"],
             }}
           >
-            <ItemReceivedToken
-              label={"From"}
-              valueDisplay={
-                params?.data?.fromAddress &&
-                Bech32Address.shortenAddress(params?.data?.fromAddress, 20)
-              }
-              value={params?.data?.fromAddress}
-            />
-            <ItemReceivedToken
-              label={"To"}
-              valueDisplay={
-                params?.data?.toAddress &&
-                Bech32Address.shortenAddress(params?.data?.toAddress, 20)
-              }
-              value={params?.data?.toAddress}
-            />
+            {dataItem &&
+              Object.keys(dataItem).map(function (key) {
+                return (
+                  <ItemReceivedToken
+                    label={capitalizedText(key)}
+                    valueDisplay={
+                      dataItem?.[key] &&
+                      formatContractAddress(dataItem?.[key], 20)
+                    }
+                    value={dataItem?.[key]}
+                  />
+                );
+              })}
             <ItemReceivedToken
               label={"Network"}
               valueDisplay={
@@ -299,10 +327,10 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
             />
             <ItemReceivedToken
               label={"Fee"}
-              valueDisplay={`${fee
+              valueDisplay={`${fee()
                 ?.shrink(true)
                 ?.trim(true)
-                ?.toString()} (${priceStore.calculatePrice(fee)})`}
+                ?.toString()} (${priceStore.calculatePrice(fee())})`}
               btnCopy={false}
             />
             <ItemReceivedToken

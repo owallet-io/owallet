@@ -1,6 +1,5 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { registerModal } from "../base";
-import { CardModal } from "../card";
 import { View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { Text } from "@src/components/text";
@@ -13,7 +12,6 @@ import {
   useSignDocAmountConfig,
   useSignDocHelper,
 } from "@owallet/hooks";
-import { Button } from "../../components/button";
 import { Msg as AminoMsg } from "@cosmjs/launchpad";
 import { observer } from "mobx-react-lite";
 import { useUnmount } from "../../hooks";
@@ -21,16 +19,14 @@ import { FeeInSign } from "./fee";
 import { renderAminoMessage } from "./amino";
 import { renderDirectMessage } from "./direct";
 import crashlytics from "@react-native-firebase/crashlytics";
-import { colors } from "../../themes";
 import { BottomSheetProps } from "@gorhom/bottom-sheet";
 import OWText from "@src/components/text/ow-text";
 import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
-import { MemoInput } from "@src/components/input";
-import { Bech32Address } from "@owallet/cosmos";
 import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
 import { useTheme } from "@src/themes/theme-provider";
-import { OWButton } from "@src/components/button";
 import OWButtonGroup from "@src/components/button/OWButtonGroup";
+import { metrics } from "@src/themes";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export const SignModal: FunctionComponent<{
   isOpen: boolean;
@@ -38,14 +34,8 @@ export const SignModal: FunctionComponent<{
   bottomSheetModalConfig?: Omit<BottomSheetProps, "snapPoints" | "children">;
 }> = registerModal(
   observer(({}) => {
-    const {
-      chainStore,
-      accountStore,
-      queriesStore,
-      signInteractionStore,
-      priceStore,
-      appInitStore,
-    } = useStore();
+    const { chainStore, accountStore, queriesStore, signInteractionStore } =
+      useStore();
     useUnmount(() => {
       signInteractionStore.rejectAll();
     });
@@ -154,105 +144,133 @@ export const SignModal: FunctionComponent<{
     };
 
     const renderedMsgs = (() => {
+      const account = accountStore.getAccount(chainId);
+      const chainInfo = chainStore.getChain(chainId);
       if (mode === "amino") {
         return (msgs as readonly AminoMsg[]).map((msg, i) => {
-          const account = accountStore.getAccount(chainId);
-          const chainInfo = chainStore.getChain(chainId);
           const { content, scrollViewHorizontal, title } = renderAminoMessage(
             account.msgOpts,
             msg,
-            chainInfo.currencies,
-            priceStore
+            chainInfo.currencies
           );
 
           return (
             <View key={i.toString()}>
-              <OWText
-                size={16}
-                weight={"700"}
-                style={{
-                  textAlign: "center",
-                  paddingBottom: 20,
-                }}
-              >
-                {`${title} confirmation`.toUpperCase()}
-              </OWText>
-              {scrollViewHorizontal ? (
-                <ScrollView horizontal={true}>
-                  <Text style={style.flatten(["body3"])}>{content}</Text>
-                </ScrollView>
-              ) : (
-                <View>{content}</View>
+              {msg.type !== account.msgOpts.withdrawRewards.type && (
+                <OWText
+                  size={16}
+                  weight={"700"}
+                  style={{
+                    textAlign: "center",
+                    paddingVertical: 20,
+                  }}
+                >
+                  {`${title} confirmation`.toUpperCase()}
+                </OWText>
               )}
+              <View>{content}</View>
             </View>
           );
         });
       } else if (mode === "direct") {
         return (msgs as any[]).map((msg, i) => {
-          const chainInfo = chainStore.getChain(chainId);
           const { title, content } = renderDirectMessage(
             msg,
             chainInfo.currencies
           );
 
-          return <View key={i.toString()}>{content}</View>;
+          return (
+            <View key={i.toString()}>
+              {msg.type !== account.msgOpts.withdrawRewards.type && (
+                <OWText
+                  size={16}
+                  weight={"700"}
+                  style={{
+                    textAlign: "center",
+                    paddingVertical: 20,
+                  }}
+                >
+                  {`${title} confirmation`.toUpperCase()}
+                </OWText>
+              )}
+              <View>{content}</View>
+            </View>
+          );
         });
       } else {
         return null;
       }
     })();
     const { colors } = useTheme();
+    const { bottom } = useSafeAreaInsets();
     return (
       <WrapViewModal
-        style={{
-          backgroundColor: colors["neutral-surface-bg"],
-        }}
-      >
-        <View>
-          <View>{renderedMsgs}</View>
-
+        disabledScrollView={false}
+        buttonBottom={
           <View
             style={{
-              backgroundColor: colors["neutral-surface-card"],
-              paddingHorizontal: 16,
-              borderBottomLeftRadius: 24,
-              borderBottomRightRadius: 24,
-              marginBottom: 24,
+              paddingBottom: 5 + (bottom || 0),
             }}
           >
-            <FeeInSign
-              feeConfig={feeConfig}
-              gasConfig={gasConfig}
-              signOptions={signInteractionStore.waitingData?.data.signOptions}
-              isInternal={isInternal}
-            />
-            {/*<MemoInput label="Memo" memoConfig={memoConfig} />*/}
-            <ItemReceivedToken
-              label={"Memo"}
-              valueDisplay={memoConfig.memo}
-              value={memoConfig.memo}
-              btnCopy={false}
+            <View
+              style={{
+                backgroundColor: colors["neutral-surface-card"],
+                paddingHorizontal: 16,
+                borderBottomLeftRadius: 24,
+                borderBottomRightRadius: 24,
+                marginBottom: 24,
+              }}
+            >
+              <FeeInSign
+                feeConfig={feeConfig}
+                gasConfig={gasConfig}
+                signOptions={signInteractionStore.waitingData?.data.signOptions}
+                isInternal={isInternal}
+              />
+              {/*<MemoInput label="Memo" memoConfig={memoConfig} />*/}
+              {memoConfig.memo && (
+                <ItemReceivedToken
+                  label={"Memo"}
+                  valueDisplay={memoConfig.memo}
+                  value={memoConfig.memo}
+                  btnCopy={false}
+                />
+              )}
+            </View>
+            <OWButtonGroup
+              labelApprove={"Confirm"}
+              labelClose={"Cancel"}
+              disabledApprove={isDisable}
+              disabledClose={signInteractionStore.isLoading}
+              loadingApprove={signInteractionStore.isLoading}
+              styleApprove={{
+                borderRadius: 99,
+                backgroundColor: colors["primary-surface-default"],
+              }}
+              onPressClose={_onPressReject}
+              onPressApprove={_onPressApprove}
+              styleClose={{
+                borderRadius: 99,
+                backgroundColor: colors["neutral-surface-bg"],
+              }}
             />
           </View>
+        }
+        style={{
+          backgroundColor: colors["neutral-surface-card"],
+          maxHeight: metrics.screenHeight - 250,
+        }}
+        containerStyle={{
+          paddingBottom: 16,
+        }}
+      >
+        <View
+        // style={{
+        //   paddingBottom: 20
+        // }}
+        >
+          <View>{renderedMsgs}</View>
         </View>
-
-        <OWButtonGroup
-          labelApprove={"Confirm"}
-          labelClose={"Cancel"}
-          disabledApprove={isDisable}
-          disabledClose={signInteractionStore.isLoading}
-          loadingApprove={signInteractionStore.isLoading}
-          styleApprove={{
-            borderRadius: 99,
-            backgroundColor: colors["primary-surface-default"],
-          }}
-          onPressClose={_onPressReject}
-          onPressApprove={_onPressApprove}
-          styleClose={{
-            borderRadius: 99,
-            backgroundColor: colors["neutral-surface-action3"],
-          }}
-        />
       </WrapViewModal>
     );
   }),

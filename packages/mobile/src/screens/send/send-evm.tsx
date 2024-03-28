@@ -3,12 +3,10 @@ import { observer } from "mobx-react-lite";
 import {
   EmptyAddressError,
   EmptyAmountError,
-  useSendTxConfig,
   useSendTxEvmConfig,
 } from "@owallet/hooks";
 import { useStore } from "../../stores";
 import { EthereumEndpoint, toAmount } from "@owallet/common";
-import { PageWithScrollView } from "../../components/page";
 import {
   InteractionManager,
   ScrollView,
@@ -16,15 +14,12 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
+import { CoinPretty, Dec } from "@owallet/unit";
 
 import {
   AddressInput,
-  AmountInput,
   MemoInput,
   CurrencySelector,
-  FeeButtons,
-  TextInput,
 } from "../../components/input";
 import { OWButton } from "../../components/button";
 import { RouteProp, useRoute } from "@react-navigation/native";
@@ -32,10 +27,6 @@ import { useTheme } from "@src/themes/theme-provider";
 import { useSmartNavigation } from "../../navigation.provider";
 import { Buffer } from "buffer";
 import { metrics, spacing } from "../../themes";
-import { Text } from "@src/components/text";
-import { Toggle } from "../../components/toggle";
-import { OWBox } from "@src/components/card";
-import { OWSubTitleHeader } from "@src/components/header";
 import { PageHeader } from "@src/components/header/header-new";
 import OWCard from "@src/components/card/ow-card";
 import OWText from "@src/components/text/ow-text";
@@ -44,9 +35,12 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { DownArrowIcon } from "@src/components/icon";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import { FeeModal } from "@src/modals/fee";
-import { capitalizedText } from "@src/utils/helper";
+import {
+  capitalizedText,
+  handleSaveHistory,
+  HISTORY_STATUS,
+} from "@src/utils/helper";
 import { navigate } from "@src/router/root";
-import { SCREENS } from "@src/common/constants";
 
 export const SendEvmScreen: FunctionComponent = observer(() => {
   const {
@@ -61,7 +55,7 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
   } = useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
-  const [customFee, setCustomFee] = useState(false);
+
   const [balance, setBalance] = useState<CoinPretty>(null);
   const route = useRoute<
     RouteProp<
@@ -217,7 +211,7 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
             onFulfill: (tx) => {
               console.log(tx, "tx evm");
             },
-            onBroadcasted: (txHash) => {
+            onBroadcasted: async (txHash) => {
               analyticsStore.logEvent("Send token tx broadcasted", {
                 chainId: chainStore.current.chainId,
                 chainName: chainStore.current.chainName,
@@ -238,6 +232,28 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
                   },
                 },
               });
+              const historyInfos = {
+                fromAddress: address,
+                toAddress: sendConfigs.recipientConfig.recipient,
+                hash: Buffer.from(txHash).toString("hex"),
+                memo: "",
+                fromAmount: sendConfigs.amountConfig.amount,
+                toAmount: sendConfigs.amountConfig.amount,
+                value: sendConfigs.amountConfig.amount,
+                fee: 0,
+                type: HISTORY_STATUS.SEND,
+                fromToken: {
+                  asset: sendConfigs.amountConfig.sendCurrency.coinDenom,
+                  chainId: chainStore.current.chainId,
+                },
+                toToken: {
+                  asset: sendConfigs.amountConfig.sendCurrency.coinDenom,
+                  chainId: chainStore.current.chainId,
+                },
+                status: "SUCCESS",
+              };
+
+              await handleSaveHistory(address, historyInfos);
             },
           },
           // In case send erc20 in evm network
@@ -261,19 +277,6 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
         if (e?.message === "Request rejected") {
           return;
         }
-
-        // if (
-        //   e?.message?.includes('Cannot read properties of undefined')
-        // ) {
-        //   return;
-        // }
-
-        // alert(e.message);
-        // if (smartNavigation.canGoBack) {
-        //   smartNavigation.goBack();
-        // } else {
-        //   smartNavigation.navigateSmart("Home", {});
-        // }
       }
     }
   };
@@ -298,15 +301,19 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
     }
     return;
   }, [sendConfigs.feeConfig]);
-
+  const isReadyBalance = queries.queryBalances
+    .getQueryBech32Address(address)
+    .getBalanceFromCurrency(sendConfigs.amountConfig.sendCurrency).isReady;
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
-      const balance = queries.queryBalances
-        .getQueryBech32Address(address)
-        .getBalanceFromCurrency(sendConfigs.amountConfig.sendCurrency);
-      setBalance(balance);
+      if (isReadyBalance) {
+        const balance = queries.queryBalances
+          .getQueryBech32Address(address)
+          .getBalanceFromCurrency(sendConfigs.amountConfig.sendCurrency);
+        setBalance(balance);
+      }
     });
-  }, [address, sendConfigs.amountConfig.sendCurrency]);
+  }, [isReadyBalance, address, sendConfigs.amountConfig.sendCurrency]);
   return (
     <PageWithBottom
       bottomGroup={
@@ -382,7 +389,7 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
                     ?.trim(true)
                     ?.maxDecimals(6)
                     ?.hideDenom(true)
-                    ?.toString()}
+                    ?.toString() || "0"}
                 </OWText>
                 <CurrencySelector
                   chainId={chainStore.current.chainId}
@@ -406,7 +413,7 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
                   colors={colors}
                   inputContainerStyle={{
                     borderWidth: 0,
-                    width: metrics.screenWidth / 2,
+                    width: metrics.screenWidth / 2.3,
                   }}
                   amountConfig={sendConfigs.amountConfig}
                   placeholder={"0.0"}

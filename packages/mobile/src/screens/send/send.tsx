@@ -34,7 +34,12 @@ import { useSmartNavigation } from "@src/navigation.provider";
 import { FeeModal } from "@src/modals/fee";
 import { CoinPretty, Dec, Int } from "@owallet/unit";
 import { DownArrowIcon } from "@src/components/icon";
-import { capitalizedText } from "@src/utils/helper";
+import {
+  capitalizedText,
+  handleSaveHistory,
+  HISTORY_STATUS,
+} from "@src/utils/helper";
+import { Buffer } from "buffer";
 
 const styling = (colors) =>
   StyleSheet.create({
@@ -216,19 +221,45 @@ export const NewSendScreen: FunctionComponent = observer(() => {
 
           {
             onFulfill: (tx) => {},
-            onBroadcasted: (txHash) => {
+            onBroadcasted: async (txHash) => {
               analyticsStore.logEvent("Send token tx broadcasted", {
                 chainId: chainStore.current.chainId,
                 chainName: chainStore.current.chainName,
                 feeType: sendConfigs.feeConfig.feeType,
               });
+
+              const historyInfos = {
+                fromAddress: address,
+                toAddress: sendConfigs.recipientConfig.recipient,
+                hash: Buffer.from(txHash).toString("hex"),
+                memo: "",
+                fromAmount: sendConfigs.amountConfig.amount,
+                toAmount: sendConfigs.amountConfig.amount,
+                value: sendConfigs.amountConfig.amount,
+                fee: sendConfigs.feeConfig.fee
+                  ?.trim(true)
+                  ?.hideDenom(true)
+                  ?.toString(),
+                type: HISTORY_STATUS.SEND,
+                fromToken: {
+                  asset: sendConfigs.amountConfig.sendCurrency.coinDenom,
+                  chainId: chainStore.current.chainId,
+                },
+                toToken: {
+                  asset: sendConfigs.amountConfig.sendCurrency.coinDenom,
+                  chainId: chainStore.current.chainId,
+                },
+                status: "SUCCESS",
+              };
+              await handleSaveHistory(address, historyInfos);
               smartNavigation.pushSmart("TxPendingResult", {
                 txHash: Buffer.from(txHash).toString("hex"),
                 data: {
                   memo: sendConfigs.memoConfig.memo,
-                  toAddress: sendConfigs.recipientConfig.recipient,
+                  from: address,
+                  type: "send",
+                  to: sendConfigs.recipientConfig.recipient,
                   amount: sendConfigs.amountConfig.getAmountPrimitive(),
-                  fromAddress: address,
                   fee: sendConfigs.feeConfig.toStdFee(),
                   currency: sendConfigs.amountConfig.sendCurrency,
                 },
@@ -255,15 +286,20 @@ export const NewSendScreen: FunctionComponent = observer(() => {
     }
     return;
   }, [sendConfigs.feeConfig]);
+
+  const isReadyBalance = queries.queryBalances
+    .getQueryBech32Address(address)
+    .getBalanceFromCurrency(sendConfigs.amountConfig.sendCurrency).isReady;
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
-      const balance = queries.queryBalances
-        .getQueryBech32Address(address)
-        .getBalanceFromCurrency(sendConfigs.amountConfig.sendCurrency);
-      setBalance(balance);
+      if (isReadyBalance && sendConfigs.amountConfig.sendCurrency && address) {
+        const balance = queries.queryBalances
+          .getQueryBech32Address(address)
+          .getBalanceFromCurrency(sendConfigs.amountConfig.sendCurrency);
+        setBalance(balance);
+      }
     });
-  }, [address, sendConfigs.amountConfig.sendCurrency]);
-
+  }, [isReadyBalance, address, sendConfigs.amountConfig.sendCurrency]);
   return (
     <PageWithBottom
       bottomGroup={
@@ -335,7 +371,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
                     ?.trim(true)
                     ?.maxDecimals(6)
                     ?.hideDenom(true)
-                    ?.toString()}
+                    ?.toString() || "0"}
                 </OWText>
                 <CurrencySelector
                   chainId={chainStore.current.chainId}
@@ -353,13 +389,14 @@ export const NewSendScreen: FunctionComponent = observer(() => {
               <View
                 style={{
                   alignItems: "flex-end",
+                  flex: 1,
                 }}
               >
                 <NewAmountInput
                   colors={colors}
                   inputContainerStyle={{
                     borderWidth: 0,
-                    width: metrics.screenWidth / 2,
+                    width: metrics.screenWidth / 2.3,
                   }}
                   amountConfig={sendConfigs.amountConfig}
                   placeholder={"0.0"}

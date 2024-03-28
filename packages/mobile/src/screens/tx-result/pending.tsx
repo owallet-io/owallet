@@ -2,14 +2,25 @@ import React, { FunctionComponent, useEffect, useState } from "react";
 import { RouteProp, useIsFocused, useRoute } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
-import { View, StyleSheet, Image, ScrollView } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Image,
+  ScrollView,
+  InteractionManager,
+} from "react-native";
 import { Text } from "@src/components/text";
 import { useSmartNavigation } from "../../navigation.provider";
 import { Bech32Address, TendermintTxTracer } from "@owallet/cosmos";
 import { Buffer } from "buffer";
 import { metrics } from "../../themes";
 import { useTheme } from "@src/themes/theme-provider";
-import { openLink, SUCCESS } from "../../utils/helper";
+import {
+  capitalizedText,
+  formatContractAddress,
+  openLink,
+  SUCCESS,
+} from "../../utils/helper";
 import { ChainIdEnum } from "@owallet/common";
 import { API } from "@src/common/api";
 import { OwalletEvent, TxRestCosmosClient, TRON_ID } from "@owallet/common";
@@ -22,6 +33,7 @@ import image from "@src/assets/images";
 import { CoinPretty, Dec, Int } from "@owallet/unit";
 import { AppCurrency, StdFee } from "@owallet/types";
 import { CoinPrimitive } from "@owallet/stores";
+import _ from "lodash";
 
 export const TxPendingResultScreen: FunctionComponent = observer(() => {
   const { chainStore, txsStore, accountStore, keyRingStore, priceStore } =
@@ -29,6 +41,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
 
   const [retry, setRetry] = useState(3);
   const { colors, images } = useTheme();
+  const [data, setData] = useState<Partial<ResTxsInfo>>();
   const route = useRoute<
     RouteProp<
       Record<
@@ -38,6 +51,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
           // Hex encoded bytes.
           txHash: string;
           tronWeb?: any;
+          title: string;
           data?: {
             memo: string;
             fee: StdFee;
@@ -51,10 +65,13 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
       string
     >
   >();
+
   const { current } = chainStore;
   const chainId = current.chainId;
   const { params } = route;
-
+  const accountAddress = accountStore
+    .getAccount(chainId)
+    .getAddressDisplay(keyRingStore.keyRingLedgerAddresses, false);
   const txHash = params?.txHash;
   const chainInfo = chainStore.getChain(chainId);
 
@@ -70,7 +87,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
   };
 
   useEffect(() => {
-    let txTracer: TendermintTxTracer | undefined;
+    // let txTracer: TendermintTxTracer | undefined;
     if (isFocused && chainId && chainInfo) {
       if (chainId === TRON_ID) {
         // It may take a while to confirm transaction in TRON, show we make retry few times until it is done
@@ -122,12 +139,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
         chainStore.current.networkType === "evm"
       ) {
         const data = {
-          memo: params.data?.memo,
-          toAddress: params.data?.toAddress,
-          amount: params.data?.amount,
-          fromAddress: params.data?.fromAddress,
-          fee: params.data?.fee,
-          currency: params.data?.currency,
+          ...params?.data,
         };
         OwalletEvent.txHashListener(txHash, (txInfo) => {
           console.log(txHash, txInfo, "txInfo");
@@ -146,43 +158,39 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
             });
           }
         });
-      } else {
-        txTracer = new TendermintTxTracer(chainInfo.rpc, "/websocket");
-        txTracer
-          .traceTx(Buffer.from(txHash, "hex"))
-          .then((tx) => {
-            const data = {
-              memo: params.data?.memo,
-              toAddress: params.data?.toAddress,
-              amount: params.data?.amount,
-              fromAddress: params.data?.fromAddress,
-              fee: params.data?.fee,
-              currency: params.data?.currency,
-            };
-            if (tx.code == null || tx.code === 0) {
-              smartNavigation.replaceSmart("TxSuccessResult", {
-                chainId,
-                txHash,
-                data,
-              });
-            } else {
-              smartNavigation.replaceSmart("TxFailedResult", {
-                chainId,
-                txHash,
-                data,
-              });
-            }
-          })
-          .catch((e) => {
-            console.log(`Failed to trace the tx (${txHash})`, e);
-          });
       }
+      // else {
+      //   txTracer = new TendermintTxTracer(chainInfo.rpc, "/websocket");
+      //   txTracer
+      //     .traceTx(Buffer.from(txHash, "hex"))
+      //     .then((tx) => {
+      //       const data = {
+      //         ...params?.data,
+      //       };
+      //       if (tx.code == null || tx.code === 0) {
+      //         smartNavigation.replaceSmart("TxSuccessResult", {
+      //           chainId,
+      //           txHash,
+      //           data,
+      //         });
+      //       } else {
+      //         smartNavigation.replaceSmart("TxFailedResult", {
+      //           chainId,
+      //           txHash,
+      //           data,
+      //         });
+      //       }
+      //     })
+      //     .catch((e) => {
+      //       console.log(`Failed to trace the tx (${txHash})`, e);
+      //     });
+      // }
     }
 
     return () => {
-      if (txTracer) {
-        txTracer.close();
-      }
+      // if (txTracer) {
+      //   txTracer.close();
+      // }
     };
   }, [
     chainId,
@@ -208,10 +216,79 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
     params?.data?.currency,
     new Dec(params?.data?.amount?.amount)
   );
-  const fee = new CoinPretty(
-    chainInfo.stakeCurrency,
-    new Dec(params?.data?.fee.amount?.[0]?.amount)
-  );
+  const chainTxs =
+    chainStore.current.chainId === ChainIdEnum.KawaiiEvm
+      ? chainStore.getChain(ChainIdEnum.KawaiiCosmos)
+      : chainStore.current;
+  const txs = txsStore(chainTxs);
+  const getDetailByHash = async (txHash) => {
+    try {
+      const tx = await txs.getTxsByHash(txHash, accountAddress);
+      setData(tx);
+    } catch (error) {
+      console.log("error: ", error);
+    }
+  };
+  useEffect(() => {
+    if (txHash) {
+      InteractionManager.runAfterInteractions(() => {
+        if (chainInfo.networkType === "cosmos") {
+          const restApi = chainInfo?.rest;
+          const restConfig = chainInfo?.restConfig;
+          const txRestCosmos = new TxRestCosmosClient(restApi, restConfig);
+          txRestCosmos
+            .fetchTxPoll(txHash)
+            .then((tx) => {
+              const data = {
+                ...params?.data,
+              };
+              if (tx.code == null || tx.code === 0) {
+                smartNavigation.replaceSmart("TxSuccessResult", {
+                  chainId,
+                  txHash,
+                  data,
+                });
+              } else {
+                smartNavigation.replaceSmart("TxFailedResult", {
+                  chainId,
+                  txHash,
+                  data,
+                });
+              }
+            })
+            .catch((err) => console.log(err));
+        }
+        getDetailByHash(txHash);
+      });
+    }
+  }, [txHash]);
+  const fee = () => {
+    if (params?.data?.fee) {
+      return new CoinPretty(
+        chainInfo.stakeCurrency,
+        new Dec(params?.data?.fee.amount?.[0]?.amount)
+      );
+    } else {
+      if (data?.stdFee?.amount?.[0]?.amount) {
+        return new CoinPretty(
+          chainInfo.stakeCurrency,
+          new Dec(data?.stdFee?.amount?.[0]?.amount)
+        );
+      }
+      return new CoinPretty(chainInfo.stakeCurrency, new Dec(0));
+    }
+  };
+  const dataItem =
+    params?.data &&
+    _.pickBy(params?.data, function (value, key) {
+      return (
+        key !== "memo" &&
+        key !== "fee" &&
+        key !== "amount" &&
+        key !== "currency" &&
+        key !== "type"
+      );
+    });
 
   return (
     <PageWithBottom
@@ -253,7 +330,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
         }}
       >
         <PageHeader
-          title={"Transaction detail"}
+          title={"Transaction details"}
           colors={colors["neutral-text-title"]}
         />
         <ScrollView showsVerticalScrollIndicator={false}>
@@ -301,7 +378,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
               size={16}
               weight={"500"}
             >
-              Send
+              {capitalizedText(params?.data?.type) || "Send"}
             </Text>
             <Image
               style={{
@@ -321,7 +398,10 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
               size={28}
               weight={"500"}
             >
-              {`${amount?.shrink(true)?.trim(true)?.toString()}`}
+              {`${params?.data?.type === "send" ? "-" : ""}${amount
+                ?.shrink(true)
+                ?.trim(true)
+                ?.toString()}`}
             </Text>
             <Text
               color={colors["neutral-text-body"]}
@@ -340,28 +420,26 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
               backgroundColor: colors["neutral-surface-card"],
             }}
           >
-            <ItemReceivedToken
-              label={"From"}
-              valueDisplay={
-                params?.data?.fromAddress &&
-                Bech32Address.shortenAddress(params?.data?.fromAddress, 20)
-              }
-              value={params?.data?.fromAddress}
-            />
-            <ItemReceivedToken
-              label={"To"}
-              valueDisplay={
-                params?.data?.toAddress &&
-                Bech32Address.shortenAddress(params?.data?.toAddress, 20)
-              }
-              value={params?.data?.toAddress}
-            />
+            {dataItem &&
+              Object.keys(dataItem).map(function (key) {
+                return (
+                  <ItemReceivedToken
+                    label={capitalizedText(key)}
+                    valueDisplay={
+                      dataItem?.[key] &&
+                      formatContractAddress(dataItem?.[key], 20)
+                    }
+                    value={dataItem?.[key]}
+                  />
+                );
+              })}
+
             <ItemReceivedToken
               label={"Fee"}
-              valueDisplay={`${fee
+              valueDisplay={`${fee()
                 ?.shrink(true)
                 ?.trim(true)
-                ?.toString()} (${priceStore.calculatePrice(fee)})`}
+                ?.toString()} (${priceStore.calculatePrice(fee())})`}
               btnCopy={false}
             />
             <ItemReceivedToken

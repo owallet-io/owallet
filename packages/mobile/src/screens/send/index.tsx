@@ -278,6 +278,7 @@ export const SendScreen: FunctionComponent = observer(() => {
                             fromAddress: address,
                             fee: sendConfigs.feeConfig.toStdFee(),
                             currency: sendConfigs.amountConfig.sendCurrency,
+                            type: "send",
                           },
                         });
 
@@ -289,7 +290,7 @@ export const SendScreen: FunctionComponent = observer(() => {
                           fromAmount: sendConfigs.amountConfig.amount,
                           toAmount: sendConfigs.amountConfig.amount,
                           value: sendConfigs.amountConfig.amount,
-                          fee: sendConfigs.feeConfig.toStdFee(),
+                          fee: 0,
                           type: HISTORY_STATUS.SEND,
                           fromToken: {
                             asset:

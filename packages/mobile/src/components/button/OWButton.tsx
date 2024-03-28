@@ -27,6 +27,7 @@ export interface IOWButtonProps extends TouchableOpacityProps {
   contentAlign?: "left" | "center" | "right";
   borderStyle?: "dashed" | "none";
   colorLoading?: TextStyle["color"];
+  iconRight?: React.ReactNode;
 }
 
 const OWButton: FunctionComponent<IOWButtonProps> = ({
@@ -43,6 +44,7 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
   loading,
   children,
   borderStyle,
+  iconRight,
   contentAlign,
   colorLoading = "white",
   ...props
@@ -83,6 +85,7 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
               {label}
             </OWText>
           )}
+          {!!iconRight && iconRight}
         </>
       )}
     </TouchableOpacity>

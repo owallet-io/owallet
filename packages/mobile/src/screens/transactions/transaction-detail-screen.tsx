@@ -102,7 +102,7 @@ const TransactionDetailScreen = observer(() => {
       return (
         <TransactionBox
           key={`tsbox-${inEv}`}
-          label={`Transaction detail`}
+          label={`Transaction details`}
           subLabel={itemEv?.typeEvent ? `${itemEv?.typeEvent || ""}` : ""}
         >
           {itemEv?.transferInfo?.map((itemDataTrans, inDtTransfer) => {

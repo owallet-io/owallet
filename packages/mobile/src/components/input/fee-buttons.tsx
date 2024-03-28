@@ -275,7 +275,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
           style={{
             flexDirection: "row",
             backgroundColor: selected ? colors["neutral-surface-bg2"] : null,
-            paddingHorizontal: 16,
+            // paddingHorizontal: 16,
             paddingVertical: 8,
             marginVertical: 8,
             borderRadius: 8,

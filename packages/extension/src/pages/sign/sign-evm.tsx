@@ -30,6 +30,7 @@ import Web3 from "web3";
 import { DetailsTabEvm } from "./details-tab-evm";
 import { DataTabEvm } from "./data-tab-evm";
 import { Dec, Int } from "@owallet/unit";
+
 enum Tab {
   Details,
   Data,
@@ -93,13 +94,9 @@ export const SignEvmPage: FunctionComponent = observer(() => {
 
   const [isProcessing, setIsProcessing] = useState(false);
   const needSetIsProcessing = !!account.isSendingMsg;
-  console.log("🚀 ~ needSetIsProcessing:", needSetIsProcessing);
 
   const preferNoSetFee = !!account.isSendingMsg || isProcessing;
   const preferNoSetMemo = !!account.isSendingMsg || isProcessing;
-  // const needSetIsProcessing = false;
-  // const preferNoSetFee = true;
-  // const preferNoSetMemo = true;
 
   const interactionInfo = useInteractionInfo(() => {
     if (needSetIsProcessing) {
@@ -111,13 +108,6 @@ export const SignEvmPage: FunctionComponent = observer(() => {
     if (!needSetIsProcessing) {
       if (!gasPrice) return;
       gasConfig.setGasPriceStep(gasPrice);
-      // if (amountConfig?.sendCurrency?.coinMinimalDenom?.startsWith("erc20")) {
-      //   if (!gasErc20) return;
-      //   gasConfig.setGas(gasErc20);
-      //   return;
-      // }
-      // if (!gasNative) return;
-      // gasConfig.setGas(gasNative);
     }
 
     return () => {};
@@ -132,18 +122,20 @@ export const SignEvmPage: FunctionComponent = observer(() => {
       chainStore.selectChain(data.data.chainId);
       gasConfig.setGas(Web3.utils.hexToNumber(gasDataSign));
       gasConfig.setGasPrice(Web3.utils.hexToNumberString(gasPriceDataSign));
-      if (preferNoSetFee && gasConfig.gas) {
-        const gas = new Dec(new Int(Web3.utils.hexToNumberString(gasDataSign)));
-        const gasPrice = new Dec(
-          new Int(Web3.utils.hexToNumberString(gasPriceDataSign))
-        );
-        const feeAmount = gasPrice.mul(gas);
+
+      const gas = new Dec(new Int(Web3.utils.hexToNumberString(gasDataSign)));
+      const gasPrice = new Dec(
+        new Int(Web3.utils.hexToNumberString(gasPriceDataSign))
+      );
+      const feeAmount = gasPrice.mul(gas);
+      if (feeAmount.lte(new Dec(0))) {
+        feeConfig.setFeeType("average");
+      } else {
         feeConfig.setManualFee({
           amount: feeAmount.roundUp().toString(),
           denom: chainStore.current.feeCurrencies[0].coinMinimalDenom,
         });
       }
-
       setDataSign(signInteractionStore.waitingEthereumData);
     }
   }, [signInteractionStore.waitingEthereumData]);

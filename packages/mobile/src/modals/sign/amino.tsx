@@ -30,8 +30,7 @@ import { AppCurrency } from "@owallet/types";
 export function renderAminoMessage(
   msgOpts: AccountSetOpts<CosmosMsgOpts & SecretMsgOpts>["msgOpts"],
   msg: MessageObj,
-  currencies: AppCurrency[],
-  priceStore: CoinGeckoPriceStore
+  currencies: AppCurrency[]
 ): {
   title: string;
   content: React.ReactElement;
@@ -44,8 +43,7 @@ export function renderAminoMessage(
       currencies,
       value.amount,
       value.to_address,
-      value.from_address,
-      priceStore
+      value.from_address
     );
   }
 

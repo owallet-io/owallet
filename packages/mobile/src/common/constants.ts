@@ -60,6 +60,7 @@ export const SCREENS = {
   SettingViewPrivateData: "Setting.ViewPrivateData",
   SettingBackupMnemonic: "Setting.BackupMnemonic",
   SettingVersion: "Setting.Version",
+  DetailsBrowser: "Detail.Browser",
   AddressBook: "AddressBook",
   AddAddressBook: "AddAddressBook",
   Browser: "Browser",
@@ -110,7 +111,7 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: "Assets",
   },
   [SCREENS.TABS.Browser]: {
-    title: "Browser",
+    title: HEADER_KEY.showNetworkHeader,
   },
   [SCREENS.TABS.Settings]: {
     title: "Settings",
@@ -123,7 +124,7 @@ export const SCREENS_OPTIONS: IScreenOption = {
     showTabBar: true,
   },
   [SCREENS.TransactionDetail]: {
-    title: "Transaction Detail",
+    title: "Transaction Details",
   },
   [SCREENS.BackupMnemonic]: {
     showTabBar: false,
@@ -138,6 +139,9 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.RegisterDone]: {
+    title: HEADER_KEY.notShowHeader,
+  },
+  [SCREENS.DetailsBrowser]: {
     title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.RegisterRecoverMnemonicMain]: {
@@ -286,6 +290,7 @@ export const SCREENS_OPTIONS: IScreenOption = {
   },
   [SCREENS.Browser]: {
     title: "Browser",
+    showTabBar: true,
   },
   [SCREENS.BookMarks]: {
     title: "Bookmarks",

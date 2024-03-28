@@ -262,7 +262,7 @@ export const FeeButtonsInner: FunctionComponent<
                       "text-muted": feeConfig.feeType !== fee,
                     })}
                   >
-                    {chainStore.current.networkType === "bitcoin" ? "≤ " : null}
+                    {chainStore.current.networkType === "bitcoin" ? "≈ " : null}
                     {[lowFeePrice, averageFeePrice, highFeePrice][i].toString()}
                   </div>
                 ) : null}
