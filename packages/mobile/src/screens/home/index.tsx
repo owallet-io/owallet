@@ -106,13 +106,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     ])
   );
 
-  useEffect(() => {
-    InteractionManager.runAfterInteractions(() => {
-      onRefresh();
-    });
-    return () => {};
-  }, []);
-
   const onRefresh = React.useCallback(async () => {
     const queries = queriesStore.get(chainStore.current.chainId);
 
@@ -159,13 +152,29 @@ export const HomeScreen: FunctionComponent = observer((props) => {
 
       if (differenceInSeconds > 15) {
         setTimeout(() => {
-          universalSwapStore.clearAmounts();
           universalSwapStore.setLoaded(false);
+          universalSwapStore.clearAmounts();
+          console.log("get here");
+
           handleFetchAmounts(
             accountOrai.bech32Address,
             accountEth.evmosHexAddress,
             accountTron.evmosHexAddress,
-            accountKawaiiCosmos.bech32Address
+            accountKawaiiCosmos.bech32Address,
+            [
+              {
+                name: "erc20_usdt",
+                chainId: ChainIdEnum.Ethereum,
+                contractAddress: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+                networkType: "evm",
+              },
+              {
+                name: "airight",
+                chainId: ChainIdEnum.Oraichain,
+                contractAddress: "orai10ldgzued6zjp0mkqwsv2mux3ml50l97c74x8sg",
+                networkType: "cosmos",
+              },
+            ]
           );
         }, 1400);
       } else {
@@ -183,7 +192,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
 
   const loadTokenAmounts = useLoadTokens(universalSwapStore);
   // handle fetch all tokens of all chains
-  const handleFetchAmounts = async (tokenReload?, orai?, eth?, tron?, kwt?) => {
+  const handleFetchAmounts = async (orai?, eth?, tron?, kwt?, tokenReload?) => {
     let loadTokenParams = {};
 
     try {
@@ -228,7 +237,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       ) {
         setTimeout(() => {
           handleFetchAmounts(
-            [ChainIdEnum.Oraichain],
             accountOrai.bech32Address,
             accountEth.evmosHexAddress,
             accountTron.evmosHexAddress,

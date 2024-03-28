@@ -279,6 +279,7 @@ async function loadEvmEntries(
         isEvmNetworkNativeSwapSupported(chain.chainId) &&
         chain.chainId === t.chainId
     );
+
     if (!tokens.length) return [];
     const multicall = new Multicall({
       nodeUrl: chain.rpc,
