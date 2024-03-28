@@ -67,12 +67,6 @@
 	<string>App uses Face ID to unlock wallet</string>
 	<key>UIAppFonts</key>
 	<array>
-		<!-- <string>DMSans-Bold.ttf</string>
-		<string>DMSans-BoldItalic.ttf</string>
-		<string>DMSans-Italic.ttf</string>
-		<string>DMSans-Medium.ttf</string>
-		<string>DMSans-MediumItalic.ttf</string>
-		<string>DMSans-Regular.ttf</string> -->
 		<string>SpaceGrotesk-Bold.ttf</string>
 		<string>SpaceGrotesk-Light.ttf</string>
 		<string>SpaceGrotesk-Medium.ttf</string>
@@ -85,13 +79,13 @@
 		<string>remote-notification</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
-	<string>LaunchScreen</string>
+	<string>LaunchScreen.storyboard</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
 	</array>
 	<key>UIStatusBarStyle</key>
-	<string>UIStatusBarStyleDarkContent</string>
+	<string>UIStatusBarStyleLightContent</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
