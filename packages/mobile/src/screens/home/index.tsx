@@ -170,8 +170,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       if (differenceInSeconds > 15) {
         setTimeout(() => {
           universalSwapStore.setLoaded(false);
-          universalSwapStore.clearAmounts();
-          console.log("get here");
 
           handleFetchAmounts(
             accountOrai.bech32Address,
