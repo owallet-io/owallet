@@ -250,10 +250,12 @@ export const DetailsBrowserScreen = observer((props) => {
     webviewRef.current.reload();
   };
   const onGoback = () => {
-    webviewRef.current.goBack();
+    if (!canGoBack) return;
+    webviewRef.current?.goBack();
   };
   const onGoForward = () => {
-    webviewRef.current.goForward();
+    if (!canGoForward) return;
+    webviewRef.current?.goForward();
   };
   const [isLoading, setIsLoading] = useState(false);
 
@@ -437,16 +439,8 @@ export const DetailsBrowserScreen = observer((props) => {
 
                 setCurrentURL(e.nativeEvent.url);
               }}
-              onLoadStart={(syntheticEvent) => {
-                // update component to be aware of loading status
-                // const { nativeEvent } = syntheticEvent;
-                // console.log(nativeEvent.loading,"nativeEvent.loading")
-                setIsLoading(true);
-              }}
               onLoadEnd={(syntheticEvent) => {
                 // update component to be aware of loading status
-                // const { nativeEvent } = syntheticEvent;
-                // console.log(nativeEvent.loading,"nativeEvent.loading")
                 setIsLoading(false);
               }}
               contentInsetAdjustmentBehavior="never"

@@ -44,10 +44,12 @@ export const BrowserScreen = observer(() => {
       inactiveColor={colors["neutral-text-body"]}
     />
   );
-  const onDetailBrowser = () => {
-    return navigate(SCREENS.DetailsBrowser, {
-      name: "test",
+  const onDetailBrowser = (url) => {
+    if (!url) return;
+    navigate(SCREENS.DetailsBrowser, {
+      url: url,
     });
+    return;
   };
   const { top } = useSafeAreaInsets();
 
@@ -133,7 +135,7 @@ export const BrowserScreen = observer(() => {
             renderItem={({ item, index }) => {
               return (
                 <TouchableOpacity
-                  onPress={onDetailBrowser}
+                  onPress={() => onDetailBrowser(item?.link)}
                   style={{
                     alignItems: "center",
                     marginHorizontal: 16,
