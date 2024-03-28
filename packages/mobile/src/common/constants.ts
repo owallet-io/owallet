@@ -96,10 +96,10 @@ export const SCREENS = {
   },
 };
 export const ICONS_TITLE = {
-  [SCREENS.TABS.Invest]: "trending",
-  [SCREENS.TABS.Main]: "pie",
-  [SCREENS.TABS.Browser]: "internet",
-  [SCREENS.TABS.Settings]: "setting",
+  [SCREENS.TABS.Invest]: "tdesigntrending-up",
+  [SCREENS.TABS.Main]: "tdesignchart-pie",
+  [SCREENS.TABS.Browser]: "tdesigninternet",
+  [SCREENS.TABS.Settings]: "tdesignsetting-1",
   [SCREENS.TABS.SendNavigation]: "",
 };
 

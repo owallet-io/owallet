@@ -1,14 +1,27 @@
 import { observer } from "mobx-react-lite";
 import { useTheme } from "@src/themes/theme-provider";
-import { FlatList, ImageBackground, View } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import {
+  FlatList,
+  ImageBackground,
+  View,
+  TouchableOpacity,
+} from "react-native";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import OWText from "@src/components/text/ow-text";
 import React from "react";
 import { dataAll } from "@src/screens/web/helper/browser-helper";
+import { navigate } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
 
 export const AllRoute = observer(() => {
   const { colors } = useTheme();
+  const onToBrowser = (url) => {
+    if (!url) return;
+    navigate(SCREENS.DetailsBrowser, {
+      url: url,
+    });
+    return;
+  };
   return (
     <View
       style={{
@@ -30,7 +43,7 @@ export const AllRoute = observer(() => {
                 padding: 4,
               }}
             >
-              <TouchableOpacity onPress={() => {}}>
+              <TouchableOpacity onPress={() => onToBrowser(item.url)}>
                 <ImageBackground
                   style={{
                     width: "100%",

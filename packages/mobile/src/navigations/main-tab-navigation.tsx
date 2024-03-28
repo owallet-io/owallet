@@ -53,9 +53,7 @@ export const MainTabNavigation: FC = observer(() => {
             }
             return (
               <OWIcon
-                name={`${ICONS_TITLE[route.name]}-${
-                  focused ? "bold" : "outline"
-                }`}
+                name={`${ICONS_TITLE[route.name]}`}
                 size={22}
                 color={color}
               />

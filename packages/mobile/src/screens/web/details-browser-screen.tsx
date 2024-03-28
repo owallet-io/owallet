@@ -8,7 +8,11 @@ import WebView, { WebViewMessageEvent } from "react-native-webview";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useInjectedSourceCode } from "@src/screens/web/hooks/inject-hook";
 import EventEmitter from "eventemitter3";
-import { useIsFocused, useNavigation } from "@react-navigation/native";
+import {
+  useIsFocused,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { useStore } from "@src/stores";
 import { version, name } from "../../../package.json";
@@ -22,26 +26,30 @@ import { Bitcoin, Ethereum, OWallet, TronWeb } from "@owallet/provider";
 import { RNMessageRequesterExternal } from "@src/router";
 import { URL } from "react-native-url-polyfill";
 import DeviceInfo from "react-native-device-info";
+import { SCREENS } from "@src/common/constants";
+import LottieView from "lottie-react-native";
 
-export const DetailsBrowserScreen = observer(() => {
+export const DetailsBrowserScreen = observer((props) => {
   const { top } = useSafeAreaInsets();
   const { colors } = useTheme();
   const webviewRef = useRef<WebView | null>(null);
-  const sourceCode = useInjectedSourceCode();
+
   const [eventEmitter] = useState(() => new EventEmitter());
   const [canGoBack, setCanGoBack] = useState(false);
   const [canGoForward, setCanGoForward] = useState(false);
   const isFocused = useIsFocused();
   const navigation = useNavigation();
   const { keyRingStore, chainStore, browserStore } = useStore();
+  const route = useRoute();
   const [currentURL, setCurrentURL] = useState(() => {
-    // if (props.source && "uri" in props.source) {
-    //   return props.source.uri;
-    // }
+    if (route?.params?.url) {
+      return route?.params?.url;
+    }
 
-    return "https://oraidex.io";
+    return "";
   });
-
+  const { inject } = browserStore;
+  const sourceCode = inject;
   const [owallet] = useState(
     () =>
       new OWallet(
@@ -233,6 +241,25 @@ export const DetailsBrowserScreen = observer(() => {
       });
     }
   }, [canGoBack, navigation]);
+
+  const onHomeBrowser = () => {
+    navigation.navigate(SCREENS.Browser);
+    return;
+  };
+  const onReload = () => {
+    webviewRef.current.reload();
+  };
+  const onGoback = () => {
+    webviewRef.current.goBack();
+  };
+  const onGoForward = () => {
+    webviewRef.current.goForward();
+  };
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    setIsLoading(true);
+  }, []);
   return (
     <PageWithViewInBottomTabView
       style={{
@@ -257,6 +284,7 @@ export const DetailsBrowserScreen = observer(() => {
         >
           <OWButtonIcon
             size={"medium"}
+            onPress={onGoback}
             style={{
               width: 44,
               height: 44,
@@ -278,6 +306,7 @@ export const DetailsBrowserScreen = observer(() => {
               backgroundColor: colors["neutral-surface-action3"],
               marginLeft: 3,
             }}
+            onPress={onGoForward}
             fullWidth={false}
             name={"tdesignchevron-right"}
             sizeIcon={18}
@@ -289,7 +318,7 @@ export const DetailsBrowserScreen = observer(() => {
             }}
           >
             <TextInput
-              defaultValue={"oraidex.io"}
+              defaultValue={currentURL}
               inputStyle={{
                 backgroundColor: colors["neutral-surface-action"],
                 borderWidth: 0,
@@ -303,6 +332,7 @@ export const DetailsBrowserScreen = observer(() => {
               editable={false}
               inputRight={
                 <OWButtonIcon
+                  onPress={onReload}
                   fullWidth={false}
                   name={"tdesignrefresh"}
                   sizeIcon={18}
@@ -325,6 +355,7 @@ export const DetailsBrowserScreen = observer(() => {
           />
           <OWButtonIcon
             size={"medium"}
+            onPress={onHomeBrowser}
             style={{
               width: 44,
               height: 44,
@@ -343,7 +374,24 @@ export const DetailsBrowserScreen = observer(() => {
             backgroundColor: colors["neutral-surface-bg"],
           }}
         >
-          {sourceCode ? (
+          {isLoading && (
+            <View
+              style={{
+                width: "100%",
+                height: "100%",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <LottieView
+                source={require("@src/assets/animations/loading.json")}
+                style={{ width: 200, height: 200 }}
+                autoPlay
+                loop
+              />
+            </View>
+          )}
+          {sourceCode && route?.params?.url ? (
             <WebView
               originWhitelist={["*"]} // to allowing WebView to load blob
               ref={webviewRef}
@@ -359,7 +407,12 @@ export const DetailsBrowserScreen = observer(() => {
                       alignItems: "center",
                     }}
                   >
-                    <ActivityIndicator />
+                    <LottieView
+                      source={require("@src/assets/animations/loading.json")}
+                      style={{ width: 200, height: 200 }}
+                      autoPlay
+                      loop
+                    />
                   </View>
                 );
               }}
@@ -384,15 +437,42 @@ export const DetailsBrowserScreen = observer(() => {
 
                 setCurrentURL(e.nativeEvent.url);
               }}
+              onLoadStart={(syntheticEvent) => {
+                // update component to be aware of loading status
+                // const { nativeEvent } = syntheticEvent;
+                // console.log(nativeEvent.loading,"nativeEvent.loading")
+                setIsLoading(true);
+              }}
+              onLoadEnd={(syntheticEvent) => {
+                // update component to be aware of loading status
+                // const { nativeEvent } = syntheticEvent;
+                // console.log(nativeEvent.loading,"nativeEvent.loading")
+                setIsLoading(false);
+              }}
               contentInsetAdjustmentBehavior="never"
               automaticallyAdjustContentInsets={false}
               decelerationRate="normal"
               allowsBackForwardNavigationGestures={true}
               // onScroll={_onScroll}
-
-              source={{ uri: "https://oraidex.io" }}
+              source={{ uri: route?.params?.url }}
             />
-          ) : null}
+          ) : (
+            <View
+              style={{
+                width: "100%",
+                height: "100%",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <LottieView
+                source={require("@src/assets/animations/loading.json")}
+                style={{ width: 200, height: 200 }}
+                autoPlay
+                loop
+              />
+            </View>
+          )}
         </View>
       </View>
     </PageWithViewInBottomTabView>
