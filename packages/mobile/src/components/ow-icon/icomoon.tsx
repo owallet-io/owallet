@@ -10,7 +10,7 @@ import { icons } from "./icons";
 type iconTypes = (typeof icons)[number];
 
 export interface IconProps extends Omit<IconMoonProps, "iconSet" | "name"> {
-  name: iconTypes;
+  name?: iconTypes;
 }
 
 export default function Icon({ name, ...restProps }: IconProps) {
