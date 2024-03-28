@@ -28,7 +28,7 @@ export const CopyAddressModal: FunctionComponent<{
   useEffect(() => {
     setTimeout(() => {
       setRefresh(Date.now());
-    }, 2000);
+    }, 1000);
   }, []);
 
   useEffect(() => {
@@ -87,24 +87,26 @@ export const CopyAddressModal: FunctionComponent<{
             const chainId = ChainIdEnum[chainNameKey];
 
             let chainIcon = chainIcons.find((c) => c.chainId === chainId);
-            if (!chainIcon) {
-              chainIcon = chainIcons.find(
-                (c) => c.chainId === ChainIdEnum.Oraichain
-              );
-            }
-            // Hardcode for Oasis because oraidex-common dos not have icon yet
+
+            // Hardcode for Oasis because oraidex-common does not have icon yet
             if (item.name.includes("Oasis")) {
               chainIcon = {
                 chainId: chainId,
                 Icon: "https://s2.coinmarketcap.com/static/img/coins/200x200/7653.png",
               };
             }
-            // Hardcode for BTC because oraidex-common dos not have icon yet
+            // Hardcode for BTC because oraidex-common does not have icon yet
             if (item.name.includes("Bit")) {
               chainIcon = {
                 chainId: chainId,
                 Icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Bitcoin.svg/1200px-Bitcoin.svg.png",
               };
+            }
+
+            if (!chainIcon) {
+              chainIcon = chainIcons.find(
+                (c) => c.chainId === ChainIdEnum.Oraichain
+              );
             }
 
             if (key !== "undefined") {
@@ -116,15 +118,11 @@ export const CopyAddressModal: FunctionComponent<{
                       onPress({ ...item, chainIcon: chainIcon?.Icon })
                     }
                     icon={
-                      chainIcon ? (
-                        <OWIcon
-                          type="images"
-                          source={{ uri: chainIcon.Icon }}
-                          size={28}
-                        />
-                      ) : (
-                        <OWText>{item.name.charAt(0)}</OWText>
-                      )
+                      <OWIcon
+                        type="images"
+                        source={{ uri: chainIcon.Icon }}
+                        size={28}
+                      />
                     }
                     chain={item.name}
                     address={item.address}
