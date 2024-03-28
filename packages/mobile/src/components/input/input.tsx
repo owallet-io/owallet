@@ -46,7 +46,7 @@ export const TextInput = React.forwardRef<
     ? BottomSheetTextInput
     : NativeTextInput;
   return (
-    <View style={[props.containerStyle, { paddingBottom: 12 }]}>
+    <View style={[{ paddingBottom: 12 }, props.containerStyle]}>
       <View
         style={{
           flexDirection: "row",

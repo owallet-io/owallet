@@ -207,7 +207,11 @@ export const SignModal: FunctionComponent<{
       <WrapViewModal
         disabledScrollView={false}
         buttonBottom={
-          <>
+          <View
+            style={{
+              paddingBottom: 5 + (bottom || 0),
+            }}
+          >
             <View
               style={{
                 backgroundColor: colors["neutral-surface-card"],
@@ -250,7 +254,7 @@ export const SignModal: FunctionComponent<{
                 backgroundColor: colors["neutral-surface-bg"],
               }}
             />
-          </>
+          </View>
         }
         style={{
           backgroundColor: colors["neutral-surface-card"],
