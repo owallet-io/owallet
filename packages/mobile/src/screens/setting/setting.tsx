@@ -124,12 +124,12 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
             >
               <OWIcon
                 name="tdesign_despise"
-                color={colors["neutral-text-title"]}
+                color={colors["neutral-text-body"]}
                 size={32}
               />
               <OWText
                 style={{ paddingTop: 8 }}
-                color={colors["neutral-text-title"]}
+                color={colors["neutral-text-body"]}
                 size={16}
                 weight="600"
               >
@@ -149,12 +149,12 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
             >
               <OWIcon
                 name="tdesign_excited"
-                color={colors["neutral-text-title"]}
+                color={colors["neutral-text-body"]}
                 size={32}
               />
               <OWText
                 style={{ paddingTop: 8 }}
-                color={colors["neutral-text-title"]}
+                color={colors["neutral-text-body"]}
                 size={16}
                 weight="600"
               >
