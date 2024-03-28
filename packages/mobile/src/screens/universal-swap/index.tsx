@@ -292,7 +292,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         kwtAddress: kwt ?? accountKawaiiCosmos.bech32Address,
         tronAddress: getBase58Address(tron ?? accountTron.evmosHexAddress),
         cwStargate,
-        tokenReload,
+        tokenReload: tokenReload.length > 0 ? tokenReload : null,
       };
 
       setTimeout(() => {
