@@ -62,6 +62,7 @@
     "@formatjs/intl-pluralrules": "^4.0.28",
     "@formatjs/intl-relativetimeformat": "^9.1.7",
     "@ledgerhq/react-native-hw-transport-ble": "=6.28.3",
+    "react-icomoon": "^2.5.7",
     "@react-native-async-storage/async-storage": "1.19.0",
     "@react-native-community/blur": "4.3.2",
     "@react-native-community/netinfo": "9.4.1",

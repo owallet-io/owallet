@@ -60,6 +60,7 @@ export const SCREENS = {
   SettingViewPrivateData: "Setting.ViewPrivateData",
   SettingBackupMnemonic: "Setting.BackupMnemonic",
   SettingVersion: "Setting.Version",
+  DetailsBrowser: "Detail.Browser",
   AddressBook: "AddressBook",
   AddAddressBook: "AddAddressBook",
   Browser: "Browser",
@@ -138,6 +139,9 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.RegisterDone]: {
+    title: HEADER_KEY.notShowHeader,
+  },
+  [SCREENS.DetailsBrowser]: {
     title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.RegisterRecoverMnemonicMain]: {
