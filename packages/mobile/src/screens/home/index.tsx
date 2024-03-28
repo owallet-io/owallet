@@ -175,21 +175,21 @@ export const HomeScreen: FunctionComponent = observer((props) => {
             accountOrai.bech32Address,
             accountEth.evmosHexAddress,
             accountTron.evmosHexAddress,
-            accountKawaiiCosmos.bech32Address,
-            [
-              {
-                name: "erc20_usdt",
-                chainId: ChainIdEnum.Ethereum,
-                contractAddress: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-                networkType: "evm",
-              },
-              {
-                name: "airight",
-                chainId: ChainIdEnum.Oraichain,
-                contractAddress: "orai10ldgzued6zjp0mkqwsv2mux3ml50l97c74x8sg",
-                networkType: "cosmos",
-              },
-            ]
+            accountKawaiiCosmos.bech32Address
+            // [
+            //   {
+            //     name: "erc20_usdt",
+            //     chainId: ChainIdEnum.Ethereum,
+            //     contractAddress: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+            //     networkType: "evm"
+            //   },
+            //   {
+            //     name: "airight",
+            //     chainId: ChainIdEnum.Oraichain,
+            //     contractAddress: "orai10ldgzued6zjp0mkqwsv2mux3ml50l97c74x8sg",
+            //     networkType: "cosmos"
+            //   }
+            // ]
           );
         }, 1400);
       } else {
@@ -228,7 +228,8 @@ export const HomeScreen: FunctionComponent = observer((props) => {
 
       setTimeout(() => {
         loadTokenAmounts(loadTokenParams);
-      }, 2000);
+        universalSwapStore.clearTokenReload();
+      }, 1000);
     } catch (error) {
       console.log("error loadTokenAmounts", error);
       showToast({
