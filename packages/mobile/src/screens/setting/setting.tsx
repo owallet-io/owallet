@@ -19,18 +19,13 @@ import OWText from "@src/components/text/ow-text";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import OWCard from "@src/components/card/ow-card";
 import { Bech32Address } from "@owallet/cosmos";
+import { ChainIdEnum } from "@oraichain/oraidex-common";
 
 export const NewSettingScreen: FunctionComponent = observer(() => {
-  const {
-    keychainStore,
-    keyRingStore,
-    priceStore,
-    modalStore,
-    accountStore,
-    chainStore,
-  } = useStore();
+  const { keychainStore, keyRingStore, priceStore, modalStore, accountStore } =
+    useStore();
   const safeAreaInsets = useSafeAreaInsets();
-  const account = accountStore.getAccount(chainStore.current.chainId);
+  const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
 
   const { colors } = useTheme();
   const styles = styling(colors);
@@ -172,7 +167,7 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
           paragraph={
             selected ? selected.meta?.name || "OWallet Account" : "No Account"
           }
-          subtitle={Bech32Address.shortenAddress(account.bech32Address, 24)}
+          subtitle={Bech32Address.shortenAddress(accountOrai.bech32Address, 24)}
           onPress={() =>
             smartNavigation.navigateSmart("SettingSelectAccount", {})
           }
