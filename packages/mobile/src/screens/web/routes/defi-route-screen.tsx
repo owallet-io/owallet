@@ -9,9 +9,18 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import OWText from "@src/components/text/ow-text";
 import React from "react";
 import { defiData } from "@src/screens/web/helper/browser-helper";
+import { navigate } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
 
 export const DefiRoute = () => {
   const { colors } = useTheme();
+  const onToBrowser = (url) => {
+    if (!url) return;
+    navigate(SCREENS.DetailsBrowser, {
+      url: url,
+    });
+    return;
+  };
   return (
     <View
       style={{
@@ -33,7 +42,7 @@ export const DefiRoute = () => {
                 padding: 4,
               }}
             >
-              <TouchableOpacity onPress={() => {}}>
+              <TouchableOpacity onPress={() => onToBrowser(item.url)}>
                 <ImageBackground
                   style={{
                     width: "100%",
