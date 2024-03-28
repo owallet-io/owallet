@@ -286,6 +286,7 @@ export const SCREENS_OPTIONS: IScreenOption = {
   },
   [SCREENS.Browser]: {
     title: "Browser",
+    showTabBar: true,
   },
   [SCREENS.BookMarks]: {
     title: "Bookmarks",

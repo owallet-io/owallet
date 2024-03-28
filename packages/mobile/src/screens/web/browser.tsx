@@ -18,7 +18,11 @@ import {
 import { Text } from "@src/components/text";
 import { useStyle } from "../../styles";
 import { TextInput } from "../../components/input";
-import { PageWithScrollView, PageWithView } from "../../components/page";
+import {
+  PageWithScrollView,
+  PageWithView,
+  PageWithViewInBottomTabView,
+} from "../../components/page";
 import { useNavigation } from "@react-navigation/core";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { _keyExtract, checkValidDomain } from "../../utils/helper";
@@ -43,6 +47,7 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import { OWBox } from "@src/components/card";
 import images from "@src/assets/images";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const explorerData = [
   {
@@ -461,15 +466,15 @@ export const Browser: FunctionComponent<BrowserProps> = observer((props) => {
   const { deepLinkUriStore, browserStore } = useStore();
   const { colors } = useTheme();
 
-  useEffect(() => {
-    navigation
-      .getParent()
-      ?.setOptions({ tabBarStyle: { display: "none" }, tabBarVisible: false });
-    return () =>
-      navigation
-        .getParent()
-        ?.setOptions({ tabBarStyle: undefined, tabBarVisible: undefined });
-  }, [navigation]);
+  // useEffect(() => {
+  //   navigation
+  //     .getParent()
+  //     ?.setOptions({ tabBarStyle: { display: "none" }, tabBarVisible: false });
+  //   return () =>
+  //     navigation
+  //       .getParent()
+  //       ?.setOptions({ tabBarStyle: undefined, tabBarVisible: undefined });
+  // }, [navigation]);
 
   const [url, setUrl] = useState("");
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
@@ -780,6 +785,7 @@ export const Browser: FunctionComponent<BrowserProps> = observer((props) => {
       inactiveColor={colors["neutral-text-body"]}
     />
   );
+  const { top } = useSafeAreaInsets();
   return (
     // <PageWithView disableSafeArea backgroundColor={colors["background"]}>
     //   {isSwitchTab ? (
@@ -804,9 +810,11 @@ export const Browser: FunctionComponent<BrowserProps> = observer((props) => {
     //     />
     //   </WebViewStateContext.Provider>
     // </PageWithView>
-    <PageWithView
+    <PageWithViewInBottomTabView
+      // disableSafeArea={true}
       style={{
         backgroundColor: colors["neutral-surface-action"],
+
         flexGrow: 1,
       }}
     >
@@ -832,7 +840,7 @@ export const Browser: FunctionComponent<BrowserProps> = observer((props) => {
         }}
         containerStyle={{
           paddingHorizontal: 16,
-          paddingTop: 16,
+          paddingTop: 16 + (top || 0),
           backgroundColor: colors["neutral-surface-card"],
         }}
       />
@@ -841,7 +849,7 @@ export const Browser: FunctionComponent<BrowserProps> = observer((props) => {
           padding: 16,
         }}
       >
-        <View>
+        <View style={{}}>
           <View
             style={{
               flexDirection: "row",
@@ -999,7 +1007,7 @@ export const Browser: FunctionComponent<BrowserProps> = observer((props) => {
           flex: 1,
         }}
       />
-    </PageWithView>
+    </PageWithViewInBottomTabView>
   );
 });
 

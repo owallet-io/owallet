@@ -10,6 +10,9 @@ import { DAppWebpageScreen } from "@src/screens/web/webpages";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { useNavigation } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
+import { useStore } from "@src/stores";
+import { observer } from "mobx-react-lite";
+
 export const WebpageHeaderOptions = ({ navigation, title }): any => {
   const { colors } = useTheme();
   return {
@@ -45,28 +48,28 @@ export const WebpageHeaderOptions = ({ navigation, title }): any => {
   };
 };
 const Stack = createStackNavigator();
-export const WebNavigation: FC = () => {
+export const WebNavigation: FC = observer(() => {
   const navigation = useNavigation();
-
+  const { appInitStore } = useStore();
+  const { colors } = useTheme();
   return (
     <Stack.Navigator
       initialRouteName={SCREENS.Browser}
-      screenOptions={{
-        headerShown: false,
-        // ...WebpageScreenScreenOptionsPreset,
+      screenOptions={({ route }) => {
+        // appInitStore.updateVisibleTabBar(route?.name);
+        return {
+          headerShown: false,
+          headerStyle: {
+            backgroundColor: colors["neutral-surface-card"],
+          },
+
+          // headerMode:"screen"
+          // ...WebpageScreenScreenOptionsPreset,
+        };
       }}
-      headerMode="screen"
+      // headerMode="screen"
     >
-      <Stack.Screen
-        options={
-          ({ navigation }) => ({
-            headerShown: false,
-          })
-          // WebpageHeaderOptions({ navigation, title: SCREENS.Browser })
-        }
-        name={SCREENS.Browser}
-        component={Browser}
-      />
+      <Stack.Screen name={SCREENS.Browser} component={Browser} />
       <Stack.Screen
         options={({ navigation }) =>
           WebpageHeaderOptions({ navigation, title: "Bookmarks" })
@@ -82,6 +85,6 @@ export const WebNavigation: FC = () => {
       <Stack.Screen name={SCREENS.WebDApp} component={DAppWebpageScreen} />
     </Stack.Navigator>
   );
-};
+});
 
 const styles = StyleSheet.create({});
