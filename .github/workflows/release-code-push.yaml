@@ -43,7 +43,7 @@ jobs:
 
       - name: Checkout to repo
         uses: actions/checkout@v3
-        
+
       - name: Install Dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn --ignore-platform --ignore-scripts
@@ -55,11 +55,11 @@ jobs:
       - name: Build Libs
         run: yarn build:libs
 
-      - name: Build provider
-        working-directory: packages/mobile
-        run: yarn build:provider
-        env:
-          CI: false
+      # - name: Build provider
+      #   working-directory: packages/mobile
+      #   run: yarn build:provider
+      #   env:
+      #     CI: false
       - name: Deploy on AppCenter
         working-directory: packages/mobile
         run: |
@@ -69,8 +69,8 @@ jobs:
       - name: Send discord message
         uses: appleboy/discord-action@master
         with:
-          webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
-          webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+          webhook_id: ${{ secrets.DISCORD_MOBILE_WEBHOOK_ID }}
+          webhook_token: ${{ secrets.DISCORD_MOBILE_WEBHOOK_TOKEN }}
           username: "GitBot"
           message: Code pushed success! Comment=${{ github.event.head_commit.message }}
 
@@ -78,7 +78,7 @@ jobs:
         if: ${{ failure() }}
         uses: appleboy/discord-action@master
         with:
-          webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
-          webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+          webhook_id: ${{ secrets.DISCORD_MOBILE_WEBHOOK_ID }}
+          webhook_token: ${{ secrets.DISCORD_MOBILE_WEBHOOK_TOKEN }}
           username: "GitBot"
           message: Code pushed fail ${{ github.job }} job in worflow ${{ github.workflow }} of ${{ github.repository }} has ${{ job.status }}

@@ -142,8 +142,9 @@ export const Browser: FunctionComponent<BrowserProps> = observer((props) => {
 
   const [url, setUrl] = useState("");
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+  const { inject } = browserStore;
 
-  const sourceCode = useInjectedSourceCode();
+  const sourceCode = inject;
 
   const handleNavigateDapp = ({ name, uri }) => {
     if (sourceCode) {

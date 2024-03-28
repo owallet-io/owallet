@@ -59,16 +59,23 @@ export class BrowserStore {
   @persist("object")
   @observable
   protected selectedTab: { id: string; name: string; uri: string };
+  @observable
+  protected inject_source: string | null;
 
   constructor() {
     makeObservable(this);
     this.bookmarks = [...DAppInfos];
     this.tabs = [];
+    this.inject_source = null;
   }
 
   @action
   updateBookmarks(bookmarks) {
     this.bookmarks = bookmarks;
+  }
+  @action
+  update_inject(inject: string) {
+    this.inject_source = inject;
   }
 
   @action
@@ -119,6 +126,11 @@ export class BrowserStore {
   @computed
   get getSelectedTab() {
     return this.selectedTab;
+  }
+
+  @computed
+  get inject() {
+    return this.inject_source;
   }
 
   @action

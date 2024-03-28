@@ -16,6 +16,7 @@ import {
   StyleSheet,
 } from "react-native";
 import { useStore } from "../../stores";
+import { EarningCard } from "./earning-card";
 import { observer } from "mobx-react-lite";
 import { TokensCard } from "./tokens-card";
 import { usePrevious } from "../../hooks";
@@ -36,6 +37,8 @@ import { oraichainNetwork } from "@oraichain/oraidex-common";
 import { useCoinGeckoPrices, useLoadTokens } from "@owallet/hooks";
 import { showToast } from "@src/utils/helper";
 import { EarningCardNew } from "./earning-card-new";
+import { TRON_ID } from "@owallet/common";
+import { InjectedProviderUrl } from "../web/config";
 
 export const HomeScreen: FunctionComponent = observer((props) => {
   const [refreshing, setRefreshing] = React.useState(false);
@@ -48,6 +51,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     accountStore,
     queriesStore,
     priceStore,
+    browserStore,
     appInitStore,
     universalSwapStore,
   } = useStore();
@@ -63,6 +67,19 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     chainStoreIsInitializing,
     true
   );
+  useEffect(() => {
+    InteractionManager.runAfterInteractions(() => {
+      console.log(InjectedProviderUrl, "InjectedProviderUrl");
+      fetch(InjectedProviderUrl)
+        .then((res) => {
+          return res.text();
+        })
+        .then((res) => {
+          browserStore.update_inject(res);
+        })
+        .catch((err) => console.log(err));
+    });
+  }, []);
   const checkAndUpdateChainInfo = useCallback(() => {
     if (!chainStoreIsInitializing) {
       (async () => {
