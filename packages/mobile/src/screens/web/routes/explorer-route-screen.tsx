@@ -1,5 +1,10 @@
 import { useTheme } from "@src/themes/theme-provider";
-import { FlatList, ImageBackground, View } from "react-native";
+import {
+  FlatList,
+  ImageBackground,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import OWText from "@src/components/text/ow-text";
 import React from "react";
@@ -28,44 +33,46 @@ export const ExplorerRoute = () => {
                 padding: 4,
               }}
             >
-              <ImageBackground
-                style={{
-                  width: "100%",
-                  height: 160,
-                }}
-                imageStyle={{ borderRadius: 12 }}
-                resizeMode={"cover"}
-                source={item.images}
-              >
-                <View
+              <TouchableOpacity onPress={() => {}}>
+                <ImageBackground
                   style={{
-                    paddingHorizontal: 16,
-                    justifyContent: "center",
-                    flex: 1,
+                    width: "100%",
+                    height: 160,
                   }}
+                  imageStyle={{ borderRadius: 12 }}
+                  resizeMode={"cover"}
+                  source={item.images}
                 >
-                  <OWIcon type={"images"} source={item.logo} size={32} />
-                  <OWText
-                    size={16}
-                    weight={"600"}
+                  <View
                     style={{
-                      color: "#EBEDF2",
-                      paddingTop: 8,
+                      paddingHorizontal: 16,
+                      justifyContent: "center",
+                      flex: 1,
                     }}
                   >
-                    {item.title}
-                  </OWText>
-                  <OWText
-                    size={13}
-                    weight={"400"}
-                    style={{
-                      color: "#909298",
-                    }}
-                  >
-                    {item.subTitle}
-                  </OWText>
-                </View>
-              </ImageBackground>
+                    <OWIcon type={"images"} source={item.logo} size={32} />
+                    <OWText
+                      size={16}
+                      weight={"600"}
+                      style={{
+                        color: "#EBEDF2",
+                        paddingTop: 8,
+                      }}
+                    >
+                      {item.title}
+                    </OWText>
+                    <OWText
+                      size={13}
+                      weight={"400"}
+                      style={{
+                        color: "#909298",
+                      }}
+                    >
+                      {item.subTitle}
+                    </OWText>
+                  </View>
+                </ImageBackground>
+              </TouchableOpacity>
             </View>
           );
         }}

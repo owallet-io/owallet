@@ -8,7 +8,11 @@ import WebView, { WebViewMessageEvent } from "react-native-webview";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useInjectedSourceCode } from "@src/screens/web/hooks/inject-hook";
 import EventEmitter from "eventemitter3";
-import { useIsFocused, useNavigation } from "@react-navigation/native";
+import {
+  useIsFocused,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { useStore } from "@src/stores";
 import { version, name } from "../../../package.json";
@@ -25,7 +29,7 @@ import DeviceInfo from "react-native-device-info";
 import { SCREENS } from "@src/common/constants";
 import LottieView from "lottie-react-native";
 
-export const DetailsBrowserScreen = observer(() => {
+export const DetailsBrowserScreen = observer((props) => {
   const { top } = useSafeAreaInsets();
   const { colors } = useTheme();
   const webviewRef = useRef<WebView | null>(null);
@@ -36,10 +40,11 @@ export const DetailsBrowserScreen = observer(() => {
   const isFocused = useIsFocused();
   const navigation = useNavigation();
   const { keyRingStore, chainStore, browserStore } = useStore();
+  const route = useRoute();
   const [currentURL, setCurrentURL] = useState(() => {
-    // if (props.source && "uri" in props.source) {
-    //   return props.source.uri;
-    // }
+    if (route?.params?.url) {
+      return route?.params?.url;
+    }
 
     return "";
   });
@@ -251,7 +256,7 @@ export const DetailsBrowserScreen = observer(() => {
     webviewRef.current.goForward();
   };
   const [isLoading, setIsLoading] = useState(false);
-  console.log(isLoading, "isLoading");
+
   useEffect(() => {
     setIsLoading(true);
   }, []);
@@ -386,7 +391,7 @@ export const DetailsBrowserScreen = observer(() => {
               />
             </View>
           )}
-          {sourceCode ? (
+          {sourceCode && route?.params?.url ? (
             <WebView
               originWhitelist={["*"]} // to allowing WebView to load blob
               ref={webviewRef}
@@ -449,7 +454,7 @@ export const DetailsBrowserScreen = observer(() => {
               decelerationRate="normal"
               allowsBackForwardNavigationGestures={true}
               // onScroll={_onScroll}
-              source={{ uri: "https://oraidex.io" }}
+              source={{ uri: route?.params?.url }}
             />
           ) : (
             <View
