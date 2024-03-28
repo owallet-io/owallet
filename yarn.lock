@@ -24034,6 +24034,11 @@ react-native-randombytes@3.6.1:
     buffer "^4.9.1"
     sjcl "^1.0.3"
 
+react-native-rate@^1.2.12:
+  version "1.2.12"
+  resolved "https://registry.yarnpkg.com/react-native-rate/-/react-native-rate-1.2.12.tgz#d4307b2994f9c849b987eb65599ec467db4aee04"
+  integrity sha512-A/z3s7Zth08aXcJnru6S4p71NG8acx2w5LhIfItwTJUbQruNJugk8WrN51dLBCSDv8W33kbS5YoUT4M9jOP5gA==
+
 react-native-reanimated@3.5.4:
   version "3.5.4"
   resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-3.5.4.tgz#a6c2b0c43b6dad246f5d276213974afedb8e3fc7"

@@ -20,6 +20,7 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import OWCard from "@src/components/card/ow-card";
 import { Bech32Address } from "@owallet/cosmos";
 import { ChainIdEnum } from "@oraichain/oraidex-common";
+import Rate, { AndroidMarket } from "react-native-rate";
 
 export const NewSettingScreen: FunctionComponent = observer(() => {
   const { keychainStore, keyRingStore, priceStore, modalStore, accountStore } =
@@ -60,6 +61,26 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
     );
   };
 
+  const onRatingApp = () => {
+    const options = {
+      AppleAppID: "id1626035069",
+      GooglePackageName: "com.io.owallet",
+      preferredAndroidMarket: AndroidMarket.Google,
+      preferInApp: true,
+      openAppStoreIfInAppFails: true,
+    };
+    Rate.rate(options, (success, errorMessage) => {
+      if (success) {
+        // this technically only tells us if the user successfully went to the Review Page. Whether they actually did anything, we do not know.
+        console.log("success", success);
+      }
+      if (errorMessage) {
+        // errorMessage comes from the native code. Useful for debugging, but probably not for users to view
+        console.error(`Example page Rate.rate() error: ${errorMessage}`);
+      }
+    });
+  };
+
   const renderRating = useCallback(() => {
     return (
       <OWCard style={{ marginBottom: 16 }}>
@@ -91,6 +112,7 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
             }}
           >
             <TouchableOpacity
+              onPress={onRatingApp}
               style={{
                 borderWidth: 1,
                 borderRadius: 12,
@@ -115,6 +137,7 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
               </OWText>
             </TouchableOpacity>
             <TouchableOpacity
+              onPress={onRatingApp}
               style={{
                 borderWidth: 1,
                 borderRadius: 12,

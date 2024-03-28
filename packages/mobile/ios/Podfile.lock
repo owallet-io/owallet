@@ -673,6 +673,8 @@ PODS:
     - React-Core
   - RNLocalize (2.2.6):
     - React-Core
+  - RNRate (1.2.12):
+    - React-Core
   - RNReanimated (3.5.4):
     - DoubleConversion
     - FBLazyVector
@@ -802,6 +804,7 @@ DEPENDENCIES:
   - RNInAppBrowser (from `../node_modules/react-native-inappbrowser-reborn`)
   - RNKeychain (from `../node_modules/react-native-keychain`)
   - RNLocalize (from `../node_modules/react-native-localize`)
+  - RNRate (from `../node_modules/react-native-rate`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNScrypt (from `../node_modules/react-native-scrypt`)
@@ -979,6 +982,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-keychain"
   RNLocalize:
     :path: "../node_modules/react-native-localize"
+  RNRate:
+    :path: "../node_modules/react-native-rate"
   RNReanimated:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
@@ -1087,6 +1092,7 @@ SPEC CHECKSUMS:
   RNInAppBrowser: e36d6935517101ccba0e875bac8ad7b0cb655364
   RNKeychain: ff836453cba46938e0e9e4c22e43d43fa2c90333
   RNLocalize: d4b8af4e442d4bcca54e68fc687a2129b4d71a81
+  RNRate: ef3bcff84f39bb1d1e41c5593d3eea4aab2bd73a
   RNReanimated: ab2e96c6d5591c3dfbb38a464f54c8d17fb34a87
   RNScreens: 3c2d122f5e08c192e254c510b212306da97d2581
   RNScrypt: 95fdef077b482e9fdf8a761120cb69d129ef4016
