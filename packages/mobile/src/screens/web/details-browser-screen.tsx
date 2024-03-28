@@ -250,6 +250,11 @@ export const DetailsBrowserScreen = observer(() => {
   const onGoForward = () => {
     webviewRef.current.goForward();
   };
+  const [isLoading, setIsLoading] = useState(false);
+  console.log(isLoading, "isLoading");
+  useEffect(() => {
+    setIsLoading(true);
+  }, []);
   return (
     <PageWithViewInBottomTabView
       style={{
@@ -364,6 +369,23 @@ export const DetailsBrowserScreen = observer(() => {
             backgroundColor: colors["neutral-surface-bg"],
           }}
         >
+          {isLoading && (
+            <View
+              style={{
+                width: "100%",
+                height: "100%",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <LottieView
+                source={require("@src/assets/animations/loading.json")}
+                style={{ width: 200, height: 200 }}
+                autoPlay
+                loop
+              />
+            </View>
+          )}
           {sourceCode ? (
             <WebView
               originWhitelist={["*"]} // to allowing WebView to load blob
@@ -409,6 +431,18 @@ export const DetailsBrowserScreen = observer(() => {
                 setCanGoForward(e.nativeEvent.canGoForward);
 
                 setCurrentURL(e.nativeEvent.url);
+              }}
+              onLoadStart={(syntheticEvent) => {
+                // update component to be aware of loading status
+                // const { nativeEvent } = syntheticEvent;
+                // console.log(nativeEvent.loading,"nativeEvent.loading")
+                setIsLoading(true);
+              }}
+              onLoadEnd={(syntheticEvent) => {
+                // update component to be aware of loading status
+                // const { nativeEvent } = syntheticEvent;
+                // console.log(nativeEvent.loading,"nativeEvent.loading")
+                setIsLoading(false);
               }}
               contentInsetAdjustmentBehavior="never"
               automaticallyAdjustContentInsets={false}
