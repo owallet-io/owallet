@@ -187,6 +187,10 @@ PODS:
   - libwebp/sharpyuv (1.3.2)
   - libwebp/webp (1.3.2):
     - libwebp/sharpyuv
+  - lottie-ios (4.4.1)
+  - lottie-react-native (6.7.0):
+    - lottie-ios (~> 4.4.1)
+    - React-Core
   - Mixpanel-swift (4.2.0):
     - Mixpanel-swift/Complete (= 4.2.0)
   - Mixpanel-swift/Complete (4.2.0)
@@ -746,6 +750,7 @@ DEPENDENCIES:
   - GoogleUtilities
   - hermes-engine (from `../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)
   - libevent (~> 2.1.12)
+  - lottie-react-native (from `../node_modules/lottie-react-native`)
   - MixpanelReactNative (from `../node_modules/mixpanel-react-native`)
   - nanopb
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
@@ -833,6 +838,7 @@ SPEC REPOS:
     - JWT
     - libevent
     - libwebp
+    - lottie-ios
     - Mixpanel-swift
     - MultiplatformBleAdapter
     - nanopb
@@ -871,6 +877,8 @@ EXTERNAL SOURCES:
   hermes-engine:
     :podspec: "../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec"
     :tag: hermes-2023-03-20-RNv0.72.0-49794cfc7c81fb8f69fd60c3bbf85a7480cc5a77
+  lottie-react-native:
+    :path: "../node_modules/lottie-react-native"
   MixpanelReactNative:
     :path: "../node_modules/mixpanel-react-native"
   RCT-Folly:
@@ -1028,6 +1036,8 @@ SPEC CHECKSUMS:
   JWT: ef71dfb03e1f842081e64dc42eef0e164f35d251
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
+  lottie-ios: e047b1d2e6239b787cc5e9755b988869cf190494
+  lottie-react-native: e3205322282d72e23efb3bff3287d0bd16fb1b01
   Mixpanel-swift: e5dd85295923e6a875acf17ccbab8d2ecb10ea65
   MixpanelReactNative: 9e83f45fdcb6c2d83e97226d2dff79a780f882b4
   MultiplatformBleAdapter: 5a6a897b006764392f9cef785e4360f54fb9477d

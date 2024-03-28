@@ -23,6 +23,7 @@ import { RNMessageRequesterExternal } from "@src/router";
 import { URL } from "react-native-url-polyfill";
 import DeviceInfo from "react-native-device-info";
 import { SCREENS } from "@src/common/constants";
+import LottieView from "lottie-react-native";
 
 export const DetailsBrowserScreen = observer(() => {
   const { top } = useSafeAreaInsets();
@@ -371,7 +372,13 @@ export const DetailsBrowserScreen = observer(() => {
                       alignItems: "center",
                     }}
                   >
-                    <ActivityIndicator />
+                    <LottieView
+                      source={require("@src/assets/animations/loading.json")}
+                      style={{ width: 200, height: 200 }}
+                      autoPlay
+                      loop
+                    />
+                    {/*<ActivityIndicator />*/}
                   </View>
                 );
               }}
