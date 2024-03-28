@@ -156,10 +156,9 @@ export const NewSendScreen: FunctionComponent = observer(() => {
     sendConfigs.amountConfig,
     route?.params?.contractAddress,
   ]);
-
   const amount = new CoinPretty(
     sendConfigs.amountConfig.sendCurrency,
-    new Dec(sendConfigs.amountConfig.amount)
+    new Dec(sendConfigs.amountConfig.getAmountPrimitive().amount)
   );
 
   useEffect(() => {
@@ -300,6 +299,9 @@ export const NewSendScreen: FunctionComponent = observer(() => {
       }
     });
   }, [isReadyBalance, address, sendConfigs.amountConfig.sendCurrency]);
+  const estimatePrice = priceStore.calculatePrice(amount)?.toString();
+  console.log(amount, "amount");
+  console.log(sendConfigs.feeConfig.fee, "sendConfigs.feeConfig.fee");
   return (
     <PageWithBottom
       bottomGroup={
@@ -415,7 +417,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
                 style={{ paddingLeft: 4 }}
                 color={colors["neutral-text-body"]}
               >
-                {priceStore.calculatePrice(amount)?.toString()}
+                {estimatePrice}
               </OWText>
             </View>
           </OWCard>

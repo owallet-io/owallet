@@ -27,7 +27,7 @@ export const DetailsBrowserScreen = observer(() => {
   const { top } = useSafeAreaInsets();
   const { colors } = useTheme();
   const webviewRef = useRef<WebView | null>(null);
-  const sourceCode = useInjectedSourceCode();
+
   const [eventEmitter] = useState(() => new EventEmitter());
   const [canGoBack, setCanGoBack] = useState(false);
   const [canGoForward, setCanGoForward] = useState(false);
@@ -41,7 +41,8 @@ export const DetailsBrowserScreen = observer(() => {
 
     return "https://oraidex.io";
   });
-
+  const { inject } = browserStore;
+  const sourceCode = inject;
   const [owallet] = useState(
     () =>
       new OWallet(
@@ -357,6 +358,8 @@ export const DetailsBrowserScreen = observer(() => {
                       height: "100%",
                       justifyContent: "center",
                       alignItems: "center",
+                      flex: 1,
+                      backgroundColor: "red",
                     }}
                   >
                     <ActivityIndicator />
