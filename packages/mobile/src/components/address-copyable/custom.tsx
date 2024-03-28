@@ -17,6 +17,7 @@ export const CustomAddressCopyable: FunctionComponent<{
   networkType?: string;
   maxCharacters: number;
   icon?: any;
+  copyable?: boolean;
 }> = ({
   style: propStyle,
   address,
@@ -25,6 +26,7 @@ export const CustomAddressCopyable: FunctionComponent<{
   chain,
   icon,
   onPress,
+  copyable,
 }) => {
   const { isTimedOut, setTimer } = useSimpleTimer();
   const { colors } = useTheme();
@@ -94,19 +96,21 @@ export const CustomAddressCopyable: FunctionComponent<{
         </View>
       </View>
 
-      <View
-        style={{
-          width: 24,
-          height: 24,
-          justifyContent: "center",
-        }}
-      >
-        {isTimedOut ? (
-          <CheckIcon />
-        ) : (
-          <CopyFillIcon size={24} color={colors["neutral-icon-on-light"]} />
-        )}
-      </View>
+      {!copyable ? null : (
+        <View
+          style={{
+            width: 24,
+            height: 24,
+            justifyContent: "center",
+          }}
+        >
+          {isTimedOut ? (
+            <CheckIcon />
+          ) : (
+            <CopyFillIcon size={24} color={colors["neutral-icon-on-light"]} />
+          )}
+        </View>
+      )}
     </TouchableWithoutFeedback>
   );
 };

@@ -43,6 +43,7 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
   );
 
   const smartNavigation = useSmartNavigation();
+
   const _onPressCountryModal = () => {
     modalStore.setOptions({
       bottomSheetModalConfig: {
@@ -76,7 +77,7 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
       }
       if (errorMessage) {
         // errorMessage comes from the native code. Useful for debugging, but probably not for users to view
-        console.error(`Example page Rate.rate() error: ${errorMessage}`);
+        console.error(`Page Rate.rate() error: ${errorMessage}`);
       }
     });
   };

@@ -1,4 +1,4 @@
-import { Image, ScrollView, StyleSheet, TextInput, View } from "react-native";
+import { Image, ScrollView, StyleSheet, View } from "react-native";
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import OWIcon from "@src/components/ow-icon/ow-icon";
@@ -9,11 +9,12 @@ import { chainIcons } from "@oraichain/oraidex-common";
 import { ChainIdEnum, ChainNameEnum, getBase58Address } from "@owallet/common";
 import OWText from "@src/components/text/ow-text";
 import { useStore } from "@src/stores";
+import { TextInput } from "@src/components/input";
 
 export const CopyAddressModal: FunctionComponent<{
   copyable?: boolean;
   onPress?: Function;
-}> = ({ onPress }) => {
+}> = ({ onPress, copyable = true }) => {
   const safeAreaInsets = useSafeAreaInsets();
   const [keyword, setKeyword] = useState("");
   const [addresses, setAddresses] = useState({});
@@ -67,7 +68,8 @@ export const CopyAddressModal: FunctionComponent<{
     >
       <View>
         <TextInput
-          style={styles.textInput}
+          isBottomSheet={true}
+          inputContainerStyle={styles.textInput}
           placeholderTextColor={colors["text-place-holder"]}
           placeholder="Search for a chain"
           onChangeText={(t) => setKeyword(t)}
@@ -113,6 +115,7 @@ export const CopyAddressModal: FunctionComponent<{
               if (keyword === "") {
                 return (
                   <CustomAddressCopyable
+                    copyable={copyable}
                     onPress={() =>
                       onPress &&
                       onPress({ ...item, chainIcon: chainIcon?.Icon })
@@ -137,6 +140,7 @@ export const CopyAddressModal: FunctionComponent<{
               ) {
                 return (
                   <CustomAddressCopyable
+                    copyable={copyable}
                     onPress={() =>
                       onPress &&
                       onPress({ ...item, chainIcon: chainIcon?.Icon })
