@@ -78,6 +78,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
     keyRingStore,
     modalStore,
     priceStore,
+    universalSwapStore,
   } = useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
@@ -251,6 +252,12 @@ export const NewSendScreen: FunctionComponent = observer(() => {
                 },
                 status: "SUCCESS",
               };
+              universalSwapStore.updateTokenReload([
+                {
+                  ...sendConfigs.amountConfig.sendCurrency,
+                  chainId: chainStore.current.chainId,
+                },
+              ]);
               await handleSaveHistory(address, historyInfos);
               smartNavigation.pushSmart("TxPendingResult", {
                 txHash: Buffer.from(txHash).toString("hex"),

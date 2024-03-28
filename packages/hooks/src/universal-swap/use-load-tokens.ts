@@ -265,9 +265,7 @@ async function loadEvmEntries(
               token.contractAddress === t.contractAddress ||
               token.chainId === chain.chainId
             ) {
-              result =
-                t.chainId === chain.chainId ||
-                token.contractAddress === t.contractAddress;
+              result = t.chainId === chain.chainId && t.contractAddress;
             }
           }
         });

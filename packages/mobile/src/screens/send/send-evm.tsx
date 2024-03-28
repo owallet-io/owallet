@@ -48,7 +48,7 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
     accountStore,
     queriesStore,
     analyticsStore,
-    sendStore,
+    universalSwapStore,
     keyRingStore,
     priceStore,
     modalStore,
@@ -252,7 +252,12 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
                 },
                 status: "SUCCESS",
               };
-
+              universalSwapStore.updateTokenReload([
+                {
+                  ...sendConfigs.amountConfig.sendCurrency,
+                  chainId: chainStore.current.chainId,
+                },
+              ]);
               await handleSaveHistory(address, historyInfos);
             },
           },

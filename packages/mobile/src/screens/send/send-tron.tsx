@@ -30,6 +30,7 @@ export const SendTronScreen: FunctionComponent = observer(() => {
     priceStore,
     keyRingStore,
     modalStore,
+    universalSwapStore,
   } = useStore();
   const [receiveAddress, setReceiveAddress] = useState("");
   const { colors } = useTheme();
@@ -212,7 +213,12 @@ export const SendTronScreen: FunctionComponent = observer(() => {
                       },
                       status: "SUCCESS",
                     };
-
+                    universalSwapStore.updateTokenReload([
+                      {
+                        ...sendConfigs.amountConfig.sendCurrency,
+                        chainId: chainStore.current.chainId,
+                      },
+                    ]);
                     await handleSaveHistory(address, historyInfos);
                   },
                 },
