@@ -277,7 +277,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const loadTokenAmounts = useLoadTokens(universalSwapStore);
   // handle fetch all tokens of all chains
-  const handleFetchAmounts = async (orai?, eth?, tron?, kwt?) => {
+  const handleFetchAmounts = async (tokenReload?, orai?, eth?, tron?, kwt?) => {
     let loadTokenParams = {};
     try {
       const cwStargate = {
@@ -292,10 +292,12 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         kwtAddress: kwt ?? accountKawaiiCosmos.bech32Address,
         tronAddress: getBase58Address(tron ?? accountTron.evmosHexAddress),
         cwStargate,
+        tokenReload,
       };
 
       setTimeout(() => {
         loadTokenAmounts(loadTokenParams);
+        universalSwapStore.clearTokenReload();
       }, 1000);
     } catch (error) {
       console.log("error loadTokenAmounts", error);
@@ -318,6 +320,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           universalSwapStore.clearAmounts();
           universalSwapStore.setLoaded(false);
           handleFetchAmounts(
+            [],
             accountOrai.bech32Address,
             accountEth.evmosHexAddress,
             accountTron.evmosHexAddress,
@@ -650,7 +653,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             }
           },
         });
-        await handleFetchAmounts();
+
+        await handleFetchAmounts([originalFromToken, originalToToken]);
         const tokens = getTokenInfos({
           tokens: universalSwapStore.getAmount,
           prices: appInitStore.getInitApp.prices,
@@ -678,7 +682,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const onRefresh = async () => {
     setLoadingRefresh(true);
-    await handleFetchAmounts();
+    await handleFetchAmounts([]);
     await estimateAverageRatio();
     setLoadingRefresh(false);
   };

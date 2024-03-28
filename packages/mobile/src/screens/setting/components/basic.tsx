@@ -91,7 +91,13 @@ export const BasicSettingItem: FunctionComponent<{
           </View>
 
           <TouchableOpacity onPress={onPress}>
-            {right ?? <OWIcon name="chevron_right" size={16} />}
+            {right ?? (
+              <OWIcon
+                name="chevron_right"
+                color={colors["neutral-text-title"]}
+                size={16}
+              />
+            )}
           </TouchableOpacity>
         </View>
       </React.Fragment>

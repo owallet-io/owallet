@@ -123,7 +123,7 @@ export const CameraScreen: FunctionComponent = observer((props) => {
                       },
                     });
                   } else {
-                    smartNavigation.pushSmart("Send", {
+                    smartNavigation.pushSmart("NewSend", {
                       chainId: chainInfo.chainId,
                       recipient: data,
                     });

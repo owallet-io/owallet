@@ -261,7 +261,10 @@ async function loadEvmEntries(
       if (tokenReload) {
         tokenReload.map((token) => {
           if (token.networkType === "evm") {
-            if (token.contractAddress === t.contractAddress) {
+            if (
+              token.contractAddress === t.contractAddress ||
+              token.chainId === chain.chainId
+            ) {
               result = t.chainId === chain.chainId && t.contractAddress;
             }
           }

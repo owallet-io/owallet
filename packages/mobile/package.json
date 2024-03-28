@@ -79,6 +79,7 @@
     "@react-navigation/stack": "6.3.17",
     "@sentry/react-native": "=5.13.0",
     "react-native-splash-screen": "^3.3.0",
+    "react-native-rate": "^1.2.12",
     "react-native-skeleton-placeholder": "^5.2.4",
     "react-native-flash-message": "0.4.2",
     "react-native-numeric-pad": "^1.1.5",

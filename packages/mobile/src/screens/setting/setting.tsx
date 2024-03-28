@@ -19,18 +19,14 @@ import OWText from "@src/components/text/ow-text";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import OWCard from "@src/components/card/ow-card";
 import { Bech32Address } from "@owallet/cosmos";
+import { ChainIdEnum } from "@oraichain/oraidex-common";
+import Rate, { AndroidMarket } from "react-native-rate";
 
 export const NewSettingScreen: FunctionComponent = observer(() => {
-  const {
-    keychainStore,
-    keyRingStore,
-    priceStore,
-    modalStore,
-    accountStore,
-    chainStore,
-  } = useStore();
+  const { keychainStore, keyRingStore, priceStore, modalStore, accountStore } =
+    useStore();
   const safeAreaInsets = useSafeAreaInsets();
-  const account = accountStore.getAccount(chainStore.current.chainId);
+  const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
 
   const { colors } = useTheme();
   const styles = styling(colors);
@@ -65,6 +61,26 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
     );
   };
 
+  const onRatingApp = () => {
+    const options = {
+      AppleAppID: "id1626035069",
+      GooglePackageName: "com.io.owallet",
+      preferredAndroidMarket: AndroidMarket.Google,
+      preferInApp: true,
+      openAppStoreIfInAppFails: true,
+    };
+    Rate.rate(options, (success, errorMessage) => {
+      if (success) {
+        // this technically only tells us if the user successfully went to the Review Page. Whether they actually did anything, we do not know.
+        console.log("success", success);
+      }
+      if (errorMessage) {
+        // errorMessage comes from the native code. Useful for debugging, but probably not for users to view
+        console.error(`Example page Rate.rate() error: ${errorMessage}`);
+      }
+    });
+  };
+
   const renderRating = useCallback(() => {
     return (
       <OWCard style={{ marginBottom: 16 }}>
@@ -96,6 +112,7 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
             }}
           >
             <TouchableOpacity
+              onPress={onRatingApp}
               style={{
                 borderWidth: 1,
                 borderRadius: 12,
@@ -107,12 +124,12 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
             >
               <OWIcon
                 name="tdesign_despise"
-                color={colors["neutral-text-title"]}
+                color={colors["neutral-text-body"]}
                 size={32}
               />
               <OWText
                 style={{ paddingTop: 8 }}
-                color={colors["neutral-text-title"]}
+                color={colors["neutral-text-body"]}
                 size={16}
                 weight="600"
               >
@@ -120,6 +137,7 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
               </OWText>
             </TouchableOpacity>
             <TouchableOpacity
+              onPress={onRatingApp}
               style={{
                 borderWidth: 1,
                 borderRadius: 12,
@@ -131,12 +149,12 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
             >
               <OWIcon
                 name="tdesign_excited"
-                color={colors["neutral-text-title"]}
+                color={colors["neutral-text-body"]}
                 size={32}
               />
               <OWText
                 style={{ paddingTop: 8 }}
-                color={colors["neutral-text-title"]}
+                color={colors["neutral-text-body"]}
                 size={16}
                 weight="600"
               >
@@ -172,7 +190,7 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
           paragraph={
             selected ? selected.meta?.name || "OWallet Account" : "No Account"
           }
-          subtitle={Bech32Address.shortenAddress(account.bech32Address, 24)}
+          subtitle={Bech32Address.shortenAddress(accountOrai.bech32Address, 24)}
           onPress={() =>
             smartNavigation.navigateSmart("SettingSelectAccount", {})
           }
