@@ -41,7 +41,7 @@ export const DetailsBrowserScreen = observer(() => {
     //   return props.source.uri;
     // }
 
-    return "https://oraidex.io";
+    return "";
   });
   const { inject } = browserStore;
   const sourceCode = inject;
@@ -244,6 +244,12 @@ export const DetailsBrowserScreen = observer(() => {
   const onReload = () => {
     webviewRef.current.reload();
   };
+  const onGoback = () => {
+    webviewRef.current.goBack();
+  };
+  const onGoForward = () => {
+    webviewRef.current.goForward();
+  };
   return (
     <PageWithViewInBottomTabView
       style={{
@@ -268,6 +274,7 @@ export const DetailsBrowserScreen = observer(() => {
         >
           <OWButtonIcon
             size={"medium"}
+            onPress={onGoback}
             style={{
               width: 44,
               height: 44,
@@ -289,6 +296,7 @@ export const DetailsBrowserScreen = observer(() => {
               backgroundColor: colors["neutral-surface-action3"],
               marginLeft: 3,
             }}
+            onPress={onGoForward}
             fullWidth={false}
             name={"tdesignchevron-right"}
             sizeIcon={18}
@@ -300,7 +308,7 @@ export const DetailsBrowserScreen = observer(() => {
             }}
           >
             <TextInput
-              defaultValue={"oraidex.io"}
+              defaultValue={currentURL}
               inputStyle={{
                 backgroundColor: colors["neutral-surface-action"],
                 borderWidth: 0,
@@ -378,7 +386,6 @@ export const DetailsBrowserScreen = observer(() => {
                       autoPlay
                       loop
                     />
-                    {/*<ActivityIndicator />*/}
                   </View>
                 );
               }}
@@ -410,7 +417,23 @@ export const DetailsBrowserScreen = observer(() => {
               // onScroll={_onScroll}
               source={{ uri: "https://oraidex.io" }}
             />
-          ) : null}
+          ) : (
+            <View
+              style={{
+                width: "100%",
+                height: "100%",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <LottieView
+                source={require("@src/assets/animations/loading.json")}
+                style={{ width: 200, height: 200 }}
+                autoPlay
+                loop
+              />
+            </View>
+          )}
         </View>
       </View>
     </PageWithViewInBottomTabView>
