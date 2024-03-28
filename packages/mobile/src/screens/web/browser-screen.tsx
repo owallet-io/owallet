@@ -113,6 +113,7 @@ export const BrowserScreen = observer(() => {
               textStyle={{
                 fontWeight: "600",
                 fontSize: 14,
+                color: colors["primary-surface-default"],
               }}
               iconRight={
                 <View

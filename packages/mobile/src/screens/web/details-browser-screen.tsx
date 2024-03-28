@@ -295,6 +295,7 @@ export const DetailsBrowserScreen = observer((props) => {
               marginRight: 3,
             }}
             fullWidth={false}
+            colorIcon={colors["neutral-text-action-on-light-bg"]}
             name={"tdesignchevron-left"}
             sizeIcon={18}
           />
@@ -310,6 +311,7 @@ export const DetailsBrowserScreen = observer((props) => {
             }}
             onPress={onGoForward}
             fullWidth={false}
+            colorIcon={colors["neutral-text-action-on-light-bg"]}
             name={"tdesignchevron-right"}
             sizeIcon={18}
           />
@@ -335,6 +337,7 @@ export const DetailsBrowserScreen = observer((props) => {
               inputRight={
                 <OWButtonIcon
                   onPress={onReload}
+                  colorIcon={colors["neutral-text-action-on-light-bg"]}
                   fullWidth={false}
                   name={"tdesignrefresh"}
                   sizeIcon={18}
@@ -352,6 +355,7 @@ export const DetailsBrowserScreen = observer((props) => {
               backgroundColor: colors["neutral-surface-action3"],
             }}
             fullWidth={false}
+            colorIcon={colors["neutral-text-action-on-light-bg"]}
             name={"tdesignbookmark"}
             sizeIcon={18}
           />
@@ -365,6 +369,7 @@ export const DetailsBrowserScreen = observer((props) => {
               marginLeft: 3,
               backgroundColor: colors["neutral-surface-action3"],
             }}
+            colorIcon={colors["neutral-text-action-on-light-bg"]}
             fullWidth={false}
             name={"tdesignhome"}
             sizeIcon={18}
