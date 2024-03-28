@@ -88,6 +88,7 @@ export const BrowserScreen = observer(() => {
       <View
         style={{
           padding: 16,
+          paddingBottom: 0,
         }}
       >
         <View style={{}}>
