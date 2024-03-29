@@ -218,6 +218,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       }, 1000);
     } catch (error) {
       console.log("error loadTokenAmounts", error);
+      universalSwapStore.setLoaded(true);
       showToast({
         message: error?.message ?? error?.ex?.message,
         type: "danger",
