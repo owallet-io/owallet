@@ -207,7 +207,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         tronAddress: getBase58Address(tron ?? accountTron.evmosHexAddress),
         cwStargate,
         tokenReload:
-          universalSwapStore.getTokenReload.length > 0
+          universalSwapStore?.getTokenReload?.length > 0
             ? universalSwapStore.getTokenReload
             : null,
       };
@@ -239,11 +239,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         accountTron.evmosHexAddress &&
         accountKawaiiCosmos.bech32Address
       ) {
-        console.log(
-          " universalSwapStore.getTokenReload",
-          universalSwapStore.getTokenReload
-        );
-
         setTimeout(() => {
           handleFetchAmounts(
             accountOrai.bech32Address,

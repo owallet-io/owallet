@@ -58,6 +58,7 @@ const MnemonicSeed = () => {
             await modalStore.close();
             analyticsStore.logEvent("Account changed");
             await selectKeyStore(item);
+            universalSwapStore.clearAmounts();
             setIsLoading(false);
           }}
         >
