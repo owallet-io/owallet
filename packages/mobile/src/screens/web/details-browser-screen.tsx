@@ -28,6 +28,7 @@ import { URL } from "react-native-url-polyfill";
 import DeviceInfo from "react-native-device-info";
 import { SCREENS } from "@src/common/constants";
 import LottieView from "lottie-react-native";
+import { items } from "@sentry/react-native/dist/js/utils/envelope";
 
 export const DetailsBrowserScreen = observer((props) => {
   const { top } = useSafeAreaInsets();
@@ -250,16 +251,32 @@ export const DetailsBrowserScreen = observer((props) => {
     webviewRef.current.reload();
   };
   const onGoback = () => {
-    webviewRef.current.goBack();
+    if (!canGoBack) return;
+    webviewRef.current?.goBack();
   };
   const onGoForward = () => {
-    webviewRef.current.goForward();
+    if (!canGoForward) return;
+    webviewRef.current?.goForward();
   };
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     setIsLoading(true);
   }, []);
+  const onAddBookMark = (bookmark) => {
+    if (!bookmark) return;
+    browserStore.addBoorkmark(bookmark);
+    return;
+  };
+  const isActiveBoorkmark = (uri) => {
+    if (!uri) return false;
+    const isActive = browserStore.getBookmarks.findIndex(
+      (item) => item?.uri === uri
+    );
+    console.log(isActive, "isActive");
+    return isActive !== -1 ? true : false;
+  };
+
   return (
     <PageWithViewInBottomTabView
       style={{
@@ -293,6 +310,7 @@ export const DetailsBrowserScreen = observer((props) => {
               marginRight: 3,
             }}
             fullWidth={false}
+            colorIcon={colors["neutral-text-action-on-light-bg"]}
             name={"tdesignchevron-left"}
             sizeIcon={18}
           />
@@ -308,6 +326,7 @@ export const DetailsBrowserScreen = observer((props) => {
             }}
             onPress={onGoForward}
             fullWidth={false}
+            colorIcon={colors["neutral-text-action-on-light-bg"]}
             name={"tdesignchevron-right"}
             sizeIcon={18}
           />
@@ -333,6 +352,7 @@ export const DetailsBrowserScreen = observer((props) => {
               inputRight={
                 <OWButtonIcon
                   onPress={onReload}
+                  colorIcon={colors["neutral-text-action-on-light-bg"]}
                   fullWidth={false}
                   name={"tdesignrefresh"}
                   sizeIcon={18}
@@ -350,6 +370,12 @@ export const DetailsBrowserScreen = observer((props) => {
               backgroundColor: colors["neutral-surface-action3"],
             }}
             fullWidth={false}
+            onPress={() => onAddBookMark({ uri: currentURL })}
+            colorIcon={
+              isActiveBoorkmark(currentURL)
+                ? colors["primary-surface-pressed"]
+                : colors["neutral-text-action-on-light-bg"]
+            }
             name={"tdesignbookmark"}
             sizeIcon={18}
           />
@@ -363,6 +389,7 @@ export const DetailsBrowserScreen = observer((props) => {
               marginLeft: 3,
               backgroundColor: colors["neutral-surface-action3"],
             }}
+            colorIcon={colors["neutral-text-action-on-light-bg"]}
             fullWidth={false}
             name={"tdesignhome"}
             sizeIcon={18}
@@ -439,14 +466,10 @@ export const DetailsBrowserScreen = observer((props) => {
               }}
               onLoadStart={(syntheticEvent) => {
                 // update component to be aware of loading status
-                // const { nativeEvent } = syntheticEvent;
-                // console.log(nativeEvent.loading,"nativeEvent.loading")
                 setIsLoading(true);
               }}
               onLoadEnd={(syntheticEvent) => {
                 // update component to be aware of loading status
-                // const { nativeEvent } = syntheticEvent;
-                // console.log(nativeEvent.loading,"nativeEvent.loading")
                 setIsLoading(false);
               }}
               contentInsetAdjustmentBehavior="never"

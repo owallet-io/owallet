@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { StoreProvider, useStore } from "./stores";
 import SplashScreen from "react-native-splash-screen";
 import { StyleProvider } from "./styles";
@@ -19,6 +19,8 @@ import { Root as PopupRootProvider } from "react-native-popup-confirm-toast";
 import { colorsCode } from "./themes/mode-colors";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import LottieView from "lottie-react-native";
+import { metrics } from "@src/themes";
 
 const queryClient = new QueryClient();
 
@@ -107,19 +109,31 @@ const AppIntlProviderWithStorage = ({ children }) => {
 };
 
 export const App = () => {
-  useEffect(() => {
-    SplashScreen.hide();
-    return () => {};
-  }, []);
+  const [isInit, setIsInit] = useState(true);
 
   const enableAnalytics = async () => {
     await analytics().setAnalyticsCollectionEnabled(true);
   };
 
   useEffect(() => {
+    SplashScreen.hide();
     enableAnalytics();
-  }, []);
 
+    return () => {};
+  }, []);
+  if (isInit) {
+    return (
+      <LottieView
+        source={require("@src/assets/animations/splashscreen.json")}
+        style={{ width: metrics.screenWidth, height: metrics.screenHeight }}
+        autoPlay
+        loop={false}
+        onAnimationFinish={() => {
+          setIsInit(false);
+        }}
+      />
+    );
+  }
   return (
     <GestureHandlerRootView
       style={{

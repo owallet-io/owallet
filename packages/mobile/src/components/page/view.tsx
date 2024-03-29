@@ -18,7 +18,7 @@ export const PageWithView: FunctionComponent<
   const {
     style: propStyle,
     disableSafeArea,
-    backgroundColor = colors["background"],
+    backgroundColor = colors["neutral-surface-bg"],
     ...restProps
   } = props;
 
