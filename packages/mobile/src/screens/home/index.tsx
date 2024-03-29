@@ -175,8 +175,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
             accountOrai.bech32Address,
             accountEth.evmosHexAddress,
             accountTron.evmosHexAddress,
-            accountKawaiiCosmos.bech32Address,
-            universalSwapStore.getTokenReload
+            accountKawaiiCosmos.bech32Address
           );
         }, 1400);
       } else {
@@ -198,7 +197,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
 
   const loadTokenAmounts = useLoadTokens(universalSwapStore);
   // handle fetch all tokens of all chains
-  const handleFetchAmounts = async (orai?, eth?, tron?, kwt?, tokenReload?) => {
+  const handleFetchAmounts = async (orai?, eth?, tron?, kwt?) => {
     let loadTokenParams = {};
 
     try {
@@ -214,7 +213,10 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         kwtAddress: kwt ?? accountKawaiiCosmos.bech32Address,
         tronAddress: getBase58Address(tron ?? accountTron.evmosHexAddress),
         cwStargate,
-        tokenReload: tokenReload.length > 0 ? tokenReload : null,
+        tokenReload:
+          universalSwapStore.getTokenReload.length > 0
+            ? universalSwapStore.getTokenReload
+            : null,
       };
 
       setTimeout(() => {
@@ -231,6 +233,8 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   };
 
   useEffect(() => {
+    console.log("accountOrai.bech32Address", accountOrai.bech32Address);
+
     universalSwapStore.setLoaded(false);
   }, [accountOrai.bech32Address]);
 
@@ -242,13 +246,17 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         accountTron.evmosHexAddress &&
         accountKawaiiCosmos.bech32Address
       ) {
+        console.log(
+          " universalSwapStore.getTokenReload",
+          universalSwapStore.getTokenReload
+        );
+
         setTimeout(() => {
           handleFetchAmounts(
             accountOrai.bech32Address,
             accountEth.evmosHexAddress,
             accountTron.evmosHexAddress,
-            accountKawaiiCosmos.bech32Address,
-            universalSwapStore.getTokenReload
+            accountKawaiiCosmos.bech32Address
           );
         }, 1400);
       }
@@ -258,7 +266,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     accountEth.evmosHexAddress,
     accountTron.evmosHexAddress,
     accountKawaiiCosmos.bech32Address,
-    universalSwapStore.getTokenReload,
   ]);
 
   const { data: prices } = useCoinGeckoPrices();

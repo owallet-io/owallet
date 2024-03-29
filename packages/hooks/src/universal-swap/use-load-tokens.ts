@@ -131,6 +131,9 @@ async function loadTokens(
         tokenReload
       );
     }, 500);
+    console.log("get here");
+
+    universalSwapStore.setLoaded(true);
   }
 }
 
@@ -345,12 +348,7 @@ async function loadEvmAmounts(
     )
   );
 
-  // console.log("chains", chains);
-
   universalSwapStore.updateAmounts(amountDetails);
-  setTimeout(() => {
-    universalSwapStore.setLoaded(true);
-  }, 3000);
 }
 
 export async function loadKawaiiSubnetAmount(
