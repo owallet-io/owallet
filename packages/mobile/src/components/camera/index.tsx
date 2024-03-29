@@ -78,7 +78,7 @@ export const FullScreenCameraView: FunctionComponent<
                   height: 38,
                   width: 38,
                   borderRadius: 64,
-                  backgroundColor: colors["gray-50"],
+                  backgroundColor: colors["neutral-surface-card"],
                   opacity: 0.9,
                   marginTop: 8,
                   marginRight: 16,
