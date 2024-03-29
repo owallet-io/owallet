@@ -157,6 +157,9 @@ export const BrowserScreen = observer(() => {
           </View>
           <FlatList
             horizontal={true}
+            style={{
+              paddingBottom: 16,
+            }}
             showsHorizontalScrollIndicator={false}
             data={browserStore.getBookmarks}
             renderItem={({ item, index }) => {
