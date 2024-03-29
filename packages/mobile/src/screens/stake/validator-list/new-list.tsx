@@ -305,7 +305,6 @@ const ValidatorItem: FunctionComponent<{
         style={{
           ...styles.container,
           flexDirection: "row",
-          backgroundColor: colors["background-box"],
           alignItems: "center",
           justifyContent: "space-between",
         }}

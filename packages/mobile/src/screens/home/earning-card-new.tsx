@@ -111,6 +111,7 @@ export const EarningCardNew: FunctionComponent<{
         marginHorizontal: 16,
         width: metrics.screenWidth - 32,
         marginTop: 2,
+        backgroundColor: colors["neutral-surface-card"],
       }}
     >
       <View>

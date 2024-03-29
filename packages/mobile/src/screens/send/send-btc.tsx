@@ -252,6 +252,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
           textStyle={{
             fontSize: 14,
             fontWeight: "600",
+            color: colors["neutral-text-action-on-dark-bg"],
           }}
         />
       }
@@ -324,7 +325,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
                   colors={colors}
                   inputContainerStyle={{
                     borderWidth: 0,
-                    width: metrics.screenWidth / 2,
+                    width: metrics.screenWidth / 2.3,
                   }}
                   amountConfig={sendConfigs.amountConfig}
                   placeholder={"0.0"}

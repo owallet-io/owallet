@@ -259,6 +259,7 @@ const styling = (colors) =>
       marginHorizontal: 16,
       width: metrics.screenWidth - 32,
       padding: spacing["16"],
+      backgroundColor: colors["neutral-surface-card"],
     },
     overview: {
       marginTop: 12,

@@ -54,8 +54,6 @@ const MnemonicSeed = () => {
             ...styles.containerAccount,
           }}
           onPress={async () => {
-            universalSwapStore.setLoaded(false);
-            universalSwapStore.clearAmounts();
             setIsLoading(true);
             await modalStore.close();
             analyticsStore.logEvent("Account changed");

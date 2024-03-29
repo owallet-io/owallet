@@ -386,6 +386,7 @@ export const TokensCardAll: FunctionComponent<{
       <OWBox
         style={{
           paddingTop: 12,
+          backgroundColor: colors["neutral-surface-card"],
         }}
       >
         <View style={styles.wrapHeaderTitle}>
