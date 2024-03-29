@@ -444,6 +444,10 @@ export const DetailsBrowserScreen = observer((props) => {
 
                 setCurrentURL(e.nativeEvent.url);
               }}
+              onLoadStart={(syntheticEvent) => {
+                // update component to be aware of loading status
+                setIsLoading(true);
+              }}
               onLoadEnd={(syntheticEvent) => {
                 // update component to be aware of loading status
                 setIsLoading(false);

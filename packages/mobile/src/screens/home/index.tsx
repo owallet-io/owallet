@@ -214,7 +214,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         kwtAddress: kwt ?? accountKawaiiCosmos.bech32Address,
         tronAddress: getBase58Address(tron ?? accountTron.evmosHexAddress),
         cwStargate,
-        tokenReload: tokenReload.length > 0 ? tokenReload : null,
+        tokenReload: tokenReload?.length > 0 ? tokenReload : null,
       };
 
       setTimeout(() => {

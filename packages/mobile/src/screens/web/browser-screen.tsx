@@ -16,6 +16,7 @@ import { useTheme } from "@src/themes/theme-provider";
 import { dataBookMarks } from "@src/screens/web/helper/browser-helper";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
+import { checkValidDomain } from "@src/utils/helper";
 
 export const BrowserScreen = observer(() => {
   const layout = useWindowDimensions();
@@ -52,7 +53,20 @@ export const BrowserScreen = observer(() => {
     return;
   };
   const { top } = useSafeAreaInsets();
-
+  const onHandleUrl = (uri) => {
+    const url = uri?.toLowerCase();
+    if (!url) return;
+    let link: string;
+    if (checkValidDomain(url)) {
+      link = url?.indexOf("http") >= 0 ? url : "https://" + url;
+    } else {
+      link = `https://www.google.com/search?q=${url}`;
+    }
+    navigate(SCREENS.DetailsBrowser, {
+      url: link,
+    });
+    return;
+  };
   return (
     <PageWithViewInBottomTabView
       // disableSafeArea={true}
@@ -74,6 +88,7 @@ export const BrowserScreen = observer(() => {
             />
           </View>
         }
+        onSubmitEditing={(e) => onHandleUrl(e.nativeEvent.text)}
         placeholder={"Search URL"}
         placeholderTextColor={colors["neutral-text-body"]}
         inputStyle={{
