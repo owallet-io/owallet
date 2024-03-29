@@ -1,5 +1,5 @@
 import { FlatList, useWindowDimensions, View } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { TabBar, TabView } from "react-native-tab-view";
 import OWText from "@src/components/text/ow-text";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -22,6 +22,7 @@ import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { checkValidDomain } from "@src/utils/helper";
 import { useStore } from "@src/stores";
+import OWButtonIcon from "@src/components/button/ow-button-icon";
 
 export const BrowserScreen = observer(() => {
   const layout = useWindowDimensions();
@@ -77,6 +78,10 @@ export const BrowserScreen = observer(() => {
     navigate(SCREENS.BookMarks);
     return;
   };
+  const [url, setUrl] = useState("");
+  const onClear = () => {
+    setUrl("");
+  };
   return (
     <PageWithViewInBottomTabView
       // disableSafeArea={true}
@@ -92,10 +97,7 @@ export const BrowserScreen = observer(() => {
               paddingRight: 8,
             }}
           >
-            <SearchIcon
-              size={14}
-              color={colors["neutral-text-action-on-light-bg"]}
-            />
+            <OWIcon name={"tdesignsearch"} size={20} />
           </View>
         }
         onSubmitEditing={(e) => onHandleUrl(e.nativeEvent.text)}
@@ -111,6 +113,17 @@ export const BrowserScreen = observer(() => {
           paddingTop: 16 + (top || 0),
           backgroundColor: colors["neutral-surface-card"],
         }}
+        returnKeyType={"next"}
+        defaultValue={url}
+        onChangeText={(txt) => setUrl(txt.toLowerCase())}
+        inputRight={
+          <OWButtonIcon
+            fullWidth={false}
+            name={"tdesignclose"}
+            sizeIcon={20}
+            onPress={onClear}
+          />
+        }
       />
       <View
         style={{
@@ -203,7 +216,7 @@ export const BrowserScreen = observer(() => {
         }}
       >
         <OWText size={22} weight={"700"}>
-          Discover Apps
+          Oraichain Apps
         </OWText>
       </View>
 
