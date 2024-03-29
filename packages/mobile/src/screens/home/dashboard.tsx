@@ -80,9 +80,9 @@ export const DashboardCard: FunctionComponent<{
   const { colors } = useTheme();
   const styles = styling(colors);
   const chartConfig = {
-    backgroundColor: colors["background-box"],
-    backgroundGradientFrom: colors["background-box"],
-    backgroundGradientTo: colors["background-box"],
+    backgroundColor: colors["neutral-surface-card"],
+    backgroundGradientFrom: colors["neutral-surface-card"],
+    backgroundGradientTo: colors["neutral-surface-card"],
     color: (opacity = 1) => `rgba(148, 94, 248, ${opacity})`,
     labelColor: (opacity = 1) => colors["text-title-login"],
     strokeWidth: 3,
@@ -163,7 +163,13 @@ export const DashboardCard: FunctionComponent<{
   }, [chainStore.current.chainId, data]);
 
   return (
-    <OWBox style={{ marginHorizontal: 16, width: metrics.screenWidth - 32 }}>
+    <OWBox
+      style={{
+        marginHorizontal: 16,
+        width: metrics.screenWidth - 32,
+        backgroundColor: colors["neutral-surface-card"],
+      }}
+    >
       <Text
         style={{
           alignSelf: "center",
