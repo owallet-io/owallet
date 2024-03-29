@@ -26,7 +26,7 @@ import { isEvmNetworkNativeSwapSupported } from "@owallet/common";
 import { CWStargate } from "@owallet/common";
 import { AccountWithAll } from "@owallet/stores";
 
-const EVM_BALANCE_RETRY_COUNT = 3;
+const EVM_BALANCE_RETRY_COUNT = 2;
 
 export type CWStargateType = {
   account: AccountWithAll;
@@ -131,7 +131,6 @@ async function loadTokens(
         tokenReload
       );
     }, 500);
-    console.log("get here");
 
     universalSwapStore.setLoaded(true);
   }
@@ -322,7 +321,7 @@ async function loadEvmEntries(
     let retry = retryCount ? retryCount + 1 : 1;
     if (retry >= EVM_BALANCE_RETRY_COUNT)
       throw `Cannot query EVM balance with error: ${error}`;
-    await new Promise((resolve) => setTimeout(resolve, 5000));
+    await new Promise((resolve) => setTimeout(resolve, 10000));
     return loadEvmEntries(
       address,
       chain,
