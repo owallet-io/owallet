@@ -4,7 +4,6 @@ import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { StyleSheet, View, TouchableOpacity, Image } from "react-native";
 import { Text } from "@src/components/text";
 import { CloseIcon } from "../icon";
-import Svg, { Path } from "react-native-svg";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LoadingSpinner } from "../spinner";
 import { metrics, typography } from "../../themes";
