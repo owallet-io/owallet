@@ -37,8 +37,6 @@ import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { Text } from "@src/components/text";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import images from "@src/assets/images";
-import { showToast } from "@src/utils/helper";
-import { LRRedact } from "@logrocket/react-native";
 
 async function waitAccountLoad(
   accountStore: AccountStore<any, any, any, any>,
@@ -404,71 +402,69 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       }}
       backgroundColor={colors["plain-background"]}
     >
-      <LRRedact>
-        <HeaderWelcome
-          style={{
-            marginTop: 0,
+      <HeaderWelcome
+        style={{
+          marginTop: 0,
+        }}
+        title={"Sign in to OWallet"}
+      />
+      <View
+        style={{
+          paddingLeft: 20,
+          paddingRight: 20,
+        }}
+      >
+        <TextInput
+          containerStyle={{
+            paddingBottom: 40,
           }}
-          title={"Sign in to OWallet"}
-        />
-        <View
-          style={{
-            paddingLeft: 20,
-            paddingRight: 20,
-          }}
-        >
-          <TextInput
-            containerStyle={{
-              paddingBottom: 40,
-            }}
-            accessibilityLabel="password"
-            returnKeyType="done"
-            secureTextEntry={statusPass}
-            value={password}
-            error={isFailed ? "Invalid password" : undefined}
-            onChangeText={setPassword}
-            onSubmitEditing={tryUnlock}
-            placeholder="Password"
-            inputLeft={
-              <View style={{ paddingRight: 10 }}>
-                <OWIcon type="images" size={25} source={images.lock_circle} />
-              </View>
-            }
-            inputRight={
-              <OWButtonIcon
-                style={styles.padIcon}
-                onPress={showPass}
-                name={statusPass ? "eye" : "eye-slash"}
-                colorIcon={colors["icon-primary-surface-default-gray"]}
-                sizeIcon={22}
-              />
-            }
-          />
-          <OWButton
-            label="Sign In"
-            disabled={isLoading || !password}
-            onPress={tryUnlock}
-            loading={isLoading || isBiometricLoading}
-          />
-          {keychainStore.isBiometryOn && (
-            <View>
-              <OrText />
-              <OWButton
-                disabled={isBiometricLoading || isLoading}
-                label="Use Biometric Authentication"
-                style={styles.useBiometric}
-                onPress={tryBiometric}
-                type="secondary"
-              />
+          accessibilityLabel="password"
+          returnKeyType="done"
+          secureTextEntry={statusPass}
+          value={password}
+          error={isFailed ? "Invalid password" : undefined}
+          onChangeText={setPassword}
+          onSubmitEditing={tryUnlock}
+          placeholder="Password"
+          inputLeft={
+            <View style={{ paddingRight: 10 }}>
+              <OWIcon type="images" size={25} source={images.lock_circle} />
             </View>
-          )}
-        </View>
-        <View
-          style={{
-            height: 100,
-          }}
-        ></View>
-      </LRRedact>
+          }
+          inputRight={
+            <OWButtonIcon
+              style={styles.padIcon}
+              onPress={showPass}
+              name={statusPass ? "eye" : "eye-slash"}
+              colorIcon={colors["icon-primary-surface-default-gray"]}
+              sizeIcon={22}
+            />
+          }
+        />
+        <OWButton
+          label="Sign In"
+          disabled={isLoading || !password}
+          onPress={tryUnlock}
+          loading={isLoading || isBiometricLoading}
+        />
+        {keychainStore.isBiometryOn && (
+          <View>
+            <OrText />
+            <OWButton
+              disabled={isBiometricLoading || isLoading}
+              label="Use Biometric Authentication"
+              style={styles.useBiometric}
+              onPress={tryBiometric}
+              type="secondary"
+            />
+          </View>
+        )}
+      </View>
+      <View
+        style={{
+          height: 100,
+        }}
+      ></View>
     </PageWithScrollView>
   );
 });
