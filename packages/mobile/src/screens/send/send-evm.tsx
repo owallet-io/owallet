@@ -340,6 +340,7 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
           textStyle={{
             fontSize: 16,
             fontWeight: "600",
+            color: colors["neutral-text-action-on-dark-bg"],
           }}
         />
       }

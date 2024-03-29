@@ -319,6 +319,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
             textStyle={{
               fontSize: 14,
               fontWeight: "600",
+              color: colors["neutral-text-action-on-dark-bg"],
             }}
           />
         </View>

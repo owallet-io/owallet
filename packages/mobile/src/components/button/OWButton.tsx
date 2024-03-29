@@ -114,6 +114,7 @@ const styling = () => {
       textAlign: "center",
       fontWeight: "700",
       fontSize: 16,
+      color: colors["neutral-text-action-on-dark-bg"],
     },
     widthAuto: {
       width: "auto",
