@@ -10,19 +10,19 @@ interface IOWHeaderRightProps {
 }
 const OWHeaderRight = observer(
   ({ onTransaction, onScan }: IOWHeaderRightProps) => {
-    const { colors, images } = useTheme();
-    const { notificationStore } = useStore();
+    const { colors } = useTheme();
     return (
       <View style={styles.btnContainer}>
         <OWButtonIcon
           style={styles.btnHistory}
+          colorIcon={colors["neutral-icon-on-light"]}
           sizeIcon={24}
           onPress={onTransaction}
           name={"trade"}
         />
         <OWButtonIcon
           style={styles.btnScan}
-          colorIcon={colors["text-content-success"]}
+          colorIcon={colors["neutral-icon-on-light"]}
           sizeIcon={24}
           onPress={onScan}
           name="scan"
