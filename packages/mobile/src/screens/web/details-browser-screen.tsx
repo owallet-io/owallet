@@ -28,6 +28,7 @@ import { URL } from "react-native-url-polyfill";
 import DeviceInfo from "react-native-device-info";
 import { SCREENS } from "@src/common/constants";
 import LottieView from "lottie-react-native";
+import { items } from "@sentry/react-native/dist/js/utils/envelope";
 
 export const DetailsBrowserScreen = observer((props) => {
   const { top } = useSafeAreaInsets();
@@ -262,6 +263,20 @@ export const DetailsBrowserScreen = observer((props) => {
   useEffect(() => {
     setIsLoading(true);
   }, []);
+  const onAddBookMark = (bookmark) => {
+    if (!bookmark) return;
+    browserStore.addBoorkmark(bookmark);
+    return;
+  };
+  const isActiveBoorkmark = (uri) => {
+    if (!uri) return false;
+    const isActive = browserStore.getBookmarks.findIndex(
+      (item) => item?.uri === uri
+    );
+    console.log(isActive, "isActive");
+    return isActive !== -1 ? true : false;
+  };
+
   return (
     <PageWithViewInBottomTabView
       style={{
@@ -355,7 +370,12 @@ export const DetailsBrowserScreen = observer((props) => {
               backgroundColor: colors["neutral-surface-action3"],
             }}
             fullWidth={false}
-            colorIcon={colors["neutral-text-action-on-light-bg"]}
+            onPress={() => onAddBookMark({ uri: currentURL })}
+            colorIcon={
+              isActiveBoorkmark(currentURL)
+                ? colors["primary-surface-pressed"]
+                : colors["neutral-text-action-on-light-bg"]
+            }
             name={"tdesignbookmark"}
             sizeIcon={18}
           />

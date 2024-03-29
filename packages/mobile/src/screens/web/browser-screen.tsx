@@ -1,4 +1,4 @@
-import { useWindowDimensions, View } from "react-native";
+import { FlatList, useWindowDimensions, View } from "react-native";
 import React from "react";
 import { TabBar, TabView } from "react-native-tab-view";
 import OWText from "@src/components/text/ow-text";
@@ -13,14 +13,20 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { observer } from "mobx-react-lite";
 import { renderScene } from "@src/screens/web/routes";
 import { useTheme } from "@src/themes/theme-provider";
-import { dataBookMarks } from "@src/screens/web/helper/browser-helper";
+import {
+  dataBookMarks,
+  getFavicon,
+  getNameBookmark,
+} from "@src/screens/web/helper/browser-helper";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { checkValidDomain } from "@src/utils/helper";
+import { useStore } from "@src/stores";
 
 export const BrowserScreen = observer(() => {
   const layout = useWindowDimensions();
   const { colors } = useTheme();
+  const { browserStore } = useStore();
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
     { key: "all", title: "All" },
@@ -65,6 +71,10 @@ export const BrowserScreen = observer(() => {
     navigate(SCREENS.DetailsBrowser, {
       url: link,
     });
+    return;
+  };
+  const onBookmarks = () => {
+    navigate(SCREENS.BookMarks);
     return;
   };
   return (
@@ -123,6 +133,7 @@ export const BrowserScreen = observer(() => {
             <OWButton
               label={"View all"}
               type={"link"}
+              onPress={onBookmarks}
               fullWidth={false}
               size={"medium"}
               textStyle={{
@@ -144,14 +155,14 @@ export const BrowserScreen = observer(() => {
               }
             />
           </View>
-          <OWFlatList
+          <FlatList
             horizontal={true}
             showsHorizontalScrollIndicator={false}
-            data={dataBookMarks}
+            data={browserStore.getBookmarks}
             renderItem={({ item, index }) => {
               return (
                 <TouchableOpacity
-                  onPress={() => onDetailBrowser(item?.link)}
+                  onPress={() => onDetailBrowser(item?.uri)}
                   style={{
                     alignItems: "center",
                     marginHorizontal: 16,
@@ -161,7 +172,7 @@ export const BrowserScreen = observer(() => {
                     size={30}
                     type={"images"}
                     source={{
-                      uri: item.url,
+                      uri: getFavicon(item?.uri),
                     }}
                   />
                   <OWText
@@ -172,7 +183,7 @@ export const BrowserScreen = observer(() => {
                     size={14}
                     weight={"400"}
                   >
-                    {item.name}
+                    {getNameBookmark(item?.name ? item?.name : item?.uri)}
                   </OWText>
                 </TouchableOpacity>
               );

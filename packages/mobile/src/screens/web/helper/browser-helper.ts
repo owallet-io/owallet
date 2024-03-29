@@ -1,4 +1,5 @@
 import images from "@src/assets/images";
+import { capitalizedText } from "@src/utils/helper";
 
 export const explorerData = [
   {
@@ -82,3 +83,26 @@ export const dataBookMarks = [
     link: "https://orai.io",
   },
 ];
+
+function extractDomainName(url) {
+  if (!url) return;
+  let domain = null;
+  const withoutProtocol = url.replace(/^https?:\/\//, "");
+  const withoutPath = withoutProtocol.split("/")[0];
+  let parts = withoutPath.split(".");
+  if (parts[0] === "www") {
+    parts.shift();
+  }
+  parts.pop();
+  domain = parts.join(" ");
+  return capitalizedText(domain);
+}
+
+export const getNameBookmark = (name: string) => {
+  if (!name) return;
+  const bookmarkName = name.toLowerCase();
+  if (name.startsWith("http")) {
+    return extractDomainName(bookmarkName);
+  }
+  return capitalizedText(bookmarkName);
+};

@@ -14,6 +14,7 @@ import { useStore } from "@src/stores";
 import { observer } from "mobx-react-lite";
 import { BrowserScreen } from "@src/screens/web/browser-screen";
 import { DetailsBrowserScreen } from "@src/screens/web/details-browser-screen";
+import { BookmarksScreen } from "@src/screens/web/bookmarks-screen";
 
 export const WebpageHeaderOptions = ({ navigation, title }): any => {
   const { colors } = useTheme();
@@ -77,11 +78,11 @@ export const WebNavigation: FC = observer(() => {
         component={DetailsBrowserScreen}
       />
       <Stack.Screen
-        options={({ navigation }) =>
-          WebpageHeaderOptions({ navigation, title: "Bookmarks" })
-        }
+        // options={({ navigation }) =>
+        //   WebpageHeaderOptions({ navigation, title: "Bookmarks" })
+        // }
         name={SCREENS.BookMarks}
-        component={BookMarks}
+        component={BookmarksScreen}
       />
       <Stack.Screen
         options={{ headerShown: false }}
