@@ -38,7 +38,7 @@ export const UndelegationsCard: FunctionComponent<{
 
   const intl = useIntl();
 
-  return (
+  return unbondings?.length <= 0 ? null : (
     <View style={{ marginTop: 16 }}>
       <TouchableOpacity
         onPress={() => {
