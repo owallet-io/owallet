@@ -108,9 +108,9 @@ export const TextInput = React.forwardRef<
                     height: style.get("body2-in-text-input")?.lineHeight,
                   },
                 }),
-                propsStyle,
               ]),
               { color: colors["sub-primary-text"], flex: 1 },
+              propsStyle,
             ]}
             {...restProps}
             placeholderTextColor={

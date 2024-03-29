@@ -126,6 +126,7 @@ export const App = () => {
       <LottieView
         source={require("@src/assets/animations/splashscreen.json")}
         style={{ width: metrics.screenWidth, height: metrics.screenHeight }}
+        resizeMode={"cover"}
         autoPlay
         loop={false}
         onAnimationFinish={() => {
