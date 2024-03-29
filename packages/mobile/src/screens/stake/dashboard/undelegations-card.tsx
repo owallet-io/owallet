@@ -1,22 +1,22 @@
 import { BondStatus } from "@owallet/stores";
-import { OWEmpty } from "@src/components/empty";
-import { Text } from "@src/components/text";
+import OWText from "@src/components/text/ow-text";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useState } from "react";
 import { useIntl } from "react-intl";
-import { View, ViewStyle } from "react-native";
-import { CardBody, OWBox } from "../../../components/card";
+import { TouchableOpacity, View, ViewStyle } from "react-native";
 import { ProgressBar } from "../../../components/progress-bar";
-import { ValidatorThumbnail } from "../../../components/thumbnail";
+import { DownArrowIcon } from "@src/components/icon";
 import { useStore } from "../../../stores";
-import { useStyle } from "../../../styles";
+import OWIcon from "@src/components/ow-icon/ow-icon";
+import { metrics } from "@src/themes";
 
 export const UndelegationsCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
   const { chainStore, accountStore, queriesStore } = useStore();
   const { colors } = useTheme();
+  const [collapse, setCollapse] = useState(true);
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
 
@@ -36,153 +36,179 @@ export const UndelegationsCard: FunctionComponent<{
   );
   const stakingParams = queries.cosmos.queryStakingParams;
 
-  const style = useStyle();
-
   const intl = useIntl();
 
   return (
-    <View>
-      {/* {unbondings.length > 0 ? null : <OWEmpty style={{ paddingBottom: 20 }} />} */}
-      {unbondings.map((unbonding, unbondingIndex) => {
-        const validator = bondedValidators.validators
-          .concat(unbondingValidators.validators)
-          .concat(unbondedValidators.validators)
-          .find((val) => val.operator_address === unbonding.validatorAddress);
-        const thumbnail =
-          bondedValidators.getValidatorThumbnail(unbonding.validatorAddress) ||
-          unbondingValidators.getValidatorThumbnail(
-            unbonding.validatorAddress
-          ) ||
-          unbondedValidators.getValidatorThumbnail(unbonding.validatorAddress);
-        const entries = unbonding.entries;
-        const isLastUnbondingIndex = unbondingIndex === unbondings.length - 1;
+    <View style={{ marginTop: 16 }}>
+      <TouchableOpacity
+        onPress={() => {
+          setCollapse(!collapse);
+        }}
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          backgroundColor: colors["neutral-surface-action2"],
+          borderRadius: 24,
+          paddingHorizontal: 12,
+          paddingVertical: 8,
+          alignItems: "center",
+        }}
+      >
+        <OWText weight="500" color={colors["neutral-text-action-on-light-bg"]}>
+          Unstaking({unbondings.length})
+        </OWText>
 
-        return (
-          <React.Fragment key={unbondingIndex}>
-            <View
-              key={unbonding.validatorAddress}
-              style={style.flatten(
-                ["padding-y-16"],
-                [isLastUnbondingIndex && "padding-bottom-8"]
-              )}
-            >
-              <View style={style.flatten(["flex-row", "items-center"])}>
-                <ValidatorThumbnail
-                  size={32}
-                  url={thumbnail}
-                  style={{
-                    backgroundColor: colors["purple-100"],
-                    borderRadius: 32,
-                  }}
-                />
-                <Text
-                  style={[
-                    { color: colors["primary-text"] },
-                    style.flatten(["margin-left-16", "h7"]),
-                  ]}
-                >
-                  {validator?.description.moniker ?? "..."}
-                </Text>
-              </View>
+        {collapse ? (
+          <OWIcon
+            name="chevron_right"
+            color={colors["neutral-text-action-on-light-bg"]}
+            size={16}
+          />
+        ) : (
+          <DownArrowIcon
+            height={12}
+            color={colors["neutral-text-action-on-light-bg"]}
+          />
+        )}
+      </TouchableOpacity>
 
-              {entries.map((entry, i) => {
-                const remainingText = (() => {
-                  const current = new Date().getTime();
+      {collapse ? null : (
+        <View>
+          {unbondings.map((unbonding, unbondingIndex) => {
+            const validator = bondedValidators.validators
+              .concat(unbondingValidators.validators)
+              .concat(unbondedValidators.validators)
+              .find(
+                (val) => val.operator_address === unbonding.validatorAddress
+              );
 
-                  const relativeEndTime =
-                    (new Date(entry.completionTime).getTime() - current) / 1000;
-                  const relativeEndTimeDays = Math.floor(
-                    relativeEndTime / (3600 * 24)
-                  );
-                  const relativeEndTimeHours = Math.ceil(
-                    relativeEndTime / 3600
-                  );
+            const entries = unbonding.entries;
+            const isLastUnbondingIndex =
+              unbondingIndex === unbondings.length - 1;
 
-                  if (relativeEndTimeDays) {
-                    return (
-                      intl
-                        .formatRelativeTime(relativeEndTimeDays, "days", {
-                          numeric: "always",
-                        })
-                        .replace("in ", "") + " left"
-                    );
-                  } else if (relativeEndTimeHours) {
-                    return (
-                      intl
-                        .formatRelativeTime(relativeEndTimeHours, "hours", {
-                          numeric: "always",
-                        })
-                        .replace("in ", "") + " left"
-                    );
-                  }
-
-                  return "";
-                })();
-                const progress = (() => {
-                  const currentTime = new Date().getTime();
-                  const endTime = new Date(entry.completionTime).getTime();
-                  const remainingTime = Math.floor(
-                    (endTime - currentTime) / 1000
-                  );
-                  const unbondingTime = stakingParams
-                    ? stakingParams.unbondingTimeSec
-                    : 3600 * 24 * 21;
-
-                  return 100 - (remainingTime / unbondingTime) * 100;
-                })();
-
-                return (
-                  <View
-                    key={i.toString()}
-                    style={style.flatten(["padding-top-12"])}
-                  >
-                    <View
-                      style={style.flatten([
-                        "flex-row",
-                        "items-center",
-                        "margin-bottom-8",
-                      ])}
-                    >
-                      <Text
-                        style={[
-                          { color: colors["primary-text"] },
-                          ,
-                          style.flatten(["subtitle2"]),
-                        ]}
-                      >
-                        {entry.balance
-                          .shrink(true)
-                          .trim(true)
-                          .maxDecimals(6)
-                          .toString()}
-                      </Text>
-                      <View style={style.get("flex-1")} />
-                      <Text
-                        style={style.flatten(["body2", "color-text-black-low"])}
-                      >
-                        {remainingText}
-                      </Text>
-                    </View>
-                    <View>
-                      <ProgressBar progress={progress} />
-                    </View>
-                  </View>
-                );
-              })}
-            </View>
-            {!isLastUnbondingIndex && (
+            return (
               <View
-                style={[
-                  style.flatten(["height-1"]),
-                  {
-                    backgroundColor: colors["border-input-login"],
-                  },
-                ]}
-              />
-            )}
-          </React.Fragment>
-        );
-      })}
+                style={{
+                  marginTop: 1,
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  backgroundColor: colors["neutral-surface-action2"],
+                  borderRadius: 16,
+                  paddingHorizontal: 12,
+                  paddingVertical: 8,
+                  alignItems: "center",
+                }}
+                key={unbondingIndex}
+              >
+                <View key={unbonding.validatorAddress}>
+                  <OWText
+                    style={{ marginBottom: 8 }}
+                    weight="500"
+                    color={colors["neutral-text-action-on-light-bg"]}
+                  >
+                    Unstaking: {validator?.description.moniker ?? "..."}
+                  </OWText>
+
+                  {entries.map((entry, i) => {
+                    const remainingText = (() => {
+                      const current = new Date().getTime();
+
+                      const relativeEndTime =
+                        (new Date(entry.completionTime).getTime() - current) /
+                        1000;
+                      const relativeEndTimeDays = Math.floor(
+                        relativeEndTime / (3600 * 24)
+                      );
+                      const relativeEndTimeHours = Math.ceil(
+                        relativeEndTime / 3600
+                      );
+
+                      if (relativeEndTimeDays) {
+                        return (
+                          intl
+                            .formatRelativeTime(relativeEndTimeDays, "days", {
+                              numeric: "always",
+                            })
+                            .replace("in ", "") + " left"
+                        );
+                      } else if (relativeEndTimeHours) {
+                        return (
+                          intl
+                            .formatRelativeTime(relativeEndTimeHours, "hours", {
+                              numeric: "always",
+                            })
+                            .replace("in ", "") + " left"
+                        );
+                      }
+
+                      return "";
+                    })();
+                    const progress = (() => {
+                      const currentTime = new Date().getTime();
+                      const endTime = new Date(entry.completionTime).getTime();
+                      const remainingTime = Math.floor(
+                        (endTime - currentTime) / 1000
+                      );
+                      const unbondingTime = stakingParams
+                        ? stakingParams.unbondingTimeSec
+                        : 3600 * 24 * 21;
+
+                      return 100 - (remainingTime / unbondingTime) * 100;
+                    })();
+
+                    return (
+                      <View
+                        style={{
+                          marginBottom: 8,
+                          width: metrics.screenWidth / 1.3,
+                        }}
+                        key={i.toString()}
+                      >
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            marginBottom: 8,
+                          }}
+                        >
+                          <OWText
+                            weight="500"
+                            color={colors["neutral-text-action-on-light-bg"]}
+                          >
+                            {entry.balance
+                              .shrink(true)
+                              .trim(true)
+                              .maxDecimals(6)
+                              .toString()}
+                          </OWText>
+                          <OWText
+                            weight="500"
+                            color={colors["neutral-text-action-on-light-bg"]}
+                          >
+                            {remainingText}
+                          </OWText>
+                        </View>
+                        <View>
+                          <ProgressBar progress={progress} />
+                        </View>
+                      </View>
+                    );
+                  })}
+                </View>
+                {!isLastUnbondingIndex && (
+                  <View
+                    style={[
+                      {
+                        backgroundColor: colors["border-input-login"],
+                      },
+                    ]}
+                  />
+                )}
+              </View>
+            );
+          })}
+        </View>
+      )}
     </View>
   );
 });

@@ -2,7 +2,6 @@ import React, {
   FunctionComponent,
   useCallback,
   useEffect,
-  useMemo,
   useRef,
 } from "react";
 import { PageWithScrollViewInBottomTabView } from "../../components/page";
@@ -16,28 +15,22 @@ import {
   StyleSheet,
 } from "react-native";
 import { useStore } from "../../stores";
-import { EarningCard } from "./earning-card";
 import { observer } from "mobx-react-lite";
-import { TokensCard } from "./tokens-card";
 import { usePrevious } from "../../hooks";
 import { BIP44Selectable } from "./bip44-selectable";
 import { useTheme } from "@src/themes/theme-provider";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useFocusEffect } from "@react-navigation/native";
 import { ChainUpdaterService } from "@owallet/background";
 import { AccountCardEVM } from "./account-card-evm";
 import { DashboardCard } from "./dashboard";
-import { UndelegationsCard } from "../stake/dashboard/undelegations-card";
-import { TronTokensCard } from "./tron-tokens-card";
 import { AccountCardBitcoin } from "./account-card-bitcoin";
-import { TokensBitcoinCard } from "./tokens-bitcoin-card";
-import { getAddress, getBase58Address, ChainIdEnum } from "@owallet/common";
+import { getBase58Address, ChainIdEnum } from "@owallet/common";
 import { TokensCardAll } from "./tokens-card-all";
 import { AccountBoxAll } from "./account-box-new";
 import { oraichainNetwork } from "@oraichain/oraidex-common";
 import { useCoinGeckoPrices, useLoadTokens } from "@owallet/hooks";
 import { showToast } from "@src/utils/helper";
 import { EarningCardNew } from "./earning-card-new";
-import { TRON_ID } from "@owallet/common";
 import { InjectedProviderUrl } from "../web/config";
 
 export const HomeScreen: FunctionComponent = observer((props) => {
@@ -167,7 +160,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       const differenceInMilliseconds = Math.abs(currentDate - refreshDate);
       const differenceInSeconds = differenceInMilliseconds / 1000;
 
-      if (differenceInSeconds > 15) {
+      if (differenceInSeconds > 10) {
         setTimeout(() => {
           universalSwapStore.setLoaded(false);
 
