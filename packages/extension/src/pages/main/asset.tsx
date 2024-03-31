@@ -54,7 +54,6 @@ export const AssetStakedChartView: FunctionComponent = observer(() => {
     const fiatCurrency = priceStore.getFiatCurrency(
       priceStore.defaultVsCurrency
     );
-    console.log(fiatCurrency, "fiatCurrency");
     if (!fiatCurrency) {
       return undefined;
     }
@@ -63,7 +62,6 @@ export const AssetStakedChartView: FunctionComponent = observer(() => {
     //   return undefined;
     // }
     let res = priceStore.calculatePrice(totalStake, fiat);
-    console.log(res, "res");
     for (const token of tokens) {
       const price = priceStore.calculatePrice(token.balance, fiat);
       if (price) {
@@ -73,7 +71,6 @@ export const AssetStakedChartView: FunctionComponent = observer(() => {
 
     return res;
   }, [totalStake, fiat]);
-  console.log(totalPrice, "totalPrice");
   return (
     <React.Fragment>
       <div className={styleAsset.containerChart}>
@@ -152,17 +149,10 @@ export const AssetChartViewEvm: FunctionComponent = observer(() => {
     false
   );
   const queryBalances = queries.queryBalances.getQueryBech32Address(evmAddress);
-  console.log(
-    "🚀 ~ constAssetChartViewEvm:FunctionComponent=observer ~ queryBalances:",
-    queryBalances
-  );
+
   const balanceStakableQuery = queryBalances.stakable;
 
   const stakable = balanceStakableQuery?.balance;
-  console.log(
-    "🚀 ~ constAssetChartViewEvm:FunctionComponent=observer ~ stakable:",
-    stakable
-  );
 
   const tokens = queryBalances.positiveNativeUnstakables.concat(
     queryBalances.nonNativeBalances
@@ -312,6 +302,97 @@ export const AssetViewEvm: FunctionComponent = () => {
   return (
     <div className={styleAsset.containerAsset}>
       <AssetChartViewEvm />
+    </div>
+  );
+};
+export const AssetChartViewTron: FunctionComponent = observer(() => {
+  const { chainStore, accountStore, queriesStore, priceStore, keyRingStore } =
+    useStore();
+  const intl = useIntl();
+  const language = useLanguage();
+
+  const fiat = language.fiatCurrency;
+  const { chainId } = chainStore.current;
+  const queries = queriesStore.get(chainId);
+
+  const accountInfo = accountStore.getAccount(chainId);
+  const tronAddressToFetch = accountInfo.getAddressDisplay(
+    keyRingStore.keyRingLedgerAddresses,
+    false
+  );
+  const tronAddress = accountInfo.getAddressDisplay(
+    keyRingStore.keyRingLedgerAddresses
+  );
+  const queryBalances =
+    queries.queryBalances.getQueryBech32Address(tronAddressToFetch);
+  //
+  const balanceStakableQuery = queryBalances.stakable;
+  //
+  const stakable = balanceStakableQuery.balance;
+  const tokens = queryBalances.positiveNativeUnstakables.concat(
+    queryBalances.nonNativeBalances
+  );
+  const totalPrice = useMemo(() => {
+    const fiatCurrency = priceStore.getFiatCurrency(
+      priceStore.defaultVsCurrency
+    );
+    if (!fiatCurrency) {
+      return undefined;
+    }
+
+    let res = priceStore.calculatePrice(stakable, fiat);
+    for (const token of tokens) {
+      const price = priceStore.calculatePrice(token.balance, fiat);
+      if (price) {
+        res = res.add(price);
+      }
+    }
+
+    return res;
+  }, [stakable, fiat]);
+
+  return (
+    <React.Fragment>
+      <div className={styleAsset.containerChart}>
+        <div className={styleAsset.centerText}>
+          <div className={styleAsset.big}>
+            <FormattedMessage id="main.account.chart.total-balance" />
+          </div>
+          <div className={styleAsset.small}>{totalPrice?.toString()}</div>
+        </div>
+        <React.Suspense fallback={<div style={{ height: "150px" }} />}>
+          <img
+            src={require("../../public/assets/img/total-balance.svg")}
+            alt="total-balance"
+          />
+        </React.Suspense>
+      </div>
+      <div style={{ marginTop: "12px", width: "100%" }}>
+        <div className={styleAsset.legend}>
+          <div className={styleAsset.label} style={{ color: "#777E90" }}>
+            <span className="badge-dot badge badge-secondary">
+              <i className="bg-gray" />
+            </span>
+            <FormattedMessage id="main.account.chart.available-balance" />
+          </div>
+          <div style={{ minWidth: "20px" }} />
+          <div
+            className={styleAsset.value}
+            style={{
+              color: "#353945E5",
+            }}
+          >
+            {stakable.shrink(true).trim(true).maxDecimals(6).toString()}
+          </div>
+        </div>
+      </div>
+    </React.Fragment>
+  );
+});
+export const AssetViewTron: FunctionComponent = () => {
+  return (
+    <div className={styleAsset.containerAsset}>
+      <AssetChartViewTron />
     </div>
   );
 };

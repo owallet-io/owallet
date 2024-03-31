@@ -17,6 +17,7 @@ import { SendPage } from "../send";
 import { SelectChain } from "../../layouts/header";
 import { SendEvmPage } from "../send-evm/send-evm";
 import {
+  ChainIdEnum,
   getBase58Address,
   getEvmAddress,
   TRC20_LIST,
@@ -52,6 +53,7 @@ export const TokenPage: FunctionComponent = observer(() => {
     .queryBalances.getQueryBech32Address(addressToFetch);
 
   const tokens = queryBalances.balances;
+  console.log(tokens, "tokens");
 
   const [tokensTron, setTokensTron] = React.useState(tokens);
 
@@ -109,11 +111,11 @@ export const TokenPage: FunctionComponent = observer(() => {
   }, [chainStore.current]);
   const handleCheckSendPage = () => {
     if (networkType === "evm") {
-      if (chainId === TRON_ID) {
+      if (chainId === ChainIdEnum.TRON) {
         return (
           <SendTronEvmPage
             coinMinimalDenom={coinMinimalDenom}
-            tokensTrc20Tron={tokensTron}
+            // tokensTrc20Tron={tokensTron}
           />
         );
       }
@@ -153,14 +155,7 @@ export const TokenPage: FunctionComponent = observer(() => {
       {hasTokens ? (
         <Card className={classnames(style.card, "shadow")}>
           <CardBody>
-            {chainId === TRON_ID ? (
-              <TokensTronView
-                //@ts-ignore
-                tokens={tokensTron}
-                coinMinimalDenom={coinMinimalDenom}
-                handleClickToken={handleClickToken}
-              />
-            ) : networkType === "bitcoin" ? (
+            {networkType === "bitcoin" ? (
               <TokensBtcView handleClickToken={handleClickToken} />
             ) : (
               <TokensView
