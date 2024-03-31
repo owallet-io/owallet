@@ -27,7 +27,7 @@ export class ObservableQueryErc20ContactInfoInner extends ObservableChainQuery<E
   protected async fetchResponse(): Promise<
     QueryResponse<Erc20ContractTokenInfo>
   > {
-    const web3 = new Web3(this.chainGetter.getChain(this.chainId).rest);
+    const web3 = new Web3(this.chainGetter.getChain(this.chainId).rpc);
     // @ts-ignore
     const contract = new web3.eth.Contract(ERC20_ABI, this.contractAddress);
     const tokenDecimal = await contract.methods.decimals().call();

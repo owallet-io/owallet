@@ -30,7 +30,7 @@ export class ObservableQueryErc20Balance extends ObservableChainQuery<Erc20Contr
     QueryResponse<Erc20ContractBalance>
   > {
     try {
-      const web3 = new Web3(this.chainGetter.getChain(this.chainId).rest);
+      const web3 = new Web3(this.chainGetter.getChain(this.chainId).rpc);
       // @ts-ignore
       const contract = new web3.eth.Contract(ERC20_ABI, this.contractAddress);
 

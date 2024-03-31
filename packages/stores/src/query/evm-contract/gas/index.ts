@@ -39,7 +39,7 @@ export class ObservableQueryGasEvmContractInner extends ObservableChainQuery<num
   }
   protected async fetchResponse(): Promise<QueryResponse<number>> {
     try {
-      const web3 = new Web3(this.chainGetter.getChain(this.chainId).rest);
+      const web3 = new Web3(this.chainGetter.getChain(this.chainId).rpc);
       const { from, to, contract_address, amount } = this.paramGas;
       console.log(
         "🚀 ~ ObservableQueryGasEvmContractInner ~ fetchResponse ~ this.paramGas:",

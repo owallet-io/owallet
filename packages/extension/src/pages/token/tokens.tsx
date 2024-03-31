@@ -57,50 +57,50 @@ export const TokenPage: FunctionComponent = observer(() => {
 
   const [tokensTron, setTokensTron] = React.useState(tokens);
 
-  useEffect(() => {
-    if (chainId == TRON_ID) {
-      // call api get token tron network
-      getTokenTron();
-    }
-    return () => {};
-  }, [accountInfo.evmosHexAddress]);
+  // useEffect(() => {
+  //   if (chainId == TRON_ID) {
+  //     // call api get token tron network
+  //     getTokenTron();
+  //   }
+  //   return () => {};
+  // }, [accountInfo.evmosHexAddress]);
 
-  const getTokenTron = async () => {
-    try {
-      fetch(
-        `${chainStore.current.rpc}/v1/accounts/${getBase58Address(
-          keyRingStore.keyRingType !== "ledger"
-            ? accountInfo.evmosHexAddress
-            : getEvmAddress(keyRingStore?.keyRingLedgerAddresses?.trx)
-        )}`
-      ).then(async (res) => {
-        const data = await res.json();
-        console.log("🚀 ~ ).then ~ data:", data);
-        if (data?.data.length > 0) {
-          if (data?.data[0].trc20) {
-            const tokenArr = [];
-            TRC20_LIST.forEach((tk) => {
-              let token = data?.data[0].trc20.find(
-                (t) => tk.contractAddress in t
-              );
-              if (token) {
-                tokenArr.push({ ...tk, amount: token[tk.contractAddress] });
-              }
-            });
-            setTokensTron(tokenArr);
-          }
-        }
-      });
-    } catch (error) {
-      console.log({ error });
-    }
-  };
+  // const getTokenTron = async () => {
+  //   try {
+  //     fetch(
+  //       `${chainStore.current.rpc}/v1/accounts/${getBase58Address(
+  //         keyRingStore.keyRingType !== "ledger"
+  //           ? accountInfo.evmosHexAddress
+  //           : getEvmAddress(keyRingStore?.keyRingLedgerAddresses?.trx)
+  //       )}`
+  //     ).then(async (res) => {
+  //       const data = await res.json();
+  //       console.log("🚀 ~ ).then ~ data:", data);
+  //       if (data?.data.length > 0) {
+  //         if (data?.data[0].trc20) {
+  //           const tokenArr = [];
+  //           TRC20_LIST.forEach((tk) => {
+  //             let token = data?.data[0].trc20.find(
+  //               (t) => tk.contractAddress in t
+  //             );
+  //             if (token) {
+  //               tokenArr.push({ ...tk, amount: token[tk.contractAddress] });
+  //             }
+  //           });
+  //           setTokensTron(tokenArr);
+  //         }
+  //       }
+  //     });
+  //   } catch (error) {
+  //     console.log({ error });
+  //   }
+  // };
 
-  const hasTokens = tokens.length > 0 || tokensTron.length > 0;
-  console.log(
-    "🚀 ~ constTokenPage:FunctionComponent=observer ~ tokensTron:",
-    tokensTron
-  );
+  const hasTokens = tokens.length > 0;
+  // console.log(
+  //   "🚀 ~ constTokenPage:FunctionComponent=observer ~ tokensTron:",
+  //   tokensTron
+  // );
   const handleClickToken = (token) => {
     if (!hasSend) setHasSend(true);
     setCoinMinimalDenom(token);

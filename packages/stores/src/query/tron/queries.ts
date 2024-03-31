@@ -5,6 +5,7 @@ import { OWallet } from "@owallet/types";
 import { ObservableQueryTronBalanceRegistry } from "./balance";
 import { DeepReadonly } from "utility-types";
 import { QueriesWrappedBitcoin } from "../bitcoin";
+import { ObservableQueryAccountTron } from "./account";
 // import { ObservableQueryGasPrice } from "./gas-price";
 // import { ObservableQueryGas } from "./gas";
 
@@ -31,6 +32,7 @@ export class QueriesWrappedTron
 }
 
 export class TronQueries {
+  public readonly queryAccount: DeepReadonly<ObservableQueryAccountTron>;
   // public readonly queryGasPrice: DeepReadonly<ObservableQueryGasPrice>;
   // public readonly queryGas: DeepReadonly<ObservableQueryGas>;
   constructor(
@@ -42,11 +44,11 @@ export class TronQueries {
     base.queryBalances.addBalanceRegistry(
       new ObservableQueryTronBalanceRegistry(kvStore)
     );
-    // this.queryGasPrice = new ObservableQueryGasPrice(
-    //   kvStore,
-    //   chainId,
-    //   chainGetter
-    // );
+    this.queryAccount = new ObservableQueryAccountTron(
+      kvStore,
+      chainId,
+      chainGetter
+    );
     // this.queryGas = new ObservableQueryGas(kvStore, chainId, chainGetter);
   }
 }

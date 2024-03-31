@@ -107,7 +107,7 @@ export class ObservableQueryTronBalances extends ObservableChainQuery<Balances> 
 
   protected async fetchResponse(): Promise<QueryResponse<Balances>> {
     try {
-      const web3 = new Web3(this.chainGetter.getChain(this.chainId).rest);
+      const web3 = new Web3(this.chainGetter.getChain(this.chainId).rpc);
       const ethBalance = await web3.eth.getBalance(this.walletAddress);
 
       const denomNative = this.chainGetter.getChain(this.chainId).stakeCurrency

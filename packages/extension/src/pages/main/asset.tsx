@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useMemo } from "react";
+import React, { FunctionComponent, useEffect, useMemo } from "react";
 
 import { Dec, DecUtils } from "@owallet/unit";
 
@@ -350,7 +350,13 @@ export const AssetChartViewTron: FunctionComponent = observer(() => {
 
     return res;
   }, [stakable, fiat]);
-
+  // useEffect(() => {
+  //   const tronAcc =queries.tron.queryAccount.getQueryWalletAddress(tronAddress).bandwidthLimit;
+  //   console.log(tronAcc,"tronAcc");
+  // }, [tronAddress]);
+  const accountTronInfo =
+    queries.tron.queryAccount.getQueryWalletAddress(tronAddress);
+  console.log(accountTronInfo, "tronAcc");
   return (
     <React.Fragment>
       <div className={styleAsset.containerChart}>
@@ -383,6 +389,40 @@ export const AssetChartViewTron: FunctionComponent = observer(() => {
             }}
           >
             {stakable.shrink(true).trim(true).maxDecimals(6).toString()}
+          </div>
+        </div>
+        <div className={styleAsset.legend}>
+          <div className={styleAsset.label} style={{ color: "#777E90" }}>
+            <span className="badge-dot badge badge-secondary">
+              <i className="bg-gray" />
+            </span>
+            Energy
+          </div>
+          <div style={{ minWidth: "20px" }} />
+          <div
+            className={styleAsset.value}
+            style={{
+              color: "#353945E5",
+            }}
+          >
+            {`${accountTronInfo?.energyRemaining?.toString()}/${accountTronInfo?.energyLimit?.toString()}`}
+          </div>
+        </div>
+        <div className={styleAsset.legend}>
+          <div className={styleAsset.label} style={{ color: "#777E90" }}>
+            <span className="badge-dot badge badge-secondary">
+              <i className="bg-gray" />
+            </span>
+            Bandwidth
+          </div>
+          <div style={{ minWidth: "20px" }} />
+          <div
+            className={styleAsset.value}
+            style={{
+              color: "#353945E5",
+            }}
+          >
+            {`${accountTronInfo?.bandwidthRemaining?.toString()}/${accountTronInfo?.bandwidthLimit?.toString()}`}
           </div>
         </div>
       </div>
