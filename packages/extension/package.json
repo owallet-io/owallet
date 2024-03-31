@@ -81,6 +81,7 @@
   },
   "devDependencies": {
     "@types/amplitude-js": "^8.0.1",
+    "node-polyfill-webpack-plugin": "^3.0.0",
     "@types/chart.js": "^2.9.25",
     "@types/chrome": "0.0.88",
     "@types/classnames": "^2.2.9",

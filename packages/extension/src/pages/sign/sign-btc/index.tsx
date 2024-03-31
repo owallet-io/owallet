@@ -62,8 +62,6 @@ export const SignBtcPage: FunctionComponent = observer(() => {
     chainId,
     signer,
     queryBalances,
-    null,
-    null,
     queries.bitcoin.queryBitcoinBalance
   );
   const memoConfig = useMemoConfig(chainStore, chainId);
@@ -75,8 +73,6 @@ export const SignBtcPage: FunctionComponent = observer(() => {
     amountConfig,
     gasConfig,
     true,
-    null,
-    null,
     queries.bitcoin.queryBitcoinBalance,
     memoConfig
   );
