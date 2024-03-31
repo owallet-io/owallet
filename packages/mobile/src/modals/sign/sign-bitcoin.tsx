@@ -66,8 +66,6 @@ export const SignBitcoinModal: FunctionComponent<{
       chainId,
       signer,
       queryBalances,
-      null,
-      null,
       queries.bitcoin.queryBitcoinBalance
     );
     const memoConfig = useMemoConfig(chainStore, chainId);
@@ -79,8 +77,6 @@ export const SignBitcoinModal: FunctionComponent<{
       amountConfig,
       gasConfig,
       true,
-      null,
-      null,
       queries.bitcoin.queryBitcoinBalance,
       memoConfig
     );
