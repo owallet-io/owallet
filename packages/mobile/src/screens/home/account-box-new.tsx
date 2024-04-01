@@ -9,7 +9,7 @@ import { getTotalUsd, chainIcons } from "@oraichain/oraidex-common";
 import { DownArrowIcon } from "@src/components/icon";
 import { metrics, spacing } from "@src/themes";
 import MyWalletModal from "./components/my-wallet-modal/my-wallet-modal";
-import { ChainIdEnum, ChainNameEnum, getBase58Address } from "@owallet/common";
+import { ChainIdEnum } from "@owallet/common";
 import { OWButton } from "@src/components/button";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { CopyAddressModal } from "./components/copy-address/copy-address-modal";
@@ -29,6 +29,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
     appInitStore,
   } = useStore();
   const [profit, setProfit] = useState(0);
+
   const smartNavigation = useSmartNavigation();
 
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
@@ -40,7 +41,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
   });
 
   const styles = styling(colors);
-  let totalUsd: number;
+  let totalUsd: number = 0;
   if (appInitStore.getInitApp.prices) {
     totalUsd = getTotalUsd(
       universalSwapStore.getAmount,
@@ -93,18 +94,22 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
     return (
       <>
         <Text variant="bigText" style={styles.labelTotalAmount}>
-          ${totalUsd?.toFixed(6) ?? 0}
+          ${!universalSwapStore.getLoadStatus ? 0 : totalUsd.toFixed(6)}
         </Text>
-        <Text
-          style={styles.profit}
-          color={colors[profit < 0 ? "error-text-body" : "success-text-body"]}
-        >
-          {profit < 0 ? "" : "+"}
-          {profit && totalUsd
-            ? Number((profit / totalUsd) * 100 ?? 0).toFixed(2)
-            : 0}
-          % (${profit ?? 0}) Today
-        </Text>
+        {!universalSwapStore.getLoadStatus ? null : (
+          <Text
+            style={styles.profit}
+            color={colors[profit < 0 ? "error-text-body" : "success-text-body"]}
+          >
+            {profit < 0 ? "" : "+"}
+            {profit && totalUsd && totalUsd > 0
+              ? Number((profit / totalUsd) * 100 ?? 0).toFixed(2)
+              : 0}
+            % ($
+            {profit ?? 0}) Today
+          </Text>
+        )}
+
         {appInitStore.getInitApp.isAllNetworks ? null : (
           <View
             style={{

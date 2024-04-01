@@ -233,6 +233,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   }, [accountOrai.bech32Address]);
 
   useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
     InteractionManager.runAfterInteractions(() => {
       startTransition(() => {
         if (
@@ -241,7 +242,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
           accountTron.evmosHexAddress &&
           accountKawaiiCosmos.bech32Address
         ) {
-          setTimeout(() => {
+          timeoutId = setTimeout(() => {
             handleFetchAmounts(
               accountOrai.bech32Address,
               accountEth.evmosHexAddress,
@@ -252,6 +253,10 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         }
       });
     });
+    // Clean up the timeout if the component unmounts or the dependency changes
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
   }, [
     accountOrai.bech32Address,
     accountEth.evmosHexAddress,
