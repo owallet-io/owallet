@@ -192,6 +192,10 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   // handle fetch all tokens of all chains
   const handleFetchAmounts = async (orai?, eth?, tron?, kwt?) => {
     let loadTokenParams = {};
+    console.log(
+      " universalSwapStore.getTokenReload",
+      universalSwapStore.getTokenReload
+    );
 
     try {
       const cwStargate = {
@@ -215,6 +219,10 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       setTimeout(() => {
         loadTokenAmounts(loadTokenParams);
         universalSwapStore.clearTokenReload();
+        console.log(
+          " universalSwapStore.getTokenReload",
+          universalSwapStore.getTokenReload
+        );
       }, 1000);
     } catch (error) {
       console.log("error loadTokenAmounts", error);

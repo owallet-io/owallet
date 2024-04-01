@@ -255,6 +255,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
                 {
                   ...sendConfigs.amountConfig.sendCurrency,
                   chainId: chainStore.current.chainId,
+                  type: "cosmos",
                 },
               ]);
               await handleSaveHistory(address, historyInfos);

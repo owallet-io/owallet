@@ -179,6 +179,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
               {
                 ...sendConfigs.amountConfig.sendCurrency,
                 chainId: chainStore.current.chainId,
+                type: "cosmos",
               },
             ]);
             if (tx) {
