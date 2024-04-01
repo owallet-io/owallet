@@ -258,9 +258,6 @@ async function loadEvmEntries(
   retryCount?: number
 ): Promise<[string, string][]> {
   try {
-    console.log("evmTokens", evmTokens);
-    console.log("tokenReload", tokenReload);
-
     const tokens = evmTokens.filter((t) => {
       let result;
       if (tokenReload) {
