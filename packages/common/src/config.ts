@@ -249,7 +249,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
         {
           coinDenom: "WETH",
           coinGeckoId: "weth",
-          coinMinimalDenom: "weth",
+          coinMinimalDenom:
+            "cw20:orai1dqa52a7hxxuv8ghe7q5v0s36ra0cthea960q2cukznleqhk0wpnshfegez:WETH",
           type: "cw20",
           contractAddress:
             "orai1dqa52a7hxxuv8ghe7q5v0s36ra0cthea960q2cukznleqhk0wpnshfegez",
@@ -287,7 +288,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinDenom: "NTMPI",
         coinMinimalDenom: "uneutaro",
         coinDecimals: 6,
-        coinGeckoId: "unknown",
+        coinGeckoId: "neutaro",
         coinImageUrl: "https://asset.brandfetch.io/idKrUw6EdO/ids9m0Bt_7.png",
       },
     ],
@@ -297,7 +298,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     stakeCurrency: {
       coinDenom: "NTMPI",
       coinMinimalDenom: "uneutaro",
-      coinGeckoId: "unknown",
+      coinGeckoId: "neutaro",
       coinImageUrl: "https://asset.brandfetch.io/idKrUw6EdO/ids9m0Bt_7.png",
       coinDecimals: 6,
       gasPriceStep: {
