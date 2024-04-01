@@ -224,6 +224,7 @@ export interface TronWeb {
   defaultAddress?: object;
   initChainId: string;
   sign(transaction: object): Promise<object>;
+  simulateSign(transaction: object): Promise<object>;
   sendRawTransaction(transaction: {
     raw_data: any;
     raw_data_hex: string;

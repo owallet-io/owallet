@@ -32,6 +32,7 @@ import {
   MyBigInt,
   escapeHTML,
   sortObjectByKey,
+  ChainIdEnum,
 } from "@owallet/common";
 import { ChainsService } from "../chains";
 import { LedgerService } from "../ledger";
@@ -59,10 +60,11 @@ import { RNG } from "@owallet/crypto";
 import { encodeSecp256k1Pubkey } from "@owallet/cosmos";
 import { Buffer } from "buffer/";
 import { request } from "../tx";
-import { Dec, DecUtils } from "@owallet/unit";
+import { CoinPretty, Dec, DecUtils } from "@owallet/unit";
 import { trimAminoSignDoc } from "./amino-sign-doc";
 import { KeyringHelper } from "./utils";
 import * as oasis from "@oasisprotocol/client";
+import { ISimulateSignTron } from "@owallet/types";
 
 @singleton()
 export class KeyRingService {
@@ -245,6 +247,27 @@ export class KeyRingService {
     return await this.keyRing.showKeyRing(index, password);
   }
 
+  async simulateSignTron(msg: ISimulateSignTron): Promise<string> {
+    const tronWeb = new TronWeb({
+      fullHost: (await this.chainsService.getChainInfo(ChainIdEnum.TRON)).grpc,
+    });
+    tronWeb.fullNode.instance.defaults.adapter = fetchAdapter;
+    const amount = new Dec(Number((msg.amount ?? "0").replace(/,/g, "."))).mul(
+      DecUtils.getTenExponentNInPrecisionRange(6)
+    );
+    console.log(amount?.toString(), "amount?.toString()");
+    const transaction = await tronWeb.transactionBuilder.sendTrx(
+      msg.recipient,
+      amount,
+      msg.from,
+      1
+    );
+    const signedTx = await this.keyRing.simulateSignTron(transaction);
+    console.log(signedTx, "signedTxsignedTx");
+    return signedTx;
+    // return await this.keyRing.signTron(msg);
+  }
+
   async createMnemonicKey(
     kdf: "scrypt" | "sha256" | "pbkdf2",
     mnemonic: string,
@@ -329,9 +352,11 @@ export class KeyRingService {
   getKeyRingLedgerAddresses(): AddressesLedger {
     return this.keyRing.addresses;
   }
+
   getKeyRingLedgerPubKey(): AddressesLedger {
     return this.keyRing.pubkeys;
   }
+
   async requestSignEIP712CosmosTx_v0_selected(
     env: Env,
     origin: string,
@@ -355,6 +380,7 @@ export class KeyRingService {
       signOptions
     );
   }
+
   async processSignDocEIP712(
     signDoc: StdSignDoc,
     chainId: string,
@@ -386,6 +412,7 @@ export class KeyRingService {
     const sortSignDoc = sortObjectByKey(signDoc);
     return sortSignDoc;
   }
+
   async requestSignEIP712CosmosTx_v0(
     env: Env,
     origin: string,
@@ -456,6 +483,7 @@ export class KeyRingService {
       this.interactionService.dispatchEvent(APP_PORT, "request-sign-end", {});
     }
   }
+
   async requestSignAmino(
     env: Env,
     msgOrigin: string,
@@ -635,6 +663,7 @@ export class KeyRingService {
       );
     }
   }
+
   async requestSignBitcoin(
     env: Env,
     chainId: string,
@@ -781,26 +810,6 @@ export class KeyRingService {
     rpc: string,
     data: object
   ): Promise<object> {
-    console.log("🚀 ~ KeyRingService ~ data:", data);
-    // const decimals = (await this.chainsService.getChainInfo(chainId))
-    //   .feeCurrencies?.[0].coinDecimals;
-    // const estimatedGasPrice = await request(rpc, "eth_gasPrice", []);
-    // let estimatedGasLimit = "0x5028";
-    // try {
-    //   estimatedGasLimit = await request(rpc, "eth_estimateGas", [
-    //     {
-    //       ...data,
-    //       maxFeePerGas: undefined,
-    //       maxPriorityFeePerGas: undefined,
-    //     },
-    //   ]);
-    // } catch (error) {
-    //   console.log(
-    //     "🚀 ~ file: service.ts ~ line 396 ~ KeyRingService ~ error",
-    //     error
-    //   );
-    // }
-
     const approveData = (await this.interactionService.waitApprove(
       env,
       "/sign-ethereum",
@@ -999,7 +1008,7 @@ export class KeyRingService {
   ) {
     try {
       const tronWeb = new TronWeb({
-        fullHost: (await this.chainsService.getChainInfo(chainId)).rpc,
+        fullHost: (await this.chainsService.getChainInfo(chainId)).grpc,
       });
       tronWeb.fullNode.instance.defaults.adapter = fetchAdapter;
       return await tronWeb.trx.sendRawTransaction(transaction);
@@ -1029,7 +1038,7 @@ export class KeyRingService {
   }> {
     try {
       const tronWeb = new TronWeb({
-        fullHost: (await this.chainsService.getChainInfo(chainId)).rpc,
+        fullHost: (await this.chainsService.getChainInfo(chainId)).grpc,
       });
       tronWeb.fullNode.instance.defaults.adapter = fetchAdapter;
       return await tronWeb.transactionBuilder.triggerSmartContract(
@@ -1071,7 +1080,7 @@ export class KeyRingService {
       }
 
       const tronWeb = new TronWeb({
-        fullHost: (await this.chainsService.getChainInfo(chainId)).rpc,
+        fullHost: (await this.chainsService.getChainInfo(chainId)).grpc,
       });
       tronWeb.fullNode.instance.defaults.adapter = fetchAdapter;
       let transaction: any;

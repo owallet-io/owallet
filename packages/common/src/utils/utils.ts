@@ -13,6 +13,8 @@ import { ChainIdEnum, TRON_ID } from "./constants";
 import { EmbedChainInfos } from "../config";
 import { Hash } from "@owallet/crypto";
 import bs58 from "bs58";
+import { ethers } from "ethers";
+import Web3 from "web3";
 export type LedgerAppType = "cosmos" | "eth" | "trx" | "btc";
 export const COINTYPE_NETWORK = {
   118: "Cosmos",
@@ -42,6 +44,56 @@ export const getAddressFromBech32 = (bech32address) => {
   return ETH.encoder(address);
 };
 
+// It is recommended to use ethers4.0.47 version
+// var ethers = require('ethers')
+
+const AbiCoder = ethers.utils.AbiCoder;
+const ADDRESS_PREFIX_REGEX = /^(41)/;
+const ADDRESS_PREFIX = "41";
+
+export const encodeParams = async (inputs) => {
+  let typesValues = inputs;
+  let parameters = "";
+
+  if (typesValues.length == 0) return parameters;
+  const abiCoder = new AbiCoder();
+  let types = [];
+  const values = [];
+
+  for (let i = 0; i < typesValues.length; i++) {
+    let { type, value } = typesValues[i];
+    if (type == "address") value = value.replace(ADDRESS_PREFIX_REGEX, "0x");
+    else if (type == "address[]")
+      value = value.map((v) =>
+        Web3.utils.toHex(v).replace(ADDRESS_PREFIX_REGEX, "0x")
+      );
+    types.push(type);
+    values.push(value);
+  }
+
+  console.log(types, values);
+  try {
+    parameters = abiCoder.encode(types, values).replace(/^(0x)/, "");
+  } catch (ex) {
+    console.log(ex);
+  }
+  return parameters;
+};
+export const estimateBandwidthTron = (signedTxn) => {
+  const DATA_HEX_PROTOBUF_EXTRA = 3;
+  const MAX_RESULT_SIZE_IN_TX = 64;
+  const A_SIGNATURE = 67;
+  let len =
+    signedTxn.raw_data_hex.length / 2 +
+    DATA_HEX_PROTOBUF_EXTRA +
+    MAX_RESULT_SIZE_IN_TX;
+  const signatureListSize = signedTxn.signature.length;
+
+  for (let i = 0; i < signatureListSize; i++) {
+    len += A_SIGNATURE;
+  }
+  return len;
+};
 export const DEFAULT_BLOCK_TIMEOUT_HEIGHT = 90;
 export const DEFAULT_BLOCK_TIME_IN_SECONDS = 2;
 export const DEFAULT_TX_BLOCK_INCLUSION_TIMEOUT_IN_MS =

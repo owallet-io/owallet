@@ -74,6 +74,7 @@ export const restBtc = {
   [ChainIdEnum.Bitcoin]: "https://blockstream.info/api",
   [ChainIdEnum.BitcoinTestnet]: "https://blockstream.info/testnet/api",
 };
+
 export const TRC20_LIST = [
   {
     contractAddress: "TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8",

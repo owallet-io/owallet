@@ -162,7 +162,7 @@ export class ObservableQueryTronBalanceRegistry implements BalanceRegistry {
     }
     const networkType = chainGetter.getChain(chainId).networkType;
     if (networkType !== "evm") return;
-    const key = `evm-${chainId}/${walletAddress}`;
+    const key = `tron-${chainId}/${walletAddress}`;
 
     if (!this.nativeBalances.has(key)) {
       this.nativeBalances.set(

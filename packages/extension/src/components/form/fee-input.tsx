@@ -3,29 +3,23 @@ import { FormGroup, Label } from "reactstrap";
 import {
   FeeConfig,
   GasConfig,
-  IFeeConfig,
-  IFeeEthereumConfig,
-  IGasEthereumConfig,
   InsufficientFeeError,
   NotLoadedFeeError,
 } from "@owallet/hooks";
 import { observer } from "mobx-react-lite";
-import Big from "big.js";
+
 import { Input } from "../../components/form";
-import { Dec, DecUtils } from "@owallet/unit";
+
 import { useIntl } from "react-intl";
 
 export interface GasInputProps {
   feeConfig: FeeConfig;
   gasConfig: GasConfig;
-  decimals: number;
 
   label?: string;
   className?: string;
   defaultValue?: number;
-  gasPrice?: number | string | Big;
 
-  denom?: string | unknown | any;
   classNameInputGroup?: string | unknown | any;
   classNameInput?: string | unknown | any;
 }
@@ -38,9 +32,6 @@ export const FeeInput: FunctionComponent<GasInputProps> = observer(
     className,
     defaultValue,
     gasConfig,
-    gasPrice,
-    decimals,
-    denom,
     classNameInputGroup,
     classNameInput,
   }) => {
@@ -50,19 +41,7 @@ export const FeeInput: FunctionComponent<GasInputProps> = observer(
       return `input-${Buffer.from(bytes).toString("hex")}`;
     });
     const intl = useIntl();
-    // useEffect(() => {
-    //   try {
-    //     if (gasConfig.gasRaw !== "NaN" && gasPrice != "NaN") {
-    //       feeConfig.setFee(
-    //         new Big(parseInt(gasConfig.gasRaw)).mul(gasPrice).toFixed(decimals)
-    //       );
-    //     } else {
-    //       feeConfig.setFee(parseFloat(feeConfig.feeRaw).toString());
-    //     }
-    //   } catch (error) {
-    //     feeConfig.setFee(parseFloat(feeConfig.feeRaw).toString());
-    //   }
-    // }, [gasConfig.gasRaw, gasPrice]);
+
     const error = feeConfig.getError();
     const errorText: string | undefined = (() => {
       if (error) {
@@ -91,29 +70,21 @@ export const FeeInput: FunctionComponent<GasInputProps> = observer(
         <Input
           // type="number"
           classNameInputGroup={classNameInputGroup}
-          value={feeConfig.fee
+          // value={feeConfig.fee
+          //   ?.shrink(true)
+          //   ?.trim(true)
+          //   ?.hideDenom(true)
+          //   ?.toString()}
+          className={classNameInput}
+          disabled
+          style={{
+            backgroundColor: "rgba(230, 232, 236, 0.2)",
+          }}
+          defaultValue={feeConfig.fee
             ?.shrink(true)
             ?.trim(true)
             ?.hideDenom(true)
             ?.toString()}
-          className={classNameInput}
-          disabled
-          // style={{
-          //   backgroundColor: 'rgba(230, 232, 236, 0.2)'
-          // }}
-          // onChange={(e) => {
-          //   // feeConfig.setManualFee(e.target.value);
-          //   const fee = new Dec(Number(e.target.value.replace(/,/g, '.'))).mul(
-          //     DecUtils.getTenExponentNInPrecisionRange(feeConfig.feeCurrency.coinDecimals)
-          //   );
-          //   console.log('🚀 ~ fee.roundUp().toString():', fee.roundUp().toString());
-          //   feeConfig.setManualFee({
-          //     amount: fee.roundUp().toString(),
-          //     denom: feeConfig.feeCurrency.coinMinimalDenom
-          //   });
-
-          //   e.preventDefault();
-          // }}
           error={errorText}
           id={inputId}
           append={

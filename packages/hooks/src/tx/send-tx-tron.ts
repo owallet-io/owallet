@@ -8,19 +8,15 @@ import {
   SecretMsgOpts,
 } from "@owallet/stores";
 import { ObservableQueryBalances } from "@owallet/stores";
-import { FeeConfig, useFeeConfig } from "./fee";
 import { useMemoConfig } from "./memo";
 import { useRecipientConfig } from "./recipient";
-import { useSendGasConfig } from "./send-gas";
 import { useAmountConfig } from "./amount";
-import { FeeEvmConfig, useFeeEvmConfig } from "./fee-evm";
-import { Int } from "@owallet/unit";
-import { useEffect, useState } from "react";
-import { useSendGasEvmConfig } from "./send-gas-evm";
+import { useFeeTronConfig } from "./fee-tron";
+import { useSendGasTronConfig } from "./send-gas-tron";
 
 type MsgOpts = CosmosMsgOpts & SecretMsgOpts & CosmwasmMsgOpts & Erc20MsgOpts;
 
-export const useSendTxEvmConfig = (
+export const useSendTxTronConfig = (
   chainGetter: ChainGetter,
   chainId: string,
   sendMsgOpts: MsgOpts["send"],
@@ -41,14 +37,14 @@ export const useSendTxEvmConfig = (
 
   const memoConfig = useMemoConfig(chainGetter, chainId);
 
-  const gasConfig = useSendGasEvmConfig(
+  const gasConfig = useSendGasTronConfig(
     chainGetter,
     chainId,
     amountConfig,
     sendMsgOpts
   );
 
-  const feeConfig = useFeeEvmConfig(
+  const feeConfig = useFeeTronConfig(
     chainGetter,
     chainId,
     sender,

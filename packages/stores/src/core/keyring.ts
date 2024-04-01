@@ -8,6 +8,7 @@ import {
   CreateMnemonicKeyMsg,
   CreatePrivateKeyMsg,
   DeleteKeyRingMsg,
+  SimulateSignTronMsg,
   UpdateNameKeyRingMsg,
   GetIsKeyStoreCoinTypeSetMsg,
   GetMultiKeyStoreInfoMsg,
@@ -25,7 +26,7 @@ import {
   ExportKeyRingDatasMsg,
   ChangeChainMsg,
 } from "@owallet/background";
-import { BIP44HDPath } from "@owallet/types";
+import { BIP44HDPath, ISimulateSignTron } from "@owallet/types";
 import { computed, flow, makeObservable, observable, runInAction } from "mobx";
 
 import { InteractionStore } from "./interaction";
@@ -350,6 +351,16 @@ export class KeyRingStore {
       this.dispatchKeyStoreChangeEvent();
       this.selectablesMap.forEach((selectables) => selectables.refresh());
     }
+  }
+
+  @flow
+  *simulateSignTron(msg: ISimulateSignTron) {
+    const msgSignTron = new SimulateSignTronMsg(msg);
+    const result = yield* toGenerator(
+      this.requester.sendMessage(BACKGROUND_PORT, msgSignTron)
+    );
+    console.log(result, "result");
+    return result;
   }
 
   @flow

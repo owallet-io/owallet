@@ -22,12 +22,23 @@ import {
   useSendTxEvmConfig,
 } from "@owallet/hooks";
 import { fitPopupWindow } from "@owallet/popup";
-import { EthereumEndpoint, getBase58Address } from "@owallet/common";
+import {
+  encodeParams,
+  estimateBandwidthTron,
+  EthereumEndpoint,
+  getBase58Address,
+} from "@owallet/common";
+import { FeeInput } from "../../components/form/fee-input";
 
+// export const useGetFeeTron = (keyRingStore)=>{
+//
+// }
 export const SendTronEvmPage: FunctionComponent<{
   coinMinimalDenom?: string;
   tokensTrc20Tron?: Array<any>;
 }> = observer(({ coinMinimalDenom, tokensTrc20Tron }) => {
+  const [bandwidthUsed, setBandwidthUsed] = useState("0");
+  const [energyUsed, setEnergyUsed] = useState("0");
   const history = useHistory();
   let search = useLocation().search || coinMinimalDenom || "";
   if (search.startsWith("?")) {
@@ -103,7 +114,6 @@ export const SendTronEvmPage: FunctionComponent<{
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query.defaultAmount, query.defaultRecipient]);
-  const feeConfig = useFeeEthereumConfig(chainStore, current.chainId);
   const sendConfigError =
     sendConfigs.recipientConfig.getError() ??
     sendConfigs.amountConfig.getError();
@@ -111,6 +121,9 @@ export const SendTronEvmPage: FunctionComponent<{
   const addressTron = accountInfo.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses,
     false
+  );
+  const addressTronBase58 = accountInfo.getAddressDisplay(
+    keyRingStore.keyRingLedgerAddresses
   );
   const tokenTrc20 =
     (tokensTrc20Tron &&
@@ -164,6 +177,50 @@ export const SendTronEvmPage: FunctionComponent<{
       }
     }
   };
+
+  const chainParameter = queriesStore
+    .get(current.chainId)
+    .tron.queryChainParameter.getQueryChainParameters(addressTron)
+    .response?.data;
+  console.log(chainParameter, "chainParameter");
+  const simulateSignTron = async () => {
+    if (
+      !sendConfigs.amountConfig.amount ||
+      !sendConfigs.recipientConfig.recipient ||
+      !sendConfigs.amountConfig.sendCurrency ||
+      !addressTron
+    )
+      return;
+    const data = {
+      amount: sendConfigs.amountConfig.amount,
+      currency: sendConfigs.amountConfig.sendCurrency,
+      recipient: sendConfigs.recipientConfig.recipient,
+      from: addressTronBase58,
+    };
+    console.log(data, "data submit tron");
+    const signedTx = await keyRingStore.simulateSignTron(data);
+    const bandwidthUsed = estimateBandwidthTron(signedTx);
+    if (!bandwidthUsed) return;
+    setBandwidthUsed(bandwidthUsed);
+    console.log(bandwidthUsed, "bandwidthUsed");
+  };
+  const encodeData = async () => {
+    const encode = await encodeParams([
+      { type: "address", value: "TEu6u8JLCFs6x1w5s8WosNqYqVx2JMC5hQ" },
+      { type: "uint256", value: "12000000" },
+    ]);
+    console.log(encode, "encode");
+  };
+  useEffect(() => {
+    encodeData();
+
+    simulateSignTron();
+  }, [
+    sendConfigs.amountConfig.amount,
+    sendConfigs.recipientConfig.recipient,
+    addressTron,
+    sendConfigs.amountConfig.sendCurrency,
+  ]);
   return (
     <>
       <form className={style.formContainer} onSubmit={onSend}>
@@ -184,25 +241,13 @@ export const SendTronEvmPage: FunctionComponent<{
               })}
               placeholder="Enter your amount"
             />
-            {/* <MemoInput
-              memoConfig={sendConfigs.memoConfig}
-              label={intl.formatMessage({ id: 'send.input.memo' })}
-              placeholder="Enter your memo message"
-            /> */}
-            <FeeButtons
+            <p>Estimate Bandwidth: {`${bandwidthUsed}`}</p>
+            <p>Estimate Energy: {`${energyUsed}`}</p>
+            <FeeInput
+              fe
+              label={"Fee"}
+              defaultValue={1}
               feeConfig={sendConfigs.feeConfig}
-              gasConfig={sendConfigs.gasConfig}
-              //   customFee={true}
-              priceStore={priceStore}
-              label={intl.formatMessage({ id: "send.input.fee" })}
-              feeSelectLabels={{
-                low: intl.formatMessage({ id: "fee-buttons.select.slow" }),
-                average: intl.formatMessage({
-                  id: "fee-buttons.select.average",
-                }),
-                high: intl.formatMessage({ id: "fee-buttons.select.fast" }),
-              }}
-              gasLabel={intl.formatMessage({ id: "send.input.gas" })}
             />
           </div>
           <div style={{ flex: 1 }} />

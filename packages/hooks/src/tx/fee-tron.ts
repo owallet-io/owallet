@@ -23,7 +23,7 @@ import { ObservableQueryBalances } from "@owallet/stores";
 import { InsufficientFeeError, NotLoadedFeeError } from "./errors";
 import { GasEvmConfig } from "./gas-evm";
 
-export class FeeEvmConfig extends TxChainSetter implements IFeeConfig {
+export class FeeTronConfig extends TxChainSetter implements IFeeConfig {
   @observable.ref
   protected queryBalances: ObservableQueryBalances;
 
@@ -305,7 +305,7 @@ export class FeeEvmConfig extends TxChainSetter implements IFeeConfig {
   }
 }
 
-export const useFeeEvmConfig = (
+export const useFeeTronConfig = (
   chainGetter: ChainGetter,
   chainId: string,
   sender: string,
@@ -318,7 +318,7 @@ export const useFeeEvmConfig = (
 ) => {
   const [config] = useState(
     () =>
-      new FeeEvmConfig(
+      new FeeTronConfig(
         chainGetter,
         chainId,
         sender,

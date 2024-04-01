@@ -277,7 +277,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinDenom: "NTMPI",
         coinMinimalDenom: "uneutaro",
         coinDecimals: 6,
-        coinGeckoId: "unknown",
+        coinGeckoId: "neutaro",
         coinImageUrl: "https://asset.brandfetch.io/idKrUw6EdO/ids9m0Bt_7.png",
       },
     ],
@@ -287,7 +287,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     stakeCurrency: {
       coinDenom: "NTMPI",
       coinMinimalDenom: "uneutaro",
-      coinGeckoId: "unknown",
+      coinGeckoId: "neutaro",
       coinImageUrl: "https://asset.brandfetch.io/idKrUw6EdO/ids9m0Bt_7.png",
       coinDecimals: 6,
       gasPriceStep: {
@@ -1230,6 +1230,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
 
   {
     rpc: "https://nile.trongrid.io/jsonrpc",
+    grpc: "https://nile.trongrid.io",
     rest: "https://nileapi.tronscan.org",
     chainId: "0x2b6653dc",
     networkType: "evm",
