@@ -175,13 +175,13 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
         {
           onFulfill: async (tx) => {
             console.log("🚀 ~ file: send-btc.tsx:109 ~ onSend ~ tx:", tx);
-            universalSwapStore.updateTokenReload([
-              {
-                ...sendConfigs.amountConfig.sendCurrency,
-                chainId: chainStore.current.chainId,
-                type: "cosmos",
-              },
-            ]);
+            // universalSwapStore.updateTokenReload([
+            //   {
+            //     ...sendConfigs.amountConfig.sendCurrency,
+            //     chainId: chainStore.current.chainId,
+            //     networkType: "bitcoin"
+            //   }
+            // ]);
             if (tx) {
               navigate(SCREENS.STACK.Others, {
                 screen: SCREENS.TxSuccessResult,

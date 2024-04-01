@@ -217,7 +217,7 @@ export const SendTronScreen: FunctionComponent = observer(() => {
                       {
                         ...sendConfigs.amountConfig.sendCurrency,
                         chainId: chainStore.current.chainId,
-                        type: "evm",
+                        networkType: "evm",
                       },
                     ]);
                     await handleSaveHistory(address, historyInfos);

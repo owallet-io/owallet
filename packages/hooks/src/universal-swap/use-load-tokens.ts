@@ -258,11 +258,16 @@ async function loadEvmEntries(
   retryCount?: number
 ): Promise<[string, string][]> {
   try {
+    console.log("evmTokens", evmTokens);
+    console.log("tokenReload", tokenReload);
+
     const tokens = evmTokens.filter((t) => {
       let result;
       if (tokenReload) {
         tokenReload.map((token) => {
           if (token.networkType === "evm") {
+            console.log("token evm", token);
+
             if (
               token.contractAddress === t.contractAddress ||
               token.chainId === chain.chainId
