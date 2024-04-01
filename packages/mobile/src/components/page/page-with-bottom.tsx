@@ -6,10 +6,8 @@ import {
   View,
   KeyboardAvoidingView,
   StatusBar,
-  SafeAreaView,
 } from "react-native";
 import { metrics } from "@src/themes";
-import { PageHeader } from "../header/header-new";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { isAndroid } from "@src/common/constants";

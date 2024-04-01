@@ -270,7 +270,7 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: "Bitcoin Faucet",
   },
   [SCREENS.BuyFiat]: {
-    title: "Buy",
+    title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.SettingVersion]: {
     title: HEADER_KEY.notShowHeader,

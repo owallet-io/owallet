@@ -3,10 +3,15 @@ import React, { useEffect, useState } from "react";
 import { WebView } from "react-native-webview";
 import { observer } from "mobx-react-lite";
 import { useStore } from "@src/stores";
-import { colors, metrics } from "@src/themes";
+import { metrics } from "@src/themes";
 import { ChainIdEnum, KADOChainNameEnum } from "@owallet/common";
+import { PageHeader } from "@src/components/header/header-new";
+import { useTheme } from "@src/themes/theme-provider";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 const BuyFiat = observer(() => {
-  const { accountStore, appInitStore } = useStore();
+  const { accountStore, appInitStore, chainStore } = useStore();
+  const { colors } = useTheme();
+  const safeAreaInsets = useSafeAreaInsets();
 
   const theme = appInitStore.getInitApp.theme;
 
@@ -22,20 +27,22 @@ const BuyFiat = observer(() => {
       .split(", ")
       .join(",");
 
-  let accounts = {};
+  const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
 
-  const delayedFunction = async () => {
+  useEffect(() => {
+    let accounts = {};
+
+    let defaultEvmAddress = accountEth.evmosHexAddress;
+
     Object.keys(ChainIdEnum).map((key) => {
-      if (KADOChainNameEnum[ChainIdEnum[key]]) {
-        let defaultAddress = accountStore.getAccount(
-          ChainIdEnum[key]
-        ).bech32Address;
-        if (defaultAddress.startsWith("evmos")) {
-          accounts[KADOChainNameEnum[ChainIdEnum[key]]] =
-            accountStore.getAccount(ChainIdEnum[key]).evmosHexAddress;
-        } else {
-          accounts[KADOChainNameEnum[ChainIdEnum[key]]] = defaultAddress;
-        }
+      let defaultCosmosAddress = accountStore.getAccount(
+        ChainIdEnum[key]
+      ).bech32Address;
+
+      if (defaultCosmosAddress.startsWith("evmos")) {
+        accounts[KADOChainNameEnum[ChainIdEnum[key]]] = defaultEvmAddress;
+      } else {
+        accounts[KADOChainNameEnum[ChainIdEnum[key]]] = defaultCosmosAddress;
       }
     });
 
@@ -46,14 +53,15 @@ const BuyFiat = observer(() => {
     });
 
     setAccounts(tmpAccounts);
-  };
-
-  useEffect(() => {
-    delayedFunction();
-  }, []);
+  }, [accountEth.evmosHexAddress]);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: safeAreaInsets.top }]}>
+      <PageHeader
+        title="Buy"
+        subtitle={chainStore.current.chainName}
+        colors={colors}
+      />
       {accountList.length > 0 ? (
         <View style={{ flex: 1 }}>
           <WebView

@@ -240,11 +240,17 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
               color: colors["neutral-text-action-on-dark-bg"],
             }}
             style={styles.getStarted}
-            label="Send"
+            label={appInitStore.getInitApp.isAllNetworks ? "Buy" : "Send"}
             onPress={() => {
               // smartNavigation.navigateSmart("NewSend", {
               //   currency: chainStore.current.stakeCurrency.coinMinimalDenom,
               // });
+              if (appInitStore.getInitApp.isAllNetworks) {
+                navigate(SCREENS.STACK.Others, {
+                  screen: SCREENS.BuyFiat,
+                });
+                return;
+              }
               if (chainStore.current.chainId === ChainIdEnum.TRON) {
                 smartNavigation.navigateSmart("SendTron", {
                   currency: chainStore.current.stakeCurrency.coinMinimalDenom,
