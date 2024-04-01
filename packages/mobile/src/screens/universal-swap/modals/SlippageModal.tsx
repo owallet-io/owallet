@@ -1,5 +1,5 @@
 import { ScrollView, StyleSheet, View } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { registerModal } from "@src/modals/base";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Text } from "@src/components/text";
@@ -33,6 +33,10 @@ export const SlippageModal = registerModal(
         }
       }
     };
+
+    useEffect(() => {
+      setSlippage(currentSlippage);
+    }, [currentSlippage]);
 
     const handleSubmitSlippage = () => {
       setUserSlippage(slippage);

@@ -21,6 +21,7 @@ import { NewAmountInput } from "@src/components/input/amount-input";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { DownArrowIcon } from "@src/components/icon";
 import { FeeModal } from "@src/modals/fee";
+import { ChainIdEnum } from "@oraichain/oraidex-common";
 
 export const SendTronScreen: FunctionComponent = observer(() => {
   const {
@@ -67,6 +68,7 @@ export const SendTronScreen: FunctionComponent = observer(() => {
     : chainStore?.current?.chainId;
 
   const account = accountStore.getAccount(chainId);
+  const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const queries = queriesStore.get(chainId);
 
   const sendConfigs = useSendTxConfig(
@@ -220,7 +222,10 @@ export const SendTronScreen: FunctionComponent = observer(() => {
                         networkType: "evm",
                       },
                     ]);
-                    await handleSaveHistory(address, historyInfos);
+                    await handleSaveHistory(
+                      accountOrai.bech32Address,
+                      historyInfos
+                    );
                   },
                 },
                 route?.params?.item

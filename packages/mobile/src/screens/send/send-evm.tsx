@@ -41,6 +41,7 @@ import {
   HISTORY_STATUS,
 } from "@src/utils/helper";
 import { navigate } from "@src/router/root";
+import { ChainIdEnum } from "@oraichain/oraidex-common";
 
 export const SendEvmScreen: FunctionComponent = observer(() => {
   const {
@@ -72,13 +73,12 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
     >
   >();
 
-  const smartNavigation = useSmartNavigation();
-
   const chainId = route?.params?.chainId
     ? route?.params?.chainId
     : chainStore?.current?.chainId;
 
   const account = accountStore.getAccount(chainId);
+  const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const queries = queriesStore.get(chainId);
 
   const address = account.getAddressDisplay(
@@ -252,6 +252,9 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
                 },
                 status: "SUCCESS",
               };
+
+              console.log("historyInfos", historyInfos);
+
               universalSwapStore.updateTokenReload([
                 {
                   ...sendConfigs.amountConfig.sendCurrency,
@@ -259,7 +262,7 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
                   networkType: "evm",
                 },
               ]);
-              await handleSaveHistory(address, historyInfos);
+              await handleSaveHistory(accountOrai.bech32Address, historyInfos);
             },
           },
           // In case send erc20 in evm network
