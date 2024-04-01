@@ -29,7 +29,6 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
     appInitStore,
   } = useStore();
   const [profit, setProfit] = useState(0);
-  const [showBalance, setShowBalance] = useState(false);
 
   const smartNavigation = useSmartNavigation();
 
@@ -40,21 +39,6 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
     prices: appInitStore.getInitApp.prices,
     networkFilter: chainStore.current.chainId,
   });
-
-  useEffect(() => {
-    setShowBalance(false);
-  }, [accountOrai.bech32Address]);
-
-  useEffect(() => {
-    if (universalSwapStore.getLoadStatus.isLoad) {
-      // Delay the rendering after 3 second
-      const timeoutId = setTimeout(() => {
-        setShowBalance(true);
-      }, 2000);
-      // Clean up the timeout if the component unmounts or the dependency changes
-      return () => clearTimeout(timeoutId);
-    }
-  }, [accountOrai.bech32Address, universalSwapStore.getLoadStatus.isLoad]); // Empty dependency array ensures that the effect runs only once
 
   const styles = styling(colors);
   let totalUsd: number = 0;
@@ -110,21 +94,19 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
     return (
       <>
         <Text variant="bigText" style={styles.labelTotalAmount}>
-          ${!showBalance ? 0 : totalUsd.toFixed(6)}
+          ${totalUsd.toFixed(6)}
         </Text>
-        {!showBalance ? null : (
-          <Text
-            style={styles.profit}
-            color={colors[profit < 0 ? "error-text-body" : "success-text-body"]}
-          >
-            {profit < 0 ? "" : "+"}
-            {profit && totalUsd && totalUsd > 0
-              ? Number((profit / totalUsd) * 100 ?? 0).toFixed(2)
-              : 0}
-            % ($
-            {profit ?? 0}) Today
-          </Text>
-        )}
+        <Text
+          style={styles.profit}
+          color={colors[profit < 0 ? "error-text-body" : "success-text-body"]}
+        >
+          {profit < 0 ? "" : "+"}
+          {profit && totalUsd && totalUsd > 0
+            ? Number((profit / totalUsd) * 100 ?? 0).toFixed(2)
+            : 0}
+          % ($
+          {profit ?? 0}) Today
+        </Text>
 
         {appInitStore.getInitApp.isAllNetworks ? null : (
           <View

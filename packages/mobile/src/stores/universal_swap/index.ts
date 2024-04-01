@@ -35,7 +35,11 @@ export class UniversalSwapStore {
 
   @action
   updateAmounts(amounts) {
-    this.amounts = { ...this.amounts, ...amounts };
+    const copy = Object.assign({}, this.amounts);
+
+    const tmpAmounts = Object.assign(copy, amounts);
+
+    this.amounts = tmpAmounts;
   }
 
   @action

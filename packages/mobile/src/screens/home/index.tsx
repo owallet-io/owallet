@@ -229,7 +229,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
 
   useEffect(() => {
     universalSwapStore.setLoaded(false);
-    universalSwapStore.clearAmounts();
   }, [accountOrai.bech32Address]);
 
   useEffect(() => {
