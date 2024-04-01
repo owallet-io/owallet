@@ -29,6 +29,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
     appInitStore,
   } = useStore();
   const [profit, setProfit] = useState(0);
+  const [showBalance, setShowBalance] = useState(false);
 
   const smartNavigation = useSmartNavigation();
 
@@ -39,6 +40,21 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
     prices: appInitStore.getInitApp.prices,
     networkFilter: chainStore.current.chainId,
   });
+
+  useEffect(() => {
+    setShowBalance(false);
+  }, [accountOrai.bech32Address]);
+
+  useEffect(() => {
+    if (universalSwapStore.getLoadStatus.isLoad) {
+      // Delay the rendering after 3 second
+      const timeoutId = setTimeout(() => {
+        setShowBalance(true);
+      }, 2000);
+      // Clean up the timeout if the component unmounts or the dependency changes
+      return () => clearTimeout(timeoutId);
+    }
+  }, [accountOrai.bech32Address, universalSwapStore.getLoadStatus.isLoad]); // Empty dependency array ensures that the effect runs only once
 
   const styles = styling(colors);
   let totalUsd: number = 0;
@@ -94,9 +110,9 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
     return (
       <>
         <Text variant="bigText" style={styles.labelTotalAmount}>
-          ${!universalSwapStore.getLoadStatus ? 0 : totalUsd.toFixed(6)}
+          ${!showBalance ? 0 : totalUsd.toFixed(6)}
         </Text>
-        {!universalSwapStore.getLoadStatus ? null : (
+        {!showBalance ? null : (
           <Text
             style={styles.profit}
             color={colors[profit < 0 ? "error-text-body" : "success-text-body"]}
