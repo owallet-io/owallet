@@ -49,7 +49,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     browserStore,
     appInitStore,
     universalSwapStore,
-    keyRingStore,
   } = useStore();
 
   const scrollViewRef = useRef<ScrollView | null>(null);

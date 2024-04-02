@@ -119,7 +119,6 @@ export const SignEthereumModal: FunctionComponent<{
 
         //@ts-ignore
         const gasDataSign = data?.data?.data?.data?.gas;
-        console.log(gasDataSign, "gasDataSign");
         //@ts-ignore
         const gasPriceDataSign = data?.data?.data?.data?.gasPrice;
 
@@ -251,7 +250,7 @@ export const SignEthereumModal: FunctionComponent<{
           backgroundColor: colors["neutral-surface-card"],
         }}
       >
-        <View>
+        <View style={{ paddingTop: 16 }}>
           {/*<View>{renderedMsgs}</View>*/}
           <OWText
             size={16}
@@ -328,7 +327,9 @@ export const SignEthereumModal: FunctionComponent<{
           loadingApprove={signInteractionStore.isLoading}
           styleApprove={{
             borderRadius: 99,
-            backgroundColor: colors["primary-surface-default"],
+            backgroundColor: approveIsDisabled
+              ? colors["primary-surface-disable"]
+              : colors["primary-surface-default"],
           }}
           onPressClose={_onPressReject}
           onPressApprove={_onPressApprove}
