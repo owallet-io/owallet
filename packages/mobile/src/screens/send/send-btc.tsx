@@ -20,7 +20,11 @@ import { metrics, spacing } from "@src/themes";
 import { observer } from "mobx-react-lite";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
-import { showToast } from "@src/utils/helper";
+import {
+  handleSaveHistory,
+  HISTORY_STATUS,
+  showToast,
+} from "@src/utils/helper";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { EthereumEndpoint, toAmount } from "@owallet/common";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
@@ -32,6 +36,7 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { DownArrowIcon } from "@src/components/icon";
 import { CoinPretty, Int } from "@owallet/unit";
 import { FeeModal } from "@src/modals/fee";
+import { ChainIdEnum } from "@oraichain/oraidex-common";
 
 export const SendBtcScreen: FunctionComponent = observer(({}) => {
   const {
@@ -40,7 +45,6 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
     keyRingStore,
     queriesStore,
     priceStore,
-    universalSwapStore,
     modalStore,
   } = useStore();
   const route = useRoute<
@@ -60,6 +64,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
     : chainStore.current.chainId;
   const queries = queriesStore.get(chainId);
   const account = accountStore.getAccount(chainId);
+  const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const address = account.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses
   );
@@ -175,12 +180,13 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
         {
           onFulfill: async (tx) => {
             console.log("🚀 ~ file: send-btc.tsx:109 ~ onSend ~ tx:", tx);
-            universalSwapStore.updateTokenReload([
-              {
-                ...sendConfigs.amountConfig.sendCurrency,
-                chainId: chainStore.current.chainId,
-              },
-            ]);
+            // universalSwapStore.updateTokenReload([
+            //   {
+            //     ...sendConfigs.amountConfig.sendCurrency,
+            //     chainId: chainStore.current.chainId,
+            //     networkType: "bitcoin"
+            //   }
+            // ]);
             if (tx) {
               navigate(SCREENS.STACK.Others, {
                 screen: SCREENS.TxSuccessResult,
@@ -195,6 +201,28 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
           },
           onBroadcasted: async (txHash) => {
             try {
+              const historyInfos = {
+                fromAddress: address,
+                toAddress: sendConfigs.recipientConfig.recipient,
+                hash: Buffer.from(txHash).toString("hex"),
+                memo: "",
+                fromAmount: sendConfigs.amountConfig.amount,
+                toAmount: sendConfigs.amountConfig.amount,
+                value: sendConfigs.amountConfig.amount,
+                fee: 0,
+                type: HISTORY_STATUS.SEND,
+                fromToken: {
+                  asset: sendConfigs.amountConfig.sendCurrency.coinDenom,
+                  chainId: chainStore.current.chainId,
+                },
+                toToken: {
+                  asset: sendConfigs.amountConfig.sendCurrency.coinDenom,
+                  chainId: chainStore.current.chainId,
+                },
+                status: "SUCCESS",
+              };
+
+              await handleSaveHistory(accountOrai.bech32Address, historyInfos);
             } catch (error) {
               console.log(
                 "🚀 ~ file: send-btc.tsx:149 ~ onBroadcasted: ~ error:",

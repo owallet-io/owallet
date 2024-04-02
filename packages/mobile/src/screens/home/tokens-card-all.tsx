@@ -29,6 +29,8 @@ import { API } from "@src/common/api";
 import { chainIcons } from "@oraichain/oraidex-common";
 import { TokenItem } from "../tokens/components/token-item";
 import { HistoryCard } from "./history-card";
+import OWFlatList from "@src/components/page/ow-flat-list";
+import { metrics } from "@src/themes";
 
 export const TokensCardAll: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -243,7 +245,9 @@ export const TokensCardAll: FunctionComponent<{
   };
 
   const renderTokenItem = useCallback(
-    (item) => {
+    ({ item, index }) => {
+      if (more && index > 3) return null;
+
       if (item) {
         let profit = 0;
         let percent = "0";
@@ -329,18 +333,33 @@ export const TokensCardAll: FunctionComponent<{
         );
       }
     },
-    [universalSwapStore?.getAmount, theme]
+    [universalSwapStore?.getAmount, theme, more]
   );
 
   const renderContent = () => {
     if (activeTab === "tokens") {
       return (
         <>
-          <CardBody style={{ paddingHorizontal: 0, paddingTop: 16 }}>
-            {/* {renderTokensFromQueryBalances()} */}
-            {tokens.length > 0 ? (
+          {/* {renderTokensFromQueryBalances()} */}
+          <OWFlatList
+            contentContainerStyle={{
+              paddingHorizontal: 0,
+              paddingTop: 16,
+              paddingBottom: 0,
+            }}
+            data={tokens?.filter((t) => {
+              if (appInitStore.getInitApp.isAllNetworks) {
+                return true;
+              }
+              return t.chainId === chainStore.current.chainId;
+            })}
+            keyExtractor={_keyExtract}
+            renderItem={renderTokenItem}
+            ListEmptyComponent={<OWEmpty type="cash" />}
+          />
+          {/* {tokens.length > 0 ? (
               tokens
-                .filter((t) => {
+                .filter(t => {
                   if (appInitStore.getInitApp.isAllNetworks) {
                     return true;
                   }
@@ -355,13 +374,15 @@ export const TokensCardAll: FunctionComponent<{
                 })
             ) : (
               <OWEmpty type="cash" />
-            )}
-          </CardBody>
-          {tokens.length > 3 ? (
+            )} */}
+          {tokens?.filter((t) => {
+            if (appInitStore.getInitApp.isAllNetworks) {
+              return true;
+            }
+            return t.chainId === chainStore.current.chainId;
+          }).length > 3 ? (
             <OWButton
-              style={{
-                marginTop: 16,
-              }}
+              style={{ marginTop: -metrics.screenHeight / 12 }}
               label={more ? "View all" : "Hide"}
               size="medium"
               type="secondary"

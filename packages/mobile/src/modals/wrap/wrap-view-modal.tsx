@@ -38,9 +38,8 @@ const WrapViewModal: FC<IWrapViewModal> = ({
         {
           flex: 1,
           paddingHorizontal: 16,
-          // paddingTop: 16,
-
-          // paddingBottom: 16 + (bottom || 0)
+          backgroundColor: colors["neutral-surface-card"],
+          borderRadius: 12,
         },
         containerStyle,
       ]}

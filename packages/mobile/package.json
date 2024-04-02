@@ -110,7 +110,7 @@
     "path-browserify": "1.0.1",
     "pbkdf2": "3.1.2",
     "process": "0.11.10",
-    "react": "18.2.0",
+    "react": "^18.2.0",
     "react-hook-form": "7.45.1",
     "react-intl": "6.4.4",
     "react-native": "0.72.1",
