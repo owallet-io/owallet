@@ -8,7 +8,13 @@ import {
 } from "@owallet/hooks";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useMemo } from "react";
-import { TextStyle, View, ViewStyle, TouchableOpacity } from "react-native";
+import {
+  TextStyle,
+  View,
+  ViewStyle,
+  TouchableOpacity,
+  Platform,
+} from "react-native";
 import OWText from "../text/ow-text";
 import { TextInput } from "./input";
 
@@ -122,7 +128,19 @@ export const NewAmountInput: FunctionComponent<{
             placeholderTextColor={placeholderTextColor}
             error={errorText}
             keyboardType="numeric"
-            style={{ fontSize: 24 }}
+            style={[
+              Platform.select({
+                ios: {},
+                android: {
+                  // On android, the text input's height does not equals to the line height by strange.
+                  // To fix this problem, set the height explicitly.
+                  height: 42,
+                },
+              }),
+              {
+                fontSize: 24,
+              },
+            ]}
           />
         </View>
       </View>

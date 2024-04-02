@@ -115,9 +115,9 @@ export const SignModal: FunctionComponent<{
       signDocHelper.signDocWrapper == null ||
       memoConfig.getError() != null ||
       feeConfig.getError() != null;
+    amountConfig.getError() != null;
 
     const _onPressApprove = async () => {
-      crashlytics().log("sign - index - _onPressApprove");
       try {
         if (signDocHelper.signDocWrapper) {
           //

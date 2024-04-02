@@ -47,8 +47,10 @@ export const AddressQRScreen: FunctionComponent<{}> = ({}) => {
   const addressToShow = account.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses
   );
+
   const [networkAddress, setNetworkAddress] = useState<any>();
   const [address, setAddress] = useState("");
+  const [isOpen, setModalOpen] = useState(false);
 
   const { colors } = useTheme();
   const styles = styling(colors);
@@ -66,19 +68,6 @@ export const AddressQRScreen: FunctionComponent<{}> = ({}) => {
   const onPressAddress = (item) => {
     setNetworkAddress(item);
     modalStore.close();
-  };
-
-  const _onPressAddressModal = () => {
-    modalStore.setOptions();
-    modalStore.setChildren(
-      <CopyAddressModal
-        copyable={false}
-        onPress={(item) => {
-          onPressAddress(item);
-          setAddress(item.address);
-        }}
-      />
-    );
   };
 
   const renderNetworkIcon = () => {
@@ -130,6 +119,19 @@ export const AddressQRScreen: FunctionComponent<{}> = ({}) => {
       }
     >
       <PageHeader title="Receive" colors={colors} />
+      <CopyAddressModal
+        copyable={false}
+        close={() => setModalOpen(false)}
+        isOpen={isOpen}
+        onPress={(item) => {
+          onPressAddress(item);
+          setAddress(item.address);
+        }}
+        bottomSheetModalConfig={{
+          enablePanDownToClose: false,
+          enableOverDrag: false,
+        }}
+      />
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={{ alignItems: "center", justifyContent: "center" }}>
           <OWText color={colors["neutral-text-title"]} size={14}>
@@ -143,7 +145,7 @@ export const AddressQRScreen: FunctionComponent<{}> = ({}) => {
           >
             <TouchableOpacity
               onPress={() => {
-                _onPressAddressModal();
+                setModalOpen(true);
               }}
               style={{
                 flexDirection: "row",
@@ -173,8 +175,8 @@ export const AddressQRScreen: FunctionComponent<{}> = ({}) => {
               >
                 <Image
                   style={{
-                    width: metrics.screenWidth / 1.6,
-                    height: metrics.screenWidth / 1.6,
+                    width: metrics.screenWidth / 1.5,
+                    height: metrics.screenWidth / 1.5,
                   }}
                   source={require("../../assets/image/img_qr.png")}
                   resizeMode="contain"
