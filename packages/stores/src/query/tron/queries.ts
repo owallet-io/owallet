@@ -7,6 +7,7 @@ import { DeepReadonly } from "utility-types";
 import { QueriesWrappedBitcoin } from "../bitcoin";
 import { ObservableQueryAccountTron } from "./account";
 import { ObservableQueryChainParameterTron } from "./chain-parameters";
+import { ObservableQueryTriggerConstantContract } from "./trigger-constant-contract";
 // import { ObservableQueryGasPrice } from "./gas-price";
 // import { ObservableQueryGas } from "./gas";
 
@@ -35,6 +36,7 @@ export class QueriesWrappedTron
 export class TronQueries {
   public readonly queryAccount: DeepReadonly<ObservableQueryAccountTron>;
   public readonly queryChainParameter: DeepReadonly<ObservableQueryChainParameterTron>;
+  public readonly queryTriggerConstantContract: DeepReadonly<ObservableQueryTriggerConstantContract>;
   // public readonly queryGasPrice: DeepReadonly<ObservableQueryGasPrice>;
   // public readonly queryGas: DeepReadonly<ObservableQueryGas>;
   constructor(
@@ -56,6 +58,8 @@ export class TronQueries {
       chainId,
       chainGetter
     );
+    this.queryTriggerConstantContract =
+      new ObservableQueryTriggerConstantContract(kvStore, chainId, chainGetter);
     // this.queryGas = new ObservableQueryGas(kvStore, chainId, chainGetter);
   }
 }

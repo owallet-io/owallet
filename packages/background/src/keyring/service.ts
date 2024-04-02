@@ -247,21 +247,7 @@ export class KeyRingService {
     return await this.keyRing.showKeyRing(index, password);
   }
 
-  async simulateSignTron(msg: ISimulateSignTron): Promise<string> {
-    const tronWeb = new TronWeb({
-      fullHost: (await this.chainsService.getChainInfo(ChainIdEnum.TRON)).grpc,
-    });
-    tronWeb.fullNode.instance.defaults.adapter = fetchAdapter;
-    const amount = new Dec(Number((msg.amount ?? "0").replace(/,/g, "."))).mul(
-      DecUtils.getTenExponentNInPrecisionRange(6)
-    );
-    console.log(amount?.toString(), "amount?.toString()");
-    const transaction = await tronWeb.transactionBuilder.sendTrx(
-      msg.recipient,
-      amount,
-      msg.from,
-      1
-    );
+  async simulateSignTron(transaction: any): Promise<any> {
     const signedTx = await this.keyRing.simulateSignTron(transaction);
     console.log(signedTx, "signedTxsignedTx");
     return signedTx;
@@ -1082,6 +1068,7 @@ export class KeyRingService {
       const tronWeb = new TronWeb({
         fullHost: (await this.chainsService.getChainInfo(chainId)).grpc,
       });
+
       tronWeb.fullNode.instance.defaults.adapter = fetchAdapter;
       let transaction: any;
       if (newData?.tokenTrc20) {

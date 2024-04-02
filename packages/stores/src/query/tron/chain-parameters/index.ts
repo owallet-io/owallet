@@ -15,45 +15,28 @@ export class ObservableQueryChainParameterTronInner extends ObservableChainQuery
     makeObservable(this);
   }
 
-  // @computed
-  // get energyLimit(): Int {
-  //   if (!this.response?.data?.bandwidth?.energyLimit) {
-  //     return new Int(0);
-  //   }
-  //   return new Int(this.response.data.bandwidth.energyLimit);
-  // }
-  // @computed
-  // get energyRemaining(): Int {
-  //   if (!this.response?.data?.bandwidth?.energyRemaining) {
-  //     return new Int(0);
-  //   }
-  //   return new Int(this.response.data.bandwidth.energyRemaining);
-  // }
-  // @computed
-  // get bandwidthLimit(): Int {
-  //   if (!this.response?.data?.bandwidth?.netLimit) {
-  //     return new Int(0);
-  //   }
-  //   return new Int(this.response.data.bandwidth.netLimit).add(
-  //     new Int(this.response.data.bandwidth.freeNetLimit)
-  //   );
-  // }
-  // @computed
-  // get bandwidthRemaining(): Int {
-  //   if (!this.response?.data?.bandwidth?.netRemaining) {
-  //     return new Int(0);
-  //   }
-  //   return new Int(this.response.data.bandwidth.netRemaining).add(
-  //     new Int(this.response.data.bandwidth.freeNetRemaining)
-  //   );
-  // }
-  // @computed
-  // get accountActivated(): boolean {
-  //   if (!this.response?.data?.activated) {
-  //     return false;
-  //   }
-  //   return this.response.data.activated;
-  // }
+  @computed
+  get bandwidthPrice(): Int {
+    if (!this.response?.data?.tronParameters) {
+      return new Int(1000);
+    }
+    const price = this.response.data.tronParameters.find(
+      ({ key }) => key === "getTransactionFee"
+    );
+    if (!price) return new Int(1000);
+    return new Int(price.value);
+  }
+  @computed
+  get energyPrice(): Int {
+    if (!this.response?.data?.tronParameters) {
+      return new Int(420);
+    }
+    const price = this.response.data.tronParameters.find(
+      ({ key }) => key === "getEnergyFee"
+    );
+    if (!price) return new Int(420);
+    return new Int(price.value);
+  }
 }
 
 export class ObservableQueryChainParameterTron extends ObservableChainQueryMap<ChainParameters> {

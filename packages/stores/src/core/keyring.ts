@@ -34,7 +34,6 @@ import { ChainGetter } from "../common";
 import { BIP44, AddressesLedger } from "@owallet/types";
 import { DeepReadonly } from "utility-types";
 import { toGenerator } from "@owallet/common";
-
 export class KeyRingSelectablesStore {
   @observable
   isInitializing: boolean = false;
@@ -354,8 +353,8 @@ export class KeyRingStore {
   }
 
   @flow
-  *simulateSignTron(msg: ISimulateSignTron) {
-    const msgSignTron = new SimulateSignTronMsg(msg);
+  *simulateSignTron(transaction: any) {
+    const msgSignTron = new SimulateSignTronMsg(transaction);
     const result = yield* toGenerator(
       this.requester.sendMessage(BACKGROUND_PORT, msgSignTron)
     );

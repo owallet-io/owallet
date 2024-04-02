@@ -107,21 +107,21 @@ const bitcoin = new Bitcoin(
   new InExtensionMessageRequester()
 );
 
-Sentry.init({
-  dsn: "https://4ce54db1095b48ab8688e701d7cc8301@o1323226.ingest.sentry.io/4504615445725184",
-  integrations: [new BrowserTracing()],
-
-  // We recommend adjusting this value in production, or using tracesSampler
-  // for finer control
-  tracesSampleRate: 1.0,
-  environment: "production",
-  ignoreErrors: [
-    "Request rejected",
-    "Failed to fetch",
-    "Load failed",
-    "User rejected the request",
-  ],
-});
+// Sentry.init({
+//   dsn: "https://4ce54db1095b48ab8688e701d7cc8301@o1323226.ingest.sentry.io/4504615445725184",
+//   integrations: [new BrowserTracing()],
+//
+//   // We recommend adjusting this value in production, or using tracesSampler
+//   // for finer control
+//   tracesSampleRate: 1.0,
+//   environment: "production",
+//   ignoreErrors: [
+//     "Request rejected",
+//     "Failed to fetch",
+//     "Load failed",
+//     "User rejected the request",
+//   ],
+// });
 //@ts-ignore
 window.oasis = oasis;
 //@ts-ignore

@@ -1051,6 +1051,7 @@ export class KeyRing {
   }
 
   async simulateSignTron(transaction: any) {
+    console.log(transaction, "transactiontransactiontransaction");
     const privKey = this.loadPrivKey(195);
     const signedTxn = TronWeb.utils.crypto.signTransaction(
       privKey.toBytes(),

@@ -60,6 +60,7 @@ export class ObservableQueryAccountTronInner extends ObservableChainQuery<AuthAc
   }
   @computed
   get accountActivated(): boolean {
+    console.log(this.response?.data, "this.response?.data");
     if (!this.response?.data?.activated) {
       return false;
     }

@@ -153,14 +153,14 @@ export class SimulateSignTronMsg extends Message<any> {
     return "simulate-sign-tron";
   }
 
-  constructor(public readonly msg: ISimulateSignTron) {
+  constructor(public readonly msg: any) {
     super();
   }
 
   validateBasic(): void {
-    if (!this.msg) {
-      throw new OWalletError("keyring", 201, "msg sign tron not set");
-    }
+    // if (!this.msg) {
+    //   throw new OWalletError("keyring", 201, "msg sign tron not set");
+    // }
   }
 
   route(): string {

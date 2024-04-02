@@ -51,6 +51,7 @@
     "@oraichain/oraidex-contracts-build": "^1.0.22",
     "@oraichain/common-contracts-build": "^1.0.35",
     "ethereum-multicall": "^2.21.0",
+    "@noble/secp256k1": "^2.1.0",
     "ethers": "=5.0.15",
     "lottie-react-native": "^6.7.0",
     "ethereumjs-util": "^7.1.5",

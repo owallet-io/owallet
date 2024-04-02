@@ -20,13 +20,14 @@ export class ObservableChainQuery<
     chainId: string,
     chainGetter: ChainGetter,
     url: string,
-    data?: { [key: string]: any }
+    data?: { [key: string]: any },
+    protected readonly baseURL?: string
   ) {
     const chainInfo = chainGetter.getChain(chainId);
 
     const instance = Axios.create({
       ...{
-        baseURL: chainInfo.rest,
+        baseURL: baseURL ? baseURL : chainInfo.rest,
       },
       ...chainInfo.restConfig,
       adapter: fetchAdapter,
@@ -45,7 +46,7 @@ export class ObservableChainQuery<
 
     return Axios.create({
       ...{
-        baseURL: chainInfo.rest,
+        baseURL: this.baseURL ? this.baseURL : chainInfo.rest,
       },
       ...chainInfo.restConfig,
     });
