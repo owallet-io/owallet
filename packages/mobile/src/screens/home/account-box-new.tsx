@@ -157,7 +157,6 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
   return (
     <View>
       <CopyAddressModal
-        copyable={false}
         close={() => setModalOpen(false)}
         isOpen={isOpen}
         bottomSheetModalConfig={{

@@ -154,9 +154,10 @@ export const CopyAddressModal: FunctionComponent<{
                   <CustomAddressCopyable
                     copyable={copyable}
                     onPress={() => {
-                      onPress &&
+                      if (onPress) {
                         onPress({ ...item, chainIcon: chainIcon?.Icon });
-                      close();
+                        close();
+                      }
                     }}
                     icon={
                       <OWIcon
