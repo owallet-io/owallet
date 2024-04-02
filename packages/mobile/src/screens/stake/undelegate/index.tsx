@@ -366,7 +366,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
               >
                 <AlertIcon color={colors["warning-text-body"]} size={16} />
                 <OWText style={{ paddingLeft: 8 }} weight="600" size={14}>
-                  {`When you unstake, a 14-day cooldown period is required before your stake \nreturns to your wallet.`}
+                  {`When you unstake, a 14-day cooldown period is required before your stake returns \nto your wallet.`}
                 </OWText>
               </View>
             </OWCard>
