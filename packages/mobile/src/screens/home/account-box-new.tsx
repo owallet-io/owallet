@@ -29,6 +29,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
     appInitStore,
   } = useStore();
   const [profit, setProfit] = useState(0);
+  const [isOpen, setModalOpen] = useState(false);
 
   const smartNavigation = useSmartNavigation();
 
@@ -59,11 +60,6 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
       },
     });
     modalStore.setChildren(MyWalletModal());
-  };
-
-  const _onPressAddressModal = () => {
-    modalStore.setOptions();
-    modalStore.setChildren(<CopyAddressModal />);
   };
 
   useEffect(() => {
@@ -160,6 +156,15 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
 
   return (
     <View>
+      <CopyAddressModal
+        copyable={false}
+        close={() => setModalOpen(false)}
+        isOpen={isOpen}
+        bottomSheetModalConfig={{
+          enablePanDownToClose: false,
+          enableOverDrag: false,
+        }}
+      />
       <OWBox style={styles.containerOWBox}>
         <View style={styles.containerInfoAccount}>
           {!universalSwapStore.getLoadStatus.isLoad && (
@@ -194,7 +199,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
             style={styles.copy}
             label="Copy address"
             onPress={() => {
-              _onPressAddressModal();
+              setModalOpen(true);
             }}
           />
         </View>
