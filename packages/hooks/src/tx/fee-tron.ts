@@ -242,15 +242,15 @@ export class FeeTronConfig extends TxChainSetter implements IFeeConfig {
 
   getError(): Error | undefined {
     try {
-      if (this.gasConfig.getError()) {
-        return this.gasConfig.getError();
-      }
+      // if (this.gasConfig.getError()) {
+      //   return this.gasConfig.getError();
+      // }
       if (this.disableBalanceCheck) {
         return undefined;
       }
       const fee = this.getFeePrimitive();
       if (!fee) {
-        return undefined;
+        return new NotLoadedFeeError("invalid fee");
       }
       const amount = this.amountConfig.getAmountPrimitive();
       let need: Coin;

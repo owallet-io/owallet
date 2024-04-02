@@ -17,6 +17,8 @@ import { Button } from "reactstrap";
 import { useHistory, useLocation } from "react-router";
 import queryString from "querystring";
 import {
+  EmptyAddressError,
+  InvalidTronAddressError,
   useFeeEthereumConfig,
   useSendTxConfig,
   useSendTxEvmConfig,
@@ -118,17 +120,24 @@ export const SendTronEvmPage: FunctionComponent<{
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query.defaultAmount, query.defaultRecipient]);
+  const addressTronBase58 = accountInfo.getAddressDisplay(
+    keyRingStore.keyRingLedgerAddresses
+  );
+  const checkSendMySelft =
+    sendConfigs.recipientConfig.recipient?.trim() === addressTronBase58
+      ? new InvalidTronAddressError("Cannot transfer TRX to the same account")
+      : null;
   const sendConfigError =
+    checkSendMySelft ??
     sendConfigs.recipientConfig.getError() ??
-    sendConfigs.amountConfig.getError();
+    sendConfigs.amountConfig.getError() ??
+    sendConfigs.feeConfig.getError();
   const txStateIsValid = sendConfigError == null;
   const addressTron = accountInfo.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses,
     false
   );
-  const addressTronBase58 = accountInfo.getAddressDisplay(
-    keyRingStore.keyRingLedgerAddresses
-  );
+
   const tokenTrc20 =
     (tokensTrc20Tron &&
       query &&
@@ -249,7 +258,6 @@ export const SendTronEvmPage: FunctionComponent<{
       .getQueryWalletAddress(sendConfigs.recipientConfig.recipient)
       .waitFreshResponse();
     const { data } = recipientInfo;
-    console.log(data, "accountActivated");
     const { bandwidthRemaining, energyRemaining } = accountTronInfo;
     if (!data?.activated) {
       sendConfigs.feeConfig.setManualFee({
@@ -327,8 +335,11 @@ export const SendTronEvmPage: FunctionComponent<{
         );
         console.log(feeLimit, "feeLimit");
       } catch (e) {
+        sendConfigs.feeConfig.setManualFee(undefined);
         console.log(e, "err");
       }
+    } else {
+      sendConfigs.feeConfig.setManualFee(undefined);
     }
   };
 
@@ -360,8 +371,8 @@ export const SendTronEvmPage: FunctionComponent<{
               })}
               placeholder="Enter your amount"
             />
-            <p>Estimate Bandwidth: {`${bandwidthUsed}`}</p>
-            <p>Estimate Energy: {`${energyUsed}`}</p>
+            {/*<p>Estimate Bandwidth: {`${bandwidthUsed}`}</p>*/}
+            {/*<p>Estimate Energy: {`${energyUsed}`}</p>*/}
             <FeeInput
               label={"Fee"}
               defaultValue={1}
