@@ -50,7 +50,7 @@ const useStyleType = ({ type }) => {
         width: metrics.screenWidth,
         padding: spacing["horizontal-pad"],
         borderRadius: spacing["horizontal-pad"],
-        backgroundColor: colors["background-box"],
+        backgroundColor: colors["neutral-surface-card"],
       };
       break;
     default:
@@ -59,7 +59,7 @@ const useStyleType = ({ type }) => {
         width: metrics.screenWidth,
         padding: spacing["24"],
         borderRadius: spacing["24"],
-        backgroundColor: colors["background-box"],
+        backgroundColor: colors["neutral-surface-card"],
       };
       break;
   }

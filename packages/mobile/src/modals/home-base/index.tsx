@@ -36,7 +36,7 @@ export const HomeBaseModal: FunctionComponent<{
       >
         <CardModal
           childrenContainerStyle={{
-            backgroundColor: colors["background-box"],
+            backgroundColor: colors["neutral-surface-card"],
           }}
           title={""}
         >

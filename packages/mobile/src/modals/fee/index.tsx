@@ -22,7 +22,7 @@ export const CustomFee: FunctionComponent<{
         label=""
         // isBottomSheet={true}
         inputContainerStyle={{
-          backgroundColor: colors["background-box"],
+          backgroundColor: colors["neutral-surface-card"],
           borderRadius: 8,
           borderColor: colors["primary-surface-default"],
         }}
