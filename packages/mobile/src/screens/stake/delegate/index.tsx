@@ -56,6 +56,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     analyticsStore,
     priceStore,
     modalStore,
+    keyRingStore,
   } = useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
@@ -74,42 +75,29 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     EthereumEndpoint
   );
 
-  const [balance, setBalance] = useState("0");
-
   useEffect(() => {
     if (sendConfigs.feeConfig.feeCurrency && !sendConfigs.feeConfig.fee) {
       sendConfigs.feeConfig.setFeeType("average");
     }
     return;
   }, [sendConfigs.feeConfig]);
-
-  const fetchBalance = async () => {
-    const queryBalance = queries.queryBalances
-      .getQueryBech32Address(account.bech32Address)
-      .balances.find((bal) => {
-        return (
-          bal.currency.coinMinimalDenom ===
-          sendConfigs.amountConfig.sendCurrency.coinMinimalDenom //currency.coinMinimalDenom
-        );
-      });
-
-    if (queryBalance) {
-      setBalance(
-        queryBalance.balance
-          .shrink(true)
-          .maxDecimals(6)
-          .trim(true)
-          .upperCase(true)
-          .toString()
-      );
-    }
-  };
-
+  const [balance, setBalance] = useState<CoinPretty>(null);
+  const address = account.getAddressDisplay(
+    keyRingStore.keyRingLedgerAddresses
+  );
+  const isReadyBalance = queries.queryBalances
+    .getQueryBech32Address(address)
+    .getBalanceFromCurrency(sendConfigs.amountConfig.sendCurrency).isReady;
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
-      fetchBalance();
+      if (isReadyBalance && sendConfigs.amountConfig.sendCurrency && address) {
+        const balance = queries.queryBalances
+          .getQueryBech32Address(address)
+          .getBalanceFromCurrency(sendConfigs.amountConfig.sendCurrency);
+        setBalance(balance);
+      }
     });
-  }, [account.bech32Address, sendConfigs.amountConfig.sendCurrency]);
+  }, [isReadyBalance, address, sendConfigs.amountConfig.sendCurrency]);
 
   useEffect(() => {
     sendConfigs.recipientConfig.setRawRecipient(validatorAddress);
@@ -305,7 +293,14 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                 }}
               >
                 <View style={{}}>
-                  <OWText style={{ paddingTop: 8 }}>Balance : {balance}</OWText>
+                  <OWText style={{ paddingTop: 8 }}>
+                    Balance :{" "}
+                    {balance
+                      ?.trim(true)
+                      ?.maxDecimals(6)
+                      ?.hideDenom(true)
+                      ?.toString() || "0"}
+                  </OWText>
                   <View
                     style={{
                       flexDirection: "row",
@@ -362,7 +357,13 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                       marginBottom: 8,
                     }}
                     amountConfig={sendConfigs.amountConfig}
-                    maxBalance={balance.split(" ")[0]}
+                    maxBalance={
+                      balance
+                        ?.trim(true)
+                        ?.maxDecimals(6)
+                        ?.hideDenom(true)
+                        ?.toString() || "0"
+                    }
                     placeholder={"0.0"}
                   />
                 </View>
