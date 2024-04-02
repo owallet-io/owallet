@@ -39,6 +39,7 @@ const FeeButtonsModal: FunctionComponent<{
             flexDirection: "row",
             paddingBottom: 24,
             alignItems: "center",
+            paddingTop: 16,
           }}
         >
           <Toggle

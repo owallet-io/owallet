@@ -870,9 +870,13 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         <OWButton
           label="Swap"
           style={styles.btnSwap}
+          textStyle={{
+            fontSize: 14,
+            fontWeight: "600",
+            color: colors["neutral-text-action-on-dark-bg"],
+          }}
           disabled={amountLoading || swapLoading}
           loading={swapLoading}
-          textStyle={styles.textBtnSwap}
           onPress={handleSubmit}
         />
         <View style={styles.containerInfoToken}>

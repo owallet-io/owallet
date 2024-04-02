@@ -278,6 +278,9 @@ export const SignBitcoinModal: FunctionComponent<{
               size="large"
               style={{
                 width: "40%",
+                backgroundColor: signInteractionStore.isLoading
+                  ? colors["primary-surface-disable"]
+                  : colors["primary-surface-default"],
               }}
               disabled={isDisable || signInteractionStore.isLoading}
               loading={signInteractionStore.isLoading}

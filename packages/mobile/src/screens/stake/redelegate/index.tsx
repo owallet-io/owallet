@@ -197,7 +197,11 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                 fromAmount: sendConfigs.amountConfig.amount,
                 toAmount: sendConfigs.amountConfig.amount,
                 value: sendConfigs.amountConfig.amount,
-                fee: sendConfigs.feeConfig.toStdFee(),
+                fee: sendConfigs.feeConfig.fee
+                  ?.maxDecimals(6)
+                  .trim(true)
+                  .hideDenom(true)
+                  .toString(),
                 type: HISTORY_STATUS.STAKE,
                 fromToken: {
                   asset: sendConfigs.amountConfig.sendCurrency.coinDenom,

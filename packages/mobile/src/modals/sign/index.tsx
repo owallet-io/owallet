@@ -245,7 +245,9 @@ export const SignModal: FunctionComponent<{
               loadingApprove={signInteractionStore.isLoading}
               styleApprove={{
                 borderRadius: 99,
-                backgroundColor: colors["primary-surface-default"],
+                backgroundColor: isDisable
+                  ? colors["primary-surface-disable"]
+                  : colors["primary-surface-default"],
               }}
               onPressClose={_onPressReject}
               onPressApprove={_onPressApprove}
