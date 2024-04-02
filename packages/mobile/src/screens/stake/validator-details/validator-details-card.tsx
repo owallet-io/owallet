@@ -174,9 +174,21 @@ export const ValidatorDetailsCard: FunctionComponent<{
               toAddress: account.bech32Address,
               hash: Buffer.from(txHash).toString("hex"),
               memo: "",
-              fromAmount: rewards?.toCoin().amount,
-              toAmount: rewards?.toCoin().amount,
-              value: rewards?.toCoin().amount,
+              fromAmount: rewards
+                ?.maxDecimals(2)
+                .trim(true)
+                .hideDenom(true)
+                .toString(),
+              toAmount: rewards
+                ?.maxDecimals(2)
+                .trim(true)
+                .hideDenom(true)
+                .toString(),
+              value: rewards
+                ?.maxDecimals(2)
+                .trim(true)
+                .hideDenom(true)
+                .toString(),
               fee: "0",
               type: HISTORY_STATUS.CLAIM,
               fromToken: {
@@ -189,6 +201,8 @@ export const ValidatorDetailsCard: FunctionComponent<{
               },
               status: "SUCCESS",
             };
+
+            console.log("historyInfos", historyInfos);
 
             handleSaveHistory(account.bech32Address, historyInfos);
             smartNavigation.pushSmart("TxPendingResult", {

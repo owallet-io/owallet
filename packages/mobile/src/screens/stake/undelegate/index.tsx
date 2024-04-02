@@ -194,7 +194,11 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
                         fromAmount: sendConfigs.amountConfig.amount,
                         toAmount: sendConfigs.amountConfig.amount,
                         value: sendConfigs.amountConfig.amount,
-                        fee: sendConfigs.feeConfig.toStdFee(),
+                        fee: sendConfigs.feeConfig.fee
+                          ?.maxDecimals(2)
+                          .trim(true)
+                          .hideDenom(true)
+                          .toString(),
                         type: HISTORY_STATUS.UNSTAKE,
                         fromToken: {
                           asset:
