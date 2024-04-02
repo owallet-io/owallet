@@ -49,6 +49,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     browserStore,
     appInitStore,
     universalSwapStore,
+    keyRingStore,
   } = useStore();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
@@ -56,6 +57,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   const currentChain = chainStore.current;
   const currentChainId = currentChain?.chainId;
   const account = accountStore.getAccount(chainStore.current.chainId);
+
   const previousChainId = usePrevious(currentChainId);
   const chainStoreIsInitializing = chainStore.isInitializing;
   const previousChainStoreIsInitializing = usePrevious(
@@ -171,7 +173,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
             accountTron.evmosHexAddress,
             accountKawaiiCosmos.bech32Address
           );
-        }, 1400);
+        }, 200);
       } else {
         console.log("The dates are 30 seconds or less apart.");
       }
@@ -248,7 +250,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
               accountTron.evmosHexAddress,
               accountKawaiiCosmos.bech32Address
             );
-          }, 1400);
+          }, 200);
         }
       });
     });
