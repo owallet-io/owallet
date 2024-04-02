@@ -16,3 +16,4 @@ export * from "./redelegate-tx";
 export * from "./send-tx-evm";
 export * from "./gas-evm";
 export * from "./send-gas-evm";
+export * from "./use-get-fee-tron";

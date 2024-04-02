@@ -35,6 +35,7 @@ export const BookmarksScreen = observer(() => {
     return;
   };
   const renderItem = ({ item, drag, isActive }) => {
+    console.log(getFavicon(item?.uri), "getFavicon(item?.uri)");
     return (
       <TouchableOpacity
         onPress={() => onDetailBrowser(item?.uri)}

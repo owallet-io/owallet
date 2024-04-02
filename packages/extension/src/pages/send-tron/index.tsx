@@ -20,6 +20,7 @@ import {
   EmptyAddressError,
   InvalidTronAddressError,
   useFeeEthereumConfig,
+  useGetFeeTron,
   useSendTxConfig,
   useSendTxEvmConfig,
 } from "@owallet/hooks";
@@ -36,15 +37,11 @@ import { FeeInput } from "../../components/form/fee-input";
 import { Dec, DecUtils, Int } from "@owallet/unit";
 import TronWeb from "tronweb";
 import { useSendTxTronConfig } from "@owallet/hooks/build/tx/send-tx-tron";
-// export const useGetFeeTron = (keyRingStore)=>{
-//
-// }
+
 export const SendTronEvmPage: FunctionComponent<{
   coinMinimalDenom?: string;
   tokensTrc20Tron?: Array<any>;
 }> = observer(({ coinMinimalDenom, tokensTrc20Tron }) => {
-  const [bandwidthUsed, setBandwidthUsed] = useState("0");
-  const [energyUsed, setEnergyUsed] = useState("0");
   const history = useHistory();
   let search = useLocation().search || coinMinimalDenom || "";
   if (search.startsWith("?")) {
@@ -191,166 +188,17 @@ export const SendTronEvmPage: FunctionComponent<{
     }
   };
   const queries = queriesStore.get(current.chainId);
-  const chainParameter =
-    queries.tron.queryChainParameter.getQueryChainParameters(addressTron);
-
-  console.log(chainParameter, "chainParameter");
-
-  const accountTronInfo =
-    queries.tron.queryAccount.getQueryWalletAddress(addressTronBase58);
-  const caculatorAmountBandwidthFee = (signedTx, bandwidthRemaining): Int => {
-    if (!signedTx || !bandwidthRemaining) return;
-    const bandwidthUsed = estimateBandwidthTron(signedTx);
-    if (!bandwidthUsed) return;
-    setBandwidthUsed(`${bandwidthUsed}`);
-    const bandwidthUsedInt = new Int(bandwidthUsed);
-    const bandwidthEstimated = bandwidthRemaining.sub(bandwidthUsedInt);
-    let amountBandwidthFee = new Int(0);
-    if (bandwidthEstimated.lt(new Int(0))) {
-      const fee = bandwidthUsedInt
-        .mul(chainParameter.bandwidthPrice)
-        .toDec()
-        .roundUp();
-      if (!fee) return;
-      amountBandwidthFee = fee;
-    }
-    return amountBandwidthFee;
-  };
-  const caculatorAmountEnergyFee = (
-    signedTx,
-    energyRemaining,
-    energy_used
-  ): Int => {
-    if (!signedTx || !energyRemaining || !energy_used) return;
-    const energyUsedInt = new Int(energy_used);
-    const energyEstimated = energyRemaining.sub(energyUsedInt);
-    let amountEnergyFee = new Int(0);
-    if (energyEstimated.lt(new Int(0))) {
-      amountEnergyFee = energyUsedInt
-        .sub(energyRemaining)
-        .mul(chainParameter.energyPrice)
-        .toDec()
-        .roundUp();
-    }
-    return amountEnergyFee;
-  };
-  const simulateSignTron = async () => {
-    if (
-      !sendConfigs.amountConfig.amount ||
-      !sendConfigs.recipientConfig.recipient ||
-      !sendConfigs.amountConfig.sendCurrency ||
-      !addressTronBase58
-    )
-      return;
-    const msg = {
-      amount: sendConfigs.amountConfig.amount,
-      currency: sendConfigs.amountConfig.sendCurrency,
-      recipient: sendConfigs.recipientConfig.recipient,
-      from: addressTronBase58,
-    };
-    console.log(msg, "data submit tron");
-    const tronWeb = new TronWeb({
-      fullHost: chainStore.current.raw.grpc,
-    });
-
-    const feeCurrency = chainStore.current.feeCurrencies[0];
-    const recipientInfo = await queries.tron.queryAccount
-      .getQueryWalletAddress(sendConfigs.recipientConfig.recipient)
-      .waitFreshResponse();
-    const { data } = recipientInfo;
-    const { bandwidthRemaining, energyRemaining } = accountTronInfo;
-    if (!data?.activated) {
-      sendConfigs.feeConfig.setManualFee({
-        denom: feeCurrency.coinMinimalDenom,
-        amount: "1000000",
-      });
-    } else if (
-      msg.currency.coinMinimalDenom ===
-      chainStore.current.feeCurrencies[0].coinMinimalDenom
-    ) {
-      const transaction = await tronWeb.transactionBuilder.sendTrx(
-        msg.recipient,
-        sendConfigs.amountConfig.getAmountPrimitive().amount,
-        msg.from,
-        1
-      );
-      const signedTx = await keyRingStore.simulateSignTron(transaction);
-      const amountBandwidthFee = caculatorAmountBandwidthFee(
-        signedTx,
-        bandwidthRemaining
-      );
-      sendConfigs.feeConfig.setManualFee({
-        denom: feeCurrency.coinMinimalDenom,
-        amount: amountBandwidthFee.toString(),
-      });
-    } else if (msg.currency.coinMinimalDenom?.includes("erc20")) {
-      try {
-        const parameter = await encodeParams([
-          {
-            type: "address",
-            value: getEvmAddress(sendConfigs.recipientConfig.recipient),
-          },
-          {
-            type: "uint256",
-            value: sendConfigs.amountConfig.getAmountPrimitive().amount,
-          },
-        ]);
-
-        const dataReq = {
-          //@ts-ignore
-          contract_address: msg.currency?.contractAddress,
-          owner_address: addressTronBase58,
-          parameter,
-          visible: true,
-          function_selector: "transfer(address,uint256)",
-        };
-
-        const triggerContractFetch =
-          await queries.tron.queryTriggerConstantContract
-            .queryTriggerConstantContract(dataReq)
-            .waitFreshResponse();
-        const triggerContract = triggerContractFetch.data;
-        if (!triggerContract?.energy_used) return;
-        setEnergyUsed(`${triggerContract.energy_used}`);
-        const signedTx = await keyRingStore.simulateSignTron(
-          triggerContract.transaction
-        );
-        const amountBandwidthFee = caculatorAmountBandwidthFee(
-          signedTx,
-          bandwidthRemaining
-        );
-        const amountEnergyFee = caculatorAmountEnergyFee(
-          signedTx,
-          energyRemaining,
-          triggerContract.energy_used
-        );
-        const trc20Fee = amountBandwidthFee.add(amountEnergyFee);
-        if (!trc20Fee) return;
-        sendConfigs.feeConfig.setManualFee({
-          denom: feeCurrency.coinMinimalDenom,
-          amount: trc20Fee.toString(),
-        });
-        const feeLimit = new Int(triggerContract.energy_used).mul(
-          chainParameter.energyPrice
-        );
-        console.log(feeLimit, "feeLimit");
-      } catch (e) {
-        sendConfigs.feeConfig.setManualFee(undefined);
-        console.log(e, "err");
-      }
-    } else {
-      sendConfigs.feeConfig.setManualFee(undefined);
-    }
-  };
-
+  const { feeTrx } = useGetFeeTron(
+    addressTronBase58,
+    sendConfigs.amountConfig,
+    sendConfigs.recipientConfig,
+    queries.tron,
+    chainStore.current,
+    keyRingStore
+  );
   useEffect(() => {
-    simulateSignTron();
-  }, [
-    sendConfigs.amountConfig.amount,
-    sendConfigs.recipientConfig.recipient,
-    addressTron,
-    sendConfigs.amountConfig.sendCurrency,
-  ]);
+    sendConfigs.feeConfig.setManualFee(feeTrx);
+  }, [feeTrx]);
   return (
     <>
       <form className={style.formContainer} onSubmit={onSend}>
