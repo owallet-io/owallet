@@ -198,6 +198,9 @@ export const SendTronEvmPage: FunctionComponent<{
   );
   useEffect(() => {
     sendConfigs.feeConfig.setManualFee(feeTrx);
+    return () => {
+      sendConfigs.feeConfig.setManualFee(null);
+    };
   }, [feeTrx]);
   return (
     <>
