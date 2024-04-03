@@ -42,7 +42,7 @@ export class ObservableQueryAccountTronInner extends ObservableChainQuery<AuthAc
   }
   @computed
   get bandwidthLimit(): Int {
-    if (!this.response?.data?.bandwidth?.netLimit) {
+    if (!this.response?.data?.bandwidth) {
       return new Int(0);
     }
     return new Int(this.response.data.bandwidth.netLimit).add(
@@ -51,7 +51,7 @@ export class ObservableQueryAccountTronInner extends ObservableChainQuery<AuthAc
   }
   @computed
   get bandwidthRemaining(): Int {
-    if (!this.response?.data?.bandwidth?.netRemaining) {
+    if (!this.response?.data?.bandwidth) {
       return new Int(0);
     }
     return new Int(this.response.data.bandwidth.netRemaining).add(

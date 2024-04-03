@@ -29,7 +29,8 @@ export const useGetFeeTron = (
   recipientConfig: RecipientConfig,
   queriesTron: TronQueries,
   chainInfo: ChainInfoInner<ChainInfoWithEmbed>,
-  keyRingStore: KeyRingStore
+  keyRingStore: KeyRingStore,
+  dataSign: any
 ): IGetFeeTron => {
   const initData = {
     feeLimit: new Int(100000000),
@@ -44,7 +45,8 @@ export const useGetFeeTron = (
     queriesTron.queryChainParameter.getQueryChainParameters(
       getEvmAddress(addressTronBase58)
     );
-
+  const feeCurrency = chainInfo.feeCurrencies[0];
+  const { bandwidthRemaining, energyRemaining } = accountTronInfo;
   const caculatorAmountBandwidthFee = (signedTx, bandwidthRemaining): Int => {
     if (!signedTx || !bandwidthRemaining) return;
     const bandwidthUsed = estimateBandwidthTron(signedTx);
@@ -88,7 +90,66 @@ export const useGetFeeTron = (
     }
     return amountEnergyFee;
   };
+
+  const estimateForTrigger = async (dataReq) => {
+    const triggerContractFetch = await queriesTron.queryTriggerConstantContract
+      .queryTriggerConstantContract(dataReq)
+      .waitFreshResponse();
+    const triggerContract = triggerContractFetch.data;
+    console.log(triggerContract, "triggerContract");
+    if (!triggerContract?.energy_used) return;
+    const signedTx = await keyRingStore.simulateSignTron(
+      triggerContract.transaction
+    );
+    const amountBandwidthFee = caculatorAmountBandwidthFee(
+      signedTx,
+      bandwidthRemaining
+    );
+    const amountEnergyFee = caculatorAmountEnergyFee(
+      signedTx,
+      energyRemaining,
+      triggerContract.energy_used
+    );
+    const trc20Fee = amountBandwidthFee.add(amountEnergyFee);
+    if (!trc20Fee) return;
+    setData((prevState) => ({
+      ...prevState,
+      feeTrx: {
+        denom: feeCurrency.coinMinimalDenom,
+        amount: trc20Fee.toString(),
+      },
+    }));
+    const feeLimit = new Int(triggerContract.energy_used).mul(
+      chainParameter.energyPrice
+    );
+    setData((prevState) => ({
+      ...prevState,
+      feeLimit,
+    }));
+    console.log(feeLimit, "feeLimit");
+  };
   const simulateSignTron = async () => {
+    console.log(dataSign, "dataSign");
+    if (dataSign?.functionSelector) {
+      try {
+        const parameter = await encodeParams(dataSign?.parameters);
+
+        const dataReq = {
+          //@ts-ignore
+          contract_address: dataSign?.address,
+          owner_address: addressTronBase58,
+          parameter,
+          visible: true,
+          function_selector: dataSign?.functionSelector,
+        };
+        estimateForTrigger(dataReq);
+        return;
+      } catch (e) {
+        setData(initData);
+        console.log(e, "err");
+      }
+      return;
+    }
     if (
       !amountConfig.amount ||
       !recipientConfig.recipient ||
@@ -101,13 +162,11 @@ export const useGetFeeTron = (
     const tronWeb = new TronWeb({
       fullHost: chainInfo.rpc,
     });
-
-    const feeCurrency = chainInfo.feeCurrencies[0];
     const recipientInfo = await queriesTron.queryAccount
       .getQueryWalletAddress(recipientConfig.recipient)
       .waitFreshResponse();
     const { data } = recipientInfo;
-    const { bandwidthRemaining, energyRemaining } = accountTronInfo;
+
     if (!data?.activated) {
       setData((prevState) => ({
         ...prevState,
@@ -160,42 +219,8 @@ export const useGetFeeTron = (
           visible: true,
           function_selector: "transfer(address,uint256)",
         };
-
-        const triggerContractFetch =
-          await queriesTron.queryTriggerConstantContract
-            .queryTriggerConstantContract(dataReq)
-            .waitFreshResponse();
-        const triggerContract = triggerContractFetch.data;
-        if (!triggerContract?.energy_used) return;
-        const signedTx = await keyRingStore.simulateSignTron(
-          triggerContract.transaction
-        );
-        const amountBandwidthFee = caculatorAmountBandwidthFee(
-          signedTx,
-          bandwidthRemaining
-        );
-        const amountEnergyFee = caculatorAmountEnergyFee(
-          signedTx,
-          energyRemaining,
-          triggerContract.energy_used
-        );
-        const trc20Fee = amountBandwidthFee.add(amountEnergyFee);
-        if (!trc20Fee) return;
-        setData((prevState) => ({
-          ...prevState,
-          feeTrx: {
-            denom: feeCurrency.coinMinimalDenom,
-            amount: trc20Fee.toString(),
-          },
-        }));
-        const feeLimit = new Int(triggerContract.energy_used).mul(
-          chainParameter.energyPrice
-        );
-        setData((prevState) => ({
-          ...prevState,
-          feeLimit,
-        }));
-        console.log(feeLimit, "feeLimit");
+        estimateForTrigger(dataReq);
+        return;
       } catch (e) {
         setData(initData);
         console.log(e, "err");
@@ -211,6 +236,7 @@ export const useGetFeeTron = (
     recipientConfig.recipient,
     addressTronBase58,
     amountConfig.sendCurrency,
+    dataSign,
   ]);
   return data;
 };

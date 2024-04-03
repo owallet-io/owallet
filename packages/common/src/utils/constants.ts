@@ -1,4 +1,7 @@
 export const EVMOS_NETWORKS = ["kawaii_6886-1"];
+export const EXTRA_FEE_LIMIT_TRON = 50_000_000;
+export const DEFAULT_FEE_LIMIT_TRON = 150_000_000;
+export const TRIGGER_TYPE = "TriggerSmartContract";
 export const TRON_ID = "0x2b6653dc";
 export const TRON_BIP39_PATH_PREFIX = "m/44'/195'";
 export const BIP44_PATH_PREFIX = "m/44'";

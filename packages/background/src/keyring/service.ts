@@ -33,6 +33,9 @@ import {
   escapeHTML,
   sortObjectByKey,
   ChainIdEnum,
+  EXTRA_FEE_LIMIT_TRON,
+  DEFAULT_FEE_LIMIT_TRON,
+  TRIGGER_TYPE,
 } from "@owallet/common";
 import { ChainsService } from "../chains";
 import { LedgerService } from "../ledger";
@@ -60,7 +63,7 @@ import { RNG } from "@owallet/crypto";
 import { encodeSecp256k1Pubkey } from "@owallet/cosmos";
 import { Buffer } from "buffer/";
 import { request } from "../tx";
-import { CoinPretty, Dec, DecUtils } from "@owallet/unit";
+import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
 import { trimAminoSignDoc } from "./amino-sign-doc";
 import { KeyringHelper } from "./utils";
 import * as oasis from "@oasisprotocol/client";
@@ -72,7 +75,7 @@ export class KeyRingService {
 
   constructor(
     @inject(TYPES.KeyRingStore)
-    kvStore: KVStore,
+    protected readonly kvStore: KVStore,
     @inject(TYPES.ChainsEmbedChainInfos)
     embedChainInfos: ChainInfo[],
     @inject(delay(() => InteractionService))
@@ -1028,18 +1031,49 @@ export class KeyRingService {
         fullHost: chainInfo.rpc,
       });
       tronWeb.fullNode.instance.defaults.adapter = fetchAdapter;
-      return await tronWeb.transactionBuilder.triggerSmartContract(
-        data.address,
-        data.functionSelector,
-        Object.keys(data.options).length > 0
-          ? data.options
-          : {
-              feeLimit: 100_000_000,
-              callValue: 0,
-            },
-        data.parameters,
-        data.issuerAddress
+      const chainParameters = await tronWeb.trx.getChainParameters();
+      const triggerConstantContract =
+        await tronWeb.transactionBuilder.triggerConstantContract(
+          data.address,
+          data.functionSelector,
+          data.options,
+          data.parameters,
+          data.issuerAddress
+        );
+      const energyFee = chainParameters.find(
+        ({ key }) => key === "getEnergyFee"
       );
+      const feeLimit = new Int(energyFee.value)
+        .mul(new Int(triggerConstantContract.energy_used))
+        .add(new Int(EXTRA_FEE_LIMIT_TRON));
+
+      const triggerSmartContract =
+        await tronWeb.transactionBuilder.triggerSmartContract(
+          data.address,
+          data.functionSelector,
+          {
+            ...data.options,
+            feeLimit: parseInt(feeLimit?.toString()) ?? DEFAULT_FEE_LIMIT_TRON,
+            callValue: 0,
+          },
+          data.parameters,
+          data.issuerAddress
+        );
+      console.log(
+        triggerSmartContract,
+        "triggerSmartContracttriggerSmartContract"
+      );
+      this.kvStore.set(
+        `${TRIGGER_TYPE}:${triggerSmartContract.transaction.txID}`,
+        {
+          address: data.address,
+          functionSelector: data.functionSelector,
+          options: data.options,
+          parameters: data.parameters,
+          issuerAddress: data.issuerAddress,
+        }
+      );
+      return triggerSmartContract;
     } catch (error) {
       throw error;
     }
@@ -1082,7 +1116,7 @@ export class KeyRingService {
             "transfer(address,uint256)",
             {
               callValue: 0,
-              feeLimit: 200_000_000,
+              feeLimit: 150_000_000,
               userFeePercentage: 100,
               shouldPollResponse: false,
             },
@@ -1112,8 +1146,9 @@ export class KeyRingService {
         ).toString("hex"),
       ];
 
-      const receipt = await tronWeb.trx.sendRawTransaction(transaction);
-      return receipt.txid ?? receipt.transaction.raw_data_hex;
+      // const receipt = await tronWeb.trx.sendRawTransaction(transaction);
+      // return receipt.txid ?? receipt.transaction.raw_data_hex;
+      return;
     } finally {
       this.interactionService.dispatchEvent(
         APP_PORT,

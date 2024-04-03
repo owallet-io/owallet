@@ -13,8 +13,17 @@ import { Button } from "reactstrap";
 import { useStore } from "../../../stores";
 import { TronDataTab } from "./tron-data-tab";
 import { TronDetailsTab } from "./tron-details-tab";
-import { useInteractionInfo } from "@owallet/hooks";
+import {
+  useAmountConfig,
+  useGetFeeTron,
+  useInteractionInfo,
+  useMemoConfig,
+  useRecipientConfig,
+} from "@owallet/hooks";
 import { useHistory } from "react-router";
+import { ChainIdEnum, ExtensionKVStore, TRIGGER_TYPE } from "@owallet/common";
+import { useSendGasTronConfig } from "@owallet/hooks/build/tx/send-gas-tron";
+import { useFeeTronConfig } from "@owallet/hooks/build/tx/fee-tron";
 
 enum Tab {
   Details,
@@ -31,20 +40,94 @@ export const SignTronPage: FunctionComponent = observer(() => {
     accountStore,
     queriesStore,
   } = useStore();
+  const accountInfo = accountStore.getAccount(chainStore.selectedChainId);
+  const addressTronBase58 = accountInfo.getAddressDisplay(
+    keyRingStore.keyRingLedgerAddresses
+  );
   const history = useHistory();
   const interactionInfo = useInteractionInfo(() => {
     signInteractionStore.rejectAll();
   });
   const [dataSign, setDataSign] = useState(null);
-
+  const [txInfo, setTxInfo] = useState();
+  const { waitingTronData } = signInteractionStore;
+  const getDataTx = async () => {
+    if (!waitingTronData) return;
+    const kvStore = new ExtensionKVStore("keyring");
+    const triggerTxId = await kvStore.get(
+      `${TRIGGER_TYPE}:${waitingTronData.data.txID}`
+    );
+    setTxInfo(triggerTxId as any);
+    kvStore.set(`${TRIGGER_TYPE}:${waitingTronData.data.txID}`, null);
+  };
   useEffect(() => {
     if (dataSign) return;
 
-    if (signInteractionStore.waitingTronData) {
-      setDataSign(signInteractionStore.waitingTronData);
+    if (waitingTronData) {
+      console.log(waitingTronData.data.txID, "waitingTronData.data");
+      getDataTx();
+      setDataSign(waitingTronData);
+      chainStore.selectChain(ChainIdEnum.TRON);
     }
-  }, [signInteractionStore.waitingTronData]);
+  }, [waitingTronData]);
 
+  const queries = queriesStore.get(chainStore.selectedChainId);
+  const amountConfig = useAmountConfig(
+    chainStore,
+    chainStore.selectedChainId,
+    addressTronBase58,
+    queries.queryBalances
+  );
+  const recipientConfig = useRecipientConfig(
+    chainStore,
+    chainStore.selectedChainId
+  );
+  const { feeTrx, estimateEnergy, estimateBandwidth, feeLimit } = useGetFeeTron(
+    addressTronBase58,
+    amountConfig,
+    recipientConfig,
+    queries.tron,
+    chainStore.current,
+    keyRingStore,
+    txInfo
+  );
+  console.log(estimateEnergy, "estimateEnergy");
+  const memoConfig = useMemoConfig(chainStore, chainStore.selectedChainId);
+
+  const gasConfig = useSendGasTronConfig(
+    chainStore,
+    chainStore.selectedChainId,
+    amountConfig,
+    //@ts-ignore
+    accountInfo.msgOpts.send
+  );
+
+  const feeConfig = useFeeTronConfig(
+    chainStore,
+    chainStore.selectedChainId,
+    addressTronBase58,
+    queries.queryBalances,
+    amountConfig,
+    gasConfig,
+    true,
+    queries,
+    memoConfig
+  );
+  useEffect(() => {
+    feeConfig.setManualFee(feeTrx);
+    return () => {
+      feeConfig.setManualFee(null);
+    };
+  }, [feeTrx]);
+  useEffect(() => {
+    console.log(txInfo, "txInfo");
+    if (txInfo && amountConfig) {
+      const tx = txInfo?.parameters.find(
+        (item, index) => item.type === "uint256"
+      );
+      amountConfig.setAmount(tx?.value);
+    }
+  }, [txInfo, amountConfig]);
   return (
     <div
       style={{
@@ -106,7 +189,16 @@ export const SignTronPage: FunctionComponent = observer(() => {
           >
             {tab === Tab.Data && <TronDataTab data={dataSign} />}
             {tab === Tab.Details && (
-              <TronDetailsTab intl={intl} dataSign={dataSign} />
+              <TronDetailsTab
+                txInfo={txInfo}
+                dataInfo={{
+                  estimateBandwidth,
+                  estimateEnergy,
+                  feeTrx,
+                }}
+                intl={intl}
+                dataSign={dataSign}
+              />
             )}
           </div>
           <div style={{ flex: 1 }} />
