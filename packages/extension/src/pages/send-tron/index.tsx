@@ -1,10 +1,5 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
-import {
-  AddressInput,
-  CoinInput,
-  CoinInputTronEvm,
-  FeeButtons,
-} from "../../components/form";
+import React, { FunctionComponent, useEffect } from "react";
+import { AddressInput, CoinInput } from "../../components/form";
 import { useStore } from "../../stores";
 import { observer } from "mobx-react-lite";
 
@@ -16,26 +11,10 @@ import { Button } from "reactstrap";
 
 import { useHistory, useLocation } from "react-router";
 import queryString from "querystring";
-import {
-  EmptyAddressError,
-  InvalidTronAddressError,
-  useFeeEthereumConfig,
-  useGetFeeTron,
-  useSendTxConfig,
-  useSendTxEvmConfig,
-} from "@owallet/hooks";
+import { InvalidTronAddressError, useGetFeeTron } from "@owallet/hooks";
 import { fitPopupWindow } from "@owallet/popup";
-import {
-  ChainIdEnum,
-  encodeParams,
-  estimateBandwidthTron,
-  EthereumEndpoint,
-  getBase58Address,
-  getEvmAddress,
-} from "@owallet/common";
+import { EthereumEndpoint } from "@owallet/common";
 import { FeeInput } from "../../components/form/fee-input";
-import { Dec, DecUtils, Int } from "@owallet/unit";
-import TronWeb from "tronweb";
 import { useSendTxTronConfig } from "@owallet/hooks/build/tx/send-tx-tron";
 
 export const SendTronEvmPage: FunctionComponent<{
