@@ -23,6 +23,7 @@ import {
   ORAI,
   toDisplay,
   getBase58Address,
+  KADOChainNameEnum,
 } from "@owallet/common";
 import {
   TokenItemType,
@@ -554,7 +555,13 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       return;
     }
 
-    let defaultEvmAddress = accountEth.evmosHexAddress;
+    let defaultEvmAddress;
+    if (accountEth.isNanoLedger && keyRingStore?.keyRingLedgerAddresses?.eth) {
+      defaultEvmAddress = keyRingStore.keyRingLedgerAddresses.eth;
+    } else {
+      defaultEvmAddress = accountEth.evmosHexAddress;
+    }
+
     Object.keys(ChainIdEnum).map((key) => {
       let defaultCosmosAddress = accountStore.getAccount(
         ChainIdEnum[key]
@@ -562,14 +569,22 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
       if (defaultCosmosAddress.startsWith("evmos")) {
         accounts[ChainIdEnum[key]] = defaultEvmAddress;
+      } else if (key === KADOChainNameEnum[ChainIdEnum.TRON]) {
+        accounts[ChainIdEnum.TRON] = null;
       } else {
         accounts[ChainIdEnum[key]] = defaultCosmosAddress;
       }
     });
 
-    accounts[ChainIdEnum.TRON] = getBase58Address(
-      accountStore.getAccount(ChainIdEnum.TRON).evmosHexAddress
-    );
+    if (accountTron.isNanoLedger && keyRingStore?.keyRingLedgerAddresses?.trx) {
+      accounts[ChainIdEnum.TRON] = keyRingStore.keyRingLedgerAddresses.trx;
+    } else {
+      if (accountTron) {
+        accounts[ChainIdEnum.TRON] = getBase58Address(
+          accountTron.evmosHexAddress
+        );
+      }
+    }
 
     const fromNetwork = chainStore.getChain(
       originalFromToken.chainId
