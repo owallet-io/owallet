@@ -50,12 +50,15 @@ export const CopyAddressModal: FunctionComponent<{
       if (defaultCosmosAddress.startsWith("evmos")) {
         accounts[ChainNameEnum[key]] = defaultEvmAddress;
       } else if (key === "TRON") {
-        return;
+        accounts[ChainNameEnum.TRON] = null;
       } else {
         accounts[ChainNameEnum[key]] = defaultCosmosAddress;
       }
     });
-    if (keyRingStore?.keyRingLedgerAddresses?.trx) {
+
+    if (accountOrai.isNanoLedger && keyRingStore?.keyRingLedgerAddresses?.trx) {
+      accounts[ChainNameEnum.TRON] = keyRingStore.keyRingLedgerAddresses.trx;
+    } else {
       accounts[ChainNameEnum.TRON] = getBase58Address(
         accountStore.getAccount(ChainIdEnum.TRON).evmosHexAddress
       );
@@ -68,7 +71,6 @@ export const CopyAddressModal: FunctionComponent<{
   }, [accountOrai.bech32Address, accountEth.evmosHexAddress, refresh]);
 
   const { colors } = useTheme();
-  const styles = styling(colors);
 
   return (
     <View>
