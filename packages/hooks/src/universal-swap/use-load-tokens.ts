@@ -71,8 +71,6 @@ async function loadNativeBalance(
     )
   );
 
-  console.log("amountDetails", amountDetails);
-
   universalSwapStore.updateAmounts(amountDetails);
 }
 

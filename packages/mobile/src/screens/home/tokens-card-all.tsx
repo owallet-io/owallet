@@ -342,13 +342,12 @@ export const TokensCardAll: FunctionComponent<{
       return (
         <>
           {/* {renderTokensFromQueryBalances()} */}
-          <OWFlatList
+          {/* <OWFlatList
             contentContainerStyle={{
               paddingHorizontal: 0,
-              paddingTop: 16,
-              marginBottom: Platform.OS === "android" ? 10 : 0,
+              paddingTop: 16
             }}
-            data={tokens?.filter((t) => {
+            data={tokens?.filter(t => {
               if (appInitStore.getInitApp.isAllNetworks) {
                 return true;
               }
@@ -357,25 +356,25 @@ export const TokensCardAll: FunctionComponent<{
             keyExtractor={_keyExtract}
             renderItem={renderTokenItem}
             ListEmptyComponent={<OWEmpty type="cash" />}
-          />
-          {/* {tokens.length > 0 ? (
-              tokens
-                .filter(t => {
-                  if (appInitStore.getInitApp.isAllNetworks) {
-                    return true;
-                  }
-                  return t.chainId === chainStore.current.chainId;
-                })
-                .map((token, index) => {
-                  if (more) {
-                    if (index < 3) return renderTokenItem(token);
-                  } else {
-                    return renderTokenItem(token);
-                  }
-                })
-            ) : (
-              <OWEmpty type="cash" />
-            )} */}
+          /> */}
+          {tokens.length > 0 ? (
+            tokens
+              .filter((t) => {
+                if (appInitStore.getInitApp.isAllNetworks) {
+                  return true;
+                }
+                return t.chainId === chainStore.current.chainId;
+              })
+              .map((token, index) => {
+                if (more) {
+                  if (index < 3) return renderTokenItem({ item: token, index });
+                } else {
+                  return renderTokenItem({ item: token, index });
+                }
+              })
+          ) : (
+            <OWEmpty type="cash" />
+          )}
           {tokens?.filter((t) => {
             if (appInitStore.getInitApp.isAllNetworks) {
               return true;
@@ -383,7 +382,7 @@ export const TokensCardAll: FunctionComponent<{
             return t.chainId === chainStore.current.chainId;
           }).length > 3 ? (
             <OWButton
-              style={{ marginTop: -metrics.screenHeight / 12 }}
+              style={{ marginTop: Platform.OS === "android" ? 24 : 16 }}
               label={more ? "View all" : "Hide"}
               size="medium"
               type="secondary"
@@ -458,7 +457,7 @@ const styling = (colors) =>
       flexDirection: "row",
     },
     container: {
-      marginBottom: 60,
+      marginBottom: 160,
     },
     pl10: {
       paddingLeft: 10,
