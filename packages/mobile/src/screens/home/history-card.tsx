@@ -114,7 +114,7 @@ export const HistoryCard: FunctionComponent<{
                   color={colors["neutral-text-heading"]}
                   weight="600"
                 >
-                  {item.type}
+                  {item.type.split("_").join("")}
                 </Text>
                 <Text weight="400" color={colors["neutral-text-body"]}>
                   {Bech32Address.shortenAddress(item.fromAddress, 16)}

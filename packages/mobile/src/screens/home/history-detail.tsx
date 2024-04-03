@@ -174,7 +174,7 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
                 }}
               >
                 <OWText style={{ fontSize: 16, fontWeight: "500" }}>
-                  {detail.type}
+                  {detail.type.split("_").join("")}
                 </OWText>
                 <View style={styles.status}>
                   <OWText
@@ -193,7 +193,7 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
                     fontWeight: "500",
                   }}
                 >
-                  -{detail.fromAmount} {detail.fromToken?.asset.toUpperCase()}
+                  {detail.fromAmount} {detail.fromToken?.asset.toUpperCase()}
                 </OWText>
                 {detail.type === HISTORY_STATUS.SWAP ? (
                   <>

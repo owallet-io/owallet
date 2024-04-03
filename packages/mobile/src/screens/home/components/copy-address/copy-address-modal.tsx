@@ -25,9 +25,10 @@ export const CopyAddressModal: FunctionComponent<{
   const [addresses, setAddresses] = useState({});
   const [refresh, setRefresh] = useState(Date.now());
 
-  const { accountStore } = useStore();
+  const { accountStore, keyRingStore } = useStore();
 
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
+  const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
   const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
   const accountBtc = accountStore.getAccount(ChainIdEnum.Bitcoin);
 
@@ -50,14 +51,22 @@ export const CopyAddressModal: FunctionComponent<{
       if (defaultCosmosAddress.startsWith("evmos")) {
         accounts[ChainNameEnum[key]] = defaultEvmAddress;
       } else if (key === "TRON") {
-        return;
+        accounts[ChainNameEnum.TRON] = null;
       } else {
         accounts[ChainNameEnum[key]] = defaultCosmosAddress;
       }
     });
-    accounts[ChainNameEnum.TRON] = getBase58Address(
-      accountStore.getAccount(ChainIdEnum.TRON).evmosHexAddress
-    );
+
+    if (accountTron.isNanoLedger && keyRingStore?.keyRingLedgerAddresses?.trx) {
+      accounts[ChainNameEnum.TRON] = keyRingStore.keyRingLedgerAddresses.trx;
+    } else {
+      if (accountTron) {
+        accounts[ChainNameEnum.TRON] = getBase58Address(
+          accountTron.evmosHexAddress
+        );
+      }
+    }
+
     accounts[ChainNameEnum.BitcoinLegacy] = accountBtc.allBtcAddresses.legacy;
     accounts[ChainNameEnum.BitcoinSegWit] = accountBtc.allBtcAddresses.bech32;
 
@@ -65,7 +74,6 @@ export const CopyAddressModal: FunctionComponent<{
   }, [accountOrai.bech32Address, accountEth.evmosHexAddress, refresh]);
 
   const { colors } = useTheme();
-  const styles = styling(colors);
 
   return (
     <View>

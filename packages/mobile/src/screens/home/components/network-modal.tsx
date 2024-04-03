@@ -62,6 +62,8 @@ export const NetworkModal = () => {
     })();
     chainStore.selectChain(item?.chainId);
     await chainStore.saveLastViewChainId();
+    appInitStore.selectAllNetworks(false);
+    modalStore.close();
     Popup.hide();
 
     await keyRingStore.setKeyStoreLedgerAddress(
