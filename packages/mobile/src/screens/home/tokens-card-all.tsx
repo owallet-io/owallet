@@ -346,8 +346,7 @@ export const TokensCardAll: FunctionComponent<{
             contentContainerStyle={{
               paddingHorizontal: 0,
               paddingTop: 16,
-              marginBottom:
-                Platform.OS === "android" ? metrics.screenHeight / 2 : 0,
+              marginBottom: Platform.OS === "android" ? 10 : 0,
             }}
             data={tokens?.filter((t) => {
               if (appInitStore.getInitApp.isAllNetworks) {
@@ -405,7 +404,7 @@ export const TokensCardAll: FunctionComponent<{
   };
 
   return (
-    <View style={containerStyle}>
+    <View style={styles.container}>
       <OWBox
         style={{
           paddingTop: 12,
@@ -457,6 +456,9 @@ const styling = (colors) =>
   StyleSheet.create({
     wrapHeaderTitle: {
       flexDirection: "row",
+    },
+    container: {
+      marginBottom: 60,
     },
     pl10: {
       paddingLeft: 10,
