@@ -6,7 +6,12 @@ import { TypeTheme, useTheme } from "@src/themes/theme-provider";
 import { metrics } from "@src/themes";
 import { CustomAddressCopyable } from "@src/components/address-copyable/custom";
 import { chainIcons } from "@oraichain/oraidex-common";
-import { ChainIdEnum, ChainNameEnum, getBase58Address } from "@owallet/common";
+import {
+  ChainIdEnum,
+  ChainNameEnum,
+  getBase58Address,
+  KADOChainNameEnum,
+} from "@owallet/common";
 import OWText from "@src/components/text/ow-text";
 import { useStore } from "@src/stores";
 import { registerModal } from "@src/modals/base";
@@ -41,8 +46,12 @@ export const CopyAddressModal: FunctionComponent<{
   useEffect(() => {
     let accounts = {};
 
-    let defaultEvmAddress = accountEth.evmosHexAddress;
-
+    let defaultEvmAddress;
+    if (accountEth.isNanoLedger && keyRingStore?.keyRingLedgerAddresses?.eth) {
+      defaultEvmAddress = keyRingStore.keyRingLedgerAddresses.eth;
+    } else {
+      defaultEvmAddress = accountEth.evmosHexAddress;
+    }
     Object.keys(ChainIdEnum).map((key) => {
       let defaultCosmosAddress = accountStore.getAccount(
         ChainIdEnum[key]
@@ -50,7 +59,7 @@ export const CopyAddressModal: FunctionComponent<{
 
       if (defaultCosmosAddress.startsWith("evmos")) {
         accounts[ChainNameEnum[key]] = defaultEvmAddress;
-      } else if (key === "TRON") {
+      } else if (key === KADOChainNameEnum[ChainIdEnum.TRON]) {
         accounts[ChainNameEnum.TRON] = null;
       } else {
         accounts[ChainNameEnum[key]] = defaultCosmosAddress;
