@@ -250,7 +250,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
               accountTron.evmosHexAddress,
               accountKawaiiCosmos.bech32Address
             );
-          }, 1500);
+          }, 1100);
         }
       });
     });

@@ -193,9 +193,8 @@ async function loadTokens(
         tokenReload
       );
     }, 500);
-
-    universalSwapStore.setLoaded(true);
   }
+  universalSwapStore.setLoaded(true);
 }
 
 const getAddress = (addr, prefix: string) => {
