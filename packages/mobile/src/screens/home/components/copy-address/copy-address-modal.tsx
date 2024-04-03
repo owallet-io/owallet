@@ -55,7 +55,7 @@ export const CopyAddressModal: FunctionComponent<{
         accounts[ChainNameEnum[key]] = defaultCosmosAddress;
       }
     });
-    if (keyRingStore.keyRingLedgerAddresses.trx) {
+    if (keyRingStore?.keyRingLedgerAddresses?.trx) {
       accounts[ChainNameEnum.TRON] = getBase58Address(
         accountStore.getAccount(ChainIdEnum.TRON).evmosHexAddress
       );

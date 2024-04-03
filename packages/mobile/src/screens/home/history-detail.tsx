@@ -193,7 +193,7 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
                     fontWeight: "500",
                   }}
                 >
-                  -{detail.fromAmount} {detail.fromToken?.asset.toUpperCase()}
+                  {detail.fromAmount} {detail.fromToken?.asset.toUpperCase()}
                 </OWText>
                 {detail.type === HISTORY_STATUS.SWAP ? (
                   <>
