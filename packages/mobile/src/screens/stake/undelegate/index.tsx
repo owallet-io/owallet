@@ -187,8 +187,8 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
                         },
                       });
                       const historyInfos = {
-                        fromAddress: account.bech32Address,
-                        toAddress: sendConfigs.recipientConfig.recipient,
+                        toAddress: account.bech32Address,
+                        fromAddress: sendConfigs.recipientConfig.recipient,
                         hash: Buffer.from(txHash).toString("hex"),
                         memo: "",
                         fromAmount: sendConfigs.amountConfig.amount,

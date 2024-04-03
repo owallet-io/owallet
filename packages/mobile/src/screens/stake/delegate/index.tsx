@@ -218,7 +218,6 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                         },
                         status: "SUCCESS",
                       };
-                      console.log("historyInfos", historyInfos);
 
                       handleSaveHistory(account.bech32Address, historyInfos);
                     },
