@@ -173,7 +173,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
             accountTron.evmosHexAddress,
             accountKawaiiCosmos.bech32Address
           );
-        }, 200);
+        }, 1000);
       } else {
         console.log("The dates are 30 seconds or less apart.");
       }
@@ -250,7 +250,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
               accountTron.evmosHexAddress,
               accountKawaiiCosmos.bech32Address
             );
-          }, 200);
+          }, 1500);
         }
       });
     });
