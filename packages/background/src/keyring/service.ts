@@ -994,7 +994,7 @@ export class KeyRingService {
   ) {
     try {
       const tronWeb = new TronWeb({
-        fullHost: (await this.chainsService.getChainInfo(chainId)).grpc,
+        fullHost: (await this.chainsService.getChainInfo(chainId)).rpc,
       });
       tronWeb.fullNode.instance.defaults.adapter = fetchAdapter;
       return await tronWeb.trx.sendRawTransaction(transaction);
@@ -1023,8 +1023,9 @@ export class KeyRingService {
     };
   }> {
     try {
+      const chainInfo = await this.chainsService.getChainInfo(chainId);
       const tronWeb = new TronWeb({
-        fullHost: (await this.chainsService.getChainInfo(chainId)).grpc,
+        fullHost: chainInfo.rpc,
       });
       tronWeb.fullNode.instance.defaults.adapter = fetchAdapter;
       return await tronWeb.transactionBuilder.triggerSmartContract(
@@ -1066,7 +1067,7 @@ export class KeyRingService {
       }
 
       const tronWeb = new TronWeb({
-        fullHost: (await this.chainsService.getChainInfo(chainId)).grpc,
+        fullHost: (await this.chainsService.getChainInfo(chainId)).rpc,
       });
 
       tronWeb.fullNode.instance.defaults.adapter = fetchAdapter;

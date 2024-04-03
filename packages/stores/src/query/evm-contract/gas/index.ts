@@ -2,7 +2,7 @@ import {
   ObservableChainQuery,
   ObservableChainQueryMap,
 } from "../../chain-query";
-import { KVStore } from "@owallet/common";
+import { getRpcByChainId, KVStore } from "@owallet/common";
 import { ChainGetter, QueryResponse } from "../../../common";
 import { computed, makeObservable } from "mobx";
 import Web3 from "web3";
@@ -39,12 +39,10 @@ export class ObservableQueryGasEvmContractInner extends ObservableChainQuery<num
   }
   protected async fetchResponse(): Promise<QueryResponse<number>> {
     try {
-      const web3 = new Web3(this.chainGetter.getChain(this.chainId).rpc);
-      const { from, to, contract_address, amount } = this.paramGas;
-      console.log(
-        "🚀 ~ ObservableQueryGasEvmContractInner ~ fetchResponse ~ this.paramGas:",
-        this.paramGas
+      const web3 = new Web3(
+        getRpcByChainId(this.chainGetter.getChain(this.chainId), this.chainId)
       );
+      const { from, to, contract_address, amount } = this.paramGas;
       if (!to || !from || !amount || !contract_address) return;
       const tokenInfo = new web3.eth.Contract(
         // @ts-ignore

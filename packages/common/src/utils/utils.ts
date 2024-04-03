@@ -24,6 +24,16 @@ export const COINTYPE_NETWORK = {
   1: "Bitcoin Testnet",
 };
 
+export const getRpcByChainId = (
+  chainInfo: ChainInfo,
+  chainId: string
+): string => {
+  if (!chainInfo || !chainId) return;
+  if (chainId === ChainIdEnum.TRON) {
+    return `${chainInfo.rpc}/jsonrpc`;
+  }
+  return chainInfo.rpc;
+};
 export const getEvmAddress = (base58Address) => {
   return base58Address
     ? "0x" +

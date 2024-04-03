@@ -13,10 +13,10 @@ import { useHistory, useLocation } from "react-router";
 import queryString from "querystring";
 import { InvalidTronAddressError, useGetFeeTron } from "@owallet/hooks";
 import { fitPopupWindow } from "@owallet/popup";
-import { EthereumEndpoint } from "@owallet/common";
+import { decodeParams, EthereumEndpoint } from "@owallet/common";
 import { FeeInput } from "../../components/form/fee-input";
 import { useSendTxTronConfig } from "@owallet/hooks/build/tx/send-tx-tron";
-
+import TronWeb from "tronweb";
 export const SendTronEvmPage: FunctionComponent<{
   coinMinimalDenom?: string;
   tokensTrc20Tron?: Array<any>;
@@ -81,6 +81,42 @@ export const SendTronEvmPage: FunctionComponent<{
 
   const isDetachedPage = query.detached === "true";
 
+  useEffect(() => {
+    (async () => {
+      try {
+        const decode = await decodeParams(
+          ["address", "string", "uint256"],
+          "0f212357000000000000000000000000a614f803b6fd780986a42c78ec9c7f77e6ded13c00000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000293449000000000000000000000000000000000000000000000000000000000000007a6368616e6e656c2d312f6f72616931327a797538773933683071326c636e7435306733666e30773379716e6879346676617761717a3a43697476636d46704d544a3665585534647a6b7a614442784d6d786a626e51314d47637a5a6d3477647a4e356357356f6554526d646d4633595846364567416141413d3d000000000000",
+          true
+        );
+        console.log(decode, "decodedecode");
+        const tronWeb = new TronWeb({
+          fullHost: "https://api.trongrid.io",
+        });
+        const res = await tronWeb.transactionBuilder.triggerConstantContract(
+          "TLXrPtQor6xxF2HeQtmKJUUkVNjJZVsgTM",
+          "sendToCosmos(address,string,uint256)",
+          {},
+          [
+            {
+              type: "address",
+              value: "41a614f803b6fd780986a42c78ec9c7f77e6ded13c",
+            },
+            {
+              type: "string",
+              value:
+                "channel-1/orai12zyu8w93h0q2lcnt50g3fn0w3yqnhy4fvawaqz:CitvcmFpMTJ6eXU4dzkzaDBxMmxjbnQ1MGczZm4wdzN5cW5oeTRmdmF3YXF6EgAaAA==",
+            },
+            { type: "uint256", value: 2700361n },
+          ],
+          "TE15PBm8MsyS4cHrW7u1VTjbZDx5MXVQfs"
+        );
+        console.log(res, "triggerConstantContract");
+      } catch (e) {
+        console.log(e, "triggerConstantContract");
+      }
+    })();
+  }, []);
   useEffect(() => {
     if (isDetachedPage) {
       fitPopupWindow();

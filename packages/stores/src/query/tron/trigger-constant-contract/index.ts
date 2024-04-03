@@ -19,14 +19,13 @@ export class ObservableQueryTriggerConstantContractInner extends ObservableChain
     chainGetter: ChainGetter,
     protected readonly data: ITriggerConstantContractReq
   ) {
-    console.log(data, chainGetter.getChain(chainId).raw.grpc, "datakaka");
     super(
       kvStore,
       chainId,
       chainGetter,
       `/walletsolidity/triggerconstantcontract`,
       data,
-      chainGetter.getChain(chainId).raw.grpc
+      chainGetter.getChain(chainId).rpc
     );
     makeObservable(this);
   }

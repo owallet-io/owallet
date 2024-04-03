@@ -99,7 +99,7 @@ export const useGetFeeTron = (
       return;
     }
     const tronWeb = new TronWeb({
-      fullHost: chainInfo.raw.grpc,
+      fullHost: chainInfo.rpc,
     });
 
     const feeCurrency = chainInfo.feeCurrencies[0];

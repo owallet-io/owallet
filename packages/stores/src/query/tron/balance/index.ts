@@ -1,4 +1,4 @@
-import { DenomHelper, KVStore } from "@owallet/common";
+import { DenomHelper, getRpcByChainId, KVStore } from "@owallet/common";
 import { ChainGetter, CoinPrimitive, QueryResponse } from "../../../common";
 import { computed, makeObservable, override } from "mobx";
 import { CoinPretty, Int } from "@owallet/unit";
@@ -107,7 +107,9 @@ export class ObservableQueryTronBalances extends ObservableChainQuery<Balances> 
 
   protected async fetchResponse(): Promise<QueryResponse<Balances>> {
     try {
-      const web3 = new Web3(this.chainGetter.getChain(this.chainId).rpc);
+      const web3 = new Web3(
+        getRpcByChainId(this.chainGetter.getChain(this.chainId), this.chainId)
+      );
       const ethBalance = await web3.eth.getBalance(this.walletAddress);
 
       const denomNative = this.chainGetter.getChain(this.chainId).stakeCurrency

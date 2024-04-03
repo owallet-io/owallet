@@ -3,6 +3,7 @@ import {
   ChainIdEnum,
   DenomHelper,
   getOasisNic,
+  getRpcByChainId,
   KVStore,
   MyBigInt,
   parseRpcBalance,
@@ -155,7 +156,9 @@ export class ObservableQueryEvmBalances extends ObservableChainQuery<Balances> {
           timestamp: Date.now(),
         };
       }
-      const web3 = new Web3(this.chainGetter.getChain(this.chainId).rpc);
+      const web3 = new Web3(
+        getRpcByChainId(this.chainGetter.getChain(this.chainId), this.chainId)
+      );
       const ethBalance = await web3.eth.getBalance(this.walletAddress);
       console.log(
         "🚀 ~ ObservableQueryEvmBalances ~ fetchResponse ~ ethBalance:",
