@@ -75,8 +75,13 @@ const mixpanel = globalThis.mixpanel as Mixpanel;
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
 
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
-  const { accountStore, universalSwapStore, chainStore, appInitStore } =
-    useStore();
+  const {
+    accountStore,
+    universalSwapStore,
+    chainStore,
+    appInitStore,
+    keyRingStore,
+  } = useStore();
   const { colors } = useTheme();
   const { data: prices } = useCoinGeckoPrices();
 
@@ -277,7 +282,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const loadTokenAmounts = useLoadTokens(universalSwapStore);
   // handle fetch all tokens of all chains
-  const handleFetchAmounts = async (tokenReload?, orai?, eth?, tron?, kwt?) => {
+  const handleFetchAmounts = async (orai, eth, tron, kwt, tokenReload?) => {
     let loadTokenParams = {};
     try {
       const cwStargate = {
@@ -288,9 +293,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       loadTokenParams = {
         ...loadTokenParams,
         oraiAddress: orai ?? accountOrai.bech32Address,
-        metamaskAddress: eth ?? accountEth.evmosHexAddress,
+        metamaskAddress: eth ?? null,
         kwtAddress: kwt ?? accountKawaiiCosmos.bech32Address,
-        tronAddress: getBase58Address(tron ?? accountTron.evmosHexAddress),
+        tronAddress: tron ? getBase58Address(tron) : null,
         cwStargate,
         tokenReload: tokenReload.length > 0 ? tokenReload : null,
       };
@@ -310,23 +315,39 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
-      if (
-        accountOrai.bech32Address &&
-        accountEth.evmosHexAddress &&
-        accountTron.evmosHexAddress &&
-        accountKawaiiCosmos.bech32Address
-      ) {
-        setTimeout(() => {
-          universalSwapStore.clearAmounts();
-          universalSwapStore.setLoaded(false);
-          handleFetchAmounts(
-            [],
-            accountOrai.bech32Address,
-            accountEth.evmosHexAddress,
-            accountTron.evmosHexAddress,
-            accountKawaiiCosmos.bech32Address
-          );
-        }, 1000);
+      if (accountOrai.isNanoLedger) {
+        if (Object.keys(keyRingStore.keyRingLedgerAddresses).length > 0) {
+          setTimeout(() => {
+            universalSwapStore.clearAmounts();
+            universalSwapStore.setLoaded(false);
+            handleFetchAmounts(
+              accountOrai.bech32Address,
+              keyRingStore.keyRingLedgerAddresses.eth ?? null,
+              keyRingStore.keyRingLedgerAddresses.trx ?? null,
+              accountKawaiiCosmos.bech32Address,
+              []
+            );
+          }, 1000);
+        }
+      } else {
+        if (
+          accountOrai.bech32Address &&
+          accountEth.evmosHexAddress &&
+          accountTron.evmosHexAddress &&
+          accountKawaiiCosmos.bech32Address
+        ) {
+          setTimeout(() => {
+            universalSwapStore.clearAmounts();
+            universalSwapStore.setLoaded(false);
+            handleFetchAmounts(
+              accountOrai.bech32Address,
+              accountEth.evmosHexAddress,
+              accountTron.evmosHexAddress,
+              accountKawaiiCosmos.bech32Address,
+              []
+            );
+          }, 1000);
+        }
       }
     });
   }, [

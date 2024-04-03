@@ -25,7 +25,7 @@ export const CopyAddressModal: FunctionComponent<{
   const [addresses, setAddresses] = useState({});
   const [refresh, setRefresh] = useState(Date.now());
 
-  const { accountStore } = useStore();
+  const { accountStore, keyRingStore } = useStore();
 
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
@@ -55,9 +55,12 @@ export const CopyAddressModal: FunctionComponent<{
         accounts[ChainNameEnum[key]] = defaultCosmosAddress;
       }
     });
-    accounts[ChainNameEnum.TRON] = getBase58Address(
-      accountStore.getAccount(ChainIdEnum.TRON).evmosHexAddress
-    );
+    if (keyRingStore.keyRingLedgerAddresses.trx) {
+      accounts[ChainNameEnum.TRON] = getBase58Address(
+        accountStore.getAccount(ChainIdEnum.TRON).evmosHexAddress
+      );
+    }
+
     accounts[ChainNameEnum.BitcoinLegacy] = accountBtc.allBtcAddresses.legacy;
     accounts[ChainNameEnum.BitcoinSegWit] = accountBtc.allBtcAddresses.bech32;
 

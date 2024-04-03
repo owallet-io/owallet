@@ -10,6 +10,7 @@ import React, {
 } from "react";
 import {
   InteractionManager,
+  Platform,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -345,7 +346,8 @@ export const TokensCardAll: FunctionComponent<{
             contentContainerStyle={{
               paddingHorizontal: 0,
               paddingTop: 16,
-              paddingBottom: 0,
+              marginBottom:
+                Platform.OS === "android" ? metrics.screenHeight / 2 : 0,
             }}
             data={tokens?.filter((t) => {
               if (appInitStore.getInitApp.isAllNetworks) {
