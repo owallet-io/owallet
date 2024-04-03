@@ -28,6 +28,7 @@ export const CopyAddressModal: FunctionComponent<{
   const { accountStore, keyRingStore } = useStore();
 
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
+  const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
   const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
   const accountBtc = accountStore.getAccount(ChainIdEnum.Bitcoin);
 
@@ -56,12 +57,14 @@ export const CopyAddressModal: FunctionComponent<{
       }
     });
 
-    if (accountOrai.isNanoLedger && keyRingStore?.keyRingLedgerAddresses?.trx) {
+    if (accountTron.isNanoLedger && keyRingStore?.keyRingLedgerAddresses?.trx) {
       accounts[ChainNameEnum.TRON] = keyRingStore.keyRingLedgerAddresses.trx;
     } else {
-      accounts[ChainNameEnum.TRON] = getBase58Address(
-        accountStore.getAccount(ChainIdEnum.TRON).evmosHexAddress
-      );
+      if (accountTron) {
+        accounts[ChainNameEnum.TRON] = getBase58Address(
+          accountTron.evmosHexAddress
+        );
+      }
     }
 
     accounts[ChainNameEnum.BitcoinLegacy] = accountBtc.allBtcAddresses.legacy;
