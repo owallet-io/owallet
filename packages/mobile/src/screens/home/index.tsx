@@ -325,9 +325,9 @@ const styling = (colors) =>
   StyleSheet.create({
     containerStyle: {
       paddingBottom: 12,
-      backgroundColor: colors["background-box"],
+      backgroundColor: colors["neutral-surface-bg2"],
     },
     containerEarnStyle: {
-      backgroundColor: colors["background-box"],
+      backgroundColor: colors["neutral-surface-bg2"],
     },
   });

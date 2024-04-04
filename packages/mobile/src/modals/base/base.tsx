@@ -123,7 +123,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
             {...bottomSheetModalConfig}
             ref={bottomSheetModalRef}
             backgroundStyle={{
-              backgroundColor: colors["background-box"],
+              backgroundColor: colors["neutral-surface-bg2"],
             }}
             handleIndicatorStyle={{
               backgroundColor: colors["title-modal-login-failed"],
@@ -175,7 +175,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
             {...bottomSheetModalConfig}
             ref={bottomSheetModalRef}
             backgroundStyle={{
-              backgroundColor: colors["background-box"],
+              backgroundColor: colors["neutral-surface-bg2"],
             }}
             handleIndicatorStyle={{
               backgroundColor: colors["title-modal-login-failed"],

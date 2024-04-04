@@ -245,7 +245,7 @@ const ValidatorItem: FunctionComponent<{
       style={{
         ...styles.container,
         flexDirection: "row",
-        backgroundColor: colors["background-box"],
+        backgroundColor: colors["neutral-surface-bg2"],
         alignItems: "center",
         borderWidth: 0.5,
         // borderColor: uptime < 0.9 ? colors["danger"] : colors["background"],

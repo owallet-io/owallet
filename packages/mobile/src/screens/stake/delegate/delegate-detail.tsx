@@ -259,7 +259,7 @@ const styling = (colors) =>
       textAlign: "center",
     },
     containerInfo: {
-      backgroundColor: colors["background-box"],
+      backgroundColor: colors["neutral-surface-bg2"],
       borderRadius: spacing["24"],
       padding: spacing["24"],
     },

@@ -1,23 +1,23 @@
-import images from '@src/assets/images';
-import { useTheme } from '@src/themes/theme-provider';
-import React from 'react';
-import { View, StyleSheet, Animated, ActivityIndicator } from 'react-native';
+import images from "@src/assets/images";
+import { useTheme } from "@src/themes/theme-provider";
+import React from "react";
+import { View, StyleSheet, Animated, ActivityIndicator } from "react-native";
 
 const styles = StyleSheet.create({
   imageOverlay: {
-    position: 'absolute',
+    position: "absolute",
     left: 0,
     right: 0,
     bottom: 0,
     top: 0
   },
   container: {
-    backgroundColor: '#e1e4e8',
-    alignItems: 'center',
-    justifyContent: 'center'
+    backgroundColor: "#e1e4e8",
+    alignItems: "center",
+    justifyContent: "center"
   }
 });
-const withProgressiveImage = (WrappedComponent) => {
+const withProgressiveImage = WrappedComponent => {
   return function (props) {
     const { colors } = useTheme();
 
@@ -50,28 +50,23 @@ class ProgressiveImage extends React.Component {
   };
 
   render() {
-    const {
-      thumbnailSource = images.empty_img,
-      source,
-      style,
-      colors,
-      styleContainer,
-      ...props
-    } = this.props;
+    const { thumbnailSource = images.empty_img, source, style, colors, styleContainer, ...props } = this.props;
     return (
       <View
         style={[
           styles.container,
           {
-            backgroundColor: colors['background-box']
+            backgroundColor: colors["neutral-surface-bg2"]
           },
           styleContainer
         ]}
       >
-        <View style={{
-          position:"absolute"
-        }}>
-        {this.state.loading ? <ActivityIndicator /> : null}
+        <View
+          style={{
+            position: "absolute"
+          }}
+        >
+          {this.state.loading ? <ActivityIndicator /> : null}
         </View>
         <Animated.Image
           {...props}

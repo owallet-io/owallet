@@ -287,7 +287,7 @@ const styling = (colors) =>
     },
     inActive: {
       padding: 7,
-      backgroundColor: colors["background-box"],
+      backgroundColor: colors["neutral-surface-bg2"],
       borderRadius: 4,
     },
     activeText: {

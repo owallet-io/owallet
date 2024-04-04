@@ -24,13 +24,13 @@ const useStyleType = ({ type }) => {
           borderRadius: spacing["12"],
           elevation: 4,
           width: "100%",
-          backgroundColor: colors["background-box-shadow"],
+          backgroundColor: colors["neutral-surface-bg2-shadow"],
         };
       } else {
         styles = {
           borderRadius: spacing["12"],
           width: "100%",
-          backgroundColor: colors["background-box-shadow"],
+          backgroundColor: colors["neutral-surface-bg2-shadow"],
         };
       }
 
@@ -50,7 +50,7 @@ const useStyleType = ({ type }) => {
         width: metrics.screenWidth,
         padding: spacing["horizontal-pad"],
         borderRadius: spacing["horizontal-pad"],
-        backgroundColor: colors["background-box"],
+        backgroundColor: colors["neutral-surface-bg2"],
       };
       break;
     default:
@@ -59,7 +59,7 @@ const useStyleType = ({ type }) => {
         width: metrics.screenWidth,
         padding: spacing["24"],
         borderRadius: spacing["24"],
-        backgroundColor: colors["background-box"],
+        backgroundColor: colors["neutral-surface-bg2"],
       };
       break;
   }

@@ -229,6 +229,6 @@ const styling = (colors: object) =>
       borderRadius: 12,
       padding: 20,
       width: "100%",
-      backgroundColor: colors["background-box"],
+      backgroundColor: colors["neutral-surface-bg2"],
     },
   });
