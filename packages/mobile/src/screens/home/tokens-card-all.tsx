@@ -316,7 +316,7 @@ export const TokensCardAll: FunctionComponent<{
                     {percent}% (${profit ?? 0})
                   </Text>
                 </View>
-                <View
+                {/* <View
                   style={{
                     flex: 0.5,
                     justifyContent: "center",
@@ -327,7 +327,7 @@ export const TokensCardAll: FunctionComponent<{
                     height={12}
                     color={colors["neutral-text-heading"]}
                   />
-                </View>
+                </View> */}
               </View>
             </View>
           </TouchableOpacity>
@@ -457,7 +457,7 @@ const styling = (colors) =>
       flexDirection: "row",
     },
     container: {
-      marginBottom: 160,
+      marginBottom: 60,
     },
     pl10: {
       paddingLeft: 10,
