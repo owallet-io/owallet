@@ -1,10 +1,4 @@
-import React, {
-  FunctionComponent,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import style from "../style.module.scss";
 import { observer } from "mobx-react-lite";
 import classnames from "classnames";
@@ -14,23 +8,14 @@ import { useStore } from "../../../stores";
 import { TronDataTab } from "./tron-data-tab";
 import { TronDetailsTab } from "./tron-details-tab";
 import {
-  InsufficientFeeError,
-  NotLoadedFeeError,
   useAmountConfig,
+  useFeeTronConfig,
   useGetFeeTron,
   useInteractionInfo,
-  useMemoConfig,
   useRecipientConfig,
 } from "@owallet/hooks";
 import { useHistory } from "react-router";
-import {
-  ChainIdEnum,
-  ExtensionKVStore,
-  getEvmAddress,
-  TRIGGER_TYPE,
-} from "@owallet/common";
-import { useSendGasTronConfig } from "@owallet/hooks/build/tx/send-gas-tron";
-import { useFeeTronConfig } from "@owallet/hooks/build/tx/fee-tron";
+import { ChainIdEnum, ExtensionKVStore, TRIGGER_TYPE } from "@owallet/common";
 import { Int } from "@owallet/unit";
 
 enum Tab {
@@ -90,28 +75,12 @@ export const SignTronPage: FunctionComponent = observer(() => {
     keyRingStore,
     txInfo
   );
-  console.log(estimateBandwidth, "estimateBandwidth");
-  console.log(amountConfig.getAmountPrimitive()?.amount, "estimateEnergy");
-  const memoConfig = useMemoConfig(chainStore, chainStore.selectedChainId);
-
-  const gasConfig = useSendGasTronConfig(
-    chainStore,
-    chainStore.selectedChainId,
-    amountConfig,
-    //@ts-ignore
-    accountInfo.msgOpts.send
-  );
-
   const feeConfig = useFeeTronConfig(
     chainStore,
     chainStore.selectedChainId,
     accountInfo.evmosHexAddress,
     queries.queryBalances,
-    amountConfig,
-    gasConfig,
-    true,
-    queries,
-    memoConfig
+    queries
   );
   useEffect(() => {
     if (feeTrx) {
@@ -150,12 +119,9 @@ export const SignTronPage: FunctionComponent = observer(() => {
       chainStore.selectChain(ChainIdEnum.TRON);
     }
   }, [waitingTronData]);
-  console.log(dataSign, "dataSigndataSign");
-
   const error = feeConfig.getError();
   console.log(error, feeConfig.fee, "errorerror");
   const txStateIsValid = error == null;
-
   return (
     <div
       style={{

@@ -34,26 +34,19 @@ export const useSendTxTronConfig = (
     queryBalances,
     queryBtcBalances
   );
-
   const memoConfig = useMemoConfig(chainGetter, chainId);
-
   const gasConfig = useSendGasTronConfig(
     chainGetter,
     chainId,
     amountConfig,
     sendMsgOpts
   );
-
   const feeConfig = useFeeTronConfig(
     chainGetter,
     chainId,
     sender,
     queryBalances,
-    amountConfig,
-    gasConfig,
-    true,
-    queriesStore,
-    memoConfig
+    queriesStore
   );
   // Due to the circular references between the amount config and gas/fee configs,
   // set the fee config of the amount config after initing the gas/fee configs.

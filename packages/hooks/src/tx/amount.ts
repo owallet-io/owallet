@@ -1,4 +1,4 @@
-import { IAmountConfig, IFeeConfig } from "./types";
+import { IAmountConfig, IFeeConfig, IFeeTronConfig } from "./types";
 import { TxChainSetter } from "./chain";
 import {
   ChainGetter,
@@ -21,7 +21,7 @@ import { useState } from "react";
 
 export class AmountConfig extends TxChainSetter implements IAmountConfig {
   @observable.ref
-  protected feeConfig?: IFeeConfig;
+  protected feeConfig?: IFeeConfig | IFeeTronConfig;
 
   @observable.ref
   protected queryBalances: ObservableQueryBalances;
@@ -69,7 +69,7 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
   }
 
   @action
-  setFeeConfig(feeConfig: IFeeConfig) {
+  setFeeConfig(feeConfig: IFeeConfig | IFeeTronConfig) {
     this.feeConfig = feeConfig;
   }
 
@@ -285,7 +285,6 @@ export const useAmountConfig = (
         sender,
         undefined,
         queryBalances,
-
         queryBtcBalance
       )
   );
