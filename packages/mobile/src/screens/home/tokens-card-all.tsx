@@ -273,50 +273,67 @@ export const TokensCardAll: FunctionComponent<{
             }}
             style={styles.btnItem}
           >
-            <View style={styles.leftBoxItem}>
-              <View style={styles.iconWrap}>
-                <OWIcon type="images" source={{ uri: item.icon }} size={28} />
-              </View>
-              <View style={styles.chainWrap}>
-                <OWIcon
-                  type="images"
-                  source={{ uri: chainIcon?.Icon }}
-                  size={16}
-                />
-              </View>
+            <View style={styles.wraperItem}>
+              <View style={styles.leftBoxItem}>
+                <View style={styles.iconWrap}>
+                  <OWIcon type="images" source={{ uri: item.icon }} size={28} />
+                </View>
+                <View style={styles.chainWrap}>
+                  <OWIcon
+                    type="images"
+                    source={{ uri: chainIcon?.Icon }}
+                    size={16}
+                  />
+                </View>
 
-              <View style={styles.pl10}>
-                <Text
-                  size={14}
-                  color={colors["neutral-text-heading"]}
-                  weight="600"
-                >
+                <View style={styles.pl12}>
+                  {/* <Text size={16} color={colors["neutral-text-heading"]} weight="600">
                   {item.balance.toFixed(4)} {item.asset}
-                </Text>
-                <Text weight="400" color={colors["neutral-text-body"]}>
-                  {item.chain}
-                </Text>
-              </View>
-            </View>
-            <View style={styles.rightBoxItem}>
-              <View style={{ flexDirection: "row" }}>
-                <View style={{ alignItems: "flex-end" }}>
-                  <Text weight="500" color={colors["neutral-text-heading"]}>
-                    ${item.value.toFixed(6)}
-                  </Text>
+                </Text> */}
                   <Text
-                    style={styles.profit}
-                    color={
-                      colors[
-                        profit < 0 ? "error-text-body" : "success-text-body"
-                      ]
-                    }
+                    size={16}
+                    color={colors["neutral-text-heading"]}
+                    weight="600"
                   >
-                    {profit < 0 ? "" : "+"}
-                    {percent}% (${profit ?? 0})
+                    {item.asset}
+                  </Text>
+                  <Text weight="400" color={colors["neutral-text-body"]}>
+                    {item.chain}
                   </Text>
                 </View>
-                {/* <View
+              </View>
+              <View style={styles.rightBoxItem}>
+                <View style={{ flexDirection: "row" }}>
+                  <View style={{ alignItems: "flex-end" }}>
+                    <Text
+                      size={16}
+                      style={{ lineHeight: 24 }}
+                      weight="500"
+                      color={colors["neutral-text-heading"]}
+                    >
+                      {item.balance.toFixed(4)} {item.asset}
+                    </Text>
+                    <Text
+                      size={14}
+                      style={{ lineHeight: 24 }}
+                      color={colors["neutral-text-body"]}
+                    >
+                      ${item.value.toFixed(6)}
+                    </Text>
+                    <Text
+                      size={14}
+                      style={styles.profit}
+                      color={
+                        colors[
+                          profit < 0 ? "error-text-body" : "success-text-body"
+                        ]
+                      }
+                    >
+                      {profit < 0 ? "" : "+"}
+                      {percent}% (${profit ?? 0})
+                    </Text>
+                  </View>
+                  {/* <View
                   style={{
                     flex: 0.5,
                     justifyContent: "center",
@@ -328,6 +345,7 @@ export const TokensCardAll: FunctionComponent<{
                     color={colors["neutral-text-heading"]}
                   />
                 </View> */}
+                </View>
               </View>
             </View>
           </TouchableOpacity>
@@ -408,6 +426,7 @@ export const TokensCardAll: FunctionComponent<{
         style={{
           paddingTop: 12,
           backgroundColor: colors["neutral-surface-card"],
+          paddingHorizontal: 0,
         }}
       >
         <View style={styles.wrapHeaderTitle}>
@@ -455,12 +474,13 @@ const styling = (colors) =>
   StyleSheet.create({
     wrapHeaderTitle: {
       flexDirection: "row",
+      paddingBottom: 12,
     },
     container: {
       marginBottom: 60,
     },
-    pl10: {
-      paddingLeft: 10,
+    pl12: {
+      paddingLeft: 12,
     },
     leftBoxItem: {
       flexDirection: "row",
@@ -469,11 +489,16 @@ const styling = (colors) =>
     rightBoxItem: {
       alignItems: "flex-end",
     },
-    btnItem: {
+    wraperItem: {
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
       marginVertical: 8,
+      marginHorizontal: 16,
+    },
+    btnItem: {
+      borderBottomColor: colors["neutral-border-default"],
+      borderBottomWidth: 1,
     },
     profit: {
       fontWeight: "400",
