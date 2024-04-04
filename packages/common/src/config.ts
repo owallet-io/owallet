@@ -1230,10 +1230,10 @@ export const EmbedChainInfos: AppChainInfo[] = [
   },
 
   {
-    // rpc: "https://api.trongrid.io",
-    // rest: "https://apilist.tronscanapi.com",
-    rpc: "https://nile.trongrid.io",
-    rest: "https://nileapi.tronscan.org",
+    rpc: "https://api.trongrid.io",
+    rest: "https://apilist.tronscanapi.com",
+    // rpc: "https://nile.trongrid.io",
+    // rest: "https://nileapi.tronscan.org",
     chainId: "0x2b6653dc",
     networkType: "evm",
     chainName: "Tron",
@@ -1264,29 +1264,27 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinDenom: "USDC",
         coinMinimalDenom:
           "erc20:0x3487b63D30B5B2C87fb7fFa8bcfADE38EAaC1abe:USDC Token",
-        // coinMinimalDenom: "usdc",
         coinGeckoId: "usd-coin",
         coinImageUrl:
           "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png",
         coinDecimals: 6,
       },
-      {
-        contractAddress: "TLBaRhANQoJFTqre9Nf1mjuwNWjCJeYqUL",
-        coinDenom: "TestUSDJ",
-        coinMinimalDenom:
-          "erc20:0x70082243784dcdf3042034E7B044d6D342A91360:USDJ Token",
-        // coinMinimalDenom: "usdc",
-        coinGeckoId: "usd-coin",
-        coinImageUrl:
-          "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png",
-        coinDecimals: 18,
-      },
+      // {
+      //   contractAddress: "TLBaRhANQoJFTqre9Nf1mjuwNWjCJeYqUL",
+      //   coinDenom: "TestUSDJ",
+      //   coinMinimalDenom:
+      //     "erc20:0x70082243784dcdf3042034E7B044d6D342A91360:USDJ Token",
+      //   // coinMinimalDenom: "usdc",
+      //   coinGeckoId: "usd-coin",
+      //   coinImageUrl:
+      //     "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png",
+      //   coinDecimals: 18,
+      // },
       {
         contractAddress: "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
         coinMinimalDenom:
           "erc20:0xa614f803B6FD780986A42c78Ec9c7f77e6DeD13C:USDT Token",
         coinDenom: "USDT",
-        // coinMinimalDenom: "usdt",
         coinDecimals: 6,
         coinGeckoId: "tether",
         coinImageUrl:
@@ -1297,7 +1295,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinMinimalDenom:
           "erc20:0x891cdb91d149f23B1a45D9c5Ca78a88d0cB44C18:WTRX Token",
         coinDenom: "WTRX",
-        // coinMinimalDenom: "usdt",
         coinDecimals: 6,
         coinGeckoId: "tron",
         coinImageUrl:
