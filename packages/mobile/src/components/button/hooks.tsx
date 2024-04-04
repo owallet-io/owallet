@@ -106,7 +106,7 @@ export const useMapStyles = ({
           borderRadius: formatSize.btn.borderRadius,
           height: formatSize.btn.height,
           backgroundColor: disabled
-            ? colors["primary-surface-disable"]
+            ? colors["neutral-surface-disable"]
             : colors["primary-surface-default"],
         },
         text: {
@@ -124,7 +124,7 @@ export const useMapStyles = ({
           borderRadius: formatSize.btn.borderRadius,
           height: formatSize.btn.height,
           backgroundColor: disabled
-            ? colors["primary-surface-disable"]
+            ? colors["neutral-surface-disable"]
             : colors["neutral-surface-action3"],
         },
         text: {
@@ -146,7 +146,7 @@ export const useMapStyles = ({
         text: {
           color: disabled
             ? colors["text-btn-disable-color"]
-            : colors["btn-primary-background"],
+            : colors["primary-surface-default"],
           fontSize: formatSize.text.fontSize,
           fontWeight: formatSize.text.fontWeight,
         },

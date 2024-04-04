@@ -104,7 +104,7 @@ export const SelectorModal: FunctionComponent<{
         style={{
           borderRadius: spacing["8"],
           overflow: "hidden",
-          backgroundColor: colors["neutral-surface-bg2"],
+          backgroundColor: colors["neutral-surface-card"],
           paddingVertical: spacing["16"],
         }}
       >

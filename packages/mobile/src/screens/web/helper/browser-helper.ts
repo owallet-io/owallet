@@ -1,5 +1,5 @@
 import images from "@src/assets/images";
-import { capitalizedText } from "@src/utils/helper";
+import { capitalizedText, limitString } from "@src/utils/helper";
 
 export const explorerData = [
   {
@@ -96,7 +96,7 @@ function extractDomainName(url) {
   }
   parts.pop();
   domain = parts.join(" ");
-  return capitalizedText(domain);
+  return capitalizedText(limitString(domain, 16));
 }
 
 export const getNameBookmark = (name: string) => {
@@ -105,5 +105,5 @@ export const getNameBookmark = (name: string) => {
   if (name.startsWith("http")) {
     return extractDomainName(bookmarkName);
   }
-  return capitalizedText(bookmarkName);
+  return capitalizedText(limitString(bookmarkName, 16));
 };

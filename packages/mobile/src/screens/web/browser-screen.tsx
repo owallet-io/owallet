@@ -97,7 +97,11 @@ export const BrowserScreen = observer(() => {
               paddingRight: 8,
             }}
           >
-            <OWIcon name={"tdesignsearch"} size={20} />
+            <OWIcon
+              color={colors["neutral-text-action-on-light-bg"]}
+              name={"tdesignsearch"}
+              size={20}
+            />
           </View>
         }
         onSubmitEditing={(e) => onHandleUrl(e.nativeEvent.text)}
@@ -119,6 +123,7 @@ export const BrowserScreen = observer(() => {
         inputRight={
           <OWButtonIcon
             fullWidth={false}
+            colorIcon={colors["neutral-text-action-on-light-bg"]}
             name={"tdesignclose"}
             sizeIcon={20}
             onPress={onClear}
