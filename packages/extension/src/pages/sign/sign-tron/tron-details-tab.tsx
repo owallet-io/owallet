@@ -1,16 +1,21 @@
-import React, { FunctionComponent, useEffect } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 
 import { observer } from "mobx-react-lite";
 
 import styleDetailsTab from "../details-tab.module.scss";
 import { FormattedMessage } from "react-intl";
-import { Badge, Label } from "reactstrap";
+import { Badge, FormFeedback, FormText, Label } from "reactstrap";
 import classnames from "classnames";
 import TronWeb from "tronweb";
 import { useStore } from "../../../stores";
 import { ChainIdEnum } from "@owallet/common";
-import { CoinPretty, Int } from "@owallet/unit";
+import { CoinPretty, Int, IntPretty } from "@owallet/unit";
 import { CoinPrimitive } from "@owallet/stores";
+import {
+  FeeTronConfig,
+  InsufficientFeeError,
+  NotLoadedFeeError,
+} from "@owallet/hooks";
 
 export const TronDetailsTab: FunctionComponent<{
   dataSign;
@@ -21,13 +26,34 @@ export const TronDetailsTab: FunctionComponent<{
     estimateEnergy: Int;
     feeTrx: CoinPrimitive;
   };
-}> = observer(({ dataSign, intl, txInfo, dataInfo }) => {
+  feeConfig: FeeTronConfig;
+}> = observer(({ dataSign, intl, txInfo, dataInfo, feeConfig }) => {
   const { chainStore, priceStore } = useStore();
-
+  let isFeeLoading = false;
   const feePretty = new CoinPretty(
     chainStore.current.feeCurrencies[0],
     new Int(dataInfo?.feeTrx?.amount)
   );
+  const error = feeConfig.getError();
+  const errorText: string | undefined = (() => {
+    if (error) {
+      switch (error.constructor) {
+        case InsufficientFeeError:
+          return intl.formatMessage({
+            id: "input.fee.error.insufficient",
+          });
+        case NotLoadedFeeError:
+          isFeeLoading = true;
+          return undefined;
+        default:
+          return (
+            error.message ||
+            intl.formatMessage({ id: "input.fee.error.unknown" })
+          );
+      }
+    }
+  })();
+
   return (
     <div className={styleDetailsTab.container}>
       <Label
@@ -77,7 +103,6 @@ export const TronDetailsTab: FunctionComponent<{
                 >
                   <span>Contract:</span>
                   <span>Method:</span>
-                  <span>Resources:</span>
                 </div>
                 <div
                   style={{
@@ -100,44 +125,61 @@ export const TronDetailsTab: FunctionComponent<{
               </div>
             </MsgRender>
           )}
-          {dataInfo?.estimateBandwidth?.lte(new Int(0)) &&
-          dataInfo?.estimateEnergy?.lte(new Int(0)) ? null : (
-            <div
-              style={{
-                justifyContent: "space-between",
-                display: "flex",
-              }}
-            >
-              <span>Resources:</span>
-              <span>
-                {dataInfo?.estimateBandwidth?.gt(new Int(0)) &&
-                  `${dataInfo?.estimateBandwidth?.toString()} Bandwidth`}
-                {dataInfo?.estimateEnergy?.gt(new Int(0)) &&
-                  `+ ${dataInfo?.estimateEnergy?.toString()} Energy`}
-              </span>
-            </div>
+          {isFeeLoading ? (
+            <FormText>
+              <i className="fa fa-spinner fa-spin fa-fw" />
+            </FormText>
+          ) : (
+            <>
+              {dataInfo?.estimateBandwidth?.lte(new Int(0)) &&
+              dataInfo?.estimateEnergy?.lte(new Int(0)) ? null : (
+                <div
+                  style={{
+                    justifyContent: "space-between",
+                    display: "flex",
+                  }}
+                >
+                  <span>Resources:</span>
+                  <span>
+                    {dataInfo?.estimateBandwidth?.gt(new Int(0)) &&
+                      `${dataInfo?.estimateBandwidth?.toString()} Bandwidth`}
+                    {dataInfo?.estimateEnergy?.gt(new Int(0)) &&
+                      ` + ${new IntPretty(
+                        dataInfo?.estimateEnergy?.toDec()
+                      )?.toString()} Energy`}
+                  </span>
+                </div>
+              )}
+
+              <div
+                style={{
+                  justifyContent: "space-between",
+                  display: "flex",
+                }}
+              >
+                <span>Fee:</span>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "flex-end",
+                  }}
+                >
+                  <span>{feePretty?.trim(true)?.toString()}</span>
+                  <span>
+                    ~{priceStore.calculatePrice(feePretty)?.toString()}
+                  </span>
+                </div>
+              </div>
+
+              <hr />
+              {errorText != null ? (
+                <FormFeedback style={{ display: "block", marginTop: -15 }}>
+                  {errorText}
+                </FormFeedback>
+              ) : null}
+            </>
           )}
-
-          <div
-            style={{
-              justifyContent: "space-between",
-              display: "flex",
-            }}
-          >
-            <span>Fee:</span>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "flex-end",
-              }}
-            >
-              <span>{feePretty?.trim(true)?.toString()}</span>
-              <span>~{priceStore.calculatePrice(feePretty)?.toString()}</span>
-            </div>
-          </div>
-
-          <hr />
         </React.Fragment>
       </div>
     </div>

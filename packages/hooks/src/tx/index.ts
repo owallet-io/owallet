@@ -3,6 +3,7 @@ export * from "./types";
 export * from "./memo";
 export * from "./fee";
 export * from "./fee-ethereum";
+export * from "./fee-tron";
 export * from "./gas";
 export * from "./gas-ethereum";
 export * from "./recipient";

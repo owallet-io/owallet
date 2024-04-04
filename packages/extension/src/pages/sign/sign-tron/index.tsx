@@ -14,6 +14,8 @@ import { useStore } from "../../../stores";
 import { TronDataTab } from "./tron-data-tab";
 import { TronDetailsTab } from "./tron-details-tab";
 import {
+  InsufficientFeeError,
+  NotLoadedFeeError,
   useAmountConfig,
   useGetFeeTron,
   useInteractionInfo,
@@ -150,9 +152,10 @@ export const SignTronPage: FunctionComponent = observer(() => {
   }, [waitingTronData]);
   console.log(dataSign, "dataSigndataSign");
 
-  const feeError = feeConfig.getError();
-  console.log(feeError, feeConfig.fee, "feeErrorfeeError");
-  const txStateIsValid = feeError == null;
+  const error = feeConfig.getError();
+  console.log(error, feeConfig.fee, "errorerror");
+  const txStateIsValid = error == null;
+
   return (
     <div
       style={{
@@ -222,6 +225,7 @@ export const SignTronPage: FunctionComponent = observer(() => {
                   feeTrx,
                 }}
                 intl={intl}
+                feeConfig={feeConfig}
                 dataSign={dataSign}
               />
             )}
