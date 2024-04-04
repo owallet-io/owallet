@@ -67,7 +67,7 @@ export const BookmarksScreen = observer(() => {
               type={"images"}
               size={18}
               source={{
-                uri: getFavicon(item?.uri),
+                uri: getFavicon(item.uri),
               }}
             />
           </View>
