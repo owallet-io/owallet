@@ -266,8 +266,10 @@ export class FeeTronConfig extends TxChainSetter implements IFeeConfig {
         const bal = this.queryBalances
           .getQueryBech32Address(this._sender)
           .balances.find((bal) => {
+            console.log(bal, this._sender, "bal");
             return bal.currency.coinMinimalDenom === need.denom;
           });
+        console.log(bal, need, "balbal");
         if (!bal) {
           return new InsufficientFeeError("insufficient fee");
         } else if (!bal.response && !bal.error) {

@@ -36,6 +36,7 @@ import {
   EXTRA_FEE_LIMIT_TRON,
   DEFAULT_FEE_LIMIT_TRON,
   TRIGGER_TYPE,
+  DenomHelper,
 } from "@owallet/common";
 import { ChainsService } from "../chains";
 import { LedgerService } from "../ledger";
@@ -1090,6 +1091,7 @@ export class KeyRingService {
       "request-sign-tron",
       data
     )) as any;
+    console.log(newData, "newDatanewData");
     try {
       if (newData?.txID) {
         newData.signature = [
@@ -1106,34 +1108,31 @@ export class KeyRingService {
 
       tronWeb.fullNode.instance.defaults.adapter = fetchAdapter;
       let transaction: any;
-      if (newData?.tokenTrc20) {
-        const amount = new MyBigInt(
-          Math.trunc(newData?.amount * Math.pow(10, 6))
-        );
+
+      if (newData?.currency?.contractAddress) {
         transaction = (
           await tronWeb.transactionBuilder.triggerSmartContract(
-            newData.tokenTrc20.contractAddress,
+            newData?.currency?.contractAddress,
             "transfer(address,uint256)",
             {
               callValue: 0,
-              feeLimit: 150_000_000,
+              feeLimit: newData?.feeLimit ?? DEFAULT_FEE_LIMIT_TRON,
               userFeePercentage: 100,
               shouldPollResponse: false,
             },
             [
               { type: "address", value: newData.recipient },
-              { type: "uint256", value: amount.toString() },
+              { type: "uint256", value: newData.amount },
             ],
             newData.address
           )
         ).transaction;
       } else {
         // get address here from keyring and
+        console.log(newData, "newData");
         transaction = await tronWeb.transactionBuilder.sendTrx(
           newData.recipient,
-          new Dec(Number((newData.amount ?? "0").replace(/,/g, "."))).mul(
-            DecUtils.getTenExponentNInPrecisionRange(6)
-          ),
+          newData.amount,
           newData.address
         );
       }
@@ -1146,9 +1145,8 @@ export class KeyRingService {
         ).toString("hex"),
       ];
 
-      // const receipt = await tronWeb.trx.sendRawTransaction(transaction);
-      // return receipt.txid ?? receipt.transaction.raw_data_hex;
-      return;
+      const receipt = await tronWeb.trx.sendRawTransaction(transaction);
+      return receipt.txid ?? receipt.transaction.raw_data_hex;
     } finally {
       this.interactionService.dispatchEvent(
         APP_PORT,

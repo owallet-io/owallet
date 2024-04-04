@@ -11,6 +11,7 @@ import { useStore } from "../../../stores";
 import { ChainIdEnum } from "@owallet/common";
 import { CoinPretty, Int } from "@owallet/unit";
 import { CoinPrimitive } from "@owallet/stores";
+
 export const TronDetailsTab: FunctionComponent<{
   dataSign;
   intl;
@@ -22,25 +23,7 @@ export const TronDetailsTab: FunctionComponent<{
   };
 }> = observer(({ dataSign, intl, txInfo, dataInfo }) => {
   const { chainStore, priceStore } = useStore();
-  useEffect(() => {
-    (async () => {
-      if (txInfo) {
-        const tronWeb = new TronWeb({
-          fullHost: chainStore.getChain(ChainIdEnum.TRON).rpc,
-        });
 
-        const triggerConstantContract =
-          await tronWeb.transactionBuilder.triggerConstantContract(
-            txInfo.address,
-            txInfo.functionSelector,
-            txInfo.options,
-            txInfo.parameters,
-            txInfo.issuerAddress
-          );
-        console.log(triggerConstantContract, "triggerConstantContract");
-      }
-    })();
-  }, [txInfo]);
   const feePretty = new CoinPretty(
     chainStore.current.feeCurrencies[0],
     new Int(dataInfo?.feeTrx?.amount)
@@ -59,7 +42,7 @@ export const TronDetailsTab: FunctionComponent<{
       </Label>
       <div id="signing-messages" className={styleDetailsTab.msgContainer}>
         <React.Fragment>
-          {dataSign?.data?.currency && (
+          {dataSign?.currency && (
             <MsgRender
               icon={"fas fa-paper-plane"}
               title={intl.formatMessage({
@@ -70,73 +53,89 @@ export const TronDetailsTab: FunctionComponent<{
                 id="sign.list.message.cosmos-sdk/MsgSend.content"
                 values={{
                   b: (...chunks: any[]) => <b>{chunks}</b>,
-                  recipient: dataSign?.data?.recipient,
+                  recipient: dataSign?.recipient,
                   amount:
-                    dataSign?.data?.amount +
-                    " " +
-                    dataSign?.data?.currency?.coinDenom,
+                    dataSign?.amount + " " + dataSign?.currency?.coinDenom,
                 }}
               />
             </MsgRender>
           )}
-          <MsgRender icon={null} title={"Bridge"}>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-              }}
-            >
+          {txInfo?.functionSelector && (
+            <MsgRender icon={null} title={"Trigger Smart Contract"}>
               <div
                 style={{
                   display: "flex",
-                  flexDirection: "column",
-                  flex: 1,
+                  justifyContent: "space-between",
                 }}
               >
-                <span>Contract:</span>
-                <span>Method:</span>
-                <span>Resources:</span>
-                <span>Fee:</span>
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  flex: 2,
-                  // justifyContent:"flex-end",
-                  alignItems: "flex-end",
-                }}
-              >
-                <a
-                  rel="noreferrer"
-                  href={`https://tronscan.org/#/contract/${txInfo?.address}`}
-                  target="_blank"
-                >
-                  {txInfo?.address}
-                </a>
-                <span>{txInfo?.functionSelector}</span>
-                <span>
-                  {dataInfo?.estimateBandwidth?.toString()} Bandwidth +{" "}
-                  {dataInfo?.estimateEnergy?.toString()} Energy
-                </span>
                 <div
                   style={{
                     display: "flex",
                     flexDirection: "column",
+                    flex: 1,
+                  }}
+                >
+                  <span>Contract:</span>
+                  <span>Method:</span>
+                  <span>Resources:</span>
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    flex: 2,
+                    // justifyContent:"flex-end",
                     alignItems: "flex-end",
                   }}
                 >
-                  <span>{feePretty?.trim(true)?.toString()}</span>
-                  <span>
-                    ~{priceStore.calculatePrice(feePretty)?.toString()}
-                  </span>
+                  <a
+                    rel="noreferrer"
+                    href={`https://tronscan.org/#/contract/${txInfo?.address}`}
+                    target="_blank"
+                  >
+                    {txInfo?.address}
+                  </a>
+                  <span>{txInfo?.functionSelector}</span>
                 </div>
               </div>
+            </MsgRender>
+          )}
+          {dataInfo?.estimateBandwidth?.lte(new Int(0)) &&
+          dataInfo?.estimateEnergy?.lte(new Int(0)) ? null : (
+            <div
+              style={{
+                justifyContent: "space-between",
+                display: "flex",
+              }}
+            >
+              <span>Resources:</span>
+              <span>
+                {dataInfo?.estimateBandwidth?.gt(new Int(0)) &&
+                  `${dataInfo?.estimateBandwidth?.toString()} Bandwidth`}
+                {dataInfo?.estimateEnergy?.gt(new Int(0)) &&
+                  `+ ${dataInfo?.estimateEnergy?.toString()} Energy`}
+              </span>
             </div>
-          </MsgRender>
-          {/*{!dataSign?.data?.currency && (*/}
-          {/*  <div style={{ width: 375 }}>{JSON.stringify(dataSign, null)}</div>*/}
-          {/*)}*/}
+          )}
+
+          <div
+            style={{
+              justifyContent: "space-between",
+              display: "flex",
+            }}
+          >
+            <span>Fee:</span>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-end",
+              }}
+            >
+              <span>{feePretty?.trim(true)?.toString()}</span>
+              <span>~{priceStore.calculatePrice(feePretty)?.toString()}</span>
+            </div>
+          </div>
 
           <hr />
         </React.Fragment>

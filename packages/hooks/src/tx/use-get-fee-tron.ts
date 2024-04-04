@@ -1,7 +1,9 @@
 import { Int } from "@owallet/unit";
 import {
+  DEFAULT_FEE_LIMIT_TRON,
   encodeParams,
   estimateBandwidthTron,
+  EXTRA_FEE_LIMIT_TRON,
   getEvmAddress,
 } from "@owallet/common";
 import {
@@ -33,7 +35,7 @@ export const useGetFeeTron = (
   dataSign: any
 ): IGetFeeTron => {
   const initData = {
-    feeLimit: new Int(100000000),
+    feeLimit: new Int(DEFAULT_FEE_LIMIT_TRON),
     estimateEnergy: new Int(0),
     estimateBandwidth: new Int(0),
     feeTrx: null,
@@ -119,9 +121,9 @@ export const useGetFeeTron = (
         amount: trc20Fee.toString(),
       },
     }));
-    const feeLimit = new Int(triggerContract.energy_used).mul(
-      chainParameter.energyPrice
-    );
+    const feeLimit = new Int(triggerContract.energy_used)
+      .mul(chainParameter.energyPrice)
+      .add(new Int(EXTRA_FEE_LIMIT_TRON));
     setData((prevState) => ({
       ...prevState,
       feeLimit,

@@ -82,42 +82,6 @@ export const SendTronEvmPage: FunctionComponent<{
   const isDetachedPage = query.detached === "true";
 
   useEffect(() => {
-    (async () => {
-      try {
-        const decode = await decodeParams(
-          ["address", "string", "uint256"],
-          "0f212357000000000000000000000000a614f803b6fd780986a42c78ec9c7f77e6ded13c00000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000293449000000000000000000000000000000000000000000000000000000000000007a6368616e6e656c2d312f6f72616931327a797538773933683071326c636e7435306733666e30773379716e6879346676617761717a3a43697476636d46704d544a3665585534647a6b7a614442784d6d786a626e51314d47637a5a6d3477647a4e356357356f6554526d646d4633595846364567416141413d3d000000000000",
-          true
-        );
-        console.log(decode, "decodedecode");
-        const tronWeb = new TronWeb({
-          fullHost: "https://api.trongrid.io",
-        });
-        const res = await tronWeb.transactionBuilder.triggerConstantContract(
-          "TLXrPtQor6xxF2HeQtmKJUUkVNjJZVsgTM",
-          "sendToCosmos(address,string,uint256)",
-          {},
-          [
-            {
-              type: "address",
-              value: "41a614f803b6fd780986a42c78ec9c7f77e6ded13c",
-            },
-            {
-              type: "string",
-              value:
-                "channel-1/orai12zyu8w93h0q2lcnt50g3fn0w3yqnhy4fvawaqz:CitvcmFpMTJ6eXU4dzkzaDBxMmxjbnQ1MGczZm4wdzN5cW5oeTRmdmF3YXF6EgAaAA==",
-            },
-            { type: "uint256", value: 2700361n },
-          ],
-          "TE15PBm8MsyS4cHrW7u1VTjbZDx5MXVQfs"
-        );
-        console.log(res, "triggerConstantContract");
-      } catch (e) {
-        console.log(e, "triggerConstantContract");
-      }
-    })();
-  }, []);
-  useEffect(() => {
     if (isDetachedPage) {
       fitPopupWindow();
     }
@@ -135,6 +99,7 @@ export const SendTronEvmPage: FunctionComponent<{
   const addressTronBase58 = accountInfo.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses
   );
+
   const checkSendMySelft =
     sendConfigs.recipientConfig.recipient?.trim() === addressTronBase58
       ? new InvalidTronAddressError("Cannot transfer TRX to the same account")
@@ -150,11 +115,6 @@ export const SendTronEvmPage: FunctionComponent<{
     false
   );
 
-  const tokenTrc20 =
-    (tokensTrc20Tron &&
-      query &&
-      tokensTrc20Tron.find((token) => token.coinDenom == query.defaultDenom)) ??
-    undefined;
   const onSend = async (e: any) => {
     e.preventDefault();
     try {
@@ -162,7 +122,7 @@ export const SendTronEvmPage: FunctionComponent<{
         sendConfigs.amountConfig.amount,
         sendConfigs.amountConfig.sendCurrency!,
         sendConfigs.recipientConfig.recipient,
-        addressTron,
+        addressTronBase58,
         {
           onFulfill: (tx) => {
             notification.push({
@@ -176,8 +136,7 @@ export const SendTronEvmPage: FunctionComponent<{
               },
             });
           },
-        },
-        tokenTrc20
+        }
       );
       if (!isDetachedPage) {
         history.replace("/");
@@ -209,7 +168,8 @@ export const SendTronEvmPage: FunctionComponent<{
     sendConfigs.recipientConfig,
     queries.tron,
     chainStore.current,
-    keyRingStore
+    keyRingStore,
+    null
   );
   useEffect(() => {
     sendConfigs.feeConfig.setManualFee(feeTrx);

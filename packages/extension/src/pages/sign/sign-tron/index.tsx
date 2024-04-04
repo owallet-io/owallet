@@ -21,9 +21,15 @@ import {
   useRecipientConfig,
 } from "@owallet/hooks";
 import { useHistory } from "react-router";
-import { ChainIdEnum, ExtensionKVStore, TRIGGER_TYPE } from "@owallet/common";
+import {
+  ChainIdEnum,
+  ExtensionKVStore,
+  getEvmAddress,
+  TRIGGER_TYPE,
+} from "@owallet/common";
 import { useSendGasTronConfig } from "@owallet/hooks/build/tx/send-gas-tron";
 import { useFeeTronConfig } from "@owallet/hooks/build/tx/fee-tron";
+import { Int } from "@owallet/unit";
 
 enum Tab {
   Details,
@@ -60,22 +66,13 @@ export const SignTronPage: FunctionComponent = observer(() => {
     setTxInfo(triggerTxId as any);
     kvStore.set(`${TRIGGER_TYPE}:${waitingTronData.data.txID}`, null);
   };
-  useEffect(() => {
-    if (dataSign) return;
-
-    if (waitingTronData) {
-      console.log(waitingTronData.data.txID, "waitingTronData.data");
-      getDataTx();
-      setDataSign(waitingTronData);
-      chainStore.selectChain(ChainIdEnum.TRON);
-    }
-  }, [waitingTronData]);
 
   const queries = queriesStore.get(chainStore.selectedChainId);
+
   const amountConfig = useAmountConfig(
     chainStore,
     chainStore.selectedChainId,
-    addressTronBase58,
+    accountInfo.evmosHexAddress,
     queries.queryBalances
   );
   const recipientConfig = useRecipientConfig(
@@ -91,7 +88,8 @@ export const SignTronPage: FunctionComponent = observer(() => {
     keyRingStore,
     txInfo
   );
-  console.log(estimateEnergy, "estimateEnergy");
+  console.log(estimateBandwidth, "estimateBandwidth");
+  console.log(amountConfig.getAmountPrimitive()?.amount, "estimateEnergy");
   const memoConfig = useMemoConfig(chainStore, chainStore.selectedChainId);
 
   const gasConfig = useSendGasTronConfig(
@@ -105,7 +103,7 @@ export const SignTronPage: FunctionComponent = observer(() => {
   const feeConfig = useFeeTronConfig(
     chainStore,
     chainStore.selectedChainId,
-    addressTronBase58,
+    accountInfo.evmosHexAddress,
     queries.queryBalances,
     amountConfig,
     gasConfig,
@@ -114,7 +112,9 @@ export const SignTronPage: FunctionComponent = observer(() => {
     memoConfig
   );
   useEffect(() => {
-    feeConfig.setManualFee(feeTrx);
+    if (feeTrx) {
+      feeConfig.setManualFee(feeTrx);
+    }
     return () => {
       feeConfig.setManualFee(null);
     };
@@ -128,6 +128,31 @@ export const SignTronPage: FunctionComponent = observer(() => {
       amountConfig.setAmount(tx?.value);
     }
   }, [txInfo, amountConfig]);
+  useEffect(() => {
+    if (dataSign) return;
+
+    if (waitingTronData) {
+      const dataTron = waitingTronData?.data;
+      getDataTx();
+      setDataSign(dataTron);
+      if (dataTron?.recipient) {
+        recipientConfig.setRawRecipient(dataTron?.recipient);
+      }
+      if (dataTron?.amount) {
+        amountConfig.setAmount(dataTron?.amount);
+      }
+      if (dataTron?.currency) {
+        amountConfig.setSendCurrency(dataTron?.currency);
+      }
+
+      chainStore.selectChain(ChainIdEnum.TRON);
+    }
+  }, [waitingTronData]);
+  console.log(dataSign, "dataSigndataSign");
+
+  const feeError = feeConfig.getError();
+  console.log(feeError, feeConfig.fee, "feeErrorfeeError");
+  const txStateIsValid = feeError == null;
   return (
     <div
       style={{
@@ -235,13 +260,21 @@ export const SignTronPage: FunctionComponent = observer(() => {
                 <Button
                   className={classnames(style.button, style.approveBtn)}
                   color=""
-                  disabled={false}
+                  disabled={!txStateIsValid}
                   data-loading={signInteractionStore.isLoading}
                   onClick={async (e) => {
                     e.preventDefault();
 
                     //@ts-ignore
-                    await signInteractionStore.approveTronAndWaitEnd();
+                    await signInteractionStore.approveTronAndWaitEnd({
+                      ...waitingTronData?.data,
+                      amount: amountConfig?.getAmountPrimitive()?.amount
+                        ? amountConfig?.getAmountPrimitive()?.amount
+                        : waitingTronData?.data?.amount,
+                      feeLimit: feeLimit?.gt(new Int(0))
+                        ? feeLimit?.toString()
+                        : null,
+                    });
 
                     if (
                       interactionInfo.interaction &&
