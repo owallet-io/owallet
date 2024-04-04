@@ -32,7 +32,7 @@ const styling = (colors) =>
       color: colors["neutral-Text-body"],
     },
     containerStyle: {
-      backgroundColor: colors["background-box"],
+      backgroundColor: colors["neutral-surface-bg2"],
     },
     bottomBtn: {
       marginTop: 20,

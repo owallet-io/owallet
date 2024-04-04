@@ -62,6 +62,8 @@ export const NetworkModal = () => {
     })();
     chainStore.selectChain(item?.chainId);
     await chainStore.saveLastViewChainId();
+    appInitStore.selectAllNetworks(false);
+    modalStore.close();
     Popup.hide();
 
     await keyRingStore.setKeyStoreLedgerAddress(
@@ -91,29 +93,33 @@ export const NetworkModal = () => {
     try {
       if (account.isNanoLedger) {
         modalStore.close();
-        Popup.show({
-          type: "confirm",
-          title: "Switch network!",
-          textBody: `You are switching to ${
-            COINTYPE_NETWORK[item.bip44.coinType]
-          } network. Please confirm that you have ${
-            COINTYPE_NETWORK[item.bip44.coinType]
-          } App opened before switch network`,
-          buttonText: `I have switched ${
-            COINTYPE_NETWORK[item.bip44.coinType]
-          } App`,
-          confirmText: "Cancel",
-          okButtonStyle: {
-            backgroundColor: colors["orange-800"],
-          },
-          callback: () => onConfirm(item),
-          cancelCallback: () => {
-            Popup.hide();
-          },
-          bounciness: 0,
-          duration: 10,
-        });
-        return;
+        if (!item.isAll) {
+          Popup.show({
+            type: "confirm",
+            title: "Switch network!",
+            textBody: `You are switching to ${
+              COINTYPE_NETWORK[item.bip44.coinType]
+            } network. Please confirm that you have ${
+              COINTYPE_NETWORK[item.bip44.coinType]
+            } App opened before switch network`,
+            buttonText: `I have switched ${
+              COINTYPE_NETWORK[item.bip44.coinType]
+            } App`,
+            confirmText: "Cancel",
+            okButtonStyle: {
+              backgroundColor: colors["orange-800"],
+            },
+            callback: () => onConfirm(item),
+            cancelCallback: () => {
+              Popup.hide();
+            },
+            bounciness: 0,
+            duration: 10,
+          });
+          return;
+        } else {
+          appInitStore.selectAllNetworks(true);
+        }
       } else {
         modalStore.close();
         if (!item.isAll) {
@@ -297,9 +303,10 @@ export const NetworkModal = () => {
           height: metrics.screenHeight / 2,
         }}
       >
-        {account.isNanoLedger
+        {/* {account.isNanoLedger
           ? null
-          : _renderItem({ item: { chainName: "All networks", isAll: true } })}
+          : _renderItem({ item: { chainName: "All networks", isAll: true } })} */}
+        {_renderItem({ item: { chainName: "All networks", isAll: true } })}
         <BottomSheetFlatList
           data={chainStore.chainInfosInUI}
           renderItem={_renderItem}

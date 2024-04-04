@@ -215,7 +215,7 @@ const styling = (colors) =>
       color: colors["primary-text"],
     },
     defaultBtn: {
-      backgroundColor: colors["background-box"],
+      backgroundColor: colors["neutral-surface-bg2"],
       height: 62,
       paddingHorizontal: spacing["20"],
       flexDirection: "row",

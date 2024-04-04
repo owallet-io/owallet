@@ -238,7 +238,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
         {
           coinDenom: "WETH",
           coinGeckoId: "weth",
-          coinMinimalDenom: "weth",
+          coinMinimalDenom:
+            "cw20:orai1dqa52a7hxxuv8ghe7q5v0s36ra0cthea960q2cukznleqhk0wpnshfegez:WETH",
           type: "cw20",
           contractAddress:
             "orai1dqa52a7hxxuv8ghe7q5v0s36ra0cthea960q2cukznleqhk0wpnshfegez",

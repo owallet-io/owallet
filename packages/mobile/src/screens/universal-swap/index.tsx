@@ -23,6 +23,7 @@ import {
   ORAI,
   toDisplay,
   getBase58Address,
+  KADOChainNameEnum,
 } from "@owallet/common";
 import {
   TokenItemType,
@@ -75,8 +76,13 @@ const mixpanel = globalThis.mixpanel as Mixpanel;
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
 
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
-  const { accountStore, universalSwapStore, chainStore, appInitStore } =
-    useStore();
+  const {
+    accountStore,
+    universalSwapStore,
+    chainStore,
+    appInitStore,
+    keyRingStore,
+  } = useStore();
   const { colors } = useTheme();
   const { data: prices } = useCoinGeckoPrices();
 
@@ -277,7 +283,14 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const loadTokenAmounts = useLoadTokens(universalSwapStore);
   // handle fetch all tokens of all chains
-  const handleFetchAmounts = async (tokenReload?, orai?, eth?, tron?, kwt?) => {
+  const handleFetchAmounts = async (params: {
+    orai?: string;
+    eth?: string;
+    tron?: string;
+    kwt?: string;
+    tokenReload?: Array<any>;
+  }) => {
+    const { orai, eth, tron, kwt, tokenReload } = params;
     let loadTokenParams = {};
     try {
       const cwStargate = {
@@ -288,11 +301,11 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       loadTokenParams = {
         ...loadTokenParams,
         oraiAddress: orai ?? accountOrai.bech32Address,
-        metamaskAddress: eth ?? accountEth.evmosHexAddress,
+        metamaskAddress: eth ?? null,
         kwtAddress: kwt ?? accountKawaiiCosmos.bech32Address,
-        tronAddress: getBase58Address(tron ?? accountTron.evmosHexAddress),
+        tronAddress: tron ?? null,
         cwStargate,
-        tokenReload: tokenReload.length > 0 ? tokenReload : null,
+        tokenReload: tokenReload?.length > 0 ? tokenReload : null,
       };
 
       setTimeout(() => {
@@ -310,23 +323,39 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
-      if (
-        accountOrai.bech32Address &&
-        accountEth.evmosHexAddress &&
-        accountTron.evmosHexAddress &&
-        accountKawaiiCosmos.bech32Address
-      ) {
-        setTimeout(() => {
-          universalSwapStore.clearAmounts();
-          universalSwapStore.setLoaded(false);
-          handleFetchAmounts(
-            [],
-            accountOrai.bech32Address,
-            accountEth.evmosHexAddress,
-            accountTron.evmosHexAddress,
-            accountKawaiiCosmos.bech32Address
-          );
-        }, 1000);
+      if (accountOrai.isNanoLedger) {
+        if (Object.keys(keyRingStore.keyRingLedgerAddresses).length > 0) {
+          setTimeout(() => {
+            universalSwapStore.clearAmounts();
+            universalSwapStore.setLoaded(false);
+            handleFetchAmounts({
+              orai: accountOrai.bech32Address,
+              eth: keyRingStore.keyRingLedgerAddresses.eth ?? null,
+              tron: keyRingStore.keyRingLedgerAddresses.trx ?? null,
+              kwt: accountKawaiiCosmos.bech32Address,
+              tokenReload: [],
+            });
+          }, 1000);
+        }
+      } else {
+        if (
+          accountOrai.bech32Address &&
+          accountEth.evmosHexAddress &&
+          accountTron.evmosHexAddress &&
+          accountKawaiiCosmos.bech32Address
+        ) {
+          setTimeout(() => {
+            universalSwapStore.clearAmounts();
+            universalSwapStore.setLoaded(false);
+            handleFetchAmounts({
+              orai: accountOrai.bech32Address,
+              eth: accountEth.evmosHexAddress,
+              tron: getBase58Address(accountTron.evmosHexAddress),
+              kwt: accountKawaiiCosmos.bech32Address,
+              tokenReload: [],
+            });
+          }, 1000);
+        }
       }
     });
   }, [
@@ -526,7 +555,13 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       return;
     }
 
-    let defaultEvmAddress = accountEth.evmosHexAddress;
+    let defaultEvmAddress;
+    if (accountEth.isNanoLedger && keyRingStore?.keyRingLedgerAddresses?.eth) {
+      defaultEvmAddress = keyRingStore.keyRingLedgerAddresses.eth;
+    } else {
+      defaultEvmAddress = accountEth.evmosHexAddress;
+    }
+
     Object.keys(ChainIdEnum).map((key) => {
       let defaultCosmosAddress = accountStore.getAccount(
         ChainIdEnum[key]
@@ -534,14 +569,22 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
       if (defaultCosmosAddress.startsWith("evmos")) {
         accounts[ChainIdEnum[key]] = defaultEvmAddress;
+      } else if (key === KADOChainNameEnum[ChainIdEnum.TRON]) {
+        accounts[ChainIdEnum.TRON] = null;
       } else {
         accounts[ChainIdEnum[key]] = defaultCosmosAddress;
       }
     });
 
-    accounts[ChainIdEnum.TRON] = getBase58Address(
-      accountStore.getAccount(ChainIdEnum.TRON).evmosHexAddress
-    );
+    if (accountTron.isNanoLedger && keyRingStore?.keyRingLedgerAddresses?.trx) {
+      accounts[ChainIdEnum.TRON] = keyRingStore.keyRingLedgerAddresses.trx;
+    } else {
+      if (accountTron) {
+        accounts[ChainIdEnum.TRON] = getBase58Address(
+          accountTron.evmosHexAddress
+        );
+      }
+    }
 
     const fromNetwork = chainStore.getChain(
       originalFromToken.chainId
@@ -616,9 +659,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             fromAmount: fromAmountToken,
             toAmount: toAmountToken,
             value: toAmountToken,
-            fee: `${(toAmountToken - minimumReceive).toFixed(6)} ${
-              originalToToken.name
-            }`,
+            fee: (toAmountToken - minimumReceive).toFixed(6),
             type: HISTORY_STATUS.SWAP,
             fromToken: {
               asset: originalFromToken.name,
@@ -635,8 +676,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             accountOrai.bech32Address,
             historyInfos
           );
-
-          console.log("res handleSaveHistory", res);
         } catch (err) {
           console.log("err on handleSaveHistory", err);
         }
@@ -654,7 +693,11 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           },
         });
 
-        await handleFetchAmounts([originalFromToken, originalToToken]);
+        await handleFetchAmounts({
+          eth: accountEth.evmosHexAddress,
+          tron: getBase58Address(accountTron.evmosHexAddress),
+          tokenReload: [originalFromToken, originalToToken],
+        });
         const tokens = getTokenInfos({
           tokens: universalSwapStore.getAmount,
           prices: appInitStore.getInitApp.prices,
@@ -682,7 +725,11 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const onRefresh = async () => {
     setLoadingRefresh(true);
-    await handleFetchAmounts([]);
+    await handleFetchAmounts({
+      eth: accountEth.evmosHexAddress,
+      tron: getBase58Address(accountTron.evmosHexAddress),
+      tokenReload: [],
+    });
     await estimateAverageRatio();
     setLoadingRefresh(false);
   };
@@ -870,9 +917,13 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         <OWButton
           label="Swap"
           style={styles.btnSwap}
+          textStyle={{
+            fontSize: 14,
+            fontWeight: "600",
+            color: colors["neutral-text-action-on-dark-bg"],
+          }}
           disabled={amountLoading || swapLoading}
           loading={swapLoading}
-          textStyle={styles.textBtnSwap}
           onPress={handleSubmit}
         />
         <View style={styles.containerInfoToken}>

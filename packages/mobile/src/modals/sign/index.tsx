@@ -115,9 +115,9 @@ export const SignModal: FunctionComponent<{
       signDocHelper.signDocWrapper == null ||
       memoConfig.getError() != null ||
       feeConfig.getError() != null;
+    amountConfig.getError() != null;
 
     const _onPressApprove = async () => {
-      crashlytics().log("sign - index - _onPressApprove");
       try {
         if (signDocHelper.signDocWrapper) {
           //
@@ -245,7 +245,9 @@ export const SignModal: FunctionComponent<{
               loadingApprove={signInteractionStore.isLoading}
               styleApprove={{
                 borderRadius: 99,
-                backgroundColor: colors["primary-surface-default"],
+                backgroundColor: isDisable
+                  ? colors["primary-surface-disable"]
+                  : colors["primary-surface-default"],
               }}
               onPressClose={_onPressReject}
               onPressApprove={_onPressApprove}

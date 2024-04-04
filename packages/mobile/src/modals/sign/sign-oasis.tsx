@@ -123,8 +123,8 @@ export const SignOasisModal: FunctionComponent<{
               }}
               style={{
                 backgroundColor: signInteractionStore.isLoading
-                  ? colors["gray-400"]
-                  : colors["purple-900"],
+                  ? colors["primary-surface-disable"]
+                  : colors["primary-surface-default"],
               }}
               loading={signInteractionStore.isLoading || loading}
               onPress={async () => {

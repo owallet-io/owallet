@@ -29,7 +29,7 @@ const styling = (colors) =>
     sendInputRoot: {
       paddingHorizontal: spacing["20"],
       paddingVertical: spacing["24"],
-      backgroundColor: colors["background-box"],
+      backgroundColor: colors["neutral-surface-bg2"],
       borderRadius: 24,
     },
     sendlabelInput: {
@@ -171,14 +171,14 @@ export const TransferNFTScreen: FunctionComponent = observer(() => {
             memoConfig={sendConfigs.memoConfig}
             labelStyle={styles.sendlabelInput}
             inputContainerStyle={{
-              backgroundColor: colors["background-box"],
+              backgroundColor: colors["neutral-surface-bg2"],
             }}
           />
           <TextInput
             placeholder={`Max: ${nft.quantity}`}
             label="Quantity"
             inputContainerStyle={{
-              backgroundColor: colors["background-box"],
+              backgroundColor: colors["neutral-surface-bg2"],
             }}
             error={
               !quantity || quantity > nft.quantity
@@ -235,7 +235,7 @@ export const TransferNFTScreen: FunctionComponent = observer(() => {
           <MemoInput
             label="Memo (Optional)"
             inputContainerStyle={{
-              backgroundColor: colors["background-box"],
+              backgroundColor: colors["neutral-surface-bg2"],
             }}
             placeholder="Type your memo here"
             memoConfig={sendConfigs.memoConfig}

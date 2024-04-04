@@ -10,6 +10,7 @@ import React, {
 } from "react";
 import {
   InteractionManager,
+  Platform,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -29,6 +30,8 @@ import { API } from "@src/common/api";
 import { chainIcons } from "@oraichain/oraidex-common";
 import { TokenItem } from "../tokens/components/token-item";
 import { HistoryCard } from "./history-card";
+import OWFlatList from "@src/components/page/ow-flat-list";
+import { metrics } from "@src/themes";
 
 export const TokensCardAll: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -243,7 +246,9 @@ export const TokensCardAll: FunctionComponent<{
   };
 
   const renderTokenItem = useCallback(
-    (item) => {
+    ({ item, index }) => {
+      if (more && index > 3) return null;
+
       if (item) {
         let profit = 0;
         let percent = "0";
@@ -268,50 +273,67 @@ export const TokensCardAll: FunctionComponent<{
             }}
             style={styles.btnItem}
           >
-            <View style={styles.leftBoxItem}>
-              <View style={styles.iconWrap}>
-                <OWIcon type="images" source={{ uri: item.icon }} size={28} />
-              </View>
-              <View style={styles.chainWrap}>
-                <OWIcon
-                  type="images"
-                  source={{ uri: chainIcon?.Icon }}
-                  size={16}
-                />
-              </View>
+            <View style={styles.wraperItem}>
+              <View style={styles.leftBoxItem}>
+                <View style={styles.iconWrap}>
+                  <OWIcon type="images" source={{ uri: item.icon }} size={28} />
+                </View>
+                <View style={styles.chainWrap}>
+                  <OWIcon
+                    type="images"
+                    source={{ uri: chainIcon?.Icon }}
+                    size={16}
+                  />
+                </View>
 
-              <View style={styles.pl10}>
-                <Text
-                  size={14}
-                  color={colors["neutral-text-heading"]}
-                  weight="600"
-                >
+                <View style={styles.pl12}>
+                  {/* <Text size={16} color={colors["neutral-text-heading"]} weight="600">
                   {item.balance.toFixed(4)} {item.asset}
-                </Text>
-                <Text weight="400" color={colors["neutral-text-body"]}>
-                  {item.chain}
-                </Text>
-              </View>
-            </View>
-            <View style={styles.rightBoxItem}>
-              <View style={{ flexDirection: "row" }}>
-                <View style={{ alignItems: "flex-end" }}>
-                  <Text weight="500" color={colors["neutral-text-heading"]}>
-                    ${item.value.toFixed(6)}
-                  </Text>
+                </Text> */}
                   <Text
-                    style={styles.profit}
-                    color={
-                      colors[
-                        profit < 0 ? "error-text-body" : "success-text-body"
-                      ]
-                    }
+                    size={16}
+                    color={colors["neutral-text-heading"]}
+                    weight="600"
                   >
-                    {profit < 0 ? "" : "+"}
-                    {percent}% (${profit ?? 0})
+                    {item.asset}
+                  </Text>
+                  <Text weight="400" color={colors["neutral-text-body"]}>
+                    {item.chain}
                   </Text>
                 </View>
-                <View
+              </View>
+              <View style={styles.rightBoxItem}>
+                <View style={{ flexDirection: "row" }}>
+                  <View style={{ alignItems: "flex-end" }}>
+                    <Text
+                      size={16}
+                      style={{ lineHeight: 24 }}
+                      weight="500"
+                      color={colors["neutral-text-heading"]}
+                    >
+                      {item.balance.toFixed(4)} {item.asset}
+                    </Text>
+                    <Text
+                      size={14}
+                      style={{ lineHeight: 24 }}
+                      color={colors["neutral-text-body"]}
+                    >
+                      ${item.value.toFixed(6)}
+                    </Text>
+                    <Text
+                      size={14}
+                      style={styles.profit}
+                      color={
+                        colors[
+                          profit < 0 ? "error-text-body" : "success-text-body"
+                        ]
+                      }
+                    >
+                      {profit < 0 ? "" : "+"}
+                      {percent}% (${profit ?? 0})
+                    </Text>
+                  </View>
+                  {/* <View
                   style={{
                     flex: 0.5,
                     justifyContent: "center",
@@ -322,6 +344,7 @@ export const TokensCardAll: FunctionComponent<{
                     height={12}
                     color={colors["neutral-text-heading"]}
                   />
+                </View> */}
                 </View>
               </View>
             </View>
@@ -329,39 +352,55 @@ export const TokensCardAll: FunctionComponent<{
         );
       }
     },
-    [universalSwapStore?.getAmount, theme]
+    [universalSwapStore?.getAmount, theme, more]
   );
 
   const renderContent = () => {
     if (activeTab === "tokens") {
       return (
         <>
-          <CardBody style={{ paddingHorizontal: 0, paddingTop: 16 }}>
-            {/* {renderTokensFromQueryBalances()} */}
-            {tokens.length > 0 ? (
-              tokens
-                .filter((t) => {
-                  if (appInitStore.getInitApp.isAllNetworks) {
-                    return true;
-                  }
-                  return t.chainId === chainStore.current.chainId;
-                })
-                .map((token, index) => {
-                  if (more) {
-                    if (index < 3) return renderTokenItem(token);
-                  } else {
-                    return renderTokenItem(token);
-                  }
-                })
-            ) : (
-              <OWEmpty type="cash" />
-            )}
-          </CardBody>
-          {tokens.length > 3 ? (
+          {/* {renderTokensFromQueryBalances()} */}
+          {/* <OWFlatList
+            contentContainerStyle={{
+              paddingHorizontal: 0,
+              paddingTop: 16
+            }}
+            data={tokens?.filter(t => {
+              if (appInitStore.getInitApp.isAllNetworks) {
+                return true;
+              }
+              return t.chainId === chainStore.current.chainId;
+            })}
+            keyExtractor={_keyExtract}
+            renderItem={renderTokenItem}
+            ListEmptyComponent={<OWEmpty type="cash" />}
+          /> */}
+          {tokens.length > 0 ? (
+            tokens
+              .filter((t) => {
+                if (appInitStore.getInitApp.isAllNetworks) {
+                  return true;
+                }
+                return t.chainId === chainStore.current.chainId;
+              })
+              .map((token, index) => {
+                if (more) {
+                  if (index < 3) return renderTokenItem({ item: token, index });
+                } else {
+                  return renderTokenItem({ item: token, index });
+                }
+              })
+          ) : (
+            <OWEmpty type="cash" />
+          )}
+          {tokens?.filter((t) => {
+            if (appInitStore.getInitApp.isAllNetworks) {
+              return true;
+            }
+            return t.chainId === chainStore.current.chainId;
+          }).length > 3 ? (
             <OWButton
-              style={{
-                marginTop: 16,
-              }}
+              style={{ marginTop: Platform.OS === "android" ? 24 : 16 }}
               label={more ? "View all" : "Hide"}
               size="medium"
               type="secondary"
@@ -382,11 +421,12 @@ export const TokensCardAll: FunctionComponent<{
   };
 
   return (
-    <View style={containerStyle}>
+    <View style={styles.container}>
       <OWBox
         style={{
           paddingTop: 12,
           backgroundColor: colors["neutral-surface-card"],
+          paddingHorizontal: 0,
         }}
       >
         <View style={styles.wrapHeaderTitle}>
@@ -434,9 +474,13 @@ const styling = (colors) =>
   StyleSheet.create({
     wrapHeaderTitle: {
       flexDirection: "row",
+      paddingBottom: 12,
     },
-    pl10: {
-      paddingLeft: 10,
+    container: {
+      marginBottom: 60,
+    },
+    pl12: {
+      paddingLeft: 12,
     },
     leftBoxItem: {
       flexDirection: "row",
@@ -445,11 +489,16 @@ const styling = (colors) =>
     rightBoxItem: {
       alignItems: "flex-end",
     },
-    btnItem: {
+    wraperItem: {
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
       marginVertical: 8,
+      marginHorizontal: 16,
+    },
+    btnItem: {
+      borderBottomColor: colors["neutral-border-default"],
+      borderBottomWidth: 1,
     },
     profit: {
       fontWeight: "400",

@@ -3,6 +3,7 @@ import React, {
   useCallback,
   useEffect,
   useRef,
+  useTransition,
 } from "react";
 import { PageWithScrollViewInBottomTabView } from "../../components/page";
 import { AccountCard } from "./account-card";
@@ -37,6 +38,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   const [refreshing, setRefreshing] = React.useState(false);
   const [refreshDate, setRefreshDate] = React.useState(Date.now());
   const { colors } = useTheme();
+  const [isPending, startTransition] = useTransition();
 
   const styles = styling(colors);
   const {
@@ -47,6 +49,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     browserStore,
     appInitStore,
     universalSwapStore,
+    keyRingStore,
   } = useStore();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
@@ -54,6 +57,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   const currentChain = chainStore.current;
   const currentChainId = currentChain?.chainId;
   const account = accountStore.getAccount(chainStore.current.chainId);
+
   const previousChainId = usePrevious(currentChainId);
   const chainStoreIsInitializing = chainStore.isInitializing;
   const previousChainStoreIsInitializing = usePrevious(
@@ -62,7 +66,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   );
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
-      console.log(InjectedProviderUrl, "InjectedProviderUrl");
       fetch(InjectedProviderUrl)
         .then((res) => {
           return res.text();
@@ -170,7 +173,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
             accountTron.evmosHexAddress,
             accountKawaiiCosmos.bech32Address
           );
-        }, 1400);
+        }, 1000);
       } else {
         console.log("The dates are 30 seconds or less apart.");
       }
@@ -228,27 +231,33 @@ export const HomeScreen: FunctionComponent = observer((props) => {
 
   useEffect(() => {
     universalSwapStore.setLoaded(false);
-    universalSwapStore.clearAmounts();
   }, [accountOrai.bech32Address]);
 
   useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
     InteractionManager.runAfterInteractions(() => {
-      if (
-        accountOrai.bech32Address &&
-        accountEth.evmosHexAddress &&
-        accountTron.evmosHexAddress &&
-        accountKawaiiCosmos.bech32Address
-      ) {
-        setTimeout(() => {
-          handleFetchAmounts(
-            accountOrai.bech32Address,
-            accountEth.evmosHexAddress,
-            accountTron.evmosHexAddress,
-            accountKawaiiCosmos.bech32Address
-          );
-        }, 1400);
-      }
+      startTransition(() => {
+        if (
+          accountOrai.bech32Address &&
+          accountEth.evmosHexAddress &&
+          accountTron.evmosHexAddress &&
+          accountKawaiiCosmos.bech32Address
+        ) {
+          timeoutId = setTimeout(() => {
+            handleFetchAmounts(
+              accountOrai.bech32Address,
+              accountEth.evmosHexAddress,
+              accountTron.evmosHexAddress,
+              accountKawaiiCosmos.bech32Address
+            );
+          }, 1100);
+        }
+      });
     });
+    // Clean up the timeout if the component unmounts or the dependency changes
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
   }, [
     accountOrai.bech32Address,
     accountEth.evmosHexAddress,
@@ -282,9 +291,9 @@ export const HomeScreen: FunctionComponent = observer((props) => {
 
   const oldUI = false;
 
-  const renderNewTokenCard = () => {
+  const renderNewTokenCard = useCallback(() => {
     return <TokensCardAll />;
-  };
+  }, []);
 
   const renderNewAccountCard = (() => {
     return <AccountBoxAll />;
@@ -316,9 +325,9 @@ const styling = (colors) =>
   StyleSheet.create({
     containerStyle: {
       paddingBottom: 12,
-      backgroundColor: colors["background-box"],
+      backgroundColor: colors["neutral-surface-bg2"],
     },
     containerEarnStyle: {
-      backgroundColor: colors["background-box"],
+      backgroundColor: colors["neutral-surface-bg2"],
     },
   });

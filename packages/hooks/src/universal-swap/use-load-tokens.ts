@@ -22,7 +22,7 @@ import {
   oraichainTokens,
   tokenMap,
 } from "@oraichain/oraidex-common";
-import { isEvmNetworkNativeSwapSupported } from "@owallet/common";
+import { ChainIdEnum, isEvmNetworkNativeSwapSupported } from "@owallet/common";
 import { CWStargate } from "@owallet/common";
 import { AccountWithAll } from "@owallet/stores";
 
@@ -41,7 +41,7 @@ export type LoadTokenParams = {
   tronAddress?: string;
   kwtAddress?: string;
   cwStargate?: CWStargateType;
-  tokenReload?: Array<string>;
+  tokenReload?: Array<any>;
 };
 type AmountDetails = { [denom: string]: string };
 
@@ -86,6 +86,68 @@ async function loadTokens(
     tokenReload,
   }: LoadTokenParams
 ) {
+  if (tokenReload) {
+    tokenReload.map((t) => {
+      if (t.networkType === "cosmos") {
+        if (oraiAddress) {
+          clearTimeout(timer[oraiAddress]);
+          // case get address when keplr ledger not support kawaii
+          timer[oraiAddress] = setTimeout(async () => {
+            await Promise.all([
+              loadTokensCosmos(
+                universalSwapStore,
+                kwtAddress,
+                oraiAddress,
+                tokenReload
+              ),
+              loadCw20Balance(
+                universalSwapStore,
+                oraiAddress,
+                cwStargate,
+                tokenReload
+              ),
+              // different cointype but also require keplr connected by checking oraiAddress
+              loadKawaiiSubnetAmount(
+                universalSwapStore,
+                kwtAddress,
+                tokenReload
+              ),
+            ]);
+          }, 500);
+        }
+      }
+      if (t.networkType === "evm") {
+        if (t.chainId === ChainIdEnum.TRON) {
+          if (tronAddress) {
+            clearTimeout(timer[tronAddress]);
+            timer[tronAddress] = setTimeout(() => {
+              loadEvmAmounts(
+                universalSwapStore,
+                tronToEthAddress(tronAddress),
+                chainInfos.filter((c) => c.chainId == "0x2b6653dc"),
+                tokenReload
+              );
+            }, 500);
+          }
+        } else {
+          if (metamaskAddress) {
+            clearTimeout(timer[metamaskAddress]);
+            timer[metamaskAddress] = setTimeout(() => {
+              loadEvmAmounts(
+                universalSwapStore,
+                metamaskAddress,
+                evmChains,
+                tokenReload
+              );
+            }, 500);
+          }
+        }
+      }
+    });
+    universalSwapStore.setLoaded(true);
+    return;
+  }
+
   if (oraiAddress) {
     clearTimeout(timer[oraiAddress]);
     // case get address when keplr ledger not support kawaii
@@ -131,9 +193,8 @@ async function loadTokens(
         tokenReload
       );
     }, 500);
-
-    universalSwapStore.setLoaded(true);
   }
+  universalSwapStore.setLoaded(true);
 }
 
 const getAddress = (addr, prefix: string) => {
@@ -253,7 +314,7 @@ async function loadNativeEvmBalance(address: string, chain: CustomChainInfo) {
 async function loadEvmEntries(
   address: string,
   chain: CustomChainInfo,
-  tokenReload?: any,
+  tokenReload?: Array<any>,
   multicallCustomContractAddress?: string,
   retryCount?: number
 ): Promise<[string, string][]> {
@@ -336,7 +397,7 @@ async function loadEvmAmounts(
   universalSwapStore: any,
   evmAddress: string,
   chains: CustomChainInfo[],
-  tokenReload?: any
+  tokenReload?: Array<any>
 ) {
   //@ts-ignore
   const amountDetails = Object.fromEntries(

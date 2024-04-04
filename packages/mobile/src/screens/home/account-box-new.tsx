@@ -9,7 +9,7 @@ import { getTotalUsd, chainIcons } from "@oraichain/oraidex-common";
 import { DownArrowIcon } from "@src/components/icon";
 import { metrics, spacing } from "@src/themes";
 import MyWalletModal from "./components/my-wallet-modal/my-wallet-modal";
-import { ChainIdEnum, ChainNameEnum, getBase58Address } from "@owallet/common";
+import { ChainIdEnum } from "@owallet/common";
 import { OWButton } from "@src/components/button";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { CopyAddressModal } from "./components/copy-address/copy-address-modal";
@@ -29,6 +29,8 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
     appInitStore,
   } = useStore();
   const [profit, setProfit] = useState(0);
+  const [isOpen, setModalOpen] = useState(false);
+
   const smartNavigation = useSmartNavigation();
 
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
@@ -40,7 +42,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
   });
 
   const styles = styling(colors);
-  let totalUsd: number;
+  let totalUsd: number = 0;
   if (appInitStore.getInitApp.prices) {
     totalUsd = getTotalUsd(
       universalSwapStore.getAmount,
@@ -58,11 +60,6 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
       },
     });
     modalStore.setChildren(MyWalletModal());
-  };
-
-  const _onPressAddressModal = () => {
-    modalStore.setOptions();
-    modalStore.setChildren(<CopyAddressModal />);
   };
 
   useEffect(() => {
@@ -93,18 +90,20 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
     return (
       <>
         <Text variant="bigText" style={styles.labelTotalAmount}>
-          ${totalUsd?.toFixed(6) ?? 0}
+          ${totalUsd.toFixed(6)}
         </Text>
         <Text
           style={styles.profit}
           color={colors[profit < 0 ? "error-text-body" : "success-text-body"]}
         >
           {profit < 0 ? "" : "+"}
-          {profit && totalUsd
+          {profit && totalUsd && totalUsd > 0
             ? Number((profit / totalUsd) * 100 ?? 0).toFixed(2)
             : 0}
-          % (${profit ?? 0}) Today
+          % ($
+          {profit ?? 0}) Today
         </Text>
+
         {appInitStore.getInitApp.isAllNetworks ? null : (
           <View
             style={{
@@ -157,6 +156,14 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
 
   return (
     <View>
+      <CopyAddressModal
+        close={() => setModalOpen(false)}
+        isOpen={isOpen}
+        bottomSheetModalConfig={{
+          enablePanDownToClose: false,
+          enableOverDrag: false,
+        }}
+      />
       <OWBox style={styles.containerOWBox}>
         <View style={styles.containerInfoAccount}>
           {!universalSwapStore.getLoadStatus.isLoad && (
@@ -191,7 +198,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
             style={styles.copy}
             label="Copy address"
             onPress={() => {
-              _onPressAddressModal();
+              setModalOpen(true);
             }}
           />
         </View>
@@ -219,11 +226,17 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
               color: colors["neutral-text-action-on-dark-bg"],
             }}
             style={styles.getStarted}
-            label="Send"
+            label={appInitStore.getInitApp.isAllNetworks ? "Buy" : "Send"}
             onPress={() => {
               // smartNavigation.navigateSmart("NewSend", {
               //   currency: chainStore.current.stakeCurrency.coinMinimalDenom,
               // });
+              if (appInitStore.getInitApp.isAllNetworks) {
+                navigate(SCREENS.STACK.Others, {
+                  screen: SCREENS.BuyFiat,
+                });
+                return;
+              }
               if (chainStore.current.chainId === ChainIdEnum.TRON) {
                 smartNavigation.navigateSmart("SendTron", {
                   currency: chainStore.current.stakeCurrency.coinMinimalDenom,

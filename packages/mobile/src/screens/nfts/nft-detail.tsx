@@ -145,7 +145,7 @@ export const NftDetailScreen: FunctionComponent = observer((props) => {
 
       <View
         style={{
-          backgroundColor: colors["background-box"],
+          backgroundColor: colors["neutral-surface-bg2"],
           borderRadius: spacing["24"],
           paddingBottom: spacing["24"],
           height: metrics.screenHeight / 2,
@@ -192,7 +192,7 @@ const styling = () => {
       marginTop: spacing["8"],
       justifyContent: "center",
       alignItems: "center",
-      backgroundColor: colors["background-box"],
+      backgroundColor: colors["neutral-surface-bg2"],
       paddingHorizontal: 12,
       borderRadius: spacing["12"],
       padding: spacing["8"],

@@ -153,7 +153,7 @@ export const Transactions: FunctionComponent = () => {
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: colors["background-box"],
+          backgroundColor: colors["neutral-surface-bg2"],
           borderRadius: spacing["12"],
           height: 56,
           marginVertical: spacing["12"],
@@ -172,7 +172,7 @@ export const Transactions: FunctionComponent = () => {
               backgroundColor:
                 indexParent === i
                   ? colors["primary-surface-default"]
-                  : colors["background-box"],
+                  : colors["neutral-surface-bg2"],
               borderRadius: spacing["12"],
             }}
             onPress={() => {

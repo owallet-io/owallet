@@ -6363,7 +6363,7 @@
   dependencies:
     "@types/node" "*"
 
-"@types/crypto-js@^4.0.1":
+"@types/crypto-js@^4.2.0":
   version "4.2.2"
   resolved "https://registry.yarnpkg.com/@types/crypto-js/-/crypto-js-4.2.2.tgz#771c4a768d94eb5922cc202a3009558204df0cea"
   integrity sha512-sDOLlVbHhXpAUAL0YHDUUwDZf3iN4Bwi4W6a0W0b+QcAezUbRtH4FVb+9J4h+XFPW7l/gQ9F8qC7P+Ec4k8QVQ==
@@ -6701,13 +6701,12 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react@*", "@types/react@16 || 17 || 18", "@types/react@18.0.24", "@types/react@^16", "@types/react@^16.14.4":
-  version "16.14.57"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.14.57.tgz#7ad1024b6188497255f94f47e735e8203d30b752"
-  integrity sha512-fuNq/GV1a6GgqSuVuC457vYeTbm4E1CUBQVZwSPxqYnRhIzSXCJ1gGqyv+PKhqLyfbKCga9dXHJDzv+4XE41fw==
+"@types/react@*", "@types/react@16 || 17 || 18", "@types/react@18.0.24", "@types/react@18.2.73", "@types/react@^16", "@types/react@^16.14.4":
+  version "18.2.73"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.2.73.tgz#0579548ad122660d99e00499d22e33b81e73ed94"
+  integrity sha512-XcGdod0Jjv84HOC7N5ziY3x+qL0AfmubvKOZ9hJjJ2yd5EE+KYjWhdOjt387e9HPheHkdggF9atTifMRtyAaRA==
   dependencies:
     "@types/prop-types" "*"
-    "@types/scheduler" "*"
     csstype "^3.0.2"
 
 "@types/reactstrap@^8.4.2":
@@ -6730,11 +6729,6 @@
   integrity sha512-H/+L+UkTV33uf49PH5pCAUBVPNj2nDBXTN+qS1dOwyyg24l3CcicicCA7ca+HMvJBZcFgl5r8e+RR6elsb4Lyw==
   dependencies:
     "@types/node" "*"
-
-"@types/scheduler@*":
-  version "0.16.8"
-  resolved "https://registry.yarnpkg.com/@types/scheduler/-/scheduler-0.16.8.tgz#ce5ace04cfeabe7ef87c0091e50752e36707deff"
-  integrity sha512-WZLiwShhwLRmeV6zH+GkbOFT6Z6VklCItrDioxUnv+u4Ll+8vKeFySoFyK/0ctcRpOmwAicELfmys1sDc/Rw+A==
 
 "@types/secp256k1@^4.0.1":
   version "4.0.6"
@@ -10936,7 +10930,7 @@ crypto-js@^3.1.9-1:
   resolved "https://registry.yarnpkg.com/crypto-js/-/crypto-js-3.3.0.tgz#846dd1cce2f68aacfa156c8578f926a609b7976b"
   integrity sha512-DIT51nX0dCfKltpRiXV+/TVZq+Qq2NgF4644+K7Ttnla7zEzqc+kjJyiB96BHNyUTBxyjzRcZYpUdZa+QAqi6Q==
 
-crypto-js@^4.0.0:
+crypto-js@^4.2.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/crypto-js/-/crypto-js-4.2.0.tgz#4d931639ecdfd12ff80e8186dba6af2c2e856631"
   integrity sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==
@@ -22851,7 +22845,7 @@ proxy-from-env@^1.0.0, proxy-from-env@^1.1.0:
   resolved "https://registry.yarnpkg.com/proxy-from-env/-/proxy-from-env-1.1.0.tgz#e102f16ca355424865755d2c9e8ea4f24d58c3e2"
   integrity sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg==
 
-proxy-recrypt-js@1.1.2:
+proxy-recrypt-js@^1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/proxy-recrypt-js/-/proxy-recrypt-js-1.1.2.tgz#0873c3404ec2352209f7ef0606380ed08f8dbd8d"
   integrity sha512-jcCo8s9LGEva5EW7j1/OH/gD0UVhH0jyg7qH1SKwWyaoBgAudUuh9Y2yqNUnHlkiVdoXhWCaaCrUgnthVxatFA==

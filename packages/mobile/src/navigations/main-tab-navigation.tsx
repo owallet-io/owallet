@@ -63,7 +63,7 @@ export const MainTabNavigation: FC = observer(() => {
           tabBarLabel: `${SCREENS_OPTIONS[route.name].title}`,
 
           tabBarStyle: {
-            backgroundColor: colors["background-box"],
+            backgroundColor: colors["neutral-surface-bg2"],
             borderTopWidth: 0.5,
             borderTopColor: colors["border-bottom-tab"],
             paddingLeft: 10,

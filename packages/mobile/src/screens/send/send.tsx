@@ -40,6 +40,7 @@ import {
   HISTORY_STATUS,
 } from "@src/utils/helper";
 import { Buffer } from "buffer";
+import { ChainIdEnum } from "@oraichain/oraidex-common";
 
 const styling = (colors) =>
   StyleSheet.create({
@@ -56,7 +57,7 @@ const styling = (colors) =>
       color: colors["neutral-text-body"],
     },
     containerStyle: {
-      backgroundColor: colors["background-box"],
+      backgroundColor: colors["neutral-surface-bg2"],
     },
     bottomBtn: {
       marginTop: 20,
@@ -105,6 +106,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
   const smartNavigation = useSmartNavigation();
 
   const account = accountStore.getAccount(chainId);
+  const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const queries = queriesStore.get(chainId);
   const address = account.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses
@@ -255,9 +257,10 @@ export const NewSendScreen: FunctionComponent = observer(() => {
                 {
                   ...sendConfigs.amountConfig.sendCurrency,
                   chainId: chainStore.current.chainId,
+                  networkType: "cosmos",
                 },
               ]);
-              await handleSaveHistory(address, historyInfos);
+              await handleSaveHistory(accountOrai.bech32Address, historyInfos);
               smartNavigation.pushSmart("TxPendingResult", {
                 txHash: Buffer.from(txHash).toString("hex"),
                 data: {

@@ -13,7 +13,6 @@ import { useStore } from "../../stores";
 import { _keyExtract } from "../../utils/helper";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { Text } from "@src/components/text";
-import { useSmartNavigation } from "@src/navigation.provider";
 import { RightArrowIcon } from "@src/components/icon";
 import { ChainIdEnum } from "@owallet/common";
 import { API } from "@src/common/api";
@@ -53,6 +52,8 @@ export const HistoryCard: FunctionComponent<{
       );
 
       if (res && res.status === 200) {
+        console.log("res.data.data", res.data.data);
+
         setHistories({ ...histories, ...res.data.data });
         setLoading(false);
         if (Number(res.data.total) > offset) {
@@ -113,7 +114,7 @@ export const HistoryCard: FunctionComponent<{
                   color={colors["neutral-text-heading"]}
                   weight="600"
                 >
-                  {item.type}
+                  {item.type.split("_").join("")}
                 </Text>
                 <Text weight="400" color={colors["neutral-text-body"]}>
                   {Bech32Address.shortenAddress(item.fromAddress, 16)}
@@ -126,12 +127,9 @@ export const HistoryCard: FunctionComponent<{
                   <Text weight="500" color={colors["neutral-text-heading"]}>
                     {item.fromAmount} {item.fromToken?.asset ?? ""}
                   </Text>
-                  <Text
-                    style={styles.profit}
-                    color={colors["success-text-body"]}
-                  >
+                  {/* <Text style={styles.profit} color={colors["success-text-body"]}>
                     {"+"}${item.value.toFixed(6)}
-                  </Text>
+                  </Text> */}
                 </View>
                 <View
                   style={{

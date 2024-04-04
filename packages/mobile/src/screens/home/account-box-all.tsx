@@ -156,7 +156,7 @@ const styling = (colors) =>
       borderTopLeftRadius: 0,
       paddingVertical: 18,
       borderTopRightRadius: 0,
-      backgroundColor: colors["background-box"],
+      backgroundColor: colors["neutral-surface-bg2"],
     },
     labelName: {
       paddingLeft: spacing["6"],

@@ -48,7 +48,7 @@ const styling = (colors) =>
       borderBottomLeftRadius: spacing["8"],
       borderBottomRightRadius: spacing["8"],
       color: colors["sub-text"],
-      backgroundColor: colors["background-box"],
+      backgroundColor: colors["neutral-surface-bg2"],
       borderWidth: 0,
     },
     input: {

@@ -14,7 +14,7 @@ import { CoinPretty, Dec } from "@owallet/unit";
 import { useTheme } from "@src/themes/theme-provider";
 import { API } from "../../../common/api";
 import { CardDivider } from "../../../components/card";
-import { AlertIcon, DownArrowIcon } from "../../../components/icon";
+import { AlertIcon } from "../../../components/icon";
 import { SelectorModal } from "../../../components/input";
 import { RectButton } from "../../../components/rect-button";
 import { useSmartNavigation } from "../../../navigation.provider";

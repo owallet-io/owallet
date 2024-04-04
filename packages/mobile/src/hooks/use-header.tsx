@@ -35,7 +35,7 @@ const useHeaderOptions = (
 
   return {
     headerStyle: {
-      backgroundColor: colors["background-box"],
+      backgroundColor: colors["neutral-surface-bg2"],
       shadowColor: colors["border-gray"],
       // shadowRadius: 0,
       // elevation: 1

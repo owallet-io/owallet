@@ -258,7 +258,7 @@ const styling = (colors) =>
     container: {},
 
     containerEarnStyle: {
-      backgroundColor: colors["background-box"],
+      backgroundColor: colors["neutral-surface-bg2"],
       margin: 0,
     },
     "text-earn": {

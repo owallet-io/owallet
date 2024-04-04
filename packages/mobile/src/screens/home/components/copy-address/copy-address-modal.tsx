@@ -1,4 +1,4 @@
-import { Image, ScrollView, StyleSheet, View } from "react-native";
+import { Image, StyleSheet, View, TextInput } from "react-native";
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import OWIcon from "@src/components/ow-icon/ow-icon";
@@ -6,23 +6,34 @@ import { TypeTheme, useTheme } from "@src/themes/theme-provider";
 import { metrics } from "@src/themes";
 import { CustomAddressCopyable } from "@src/components/address-copyable/custom";
 import { chainIcons } from "@oraichain/oraidex-common";
-import { ChainIdEnum, ChainNameEnum, getBase58Address } from "@owallet/common";
+import {
+  ChainIdEnum,
+  ChainNameEnum,
+  getBase58Address,
+  KADOChainNameEnum,
+} from "@owallet/common";
 import OWText from "@src/components/text/ow-text";
 import { useStore } from "@src/stores";
-import { TextInput } from "@src/components/input";
+import { registerModal } from "@src/modals/base";
+import { BottomSheetProps } from "@gorhom/bottom-sheet";
+import { ScrollView } from "react-native-gesture-handler";
 
 export const CopyAddressModal: FunctionComponent<{
   copyable?: boolean;
   onPress?: Function;
-}> = ({ onPress, copyable = true }) => {
+  isOpen: boolean;
+  close: () => void;
+  bottomSheetModalConfig?: Omit<BottomSheetProps, "snapPoints" | "children">;
+}> = registerModal(({ onPress, copyable = true, close }) => {
   const safeAreaInsets = useSafeAreaInsets();
   const [keyword, setKeyword] = useState("");
   const [addresses, setAddresses] = useState({});
   const [refresh, setRefresh] = useState(Date.now());
 
-  const { accountStore } = useStore();
+  const { accountStore, keyRingStore } = useStore();
 
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
+  const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
   const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
   const accountBtc = accountStore.getAccount(ChainIdEnum.Bitcoin);
 
@@ -35,8 +46,12 @@ export const CopyAddressModal: FunctionComponent<{
   useEffect(() => {
     let accounts = {};
 
-    let defaultEvmAddress = accountEth.evmosHexAddress;
-
+    let defaultEvmAddress;
+    if (accountEth.isNanoLedger && keyRingStore?.keyRingLedgerAddresses?.eth) {
+      defaultEvmAddress = keyRingStore.keyRingLedgerAddresses.eth;
+    } else {
+      defaultEvmAddress = accountEth.evmosHexAddress;
+    }
     Object.keys(ChainIdEnum).map((key) => {
       let defaultCosmosAddress = accountStore.getAccount(
         ChainIdEnum[key]
@@ -44,15 +59,23 @@ export const CopyAddressModal: FunctionComponent<{
 
       if (defaultCosmosAddress.startsWith("evmos")) {
         accounts[ChainNameEnum[key]] = defaultEvmAddress;
-      } else if (key === "TRON") {
-        return;
+      } else if (key === KADOChainNameEnum[ChainIdEnum.TRON]) {
+        accounts[ChainNameEnum.TRON] = null;
       } else {
         accounts[ChainNameEnum[key]] = defaultCosmosAddress;
       }
     });
-    accounts[ChainNameEnum.TRON] = getBase58Address(
-      accountStore.getAccount(ChainIdEnum.TRON).evmosHexAddress
-    );
+
+    if (accountTron.isNanoLedger && keyRingStore?.keyRingLedgerAddresses?.trx) {
+      accounts[ChainNameEnum.TRON] = keyRingStore.keyRingLedgerAddresses.trx;
+    } else {
+      if (accountTron) {
+        accounts[ChainNameEnum.TRON] = getBase58Address(
+          accountTron.evmosHexAddress
+        );
+      }
+    }
+
     accounts[ChainNameEnum.BitcoinLegacy] = accountBtc.allBtcAddresses.legacy;
     accounts[ChainNameEnum.BitcoinSegWit] = accountBtc.allBtcAddresses.bech32;
 
@@ -60,26 +83,57 @@ export const CopyAddressModal: FunctionComponent<{
   }, [accountOrai.bech32Address, accountEth.evmosHexAddress, refresh]);
 
   const { colors } = useTheme();
-  const styles = styling(colors);
 
   return (
-    <View
-      style={[styles.containerModal, { paddingBottom: safeAreaInsets.bottom }]}
-    >
-      <View>
-        <TextInput
-          isBottomSheet={true}
-          inputContainerStyle={styles.textInput}
-          placeholderTextColor={colors["text-place-holder"]}
-          placeholder="Search for a chain"
-          onChangeText={(t) => setKeyword(t)}
-          value={keyword}
-        />
-        <View style={styles.iconSearch}>
-          <OWIcon color={colors["blue-400"]} name="tdesign_search" size={16} />
+    <View>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          marginBottom: 16,
+          alignSelf: "center",
+        }}
+      >
+        <View
+          style={{
+            flexDirection: "row",
+            backgroundColor: colors["neutral-surface-action"],
+            height: 40,
+            borderRadius: 999,
+            width: metrics.screenWidth - 32,
+            alignItems: "center",
+            paddingHorizontal: 12,
+          }}
+        >
+          <View style={{ paddingRight: 4 }}>
+            <OWIcon
+              color={colors["neutral-icon-on-light"]}
+              name="tdesign_search"
+              size={16}
+            />
+          </View>
+          <TextInput
+            style={{
+              fontFamily: "SpaceGrotesk-Regular",
+              width: "100%",
+            }}
+            onChangeText={(t) => setKeyword(t)}
+            value={keyword}
+            placeholderTextColor={colors["neutral-text-body"]}
+            placeholder="Search by name"
+          />
         </View>
       </View>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={[
+          {
+            paddingBottom: safeAreaInsets.bottom,
+            height: metrics.screenHeight / 1.5,
+          },
+        ]}
+        showsVerticalScrollIndicator={false}
+        persistentScrollbar={true}
+      >
         {addresses && Object.keys(addresses).length > 0 ? (
           Object.keys(addresses).map((key) => {
             const item = { name: key, address: addresses[key] };
@@ -116,10 +170,12 @@ export const CopyAddressModal: FunctionComponent<{
                 return (
                   <CustomAddressCopyable
                     copyable={copyable}
-                    onPress={() =>
-                      onPress &&
-                      onPress({ ...item, chainIcon: chainIcon?.Icon })
-                    }
+                    onPress={() => {
+                      if (onPress) {
+                        onPress({ ...item, chainIcon: chainIcon?.Icon });
+                        close();
+                      }
+                    }}
                     icon={
                       <OWIcon
                         type="images"
@@ -180,7 +236,7 @@ export const CopyAddressModal: FunctionComponent<{
       </ScrollView>
     </View>
   );
-};
+});
 
 const styling = (colors: TypeTheme["colors"]) =>
   StyleSheet.create({
@@ -200,8 +256,5 @@ const styling = (colors: TypeTheme["colors"]) =>
       color: colors["neutral-text-body"],
       marginVertical: 10,
       paddingRight: 12,
-    },
-    containerModal: {
-      height: metrics.screenHeight / 1.6,
     },
   });

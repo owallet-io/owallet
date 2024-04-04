@@ -51,6 +51,7 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
 }) => {
   const styleMapped = useMapStyles({ type, disabled, size, contentAlign });
   const styles = styling();
+  const { colors } = useTheme();
   return (
     <TouchableOpacity
       {...props}
@@ -67,7 +68,10 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
       ]}
     >
       {loading ? (
-        <LoadingSpinner color={colorLoading} size={20} />
+        <LoadingSpinner
+          color={colorLoading ?? colors["neutral-text-action-on-dark-bg"]}
+          size={20}
+        />
       ) : (
         <>
           {!!icon && icon}
@@ -81,6 +85,7 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
                 styleMapped.text,
                 textStyle,
               ]}
+              color={colors["neutral-text-action-on-dark-bg"]}
             >
               {label}
             </OWText>

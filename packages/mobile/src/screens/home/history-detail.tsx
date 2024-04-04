@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Image,
   ActivityIndicator,
+  Clipboard,
 } from "react-native";
 import OWText from "@src/components/text/ow-text";
 import { useSmartNavigation } from "@src/navigation.provider";
@@ -16,14 +17,16 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { OWButton } from "@src/components/button";
 import { metrics } from "@src/themes";
 import { ScrollView } from "react-native-gesture-handler";
-import { CopyFillIcon, DownArrowIcon } from "@src/components/icon";
+import { CheckIcon, CopyFillIcon, DownArrowIcon } from "@src/components/icon";
 import { API } from "@src/common/api";
 import { HISTORY_STATUS, openLink } from "@src/utils/helper";
 import { Bech32Address } from "@owallet/cosmos";
 import { getTransactionUrl } from "../universal-swap/helpers";
+import { useSimpleTimer } from "@src/hooks";
 
 export const HistoryDetail: FunctionComponent = observer((props) => {
   const { chainStore } = useStore();
+  const { isTimedOut, setTimer } = useSimpleTimer();
 
   const route = useRoute<
     RouteProp<
@@ -78,6 +81,11 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
     smartNavigation.goBack();
   };
 
+  const onCopy = (address) => {
+    Clipboard.setString(address);
+    setTimer(2000);
+  };
+
   const renderTransactionDetail = (
     title,
     content,
@@ -85,7 +93,7 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
   ) => {
     return (
       <View style={styles.wrapperDetail}>
-        <View>
+        <View style={{ maxWidth: metrics.screenWidth / 1.3 }}>
           <OWText weight="600">{title}</OWText>
           <OWText color={colors["neutral-text-body"]} style={{ paddingTop: 4 }}>
             {content}
@@ -93,7 +101,9 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
         </View>
 
         {action?.type === "copy" ? (
-          <CopyFillIcon size={24} color={colors["neutral-icon-on-light"]} />
+          <TouchableOpacity onPress={action.callback}>
+            <CopyFillIcon size={24} color={colors["neutral-icon-on-light"]} />
+          </TouchableOpacity>
         ) : null}
         {action?.type === "share" ? (
           <TouchableOpacity onPress={action.callback}>
@@ -164,7 +174,7 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
                 }}
               >
                 <OWText style={{ fontSize: 16, fontWeight: "500" }}>
-                  {detail.type}
+                  {detail.type.split("_").join("")}
                 </OWText>
                 <View style={styles.status}>
                   <OWText
@@ -183,7 +193,7 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
                     fontWeight: "500",
                   }}
                 >
-                  -{detail.fromAmount} {detail.fromToken?.asset.toUpperCase()}
+                  {detail.fromAmount} {detail.fromToken?.asset.toUpperCase()}
                 </OWText>
                 {detail.type === HISTORY_STATUS.SWAP ? (
                   <>
@@ -215,7 +225,9 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
                 Bech32Address.shortenAddress(detail.fromAddress, 24),
                 {
                   type: "copy",
-                  callback: () => {},
+                  callback: () => {
+                    onCopy(detail.fromAddress);
+                  },
                 }
               )}
               {renderTransactionDetail(
@@ -223,7 +235,9 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
                 Bech32Address.shortenAddress(detail.toAddress, 24),
                 {
                   type: "copy",
-                  callback: () => {},
+                  callback: () => {
+                    onCopy(detail.toAddress);
+                  },
                 }
               )}
               {renderTransactionDetail("Network", detail.fromToken?.chainId)}

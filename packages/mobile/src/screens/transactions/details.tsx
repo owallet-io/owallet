@@ -168,7 +168,7 @@ const InfoItems: FunctionComponent<{
             ]),
           ]),
           {
-            backgroundColor: colors["background-box"],
+            backgroundColor: colors["neutral-surface-bg2"],
           },
         ]}
       >
@@ -195,7 +195,7 @@ const DetailItems: FunctionComponent<{
           style={[
             styles.containerDetailHorizontal,
             {
-              backgroundColor: colors["background-box"],
+              backgroundColor: colors["neutral-surface-bg2"],
             },
           ]}
         >
@@ -250,7 +250,7 @@ const DetailItems: FunctionComponent<{
             ]),
           ]),
           {
-            backgroundColor: colors["background-box"],
+            backgroundColor: colors["neutral-surface-bg2"],
           },
         ]}
         onPress={onPress}

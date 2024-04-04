@@ -64,10 +64,7 @@ export const styling = (colors: TypeTheme["colors"]) =>
       alignItems: "center",
       justifyContent: "space-between",
     },
-    textBtnSwap: {
-      fontWeight: "700",
-      fontSize: 16,
-    },
+
     itemBottom: {
       flexDirection: "row",
       justifyContent: "space-between",

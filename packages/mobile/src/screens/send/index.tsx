@@ -41,7 +41,7 @@ const styling = (colors) =>
       marginBottom: spacing["8"],
     },
     containerStyle: {
-      backgroundColor: colors["background-box"],
+      backgroundColor: colors["neutral-surface-bg2"],
     },
   });
 
@@ -141,7 +141,7 @@ export const SendScreen: FunctionComponent = observer(() => {
             labelStyle={styles.sendlabelInput}
             containerStyle={styles.containerStyle}
             selectorContainerStyle={{
-              backgroundColor: colors["background-box"],
+              backgroundColor: colors["neutral-surface-bg2"],
             }}
           />
           <AddressInput
@@ -151,7 +151,7 @@ export const SendScreen: FunctionComponent = observer(() => {
             memoConfig={sendConfigs.memoConfig}
             labelStyle={styles.sendlabelInput}
             inputContainerStyle={{
-              backgroundColor: colors["background-box"],
+              backgroundColor: colors["neutral-surface-bg2"],
             }}
           />
           <AmountInput
@@ -164,7 +164,7 @@ export const SendScreen: FunctionComponent = observer(() => {
             amountConfig={sendConfigs.amountConfig}
             labelStyle={styles.sendlabelInput}
             inputContainerStyle={{
-              backgroundColor: colors["background-box"],
+              backgroundColor: colors["neutral-surface-bg2"],
             }}
           />
 
@@ -206,7 +206,7 @@ export const SendScreen: FunctionComponent = observer(() => {
             <TextInput
               label="Fee"
               inputContainerStyle={{
-                backgroundColor: colors["background-box"],
+                backgroundColor: colors["neutral-surface-bg2"],
               }}
               placeholder="Type your Fee here"
               keyboardType={"numeric"}
@@ -236,7 +236,7 @@ export const SendScreen: FunctionComponent = observer(() => {
             label="Memo (Optional)"
             placeholder="Type your memo here"
             inputContainerStyle={{
-              backgroundColor: colors["background-box"],
+              backgroundColor: colors["neutral-surface-bg2"],
             }}
             memoConfig={sendConfigs.memoConfig}
             labelStyle={styles.sendlabelInput}

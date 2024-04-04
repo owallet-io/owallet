@@ -270,7 +270,10 @@ const HistoryTransactionsScreen = observer(() => {
         <View
           style={[
             styles.containerBtnPage,
-            { backgroundColor: colors["background-box"], borderRadius: 16 },
+            {
+              backgroundColor: colors["neutral-surface-bg2"],
+              borderRadius: 16,
+            },
           ]}
         >
           {["Transfer", "Receive"].map((title: string, i: number) => (
@@ -283,7 +286,7 @@ const HistoryTransactionsScreen = observer(() => {
                 backgroundColor:
                   activePage === i
                     ? colors["primary-surface-default"]
-                    : colors["background-box"],
+                    : colors["neutral-surface-bg2"],
                 borderRadius: spacing["12"],
               }}
               onPress={() => {
