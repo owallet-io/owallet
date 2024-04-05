@@ -273,7 +273,7 @@ export const TokensCardAll: FunctionComponent<{
             }}
             style={styles.btnItem}
           >
-            <View style={styles.wraperItem}>
+            <View style={[styles.wraperItem]}>
               <View style={styles.leftBoxItem}>
                 <View style={styles.iconWrap}>
                   <OWIcon type="images" source={{ uri: item.icon }} size={28} />
@@ -484,7 +484,6 @@ const styling = (colors) =>
     },
     leftBoxItem: {
       flexDirection: "row",
-      alignItems: "center",
     },
     rightBoxItem: {
       alignItems: "flex-end",
@@ -492,7 +491,6 @@ const styling = (colors) =>
     wraperItem: {
       flexDirection: "row",
       justifyContent: "space-between",
-      alignItems: "center",
       marginVertical: 8,
       marginHorizontal: 16,
     },
@@ -523,6 +521,7 @@ const styling = (colors) =>
       position: "absolute",
       bottom: -6,
       left: 20,
+      top: 20,
     },
     active: {
       borderBottomColor: colors["primary-surface-default"],
