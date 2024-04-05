@@ -5,13 +5,13 @@ import { HeaderLayout, LayoutHidePage } from "../../layouts";
 import { Card, CardBody } from "reactstrap";
 
 import { AccountView } from "./account";
-import { AssetView, AssetViewBtc, AssetViewEvm } from "./asset";
+import { AssetView, AssetViewBtc, AssetViewEvm, AssetViewTron } from "./asset";
 import { LinkStakeView, StakeView } from "./stake";
 import style from "./style.module.scss";
 import { TxButtonBtcView, TxButtonView } from "./tx-button";
 
 import { ChainUpdaterService } from "@owallet/background";
-import { TRON_ID } from "@owallet/common";
+import { ChainIdEnum, TRON_ID } from "@owallet/common";
 import classnames from "classnames";
 import { observer } from "mobx-react-lite";
 import { useIntl } from "react-intl";
@@ -72,6 +72,9 @@ export const MainPage: FunctionComponent = observer(() => {
 
   const renderAssetView = useMemo(() => {
     if (networkType === "evm") {
+      if (chainId === ChainIdEnum.TRON) {
+        return <AssetViewTron />;
+      }
       return (
         <>
           <AssetViewEvm />

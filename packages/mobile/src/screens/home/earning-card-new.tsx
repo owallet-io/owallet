@@ -18,7 +18,7 @@ import {
   showToast,
 } from "@src/utils/helper";
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useState } from "react";
 import { StyleSheet, TouchableOpacity, View, ViewStyle } from "react-native";
 import { OWBox } from "../../components/card";
 import { useSmartNavigation } from "../../navigation.provider";
@@ -44,6 +44,7 @@ export const EarningCardNew: FunctionComponent<{
   );
   const stakingReward = queryReward.stakableReward;
   const totalStakingReward = priceStore.calculatePrice(stakingReward);
+
   const _onPressClaim = async () => {
     try {
       await account.cosmos.sendWithdrawDelegationRewardMsgs(

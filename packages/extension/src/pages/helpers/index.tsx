@@ -1,7 +1,7 @@
 import { getNetworkTypeByChainId, TRON_ID } from "@owallet/common";
 
 export const generateMsgNft = (limit, address, startAfter) => {
-  let obj: {
+  const obj: {
     limit?: number;
     owner: string;
     start_after?: string;

@@ -32,6 +32,11 @@ import {
   MyBigInt,
   escapeHTML,
   sortObjectByKey,
+  ChainIdEnum,
+  EXTRA_FEE_LIMIT_TRON,
+  DEFAULT_FEE_LIMIT_TRON,
+  TRIGGER_TYPE,
+  DenomHelper,
 } from "@owallet/common";
 import { ChainsService } from "../chains";
 import { LedgerService } from "../ledger";
@@ -59,10 +64,11 @@ import { RNG } from "@owallet/crypto";
 import { encodeSecp256k1Pubkey } from "@owallet/cosmos";
 import { Buffer } from "buffer/";
 import { request } from "../tx";
-import { Dec, DecUtils } from "@owallet/unit";
+import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
 import { trimAminoSignDoc } from "./amino-sign-doc";
 import { KeyringHelper } from "./utils";
 import * as oasis from "@oasisprotocol/client";
+import { ISimulateSignTron } from "@owallet/types";
 
 @singleton()
 export class KeyRingService {
@@ -70,7 +76,7 @@ export class KeyRingService {
 
   constructor(
     @inject(TYPES.KeyRingStore)
-    kvStore: KVStore,
+    protected readonly kvStore: KVStore,
     @inject(TYPES.ChainsEmbedChainInfos)
     embedChainInfos: ChainInfo[],
     @inject(delay(() => InteractionService))
@@ -245,6 +251,13 @@ export class KeyRingService {
     return await this.keyRing.showKeyRing(index, password);
   }
 
+  async simulateSignTron(transaction: any): Promise<any> {
+    const signedTx = await this.keyRing.simulateSignTron(transaction);
+    console.log(signedTx, "signedTxsignedTx");
+    return signedTx;
+    // return await this.keyRing.signTron(msg);
+  }
+
   async createMnemonicKey(
     kdf: "scrypt" | "sha256" | "pbkdf2",
     mnemonic: string,
@@ -329,9 +342,11 @@ export class KeyRingService {
   getKeyRingLedgerAddresses(): AddressesLedger {
     return this.keyRing.addresses;
   }
+
   getKeyRingLedgerPubKey(): AddressesLedger {
     return this.keyRing.pubkeys;
   }
+
   async requestSignEIP712CosmosTx_v0_selected(
     env: Env,
     origin: string,
@@ -355,6 +370,7 @@ export class KeyRingService {
       signOptions
     );
   }
+
   async processSignDocEIP712(
     signDoc: StdSignDoc,
     chainId: string,
@@ -386,6 +402,7 @@ export class KeyRingService {
     const sortSignDoc = sortObjectByKey(signDoc);
     return sortSignDoc;
   }
+
   async requestSignEIP712CosmosTx_v0(
     env: Env,
     origin: string,
@@ -456,6 +473,7 @@ export class KeyRingService {
       this.interactionService.dispatchEvent(APP_PORT, "request-sign-end", {});
     }
   }
+
   async requestSignAmino(
     env: Env,
     msgOrigin: string,
@@ -635,6 +653,7 @@ export class KeyRingService {
       );
     }
   }
+
   async requestSignBitcoin(
     env: Env,
     chainId: string,
@@ -781,26 +800,6 @@ export class KeyRingService {
     rpc: string,
     data: object
   ): Promise<object> {
-    console.log("🚀 ~ KeyRingService ~ data:", data);
-    // const decimals = (await this.chainsService.getChainInfo(chainId))
-    //   .feeCurrencies?.[0].coinDecimals;
-    // const estimatedGasPrice = await request(rpc, "eth_gasPrice", []);
-    // let estimatedGasLimit = "0x5028";
-    // try {
-    //   estimatedGasLimit = await request(rpc, "eth_estimateGas", [
-    //     {
-    //       ...data,
-    //       maxFeePerGas: undefined,
-    //       maxPriorityFeePerGas: undefined,
-    //     },
-    //   ]);
-    // } catch (error) {
-    //   console.log(
-    //     "🚀 ~ file: service.ts ~ line 396 ~ KeyRingService ~ error",
-    //     error
-    //   );
-    // }
-
     const approveData = (await this.interactionService.waitApprove(
       env,
       "/sign-ethereum",
@@ -1028,22 +1027,51 @@ export class KeyRingService {
     };
   }> {
     try {
+      const chainInfo = await this.chainsService.getChainInfo(chainId);
       const tronWeb = new TronWeb({
-        fullHost: (await this.chainsService.getChainInfo(chainId)).rpc,
+        fullHost: chainInfo.rpc,
       });
       tronWeb.fullNode.instance.defaults.adapter = fetchAdapter;
-      return await tronWeb.transactionBuilder.triggerSmartContract(
-        data.address,
-        data.functionSelector,
-        Object.keys(data.options).length > 0
-          ? data.options
-          : {
-              feeLimit: 100_000_000,
-              callValue: 0,
-            },
-        data.parameters,
-        data.issuerAddress
+      // TODO: Estimate before trigger changed signature, Resolve: Hardcode feeLimit for trigger smart contract from DApp
+      // const chainParameters = await tronWeb.trx.getChainParameters();
+      // const triggerConstantContract =
+      //   await tronWeb.transactionBuilder.triggerConstantContract(
+      //     data.address,
+      //     data.functionSelector,
+      //     data.options,
+      //     data.parameters,
+      //     data.issuerAddress
+      //   );
+      // const energyFee = chainParameters.find(
+      //   ({ key }) => key === 'getEnergyFee'
+      // );
+      // const feeLimit = new Int(energyFee.value)
+      //   .mul(new Int(triggerConstantContract.energy_used))
+      //   .add(new Int(EXTRA_FEE_LIMIT_TRON));
+
+      const triggerSmartContract =
+        await tronWeb.transactionBuilder.triggerSmartContract(
+          data.address,
+          data.functionSelector,
+          {
+            ...data.options,
+            feeLimit: DEFAULT_FEE_LIMIT_TRON,
+            callValue: 0,
+          },
+          data.parameters,
+          data.issuerAddress
+        );
+      this.kvStore.set(
+        `${TRIGGER_TYPE}:${triggerSmartContract.transaction.txID}`,
+        {
+          address: data.address,
+          functionSelector: data.functionSelector,
+          options: data.options,
+          parameters: data.parameters,
+          issuerAddress: data.issuerAddress,
+        }
       );
+      return triggerSmartContract;
     } catch (error) {
       throw error;
     }
@@ -1073,25 +1101,24 @@ export class KeyRingService {
       const tronWeb = new TronWeb({
         fullHost: (await this.chainsService.getChainInfo(chainId)).rpc,
       });
+
       tronWeb.fullNode.instance.defaults.adapter = fetchAdapter;
       let transaction: any;
-      if (newData?.tokenTrc20) {
-        const amount = new MyBigInt(
-          Math.trunc(newData?.amount * Math.pow(10, 6))
-        );
+
+      if (newData?.currency?.contractAddress) {
         transaction = (
           await tronWeb.transactionBuilder.triggerSmartContract(
-            newData.tokenTrc20.contractAddress,
+            newData?.currency?.contractAddress,
             "transfer(address,uint256)",
             {
               callValue: 0,
-              feeLimit: 200_000_000,
+              feeLimit: newData?.feeLimit ?? DEFAULT_FEE_LIMIT_TRON,
               userFeePercentage: 100,
               shouldPollResponse: false,
             },
             [
               { type: "address", value: newData.recipient },
-              { type: "uint256", value: amount.toString() },
+              { type: "uint256", value: newData.amount },
             ],
             newData.address
           )
@@ -1100,21 +1127,15 @@ export class KeyRingService {
         // get address here from keyring and
         transaction = await tronWeb.transactionBuilder.sendTrx(
           newData.recipient,
-          new Dec(Number((newData.amount ?? "0").replace(/,/g, "."))).mul(
-            DecUtils.getTenExponentNInPrecisionRange(6)
-          ),
+          newData.amount,
           newData.address
         );
       }
-
-      // const transactionData = Buffer.from(transaction.raw_data_hex, 'hex');
-
       transaction.signature = [
         Buffer.from(
           await this.keyRing.sign(env, chainId, 195, transaction?.txID)
         ).toString("hex"),
       ];
-
       const receipt = await tronWeb.trx.sendRawTransaction(transaction);
       return receipt.txid ?? receipt.transaction.raw_data_hex;
     } finally {

@@ -4,7 +4,7 @@ import {
   CosmwasmMsgOpts,
   Erc20MsgOpts,
   ObservableQueryBitcoinBalance,
-  QueriesWrappedBitcoin,
+  QueriesWrappedTron,
   SecretMsgOpts,
 } from "@owallet/stores";
 import { ObservableQueryBalances } from "@owallet/stores";
@@ -26,7 +26,7 @@ export const useSendTxEvmConfig = (
   sendMsgOpts: MsgOpts["send"],
   sender: string,
   queryBalances: ObservableQueryBalances,
-  queriesStore: QueriesWrappedBitcoin,
+  queriesStore: QueriesWrappedTron,
   ensEndpoint?: string,
   queryBtcBalances?: ObservableQueryBitcoinBalance
 ) => {

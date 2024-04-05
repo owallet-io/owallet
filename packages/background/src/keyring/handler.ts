@@ -17,6 +17,7 @@ import {
   DeleteKeyRingMsg,
   UpdateNameKeyRingMsg,
   ShowKeyRingMsg,
+  SimulateSignTronMsg,
   AddMnemonicKeyMsg,
   AddPrivateKeyMsg,
   GetMultiKeyStoreInfoMsg,
@@ -66,6 +67,8 @@ export const getHandler: (service: KeyRingService) => Handler = (
           env,
           msg as UpdateNameKeyRingMsg
         );
+      case SimulateSignTronMsg:
+        return handleSimulateSignTron(service)(env, msg as SimulateSignTronMsg);
       case ShowKeyRingMsg:
         return handleShowKeyRingMsg(service)(env, msg as ShowKeyRingMsg);
       case CreateMnemonicKeyMsg:
@@ -238,6 +241,14 @@ const handleShowKeyRingMsg: (
 ) => InternalHandler<ShowKeyRingMsg> = (service) => {
   return async (_, msg) => {
     return await service.showKeyRing(msg.index, msg.password);
+  };
+};
+const handleSimulateSignTron: (
+  service: KeyRingService
+) => InternalHandler<SimulateSignTronMsg> = (service) => {
+  return async (_, msg) => {
+    console.log(msg, "msg");
+    return await service.simulateSignTron(msg.msg);
   };
 };
 

@@ -1,5 +1,5 @@
 import { Erc20ContractTokenInfo } from "./types";
-import { KVStore } from "@owallet/common";
+import { getRpcByChainId, KVStore } from "@owallet/common";
 import { ObservableChainQuery, ObservableChainQueryMap } from "../chain-query";
 import { ChainGetter, QueryResponse } from "../../common";
 import { computed } from "mobx";
@@ -27,7 +27,9 @@ export class ObservableQueryErc20ContactInfoInner extends ObservableChainQuery<E
   protected async fetchResponse(): Promise<
     QueryResponse<Erc20ContractTokenInfo>
   > {
-    const web3 = new Web3(this.chainGetter.getChain(this.chainId).rest);
+    const web3 = new Web3(
+      getRpcByChainId(this.chainGetter.getChain(this.chainId), this.chainId)
+    );
     // @ts-ignore
     const contract = new web3.eth.Contract(ERC20_ABI, this.contractAddress);
     const tokenDecimal = await contract.methods.decimals().call();

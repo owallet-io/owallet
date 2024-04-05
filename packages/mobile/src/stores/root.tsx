@@ -6,7 +6,7 @@ import {
   AccountStore,
   SignInteractionStore,
   TokensStore,
-  QueriesWrappedBitcoin,
+  QueriesWrappedTron,
   AccountWithAll,
   LedgerInitStore,
   IBCCurrencyRegsitrar,
@@ -52,7 +52,7 @@ export class RootStore {
   public readonly ledgerInitStore: LedgerInitStore;
   public readonly signInteractionStore: SignInteractionStore;
 
-  public readonly queriesStore: QueriesStore<QueriesWrappedBitcoin>;
+  public readonly queriesStore: QueriesStore<QueriesWrappedTron>;
   public readonly accountStore: AccountStore<AccountWithAll>;
   public readonly priceStore: CoinGeckoPriceStore;
   public readonly tokensStore: TokensStore<ChainInfoWithEmbed>;
@@ -147,7 +147,7 @@ export class RootStore {
           new RNMessageRequesterInternal()
         );
       },
-      QueriesWrappedBitcoin
+      QueriesWrappedTron
     );
 
     this.accountStore = new AccountStore<AccountWithAll>(

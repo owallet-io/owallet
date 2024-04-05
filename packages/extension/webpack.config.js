@@ -8,7 +8,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const WriteFilePlugin = require('write-file-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const TerserPlugin = require('terser-webpack-plugin');
-
+const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 const isEnvDevelopment = process.env.NODE_ENV !== 'production';
 const isEnvAnalyzer = process.env.ANALYZER === 'true';
 
@@ -117,7 +117,12 @@ const extensionConfig = {
   },
   resolve: commonResolve('src/public/assets'),
   module: {
-    rules: [sassRule, tsRule, fileRule]
+    rules: [sassRule, tsRule, fileRule, {
+      test: /\.m?js/,
+      resolve: {
+        fullySpecified: false
+      }
+    }]
   },
   performance: {
     hints: false,
@@ -145,6 +150,7 @@ const extensionConfig = {
     // TODO: Optimizing build process
     new CleanWebpackPlugin(),
     new ForkTsCheckerWebpackPlugin(),
+    new NodePolyfillPlugin(),
     new CopyWebpackPlugin(
       [
         {

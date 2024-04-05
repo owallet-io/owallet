@@ -1,5 +1,5 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
-import { AddressInput, CoinInputTronEvm } from "../../components/form";
+import React, { FunctionComponent, useEffect } from "react";
+import { AddressInput, CoinInput } from "../../components/form";
 import { useStore } from "../../stores";
 import { observer } from "mobx-react-lite";
 
@@ -11,10 +11,15 @@ import { Button } from "reactstrap";
 
 import { useHistory, useLocation } from "react-router";
 import queryString from "querystring";
-import { useFeeEthereumConfig, useSendTxConfig } from "@owallet/hooks";
+import {
+  InvalidTronAddressError,
+  useGetFeeTron,
+  useSendTxTronConfig,
+} from "@owallet/hooks";
 import { fitPopupWindow } from "@owallet/popup";
-import { EthereumEndpoint, getBase58Address } from "@owallet/common";
-
+import { decodeParams, EthereumEndpoint } from "@owallet/common";
+import { FeeInput } from "../../components/form/fee-input";
+import TronWeb from "tronweb";
 export const SendTronEvmPage: FunctionComponent<{
   coinMinimalDenom?: string;
   tokensTrc20Tron?: Array<any>;
@@ -49,12 +54,13 @@ export const SendTronEvmPage: FunctionComponent<{
 
   const notification = useNotification();
 
-  const { chainStore, accountStore, queriesStore, keyRingStore } = useStore();
+  const { chainStore, priceStore, accountStore, queriesStore, keyRingStore } =
+    useStore();
   const current = chainStore.current;
 
   const accountInfo = accountStore.getAccount(current.chainId);
 
-  const sendConfigs = useSendTxConfig(
+  const sendConfigs = useSendTxTronConfig(
     chainStore,
     current.chainId,
     //@ts-ignore
@@ -93,74 +99,90 @@ export const SendTronEvmPage: FunctionComponent<{
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query.defaultAmount, query.defaultRecipient]);
-  const feeConfig = useFeeEthereumConfig(chainStore, current.chainId);
+  const addressTronBase58 = accountInfo.getAddressDisplay(
+    keyRingStore.keyRingLedgerAddresses
+  );
+
+  const checkSendMySelft =
+    sendConfigs.recipientConfig.recipient?.trim() === addressTronBase58
+      ? new InvalidTronAddressError("Cannot transfer TRX to the same account")
+      : null;
   const sendConfigError =
+    checkSendMySelft ??
     sendConfigs.recipientConfig.getError() ??
-    sendConfigs.amountConfig.getError();
+    sendConfigs.amountConfig.getError() ??
+    sendConfigs.feeConfig.getError();
   const txStateIsValid = sendConfigError == null;
-  const addressTron =
-    keyRingStore?.keyRingType !== "ledger"
-      ? getBase58Address(accountInfo.evmosHexAddress)
-      : keyRingStore?.keyRingLedgerAddresses?.trx;
-  const tokenTrc20 =
-    (tokensTrc20Tron &&
-      query &&
-      tokensTrc20Tron.find((token) => token.coinDenom == query.defaultDenom)) ??
-    undefined;
-  return (
-    <>
-      <form
-        className={style.formContainer}
-        onSubmit={async (e: any) => {
-          e.preventDefault();
-          try {
-            await accountInfo.sendTronToken(
-              sendConfigs.amountConfig.amount,
-              sendConfigs.amountConfig.sendCurrency!,
-              sendConfigs.recipientConfig.recipient,
-              addressTron,
-              {
-                onFulfill: (tx) => {
-                  notification.push({
-                    placement: "top-center",
-                    type: !!tx ? "success" : "danger",
-                    duration: 5,
-                    content: !!tx
-                      ? `Transaction successful`
-                      : `Transaction failed`,
-                    canDelete: true,
-                    transition: {
-                      duration: 0.25,
-                    },
-                  });
-                },
-              },
-              tokenTrc20
-            );
-            if (!isDetachedPage) {
-              history.replace("/");
-            }
-          } catch (error) {
-            if (!isDetachedPage) {
-              history.replace("/");
-            }
+  const addressTron = accountInfo.getAddressDisplay(
+    keyRingStore.keyRingLedgerAddresses,
+    false
+  );
+
+  const onSend = async (e: any) => {
+    e.preventDefault();
+    try {
+      await accountInfo.sendTronToken(
+        sendConfigs.amountConfig.amount,
+        sendConfigs.amountConfig.sendCurrency!,
+        sendConfigs.recipientConfig.recipient,
+        addressTronBase58,
+        {
+          onFulfill: (tx) => {
             notification.push({
-              type: "warning",
               placement: "top-center",
+              type: !!tx ? "success" : "danger",
               duration: 5,
-              content: `Fail to send token: ${error.message}`,
+              content: !!tx ? `Transaction successful` : `Transaction failed`,
               canDelete: true,
               transition: {
                 duration: 0.25,
               },
             });
-          } finally {
-            if (isDetachedPage) {
-              window.close();
-            }
-          }
-        }}
-      >
+          },
+        }
+      );
+      if (!isDetachedPage) {
+        history.replace("/");
+      }
+    } catch (error) {
+      if (!isDetachedPage) {
+        history.replace("/");
+      }
+      notification.push({
+        type: "warning",
+        placement: "top-center",
+        duration: 5,
+        content: `Fail to send token: ${error.message}`,
+        canDelete: true,
+        transition: {
+          duration: 0.25,
+        },
+      });
+    } finally {
+      if (isDetachedPage) {
+        window.close();
+      }
+    }
+  };
+  const queries = queriesStore.get(current.chainId);
+  const { feeTrx } = useGetFeeTron(
+    addressTronBase58,
+    sendConfigs.amountConfig,
+    sendConfigs.recipientConfig,
+    queries.tron,
+    chainStore.current,
+    keyRingStore,
+    null
+  );
+  useEffect(() => {
+    sendConfigs.feeConfig.setManualFee(feeTrx);
+    return () => {
+      sendConfigs.feeConfig.setManualFee(null);
+    };
+  }, [feeTrx]);
+  return (
+    <>
+      <form className={style.formContainer} onSubmit={onSend}>
         <div className={style.formInnerContainer}>
           <div>
             <AddressInput
@@ -170,15 +192,21 @@ export const SendTronEvmPage: FunctionComponent<{
               label={intl.formatMessage({ id: "send.input.recipient" })}
               placeholder="Enter recipient address"
             />
-            <CoinInputTronEvm
+            <CoinInput
               amountConfig={sendConfigs.amountConfig}
-              feeConfig={feeConfig.feeRaw}
               label={intl.formatMessage({ id: "send.input.amount" })}
               balanceText={intl.formatMessage({
                 id: "send.input-button.balance",
               })}
-              tokenTrc20={tokenTrc20}
               placeholder="Enter your amount"
+            />
+            {/*<p>Estimate Bandwidth: {`${bandwidthUsed}`}</p>*/}
+            {/*<p>Estimate Energy: {`${energyUsed}`}</p>*/}
+            <FeeInput
+              label={"Fee"}
+              defaultValue={1}
+              //@ts-ignore
+              feeConfig={sendConfigs.feeConfig}
             />
           </div>
           <div style={{ flex: 1 }} />
@@ -191,7 +219,7 @@ export const SendTronEvmPage: FunctionComponent<{
             style={{
               cursor:
                 accountInfo.isReadyToSendMsgs || !txStateIsValid
-                  ? "default"
+                  ? ""
                   : "pointer",
             }}
           >

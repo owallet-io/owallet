@@ -991,7 +991,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
   },
   {
     rest: "https://data-seed-prebsc-1-s1.binance.org:8545/",
-    evmRpc: "https://data-seed-prebsc-1-s1.binance.org:8545/",
+    rpc: "https://data-seed-prebsc-1-s1.binance.org:8545/",
     chainId: "0x61",
     chainName: "BNB Chain Testnet",
     bip44: {
@@ -1063,6 +1063,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
   },
   {
+    rpc: "https://rpc.ankr.com/eth",
     rest: "https://rpc.ankr.com/eth",
     chainId: "0x01",
     chainName: "Ethereum",
@@ -1136,6 +1137,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
   },
   {
+    rpc: "https://bsc-dataseed1.ninicoin.io",
     rest: "https://bsc-dataseed1.ninicoin.io",
     chainId: "0x38",
     chainName: "BNB Chain",
@@ -1229,7 +1231,9 @@ export const EmbedChainInfos: AppChainInfo[] = [
 
   {
     rpc: "https://api.trongrid.io",
-    rest: "https://api.trongrid.io/jsonrpc",
+    rest: "https://apilist.tronscanapi.com",
+    // rpc: "https://nile.trongrid.io",
+    // rest: "https://nileapi.tronscan.org",
     chainId: "0x2b6653dc",
     networkType: "evm",
     chainName: "Tron",
@@ -1260,18 +1264,27 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinDenom: "USDC",
         coinMinimalDenom:
           "erc20:0x3487b63D30B5B2C87fb7fFa8bcfADE38EAaC1abe:USDC Token",
-        // coinMinimalDenom: "usdc",
         coinGeckoId: "usd-coin",
         coinImageUrl:
           "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png",
         coinDecimals: 6,
       },
+      // {
+      //   contractAddress: "TLBaRhANQoJFTqre9Nf1mjuwNWjCJeYqUL",
+      //   coinDenom: "TestUSDJ",
+      //   coinMinimalDenom:
+      //     "erc20:0x70082243784dcdf3042034E7B044d6D342A91360:USDJ Token",
+      //   // coinMinimalDenom: "usdc",
+      //   coinGeckoId: "usd-coin",
+      //   coinImageUrl:
+      //     "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png",
+      //   coinDecimals: 18,
+      // },
       {
         contractAddress: "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
         coinMinimalDenom:
           "erc20:0xa614f803B6FD780986A42c78Ec9c7f77e6DeD13C:USDT Token",
         coinDenom: "USDT",
-        // coinMinimalDenom: "usdt",
         coinDecimals: 6,
         coinGeckoId: "tether",
         coinImageUrl:
@@ -1282,7 +1295,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinMinimalDenom:
           "erc20:0x891cdb91d149f23B1a45D9c5Ca78a88d0cB44C18:WTRX Token",
         coinDenom: "WTRX",
-        // coinMinimalDenom: "usdt",
         coinDecimals: 6,
         coinGeckoId: "tron",
         coinImageUrl:

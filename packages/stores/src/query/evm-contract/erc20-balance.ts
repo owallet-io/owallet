@@ -1,5 +1,5 @@
 import { computed, makeObservable, override } from "mobx";
-import { DenomHelper, KVStore } from "@owallet/common";
+import { DenomHelper, getRpcByChainId, KVStore } from "@owallet/common";
 import { ChainGetter, QueryResponse } from "../../common";
 import { CoinPretty, Int } from "@owallet/unit";
 import {
@@ -30,7 +30,9 @@ export class ObservableQueryErc20Balance extends ObservableChainQuery<Erc20Contr
     QueryResponse<Erc20ContractBalance>
   > {
     try {
-      const web3 = new Web3(this.chainGetter.getChain(this.chainId).rest);
+      const web3 = new Web3(
+        getRpcByChainId(this.chainGetter.getChain(this.chainId), this.chainId)
+      );
       // @ts-ignore
       const contract = new web3.eth.Contract(ERC20_ABI, this.contractAddress);
 

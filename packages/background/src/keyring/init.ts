@@ -37,6 +37,7 @@ import {
   GetDefaultAddressOasisMsg,
   TriggerSmartContractMsg,
   RequestSendRawTransactionMsg,
+  SimulateSignTronMsg,
 } from "./messages";
 import { ROUTE } from "./constants";
 import { getHandler } from "./handler";
@@ -47,6 +48,7 @@ export function init(router: Router, service: KeyRingService): void {
   router.registerMessage(DeleteKeyRingMsg);
   router.registerMessage(UpdateNameKeyRingMsg);
   router.registerMessage(ShowKeyRingMsg);
+  router.registerMessage(SimulateSignTronMsg);
   router.registerMessage(CreateMnemonicKeyMsg);
   router.registerMessage(AddMnemonicKeyMsg);
   router.registerMessage(CreatePrivateKeyMsg);

@@ -47,7 +47,7 @@ export const CardModal: FunctionComponent<{
           },
         ]),
         {
-          backgroundColor: colors["neutral-surface-bg2"],
+          backgroundColor: colors["neutral-surface-card"],
         },
       ]}
     >

@@ -640,7 +640,7 @@ export class AccountSetBase<MsgOpts, Queries> {
       console.log("🚀 ~ AccountSetBase<MsgOpts, ~ msgs.type:", msgs.type);
       if (msgs.type === "erc20") {
         const { value } = msgs;
-        const provider = this.chainGetter.getChain(this.chainId).rest;
+        const provider = this.chainGetter.getChain(this.chainId).rpc;
         const web3 = new Web3(provider);
         const contract = new web3.eth.Contract(
           // @ts-ignore

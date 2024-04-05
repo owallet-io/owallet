@@ -1,5 +1,5 @@
 import images from "@src/assets/images";
-import { capitalizedText } from "@src/utils/helper";
+import { capitalizedText, limitString } from "@src/utils/helper";
 
 export const explorerData = [
   {
@@ -11,6 +11,13 @@ export const explorerData = [
   },
 ];
 export const aiData = [
+  {
+    images: images.img_airight,
+    logo: images.dapps_airight_logo,
+    title: "aiRight",
+    subTitle: "Marketplace of Generative AI",
+    url: "https://airight.io",
+  },
   {
     images: images.img_defi_lens,
     logo: images.dapps_defi_logo,
@@ -24,13 +31,6 @@ export const aiData = [
     title: "LLM Chatbot",
     subTitle: "Natural language layer for Web3 Business",
     url: "https://layer.orai.io",
-  },
-  {
-    images: images.img_airight,
-    logo: images.dapps_airight_logo,
-    title: "aiRight",
-    subTitle: "Marketplace of Generative AI",
-    url: "https://airight.io",
   },
 ];
 export const defiData = [
@@ -64,7 +64,8 @@ export const defiData = [
     url: "https://app.orchai.io",
   },
 ];
-export const dataAll = [...defiData, ...aiData, ...explorerData];
+export const dataAll = [...defiData, ...explorerData, ...aiData];
+
 export const getFavicon = (url) => {
   const serviceGG =
     "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&size=32&url=";
@@ -95,7 +96,7 @@ function extractDomainName(url) {
   }
   parts.pop();
   domain = parts.join(" ");
-  return capitalizedText(domain);
+  return capitalizedText(limitString(domain, 16));
 }
 
 export const getNameBookmark = (name: string) => {
@@ -104,5 +105,5 @@ export const getNameBookmark = (name: string) => {
   if (name.startsWith("http")) {
     return extractDomainName(bookmarkName);
   }
-  return capitalizedText(bookmarkName);
+  return capitalizedText(limitString(bookmarkName, 16));
 };

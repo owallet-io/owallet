@@ -3,7 +3,6 @@ import { Int } from "./int";
 import { Dec } from "./decimal";
 import { DecUtils } from "./dec-utils";
 import { AppCurrency, Currency } from "@owallet/types";
-import { CoinPrimitive } from "@owallet/stores";
 import { CoinPretty } from "./coin-pretty";
 import bigInteger from "big-integer";
 

@@ -18,6 +18,7 @@ import {
   useAmountConfig,
   useGasEvmConfig,
   useMemoConfig,
+  useFeeEvmConfig,
 } from "@owallet/hooks";
 import { BottomSheetProps } from "@gorhom/bottom-sheet";
 import { ethers } from "ethers";
@@ -26,7 +27,6 @@ import { FeeInSign } from "@src/modals/sign/fee";
 import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
 import OWButtonGroup from "@src/components/button/OWButtonGroup";
 import { CoinPretty, CoinUtils, Dec, Int } from "@owallet/unit";
-import { useFeeEvmConfig } from "@owallet/hooks/build/tx/fee-evm";
 import { useTheme } from "@src/themes/theme-provider";
 import OWText from "@src/components/text/ow-text";
 import OWCard from "@src/components/card/ow-card";

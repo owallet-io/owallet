@@ -193,114 +193,109 @@ export const SendEvmPage: FunctionComponent<{
       },
     });
   };
+  const onSend = async (e: any) => {
+    e.preventDefault();
+    if (accountInfo.isReadyToSendMsgs && txStateIsValid) {
+      try {
+        const stdFee = sendConfigs.feeConfig.toStdEvmFee();
+        console.log("🚀 ~ onSubmit={ ~ stdFee:", stdFee);
+        // (window as any).accountInfo = accountInfo;
+        await accountInfo.sendToken(
+          sendConfigs.amountConfig.amount,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          sendConfigs.amountConfig.sendCurrency!,
+          sendConfigs.recipientConfig.recipient,
+          sendConfigs.memoConfig.memo,
+          stdFee,
+          {
+            preferNoSetFee: true,
+            preferNoSetMemo: true,
+            networkType: chainStore.current.networkType,
+            chainId: chainStore.current.chainId,
+          },
+          {
+            onBroadcasted: () => {
+              analyticsStore.logEvent("Send token tx broadcasted", {
+                chainId: chainStore.current.chainId,
+                chainName: chainStore.current.chainName,
+                feeType: sendConfigs.feeConfig.feeType,
+              });
+            },
+            onFulfill: (tx) => {
+              if (tx && chainStore.current.chainId === ChainIdEnum.Oasis) {
+                submitSignOasis(tx);
+                return;
+              }
+              if (!tx?.status) return;
+              notification.push({
+                placement: "top-center",
+                type: tx?.data ? "success" : "danger",
+                duration: 5,
+                content: tx?.data
+                  ? `Transaction successful with tx: ${tx?.hash}`
+                  : `Transaction failed with tx: ${tx?.hash}`,
+                canDelete: true,
+                transition: {
+                  duration: 0.25,
+                },
+              });
+            },
+          },
+          sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.startsWith(
+            "erc20"
+          )
+            ? {
+                type: "erc20",
+                from: walletAddress,
+                contract_addr:
+                  sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.split(
+                    ":"
+                  )[1],
+                recipient: sendConfigs.recipientConfig.recipient,
+                amount: sendConfigs.amountConfig.amount,
+              }
+            : null
+        );
+        if (!isDetachedPage) {
+          history.replace("/");
+        }
+        notification.push({
+          placement: "top-center",
+          type: "success",
+          duration: 5,
+          content: "Transaction submitted!",
+          canDelete: true,
+          transition: {
+            duration: 0.25,
+          },
+        });
+      } catch (e: any) {
+        if (!isDetachedPage) {
+          history.replace("/");
+        }
+        console.log(e.message, "Catch Error on send!!!");
+        notification.push({
+          type: "warning",
+          placement: "top-center",
+          duration: 5,
+          content: `Fail to send token: ${e.message}`,
+          canDelete: true,
+          transition: {
+            duration: 0.25,
+          },
+        });
+      } finally {
+        // XXX: If the page is in detached state,
+        // close the window without waiting for tx to commit. analytics won't work.
+        if (isDetachedPage) {
+          window.close();
+        }
+      }
+    }
+  };
   return (
     <>
-      <form
-        className={style.formContainer}
-        onSubmit={async (e: any) => {
-          e.preventDefault();
-          if (accountInfo.isReadyToSendMsgs && txStateIsValid) {
-            try {
-              const stdFee = sendConfigs.feeConfig.toStdEvmFee();
-              console.log("🚀 ~ onSubmit={ ~ stdFee:", stdFee);
-              // (window as any).accountInfo = accountInfo;
-              await accountInfo.sendToken(
-                sendConfigs.amountConfig.amount,
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                sendConfigs.amountConfig.sendCurrency!,
-                sendConfigs.recipientConfig.recipient,
-                sendConfigs.memoConfig.memo,
-                stdFee,
-                {
-                  preferNoSetFee: true,
-                  preferNoSetMemo: true,
-                  networkType: chainStore.current.networkType,
-                  chainId: chainStore.current.chainId,
-                },
-                {
-                  onBroadcasted: () => {
-                    analyticsStore.logEvent("Send token tx broadcasted", {
-                      chainId: chainStore.current.chainId,
-                      chainName: chainStore.current.chainName,
-                      feeType: sendConfigs.feeConfig.feeType,
-                    });
-                  },
-                  onFulfill: (tx) => {
-                    if (
-                      tx &&
-                      chainStore.current.chainId === ChainIdEnum.Oasis
-                    ) {
-                      submitSignOasis(tx);
-                      return;
-                    }
-                    if (!tx?.status) return;
-                    notification.push({
-                      placement: "top-center",
-                      type: tx?.data ? "success" : "danger",
-                      duration: 5,
-                      content: tx?.data
-                        ? `Transaction successful with tx: ${tx?.hash}`
-                        : `Transaction failed with tx: ${tx?.hash}`,
-                      canDelete: true,
-                      transition: {
-                        duration: 0.25,
-                      },
-                    });
-                  },
-                },
-                sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.startsWith(
-                  "erc20"
-                )
-                  ? {
-                      type: "erc20",
-                      from: walletAddress,
-                      contract_addr:
-                        sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.split(
-                          ":"
-                        )[1],
-                      recipient: sendConfigs.recipientConfig.recipient,
-                      amount: sendConfigs.amountConfig.amount,
-                    }
-                  : null
-              );
-              if (!isDetachedPage) {
-                history.replace("/");
-              }
-              notification.push({
-                placement: "top-center",
-                type: "success",
-                duration: 5,
-                content: "Transaction submitted!",
-                canDelete: true,
-                transition: {
-                  duration: 0.25,
-                },
-              });
-            } catch (e: any) {
-              if (!isDetachedPage) {
-                history.replace("/");
-              }
-              console.log(e.message, "Catch Error on send!!!");
-              notification.push({
-                type: "warning",
-                placement: "top-center",
-                duration: 5,
-                content: `Fail to send token: ${e.message}`,
-                canDelete: true,
-                transition: {
-                  duration: 0.25,
-                },
-              });
-            } finally {
-              // XXX: If the page is in detached state,
-              // close the window without waiting for tx to commit. analytics won't work.
-              if (isDetachedPage) {
-                window.close();
-              }
-            }
-          }
-        }}
-      >
+      <form className={style.formContainer} onSubmit={onSend}>
         <div className={style.formInnerContainer}>
           <div>
             <AddressInput

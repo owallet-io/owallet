@@ -31,7 +31,7 @@ import {
   Hash,
 } from "@owallet/crypto";
 import { Env, OWalletError } from "@owallet/router";
-import { AddressBtcType, ChainInfo } from "@owallet/types";
+import { AddressBtcType, AppCurrency, ChainInfo } from "@owallet/types";
 import AES from "aes-js";
 import { Buffer } from "buffer";
 import eccrypto from "eccrypto-js";
@@ -86,6 +86,7 @@ import {
   uint2hex,
 } from "@owallet/common";
 import { CoinPretty, Int } from "@owallet/unit";
+import { ISimulateSignTron } from "@owallet/types";
 
 // inject TronWeb class
 (globalThis as any).TronWeb = require("tronweb");
@@ -199,6 +200,7 @@ export class KeyRing {
       return KeyRing.getLedgerAddressOfKeyStore(this.keyStore);
     }
   }
+
   public get pubkeys(): AddressesLedger {
     if (!this.keyStore) {
       return {} as AddressesLedger;
@@ -206,6 +208,7 @@ export class KeyRing {
       return this.keyStore.pubkeys;
     }
   }
+
   public isLocked(): boolean {
     return (
       this.privateKey == null &&
@@ -822,6 +825,7 @@ export class KeyRing {
     await this.save();
     return this.getMultiKeyStoreInfo();
   }
+
   private getPubKey(coinType): PubKeySecp256k1 {
     if (this.keyStore.type === "ledger") {
       const appName = getNetworkTypeByBip44HDPath({
@@ -843,6 +847,7 @@ export class KeyRing {
       return privKey.getPubKey();
     }
   }
+
   private async loadKey(
     coinType: number,
     chainId?: string | number
@@ -1033,6 +1038,7 @@ export class KeyRing {
       throw new Error("Unexpected type of keyring");
     }
   }
+
   signTron(privKey: PrivKeySecp256k1, message: Uint8Array) {
     const transactionSign = TronWeb.utils.crypto.signTransaction(
       privKey.toBytes(),
@@ -1043,6 +1049,17 @@ export class KeyRing {
 
     return Buffer.from(transactionSign?.signature?.[0], "hex");
   }
+
+  async simulateSignTron(transaction: any) {
+    console.log(transaction, "transactiontransactiontransaction");
+    const privKey = this.loadPrivKey(195);
+    const signedTxn = TronWeb.utils.crypto.signTransaction(
+      privKey.toBytes(),
+      transaction
+    );
+    return signedTxn;
+  }
+
   public async sign(
     env: Env,
     chainId: string,
@@ -1180,6 +1197,7 @@ export class KeyRing {
     const response = await request(rpc, "eth_sendRawTransaction", [rawTxHex]);
     return response;
   }
+
   public async signAndBroadcastEthereum(
     env: Env,
     chainId: string,
@@ -1230,6 +1248,7 @@ export class KeyRing {
       return this.processSignEvm(chainId, coinType, rpc, message);
     }
   }
+
   protected getKeyPairBtc(chainId: string, keyDerivation: string = "84") {
     let keyPair;
     if (!!this.mnemonic) {
@@ -1247,6 +1266,7 @@ export class KeyRing {
     if (!keyPair) throw Error("Your Mnemonic or Private Key is invalid");
     return keyPair;
   }
+
   public async signAndBroadcastBitcoin(
     env: Env,
     chainId: string,

@@ -12,16 +12,25 @@ import {
   Bech32Address,
   checkAndValidateADR36AminoSignDoc,
 } from "@owallet/cosmos";
-import { BIP44, OWalletSignOptions, Key, BIP44HDPath } from "@owallet/types";
+import {
+  BIP44,
+  OWalletSignOptions,
+  Key,
+  BIP44HDPath,
+  AppCurrency,
+} from "@owallet/types";
 import Joi from "joi";
 import { AminoSignResponse, StdSignature } from "@cosmjs/launchpad";
 import { StdSignDoc } from "@owallet/types";
 import Long from "long";
 import { Int } from "@owallet/unit";
 import bigInteger from "big-integer";
+
 const bip39 = require("bip39");
 import { SignDoc } from "@owallet/proto-types/cosmos/tx/v1beta1/tx";
 import { schemaRequestSignBitcoin } from "./validates";
+import { ISimulateSignTron } from "@owallet/types";
+
 export class RestoreKeyRingMsg extends Message<{
   status: KeyRingStatus;
   multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
@@ -136,6 +145,30 @@ export class ShowKeyRingMsg extends Message<string> {
 
   type(): string {
     return ShowKeyRingMsg.type();
+  }
+}
+
+export class SimulateSignTronMsg extends Message<any> {
+  public static type() {
+    return "simulate-sign-tron";
+  }
+
+  constructor(public readonly msg: any) {
+    super();
+  }
+
+  validateBasic(): void {
+    // if (!this.msg) {
+    //   throw new OWalletError("keyring", 201, "msg sign tron not set");
+    // }
+  }
+
+  route(): string {
+    return ROUTE;
+  }
+
+  type(): string {
+    return SimulateSignTronMsg.type();
   }
 }
 
@@ -553,6 +586,7 @@ export class RequestSignAminoMsg extends Message<AminoSignResponse> {
     return RequestSignAminoMsg.type();
   }
 }
+
 export class RequestSignEIP712CosmosTxMsg_v0 extends Message<AminoSignResponse> {
   public static type() {
     return "request-sign-eip-712-cosmos-tx-v0";
@@ -630,6 +664,7 @@ export class RequestSignEIP712CosmosTxMsg_v0 extends Message<AminoSignResponse> 
     return RequestSignEIP712CosmosTxMsg_v0.type();
   }
 }
+
 // request goes here
 export class RequestSignDirectMsg extends Message<{
   readonly signed: {

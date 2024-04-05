@@ -192,7 +192,7 @@ export const SendBtcPage: FunctionComponent<{
                       content: tx ? (
                         <div className="alert-inner--text">
                           Transaction successful with tx:{" "}
-                          <a target="_blank" href={url}>
+                          <a target="_blank" href={url} rel="noreferrer">
                             {Address.shortAddress(tx)}
                           </a>
                         </div>

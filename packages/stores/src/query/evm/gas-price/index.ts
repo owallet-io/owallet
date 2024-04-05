@@ -31,7 +31,7 @@ export class ObservableQueryGasPriceInner extends ObservableChainQuery<string> {
   }
   protected async fetchResponse(): Promise<QueryResponse<string>> {
     try {
-      const web3 = new Web3(this.chainGetter.getChain(this.chainId).rest);
+      const web3 = new Web3(this.chainGetter.getChain(this.chainId).rpc);
       const gasPrice = await web3.eth.getGasPrice();
       return {
         status: 1,

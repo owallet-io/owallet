@@ -22,10 +22,10 @@ import {
   useMemoConfig,
   useSignDocAmountConfig,
   useAmountConfig,
+  useFeeEvmConfig,
 } from "@owallet/hooks";
 import { ADR36SignDocDetailsTab } from "./adr-36";
 import { ChainIdHelper } from "@owallet/cosmos";
-import { useFeeEvmConfig } from "@owallet/hooks/build/tx/fee-evm";
 import Web3 from "web3";
 import { DetailsTabEvm } from "./details-tab-evm";
 import { DataTabEvm } from "./data-tab-evm";
