@@ -332,7 +332,7 @@ export const AssetChartViewTron: FunctionComponent = observer(() => {
   const tokens = queryBalances.positiveNativeUnstakables.concat(
     queryBalances.nonNativeBalances
   );
-  const totalPrice = useMemo(() => {
+  const totalPrice = () => {
     const fiatCurrency = priceStore.getFiatCurrency(
       priceStore.defaultVsCurrency
     );
@@ -349,11 +349,8 @@ export const AssetChartViewTron: FunctionComponent = observer(() => {
     }
 
     return res;
-  }, [stakable, fiat]);
-  // useEffect(() => {
-  //   const tronAcc =queries.tron.queryAccount.getQueryWalletAddress(tronAddress).bandwidthLimit;
-  //   console.log(tronAcc,"tronAcc");
-  // }, [tronAddress]);
+  };
+
   const accountTronInfo =
     queries.tron.queryAccount.getQueryWalletAddress(tronAddress);
   console.log(accountTronInfo, "tronAcc");
@@ -364,7 +361,7 @@ export const AssetChartViewTron: FunctionComponent = observer(() => {
           <div className={styleAsset.big}>
             <FormattedMessage id="main.account.chart.total-balance" />
           </div>
-          <div className={styleAsset.small}>{totalPrice?.toString()}</div>
+          <div className={styleAsset.small}>{totalPrice()?.toString()}</div>
         </div>
         <React.Suspense fallback={<div style={{ height: "150px" }} />}>
           <img
