@@ -237,7 +237,7 @@ export const AssetChartViewBtc: FunctionComponent = observer(() => {
   // wait for account to be
   const networkType = chainStore.current.networkType;
   const chainId = chainStore.current.chainId;
-  let address = accountInfo.getAddressDisplay(
+  const address = accountInfo.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses
   );
   const balance =

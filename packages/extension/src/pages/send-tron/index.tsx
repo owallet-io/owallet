@@ -11,11 +11,14 @@ import { Button } from "reactstrap";
 
 import { useHistory, useLocation } from "react-router";
 import queryString from "querystring";
-import { InvalidTronAddressError, useGetFeeTron } from "@owallet/hooks";
+import {
+  InvalidTronAddressError,
+  useGetFeeTron,
+  useSendTxTronConfig,
+} from "@owallet/hooks";
 import { fitPopupWindow } from "@owallet/popup";
 import { decodeParams, EthereumEndpoint } from "@owallet/common";
 import { FeeInput } from "../../components/form/fee-input";
-import { useSendTxTronConfig } from "@owallet/hooks/build/tx/send-tx-tron";
 import TronWeb from "tronweb";
 export const SendTronEvmPage: FunctionComponent<{
   coinMinimalDenom?: string;

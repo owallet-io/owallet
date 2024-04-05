@@ -76,7 +76,7 @@ export const AccountView: FunctionComponent = observer(() => {
               })
             : "Loading..."}
         </div>
-        <div style={{ flex: 1, textAlign: "right" }}></div>
+        <div style={{ flex: 1, textAlign: "right" }} />
       </div>
       {/* {(networkType === 'cosmos' || networkType === 'bitcoin') && ( */}
       <div className={styleAccount.containerAccount}>
@@ -139,7 +139,11 @@ export const AccountView: FunctionComponent = observer(() => {
       )}
       {chainId === ChainIdEnum.BitcoinTestnet && (
         <div className={styleAccount.coinType}>
-          <a target="_blank" href="https://bitcoinfaucet.uo1.net/">
+          <a
+            target="_blank"
+            href="https://bitcoinfaucet.uo1.net/"
+            rel="noreferrer"
+          >
             BTC Testnet Faucet
           </a>
         </div>

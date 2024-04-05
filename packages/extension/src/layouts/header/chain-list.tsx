@@ -255,7 +255,7 @@ export const ChainList: FunctionComponent = observer(() => {
             flex: 1,
             borderTop: "1px solid rgba(255, 255, 255)",
           }}
-        ></hr>
+        />
         <div
           style={{
             fontSize: "14px",
