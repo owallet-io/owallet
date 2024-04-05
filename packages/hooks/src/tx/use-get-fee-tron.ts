@@ -98,7 +98,6 @@ export const useGetFeeTron = (
       .queryTriggerConstantContract(dataReq)
       .waitFreshResponse();
     const triggerContract = triggerContractFetch.data;
-    console.log(triggerContract, "triggerContract");
     if (!triggerContract?.energy_used) return;
     const signedTx = await keyRingStore.simulateSignTron(
       triggerContract.transaction
@@ -128,10 +127,8 @@ export const useGetFeeTron = (
       ...prevState,
       feeLimit,
     }));
-    console.log(feeLimit, "feeLimit");
   };
   const simulateSignTron = async () => {
-    console.log(dataSign, "dataSign");
     if (dataSign?.functionSelector) {
       try {
         const parameter = await encodeParams(dataSign?.parameters);

@@ -93,6 +93,7 @@ export const SignTronPage: FunctionComponent = observer(() => {
   useEffect(() => {
     console.log(txInfo, "txInfo");
     if (txInfo && amountConfig) {
+      //@ts-ignore
       const tx = txInfo?.parameters.find(
         (item, index) => item.type === "uint256"
       );
@@ -120,8 +121,8 @@ export const SignTronPage: FunctionComponent = observer(() => {
     }
   }, [waitingTronData]);
   const error = feeConfig.getError();
-  console.log(error, feeConfig.fee, "errorerror");
   const txStateIsValid = error == null;
+  const feeLimitData = feeLimit?.gt(new Int(0)) ? feeLimit?.toString() : null;
   return (
     <div
       style={{
@@ -234,18 +235,19 @@ export const SignTronPage: FunctionComponent = observer(() => {
                   data-loading={signInteractionStore.isLoading}
                   onClick={async (e) => {
                     e.preventDefault();
-
                     //@ts-ignore
-                    await signInteractionStore.approveTronAndWaitEnd({
-                      ...waitingTronData?.data,
-                      amount: amountConfig?.getAmountPrimitive()?.amount
-                        ? amountConfig?.getAmountPrimitive()?.amount
-                        : waitingTronData?.data?.amount,
-                      feeLimit: feeLimit?.gt(new Int(0))
-                        ? feeLimit?.toString()
-                        : null,
-                    });
-
+                    if (txInfo?.functionSelector) {
+                      await signInteractionStore.approveTronAndWaitEnd({
+                        ...waitingTronData?.data,
+                      });
+                    } else {
+                      //@ts-ignore
+                      await signInteractionStore.approveTronAndWaitEnd({
+                        ...waitingTronData?.data,
+                        amount: amountConfig?.getAmountPrimitive()?.amount,
+                        feeLimit: feeLimitData,
+                      });
+                    }
                     if (
                       interactionInfo.interaction &&
                       !interactionInfo.interactionInternal
