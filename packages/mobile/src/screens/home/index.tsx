@@ -167,12 +167,12 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         setTimeout(() => {
           universalSwapStore.setLoaded(false);
 
-          handleFetchAmounts(
-            accountOrai.bech32Address,
-            accountEth.evmosHexAddress,
-            accountTron.evmosHexAddress,
-            accountKawaiiCosmos.bech32Address
-          );
+          handleFetchAmounts({
+            orai: accountOrai.bech32Address,
+            eth: accountEth.evmosHexAddress,
+            tron: accountTron.evmosHexAddress,
+            kwt: accountKawaiiCosmos.bech32Address,
+          });
         }, 1000);
       } else {
         console.log("The dates are 30 seconds or less apart.");
@@ -193,8 +193,9 @@ export const HomeScreen: FunctionComponent = observer((props) => {
 
   const loadTokenAmounts = useLoadTokens(universalSwapStore);
   // handle fetch all tokens of all chains
-  const handleFetchAmounts = async (orai?, eth?, tron?, kwt?) => {
+  const handleFetchAmounts = async (params: { orai?; eth?; tron?; kwt? }) => {
     let loadTokenParams = {};
+    const { orai, eth, tron, kwt } = params;
 
     try {
       const cwStargate = {
@@ -233,8 +234,33 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     universalSwapStore.setLoaded(false);
   }, [accountOrai.bech32Address]);
 
+  const getTokensAmount = (condition) => {
+    const ledgerAddress = keyRingStore.keyRingLedgerAddresses;
+    let orai, eth, tron, kwt;
+    if (account.isNanoLedger) {
+    }
+    if (condition) {
+      if (
+        accountOrai.bech32Address &&
+        accountEth.evmosHexAddress &&
+        accountTron.evmosHexAddress &&
+        accountKawaiiCosmos.bech32Address
+      ) {
+        setTimeout(() => {
+          handleFetchAmounts({
+            orai: accountOrai.bech32Address,
+            eth: accountEth.evmosHexAddress,
+            tron: accountTron.evmosHexAddress,
+            kwt: accountKawaiiCosmos.bech32Address,
+          });
+        }, 1100);
+      }
+    }
+  };
+
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
+
     InteractionManager.runAfterInteractions(() => {
       startTransition(() => {
         if (
@@ -244,12 +270,12 @@ export const HomeScreen: FunctionComponent = observer((props) => {
           accountKawaiiCosmos.bech32Address
         ) {
           timeoutId = setTimeout(() => {
-            handleFetchAmounts(
-              accountOrai.bech32Address,
-              accountEth.evmosHexAddress,
-              accountTron.evmosHexAddress,
-              accountKawaiiCosmos.bech32Address
-            );
+            handleFetchAmounts({
+              orai: accountOrai.bech32Address,
+              eth: accountEth.evmosHexAddress,
+              tron: accountTron.evmosHexAddress,
+              kwt: accountKawaiiCosmos.bech32Address,
+            });
           }, 1100);
         }
       });
@@ -263,6 +289,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     accountEth.evmosHexAddress,
     accountTron.evmosHexAddress,
     accountKawaiiCosmos.bech32Address,
+    keyRingStore.keyRingLedgerAddresses,
   ]);
 
   const { data: prices } = useCoinGeckoPrices();
@@ -310,7 +337,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     >
       <BIP44Selectable />
       {oldUI ? renderAccountCard : renderNewAccountCard}
-      <DashboardCard />
+      {/* <DashboardCard /> */}
       {chainStore.current.networkType === "cosmos" &&
       !appInitStore.getInitApp.isAllNetworks ? (
         <EarningCardNew containerStyle={styles.containerEarnStyle} />
