@@ -384,7 +384,7 @@ export const SendTronScreen: FunctionComponent = observer(() => {
                 Transaction fee
               </OWText>
               <TouchableOpacity
-                style={{ flexDirection: "row" }}
+                style={{ flexDirection: "row", alignItems: "center" }}
                 disabled={true}
               >
                 <OWText
@@ -393,15 +393,18 @@ export const SendTronScreen: FunctionComponent = observer(() => {
                   size={16}
                 >
                   {/*{capitalizedText(sendConfigs.feeConfig.feeType)}:{' '}*/}
-                  {sendConfigs.feeConfig.fee?.toString()}
+                  {sendConfigs.feeConfig.fee?.trim(true)?.toString()}
+                </OWText>
+                <OWText color={colors["neutral-text-body"]}>
+                  {"~"}
                   {priceStore
                     .calculatePrice(sendConfigs.feeConfig.fee)
                     ?.toString()}{" "}
                 </OWText>
-                <DownArrowIcon
-                  height={11}
-                  color={colors["primary-text-action"]}
-                />
+                {/*<DownArrowIcon*/}
+                {/*  height={11}*/}
+                {/*  color={colors["primary-text-action"]}*/}
+                {/*/>*/}
               </TouchableOpacity>
             </View>
 
