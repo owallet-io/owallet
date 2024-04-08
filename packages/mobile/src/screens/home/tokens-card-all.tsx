@@ -182,48 +182,6 @@ export const TokensCardAll: FunctionComponent<{
       item,
     });
     return;
-
-    chainStore.selectChain(item?.chainId);
-    await chainStore.saveLastViewChainId();
-    if (!account.isNanoLedger) {
-      if (chainStore.current.networkType === "bitcoin") {
-        navigate(SCREENS.STACK.Others, {
-          screen: SCREENS.SendBtc,
-        });
-        return;
-      }
-      if (chainStore.current.networkType === "evm") {
-        if (item.chainId === ChainIdEnum.TRON) {
-          const itemTron = tronTokens?.find((t) => {
-            return t.coinGeckoId === item.coinGeckoId;
-          });
-
-          smartNavigation.navigateSmart("SendTron", { item: itemTron });
-          return;
-        }
-        if (item.chainId === ChainIdEnum.Oasis) {
-          smartNavigation.navigateSmart("SendOasis", {
-            currency: chainStore.current.stakeCurrency.coinMinimalDenom,
-          });
-          return;
-        }
-        navigate(SCREENS.STACK.Others, {
-          screen: SCREENS.SendEvm,
-          params: {
-            currency: item.denom,
-            contractAddress: item.contractAddress,
-            coinGeckoId: item.coinGeckoId,
-          },
-        });
-        return;
-      }
-
-      smartNavigation.navigateSmart("NewSend", {
-        currency: item.denom,
-        contractAddress: item.contractAddress,
-        coinGeckoId: item.coinGeckoId,
-      });
-    }
   };
 
   const renderTokensFromQueryBalances = () => {
@@ -405,7 +363,11 @@ export const TokensCardAll: FunctionComponent<{
             return t.chainId === chainStore.current.chainId;
           }).length > 3 ? (
             <OWButton
-              style={{ marginTop: Platform.OS === "android" ? 24 : 16 }}
+              style={{
+                marginTop: Platform.OS === "android" ? 24 : 16,
+                marginHorizontal: 16,
+                width: metrics.screenWidth - 32,
+              }}
               label={more ? "View all" : "Hide"}
               size="medium"
               type="secondary"

@@ -5,38 +5,38 @@ import { useTheme } from "@src/themes/theme-provider";
 import {
   StyleSheet,
   View,
-  TouchableOpacity,
   Image,
-  ActivityIndicator,
+  InteractionManager,
   Clipboard,
 } from "react-native";
 import OWText from "@src/components/text/ow-text";
 import { useSmartNavigation } from "@src/navigation.provider";
 import { useStore } from "@src/stores";
-import OWIcon from "@src/components/ow-icon/ow-icon";
 import { OWButton } from "@src/components/button";
 import { metrics, spacing } from "@src/themes";
 import { ScrollView } from "react-native-gesture-handler";
-import { CheckIcon, CopyFillIcon, DownArrowIcon } from "@src/components/icon";
 import { API } from "@src/common/api";
-import { HISTORY_STATUS, openLink } from "@src/utils/helper";
-import { Bech32Address } from "@owallet/cosmos";
-import { getTransactionUrl } from "../universal-swap/helpers";
 import { useSimpleTimer } from "@src/hooks";
 import { PageHeader } from "@src/components/header/header-new";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
-import { OWBox } from "@src/components/card";
 import { DashboardCard } from "./dashboard";
+import { ChainIdEnum, getBase58Address, TRC20_LIST } from "@owallet/common";
+import { formarPriceWithDigits, shortenAddress } from "@src/utils/helper";
+import { CheckIcon, CopyFillIcon } from "@src/components/icon";
 
 export const TokenDetails: FunctionComponent = observer((props) => {
-  const { chainStore, accountStore } = useStore();
+  const { chainStore, accountStore, keyRingStore } = useStore();
   const { isTimedOut, setTimer } = useSimpleTimer();
   const { colors } = useTheme();
   const styles = useStyles(colors);
   const safeAreaInsets = useSafeAreaInsets();
-  const account = accountStore.getAccount(chainStore.current.chainId);
+  const smartNavigation = useSmartNavigation();
+
+  const [address, setAddress] = useState("");
+  const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
+  const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
 
   const route = useRoute<
     RouteProp<
@@ -52,57 +52,136 @@ export const TokenDetails: FunctionComponent = observer((props) => {
 
   const { item } = route.params;
 
-  //   const onPressToken = async item => {
+  const account = accountStore.getAccount(item.chainId);
 
-  //     chainStore.selectChain(item?.chainId);
-  //     await chainStore.saveLastViewChainId();
-  //     if (!account.isNanoLedger) {
-  //       if (chainStore.current.networkType === "bitcoin") {
-  //         navigate(SCREENS.STACK.Others, {
-  //           screen: SCREENS.SendBtc
-  //         });
-  //         return;
-  //       }
-  //       if (chainStore.current.networkType === "evm") {
-  //         if (item.chainId === ChainIdEnum.TRON) {
-  //           const itemTron = tronTokens?.find(t => {
-  //             return t.coinGeckoId === item.coinGeckoId;
-  //           });
+  const [tronTokens, setTronTokens] = useState([]);
 
-  //           smartNavigation.navigateSmart("SendTron", { item: itemTron });
-  //           return;
-  //         }
-  //         if (item.chainId === ChainIdEnum.Oasis) {
-  //           smartNavigation.navigateSmart("SendOasis", {
-  //             currency: chainStore.current.stakeCurrency.coinMinimalDenom
-  //           });
-  //           return;
-  //         }
-  //         navigate(SCREENS.STACK.Others, {
-  //           screen: SCREENS.SendEvm,
-  //           params: {
-  //             currency: item.denom,
-  //             contractAddress: item.contractAddress,
-  //             coinGeckoId: item.coinGeckoId
-  //           }
-  //         });
-  //         return;
-  //       }
+  useEffect(() => {
+    InteractionManager.runAfterInteractions(() => {
+      (async function get() {
+        try {
+          if (accountTron.evmosHexAddress) {
+            const res = await API.getTronAccountInfo(
+              {
+                address: getBase58Address(accountTron.evmosHexAddress),
+              },
+              {
+                baseURL: chainStore.current.rpc,
+              }
+            );
 
-  //       smartNavigation.navigateSmart("NewSend", {
-  //         currency: item.denom,
-  //         contractAddress: item.contractAddress,
-  //         coinGeckoId: item.coinGeckoId
-  //       });
-  //     }
-  //   };
+            if (res.data?.data.length > 0) {
+              if (res.data?.data[0].trc20) {
+                const tokenArr = [];
+                TRC20_LIST.map((tk) => {
+                  let token = res.data?.data[0].trc20.find(
+                    (t) => tk.contractAddress in t
+                  );
+                  if (token) {
+                    tokenArr.push({ ...tk, amount: token[tk.contractAddress] });
+                  }
+                });
+
+                setTronTokens(tokenArr);
+              }
+            }
+          }
+        } catch (error) {}
+      })();
+    });
+  }, [accountTron.evmosHexAddress]);
+
+  useEffect(() => {
+    let address;
+
+    const chainInfo = chainStore.chainInfosInUI.find((chainInfo) => {
+      return chainInfo.chainId === item.chainId;
+    });
+
+    if (chainInfo.networkType === "cosmos") {
+      address = accountStore.getAccount(item.chainId).bech32Address;
+    } else {
+      if (chainInfo.chainId === ChainIdEnum.TRON) {
+        if (
+          accountTron.isNanoLedger &&
+          keyRingStore?.keyRingLedgerAddresses?.trx
+        ) {
+          address = keyRingStore.keyRingLedgerAddresses.trx;
+        } else {
+          if (accountTron) {
+            address = getBase58Address(accountTron.evmosHexAddress);
+          }
+        }
+      } else if (chainInfo.chainId === ChainIdEnum.Bitcoin) {
+        address = accountStore.getAccount(ChainIdEnum.Bitcoin).allBtcAddresses
+          .legacy;
+      } else {
+        if (
+          accountEth.isNanoLedger &&
+          keyRingStore?.keyRingLedgerAddresses?.eth
+        ) {
+          address = keyRingStore.keyRingLedgerAddresses.eth;
+        } else {
+          address = accountEth.evmosHexAddress;
+        }
+      }
+    }
+    setAddress(address);
+  }, [item]);
+
+  const onPressToken = async () => {
+    chainStore.selectChain(item?.chainId);
+    await chainStore.saveLastViewChainId();
+
+    if (chainStore.current.networkType === "bitcoin") {
+      navigate(SCREENS.STACK.Others, {
+        screen: SCREENS.SendBtc,
+      });
+      return;
+    }
+    if (chainStore.current.networkType === "evm") {
+      if (item.chainId === ChainIdEnum.TRON) {
+        const itemTron = tronTokens?.find((t) => {
+          return t.coinGeckoId === item.coinGeckoId;
+        });
+
+        smartNavigation.navigateSmart("SendTron", { item: itemTron });
+        return;
+      }
+      if (item.chainId === ChainIdEnum.Oasis) {
+        smartNavigation.navigateSmart("SendOasis", {
+          currency: chainStore.current.stakeCurrency.coinMinimalDenom,
+        });
+        return;
+      }
+      navigate(SCREENS.STACK.Others, {
+        screen: SCREENS.SendEvm,
+        params: {
+          currency: item.denom,
+          contractAddress: item.contractAddress,
+          coinGeckoId: item.coinGeckoId,
+        },
+      });
+      return;
+    }
+
+    try {
+      navigate(SCREENS.STACK.Others, {
+        screen: SCREENS.NewSend,
+        params: {
+          currency: item.denom,
+          contractAddress: item.contractAddress,
+          coinGeckoId: item.coinGeckoId,
+        },
+      });
+    } catch (err) {}
+  };
 
   return (
     <View style={[styles.container, { paddingTop: safeAreaInsets.top }]}>
       <PageHeader title={item.asset} subtitle={item.chain} colors={colors} />
       <ScrollView
         contentContainerStyle={{ width: "100%" }}
-        style={{}}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.containerOWBox}>
@@ -114,7 +193,7 @@ export const TokenDetails: FunctionComponent = observer((props) => {
                 resizeMode="contain"
                 fadeDuration={0}
               />
-              <OWText style={styles.labelName}>{account?.name || ".."}</OWText>
+              <OWText style={styles.labelName}>{account?.name || "..."}</OWText>
             </View>
             <OWButton
               type="secondary"
@@ -124,23 +203,26 @@ export const TokenDetails: FunctionComponent = observer((props) => {
                 color: colors["neutral-text-action-on-light-bg"],
               }}
               icon={
-                <OWIcon
-                  size={14}
-                  name="copy"
-                  color={colors["neutral-text-action-on-light-bg"]}
-                />
+                isTimedOut ? (
+                  <CheckIcon />
+                ) : (
+                  <CopyFillIcon color={colors["sub-text"]} />
+                )
               }
               style={styles.copy}
-              label="Copy address"
-              onPress={() => {}}
+              label={shortenAddress(address)}
+              onPress={() => {
+                Clipboard.setString(address);
+                setTimer(2000);
+              }}
             />
           </View>
           <View style={styles.overview}>
             <OWText variant="bigText" style={styles.labelTotalAmount}>
-              {item.balance} {item.asset}
+              {item.balance.toFixed(4)} {item.asset}
             </OWText>
             <OWText style={styles.profit} color={colors["success-text-body"]}>
-              ${item.value}
+              ${formarPriceWithDigits(item.value)}
             </OWText>
           </View>
           <View style={styles.btnGroup}>
@@ -167,7 +249,7 @@ export const TokenDetails: FunctionComponent = observer((props) => {
               }}
               style={styles.getStarted}
               label={"Send"}
-              onPress={() => {}}
+              onPress={onPressToken}
             />
           </View>
         </View>

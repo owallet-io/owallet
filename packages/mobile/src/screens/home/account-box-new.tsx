@@ -71,7 +71,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
         yesterdayBalance += y.value ?? 0;
       });
 
-      setProfit(Number(Number(totalUsd - yesterdayBalance).toFixed(6)));
+      setProfit(Number(Number(totalUsd - yesterdayBalance).toFixed(2)));
     } else {
       setProfit(0);
     }

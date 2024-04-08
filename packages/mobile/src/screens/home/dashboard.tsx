@@ -4,17 +4,16 @@ import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
 import moment from "moment";
 import React, { FunctionComponent, useEffect, useState } from "react";
-import { StyleSheet, TouchableOpacity, View, ViewStyle } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { BarChart, LineChart } from "react-native-chart-kit";
 import { API } from "../../common/api";
-import { OWBox } from "../../components/card";
 import { useSmartNavigation } from "../../navigation.provider";
 import { useStore } from "../../stores";
 import { metrics, spacing } from "../../themes";
 import { nFormatter } from "../../utils/helper";
 import { colorsCode } from "@src/themes/mode-colors";
 import { useQuery } from "@tanstack/react-query";
-import { CoinGeckoAPIEndPoint, MarketAPIEndPoint } from "@owallet/common";
+import { MarketAPIEndPoint } from "@owallet/common";
 
 const DATA_COUNT_DENOM = 4;
 const transformData = (data) => {
@@ -131,7 +130,7 @@ export const DashboardCard: FunctionComponent<{
         {
           id: coinGeckoId ?? chainStore.current.stakeCurrency.coinGeckoId,
         },
-        { baseURL: CoinGeckoAPIEndPoint }
+        { baseURL: MarketAPIEndPoint + "/api/v3" }
       ),
     ...{
       initialData: null,

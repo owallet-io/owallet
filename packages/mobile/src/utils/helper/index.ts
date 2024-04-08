@@ -314,6 +314,10 @@ export function removeEmptyElements(array) {
   return array.filter((element) => !!element);
 }
 
+export function formarPriceWithDigits(amount, numOfDigits = 2) {
+  return Number(amount).toFixed(numOfDigits);
+}
+
 function convertVarToWord(str) {
   const words = str && str.split("_");
   const capitalizedWords =
@@ -685,6 +689,16 @@ export function numberWithCommas(x) {
 
 export function createTxsHelper() {
   return new TxsHelper();
+}
+
+export function shortenAddress(address): string {
+  if (address) {
+    const firstThree = address.substring(0, 3);
+    const lastThree = address.substring(address.length - 3);
+    return firstThree + "..." + lastThree;
+  }
+
+  return "";
 }
 
 export { get };
