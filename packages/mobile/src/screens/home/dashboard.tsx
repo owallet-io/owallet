@@ -131,7 +131,7 @@ export const DashboardCard: FunctionComponent<{
         {
           id: coinGeckoId ?? chainStore.current.stakeCurrency.coinGeckoId,
         },
-        { baseURL: CoinGeckoAPIEndPoint }
+        { baseURL: MarketAPIEndPoint + "/api/v3" }
       ),
     ...{
       initialData: null,
