@@ -246,7 +246,11 @@ export const TokenDetails: FunctionComponent = observer((props) => {
             />
           </View>
         </View>
-        {/* <DashboardCard label={`${item.asset}`} canView={false} coinGeckoId={item.coinGeckoId} /> */}
+        <DashboardCard
+          label={`${item.asset}`}
+          canView={false}
+          coinGeckoId={item.coinGeckoId}
+        />
       </ScrollView>
     </View>
   );
