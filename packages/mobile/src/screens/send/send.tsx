@@ -310,8 +310,6 @@ export const NewSendScreen: FunctionComponent = observer(() => {
     });
   }, [isReadyBalance, address, sendConfigs.amountConfig.sendCurrency]);
   const estimatePrice = priceStore.calculatePrice(amount)?.toString();
-  console.log(amount, "amount");
-  console.log(sendConfigs.feeConfig.fee, "sendConfigs.feeConfig.fee");
   return (
     <PageWithBottom
       bottomGroup={

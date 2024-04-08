@@ -314,6 +314,10 @@ export function removeEmptyElements(array) {
   return array.filter((element) => !!element);
 }
 
+export function formarPriceWithDigits(amount, numOfDigits = 2) {
+  return Number(amount).toFixed(numOfDigits);
+}
+
 function convertVarToWord(str) {
   const words = str && str.split("_");
   const capitalizedWords =

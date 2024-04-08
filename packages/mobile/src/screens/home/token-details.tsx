@@ -23,7 +23,7 @@ import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { DashboardCard } from "./dashboard";
 import { ChainIdEnum, getBase58Address, TRC20_LIST } from "@owallet/common";
-import { shortenAddress } from "@src/utils/helper";
+import { formarPriceWithDigits, shortenAddress } from "@src/utils/helper";
 import { CheckIcon, CopyFillIcon } from "@src/components/icon";
 
 export const TokenDetails: FunctionComponent = observer((props) => {
@@ -182,7 +182,6 @@ export const TokenDetails: FunctionComponent = observer((props) => {
       <PageHeader title={item.asset} subtitle={item.chain} colors={colors} />
       <ScrollView
         contentContainerStyle={{ width: "100%" }}
-        style={{}}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.containerOWBox}>
@@ -223,7 +222,7 @@ export const TokenDetails: FunctionComponent = observer((props) => {
               {item.balance} {item.asset}
             </OWText>
             <OWText style={styles.profit} color={colors["success-text-body"]}>
-              ${item.value}
+              ${formarPriceWithDigits(item.value)}
             </OWText>
           </View>
           <View style={styles.btnGroup}>
