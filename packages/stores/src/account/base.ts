@@ -493,8 +493,6 @@ export class AccountSetBase<MsgOpts, Queries> {
     if (onBroadcasted) {
       onBroadcasted(txHash);
     }
-    const isInj = this.chainId.startsWith("injective");
-
     const chainInfo = this.chainGetter.getChain(this.chainId);
     const restApi = chainInfo?.rest;
     const restConfig = chainInfo?.restConfig;
@@ -528,14 +526,10 @@ export class AccountSetBase<MsgOpts, Queries> {
       if (onFulfill) {
         onFulfill(tx);
       }
-      if (isInj) {
-        OwalletEvent.txHashEmit(txHashRoot, tx);
-      }
+      OwalletEvent.txHashEmit(txHashRoot, tx);
     } catch (error) {
       console.log(error, "error");
-      if (isInj) {
-        OwalletEvent.txHashEmit(txHashRoot, null);
-      }
+      OwalletEvent.txHashEmit(txHashRoot, null);
     } finally {
       runInAction(() => {
         this._isSendingMsg = false;
