@@ -192,11 +192,16 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   const accountKawaiiCosmos = accountStore.getAccount(ChainIdEnum.KawaiiCosmos);
 
   const loadTokenAmounts = useLoadTokens(universalSwapStore);
-  // handle fetch all tokens of all chains
-  const handleFetchAmounts = async (params: { orai?; eth?; tron?; kwt? }) => {
-    let loadTokenParams = {};
-    const { orai, eth, tron, kwt } = params;
 
+  // handle fetch all tokens of all chains
+  const handleFetchAmounts = async (params: {
+    orai?: string;
+    eth?: string;
+    tron?: string;
+    kwt?: string;
+  }) => {
+    const { orai, eth, tron, kwt } = params;
+    let loadTokenParams = {};
     try {
       const cwStargate = {
         account: accountOrai,
@@ -206,9 +211,9 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       loadTokenParams = {
         ...loadTokenParams,
         oraiAddress: orai ?? accountOrai.bech32Address,
-        metamaskAddress: eth ?? accountEth.evmosHexAddress,
+        metamaskAddress: eth ?? null,
         kwtAddress: kwt ?? accountKawaiiCosmos.bech32Address,
-        tronAddress: getBase58Address(tron ?? accountTron.evmosHexAddress),
+        tronAddress: tron ?? null,
         cwStargate,
         tokenReload:
           universalSwapStore?.getTokenReload?.length > 0
@@ -222,7 +227,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       }, 1000);
     } catch (error) {
       console.log("error loadTokenAmounts", error);
-      universalSwapStore.setLoaded(true);
       showToast({
         message: error?.message ?? error?.ex?.message,
         type: "danger",
@@ -234,36 +238,25 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     universalSwapStore.setLoaded(false);
   }, [accountOrai.bech32Address]);
 
-  const getTokensAmount = (condition) => {
-    const ledgerAddress = keyRingStore.keyRingLedgerAddresses;
-    let orai, eth, tron, kwt;
-    if (account.isNanoLedger) {
-    }
-    if (condition) {
-      if (
-        accountOrai.bech32Address &&
-        accountEth.evmosHexAddress &&
-        accountTron.evmosHexAddress &&
-        accountKawaiiCosmos.bech32Address
-      ) {
-        setTimeout(() => {
-          handleFetchAmounts({
-            orai: accountOrai.bech32Address,
-            eth: accountEth.evmosHexAddress,
-            tron: accountTron.evmosHexAddress,
-            kwt: accountKawaiiCosmos.bech32Address,
-          });
-        }, 1100);
-      }
-    }
-  };
-
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
 
     InteractionManager.runAfterInteractions(() => {
       startTransition(() => {
-        if (
+        if (accountOrai.isNanoLedger) {
+          if (Object.keys(keyRingStore.keyRingLedgerAddresses).length > 0) {
+            setTimeout(() => {
+              universalSwapStore.clearAmounts();
+              universalSwapStore.setLoaded(false);
+              handleFetchAmounts({
+                orai: accountOrai.bech32Address,
+                eth: keyRingStore.keyRingLedgerAddresses.eth ?? null,
+                tron: keyRingStore.keyRingLedgerAddresses.trx ?? null,
+                kwt: accountKawaiiCosmos.bech32Address,
+              });
+            }, 1000);
+          }
+        } else if (
           accountOrai.bech32Address &&
           accountEth.evmosHexAddress &&
           accountTron.evmosHexAddress &&
@@ -273,7 +266,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
             handleFetchAmounts({
               orai: accountOrai.bech32Address,
               eth: accountEth.evmosHexAddress,
-              tron: accountTron.evmosHexAddress,
+              tron: getBase58Address(accountTron.evmosHexAddress),
               kwt: accountKawaiiCosmos.bech32Address,
             });
           }, 1100);
