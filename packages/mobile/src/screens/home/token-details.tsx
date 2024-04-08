@@ -2,11 +2,16 @@ import React, { FunctionComponent, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
-import { StyleSheet, View, Image, InteractionManager } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Image,
+  InteractionManager,
+  Clipboard,
+} from "react-native";
 import OWText from "@src/components/text/ow-text";
 import { useSmartNavigation } from "@src/navigation.provider";
 import { useStore } from "@src/stores";
-import OWIcon from "@src/components/ow-icon/ow-icon";
 import { OWButton } from "@src/components/button";
 import { metrics, spacing } from "@src/themes";
 import { ScrollView } from "react-native-gesture-handler";
@@ -18,8 +23,8 @@ import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { DashboardCard } from "./dashboard";
 import { ChainIdEnum, getBase58Address, TRC20_LIST } from "@owallet/common";
-import { Bech32Address } from "@owallet/cosmos";
-import { formatContractAddress, shortenAddress } from "@src/utils/helper";
+import { shortenAddress } from "@src/utils/helper";
+import { CheckIcon, CopyFillIcon } from "@src/components/icon";
 
 export const TokenDetails: FunctionComponent = observer((props) => {
   const { chainStore, accountStore, keyRingStore } = useStore();
@@ -199,15 +204,18 @@ export const TokenDetails: FunctionComponent = observer((props) => {
                 color: colors["neutral-text-action-on-light-bg"],
               }}
               icon={
-                <OWIcon
-                  size={14}
-                  name="copy"
-                  color={colors["neutral-text-action-on-light-bg"]}
-                />
+                isTimedOut ? (
+                  <CheckIcon />
+                ) : (
+                  <CopyFillIcon color={colors["sub-text"]} />
+                )
               }
               style={styles.copy}
               label={shortenAddress(address)}
-              onPress={() => {}}
+              onPress={() => {
+                Clipboard.setString(address);
+                setTimer(2000);
+              }}
             />
           </View>
           <View style={styles.overview}>
