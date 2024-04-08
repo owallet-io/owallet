@@ -687,6 +687,16 @@ export function createTxsHelper() {
   return new TxsHelper();
 }
 
+export function shortenAddress(address): string {
+  if (address) {
+    const firstThree = address.substring(0, 3);
+    const lastThree = address.substring(address.length - 3);
+    return firstThree + "..." + lastThree;
+  }
+
+  return "";
+}
+
 export { get };
 
 export const handleSaveHistory = async (address, infos) => {
