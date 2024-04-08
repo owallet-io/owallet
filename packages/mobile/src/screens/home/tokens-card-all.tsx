@@ -217,11 +217,15 @@ export const TokensCardAll: FunctionComponent<{
       return;
     }
 
+    console.log("get 1111");
+
     smartNavigation.navigateSmart("NewSend", {
       currency: item.denom,
       contractAddress: item.contractAddress,
       coinGeckoId: item.coinGeckoId,
     });
+
+    console.log("get 222");
   };
 
   const renderTokensFromQueryBalances = () => {

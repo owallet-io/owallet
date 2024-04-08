@@ -124,9 +124,10 @@ export const TokenDetails: FunctionComponent = observer((props) => {
     setAddress(address);
   }, [item]);
 
-  const onPressToken = async (item) => {
+  const onPressToken = async () => {
     chainStore.selectChain(item?.chainId);
     await chainStore.saveLastViewChainId();
+
     if (chainStore.current.networkType === "bitcoin") {
       navigate(SCREENS.STACK.Others, {
         screen: SCREENS.SendBtc,
@@ -159,11 +160,16 @@ export const TokenDetails: FunctionComponent = observer((props) => {
       return;
     }
 
-    smartNavigation.navigateSmart("NewSend", {
-      currency: item.denom,
-      contractAddress: item.contractAddress,
-      coinGeckoId: item.coinGeckoId,
-    });
+    try {
+      navigate(SCREENS.STACK.Others, {
+        screen: SCREENS.NewSend,
+        params: {
+          currency: item.denom,
+          contractAddress: item.contractAddress,
+          coinGeckoId: item.coinGeckoId,
+        },
+      });
+    } catch (err) {}
   };
 
   return (
@@ -236,9 +242,7 @@ export const TokenDetails: FunctionComponent = observer((props) => {
               }}
               style={styles.getStarted}
               label={"Send"}
-              onPress={() => {
-                onPressToken(item);
-              }}
+              onPress={onPressToken}
             />
           </View>
         </View>
