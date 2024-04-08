@@ -50,6 +50,11 @@ export const SignTronPage: FunctionComponent = observer(() => {
     const triggerTxId = await kvStore.get(
       `${TRIGGER_TYPE}:${waitingTronData.data.txID}`
     );
+    console.log(
+      "b3: get info trigger by txid: \n",
+      triggerTxId,
+      `${TRIGGER_TYPE}:${waitingTronData.data.txID}`
+    );
     setTxInfo(triggerTxId as any);
     kvStore.set(`${TRIGGER_TYPE}:${waitingTronData.data.txID}`, null);
   };

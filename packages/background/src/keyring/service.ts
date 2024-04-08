@@ -1061,15 +1061,24 @@ export class KeyRingService {
           data.parameters,
           data.issuerAddress
         );
+      const objStore = {
+        address: data.address,
+        functionSelector: data.functionSelector,
+        options: data.options,
+        parameters: data.parameters,
+        issuerAddress: data.issuerAddress,
+      };
+      console.log(
+        `B1: trigger data Req = ${TRIGGER_TYPE}:${triggerSmartContract.transaction.txID}`,
+        objStore
+      );
+      console.log(
+        `B2: data trigger after request = ${triggerSmartContract}`,
+        "data trigger"
+      );
       this.kvStore.set(
         `${TRIGGER_TYPE}:${triggerSmartContract.transaction.txID}`,
-        {
-          address: data.address,
-          functionSelector: data.functionSelector,
-          options: data.options,
-          parameters: data.parameters,
-          issuerAddress: data.issuerAddress,
-        }
+        objStore
       );
       return triggerSmartContract;
     } catch (error) {
@@ -1090,6 +1099,7 @@ export class KeyRingService {
     )) as any;
     try {
       if (newData?.txID) {
+        console.log("buoc cuoi: bat dau sign:", newData);
         newData.signature = [
           Buffer.from(
             await this.keyRing.sign(env, chainId, 195, newData.txID)
