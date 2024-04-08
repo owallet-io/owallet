@@ -90,7 +90,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
     return (
       <>
         <Text variant="bigText" style={styles.labelTotalAmount}>
-          ${totalUsd.toFixed(6)}
+          ${totalUsd.toFixed(2)}
         </Text>
         <Text
           style={styles.profit}

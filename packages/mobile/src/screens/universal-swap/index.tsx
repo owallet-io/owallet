@@ -371,7 +371,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       originalFromToken.coinGeckoId,
       originalFromToken.denom,
       searchTokenName,
-      SwapDirection.To
+      SwapDirection.To,
+      universalSwapStore.getAmount
     );
 
     setFilteredToTokens(filteredToTokens);
@@ -381,8 +382,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       originalToToken.coinGeckoId,
       originalToToken.denom,
       searchTokenName,
-      SwapDirection.From
+      SwapDirection.From,
+      universalSwapStore.getAmount
     );
+
     setFilteredFromTokens(filteredFromTokens);
 
     // TODO: need to automatically update from / to token to the correct swappable one when clicking the swap button
@@ -777,7 +780,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           index: 1,
         }}
         prices={prices}
-        data={filteredFromTokens}
+        data={filteredFromTokens.sort((a, b) => {
+          // @ts-ignore
+          return b.value - a.value;
+        })}
         close={() => {
           setIsSelectFromTokenModal(false);
           setChainFilter(null);
@@ -800,7 +806,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           index: 1,
         }}
         prices={prices}
-        data={filteredToTokens}
+        data={filteredToTokens.sort((a, b) => {
+          // @ts-ignore
+          return b.value - a.value;
+        })}
         selectedChainFilter={selectedChainFilter}
         close={() => {
           setIsSelectToTokenModal(false);

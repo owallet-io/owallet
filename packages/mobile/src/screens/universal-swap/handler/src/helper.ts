@@ -758,16 +758,29 @@ export function filterNonPoolEvmTokens(
   coingeckoId: CoinGeckoId,
   denom: string,
   searchTokenName: string,
-  direction: SwapDirection // direction = to means we are filtering to tokens
+  direction: SwapDirection, // direction = to means we are filtering to tokens,
+  amounts: object
 ) {
   // basic filter. Dont include itself & only collect tokens with searched letters
   const listTokens =
     direction === SwapDirection.From ? swapFromTokens : swapToTokens;
+
   let filteredToTokens = listTokens.filter(
     (token) =>
       token.denom !== denom &&
       token.name.toLowerCase().includes(searchTokenName.toLowerCase())
   );
+
+  const tmpListTokens = filteredToTokens
+    .filter((t) => {
+      // filter out to tokens that are on a different network & with no pool because we are not ready to support them yet. TODO: support
+      if (isSupportedNoPoolSwapEvm(t.coinGeckoId)) return t.chainId === chainId;
+      return true;
+    })
+    .map((t) => {
+      return { ...t, value: toDisplay(amounts?.[t.denom], t.decimals) };
+    });
+
   // special case for tokens not having a pool on Oraichain
   if (isSupportedNoPoolSwapEvm(coingeckoId)) {
     const swappableTokens = Object.keys(swapEvmRoutes[chainId]).map(
@@ -788,28 +801,39 @@ export function filterNonPoolEvmTokens(
           )
         ),
       ];
-    filteredToTokens = filteredTokens;
+    filteredToTokens = filteredTokens.map((t) => {
+      return { ...t, value: toDisplay(amounts?.[t.denom], t.decimals) };
+    });
   }
   // special case filter. Tokens on networks other than supported evm cannot swap to tokens, so we need to remove them
   if (!isEvmNetworkNativeSwapSupported(chainId as NetworkChainId))
-    return filteredToTokens.filter((t) => {
-      // one-directional swap. non-pool tokens of evm network can swap be swapped with tokens on Oraichain, but not vice versa
-      const isSupported = isSupportedNoPoolSwapEvm(t.coinGeckoId);
-      if (direction === SwapDirection.To) return !isSupported;
-      if (isSupported) {
-        // if we cannot find any matched token then we dont include it in the list since it cannot be swapped
-        const sameChainId = getTokenOnSpecificChainId(
-          coingeckoId,
-          t.chainId as NetworkChainId
-        );
-        if (!sameChainId) return false;
+    return filteredToTokens
+      .filter((t) => {
+        // one-directional swap. non-pool tokens of evm network can swap be swapped with tokens on Oraichain, but not vice versa
+        const isSupported = isSupportedNoPoolSwapEvm(t.coinGeckoId);
+        if (direction === SwapDirection.To) return !isSupported;
+        if (isSupported) {
+          // if we cannot find any matched token then we dont include it in the list since it cannot be swapped
+          const sameChainId = getTokenOnSpecificChainId(
+            coingeckoId,
+            t.chainId as NetworkChainId
+          );
+          if (!sameChainId) return false;
+          return true;
+        }
         return true;
-      }
+      })
+      .map((t) => {
+        return { ...t, value: toDisplay(amounts?.[t.denom], t.decimals) };
+      });
+
+  return filteredToTokens
+    .filter((t) => {
+      // filter out to tokens that are on a different network & with no pool because we are not ready to support them yet. TODO: support
+      if (isSupportedNoPoolSwapEvm(t.coinGeckoId)) return t.chainId === chainId;
       return true;
+    })
+    .map((t) => {
+      return { ...t, value: toDisplay(amounts?.[t.denom], t.decimals) };
     });
-  return filteredToTokens.filter((t) => {
-    // filter out to tokens that are on a different network & with no pool because we are not ready to support them yet. TODO: support
-    if (isSupportedNoPoolSwapEvm(t.coinGeckoId)) return t.chainId === chainId;
-    return true;
-  });
 }
