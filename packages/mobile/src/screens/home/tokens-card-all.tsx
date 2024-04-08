@@ -281,7 +281,7 @@ export const TokensCardAll: FunctionComponent<{
                       style={{ lineHeight: 24 }}
                       color={colors["neutral-text-body"]}
                     >
-                      ${item.value.toFixed(6)}
+                      ${item.value.toFixed(2)}
                     </Text>
                     <Text
                       size={14}

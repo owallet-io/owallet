@@ -71,7 +71,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
         yesterdayBalance += y.value ?? 0;
       });
 
-      setProfit(Number(Number(totalUsd - yesterdayBalance).toFixed(6)));
+      setProfit(Number(Number(totalUsd - yesterdayBalance).toFixed(2)));
     } else {
       setProfit(0);
     }
@@ -146,7 +146,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
             </View>
 
             <Text size={16} weight="600" color={colors["neutral-text-title"]}>
-              ${chainBalance.toFixed(6)}
+              ${chainBalance.toFixed(2)}
             </Text>
           </View>
         )}
