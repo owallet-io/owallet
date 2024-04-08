@@ -263,9 +263,7 @@ export const SendTronScreen: FunctionComponent = observer(() => {
       >
         <View>
           <OWCard type="normal">
-            <OWText color={colors["neutral-text-title"]} size={12}>
-              Recipient
-            </OWText>
+            <OWText color={colors["neutral-text-title"]}>Recipient</OWText>
 
             <TextInput
               placeholder="Enter receiving address"
@@ -296,7 +294,6 @@ export const SendTronScreen: FunctionComponent = observer(() => {
               <View>
                 <OWText
                   style={{ paddingTop: 8, maxWidth: metrics.screenWidth / 2.5 }}
-                  size={12}
                 >
                   Balance : {balance}
                 </OWText>
@@ -375,9 +372,7 @@ export const SendTronScreen: FunctionComponent = observer(() => {
               </TouchableOpacity>
             </View>
 
-            <OWText color={colors["neutral-text-title"]} size={12}>
-              Memo
-            </OWText>
+            <OWText color={colors["neutral-text-title"]}>Memo</OWText>
 
             <MemoInput
               label=""

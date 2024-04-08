@@ -11,6 +11,7 @@ import { OWButton } from "@src/components/button";
 import { toAmount } from "@owallet/common";
 import { CardModal } from "@src/modals/card";
 import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
+import { useTheme } from "@src/themes/theme-provider";
 
 export const CustomFee: FunctionComponent<{
   gasConfig;
@@ -44,11 +45,10 @@ export const CustomFee: FunctionComponent<{
 };
 export const FeeModal: FunctionComponent<{
   sendConfigs;
-  colors;
   vertical;
-}> = ({ sendConfigs, colors, vertical }) => {
+}> = ({ sendConfigs, vertical }) => {
   const [customGas, setCustomGas] = useState(false);
-
+  const { colors } = useTheme();
   const { modalStore } = useStore();
 
   return (
@@ -88,7 +88,11 @@ export const FeeModal: FunctionComponent<{
                 alignItems: "center",
               }}
             >
-              <OWIcon name={"send"} size={16} />
+              <OWIcon
+                name={"wrench"}
+                color={colors["neutral-icon-on-light"]}
+                size={16}
+              />
             </View>
 
             <OWText
@@ -97,7 +101,7 @@ export const FeeModal: FunctionComponent<{
                 fontSize: 16,
                 lineHeight: 34,
                 paddingHorizontal: 8,
-                color: colors["primary-text"],
+                color: colors["neutral-text-title"],
               }}
             >
               Custom Gas
