@@ -1230,10 +1230,10 @@ export const EmbedChainInfos: AppChainInfo[] = [
   },
 
   {
-    rpc: "https://api.trongrid.io",
-    rest: "https://apilist.tronscanapi.com",
-    // rpc: "https://nile.trongrid.io",
-    // rest: "https://nileapi.tronscan.org",
+    // rpc: "https://api.trongrid.io",
+    // rest: "https://apilist.tronscanapi.com",
+    rpc: "https://nile.trongrid.io",
+    rest: "https://nileapi.tronscan.org",
     chainId: "0x2b6653dc",
     networkType: "evm",
     chainName: "Tron",
@@ -1269,17 +1269,17 @@ export const EmbedChainInfos: AppChainInfo[] = [
           "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png",
         coinDecimals: 6,
       },
-      // {
-      //   contractAddress: "TLBaRhANQoJFTqre9Nf1mjuwNWjCJeYqUL",
-      //   coinDenom: "TestUSDJ",
-      //   coinMinimalDenom:
-      //     "erc20:0x70082243784dcdf3042034E7B044d6D342A91360:USDJ Token",
-      //   // coinMinimalDenom: "usdc",
-      //   coinGeckoId: "usd-coin",
-      //   coinImageUrl:
-      //     "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png",
-      //   coinDecimals: 18,
-      // },
+      {
+        contractAddress: "TLBaRhANQoJFTqre9Nf1mjuwNWjCJeYqUL",
+        coinDenom: "TestUSDJ",
+        coinMinimalDenom:
+          "erc20:0x70082243784dcdf3042034E7B044d6D342A91360:USDJ Token",
+        // coinMinimalDenom: "usdc",
+        coinGeckoId: "usd-coin",
+        coinImageUrl:
+          "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png",
+        coinDecimals: 18,
+      },
       {
         contractAddress: "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
         coinMinimalDenom:

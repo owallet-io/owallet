@@ -260,7 +260,7 @@ export const SignEthereumModal: FunctionComponent<{
               paddingBottom: 20,
             }}
           >
-            {`Send confirmation`.toUpperCase()}
+            {`Confirmation`.toUpperCase()}
           </OWText>
 
           {renderAmount() ? (

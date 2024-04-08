@@ -42,6 +42,7 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { DownArrowIcon } from "@src/components/icon";
 import { FeeModal } from "@src/modals/fee";
 import { ChainIdEnum } from "@oraichain/oraidex-common";
+import { navigate } from "@src/router/root";
 
 export const SendTronScreen: FunctionComponent = observer(() => {
   const {
@@ -216,10 +217,23 @@ export const SendTronScreen: FunctionComponent = observer(() => {
                 address,
                 {
                   onBroadcasted: async (txHash) => {
-                    smartNavigation.pushSmart("TxPendingResult", {
-                      txHash: Buffer.from(txHash).toString("hex"),
+                    // smartNavigation.pushSmart('TxPendingResult', {
+                    //   txHash: Buffer.from(txHash).toString('hex')
+                    // });
+                    navigate("Others", {
+                      screen: "TxPendingResult",
+                      params: {
+                        txHash: txHash,
+                        data: {
+                          memo: sendConfigs.memoConfig.memo,
+                          toAddress: sendConfigs.recipientConfig.recipient,
+                          amount: sendConfigs.amountConfig.getAmountPrimitive(),
+                          fromAddress: address,
+                          fee: sendConfigs.feeConfig.toStdFee(),
+                          currency: sendConfigs.amountConfig.sendCurrency,
+                        },
+                      },
                     });
-
                     const historyInfos = {
                       fromAddress: address,
                       toAddress: sendConfigs.recipientConfig.recipient,
@@ -252,15 +266,13 @@ export const SendTronScreen: FunctionComponent = observer(() => {
                       historyInfos
                     );
                   },
-                },
-                route?.params?.item
+                }
               );
             } catch (err) {
               console.log("send tron err", err);
-              smartNavigation.pushSmart("TxFailedResult", {
-                chainId: chainStore.current.chainId,
-                txHash: "",
-              });
+              if (err?.message === "Request rejected") {
+                return;
+              }
             }
           }}
           style={[
@@ -392,7 +404,6 @@ export const SendTronScreen: FunctionComponent = observer(() => {
                   weight="600"
                   size={16}
                 >
-                  {/*{capitalizedText(sendConfigs.feeConfig.feeType)}:{' '}*/}
                   {sendConfigs.feeConfig.fee?.trim(true)?.toString()}
                 </OWText>
                 <OWText color={colors["neutral-text-body"]}>
@@ -401,10 +412,6 @@ export const SendTronScreen: FunctionComponent = observer(() => {
                     .calculatePrice(sendConfigs.feeConfig.fee)
                     ?.toString()}{" "}
                 </OWText>
-                {/*<DownArrowIcon*/}
-                {/*  height={11}*/}
-                {/*  color={colors["primary-text-action"]}*/}
-                {/*/>*/}
               </TouchableOpacity>
             </View>
 
