@@ -162,18 +162,9 @@ export const HomeScreen: FunctionComponent = observer((props) => {
 
       const differenceInMilliseconds = Math.abs(currentDate - refreshDate);
       const differenceInSeconds = differenceInMilliseconds / 1000;
-
+      let timeoutId: NodeJS.Timeout;
       if (differenceInSeconds > 10) {
-        setTimeout(() => {
-          universalSwapStore.setLoaded(false);
-
-          handleFetchAmounts({
-            orai: accountOrai.bech32Address,
-            eth: accountEth.evmosHexAddress,
-            tron: accountTron.evmosHexAddress,
-            kwt: accountKawaiiCosmos.bech32Address,
-          });
-        }, 1000);
+        onFetchAmount(timeoutId);
       } else {
         console.log("The dates are 30 seconds or less apart.");
       }
@@ -238,39 +229,43 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     universalSwapStore.setLoaded(false);
   }, [accountOrai.bech32Address]);
 
+  const onFetchAmount = (timeoutId: NodeJS.Timeout) => {
+    if (accountOrai.isNanoLedger) {
+      if (Object.keys(keyRingStore.keyRingLedgerAddresses).length > 0) {
+        setTimeout(() => {
+          universalSwapStore.clearAmounts();
+          universalSwapStore.setLoaded(false);
+          handleFetchAmounts({
+            orai: accountOrai.bech32Address,
+            eth: keyRingStore.keyRingLedgerAddresses.eth ?? null,
+            tron: keyRingStore.keyRingLedgerAddresses.trx ?? null,
+            kwt: accountKawaiiCosmos.bech32Address,
+          });
+        }, 1000);
+      }
+    } else if (
+      accountOrai.bech32Address &&
+      accountEth.evmosHexAddress &&
+      accountTron.evmosHexAddress &&
+      accountKawaiiCosmos.bech32Address
+    ) {
+      timeoutId = setTimeout(() => {
+        handleFetchAmounts({
+          orai: accountOrai.bech32Address,
+          eth: accountEth.evmosHexAddress,
+          tron: getBase58Address(accountTron.evmosHexAddress),
+          kwt: accountKawaiiCosmos.bech32Address,
+        });
+      }, 1100);
+    }
+  };
+
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
 
     InteractionManager.runAfterInteractions(() => {
       startTransition(() => {
-        if (accountOrai.isNanoLedger) {
-          if (Object.keys(keyRingStore.keyRingLedgerAddresses).length > 0) {
-            setTimeout(() => {
-              universalSwapStore.clearAmounts();
-              universalSwapStore.setLoaded(false);
-              handleFetchAmounts({
-                orai: accountOrai.bech32Address,
-                eth: keyRingStore.keyRingLedgerAddresses.eth ?? null,
-                tron: keyRingStore.keyRingLedgerAddresses.trx ?? null,
-                kwt: accountKawaiiCosmos.bech32Address,
-              });
-            }, 1000);
-          }
-        } else if (
-          accountOrai.bech32Address &&
-          accountEth.evmosHexAddress &&
-          accountTron.evmosHexAddress &&
-          accountKawaiiCosmos.bech32Address
-        ) {
-          timeoutId = setTimeout(() => {
-            handleFetchAmounts({
-              orai: accountOrai.bech32Address,
-              eth: accountEth.evmosHexAddress,
-              tron: getBase58Address(accountTron.evmosHexAddress),
-              kwt: accountKawaiiCosmos.bech32Address,
-            });
-          }, 1100);
-        }
+        onFetchAmount(timeoutId);
       });
     });
     // Clean up the timeout if the component unmounts or the dependency changes

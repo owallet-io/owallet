@@ -273,7 +273,6 @@ export const DetailsBrowserScreen = observer((props) => {
     const isActive = browserStore.getBookmarks.findIndex(
       (item) => item?.uri === uri
     );
-    console.log(isActive, "isActive");
     return isActive !== -1 ? true : false;
   };
 
