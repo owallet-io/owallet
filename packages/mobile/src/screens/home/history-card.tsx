@@ -131,18 +131,15 @@ export const HistoryCard: FunctionComponent<{
                     {"+"}${item.value.toFixed(6)}
                   </Text> */}
                 </View>
-                <View
+                {/* <View
                   style={{
                     flex: 0.5,
                     justifyContent: "center",
-                    paddingLeft: 20,
+                    paddingLeft: 20
                   }}
                 >
-                  <RightArrowIcon
-                    height={12}
-                    color={colors["neutral-text-heading"]}
-                  />
-                </View>
+                  <RightArrowIcon height={12} color={colors["neutral-text-heading"]} />
+                </View> */}
               </View>
             </View>
           </TouchableOpacity>
@@ -181,6 +178,7 @@ export const HistoryCard: FunctionComponent<{
       <>
         <OWFlatList
           data={Object.keys(histories)}
+          contentContainerStyle={{ paddingHorizontal: 16 }}
           onEndReached={onEndReached}
           renderItem={renderListHistoryItem}
           loading={loading}

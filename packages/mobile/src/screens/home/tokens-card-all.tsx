@@ -178,6 +178,11 @@ export const TokensCardAll: FunctionComponent<{
   const smartNavigation = useSmartNavigation();
 
   const onPressToken = async (item) => {
+    navigate(SCREENS.TokenDetails, {
+      item,
+    });
+    return;
+
     chainStore.selectChain(item?.chainId);
     await chainStore.saveLastViewChainId();
     if (!account.isNanoLedger) {
