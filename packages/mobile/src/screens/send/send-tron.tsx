@@ -237,12 +237,12 @@ export const SendTronScreen: FunctionComponent = observer(() => {
                     const historyInfos = {
                       fromAddress: address,
                       toAddress: sendConfigs.recipientConfig.recipient,
-                      hash: Buffer.from(txHash).toString("hex"),
+                      hash: txHash,
                       memo: "",
                       fromAmount: sendConfigs.amountConfig.amount,
                       toAmount: sendConfigs.amountConfig.amount,
                       value: sendConfigs.amountConfig.amount,
-                      fee: sendConfigs.feeConfig.fee?.toString(),
+                      fee: sendConfigs.feeConfig.toStdFee().amount,
                       type: HISTORY_STATUS.SEND,
                       fromToken: {
                         asset: sendConfigs.amountConfig.sendCurrency.coinDenom,

@@ -37,6 +37,7 @@ import {
   isBase58,
   getBase58Address,
   getEvmAddress,
+  TxRestTronClient,
 } from "@owallet/common";
 import Web3 from "web3";
 import ERC20_ABI from "human-standard-token-abi";
@@ -74,7 +75,7 @@ import { ETH } from "@hanchon/ethermint-address-converter";
 import { request } from "@owallet/background";
 import { AddressesLedger } from "@owallet/types";
 import { wallet } from "@owallet/bitcoin";
-
+import TronWebProvider from "tronweb";
 import { getEip712TypedDataBasedOnChainId } from "./utils";
 
 export interface Coin {
@@ -595,21 +596,78 @@ export class AccountSetBase<MsgOpts, Queries> {
     tokenTrc20?: object
   ) {
     try {
+      runInAction(() => {
+        this._isSendingMsg = "send";
+      });
       const ethereum = (await this.getEthereum())!;
-      const signResponse = await ethereum.signAndBroadcastTron(this.chainId, {
+      const txId = await ethereum.signAndBroadcastTron(this.chainId, {
         amount,
         currency,
         recipient,
         address,
         tokenTrc20,
       });
-
-      if (onTxEvents?.onFulfill) {
-        onTxEvents?.onFulfill(signResponse);
+      if (onTxEvents?.onBroadcasted) {
+        onTxEvents?.onBroadcasted(txId);
       }
-      return {
-        txHash: signResponse,
-      };
+
+      const txRest = new TxRestTronClient(
+        this.chainGetter.getChain(this.chainId).rpc,
+        null
+      );
+      try {
+        const tx = await txRest.fetchTxPoll(txId);
+        if (tx?.blockNumber) {
+          OwalletEvent.txHashEmit(txId, {
+            ...tx,
+            code: 0,
+          });
+
+          // After sending tx, the balances is probably changed due to the fee.
+          const bal = this.queries.queryBalances
+            .getQueryBech32Address(this.evmosHexAddress)
+            .balances.find(
+              (bal) =>
+                bal.currency.coinMinimalDenom === currency.coinMinimalDenom
+            );
+          console.log(bal, "bal");
+          if (bal) {
+            bal.fetch();
+          }
+          if (this.opts.preTxEvents?.onFulfill) {
+            this.opts.preTxEvents.onFulfill(tx);
+          }
+
+          if (onTxEvents?.onFulfill) {
+            onTxEvents?.onFulfill(txId);
+          }
+        } else {
+          OwalletEvent.txHashEmit(txId, {
+            ...tx,
+            code: 1,
+          });
+        }
+      } catch (error) {
+        OwalletEvent.txHashEmit(txId, null);
+        if (this.opts.preTxEvents?.onBroadcastFailed) {
+          this.opts.preTxEvents.onBroadcastFailed(error);
+        }
+
+        if (
+          onTxEvents &&
+          "onBroadcastFailed" in onTxEvents &&
+          onTxEvents.onBroadcastFailed
+        ) {
+          //@ts-ignore
+          onTxEvents.onBroadcastFailed(error);
+        }
+        console.log(error, "error");
+        throw error;
+      } finally {
+        runInAction(() => {
+          this._isSendingMsg = false;
+        });
+      }
     } catch (error) {
       console.log("error sendTronToken", error);
     }
@@ -636,8 +694,6 @@ export class AccountSetBase<MsgOpts, Queries> {
     let txHash: string;
 
     try {
-      console.log("🚀 ~ AccountSetBase<MsgOpts, ~ fee:", fee);
-      console.log("🚀 ~ AccountSetBase<MsgOpts, ~ msgs.type:", msgs.type);
       if (msgs.type === "erc20") {
         const { value } = msgs;
         const provider = this.chainGetter.getChain(this.chainId).rpc;
