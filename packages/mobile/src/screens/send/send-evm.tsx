@@ -293,17 +293,7 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
     sendConfigs.amountConfig.sendCurrency,
     new Dec(sendConfigs.amountConfig.getAmountPrimitive().amount)
   );
-  const _onPressFee = () => {
-    modalStore.setOptions({
-      bottomSheetModalConfig: {
-        enablePanDownToClose: false,
-        enableOverDrag: false,
-      },
-    });
-    modalStore.setChildren(
-      <FeeModal vertical={true} sendConfigs={sendConfigs} colors={colors} />
-    );
-  };
+
   useEffect(() => {
     if (sendConfigs.feeConfig.feeCurrency && !sendConfigs.feeConfig.fee) {
       sendConfigs.feeConfig.setFeeType("average");
@@ -323,6 +313,18 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
       }
     });
   }, [isReadyBalance, address, sendConfigs.amountConfig.sendCurrency]);
+
+  const _onPressFee = () => {
+    modalStore.setOptions({
+      bottomSheetModalConfig: {
+        enablePanDownToClose: false,
+        enableOverDrag: false,
+      },
+    });
+    modalStore.setChildren(
+      <FeeModal vertical={true} sendConfigs={sendConfigs} colors={colors} />
+    );
+  };
   return (
     <PageWithBottom
       bottomGroup={

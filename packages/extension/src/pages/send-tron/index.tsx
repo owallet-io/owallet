@@ -113,10 +113,6 @@ export const SendTronEvmPage: FunctionComponent<{
     sendConfigs.amountConfig.getError() ??
     sendConfigs.feeConfig.getError();
   const txStateIsValid = sendConfigError == null;
-  const addressTron = accountInfo.getAddressDisplay(
-    keyRingStore.keyRingLedgerAddresses,
-    false
-  );
 
   const onSend = async (e: any) => {
     e.preventDefault();
@@ -204,7 +200,6 @@ export const SendTronEvmPage: FunctionComponent<{
             {/*<p>Estimate Energy: {`${energyUsed}`}</p>*/}
             <FeeInput
               label={"Fee"}
-              defaultValue={1}
               //@ts-ignore
               feeConfig={sendConfigs.feeConfig}
             />

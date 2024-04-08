@@ -1,18 +1,38 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
-import { useSendTxConfig } from "@owallet/hooks";
+import {
+  InvalidTronAddressError,
+  useGetFeeTron,
+  useSendTxConfig,
+  useSendTxTronConfig,
+} from "@owallet/hooks";
 import { useStore } from "../../stores";
 import { EthereumEndpoint, toAmount } from "@owallet/common";
-import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  InteractionManager,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
-import { CurrencySelector, MemoInput, TextInput } from "../../components/input";
+import {
+  AddressInput,
+  CurrencySelector,
+  MemoInput,
+  TextInput,
+} from "../../components/input";
 import { OWButton } from "../../components/button";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { useSmartNavigation } from "../../navigation.provider";
 import { Buffer } from "buffer";
 import { metrics, spacing } from "../../themes";
 import { useTheme } from "@src/themes/theme-provider";
-import { handleSaveHistory, HISTORY_STATUS } from "@src/utils/helper";
+import {
+  capitalizedText,
+  handleSaveHistory,
+  HISTORY_STATUS,
+} from "@src/utils/helper";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import { PageHeader } from "@src/components/header/header-new";
 import OWCard from "@src/components/card/ow-card";
@@ -33,7 +53,6 @@ export const SendTronScreen: FunctionComponent = observer(() => {
     modalStore,
     universalSwapStore,
   } = useStore();
-  const [receiveAddress, setReceiveAddress] = useState("");
   const { colors } = useTheme();
   const styles = styling(colors);
   const route = useRoute<
@@ -63,65 +82,82 @@ export const SendTronScreen: FunctionComponent = observer(() => {
 
   const smartNavigation = useSmartNavigation();
 
-  const chainId = route?.params?.chainId
-    ? route?.params?.chainId
-    : chainStore?.current?.chainId;
+  const { chainId } = chainStore.current;
 
   const account = accountStore.getAccount(chainId);
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const queries = queriesStore.get(chainId);
-
-  const sendConfigs = useSendTxConfig(
+  const addressToFetch = account.getAddressDisplay(
+    keyRingStore.keyRingLedgerAddresses,
+    false
+  );
+  const address = account.getAddressDisplay(
+    keyRingStore.keyRingLedgerAddresses
+  );
+  const sendConfigs = useSendTxTronConfig(
     chainStore,
     chainId,
-    account.msgOpts["send"],
-    account.bech32Address,
-    queries.queryBalances,
+    //@ts-ignore
+    account.msgOpts.send,
+    account.evmosHexAddress,
+    queriesStore.get(chainId).queryBalances,
     EthereumEndpoint
-    // queriesStore.get(chainStore.current.chainId).evm.queryEvmBalance
   );
 
-  const [balance, setBalance] = useState("0");
-  const [fee, setFee] = useState({ type: "", value: "" });
+  const [balance, setBalance] = useState<CoinPretty>(null);
 
-  const fetchBalance = async () => {
-    const queryBalance = queries.queryBalances
-      .getQueryBech32Address(account.bech32Address)
-      .balances.find((bal) => {
-        return (
-          bal.currency.coinMinimalDenom ===
-          sendConfigs.amountConfig.sendCurrency.coinMinimalDenom //currency.coinMinimalDenom
-        );
-      });
-
-    if (queryBalance) {
-      // queryBalance.fetch();
-      setBalance(
-        queryBalance.balance
-          .shrink(true)
-          .maxDecimals(6)
-          .trim(true)
-          .upperCase(true)
-          .toString()
-      );
-    }
-  };
-
+  // useEffect(() => {
+  //   if (sendConfigs.feeConfig.feeCurrency && !sendConfigs.feeConfig.fee) {
+  //     sendConfigs.feeConfig.setFeeType("average");
+  //   }
+  //   return;
+  // }, [sendConfigs.feeConfig]);
+  const checkSendMySelft =
+    sendConfigs.recipientConfig.recipient?.trim() === address
+      ? new InvalidTronAddressError("Cannot transfer TRX to the same account")
+      : null;
+  const isReadyBalance = queries.queryBalances
+    .getQueryBech32Address(addressToFetch)
+    .getBalanceFromCurrency(sendConfigs.amountConfig.sendCurrency).isReady;
   useEffect(() => {
-    fetchBalance();
-    const averageFee = sendConfigs.feeConfig.getFeeTypePretty("average");
-    const averageFeePrice = priceStore.calculatePrice(averageFee);
-    setFee({ type: "Avarage", value: averageFeePrice.toString() });
-  }, [account.bech32Address, sendConfigs.amountConfig.sendCurrency]);
-
+    InteractionManager.runAfterInteractions(() => {
+      if (isReadyBalance) {
+        const balance = queries.queryBalances
+          .getQueryBech32Address(addressToFetch)
+          .getBalanceFromCurrency(sendConfigs.amountConfig.sendCurrency);
+        setBalance(balance);
+      }
+    });
+  }, [isReadyBalance, addressToFetch, sendConfigs.amountConfig.sendCurrency]);
   useEffect(() => {
     if (route?.params?.currency) {
       const currency = sendConfigs.amountConfig.sendableCurrencies.find(
         (cur) => {
-          if (cur.coinDenom === route.params.currency) {
-            return cur.coinDenom === route.params.currency;
+          if (
+            cur?.coinMinimalDenom
+              ?.toLowerCase()
+              //@ts-ignore
+              ?.includes(route?.params?.contractAddress?.toLowerCase())
+          )
+            return true;
+          if (
+            cur.coinDenom?.toLowerCase() ===
+            route.params.currency?.toLowerCase()
+          ) {
+            return true;
           }
-          return cur.coinMinimalDenom == route.params.currency;
+
+          if (
+            cur?.coinGeckoId
+              ?.toLowerCase()
+              //@ts-ignore
+              ?.includes(route?.params?.coinGeckoId?.toLowerCase())
+          )
+            return true;
+          return (
+            cur.coinMinimalDenom?.toLowerCase() ==
+            route.params.currency?.toLowerCase()
+          );
         }
       );
 
@@ -134,34 +170,34 @@ export const SendTronScreen: FunctionComponent = observer(() => {
   useEffect(() => {
     if (route?.params?.recipient) {
       sendConfigs.recipientConfig.setRawRecipient(route.params.recipient);
-      setReceiveAddress(route.params.recipient);
     }
   }, [route?.params?.recipient, sendConfigs.recipientConfig]);
-  const address = account.getAddressDisplay(
-    keyRingStore.keyRingLedgerAddresses
-  );
 
   const amount = new CoinPretty(
     sendConfigs.amountConfig.sendCurrency,
-    new Int(toAmount(Number(sendConfigs.amountConfig.amount)))
+    new Dec(sendConfigs.amountConfig.getAmountPrimitive().amount)
   );
-
-  const _onPressFee = () => {
-    modalStore.setOptions({
-      bottomSheetModalConfig: {
-        enablePanDownToClose: false,
-        enableOverDrag: false,
-      },
-    });
-    modalStore.setChildren(
-      <FeeModal
-        vertical={true}
-        sendConfigs={sendConfigs}
-        colors={colors}
-        setFee={setFee}
-      />
-    );
-  };
+  const { feeTrx } = useGetFeeTron(
+    address,
+    sendConfigs.amountConfig,
+    sendConfigs.recipientConfig,
+    queries.tron,
+    chainStore.current,
+    keyRingStore,
+    null
+  );
+  useEffect(() => {
+    sendConfigs.feeConfig.setManualFee(feeTrx);
+    return () => {
+      sendConfigs.feeConfig.setManualFee(null);
+    };
+  }, [feeTrx]);
+  const sendConfigError =
+    checkSendMySelft ??
+    sendConfigs.recipientConfig.getError() ??
+    sendConfigs.amountConfig.getError() ??
+    sendConfigs.feeConfig.getError();
+  const txStateIsValid = sendConfigError == null;
 
   return (
     <PageWithBottom
@@ -170,24 +206,13 @@ export const SendTronScreen: FunctionComponent = observer(() => {
           label="Send"
           size="large"
           loading={account.isSendingMsg === "send"}
+          disabled={!account.isReadyToSendMsgs || !txStateIsValid}
           onPress={async () => {
-            let amount;
-            if (route?.params?.item?.type === "trc20") {
-              amount = Number(
-                (sendConfigs.amountConfig.amount ?? "0").replace(/,/g, ".")
-              );
-            } else {
-              amount = new Dec(
-                Number(
-                  (sendConfigs.amountConfig.amount ?? "0").replace(/,/g, ".")
-                )
-              ).mul(DecUtils.getTenExponentNInPrecisionRange(6));
-            }
             try {
               await account.sendTronToken(
                 sendConfigs.amountConfig.amount,
                 sendConfigs.amountConfig.sendCurrency!,
-                receiveAddress,
+                sendConfigs.recipientConfig.recipient,
                 address,
                 {
                   onBroadcasted: async (txHash) => {
@@ -197,13 +222,13 @@ export const SendTronScreen: FunctionComponent = observer(() => {
 
                     const historyInfos = {
                       fromAddress: address,
-                      toAddress: receiveAddress,
+                      toAddress: sendConfigs.recipientConfig.recipient,
                       hash: Buffer.from(txHash).toString("hex"),
                       memo: "",
                       fromAmount: sendConfigs.amountConfig.amount,
                       toAmount: sendConfigs.amountConfig.amount,
                       value: sendConfigs.amountConfig.amount,
-                      fee: sendConfigs.feeConfig.toStdFee(),
+                      fee: sendConfigs.feeConfig.fee?.toString(),
                       type: HISTORY_STATUS.SEND,
                       fromToken: {
                         asset: sendConfigs.amountConfig.sendCurrency.coinDenom,
@@ -265,9 +290,12 @@ export const SendTronScreen: FunctionComponent = observer(() => {
           <OWCard type="normal">
             <OWText color={colors["neutral-text-title"]}>Recipient</OWText>
 
-            <TextInput
-              placeholder="Enter receiving address"
+            <AddressInput
+              colors={colors}
+              placeholder="Enter address"
               label=""
+              recipientConfig={sendConfigs.recipientConfig}
+              memoConfig={sendConfigs.memoConfig}
               labelStyle={styles.sendlabelInput}
               containerStyle={{
                 marginBottom: 12,
@@ -277,11 +305,6 @@ export const SendTronScreen: FunctionComponent = observer(() => {
                 borderWidth: 0,
                 paddingHorizontal: 0,
               }}
-              value={receiveAddress}
-              onChange={({ nativeEvent: { text } }) => setReceiveAddress(text)}
-              autoCorrect={false}
-              autoCapitalize="none"
-              autoCompleteType="off"
             />
           </OWCard>
           <OWCard style={{ paddingTop: 22 }} type="normal">
@@ -292,10 +315,13 @@ export const SendTronScreen: FunctionComponent = observer(() => {
               }}
             >
               <View>
-                <OWText
-                  style={{ paddingTop: 8, maxWidth: metrics.screenWidth / 2.5 }}
-                >
-                  Balance : {balance}
+                <OWText style={{ paddingTop: 8 }}>
+                  Balance :{" "}
+                  {balance
+                    ?.trim(true)
+                    ?.maxDecimals(6)
+                    ?.hideDenom(true)
+                    ?.toString() || "0"}
                 </OWText>
                 <CurrencySelector
                   chainId={chainStore.current.chainId}
@@ -323,7 +349,6 @@ export const SendTronScreen: FunctionComponent = observer(() => {
                   }}
                   amountConfig={sendConfigs.amountConfig}
                   placeholder={"0.0"}
-                  maxBalance={balance.split(" ")[0]}
                 />
               </View>
             </View>
@@ -360,10 +385,18 @@ export const SendTronScreen: FunctionComponent = observer(() => {
               </OWText>
               <TouchableOpacity
                 style={{ flexDirection: "row" }}
-                onPress={_onPressFee}
+                disabled={true}
               >
-                <OWText color={colors["primary-text-action"]} weight="600">
-                  {fee.type}: {fee.value}{" "}
+                <OWText
+                  color={colors["primary-text-action"]}
+                  weight="600"
+                  size={16}
+                >
+                  {/*{capitalizedText(sendConfigs.feeConfig.feeType)}:{' '}*/}
+                  {sendConfigs.feeConfig.fee?.toString()}
+                  {priceStore
+                    .calculatePrice(sendConfigs.feeConfig.fee)
+                    ?.toString()}{" "}
                 </OWText>
                 <DownArrowIcon
                   height={11}
@@ -382,6 +415,7 @@ export const SendTronScreen: FunctionComponent = observer(() => {
                 borderWidth: 0,
                 paddingHorizontal: 0,
               }}
+              editable={false}
               memoConfig={sendConfigs.memoConfig}
               labelStyle={styles.sendlabelInput}
             />
