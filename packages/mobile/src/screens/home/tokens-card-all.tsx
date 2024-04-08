@@ -182,50 +182,6 @@ export const TokensCardAll: FunctionComponent<{
       item,
     });
     return;
-
-    chainStore.selectChain(item?.chainId);
-    await chainStore.saveLastViewChainId();
-    if (chainStore.current.networkType === "bitcoin") {
-      navigate(SCREENS.STACK.Others, {
-        screen: SCREENS.SendBtc,
-      });
-      return;
-    }
-    if (chainStore.current.networkType === "evm") {
-      if (item.chainId === ChainIdEnum.TRON) {
-        const itemTron = tronTokens?.find((t) => {
-          return t.coinGeckoId === item.coinGeckoId;
-        });
-
-        smartNavigation.navigateSmart("SendTron", { item: itemTron });
-        return;
-      }
-      if (item.chainId === ChainIdEnum.Oasis) {
-        smartNavigation.navigateSmart("SendOasis", {
-          currency: chainStore.current.stakeCurrency.coinMinimalDenom,
-        });
-        return;
-      }
-      navigate(SCREENS.STACK.Others, {
-        screen: SCREENS.SendEvm,
-        params: {
-          currency: item.denom,
-          contractAddress: item.contractAddress,
-          coinGeckoId: item.coinGeckoId,
-        },
-      });
-      return;
-    }
-
-    console.log("get 1111");
-
-    smartNavigation.navigateSmart("NewSend", {
-      currency: item.denom,
-      contractAddress: item.contractAddress,
-      coinGeckoId: item.coinGeckoId,
-    });
-
-    console.log("get 222");
   };
 
   const renderTokensFromQueryBalances = () => {
