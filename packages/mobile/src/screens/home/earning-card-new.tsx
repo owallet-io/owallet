@@ -100,10 +100,14 @@ export const EarningCardNew: FunctionComponent<{
       );
     } catch (e) {
       console.error({ errorClaim: e });
-      showToast({
-        message: e?.message ?? "Something went wrong! Please try again later.",
-        type: "danger",
-      });
+      if (!e?.message?.startWith("Transaction Rejected")) {
+        showToast({
+          message:
+            e?.message ?? "Something went wrong! Please try again later.",
+          type: "danger",
+        });
+        return;
+      }
     }
   };
   return (
