@@ -363,7 +363,11 @@ export const TokensCardAll: FunctionComponent<{
             return t.chainId === chainStore.current.chainId;
           }).length > 3 ? (
             <OWButton
-              style={{ marginTop: Platform.OS === "android" ? 24 : 16 }}
+              style={{
+                marginTop: Platform.OS === "android" ? 24 : 16,
+                marginHorizontal: 16,
+                width: metrics.screenWidth - 32,
+              }}
               label={more ? "View all" : "Hide"}
               size="medium"
               type="secondary"
