@@ -1148,7 +1148,7 @@ export class KeyRingService {
       ];
       const receipt = await tronWeb.trx.sendRawTransaction(transaction);
       console.log(receipt, "receipt");
-      return receipt.txid;
+      return receipt;
     } finally {
       this.interactionService.dispatchEvent(
         APP_PORT,

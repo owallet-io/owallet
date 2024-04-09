@@ -43,6 +43,7 @@ import { DownArrowIcon } from "@src/components/icon";
 import { FeeModal } from "@src/modals/fee";
 import { ChainIdEnum } from "@oraichain/oraidex-common";
 import { navigate } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
 
 export const SendTronScreen: FunctionComponent = observer(() => {
   const {
@@ -216,44 +217,62 @@ export const SendTronScreen: FunctionComponent = observer(() => {
                 sendConfigs.recipientConfig.recipient,
                 address,
                 {
-                  onBroadcasted: async (txHash) => {
-                    // smartNavigation.pushSmart('TxPendingResult', {
-                    //   txHash: Buffer.from(txHash).toString('hex')
-                    // });
-                    navigate("Others", {
-                      screen: "TxPendingResult",
-                      params: {
-                        txHash: txHash,
-                        data: {
-                          memo: sendConfigs.memoConfig.memo,
-                          toAddress: sendConfigs.recipientConfig.recipient,
-                          amount: sendConfigs.amountConfig.getAmountPrimitive(),
-                          fromAddress: address,
-                          fee: sendConfigs.feeConfig.toStdFee(),
-                          currency: sendConfigs.amountConfig.sendCurrency,
+                  onFulfill: async (tx) => {
+                    console.log(tx, "txHashtxHash");
+                    if (tx?.code === 0) {
+                      navigate("Others", {
+                        screen: SCREENS.TxSuccessResult,
+                        params: {
+                          txHash: tx.txid,
+                          data: {
+                            memo: sendConfigs.memoConfig.memo,
+                            toAddress: sendConfigs.recipientConfig.recipient,
+                            amount:
+                              sendConfigs.amountConfig.getAmountPrimitive(),
+                            fromAddress: address,
+                            fee: sendConfigs.feeConfig.toStdFee(),
+                            currency: sendConfigs.amountConfig.sendCurrency,
+                          },
                         },
-                      },
-                    });
-                    const historyInfos = {
-                      fromAddress: address,
-                      toAddress: sendConfigs.recipientConfig.recipient,
-                      hash: txHash,
-                      memo: "",
-                      fromAmount: sendConfigs.amountConfig.amount,
-                      toAmount: sendConfigs.amountConfig.amount,
-                      value: sendConfigs.amountConfig.amount,
-                      fee: sendConfigs.feeConfig.toStdFee().amount,
-                      type: HISTORY_STATUS.SEND,
-                      fromToken: {
-                        asset: sendConfigs.amountConfig.sendCurrency.coinDenom,
-                        chainId: chainStore.current.chainId,
-                      },
-                      toToken: {
-                        asset: sendConfigs.amountConfig.sendCurrency.coinDenom,
-                        chainId: chainStore.current.chainId,
-                      },
-                      status: "SUCCESS",
-                    };
+                      });
+                    } else {
+                      navigate("Others", {
+                        screen: SCREENS.TxFailedResult,
+                        params: {
+                          txHash: tx.txid,
+                          data: {
+                            memo: sendConfigs.memoConfig.memo,
+                            toAddress: sendConfigs.recipientConfig.recipient,
+                            amount:
+                              sendConfigs.amountConfig.getAmountPrimitive(),
+                            fromAddress: address,
+                            fee: sendConfigs.feeConfig.toStdFee(),
+                            currency: sendConfigs.amountConfig.sendCurrency,
+                          },
+                        },
+                      });
+                    }
+
+                    // const historyInfos = {
+                    //   fromAddress: address,
+                    //   toAddress: sendConfigs.recipientConfig.recipient,
+                    //   hash: txHash,
+                    //   memo: "",
+                    //   fromAmount: sendConfigs.amountConfig.amount,
+                    //   toAmount: sendConfigs.amountConfig.amount,
+                    //   value: sendConfigs.amountConfig.amount,
+                    //   fee: sendConfigs.feeConfig.toStdFee().amount,
+                    //   type: HISTORY_STATUS.SEND,
+                    //   fromToken: {
+                    //     asset: sendConfigs.amountConfig.sendCurrency.coinDenom,
+                    //     chainId: chainStore.current.chainId,
+                    //   },
+                    //   toToken: {
+                    //     asset: sendConfigs.amountConfig.sendCurrency.coinDenom,
+                    //     chainId: chainStore.current.chainId,
+                    //   },
+                    //   status: "SUCCESS",
+                    // };
                     universalSwapStore.updateTokenReload([
                       {
                         ...sendConfigs.amountConfig.sendCurrency,
@@ -261,10 +280,10 @@ export const SendTronScreen: FunctionComponent = observer(() => {
                         networkType: "evm",
                       },
                     ]);
-                    await handleSaveHistory(
-                      accountOrai.bech32Address,
-                      historyInfos
-                    );
+                    // await handleSaveHistory(
+                    //   accountOrai.bech32Address,
+                    //   historyInfos
+                    // );
                   },
                 }
               );

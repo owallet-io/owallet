@@ -594,53 +594,42 @@ export class AccountSetBase<MsgOpts, Queries> {
         this._isSendingMsg = "send";
       });
       const ethereum = (await this.getEthereum())!;
-      const txId = await ethereum.signAndBroadcastTron(this.chainId, {
+      const tx = await ethereum.signAndBroadcastTron(this.chainId, {
         amount,
         currency,
         recipient,
         address,
         tokenTrc20,
       });
-      if (!txId) throw Error("Transaction Rejected");
+      if (!tx?.txid) throw Error("Transaction Rejected");
       if (onTxEvents?.onBroadcasted) {
-        onTxEvents?.onBroadcasted(txId);
+        onTxEvents?.onBroadcasted(tx.txid);
       }
 
-      const txRest = new TxRestTronClient(
-        this.chainGetter.getChain(this.chainId).rpc,
-        null
-      );
+      // After sending tx, the balances is probably changed due to the fee.
+      this.queriesStore
+        .get(this.chainId)
+        .queryBalances.getQueryBech32Address(this.evmosHexAddress)
+        .fetch();
 
-      const tx = await txRest.fetchTxPoll(txId);
-      if (tx?.blockNumber) {
-        OwalletEvent.txHashEmit(txId, {
+      if (this.opts.preTxEvents?.onFulfill) {
+        this.opts.preTxEvents.onFulfill({
           ...tx,
           code: 0,
         });
+      }
 
-        // After sending tx, the balances is probably changed due to the fee.
-        const bal = this.queries.queryBalances
-          .getQueryBech32Address(this.evmosHexAddress)
-          .balances.find(
-            (bal) => bal.currency.coinMinimalDenom === currency.coinMinimalDenom
-          );
-        console.log(bal, "bal");
-        if (bal) {
-          bal.fetch();
-        }
-        if (this.opts.preTxEvents?.onFulfill) {
-          this.opts.preTxEvents.onFulfill(tx);
-        }
-
-        if (onTxEvents?.onFulfill) {
-          onTxEvents?.onFulfill(txId);
-        }
-      } else {
-        OwalletEvent.txHashEmit(txId, {
+      if (onTxEvents?.onFulfill) {
+        onTxEvents?.onFulfill({
           ...tx,
-          code: 1,
+          code: 0,
         });
       }
+      OwalletEvent.txHashEmit(tx.txid, {
+        ...tx,
+        code: 0,
+      });
+      // }
     } catch (error) {
       // OwalletEvent.txHashEmit(txId, null);
       if (this.opts.preTxEvents?.onBroadcastFailed) {

@@ -67,6 +67,7 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
 
   const { params } = route;
   const txHash = params?.txHash;
+  console.log(txHash, "txHash");
   const [data, setData] = useState<Partial<ResTxsInfo>>();
   const account = accountStore.getAccount(chainStore?.current?.chainId);
   const address = account.getAddressDisplay(

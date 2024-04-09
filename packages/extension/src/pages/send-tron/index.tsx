@@ -126,9 +126,12 @@ export const SendTronEvmPage: FunctionComponent<{
           onFulfill: (tx) => {
             notification.push({
               placement: "top-center",
-              type: !!tx ? "success" : "danger",
+              type: tx?.code === 0 ? "success" : "danger",
               duration: 5,
-              content: !!tx ? `Transaction successful` : `Transaction failed`,
+              content:
+                tx?.code === 0
+                  ? `Transaction successful`
+                  : `Transaction failed`,
               canDelete: true,
               transition: {
                 duration: 0.25,
@@ -196,8 +199,7 @@ export const SendTronEvmPage: FunctionComponent<{
               })}
               placeholder="Enter your amount"
             />
-            {/*<p>Estimate Bandwidth: {`${bandwidthUsed}`}</p>*/}
-            {/*<p>Estimate Energy: {`${energyUsed}`}</p>*/}
+
             <FeeInput
               label={"Fee"}
               //@ts-ignore
