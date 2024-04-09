@@ -316,10 +316,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         tokenReload: tokenReload?.length > 0 ? tokenReload : null,
       };
 
-      setTimeout(() => {
-        loadTokenAmounts(loadTokenParams);
-        universalSwapStore.clearTokenReload();
-      }, 1000);
+      loadTokenAmounts(loadTokenParams);
+      universalSwapStore.clearTokenReload();
     } catch (error) {
       console.log("error loadTokenAmounts", error);
       showToast({
