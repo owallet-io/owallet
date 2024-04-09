@@ -345,7 +345,7 @@ export const MsgExecuteContractView: FunctionComponent<{
               .join(",")
           )}
           msg={msg}
-          totalPrice={totalPrice}
+          totalPrice={null}
         />
       ) : (
         <ScrollView
