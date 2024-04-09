@@ -369,9 +369,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
     InteractionManager.runAfterInteractions(() => {
       startTransition(() => {
-        if (accountOrai.bech32Address) {
-          onFetchAmount(timeoutId);
-        }
+        onFetchAmount(timeoutId);
       });
     });
     // Clean up the timeout if the component unmounts or the dependency changes
