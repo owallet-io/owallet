@@ -192,6 +192,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     kwt?: string;
   }) => {
     const { orai, eth, tron, kwt } = params;
+
     let loadTokenParams = {};
     try {
       const cwStargate = {
@@ -199,6 +200,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         chainId: ChainIdEnum.Oraichain,
         rpc: oraichainNetwork.rpc,
       };
+
       loadTokenParams = {
         ...loadTokenParams,
         oraiAddress: orai ?? accountOrai.bech32Address,
@@ -212,10 +214,8 @@ export const HomeScreen: FunctionComponent = observer((props) => {
             : null,
       };
 
-      setTimeout(() => {
-        loadTokenAmounts(loadTokenParams);
-        universalSwapStore.clearTokenReload();
-      }, 1000);
+      loadTokenAmounts(loadTokenParams);
+      universalSwapStore.clearTokenReload();
     } catch (error) {
       console.log("error loadTokenAmounts", error);
       showToast({
@@ -224,6 +224,8 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       });
     }
   };
+
+  console.log("universalSwapStore", universalSwapStore.getAmount);
 
   useEffect(() => {
     universalSwapStore.setLoaded(false);
@@ -256,7 +258,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
           tron: getBase58Address(accountTron.evmosHexAddress),
           kwt: accountKawaiiCosmos.bech32Address,
         });
-      }, 1100);
+      }, 500);
     }
   };
 
@@ -272,13 +274,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     return () => {
       if (timeoutId) clearTimeout(timeoutId);
     };
-  }, [
-    accountOrai.bech32Address,
-    accountEth.evmosHexAddress,
-    accountTron.evmosHexAddress,
-    accountKawaiiCosmos.bech32Address,
-    keyRingStore.keyRingLedgerAddresses,
-  ]);
+  }, []);
 
   const { data: prices } = useCoinGeckoPrices();
 

@@ -340,24 +340,23 @@ export const TokensCardAll: FunctionComponent<{
             renderItem={renderTokenItem}
             ListEmptyComponent={<OWEmpty type="cash" />}
           /> */}
-          {tokens.length > 0 ? (
-            tokens
-              .filter((t) => {
-                if (appInitStore.getInitApp.isAllNetworks) {
-                  return true;
-                }
-                return t.chainId === chainStore.current.chainId;
-              })
-              .map((token, index) => {
-                if (more) {
-                  if (index < 3) return renderTokenItem({ item: token, index });
-                } else {
-                  return renderTokenItem({ item: token, index });
-                }
-              })
-          ) : (
-            <OWEmpty type="cash" />
-          )}
+          {tokens.length > 0
+            ? tokens
+                .filter((t) => {
+                  if (appInitStore.getInitApp.isAllNetworks) {
+                    return true;
+                  }
+                  return t.chainId === chainStore.current.chainId;
+                })
+                .map((token, index) => {
+                  if (more) {
+                    if (index < 3)
+                      return renderTokenItem({ item: token, index });
+                  } else {
+                    return renderTokenItem({ item: token, index });
+                  }
+                })
+            : null}
           {/* Section for empty token  */}
           {tokens.filter((t) => {
             if (appInitStore.getInitApp.isAllNetworks) {
