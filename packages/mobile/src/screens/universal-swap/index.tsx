@@ -316,10 +316,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         tokenReload: tokenReload?.length > 0 ? tokenReload : null,
       };
 
-      setTimeout(() => {
-        loadTokenAmounts(loadTokenParams);
-        universalSwapStore.clearTokenReload();
-      }, 1000);
+      loadTokenAmounts(loadTokenParams);
+      universalSwapStore.clearTokenReload();
     } catch (error) {
       console.log("error loadTokenAmounts", error);
       showToast({
@@ -360,7 +358,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           tron: getBase58Address(accountTron.evmosHexAddress),
           kwt: accountKawaiiCosmos.bech32Address,
         });
-      }, 500);
+      }, 1000);
     }
   };
 
@@ -369,9 +367,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
     InteractionManager.runAfterInteractions(() => {
       startTransition(() => {
-        if (accountOrai.bech32Address) {
-          onFetchAmount(timeoutId);
-        }
+        onFetchAmount(timeoutId);
       });
     });
     // Clean up the timeout if the component unmounts or the dependency changes
