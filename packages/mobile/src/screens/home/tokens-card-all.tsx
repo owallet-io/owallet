@@ -16,15 +16,13 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import { CardBody, OWBox } from "../../components/card";
+import { OWBox } from "../../components/card";
 import { useStore } from "../../stores";
 import { getTokenInfos, _keyExtract } from "../../utils/helper";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { Text } from "@src/components/text";
-import { useSmartNavigation } from "@src/navigation.provider";
 import { SCREENS } from "@src/common/constants";
 import { navigate } from "@src/router/root";
-import { RightArrowIcon } from "@src/components/icon";
 import { ChainIdEnum, getBase58Address, TRC20_LIST } from "@owallet/common";
 import { API } from "@src/common/api";
 import { chainIcons } from "@oraichain/oraidex-common";
@@ -177,8 +175,6 @@ export const TokensCardAll: FunctionComponent<{
 
   const styles = styling(colors);
 
-  const smartNavigation = useSmartNavigation();
-
   const onPressToken = async (item) => {
     navigate(SCREENS.TokenDetails, {
       item,
@@ -276,7 +272,7 @@ export const TokensCardAll: FunctionComponent<{
                       weight="500"
                       color={colors["neutral-text-heading"]}
                     >
-                      {item.balance.toFixed(4)} {item.asset}
+                      {Number(item.balance.toFixed(4))} {item.asset}
                     </Text>
                     <Text
                       size={14}
