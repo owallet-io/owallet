@@ -737,7 +737,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     await handleFetchAmounts({
       eth: accountEth.evmosHexAddress,
       tron: getBase58Address(accountTron.evmosHexAddress),
-      tokenReload: [],
     });
     await estimateAverageRatio();
     setLoadingRefresh(false);

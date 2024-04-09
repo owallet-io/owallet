@@ -276,7 +276,7 @@ export const TokensCardAll: FunctionComponent<{
                       weight="500"
                       color={colors["neutral-text-heading"]}
                     >
-                      {item.balance.toFixed(4)} {item.asset}
+                      {Number(item.balance.toFixed(4))} {item.asset}
                     </Text>
                     <Text
                       size={14}
