@@ -327,7 +327,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       });
     }
   };
-  const onFetchAmount = (timeoutId: NodeJS.Timeout) => {
+  const onFetchAmount = (
+    timeoutId: NodeJS.Timeout,
+    tokenReload?: Array<any>
+  ) => {
     if (accountOrai.isNanoLedger) {
       if (Object.keys(keyRingStore.keyRingLedgerAddresses).length > 0) {
         setTimeout(() => {
@@ -338,6 +341,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             eth: keyRingStore.keyRingLedgerAddresses.eth ?? null,
             tron: keyRingStore.keyRingLedgerAddresses.trx ?? null,
             kwt: accountKawaiiCosmos.bech32Address,
+            tokenReload: tokenReload?.length > 0 ? tokenReload : null,
           });
         }, 1000);
       }
@@ -701,12 +705,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             }
           },
         });
-
-        await handleFetchAmounts({
-          eth: accountEth.evmosHexAddress,
-          tron: getBase58Address(accountTron.evmosHexAddress),
-          tokenReload: [originalFromToken, originalToToken],
-        });
+        let timeoutId: NodeJS.Timeout;
+        await onFetchAmount(timeoutId, [originalFromToken, originalToToken]);
         const tokens = getTokenInfos({
           tokens: universalSwapStore.getAmount,
           prices: appInitStore.getInitApp.prices,
@@ -733,11 +733,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   };
 
   const onRefresh = async () => {
+    let timeoutId: NodeJS.Timeout;
     setLoadingRefresh(true);
-    await handleFetchAmounts({
-      eth: accountEth.evmosHexAddress,
-      tron: getBase58Address(accountTron.evmosHexAddress),
-    });
+    onFetchAmount(timeoutId);
     await estimateAverageRatio();
     setLoadingRefresh(false);
   };
