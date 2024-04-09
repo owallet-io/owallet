@@ -10,7 +10,13 @@ import { observer } from "mobx-react-lite";
 import { useUnmount } from "../../hooks";
 import { BottomSheetProps } from "@gorhom/bottom-sheet";
 import { navigationRef } from "../../router/root";
-import { ChainIdEnum, ExtensionKVStore, TRIGGER_TYPE } from "@owallet/common";
+import {
+  ChainIdEnum,
+  DenomHelper,
+  ExtensionKVStore,
+  formatAddress,
+  TRIGGER_TYPE,
+} from "@owallet/common";
 import { AsyncKVStore } from "@src/common";
 import {
   useAmountConfig,
@@ -18,7 +24,7 @@ import {
   useGetFeeTron,
   useRecipientConfig,
 } from "@owallet/hooks";
-import { CoinPretty, Dec, Int, IntPretty } from "@owallet/unit";
+import { CoinPretty, Dec, DecUtils, Int, IntPretty } from "@owallet/unit";
 import OWText from "@src/components/text/ow-text";
 import { AmountCard, WasmExecutionMsgView } from "@src/modals/sign/components";
 import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
@@ -123,11 +129,27 @@ export const SignTronModal: FunctionComponent<{
     useEffect(() => {
       console.log(txInfo, "txInfo");
       if (txInfo && amountConfig) {
-        //@ts-ignore
-        const tx = txInfo?.parameters.find(
-          (item, index) => item.type === "uint256"
+        const toToken = txInfo?.parameters.find(
+          (item, index) => item.type === "address"
         );
-        amountConfig.setAmount(tx?.value);
+        if (toToken?.value) {
+          const infoToken = chainStore.current.currencies.find(
+            (item, index) => {
+              const denom = new DenomHelper(item.coinMinimalDenom);
+              if (
+                denom?.contractAddress?.toLowerCase() ===
+                toToken?.value?.toLowerCase()
+              )
+                return true;
+              return false;
+            }
+          );
+          if (infoToken) amountConfig.setSendCurrency(infoToken);
+
+          return;
+        }
+
+        console.log(toToken, "toToken");
       }
     }, [txInfo, amountConfig]);
     useEffect(() => {
@@ -141,6 +163,7 @@ export const SignTronModal: FunctionComponent<{
           recipientConfig.setRawRecipient(dataTron?.recipient);
         }
         if (dataTron?.amount) {
+          console.log(dataTron?.amount, "dataTron?.amount");
           amountConfig.setAmount(dataTron?.amount);
         }
         if (dataTron?.currency) {
@@ -173,19 +196,34 @@ export const SignTronModal: FunctionComponent<{
         console.log("error approveTronAndWaitEnd", error);
       }
     };
+    //@ts-ignore
+    const txAmountInfo = txInfo?.parameters?.find(
+      (item, index) => item.type === "uint256"
+    );
     const renderAmount = () => {
       if (
         !amountConfig.sendCurrency ||
         !amountConfig.getAmountPrimitive().amount
       )
         return null;
-      return new CoinPretty(
-        amountConfig.sendCurrency,
-        new Dec(amountConfig.getAmountPrimitive().amount)
-      )
-        ?.maxDecimals(9)
-        ?.trim(true)
-        ?.toString();
+
+      if (txAmountInfo && txAmountInfo?.value && amountConfig?.sendCurrency) {
+        return new CoinPretty(
+          amountConfig.sendCurrency,
+          new Dec(txAmountInfo?.value)
+        )
+          ?.maxDecimals(9)
+          ?.trim(true)
+          ?.toString();
+      } else {
+        return new CoinPretty(
+          amountConfig.sendCurrency,
+          new Dec(amountConfig.getAmountPrimitive().amount)
+        )
+          ?.maxDecimals(9)
+          ?.trim(true)
+          ?.toString();
+      }
     };
     const checkPrice = () => {
       if (
@@ -193,10 +231,16 @@ export const SignTronModal: FunctionComponent<{
         !amountConfig.getAmountPrimitive().amount
       )
         return;
-      const coin = new CoinPretty(
+      let coin = new CoinPretty(
         amountConfig.sendCurrency,
         new Dec(amountConfig.getAmountPrimitive().amount)
       );
+      if (txAmountInfo && txAmountInfo?.value && amountConfig?.sendCurrency) {
+        coin = new CoinPretty(
+          amountConfig.sendCurrency,
+          new Dec(txAmountInfo?.value)
+        );
+      }
       const totalPrice = priceStore.calculatePrice(coin);
       return totalPrice?.toString();
     };
@@ -248,6 +292,7 @@ export const SignTronModal: FunctionComponent<{
               imageCoin={checkImageCoin()}
               amountStr={renderAmount()}
               totalPrice={checkPrice()}
+              msg={txInfo?.functionSelector ? waitingTronData : null}
             />
           ) : (
             dataSign && (
@@ -282,6 +327,20 @@ export const SignTronModal: FunctionComponent<{
                   20
                 )}
                 value={addressTronBase58}
+              />
+            )}
+            {txInfo?.functionSelector && (
+              <ItemReceivedToken
+                label={"Method"}
+                valueDisplay={txInfo?.functionSelector}
+                btnCopy={false}
+              />
+            )}
+            {txInfo?.address && (
+              <ItemReceivedToken
+                label={"Contract"}
+                valueDisplay={formatAddress(txInfo?.address, 12)}
+                value={txInfo?.address}
               />
             )}
             {recipientConfig?.recipient && (

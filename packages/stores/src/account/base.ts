@@ -601,6 +601,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         address,
         tokenTrc20,
       });
+      if (!txId) throw Error("Transaction Rejected");
       if (onTxEvents?.onBroadcasted) {
         onTxEvents?.onBroadcasted(txId);
       }
@@ -609,61 +610,60 @@ export class AccountSetBase<MsgOpts, Queries> {
         this.chainGetter.getChain(this.chainId).rpc,
         null
       );
-      try {
-        const tx = await txRest.fetchTxPoll(txId);
-        if (tx?.blockNumber) {
-          OwalletEvent.txHashEmit(txId, {
-            ...tx,
-            code: 0,
-          });
 
-          // After sending tx, the balances is probably changed due to the fee.
-          const bal = this.queries.queryBalances
-            .getQueryBech32Address(this.evmosHexAddress)
-            .balances.find(
-              (bal) =>
-                bal.currency.coinMinimalDenom === currency.coinMinimalDenom
-            );
-          console.log(bal, "bal");
-          if (bal) {
-            bal.fetch();
-          }
-          if (this.opts.preTxEvents?.onFulfill) {
-            this.opts.preTxEvents.onFulfill(tx);
-          }
+      const tx = await txRest.fetchTxPoll(txId);
+      if (tx?.blockNumber) {
+        OwalletEvent.txHashEmit(txId, {
+          ...tx,
+          code: 0,
+        });
 
-          if (onTxEvents?.onFulfill) {
-            onTxEvents?.onFulfill(txId);
-          }
-        } else {
-          OwalletEvent.txHashEmit(txId, {
-            ...tx,
-            code: 1,
-          });
+        // After sending tx, the balances is probably changed due to the fee.
+        const bal = this.queries.queryBalances
+          .getQueryBech32Address(this.evmosHexAddress)
+          .balances.find(
+            (bal) => bal.currency.coinMinimalDenom === currency.coinMinimalDenom
+          );
+        console.log(bal, "bal");
+        if (bal) {
+          bal.fetch();
         }
-      } catch (error) {
-        OwalletEvent.txHashEmit(txId, null);
-        if (this.opts.preTxEvents?.onBroadcastFailed) {
-          this.opts.preTxEvents.onBroadcastFailed(error);
+        if (this.opts.preTxEvents?.onFulfill) {
+          this.opts.preTxEvents.onFulfill(tx);
         }
 
-        if (
-          onTxEvents &&
-          "onBroadcastFailed" in onTxEvents &&
-          onTxEvents.onBroadcastFailed
-        ) {
-          //@ts-ignore
-          onTxEvents.onBroadcastFailed(error);
+        if (onTxEvents?.onFulfill) {
+          onTxEvents?.onFulfill(txId);
         }
-        console.log(error, "error");
-        throw error;
-      } finally {
-        runInAction(() => {
-          this._isSendingMsg = false;
+      } else {
+        OwalletEvent.txHashEmit(txId, {
+          ...tx,
+          code: 1,
         });
       }
     } catch (error) {
-      console.log("error sendTronToken", error);
+      // OwalletEvent.txHashEmit(txId, null);
+      if (this.opts.preTxEvents?.onBroadcastFailed) {
+        this.opts.preTxEvents.onBroadcastFailed(error);
+      }
+
+      if (
+        onTxEvents &&
+        "onBroadcastFailed" in onTxEvents &&
+        onTxEvents.onBroadcastFailed
+      ) {
+        //@ts-ignore
+        onTxEvents.onBroadcastFailed(error);
+      }
+      console.log(error, "error");
+      runInAction(() => {
+        this._isSendingMsg = false;
+      });
+      throw error;
+    } finally {
+      runInAction(() => {
+        this._isSendingMsg = false;
+      });
     }
   }
 
