@@ -37,6 +37,7 @@ import FastImage from "react-native-fast-image";
 import { useTheme } from "@src/themes/theme-provider";
 import { FeeInSign } from "@src/modals/sign/fee";
 import ItemDetail from "@src/screens/transactions/components/item-details";
+import { metrics } from "@src/themes";
 
 export const SignTronModal: FunctionComponent<{
   isOpen: boolean;
@@ -52,7 +53,7 @@ export const SignTronModal: FunctionComponent<{
       queriesStore,
       priceStore,
     } = useStore();
-    const accountInfo = accountStore.getAccount(chainStore.current.chainId);
+    const accountInfo = accountStore.getAccount(chainStore.selectedChainId);
     const addressTronBase58 = accountInfo.getAddressDisplay(
       keyRingStore.keyRingLedgerAddresses
     );
@@ -100,17 +101,6 @@ export const SignTronModal: FunctionComponent<{
       chainStore,
       chainStore.selectedChainId
     );
-    const { feeTrx, estimateEnergy, estimateBandwidth, feeLimit } =
-      useGetFeeTron(
-        addressTronBase58,
-        amountConfig,
-        recipientConfig,
-        queries.tron,
-        chainStore.current,
-        keyRingStore,
-        txInfo
-      );
-    console.log(estimateBandwidth, "estimateBandwidth");
     const feeConfig = useFeeTronConfig(
       chainStore,
       chainStore.selectedChainId,
@@ -118,20 +108,14 @@ export const SignTronModal: FunctionComponent<{
       queries.queryBalances,
       queries
     );
-    useEffect(() => {
-      if (feeTrx) {
-        feeConfig.setManualFee(feeTrx);
-      }
-      return () => {
-        feeConfig.setManualFee(null);
-      };
-    }, [feeTrx]);
+
     useEffect(() => {
       console.log(txInfo, "txInfo");
       if (txInfo && amountConfig) {
         const toToken = txInfo?.parameters.find(
           (item, index) => item.type === "address"
         );
+        if (!toToken?.value) amountConfig.setSendCurrency(null);
         if (toToken?.value) {
           const infoToken = chainStore.current.currencies.find(
             (item, index) => {
@@ -144,14 +128,14 @@ export const SignTronModal: FunctionComponent<{
               return false;
             }
           );
-          if (infoToken) amountConfig.setSendCurrency(infoToken);
 
+          if (!infoToken) amountConfig.setSendCurrency(null);
+          if (infoToken) amountConfig.setSendCurrency(infoToken);
           return;
         }
-
-        console.log(toToken, "toToken");
       }
     }, [txInfo, amountConfig]);
+
     useEffect(() => {
       if (dataSign) return;
 
@@ -163,7 +147,6 @@ export const SignTronModal: FunctionComponent<{
           recipientConfig.setRawRecipient(dataTron?.recipient);
         }
         if (dataTron?.amount) {
-          console.log(dataTron?.amount, "dataTron?.amount");
           amountConfig.setAmount(dataTron?.amount);
         }
         if (dataTron?.currency) {
@@ -175,6 +158,25 @@ export const SignTronModal: FunctionComponent<{
     }, [waitingTronData]);
     const error = feeConfig.getError();
     const txStateIsValid = error == null;
+    if (chainStore?.selectedChainId !== ChainIdEnum.TRON) return;
+    const { feeTrx, estimateEnergy, estimateBandwidth, feeLimit } =
+      useGetFeeTron(
+        addressTronBase58,
+        amountConfig,
+        recipientConfig,
+        queries.tron,
+        chainStore.current,
+        keyRingStore,
+        txInfo
+      );
+    useEffect(() => {
+      if (feeTrx) {
+        feeConfig.setManualFee(feeTrx);
+      }
+      return () => {
+        feeConfig.setManualFee(null);
+      };
+    }, [feeTrx]);
     const feeLimitData = feeLimit?.gt(new Int(0)) ? feeLimit?.toString() : null;
     const _onPressApprove = async () => {
       try {
@@ -201,6 +203,11 @@ export const SignTronModal: FunctionComponent<{
       (item, index) => item.type === "uint256"
     );
     const renderAmount = () => {
+      if (
+        txInfo?.functionSelector &&
+        !txInfo?.functionSelector?.startsWith("sendToCosmos")
+      )
+        return;
       if (
         !amountConfig.sendCurrency ||
         !amountConfig.getAmountPrimitive().amount
@@ -272,7 +279,12 @@ export const SignTronModal: FunctionComponent<{
       <WrapViewModal
         style={{
           backgroundColor: colors["neutral-surface-card"],
+          maxHeight: metrics.screenHeight - 250,
         }}
+        containerStyle={{
+          paddingBottom: 20,
+        }}
+        disabledScrollView={false}
       >
         <View style={{ paddingTop: 16 }}>
           {/*<View>{renderedMsgs}</View>*/}
@@ -398,6 +410,6 @@ export const SignTronModal: FunctionComponent<{
     );
   }),
   {
-    disableSafeArea: true,
+    disableSafeArea: false,
   }
 );

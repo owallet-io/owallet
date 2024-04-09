@@ -1064,7 +1064,11 @@ export class KeyRingService {
       const objStore = {
         address: data.address,
         functionSelector: data.functionSelector,
-        options: data.options,
+        options: {
+          ...data.options,
+          feeLimit: DEFAULT_FEE_LIMIT_TRON,
+          callValue: 0,
+        },
         parameters: data.parameters,
         issuerAddress: data.issuerAddress,
       };

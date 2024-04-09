@@ -71,15 +71,6 @@ export const SignTronPage: FunctionComponent = observer(() => {
     chainStore,
     chainStore.selectedChainId
   );
-  const { feeTrx, estimateEnergy, estimateBandwidth, feeLimit } = useGetFeeTron(
-    addressTronBase58,
-    amountConfig,
-    recipientConfig,
-    queries.tron,
-    chainStore.current,
-    keyRingStore,
-    txInfo
-  );
   const feeConfig = useFeeTronConfig(
     chainStore,
     chainStore.selectedChainId,
@@ -87,14 +78,7 @@ export const SignTronPage: FunctionComponent = observer(() => {
     queries.queryBalances,
     queries
   );
-  useEffect(() => {
-    if (feeTrx) {
-      feeConfig.setManualFee(feeTrx);
-    }
-    return () => {
-      feeConfig.setManualFee(null);
-    };
-  }, [feeTrx]);
+
   useEffect(() => {
     console.log(txInfo, "txInfo");
     if (txInfo && amountConfig) {
@@ -127,6 +111,24 @@ export const SignTronPage: FunctionComponent = observer(() => {
   }, [waitingTronData]);
   const error = feeConfig.getError();
   const txStateIsValid = error == null;
+  if (chainStore?.selectedChainId !== ChainIdEnum.TRON) return;
+  const { feeTrx, estimateEnergy, estimateBandwidth, feeLimit } = useGetFeeTron(
+    addressTronBase58,
+    amountConfig,
+    recipientConfig,
+    queries.tron,
+    chainStore.current,
+    keyRingStore,
+    txInfo
+  );
+  useEffect(() => {
+    if (feeTrx) {
+      feeConfig.setManualFee(feeTrx);
+    }
+    return () => {
+      feeConfig.setManualFee(null);
+    };
+  }, [feeTrx]);
   const feeLimitData = feeLimit?.gt(new Int(0)) ? feeLimit?.toString() : null;
   return (
     <div
