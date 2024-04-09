@@ -53,7 +53,7 @@ export const SignTronModal: FunctionComponent<{
       queriesStore,
       priceStore,
     } = useStore();
-    const accountInfo = accountStore.getAccount(chainStore.selectedChainId);
+    const accountInfo = accountStore.getAccount(ChainIdEnum.TRON);
     const addressTronBase58 = accountInfo.getAddressDisplay(
       keyRingStore.keyRingLedgerAddresses
     );
@@ -89,21 +89,18 @@ export const SignTronModal: FunctionComponent<{
         console.error(error);
       }
     };
-    const queries = queriesStore.get(chainStore.selectedChainId);
+    const queries = queriesStore.get(ChainIdEnum.TRON);
 
     const amountConfig = useAmountConfig(
       chainStore,
-      chainStore.selectedChainId,
+      ChainIdEnum.TRON,
       accountInfo.evmosHexAddress,
       queries.queryBalances
     );
-    const recipientConfig = useRecipientConfig(
-      chainStore,
-      chainStore.selectedChainId
-    );
+    const recipientConfig = useRecipientConfig(chainStore, ChainIdEnum.TRON);
     const feeConfig = useFeeTronConfig(
       chainStore,
-      chainStore.selectedChainId,
+      ChainIdEnum.TRON,
       accountInfo.evmosHexAddress,
       queries.queryBalances,
       queries
@@ -115,10 +112,11 @@ export const SignTronModal: FunctionComponent<{
         const toToken = txInfo?.parameters.find(
           (item, index) => item.type === "address"
         );
-        if (!toToken?.value) amountConfig.setSendCurrency(null);
+
         if (toToken?.value) {
-          const infoToken = chainStore.current.currencies.find(
-            (item, index) => {
+          const infoToken = chainStore
+            .getChain(ChainIdEnum.TRON)
+            .currencies.find((item, index) => {
               const denom = new DenomHelper(item.coinMinimalDenom);
               if (
                 denom?.contractAddress?.toLowerCase() ===
@@ -126,10 +124,8 @@ export const SignTronModal: FunctionComponent<{
               )
                 return true;
               return false;
-            }
-          );
+            });
 
-          if (!infoToken) amountConfig.setSendCurrency(null);
           if (infoToken) amountConfig.setSendCurrency(infoToken);
           return;
         }
@@ -152,20 +148,18 @@ export const SignTronModal: FunctionComponent<{
         if (dataTron?.currency) {
           amountConfig.setSendCurrency(dataTron?.currency);
         }
-
-        chainStore.selectChain(ChainIdEnum.TRON);
       }
     }, [waitingTronData]);
     const error = feeConfig.getError();
     const txStateIsValid = error == null;
-    if (chainStore?.selectedChainId !== ChainIdEnum.TRON) return;
+
     const { feeTrx, estimateEnergy, estimateBandwidth, feeLimit } =
       useGetFeeTron(
         addressTronBase58,
         amountConfig,
         recipientConfig,
         queries.tron,
-        chainStore.current,
+        chainStore.getChain(ChainIdEnum.TRON),
         keyRingStore,
         txInfo
       );
