@@ -81,6 +81,8 @@ export const AddressInput: FunctionComponent<{
     );
 
     const error = recipientConfig.getError();
+    console.log("error", error);
+
     const errorText: string | undefined = useMemo(() => {
       if (error) {
         switch (error.constructor) {
@@ -109,7 +111,11 @@ export const AddressInput: FunctionComponent<{
         label={label}
         topInInputContainer={topInInputContainer}
         labelStyle={labelStyle}
-        containerStyle={containerStyle}
+        containerStyle={{
+          ...containerStyle,
+          marginBottom:
+            error && error.constructor !== EmptyAddressError ? 24 : 0,
+        }}
         inputContainerStyle={inputContainerStyle}
         errorLabelStyle={errorLabelStyle}
         error={errorText}

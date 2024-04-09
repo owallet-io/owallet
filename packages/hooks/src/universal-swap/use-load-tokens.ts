@@ -25,6 +25,19 @@ import {
 import { ChainIdEnum, isEvmNetworkNativeSwapSupported } from "@owallet/common";
 import { CWStargate } from "@owallet/common";
 import { AccountWithAll } from "@owallet/stores";
+import { reduce } from "lodash";
+import axios from "axios";
+
+export const getUtxos = async (address: string, baseUrl: string) => {
+  if (!address) throw Error("Address is not empty");
+  if (!baseUrl) throw Error("BaseUrl is not empty");
+  const { data } = await axios({
+    baseURL: baseUrl,
+    method: "get",
+    url: `/address/${address}/utxo`,
+  });
+  return data;
+};
 
 const EVM_BALANCE_RETRY_COUNT = 2;
 
@@ -125,6 +138,7 @@ async function loadTokens(
                 universalSwapStore,
                 tronToEthAddress(tronAddress),
                 chainInfos.filter((c) => c.chainId == "0x2b6653dc"),
+                true,
                 tokenReload
               );
             }, 500);
@@ -137,6 +151,7 @@ async function loadTokens(
                 universalSwapStore,
                 metamaskAddress,
                 evmChains,
+                false,
                 tokenReload
               );
             }, 500);
@@ -178,6 +193,7 @@ async function loadTokens(
         universalSwapStore,
         metamaskAddress,
         evmChains,
+        false,
         tokenReload
       );
     }, 500);
@@ -190,6 +206,7 @@ async function loadTokens(
         universalSwapStore,
         tronToEthAddress(tronAddress),
         chainInfos.filter((c) => c.chainId == "0x2b6653dc"),
+        true,
         tokenReload
       );
     }, 500);
@@ -301,6 +318,49 @@ async function loadCw20Balance(
   } catch (err) {}
 }
 
+// async function loadBtcAmounts(  universalSwapStore: any,
+//    btcAddress: string, chains: CustomChainInfo[]) {
+//   const amountDetails = Object.fromEntries(
+//     flatten(await Promise.all(chains.map(chain => loadBtcEntries(btcAddress, chain))))
+//   );
+
+//   universalSwapStore.updateAmounts(amountDetails);
+// }
+
+// async function loadNativeBtcBalance(address: string, chain: CustomChainInfo) {
+//   const data = await getUtxos(address, chain.rest);
+//   const total = reduce(
+//     data,
+//     function (sum, n) {
+//       return sum + n.value;
+//     },
+//     0
+//   );
+
+//   return total;
+// }
+
+// async function loadBtcEntries(
+//   address: string,
+//   chain: CustomChainInfo,
+
+//   retryCount?: number
+// ): Promise<[string, string][]> {
+//   try {
+//     const nativeBtc = btcTokens.find(t => chain.chainId === t.chainId);
+
+//     const nativeBalance = await loadNativeBtcBalance(address, chain);
+//     let entries: [string, string][] = [[nativeBtc.denom, nativeBalance.toString()]];
+//     return entries;
+//   } catch (error) {
+//     console.log('error querying BTC balance: ', error);
+//     let retry = retryCount ? retryCount + 1 : 1;
+//     if (retry >= EVM_BALANCE_RETRY_COUNT) throw (`Cannot query BTC balance with error: ${error}`);
+//     await new Promise(resolve => setTimeout(resolve, 2000));
+//     return loadBtcEntries(address, chain, retry);
+//   }
+// }
+
 async function loadNativeEvmBalance(address: string, chain: CustomChainInfo) {
   try {
     const client = new JsonRpcProvider(chain.rpc);
@@ -397,6 +457,7 @@ async function loadEvmAmounts(
   universalSwapStore: any,
   evmAddress: string,
   chains: CustomChainInfo[],
+  isTronAddress: boolean,
   tokenReload?: Array<any>
 ) {
   //@ts-ignore
@@ -407,6 +468,14 @@ async function loadEvmAmounts(
       )
     )
   );
+
+  if (!isTronAddress) {
+    Object.keys(amountDetails).forEach(function (key) {
+      if (key.startsWith("trx")) {
+        delete amountDetails[key];
+      }
+    });
+  }
 
   universalSwapStore.updateAmounts(amountDetails);
 }
