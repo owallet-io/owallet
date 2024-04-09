@@ -145,12 +145,21 @@ export const TokenDetails: FunctionComponent = observer((props) => {
           return t.coinGeckoId === item.coinGeckoId;
         });
 
-        smartNavigation.navigateSmart("SendTron", { item: itemTron });
+        navigate(SCREENS.STACK.Others, {
+          screen: SCREENS.SendTron,
+          params: {
+            item: itemTron,
+          },
+        });
+
         return;
       }
       if (item.chainId === ChainIdEnum.Oasis) {
-        smartNavigation.navigateSmart("SendOasis", {
-          currency: chainStore.current.stakeCurrency.coinMinimalDenom,
+        navigate(SCREENS.STACK.Others, {
+          screen: SCREENS.SendOasis,
+          params: {
+            currency: chainStore.current.stakeCurrency.coinMinimalDenom,
+          },
         });
         return;
       }
