@@ -12,7 +12,7 @@ interface IOWEmpty extends ViewProps {
 
 const OWEmpty = ({
   style,
-  sizeImage = 142,
+  sizeImage = 160,
   type = "list",
   ...props
 }: IOWEmpty) => {
@@ -20,7 +20,7 @@ const OWEmpty = ({
     props;
   const { colors, images } = useTheme();
   const imgList = {
-    list: images.list_empty,
+    list: require("../../assets/image/img_planet.png"),
     crash: images.crash_empty,
     cash: images.money_empty,
   };

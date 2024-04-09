@@ -304,8 +304,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   //   return <TokensCard refreshDate={refreshDate} />;
   // }, []);
 
-  const oldUI = false;
-
   const renderNewTokenCard = useCallback(() => {
     return <TokensCardAll />;
   }, []);
@@ -324,7 +322,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       ref={scrollViewRef}
     >
       <BIP44Selectable />
-      {oldUI ? renderAccountCard : renderNewAccountCard}
+      {renderNewAccountCard}
       {/* <DashboardCard /> */}
       {chainStore.current.networkType === "cosmos" &&
       !appInitStore.getInitApp.isAllNetworks ? (

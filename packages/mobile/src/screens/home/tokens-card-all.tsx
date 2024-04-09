@@ -32,6 +32,8 @@ import { TokenItem } from "../tokens/components/token-item";
 import { HistoryCard } from "./history-card";
 import OWFlatList from "@src/components/page/ow-flat-list";
 import { metrics } from "@src/themes";
+import FastImage from "react-native-fast-image";
+import OWText from "@src/components/text/ow-text";
 
 export const TokensCardAll: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -356,6 +358,31 @@ export const TokensCardAll: FunctionComponent<{
           ) : (
             <OWEmpty type="cash" />
           )}
+          {/* Section for empty token  */}
+          {tokens.filter((t) => {
+            if (appInitStore.getInitApp.isAllNetworks) {
+              return true;
+            }
+            return t.chainId === chainStore.current.chainId;
+          }).length <= 0 ? (
+            <View style={{ justifyContent: "center", alignItems: "center" }}>
+              <FastImage
+                source={require("../../assets/image/img_planet.png")}
+                style={{
+                  width: 260,
+                  height: 260,
+                }}
+                resizeMode={"contain"}
+              />
+              <OWText
+                color={colors["neutral-text-title"]}
+                size={16}
+                weight="700"
+              >
+                {"no result found".toUpperCase()}
+              </OWText>
+            </View>
+          ) : null}
           {tokens?.filter((t) => {
             if (appInitStore.getInitApp.isAllNetworks) {
               return true;
