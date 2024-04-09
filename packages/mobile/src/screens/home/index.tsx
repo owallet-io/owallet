@@ -265,14 +265,16 @@ export const HomeScreen: FunctionComponent = observer((props) => {
 
     InteractionManager.runAfterInteractions(() => {
       startTransition(() => {
-        onFetchAmount(timeoutId);
+        if (accountOrai.bech32Address) {
+          onFetchAmount(timeoutId);
+        }
       });
     });
     // Clean up the timeout if the component unmounts or the dependency changes
     return () => {
       if (timeoutId) clearTimeout(timeoutId);
     };
-  }, []);
+  }, [accountOrai.bech32Address]);
 
   const { data: prices } = useCoinGeckoPrices();
 
