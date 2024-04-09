@@ -21,7 +21,7 @@ import {
   openLink,
   SUCCESS,
 } from "../../utils/helper";
-import { ChainIdEnum } from "@owallet/common";
+import { ChainIdEnum, TxRestTronClient } from "@owallet/common";
 import { API } from "@src/common/api";
 import { OwalletEvent, TxRestCosmosClient, TRON_ID } from "@owallet/common";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
@@ -73,58 +73,15 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
     .getAccount(chainId)
     .getAddressDisplay(keyRingStore.keyRingLedgerAddresses, false);
   const txHash = params?.txHash;
+  console.log(txHash, "txHash");
   const chainInfo = chainStore.getChain(chainId);
 
   const smartNavigation = useSmartNavigation();
   const isFocused = useIsFocused();
-
-  const getTronTx = async (txHash) => {
-    const transaction = await route.params.tronWeb?.trx.getTransactionInfo(
-      txHash
-    );
-    setRetry(retry - 1);
-    return transaction;
-  };
-
   useEffect(() => {
     // let txTracer: TendermintTxTracer | undefined;
     if (isFocused && chainId && chainInfo) {
-      if (chainId === TRON_ID) {
-        // It may take a while to confirm transaction in TRON, show we make retry few times until it is done
-        if (retry >= 0) {
-          setTimeout(() => {
-            getTronTx(txHash).then((transaction) => {
-              if (
-                transaction &&
-                Object.keys(transaction).length > 0 &&
-                retry > 0
-              ) {
-                if (transaction.receipt.result === SUCCESS) {
-                  smartNavigation.pushSmart("TxSuccessResult", {
-                    txHash: transaction.id,
-                  });
-                } else {
-                  smartNavigation.pushSmart("TxFailedResult", {
-                    chainId: current.chainId,
-                    txHash: transaction.id,
-                  });
-                }
-              }
-              if (retry === 0) {
-                smartNavigation.pushSmart("TxFailedResult", {
-                  chainId: current.chainId,
-                  txHash: txHash,
-                });
-              }
-            });
-          }, 33000);
-        } else {
-          smartNavigation.pushSmart("TxFailedResult", {
-            chainId: current.chainId,
-            txHash: txHash,
-          });
-        }
-      } else if (chainId === ChainIdEnum.Bitcoin) {
+      if (chainId === ChainIdEnum.Bitcoin) {
         API.checkStatusTxBitcoinTestNet(chainInfo.rest, txHash)
           .then((res: any) => {
             if (res?.confirmed) {
@@ -134,64 +91,10 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
             }
           })
           .catch((err) => console.log(err, "err data"));
-      } else if (
-        chainId.startsWith("injective") ||
-        chainStore.current.networkType === "evm"
-      ) {
-        const data = {
-          ...params?.data,
-        };
-        OwalletEvent.txHashListener(txHash, (txInfo) => {
-          console.log(txHash, txInfo, "txInfo");
-          if (txInfo?.code === 0) {
-            smartNavigation.replaceSmart("TxSuccessResult", {
-              chainId,
-              txHash,
-              data,
-            });
-            return;
-          } else {
-            smartNavigation.replaceSmart("TxFailedResult", {
-              chainId,
-              txHash,
-              data,
-            });
-          }
-        });
       }
-      // else {
-      //   txTracer = new TendermintTxTracer(chainInfo.rpc, "/websocket");
-      //   txTracer
-      //     .traceTx(Buffer.from(txHash, "hex"))
-      //     .then((tx) => {
-      //       const data = {
-      //         ...params?.data,
-      //       };
-      //       if (tx.code == null || tx.code === 0) {
-      //         smartNavigation.replaceSmart("TxSuccessResult", {
-      //           chainId,
-      //           txHash,
-      //           data,
-      //         });
-      //       } else {
-      //         smartNavigation.replaceSmart("TxFailedResult", {
-      //           chainId,
-      //           txHash,
-      //           data,
-      //         });
-      //       }
-      //     })
-      //     .catch((e) => {
-      //       console.log(`Failed to trace the tx (${txHash})`, e);
-      //     });
-      // }
     }
 
-    return () => {
-      // if (txTracer) {
-      //   txTracer.close();
-      // }
-    };
+    return () => {};
   }, [
     chainId,
     chainStore,
@@ -232,36 +135,31 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
   useEffect(() => {
     if (txHash) {
       InteractionManager.runAfterInteractions(() => {
-        if (chainInfo.networkType === "cosmos") {
-          const restApi = chainInfo?.rest;
-          const restConfig = chainInfo?.restConfig;
-          const txRestCosmos = new TxRestCosmosClient(restApi, restConfig);
-          txRestCosmos
-            .fetchTxPoll(txHash)
-            .then((tx) => {
-              const data = {
-                ...params?.data,
-              };
-              if (tx.code == null || tx.code === 0) {
-                smartNavigation.replaceSmart("TxSuccessResult", {
-                  chainId,
-                  txHash,
-                  data,
-                });
-              } else {
-                smartNavigation.replaceSmart("TxFailedResult", {
-                  chainId,
-                  txHash,
-                  data,
-                });
-              }
-            })
-            .catch((err) => console.log(err));
-        }
+        if (chainInfo?.chainId === ChainIdEnum.Bitcoin) return;
+        const data = {
+          ...params?.data,
+        };
+        OwalletEvent.txHashListener(txHash, (txInfo) => {
+          console.log(txHash, txInfo, "txInfo");
+          if (txInfo?.code === 0) {
+            smartNavigation.replaceSmart("TxSuccessResult", {
+              chainId,
+              txHash,
+              data,
+            });
+            return;
+          } else {
+            smartNavigation.replaceSmart("TxFailedResult", {
+              chainId,
+              txHash,
+              data,
+            });
+          }
+        });
         getDetailByHash(txHash);
       });
     }
-  }, [txHash]);
+  }, [txHash, chainId]);
   const fee = () => {
     if (params?.data?.fee) {
       return new CoinPretty(

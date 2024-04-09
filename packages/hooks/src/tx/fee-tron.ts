@@ -11,6 +11,7 @@ import { Currency } from "@owallet/types";
 import { useState } from "react";
 import { ObservableQueryBalances } from "@owallet/stores";
 import { InsufficientFeeError, NotLoadedFeeError } from "./errors";
+import { StdFee } from "@cosmjs/launchpad";
 
 export class FeeTronConfig extends TxChainSetter implements IFeeTronConfig {
   @observable.ref
@@ -90,7 +91,20 @@ export class FeeTronConfig extends TxChainSetter implements IFeeTronConfig {
       console.log("Error in getFeePrimitive:", error);
     }
   }
+  toStdFee(): StdFee {
+    const amount = this.getFeePrimitive();
+    if (!amount) {
+      return {
+        gas: null,
+        amount: [],
+      };
+    }
 
+    return {
+      gas: null,
+      amount: [amount],
+    };
+  }
   getError(): Error | undefined {
     try {
       const fee = this.getFeePrimitive();

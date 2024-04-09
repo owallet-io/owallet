@@ -111,3 +111,29 @@ export interface SimulationResponse {
     events: { type: string; attributes: { key: string; value: string }[] }[];
   };
 }
+
+export interface TxResTron {
+  id: string;
+  fee: number;
+  blockNumber: number;
+  blockTimeStamp: number;
+  contractResult: string[];
+  contract_address: string;
+  receipt: Receipt;
+  log: Log[];
+  packingFee: number;
+}
+
+export interface Receipt {
+  energy_usage: number;
+  energy_fee: number;
+  energy_usage_total: number;
+  net_fee: number;
+  result: string;
+}
+
+export interface Log {
+  address: string;
+  topics: string[];
+  data: string;
+}

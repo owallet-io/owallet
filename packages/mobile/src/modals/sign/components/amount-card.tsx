@@ -75,15 +75,17 @@ export const AmountCard: FC<{
       >
         {amountStr}
       </OWText>
-      <OWText
-        style={{
-          textAlign: "center",
-        }}
-        color={colors["neutral-text-body2"]}
-        weight={"400"}
-      >
-        {totalPrice}
-      </OWText>
+      {totalPrice && (
+        <OWText
+          style={{
+            textAlign: "center",
+          }}
+          color={colors["neutral-text-body2"]}
+          weight={"400"}
+        >
+          {totalPrice}
+        </OWText>
+      )}
       {msg && (
         <OWButton
           label={"View Raw Data"}

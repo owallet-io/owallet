@@ -68,6 +68,7 @@ export interface IFeeTronConfig extends ITxChainSetter {
   fee: CoinPretty | undefined;
   getFeePrimitive(): CoinPrimitive | undefined;
   getError(): Error | undefined;
+  toStdFee(): StdFee;
 }
 
 export interface IRecipientConfig extends ITxChainSetter {

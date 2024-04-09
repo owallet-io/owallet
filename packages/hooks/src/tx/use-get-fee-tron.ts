@@ -5,6 +5,7 @@ import {
   estimateBandwidthTron,
   EXTRA_FEE_LIMIT_TRON,
   getEvmAddress,
+  isBase58,
 } from "@owallet/common";
 import {
   ChainInfoInner,
@@ -41,6 +42,7 @@ export const useGetFeeTron = (
     feeTrx: null,
   };
   const [data, setData] = useState<IGetFeeTron>(initData);
+  if (!isBase58(addressTronBase58)) return;
   const accountTronInfo =
     queriesTron.queryAccount.getQueryWalletAddress(addressTronBase58);
   const chainParameter =
@@ -98,6 +100,11 @@ export const useGetFeeTron = (
       .queryTriggerConstantContract(dataReq)
       .waitFreshResponse();
     const triggerContract = triggerContractFetch.data;
+    console.log("B4: simulate sign trigger data request Trigger: ", dataReq);
+    console.log(
+      "B4: simulate sign trigger data after Trigger: ",
+      triggerContract
+    );
     if (!triggerContract?.energy_used) return;
     const signedTx = await keyRingStore.simulateSignTron(
       triggerContract.transaction
@@ -131,6 +138,8 @@ export const useGetFeeTron = (
   const simulateSignTron = async () => {
     if (dataSign?.functionSelector) {
       try {
+        if (addressTronBase58?.length <= 0 || !addressTronBase58?.length)
+          return;
         const parameter = await encodeParams(dataSign?.parameters);
 
         const dataReq = {

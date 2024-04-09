@@ -158,10 +158,13 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
               style={{
                 ...styles.containerIcon,
                 borderRadius: round ? 44 : 0,
-                backgroundColor: colors["gray-10"],
+                backgroundColor: colors["neutral-surface-bg2"],
               }}
             >
-              <LowIconFill color={"#1E1E1E"} size={size} />
+              <LowIconFill
+                color={colors["neutral-icon-on-light"]}
+                size={size}
+              />
             </View>
           );
         case "Average":
@@ -170,10 +173,13 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
               style={{
                 ...styles.containerIcon,
                 borderRadius: round ? 44 : 0,
-                backgroundColor: colors["yellow-10"],
+                backgroundColor: colors["warning-surface-subtle"],
               }}
             >
-              <AverageIconFill color={"#1E1E1E"} size={size} />
+              <AverageIconFill
+                color={colors["neutral-icon-on-light"]}
+                size={size}
+              />
             </View>
           );
         case "Fast":
@@ -182,10 +188,13 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
               style={{
                 ...styles.containerIcon,
                 borderRadius: round ? 44 : 0,
-                backgroundColor: colors["red-10"],
+                backgroundColor: colors["primary-surface-subtle"],
               }}
             >
-              <FastIconFill color={"#1E1E1E"} size={size} />
+              <FastIconFill
+                color={colors["neutral-icon-on-light"]}
+                size={size}
+              />
             </View>
           );
         default:
@@ -193,9 +202,13 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
             <View
               style={{
                 ...styles.containerIcon,
+                backgroundColor: colors["primary-surface-subtle"],
               }}
             >
-              <LowIconFill color={"#1E1E1E"} size={size} />
+              <LowIconFill
+                color={colors["neutral-icon-on-light"]}
+                size={size}
+              />
             </View>
           );
       }

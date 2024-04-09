@@ -1,19 +1,43 @@
 import React, { FunctionComponent, useEffect, useRef, useState } from "react";
 import { registerModal } from "../base";
-import { CardModal } from "../card";
+
 import { Text, View, KeyboardAvoidingView, Platform } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { useStyle } from "../../styles";
 import { useStore } from "../../stores";
-import { Button } from "../../components/button";
-import { colors, typography } from "../../themes";
 
 import { observer } from "mobx-react-lite";
 import { useUnmount } from "../../hooks";
 import { BottomSheetProps } from "@gorhom/bottom-sheet";
 import { navigationRef } from "../../router/root";
+import {
+  ChainIdEnum,
+  DenomHelper,
+  ExtensionKVStore,
+  formatAddress,
+  TRIGGER_TYPE,
+} from "@owallet/common";
+import { AsyncKVStore } from "@src/common";
+import {
+  useAmountConfig,
+  useFeeTronConfig,
+  useGetFeeTron,
+  useRecipientConfig,
+} from "@owallet/hooks";
+import { CoinPretty, Dec, DecUtils, Int, IntPretty } from "@owallet/unit";
+import OWText from "@src/components/text/ow-text";
+import { AmountCard, WasmExecutionMsgView } from "@src/modals/sign/components";
+import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
+import { Bech32Address } from "@owallet/cosmos";
 
-const keyboardVerticalOffset = Platform.OS === "ios" ? 130 : 0;
+import OWButtonGroup from "@src/components/button/OWButtonGroup";
+import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
+
+import FastImage from "react-native-fast-image";
+import { useTheme } from "@src/themes/theme-provider";
+import { FeeInSign } from "@src/modals/sign/fee";
+import ItemDetail from "@src/screens/transactions/components/item-details";
+import { metrics } from "@src/themes";
 
 export const SignTronModal: FunctionComponent<{
   isOpen: boolean;
@@ -21,19 +45,40 @@ export const SignTronModal: FunctionComponent<{
   bottomSheetModalConfig?: Omit<BottomSheetProps, "snapPoints" | "children">;
 }> = registerModal(
   observer(() => {
-    const { chainStore, signInteractionStore } = useStore();
+    const {
+      chainStore,
+      keyRingStore,
+      signInteractionStore,
+      accountStore,
+      queriesStore,
+      priceStore,
+    } = useStore();
+    const accountInfo = accountStore.getAccount(ChainIdEnum.TRON);
+    const addressTronBase58 = accountInfo.getAddressDisplay(
+      keyRingStore.keyRingLedgerAddresses
+    );
+    const [dataSign, setDataSign] = useState(null);
+    const [txInfo, setTxInfo] = useState();
+    const { waitingTronData } = signInteractionStore;
+
+    const getDataTx = async () => {
+      if (!waitingTronData) return;
+      const kvStore = new AsyncKVStore("keyring");
+      const triggerTxId = await kvStore.get(
+        `${TRIGGER_TYPE}:${waitingTronData.data.txID}`
+      );
+      console.log(
+        "b3: get info trigger by txid: \n",
+        triggerTxId,
+        `${TRIGGER_TYPE}:${waitingTronData.data.txID}`
+      );
+      setTxInfo(triggerTxId as any);
+      kvStore.set(`${TRIGGER_TYPE}:${waitingTronData.data.txID}`, null);
+    };
 
     useUnmount(() => {
       signInteractionStore.rejectAll();
     });
-
-    const [dataSign, setDataSign] = useState(null);
-
-    useEffect(() => {
-      if (signInteractionStore.waitingTronData) {
-        setDataSign(signInteractionStore.waitingTronData);
-      }
-    }, []);
 
     const style = useStyle();
 
@@ -44,107 +89,321 @@ export const SignTronModal: FunctionComponent<{
         console.error(error);
       }
     };
+    const queries = queriesStore.get(ChainIdEnum.TRON);
 
-    return (
-      <CardModal>
-        <KeyboardAvoidingView
-          behavior="position"
-          keyboardVerticalOffset={keyboardVerticalOffset}
-        >
-          <View style={style.flatten(["margin-bottom-16"])}>
-            <Text style={style.flatten(["margin-bottom-3"])}>
-              <Text
-                style={style.flatten(["subtitle3", "color-primary"])}
-              >{`1 `}</Text>
-              <Text
-                style={style.flatten(["subtitle3", "color-text-black-medium"])}
-              >
-                Message
-              </Text>
-            </Text>
-            <View
-              style={style.flatten([
-                "border-radius-8",
-                "border-width-1",
-                "border-color-border-white",
-                "overflow-hidden",
-              ])}
-            >
-              <ScrollView
-                style={style.flatten(["max-height-214"])}
-                persistentScrollbar={true}
-              >
-                <Text
-                  style={{
-                    color: colors["sub-text"],
-                  }}
-                >
-                  {JSON.stringify(dataSign, null, 2)}
-                </Text>
-              </ScrollView>
-            </View>
+    const amountConfig = useAmountConfig(
+      chainStore,
+      ChainIdEnum.TRON,
+      accountInfo.evmosHexAddress,
+      queries.queryBalances
+    );
+    const recipientConfig = useRecipientConfig(chainStore, ChainIdEnum.TRON);
+    const feeConfig = useFeeTronConfig(
+      chainStore,
+      ChainIdEnum.TRON,
+      accountInfo.evmosHexAddress,
+      queries.queryBalances,
+      queries
+    );
+
+    useEffect(() => {
+      console.log(txInfo, "txInfo");
+      if (txInfo && amountConfig) {
+        const toToken = txInfo?.parameters.find(
+          (item, index) => item.type === "address"
+        );
+
+        if (toToken?.value) {
+          const infoToken = chainStore
+            .getChain(ChainIdEnum.TRON)
+            .currencies.find((item, index) => {
+              const denom = new DenomHelper(item.coinMinimalDenom);
+              if (
+                denom?.contractAddress?.toLowerCase() ===
+                toToken?.value?.toLowerCase()
+              )
+                return true;
+              return false;
+            });
+
+          if (infoToken) amountConfig.setSendCurrency(infoToken);
+          return;
+        }
+      }
+    }, [txInfo, amountConfig]);
+
+    useEffect(() => {
+      if (dataSign) return;
+
+      if (waitingTronData) {
+        const dataTron = waitingTronData?.data;
+        getDataTx();
+        setDataSign(dataTron);
+        if (dataTron?.recipient) {
+          recipientConfig.setRawRecipient(dataTron?.recipient);
+        }
+        if (dataTron?.amount) {
+          amountConfig.setAmount(dataTron?.amount);
+        }
+        if (dataTron?.currency) {
+          amountConfig.setSendCurrency(dataTron?.currency);
+        }
+      }
+    }, [waitingTronData]);
+    const error = feeConfig.getError();
+    const txStateIsValid = error == null;
+
+    const { feeTrx, estimateEnergy, estimateBandwidth, feeLimit } =
+      useGetFeeTron(
+        addressTronBase58,
+        amountConfig,
+        recipientConfig,
+        queries.tron,
+        chainStore.getChain(ChainIdEnum.TRON),
+        keyRingStore,
+        txInfo
+      );
+    useEffect(() => {
+      if (feeTrx) {
+        feeConfig.setManualFee(feeTrx);
+      }
+      return () => {
+        feeConfig.setManualFee(null);
+      };
+    }, [feeTrx]);
+    const feeLimitData = feeLimit?.gt(new Int(0)) ? feeLimit?.toString() : null;
+    const _onPressApprove = async () => {
+      try {
+        //@ts-ignore
+        if (txInfo?.functionSelector) {
+          await signInteractionStore.approveTronAndWaitEnd({
+            ...waitingTronData?.data,
+          });
+        } else {
+          //@ts-ignore
+          await signInteractionStore.approveTronAndWaitEnd({
+            ...waitingTronData?.data,
+            amount: amountConfig?.getAmountPrimitive()?.amount,
+            feeLimit: feeLimitData,
+          });
+        }
+      } catch (error) {
+        signInteractionStore.rejectAll();
+        console.log("error approveTronAndWaitEnd", error);
+      }
+    };
+    //@ts-ignore
+    const txAmountInfo = txInfo?.parameters?.find(
+      (item, index) => item.type === "uint256"
+    );
+    const renderAmount = () => {
+      if (
+        txInfo?.functionSelector &&
+        !txInfo?.functionSelector?.startsWith("sendToCosmos")
+      )
+        return;
+      if (
+        !amountConfig.sendCurrency ||
+        !amountConfig.getAmountPrimitive().amount
+      )
+        return null;
+
+      if (txAmountInfo && txAmountInfo?.value && amountConfig?.sendCurrency) {
+        return new CoinPretty(
+          amountConfig.sendCurrency,
+          new Dec(txAmountInfo?.value)
+        )
+          ?.maxDecimals(9)
+          ?.trim(true)
+          ?.toString();
+      } else {
+        return new CoinPretty(
+          amountConfig.sendCurrency,
+          new Dec(amountConfig.getAmountPrimitive().amount)
+        )
+          ?.maxDecimals(9)
+          ?.trim(true)
+          ?.toString();
+      }
+    };
+    const checkPrice = () => {
+      if (
+        !amountConfig.sendCurrency ||
+        !amountConfig.getAmountPrimitive().amount
+      )
+        return;
+      let coin = new CoinPretty(
+        amountConfig.sendCurrency,
+        new Dec(amountConfig.getAmountPrimitive().amount)
+      );
+      if (txAmountInfo && txAmountInfo?.value && amountConfig?.sendCurrency) {
+        coin = new CoinPretty(
+          amountConfig.sendCurrency,
+          new Dec(txAmountInfo?.value)
+        );
+      }
+      const totalPrice = priceStore.calculatePrice(coin);
+      return totalPrice?.toString();
+    };
+    const checkImageCoin = () => {
+      if (!amountConfig.sendCurrency) return;
+      if (amountConfig.sendCurrency?.coinImageUrl)
+        return (
+          <View
+            style={{
+              alignSelf: "center",
+              paddingVertical: 8,
+            }}
+          >
+            <FastImage
+              style={{
+                height: 30,
+                width: 30,
+              }}
+              source={{
+                uri: amountConfig.sendCurrency?.coinImageUrl,
+              }}
+            />
           </View>
+        );
+      return null;
+    };
+    const { colors } = useTheme();
+    return (
+      <WrapViewModal
+        style={{
+          backgroundColor: colors["neutral-surface-card"],
+          maxHeight: metrics.screenHeight - 250,
+        }}
+        containerStyle={{
+          paddingBottom: 20,
+        }}
+        disabledScrollView={false}
+      >
+        <View style={{ paddingTop: 16 }}>
+          {/*<View>{renderedMsgs}</View>*/}
+          <OWText
+            size={16}
+            weight={"700"}
+            style={{
+              textAlign: "center",
+              paddingBottom: 20,
+            }}
+          >
+            {`Confirmation`.toUpperCase()}
+          </OWText>
+
+          {renderAmount() ? (
+            <AmountCard
+              imageCoin={checkImageCoin()}
+              amountStr={renderAmount()}
+              totalPrice={checkPrice()}
+              msg={txInfo?.functionSelector ? waitingTronData : null}
+            />
+          ) : (
+            dataSign && (
+              <ScrollView
+                style={{
+                  backgroundColor: colors["neutral-surface-bg"],
+                  padding: 16,
+                  borderRadius: 24,
+                  maxHeight: 300,
+                }}
+              >
+                <WasmExecutionMsgView msg={dataSign} />
+              </ScrollView>
+            )
+          )}
 
           <View
             style={{
-              flexDirection: "row",
-              justifyContent: "space-evenly",
+              backgroundColor: colors["neutral-surface-card"],
+              paddingHorizontal: 16,
+              paddingTop: 16,
+              borderRadius: 24,
+              marginBottom: 24,
+              marginTop: 2,
             }}
           >
-            <Button
-              text="Reject"
-              size="large"
-              containerStyle={{
-                width: "40%",
-              }}
-              style={{
-                backgroundColor: colors["red-500"],
-              }}
-              textStyle={{
-                color: colors["white"],
-              }}
-              underlayColor={colors["danger-400"]}
-              loading={signInteractionStore.isLoading}
-              disabled={signInteractionStore.isLoading}
-              onPress={_onPressReject}
-            />
-            <Button
-              text="Approve"
-              size="large"
-              disabled={signInteractionStore.isLoading}
-              containerStyle={{
-                width: "40%",
-              }}
-              textStyle={{
-                color: colors["white"],
-              }}
-              style={{
-                backgroundColor: signInteractionStore.isLoading
-                  ? colors["primary-surface-disable"]
-                  : colors["primary-surface-default"],
-              }}
-              loading={signInteractionStore.isLoading}
-              onPress={async () => {
-                try {
-                  await signInteractionStore.approveTronAndWaitEnd();
-                  if (
-                    navigationRef.current.getCurrentRoute().name === "Send" ||
-                    navigationRef.current.getCurrentRoute().name === "SendTron"
-                  ) {
-                    navigationRef.current.navigate("TxSuccessResult", {});
-                  }
-                } catch (error) {
-                  signInteractionStore.rejectAll();
-                  console.log("error approveTronAndWaitEnd", error);
+            {addressTronBase58 && (
+              <ItemReceivedToken
+                label={"From"}
+                valueDisplay={Bech32Address.shortenAddress(
+                  addressTronBase58,
+                  20
+                )}
+                value={addressTronBase58}
+              />
+            )}
+            {txInfo?.functionSelector && (
+              <ItemReceivedToken
+                label={"Method"}
+                valueDisplay={txInfo?.functionSelector}
+                btnCopy={false}
+              />
+            )}
+            {txInfo?.address && (
+              <ItemReceivedToken
+                label={"Contract"}
+                valueDisplay={formatAddress(txInfo?.address, 12)}
+                value={txInfo?.address}
+              />
+            )}
+            {recipientConfig?.recipient && (
+              <ItemReceivedToken
+                label={"To"}
+                valueDisplay={
+                  recipientConfig.recipient &&
+                  Bech32Address.shortenAddress(recipientConfig.recipient, 20)
                 }
-              }}
+                value={recipientConfig.recipient}
+              />
+            )}
+
+            {estimateBandwidth?.gt(new Int(0)) && (
+              <ItemDetail
+                label={"Bandwidth Fee"}
+                value={estimateBandwidth?.toString()}
+              />
+            )}
+            {estimateEnergy?.gt(new Int(0)) && (
+              <ItemDetail
+                label={"Energy Fee"}
+                value={new IntPretty(estimateEnergy?.toDec())?.toString()}
+              />
+            )}
+            <FeeInSign
+              feeConfig={feeConfig}
+              gasConfig={null}
+              signOptions={{ preferNoSetFee: true }}
+              isInternal={true}
             />
           </View>
-        </KeyboardAvoidingView>
-      </CardModal>
+        </View>
+
+        <OWButtonGroup
+          labelApprove={"Confirm"}
+          labelClose={"Cancel"}
+          disabledApprove={!txStateIsValid}
+          disabledClose={signInteractionStore.isLoading}
+          loadingApprove={signInteractionStore.isLoading}
+          styleApprove={{
+            borderRadius: 99,
+            backgroundColor: !txStateIsValid
+              ? colors["primary-surface-disable"]
+              : colors["primary-surface-default"],
+          }}
+          onPressClose={_onPressReject}
+          onPressApprove={_onPressApprove}
+          styleClose={{
+            borderRadius: 99,
+            backgroundColor: colors["neutral-surface-action3"],
+          }}
+        />
+      </WrapViewModal>
     );
   }),
   {
-    disableSafeArea: true,
+    disableSafeArea: false,
   }
 );

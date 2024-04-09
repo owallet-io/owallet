@@ -72,7 +72,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
         <View style={styles.overview}>
           <Text style={styles.titleTotalBalance}>Total Balance</Text>
           <Text style={styles.labelTotalAmount}>
-            ${totalUsd?.toFixed(6) ?? 0}
+            ${totalUsd?.toFixed(2) ?? 0}
           </Text>
         </View>
       </OWBox>

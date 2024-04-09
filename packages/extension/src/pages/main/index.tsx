@@ -72,6 +72,7 @@ export const MainPage: FunctionComponent = observer(() => {
 
   const renderAssetView = useMemo(() => {
     if (networkType === "evm") {
+      console.log(chainId, "chain ID");
       if (chainId === ChainIdEnum.TRON) {
         return <AssetViewTron />;
       }
@@ -92,7 +93,7 @@ export const MainPage: FunctionComponent = observer(() => {
         <AssetView />
       </>
     );
-  }, [networkType]);
+  }, [networkType, chainId]);
 
   const handleCheckSendPage = () => {
     if (networkType === "evm") {

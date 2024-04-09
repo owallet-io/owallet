@@ -219,8 +219,8 @@ export const NetworkModal = () => {
             >
               $
               {!item.chainId
-                ? totalUsd?.toFixed(6)
-                : Number(groupedData?.[item.chainId]?.sum ?? 0).toFixed(6)}
+                ? totalUsd?.toFixed(2)
+                : Number(groupedData?.[item.chainId]?.sum ?? 0).toFixed(2)}
             </Text>
           </View>
         </View>
