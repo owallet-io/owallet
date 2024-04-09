@@ -375,6 +375,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       if (timeoutId) clearTimeout(timeoutId);
     };
   }, []);
+
   useEffect(() => {
     const filteredToTokens = filterNonPoolEvmTokens(
       originalFromToken.chainId,
