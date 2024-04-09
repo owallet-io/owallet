@@ -159,6 +159,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
     sendConfigs.amountConfig,
     route?.params?.contractAddress,
   ]);
+
   const amount = new CoinPretty(
     sendConfigs.amountConfig.sendCurrency,
     new Dec(sendConfigs.amountConfig.getAmountPrimitive().amount)

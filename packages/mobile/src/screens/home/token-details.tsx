@@ -149,6 +149,8 @@ export const TokenDetails: FunctionComponent = observer((props) => {
           screen: SCREENS.SendTron,
           params: {
             item: itemTron,
+            currency: item.denom,
+            contractAddress: item.contractAddress,
           },
         });
 

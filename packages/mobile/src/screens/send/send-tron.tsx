@@ -131,8 +131,11 @@ export const SendTronScreen: FunctionComponent = observer(() => {
       }
     });
   }, [isReadyBalance, addressToFetch, sendConfigs.amountConfig.sendCurrency]);
+
   useEffect(() => {
     if (route?.params?.currency) {
+      console.log("route?.params?.currency", route?.params?.currency);
+
       const currency = sendConfigs.amountConfig.sendableCurrencies.find(
         (cur) => {
           if (
