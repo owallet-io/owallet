@@ -18,6 +18,7 @@ import { useSmartNavigation } from "@src/navigation.provider";
 import { SCREENS } from "@src/common/constants";
 import { navigate } from "@src/router/root";
 import { LoadingSpinner } from "@src/components/spinner";
+import OWText from "@src/components/text/ow-text";
 
 export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
   const { colors } = useTheme();
@@ -27,6 +28,8 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
     modalStore,
     chainStore,
     appInitStore,
+    queriesStore,
+    keyRingStore,
   } = useStore();
   const [profit, setProfit] = useState(0);
   const [isOpen, setModalOpen] = useState(false);
@@ -40,7 +43,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
     prices: appInitStore.getInitApp.prices,
     networkFilter: chainStore.current.chainId,
   });
-
+  const queries = queriesStore.get(chainStore.current.chainId);
   const styles = styling(colors);
   let totalUsd: number = 0;
   if (appInitStore.getInitApp.prices) {
@@ -76,7 +79,13 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
       setProfit(0);
     }
   }, [totalUsd, accountOrai.bech32Address, appInitStore]);
-
+  const address = account.getAddressDisplay(
+    keyRingStore.keyRingLedgerAddresses
+  );
+  const accountTronInfo =
+    chainStore.current.chainId === ChainIdEnum.TRON
+      ? queries.tron.queryAccount.getQueryWalletAddress(address)
+      : null;
   const renderTotalBalance = () => {
     const chainIcon = chainIcons.find(
       (c) => c.chainId === chainStore.current.chainId
@@ -105,50 +114,96 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
         </Text>
 
         {appInitStore.getInitApp.isAllNetworks ? null : (
-          <View
-            style={{
-              borderTopWidth: 1,
-              borderColor: colors["neutral-border-default"],
-              marginVertical: 8,
-              paddingVertical: 8,
-              flexDirection: "row",
-              justifyContent: "space-between",
-            }}
-          >
+          <>
             <View
               style={{
+                borderTopWidth: 1,
+                borderColor: colors["neutral-border-default"],
+                marginVertical: 8,
+                paddingVertical: 8,
                 flexDirection: "row",
-                alignItems: "center",
+                justifyContent: "space-between",
               }}
             >
               <View
                 style={{
-                  backgroundColor: colors["neutral-text-action-on-dark-bg"],
-                  borderRadius: 16,
+                  flexDirection: "row",
+                  alignItems: "center",
                 }}
               >
-                <OWIcon
-                  type="images"
-                  source={{ uri: chainIcon?.Icon }}
+                <View
+                  style={{
+                    backgroundColor: colors["neutral-text-action-on-dark-bg"],
+                    borderRadius: 16,
+                  }}
+                >
+                  <OWIcon
+                    type="images"
+                    source={{ uri: chainIcon?.Icon }}
+                    size={16}
+                  />
+                </View>
+                <Text
+                  style={{
+                    paddingLeft: 6,
+                  }}
                   size={16}
-                />
+                  weight="600"
+                  color={colors["neutral-text-title"]}
+                >
+                  {chainStore.current.chainName}
+                </Text>
               </View>
-              <Text
-                style={{
-                  paddingLeft: 6,
-                }}
-                size={16}
-                weight="600"
-                color={colors["neutral-text-title"]}
-              >
-                {chainStore.current.chainName}
+
+              <Text size={16} weight="600" color={colors["neutral-text-title"]}>
+                ${chainBalance.toFixed(2)}
               </Text>
             </View>
-
-            <Text size={16} weight="600" color={colors["neutral-text-title"]}>
-              ${chainBalance.toFixed(2)}
-            </Text>
-          </View>
+            {chainStore.current.chainId === ChainIdEnum.TRON && (
+              <>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <OWText
+                    size={16}
+                    weight="600"
+                    color={colors["neutral-text-title"]}
+                  >
+                    My Energy:
+                  </OWText>
+                  <OWText
+                    size={16}
+                    weight="600"
+                    color={colors["neutral-text-body"]}
+                  >{`${accountTronInfo?.energyRemaining?.toString()}/${accountTronInfo?.energyLimit?.toString()}`}</OWText>
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <OWText
+                    size={16}
+                    weight="600"
+                    color={colors["neutral-text-title"]}
+                  >
+                    My Bandwidth:
+                  </OWText>
+                  <OWText
+                    size={16}
+                    weight="600"
+                    color={colors["neutral-text-body"]}
+                  >{`${accountTronInfo?.bandwidthRemaining?.toString()}/${accountTronInfo?.bandwidthLimit?.toString()}`}</OWText>
+                </View>
+              </>
+            )}
+          </>
         )}
       </>
     );
