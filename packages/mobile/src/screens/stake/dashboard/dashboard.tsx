@@ -18,8 +18,16 @@ import { OWEmpty } from "@src/components/empty";
 import { metrics } from "@src/themes";
 import { OWButton } from "@src/components/button";
 import { UndelegationsCard } from "./undelegations-card";
+import { NetworkModal } from "@src/screens/home/components";
 export const StakingDashboardScreen: FunctionComponent = observer(() => {
-  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
+  const {
+    chainStore,
+    accountStore,
+    queriesStore,
+    priceStore,
+    modalStore,
+    appInitStore,
+  } = useStore();
   const [validators, setValidators] = useState([]);
   const smartNavigation = useSmartNavigation();
 
@@ -47,13 +55,24 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
     })();
   }, []);
 
+  const _onPressNetworkModal = () => {
+    modalStore.setOptions({
+      bottomSheetModalConfig: {
+        enablePanDownToClose: false,
+        enableOverDrag: false,
+      },
+    });
+    modalStore.setChildren(<NetworkModal />);
+  };
+
   return (
     <PageWithScrollViewInBottomTabView
       scrollEnabled={chainStore.current.networkType === "cosmos"}
       contentContainerStyle={styles.container}
       backgroundColor={colors["neutral-surface-bg"]}
     >
-      {chainStore.current.networkType === "cosmos" ? (
+      {chainStore.current.networkType === "cosmos" &&
+      !appInitStore.getInitApp.isAllNetworks ? (
         <>
           <OWCard>
             <View
@@ -141,7 +160,11 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
             <View
               style={{ alignItems: "center", margin: 24, marginBottom: 32 }}
             >
-              <OWText size={22} weight={"700"}>{`NOT SUPPORTED YET`}</OWText>
+              <OWText size={22} weight={"700"}>
+                {appInitStore.getInitApp.isAllNetworks
+                  ? `Looking for Validators?`.toUpperCase()
+                  : `NOT SUPPORTED YET`}
+              </OWText>
               <OWText
                 size={14}
                 color={colors["neutral-text-body"]}
@@ -150,7 +173,11 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
                   textAlign: "center",
                   paddingTop: 4,
                 }}
-              >{`Please try switching networks or exploring other functions.`}</OWText>
+              >{`Please try switching networks${
+                appInitStore.getInitApp.isAllNetworks
+                  ? "."
+                  : "or exploring other functions."
+              }`}</OWText>
             </View>
 
             <OWButton
@@ -160,13 +187,13 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
                 fontWeight: "500",
               }}
               style={{
-                width: metrics.screenWidth / 3.3,
+                width: metrics.screenWidth / 2.5,
                 borderRadius: 999,
                 padding: 8,
               }}
-              label="Go back"
+              label="Choose network"
               onPress={() => {
-                smartNavigation.goBack();
+                _onPressNetworkModal();
               }}
             />
           </View>

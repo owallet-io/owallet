@@ -225,8 +225,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     }
   };
 
-  console.log("universalSwapStore", universalSwapStore.getAmount);
-
   useEffect(() => {
     universalSwapStore.setLoaded(false);
   }, [accountOrai.bech32Address]);
