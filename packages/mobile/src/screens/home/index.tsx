@@ -254,7 +254,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
           tron: getBase58Address(accountTron.evmosHexAddress),
           kwt: accountKawaiiCosmos.bech32Address,
         });
-      }, 500);
+      }, 1000);
     }
   };
 
