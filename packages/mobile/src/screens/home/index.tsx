@@ -159,14 +159,13 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       accountKawaiiCosmos.bech32Address
     ) {
       const currentDate = Date.now();
-
       const differenceInMilliseconds = Math.abs(currentDate - refreshDate);
       const differenceInSeconds = differenceInMilliseconds / 1000;
       let timeoutId: NodeJS.Timeout;
       if (differenceInSeconds > 10) {
         onFetchAmount(timeoutId);
       } else {
-        console.log("The dates are 30 seconds or less apart.");
+        console.log("The dates are 10 seconds or less apart.");
       }
     }
   }, [
@@ -226,15 +225,14 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   };
 
   useEffect(() => {
+    universalSwapStore.clearAmounts();
     universalSwapStore.setLoaded(false);
   }, [accountOrai.bech32Address]);
 
   const onFetchAmount = (timeoutId: NodeJS.Timeout) => {
     if (accountOrai.isNanoLedger) {
       if (Object.keys(keyRingStore.keyRingLedgerAddresses).length > 0) {
-        setTimeout(() => {
-          universalSwapStore.clearAmounts();
-          universalSwapStore.setLoaded(false);
+        timeoutId = setTimeout(() => {
           handleFetchAmounts({
             orai: accountOrai.bech32Address,
             eth: keyRingStore.keyRingLedgerAddresses.eth ?? null,
@@ -265,14 +263,16 @@ export const HomeScreen: FunctionComponent = observer((props) => {
 
     InteractionManager.runAfterInteractions(() => {
       startTransition(() => {
-        onFetchAmount(timeoutId);
+        if (accountOrai.bech32Address) {
+          onFetchAmount(timeoutId);
+        }
       });
     });
     // Clean up the timeout if the component unmounts or the dependency changes
     return () => {
       if (timeoutId) clearTimeout(timeoutId);
     };
-  }, []);
+  }, [accountOrai.bech32Address]);
 
   const { data: prices } = useCoinGeckoPrices();
 

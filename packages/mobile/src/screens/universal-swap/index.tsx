@@ -91,6 +91,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   } = useStore();
   const { colors } = useTheme();
   const { data: prices } = useCoinGeckoPrices();
+  const [refreshDate, setRefreshDate] = React.useState(Date.now());
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
@@ -327,15 +328,16 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       });
     }
   };
+
   const onFetchAmount = (
     timeoutId: NodeJS.Timeout,
     tokenReload?: Array<any>
   ) => {
+    universalSwapStore.clearAmounts();
+    universalSwapStore.setLoaded(false);
     if (accountOrai.isNanoLedger) {
       if (Object.keys(keyRingStore.keyRingLedgerAddresses).length > 0) {
-        setTimeout(() => {
-          universalSwapStore.clearAmounts();
-          universalSwapStore.setLoaded(false);
+        timeoutId = setTimeout(() => {
           handleFetchAmounts({
             orai: accountOrai.bech32Address,
             eth: keyRingStore.keyRingLedgerAddresses.eth ?? null,
@@ -367,14 +369,16 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
     InteractionManager.runAfterInteractions(() => {
       startTransition(() => {
-        onFetchAmount(timeoutId);
+        if (accountOrai.bech32Address) {
+          onFetchAmount(timeoutId);
+        }
       });
     });
     // Clean up the timeout if the component unmounts or the dependency changes
     return () => {
       if (timeoutId) clearTimeout(timeoutId);
     };
-  }, []);
+  }, [accountOrai.bech32Address]);
 
   useEffect(() => {
     const filteredToTokens = filterNonPoolEvmTokens(
@@ -734,9 +738,17 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   };
 
   const onRefresh = async () => {
-    let timeoutId: NodeJS.Timeout;
     setLoadingRefresh(true);
-    onFetchAmount(timeoutId);
+    const currentDate = Date.now();
+    const differenceInMilliseconds = Math.abs(currentDate - refreshDate);
+    const differenceInSeconds = differenceInMilliseconds / 1000;
+    let timeoutId: NodeJS.Timeout;
+    if (differenceInSeconds > 10) {
+      onFetchAmount(timeoutId);
+      setRefreshDate(Date.now());
+    } else {
+      console.log("The dates are 10 seconds or less apart.");
+    }
     await estimateAverageRatio();
     setLoadingRefresh(false);
   };
