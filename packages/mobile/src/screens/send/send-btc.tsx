@@ -191,7 +191,14 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
                 screen: SCREENS.TxSuccessResult,
                 params: {
                   txHash: tx,
-                  chainId: chainId,
+                  data: {
+                    memo: sendConfigs.memoConfig.memo,
+                    toAddress: sendConfigs.recipientConfig.recipient,
+                    amount: sendConfigs.amountConfig.getAmountPrimitive(),
+                    fromAddress: address,
+                    fee: sendConfigs.feeConfig.toStdFee(),
+                    currency: sendConfigs.amountConfig.sendCurrency,
+                  },
                 },
               });
             }
