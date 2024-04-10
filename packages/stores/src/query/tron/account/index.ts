@@ -54,6 +54,10 @@ export class ObservableQueryAccountTronInner extends ObservableChainQuery<AuthAc
 
   @computed
   get bandwidthRemaining(): Int {
+    console.log(
+      this.response?.data?.bandwidth,
+      "this.response?.data?.bandwidth"
+    );
     if (!this.response?.data?.bandwidth) {
       return new Int(0);
     }

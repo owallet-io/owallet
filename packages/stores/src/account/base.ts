@@ -618,7 +618,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         .tron.queryAccount.getQueryWalletAddress(
           getBase58Address(this.evmosHexAddress)
         )
-        .waitFreshResponse();
+        .fetch();
 
       if (this.opts.preTxEvents?.onFulfill) {
         this.opts.preTxEvents.onFulfill({
