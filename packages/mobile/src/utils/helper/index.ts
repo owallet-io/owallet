@@ -693,9 +693,9 @@ export function createTxsHelper() {
 
 export function shortenAddress(address): string {
   if (address) {
-    const firstThree = address.substring(0, 3);
-    const lastThree = address.substring(address.length - 3);
-    return firstThree + "..." + lastThree;
+    const firstSix = address.substring(0, 6);
+    const lastSix = address.substring(address.length - 6);
+    return firstSix + "..." + lastSix;
   }
 
   return "";

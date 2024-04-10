@@ -15,6 +15,7 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
+  View,
 } from "react-native";
 import { useStore } from "../../stores";
 import { observer } from "mobx-react-lite";
@@ -33,10 +34,17 @@ import { useCoinGeckoPrices, useLoadTokens } from "@owallet/hooks";
 import { showToast } from "@src/utils/helper";
 import { EarningCardNew } from "./earning-card-new";
 import { InjectedProviderUrl } from "../web/config";
+import { PageHeader } from "@src/components/header/header-new";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import OWText from "@src/components/text/ow-text";
+import { DownArrowIcon } from "@src/components/icon";
+import { CommonPageHeader } from "@src/components/header/common-header";
 
 export const HomeScreen: FunctionComponent = observer((props) => {
   const [refreshing, setRefreshing] = React.useState(false);
   const [refreshDate, setRefreshDate] = React.useState(Date.now());
+  const safeAreaInsets = useSafeAreaInsets();
+
   const { colors } = useTheme();
   const [isPending, startTransition] = useTransition();
 
@@ -312,9 +320,11 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
       showsVerticalScrollIndicator={false}
-      // backgroundColor={colors['background']}
+      contentContainerStyle={{ paddingTop: safeAreaInsets.top }}
       ref={scrollViewRef}
     >
+      <CommonPageHeader title="Assets" />
+
       {/* <BIP44Selectable /> */}
       {renderNewAccountCard}
       {/* <DashboardCard /> */}

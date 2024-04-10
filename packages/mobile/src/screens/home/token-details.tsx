@@ -230,7 +230,7 @@ export const TokenDetails: FunctionComponent = observer((props) => {
           </View>
           <View style={styles.overview}>
             <OWText variant="bigText" style={styles.labelTotalAmount}>
-              {item.balance.toFixed(4)} {item.asset}
+              {Number(item.balance.toFixed(4))} {item.asset}
             </OWText>
             <OWText style={styles.profit} color={colors["success-text-body"]}>
               ${formarPriceWithDigits(item.value)}
@@ -324,7 +324,7 @@ const useStyles = (colors) => {
     },
     copy: {
       borderRadius: 999,
-      width: metrics.screenWidth / 3,
+      width: metrics.screenWidth / 2.5,
       height: 32,
     },
     btnGroup: {
