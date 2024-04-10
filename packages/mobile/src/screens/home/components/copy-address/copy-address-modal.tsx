@@ -1,4 +1,10 @@
-import { Image, StyleSheet, View, TextInput } from "react-native";
+import {
+  Image,
+  StyleSheet,
+  View,
+  TextInput,
+  InteractionManager,
+} from "react-native";
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import OWIcon from "@src/components/ow-icon/ow-icon";
@@ -44,42 +50,50 @@ export const CopyAddressModal: FunctionComponent<{
   }, []);
 
   useEffect(() => {
-    let accounts = {};
+    InteractionManager.runAfterInteractions(() => {
+      let accounts = {};
 
-    let defaultEvmAddress;
-    if (accountEth.isNanoLedger && keyRingStore?.keyRingLedgerAddresses?.eth) {
-      defaultEvmAddress = keyRingStore.keyRingLedgerAddresses.eth;
-    } else {
-      defaultEvmAddress = accountEth.evmosHexAddress;
-    }
-    Object.keys(ChainIdEnum).map((key) => {
-      let defaultCosmosAddress = accountStore.getAccount(
-        ChainIdEnum[key]
-      ).bech32Address;
-
-      if (defaultCosmosAddress.startsWith("evmos")) {
-        accounts[ChainNameEnum[key]] = defaultEvmAddress;
-      } else if (key === KADOChainNameEnum[ChainIdEnum.TRON]) {
-        accounts[ChainNameEnum.TRON] = null;
+      let defaultEvmAddress;
+      if (
+        accountEth.isNanoLedger &&
+        keyRingStore?.keyRingLedgerAddresses?.eth
+      ) {
+        defaultEvmAddress = keyRingStore.keyRingLedgerAddresses.eth;
       } else {
-        accounts[ChainNameEnum[key]] = defaultCosmosAddress;
+        defaultEvmAddress = accountEth.evmosHexAddress;
       }
+      Object.keys(ChainIdEnum).map((key) => {
+        let defaultCosmosAddress = accountStore.getAccount(
+          ChainIdEnum[key]
+        ).bech32Address;
+
+        if (defaultCosmosAddress.startsWith("evmos")) {
+          accounts[ChainNameEnum[key]] = defaultEvmAddress;
+        } else if (key === KADOChainNameEnum[ChainIdEnum.TRON]) {
+          accounts[ChainNameEnum.TRON] = null;
+        } else {
+          accounts[ChainNameEnum[key]] = defaultCosmosAddress;
+        }
+      });
+
+      if (
+        accountTron.isNanoLedger &&
+        keyRingStore?.keyRingLedgerAddresses?.trx
+      ) {
+        accounts[ChainNameEnum.TRON] = keyRingStore.keyRingLedgerAddresses.trx;
+      } else {
+        if (accountTron) {
+          accounts[ChainNameEnum.TRON] = getBase58Address(
+            accountTron.evmosHexAddress
+          );
+        }
+      }
+
+      accounts[ChainNameEnum.BitcoinLegacy] = accountBtc.allBtcAddresses.legacy;
+      accounts[ChainNameEnum.BitcoinSegWit] = accountBtc.allBtcAddresses.bech32;
+
+      setAddresses(accounts);
     });
-
-    if (accountTron.isNanoLedger && keyRingStore?.keyRingLedgerAddresses?.trx) {
-      accounts[ChainNameEnum.TRON] = keyRingStore.keyRingLedgerAddresses.trx;
-    } else {
-      if (accountTron) {
-        accounts[ChainNameEnum.TRON] = getBase58Address(
-          accountTron.evmosHexAddress
-        );
-      }
-    }
-
-    accounts[ChainNameEnum.BitcoinLegacy] = accountBtc.allBtcAddresses.legacy;
-    accounts[ChainNameEnum.BitcoinSegWit] = accountBtc.allBtcAddresses.bech32;
-
-    setAddresses(accounts);
   }, [accountOrai.bech32Address, accountEth.evmosHexAddress, refresh]);
 
   const { colors } = useTheme();

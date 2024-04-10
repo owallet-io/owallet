@@ -42,6 +42,7 @@ const MnemonicSeed = () => {
   const selectKeyStore = useCallback(async (keyStore: any) => {
     const index = keyRingStore.multiKeyStoreInfo.indexOf(keyStore);
     if (index >= 0) {
+      universalSwapStore.setLoaded(false);
       await keyRingStore.changeKeyRing(index);
     }
   }, []);
