@@ -134,6 +134,7 @@ export const SendTronScreen: FunctionComponent = observer(() => {
       }
     });
   }, [isReadyBalance, addressToFetch, sendConfigs.amountConfig.sendCurrency]);
+
   useEffect(() => {
     if (route?.params?.currency) {
       const currency = sendConfigs.amountConfig.sendableCurrencies.find(
@@ -265,26 +266,26 @@ export const SendTronScreen: FunctionComponent = observer(() => {
                       });
                     }
 
-                    // const historyInfos = {
-                    //   fromAddress: address,
-                    //   toAddress: sendConfigs.recipientConfig.recipient,
-                    //   hash: txHash,
-                    //   memo: "",
-                    //   fromAmount: sendConfigs.amountConfig.amount,
-                    //   toAmount: sendConfigs.amountConfig.amount,
-                    //   value: sendConfigs.amountConfig.amount,
-                    //   fee: sendConfigs.feeConfig.toStdFee().amount,
-                    //   type: HISTORY_STATUS.SEND,
-                    //   fromToken: {
-                    //     asset: sendConfigs.amountConfig.sendCurrency.coinDenom,
-                    //     chainId: chainStore.current.chainId,
-                    //   },
-                    //   toToken: {
-                    //     asset: sendConfigs.amountConfig.sendCurrency.coinDenom,
-                    //     chainId: chainStore.current.chainId,
-                    //   },
-                    //   status: "SUCCESS",
-                    // };
+                    const historyInfos = {
+                      fromAddress: address,
+                      toAddress: sendConfigs.recipientConfig.recipient,
+                      hash: tx.txid,
+                      memo: "",
+                      fromAmount: sendConfigs.amountConfig.amount,
+                      toAmount: sendConfigs.amountConfig.amount,
+                      value: sendConfigs.amountConfig.amount,
+                      fee: sendConfigs.feeConfig.toStdFee().amount,
+                      type: HISTORY_STATUS.SEND,
+                      fromToken: {
+                        asset: sendConfigs.amountConfig.sendCurrency.coinDenom,
+                        chainId: chainStore.current.chainId,
+                      },
+                      toToken: {
+                        asset: sendConfigs.amountConfig.sendCurrency.coinDenom,
+                        chainId: chainStore.current.chainId,
+                      },
+                      status: "SUCCESS",
+                    };
                     universalSwapStore.updateTokenReload([
                       {
                         ...sendConfigs.amountConfig.sendCurrency,
@@ -292,10 +293,10 @@ export const SendTronScreen: FunctionComponent = observer(() => {
                         networkType: "evm",
                       },
                     ]);
-                    // await handleSaveHistory(
-                    //   accountOrai.bech32Address,
-                    //   historyInfos
-                    // );
+                    await handleSaveHistory(
+                      accountOrai.bech32Address,
+                      historyInfos
+                    );
                   },
                 }
               );

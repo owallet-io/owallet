@@ -81,7 +81,6 @@ export const AddressInput: FunctionComponent<{
     );
 
     const error = recipientConfig.getError();
-    console.log("error", error);
 
     const errorText: string | undefined = useMemo(() => {
       if (error) {

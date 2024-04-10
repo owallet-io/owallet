@@ -3,6 +3,7 @@ import React, {
   useCallback,
   useEffect,
   useRef,
+  //@ts-ignore
   useTransition,
 } from "react";
 import { PageWithScrollViewInBottomTabView } from "../../components/page";
@@ -14,17 +15,17 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
+  View,
 } from "react-native";
 import { useStore } from "../../stores";
 import { observer } from "mobx-react-lite";
 import { usePrevious } from "../../hooks";
-import { BIP44Selectable } from "./bip44-selectable";
+// import { BIP44Selectable } from "./bip44-selectable";
 import { useTheme } from "@src/themes/theme-provider";
 import { useFocusEffect } from "@react-navigation/native";
 import { ChainUpdaterService } from "@owallet/background";
-import { AccountCardEVM } from "./account-card-evm";
-import { DashboardCard } from "./dashboard";
-import { AccountCardBitcoin } from "./account-card-bitcoin";
+// import { AccountCardEVM } from "./account-card-evm";
+// import { AccountCardBitcoin } from "./account-card-bitcoin";
 import { getBase58Address, ChainIdEnum } from "@owallet/common";
 import { TokensCardAll } from "./tokens-card-all";
 import { AccountBoxAll } from "./account-box-new";
@@ -33,10 +34,17 @@ import { useCoinGeckoPrices, useLoadTokens } from "@owallet/hooks";
 import { showToast } from "@src/utils/helper";
 import { EarningCardNew } from "./earning-card-new";
 import { InjectedProviderUrl } from "../web/config";
+import { PageHeader } from "@src/components/header/header-new";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import OWText from "@src/components/text/ow-text";
+import { DownArrowIcon } from "@src/components/icon";
+import { CommonPageHeader } from "@src/components/header/common-header";
 
 export const HomeScreen: FunctionComponent = observer((props) => {
   const [refreshing, setRefreshing] = React.useState(false);
   const [refreshDate, setRefreshDate] = React.useState(Date.now());
+  const safeAreaInsets = useSafeAreaInsets();
+
   const { colors } = useTheme();
   const [isPending, startTransition] = useTransition();
 
@@ -64,6 +72,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     chainStoreIsInitializing,
     true
   );
+
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
       fetch(InjectedProviderUrl)
@@ -76,6 +85,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         .catch((err) => console.log(err));
     });
   }, []);
+
   const checkAndUpdateChainInfo = useCallback(() => {
     if (!chainStoreIsInitializing) {
       (async () => {
@@ -285,14 +295,14 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     appInitStore.updatePrices(prices);
   }, [prices]);
 
-  const renderAccountCard = (() => {
-    if (chainStore.current.networkType === "bitcoin") {
-      return <AccountCardBitcoin containerStyle={styles.containerStyle} />;
-    } else if (chainStore.current.networkType === "evm") {
-      return <AccountCardEVM containerStyle={styles.containerStyle} />;
-    }
-    return <AccountCard containerStyle={styles.containerStyle} />;
-  })();
+  // const renderAccountCard = (() => {
+  //   if (chainStore.current.networkType === "bitcoin") {
+  //     return <AccountCardBitcoin containerStyle={styles.containerStyle} />;
+  //   } else if (chainStore.current.networkType === "evm") {
+  //     return <AccountCardEVM containerStyle={styles.containerStyle} />;
+  //   }
+  //   return <AccountCard containerStyle={styles.containerStyle} />;
+  // })();
 
   // const renderTokenCard = useMemo(() => {
   //   if (chainStore.current.networkType === 'bitcoin') {
@@ -317,10 +327,12 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
       showsVerticalScrollIndicator={false}
-      // backgroundColor={colors['background']}
+      contentContainerStyle={{ paddingTop: safeAreaInsets.top }}
       ref={scrollViewRef}
     >
-      <BIP44Selectable />
+      <CommonPageHeader title="Assets" />
+
+      {/* <BIP44Selectable /> */}
       {renderNewAccountCard}
       {/* <DashboardCard /> */}
       {chainStore.current.networkType === "cosmos" &&

@@ -19,6 +19,8 @@ import { metrics } from "@src/themes";
 import { OWButton } from "@src/components/button";
 import { UndelegationsCard } from "./undelegations-card";
 import { NetworkModal } from "@src/screens/home/components";
+import { CommonPageHeader } from "@src/components/header/common-header";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 export const StakingDashboardScreen: FunctionComponent = observer(() => {
   const {
     chainStore,
@@ -30,6 +32,7 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
   } = useStore();
   const [validators, setValidators] = useState([]);
   const smartNavigation = useSmartNavigation();
+  const safeAreaInsets = useSafeAreaInsets();
 
   const { colors } = useTheme();
   const styles = styling(colors);
@@ -68,9 +71,10 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
   return (
     <PageWithScrollViewInBottomTabView
       scrollEnabled={chainStore.current.networkType === "cosmos"}
-      contentContainerStyle={styles.container}
+      contentContainerStyle={{ paddingTop: safeAreaInsets.top }}
       backgroundColor={colors["neutral-surface-bg"]}
     >
+      <CommonPageHeader title="Stake" />
       {chainStore.current.networkType === "cosmos" &&
       !appInitStore.getInitApp.isAllNetworks ? (
         <>
@@ -282,8 +286,6 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
 
 const styling = (colors) =>
   StyleSheet.create({
-    container: {},
-
     containerEarnStyle: {
       backgroundColor: colors["neutral-surface-bg2"],
       margin: 0,

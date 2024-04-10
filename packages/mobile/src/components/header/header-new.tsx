@@ -6,14 +6,15 @@ import OWIcon from "../ow-icon/ow-icon";
 import { useSmartNavigation } from "@src/navigation.provider";
 
 export const PageHeader: FunctionComponent<{
-  title: string;
+  title?: string;
   subtitle?: string;
   colors: any;
   left?: ReactElement;
+  middle?: ReactElement;
   onPress?: () => void;
   onGoBack?: () => void;
   right?: ReactElement;
-}> = ({ title, subtitle, right, left, onGoBack, colors }) => {
+}> = ({ title, subtitle, right, middle, left, onGoBack, colors }) => {
   const smartNavigation = useSmartNavigation();
 
   const goBack = () => {
@@ -51,7 +52,10 @@ export const PageHeader: FunctionComponent<{
           />
         </TouchableOpacity>
       )}
-      {title ? (
+
+      {middle ? (
+        <View>{middle}</View>
+      ) : title ? (
         <View
           style={{
             justifyContent: "center",
@@ -81,9 +85,7 @@ export const PageHeader: FunctionComponent<{
             </Text>
           ) : null}
         </View>
-      ) : (
-        <View />
-      )}
+      ) : null}
 
       <View>
         {right ? (

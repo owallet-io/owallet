@@ -253,8 +253,6 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
                 status: "SUCCESS",
               };
 
-              console.log("historyInfos", historyInfos);
-
               universalSwapStore.updateTokenReload([
                 {
                   ...sendConfigs.amountConfig.sendCurrency,

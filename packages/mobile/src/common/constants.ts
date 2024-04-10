@@ -121,7 +121,7 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: "",
   },
   [SCREENS.Home]: {
-    title: HEADER_KEY.showNetworkHeader,
+    title: HEADER_KEY.notShowHeader,
     showTabBar: true,
   },
   [SCREENS.TransactionDetail]: {
@@ -303,7 +303,7 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: "",
   },
   [SCREENS.Invest]: {
-    title: HEADER_KEY.showNetworkHeader,
+    title: HEADER_KEY.notShowHeader,
     showTabBar: true,
   },
   [SCREENS.Delegate]: {

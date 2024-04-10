@@ -26,6 +26,7 @@ const Stack = createStackNavigator();
 
 export const MainNavigation: FC = observer(() => {
   const { appInitStore } = useStore();
+
   const handleScreenOptions = ({ route, navigation }) => {
     appInitStore.updateVisibleTabBar(route?.name);
     const headerOptions = useHeaderOptions(
