@@ -96,10 +96,20 @@ export const useGetFeeTron = (
   };
 
   const estimateForTrigger = async (dataReq) => {
-    const triggerContractFetch = await queriesTron.queryTriggerConstantContract
-      .queryTriggerConstantContract(dataReq)
-      .waitFreshResponse();
-    const triggerContract = triggerContractFetch.data;
+    const tronWeb = new TronWeb({
+      fullHost: chainInfo.rpc,
+    });
+    const triggerContract =
+      await tronWeb.transactionBuilder.triggerConstantContract(
+        dataReq.address,
+        dataReq.functionSelector,
+        {
+          ...dataReq.options,
+          feeLimit: DEFAULT_FEE_LIMIT_TRON + Math.floor(Math.random() * 100),
+        },
+        dataReq.parameters,
+        dataReq.issuerAddress
+      );
     console.log("B4: simulate sign trigger data request Trigger: ", dataReq);
     console.log(
       "B4: simulate sign trigger data after Trigger: ",
@@ -140,17 +150,8 @@ export const useGetFeeTron = (
       try {
         if (addressTronBase58?.length <= 0 || !addressTronBase58?.length)
           return;
-        const parameter = await encodeParams(dataSign?.parameters);
 
-        const dataReq = {
-          //@ts-ignore
-          contract_address: dataSign?.address,
-          owner_address: addressTronBase58,
-          parameter,
-          visible: true,
-          function_selector: dataSign?.functionSelector,
-        };
-        estimateForTrigger(dataReq);
+        estimateForTrigger(dataSign);
         return;
       } catch (e) {
         setData(initData);
@@ -208,25 +209,26 @@ export const useGetFeeTron = (
       }));
     } else if (amountConfig.sendCurrency.coinMinimalDenom?.includes("erc20")) {
       try {
-        const parameter = await encodeParams([
-          {
-            type: "address",
-            value: getEvmAddress(recipientConfig.recipient),
-          },
-          {
-            type: "uint256",
-            value: amountConfig.getAmountPrimitive().amount,
-          },
-        ]);
-
         const dataReq = {
           //@ts-ignore
-          contract_address: amountConfig.sendCurrency?.contractAddress,
-          owner_address: addressTronBase58,
-          parameter,
-          visible: true,
-          function_selector: "transfer(address,uint256)",
+          address: amountConfig.sendCurrency?.contractAddress,
+          functionSelector: "transfer(address,uint256)",
+          options: {
+            feeLimit: DEFAULT_FEE_LIMIT_TRON + Math.floor(Math.random() * 100),
+          },
+          parameters: [
+            {
+              type: "address",
+              value: getEvmAddress(recipientConfig.recipient),
+            },
+            {
+              type: "uint256",
+              value: amountConfig.getAmountPrimitive().amount,
+            },
+          ],
+          issuerAddress: addressTronBase58,
         };
+        console.log(dataReq, "dataReq");
         estimateForTrigger(dataReq);
         return;
       } catch (e) {

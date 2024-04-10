@@ -33,6 +33,7 @@ export class ObservableQueryAccountTronInner extends ObservableChainQuery<AuthAc
     }
     return new Int(this.response.data.bandwidth.energyLimit);
   }
+
   @computed
   get energyRemaining(): Int {
     if (!this.response?.data?.bandwidth?.energyRemaining) {
@@ -40,6 +41,7 @@ export class ObservableQueryAccountTronInner extends ObservableChainQuery<AuthAc
     }
     return new Int(this.response.data.bandwidth.energyRemaining);
   }
+
   @computed
   get bandwidthLimit(): Int {
     if (!this.response?.data?.bandwidth) {
@@ -49,6 +51,7 @@ export class ObservableQueryAccountTronInner extends ObservableChainQuery<AuthAc
       new Int(this.response.data.bandwidth.freeNetLimit)
     );
   }
+
   @computed
   get bandwidthRemaining(): Int {
     if (!this.response?.data?.bandwidth) {
@@ -58,6 +61,15 @@ export class ObservableQueryAccountTronInner extends ObservableChainQuery<AuthAc
       new Int(this.response.data.bandwidth.freeNetRemaining)
     );
   }
+
+  @computed
+  get bandwidthNetRemaining(): Int {
+    if (!this.response?.data?.bandwidth) {
+      return new Int(0);
+    }
+    return new Int(this.response.data.bandwidth.netRemaining);
+  }
+
   @computed
   get accountActivated(): boolean {
     console.log(this.response?.data, "this.response?.data");

@@ -1049,7 +1049,7 @@ export class KeyRingService {
           data.functionSelector,
           {
             ...data.options,
-            feeLimit: DEFAULT_FEE_LIMIT_TRON + 1,
+            feeLimit: DEFAULT_FEE_LIMIT_TRON + Math.floor(Math.random() * 100),
           },
           data.parameters,
           data.issuerAddress
@@ -1083,8 +1083,6 @@ export class KeyRingService {
         functionSelector: data.functionSelector,
         options: {
           ...data.options,
-          feeLimit: feeLimit?.toString(),
-          callValue: 0,
         },
         parameters: data.parameters,
         issuerAddress: data.issuerAddress,
