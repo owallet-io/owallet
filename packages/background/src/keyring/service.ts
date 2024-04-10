@@ -37,6 +37,7 @@ import {
   DEFAULT_FEE_LIMIT_TRON,
   TRIGGER_TYPE,
   DenomHelper,
+  TronWebProvider,
 } from "@owallet/common";
 import { ChainsService } from "../chains";
 import { LedgerService } from "../ledger";
@@ -997,9 +998,8 @@ export class KeyRingService {
     }
   ) {
     try {
-      const tronWeb = new TronWeb({
-        fullHost: (await this.chainsService.getChainInfo(chainId)).rpc,
-      });
+      const chainInfo = await this.chainsService.getChainInfo(chainId);
+      const tronWeb = TronWebProvider(chainInfo.rpc);
       tronWeb.fullNode.instance.defaults.adapter = fetchAdapter;
       return await tronWeb.trx.sendRawTransaction(transaction);
     } catch (error) {
@@ -1028,21 +1028,11 @@ export class KeyRingService {
   }> {
     try {
       const chainInfo = await this.chainsService.getChainInfo(chainId);
-      const tronWeb = new TronWeb({
-        fullHost: chainInfo.rpc,
-      });
+      const tronWeb = TronWebProvider(chainInfo.rpc);
       tronWeb.fullNode.instance.defaults.adapter = fetchAdapter;
-      // TODO: Estimate before trigger changed signature, Resolve: Hardcode feeLimit for trigger smart contract from DApp
+
       const chainParameters = await tronWeb.trx.getChainParameters();
-      // const parametersInfo = [...data?.parameters]?.map(
-      //   (item, index) => {
-      //     if(item.type === 'uint256'){
-      //       item.value += 1n;
-      //     }
-      //     return item;
-      //   }
-      // );
-      console.log(data, "txInfo");
+
       const triggerConstantContract =
         await tronWeb.transactionBuilder.triggerConstantContract(
           data.address,
@@ -1060,12 +1050,7 @@ export class KeyRingService {
       const feeLimit = new Int(energyFee.value)
         .mul(new Int(triggerConstantContract.energy_used))
         .add(new Int(EXTRA_FEE_LIMIT_TRON));
-      console.log(
-        feeLimit,
-        data.options,
-        triggerConstantContract,
-        "data.options"
-      );
+
       const triggerSmartContract =
         await tronWeb.transactionBuilder.triggerSmartContract(
           data.address,
@@ -1087,14 +1072,7 @@ export class KeyRingService {
         parameters: data.parameters,
         issuerAddress: data.issuerAddress,
       };
-      console.log(
-        `B1: trigger data Req = ${TRIGGER_TYPE}:${triggerSmartContract.transaction.txID}`,
-        objStore
-      );
-      console.log(
-        `B2: data trigger after request = ${triggerSmartContract}`,
-        "data trigger"
-      );
+
       this.kvStore.set(
         `${TRIGGER_TYPE}:${triggerSmartContract.transaction.txID}`,
         objStore
@@ -1119,7 +1097,6 @@ export class KeyRingService {
     )) as any;
     try {
       if (newData?.txID) {
-        console.log("buoc cuoi: bat dau sign:", newData);
         newData.signature = [
           Buffer.from(
             await this.keyRing.sign(env, chainId, 195, newData.txID)
@@ -1127,10 +1104,8 @@ export class KeyRingService {
         ];
         return newData;
       }
-
-      const tronWeb = new TronWeb({
-        fullHost: (await this.chainsService.getChainInfo(chainId)).rpc,
-      });
+      const chainInfo = await this.chainsService.getChainInfo(chainId);
+      const tronWeb = TronWebProvider(chainInfo.rpc);
 
       tronWeb.fullNode.instance.defaults.adapter = fetchAdapter;
       let transaction: any;

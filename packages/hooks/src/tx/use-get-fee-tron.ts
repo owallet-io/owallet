@@ -6,6 +6,7 @@ import {
   EXTRA_FEE_LIMIT_TRON,
   getEvmAddress,
   isBase58,
+  TronWebProvider,
 } from "@owallet/common";
 import {
   ChainInfoInner,
@@ -15,7 +16,7 @@ import {
 } from "@owallet/stores";
 import { ChainInfoWithEmbed } from "@owallet/background";
 import { useEffect, useState } from "react";
-import TronWeb from "tronweb";
+
 import { AmountConfig } from "./amount";
 import { RecipientConfig } from "./recipient";
 
@@ -96,9 +97,8 @@ export const useGetFeeTron = (
   };
 
   const estimateForTrigger = async (dataReq) => {
-    const tronWeb = new TronWeb({
-      fullHost: chainInfo.rpc,
-    });
+    const tronWeb = TronWebProvider(chainInfo.rpc);
+    console.log(tronWeb, "tronWeb");
     const triggerContract =
       await tronWeb.transactionBuilder.triggerConstantContract(
         dataReq.address,
@@ -168,9 +168,8 @@ export const useGetFeeTron = (
       setData(initData);
       return;
     }
-    const tronWeb = new TronWeb({
-      fullHost: chainInfo.rpc,
-    });
+    const tronWeb = TronWebProvider(chainInfo.rpc);
+    console.log(tronWeb, "tronWeb");
     const recipientInfo = await queriesTron.queryAccount
       .getQueryWalletAddress(recipientConfig.recipient)
       .waitFreshResponse();
@@ -195,6 +194,7 @@ export const useGetFeeTron = (
         addressTronBase58,
         1
       );
+      console.log(tronWeb, "tronWeb");
       const signedTx = await keyRingStore.simulateSignTron(transaction);
       const amountBandwidthFee = caculatorAmountBandwidthFee(
         signedTx,

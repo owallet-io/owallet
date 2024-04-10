@@ -2,6 +2,7 @@ import React, { FunctionComponent, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import {
   InvalidTronAddressError,
+  NotLoadedFeeError,
   useGetFeeTron,
   useSendTxConfig,
   useSendTxTronConfig,
@@ -19,6 +20,7 @@ import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
 import {
   AddressInput,
   CurrencySelector,
+  getFeeErrorText,
   MemoInput,
   TextInput,
 } from "../../components/input";
@@ -44,6 +46,7 @@ import { FeeModal } from "@src/modals/fee";
 import { ChainIdEnum } from "@oraichain/oraidex-common";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
+import { Text } from "@src/components/text";
 
 export const SendTronScreen: FunctionComponent = observer(() => {
   const {
@@ -200,7 +203,16 @@ export const SendTronScreen: FunctionComponent = observer(() => {
     sendConfigs.amountConfig.getError() ??
     sendConfigs.feeConfig.getError();
   const txStateIsValid = sendConfigError == null;
+  const error = sendConfigs.feeConfig.getError();
+  const errorText: string | undefined = (() => {
+    if (error) {
+      if (error.constructor === NotLoadedFeeError) {
+        return;
+      }
 
+      return getFeeErrorText(error);
+    }
+  })();
   return (
     <PageWithBottom
       bottomGroup={
@@ -448,6 +460,11 @@ export const SendTronScreen: FunctionComponent = observer(() => {
               memoConfig={sendConfigs.memoConfig}
               labelStyle={styles.sendlabelInput}
             />
+            {errorText && (
+              <View>
+                <OWText color={colors["error-text-body"]}>{errorText}</OWText>
+              </View>
+            )}
           </OWCard>
         </View>
       </ScrollView>

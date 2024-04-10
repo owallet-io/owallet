@@ -1,4 +1,3 @@
-import "dotenv/config";
 import { CosmosWalletImpl } from "./offline-wallet";
 import { UniversalSwapHandler } from "../handler";
 import {
@@ -7,6 +6,7 @@ import {
   generateError,
   toAmount,
 } from "@oraichain/oraidex-common";
+import "dotenv/config";
 
 const neutaroUsdcToOraiUsdc = async (chainId: "Neutaro-1" | "Oraichain") => {
   const wallet = new CosmosWalletImpl(process.env.MNEMONIC);
