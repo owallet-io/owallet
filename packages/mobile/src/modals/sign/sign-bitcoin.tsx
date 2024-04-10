@@ -221,7 +221,7 @@ export const SignBitcoinModal: FunctionComponent<{
       if (!chainStore.current.stakeCurrency || !msgData?.amount) return;
       const coin = new CoinPretty(
         chainStore.current.stakeCurrency,
-        new Dec(Web3.utils.hexToNumberString(msgData?.amount))
+        new Dec(msgData?.amount)
       );
       const totalPrice = priceStore.calculatePrice(coin);
       return totalPrice?.toString();
@@ -296,7 +296,7 @@ export const SignBitcoinModal: FunctionComponent<{
                 value={msgData?.address}
               />
             )}
-            <FeeInSignBtc
+            <FeeInSign
               feeConfig={feeConfig}
               gasConfig={gasConfig}
               isInternal={!isNoSetFee}
