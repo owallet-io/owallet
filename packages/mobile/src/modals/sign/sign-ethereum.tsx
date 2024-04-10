@@ -251,7 +251,6 @@ export const SignEthereumModal: FunctionComponent<{
         }}
       >
         <View style={{ paddingTop: 16 }}>
-          {/*<View>{renderedMsgs}</View>*/}
           <OWText
             size={16}
             weight={"700"}

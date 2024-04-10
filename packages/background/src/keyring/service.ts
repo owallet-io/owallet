@@ -1033,29 +1033,46 @@ export class KeyRingService {
       });
       tronWeb.fullNode.instance.defaults.adapter = fetchAdapter;
       // TODO: Estimate before trigger changed signature, Resolve: Hardcode feeLimit for trigger smart contract from DApp
-      // const chainParameters = await tronWeb.trx.getChainParameters();
-      // const triggerConstantContract =
-      //   await tronWeb.transactionBuilder.triggerConstantContract(
-      //     data.address,
-      //     data.functionSelector,
-      //     data.options,
-      //     data.parameters,
-      //     data.issuerAddress
-      //   );
-      // const energyFee = chainParameters.find(
-      //   ({ key }) => key === 'getEnergyFee'
+      const chainParameters = await tronWeb.trx.getChainParameters();
+      // const parametersInfo = [...data?.parameters]?.map(
+      //   (item, index) => {
+      //     if(item.type === 'uint256'){
+      //       item.value += 1n;
+      //     }
+      //     return item;
+      //   }
       // );
-      // const feeLimit = new Int(energyFee.value)
-      //   .mul(new Int(triggerConstantContract.energy_used))
-      //   .add(new Int(EXTRA_FEE_LIMIT_TRON));
-
+      console.log(data, "txInfo");
+      const triggerConstantContract =
+        await tronWeb.transactionBuilder.triggerConstantContract(
+          data.address,
+          data.functionSelector,
+          {
+            ...data.options,
+            feeLimit: DEFAULT_FEE_LIMIT_TRON + 1,
+          },
+          data.parameters,
+          data.issuerAddress
+        );
+      const energyFee = chainParameters.find(
+        ({ key }) => key === "getEnergyFee"
+      );
+      const feeLimit = new Int(energyFee.value)
+        .mul(new Int(triggerConstantContract.energy_used))
+        .add(new Int(EXTRA_FEE_LIMIT_TRON));
+      console.log(
+        feeLimit,
+        data.options,
+        triggerConstantContract,
+        "data.options"
+      );
       const triggerSmartContract =
         await tronWeb.transactionBuilder.triggerSmartContract(
           data.address,
           data.functionSelector,
           {
             ...data.options,
-            feeLimit: DEFAULT_FEE_LIMIT_TRON,
+            feeLimit: feeLimit?.toString(),
             callValue: 0,
           },
           data.parameters,
@@ -1066,7 +1083,7 @@ export class KeyRingService {
         functionSelector: data.functionSelector,
         options: {
           ...data.options,
-          feeLimit: DEFAULT_FEE_LIMIT_TRON,
+          feeLimit: feeLimit?.toString(),
           callValue: 0,
         },
         parameters: data.parameters,
@@ -1086,6 +1103,7 @@ export class KeyRingService {
       );
       return triggerSmartContract;
     } catch (error) {
+      console.log(error, "error");
       throw error;
     }
   }

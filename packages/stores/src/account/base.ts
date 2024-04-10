@@ -611,7 +611,6 @@ export class AccountSetBase<MsgOpts, Queries> {
         .get(this.chainId)
         .queryBalances.getQueryBech32Address(this.evmosHexAddress)
         .fetch();
-
       if (this.opts.preTxEvents?.onFulfill) {
         this.opts.preTxEvents.onFulfill({
           ...tx,
