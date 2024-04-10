@@ -611,9 +611,10 @@ export class AccountSetBase<MsgOpts, Queries> {
         .get(this.chainId)
         .queryBalances.getQueryBech32Address(this.evmosHexAddress)
         .fetch();
-      //@ts-ignore
+
       this.queriesStore
         .get(this.chainId)
+        //@ts-ignore
         .tron.queryAccount.getQueryWalletAddress(
           getBase58Address(this.evmosHexAddress)
         )
