@@ -35,6 +35,9 @@ export const CopyAddressModal: FunctionComponent<{
   const [keyword, setKeyword] = useState("");
   const [addresses, setAddresses] = useState({});
   const [refresh, setRefresh] = useState(Date.now());
+  const { colors } = useTheme();
+
+  const styles = styling(colors);
 
   const { accountStore, keyRingStore } = useStore();
 
@@ -96,29 +99,10 @@ export const CopyAddressModal: FunctionComponent<{
     });
   }, [accountOrai.bech32Address, accountEth.evmosHexAddress, refresh]);
 
-  const { colors } = useTheme();
-
   return (
     <View>
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          marginBottom: 16,
-          alignSelf: "center",
-        }}
-      >
-        <View
-          style={{
-            flexDirection: "row",
-            backgroundColor: colors["neutral-surface-action"],
-            height: 40,
-            borderRadius: 999,
-            width: metrics.screenWidth - 32,
-            alignItems: "center",
-            paddingHorizontal: 12,
-          }}
-        >
+      <View style={styles.header}>
+        <View style={styles.searchInput}>
           <View style={{ paddingRight: 4 }}>
             <OWIcon
               color={colors["neutral-icon-on-light"]}
@@ -254,21 +238,19 @@ export const CopyAddressModal: FunctionComponent<{
 
 const styling = (colors: TypeTheme["colors"]) =>
   StyleSheet.create({
-    iconSearch: {
-      position: "absolute",
-      left: 12,
-      top: 22,
+    header: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginBottom: 16,
+      alignSelf: "center",
     },
-    textInput: {
-      paddingVertical: 0,
+    searchInput: {
+      flexDirection: "row",
+      backgroundColor: colors["neutral-surface-action"],
       height: 40,
-      backgroundColor: colors["box-nft"],
       borderRadius: 999,
-      paddingLeft: 35,
-      fontSize: 14,
-      fontWeight: "500",
-      color: colors["neutral-text-body"],
-      marginVertical: 10,
-      paddingRight: 12,
+      width: metrics.screenWidth - 32,
+      alignItems: "center",
+      paddingHorizontal: 12,
     },
   });
