@@ -22,10 +22,9 @@ const BuyFiat = observer(() => {
       .split(", ")
       .join(",");
 
-  const cryptoList =
-    "ORAI, USDT, USDC, ETH, OSMO, ATOM, BTC, INJ, wETH, wBTC, USDC.e"
-      .split(", ")
-      .join(",");
+  const cryptoList = "ORAI, USDT, USDC, ETH, OSMO, ATOM, INJ, wETH"
+    .split(", ")
+    .join(",");
 
   const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
 
@@ -62,6 +61,7 @@ const BuyFiat = observer(() => {
         subtitle={chainStore.current.chainName}
         colors={colors}
       />
+      ``
       {accountList.length > 0 ? (
         <View style={{ flex: 1 }}>
           <WebView
