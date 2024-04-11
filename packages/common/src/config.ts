@@ -1363,12 +1363,11 @@ export const EmbedChainInfos: AppChainInfo[] = [
     get feeCurrencies() {
       return [this.stakeCurrency];
     },
-
     features: ["ibc-go", "stargate", "isEvm"],
     txExplorer: {
       name: "Oasis scan",
-      txUrl: "https://explorer.sapphire.oasis.io/{txHash}",
-      accountUrl: "https://explorer.sapphire.oasis.io/{address}",
+      txUrl: "https://www.oasisscan.com/transactions/{txHash}",
+      accountUrl: "https://www.oasisscan.com/accounts/detail/{address}",
     },
   },
   {
