@@ -10,6 +10,7 @@ const images = {
   dapps_defi_logo: require("./dApps_defi_logo.png"),
   dapps_dex_logo: require("./dApps_dex_logo.png"),
   dapps_future_logo: require("./dApps_future_logo.png"),
+  dapps_llm_logo: require("./dApps_llm_logo.png"),
   dapps_orchai_logo: require("./dApps_orchai_logo.png"),
   dapps_orderbook_logo: require("./dApps_orderbook_logo.png"),
   dapps_scan_logo: require("./dApps_scan_logo.png"),

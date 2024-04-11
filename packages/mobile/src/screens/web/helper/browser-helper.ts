@@ -27,7 +27,7 @@ export const aiData = [
   },
   {
     images: images.img_chatbot,
-    logo: images.dapps_defi_logo,
+    logo: images.dapps_llm_logo,
     title: "LLM Chatbot",
     subTitle: "Natural language layer for Web3 Business",
     url: "https://layer.orai.io",
