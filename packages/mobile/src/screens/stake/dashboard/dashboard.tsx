@@ -65,7 +65,7 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
         enableOverDrag: false,
       },
     });
-    modalStore.setChildren(<NetworkModal />);
+    modalStore.setChildren(<NetworkModal stakeable={true} />);
   };
 
   return (

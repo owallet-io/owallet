@@ -24,7 +24,7 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { OWButton } from "@src/components/button";
 import { RadioButton } from "react-native-radio-buttons-group";
 
-export const NetworkModal = () => {
+export const NetworkModal = ({ stakeable }) => {
   const { colors } = useTheme();
   const [keyword, setKeyword] = useState("");
   const [activeTab, setActiveTab] = useState<"mainnet" | "testnet">("mainnet");
@@ -118,7 +118,7 @@ export const NetworkModal = () => {
 
   useEffect(() => {
     if (activeTab === "mainnet") {
-      const tmpChainInfos = [];
+      let tmpChainInfos = [];
       chainStore.chainInfosInUI.map((c) => {
         if (
           !c.chainName.toLowerCase().includes("test") &&
@@ -127,9 +127,13 @@ export const NetworkModal = () => {
           tmpChainInfos.push(c);
         }
       });
+      if (stakeable) {
+        tmpChainInfos = tmpChainInfos.filter((c) => c.networkType === "cosmos");
+        setChains(tmpChainInfos);
+      }
       setChains(tmpChainInfos);
     } else {
-      const tmpChainInfos = [];
+      let tmpChainInfos = [];
       chainStore.chainInfosInUI.map((c) => {
         if (
           c.chainName.toLowerCase().includes("test") &&
@@ -138,9 +142,13 @@ export const NetworkModal = () => {
           tmpChainInfos.push(c);
         }
       });
+      if (stakeable) {
+        tmpChainInfos = tmpChainInfos.filter((c) => c.networkType === "cosmos");
+        setChains(tmpChainInfos);
+      }
       setChains(tmpChainInfos);
     }
-  }, [keyword, activeTab]);
+  }, [keyword, activeTab, stakeable]);
 
   useEffect(() => {
     if (chainStore.current.chainName.toLowerCase().includes("test")) {

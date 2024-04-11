@@ -15,7 +15,6 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
-  View,
 } from "react-native";
 import { useStore } from "../../stores";
 import { observer } from "mobx-react-lite";
@@ -34,10 +33,7 @@ import { useCoinGeckoPrices, useLoadTokens } from "@owallet/hooks";
 import { showToast } from "@src/utils/helper";
 import { EarningCardNew } from "./earning-card-new";
 import { InjectedProviderUrl } from "../web/config";
-import { PageHeader } from "@src/components/header/header-new";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import OWText from "@src/components/text/ow-text";
-import { DownArrowIcon } from "@src/components/icon";
 import { CommonPageHeader } from "@src/components/header/common-header";
 
 export const HomeScreen: FunctionComponent = observer((props) => {
