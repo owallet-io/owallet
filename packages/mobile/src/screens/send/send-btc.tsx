@@ -1,4 +1,10 @@
-import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  InteractionManager,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React, {
   FunctionComponent,
   useCallback,
@@ -21,6 +27,7 @@ import { observer } from "mobx-react-lite";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import {
+  capitalizedText,
   handleSaveHistory,
   HISTORY_STATUS,
   showToast,
@@ -34,7 +41,7 @@ import OWText from "@src/components/text/ow-text";
 import { NewAmountInput } from "@src/components/input/amount-input";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { DownArrowIcon } from "@src/components/icon";
-import { CoinPretty, Int } from "@owallet/unit";
+import { CoinPretty, Dec, Int } from "@owallet/unit";
 import { FeeModal } from "@src/modals/fee";
 import { ChainIdEnum } from "@oraichain/oraidex-common";
 
@@ -121,30 +128,27 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
     }
   }, [route?.params?.recipient, sendConfigs.recipientConfig]);
 
-  const [balance, setBalance] = useState("0");
-  const [price, setPrice] = useState("0");
-  const [fee, setFee] = useState({ type: "", value: "" });
+  const [balance, setBalance] = useState<CoinPretty>(null);
 
-  const fetchBalance = async () => {
-    const balanceBtc =
-      queries.bitcoin.queryBitcoinBalance.getQueryBalance(address)?.balance;
-    const priceBalance = priceStore.calculatePrice(balanceBtc);
-    const amount = formatBalance({
-      balance: Number(balanceBtc?.toCoin().amount),
-      cryptoUnit: "BTC",
-      coin: chainStore.current.chainId,
-    });
-    setPrice(priceBalance?.toString() || "$0");
-    setBalance(amount);
-  };
+  const isReadyBalance = queries.queryBalances
+    .getQueryBech32Address(address)
+    .getBalanceFromCurrency(sendConfigs.amountConfig.sendCurrency).isReady;
 
   useEffect(() => {
-    fetchBalance();
-    const averageFee = sendConfigs.feeConfig.getFeeTypePretty("average");
-    const averageFeePrice = priceStore.calculatePrice(averageFee);
-    setFee({ type: "Avarage", value: averageFeePrice.toString() });
-  }, [account.bech32Address, sendConfigs.amountConfig.sendCurrency]);
-
+    InteractionManager.runAfterInteractions(() => {
+      if (isReadyBalance) {
+        console.log(
+          sendConfigs.amountConfig.sendCurrency,
+          "sendConfigs.amountConfig.sendCurrency"
+        );
+        const balance = queries.queryBalances
+          .getQueryBech32Address(address)
+          .getBalanceFromCurrency(sendConfigs.amountConfig.sendCurrency);
+        console.log(balance, "balance");
+        setBalance(balance);
+      }
+    });
+  }, [isReadyBalance, address, sendConfigs.amountConfig.sendCurrency]);
   const _onPressFee = () => {
     modalStore.setOptions({
       bottomSheetModalConfig: {
@@ -153,12 +157,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
       },
     });
     modalStore.setChildren(
-      <FeeModal
-        vertical={true}
-        sendConfigs={sendConfigs}
-        colors={colors}
-        setFee={setFee}
-      />
+      <FeeModal vertical={true} sendConfigs={sendConfigs} />
     );
   };
 
@@ -192,7 +191,14 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
                 screen: SCREENS.TxSuccessResult,
                 params: {
                   txHash: tx,
-                  chainId: chainId,
+                  data: {
+                    memo: sendConfigs.memoConfig.memo,
+                    toAddress: sendConfigs.recipientConfig.recipient,
+                    amount: sendConfigs.amountConfig.getAmountPrimitive(),
+                    fromAddress: address,
+                    fee: sendConfigs.feeConfig.toStdFee(),
+                    currency: sendConfigs.amountConfig.sendCurrency,
+                  },
                 },
               });
             }
@@ -262,7 +268,16 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
   ]);
 
   const styles = styling(colors);
-
+  useEffect(() => {
+    if (sendConfigs.feeConfig.feeCurrency && !sendConfigs.feeConfig.fee) {
+      sendConfigs.feeConfig.setFeeType("average");
+    }
+    return;
+  }, [sendConfigs.feeConfig]);
+  const amount = new CoinPretty(
+    sendConfigs.amountConfig.sendCurrency,
+    new Dec(sendConfigs.amountConfig.getAmountPrimitive().amount)
+  );
   return (
     <PageWithBottom
       bottomGroup={
@@ -296,9 +311,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
       >
         <View>
           <OWCard type="normal">
-            <OWText color={colors["neutral-text-title"]} size={12}>
-              Recipient
-            </OWText>
+            <OWText color={colors["neutral-text-title"]}>Recipient</OWText>
 
             <AddressInput
               colors={colors}
@@ -325,11 +338,13 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
               }}
             >
               <View>
-                <OWText
-                  style={{ paddingTop: 8, maxWidth: metrics.screenWidth / 2.5 }}
-                  size={12}
-                >
-                  Balance : {balance}
+                <OWText style={{ paddingTop: 8 }}>
+                  Balance :{" "}
+                  {balance
+                    ?.trim(true)
+                    ?.maxDecimals(6)
+                    ?.hideDenom(true)
+                    ?.toString() || "0"}
                 </OWText>
                 <CurrencySelector
                   chainId={chainStore.current.chainId}
@@ -357,7 +372,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
                   }}
                   amountConfig={sendConfigs.amountConfig}
                   placeholder={"0.0"}
-                  maxBalance={balance.split(" ")[0]}
+                  // maxBalance={balance.split(" ")[0]}
                 />
               </View>
             </View>
@@ -374,7 +389,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
                 color={colors["neutral-text-body"]}
                 size={14}
               >
-                {price}
+                {priceStore.calculatePrice(amount).toString()}
               </OWText>
             </View>
           </OWCard>
@@ -389,15 +404,26 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
                 marginBottom: 8,
               }}
             >
-              <OWText color={colors["neutral-text-title"]} weight="600">
+              <OWText
+                color={colors["neutral-text-title"]}
+                weight="600"
+                size={16}
+              >
                 Transaction fee
               </OWText>
               <TouchableOpacity
                 style={{ flexDirection: "row" }}
                 onPress={_onPressFee}
               >
-                <OWText color={colors["primary-text-action"]} weight="600">
-                  {fee.type}: {fee.value}{" "}
+                <OWText
+                  color={colors["primary-text-action"]}
+                  weight="600"
+                  size={16}
+                >
+                  {capitalizedText(sendConfigs.feeConfig.feeType)}:{" "}
+                  {priceStore
+                    .calculatePrice(sendConfigs.feeConfig.fee)
+                    ?.toString()}{" "}
                 </OWText>
                 <DownArrowIcon
                   height={11}
@@ -406,9 +432,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
               </TouchableOpacity>
             </View>
 
-            <OWText color={colors["neutral-text-title"]} size={12}>
-              Memo
-            </OWText>
+            <OWText color={colors["neutral-text-title"]}>Memo</OWText>
 
             <MemoInput
               label=""

@@ -48,7 +48,7 @@ export const OtherNavigation: FC = () => {
       {/*<Stack.Screen name={SCREENS.NewSend} component={NewSendScreen} />*/}
       <Stack.Screen name={SCREENS.NewSend} component={NewSendScreen} />
       <Stack.Screen name={SCREENS.SendEvm} component={SendEvmScreen} />
-      <Stack.Screen name={SCREENS.SendOasis} component={SendOasisScreen} />
+      <Stack.Screen name={SCREENS.SendOasis} component={SendEvmScreen} />
       <Stack.Screen name={SCREENS.TransferNFT} component={TransferNFTScreen} />
       <Stack.Screen
         name={SCREENS.Transactions}

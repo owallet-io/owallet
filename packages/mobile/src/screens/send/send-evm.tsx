@@ -6,7 +6,7 @@ import {
   useSendTxEvmConfig,
 } from "@owallet/hooks";
 import { useStore } from "../../stores";
-import { EthereumEndpoint, toAmount } from "@owallet/common";
+import { ChainIdEnum, EthereumEndpoint, toAmount } from "@owallet/common";
 import {
   InteractionManager,
   ScrollView,
@@ -41,7 +41,7 @@ import {
   HISTORY_STATUS,
 } from "@src/utils/helper";
 import { navigate } from "@src/router/root";
-import { ChainIdEnum } from "@oraichain/oraidex-common";
+import { SCREENS } from "@src/common/constants";
 
 export const SendEvmScreen: FunctionComponent = observer(() => {
   const {
@@ -210,6 +210,22 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
           {
             onFulfill: (tx) => {
               console.log(tx, "tx evm");
+              if (chainStore.current.chainId === ChainIdEnum.Oasis) {
+                navigate("Others", {
+                  screen: SCREENS.TxSuccessResult,
+                  params: {
+                    txHash: tx,
+                    data: {
+                      memo: sendConfigs.memoConfig.memo,
+                      toAddress: sendConfigs.recipientConfig.recipient,
+                      amount: sendConfigs.amountConfig.getAmountPrimitive(),
+                      fromAddress: address,
+                      fee: sendConfigs.feeConfig.toStdFee(),
+                      currency: sendConfigs.amountConfig.sendCurrency,
+                    },
+                  },
+                });
+              }
             },
             onBroadcasted: async (txHash) => {
               analyticsStore.logEvent("Send token tx broadcasted", {

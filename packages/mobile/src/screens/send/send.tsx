@@ -42,34 +42,6 @@ import {
 import { Buffer } from "buffer";
 import { ChainIdEnum } from "@oraichain/oraidex-common";
 
-const styling = (colors) =>
-  StyleSheet.create({
-    sendInputRoot: {
-      paddingHorizontal: spacing["20"],
-      paddingVertical: spacing["24"],
-      backgroundColor: colors["primary"],
-      borderRadius: 24,
-    },
-    sendlabelInput: {
-      fontSize: 14,
-      fontWeight: "500",
-      lineHeight: 20,
-      color: colors["neutral-text-body"],
-    },
-    containerStyle: {
-      backgroundColor: colors["neutral-surface-bg2"],
-    },
-    bottomBtn: {
-      marginTop: 20,
-      width: metrics.screenWidth / 2.3,
-      borderRadius: 999,
-    },
-    errorBorder: {
-      borderWidth: 2,
-      borderColor: colors["error-border-default"],
-    },
-  });
-
 export const NewSendScreen: FunctionComponent = observer(() => {
   const {
     chainStore,
@@ -325,11 +297,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
               width: metrics.screenWidth - 32,
             },
           ]}
-          textStyle={{
-            fontSize: 16,
-            fontWeight: "600",
-            color: colors["neutral-text-action-on-dark-bg"],
-          }}
+          textStyle={styles.txtBtnSend}
         />
       }
     >
@@ -359,11 +327,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
               containerStyle={{
                 marginBottom: 12,
               }}
-              inputContainerStyle={{
-                backgroundColor: colors["neutral-surface-card"],
-                borderWidth: 0,
-                paddingHorizontal: 0,
-              }}
+              inputContainerStyle={styles.inputContainerAddress}
             />
           </OWCard>
           <OWCard
@@ -415,13 +379,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
                 />
               </View>
             </View>
-            <View
-              style={{
-                alignSelf: "flex-end",
-                flexDirection: "row",
-                alignItems: "center",
-              }}
-            >
+            <View style={styles.containerEstimatePrice}>
               <OWIcon name="tdesign_swap" size={16} />
               <OWText
                 style={{ paddingLeft: 4 }}
@@ -432,16 +390,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
             </View>
           </OWCard>
           <OWCard type="normal">
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                borderBottomColor: colors["neutral-border-default"],
-                borderBottomWidth: 1,
-                paddingVertical: 16,
-                marginBottom: 8,
-              }}
-            >
+            <View style={styles.containerFee}>
               <OWText
                 color={colors["neutral-text-title"]}
                 weight="600"
@@ -475,11 +424,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
             <MemoInput
               label=""
               placeholder="Required if send to CEX"
-              inputContainerStyle={{
-                backgroundColor: colors["neutral-surface-card"],
-                borderWidth: 0,
-                paddingHorizontal: 0,
-              }}
+              inputContainerStyle={styles.inputContainerMemo}
               memoConfig={sendConfigs.memoConfig}
               labelStyle={styles.sendlabelInput}
             />
@@ -489,3 +434,58 @@ export const NewSendScreen: FunctionComponent = observer(() => {
     </PageWithBottom>
   );
 });
+const styling = (colors) =>
+  StyleSheet.create({
+    txtBtnSend: {
+      fontSize: 16,
+      fontWeight: "600",
+      color: colors["neutral-text-action-on-dark-bg"],
+    },
+    inputContainerAddress: {
+      backgroundColor: colors["neutral-surface-card"],
+      borderWidth: 0,
+      paddingHorizontal: 0,
+    },
+    containerEstimatePrice: {
+      alignSelf: "flex-end",
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    containerFee: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      borderBottomColor: colors["neutral-border-default"],
+      borderBottomWidth: 1,
+      paddingVertical: 16,
+      marginBottom: 8,
+    },
+    sendInputRoot: {
+      paddingHorizontal: spacing["20"],
+      paddingVertical: spacing["24"],
+      backgroundColor: colors["primary"],
+      borderRadius: 24,
+    },
+    sendlabelInput: {
+      fontSize: 14,
+      fontWeight: "500",
+      lineHeight: 20,
+      color: colors["neutral-text-body"],
+    },
+    inputContainerMemo: {
+      backgroundColor: colors["neutral-surface-card"],
+      borderWidth: 0,
+      paddingHorizontal: 0,
+    },
+    containerStyle: {
+      backgroundColor: colors["neutral-surface-bg2"],
+    },
+    bottomBtn: {
+      marginTop: 20,
+      width: metrics.screenWidth / 2.3,
+      borderRadius: 999,
+    },
+    errorBorder: {
+      borderWidth: 2,
+      borderColor: colors["error-border-default"],
+    },
+  });

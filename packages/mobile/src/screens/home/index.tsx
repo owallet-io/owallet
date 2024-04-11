@@ -131,7 +131,14 @@ export const HomeScreen: FunctionComponent = observer((props) => {
 
   const onRefresh = React.useCallback(async () => {
     const queries = queriesStore.get(chainStore.current.chainId);
-
+    if (chainStore.current.chainId === ChainIdEnum.TRON) {
+      await queries.tron.queryAccount
+        .getQueryWalletAddress(getBase58Address(account.evmosHexAddress))
+        .waitFreshResponse();
+      setRefreshing(false);
+      setRefreshDate(Date.now());
+      return;
+    }
     // Because the components share the states related to the queries,
     // fetching new query responses here would make query responses on all other components also refresh.
     if (chainStore.current.networkType === "bitcoin") {

@@ -404,6 +404,6 @@ export const SignTronModal: FunctionComponent<{
     );
   }),
   {
-    disableSafeArea: false,
+    disableSafeArea: true,
   }
 );

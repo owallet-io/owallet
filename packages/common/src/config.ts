@@ -2,6 +2,8 @@ import { Bech32Address } from "@owallet/cosmos";
 import { AppChainInfo } from "@owallet/types";
 import { IntlMessages, TypeLanguageToFiatCurrency } from "./languages";
 import { FiatCurrency } from "@owallet/types";
+import "dotenv/config";
+console.log(process.env.API_KEY_TRON_SCAN, "process.env.API_KEY_TRON_SCAN");
 
 export const AutoFetchingFiatValueInterval = 300 * 1000; // 5min
 
@@ -1303,7 +1305,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     ],
     restConfig: {
       headers: {
-        "x-api-key": "e2e3f401-2137-409c-b821-bd8c29f2141c",
+        "TRON-PRO-API-KEY": process.env.API_KEY_TRON_SCAN,
       },
     },
     bip44: {
@@ -1361,12 +1363,11 @@ export const EmbedChainInfos: AppChainInfo[] = [
     get feeCurrencies() {
       return [this.stakeCurrency];
     },
-
     features: ["ibc-go", "stargate", "isEvm"],
     txExplorer: {
       name: "Oasis scan",
-      txUrl: "https://explorer.sapphire.oasis.io/{txHash}",
-      accountUrl: "https://explorer.sapphire.oasis.io/{address}",
+      txUrl: "https://www.oasisscan.com/transactions/{txHash}",
+      accountUrl: "https://www.oasisscan.com/accounts/detail/{address}",
     },
   },
   {
