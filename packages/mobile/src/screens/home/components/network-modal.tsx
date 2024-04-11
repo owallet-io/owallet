@@ -117,6 +117,32 @@ export const NetworkModal = () => {
   }, [activeTab]);
 
   useEffect(() => {
+    if (activeTab === "mainnet") {
+      const tmpChainInfos = [];
+      chainStore.chainInfosInUI.map((c) => {
+        if (
+          !c.chainName.toLowerCase().includes("test") &&
+          c.chainName.toLowerCase().includes(keyword.toLowerCase())
+        ) {
+          tmpChainInfos.push(c);
+        }
+      });
+      setChains(tmpChainInfos);
+    } else {
+      const tmpChainInfos = [];
+      chainStore.chainInfosInUI.map((c) => {
+        if (
+          c.chainName.toLowerCase().includes("test") &&
+          c.chainName.toLowerCase().includes(keyword.toLowerCase())
+        ) {
+          tmpChainInfos.push(c);
+        }
+      });
+      setChains(tmpChainInfos);
+    }
+  }, [keyword, activeTab]);
+
+  useEffect(() => {
     if (chainStore.current.chainName.toLowerCase().includes("test")) {
       setActiveTab("testnet");
     }
