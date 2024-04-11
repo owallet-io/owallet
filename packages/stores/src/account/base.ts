@@ -695,11 +695,11 @@ export class AccountSetBase<MsgOpts, Queries> {
           value.contract_addr,
           { from: value.from }
         );
-        let data = contract.methods
+        const data = contract.methods
           .transfer(value.recipient, value.amount)
           .encodeABI();
 
-        let txObj = {
+        const txObj = {
           gas: web3.utils.toHex(value.gas),
           to: value.contract_addr,
           value: "0x0", // Must be 0x0, maybe this field is not in use while send erc20 tokens, but still need
