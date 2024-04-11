@@ -49,7 +49,7 @@ export const CopyAddressModal: FunctionComponent<{
   useEffect(() => {
     setTimeout(() => {
       setRefresh(Date.now());
-    }, 1000);
+    }, 300);
   }, []);
 
   useEffect(() => {
