@@ -1,7 +1,6 @@
 import { observable, action, makeObservable, computed } from "mobx";
 import { create, persist } from "mobx-persist";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import moment from "moment";
 import { CoinGeckoPrices } from "@oraichain/oraidex-common";
 
 export class AppInit {
@@ -16,6 +15,7 @@ export class AppInit {
     visibleTabBar?: string;
     prices: CoinGeckoPrices<string>;
     yesterdayPriceFeed: Array<any>;
+    balances: object;
   };
   @observable
   protected notiData: {};
@@ -30,6 +30,7 @@ export class AppInit {
       theme: "light",
       isAllNetworks: false,
       prices: {},
+      balances: {},
       yesterdayPriceFeed: [],
     };
   }
@@ -42,6 +43,14 @@ export class AppInit {
   @action
   updateInitApp() {
     this.initApp = { ...this.initApp, status: false };
+  }
+
+  @action
+  updateBalanceByAddress(address, balance) {
+    this.initApp = {
+      ...this.initApp,
+      balances: { ...this.getInitApp.balances, [address]: balance },
+    };
   }
 
   @action

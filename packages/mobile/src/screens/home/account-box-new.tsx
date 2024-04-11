@@ -62,7 +62,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
         enableOverDrag: false,
       },
     });
-    modalStore.setChildren(MyWalletModal());
+    modalStore.setChildren(<MyWalletModal />);
   };
 
   useEffect(() => {
@@ -78,6 +78,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
     } else {
       setProfit(0);
     }
+    appInitStore.updateBalanceByAddress(accountOrai.bech32Address, totalUsd);
   }, [totalUsd, accountOrai.bech32Address, appInitStore]);
   const address = account.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses
