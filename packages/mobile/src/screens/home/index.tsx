@@ -173,6 +173,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       const differenceInSeconds = differenceInMilliseconds / 1000;
       let timeoutId: NodeJS.Timeout;
       if (differenceInSeconds > 10) {
+        universalSwapStore.setLoaded(false);
         onFetchAmount(timeoutId);
       } else {
         console.log("The dates are 10 seconds or less apart.");
