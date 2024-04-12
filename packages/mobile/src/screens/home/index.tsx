@@ -253,7 +253,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
             tron: keyRingStore.keyRingLedgerAddresses.trx ?? null,
             kwt: accountKawaiiCosmos.bech32Address,
           });
-        }, 1800);
+        }, 800);
       }
     } else if (
       accountOrai.bech32Address &&
@@ -268,7 +268,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
           tron: getBase58Address(accountTron.evmosHexAddress),
           kwt: accountKawaiiCosmos.bech32Address,
         });
-      }, 1800);
+      }, 1700);
     }
   };
 
@@ -284,7 +284,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     return () => {
       if (timeoutId) clearTimeout(timeoutId);
     };
-  }, [accountOrai.bech32Address]);
+  }, [accountOrai.bech32Address, accountKawaiiCosmos.bech32Address]);
 
   const { data: prices } = useCoinGeckoPrices();
 
