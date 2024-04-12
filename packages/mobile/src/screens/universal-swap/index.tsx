@@ -343,7 +343,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             kwt: accountKawaiiCosmos.bech32Address,
             tokenReload: tokenReload?.length > 0 ? tokenReload : null,
           });
-        }, 1600);
+        }, 1800);
       }
     } else if (
       accountOrai.bech32Address &&
@@ -358,7 +358,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           tron: getBase58Address(accountTron.evmosHexAddress),
           kwt: accountKawaiiCosmos.bech32Address,
         });
-      }, 1600);
+      }, 1800);
     }
   };
 
