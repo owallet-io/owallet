@@ -46,12 +46,14 @@ export const CommonPageHeader: FunctionComponent<{ title: string }> = ({
       <PageHeader
         left={<View style={{ width: metrics.screenWidth / 6 }} />}
         middle={
-          <View style={{ alignItems: "center" }}>
+          <TouchableOpacity
+            onPress={_onPressNetworkModal}
+            style={{ alignItems: "center" }}
+          >
             <OWText color={colors["neutral-text-title"]} weight="700" size={16}>
               {title.toUpperCase()}
             </OWText>
-            <TouchableOpacity
-              onPress={_onPressNetworkModal}
+            <View
               style={{
                 flexDirection: "row",
                 alignItems: "center",
@@ -68,8 +70,8 @@ export const CommonPageHeader: FunctionComponent<{ title: string }> = ({
                   : chainStore.current.chainName}
               </OWText>
               <DownArrowIcon height={10} color={colors["neutral-text-title"]} />
-            </TouchableOpacity>
-          </View>
+            </View>
+          </TouchableOpacity>
         }
         colors={colors}
         right={
