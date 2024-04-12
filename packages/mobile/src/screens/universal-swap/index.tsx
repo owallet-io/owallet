@@ -358,7 +358,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           tron: getBase58Address(accountTron.evmosHexAddress),
           kwt: accountKawaiiCosmos.bech32Address,
         });
-      }, 1700);
+      }, 2000);
     }
   };
 
