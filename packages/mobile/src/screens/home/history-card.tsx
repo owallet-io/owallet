@@ -22,6 +22,8 @@ import OWFlatList from "@src/components/page/ow-flat-list";
 import { chainIcons } from "@oraichain/oraidex-common";
 import { SCREENS } from "@src/common/constants";
 import { navigate } from "@src/router/root";
+import FastImage from "react-native-fast-image";
+import OWText from "@src/components/text/ow-text";
 
 export const HistoryCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -188,9 +190,30 @@ export const HistoryCard: FunctionComponent<{
           onRefresh={onRefresh}
           ListEmptyComponent={() => {
             return (
-              <CardBody style={{ paddingHorizontal: 0, paddingTop: 8 }}>
-                <OWEmpty type="cash" />
-              </CardBody>
+              <View
+                style={{
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginVertical: 42,
+                  marginBottom: 0,
+                }}
+              >
+                <FastImage
+                  source={require("../../assets/image/img_empty.png")}
+                  style={{
+                    width: 150,
+                    height: 150,
+                  }}
+                  resizeMode={"contain"}
+                />
+                <OWText
+                  color={colors["neutral-text-title"]}
+                  size={16}
+                  weight="700"
+                >
+                  {"NO TRANSACTIONS YET".toUpperCase()}
+                </OWText>
+              </View>
             );
           }}
         />

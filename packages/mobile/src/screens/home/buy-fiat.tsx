@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, InteractionManager } from "react-native";
 import React, { useEffect, useState } from "react";
 import { WebView } from "react-native-webview";
 import { observer } from "mobx-react-lite";
@@ -29,29 +29,31 @@ const BuyFiat = observer(() => {
   const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
 
   useEffect(() => {
-    let accounts = {};
+    InteractionManager.runAfterInteractions(() => {
+      let accounts = {};
 
-    let defaultEvmAddress = accountEth.evmosHexAddress;
+      let defaultEvmAddress = accountEth.evmosHexAddress;
 
-    Object.keys(ChainIdEnum).map((key) => {
-      let defaultCosmosAddress = accountStore.getAccount(
-        ChainIdEnum[key]
-      ).bech32Address;
+      Object.keys(ChainIdEnum).map((key) => {
+        let defaultCosmosAddress = accountStore.getAccount(
+          ChainIdEnum[key]
+        ).bech32Address;
 
-      if (defaultCosmosAddress.startsWith("evmos")) {
-        accounts[KADOChainNameEnum[ChainIdEnum[key]]] = defaultEvmAddress;
-      } else {
-        accounts[KADOChainNameEnum[ChainIdEnum[key]]] = defaultCosmosAddress;
-      }
+        if (defaultCosmosAddress.startsWith("evmos")) {
+          accounts[KADOChainNameEnum[ChainIdEnum[key]]] = defaultEvmAddress;
+        } else {
+          accounts[KADOChainNameEnum[ChainIdEnum[key]]] = defaultCosmosAddress;
+        }
+      });
+
+      let tmpAccounts = "";
+
+      Object.keys(accounts).map((a) => {
+        tmpAccounts += `${a}:${accounts[a]},`;
+      });
+
+      setAccounts(tmpAccounts);
     });
-
-    let tmpAccounts = "";
-
-    Object.keys(accounts).map((a) => {
-      tmpAccounts += `${a}:${accounts[a]},`;
-    });
-
-    setAccounts(tmpAccounts);
   }, [accountEth.evmosHexAddress]);
 
   return (
@@ -61,7 +63,6 @@ const BuyFiat = observer(() => {
         subtitle={chainStore.current.chainName}
         colors={colors}
       />
-      ``
       {accountList.length > 0 ? (
         <View style={{ flex: 1 }}>
           <WebView

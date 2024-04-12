@@ -360,12 +360,18 @@ export const TokensCardAll: FunctionComponent<{
             }
             return t.chainId === chainStore.current.chainId;
           }).length <= 0 ? (
-            <View style={{ justifyContent: "center", alignItems: "center" }}>
+            <View
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+                marginVertical: 42,
+              }}
+            >
               <FastImage
-                source={require("../../assets/image/img_planet.png")}
+                source={require("../../assets/images/img_money.png")}
                 style={{
-                  width: 260,
-                  height: 260,
+                  width: 150,
+                  height: 150,
                 }}
                 resizeMode={"contain"}
               />
@@ -374,8 +380,24 @@ export const TokensCardAll: FunctionComponent<{
                 size={16}
                 weight="700"
               >
-                {"no result found".toUpperCase()}
+                {"no tokens yet".toUpperCase()}
               </OWText>
+              <OWButton
+                style={{
+                  marginTop: 8,
+                  marginHorizontal: 16,
+                  width: metrics.screenWidth / 2,
+                  borderRadius: 999,
+                }}
+                label={"+ Buy ORAI with cash"}
+                size="large"
+                type="secondary"
+                onPress={() => {
+                  navigate(SCREENS.STACK.Others, {
+                    screen: SCREENS.BuyFiat,
+                  });
+                }}
+              />
             </View>
           ) : null}
           {tokens?.filter((t) => {
@@ -423,7 +445,10 @@ export const TokensCardAll: FunctionComponent<{
             type="link"
             label={"Tokens"}
             textStyle={{
-              color: colors["primary-surface-default"],
+              color:
+                activeTab === "tokens"
+                  ? colors["primary-surface-default"]
+                  : colors["neutral-text-body"],
               fontWeight: "600",
               fontSize: 16,
             }}
@@ -440,7 +465,10 @@ export const TokensCardAll: FunctionComponent<{
             label={"History"}
             onPress={() => setActiveTab("history")}
             textStyle={{
-              color: colors["primary-surface-default"],
+              color:
+                activeTab === "history"
+                  ? colors["primary-surface-default"]
+                  : colors["neutral-text-body"],
               fontWeight: "600",
               fontSize: 16,
             }}
@@ -494,7 +522,7 @@ const styling = (colors) =>
     iconWrap: {
       width: 32,
       height: 32,
-      borderRadius: 32,
+      borderRadius: 999,
       alignItems: "center",
       justifyContent: "center",
       overflow: "hidden",
