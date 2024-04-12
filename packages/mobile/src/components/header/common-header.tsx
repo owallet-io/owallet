@@ -9,6 +9,7 @@ import { DownArrowIcon } from "../icon";
 import { NetworkModal } from "@src/screens/home/components";
 import { SCREENS } from "@src/common/constants";
 import { useNavigation } from "@react-navigation/native";
+import { metrics } from "@src/themes";
 
 export const CommonPageHeader: FunctionComponent<{ title: string }> = ({
   title,
@@ -43,14 +44,16 @@ export const CommonPageHeader: FunctionComponent<{ title: string }> = ({
   return (
     <View>
       <PageHeader
-        left={<View style={{ width: 44, height: 44 }} />}
+        left={<View style={{ width: metrics.screenWidth / 6 }} />}
         middle={
-          <View style={{ alignItems: "center" }}>
+          <TouchableOpacity
+            onPress={_onPressNetworkModal}
+            style={{ alignItems: "center" }}
+          >
             <OWText color={colors["neutral-text-title"]} weight="700" size={16}>
               {title.toUpperCase()}
             </OWText>
-            <TouchableOpacity
-              onPress={_onPressNetworkModal}
+            <View
               style={{
                 flexDirection: "row",
                 alignItems: "center",
@@ -67,8 +70,8 @@ export const CommonPageHeader: FunctionComponent<{ title: string }> = ({
                   : chainStore.current.chainName}
               </OWText>
               <DownArrowIcon height={10} color={colors["neutral-text-title"]} />
-            </TouchableOpacity>
-          </View>
+            </View>
+          </TouchableOpacity>
         }
         colors={colors}
         right={
@@ -82,7 +85,11 @@ export const CommonPageHeader: FunctionComponent<{ title: string }> = ({
                 marginRight: 8,
               }}
             >
-              <OWIcon size={22} name="scan" />
+              <OWIcon
+                size={22}
+                name="tdesignscan"
+                color={colors["neutral-text-title"]}
+              />
             </TouchableOpacity>
             <TouchableOpacity
               onPress={onAddWallet}
@@ -92,7 +99,11 @@ export const CommonPageHeader: FunctionComponent<{ title: string }> = ({
                 borderRadius: 999,
               }}
             >
-              <OWIcon size={22} name="wallet" />
+              <OWIcon
+                size={22}
+                name="tdesignwallet"
+                color={colors["neutral-text-title"]}
+              />
             </TouchableOpacity>
           </View>
         }

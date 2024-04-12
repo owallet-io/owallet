@@ -22,11 +22,13 @@ import OWFlatList from "@src/components/page/ow-flat-list";
 import { chainIcons } from "@oraichain/oraidex-common";
 import { SCREENS } from "@src/common/constants";
 import { navigate } from "@src/router/root";
+import FastImage from "react-native-fast-image";
+import OWText from "@src/components/text/ow-text";
 
 export const HistoryCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
-  const { accountStore, appInitStore } = useStore();
+  const { accountStore, appInitStore, chainStore } = useStore();
   const { colors } = useTheme();
   const theme = appInitStore.getInitApp.theme;
 
@@ -74,15 +76,53 @@ export const HistoryCard: FunctionComponent<{
 
   const styles = styling(colors);
 
+  const findChainIcon = ({ chainId, chainName }) => {
+    let chainIcon = chainIcons.find((c) => c.chainId === chainId);
+    // Hardcode for Oasis because oraidex-common does not have icon yet
+    if (chainName?.includes("Oasis")) {
+      chainIcon = {
+        chainId: chainId,
+        Icon: "https://s2.coinmarketcap.com/static/img/coins/200x200/7653.png",
+      };
+    }
+    // Hardcode for BTC because oraidex-common does not have icon yet
+    if (chainName?.includes("Bit")) {
+      chainIcon = {
+        chainId: chainId,
+        Icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Bitcoin.svg/1200px-Bitcoin.svg.png",
+      };
+    }
+
+    if (!chainIcon) {
+      chainIcon = chainIcons.find((c) => c.chainId === ChainIdEnum.Oraichain);
+    }
+
+    return chainIcon;
+  };
+
   const renderHistoryItem = useCallback(
     (item) => {
       if (item) {
-        const fromChainIcon = chainIcons.find(
-          (c) => c.chainId === item.fromToken?.chainId ?? ChainIdEnum.Oraichain
-        );
-        const toChainIcon = chainIcons.find(
-          (c) => c.chainId === item.toToken?.chainId ?? ChainIdEnum.Oraichain
-        );
+        let fromChainInfo = chainStore.chainInfosInUI.find((c) => {
+          return c.chainId === item.fromToken?.chainId;
+        });
+
+        let toChainInfo = chainStore.chainInfosInUI.find((c) => {
+          return c.chainId === item.toToken?.chainId;
+        });
+
+        console.log("fromChainInfo", fromChainInfo);
+
+        const fromChainIcon = findChainIcon({
+          chainId: fromChainInfo?.chainId,
+          chainName: fromChainInfo?.chainName,
+        });
+
+        const toChainIcon = findChainIcon({
+          chainId: toChainInfo?.chainId,
+          chainName: toChainInfo?.chainName,
+        });
+
         return (
           <TouchableOpacity
             onPress={() => {
@@ -188,9 +228,30 @@ export const HistoryCard: FunctionComponent<{
           onRefresh={onRefresh}
           ListEmptyComponent={() => {
             return (
-              <CardBody style={{ paddingHorizontal: 0, paddingTop: 8 }}>
-                <OWEmpty type="cash" />
-              </CardBody>
+              <View
+                style={{
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginVertical: 42,
+                  marginBottom: 0,
+                }}
+              >
+                <FastImage
+                  source={require("../../assets/image/img_empty.png")}
+                  style={{
+                    width: 150,
+                    height: 150,
+                  }}
+                  resizeMode={"contain"}
+                />
+                <OWText
+                  color={colors["neutral-text-title"]}
+                  size={16}
+                  weight="700"
+                >
+                  {"NO TRANSACTIONS YET".toUpperCase()}
+                </OWText>
+              </View>
             );
           }}
         />

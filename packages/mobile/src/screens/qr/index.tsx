@@ -183,8 +183,10 @@ export const AddressQRScreen: FunctionComponent<{}> = ({}) => {
                   fadeDuration={0}
                 />
               </View>
-              <View style={{ marginTop: 24 }}>
-                {address ? <QRCode size={200} value={address} /> : null}
+              <View style={{ marginTop: 24, alignSelf: "center" }}>
+                {address ? (
+                  <QRCode size={metrics.screenHeight / 4.2} value={address} />
+                ) : null}
               </View>
             </View>
           </View>

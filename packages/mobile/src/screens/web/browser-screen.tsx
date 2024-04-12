@@ -195,6 +195,7 @@ export const BrowserScreen = observer(() => {
                     source={{
                       uri: getFavicon(item?.uri),
                     }}
+                    style={{ borderRadius: 999 }}
                   />
                   <OWText
                     style={{

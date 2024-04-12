@@ -80,6 +80,11 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
     }
     appInitStore.updateBalanceByAddress(accountOrai.bech32Address, totalUsd);
   }, [totalUsd, accountOrai.bech32Address, appInitStore]);
+
+  useEffect(() => {
+    setProfit(0);
+  }, [accountOrai.bech32Address]);
+
   const address = account.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses
   );
@@ -227,7 +232,11 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
               <LoadingSpinner color={colors["gray-150"]} size={22} />
             </View>
           )}
-          <TouchableOpacity onPress={_onPressMyWallet} style={styles.btnAcc}>
+          <TouchableOpacity
+            disabled={!universalSwapStore.getLoadStatus.isLoad}
+            onPress={_onPressMyWallet}
+            style={styles.btnAcc}
+          >
             <Image
               style={styles.infoIcon}
               source={require("../../assets/images/default-avatar.png")}

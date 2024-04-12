@@ -1,7 +1,7 @@
 import React, { FunctionComponent, ReactElement } from "react";
 import { View, TouchableOpacity } from "react-native";
 import { Text } from "@src/components/text";
-import { spacing } from "../../themes";
+import { metrics, spacing } from "../../themes";
 import OWIcon from "../ow-icon/ow-icon";
 import { useSmartNavigation } from "@src/navigation.provider";
 
@@ -91,7 +91,7 @@ export const PageHeader: FunctionComponent<{
         {right ? (
           <View>{right}</View>
         ) : (
-          <View style={{ width: 44, height: 44 }} />
+          <View style={{ width: metrics.screenWidth / 6 }} />
         )}
       </View>
     </View>

@@ -23,6 +23,7 @@ import { HISTORY_STATUS, openLink } from "@src/utils/helper";
 import { Bech32Address } from "@owallet/cosmos";
 import { getTransactionUrl } from "../universal-swap/helpers";
 import { useSimpleTimer } from "@src/hooks";
+import moment from "moment";
 
 export const HistoryDetail: FunctionComponent = observer((props) => {
   const { chainStore } = useStore();
@@ -117,6 +118,10 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
       </View>
     );
   };
+
+  let chainInfo = chainStore.chainInfosInUI.find((c) => {
+    return c.chainId === detail.fromToken?.chainId;
+  });
 
   return (
     <View>
@@ -240,12 +245,15 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
                   },
                 }
               )}
-              {renderTransactionDetail("Network", detail.fromToken?.chainId)}
+              {renderTransactionDetail("Network", chainInfo?.chainName)}
               {detail.type === HISTORY_STATUS.SWAP
                 ? renderTransactionDetail("To Network", detail.toToken.chainId)
                 : null}
               {renderTransactionDetail("Fee", detail.fee)}
-              {renderTransactionDetail("Time", detail.createdAt)}
+              {renderTransactionDetail(
+                "Time",
+                moment(detail.createdAt).format("DD/MM/YYYY hh:mm:ss")
+              )}
               {renderTransactionDetail("Memo", detail.memo)}
               {renderTransactionDetail("Hash", detail.hash, {
                 type: "share",

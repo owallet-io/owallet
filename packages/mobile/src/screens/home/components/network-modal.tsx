@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from "react";
 import { StyleSheet, TextInput, View } from "react-native";
 import { metrics, spacing, typography } from "../../../themes";
 import { _keyExtract, showToast, getTokenInfos } from "../../../utils/helper";
-import FastImage from "react-native-fast-image";
 import { VectorCharacter } from "../../../components/vector-character";
 import { Text } from "@src/components/text";
 import {
@@ -24,7 +23,7 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { OWButton } from "@src/components/button";
 import { RadioButton } from "react-native-radio-buttons-group";
 
-export const NetworkModal = ({ stakeable }) => {
+export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
   const { colors } = useTheme();
   const [keyword, setKeyword] = useState("");
   const [activeTab, setActiveTab] = useState<"mainnet" | "testnet">("mainnet");
@@ -325,100 +324,6 @@ export const NetworkModal = ({ stakeable }) => {
         </View>
       </TouchableOpacity>
     );
-
-    return (
-      <TouchableOpacity
-        style={{
-          ...styles.containerBtn,
-        }}
-        onPress={() => {
-          handleSwitchNetwork(item);
-        }}
-      >
-        <View
-          style={{
-            justifyContent: "flex-start",
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
-          <View
-            style={{
-              height: 38,
-              width: 38,
-              padding: spacing["2"],
-              borderRadius: spacing["12"],
-              justifyContent: "center",
-              alignItems: "center",
-              backgroundColor: selected
-                ? colors["primary-surface-default"]
-                : null,
-            }}
-          >
-            {item?.raw?.chainSymbolImageUrl ? (
-              <FastImage
-                style={{
-                  width: 24,
-                  height: 24,
-                }}
-                resizeMode={FastImage.resizeMode.contain}
-                source={{
-                  uri: item.raw.chainSymbolImageUrl,
-                }}
-              />
-            ) : (
-              <VectorCharacter
-                char={item.chainName[0]}
-                height={15}
-                color={colors["white"]}
-              />
-            )}
-          </View>
-
-          <View
-            style={{
-              justifyContent: "space-between",
-              marginLeft: spacing["12"],
-            }}
-          >
-            <Text
-              style={{
-                ...typography.h6,
-                color: colors["sub-primary-text"],
-                fontWeight: "900",
-              }}
-              numberOfLines={1}
-            >
-              {item.chainName}
-            </Text>
-            <Text
-              style={{
-                color: colors["neutral-text-body"],
-              }}
-              numberOfLines={1}
-            >
-              $
-              {!item.chainId
-                ? totalUsd?.toFixed(2)
-                : Number(groupedData?.[item.chainId]?.sum ?? 0).toFixed(2)}
-            </Text>
-          </View>
-        </View>
-
-        <View>
-          <RadioButton
-            color={
-              selected
-                ? colors["hightlight-surface-active"]
-                : colors["neutral-text-body"]
-            }
-            id={item.chainId}
-            selected={selected}
-            onPress={() => handleSwitchNetwork(item)}
-          />
-        </View>
-      </TouchableOpacity>
-    );
   };
 
   return (
@@ -427,33 +332,6 @@ export const NetworkModal = ({ stakeable }) => {
         alignItems: "center",
       }}
     >
-      {/* <View
-        style={{
-          alignItems: "flex-end",
-          width: "100%",
-        }}
-      >
-        {chainStore.current.chainId === TRON_ID ? null : (
-          <TouchableOpacity
-            onPress={() => {
-              navigate(SCREENS.STACK.Others, {
-                screen: SCREENS.NetworkSelect,
-              });
-              modalStore.close();
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 12,
-                fontWeight: "700",
-                color: colors["primary-surface-default"],
-              }}
-            >
-              + Add network
-            </Text>
-          </TouchableOpacity>
-        )}
-      </View> */}
       <Text
         style={{
           ...typography.h6,
