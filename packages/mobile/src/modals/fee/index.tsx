@@ -27,6 +27,7 @@ export const CustomFee: FunctionComponent<{
           borderRadius: 8,
           borderColor: colors["primary-surface-default"],
         }}
+        maxLength={20}
         placeholder="Fee amount"
         keyboardType={"numeric"}
         labelStyle={{
@@ -49,7 +50,7 @@ export const FeeModal: FunctionComponent<{
 }> = ({ sendConfigs, vertical }) => {
   const [customGas, setCustomGas] = useState(false);
   const { colors } = useTheme();
-  const { modalStore } = useStore();
+  const { modalStore, chainStore } = useStore();
 
   return (
     <WrapViewModal
@@ -61,67 +62,69 @@ export const FeeModal: FunctionComponent<{
       subTitle={"The fee required to successfully conduct a transaction"}
     >
       <View>
-        <View
-          style={{
-            flexDirection: "row",
-            paddingBottom: 16,
-            alignItems: "center",
-            justifyContent: "space-between",
-            borderBottomColor: colors["neutral-border-default"],
-            borderBottomWidth: 1,
-            marginBottom: 8,
-          }}
-        >
+        {chainStore.current.networkType !== "bitcoin" && (
           <View
             style={{
               flexDirection: "row",
+              paddingBottom: 16,
               alignItems: "center",
+              justifyContent: "space-between",
+              borderBottomColor: colors["neutral-border-default"],
+              borderBottomWidth: 1,
+              marginBottom: 8,
             }}
           >
             <View
               style={{
-                width: 44,
-                height: 44,
-                borderRadius: 44,
-                backgroundColor: colors["neutral-surface-action"],
-                justifyContent: "center",
+                flexDirection: "row",
                 alignItems: "center",
               }}
             >
-              <OWIcon
-                name={"wrench"}
-                color={colors["neutral-icon-on-light"]}
-                size={16}
-              />
-            </View>
+              <View
+                style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: 44,
+                  backgroundColor: colors["neutral-surface-action"],
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <OWIcon
+                  name={"wrench"}
+                  color={colors["neutral-icon-on-light"]}
+                  size={16}
+                />
+              </View>
 
-            <OWText
-              style={{
-                fontWeight: "700",
-                fontSize: 16,
-                lineHeight: 34,
-                paddingHorizontal: 8,
-                color: colors["neutral-text-title"],
-              }}
-            >
-              Custom Gas
-            </OWText>
-          </View>
-          <Toggle
-            on={customGas}
-            onChange={(value) => {
-              setCustomGas(value);
-              if (!value) {
-                if (
-                  sendConfigs.feeConfig.feeCurrency &&
-                  !sendConfigs.feeConfig.fee
-                ) {
-                  sendConfigs.feeConfig.setFeeType("average");
+              <OWText
+                style={{
+                  fontWeight: "700",
+                  fontSize: 16,
+                  lineHeight: 34,
+                  paddingHorizontal: 8,
+                  color: colors["neutral-text-title"],
+                }}
+              >
+                Custom Gas
+              </OWText>
+            </View>
+            <Toggle
+              on={customGas}
+              onChange={(value) => {
+                setCustomGas(value);
+                if (!value) {
+                  if (
+                    sendConfigs.feeConfig.feeCurrency &&
+                    !sendConfigs.feeConfig.fee
+                  ) {
+                    sendConfigs.feeConfig.setFeeType("average");
+                  }
                 }
-              }
-            }}
-          />
-        </View>
+              }}
+            />
+          </View>
+        )}
         {customGas && (
           <CustomFee gasConfig={sendConfigs.gasConfig} colors={colors} />
         )}

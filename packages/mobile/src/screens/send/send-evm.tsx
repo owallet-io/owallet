@@ -152,6 +152,7 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
   const { gasPrice } = queriesStore
     .get(chainId)
     .evm.queryGasPrice.getGasPrice();
+  console.log(gasPrice, chainId, "gasPrice");
   useEffect(() => {
     if (!gasPrice) return;
     sendConfigs.gasConfig.setGasPriceStep(gasPrice);

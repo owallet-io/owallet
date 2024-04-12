@@ -1388,9 +1388,9 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinImageUrl:
         "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
       gasPriceStep: {
-        low: 0.01,
-        average: 0.025,
-        high: 0.04,
+        low: 1,
+        average: 1.25,
+        high: 1.5,
       },
     },
     bech32Config: Bech32Address.defaultBech32Config("evmos"),
@@ -1412,8 +1412,9 @@ export const EmbedChainInfos: AppChainInfo[] = [
     features: ["ibc-go", "stargate", "isEvm"],
     txExplorer: {
       name: "Oasis Saphire Scan",
-      txUrl: "https://explorer.sapphire.oasis.io/tx/{txHash}",
-      accountUrl: "https://explorer.sapphire.oasis.io/address/{address}",
+      txUrl: "https://explorer.oasis.io/mainnet/sapphire/tx/{txHash}",
+      accountUrl:
+        "https://explorer.oasis.io/mainnet/sapphire/address/{address}",
     },
   },
   {
@@ -1434,9 +1435,9 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinImageUrl:
         "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
       gasPriceStep: {
-        low: 0.01,
-        average: 0.025,
-        high: 0.04,
+        low: 1,
+        average: 1.25,
+        high: 1.5,
       },
     },
     bech32Config: Bech32Address.defaultBech32Config("evmos"),
@@ -1458,8 +1459,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     features: ["ibc-go", "stargate", "isEvm"],
     txExplorer: {
       name: "Oasis Emerald Scan",
-      txUrl: "https://explorer.emerald.oasis.dev/tx/{txHash}",
-      accountUrl: "https://explorer.emerald.oasis.dev/address/{address}",
+      txUrl: "https://explorer.oasis.io/mainnet/emerald/tx/{txHash}",
+      accountUrl: "https://explorer.oasis.io/mainnet/emerald/address/{address}",
     },
   },
 ];

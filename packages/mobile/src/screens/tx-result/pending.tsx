@@ -108,7 +108,10 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
       await openLink(
         chainInfo.raw.txExplorer.txUrl.replace(
           "{txHash}",
-          chainInfo.chainId === TRON_ID || chainInfo.networkType === "bitcoin"
+          chainInfo.chainId === TRON_ID ||
+            chainInfo.networkType === "bitcoin" ||
+            chainInfo.chainId === ChainIdEnum.OasisSapphire ||
+            chainInfo.chainId === ChainIdEnum.OasisEmerald
             ? txHash
             : txHash.toUpperCase()
         )
