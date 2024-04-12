@@ -28,7 +28,7 @@ import OWText from "@src/components/text/ow-text";
 export const HistoryCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
-  const { accountStore, appInitStore } = useStore();
+  const { accountStore, appInitStore, chainStore } = useStore();
   const { colors } = useTheme();
   const theme = appInitStore.getInitApp.theme;
 
@@ -78,7 +78,6 @@ export const HistoryCard: FunctionComponent<{
 
   const findChainIcon = ({ chainId, chainName }) => {
     let chainIcon = chainIcons.find((c) => c.chainId === chainId);
-
     // Hardcode for Oasis because oraidex-common does not have icon yet
     if (chainName?.includes("Oasis")) {
       chainIcon = {
@@ -97,18 +96,31 @@ export const HistoryCard: FunctionComponent<{
     if (!chainIcon) {
       chainIcon = chainIcons.find((c) => c.chainId === ChainIdEnum.Oraichain);
     }
+
+    return chainIcon;
   };
 
   const renderHistoryItem = useCallback(
     (item) => {
       if (item) {
-        const fromChainIcon = findChainIcon({
-          chainId: item.fromToken?.chainId,
-          chainName: item.fromToken?.chain,
+        let fromChainInfo = chainStore.chainInfosInUI.find((c) => {
+          return c.chainId === item.fromToken?.chainId;
         });
+
+        let toChainInfo = chainStore.chainInfosInUI.find((c) => {
+          return c.chainId === item.toToken?.chainId;
+        });
+
+        console.log("fromChainInfo", fromChainInfo);
+
+        const fromChainIcon = findChainIcon({
+          chainId: fromChainInfo?.chainId,
+          chainName: fromChainInfo?.chainName,
+        });
+
         const toChainIcon = findChainIcon({
-          chainId: item.toToken?.chainId,
-          chainName: item.toToken?.chain,
+          chainId: toChainInfo?.chainId,
+          chainName: toChainInfo?.chainName,
         });
 
         return (
