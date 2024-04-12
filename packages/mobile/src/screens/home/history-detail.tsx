@@ -120,7 +120,7 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
   };
 
   let chainInfo = chainStore.chainInfosInUI.find((c) => {
-    return c.chainId === detail.fromToken?.chainId;
+    return c.chainId === detail?.fromToken?.chainId;
   });
 
   return (
