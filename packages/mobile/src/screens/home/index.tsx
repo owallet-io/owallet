@@ -253,7 +253,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
             tron: keyRingStore.keyRingLedgerAddresses.trx ?? null,
             kwt: accountKawaiiCosmos.bech32Address,
           });
-        }, 1300);
+        }, 1600);
       }
     } else if (
       accountOrai.bech32Address &&
@@ -268,7 +268,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
           tron: getBase58Address(accountTron.evmosHexAddress),
           kwt: accountKawaiiCosmos.bech32Address,
         });
-      }, 1300);
+      }, 1600);
     }
   };
 
