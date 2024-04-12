@@ -85,7 +85,11 @@ export const CommonPageHeader: FunctionComponent<{ title: string }> = ({
                 marginRight: 8,
               }}
             >
-              <OWIcon size={22} name="tdesignscan" />
+              <OWIcon
+                size={22}
+                name="tdesignscan"
+                color={colors["neutral-text-title"]}
+              />
             </TouchableOpacity>
             <TouchableOpacity
               onPress={onAddWallet}
@@ -95,7 +99,11 @@ export const CommonPageHeader: FunctionComponent<{ title: string }> = ({
                 borderRadius: 999,
               }}
             >
-              <OWIcon size={22} name="tdesignwallet" />
+              <OWIcon
+                size={22}
+                name="tdesignwallet"
+                color={colors["neutral-text-title"]}
+              />
             </TouchableOpacity>
           </View>
         }
