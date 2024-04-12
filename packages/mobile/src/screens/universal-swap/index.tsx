@@ -358,7 +358,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           tron: getBase58Address(accountTron.evmosHexAddress),
           kwt: accountKawaiiCosmos.bech32Address,
         });
-      }, 1300);
+      }, 1000);
     }
   };
 
@@ -374,7 +374,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     return () => {
       if (timeoutId) clearTimeout(timeoutId);
     };
-  }, [accountOrai.bech32Address, accountKawaiiCosmos.bech32Address]);
+  }, [accountOrai.bech32Address]);
 
   useEffect(() => {
     const filteredToTokens = filterNonPoolEvmTokens(

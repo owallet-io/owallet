@@ -64,27 +64,54 @@ async function loadNativeBalance(
   tokenInfo: { chainId?: string; rpc?: string }
 ) {
   if (!address) return;
-  const client = await StargateClient.connect(tokenInfo.rpc);
-  const amountAll = await client.getAllBalances(address);
-  let amountDetails: AmountDetails = {};
 
-  // reset native balances
-  cosmosTokens
-    .filter((t) => t.chainId === tokenInfo.chainId && !t.contractAddress)
-    .forEach((t) => {
-      amountDetails[t.denom] = "0";
-    });
+  try {
+    const client = await StargateClient.connect(tokenInfo.rpc);
+    let amountAll = await client.getAllBalances(address);
+    let amountDetails: AmountDetails = {};
 
-  Object.assign(
-    amountDetails, //@ts-ignore
-    Object.fromEntries(
-      amountAll
-        .filter((coin) => tokenMap[coin.denom])
-        .map((coin) => [coin.denom, coin.amount])
-    )
-  );
+    // reset native balances
+    cosmosTokens
+      .filter((t) => t.chainId === tokenInfo.chainId && !t.contractAddress)
+      .forEach((t) => {
+        amountDetails[t.denom] = "0";
+      });
 
-  universalSwapStore.updateAmounts(amountDetails);
+    Object.assign(
+      amountDetails, //@ts-ignore
+      Object.fromEntries(
+        amountAll
+          .filter((coin) => tokenMap[coin.denom])
+          .map((coin) => [coin.denom, coin.amount])
+      )
+    );
+
+    universalSwapStore.updateAmounts(amountDetails);
+  } catch (err) {
+    console.log("error address,", address, err);
+
+    const client = await StargateClient.connect(tokenInfo.rpc);
+    let amountAll = await client.getAllBalances(address);
+    let amountDetails: AmountDetails = {};
+
+    // reset native balances
+    cosmosTokens
+      .filter((t) => t.chainId === tokenInfo.chainId && !t.contractAddress)
+      .forEach((t) => {
+        amountDetails[t.denom] = "0";
+      });
+
+    Object.assign(
+      amountDetails, //@ts-ignore
+      Object.fromEntries(
+        amountAll
+          .filter((coin) => tokenMap[coin.denom])
+          .map((coin) => [coin.denom, coin.amount])
+      )
+    );
+
+    universalSwapStore.updateAmounts(amountDetails);
+  }
 }
 
 const timer = {};
@@ -255,6 +282,8 @@ async function loadTokensCosmos(
       kwtAddress,
       oraiAddress
     );
+
+    console.log("cosmosAddress", cosmosAddress);
 
     loadNativeBalance(updateAmounts, cosmosAddress, chainInfo);
   }

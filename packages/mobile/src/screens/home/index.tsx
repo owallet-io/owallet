@@ -265,7 +265,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
           tron: getBase58Address(accountTron.evmosHexAddress),
           kwt: accountKawaiiCosmos.bech32Address,
         });
-      }, 1300);
+      }, 1000);
     }
   };
 
@@ -281,7 +281,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     return () => {
       if (timeoutId) clearTimeout(timeoutId);
     };
-  }, [accountOrai.bech32Address, accountKawaiiCosmos.bech32Address]);
+  }, [accountOrai.bech32Address]);
 
   const { data: prices } = useCoinGeckoPrices();
 
