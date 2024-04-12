@@ -67,10 +67,12 @@ async function loadNativeBalance(
 
   const client = await StargateClient.connect(tokenInfo.rpc);
   let amountAll = await client.getAllBalances(address);
-  if (tokenInfo.chainId === ChainIdEnum.Injective && amountAll.length === 0) {
+
+  if (tokenInfo.chainId === ChainIdEnum.Injective) {
     // try again if it Injective
     setTimeout(async () => {
       amountAll = await client.getAllBalances(address);
+      console.log("amountAll Injective", amountAll);
     }, 1000);
   }
 
