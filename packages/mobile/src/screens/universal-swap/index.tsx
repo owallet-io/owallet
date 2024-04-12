@@ -327,18 +327,23 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     }
   };
 
-  const onFetchAmount = (tokenReload?: Array<any>) => {
+  const onFetchAmount = (
+    timeoutId: NodeJS.Timeout,
+    tokenReload?: Array<any>
+  ) => {
     universalSwapStore.clearAmounts();
     universalSwapStore.setLoaded(false);
     if (accountOrai.isNanoLedger) {
       if (Object.keys(keyRingStore.keyRingLedgerAddresses).length > 0) {
-        handleFetchAmounts({
-          orai: accountOrai.bech32Address,
-          eth: keyRingStore.keyRingLedgerAddresses.eth ?? null,
-          tron: keyRingStore.keyRingLedgerAddresses.trx ?? null,
-          kwt: accountKawaiiCosmos.bech32Address,
-          tokenReload: tokenReload?.length > 0 ? tokenReload : null,
-        });
+        timeoutId = setTimeout(() => {
+          handleFetchAmounts({
+            orai: accountOrai.bech32Address,
+            eth: keyRingStore.keyRingLedgerAddresses.eth ?? null,
+            tron: keyRingStore.keyRingLedgerAddresses.trx ?? null,
+            kwt: accountKawaiiCosmos.bech32Address,
+            tokenReload: tokenReload?.length > 0 ? tokenReload : null,
+          });
+        }, 1800);
       }
     } else if (
       accountOrai.bech32Address &&
@@ -346,12 +351,14 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       accountTron.evmosHexAddress &&
       accountKawaiiCosmos.bech32Address
     ) {
-      handleFetchAmounts({
-        orai: accountOrai.bech32Address,
-        eth: accountEth.evmosHexAddress,
-        tron: getBase58Address(accountTron.evmosHexAddress),
-        kwt: accountKawaiiCosmos.bech32Address,
-      });
+      timeoutId = setTimeout(() => {
+        handleFetchAmounts({
+          orai: accountOrai.bech32Address,
+          eth: accountEth.evmosHexAddress,
+          tron: getBase58Address(accountTron.evmosHexAddress),
+          kwt: accountKawaiiCosmos.bech32Address,
+        });
+      }, 1800);
     }
   };
 
@@ -360,9 +367,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
     InteractionManager.runAfterInteractions(() => {
       startTransition(() => {
-        timeoutId = setTimeout(() => {
-          onFetchAmount();
-        }, 1700);
+        onFetchAmount(timeoutId);
       });
     });
     // Clean up the timeout if the component unmounts or the dependency changes
@@ -701,7 +706,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             }
           },
         });
-        await onFetchAmount([originalFromToken, originalToToken]);
+        let timeoutId: NodeJS.Timeout;
+        await onFetchAmount(timeoutId, [originalFromToken, originalToToken]);
         const tokens = getTokenInfos({
           tokens: universalSwapStore.getAmount,
           prices: appInitStore.getInitApp.prices,
@@ -732,8 +738,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     const currentDate = Date.now();
     const differenceInMilliseconds = Math.abs(currentDate - refreshDate);
     const differenceInSeconds = differenceInMilliseconds / 1000;
+    let timeoutId: NodeJS.Timeout;
     if (differenceInSeconds > 10) {
-      onFetchAmount();
+      onFetchAmount(timeoutId);
       setRefreshDate(Date.now());
     } else {
       console.log("The dates are 10 seconds or less apart.");
