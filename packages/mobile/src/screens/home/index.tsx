@@ -19,12 +19,9 @@ import {
 import { useStore } from "../../stores";
 import { observer } from "mobx-react-lite";
 import { usePrevious } from "../../hooks";
-// import { BIP44Selectable } from "./bip44-selectable";
 import { useTheme } from "@src/themes/theme-provider";
 import { useFocusEffect } from "@react-navigation/native";
 import { ChainUpdaterService } from "@owallet/background";
-// import { AccountCardEVM } from "./account-card-evm";
-// import { AccountCardBitcoin } from "./account-card-bitcoin";
 import { getBase58Address, ChainIdEnum } from "@owallet/common";
 import { TokensCardAll } from "./tokens-card-all";
 import { AccountBoxAll } from "./account-box-new";
@@ -253,7 +250,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
             tron: keyRingStore.keyRingLedgerAddresses.trx ?? null,
             kwt: accountKawaiiCosmos.bech32Address,
           });
-        }, 1800);
+        }, 800);
       }
     } else if (
       accountOrai.bech32Address &&
@@ -268,7 +265,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
           tron: getBase58Address(accountTron.evmosHexAddress),
           kwt: accountKawaiiCosmos.bech32Address,
         });
-      }, 1800);
+      }, 1300);
     }
   };
 
@@ -284,7 +281,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     return () => {
       if (timeoutId) clearTimeout(timeoutId);
     };
-  }, [accountOrai.bech32Address]);
+  }, [accountOrai.bech32Address, accountKawaiiCosmos.bech32Address]);
 
   const { data: prices } = useCoinGeckoPrices();
 
