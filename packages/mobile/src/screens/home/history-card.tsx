@@ -76,15 +76,41 @@ export const HistoryCard: FunctionComponent<{
 
   const styles = styling(colors);
 
+  const findChainIcon = ({ chainId, chainName }) => {
+    let chainIcon = chainIcons.find((c) => c.chainId === chainId);
+
+    // Hardcode for Oasis because oraidex-common does not have icon yet
+    if (chainName?.includes("Oasis")) {
+      chainIcon = {
+        chainId: chainId,
+        Icon: "https://s2.coinmarketcap.com/static/img/coins/200x200/7653.png",
+      };
+    }
+    // Hardcode for BTC because oraidex-common does not have icon yet
+    if (chainName?.includes("Bit")) {
+      chainIcon = {
+        chainId: chainId,
+        Icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Bitcoin.svg/1200px-Bitcoin.svg.png",
+      };
+    }
+
+    if (!chainIcon) {
+      chainIcon = chainIcons.find((c) => c.chainId === ChainIdEnum.Oraichain);
+    }
+  };
+
   const renderHistoryItem = useCallback(
     (item) => {
       if (item) {
-        const fromChainIcon = chainIcons.find(
-          (c) => c.chainId === item.fromToken?.chainId ?? ChainIdEnum.Oraichain
-        );
-        const toChainIcon = chainIcons.find(
-          (c) => c.chainId === item.toToken?.chainId ?? ChainIdEnum.Oraichain
-        );
+        const fromChainIcon = findChainIcon({
+          chainId: item.fromToken?.chainId,
+          chainName: item.fromToken?.chain,
+        });
+        const toChainIcon = findChainIcon({
+          chainId: item.toToken?.chainId,
+          chainName: item.toToken?.chain,
+        });
+
         return (
           <TouchableOpacity
             onPress={() => {

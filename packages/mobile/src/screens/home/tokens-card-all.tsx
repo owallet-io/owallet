@@ -23,12 +23,11 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { Text } from "@src/components/text";
 import { SCREENS } from "@src/common/constants";
 import { navigate } from "@src/router/root";
-import { ChainIdEnum, getBase58Address, TRC20_LIST } from "@owallet/common";
+import { ChainIdEnum } from "@owallet/common";
 import { API } from "@src/common/api";
 import { chainIcons } from "@oraichain/oraidex-common";
 import { TokenItem } from "../tokens/components/token-item";
 import { HistoryCard } from "./history-card";
-import OWFlatList from "@src/components/page/ow-flat-list";
 import { metrics } from "@src/themes";
 import FastImage from "react-native-fast-image";
 import OWText from "@src/components/text/ow-text";
@@ -55,7 +54,6 @@ export const TokensCardAll: FunctionComponent<{
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
-  const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
@@ -67,8 +65,6 @@ export const TokensCardAll: FunctionComponent<{
       setQueryBalances(balances);
     });
   }, [chainStore.current.chainId]);
-
-  const [tronTokens, setTronTokens] = useState([]);
 
   const getYesterdayAssets = async () => {
     appInitStore.updateYesterdayPriceFeed({});
@@ -138,41 +134,6 @@ export const TokensCardAll: FunctionComponent<{
     universalSwapStore.getLoadStatus.isLoad,
   ]);
 
-  useEffect(() => {
-    InteractionManager.runAfterInteractions(() => {
-      (async function get() {
-        try {
-          if (accountTron.evmosHexAddress) {
-            const res = await API.getTronAccountInfo(
-              {
-                address: getBase58Address(accountTron.evmosHexAddress),
-              },
-              {
-                baseURL: chainStore.current.rpc,
-              }
-            );
-
-            if (res.data?.data.length > 0) {
-              if (res.data?.data[0].trc20) {
-                const tokenArr = [];
-                TRC20_LIST.map((tk) => {
-                  let token = res.data?.data[0].trc20.find(
-                    (t) => tk.contractAddress in t
-                  );
-                  if (token) {
-                    tokenArr.push({ ...tk, amount: token[tk.contractAddress] });
-                  }
-                });
-
-                setTronTokens(tokenArr);
-              }
-            }
-          }
-        } catch (error) {}
-      })();
-    });
-  }, [accountTron.evmosHexAddress]);
-
   const styles = styling(colors);
 
   const onPressToken = async (item) => {
@@ -182,29 +143,29 @@ export const TokensCardAll: FunctionComponent<{
     return;
   };
 
-  const renderTokensFromQueryBalances = () => {
-    //@ts-ignore
-    const tokens = queryBalances?.positiveBalances;
-    if (tokens?.length > 0) {
-      return tokens.map((token, index) => {
-        const priceBalance = priceStore.calculatePrice(token.balance);
-        return (
-          <TokenItem
-            key={index?.toString()}
-            chainInfo={{
-              stakeCurrency: chainStore.current.stakeCurrency,
-              networkType: chainStore.current.networkType,
-              chainId: chainStore.current.chainId,
-            }}
-            balance={token.balance}
-            priceBalance={priceBalance}
-          />
-        );
-      });
-    } else {
-      return <OWEmpty />;
-    }
-  };
+  // const renderTokensFromQueryBalances = () => {
+  //   //@ts-ignore
+  //   const tokens = queryBalances?.positiveBalances;
+  //   if (tokens?.length > 0) {
+  //     return tokens.map((token, index) => {
+  //       const priceBalance = priceStore.calculatePrice(token.balance);
+  //       return (
+  //         <TokenItem
+  //           key={index?.toString()}
+  //           chainInfo={{
+  //             stakeCurrency: chainStore.current.stakeCurrency,
+  //             networkType: chainStore.current.networkType,
+  //             chainId: chainStore.current.chainId
+  //           }}
+  //           balance={token.balance}
+  //           priceBalance={priceBalance}
+  //         />
+  //       );
+  //     });
+  //   } else {
+  //     return <OWEmpty />;
+  //   }
+  // };
 
   const renderTokenItem = useCallback(
     ({ item, index }) => {
@@ -237,7 +198,12 @@ export const TokensCardAll: FunctionComponent<{
             <View style={[styles.wraperItem]}>
               <View style={styles.leftBoxItem}>
                 <View style={styles.iconWrap}>
-                  <OWIcon type="images" source={{ uri: item.icon }} size={28} />
+                  <OWIcon
+                    style={{ borderRadius: 999 }}
+                    type="images"
+                    source={{ uri: item.icon }}
+                    size={32}
+                  />
                 </View>
                 <View style={styles.chainWrap}>
                   <OWIcon
@@ -520,25 +486,26 @@ const styling = (colors) =>
       lineHeight: 20,
     },
     iconWrap: {
-      width: 32,
-      height: 32,
+      width: 44,
+      height: 44,
       borderRadius: 999,
       alignItems: "center",
       justifyContent: "center",
       overflow: "hidden",
-      backgroundColor: colors["neutral-text-action-on-dark-bg"],
+      backgroundColor: colors["neutral-surface-action2"],
     },
     chainWrap: {
-      width: 18,
-      height: 18,
+      width: 22,
+      height: 22,
       borderRadius: 32,
       alignItems: "center",
       justifyContent: "center",
       backgroundColor: colors["neutral-text-action-on-dark-bg"],
       position: "absolute",
       bottom: -6,
-      left: 20,
-      top: 20,
+      left: 26,
+      top: 26,
+      borderWidth: 1,
     },
     active: {
       borderBottomColor: colors["primary-surface-default"],
