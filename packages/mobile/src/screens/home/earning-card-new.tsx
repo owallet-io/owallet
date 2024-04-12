@@ -179,7 +179,7 @@ export const EarningCardNew: FunctionComponent<{
               fontWeight: "600",
               color: colors["neutral-text-action-on-dark-bg"],
             }}
-            label="Claim All"
+            label="Claim"
             onPress={_onPressClaim}
             loading={account.isSendingMsg === "withdrawRewards"}
             disabled={
