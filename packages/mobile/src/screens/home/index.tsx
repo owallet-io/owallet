@@ -174,10 +174,9 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       const currentDate = Date.now();
       const differenceInMilliseconds = Math.abs(currentDate - refreshDate);
       const differenceInSeconds = differenceInMilliseconds / 1000;
-      let timeoutId: NodeJS.Timeout;
       if (differenceInSeconds > 10) {
         universalSwapStore.setLoaded(false);
-        onFetchAmount(timeoutId);
+        onFetchAmount();
       } else {
         console.log("The dates are 10 seconds or less apart.");
       }
@@ -243,17 +242,15 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     universalSwapStore.setLoaded(false);
   }, [accountOrai.bech32Address]);
 
-  const onFetchAmount = (timeoutId: NodeJS.Timeout) => {
+  const onFetchAmount = () => {
     if (accountOrai.isNanoLedger) {
       if (Object.keys(keyRingStore.keyRingLedgerAddresses).length > 0) {
-        timeoutId = setTimeout(() => {
-          handleFetchAmounts({
-            orai: accountOrai.bech32Address,
-            eth: keyRingStore.keyRingLedgerAddresses.eth ?? null,
-            tron: keyRingStore.keyRingLedgerAddresses.trx ?? null,
-            kwt: accountKawaiiCosmos.bech32Address,
-          });
-        }, 1800);
+        handleFetchAmounts({
+          orai: accountOrai.bech32Address,
+          eth: keyRingStore.keyRingLedgerAddresses.eth ?? null,
+          tron: keyRingStore.keyRingLedgerAddresses.trx ?? null,
+          kwt: accountKawaiiCosmos.bech32Address,
+        });
       }
     } else if (
       accountOrai.bech32Address &&
@@ -261,14 +258,12 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       accountTron.evmosHexAddress &&
       accountKawaiiCosmos.bech32Address
     ) {
-      timeoutId = setTimeout(() => {
-        handleFetchAmounts({
-          orai: accountOrai.bech32Address,
-          eth: accountEth.evmosHexAddress,
-          tron: getBase58Address(accountTron.evmosHexAddress),
-          kwt: accountKawaiiCosmos.bech32Address,
-        });
-      }, 1800);
+      handleFetchAmounts({
+        orai: accountOrai.bech32Address,
+        eth: accountEth.evmosHexAddress,
+        tron: getBase58Address(accountTron.evmosHexAddress),
+        kwt: accountKawaiiCosmos.bech32Address,
+      });
     }
   };
 
@@ -277,7 +272,9 @@ export const HomeScreen: FunctionComponent = observer((props) => {
 
     InteractionManager.runAfterInteractions(() => {
       startTransition(() => {
-        onFetchAmount(timeoutId);
+        timeoutId = setTimeout(() => {
+          onFetchAmount();
+        }, 1700);
       });
     });
     // Clean up the timeout if the component unmounts or the dependency changes
