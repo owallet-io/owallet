@@ -80,6 +80,11 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
     }
     appInitStore.updateBalanceByAddress(accountOrai.bech32Address, totalUsd);
   }, [totalUsd, accountOrai.bech32Address, appInitStore]);
+
+  useEffect(() => {
+    setProfit(0);
+  }, [accountOrai.bech32Address]);
+
   const address = account.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses
   );
