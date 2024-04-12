@@ -64,8 +64,16 @@ async function loadNativeBalance(
   tokenInfo: { chainId?: string; rpc?: string }
 ) {
   if (!address) return;
+
   const client = await StargateClient.connect(tokenInfo.rpc);
-  const amountAll = await client.getAllBalances(address);
+  let amountAll = await client.getAllBalances(address);
+  if (tokenInfo.chainId === ChainIdEnum.Injective && amountAll.length === 0) {
+    // try again if it Injective
+    setTimeout(async () => {
+      amountAll = await client.getAllBalances(address);
+    }, 1000);
+  }
+
   let amountDetails: AmountDetails = {};
 
   // reset native balances
@@ -74,6 +82,8 @@ async function loadNativeBalance(
     .forEach((t) => {
       amountDetails[t.denom] = "0";
     });
+
+  console.log("amountAll", address, amountAll);
 
   Object.assign(
     amountDetails, //@ts-ignore
@@ -255,6 +265,8 @@ async function loadTokensCosmos(
       kwtAddress,
       oraiAddress
     );
+
+    console.log("cosmosAddress", cosmosAddress);
 
     loadNativeBalance(updateAmounts, cosmosAddress, chainInfo);
   }
