@@ -157,6 +157,14 @@ export const CopyAddressModal: FunctionComponent<{
               };
             }
 
+            // Hardcode for Neutaro because oraidex-common does not have icon yet
+            if (item.name.toLowerCase().includes("neutaro")) {
+              chainIcon = {
+                chainId: chainId,
+                Icon: "https://assets.coingecko.com/coins/images/36277/large/Neutaro_logo.jpg?1711371142",
+              };
+            }
+
             if (!chainIcon) {
               chainIcon = chainIcons.find(
                 (c) => c.chainId === ChainIdEnum.Oraichain

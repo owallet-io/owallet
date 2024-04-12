@@ -186,8 +186,21 @@ export const TokensCardAll: FunctionComponent<{
             percent = Number((profit / yesterday.value) * 100 ?? 0).toFixed(2);
           }
         }
-        const chainIcon = chainIcons.find((c) => c.chainId === item.chainId);
 
+        let chainIcon = chainIcons.find((c) => c.chainId === item.chainId);
+        let tokenIcon = item.icon;
+
+        // Hardcode for Neutaro because oraidex-common does not have icon yet
+        if (item.chain.toLowerCase().includes("neutaro")) {
+          chainIcon = {
+            chainId: item.chainId,
+            Icon: "https://assets.coingecko.com/coins/images/36277/large/Neutaro_logo.jpg?1711371142",
+          };
+        }
+        if (item.asset.toLowerCase().includes("ntmpi")) {
+          tokenIcon =
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPW-5R-30JcMNKXbm6vSsi5e_YfRYgQxqIuUCpTbkzpQ&s";
+        }
         return (
           <TouchableOpacity
             onPress={() => {
@@ -201,7 +214,7 @@ export const TokensCardAll: FunctionComponent<{
                   <OWIcon
                     style={{ borderRadius: 999 }}
                     type="images"
-                    source={{ uri: item.icon }}
+                    source={{ uri: tokenIcon }}
                     size={32}
                   />
                 </View>
@@ -500,12 +513,13 @@ const styling = (colors) =>
       borderRadius: 32,
       alignItems: "center",
       justifyContent: "center",
-      backgroundColor: colors["neutral-text-action-on-dark-bg"],
+      backgroundColor: colors["neutral-icon-on-dark"],
       position: "absolute",
       bottom: -6,
       left: 26,
       top: 26,
       borderWidth: 1,
+      borderColor: colors["neutral-border-bold"],
     },
     active: {
       borderBottomColor: colors["primary-surface-default"],
