@@ -44,6 +44,11 @@ export const EarningCardNew: FunctionComponent<{
   );
   const stakingReward = queryReward.stakableReward;
   const totalStakingReward = priceStore.calculatePrice(stakingReward);
+  const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(
+    account.bech32Address
+  );
+  const delegated = queryDelegated.total;
+  const totalPrice = priceStore.calculatePrice(delegated);
 
   const _onPressClaim = async () => {
     try {
@@ -183,6 +188,22 @@ export const EarningCardNew: FunctionComponent<{
               queryReward.pendingRewardValidatorAddresses.length === 0
             }
           />
+        </View>
+        <View
+          style={{
+            backgroundColor: colors["primary-surface-subtle"],
+            marginTop: 6,
+            borderRadius: 16,
+            paddingHorizontal: 12,
+            paddingVertical: 4,
+          }}
+        >
+          <Text weight="500" color={colors["neutral-text-action-on-light-bg"]}>
+            Staked:{" "}
+            {totalPrice
+              ? totalPrice.toString()
+              : delegated.shrink(true).maxDecimals(6).toString()}
+          </Text>
         </View>
       </View>
     </OWBox>
