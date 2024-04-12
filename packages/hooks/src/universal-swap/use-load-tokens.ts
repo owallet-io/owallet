@@ -65,38 +65,53 @@ async function loadNativeBalance(
 ) {
   if (!address) return;
 
-  const client = await StargateClient.connect(tokenInfo.rpc);
-  let amountAll = await client.getAllBalances(address);
+  try {
+    const client = await StargateClient.connect(tokenInfo.rpc);
+    let amountAll = await client.getAllBalances(address);
+    let amountDetails: AmountDetails = {};
 
-  if (tokenInfo.chainId === ChainIdEnum.Injective) {
-    // try again if it Injective
-    setTimeout(async () => {
-      amountAll = await client.getAllBalances(address);
-      console.log("amountAll Injective", amountAll);
-    }, 1000);
+    // reset native balances
+    cosmosTokens
+      .filter((t) => t.chainId === tokenInfo.chainId && !t.contractAddress)
+      .forEach((t) => {
+        amountDetails[t.denom] = "0";
+      });
+
+    Object.assign(
+      amountDetails, //@ts-ignore
+      Object.fromEntries(
+        amountAll
+          .filter((coin) => tokenMap[coin.denom])
+          .map((coin) => [coin.denom, coin.amount])
+      )
+    );
+
+    universalSwapStore.updateAmounts(amountDetails);
+  } catch (err) {
+    console.log("error address,", address, err);
+
+    const client = await StargateClient.connect(tokenInfo.rpc);
+    let amountAll = await client.getAllBalances(address);
+    let amountDetails: AmountDetails = {};
+
+    // reset native balances
+    cosmosTokens
+      .filter((t) => t.chainId === tokenInfo.chainId && !t.contractAddress)
+      .forEach((t) => {
+        amountDetails[t.denom] = "0";
+      });
+
+    Object.assign(
+      amountDetails, //@ts-ignore
+      Object.fromEntries(
+        amountAll
+          .filter((coin) => tokenMap[coin.denom])
+          .map((coin) => [coin.denom, coin.amount])
+      )
+    );
+
+    universalSwapStore.updateAmounts(amountDetails);
   }
-
-  let amountDetails: AmountDetails = {};
-
-  // reset native balances
-  cosmosTokens
-    .filter((t) => t.chainId === tokenInfo.chainId && !t.contractAddress)
-    .forEach((t) => {
-      amountDetails[t.denom] = "0";
-    });
-
-  console.log("amountAll", address, amountAll);
-
-  Object.assign(
-    amountDetails, //@ts-ignore
-    Object.fromEntries(
-      amountAll
-        .filter((coin) => tokenMap[coin.denom])
-        .map((coin) => [coin.denom, coin.amount])
-    )
-  );
-
-  universalSwapStore.updateAmounts(amountDetails);
 }
 
 const timer = {};
