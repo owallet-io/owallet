@@ -227,7 +227,11 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
               <LoadingSpinner color={colors["gray-150"]} size={22} />
             </View>
           )}
-          <TouchableOpacity onPress={_onPressMyWallet} style={styles.btnAcc}>
+          <TouchableOpacity
+            disabled={!universalSwapStore.getLoadStatus.isLoad}
+            onPress={_onPressMyWallet}
+            style={styles.btnAcc}
+          >
             <Image
               style={styles.infoIcon}
               source={require("../../assets/images/default-avatar.png")}
