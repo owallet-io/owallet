@@ -30,6 +30,7 @@ import {
   capitalizedText,
   handleSaveHistory,
   HISTORY_STATUS,
+  shortenAddress,
   showToast,
 } from "@src/utils/helper";
 import { RouteProp, useRoute } from "@react-navigation/native";
@@ -439,9 +440,9 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
                   Type
                 </OWText>
                 <View
-                  style={{
-                    flexDirection: "row",
-                  }}
+                // style={{
+                //   flexDirection: "row",
+                // }}
                 >
                   <OWText color={colors["neutral-text-title"]} weight="500">
                     {
@@ -449,6 +450,9 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
                         (item, index) => item.id === account.addressType
                       )?.name
                     }
+                  </OWText>
+                  <OWText color={colors["neutral-text-body"]}>
+                    {shortenAddress(account.btcAddress)}
                   </OWText>
                 </View>
               </View>
