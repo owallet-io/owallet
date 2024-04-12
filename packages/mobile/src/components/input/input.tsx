@@ -19,6 +19,7 @@ export const TextInput = React.forwardRef<
     labelStyle?: TextStyle;
     containerStyle?: ViewStyle;
     inputContainerStyle?: ViewStyle;
+    containerError?: ViewStyle;
     errorLabelStyle?: TextStyle;
     inputStyle?: TextStyle;
     iconLabel?: React.ReactNode;
@@ -147,7 +148,7 @@ export const TextInput = React.forwardRef<
         )
       ) : null}
       {props.error ? (
-        <View>
+        <View style={restProps.containerError}>
           <Text
             style={StyleSheet.flatten([
               style.flatten([

@@ -116,7 +116,10 @@ export const NewAmountInput: FunctionComponent<{
             label={""}
             labelStyle={labelStyle}
             containerStyle={containerStyle}
-            inputContainerStyle={inputContainerStyle}
+            inputContainerStyle={{
+              ...inputContainerStyle,
+              paddingHorizontal: 0,
+            }}
             textAlign="right"
             errorLabelStyle={errorLabelStyle}
             maxLength={20}
@@ -128,6 +131,9 @@ export const NewAmountInput: FunctionComponent<{
             placeholderTextColor={placeholderTextColor}
             error={errorText}
             keyboardType="numeric"
+            containerError={{
+              alignItems: "flex-end",
+            }}
             style={[
               Platform.select({
                 ios: {},
