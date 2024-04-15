@@ -355,9 +355,9 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
                   </OWText>
                 </View>
               }
-              amount={`${
-                detail.fromAmount
-              } ${detail.fromToken?.asset.toUpperCase()}`}
+              amount={`${detail.fromAmount} ${
+                detail.fromToken?.asset.toUpperCase() ?? ""
+              }`}
               toAmount={
                 detail.type === HISTORY_STATUS.SWAP
                   ? `+${detail.toAmount} ${detail.toToken?.asset.toUpperCase()}`
