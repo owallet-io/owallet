@@ -26,7 +26,6 @@ import {
 import { useTheme } from "./themes/theme-provider";
 import { PincodeUnlockScreen } from "./screens/unlock/pincode-unlock";
 import { RecoverPhraseScreen } from "./screens/register/mnemonic/recover-phrase";
-import { PincodeScreen } from "./screens/pincode/pincode";
 
 const Stack = createStackNavigator();
 export const AppNavigation: FunctionComponent = observer(() => {
@@ -85,11 +84,6 @@ export const AppNavigation: FunctionComponent = observer(() => {
               }}
               // headerMode="screen"
             >
-              <Stack.Screen
-                name={SCREENS.STACK.Pincode}
-                component={PincodeScreen}
-              />
-
               <Stack.Screen
                 name={SCREENS.STACK.PincodeUnlock}
                 component={PincodeUnlockScreen}

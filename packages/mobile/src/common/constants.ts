@@ -39,6 +39,7 @@ export const SCREENS = {
   RegisterRecoverMnemonic: "Register.RecoverMnemonic",
   RegisterRecoverPhrase: "Register.RecoverPhrase",
   RegisterNewLedger: "Register.NewLedger",
+  PincodeScreen: "PincodeScreen",
   Send: "Send",
   SendEvm: "SendEvm",
   SendOasis: "SendOasis",
@@ -227,6 +228,9 @@ export const SCREENS_OPTIONS: IScreenOption = {
   },
   [SCREENS.SendTron]: {
     // title: "Send",
+    title: HEADER_KEY.notShowHeader,
+  },
+  [SCREENS.PincodeScreen]: {
     title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.SendOasis]: {

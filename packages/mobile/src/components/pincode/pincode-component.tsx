@@ -12,16 +12,12 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
-import { observer } from "mobx-react-lite";
-import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
 import OWText from "@src/components/text/ow-text";
 import { metrics } from "@src/themes";
 import NumericPad from "react-native-numeric-pad";
 import SmoothPinCodeInput from "react-native-smooth-pincode-input";
-import { useSmartNavigation } from "@src/navigation.provider";
-import { checkRouter } from "@src/router/root";
 import { TextInput } from "@src/components/input";
 import { OWButton } from "@src/components/button";
 import OWIcon from "@src/components/ow-icon/ow-icon";
@@ -38,13 +34,13 @@ interface FormData {
 export const Pincode: FunctionComponent<{
   onVerifyPincode: Function;
   needConfirmation: boolean;
-  onGoBack: Function;
+  onGoBack?: Function;
   label?: string;
-}> = ({ onVerifyPincode, needConfirmation, onGoBack, label }) => {
+  subLabel?: string;
+}> = ({ onVerifyPincode, needConfirmation, onGoBack, label, subLabel }) => {
   const { appInitStore } = useStore();
 
   const { colors } = useTheme();
-  const smartNavigation = useSmartNavigation();
 
   const [statusPass, setStatusPass] = useState(false);
   const [isNumericPad, setNumericPad] = useState(true);
@@ -56,8 +52,6 @@ export const Pincode: FunctionComponent<{
   const [isLoading, setIsLoading] = useState(false);
   const [isBiometricLoading, setIsBiometricLoading] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
-
-  const navigation = useNavigation();
 
   const [isCreating, setIsCreating] = useState(false);
 
@@ -108,11 +102,6 @@ export const Pincode: FunctionComponent<{
     }
   };
 
-  const onHandeCreateMnemonic = () => {
-    numpadRef?.current?.clearAll();
-    onVerifyPincode();
-  };
-
   const onHandleConfirmPincodeError = () => {
     showToast({
       message: `${counter} times false. Please try again`,
@@ -137,7 +126,7 @@ export const Pincode: FunctionComponent<{
 
   const handleCheckConfirm = (confirmPass) => {
     if (confirmCode === confirmPass && counter < 3) {
-      onHandeCreateMnemonic();
+      onVerifyPincode(code);
     } else {
       setCounter(counter + 1);
       if (counter > 3) {
@@ -166,7 +155,10 @@ export const Pincode: FunctionComponent<{
         }
       }
     } else {
-      handleSetPassword();
+      if (code.length >= 6) {
+        numpadRef?.current?.clearAll();
+        onVerifyPincode(code);
+      }
     }
   }, [code]);
 
@@ -230,7 +222,10 @@ export const Pincode: FunctionComponent<{
         </View>
       ) : null}
       <View style={styles.container}>
-        <TouchableOpacity style={styles.goBack} onPress={() => onGoBack()}>
+        <TouchableOpacity
+          style={styles.goBack}
+          onPress={() => onGoBack && onGoBack()}
+        >
           <OWIcon
             size={16}
             color={colors["neutral-icon-on-light"]}
@@ -256,9 +251,15 @@ export const Pincode: FunctionComponent<{
             </OWText>
           )}
 
-          <OWText color={colors["neutral-text-body"]} weight={"500"}>
-            Secure your wallet by setting a passcode
-          </OWText>
+          {subLabel ? (
+            <OWText color={colors["neutral-text-body"]} weight={"500"}>
+              {subLabel}
+            </OWText>
+          ) : (
+            <OWText color={colors["neutral-text-body"]} weight={"500"}>
+              Secure your wallet by setting a passcode
+            </OWText>
+          )}
           <View
             style={{
               paddingLeft: 20,
@@ -370,6 +371,8 @@ export const Pincode: FunctionComponent<{
               buttonSize={60}
               activeOpacity={0.1}
               onValueChange={(value) => {
+                console.log("setCode", value);
+
                 setCode(value);
               }}
               allowDecimal={false}

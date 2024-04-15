@@ -11,6 +11,9 @@ import { useNavigation } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { View } from "react-native";
+import { showToast } from "@src/utils/helper";
+import { SCREENS } from "@src/common/constants";
+import { navigate } from "@src/router/root";
 export const SettingRemoveAccountItem: FunctionComponent<{
   topBorder?: boolean;
 }> = observer(({ topBorder }) => {
@@ -82,10 +85,49 @@ export const SettingRemoveAccountItem: FunctionComponent<{
         paragraph="Remove current wallet"
         paragraphStyle={{ color: colors["error-text-action"] }}
         onPress={() => {
-          setIsOpenModal(true);
+          navigate("Others", {
+            screen: SCREENS.PincodeScreen,
+            params: {
+              onVerifyPincode: async (passcode) => {
+                try {
+                  const index = keyRingStore.multiKeyStoreInfo.findIndex(
+                    (keyStore) => keyStore.selected
+                  );
+
+                  if (index >= 0) {
+                    await keyRingStore.deleteKeyRing(index, passcode);
+                    // await onUnSubscribeToTopic();
+                    analyticsStore.logEvent("Account removed");
+
+                    if (!keyRingStore.multiKeyStoreInfo.length) {
+                      await keychainStore.reset();
+
+                      navigation.reset({
+                        index: 0,
+                        routes: [
+                          {
+                            name: "Unlock",
+                          },
+                        ],
+                      });
+                    }
+                  }
+                } catch (err) {
+                  showToast({
+                    message: "Invalid passcode",
+                    type: "danger",
+                  });
+                }
+              },
+              onGoBack: () => navigation.canGoBack && navigation.goBack(),
+              label: "Enter your passcode",
+              subLabel: "Enter your passcode to remove current wallet",
+            },
+          });
+          // setIsOpenModal(true);
         }}
       />
-      <PasswordInputModal
+      {/* <PasswordInputModal
         isOpen={isOpenModal}
         close={() => setIsOpenModal(false)}
         title="Remove wallet"
@@ -116,7 +158,7 @@ export const SettingRemoveAccountItem: FunctionComponent<{
             }
           }
         }}
-      />
+      /> */}
     </React.Fragment>
   );
 });
