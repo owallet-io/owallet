@@ -21,7 +21,6 @@ import { SCREENS } from "@src/common/constants";
 export const BookmarksScreen = observer(() => {
   const { colors } = useTheme();
   const { browserStore } = useStore();
-  console.log(browserStore.getBookmarks, "browserStore.getBookmarks");
   const onDetailBrowser = (url) => {
     if (!url) return;
     navigate(SCREENS.DetailsBrowser, {
@@ -35,7 +34,6 @@ export const BookmarksScreen = observer(() => {
     return;
   };
   const renderItem = ({ item, drag, isActive }) => {
-    console.log(getFavicon(item?.uri), "getFavicon(item?.uri)");
     return (
       <TouchableOpacity
         onPress={() => onDetailBrowser(item?.uri)}

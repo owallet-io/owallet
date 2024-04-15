@@ -6,7 +6,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "@src/themes/theme-provider";
 import WebView, { WebViewMessageEvent } from "react-native-webview";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useInjectedSourceCode } from "@src/screens/web/hooks/inject-hook";
 import EventEmitter from "eventemitter3";
 import {
   useIsFocused,
@@ -28,7 +27,6 @@ import { URL } from "react-native-url-polyfill";
 import DeviceInfo from "react-native-device-info";
 import { SCREENS } from "@src/common/constants";
 import LottieView from "lottie-react-native";
-import { items } from "@sentry/react-native/dist/js/utils/envelope";
 
 export const DetailsBrowserScreen = observer((props) => {
   const { top } = useSafeAreaInsets();
