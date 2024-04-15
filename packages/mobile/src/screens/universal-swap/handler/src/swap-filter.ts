@@ -3,8 +3,8 @@ import { flattenTokens } from "@oraichain/oraidex-common";
 const notAllowSwapCoingeckoIds = [
   "kawaii-islands",
   "milky-token",
-  "injective-protocol",
-  "bitcoin",
+  // "injective-protocol",
+  // "bitcoin",
 ];
 // universal swap. Currently we dont support from tokens that are not using the ibc wasm channel
 const notAllowSwapFromChainIds = [
@@ -12,7 +12,7 @@ const notAllowSwapFromChainIds = [
   "osmosis-1",
   "cosmoshub-4",
   "oraibridge-subnet-2",
-  "injective-1",
+  // "injective-1",
   "noble-1",
 ];
 export const swapFromTokens = flattenTokens.filter(
