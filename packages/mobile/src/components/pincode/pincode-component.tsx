@@ -42,12 +42,16 @@ export const Pincode: FunctionComponent = observer((props) => {
         string,
         {
           onVerifyPincode: Function;
+          needConfirmation: boolean;
+          label?: string;
         }
       >,
       string
     >
   >();
   const { appInitStore } = useStore();
+
+  const { onVerifyPincode, needConfirmation, label } = route?.params;
 
   const { colors } = useTheme();
   const smartNavigation = useSmartNavigation();
@@ -124,6 +128,7 @@ export const Pincode: FunctionComponent = observer((props) => {
 
   const onHandeCreateMnemonic = () => {
     numpadRef?.current?.clearAll();
+    onVerifyPincode();
   };
 
   const onHandleConfirmPincodeError = () => {
@@ -170,12 +175,16 @@ export const Pincode: FunctionComponent = observer((props) => {
   };
 
   useEffect(() => {
-    if (code.length >= 6) {
-      if (confirmCode) {
-        handleConfirm();
-      } else {
-        handleSetPassword();
+    if (needConfirmation) {
+      if (code.length >= 6) {
+        if (confirmCode) {
+          handleConfirm();
+        } else {
+          handleSetPassword();
+        }
       }
+    } else {
+      handleSetPassword();
     }
   }, [code]);
 
@@ -247,9 +256,24 @@ export const Pincode: FunctionComponent = observer((props) => {
           />
         </TouchableOpacity>
         <View style={styles.aic}>
-          <OWText color={colors["neutral-text-title"]} variant="h2" typo="bold">
-            {confirmCode ? "Confirm your" : "Set"} passcode
-          </OWText>
+          {label ? (
+            <OWText
+              color={colors["neutral-text-title"]}
+              variant="h2"
+              typo="bold"
+            >
+              {label}
+            </OWText>
+          ) : (
+            <OWText
+              color={colors["neutral-text-title"]}
+              variant="h2"
+              typo="bold"
+            >
+              {confirmCode ? "Confirm your" : "Set"} passcode
+            </OWText>
+          )}
+
           <OWText color={colors["neutral-text-body"]} weight={"500"}>
             Secure your wallet by setting a passcode
           </OWText>

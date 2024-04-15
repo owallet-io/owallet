@@ -294,6 +294,7 @@ export const NewPincodeScreen: FunctionComponent = observer((props) => {
   const styles = useStyles();
 
   return mode === "add" ? (
+    // @ts-ignore
     <LoadingWalletScreen mode={mode} />
   ) : (
     <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
