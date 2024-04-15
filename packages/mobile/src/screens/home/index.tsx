@@ -289,6 +289,10 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     appInitStore.updatePrices(prices);
   }, [prices]);
 
+  useEffect(() => {
+    appInitStore.selectAllNetworks(true);
+  }, []);
+
   // const renderAccountCard = (() => {
   //   if (chainStore.current.networkType === "bitcoin") {
   //     return <AccountCardBitcoin containerStyle={styles.containerStyle} />;

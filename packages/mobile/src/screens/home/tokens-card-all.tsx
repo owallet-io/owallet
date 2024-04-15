@@ -251,14 +251,15 @@ export const TokensCardAll: FunctionComponent<{
                       weight="500"
                       color={colors["neutral-text-heading"]}
                     >
-                      {Number(item.balance.toFixed(4))} {item.asset}
+                      {Number(item.balance.toFixed(4)).toLocaleString()}{" "}
+                      {item.asset}
                     </Text>
                     <Text
                       size={14}
                       style={{ lineHeight: 24 }}
                       color={colors["neutral-text-body"]}
                     >
-                      ${item.value.toFixed(2)}
+                      ${item.value.toFixed(2).toLocaleString()}
                     </Text>
                     <Text
                       size={14}

@@ -61,7 +61,8 @@ type AmountDetails = { [denom: string]: string };
 async function loadNativeBalance(
   universalSwapStore: any,
   address: string,
-  tokenInfo: { chainId?: string; rpc?: string }
+  tokenInfo: { chainId?: string; rpc?: string },
+  retryCount?: number
 ) {
   if (!address) return;
 
@@ -89,28 +90,17 @@ async function loadNativeBalance(
     universalSwapStore.updateAmounts(amountDetails);
   } catch (err) {
     console.log("error address,", address, err);
+    let retry = retryCount ? retryCount + 1 : 1;
+    if (retry >= EVM_BALANCE_RETRY_COUNT)
+      throw `Cannot loadNativeBalance with error: ${err}`;
 
-    const client = await StargateClient.connect(tokenInfo.rpc);
-    let amountAll = await client.getAllBalances(address);
-    let amountDetails: AmountDetails = {};
-
-    // reset native balances
-    cosmosTokens
-      .filter((t) => t.chainId === tokenInfo.chainId && !t.contractAddress)
-      .forEach((t) => {
-        amountDetails[t.denom] = "0";
-      });
-
-    Object.assign(
-      amountDetails, //@ts-ignore
-      Object.fromEntries(
-        amountAll
-          .filter((coin) => tokenMap[coin.denom])
-          .map((coin) => [coin.denom, coin.amount])
-      )
+    await new Promise((resolve) => setTimeout(resolve, 10000));
+    return loadNativeBalance(
+      universalSwapStore,
+      address,
+      tokenInfo,
+      retryCount
     );
-
-    universalSwapStore.updateAmounts(amountDetails);
   }
 }
 
