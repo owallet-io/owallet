@@ -5,7 +5,6 @@ import useHeaderOptions from "@src/hooks/use-header";
 import { SCREENS, SCREENS_OPTIONS } from "@src/common/constants";
 import { SendScreen } from "@src/screens/send";
 import { SendEvmScreen } from "@src/screens/send/send-evm";
-import { TransferNFTScreen } from "@src/screens/transfer-nft";
 import { DashBoardScreen } from "@src/screens/dashboard";
 import { CameraScreen } from "@src/screens/camera";
 import { SelectNetworkScreen } from "@src/screens/network";
@@ -44,7 +43,6 @@ export const OtherNavigation: FC = () => {
       <Stack.Screen name={SCREENS.NewSend} component={NewSendScreen} />
       <Stack.Screen name={SCREENS.SendEvm} component={SendEvmScreen} />
       <Stack.Screen name={SCREENS.SendOasis} component={SendEvmScreen} />
-      <Stack.Screen name={SCREENS.TransferNFT} component={TransferNFTScreen} />
       <Stack.Screen
         name={SCREENS.Transactions}
         component={HistoryTransactionsScreen}
