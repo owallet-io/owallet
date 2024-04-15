@@ -1,4 +1,4 @@
-import { FlatList, useWindowDimensions, View } from "react-native";
+import { Clipboard, FlatList, useWindowDimensions, View } from "react-native";
 import React, { useState } from "react";
 import { TabBar, TabView } from "react-native-tab-view";
 import OWText from "@src/components/text/ow-text";
@@ -82,6 +82,12 @@ export const BrowserScreen = observer(() => {
   const onClear = () => {
     setUrl("");
   };
+  const onPaste = async () => {
+    const text = await Clipboard.getString();
+    if (text) {
+      setUrl(text);
+    }
+  };
   return (
     <PageWithViewInBottomTabView
       // disableSafeArea={true}
@@ -121,13 +127,22 @@ export const BrowserScreen = observer(() => {
         defaultValue={url}
         onChangeText={(txt) => setUrl(txt.toLowerCase())}
         inputRight={
-          <OWButtonIcon
-            fullWidth={false}
-            colorIcon={colors["neutral-text-action-on-light-bg"]}
-            name={"tdesignclose"}
-            sizeIcon={20}
-            onPress={onClear}
-          />
+          <>
+            <OWButtonIcon
+              fullWidth={false}
+              colorIcon={colors["neutral-text-action-on-light-bg"]}
+              name={"tdesignfile-paste"}
+              sizeIcon={18}
+              onPress={onPaste}
+            />
+            <OWButtonIcon
+              fullWidth={false}
+              colorIcon={colors["neutral-text-action-on-light-bg"]}
+              name={"tdesignclose"}
+              sizeIcon={20}
+              onPress={onClear}
+            />
+          </>
         }
       />
       <View
