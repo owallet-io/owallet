@@ -3,30 +3,13 @@ import { RouteProp, useRoute } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
 import _ from "lodash";
-import {
-  View,
-  Animated,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-  ScrollView,
-} from "react-native";
+import { View, Image, ScrollView } from "react-native";
 import { Text } from "@src/components/text";
 import { useSmartNavigation } from "../../navigation.provider";
-import { RightArrowIcon } from "../../components/icon";
-import { Card, OWBox } from "../../components/card";
-import { metrics } from "../../themes";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { CommonActions } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
-import { PageWithView } from "@src/components/page";
-import imagesAssets from "@src/assets/images";
-import {
-  capitalizedText,
-  formatContractAddress,
-  openLink,
-} from "@src/utils/helper";
-import { OWButton } from "@src/components/button";
+import { capitalizedText, formatContractAddress } from "@src/utils/helper";
+
 import { PageHeader } from "@src/components/header/header-new";
 import image from "@src/assets/images";
 import OWCard from "@src/components/card/ow-card";
@@ -34,12 +17,11 @@ import ItemReceivedToken from "@src/screens/transactions/components/item-receive
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import OWText from "@src/components/text/ow-text";
 import OWButtonGroup from "@src/components/button/OWButtonGroup";
-import owIcon from "@src/components/ow-icon/ow-icon";
+
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { AppCurrency, StdFee } from "@owallet/types";
 import { CoinPrimitive } from "@owallet/stores";
 import { CoinPretty, Dec } from "@owallet/unit";
-import { Bech32Address } from "@owallet/cosmos";
 
 export const TxFailedResultScreen: FunctionComponent = observer(() => {
   const { chainStore, priceStore } = useStore();
@@ -137,10 +119,7 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
           flex: 1,
         }}
       >
-        <PageHeader
-          title={"Transaction details"}
-          colors={colors["neutral-text-title"]}
-        />
+        <PageHeader title={"Transaction details"} />
         <ScrollView showsVerticalScrollIndicator={false}>
           <View
             style={{

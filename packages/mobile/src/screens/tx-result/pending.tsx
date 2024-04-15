@@ -2,17 +2,9 @@ import React, { FunctionComponent, useEffect, useState } from "react";
 import { RouteProp, useIsFocused, useRoute } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
-import {
-  View,
-  StyleSheet,
-  Image,
-  ScrollView,
-  InteractionManager,
-} from "react-native";
+import { View, Image, ScrollView, InteractionManager } from "react-native";
 import { Text } from "@src/components/text";
 import { useSmartNavigation } from "../../navigation.provider";
-import { Bech32Address, TendermintTxTracer } from "@owallet/cosmos";
-import { Buffer } from "buffer";
 import { metrics } from "../../themes";
 import { useTheme } from "@src/themes/theme-provider";
 import {
@@ -231,10 +223,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
           flex: 1,
         }}
       >
-        <PageHeader
-          title={"Transaction details"}
-          colors={colors["neutral-text-title"]}
-        />
+        <PageHeader title={"Transaction details"} />
         <ScrollView showsVerticalScrollIndicator={false}>
           <View
             style={{

@@ -4,19 +4,19 @@ import { Text } from "@src/components/text";
 import { metrics, spacing } from "../../themes";
 import OWIcon from "../ow-icon/ow-icon";
 import { useSmartNavigation } from "@src/navigation.provider";
+import { useTheme } from "@src/themes/theme-provider";
 
 export const PageHeader: FunctionComponent<{
   title?: string;
   subtitle?: string;
-  colors: any;
   left?: ReactElement;
   middle?: ReactElement;
   onPress?: () => void;
   onGoBack?: () => void;
   right?: ReactElement;
-}> = ({ title, subtitle, right, middle, left, onGoBack, colors }) => {
+}> = ({ title, subtitle, right, middle, left, onGoBack }) => {
   const smartNavigation = useSmartNavigation();
-
+  const { colors } = useTheme();
   const goBack = () => {
     smartNavigation.goBack();
   };

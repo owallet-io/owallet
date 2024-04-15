@@ -2,13 +2,7 @@ import React, { FunctionComponent, useEffect, useState } from "react";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
-import {
-  View,
-  Image,
-  TouchableOpacity,
-  ScrollView,
-  InteractionManager,
-} from "react-native";
+import { View, Image, ScrollView, InteractionManager } from "react-native";
 import { Text } from "@src/components/text";
 import { useSmartNavigation } from "../../navigation.provider";
 import { CommonActions } from "@react-navigation/native";
@@ -26,11 +20,9 @@ import image from "@src/assets/images";
 import OWCard from "@src/components/card/ow-card";
 import OWText from "@src/components/text/ow-text";
 import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
-import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { CoinPretty, Dec } from "@owallet/unit";
 import { AppCurrency, StdFee } from "@owallet/types";
 import { CoinPrimitive } from "@owallet/stores";
-import { Bech32Address } from "@owallet/cosmos";
 import _ from "lodash";
 export const TxSuccessResultScreen: FunctionComponent = observer(() => {
   const { chainStore, priceStore, txsStore, accountStore, keyRingStore } =
@@ -182,10 +174,7 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
           flex: 1,
         }}
       >
-        <PageHeader
-          title={"Transaction details"}
-          colors={colors["neutral-text-title"]}
-        />
+        <PageHeader title={"Transaction details"} />
         <ScrollView showsVerticalScrollIndicator={false}>
           <View
             style={{
