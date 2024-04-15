@@ -103,8 +103,9 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
           chainInfo.chainId === TRON_ID ||
             chainInfo.networkType === "bitcoin" ||
             chainInfo.chainId === ChainIdEnum.OasisSapphire ||
-            chainInfo.chainId === ChainIdEnum.OasisEmerald
-            ? txHash
+            chainInfo.chainId === ChainIdEnum.OasisEmerald ||
+            chainInfo.chainId === ChainIdEnum.Oasis
+            ? txHash.toLowerCase()
             : txHash.toUpperCase()
         )
       );
