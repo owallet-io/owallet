@@ -35,23 +35,13 @@ interface FormData {
   confirmPassword: string;
 }
 
-export const Pincode: FunctionComponent = observer((props) => {
-  const route = useRoute<
-    RouteProp<
-      Record<
-        string,
-        {
-          onVerifyPincode: Function;
-          needConfirmation: boolean;
-          label?: string;
-        }
-      >,
-      string
-    >
-  >();
+export const Pincode: FunctionComponent<{
+  onVerifyPincode: Function;
+  needConfirmation: boolean;
+  onGoBack: Function;
+  label?: string;
+}> = ({ onVerifyPincode, needConfirmation, onGoBack, label }) => {
   const { appInitStore } = useStore();
-
-  const { onVerifyPincode, needConfirmation, label } = route?.params;
 
   const { colors } = useTheme();
   const smartNavigation = useSmartNavigation();
@@ -75,14 +65,6 @@ export const Pincode: FunctionComponent = observer((props) => {
     control,
     formState: { errors },
   } = useForm<FormData>();
-
-  const onGoBack = () => {
-    if (checkRouter(route?.name, "RegisterMain")) {
-      smartNavigation.goBack();
-    } else {
-      smartNavigation.navigateSmart("Register.Intro", {});
-    }
-  };
 
   const showPass = () => setStatusPass(!statusPass);
 
@@ -248,7 +230,7 @@ export const Pincode: FunctionComponent = observer((props) => {
         </View>
       ) : null}
       <View style={styles.container}>
-        <TouchableOpacity style={styles.goBack} onPress={onGoBack}>
+        <TouchableOpacity style={styles.goBack} onPress={() => onGoBack()}>
           <OWIcon
             size={16}
             color={colors["neutral-icon-on-light"]}
@@ -426,7 +408,7 @@ export const Pincode: FunctionComponent = observer((props) => {
       </View>
     </KeyboardAvoidingView>
   );
-});
+};
 
 const useStyles = () => {
   const { colors } = useTheme();
