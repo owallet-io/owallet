@@ -36,7 +36,17 @@ interface FormData {
 }
 
 export const Pincode: FunctionComponent = observer((props) => {
-  const route = useRoute<RouteProp<Record<string, {}>, string>>();
+  const route = useRoute<
+    RouteProp<
+      Record<
+        string,
+        {
+          onVerifyPincode: Function;
+        }
+      >,
+      string
+    >
+  >();
   const { appInitStore } = useStore();
 
   const { colors } = useTheme();
@@ -169,7 +179,7 @@ export const Pincode: FunctionComponent = observer((props) => {
     }
   }, [code]);
 
-  const renderPassword = ({ field: { onChange, onBlur, value, ref } }) => {
+  const renderPassword = ({ field: {} }) => {
     return (
       <TextInput
         accessibilityLabel="password"
