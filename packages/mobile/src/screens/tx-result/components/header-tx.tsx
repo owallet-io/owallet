@@ -6,6 +6,7 @@ import { capitalizedText } from "@src/utils/helper";
 import { metrics } from "@src/themes";
 import React, { FC, ReactNode } from "react";
 import { useTheme } from "@src/themes/theme-provider";
+import OWIcon from "@src/components/ow-icon/ow-icon";
 
 const styling = (colors) => {
   return StyleSheet.create({
@@ -41,6 +42,9 @@ const styling = (colors) => {
       textAlign: "center",
       paddingTop: 16,
     },
+    toAmount: {
+      textAlign: "center",
+    },
   });
 };
 export const HeaderTx: FC<{
@@ -48,7 +52,8 @@ export const HeaderTx: FC<{
   imageType: ImageSourcePropType | ReactNode;
   amount: string;
   price: string;
-}> = ({ type, imageType, amount, price }) => {
+  toAmount: string;
+}> = ({ type, imageType, amount, price, toAmount }) => {
   const { colors } = useTheme();
   const styles = styling(colors);
   return (
@@ -82,14 +87,45 @@ export const HeaderTx: FC<{
         >
           {amount}
         </Text>
-        <Text
-          color={colors["neutral-text-body"]}
-          style={{
-            textAlign: "center",
-          }}
-        >
-          {price}
-        </Text>
+        {price && (
+          <Text
+            color={colors["neutral-text-body"]}
+            style={{
+              textAlign: "center",
+            }}
+          >
+            {price}
+          </Text>
+        )}
+        {toAmount && (
+          <>
+            <View
+              style={{
+                backgroundColor: colors["neutral-surface-action"],
+                borderRadius: 99,
+                width: 30,
+                height: 30,
+                alignItems: "center",
+                justifyContent: "center",
+                alignSelf: "center",
+              }}
+            >
+              <OWIcon
+                name={"tdesignchevron-down"}
+                size={20}
+                color={colors["primary-text"]}
+              />
+            </View>
+            <Text
+              color={colors["success-text-body"]}
+              style={styles.toAmount}
+              size={28}
+              weight={"500"}
+            >
+              {toAmount}
+            </Text>
+          </>
+        )}
       </OWCard>
     </>
   );

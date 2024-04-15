@@ -249,6 +249,9 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
                   },
                 },
               });
+              const fee = Number(
+                sendConfigs.feeConfig.fee.trim(true).hideDenom(true).toString()
+              );
               const historyInfos = {
                 fromAddress: address,
                 toAddress: sendConfigs.recipientConfig.recipient,
@@ -257,7 +260,7 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
                 fromAmount: sendConfigs.amountConfig.amount,
                 toAmount: sendConfigs.amountConfig.amount,
                 value: sendConfigs.amountConfig.amount,
-                fee: 0,
+                fee: fee,
                 type: HISTORY_STATUS.SEND,
                 fromToken: {
                   asset: sendConfigs.amountConfig.sendCurrency.coinDenom,
