@@ -54,7 +54,6 @@ export enum KADOChainNameEnum {
 export enum ChainNameEnum {
   Oraichain = "Oraichain",
   OraichainTestnet = "Oraichain-testnet",
-  OraiBridge = "Orai Bride",
   KawaiiCosmos = "Kawaiiverse",
   KawaiiEvm = "Kawaiiverse EVM",
   Ethereum = "Ethereum",
