@@ -410,7 +410,7 @@ export const DetailsBrowserScreen = observer((props) => {
               }}
             >
               <LottieView
-                source={require("@src/assets/animations/loading.json")}
+                source={require("@src/assets/animations/loading_owallet.json")}
                 style={{ width: 200, height: 200 }}
                 autoPlay
                 loop
@@ -488,7 +488,7 @@ export const DetailsBrowserScreen = observer((props) => {
               }}
             >
               <LottieView
-                source={require("@src/assets/animations/loading.json")}
+                source={require("@src/assets/animations/loading_owallet.json")}
                 style={{ width: 200, height: 200 }}
                 autoPlay
                 loop
