@@ -176,9 +176,6 @@ const { SmartNavigatorProvider, useSmartNavigation } =
       "Web.dApp": {
         upperScreenName: "Web",
       },
-      TransferTokensScreen: {
-        upperScreenName: "SendNavigation",
-      },
       UniversalSwapScreen: {
         upperScreenName: "SendNavigation",
       },

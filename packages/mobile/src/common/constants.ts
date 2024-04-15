@@ -28,7 +28,6 @@ export const SCREENS = {
   NftsDetail: "Nfts.Detail",
   HistoryDetail: "History.Detail",
   TokenDetails: "Token.Details",
-  TransferTokensScreen: "TransferTokensScreen",
   UniversalSwapScreen: "UniversalSwapScreen",
   RegisterIntro: "Register.Intro",
   RegisterNewUser: "Register.NewUser",
@@ -162,10 +161,6 @@ export const SCREENS_OPTIONS: IScreenOption = {
   },
   [SCREENS.NftsDetail]: {
     title: HEADER_KEY.showNetworkHeader,
-  },
-  [SCREENS.TransferTokensScreen]: {
-    title: HEADER_KEY.showNetworkHeader,
-    showTabBar: true,
   },
   [SCREENS.UniversalSwapScreen]: {
     title: HEADER_KEY.notShowHeader,
