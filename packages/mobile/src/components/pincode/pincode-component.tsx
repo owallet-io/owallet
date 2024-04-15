@@ -12,26 +12,18 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
-import { observer } from "mobx-react-lite";
-import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
-import { RegisterConfig } from "@owallet/hooks";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
 import OWText from "@src/components/text/ow-text";
 import { metrics } from "@src/themes";
 import NumericPad from "react-native-numeric-pad";
 import SmoothPinCodeInput from "react-native-smooth-pincode-input";
-import { useSmartNavigation } from "@src/navigation.provider";
-import { useBIP44Option } from "./bip44";
-import { useNewMnemonicConfig } from "./mnemonic";
-import { Controller, useForm } from "react-hook-form";
-import { checkRouter } from "@src/router/root";
 import { TextInput } from "@src/components/input";
 import { OWButton } from "@src/components/button";
 import OWIcon from "@src/components/ow-icon/ow-icon";
-import { LoadingWalletScreen } from "./loading-wallet";
-import { isPrivateKey, showToast, trimWordsStr } from "@src/utils/helper";
+import { showToast } from "@src/utils/helper";
 import { useStore } from "@src/stores";
+import { Controller, useForm } from "react-hook-form";
 
 interface FormData {
   name: string;
@@ -39,32 +31,16 @@ interface FormData {
   confirmPassword: string;
 }
 
-export const NewPincodeScreen: FunctionComponent = observer((props) => {
-  const route = useRoute<
-    RouteProp<
-      Record<
-        string,
-        {
-          registerConfig: RegisterConfig;
-          words?: string;
-          walletName?: string;
-        }
-      >,
-      string
-    >
-  >();
+export const Pincode: FunctionComponent<{
+  onVerifyPincode: Function;
+  needConfirmation: boolean;
+  onGoBack?: Function;
+  label?: string;
+  subLabel?: string;
+}> = ({ onVerifyPincode, needConfirmation, onGoBack, label, subLabel }) => {
   const { appInitStore } = useStore();
 
   const { colors } = useTheme();
-  const smartNavigation = useSmartNavigation();
-
-  const registerConfig: RegisterConfig = route.params.registerConfig;
-  const words: string = route.params?.words;
-  const walletName: string = route.params?.walletName;
-  const bip44Option = useBIP44Option();
-
-  const newMnemonicConfig = useNewMnemonicConfig(registerConfig);
-  const [mode] = useState(registerConfig.mode);
 
   const [statusPass, setStatusPass] = useState(false);
   const [isNumericPad, setNumericPad] = useState(true);
@@ -77,78 +53,12 @@ export const NewPincodeScreen: FunctionComponent = observer((props) => {
   const [isBiometricLoading, setIsBiometricLoading] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
 
-  const navigation = useNavigation();
-
   const [isCreating, setIsCreating] = useState(false);
 
-  const onVerifyMnemonic = useCallback(async () => {
-    if (isCreating) return;
-    setIsCreating(true);
-    try {
-      const newWalletName =
-        walletName ?? `OWallet-${Math.floor(Math.random() * (100 - 1)) + 1}`;
-
-      const mnemonic = trimWordsStr(words ?? newMnemonicConfig.mnemonic);
-
-      if (!isPrivateKey(mnemonic)) {
-        await registerConfig.createMnemonic(
-          newWalletName,
-          mnemonic,
-          newMnemonicConfig.password,
-          bip44Option.bip44HDPath
-        );
-      } else {
-        const privateKey = Buffer.from(
-          mnemonic.trim().replace("0x", ""),
-          "hex"
-        );
-        await registerConfig.createPrivateKey(
-          newWalletName,
-          privateKey,
-          newMnemonicConfig.password
-        );
-      }
-
-      navigation.reset({
-        index: 0,
-        routes: [
-          {
-            name: "Register.Done",
-            params: {
-              password: newMnemonicConfig.password,
-              type: "new",
-              walletName,
-            },
-          },
-        ],
-      });
-    } catch (err) {
-      console.log("errrr,", err);
-    }
-  }, [newMnemonicConfig, isCreating]);
   const {
     control,
     formState: { errors },
   } = useForm<FormData>();
-
-  const onGoBack = () => {
-    if (checkRouter(route?.name, "RegisterMain")) {
-      smartNavigation.goBack();
-    } else {
-      smartNavigation.navigateSmart("Register.Intro", {});
-    }
-  };
-
-  useEffect(() => {
-    // mode : add | create
-    // add is for user that have wallet existed
-    // create is for new user
-    if (mode === "add" && newMnemonicConfig.mnemonic) {
-      setTimeout(() => {
-        onVerifyMnemonic();
-      }, 2000);
-    }
-  }, [newMnemonicConfig.mnemonic]);
 
   const showPass = () => setStatusPass(!statusPass);
 
@@ -159,7 +69,6 @@ export const NewPincodeScreen: FunctionComponent = observer((props) => {
 
   const handleSetPassword = () => {
     setConfirmCode(code);
-    newMnemonicConfig.setPassword(code);
     setCode("");
     numpadRef?.current?.clearAll();
     setPrevPad("numeric");
@@ -172,7 +81,6 @@ export const NewPincodeScreen: FunctionComponent = observer((props) => {
     if (password.length >= 6) {
       if (!confirmCode) {
         setConfirmCode(password);
-        newMnemonicConfig.setPassword(password);
         setPassword("");
       } else {
         handleCheckConfirm(password);
@@ -192,11 +100,6 @@ export const NewPincodeScreen: FunctionComponent = observer((props) => {
     } else {
       setNumericPad(false);
     }
-  };
-
-  const onHandeCreateMnemonic = () => {
-    numpadRef?.current?.clearAll();
-    onVerifyMnemonic();
   };
 
   const onHandleConfirmPincodeError = () => {
@@ -223,7 +126,7 @@ export const NewPincodeScreen: FunctionComponent = observer((props) => {
 
   const handleCheckConfirm = (confirmPass) => {
     if (confirmCode === confirmPass && counter < 3) {
-      onHandeCreateMnemonic();
+      onVerifyPincode(code);
     } else {
       setCounter(counter + 1);
       if (counter > 3) {
@@ -243,16 +146,23 @@ export const NewPincodeScreen: FunctionComponent = observer((props) => {
   };
 
   useEffect(() => {
-    if (code.length >= 6) {
-      if (confirmCode) {
-        handleConfirm();
-      } else {
-        handleSetPassword();
+    if (needConfirmation) {
+      if (code.length >= 6) {
+        if (confirmCode) {
+          handleConfirm();
+        } else {
+          handleSetPassword();
+        }
+      }
+    } else {
+      if (code.length >= 6) {
+        numpadRef?.current?.clearAll();
+        onVerifyPincode(code);
       }
     }
   }, [code]);
 
-  const renderPassword = ({ field: { onChange, onBlur, value, ref } }) => {
+  const renderPassword = ({ field: {} }) => {
     return (
       <TextInput
         accessibilityLabel="password"
@@ -293,10 +203,7 @@ export const NewPincodeScreen: FunctionComponent = observer((props) => {
 
   const styles = useStyles();
 
-  return mode === "add" ? (
-    // @ts-ignore
-    <LoadingWalletScreen mode={mode} />
-  ) : (
+  return (
     <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
       {isCreating ? (
         <View
@@ -315,7 +222,10 @@ export const NewPincodeScreen: FunctionComponent = observer((props) => {
         </View>
       ) : null}
       <View style={styles.container}>
-        <TouchableOpacity style={styles.goBack} onPress={onGoBack}>
+        <TouchableOpacity
+          style={styles.goBack}
+          onPress={() => onGoBack && onGoBack()}
+        >
           <OWIcon
             size={16}
             color={colors["neutral-icon-on-light"]}
@@ -323,12 +233,33 @@ export const NewPincodeScreen: FunctionComponent = observer((props) => {
           />
         </TouchableOpacity>
         <View style={styles.aic}>
-          <OWText color={colors["neutral-text-title"]} variant="h2" typo="bold">
-            {confirmCode ? "Confirm your" : "Set"} passcode
-          </OWText>
-          <OWText color={colors["neutral-text-body"]} weight={"500"}>
-            Secure your wallet by setting a passcode
-          </OWText>
+          {label ? (
+            <OWText
+              color={colors["neutral-text-title"]}
+              variant="h2"
+              typo="bold"
+            >
+              {label}
+            </OWText>
+          ) : (
+            <OWText
+              color={colors["neutral-text-title"]}
+              variant="h2"
+              typo="bold"
+            >
+              {confirmCode ? "Confirm your" : "Set"} passcode
+            </OWText>
+          )}
+
+          {subLabel ? (
+            <OWText color={colors["neutral-text-body"]} weight={"500"}>
+              {subLabel}
+            </OWText>
+          ) : (
+            <OWText color={colors["neutral-text-body"]} weight={"500"}>
+              Secure your wallet by setting a passcode
+            </OWText>
+          )}
           <View
             style={{
               paddingLeft: 20,
@@ -440,6 +371,8 @@ export const NewPincodeScreen: FunctionComponent = observer((props) => {
               buttonSize={60}
               activeOpacity={0.1}
               onValueChange={(value) => {
+                console.log("setCode", value);
+
                 setCode(value);
               }}
               allowDecimal={false}
@@ -478,7 +411,7 @@ export const NewPincodeScreen: FunctionComponent = observer((props) => {
       </View>
     </KeyboardAvoidingView>
   );
-});
+};
 
 const useStyles = () => {
   const { colors } = useTheme();

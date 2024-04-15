@@ -24,7 +24,6 @@ import {
   RegisterNavigation,
 } from "./navigations";
 import { useTheme } from "./themes/theme-provider";
-import { NewPincodeScreen } from "./screens/register/register-pincode";
 import { PincodeUnlockScreen } from "./screens/unlock/pincode-unlock";
 import { RecoverPhraseScreen } from "./screens/register/mnemonic/recover-phrase";
 
@@ -85,10 +84,6 @@ export const AppNavigation: FunctionComponent = observer(() => {
               }}
               // headerMode="screen"
             >
-              <Stack.Screen
-                name={SCREENS.STACK.Pincode}
-                component={NewPincodeScreen}
-              />
               <Stack.Screen
                 name={SCREENS.STACK.PincodeUnlock}
                 component={PincodeUnlockScreen}

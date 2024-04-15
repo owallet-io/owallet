@@ -135,6 +135,9 @@ export const CopyAddressModal: FunctionComponent<{
         {addresses && Object.keys(addresses).length > 0 ? (
           Object.keys(addresses).map((key) => {
             const item = { name: key, address: addresses[key] };
+            if (item.name.toLowerCase().includes("testnet")) {
+              return;
+            }
             const chainNameKey = Object.keys(ChainNameEnum).find(
               (k) => ChainNameEnum[k] === key
             );

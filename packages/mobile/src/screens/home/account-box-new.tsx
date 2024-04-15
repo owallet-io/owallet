@@ -105,7 +105,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
     return (
       <>
         <Text variant="bigText" style={styles.labelTotalAmount}>
-          ${totalUsd.toFixed(2)}
+          ${totalUsd.toFixed(2).toLocaleString()}
         </Text>
         <Text
           style={styles.profit}
@@ -113,10 +113,12 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
         >
           {profit < 0 ? "" : "+"}
           {profit && totalUsd && totalUsd > 0
-            ? Number((profit / totalUsd) * 100 ?? 0).toFixed(2)
+            ? Number((profit / totalUsd) * 100 ?? 0)
+                .toFixed(2)
+                .toLocaleString()
             : 0}
           % ($
-          {profit?.toFixed(2) ?? 0}) Today
+          {profit?.toFixed(2).toLocaleString() ?? 0}) Today
         </Text>
 
         {appInitStore.getInitApp.isAllNetworks ? null : (

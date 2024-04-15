@@ -61,6 +61,9 @@ const { SmartNavigatorProvider, useSmartNavigation } =
       Home: {
         upperScreenName: "Main",
       },
+      PincodeScreen: {
+        upperScreenName: "Others",
+      },
       Send: {
         upperScreenName: "Others",
       },

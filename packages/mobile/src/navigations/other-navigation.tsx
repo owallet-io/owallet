@@ -27,6 +27,7 @@ import BtcFaucet from "@src/screens/home/btc-faucet";
 import BuyFiat from "@src/screens/home/buy-fiat";
 import { NewSendScreen } from "@src/screens/send/send";
 import { AddressQRScreen } from "@src/screens/qr";
+import { PincodeScreen } from "@src/screens/pincode/pincode";
 const Stack = createStackNavigator();
 export const OtherNavigation: FC = () => {
   const handleScreenOptions = ({ route, navigation }) => {
@@ -39,6 +40,8 @@ export const OtherNavigation: FC = () => {
   return (
     <Stack.Navigator screenOptions={handleScreenOptions}>
       <Stack.Screen name={SCREENS.Send} component={SendScreen} />
+      <Stack.Screen name={SCREENS.PincodeScreen} component={PincodeScreen} />
+
       {/*<Stack.Screen name={SCREENS.NewSend} component={NewSendScreen} />*/}
       <Stack.Screen name={SCREENS.NewSend} component={NewSendScreen} />
       <Stack.Screen name={SCREENS.SendEvm} component={SendEvmScreen} />
