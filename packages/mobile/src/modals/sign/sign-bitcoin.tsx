@@ -299,7 +299,8 @@ export const SignBitcoinModal: FunctionComponent<{
             <FeeInSign
               feeConfig={feeConfig}
               gasConfig={gasConfig}
-              isInternal={!isNoSetFee}
+              signOptions={{ preferNoSetFee: isNoSetFee }}
+              isInternal={isNoSetFee}
             />
           </View>
         </View>

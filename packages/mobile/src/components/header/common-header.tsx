@@ -80,7 +80,6 @@ export const CommonPageHeader: FunctionComponent<{ title: string }> = observer(
               </View>
             </TouchableOpacity>
           }
-          colors={colors}
           right={
             <View style={{ flexDirection: "row" }}>
               <TouchableOpacity

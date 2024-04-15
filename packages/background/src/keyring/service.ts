@@ -638,6 +638,7 @@ export class KeyRingService {
         rpcCustom,
         data
       );
+      console.log(newData, "newData");
       const rawTxHex = await this.keyRing.signAndBroadcastEthereum(
         env,
         chainId,

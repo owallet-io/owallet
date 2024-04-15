@@ -23,7 +23,6 @@ import { ChainIdEnum } from "@owallet/common";
 import TypeModal from "./components/type-modal";
 import ButtonFilter from "./components/button-filter";
 import { TendermintTxTracer } from "@owallet/cosmos";
-import { OWButtonPage } from "@src/components/button";
 import { Text } from "@src/components/text";
 
 const HistoryTransactionsScreen = observer(() => {

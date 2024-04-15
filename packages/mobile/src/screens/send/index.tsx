@@ -281,7 +281,13 @@ export const SendScreen: FunctionComponent = observer(() => {
                             type: "send",
                           },
                         });
-
+                        const fee = Number(
+                          sendConfigs.feeConfig.fee
+                            .trim(true)
+                            .hideDenom(true)
+                            .toString()
+                        );
+                        console.log(fee, "fee");
                         const historyInfos = {
                           fromAddress: address,
                           toAddress: sendConfigs.recipientConfig.recipient,
@@ -290,7 +296,7 @@ export const SendScreen: FunctionComponent = observer(() => {
                           fromAmount: sendConfigs.amountConfig.amount,
                           toAmount: sendConfigs.amountConfig.amount,
                           value: sendConfigs.amountConfig.amount,
-                          fee: 0,
+                          fee: fee,
                           type: HISTORY_STATUS.SEND,
                           fromToken: {
                             asset:

@@ -5,7 +5,7 @@ export const explorerData = [
   {
     images: images.img_scan,
     logo: images.dapps_scan_logo,
-    title: "OraiScan",
+    title: "Oraichain Scan",
     subTitle: "The Oraichain blockchain explorer",
     url: "https://scan.orai.io",
   },

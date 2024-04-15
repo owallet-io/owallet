@@ -5,77 +5,77 @@
     
     
       
-      <testcase classname="fastlane.lanes" name="00: default_platform" time="0.000235">
+      <testcase classname="fastlane.lanes" name="00: default_platform" time="0.000216">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="01: app_store_connect_api_key" time="0.001909">
+      <testcase classname="fastlane.lanes" name="01: app_store_connect_api_key" time="0.002541">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="02: create_keychain" time="0.126994">
+      <testcase classname="fastlane.lanes" name="02: create_keychain" time="0.099234">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="03: match" time="3.246199">
+      <testcase classname="fastlane.lanes" name="03: match" time="2.350123">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="04: latest_testflight_build_number" time="2.171457">
+      <testcase classname="fastlane.lanes" name="04: latest_testflight_build_number" time="2.266603">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="05: get_build_number_from_xcodeproj" time="0.127545">
+      <testcase classname="fastlane.lanes" name="05: get_build_number_from_xcodeproj" time="0.078272">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="06: get_version_number_from_xcodeproj" time="12.680808">
+      <testcase classname="fastlane.lanes" name="06: get_version_number_from_xcodeproj" time="7.103832">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="07: increment_build_number_in_xcodeproj" time="0.040711">
+      <testcase classname="fastlane.lanes" name="07: increment_build_number_in_xcodeproj" time="0.022651">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="08: get_build_number_from_xcodeproj" time="0.01409">
+      <testcase classname="fastlane.lanes" name="08: get_build_number_from_xcodeproj" time="0.01192">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="09: get_version_number_from_xcodeproj" time="1.414394">
+      <testcase classname="fastlane.lanes" name="09: get_version_number_from_xcodeproj" time="1.458694">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="10: update_code_signing_settings" time="0.0159">
+      <testcase classname="fastlane.lanes" name="10: update_code_signing_settings" time="0.164501">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="11: sentry_upload_dif" time="23.323544">
+      <testcase classname="fastlane.lanes" name="11: sentry_upload_dif" time="23.778083">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="12: build_app" time="238.055956">
+      <testcase classname="fastlane.lanes" name="12: build_app" time="240.070958">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="13: pilot" time="254.576058">
+      <testcase classname="fastlane.lanes" name="13: pilot" time="305.252787">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="14: discord_notifier" time="0.58821">
+      <testcase classname="fastlane.lanes" name="14: discord_notifier" time="0.505705">
         
       </testcase>
     

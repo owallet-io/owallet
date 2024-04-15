@@ -152,6 +152,7 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
   const { gasPrice } = queriesStore
     .get(chainId)
     .evm.queryGasPrice.getGasPrice();
+  console.log(gasPrice, chainId, "gasPrice");
   useEffect(() => {
     if (!gasPrice) return;
     sendConfigs.gasConfig.setGasPriceStep(gasPrice);
@@ -248,6 +249,9 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
                   },
                 },
               });
+              const fee = Number(
+                sendConfigs.feeConfig.fee.trim(true).hideDenom(true).toString()
+              );
               const historyInfos = {
                 fromAddress: address,
                 toAddress: sendConfigs.recipientConfig.recipient,
@@ -256,7 +260,7 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
                 fromAmount: sendConfigs.amountConfig.amount,
                 toAmount: sendConfigs.amountConfig.amount,
                 value: sendConfigs.amountConfig.amount,
-                fee: 0,
+                fee: fee,
                 type: HISTORY_STATUS.SEND,
                 fromToken: {
                   asset: sendConfigs.amountConfig.sendCurrency.coinDenom,

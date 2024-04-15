@@ -30,10 +30,15 @@ import {
   capitalizedText,
   handleSaveHistory,
   HISTORY_STATUS,
+  shortenAddress,
   showToast,
 } from "@src/utils/helper";
 import { RouteProp, useRoute } from "@react-navigation/native";
-import { EthereumEndpoint, toAmount } from "@owallet/common";
+import {
+  EthereumEndpoint,
+  getKeyDerivationFromAddressType,
+  toAmount,
+} from "@owallet/common";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import { PageHeader } from "@src/components/header/header-new";
 import OWCard from "@src/components/card/ow-card";
@@ -44,7 +49,112 @@ import { DownArrowIcon } from "@src/components/icon";
 import { CoinPretty, Dec, Int } from "@owallet/unit";
 import { FeeModal } from "@src/modals/fee";
 import { ChainIdEnum } from "@oraichain/oraidex-common";
+import ValidatorsList from "@src/screens/stake/redelegate/validators-list";
+import { ValidatorThumbnail } from "@src/components/thumbnail";
+import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
+import OWFlatList from "@src/components/page/ow-flat-list";
+import { VectorCharacter } from "@src/components/vector-character";
+import { Text } from "@src/components/text";
+import { RadioButton } from "react-native-radio-buttons-group";
+import { AddressBtcType } from "@owallet/types";
+import { useBIP44Option } from "@src/screens/register/bip44";
 
+const dataTypeBtc = [
+  { id: AddressBtcType.Bech32, name: "Bitcoin Segwit" },
+  {
+    id: AddressBtcType.Legacy,
+    name: "Bitcoin Legacy",
+  },
+];
+export const ModalBtcTypeList = observer(() => {
+  const { accountStore, chainStore, modalStore, keyRingStore } = useStore();
+  const accountInfo = accountStore.getAccount(chainStore.current.chainId);
+  const bip44Option = useBIP44Option();
+  const { coinType, chainId, bip44 } = chainStore.current;
+  const { colors } = useTheme();
+  const handleSwitchType = (item) => {
+    accountInfo.setAddressTypeBtc(item.id);
+    const keyDerivation = (() => {
+      const keyMain = getKeyDerivationFromAddressType(item.id);
+      return keyMain;
+    })();
+
+    if (accountInfo.isNanoLedger) {
+      const path = `${keyDerivation}'/${bip44.coinType ?? coinType}'/${
+        bip44Option.bip44HDPath.account
+      }'/${bip44Option.bip44HDPath.change}/${
+        bip44Option.bip44HDPath.addressIndex
+      }`;
+
+      keyRingStore.setKeyStoreLedgerAddress(path, chainId);
+    }
+    modalStore.close();
+  };
+  return (
+    <WrapViewModal title={"Choose type"} disabledScrollView={false}>
+      <OWFlatList
+        isBottomSheet={true}
+        data={dataTypeBtc}
+        renderItem={({ item, index }) => {
+          const selected = item?.id === accountInfo.addressType;
+          return (
+            <TouchableOpacity
+              style={{
+                paddingLeft: 12,
+                paddingRight: 8,
+                paddingVertical: 9.5,
+                borderRadius: 12,
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                backgroundColor: selected
+                  ? colors["neutral-surface-bg2"]
+                  : null,
+              }}
+              onPress={() => {
+                handleSwitchType(item);
+              }}
+            >
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <View>
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      color: colors["neutral-text-title"],
+                      fontWeight: "600",
+                    }}
+                  >
+                    {item.name}
+                  </Text>
+                </View>
+              </View>
+
+              <View>
+                <RadioButton
+                  color={
+                    selected
+                      ? colors["hightlight-surface-active"]
+                      : colors["neutral-text-body"]
+                  }
+                  id={item.id}
+                  selected={selected}
+                  onPress={() => handleSwitchType(item)}
+                />
+              </View>
+            </TouchableOpacity>
+          );
+        }}
+      />
+    </WrapViewModal>
+  );
+});
 export const SendBtcScreen: FunctionComponent = observer(({}) => {
   const {
     chainStore,
@@ -207,6 +317,9 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
           },
           onBroadcasted: async (txHash) => {
             try {
+              const fee = Number(
+                sendConfigs.feeConfig.fee.trim(true).hideDenom(true).toString()
+              );
               const historyInfos = {
                 fromAddress: address,
                 toAddress: sendConfigs.recipientConfig.recipient,
@@ -215,7 +328,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
                 fromAmount: sendConfigs.amountConfig.amount,
                 toAmount: sendConfigs.amountConfig.amount,
                 value: sendConfigs.amountConfig.amount,
-                fee: 0,
+                fee: fee,
                 type: HISTORY_STATUS.SEND,
                 fromToken: {
                   asset: sendConfigs.amountConfig.sendCurrency.coinDenom,
@@ -310,6 +423,45 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
         showsVerticalScrollIndicator={false}
       >
         <View>
+          <OWCard>
+            <TouchableOpacity
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+              onPress={() => {
+                modalStore.setOptions();
+                modalStore.setChildren(<ModalBtcTypeList />);
+              }}
+            >
+              <View>
+                <OWText
+                  style={{ paddingBottom: 8 }}
+                  color={colors["neutral-text-title"]}
+                >
+                  Type
+                </OWText>
+                <View
+                // style={{
+                //   flexDirection: "row",
+                // }}
+                >
+                  <OWText color={colors["neutral-text-title"]} weight="500">
+                    {
+                      dataTypeBtc.find(
+                        (item, index) => item.id === account.addressType
+                      )?.name
+                    }
+                  </OWText>
+                  <OWText color={colors["neutral-text-body"]}>
+                    {shortenAddress(account.btcAddress)}
+                  </OWText>
+                </View>
+              </View>
+              <DownArrowIcon height={15} color={colors["gray-150"]} />
+            </TouchableOpacity>
+          </OWCard>
           <OWCard type="normal">
             <OWText color={colors["neutral-text-title"]}>Recipient</OWText>
 
