@@ -304,8 +304,10 @@ export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
             >
               $
               {!item.chainId
-                ? totalUsd?.toFixed(2)
-                : Number(groupedData?.[item.chainId]?.sum ?? 0).toFixed(2)}
+                ? Number(totalUsd?.toFixed(2)).toLocaleString()
+                : Number(
+                    groupedData?.[item.chainId]?.sum.toFixed(2) ?? 0
+                  ).toLocaleString()}
             </Text>
           </View>
         </View>
