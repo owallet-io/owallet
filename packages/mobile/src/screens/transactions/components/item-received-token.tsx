@@ -66,7 +66,7 @@ const ItemReceivedToken: FC<{
               />
             ) : (
               <OWButtonIcon
-                name="copy"
+                name="tdesigncopy"
                 style={styles.iconCopy}
                 sizeIcon={20}
                 fullWidth={false}

@@ -245,7 +245,7 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
                   },
                 }
               )}
-              {renderTransactionDetail("Network", chainInfo?.chainName)}
+              {renderTransactionDetail("From Network", chainInfo?.chainName)}
               {detail.type === HISTORY_STATUS.SWAP
                 ? renderTransactionDetail("To Network", detail.toToken.chainId)
                 : null}
