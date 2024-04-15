@@ -24,6 +24,7 @@ import { CoinPretty, Dec } from "@owallet/unit";
 import { AppCurrency, StdFee } from "@owallet/types";
 import { CoinPrimitive } from "@owallet/stores";
 import _ from "lodash";
+
 export const TxSuccessResultScreen: FunctionComponent = observer(() => {
   const { chainStore, priceStore, txsStore, accountStore, keyRingStore } =
     useStore();
@@ -70,21 +71,23 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
   const smartNavigation = useSmartNavigation();
 
   const chainInfo = chainStore.getChain(chainId);
-
+  const handleUrl = (txHash) => {
+    return chainInfo.raw.txExplorer.txUrl.replace(
+      "{txHash}",
+      chainInfo.chainId === TRON_ID ||
+        chainInfo.networkType === "bitcoin" ||
+        chainInfo.chainId === ChainIdEnum.OasisSapphire ||
+        chainInfo.chainId === ChainIdEnum.OasisEmerald ||
+        chainInfo.chainId === ChainIdEnum.Oasis ||
+        chainInfo.chainId === ChainIdEnum.BNBChain
+        ? txHash.toLowerCase()
+        : txHash.toUpperCase()
+    );
+  };
   const handleOnExplorer = async () => {
     if (chainInfo.raw.txExplorer && txHash) {
-      await openLink(
-        chainInfo.raw.txExplorer.txUrl.replace(
-          "{txHash}",
-          chainInfo.chainId === TRON_ID ||
-            chainInfo.networkType === "bitcoin" ||
-            chainInfo.chainId === ChainIdEnum.OasisSapphire ||
-            chainInfo.chainId === ChainIdEnum.OasisEmerald ||
-            chainInfo.chainId === ChainIdEnum.Oasis
-            ? txHash.toLowerCase()
-            : txHash.toUpperCase()
-        )
-      );
+      const url = handleUrl(txHash);
+      await openLink(url);
     }
   };
 

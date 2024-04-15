@@ -95,20 +95,23 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
     smartNavigation,
     retry,
   ]);
+  const handleUrl = (txHash) => {
+    return chainInfo.raw.txExplorer.txUrl.replace(
+      "{txHash}",
+      chainInfo.chainId === TRON_ID ||
+        chainInfo.networkType === "bitcoin" ||
+        chainInfo.chainId === ChainIdEnum.OasisSapphire ||
+        chainInfo.chainId === ChainIdEnum.OasisEmerald ||
+        chainInfo.chainId === ChainIdEnum.Oasis ||
+        chainInfo.chainId === ChainIdEnum.BNBChain
+        ? txHash.toLowerCase()
+        : txHash.toUpperCase()
+    );
+  };
   const handleOnExplorer = async () => {
     if (chainInfo.raw.txExplorer && txHash) {
-      await openLink(
-        chainInfo.raw.txExplorer.txUrl.replace(
-          "{txHash}",
-          chainInfo.chainId === TRON_ID ||
-            chainInfo.networkType === "bitcoin" ||
-            chainInfo.chainId === ChainIdEnum.OasisSapphire ||
-            chainInfo.chainId === ChainIdEnum.OasisEmerald ||
-            chainInfo.chainId === ChainIdEnum.Oasis
-            ? txHash.toLowerCase()
-            : txHash.toUpperCase()
-        )
-      );
+      const url = handleUrl(txHash);
+      await openLink(url);
     }
   };
   const amount = new CoinPretty(
