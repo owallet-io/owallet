@@ -181,7 +181,9 @@ export const TokensCardAll: FunctionComponent<{
           );
           if (yesterday && yesterday.value) {
             profit = Number(
-              Number(item.value - (yesterday.value ?? 0))?.toFixed(2) ?? 0
+              Number(item.value - (yesterday.value ?? 0))
+                ?.toFixed(2)
+                .toLocaleString() ?? 0
             );
             percent = Number((profit / yesterday.value) * 100 ?? 0).toFixed(2);
           }
@@ -259,7 +261,7 @@ export const TokensCardAll: FunctionComponent<{
                       style={{ lineHeight: 24 }}
                       color={colors["neutral-text-body"]}
                     >
-                      ${item.value.toFixed(2).toLocaleString()}
+                      ${Number(item.value.toFixed(2)).toLocaleString()}
                     </Text>
                     <Text
                       size={14}

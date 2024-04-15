@@ -105,7 +105,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
     return (
       <>
         <Text variant="bigText" style={styles.labelTotalAmount}>
-          ${totalUsd.toFixed(2).toLocaleString()}
+          ${Number(totalUsd.toFixed(2)).toLocaleString()}
         </Text>
         <Text
           style={styles.profit}
@@ -118,7 +118,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
                 .toLocaleString()
             : 0}
           % ($
-          {profit?.toFixed(2).toLocaleString() ?? 0}) Today
+          {Number(profit?.toFixed(2)).toLocaleString() ?? 0}) Today
         </Text>
 
         {appInitStore.getInitApp.isAllNetworks ? null : (
@@ -164,7 +164,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
               </View>
 
               <Text size={16} weight="600" color={colors["neutral-text-title"]}>
-                ${chainBalance.toFixed(2)}
+                ${Number(chainBalance.toFixed(2)).toLocaleString()}
               </Text>
             </View>
             {chainStore.current.chainId === ChainIdEnum.TRON && (
