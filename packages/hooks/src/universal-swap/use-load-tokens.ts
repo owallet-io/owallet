@@ -94,7 +94,7 @@ async function loadNativeBalance(
     if (retry >= EVM_BALANCE_RETRY_COUNT)
       throw `Cannot loadNativeBalance with error: ${err}`;
 
-    await new Promise((resolve) => setTimeout(resolve, 10000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     return loadNativeBalance(
       universalSwapStore,
       address,
