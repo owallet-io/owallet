@@ -1,4 +1,5 @@
 export const icons = [
+  "tdesign_bookmark",
   "tdesignactivity",
   "tdesignadd-and-subtract",
   "tdesignadd-circle",

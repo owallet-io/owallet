@@ -111,8 +111,6 @@ export const HistoryCard: FunctionComponent<{
           return c.chainId === item.toToken?.chainId;
         });
 
-        console.log("fromChainInfo", fromChainInfo);
-
         const fromChainIcon = findChainIcon({
           chainId: fromChainInfo?.chainId,
           chainName: fromChainInfo?.chainName,

@@ -24,6 +24,9 @@ import { DashboardCard } from "./dashboard";
 import { ChainIdEnum, getBase58Address, TRC20_LIST } from "@owallet/common";
 import { shortenAddress } from "@src/utils/helper";
 import { CheckIcon, CopyFillIcon } from "@src/components/icon";
+import { LineGraph } from "react-native-graph";
+import { OWBox } from "@src/components/card";
+import { TokenChart } from "@src/screens/home/components/token-chart";
 
 export const TokenDetails: FunctionComponent = observer((props) => {
   const { chainStore, accountStore, keyRingStore } = useStore();
@@ -262,11 +265,7 @@ export const TokenDetails: FunctionComponent = observer((props) => {
             />
           </View>
         </View>
-        <DashboardCard
-          label={`${item.asset}`}
-          canView={false}
-          coinGeckoId={item.coinGeckoId}
-        />
+        <TokenChart coinGeckoId={item.coinGeckoId} />
       </ScrollView>
     </View>
   );

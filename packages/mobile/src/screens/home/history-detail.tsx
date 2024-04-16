@@ -40,7 +40,6 @@ import { ChainIdEnum, TRON_ID } from "@owallet/common";
 
 export const HistoryDetail: FunctionComponent = observer((props) => {
   const { chainStore } = useStore();
-  const { isTimedOut, setTimer } = useSimpleTimer();
 
   const route = useRoute<
     RouteProp<
@@ -89,45 +88,11 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
 
   const styles = useStyles(colors);
 
-  const renderTransactionDetail = (
-    title,
-    content,
-    action?: { type: "copy" | "share"; callback }
-  ) => {
-    return (
-      <View style={styles.wrapperDetail}>
-        <View style={{ maxWidth: metrics.screenWidth / 1.3 }}>
-          <OWText weight="600">{title}</OWText>
-          <OWText color={colors["neutral-text-body"]} style={{ paddingTop: 4 }}>
-            {content}
-          </OWText>
-        </View>
-
-        {action?.type === "copy" ? (
-          <TouchableOpacity onPress={action.callback}>
-            <CopyFillIcon size={24} color={colors["neutral-icon-on-light"]} />
-          </TouchableOpacity>
-        ) : null}
-        {action?.type === "share" ? (
-          <TouchableOpacity onPress={action.callback}>
-            <OWIcon
-              name="share"
-              size={15}
-              color={colors["neutral-icon-on-light"]}
-            />
-          </TouchableOpacity>
-        ) : null}
-      </View>
-    );
-  };
-
-  // let chainInfo = chainStore.chainInfosInUI.find((c) => {
-  //   return c.chainId === detail?.fromToken?.chainId;
-  // });
   const chainInfo = chainStore.getChain(
     detail?.fromToken?.chainId ?? chainStore.current.chainId
   );
   const handleUrl = (txHash) => {
+    console.log(txHash, "txhas");
     const chainInfo = chainStore.getChain(detail?.fromToken?.chainId);
     return chainInfo.raw.txExplorer.txUrl.replace(
       "{txHash}",
@@ -144,6 +109,7 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
   const handleOnExplorer = async () => {
     if (chainInfo.raw.txExplorer && detail.hash) {
       const url = handleUrl(detail.hash);
+      console.log(url, "url");
       await openLink(url);
     }
   };
@@ -151,172 +117,6 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
     detail?.toToken?.chainId ?? chainStore.current.chainId
   );
   return (
-    // <View>
-    //   <ScrollView
-    //     contentContainerStyle={styles.wrapper}
-    //     style={styles.container}
-    //     showsVerticalScrollIndicator={false}
-    //   >
-    //     <View>
-    //       <View style={styles.goBack}>
-    //         <TouchableOpacity onPress={onGoBack}>
-    //           <OWIcon
-    //             size={16}
-    //             color={colors["neutral-icon-on-light"]}
-    //             name="arrow-left"
-    //           />
-    //         </TouchableOpacity>
-    //       </View>
-    //       <View style={[styles.aic, styles.title]}>
-    //         <OWText
-    //           variant="heading"
-    //           style={{ textAlign: "center" }}
-    //           typo="bold"
-    //         >
-    //           Transaction Details
-    //         </OWText>
-    //       </View>
-    //
-    //       <View style={styles.headerCard}>
-    //         <Image
-    //           style={{
-    //             width: metrics.screenWidth - 32,
-    //             height: 260,
-    //             position: "absolute",
-    //           }}
-    //           source={require("../../assets/image/img-bg.png")}
-    //           resizeMode="cover"
-    //           fadeDuration={0}
-    //         />
-    //         {!detail ? (
-    //           <View
-    //             style={{
-    //               height: metrics.screenHeight / 7,
-    //               justifyContent: "center",
-    //               alignItems: "center",
-    //             }}
-    //           >
-    //             <ActivityIndicator />
-    //           </View>
-    //         ) : (
-    //           <View
-    //             style={{
-    //               justifyContent: "center",
-    //               alignItems: "center",
-    //             }}
-    //           >
-    //             <OWText style={{ fontSize: 16, fontWeight: "500" }}>
-    //               {detail.type.split("_").join("")}
-    //             </OWText>
-    //             <View style={styles.status}>
-    //               <OWText
-    //                 style={{
-    //                   fontSize: 14,
-    //                   fontWeight: "500",
-    //                   color: colors["hightlight-text-title"],
-    //                 }}
-    //               >
-    //                 {detail.status}
-    //               </OWText>
-    //             </View>
-    //             <OWText
-    //               style={{
-    //                 fontSize: 28,
-    //                 fontWeight: "500",
-    //               }}
-    //             >
-    //               {detail.fromAmount} {detail.fromToken?.asset.toUpperCase()}
-    //             </OWText>
-    //             {detail.type === HISTORY_STATUS.SWAP ? (
-    //               <>
-    //                 <DownArrowIcon height={20} color={colors["primary-text"]} />
-    //                 <OWText
-    //                   style={{
-    //                     fontSize: 28,
-    //                     fontWeight: "500",
-    //                     color: colors["success-text-body"],
-    //                   }}
-    //                 >
-    //                   +{detail.toAmount} {detail.toToken.asset.toUpperCase()}
-    //                 </OWText>
-    //               </>
-    //             ) : null}
-    //
-    //             {/* <OWText
-    //               style={{ fontSize: 14, color: colors["neutral-text-body"] }}
-    //             >
-    //               ${detail.toAmount}
-    //             </OWText> */}
-    //           </View>
-    //         )}
-    //       </View>
-    //       {!detail ? null : (
-    //         <View style={styles.txDetail}>
-    //           {renderTransactionDetail(
-    //             "From",
-    //             Bech32Address.shortenAddress(detail.fromAddress, 24),
-    //             {
-    //               type: "copy",
-    //               callback: () => {
-    //                 onCopy(detail.fromAddress);
-    //               },
-    //             }
-    //           )}
-    //           {renderTransactionDetail(
-    //             "To",
-    //             Bech32Address.shortenAddress(detail.toAddress, 24),
-    //             {
-    //               type: "copy",
-    //               callback: () => {
-    //                 onCopy(detail.toAddress);
-    //               },
-    //             }
-    //           )}
-    //           {renderTransactionDetail("From Network", chainInfo?.chainName)}
-    //           {detail.type === HISTORY_STATUS.SWAP
-    //             ? renderTransactionDetail("To Network", detail.toToken.chainId)
-    //             : null}
-    //           {renderTransactionDetail("Fee", detail.fee)}
-    //           {renderTransactionDetail(
-    //             "Time",
-    //             moment(detail.createdAt).format("DD/MM/YYYY hh:mm:ss")
-    //           )}
-    //           {renderTransactionDetail("Memo", detail.memo)}
-    //           {renderTransactionDetail("Hash", detail.hash, {
-    //             type: "share",
-    //             callback: async () => {
-    //               if (chainStore.current.raw.txExplorer && detail.hash) {
-    //                 await openLink(
-    //                   getTransactionUrl(chainStore.current.chainId, detail.hash)
-    //                 );
-    //               }
-    //             },
-    //           })}
-    //         </View>
-    //       )}
-    //     </View>
-    //   </ScrollView>
-    //
-    //   <View style={styles.aic}>
-    //     <View style={styles.signIn}>
-    //       <OWButton
-    //         style={{
-    //           borderRadius: 32,
-    //         }}
-    //         label={"View on Explorer"}
-    //         loading={false}
-    //         disabled={false}
-    //         onPress={async () => {
-    //           if (chainStore.current.raw.txExplorer && detail.hash) {
-    //             await openLink(
-    //               getTransactionUrl(chainStore.current.chainId, detail.hash)
-    //             );
-    //           }
-    //         }}
-    //       />
-    //     </View>
-    //   </View>
-    // </View>
     <PageWithBottom
       bottomGroup={
         <View style={styles.containerBottomButton}>
