@@ -40,6 +40,7 @@ export const getUtxos = async (address: string, baseUrl: string) => {
 };
 
 const EVM_BALANCE_RETRY_COUNT = 2;
+const COSMOS_BALANCE_RETRY_COUNT = 4;
 
 export type CWStargateType = {
   account: AccountWithAll;
@@ -86,7 +87,7 @@ async function loadNativeBalance(
           .map((coin) => [coin.denom, coin.amount])
       )
     );
-
+    console.log("success with address ", address);
     universalSwapStore.updateAmounts(amountDetails);
   } catch (err) {
     console.log("error address,", address, err);
@@ -94,7 +95,9 @@ async function loadNativeBalance(
     if (retry >= EVM_BALANCE_RETRY_COUNT)
       throw `Cannot loadNativeBalance with error: ${err}`;
 
-    await new Promise((resolve) => setTimeout(resolve, 10000));
+    await new Promise((resolve) => setTimeout(resolve, 2500));
+    console.log("try again with address ", address);
+
     return loadNativeBalance(
       universalSwapStore,
       address,
@@ -283,7 +286,8 @@ async function loadCw20Balance(
   universalSwapStore: any,
   address: string,
   cwStargate: CWStargateType,
-  tokenReload?: any
+  tokenReload?: any,
+  retryCount?: number
 ) {
   if (!address) return;
   // get all cw20 token contract
@@ -334,7 +338,20 @@ async function loadCw20Balance(
     );
 
     universalSwapStore.updateAmounts(amountDetails);
-  } catch (err) {}
+  } catch (err) {
+    console.log("error querying EVM balance: ", err);
+    let retry = retryCount ? retryCount + 1 : 1;
+    if (retry >= EVM_BALANCE_RETRY_COUNT)
+      throw `Cannot query EVM balance with error: ${err}`;
+    await new Promise((resolve) => setTimeout(resolve, 2500));
+    return loadCw20Balance(
+      universalSwapStore,
+      address,
+      cwStargate,
+      tokenReload,
+      retry
+    );
+  }
 }
 
 // async function loadBtcAmounts(  universalSwapStore: any,
@@ -461,7 +478,7 @@ async function loadEvmEntries(
     let retry = retryCount ? retryCount + 1 : 1;
     if (retry >= EVM_BALANCE_RETRY_COUNT)
       throw `Cannot query EVM balance with error: ${error}`;
-    await new Promise((resolve) => setTimeout(resolve, 10000));
+    await new Promise((resolve) => setTimeout(resolve, 5000));
     return loadEvmEntries(
       address,
       chain,

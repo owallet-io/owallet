@@ -337,6 +337,7 @@ const ValidatorItem: FunctionComponent<{
             <OWText
               style={{
                 ...styles.textInfo,
+                maxWidth: metrics.screenWidth / 2,
               }}
               numberOfLines={1}
               ellipsizeMode="tail"

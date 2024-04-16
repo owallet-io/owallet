@@ -266,7 +266,7 @@ export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
               width: 44,
               height: 44,
               borderRadius: 44,
-              backgroundColor: colors["neutral-surface-action"],
+              backgroundColor: colors["neutral-icon-on-dark"],
               marginRight: 16,
             }}
           >
@@ -304,8 +304,10 @@ export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
             >
               $
               {!item.chainId
-                ? totalUsd?.toFixed(2)
-                : Number(groupedData?.[item.chainId]?.sum ?? 0).toFixed(2)}
+                ? Number(totalUsd?.toFixed(2)).toLocaleString()
+                : Number(
+                    groupedData?.[item.chainId]?.sum.toFixed(2) ?? 0
+                  ).toLocaleString()}
             </Text>
           </View>
         </View>
@@ -325,6 +327,34 @@ export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
       </TouchableOpacity>
     );
   };
+
+  useEffect(() => {
+    const sortedData = Object.entries(groupedData).sort(
+      (a, b) => b[1].sum - a[1].sum
+    );
+    const keysArray = sortedData.map(([key]) => key);
+
+    chains.sort((a, b) => {
+      const indexA = keysArray.indexOf(a.chainId);
+      const indexB = keysArray.indexOf(b.chainId);
+
+      if (indexA === -1 && indexB === -1) {
+        return 0;
+      } else if (indexA === -1) {
+        return 1;
+      } else if (indexB === -1) {
+        return -1;
+      } else {
+        if (indexA < indexB) {
+          return -1;
+        }
+        if (indexA > indexB) {
+          return 1;
+        }
+        return 0;
+      }
+    });
+  }, [groupedData]);
 
   return (
     <View

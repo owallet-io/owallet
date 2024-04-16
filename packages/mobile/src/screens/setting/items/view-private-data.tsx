@@ -10,14 +10,57 @@ import { SCREENS } from "@src/common/constants";
 import { Alert } from "react-native";
 import { showToast } from "@src/utils/helper";
 import { useNavigation } from "@react-navigation/native";
+import { PincodeModal } from "@src/screens/pincode/pincode-modal";
 
 export const SettingViewPrivateDataItem: FunctionComponent<{
   topBorder?: boolean;
 }> = observer(({ topBorder }) => {
-  const { keyRingStore } = useStore();
+  const { keyRingStore, modalStore } = useStore();
 
   const smartNavigation = useSmartNavigation();
-  const navigation = useNavigation();
+
+  const onGoBack = () => {
+    modalStore.close();
+  };
+
+  const onVerifyPincode = async (passcode) => {
+    try {
+      const index = keyRingStore.multiKeyStoreInfo.findIndex(
+        (keyStore) => keyStore.selected
+      );
+
+      if (index >= 0) {
+        const privateData = await keyRingStore.showKeyRing(index, passcode);
+        smartNavigation.navigateSmart("Setting.BackupMnemonic", {
+          privateData,
+          privateDataType: keyRingStore.keyRingType,
+        });
+      }
+      modalStore.close();
+    } catch (err) {
+      showToast({
+        message: "Invalid passcode",
+        type: "danger",
+      });
+    }
+  };
+
+  const _onPressPincodekModal = () => {
+    modalStore.setOptions({
+      bottomSheetModalConfig: {
+        enablePanDownToClose: false,
+        enableOverDrag: false,
+      },
+    });
+    modalStore.setChildren(
+      <PincodeModal
+        onVerifyPincode={onVerifyPincode}
+        onGoBack={onGoBack}
+        label={"Enter your passcode"}
+        subLabel={"Enter your passcode to reveal secret phrase"}
+      />
+    );
+  };
 
   // const [isOpenModal, setIsOpenModal] = useState(false);
 
@@ -27,38 +70,7 @@ export const SettingViewPrivateDataItem: FunctionComponent<{
         icon="md_key"
         paragraph={"Reveal secret phrase"}
         onPress={() => {
-          navigate("Others", {
-            screen: SCREENS.PincodeScreen,
-            params: {
-              onVerifyPincode: async (passcode) => {
-                try {
-                  const index = keyRingStore.multiKeyStoreInfo.findIndex(
-                    (keyStore) => keyStore.selected
-                  );
-
-                  if (index >= 0) {
-                    const privateData = await keyRingStore.showKeyRing(
-                      index,
-                      passcode
-                    );
-                    smartNavigation.navigateSmart("Setting.BackupMnemonic", {
-                      privateData,
-                      privateDataType: keyRingStore.keyRingType,
-                    });
-                  }
-                } catch (err) {
-                  showToast({
-                    message: "Invalid passcode",
-                    type: "danger",
-                  });
-                }
-              },
-              onGoBack: () => navigation.canGoBack && navigation.goBack(),
-              label: "Enter your passcode",
-              subLabel: "Enter your passcode to reveal secret phrase",
-            },
-          });
-          // setIsOpenModal(true);
+          _onPressPincodekModal();
         }}
       />
       {/* <PasswordInputModal

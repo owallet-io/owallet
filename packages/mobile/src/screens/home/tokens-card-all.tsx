@@ -1,12 +1,13 @@
 import { OWButton } from "@src/components/button";
-import { OWEmpty } from "@src/components/empty";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
+// @ts-ignore
 import React, {
   FunctionComponent,
   useCallback,
   useEffect,
   useState,
+  useTransition,
 } from "react";
 import {
   InteractionManager,
@@ -51,6 +52,7 @@ export const TokensCardAll: FunctionComponent<{
   const [activeTab, setActiveTab] = useState("tokens");
   const [yesterdayAssets, setYesterdayAssets] = useState([]);
   const [queryBalances, setQueryBalances] = useState({});
+  const [isPending, startTransition] = useTransition();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
@@ -181,7 +183,9 @@ export const TokensCardAll: FunctionComponent<{
           );
           if (yesterday && yesterday.value) {
             profit = Number(
-              Number(item.value - (yesterday.value ?? 0))?.toFixed(2) ?? 0
+              Number(item.value - (yesterday.value ?? 0))
+                ?.toFixed(2)
+                .toLocaleString() ?? 0
             );
             percent = Number((profit / yesterday.value) * 100 ?? 0).toFixed(2);
           }
@@ -259,7 +263,7 @@ export const TokensCardAll: FunctionComponent<{
                       style={{ lineHeight: 24 }}
                       color={colors["neutral-text-body"]}
                     >
-                      ${item.value.toFixed(2).toLocaleString()}
+                      ${Number(item.value.toFixed(2)).toLocaleString()}
                     </Text>
                     <Text
                       size={14}
@@ -432,7 +436,11 @@ export const TokensCardAll: FunctionComponent<{
               fontWeight: "600",
               fontSize: 16,
             }}
-            onPress={() => setActiveTab("tokens")}
+            onPress={() => {
+              startTransition(() => {
+                setActiveTab("tokens");
+              });
+            }}
             style={[
               {
                 width: "50%",
@@ -443,7 +451,11 @@ export const TokensCardAll: FunctionComponent<{
           <OWButton
             type="link"
             label={"History"}
-            onPress={() => setActiveTab("history")}
+            onPress={() => {
+              startTransition(() => {
+                setActiveTab("history");
+              });
+            }}
             textStyle={{
               color:
                 activeTab === "history"
@@ -506,7 +518,7 @@ const styling = (colors) =>
       alignItems: "center",
       justifyContent: "center",
       overflow: "hidden",
-      backgroundColor: colors["neutral-surface-action2"],
+      backgroundColor: colors["neutral-icon-on-dark"],
     },
     chainWrap: {
       width: 22,

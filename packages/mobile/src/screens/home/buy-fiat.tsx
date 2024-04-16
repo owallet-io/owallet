@@ -17,52 +17,53 @@ const BuyFiat = observer(() => {
 
   const [accountList, setAccounts] = useState("");
 
-  const networkList =
-    "BITCOIN, OSMOSIS, ETHEREUM, JUNO, INJECTIVE, COSMOS HUB, ORAICHAIN"
-      .split(", ")
-      .join(",");
+  // const networkList =
+  //   "BITCOIN, OSMOSIS, ETHEREUM, JUNO, INJECTIVE, COSMOS HUB, ORAICHAIN"
+  //     .split(", ")
+  //     .join(",");
 
-  const cryptoList = "ORAI, USDT, USDC, ETH, OSMO, ATOM, INJ, wETH"
-    .split(", ")
-    .join(",");
+  // const cryptoList = "ORAI, USDT, USDC, ETH, OSMO, ATOM, INJ, wETH"
+  //   .split(", ")
+  //   .join(",");
 
+  const networkList = "ETHEREUM, ORAICHAIN".split(", ").join(",");
+
+  const cryptoList = "ORAI, USDT, USDC, ETH".split(", ").join(",");
+
+  const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
 
   useEffect(() => {
-    InteractionManager.runAfterInteractions(() => {
-      let accounts = {};
-
-      let defaultEvmAddress = accountEth.evmosHexAddress;
-
-      Object.keys(ChainIdEnum).map((key) => {
-        let defaultCosmosAddress = accountStore.getAccount(
-          ChainIdEnum[key]
-        ).bech32Address;
-
-        if (defaultCosmosAddress.startsWith("evmos")) {
-          accounts[KADOChainNameEnum[ChainIdEnum[key]]] = defaultEvmAddress;
-        } else {
-          accounts[KADOChainNameEnum[ChainIdEnum[key]]] = defaultCosmosAddress;
-        }
-      });
-
-      let tmpAccounts = "";
-
-      Object.keys(accounts).map((a) => {
-        tmpAccounts += `${a}:${accounts[a]},`;
-      });
-
-      setAccounts(tmpAccounts);
-    });
+    // InteractionManager.runAfterInteractions(() => {
+    //   let accounts = {};
+    //   let defaultEvmAddress = accountEth.evmosHexAddress;
+    //   Object.keys(ChainIdEnum).map((key) => {
+    //     // let defaultCosmosAddress = accountStore.getAccount(
+    //     //   ChainIdEnum[key]
+    //     // ).bech32Address;
+    //     // if (defaultCosmosAddress.startsWith("evmos")) {
+    //     //   accounts[KADOChainNameEnum[ChainIdEnum[key]]] = defaultEvmAddress;
+    //     // }
+    //     // else {
+    //     //   accounts[KADOChainNameEnum[ChainIdEnum[key]]] = defaultCosmosAddress;
+    //     // }
+    //   });
+    //   let tmpAccounts = "";
+    //   Object.keys(accounts).map((a) => {
+    //     tmpAccounts += `${a}:${accounts[a]},`;
+    //   });
+    //   setAccounts(tmpAccounts);
+    // });
+    setAccounts(
+      `${"ORAICHAIN"}:${accountOrai.bech32Address},${"ETHEREUM"}:${
+        accountOrai.evmosHexAddress
+      }`
+    );
   }, [accountEth.evmosHexAddress]);
 
   return (
     <View style={[styles.container, { paddingTop: safeAreaInsets.top }]}>
-      <PageHeader
-        title="Buy"
-        subtitle={chainStore.current.chainName}
-        colors={colors}
-      />
+      <PageHeader title="Buy" subtitle={chainStore.current.chainName} />
       {accountList.length > 0 ? (
         <View style={{ flex: 1 }}>
           <WebView

@@ -1,24 +1,31 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { OWBox } from "../../components/card";
-import { View, StyleSheet, TouchableOpacity, Image } from "react-native";
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  Clipboard,
+} from "react-native";
 import { Text } from "@src/components/text";
 import { useStore } from "../../stores";
 import { useTheme } from "@src/themes/theme-provider";
 import { getTotalUsd, chainIcons } from "@oraichain/oraidex-common";
-import { DownArrowIcon } from "@src/components/icon";
+import { CheckIcon, CopyFillIcon, DownArrowIcon } from "@src/components/icon";
 import { metrics, spacing } from "@src/themes";
 import MyWalletModal from "./components/my-wallet-modal/my-wallet-modal";
-import { ChainIdEnum } from "@owallet/common";
+import { ChainIdEnum, getBase58Address } from "@owallet/common";
 import { OWButton } from "@src/components/button";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { CopyAddressModal } from "./components/copy-address/copy-address-modal";
-import { getTokenInfos } from "@src/utils/helper";
+import { getTokenInfos, shortenAddress } from "@src/utils/helper";
 import { useSmartNavigation } from "@src/navigation.provider";
 import { SCREENS } from "@src/common/constants";
 import { navigate } from "@src/router/root";
 import { LoadingSpinner } from "@src/components/spinner";
 import OWText from "@src/components/text/ow-text";
+import { useSimpleTimer } from "@src/hooks";
 
 export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
   const { colors } = useTheme();
@@ -54,6 +61,37 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
   }
 
   const account = accountStore.getAccount(chainStore.current.chainId);
+
+  const [chainAddress, setAddress] = useState("");
+  const { isTimedOut, setTimer } = useSimpleTimer();
+
+  useEffect(() => {
+    let address;
+
+    if (chainStore.current.networkType === "cosmos") {
+      address = account.bech32Address;
+    } else {
+      if (chainStore.current.chainId === ChainIdEnum.TRON) {
+        if (account.isNanoLedger && keyRingStore?.keyRingLedgerAddresses?.trx) {
+          address = keyRingStore.keyRingLedgerAddresses.trx;
+        } else {
+          if (account) {
+            address = getBase58Address(account.evmosHexAddress);
+          }
+        }
+      } else if (chainStore.current.chainId === ChainIdEnum.Bitcoin) {
+        address = accountStore.getAccount(ChainIdEnum.Bitcoin).allBtcAddresses
+          .legacy;
+      } else {
+        if (account.isNanoLedger && keyRingStore?.keyRingLedgerAddresses?.eth) {
+          address = keyRingStore.keyRingLedgerAddresses.eth;
+        } else {
+          address = account.evmosHexAddress;
+        }
+      }
+    }
+    setAddress(address);
+  }, [chainStore.current.chainId]);
 
   const _onPressMyWallet = () => {
     modalStore.setOptions({
@@ -105,7 +143,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
     return (
       <>
         <Text variant="bigText" style={styles.labelTotalAmount}>
-          ${totalUsd.toFixed(2).toLocaleString()}
+          ${Number(totalUsd.toFixed(2)).toLocaleString()}
         </Text>
         <Text
           style={styles.profit}
@@ -118,7 +156,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
                 .toLocaleString()
             : 0}
           % ($
-          {profit?.toFixed(2).toLocaleString() ?? 0}) Today
+          {Number(profit?.toFixed(2)).toLocaleString() ?? 0}) Today
         </Text>
 
         {appInitStore.getInitApp.isAllNetworks ? null : (
@@ -164,7 +202,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
               </View>
 
               <Text size={16} weight="600" color={colors["neutral-text-title"]}>
-                ${chainBalance.toFixed(2)}
+                ${Number(chainBalance.toFixed(2)).toLocaleString()}
               </Text>
             </View>
             {chainStore.current.chainId === ChainIdEnum.TRON && (
@@ -248,26 +286,50 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
             <Text style={styles.labelName}>{account?.name || ".."}</Text>
             <DownArrowIcon height={15} color={colors["primary-text"]} />
           </TouchableOpacity>
-          <OWButton
-            type="secondary"
-            textStyle={{
-              fontSize: 14,
-              fontWeight: "600",
-              color: colors["neutral-text-action-on-light-bg"],
-            }}
-            icon={
-              <OWIcon
-                size={14}
-                name="copy"
-                color={colors["neutral-text-action-on-light-bg"]}
-              />
-            }
-            style={styles.copy}
-            label="Copy address"
-            onPress={() => {
-              setModalOpen(true);
-            }}
-          />
+          {appInitStore.getInitApp.isAllNetworks ? (
+            <OWButton
+              type="secondary"
+              textStyle={{
+                fontSize: 14,
+                fontWeight: "600",
+                color: colors["neutral-text-action-on-light-bg"],
+              }}
+              icon={
+                <OWIcon
+                  size={14}
+                  name="copy"
+                  color={colors["neutral-text-action-on-light-bg"]}
+                />
+              }
+              style={styles.copy}
+              label="Copy address"
+              onPress={() => {
+                setModalOpen(true);
+              }}
+            />
+          ) : (
+            <OWButton
+              type="secondary"
+              textStyle={{
+                fontSize: 14,
+                fontWeight: "600",
+                color: colors["neutral-text-action-on-light-bg"],
+              }}
+              icon={
+                isTimedOut ? (
+                  <CheckIcon />
+                ) : (
+                  <CopyFillIcon color={colors["sub-text"]} />
+                )
+              }
+              style={styles.copy}
+              label={shortenAddress(chainAddress)}
+              onPress={() => {
+                Clipboard.setString(chainAddress);
+                setTimer(2000);
+              }}
+            />
+          )}
         </View>
         <View style={styles.overview}>{renderTotalBalance()}</View>
         <View style={styles.btnGroup}>
@@ -383,7 +445,7 @@ const styling = (colors) =>
     },
     copy: {
       borderRadius: 999,
-      width: metrics.screenWidth / 3,
+      width: metrics.screenWidth / 2.5,
       height: 32,
     },
     btnGroup: {
