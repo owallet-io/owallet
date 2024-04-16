@@ -42,6 +42,8 @@
     "@oasisprotocol/client": "^1.0.0",
     "human-standard-token-abi": "2.0.0",
     "@oasisprotocol/client-rt": "^1.0.0",
+    "react-native-graph": "^1.1.0",
+    "@shopify/react-native-skia": "^1.2.0",
     "@oraichain/common-contracts-sdk": "^1.0.31",
     "@oraichain/oraidex-common": "^1.0.83",
     "react-native-pager-view": "^6.2.3",
