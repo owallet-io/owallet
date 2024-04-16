@@ -518,7 +518,7 @@ const styling = (colors) =>
       alignItems: "center",
       justifyContent: "center",
       overflow: "hidden",
-      backgroundColor: colors["neutral-surface-action2"],
+      backgroundColor: colors["neutral-icon-on-dark"],
     },
     chainWrap: {
       width: 22,

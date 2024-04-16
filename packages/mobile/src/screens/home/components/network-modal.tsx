@@ -266,7 +266,7 @@ export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
               width: 44,
               height: 44,
               borderRadius: 44,
-              backgroundColor: colors["neutral-surface-action"],
+              backgroundColor: colors["neutral-icon-on-dark"],
               marginRight: 16,
             }}
           >
