@@ -91,7 +91,7 @@ export const PageHeader: FunctionComponent<{
         {right ? (
           <View>{right}</View>
         ) : (
-          <View style={{ width: metrics.screenWidth / 6 }} />
+          <View style={{ width: metrics.screenWidth / 9 }} />
         )}
       </View>
     </View>

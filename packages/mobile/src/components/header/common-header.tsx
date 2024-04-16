@@ -44,7 +44,7 @@ export const CommonPageHeader: FunctionComponent<{ title: string }> = observer(
     return (
       <View>
         <PageHeader
-          left={<View style={{ width: metrics.screenWidth / 6 }} />}
+          left={<View style={{ width: metrics.screenWidth / 4 }} />}
           middle={
             <TouchableOpacity
               onPress={_onPressNetworkModal}
@@ -86,7 +86,7 @@ export const CommonPageHeader: FunctionComponent<{ title: string }> = observer(
                 onPress={onScan}
                 style={{
                   backgroundColor: colors["neutral-surface-card"],
-                  padding: 6,
+                  padding: 12,
                   borderRadius: 999,
                   marginRight: 8,
                 }}
@@ -101,7 +101,7 @@ export const CommonPageHeader: FunctionComponent<{ title: string }> = observer(
                 onPress={onAddWallet}
                 style={{
                   backgroundColor: colors["neutral-surface-card"],
-                  padding: 6,
+                  padding: 12,
                   borderRadius: 999,
                 }}
               >
