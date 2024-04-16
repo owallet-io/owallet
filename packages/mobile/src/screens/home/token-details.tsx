@@ -10,7 +10,6 @@ import {
   Clipboard,
 } from "react-native";
 import OWText from "@src/components/text/ow-text";
-import { useSmartNavigation } from "@src/navigation.provider";
 import { useStore } from "@src/stores";
 import { OWButton } from "@src/components/button";
 import { metrics, spacing } from "@src/themes";
@@ -23,7 +22,7 @@ import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { DashboardCard } from "./dashboard";
 import { ChainIdEnum, getBase58Address, TRC20_LIST } from "@owallet/common";
-import { formarPriceWithDigits, shortenAddress } from "@src/utils/helper";
+import { shortenAddress } from "@src/utils/helper";
 import { CheckIcon, CopyFillIcon } from "@src/components/icon";
 
 export const TokenDetails: FunctionComponent = observer((props) => {
@@ -32,7 +31,6 @@ export const TokenDetails: FunctionComponent = observer((props) => {
   const { colors } = useTheme();
   const styles = useStyles(colors);
   const safeAreaInsets = useSafeAreaInsets();
-  const smartNavigation = useSmartNavigation();
 
   const [address, setAddress] = useState("");
   const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
