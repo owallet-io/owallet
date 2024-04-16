@@ -24,6 +24,7 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { showToast } from "@src/utils/helper";
 import { useStore } from "@src/stores";
 import { Controller, useForm } from "react-hook-form";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface FormData {
   name: string;
@@ -415,6 +416,8 @@ export const Pincode: FunctionComponent<{
 
 const useStyles = () => {
   const { colors } = useTheme();
+  const safeAreaInsets = useSafeAreaInsets();
+
   return StyleSheet.create({
     padIcon: {
       paddingLeft: 10,
@@ -440,7 +443,7 @@ const useStyles = () => {
     },
 
     container: {
-      paddingTop: metrics.screenHeight / 14,
+      paddingTop: safeAreaInsets.top,
       justifyContent: "space-between",
       height: "100%",
       backgroundColor: colors["neutral-surface-card"],
@@ -492,7 +495,6 @@ const useStyles = () => {
       height: 44,
       alignItems: "center",
       justifyContent: "center",
-      marginLeft: 16,
     },
   });
 };
