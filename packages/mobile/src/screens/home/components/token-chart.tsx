@@ -10,6 +10,11 @@ import { useQuery } from "@tanstack/react-query";
 import { API } from "@src/common/api";
 import { MarketAPIEndPoint } from "@owallet/common";
 import moment from "moment/moment";
+import HapticFeedback, {
+  HapticFeedbackTypes,
+} from "react-native-haptic-feedback";
+import { Dec, PricePretty } from "@owallet/unit";
+import { useStore } from "@src/stores";
 
 export interface GraphPoint {
   value: number;
@@ -56,20 +61,22 @@ const ranges = [
     name: "1Y",
     unit: "year",
   },
-  {
-    id: 6,
-    value: 10,
-    name: "MAX",
-    unit: "year",
-  },
+  // {
+  //   id: 6,
+  //   value: 10,
+  //   name: 'MAX',
+  //   unit: 'year'
+  // }
 ];
 export const TokenChart: FC<{
   coinGeckoId: string;
 }> = observer(({ coinGeckoId }) => {
   const { colors } = useTheme();
-
+  const { priceStore } = useStore();
   const [typeActive, setTypeActive] = useState(ranges[1]);
   const [dataPriceChart, setDataPriceChart] = useState(null);
+  const [currentPrice, setCurrentPrice] = useState();
+  console.log(currentPrice, "currentPrice");
   const { data: res, refetch } = useQuery({
     queryKey: ["chart-range", coinGeckoId, typeActive],
     queryFn: () =>
@@ -89,17 +96,27 @@ export const TokenChart: FC<{
 
   const handlePriceData = (prices: DataPrices) => {
     const dataConvered = convertDataPrices(prices);
-    console.log(dataConvered, "dataConvered");
+    // console.log(dataConvered, 'dataConvered');
     return dataConvered;
   };
   useEffect(() => {
     if (res?.status === 200 && typeof res?.data === "object") {
-      console.log(res, "ress");
+      // console.log(res, 'ress');
       const dataPrice = handlePriceData(res.data?.prices);
       setDataPriceChart(dataPrice);
     }
   }, [res]);
-
+  const hapticFeedback = (
+    type: HapticFeedbackTypes = "impactLight",
+    force = false
+  ) => {
+    HapticFeedback.trigger(type, {
+      enableVibrateFallback: force,
+      ignoreAndroidSystemSettings: force,
+    });
+  };
+  const fiat = priceStore.defaultVsCurrency;
+  const fiatCurrency = priceStore.getFiatCurrency(fiat);
   return (
     <View
       style={{
@@ -118,7 +135,12 @@ export const TokenChart: FC<{
         }}
       >
         <OWText size={28} weight={"500"} color={colors["neutral-text-heading"]}>
-          $4.89
+          {currentPrice?.value
+            ? new PricePretty(
+                fiatCurrency,
+                new Dec(`${currentPrice?.value}`)
+              ).toString()
+            : "$0"}
         </OWText>
         <OWText
           style={{
@@ -143,8 +165,10 @@ export const TokenChart: FC<{
           enableFadeInMask={true}
           TopAxisLabel={() => <OWText>ok</OWText>}
           enablePanGesture={true}
-          // onGestureStart={() => hapticFeedback('impactLight')}
+          onPointSelected={(p) => setCurrentPrice(p)}
+          onGestureStart={() => hapticFeedback("impactLight")}
           enableIndicator={true}
+          panGestureDelay={0}
           points={dataPriceChart}
           color={colors["success-text-body"]}
         />

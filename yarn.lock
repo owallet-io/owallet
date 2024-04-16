@@ -23997,6 +23997,11 @@ react-native-graph@^1.1.0:
   resolved "https://registry.yarnpkg.com/react-native-graph/-/react-native-graph-1.1.0.tgz#b0a98f96dc386d1a95aeec822a5db94ec9c3d3b4"
   integrity sha512-jcPLfhOOzjNaug1yw4Y6RecqMTdsiW0dQD+VruOpgzUUIZivNHIQD4LCp3vqdpqhok/nqggviuHVAYQv1ICRTw==
 
+react-native-haptic-feedback@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/react-native-haptic-feedback/-/react-native-haptic-feedback-2.2.0.tgz#bc46edd1f053265bfbe6c32487cbce074e099429"
+  integrity sha512-3tqJOjCguWhIrX0nkURn4yw6kXdsSDjjrvZCRjKXYGlL28hdQmoW2okAHduDTD9FWj9lA+lHgwFWgGs4aFNN7A==
+
 react-native-icomoon@0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/react-native-icomoon/-/react-native-icomoon-0.1.1.tgz#2c7be306c4e33b7a56f091018c41f072c3c54670"
