@@ -230,7 +230,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
       contentContainerStyle={{ marginTop: Platform.OS === "android" ? 10 : 0 }}
       backgroundColor={colors["neutral-surface-bg"]}
     >
-      <PageHeader title="Address book" colors={colors} />
+      <PageHeader title="Address book" />
       <View
         style={{
           flexDirection: "row",

@@ -233,7 +233,7 @@ export const TokenDetails: FunctionComponent = observer((props) => {
               {Number(item.balance.toFixed(4)).toLocaleString()} {item.asset}
             </OWText>
             <OWText style={styles.profit} color={colors["success-text-body"]}>
-              ${formarPriceWithDigits(item.value).toLocaleString()}
+              ${item.value.toLocaleString()}
             </OWText>
           </View>
           <View style={styles.btnGroup}>
