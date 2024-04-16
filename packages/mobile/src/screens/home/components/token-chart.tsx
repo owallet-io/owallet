@@ -33,37 +33,37 @@ function convertDataPrices(data: [number, number][]): GraphPoint[] {
 const ranges = [
   {
     id: 1,
-    value: 10,
+    value: "1h",
     name: "1H",
     unit: "hour",
   },
   {
     id: 2,
-    value: 10,
+    value: "24h",
     name: "1D",
     unit: "day",
   },
   {
     id: 3,
-    value: 10,
+    value: "7d",
     name: "1W",
     unit: "week",
   },
   {
     id: 4,
-    value: 10,
+    value: "30d",
     name: "1M",
     unit: "month",
   },
   {
     id: 5,
-    value: 10,
+    value: "1y",
     name: "1Y",
     unit: "year",
   },
   {
     id: 6,
-    value: 10,
+    value: "max",
     name: "MAX",
     unit: "year",
   },
@@ -107,11 +107,12 @@ export const TokenChart: FC<{
     },
   });
   const { data: resPriceSimple, refetch: refetchPriceSimple } = useQuery({
-    queryKey: ["current-price", coinGeckoId],
+    queryKey: ["current-price", coinGeckoId, typeActive?.value],
     queryFn: () =>
       API.getCoinSimpleInfo(
         {
           id: coinGeckoId,
+          time: typeActive?.value,
         },
         { baseURL: MarketAPIEndPoint + "/api/v3" }
       ),
@@ -120,26 +121,36 @@ export const TokenChart: FC<{
     },
   });
   useEffect(() => {
-    if (resPriceSimple?.data?.[coinGeckoId]) {
-      console.log(
-        resPriceSimple?.data?.[coinGeckoId]?.[fiat],
-        "resPriceSimple?.data"
-      );
-      if (resPriceSimple?.data?.[coinGeckoId]?.[fiat]) {
+    if (resPriceSimple?.data?.length > 0 && typeActive?.value) {
+      // console.log(
+      //   resPriceSimple?.data?.[coinGeckoId]?.[fiat],
+      //   "resPriceSimple?.data"
+      // );
+      if (resPriceSimple?.data?.[0]?.["current_price"]) {
         setCurrentPrice({
-          value: resPriceSimple?.data?.[coinGeckoId]?.[fiat],
+          value: resPriceSimple?.data?.[0]?.["current_price"],
           date: new Date(),
         });
         setSimplePrice({
-          value: resPriceSimple?.data?.[coinGeckoId]?.[fiat],
+          value: resPriceSimple?.data?.[0]?.["current_price"],
           date: new Date(),
         });
-        setChange24h(
-          resPriceSimple?.data?.[coinGeckoId]?.[`${fiat}_24h_change`]
-        );
+        if (typeActive.value === "max") {
+          setChange24h(resPriceSimple?.data?.[0]?.roi?.percentage);
+        } else {
+          setChange24h(
+            resPriceSimple?.data?.[0]?.[
+              `price_change_percentage_${typeActive.value}_in_currency`
+            ]
+          );
+        }
       }
     }
-  }, [resPriceSimple?.data?.[coinGeckoId], coinGeckoId]);
+  }, [
+    resPriceSimple?.data?.[0]?.["current_price"],
+    coinGeckoId,
+    typeActive?.value,
+  ]);
   const handlePriceData = (prices: DataPrices) => {
     const dataConvered = convertDataPrices(prices);
     // console.log(dataConvered, 'dataConvered');
@@ -180,7 +191,7 @@ export const TokenChart: FC<{
         backgroundColor: colors["neutral-surface-card"],
         maxHeight: 330,
         marginHorizontal: 16,
-        padding: 16,
+        paddingVertical: 16,
         marginTop: 2,
         borderRadius: 24,
       }}
@@ -189,6 +200,7 @@ export const TokenChart: FC<{
         style={{
           flexDirection: "row",
           alignItems: "flex-end",
+          paddingHorizontal: 16,
         }}
       >
         <OWText size={28} weight={"500"} color={colors["neutral-text-heading"]}>
@@ -228,7 +240,7 @@ export const TokenChart: FC<{
           >
             {typeof change24h === "number" && change24h < 0
               ? `${change24h?.toFixed(2)}`
-              : `+${change24h?.toFixed(2) ?? ""}`}{" "}
+              : `+${change24h?.toFixed(2) ?? "0.00"}`}{" "}
             %
           </OWText>
         </View>
@@ -259,6 +271,7 @@ export const TokenChart: FC<{
         style={{
           flexDirection: "row",
           justifyContent: "space-between",
+          paddingHorizontal: 16,
         }}
       >
         {ranges.map((item, index) => {
