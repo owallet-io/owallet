@@ -1,5 +1,4 @@
 import { OWButton } from "@src/components/button";
-import { OWEmpty } from "@src/components/empty";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
 import React, {
@@ -7,6 +6,7 @@ import React, {
   useCallback,
   useEffect,
   useState,
+  useTransition,
 } from "react";
 import {
   InteractionManager,
@@ -51,6 +51,7 @@ export const TokensCardAll: FunctionComponent<{
   const [activeTab, setActiveTab] = useState("tokens");
   const [yesterdayAssets, setYesterdayAssets] = useState([]);
   const [queryBalances, setQueryBalances] = useState({});
+  const [isPending, startTransition] = useTransition();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
@@ -434,7 +435,11 @@ export const TokensCardAll: FunctionComponent<{
               fontWeight: "600",
               fontSize: 16,
             }}
-            onPress={() => setActiveTab("tokens")}
+            onPress={() => {
+              startTransition(() => {
+                setActiveTab("tokens");
+              });
+            }}
             style={[
               {
                 width: "50%",
@@ -445,7 +450,11 @@ export const TokensCardAll: FunctionComponent<{
           <OWButton
             type="link"
             label={"History"}
-            onPress={() => setActiveTab("history")}
+            onPress={() => {
+              startTransition(() => {
+                setActiveTab("history");
+              });
+            }}
             textStyle={{
               color:
                 activeTab === "history"
