@@ -139,7 +139,7 @@ export const TokenChart: FC<{
         );
       }
     }
-  }, [resPriceSimple?.data, coinGeckoId]);
+  }, [resPriceSimple?.data?.[coinGeckoId], coinGeckoId]);
   const handlePriceData = (prices: DataPrices) => {
     const dataConvered = convertDataPrices(prices);
     // console.log(dataConvered, 'dataConvered');
@@ -192,29 +192,43 @@ export const TokenChart: FC<{
         }}
       >
         <OWText size={28} weight={"500"} color={colors["neutral-text-heading"]}>
-          {new PricePretty(
-            fiatCurrency,
-            new Dec(`${currentPrice?.value ? currentPrice?.value : "0"}`)
-          ).toString()}
+          ${currentPrice?.value ? `${currentPrice?.value?.toFixed(2)}` : ""}
         </OWText>
-        <OWText
+        <View
           style={{
             paddingLeft: 8,
             paddingBottom: 4,
           }}
-          size={14}
-          weight={"400"}
-          color={
-            change24h < 0
-              ? colors["error-text-body"]
-              : colors["success-text-body"]
-          }
         >
-          {typeof change24h === "number" && change24h < 0
-            ? `${change24h?.toFixed(2)}`
-            : `+${change24h?.toFixed(2) ?? ""}`}{" "}
-          % Today
-        </OWText>
+          <OWText
+            size={12}
+            color={colors["neutral-text-body"]}
+            style={{
+              paddingLeft: 5,
+            }}
+          >
+            {" "}
+            {currentPrice?.date &&
+            simplePrice?.date &&
+            currentPrice?.date !== simplePrice?.date
+              ? moment(currentPrice?.date).format("YYYY-MM-DD HH:mm:ss")
+              : null}
+          </OWText>
+          <OWText
+            size={14}
+            weight={"400"}
+            color={
+              change24h < 0
+                ? colors["error-text-body"]
+                : colors["success-text-body"]
+            }
+          >
+            {typeof change24h === "number" && change24h < 0
+              ? `${change24h?.toFixed(2)}`
+              : `+${change24h?.toFixed(2) ?? ""}`}{" "}
+            %
+          </OWText>
+        </View>
       </View>
       {dataPriceChart && (
         <LineGraph
