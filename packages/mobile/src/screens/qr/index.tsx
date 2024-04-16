@@ -15,6 +15,8 @@ import { CheckIcon, DownArrowIcon } from "@src/components/icon";
 import { chainIcons } from "@oraichain/oraidex-common";
 import { useSimpleTimer } from "@src/hooks";
 import { CopyAddressModal } from "../home/components/copy-address/copy-address-modal";
+import { RouteProp, useRoute } from "@react-navigation/native";
+import { observer } from "mobx-react-lite";
 
 const styling = (colors) =>
   StyleSheet.create({
@@ -40,9 +42,27 @@ const styling = (colors) =>
     },
   });
 
-export const AddressQRScreen: FunctionComponent<{}> = ({}) => {
+export const AddressQRScreen: FunctionComponent<{}> = observer(({}) => {
   const { chainStore, keyRingStore, accountStore, modalStore } = useStore();
-  const account = accountStore.getAccount(chainStore.current.chainId);
+
+  const route = useRoute<
+    RouteProp<
+      Record<
+        string,
+        {
+          chainId: any;
+        }
+      >,
+      string
+    >
+  >();
+  const params = route.params;
+  const chainInfo = chainStore.getChain(
+    params?.chainId ? params?.chainId : chainStore.current.chainId
+  );
+  const account = accountStore.getAccount(
+    params?.chainId ? params?.chainId : chainStore.current.chainId
+  );
 
   const addressToShow = account.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses
@@ -56,9 +76,7 @@ export const AddressQRScreen: FunctionComponent<{}> = ({}) => {
   const styles = styling(colors);
   const { isTimedOut, setTimer } = useSimpleTimer();
 
-  const chainIcon = chainIcons.find(
-    (c) => c.chainId === chainStore.current.chainId
-  );
+  const chainIcon = chainIcons.find((c) => c.chainId === chainInfo.chainId);
 
   useEffect(() => {
     setAddress(addressToShow);
@@ -160,9 +178,7 @@ export const AddressQRScreen: FunctionComponent<{}> = ({}) => {
             >
               {renderNetworkIcon()}
               <OWText style={{ paddingHorizontal: 4 }} weight="600" size={14}>
-                {networkAddress
-                  ? networkAddress.name
-                  : chainStore.current.chainName}
+                {networkAddress ? networkAddress.name : chainInfo.chainName}
               </OWText>
               <DownArrowIcon height={11} color={colors["primary-text"]} />
             </TouchableOpacity>
@@ -244,4 +260,4 @@ export const AddressQRScreen: FunctionComponent<{}> = ({}) => {
       </ScrollView>
     </PageWithBottom>
   );
-};
+});

@@ -213,6 +213,9 @@ export const TokenDetails: FunctionComponent = observer((props) => {
               onPress={() => {
                 navigate(SCREENS.STACK.Others, {
                   screen: SCREENS.QRScreen,
+                  params: {
+                    chainId: item?.chainId,
+                  },
                 });
                 return;
               }}
