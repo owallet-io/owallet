@@ -192,7 +192,10 @@ export const TokenChart: FC<{
         }}
       >
         <OWText size={28} weight={"500"} color={colors["neutral-text-heading"]}>
-          ${currentPrice?.value ? `${currentPrice?.value?.toFixed(2)}` : ""}
+          $
+          {currentPrice?.value
+            ? `${Number(currentPrice?.value?.toFixed(2))?.toLocaleString()}`
+            : ""}
         </OWText>
         <View
           style={{

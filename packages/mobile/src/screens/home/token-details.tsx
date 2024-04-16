@@ -35,7 +35,6 @@ export const TokenDetails: FunctionComponent = observer((props) => {
   const styles = useStyles(colors);
   const safeAreaInsets = useSafeAreaInsets();
 
-  const [address, setAddress] = useState("");
   const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
   const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
 
@@ -92,44 +91,9 @@ export const TokenDetails: FunctionComponent = observer((props) => {
     });
   }, [accountTron.evmosHexAddress]);
 
-  useEffect(() => {
-    let address;
-
-    const chainInfo = chainStore.chainInfosInUI.find((chainInfo) => {
-      return chainInfo.chainId === item.chainId;
-    });
-
-    if (chainInfo.networkType === "cosmos") {
-      address = accountStore.getAccount(item.chainId).bech32Address;
-    } else {
-      if (chainInfo.chainId === ChainIdEnum.TRON) {
-        if (
-          accountTron.isNanoLedger &&
-          keyRingStore?.keyRingLedgerAddresses?.trx
-        ) {
-          address = keyRingStore.keyRingLedgerAddresses.trx;
-        } else {
-          if (accountTron) {
-            address = getBase58Address(accountTron.evmosHexAddress);
-          }
-        }
-      } else if (chainInfo.chainId === ChainIdEnum.Bitcoin) {
-        address = accountStore.getAccount(ChainIdEnum.Bitcoin).allBtcAddresses
-          .legacy;
-      } else {
-        if (
-          accountEth.isNanoLedger &&
-          keyRingStore?.keyRingLedgerAddresses?.eth
-        ) {
-          address = keyRingStore.keyRingLedgerAddresses.eth;
-        } else {
-          address = accountEth.evmosHexAddress;
-        }
-      }
-    }
-    setAddress(address);
-  }, [item]);
-
+  const address = account.getAddressDisplay(
+    keyRingStore.keyRingLedgerAddresses
+  );
   const onPressToken = async () => {
     chainStore.selectChain(item?.chainId);
     await chainStore.saveLastViewChainId();
