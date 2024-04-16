@@ -1,6 +1,7 @@
 import { OWButton } from "@src/components/button";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
+// @ts-ignore
 import React, {
   FunctionComponent,
   useCallback,

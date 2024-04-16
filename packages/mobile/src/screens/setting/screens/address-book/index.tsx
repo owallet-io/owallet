@@ -253,6 +253,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
           style={{
             fontFamily: "SpaceGrotesk-Regular",
             width: "100%",
+            color: colors["neutral-text-body"],
           }}
           value={nameSearch}
           onChangeText={(text) => {
