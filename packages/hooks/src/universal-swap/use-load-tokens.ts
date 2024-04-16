@@ -40,6 +40,7 @@ export const getUtxos = async (address: string, baseUrl: string) => {
 };
 
 const EVM_BALANCE_RETRY_COUNT = 2;
+const COSMOS_BALANCE_RETRY_COUNT = 4;
 
 export type CWStargateType = {
   account: AccountWithAll;
@@ -86,7 +87,7 @@ async function loadNativeBalance(
           .map((coin) => [coin.denom, coin.amount])
       )
     );
-
+    console.log("success with address ", address);
     universalSwapStore.updateAmounts(amountDetails);
   } catch (err) {
     console.log("error address,", address, err);
@@ -94,7 +95,9 @@ async function loadNativeBalance(
     if (retry >= EVM_BALANCE_RETRY_COUNT)
       throw `Cannot loadNativeBalance with error: ${err}`;
 
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 2500));
+    console.log("try again with address ", address);
+
     return loadNativeBalance(
       universalSwapStore,
       address,
@@ -461,7 +464,7 @@ async function loadEvmEntries(
     let retry = retryCount ? retryCount + 1 : 1;
     if (retry >= EVM_BALANCE_RETRY_COUNT)
       throw `Cannot query EVM balance with error: ${error}`;
-    await new Promise((resolve) => setTimeout(resolve, 10000));
+    await new Promise((resolve) => setTimeout(resolve, 5000));
     return loadEvmEntries(
       address,
       chain,
