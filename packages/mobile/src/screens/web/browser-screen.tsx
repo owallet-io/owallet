@@ -82,10 +82,14 @@ export const BrowserScreen = observer(() => {
   const onClear = () => {
     setUrl("");
   };
-  const onPaste = async () => {
+  const onPasteAndGo = async () => {
     const text = await Clipboard.getString();
     if (text) {
       setUrl(text);
+      navigate(SCREENS.DetailsBrowser, {
+        url: text,
+      });
+      return;
     }
   };
   return (
@@ -117,6 +121,7 @@ export const BrowserScreen = observer(() => {
           backgroundColor: colors["neutral-surface-action"],
           borderWidth: 0,
           borderRadius: 999,
+          paddingVertical: 7,
         }}
         containerStyle={{
           paddingHorizontal: 16,
@@ -128,20 +133,33 @@ export const BrowserScreen = observer(() => {
         onChangeText={(txt) => setUrl(txt.toLowerCase())}
         inputRight={
           <>
-            <OWButtonIcon
+            <OWButton
+              onPress={onPasteAndGo}
+              size={"small"}
+              style={{
+                backgroundColor: colors["neutral-surface-action3"],
+                borderRadius: 99,
+                paddingHorizontal: 10,
+                paddingVertical: 5,
+                // height: 20
+              }}
+              textStyle={{
+                color: colors["neutral-text-action-on-light-bg"],
+                fontWeight: "600",
+                fontSize: 13,
+              }}
               fullWidth={false}
-              colorIcon={colors["neutral-text-action-on-light-bg"]}
-              name={"tdesignfile-paste"}
-              sizeIcon={18}
-              onPress={onPaste}
+              label={"Paste & Go"}
             />
-            <OWButtonIcon
-              fullWidth={false}
-              colorIcon={colors["neutral-text-action-on-light-bg"]}
-              name={"tdesignclose"}
-              sizeIcon={20}
-              onPress={onClear}
-            />
+            {url?.length > 0 && (
+              <OWButtonIcon
+                fullWidth={false}
+                colorIcon={colors["neutral-text-action-on-light-bg"]}
+                name={"tdesignclose"}
+                sizeIcon={20}
+                onPress={onClear}
+              />
+            )}
           </>
         }
       />

@@ -421,26 +421,6 @@ export const DetailsBrowserScreen = observer((props) => {
               ref={webviewRef}
               // incognito={true}
               // style={pageLoaded ? {} : { flex: 0, height: 0, opacity: 0 }}
-              renderLoading={() => {
-                return (
-                  <View
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    <LottieView
-                      source={require("@src/assets/animations/loading.json")}
-                      style={{ width: 130, height: 130 }}
-                      autoPlay
-                      loop
-                    />
-                  </View>
-                );
-              }}
-              // containerStyle={{ marginBottom: bottomHeight }}
               cacheEnabled={true}
               injectedJavaScriptBeforeContentLoaded={sourceCode}
               // onLoad={handleWebViewLoaded}
@@ -460,6 +440,7 @@ export const DetailsBrowserScreen = observer((props) => {
                 setCanGoForward(e.nativeEvent.canGoForward);
 
                 setCurrentURL(e.nativeEvent.url);
+                // setIsLoading(false);
               }}
               onLoadStart={(syntheticEvent) => {
                 // update component to be aware of loading status

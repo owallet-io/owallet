@@ -255,7 +255,7 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
               const historyInfos = {
                 fromAddress: address,
                 toAddress: sendConfigs.recipientConfig.recipient,
-                hash: Buffer.from(txHash).toString("hex"),
+                hash: txHash,
                 memo: "",
                 fromAmount: sendConfigs.amountConfig.amount,
                 toAmount: sendConfigs.amountConfig.amount,
