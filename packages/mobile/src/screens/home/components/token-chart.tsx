@@ -61,12 +61,12 @@ const ranges = [
     name: "1Y",
     unit: "year",
   },
-  // {
-  //   id: 6,
-  //   value: 10,
-  //   name: 'MAX',
-  //   unit: 'year'
-  // }
+  {
+    id: 6,
+    value: 10,
+    name: "MAX",
+    unit: "year",
+  },
 ];
 export const TokenChart: FC<{
   coinGeckoId: string;
@@ -75,12 +75,24 @@ export const TokenChart: FC<{
   const { priceStore } = useStore();
   const [typeActive, setTypeActive] = useState(ranges[1]);
   const [dataPriceChart, setDataPriceChart] = useState(null);
-  const [currentPrice, setCurrentPrice] = useState();
+  const [currentPrice, setCurrentPrice] = useState<GraphPoint>();
+  const [simplePrice, setSimplePrice] = useState<GraphPoint>();
+  const [change24h, setChange24h] = useState<number>();
   console.log(currentPrice, "currentPrice");
   const { data: res, refetch } = useQuery({
     queryKey: ["chart-range", coinGeckoId, typeActive],
-    queryFn: () =>
-      API.getMarketChartRange(
+    queryFn: () => {
+      if (typeActive.id === 6) {
+        return API.getMarketChart(
+          {
+            id: coinGeckoId,
+            unit: "usd",
+            days: "max",
+          },
+          { baseURL: MarketAPIEndPoint + "/api/v3" }
+        );
+      }
+      return API.getMarketChartRange(
         {
           id: coinGeckoId,
           from: moment()
@@ -88,12 +100,46 @@ export const TokenChart: FC<{
             .unix(),
         },
         { baseURL: MarketAPIEndPoint + "/api/v3" }
+      );
+    },
+    ...{
+      initialData: null,
+    },
+  });
+  const { data: resPriceSimple, refetch: refetchPriceSimple } = useQuery({
+    queryKey: ["current-price", coinGeckoId],
+    queryFn: () =>
+      API.getCoinSimpleInfo(
+        {
+          id: coinGeckoId,
+        },
+        { baseURL: MarketAPIEndPoint + "/api/v3" }
       ),
     ...{
       initialData: null,
     },
   });
-
+  useEffect(() => {
+    if (resPriceSimple?.data?.[coinGeckoId]) {
+      console.log(
+        resPriceSimple?.data?.[coinGeckoId]?.[fiat],
+        "resPriceSimple?.data"
+      );
+      if (resPriceSimple?.data?.[coinGeckoId]?.[fiat]) {
+        setCurrentPrice({
+          value: resPriceSimple?.data?.[coinGeckoId]?.[fiat],
+          date: new Date(),
+        });
+        setSimplePrice({
+          value: resPriceSimple?.data?.[coinGeckoId]?.[fiat],
+          date: new Date(),
+        });
+        setChange24h(
+          resPriceSimple?.data?.[coinGeckoId]?.[`${fiat}_24h_change`]
+        );
+      }
+    }
+  }, [resPriceSimple?.data, coinGeckoId]);
   const handlePriceData = (prices: DataPrices) => {
     const dataConvered = convertDataPrices(prices);
     // console.log(dataConvered, 'dataConvered');
@@ -117,6 +163,17 @@ export const TokenChart: FC<{
   };
   const fiat = priceStore.defaultVsCurrency;
   const fiatCurrency = priceStore.getFiatCurrency(fiat);
+  const resetPrice = () => {
+    if (simplePrice) {
+      setCurrentPrice(simplePrice);
+      return;
+    }
+    return;
+  };
+  const hapticStart = () => {
+    hapticFeedback("impactLight");
+    return;
+  };
   return (
     <View
       style={{
@@ -135,12 +192,10 @@ export const TokenChart: FC<{
         }}
       >
         <OWText size={28} weight={"500"} color={colors["neutral-text-heading"]}>
-          {currentPrice?.value
-            ? new PricePretty(
-                fiatCurrency,
-                new Dec(`${currentPrice?.value}`)
-              ).toString()
-            : "$0"}
+          {new PricePretty(
+            fiatCurrency,
+            new Dec(`${currentPrice?.value ? currentPrice?.value : "0"}`)
+          ).toString()}
         </OWText>
         <OWText
           style={{
@@ -149,9 +204,16 @@ export const TokenChart: FC<{
           }}
           size={14}
           weight={"400"}
-          color={colors["success-text-body"]}
+          color={
+            change24h < 0
+              ? colors["error-text-body"]
+              : colors["success-text-body"]
+          }
         >
-          +8.95% Today
+          {typeof change24h === "number" && change24h < 0
+            ? `${change24h?.toFixed(2)}`
+            : `+${change24h?.toFixed(2) ?? ""}`}{" "}
+          % Today
         </OWText>
       </View>
       {dataPriceChart && (
@@ -162,15 +224,18 @@ export const TokenChart: FC<{
             height: "77%",
             // marginLeft: 5,
           }}
-          enableFadeInMask={true}
-          TopAxisLabel={() => <OWText>ok</OWText>}
           enablePanGesture={true}
           onPointSelected={(p) => setCurrentPrice(p)}
-          onGestureStart={() => hapticFeedback("impactLight")}
+          onGestureStart={hapticStart}
+          onGestureEnd={resetPrice}
           enableIndicator={true}
           panGestureDelay={0}
           points={dataPriceChart}
-          color={colors["success-text-body"]}
+          color={
+            change24h < 0
+              ? colors["error-text-body"]
+              : colors["success-text-body"]
+          }
         />
       )}
       <View

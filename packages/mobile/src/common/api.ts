@@ -331,9 +331,20 @@ export const API = {
     let url = `/coins/${id}/market_chart/range?vs_currency=usd&from=${from}&to=${to}`;
     return API.get(url, config);
   },
+  getMarketChart: (
+    { id, unit, days }: { id: string; unit?: string; days?: string },
+    config: AxiosRequestConfig
+  ) => {
+    const url = `/coins/${id}/market_chart?vs_currency=${unit}&days=${days}`;
+    return API.get(url, config);
+  },
 
   getCoinInfo: ({ id }: { id: string }, config: AxiosRequestConfig) => {
     let url = `/coins/markets?vs_currency=usd&ids=${id}&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=24h`;
+    return API.get(url, config);
+  },
+  getCoinSimpleInfo: ({ id }: { id: string }, config: AxiosRequestConfig) => {
+    let url = `/simple/price?ids=${id}&vs_currencies=usd&include_24hr_change=true&include_last_updated_at=true`;
     return API.get(url, config);
   },
 
@@ -393,7 +404,7 @@ const retryWrapper = (axios, options) => {
   const max_time = 1;
   let counter = 0;
   axios.interceptors.response.use(null, (error) => {
-    /** @type {import("axios").AxiosRequestConfig} */
+    /** @type {import('axios').AxiosRequestConfig} */
     const config = error.config;
     // you could defined status you want to retry, such as 503
     // if (counter < max_time && error.response.status === retry_status_code) {
