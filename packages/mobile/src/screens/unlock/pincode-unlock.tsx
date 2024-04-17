@@ -38,6 +38,7 @@ import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { Text } from "@src/components/text";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { showToast } from "@src/utils/helper";
+import { useAutoBiomtric } from "./index";
 import SmoothPinCodeInput from "react-native-smooth-pincode-input";
 import NumericPad from "react-native-numeric-pad";
 import OWText from "@src/components/text/ow-text";
@@ -117,9 +118,10 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
     navigateToHomeOnce.current = true;
   }, [accountStore, chainStore, navigation]);
 
-  // const autoBiometryStatus = useAutoBiomtric(keychainStore, keyRingStore.status === KeyRingStatus.LOCKED && loaded);
-
-  // console.log('autoBiometryStatus', autoBiometryStatus);
+  const autoBiometryStatus = useAutoBiomtric(
+    keychainStore,
+    keyRingStore.status === KeyRingStatus.LOCKED && loaded
+  );
 
   useEffect(() => {
     if (__DEV__) {
@@ -196,6 +198,12 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
       setIsBiometricLoading(false);
     }
   }, [keychainStore]);
+
+  useEffect(() => {
+    if (autoBiometryStatus) {
+      tryBiometric();
+    }
+  }, [autoBiometryStatus]);
 
   const tryUnlock = async () => {
     try {
