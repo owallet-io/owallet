@@ -1225,7 +1225,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
 
     features: ["ibc-go", "stargate", "isEvm"],
     txExplorer: {
-      name: "Bsc Scan Testnet",
+      name: "Bsc Scan",
       txUrl: "https://bscscan.com/tx/{txHash}",
       accountUrl: "https://bscscan.com/address/{address}",
     },
