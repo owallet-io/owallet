@@ -159,7 +159,6 @@ export const TokenDetails: FunctionComponent = observer((props) => {
   };
   const fiat = priceStore.defaultVsCurrency;
   const fiatCurrency = priceStore.getFiatCurrency(fiat);
-  console.log(item.balance, "item.balance");
   return (
     <View style={[styles.container, { paddingTop: safeAreaInsets.top }]}>
       <PageHeader title={item.asset} subtitle={item.chain} />
@@ -202,17 +201,9 @@ export const TokenDetails: FunctionComponent = observer((props) => {
           </View>
           <View style={styles.overview}>
             <OWText variant="bigText" style={styles.labelTotalAmount}>
-              {new CoinPretty(
-                currency,
-                new Dec(item.balance).mul(
-                  DecUtils.getTenExponentNInPrecisionRange(
-                    currency.coinDecimals
-                  )
-                )
-              )
-                .trim(true)
-                .maxDecimals(4)
-                .toString()}
+              {`${Number(item.balance?.toFixed(4)).toLocaleString()} ${
+                item.asset
+              }`}
             </OWText>
             <OWText style={styles.profit} color={colors["neutral-text-body"]}>
               {new PricePretty(fiatCurrency, item.value).toString()}
