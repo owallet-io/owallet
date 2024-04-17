@@ -204,10 +204,7 @@ export const TokenChart: FC<{
         }}
       >
         <OWText size={28} weight={"500"} color={colors["neutral-text-heading"]}>
-          $
-          {currentPrice?.value
-            ? `${Number(currentPrice?.value?.toFixed(2))?.toLocaleString()}`
-            : ""}
+          {new PricePretty(fiatCurrency, currentPrice?.value).toString()}
         </OWText>
         <View
           style={{

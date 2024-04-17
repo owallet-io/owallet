@@ -27,9 +27,10 @@ import { CheckIcon, CopyFillIcon } from "@src/components/icon";
 import { LineGraph } from "react-native-graph";
 import { OWBox } from "@src/components/card";
 import { TokenChart } from "@src/screens/home/components/token-chart";
+import { CoinPretty, Dec, DecUtils, PricePretty } from "@owallet/unit";
 
 export const TokenDetails: FunctionComponent = observer((props) => {
-  const { chainStore, accountStore, keyRingStore } = useStore();
+  const { chainStore, accountStore, priceStore, keyRingStore } = useStore();
   const { isTimedOut, setTimer } = useSimpleTimer();
   const { colors } = useTheme();
   const styles = useStyles(colors);
@@ -51,11 +52,15 @@ export const TokenDetails: FunctionComponent = observer((props) => {
   >();
 
   const { item } = route.params;
-
+  console.log(item, "item");
   const account = accountStore.getAccount(item.chainId);
 
   const [tronTokens, setTronTokens] = useState([]);
-
+  const chainInfo = chainStore.getChain(item.chainId);
+  const currency = chainInfo.currencies.find(
+    (it) => it.coinGeckoId === item.coinGeckoId
+  );
+  console.log(currency, "currency");
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
       (async function get() {
@@ -152,10 +157,12 @@ export const TokenDetails: FunctionComponent = observer((props) => {
       });
     } catch (err) {}
   };
-
+  const fiat = priceStore.defaultVsCurrency;
+  const fiatCurrency = priceStore.getFiatCurrency(fiat);
+  console.log(item.balance, "item.balance");
   return (
     <View style={[styles.container, { paddingTop: safeAreaInsets.top }]}>
-      <PageHeader title={item.asset} subtitle={item.chain} colors={colors} />
+      <PageHeader title={item.asset} subtitle={item.chain} />
       <ScrollView
         contentContainerStyle={{ width: "100%" }}
         showsVerticalScrollIndicator={false}
@@ -195,10 +202,20 @@ export const TokenDetails: FunctionComponent = observer((props) => {
           </View>
           <View style={styles.overview}>
             <OWText variant="bigText" style={styles.labelTotalAmount}>
-              {Number(item.balance.toFixed(4)).toLocaleString()} {item.asset}
+              {new CoinPretty(
+                currency,
+                new Dec(item.balance).mul(
+                  DecUtils.getTenExponentNInPrecisionRange(
+                    currency.coinDecimals
+                  )
+                )
+              )
+                .trim(true)
+                .maxDecimals(4)
+                .toString()}
             </OWText>
-            <OWText style={styles.profit} color={colors["success-text-body"]}>
-              ${Number(item.value.toFixed(4)).toLocaleString()}
+            <OWText style={styles.profit} color={colors["neutral-text-body"]}>
+              {new PricePretty(fiatCurrency, item.value).toString()}
             </OWText>
           </View>
           <View style={styles.btnGroup}>
