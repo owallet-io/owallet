@@ -1,10 +1,4 @@
-import React, {
-  FunctionComponent,
-  useEffect,
-  useMemo,
-  useState,
-  useTransition,
-} from "react";
+import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { PageWithScrollViewInBottomTabView } from "../../components/page";
 import { Text } from "@src/components/text";
 import { useTheme } from "@src/themes/theme-provider";
@@ -29,7 +23,6 @@ import {
   ORAI,
   toDisplay,
   getBase58Address,
-  KADOChainNameEnum,
 } from "@owallet/common";
 import {
   TokenItemType,
@@ -92,7 +85,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const { colors } = useTheme();
   const { data: prices } = useCoinGeckoPrices();
   const [refreshDate, setRefreshDate] = React.useState(Date.now());
-  const [isPending, startTransition] = useTransition();
+  // const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     appInitStore.updatePrices(prices);

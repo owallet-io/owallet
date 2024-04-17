@@ -1,4 +1,9 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, {
+  FunctionComponent,
+  useEffect,
+  useState,
+  useTransition,
+} from "react";
 import { observer } from "mobx-react-lite";
 import { OWBox } from "../../components/card";
 import {
@@ -40,6 +45,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
   } = useStore();
   const [profit, setProfit] = useState(0);
   const [isOpen, setModalOpen] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   const smartNavigation = useSmartNavigation();
 
@@ -279,7 +285,9 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
               style={styles.copy}
               label="Copy address"
               onPress={() => {
-                setModalOpen(true);
+                startTransition(() => {
+                  setModalOpen(true);
+                });
               }}
             />
           ) : (

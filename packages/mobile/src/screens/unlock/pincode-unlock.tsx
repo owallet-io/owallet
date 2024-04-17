@@ -24,7 +24,6 @@ import delay from "delay";
 import { useStore } from "../../stores";
 import { StackActions, useNavigation } from "@react-navigation/native";
 import { KeyRingStatus } from "@owallet/background";
-import { KeychainStore } from "../../stores/keychain";
 import { AccountStore } from "@owallet/stores";
 import { autorun } from "mobx";
 import { metrics, spacing } from "../../themes";
@@ -200,7 +199,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
   }, [keychainStore]);
 
   useEffect(() => {
-    if (autoBiometryStatus) {
+    if (autoBiometryStatus && keychainStore.isBiometryOn) {
       tryBiometric();
     }
   }, [autoBiometryStatus]);
