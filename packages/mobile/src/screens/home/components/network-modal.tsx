@@ -329,31 +329,33 @@ export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
   };
 
   useEffect(() => {
-    const sortedData = Object.entries(groupedData).sort(
-      (a, b) => b[1].sum - a[1].sum
-    );
-    const keysArray = sortedData.map(([key]) => key);
+    if (groupedData) {
+      const sortedData = Object.entries(groupedData).sort(
+        (a, b) => b[1].sum - a[1].sum
+      );
+      const keysArray = sortedData.map(([key]) => key);
 
-    chains.sort((a, b) => {
-      const indexA = keysArray.indexOf(a.chainId);
-      const indexB = keysArray.indexOf(b.chainId);
+      chains.sort((a, b) => {
+        const indexA = keysArray.indexOf(a.chainId);
+        const indexB = keysArray.indexOf(b.chainId);
 
-      if (indexA === -1 && indexB === -1) {
-        return 0;
-      } else if (indexA === -1) {
-        return 1;
-      } else if (indexB === -1) {
-        return -1;
-      } else {
-        if (indexA < indexB) {
-          return -1;
-        }
-        if (indexA > indexB) {
+        if (indexA === -1 && indexB === -1) {
+          return 0;
+        } else if (indexA === -1) {
           return 1;
+        } else if (indexB === -1) {
+          return -1;
+        } else {
+          if (indexA < indexB) {
+            return -1;
+          }
+          if (indexA > indexB) {
+            return 1;
+          }
+          return 0;
         }
-        return 0;
-      }
-    });
+      });
+    }
   }, [groupedData]);
 
   return (
