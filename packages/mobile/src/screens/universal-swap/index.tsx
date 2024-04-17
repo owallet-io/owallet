@@ -574,10 +574,13 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     ) {
       cosmosAddress = keyRingStore.keyRingLedgerAddresses.cosmos;
     } else {
-      const accountCosmos = accountStore.getAccount(originalFromToken.chainId);
-      cosmosAddress = originalFromToken.cosmosBased
-        ? accountCosmos.bech32Address
-        : accountOrai.bech32Address;
+      if (originalFromToken.cosmosBased) {
+        cosmosAddress = accountStore.getAccount(
+          originalFromToken.chainId
+        ).bech32Address;
+      } else {
+        cosmosAddress = accountOrai.bech32Address;
+      }
     }
 
     if (accountEth.isNanoLedger && keyRingStore?.keyRingLedgerAddresses?.eth) {
