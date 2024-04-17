@@ -360,19 +360,19 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     }
   };
 
-  useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
+  // useEffect(() => {
+  //   let timeoutId: NodeJS.Timeout;
 
-    InteractionManager.runAfterInteractions(() => {
-      startTransition(() => {
-        onFetchAmount(timeoutId);
-      });
-    });
-    // Clean up the timeout if the component unmounts or the dependency changes
-    return () => {
-      if (timeoutId) clearTimeout(timeoutId);
-    };
-  }, [accountOrai.bech32Address]);
+  //   InteractionManager.runAfterInteractions(() => {
+  //     startTransition(() => {
+  //       onFetchAmount(timeoutId);
+  //     });
+  //   });
+  //   // Clean up the timeout if the component unmounts or the dependency changes
+  //   return () => {
+  //     if (timeoutId) clearTimeout(timeoutId);
+  //   };
+  // }, [accountOrai.bech32Address]);
 
   useEffect(() => {
     const filteredToTokens = filterNonPoolEvmTokens(
