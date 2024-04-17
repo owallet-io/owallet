@@ -199,7 +199,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
         <View style={styles.containerBottomButton}>
           <Text style={styles.txtPending}>
             The transaction is still pending. {"\n"}
-            You can check the status on OraiScan
+            You can check the status on {chainInfo.raw.txExplorer.name}
           </Text>
           <OWButton
             label="View on Explorer"

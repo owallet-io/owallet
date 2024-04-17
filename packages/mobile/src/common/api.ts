@@ -343,8 +343,11 @@ export const API = {
     let url = `/coins/markets?vs_currency=usd&ids=${id}&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=24h`;
     return API.get(url, config);
   },
-  getCoinSimpleInfo: ({ id }: { id: string }, config: AxiosRequestConfig) => {
-    let url = `/simple/price?ids=${id}&vs_currencies=usd&include_24hr_change=true&include_last_updated_at=true`;
+  getCoinSimpleInfo: (
+    { id, time }: { id: string; time: string },
+    config: AxiosRequestConfig
+  ) => {
+    let url = `/coins/markets?vs_currency=usd&ids=${id}&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=${time}`;
     return API.get(url, config);
   },
 

@@ -62,36 +62,11 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
 
   const account = accountStore.getAccount(chainStore.current.chainId);
 
-  const [chainAddress, setAddress] = useState("");
+  // const [chainAddress, setAddress] = useState("");
   const { isTimedOut, setTimer } = useSimpleTimer();
-
-  useEffect(() => {
-    let address;
-
-    if (chainStore.current.networkType === "cosmos") {
-      address = account.bech32Address;
-    } else {
-      if (chainStore.current.chainId === ChainIdEnum.TRON) {
-        if (account.isNanoLedger && keyRingStore?.keyRingLedgerAddresses?.trx) {
-          address = keyRingStore.keyRingLedgerAddresses.trx;
-        } else {
-          if (account) {
-            address = getBase58Address(account.evmosHexAddress);
-          }
-        }
-      } else if (chainStore.current.chainId === ChainIdEnum.Bitcoin) {
-        address = accountStore.getAccount(ChainIdEnum.Bitcoin).allBtcAddresses
-          .legacy;
-      } else {
-        if (account.isNanoLedger && keyRingStore?.keyRingLedgerAddresses?.eth) {
-          address = keyRingStore.keyRingLedgerAddresses.eth;
-        } else {
-          address = account.evmosHexAddress;
-        }
-      }
-    }
-    setAddress(address);
-  }, [chainStore.current.chainId]);
+  const chainAddress = account.getAddressDisplay(
+    keyRingStore.keyRingLedgerAddresses
+  );
 
   const _onPressMyWallet = () => {
     modalStore.setOptions({
