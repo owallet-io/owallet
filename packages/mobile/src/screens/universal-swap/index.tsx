@@ -1,10 +1,4 @@
-import React, {
-  FunctionComponent,
-  useEffect,
-  useMemo,
-  useState,
-  useTransition,
-} from "react";
+import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { PageWithScrollViewInBottomTabView } from "../../components/page";
 import { Text } from "@src/components/text";
 import { useTheme } from "@src/themes/theme-provider";
@@ -29,7 +23,6 @@ import {
   ORAI,
   toDisplay,
   getBase58Address,
-  KADOChainNameEnum,
 } from "@owallet/common";
 import {
   TokenItemType,
@@ -92,15 +85,13 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const { colors } = useTheme();
   const { data: prices } = useCoinGeckoPrices();
   const [refreshDate, setRefreshDate] = React.useState(Date.now());
-  const [isPending, startTransition] = useTransition();
+  // const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     appInitStore.updatePrices(prices);
   }, [prices]);
 
   const chainInfo = chainStore.getChain(ChainIdEnum.Oraichain);
-
-  let accounts = {};
 
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
@@ -362,19 +353,19 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     }
   };
 
-  useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
+  // useEffect(() => {
+  //   let timeoutId: NodeJS.Timeout;
 
-    InteractionManager.runAfterInteractions(() => {
-      startTransition(() => {
-        onFetchAmount(timeoutId);
-      });
-    });
-    // Clean up the timeout if the component unmounts or the dependency changes
-    return () => {
-      if (timeoutId) clearTimeout(timeoutId);
-    };
-  }, [accountOrai.bech32Address]);
+  //   InteractionManager.runAfterInteractions(() => {
+  //     startTransition(() => {
+  //       onFetchAmount(timeoutId);
+  //     });
+  //   });
+  //   // Clean up the timeout if the component unmounts or the dependency changes
+  //   return () => {
+  //     if (timeoutId) clearTimeout(timeoutId);
+  //   };
+  // }, [accountOrai.bech32Address]);
 
   useEffect(() => {
     const filteredToTokens = filterNonPoolEvmTokens(
@@ -569,34 +560,33 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       return;
     }
 
-    let defaultEvmAddress;
-    if (accountEth.isNanoLedger && keyRingStore?.keyRingLedgerAddresses?.eth) {
-      defaultEvmAddress = keyRingStore.keyRingLedgerAddresses.eth;
+    let evmAddress, tronAddress, cosmosAddress;
+    if (
+      accountOrai.isNanoLedger &&
+      keyRingStore?.keyRingLedgerAddresses?.cosmos
+    ) {
+      cosmosAddress = keyRingStore.keyRingLedgerAddresses.cosmos;
     } else {
-      defaultEvmAddress = accountEth.evmosHexAddress;
+      if (originalFromToken.cosmosBased) {
+        cosmosAddress = accountStore.getAccount(
+          originalFromToken.chainId
+        ).bech32Address;
+      } else {
+        cosmosAddress = accountOrai.bech32Address;
+      }
     }
 
-    Object.keys(ChainIdEnum).map((key) => {
-      let defaultCosmosAddress = accountStore.getAccount(
-        ChainIdEnum[key]
-      ).bech32Address;
-
-      if (defaultCosmosAddress.startsWith("evmos")) {
-        accounts[ChainIdEnum[key]] = defaultEvmAddress;
-      } else if (key === KADOChainNameEnum[ChainIdEnum.TRON]) {
-        accounts[ChainIdEnum.TRON] = null;
-      } else {
-        accounts[ChainIdEnum[key]] = defaultCosmosAddress;
-      }
-    });
+    if (accountEth.isNanoLedger && keyRingStore?.keyRingLedgerAddresses?.eth) {
+      evmAddress = keyRingStore.keyRingLedgerAddresses.eth;
+    } else {
+      evmAddress = accountEth.evmosHexAddress;
+    }
 
     if (accountTron.isNanoLedger && keyRingStore?.keyRingLedgerAddresses?.trx) {
-      accounts[ChainIdEnum.TRON] = keyRingStore.keyRingLedgerAddresses.trx;
+      tronAddress = keyRingStore.keyRingLedgerAddresses.trx;
     } else {
       if (accountTron) {
-        accounts[ChainIdEnum.TRON] = getBase58Address(
-          accountTron.evmosHexAddress
-        );
+        tronAddress = getBase58Address(accountTron.evmosHexAddress);
       }
     }
 
@@ -618,9 +608,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
     try {
       const cosmosWallet = new SwapCosmosWallet(client);
-      const cosmosAddress = originalFromToken.cosmosBased
-        ? accounts[originalFromToken.chainId]
-        : accountOrai.bech32Address;
 
       const isTron = Number(originalFromToken.chainId) === Networks.tron;
 
@@ -634,8 +621,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       const universalSwapData: UniversalSwapData = {
         sender: {
           cosmos: cosmosAddress,
-          evm: accounts[ChainIdEnum.Ethereum],
-          tron: accounts[ChainIdEnum.TRON],
+          evm: evmAddress,
+          tron: tronAddress,
         },
         originalFromToken: originalFromToken,
         originalToToken: originalToToken,
@@ -666,8 +653,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         const { transactionHash } = result;
         try {
           const historyInfos = {
-            fromAddress: accounts[originalFromToken.chainId],
-            toAddress: accounts[originalToToken.chainId],
+            fromAddress: accountOrai.bech32Address,
+            toAddress: accountOrai.bech32Address,
             hash: transactionHash,
             memo: "",
             fromAmount: fromAmountToken,

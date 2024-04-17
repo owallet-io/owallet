@@ -34,7 +34,7 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
     onChangeAmount(Number(Number(amount).toFixed(6)).toString());
   };
 
-  const debounceFn = useCallback(_debounce(handleChangeAmount, 500), []);
+  const debounceFn = useCallback(_debounce(handleChangeAmount, 1000), []);
 
   useEffect(() => {
     const tokenIcon = find(

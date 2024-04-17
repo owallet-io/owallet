@@ -66,7 +66,10 @@ enum AutoBiomtricStatus {
   SUCCESS,
 }
 
-const useAutoBiomtric = (keychainStore: KeychainStore, tryEnabled: boolean) => {
+export const useAutoBiomtric = (
+  keychainStore: KeychainStore,
+  tryEnabled: boolean
+) => {
   const [status, setStatus] = useState(AutoBiomtricStatus.NO_NEED);
   // const tryBiometricAutoOnce = useRef(false);
 

@@ -1,10 +1,4 @@
-import React, {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { FunctionComponent, useEffect, useRef, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -24,7 +18,7 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { showToast } from "@src/utils/helper";
 import { useStore } from "@src/stores";
 import { Controller, useForm } from "react-hook-form";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+// import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface FormData {
   name: string;
@@ -35,10 +29,18 @@ interface FormData {
 export const Pincode: FunctionComponent<{
   onVerifyPincode: Function;
   needConfirmation: boolean;
+  isModal?: boolean;
   onGoBack?: Function;
   label?: string;
   subLabel?: string;
-}> = ({ onVerifyPincode, needConfirmation, onGoBack, label, subLabel }) => {
+}> = ({
+  onVerifyPincode,
+  needConfirmation,
+  onGoBack,
+  label,
+  subLabel,
+  isModal,
+}) => {
   const { appInitStore } = useStore();
 
   const { colors } = useTheme();
@@ -416,7 +418,7 @@ export const Pincode: FunctionComponent<{
 
 const useStyles = () => {
   const { colors } = useTheme();
-  const safeAreaInsets = useSafeAreaInsets();
+  // const safeAreaInsets = useSafeAreaInsets();
 
   return StyleSheet.create({
     padIcon: {
@@ -443,9 +445,9 @@ const useStyles = () => {
     },
 
     container: {
-      paddingTop: safeAreaInsets.top,
+      // paddingTop: safeAreaInsets.top,
       justifyContent: "space-between",
-      height: "100%",
+      height: "95%",
       backgroundColor: colors["neutral-surface-card"],
     },
     signIn: {
