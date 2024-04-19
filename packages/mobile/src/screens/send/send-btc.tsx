@@ -303,9 +303,9 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
                   txHash: tx,
                   data: {
                     memo: sendConfigs.memoConfig.memo,
-                    toAddress: sendConfigs.recipientConfig.recipient,
+                    from: address,
+                    to: sendConfigs.recipientConfig.recipient,
                     amount: sendConfigs.amountConfig.getAmountPrimitive(),
-                    fromAddress: address,
                     fee: sendConfigs.feeConfig.toStdFee(),
                     currency: sendConfigs.amountConfig.sendCurrency,
                   },

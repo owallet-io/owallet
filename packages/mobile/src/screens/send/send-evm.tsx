@@ -241,9 +241,9 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
                   txHash: txHash,
                   data: {
                     memo: sendConfigs.memoConfig.memo,
-                    toAddress: sendConfigs.recipientConfig.recipient,
+                    from: address,
+                    to: sendConfigs.recipientConfig.recipient,
                     amount: sendConfigs.amountConfig.getAmountPrimitive(),
-                    fromAddress: address,
                     fee: sendConfigs.feeConfig.toStdFee(),
                     currency: sendConfigs.amountConfig.sendCurrency,
                   },

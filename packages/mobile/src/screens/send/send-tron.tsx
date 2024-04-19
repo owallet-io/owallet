@@ -255,10 +255,10 @@ export const SendTronScreen: FunctionComponent = observer(() => {
                           txHash: tx.txid,
                           data: {
                             memo: sendConfigs.memoConfig.memo,
-                            toAddress: sendConfigs.recipientConfig.recipient,
+                            from: address,
+                            to: sendConfigs.recipientConfig.recipient,
                             amount:
                               sendConfigs.amountConfig.getAmountPrimitive(),
-                            fromAddress: address,
                             fee: sendConfigs.feeConfig.toStdFee(),
                             currency: sendConfigs.amountConfig.sendCurrency,
                           },
