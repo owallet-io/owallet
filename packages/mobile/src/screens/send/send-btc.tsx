@@ -317,9 +317,11 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
           },
           onBroadcasted: async (txHash) => {
             try {
-              const fee = Number(
-                sendConfigs.feeConfig.fee.trim(true).hideDenom(true).toString()
-              );
+              const fee = sendConfigs.feeConfig.fee
+                .trim(true)
+                .hideDenom(true)
+                .maxDecimals(4)
+                .toString();
               const historyInfos = {
                 fromAddress: address,
                 toAddress: sendConfigs.recipientConfig.recipient,

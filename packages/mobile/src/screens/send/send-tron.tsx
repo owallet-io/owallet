@@ -265,12 +265,11 @@ export const SendTronScreen: FunctionComponent = observer(() => {
                         },
                       });
                     }
-                    const fee = Number(
-                      sendConfigs.feeConfig.fee
-                        .trim(true)
-                        .hideDenom(true)
-                        .toString()
-                    );
+                    const fee = sendConfigs.feeConfig.fee
+                      .trim(true)
+                      .hideDenom(true)
+                      .maxDecimals(4)
+                      .toString();
                     const historyInfos = {
                       fromAddress: address,
                       toAddress: sendConfigs.recipientConfig.recipient,
