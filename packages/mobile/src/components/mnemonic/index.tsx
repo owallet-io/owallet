@@ -65,8 +65,8 @@ export const BackupWordChip: FunctionComponent<{
       <View
         style={{
           borderRadius: 999,
-          width: 20,
-          height: 20,
+          width: 24,
+          height: 24,
           backgroundColor: colors["primary-surface-subtle"],
           justifyContent: "center",
           alignItems: "center",

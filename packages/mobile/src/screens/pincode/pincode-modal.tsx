@@ -2,6 +2,7 @@ import React, { FunctionComponent } from "react";
 import { observer } from "mobx-react-lite";
 import { Pincode } from "@src/components/pincode/pincode-component";
 import { ScrollView } from "react-native-gesture-handler";
+import { metrics } from "@src/themes";
 
 export const PincodeModal: FunctionComponent<{
   onVerifyPincode: Function;
