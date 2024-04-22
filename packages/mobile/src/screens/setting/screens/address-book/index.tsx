@@ -227,7 +227,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
   return (
     <PageWithScrollView
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ marginTop: Platform.OS === "android" ? 10 : 0 }}
+      contentContainerStyle={{ marginTop: Platform.OS === "android" ? 30 : 0 }}
       backgroundColor={colors["neutral-surface-bg"]}
     >
       <PageHeader title="Address book" />

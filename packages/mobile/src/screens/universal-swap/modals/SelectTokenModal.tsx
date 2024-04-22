@@ -59,7 +59,6 @@ export const SelectTokenModal: FunctionComponent<{
         return;
       } else {
         if (key && key !== "") {
-          console.log("get here key,", key);
           const tmpData = data.filter((d) => {
             return (d.chainId + d.denom + d.name + d.org + d.coinGeckoId)
               .toString()
@@ -72,14 +71,12 @@ export const SelectTokenModal: FunctionComponent<{
         }
 
         if (chain && chain !== "") {
-          console.log("get here chain,", chain);
           const tmpData = data.filter((d) =>
             d.chainId.toString().toLowerCase().includes(chain.toLowerCase())
           );
           setTokens(tmpData);
           return;
         }
-        console.log("get here nothing,", key, chain);
         setTokens(data);
       }
     };
