@@ -10,7 +10,7 @@ export const PincodeModal: FunctionComponent<{
   subLabel?: string;
 }> = observer(({ onVerifyPincode, onGoBack, label, subLabel }) => {
   return (
-    <ScrollView contentContainerStyle={{ height: "95%" }}>
+    <ScrollView contentContainerStyle={{ height: "98%" }}>
       <Pincode
         onVerifyPincode={onVerifyPincode}
         subLabel={subLabel}
