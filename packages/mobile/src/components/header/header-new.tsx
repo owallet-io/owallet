@@ -34,23 +34,25 @@ export const PageHeader: FunctionComponent<{
       {left ? (
         <View>{left}</View>
       ) : (
-        <TouchableOpacity
-          onPress={onGoBack ?? goBack}
-          style={{
-            backgroundColor: colors["neutral-surface-card"],
-            borderRadius: 999,
-            width: 44,
-            height: 44,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <OWIcon
-            size={16}
-            color={colors["neutral-icon-on-light"]}
-            name="arrow-left"
-          />
-        </TouchableOpacity>
+        <View style={{ width: 66 }}>
+          <TouchableOpacity
+            onPress={onGoBack ?? goBack}
+            style={{
+              backgroundColor: colors["neutral-surface-card"],
+              borderRadius: 999,
+              width: 44,
+              height: 44,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <OWIcon
+              size={16}
+              color={colors["neutral-icon-on-light"]}
+              name="arrow-left"
+            />
+          </TouchableOpacity>
+        </View>
       )}
 
       {middle ? (
