@@ -33,40 +33,60 @@ export const SelectTokenModal: FunctionComponent<{
   setToken: (denom: string) => void;
   setSearchTokenName: Function;
 }> = registerModal(
-  ({ close, onNetworkModal, data, setToken, prices, selectedChainFilter }) => {
+  ({ close, onNetworkModal, data, setToken, selectedChainFilter }) => {
     const safeAreaInsets = useSafeAreaInsets();
     const { universalSwapStore } = useStore();
     const [filteredTokens, setTokens] = useState([]);
     const [keyword, setKeyword] = useState("");
 
-    useEffect(() => {
-      if (keyword === "" || !keyword) {
-        setTokens(data);
-      } else {
-        const tmpData = data.filter((d) => {
-          return (d.chainId + d.denom + d.name + d.org + d.coinGeckoId)
-            .toString()
-            .toLowerCase()
-            .includes(keyword.toLowerCase());
+    const onFilter = (key, chain) => {
+      if (key && chain && key !== "" && chain !== "") {
+        const tmpData = [];
+
+        data.map((d) => {
+          if (
+            d.chainId.toString().toLowerCase().includes(chain.toLowerCase()) &&
+            (d.chainId + d.denom + d.name + d.org + d.coinGeckoId)
+              .toString()
+              .toLowerCase()
+              .includes(key.toLowerCase())
+          ) {
+            tmpData.push(d);
+          }
         });
 
         setTokens(tmpData);
+        return;
+      } else {
+        if (key && key !== "") {
+          console.log("get here key,", key);
+          const tmpData = data.filter((d) => {
+            return (d.chainId + d.denom + d.name + d.org + d.coinGeckoId)
+              .toString()
+              .toLowerCase()
+              .includes(key.toLowerCase());
+          });
+
+          setTokens(tmpData);
+          return;
+        }
+
+        if (chain && chain !== "") {
+          console.log("get here chain,", chain);
+          const tmpData = data.filter((d) =>
+            d.chainId.toString().toLowerCase().includes(chain.toLowerCase())
+          );
+          setTokens(tmpData);
+          return;
+        }
+        console.log("get here nothing,", key, chain);
+        setTokens(data);
       }
-    }, [data, keyword]);
+    };
 
     useEffect(() => {
-      if (selectedChainFilter === "" || !selectedChainFilter) {
-        setTokens(data);
-      } else {
-        const tmpData = data.filter((d) =>
-          d.chainId
-            .toString()
-            .toLowerCase()
-            .includes(selectedChainFilter.toLowerCase())
-        );
-        setTokens(tmpData);
-      }
-    }, [data, selectedChainFilter]);
+      onFilter(keyword, selectedChainFilter);
+    }, [data, keyword, selectedChainFilter]);
 
     const { colors } = useTheme();
     const styles = styling(colors);
@@ -173,7 +193,7 @@ export const SelectTokenModal: FunctionComponent<{
 
         <View style={styles.containerTitle}>
           <Text color={colors["neutral-icon-on-light"]} weight="500">
-            List Token
+            Token list
           </Text>
           <TouchableOpacity
             onPress={() => {

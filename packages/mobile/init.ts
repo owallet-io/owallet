@@ -1,9 +1,9 @@
 import "./src/background/background";
 
 import { version } from "./package.json";
+import { ChainIdEnum } from "@owallet/common";
 import { Ethereum, Oasis, OWallet, TronWeb } from "@owallet/provider";
 import { RNMessageRequesterInternal } from "./src/router";
-import { ChainIdEnum } from "@owallet/common";
 
 import { Mixpanel } from "mixpanel-react-native";
 if (process.env.MIX_PANEL_TOKEN && !__DEV__) {
