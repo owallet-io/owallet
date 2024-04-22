@@ -25,12 +25,17 @@ export const checkFnComponent = (
   return null;
 };
 
-export const handleErrorSwap = (message) => {
+export const floatToPercent = (value: number): number => {
+  return value * 100;
+};
+
+export const handleErrorSwap = (message: string) => {
+  let formatedMessage = message;
+  if (message.includes("of undefined")) {
+    formatedMessage = "Transaction Rejected!";
+  }
   showToast({
-    message:
-      message && message.length < 300
-        ? message
-        : "Something went wrong! Please make sure you have enough fees to make this transaction.",
+    message: formatedMessage,
     type: "danger",
   });
 };

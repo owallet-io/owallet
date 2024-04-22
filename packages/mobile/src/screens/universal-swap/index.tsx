@@ -64,8 +64,9 @@ import {
   useClient,
   useRelayerFee,
   useTaxRate,
+  useSwapFee,
 } from "@owallet/hooks";
-import { getTransactionUrl, handleErrorSwap } from "./helpers";
+import { getTransactionUrl, handleErrorSwap, floatToPercent } from "./helpers";
 import { useQuery } from "@tanstack/react-query";
 import { Mixpanel } from "mixpanel-react-native";
 import { API } from "@src/common/api";
@@ -207,6 +208,11 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       return acc;
     }, 0);
   }, [relayerFee, originalFromToken, originalToToken]);
+
+  const { fee } = useSwapFee({
+    fromToken: originalFromToken,
+    toToken: originalToToken,
+  });
 
   // if evm swappable then no need to get token on oraichain because we can swap on evm. Otherwise, get token on oraichain. If cannot find => fallback to original token
   const fromToken = isEvmSwap
@@ -991,6 +997,12 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                 {toDisplay(relayerFeeToken.toString(), RELAYER_DECIMAL)} ORAI ≈{" "}
                 {relayerFeeAmount} {originalToToken.name}
               </BalanceText>
+            </View>
+          )}
+          {!fromTokenFee && !toTokenFee && fee && (
+            <View style={styles.itemBottom}>
+              <BalanceText>Swapp Fee</BalanceText>
+              <BalanceText>{fee && floatToPercent(fee) + "%"}</BalanceText>
             </View>
           )}
           {minimumReceive < 0 && (

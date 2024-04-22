@@ -192,6 +192,9 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
           onPress={() => {
             navigation.navigate("Register", {
               screen: "Register.Intro",
+              params: {
+                canBeBack: true,
+              },
             });
           }}
           style={{

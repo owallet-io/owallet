@@ -122,6 +122,9 @@ const WalletBtnList = () => {
             modalStore.close();
             navigate("Register", {
               screen: "Register.Intro",
+              params: {
+                canBeBack: true,
+              },
             });
           }}
           style={{
