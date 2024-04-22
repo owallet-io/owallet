@@ -28,6 +28,9 @@ export const CommonPageHeader: FunctionComponent<{ title: string }> = observer(
     const onAddWallet = () => {
       navigation.navigate("Register", {
         screen: "Register.Intro",
+        params: {
+          canBeBack: true,
+        },
       });
     };
 
