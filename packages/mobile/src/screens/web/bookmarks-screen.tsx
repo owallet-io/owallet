@@ -17,6 +17,7 @@ import { limitString } from "@src/utils/helper";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
+import { metrics } from "@src/themes";
 
 export const BookmarksScreen = observer(() => {
   const { colors } = useTheme();
@@ -129,6 +130,7 @@ export const BookmarksScreen = observer(() => {
           }}
           keyExtractor={(item: any) => item?.uri}
           renderItem={renderItem}
+          containerStyle={{ marginBottom: metrics.screenHeight / 3 }}
         />
       </View>
     </PageWithView>

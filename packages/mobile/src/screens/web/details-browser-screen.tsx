@@ -249,7 +249,7 @@ export const DetailsBrowserScreen = observer((props) => {
     webviewRef.current.reload();
   };
   const onGoback = () => {
-    if (!canGoBack) return;
+    if (!canGoBack) navigation.goBack();
     webviewRef.current?.goBack();
   };
   const onGoForward = () => {

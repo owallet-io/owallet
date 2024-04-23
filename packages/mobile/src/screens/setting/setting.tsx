@@ -4,7 +4,13 @@ import { BasicSettingItem, renderFlag } from "./components";
 import { useSmartNavigation } from "../../navigation.provider";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
-import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  Image,
+  Platform,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { useStore } from "../../stores";
 import { metrics } from "../../themes";
 import { CountryModal } from "./components/country-modal";
@@ -67,8 +73,10 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
       AppleAppID: "id1626035069",
       GooglePackageName: "com.io.owallet",
       preferredAndroidMarket: AndroidMarket.Google,
-      preferInApp: true,
+      preferInApp: Platform.OS === "android" ? false : true,
       openAppStoreIfInAppFails: true,
+      fallbackPlatformURL:
+        "https://play.google.com/store/apps/details?id=com.io.owallet",
     };
     Rate.rate(options, (success, errorMessage) => {
       if (success) {
