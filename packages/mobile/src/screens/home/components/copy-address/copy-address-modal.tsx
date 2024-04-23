@@ -114,6 +114,7 @@ export const CopyAddressModal: FunctionComponent<{
             style={{
               fontFamily: "SpaceGrotesk-Regular",
               width: "100%",
+              color: colors["neutral-icon-on-light"],
             }}
             onChangeText={(t) => setKeyword(t)}
             value={keyword}
