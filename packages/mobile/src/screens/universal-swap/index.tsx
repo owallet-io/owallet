@@ -715,19 +715,23 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         }
       }
     } catch (error) {
-      setSwapLoading(false);
       console.log("error handleSubmit", error);
       if (
         error.message.includes("Bad status on response") ||
         error.message.includes("403")
       ) {
         if (counter < 4) {
-          handleSubmit();
+          await handleSubmit();
+          setSwapLoading(false);
         } else {
           handleErrorSwap(error?.message ?? error?.ex?.message);
           setCounter(0);
+          setSwapLoading(false);
         }
         return;
+      } else {
+        handleErrorSwap(error?.message ?? error?.ex?.message);
+        setSwapLoading(false);
       }
       // handleErrorSwap(error?.message ?? error?.ex?.message);
     } finally {
