@@ -716,9 +716,11 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       }
     } catch (error) {
       console.log("error handleSubmit", error);
+      //Somehow, when invoking the "handleSubmit" function with injective, it often returns a 403 status error along with other errors. Therefore, we need to implement a retry mechanism where we try invoking "handleSubmit" multiple times until it succeeds.
       if (
         error.message.includes("Bad status on response") ||
-        error.message.includes("403")
+        error.message.includes("403") ||
+        originalFromToken.chainId === ChainIdEnum.Injective
       ) {
         if (counter < 4) {
           await handleSubmit();
