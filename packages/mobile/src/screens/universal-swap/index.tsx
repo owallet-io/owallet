@@ -776,6 +776,17 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     );
   };
 
+  const renderSwapFee = () => {
+    if (fee) {
+      return (
+        <View style={styles.itemBottom}>
+          <BalanceText>Swapp Fee</BalanceText>
+          <BalanceText>{floatToPercent(fee) + "%"}</BalanceText>
+        </View>
+      );
+    }
+  };
+
   return (
     <PageWithScrollViewInBottomTabView
       backgroundColor={colors["plain-background"]}
@@ -999,12 +1010,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               </BalanceText>
             </View>
           )}
-          {!fromTokenFee && !toTokenFee && fee && (
-            <View style={styles.itemBottom}>
-              <BalanceText>Swapp Fee</BalanceText>
-              <BalanceText>{fee && floatToPercent(fee) + "%"}</BalanceText>
-            </View>
-          )}
+          {renderSwapFee()}
           {minimumReceive < 0 && (
             <View style={styles.itemBottom}>
               <BalanceText color={colors["danger"]}>

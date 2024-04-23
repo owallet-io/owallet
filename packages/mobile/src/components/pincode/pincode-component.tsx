@@ -371,7 +371,7 @@ export const Pincode: FunctionComponent<{
             <NumericPad
               ref={numpadRef}
               numLength={6}
-              buttonSize={60}
+              buttonSize={40}
               activeOpacity={0.1}
               onValueChange={(value) => {
                 console.log("setCode", value);
