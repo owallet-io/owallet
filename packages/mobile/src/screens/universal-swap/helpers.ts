@@ -26,7 +26,7 @@ export const checkFnComponent = (
 };
 
 export const floatToPercent = (value: number): number => {
-  return value * 100;
+  return Number(value) * 100;
 };
 
 export const handleErrorSwap = (message: string) => {
