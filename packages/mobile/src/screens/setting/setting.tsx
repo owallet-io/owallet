@@ -50,23 +50,24 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
 
   const smartNavigation = useSmartNavigation();
 
-  const _onPressCountryModal = () => {
-    modalStore.setOptions({
-      bottomSheetModalConfig: {
-        enablePanDownToClose: false,
-        enableOverDrag: false,
-      },
-    });
-    modalStore.setChildren(
-      CountryModal({
-        data: currencyItems,
-        current: priceStore.defaultVsCurrency,
-        priceStore,
-        modalStore,
-        colors,
-      })
-    );
-  };
+  // const _onPressCountryModal = () => {
+  //   modalStore.setOptions({
+  //     bottomSheetModalConfig: {
+  //       enablePanDownToClose: false,
+  //       enableOverDrag: false,
+  //     },
+  //   });
+
+  //   modalStore.setChildren(
+  //     CountryModal({
+  //       data: currencyItems,
+  //       current: priceStore.defaultVsCurrency,
+  //       priceStore,
+  //       modalStore,
+  //       colors,
+  //     })
+  //   );
+  // };
 
   const onRatingApp = () => {
     const options = {
