@@ -174,9 +174,9 @@ export const SelectTokenModal: FunctionComponent<{
         <View>
           <TextInput
             style={styles.textInput}
-            placeholderTextColor={colors["neutral-text-body"]}
             placeholder="Search Token"
             onChangeText={(t) => setKeyword(t)}
+            placeholderTextColor={colors["neutral-text-body"]}
             value={keyword}
           />
           <View style={styles.iconSearch}>
@@ -271,7 +271,8 @@ const styling = (colors: TypeTheme["colors"]) =>
       borderRadius: 8,
       paddingLeft: 35,
       fontSize: 16,
-      color: colors["neutral-text-body"],
+      fontFamily: "SpaceGrotesk-Regular",
+      color: colors["neutral-icon-on-light"],
       marginVertical: 10,
     },
     containerModal: {
