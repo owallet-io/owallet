@@ -24,6 +24,8 @@ import { SCREENS } from "@src/common/constants";
 import { navigate } from "@src/router/root";
 import FastImage from "react-native-fast-image";
 import OWText from "@src/components/text/ow-text";
+import { FlatList } from "react-native-gesture-handler";
+import { metrics } from "@src/themes";
 
 export const HistoryCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -216,13 +218,15 @@ export const HistoryCard: FunctionComponent<{
 
   const renderContent = () => {
     return (
-      <>
-        <OWFlatList
+      <View>
+        <FlatList
           data={Object.keys(histories)}
-          contentContainerStyle={{ paddingHorizontal: 16 }}
+          contentContainerStyle={{
+            paddingHorizontal: 16,
+            marginBottom: metrics.screenHeight / 4,
+          }}
           onEndReached={onEndReached}
           renderItem={renderListHistoryItem}
-          loading={loading}
           onRefresh={onRefresh}
           ListEmptyComponent={() => {
             return (
@@ -253,7 +257,7 @@ export const HistoryCard: FunctionComponent<{
             );
           }}
         />
-      </>
+      </View>
     );
   };
 
