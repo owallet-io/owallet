@@ -716,6 +716,14 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       }
     } catch (error) {
       console.log("error handleSubmit", error);
+      if (
+        error.message.includes("of undefined") ||
+        error.message.includes("Rejected")
+      ) {
+        handleErrorSwap(error?.message ?? error?.ex?.message);
+        setSwapLoading(false);
+        return;
+      }
       //Somehow, when invoking the "handleSubmit" function with injective, it often returns a 403 status error along with other errors. Therefore, we need to implement a retry mechanism where we try invoking "handleSubmit" multiple times until it succeeds.
       if (
         error.message.includes("Bad status on response") ||
@@ -740,7 +748,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       if (mixpanel) {
         mixpanel.track("Universal Swap Owallet", logEvent);
       }
-
       setSwapLoading(false);
       setSwapAmount([0, 0]);
     }
