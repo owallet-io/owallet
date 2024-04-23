@@ -91,6 +91,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   useEffect(() => {
     appInitStore.updatePrices(prices);
   }, [prices]);
+  const [counter, setCounter] = useState(0);
 
   const chainInfo = chainStore.getChain(ChainIdEnum.Oraichain);
 
@@ -688,6 +689,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         }
 
         setSwapLoading(false);
+        setCounter(0);
         showToast({
           message: "Successful transaction. View on scan",
           type: "success",
@@ -714,8 +716,20 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       }
     } catch (error) {
       setSwapLoading(false);
-      console.log("error", error);
-      handleErrorSwap(error?.message ?? error?.ex?.message);
+      console.log("error handleSubmit", error);
+      if (
+        error.message.includes("Bad status on response") ||
+        error.message.includes("403")
+      ) {
+        if (counter < 4) {
+          handleSubmit();
+        } else {
+          handleErrorSwap(error?.message ?? error?.ex?.message);
+          setCounter(0);
+        }
+        return;
+      }
+      // handleErrorSwap(error?.message ?? error?.ex?.message);
     } finally {
       if (mixpanel) {
         mixpanel.track("Universal Swap Owallet", logEvent);
