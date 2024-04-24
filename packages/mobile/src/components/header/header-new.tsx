@@ -34,7 +34,7 @@ export const PageHeader: FunctionComponent<{
       {left ? (
         <View>{left}</View>
       ) : (
-        <View style={{ width: 66 }}>
+        <View style={{ width: metrics.screenWidth / 9 }}>
           <TouchableOpacity
             onPress={onGoBack ?? goBack}
             style={{
