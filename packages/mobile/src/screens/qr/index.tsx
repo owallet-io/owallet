@@ -191,8 +191,8 @@ export const AddressQRScreen: FunctionComponent<{}> = observer(({}) => {
               >
                 <Image
                   style={{
-                    width: metrics.screenWidth / 1.5,
-                    height: metrics.screenWidth / 1.5,
+                    width: metrics.screenHeight / 3.2,
+                    height: metrics.screenHeight / 3.2,
                   }}
                   source={require("../../assets/image/img_qr.png")}
                   resizeMode="contain"
