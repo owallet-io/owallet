@@ -44,6 +44,7 @@ import {
   handleSimulateSwap,
   // filterNonPoolEvmTokens,
   SwapDirection,
+  UniversalSwapHelper,
 } from "@oraichain/oraidex-universal-swap";
 import { fetchTokenInfos, ChainIdEnum } from "@owallet/common";
 import { calculateMinReceive } from "@oraichain/oraidex-common";
@@ -435,6 +436,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         originalToInfo: originalToToken,
         originalAmount: initAmount ?? simulateAmount,
         routerClient,
+        useSmartRoute: true,
       });
 
       setAmountLoading(false);
@@ -459,6 +461,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         originalToInfo: originalToToken,
         originalAmount: toDisplay(relayerFeeToken.toString()),
         routerClient,
+        useSmartRoute: true,
       });
 
       setRelayerFeeAmount(data?.displayAmount);
@@ -625,6 +628,16 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         relayerAmount: relayerFeeToken.toString(),
         relayerDecimals: RELAYER_DECIMAL,
       };
+      const smartRoutes = await UniversalSwapHelper.simulateSwapUsingSmartRoute(
+        {
+          fromInfo: originalFromToken,
+          toInfo: originalToToken,
+          amount: toAmount(
+            fromAmountToken,
+            originalToToken.decimals
+          ).toString(),
+        }
+      );
 
       const universalSwapData: UniversalSwapData = {
         sender: {
@@ -642,6 +655,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         userSlippage: userSlippage,
         fromAmount: fromAmountToken,
         relayerFee,
+        smartRoutes: smartRoutes.routes,
       };
 
       const universalSwapHandler = new UniversalSwapHandler(
