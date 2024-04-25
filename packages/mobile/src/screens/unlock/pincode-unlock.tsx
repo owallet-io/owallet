@@ -656,7 +656,7 @@ const styling = (colors) =>
   StyleSheet.create({
     useBiometric: {},
     container: {
-      paddingTop: metrics.screenHeight / 14,
+      paddingTop: metrics.screenHeight / 19,
       justifyContent: "space-between",
       height: "100%",
       backgroundColor: colors["neutral-surface-card"],

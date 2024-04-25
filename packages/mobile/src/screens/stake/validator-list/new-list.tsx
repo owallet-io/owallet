@@ -421,7 +421,7 @@ const ValidatorItem: FunctionComponent<{
               paddingLeft: 4,
             }}
           >
-            Validators are about to be jailed
+            Validator are about to be jailed
           </OWText>
         </View>
       ) : null}
