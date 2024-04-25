@@ -2,37 +2,36 @@ import "dotenv/config";
 import { CosmosWalletImpl } from "./offline-wallet";
 import { UniversalSwapHandler } from "../handler";
 import {
-  NEUTARO_ORAICHAIN_DENOM,
+  CoinGeckoId,
+  KWT_BSC_CONTRACT,
+  USDC_CONTRACT,
   cosmosTokens,
+  flattenTokens,
   generateError,
+  getTokenOnOraichain,
   toAmount,
 } from "@oraichain/oraidex-common";
 
-const neutaroUsdcToOraiUsdc = async (chainId: "Neutaro-1" | "Oraichain") => {
+const cosmosToOraichain = async (
+  chainId: "cosmoshub-4" | "osmosis-1" | "injective-1",
+  toTokenCoingeckoId: CoinGeckoId
+) => {
   const wallet = new CosmosWalletImpl(process.env.MNEMONIC);
   const sender = await wallet.getKeplrAddr(chainId);
-  const fromAmount = 0.01;
-  let originalFromToken = cosmosTokens.find(
-    (t) => t.chainId === "Neutaro-1" && t.denom === "uneutaro"
-  );
+  const fromAmount = 0.001;
+  console.log("sender: ", sender);
+  const originalFromToken = cosmosTokens.find((t) => t.chainId === chainId);
 
-  let originalToToken = cosmosTokens.find(
-    (t) =>
-      t.chainId === "Oraichain" &&
-      t.denom &&
-      t.denom === NEUTARO_ORAICHAIN_DENOM
-  );
-
-  // if we bridge from Oraichain -> Neutaro then we reverse order
-  if (chainId === "Oraichain") {
-    const temp = originalFromToken;
-    originalFromToken = originalToToken;
-    originalToToken = temp;
-  }
+  const originalToToken = getTokenOnOraichain(toTokenCoingeckoId);
 
   if (!originalFromToken)
     throw generateError("Could not find original from token");
   if (!originalToToken) throw generateError("Could not find original to token");
+  console.log({
+    originalToToken,
+    originalFromToken,
+  });
+
   const universalHandler = new UniversalSwapHandler(
     {
       originalFromToken,
@@ -41,18 +40,17 @@ const neutaroUsdcToOraiUsdc = async (chainId: "Neutaro-1" | "Oraichain") => {
       fromAmount,
       simulateAmount: toAmount(fromAmount, originalToToken.decimals).toString(),
     },
-    { cosmosWallet: wallet, swapOptions: { ibcInfoTestMode: true } }
+    { cosmosWallet: wallet }
   );
 
   try {
     const result = await universalHandler.processUniversalSwap();
     console.log("result: ", result);
   } catch (error) {
-    console.log("error: ", error);
+    console.trace("error: ", error);
   }
 };
 
 (() => {
-  if (process.env.FORWARD) return neutaroUsdcToOraiUsdc("Neutaro-1");
-  return neutaroUsdcToOraiUsdc("Oraichain");
+  cosmosToOraichain("injective-1", "tether");
 })();

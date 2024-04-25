@@ -41,10 +41,10 @@ import {
 import { openLink } from "../../utils/helper";
 import { feeEstimate, getTransferTokenFee } from "@owallet/common";
 import {
-  handleSimulateSwap,
+  // handleSimulateSwap,
   // filterNonPoolEvmTokens,
   SwapDirection,
-  UniversalSwapHelper,
+  // UniversalSwapHelper
 } from "@oraichain/oraidex-universal-swap";
 import { fetchTokenInfos, ChainIdEnum } from "@owallet/common";
 import { calculateMinReceive } from "@oraichain/oraidex-common";
@@ -71,8 +71,12 @@ import { getTransactionUrl, handleErrorSwap, floatToPercent } from "./helpers";
 import { useQuery } from "@tanstack/react-query";
 import { Mixpanel } from "mixpanel-react-native";
 import { API } from "@src/common/api";
-import { filterNonPoolEvmTokens } from "./handler/src/helper";
+// import { filterNonPoolEvmTokens } from "./handler/src/helper";
 import { metrics } from "@src/themes";
+import {
+  // UniversalSwapHandler,
+  UniversalSwapHelper,
+} from "./handler/src";
 const mixpanel = globalThis.mixpanel as Mixpanel;
 
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
@@ -377,24 +381,24 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   // }, [accountOrai.bech32Address]);
 
   useEffect(() => {
-    const filteredToTokens = filterNonPoolEvmTokens(
+    const filteredToTokens = UniversalSwapHelper.filterNonPoolEvmTokens(
       originalFromToken.chainId,
       originalFromToken.coinGeckoId,
       originalFromToken.denom,
       searchTokenName,
-      SwapDirection.To,
-      universalSwapStore.getAmount
+      SwapDirection.To
+      // universalSwapStore.getAmount
     );
 
     setFilteredToTokens(filteredToTokens);
 
-    const filteredFromTokens = filterNonPoolEvmTokens(
+    const filteredFromTokens = UniversalSwapHelper.filterNonPoolEvmTokens(
       originalToToken.chainId,
       originalToToken.coinGeckoId,
       originalToToken.denom,
       searchTokenName,
-      SwapDirection.From,
-      universalSwapStore.getAmount
+      SwapDirection.From
+      // universalSwapStore.getAmount
     );
 
     setFilteredFromTokens(filteredFromTokens);
@@ -431,7 +435,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         simulateAmount = fromAmountToken;
       }
 
-      const data = await handleSimulateSwap({
+      const data = await UniversalSwapHelper.handleSimulateSwap({
         originalFromInfo: originalFromToken,
         originalToInfo: originalToToken,
         originalAmount: initAmount ?? simulateAmount,
@@ -455,7 +459,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         (token) => token.coinGeckoId === "oraichain-token"
       );
 
-      const data = await handleSimulateSwap({
+      const data = await UniversalSwapHelper.handleSimulateSwap({
         // @ts-ignore
         originalFromInfo: oraiToken,
         originalToInfo: originalToToken,
@@ -639,6 +643,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         }
       );
 
+      console.log("smartRoutes", smartRoutes);
+
       const universalSwapData: UniversalSwapData = {
         sender: {
           cosmos: cosmosAddress,
@@ -657,6 +663,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         relayerFee,
         smartRoutes: smartRoutes.routes,
       };
+
+      console.log("universalSwapData", universalSwapData);
 
       const universalSwapHandler = new UniversalSwapHandler(
         {
