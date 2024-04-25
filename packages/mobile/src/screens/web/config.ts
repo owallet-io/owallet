@@ -19,11 +19,11 @@ export const DAppInfos: DAppInfo[] = [
     uri: "https://oraidex.io",
     logo: oraiLogo,
   },
-  {
-    name: "Oraidex Dev",
-    uri: "https://develop-v3.oraiswap-frontend.pages.dev",
-    logo: oraiLogo,
-  },
+  // {
+  //   name: "Oraidex Dev",
+  //   uri: "https://develop-v3.oraiswap-frontend.pages.dev",
+  //   logo: oraiLogo,
+  // },
   {
     name: "Multisig",
     uri: "https://multisig.orai.io",
