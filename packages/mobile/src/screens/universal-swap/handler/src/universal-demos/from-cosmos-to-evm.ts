@@ -2,34 +2,33 @@ import "dotenv/config";
 import { CosmosWalletImpl } from "./offline-wallet";
 import { UniversalSwapHandler } from "../handler";
 import {
-  NEUTARO_ORAICHAIN_DENOM,
+  ORAI_ETH_CONTRACT,
   cosmosTokens,
+  flattenTokens,
   generateError,
   toAmount,
+  USDT_CONTRACT,
 } from "@oraichain/oraidex-common";
 
-const neutaroUsdcToOraiUsdc = async (chainId: "Neutaro-1" | "Oraichain") => {
+const oraichainToEvm = async (chainId: "Oraichain") => {
   const wallet = new CosmosWalletImpl(process.env.MNEMONIC);
+
   const sender = await wallet.getKeplrAddr(chainId);
-  const fromAmount = 0.01;
+  const fromAmount = 90;
   let originalFromToken = cosmosTokens.find(
-    (t) => t.chainId === "Neutaro-1" && t.denom === "uneutaro"
-  );
-
-  let originalToToken = cosmosTokens.find(
     (t) =>
-      t.chainId === "Oraichain" &&
-      t.denom &&
-      t.denom === NEUTARO_ORAICHAIN_DENOM
+      t.chainId === chainId &&
+      t.contractAddress &&
+      t.contractAddress === USDT_CONTRACT
   );
 
-  // if we bridge from Oraichain -> Neutaro then we reverse order
-  if (chainId === "Oraichain") {
-    const temp = originalFromToken;
-    originalFromToken = originalToToken;
-    originalToToken = temp;
-  }
-
+  let originalToToken = flattenTokens.find(
+    (t) =>
+      t.chainId === "0x01" &&
+      t.contractAddress &&
+      t.contractAddress === ORAI_ETH_CONTRACT
+  );
+  const evmAddress = "0xf2846a1E4dAFaeA38C1660a618277d67605bd2B5";
   if (!originalFromToken)
     throw generateError("Could not find original from token");
   if (!originalToToken) throw generateError("Could not find original to token");
@@ -37,11 +36,15 @@ const neutaroUsdcToOraiUsdc = async (chainId: "Neutaro-1" | "Oraichain") => {
     {
       originalFromToken,
       originalToToken,
-      sender: { cosmos: sender },
+      sender: { cosmos: sender, evm: evmAddress },
+      relayerFee: {
+        relayerAmount: "1000000",
+        relayerDecimals: 6,
+      },
       fromAmount,
       simulateAmount: toAmount(fromAmount, originalToToken.decimals).toString(),
     },
-    { cosmosWallet: wallet, swapOptions: { ibcInfoTestMode: true } }
+    { cosmosWallet: wallet, swapOptions: {} }
   );
 
   try {
@@ -53,6 +56,5 @@ const neutaroUsdcToOraiUsdc = async (chainId: "Neutaro-1" | "Oraichain") => {
 };
 
 (() => {
-  if (process.env.FORWARD) return neutaroUsdcToOraiUsdc("Neutaro-1");
-  return neutaroUsdcToOraiUsdc("Oraichain");
+  return oraichainToEvm("Oraichain");
 })();

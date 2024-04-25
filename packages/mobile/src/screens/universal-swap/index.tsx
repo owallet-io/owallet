@@ -41,9 +41,10 @@ import {
 import { openLink } from "../../utils/helper";
 import { feeEstimate, getTransferTokenFee } from "@owallet/common";
 import {
-  handleSimulateSwap,
+  // handleSimulateSwap,
   // filterNonPoolEvmTokens,
   SwapDirection,
+  // UniversalSwapHelper
 } from "@oraichain/oraidex-universal-swap";
 import { fetchTokenInfos, ChainIdEnum } from "@owallet/common";
 import { calculateMinReceive } from "@oraichain/oraidex-common";
@@ -70,7 +71,12 @@ import { getTransactionUrl, handleErrorSwap, floatToPercent } from "./helpers";
 import { useQuery } from "@tanstack/react-query";
 import { Mixpanel } from "mixpanel-react-native";
 import { API } from "@src/common/api";
-import { filterNonPoolEvmTokens } from "./handler/src/helper";
+// import { filterNonPoolEvmTokens } from "./handler/src/helper";
+import { metrics } from "@src/themes";
+import {
+  // UniversalSwapHandler,
+  UniversalSwapHelper,
+} from "./handler/src";
 const mixpanel = globalThis.mixpanel as Mixpanel;
 
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
@@ -375,24 +381,24 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   // }, [accountOrai.bech32Address]);
 
   useEffect(() => {
-    const filteredToTokens = filterNonPoolEvmTokens(
+    const filteredToTokens = UniversalSwapHelper.filterNonPoolEvmTokens(
       originalFromToken.chainId,
       originalFromToken.coinGeckoId,
       originalFromToken.denom,
       searchTokenName,
-      SwapDirection.To,
-      universalSwapStore.getAmount
+      SwapDirection.To
+      // universalSwapStore.getAmount
     );
 
     setFilteredToTokens(filteredToTokens);
 
-    const filteredFromTokens = filterNonPoolEvmTokens(
+    const filteredFromTokens = UniversalSwapHelper.filterNonPoolEvmTokens(
       originalToToken.chainId,
       originalToToken.coinGeckoId,
       originalToToken.denom,
       searchTokenName,
-      SwapDirection.From,
-      universalSwapStore.getAmount
+      SwapDirection.From
+      // universalSwapStore.getAmount
     );
 
     setFilteredFromTokens(filteredFromTokens);
@@ -429,11 +435,12 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         simulateAmount = fromAmountToken;
       }
 
-      const data = await handleSimulateSwap({
+      const data = await UniversalSwapHelper.handleSimulateSwap({
         originalFromInfo: originalFromToken,
         originalToInfo: originalToToken,
         originalAmount: initAmount ?? simulateAmount,
         routerClient,
+        useSmartRoute: true,
       });
 
       setAmountLoading(false);
@@ -452,12 +459,13 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         (token) => token.coinGeckoId === "oraichain-token"
       );
 
-      const data = await handleSimulateSwap({
+      const data = await UniversalSwapHelper.handleSimulateSwap({
         // @ts-ignore
         originalFromInfo: oraiToken,
         originalToInfo: originalToToken,
         originalAmount: toDisplay(relayerFeeToken.toString()),
         routerClient,
+        useSmartRoute: true,
       });
 
       setRelayerFeeAmount(data?.displayAmount);
@@ -624,6 +632,18 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         relayerAmount: relayerFeeToken.toString(),
         relayerDecimals: RELAYER_DECIMAL,
       };
+      const smartRoutes = await UniversalSwapHelper.simulateSwapUsingSmartRoute(
+        {
+          fromInfo: originalFromToken,
+          toInfo: originalToToken,
+          amount: toAmount(
+            fromAmountToken,
+            originalToToken.decimals
+          ).toString(),
+        }
+      );
+
+      console.log("smartRoutes", smartRoutes);
 
       const universalSwapData: UniversalSwapData = {
         sender: {
@@ -641,7 +661,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         userSlippage: userSlippage,
         fromAmount: fromAmountToken,
         relayerFee,
+        smartRoutes: smartRoutes.routes,
       };
+
+      console.log("universalSwapData", universalSwapData);
 
       const universalSwapHandler = new UniversalSwapHandler(
         {
@@ -818,6 +841,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     <PageWithScrollViewInBottomTabView
       backgroundColor={colors["plain-background"]}
       style={[styles.container, styles.pt30]}
+      contentContainerStyle={{ paddingBottom: metrics.screenHeight / 8 }}
       showsVerticalScrollIndicator={false}
       refreshControl={
         <RefreshControl refreshing={loadingRefresh} onRefresh={onRefresh} />
