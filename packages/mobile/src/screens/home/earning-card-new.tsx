@@ -196,6 +196,8 @@ export const EarningCardNew: FunctionComponent<{
             borderRadius: 16,
             paddingHorizontal: 12,
             paddingVertical: 4,
+            flexDirection: "row",
+            justifyContent: "space-between",
           }}
         >
           <Text weight="500" color={colors["neutral-text-action-on-light-bg"]}>
@@ -203,6 +205,14 @@ export const EarningCardNew: FunctionComponent<{
             {totalPrice
               ? totalPrice.toString()
               : delegated.shrink(true).maxDecimals(6).toString()}
+          </Text>
+          <Text weight="500" color={colors["neutral-text-action-on-light-bg"]}>
+            {delegated
+              .shrink(true)
+              .maxDecimals(6)
+              .trim(true)
+              .upperCase(true)
+              .toString()}
           </Text>
         </View>
       </View>
