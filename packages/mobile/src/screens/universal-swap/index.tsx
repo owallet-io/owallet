@@ -71,6 +71,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Mixpanel } from "mixpanel-react-native";
 import { API } from "@src/common/api";
 import { filterNonPoolEvmTokens } from "./handler/src/helper";
+import { metrics } from "@src/themes";
 const mixpanel = globalThis.mixpanel as Mixpanel;
 
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
@@ -818,6 +819,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     <PageWithScrollViewInBottomTabView
       backgroundColor={colors["plain-background"]}
       style={[styles.container, styles.pt30]}
+      contentContainerStyle={{ paddingBottom: metrics.screenHeight / 8 }}
       showsVerticalScrollIndicator={false}
       refreshControl={
         <RefreshControl refreshing={loadingRefresh} onRefresh={onRefresh} />

@@ -81,6 +81,7 @@ export const RegisterIntroScreen: FunctionComponent = observer((props) => {
               height: 44,
               alignItems: "center",
               justifyContent: "center",
+              marginHorizontal: 16,
             }}
           >
             <OWIcon
@@ -143,26 +144,28 @@ export const RegisterIntroScreen: FunctionComponent = observer((props) => {
             </OWText>
           </View>
         </View>
-        <OWButton
-          style={styles.btnOW}
-          size="default"
-          label="Create a new wallet"
-          onPress={handleCreateANewWallet}
-        />
-        <OWButton
-          style={styles.btnOW}
-          label="Import Ledger Nano X"
-          onPress={handleImportLedgerNanoX}
-          type="secondary"
-          size="default"
-        />
-        <OWButton
-          style={styles.btnOW}
-          label="Import from Mnemonic / Private key"
-          onPress={handleImportFromMnemonic}
-          type="secondary"
-          size="default"
-        />
+        <View style={{ paddingHorizontal: 42 }}>
+          <OWButton
+            style={styles.btnOW}
+            size="default"
+            label="Create a new wallet"
+            onPress={handleCreateANewWallet}
+          />
+          <OWButton
+            style={styles.btnOW}
+            label="Import Ledger Nano X"
+            onPress={handleImportLedgerNanoX}
+            type="secondary"
+            size="default"
+          />
+          <OWButton
+            style={styles.btnOW}
+            label="Import from Mnemonic / Private key"
+            onPress={handleImportFromMnemonic}
+            type="secondary"
+            size="default"
+          />
+        </View>
       </ScrollView>
     </View>
   );
@@ -197,8 +200,6 @@ const useStyles = () => {
       padding: 16,
     },
     container: {
-      paddingLeft: 42,
-      paddingRight: 42,
       backgroundColor: colors["neutral-surface-card"],
       height: metrics.screenHeight,
     },

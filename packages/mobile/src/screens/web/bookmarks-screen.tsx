@@ -130,7 +130,7 @@ export const BookmarksScreen = observer(() => {
           }}
           keyExtractor={(item: any) => item?.uri}
           renderItem={renderItem}
-          containerStyle={{ paddingBottom: metrics.screenHeight / 3.5 }}
+          containerStyle={{ paddingBottom: metrics.screenHeight / 7 }}
         />
       </View>
     </PageWithView>
