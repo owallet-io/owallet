@@ -105,13 +105,13 @@ export const BookmarksScreen = observer(() => {
             fullWidth={false}
             colorIcon={colors["neutral-text-action-on-light-bg"]}
           />
-          {/*<OWButtonIcon*/}
-          {/*  name={"tdesignview-list"}*/}
-          {/*  sizeIcon={24}*/}
-          {/*  fullWidth={false}*/}
-          {/*  colorIcon={colors["neutral-text-disable"]}*/}
-          {/*  onLongPress={drag}*/}
-          {/*/>*/}
+          <OWButtonIcon
+            name={"tdesignview-list"}
+            sizeIcon={24}
+            fullWidth={false}
+            colorIcon={colors["neutral-text-disable"]}
+            onLongPress={drag}
+          />
         </View>
       </TouchableOpacity>
     );
@@ -135,12 +135,12 @@ export const BookmarksScreen = observer(() => {
           flex: 1,
         }}
       >
-        <FlatList
+        <DraggableFlatList
           data={browserStore.getBookmarks}
-          // onDragEnd={({ data }) => {
-          //   browserStore.updateBookmarks(data);
-          //   // setData(data);
-          // }}
+          onDragEnd={({ data }) => {
+            browserStore.updateBookmarks(data);
+            // setData(data);
+          }}
           keyExtractor={(item: any) => item?.uri}
           renderItem={renderItem}
           containerStyle={{ paddingBottom: metrics.screenHeight / 7 }}
