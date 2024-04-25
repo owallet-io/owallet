@@ -1,10 +1,13 @@
-import React from "react";
-import { PageWithView } from "@src/components/page";
+import React, { useState } from "react";
+import {
+  PageWithView,
+  PageWithViewInBottomTabView,
+} from "@src/components/page";
 import { PageHeader } from "@src/components/header/header-new";
 
 import { observer } from "mobx-react-lite";
 import { useTheme } from "@src/themes/theme-provider";
-import { TouchableOpacity, View } from "react-native";
+import { FlatList, TouchableOpacity, View } from "react-native";
 import DraggableFlatList from "react-native-draggable-flatlist";
 import { useStore } from "@src/stores";
 import OWIcon from "@src/components/ow-icon/ow-icon";
@@ -18,10 +21,12 @@ import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { metrics } from "@src/themes";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export const BookmarksScreen = observer(() => {
   const { colors } = useTheme();
   const { browserStore } = useStore();
+
   const onDetailBrowser = (url) => {
     if (!url) return;
     navigate(SCREENS.DetailsBrowser, {
@@ -34,6 +39,7 @@ export const BookmarksScreen = observer(() => {
     browserStore.removeBoorkmark(uri);
     return;
   };
+
   const renderItem = ({ item, drag, isActive }) => {
     return (
       <TouchableOpacity
@@ -99,40 +105,47 @@ export const BookmarksScreen = observer(() => {
             fullWidth={false}
             colorIcon={colors["neutral-text-action-on-light-bg"]}
           />
-          <OWButtonIcon
-            name={"tdesignview-list"}
-            sizeIcon={24}
-            fullWidth={false}
-            colorIcon={colors["neutral-text-disable"]}
-            onLongPress={drag}
-          />
+          {/*<OWButtonIcon*/}
+          {/*  name={"tdesignview-list"}*/}
+          {/*  sizeIcon={24}*/}
+          {/*  fullWidth={false}*/}
+          {/*  colorIcon={colors["neutral-text-disable"]}*/}
+          {/*  onLongPress={drag}*/}
+          {/*/>*/}
         </View>
       </TouchableOpacity>
     );
   };
+  const { top } = useSafeAreaInsets();
   return (
-    <PageWithView>
+    <PageWithViewInBottomTabView
+      style={{
+        // backgroundColor: colors["neutral-surface-action"],
+        paddingTop: top,
+      }}
+    >
       <PageHeader
         title="BOOKMARKS"
         // subtitle={chainStore.current.chainName}
-        colors={colors}
+        // colors={colors}
       />
       <View
         style={{
           paddingHorizontal: 16,
+          flex: 1,
         }}
       >
-        <DraggableFlatList
+        <FlatList
           data={browserStore.getBookmarks}
-          onDragEnd={({ data }) => {
-            browserStore.updateBookmarks(data);
-            // setData(data);
-          }}
+          // onDragEnd={({ data }) => {
+          //   browserStore.updateBookmarks(data);
+          //   // setData(data);
+          // }}
           keyExtractor={(item: any) => item?.uri}
           renderItem={renderItem}
           containerStyle={{ marginBottom: metrics.screenHeight / 3 }}
         />
       </View>
-    </PageWithView>
+    </PageWithViewInBottomTabView>
   );
 });

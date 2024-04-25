@@ -27,6 +27,8 @@ import { URL } from "react-native-url-polyfill";
 import DeviceInfo from "react-native-device-info";
 import { SCREENS } from "@src/common/constants";
 import LottieView from "lottie-react-native";
+import { LoadingBar } from "@src/screens/web/components/loadingBar";
+import get from "lodash/get";
 
 export const DetailsBrowserScreen = observer((props) => {
   const { top } = useSafeAreaInsets();
@@ -40,6 +42,12 @@ export const DetailsBrowserScreen = observer((props) => {
   const navigation = useNavigation();
   const { keyRingStore, chainStore, browserStore } = useStore();
   const route = useRoute();
+  const [useProperty, setUseProperty] = useState({
+    percent: 0, //range:  0 - 1
+    color: "#3B78E7",
+    visible: false,
+    height: 3,
+  });
   const [currentURL, setCurrentURL] = useState(() => {
     if (route?.params?.url) {
       return route?.params?.url;
@@ -256,11 +264,7 @@ export const DetailsBrowserScreen = observer((props) => {
     if (!canGoForward) return;
     webviewRef.current?.goForward();
   };
-  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    setIsLoading(true);
-  }, []);
   const onAddBookMark = (bookmark) => {
     if (!bookmark) return;
     browserStore.addBoorkmark(bookmark);
@@ -273,7 +277,13 @@ export const DetailsBrowserScreen = observer((props) => {
     );
     return isActive !== -1 ? true : false;
   };
-
+  const { color, percent, visible, height } = useProperty;
+  const timer = useRef();
+  useEffect(() => {
+    return () => {
+      clearTimeout(timer.current);
+    };
+  }, []);
   return (
     <PageWithViewInBottomTabView
       style={{
@@ -398,7 +408,7 @@ export const DetailsBrowserScreen = observer((props) => {
             backgroundColor: colors["neutral-surface-bg"],
           }}
         >
-          {isLoading && (
+          {visible && (
             <View
               style={{
                 width: "100%",
@@ -416,47 +426,65 @@ export const DetailsBrowserScreen = observer((props) => {
             </View>
           )}
           {sourceCode && route?.params?.url ? (
-            <WebView
-              originWhitelist={["*"]} // to allowing WebView to load blob
-              ref={webviewRef}
-              // incognito={true}
-              // style={pageLoaded ? {} : { flex: 0, height: 0, opacity: 0 }}
-              cacheEnabled={true}
-              injectedJavaScriptBeforeContentLoaded={sourceCode}
-              // onLoad={handleWebViewLoaded}
-              onMessage={onMessage}
-              onNavigationStateChange={(e) => {
-                // Strangely, `onNavigationStateChange` is only invoked whenever page changed only in IOS.
-                // Use two handlers to measure simultaneously in ios and android.
-                setCanGoBack(e.canGoBack);
-                setCanGoForward(e.canGoForward);
+            <>
+              {visible && (
+                <LoadingBar height={height} color={color} percent={percent} />
+              )}
+              <WebView
+                originWhitelist={["*"]} // to allowing WebView to load blob
+                ref={webviewRef}
+                // style={pageLoaded ? {} : { flex: 0, height: 0, opacity: 0 }}
+                cacheEnabled={true}
+                injectedJavaScriptBeforeContentLoaded={sourceCode}
+                // onLoad={handleWebViewLoaded}
+                onMessage={onMessage}
+                onNavigationStateChange={(e) => {
+                  // Strangely, `onNavigationStateChange` is only invoked whenever page changed only in IOS.
+                  // Use two handlers to measure simultaneously in ios and android.
+                  setCanGoBack(e.canGoBack);
+                  setCanGoForward(e.canGoForward);
 
-                setCurrentURL(e.url);
-              }}
-              onLoadProgress={(e) => {
-                // Strangely, `onLoadProgress` is only invoked whenever page changed only in Android.
-                // Use two handlers to measure simultaneously in ios and android.
-                setCanGoBack(e.nativeEvent.canGoBack);
-                setCanGoForward(e.nativeEvent.canGoForward);
+                  setCurrentURL(e.url);
+                }}
+                onLoadProgress={(e) => {
+                  // Strangely, `onLoadProgress` is only invoked whenever page changed only in Android.
+                  // Use two handlers to measure simultaneously in ios and android.
+                  setUseProperty((prev) => ({
+                    ...prev,
+                    percent: e.nativeEvent?.progress ?? 0.1,
+                  }));
+                  setCanGoBack(e.nativeEvent.canGoBack);
+                  setCanGoForward(e.nativeEvent.canGoForward);
+                  // const { progress } = e.nativeEvent;
+                  setCurrentURL(e.nativeEvent.url);
 
-                setCurrentURL(e.nativeEvent.url);
-                // setIsLoading(false);
-              }}
-              onLoadStart={(syntheticEvent) => {
-                // update component to be aware of loading status
-                setIsLoading(true);
-              }}
-              onLoadEnd={(syntheticEvent) => {
-                // update component to be aware of loading status
-                setIsLoading(false);
-              }}
-              contentInsetAdjustmentBehavior="never"
-              automaticallyAdjustContentInsets={false}
-              decelerationRate="normal"
-              allowsBackForwardNavigationGestures={true}
-              // onScroll={_onScroll}
-              source={{ uri: route?.params?.url }}
-            />
+                  // setIsLoading(false);
+                }}
+                onLoadStart={(syntheticEvent) => {
+                  // update component to be aware of loading status
+                  setUseProperty((prev) => ({ ...prev, visible: true }));
+                }}
+                onLoadEnd={(syntheticEvent) => {
+                  // update component to be aware of loading status
+                  timer.current = setTimeout(() => {
+                    setUseProperty((prev) => ({ ...prev, visible: false }));
+                  }, 300) as any;
+                }}
+                onError={() => {
+                  setUseProperty((prev) => ({
+                    ...prev,
+                    percent: 1,
+                    color: colors["error-border-default"],
+                  }));
+                }}
+                contentInsetAdjustmentBehavior="never"
+                automaticallyAdjustContentInsets={false}
+                decelerationRate="normal"
+                allowsBackForwardNavigationGestures={true}
+                // onScroll={_onScroll}
+                source={{ uri: route?.params?.url }}
+              />
+            </>
           ) : (
             <View
               style={{
