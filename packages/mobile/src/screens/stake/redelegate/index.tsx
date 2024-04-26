@@ -316,7 +316,15 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                     flexDirection: "row",
                   }}
                 >
-                  <ValidatorThumbnail size={20} url={srcValidatorThumbnail} />
+                  <View
+                    style={{
+                      backgroundColor: colors["neutral-icon-on-dark"],
+                      borderRadius: 999,
+                    }}
+                  >
+                    <ValidatorThumbnail size={20} url={srcValidatorThumbnail} />
+                  </View>
+
                   <OWText
                     style={{ paddingLeft: 8 }}
                     color={colors["neutral-text-title"]}
@@ -467,11 +475,18 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                           marginTop: 12,
                         }}
                       >
-                        <OWIcon
-                          type="images"
-                          source={{ uri: chainIcon?.Icon }}
-                          size={16}
-                        />
+                        <View
+                          style={{
+                            backgroundColor: colors["neutral-icon-on-dark"],
+                            borderRadius: 999,
+                          }}
+                        >
+                          <OWIcon
+                            type="images"
+                            source={{ uri: chainIcon?.Icon }}
+                            size={16}
+                          />
+                        </View>
                         <OWText
                           style={{ paddingLeft: 4 }}
                           weight="600"
@@ -533,7 +548,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                   >
                     <AlertIcon color={colors["warning-text-body"]} size={16} />
                     <OWText style={{ paddingLeft: 8 }} weight="600" size={14}>
-                      {`When you unstake, a 14-day cooldown period is required before your stake \nreturns to your wallet.`}
+                      {`When you unstake, a 14-day cooldown period is required before your stake returns to your wallet.`}
                     </OWText>
                   </View>
                 </OWCard>
