@@ -88,7 +88,7 @@ export const TokenView: FunctionComponent<{
               borderRadius: 999,
               width: 40,
               height: 40,
-              backgroundColor: colors["neutral-surface-action2"],
+              backgroundColor: colors["neutral-icon-on-dark"],
               alignItems: "center",
               justifyContent: "center",
             }}
@@ -346,13 +346,25 @@ export const SelectorButtonWithoutModal: FunctionComponent<{
         }}
       >
         {currencyActive?.coinImageUrl && (
-          <OWIcon
-            size={20}
-            type={"images"}
-            source={{
-              uri: currencyActive?.coinImageUrl,
+          <View
+            style={{
+              width: 22,
+              height: 22,
+              borderRadius: 999,
+              alignItems: "center",
+              justifyContent: "center",
+              overflow: "hidden",
+              backgroundColor: colors["neutral-icon-on-dark"],
             }}
-          />
+          >
+            <OWIcon
+              size={20}
+              type={"images"}
+              source={{
+                uri: currencyActive?.coinImageUrl,
+              }}
+            />
+          </View>
         )}
         <OWText style={{ paddingHorizontal: 4 }} weight="600" size={14}>
           {removeDataInParentheses(currencyActive?.coinDenom)}

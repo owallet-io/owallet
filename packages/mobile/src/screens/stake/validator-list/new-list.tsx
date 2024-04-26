@@ -326,7 +326,13 @@ const ValidatorItem: FunctionComponent<{
           }}
         >
           <ValidatorThumbnail
-            style={{}}
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: 999,
+              backgroundColor: colors["neutral-icon-on-dark"],
+              alignItems: "center",
+            }}
             size={40}
             url={
               ValidatorThumbnails[validator.operator_address] ??

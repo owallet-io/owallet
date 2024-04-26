@@ -160,7 +160,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
               >
                 <View
                   style={{
-                    backgroundColor: colors["neutral-text-action-on-dark-bg"],
+                    backgroundColor: colors["neutral-icon-on-dark"],
                     borderRadius: 16,
                   }}
                 >
