@@ -22,7 +22,7 @@ import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { DashboardCard } from "./dashboard";
 import { ChainIdEnum, getBase58Address, TRC20_LIST } from "@owallet/common";
-import { shortenAddress } from "@src/utils/helper";
+import { maskedNumber, shortenAddress } from "@src/utils/helper";
 import { CheckIcon, CopyFillIcon } from "@src/components/icon";
 import { LineGraph } from "react-native-graph";
 import { OWBox } from "@src/components/card";
@@ -195,10 +195,10 @@ export const TokenDetails: FunctionComponent = observer((props) => {
           </View>
           <View style={styles.overview}>
             <OWText variant="bigText" style={styles.labelTotalAmount}>
-              {Number(item.balance.toFixed(4)).toLocaleString()} {item.asset}
+              {maskedNumber(item.balance)} {item.asset}
             </OWText>
             <OWText style={styles.profit} color={colors["success-text-body"]}>
-              ${Number(item.value.toFixed(4)).toLocaleString()}
+              ${maskedNumber(item.value)}
             </OWText>
           </View>
           <View style={styles.btnGroup}>

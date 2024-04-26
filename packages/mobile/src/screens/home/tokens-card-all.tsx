@@ -19,7 +19,7 @@ import {
 } from "react-native";
 import { OWBox } from "../../components/card";
 import { useStore } from "../../stores";
-import { getTokenInfos, _keyExtract } from "../../utils/helper";
+import { getTokenInfos, maskedNumber, _keyExtract } from "../../utils/helper";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { Text } from "@src/components/text";
 import { SCREENS } from "@src/common/constants";
@@ -183,9 +183,7 @@ export const TokensCardAll: FunctionComponent<{
           );
           if (yesterday && yesterday.value) {
             profit = Number(
-              Number(item.value - (yesterday.value ?? 0))
-                ?.toFixed(2)
-                .toLocaleString() ?? 0
+              Number(item.value - (yesterday.value ?? 0))?.toFixed(2) ?? 0
             );
             percent = Number((profit / yesterday.value) * 100 ?? 0).toFixed(2);
           }
@@ -255,15 +253,14 @@ export const TokensCardAll: FunctionComponent<{
                       weight="500"
                       color={colors["neutral-text-heading"]}
                     >
-                      {Number(item.balance.toFixed(4)).toLocaleString()}{" "}
-                      {item.asset}
+                      {maskedNumber(item.balance)} {item.asset}
                     </Text>
                     <Text
                       size={14}
                       style={{ lineHeight: 24 }}
                       color={colors["neutral-text-body"]}
                     >
-                      ${Number(item.value.toFixed(2)).toLocaleString()}
+                      ${maskedNumber(item.value)}
                     </Text>
                     <Text
                       size={14}

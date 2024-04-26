@@ -1,7 +1,12 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { StyleSheet, TextInput, View } from "react-native";
 import { metrics, spacing, typography } from "../../../themes";
-import { _keyExtract, showToast, getTokenInfos } from "../../../utils/helper";
+import {
+  _keyExtract,
+  showToast,
+  getTokenInfos,
+  maskedNumber,
+} from "../../../utils/helper";
 import { VectorCharacter } from "../../../components/vector-character";
 import { Text } from "@src/components/text";
 import {
@@ -304,10 +309,8 @@ export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
             >
               $
               {!item.chainId
-                ? Number(totalUsd?.toFixed(2)).toLocaleString()
-                : Number(
-                    groupedData?.[item.chainId]?.sum.toFixed(2) ?? 0
-                  ).toLocaleString()}
+                ? maskedNumber(totalUsd)
+                : maskedNumber(groupedData?.[item.chainId]?.sum)}
             </Text>
           </View>
         </View>

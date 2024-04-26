@@ -241,6 +241,15 @@ export const getDataFromDataEvent = (itemEvents) => {
         },
       };
 };
+
+export const maskedNumber = (number: number | string, digits?: number) => {
+  return number
+    ? Number(number).toLocaleString(undefined, {
+        minimumFractionDigits: digits ?? 4,
+      })
+    : 0;
+};
+
 const countAmountValue = (array) => {
   let count = 0;
   if (array && array?.length > 0) {

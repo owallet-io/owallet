@@ -15,6 +15,7 @@ import HapticFeedback, {
 } from "react-native-haptic-feedback";
 import { Dec, PricePretty } from "@owallet/unit";
 import { useStore } from "@src/stores";
+import { maskedNumber } from "@src/utils/helper";
 
 export interface GraphPoint {
   value: number;
@@ -204,10 +205,7 @@ export const TokenChart: FC<{
         }}
       >
         <OWText size={28} weight={"500"} color={colors["neutral-text-heading"]}>
-          $
-          {currentPrice?.value
-            ? `${Number(currentPrice?.value?.toFixed(2))?.toLocaleString()}`
-            : ""}
+          ${currentPrice?.value ? `${maskedNumber(currentPrice?.value)}` : ""}
         </OWText>
         <View
           style={{
