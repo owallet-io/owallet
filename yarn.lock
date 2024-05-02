@@ -24029,6 +24029,11 @@ react-native-flash-message@0.4.2:
     prop-types "^15.8.1"
     react-native-iphone-screen-helper "^2.0.2"
 
+react-native-fresh-refresh@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/react-native-fresh-refresh/-/react-native-fresh-refresh-2.1.1.tgz#1afd80650cccfcfc2ea5106063aaade49551d91c"
+  integrity sha512-0X9yV9xlhxrABq5ov+Ja03qV350eUPKVSle4WIE5BZJQJZhm/4YeRO8l24wpysVygi7ZTk3opVCcrb83K9ynag==
+
 react-native-gesture-handler@2.12.0:
   version "2.12.0"
   resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-2.12.0.tgz#59ca9d97e4c71f70b9c258f14a1a081f4c689976"

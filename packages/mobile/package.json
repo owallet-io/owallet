@@ -47,6 +47,7 @@
     "@shopify/react-native-skia": "^1.2.0",
     "@oraichain/common-contracts-sdk": "^1.0.31",
     "@oraichain/oraidex-common": "^1.0.85",
+    "react-native-fresh-refresh": "^2.1.1",
     "react-native-pager-view": "^6.2.3",
     "@oraichain/oraidex-contracts-sdk": "^1.0.33",
     "@oraichain/cw-simulate": "^2.8.76",

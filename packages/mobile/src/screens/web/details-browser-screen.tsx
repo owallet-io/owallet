@@ -409,27 +409,28 @@ export const DetailsBrowserScreen = observer((props) => {
           }}
         >
           {visible && (
-            <View
-              style={{
-                width: "100%",
-                height: "100%",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <LottieView
-                source={require("@src/assets/animations/loading_owallet.json")}
-                style={{ width: 130, height: 130 }}
-                autoPlay
-                loop
-              />
-            </View>
-          )}
-          {sourceCode && route?.params?.url ? (
             <>
-              {visible && (
-                <LoadingBar height={height} color={color} percent={percent} />
-              )}
+              <View
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <LottieView
+                  source={require("@src/assets/animations/loading_owallet.json")}
+                  style={{ width: 130, height: 130 }}
+                  autoPlay
+                  loop
+                />
+              </View>
+              <LoadingBar height={height} color={color} percent={percent} />
+            </>
+          )}
+
+          {sourceCode && route?.params?.url && (
+            <>
               <WebView
                 originWhitelist={["*"]} // to allowing WebView to load blob
                 ref={webviewRef}
@@ -485,22 +486,6 @@ export const DetailsBrowserScreen = observer((props) => {
                 source={{ uri: route?.params?.url }}
               />
             </>
-          ) : (
-            <View
-              style={{
-                width: "100%",
-                height: "100%",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <LottieView
-                source={require("@src/assets/animations/loading_owallet.json")}
-                style={{ width: 200, height: 200 }}
-                autoPlay
-                loop
-              />
-            </View>
           )}
         </View>
       </View>
