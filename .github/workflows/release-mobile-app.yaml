@@ -129,14 +129,14 @@ jobs:
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
-      # - name: Restore node_modules from cache
-      #   uses: actions/cache@v2
-      #   id: yarn-cache
-      #   with:
-      #     path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-      #     key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-yarn-
+      - name: Restore node_modules from cache
+        uses: actions/cache@v2
+        id: yarn-cache
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
       - name: Checkout submodule repo
         uses: actions/checkout@v3
       - name: Install dependencies # install project deps with --frozen-lockfile to make sure we will have the same packages version ( very recommended  on running yarn install on ci)
@@ -144,25 +144,28 @@ jobs:
       - name: Install mobile packages
         working-directory: packages/mobile
         run: yarn --silent
-      # - name: restore lerna
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: "**/node_modules"
-      #     key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - name: Build mobile images
+        working-directory: packages/mobile
+        run: yarn images
+      - name: restore lerna
+        uses: actions/cache@v3
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - name: Build Libs
         run: yarn build:libs
-      # - name: Build provider
-      #   working-directory: packages/mobile
-      #   run: yarn build:provider
-      #   env:
-      #     SENTRY_TOKEN: ${{ secrets.SENTRY_TOKEN }}
-      #     API_KEY_ETH_SCAN: ${{ secrets.API_KEY_ETH_SCAN }}
-      #     API_KEY_BSC_SCAN: ${{ secrets.API_KEY_BSC_SCAN }}
-      #     API_KEY: ${{ secrets.API_KEY_FIREBASE }}
-      #     SENDER_ID: ${{ secrets.SENDER_ID_FIREBASE }}
-      #     APP_ID: ${{ secrets.APP_ID_FIREBASE }}
-      #     API_KEY_KADO: ${{ secrets.API_KEY_KADO }}
-      #     MIX_PANEL_TOKEN: ${{ secrets.MIX_PANEL_TOKEN }}
+      - name: Build provider
+        working-directory: packages/mobile
+        run: yarn build:provider
+        env:
+          SENTRY_TOKEN: ${{ secrets.SENTRY_TOKEN }}
+          API_KEY_ETH_SCAN: ${{ secrets.API_KEY_ETH_SCAN }}
+          API_KEY_BSC_SCAN: ${{ secrets.API_KEY_BSC_SCAN }}
+          API_KEY: ${{ secrets.API_KEY_FIREBASE }}
+          SENDER_ID: ${{ secrets.SENDER_ID_FIREBASE }}
+          APP_ID: ${{ secrets.APP_ID_FIREBASE }}
+          API_KEY_KADO: ${{ secrets.API_KEY_KADO }}
+          MIX_PANEL_TOKEN: ${{ secrets.MIX_PANEL_TOKEN }}
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:

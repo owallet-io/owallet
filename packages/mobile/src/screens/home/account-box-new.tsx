@@ -132,7 +132,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
         >
           {profit < 0 ? "" : "+"}
           {profit && totalUsd && totalUsd > 0
-            ? Number((profit / totalUsd) * 100 ?? 0)
+            ? Number((profit / totalUsd) * 100 ?? 0).toFixed(2)
             : 0}
           % ($
           {maskedNumber(profit ?? 0, 2)}) Today

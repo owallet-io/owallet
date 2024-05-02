@@ -41,10 +41,10 @@ import {
 import { openLink } from "../../utils/helper";
 import { feeEstimate, getTransferTokenFee } from "@owallet/common";
 import {
-  handleSimulateSwap,
-  filterNonPoolEvmTokens,
+  // handleSimulateSwap,
+  // filterNonPoolEvmTokens,
   SwapDirection,
-  UniversalSwapHelper,
+  // UniversalSwapHelper
 } from "@oraichain/oraidex-universal-swap";
 import { fetchTokenInfos, ChainIdEnum } from "@owallet/common";
 import { calculateMinReceive } from "@oraichain/oraidex-common";
@@ -73,10 +73,10 @@ import { Mixpanel } from "mixpanel-react-native";
 import { API } from "@src/common/api";
 // import { filterNonPoolEvmTokens } from "./handler/src/helper";
 import { metrics } from "@src/themes";
-// import {
-//   // UniversalSwapHandler,
-//   UniversalSwapHelper,
-// } from "./handler/src";
+import {
+  // UniversalSwapHandler,
+  UniversalSwapHelper,
+} from "./handler/src";
 const mixpanel = globalThis.mixpanel as Mixpanel;
 
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
@@ -434,18 +434,21 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       if (fromAmountToken > 0) {
         simulateAmount = fromAmountToken;
       }
+      try {
+        const data = await UniversalSwapHelper.handleSimulateSwap({
+          originalFromInfo: originalFromToken,
+          originalToInfo: originalToToken,
+          originalAmount: initAmount ?? simulateAmount,
+          routerClient,
+          useSmartRoute: true,
+        });
 
-      const data = await UniversalSwapHelper.handleSimulateSwap({
-        originalFromInfo: originalFromToken,
-        originalToInfo: originalToToken,
-        originalAmount: initAmount ?? simulateAmount,
-        routerClient,
-        useSmartRoute: true,
-      });
+        setAmountLoading(false);
 
-      setAmountLoading(false);
-
-      return data;
+        return data;
+      } catch (err) {
+        console.log("err getSimulateSwap", err);
+      }
     }
   };
 
@@ -480,6 +483,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const estimateAverageRatio = async () => {
     const data = await getSimulateSwap(INIT_AMOUNT);
+
+    console.log(";data", data);
 
     setRatio(data);
   };
