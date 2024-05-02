@@ -6,6 +6,7 @@ const BundleAnalyzerPlugin =
 
 const isEnvDevelopment = process.env.NODE_ENV !== 'production';
 const isEnvAnalyzer = process.env.ANALYZER === 'true';
+const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 const tsRule = {
   test: /\.ts$/,
   loader: 'ts-loader',
@@ -45,7 +46,12 @@ module.exports = (env, args) => {
       fallback
     },
     module: {
-      rules: [tsRule]
+      rules: [tsRule, {
+        test: /\.m?js/,
+        resolve: {
+          fullySpecified: false
+        }
+      }]
     },
     performance: {
       hints: false,
@@ -53,6 +59,7 @@ module.exports = (env, args) => {
       maxAssetSize: 512000
     },
     plugins: [
+      new NodePolyfillPlugin(),
       new webpack.ProvidePlugin({
         process: 'process/browser',
         Buffer: ['buffer', 'Buffer']
