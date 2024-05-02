@@ -34,7 +34,12 @@ import {
   showToast,
 } from "@src/utils/helper";
 
-const renderIconValidator = (label: string, size?: number, styles?: any) => {
+const renderIconValidator = (
+  label: string,
+  size?: number,
+  colors?: any,
+  styles?: any
+) => {
   switch (label) {
     case "Website":
       return (
@@ -43,7 +48,10 @@ const renderIconValidator = (label: string, size?: number, styles?: any) => {
             ...styles.containerIcon,
           }}
         >
-          <ValidatorBlockIcon color={"#1E1E1E"} size={size} />
+          <ValidatorBlockIcon
+            color={colors["neutral-text-title"]}
+            size={size}
+          />
         </View>
       );
     case "APR":
@@ -53,7 +61,7 @@ const renderIconValidator = (label: string, size?: number, styles?: any) => {
             ...styles.containerIcon,
           }}
         >
-          <ValidatorAPYIcon color={"#1E1E1E"} size={size} />
+          <ValidatorAPYIcon color={colors["neutral-text-title"]} size={size} />
         </View>
       );
     case "Commission":
@@ -63,7 +71,10 @@ const renderIconValidator = (label: string, size?: number, styles?: any) => {
             ...styles.containerIcon,
           }}
         >
-          <ValidatorCommissionIcon color={"#1E1E1E"} size={size} />
+          <ValidatorCommissionIcon
+            color={colors["neutral-text-title"]}
+            size={size}
+          />
         </View>
       );
     case "Voting power":
@@ -73,7 +84,10 @@ const renderIconValidator = (label: string, size?: number, styles?: any) => {
             ...styles.containerIcon,
           }}
         >
-          <ValidatorVotingIcon color={"#1E1E1E"} size={size} />
+          <ValidatorVotingIcon
+            color={colors["neutral-text-title"]}
+            size={size}
+          />
         </View>
       );
   }
@@ -340,7 +354,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
                   <View style={styles.topSubInfo}>
                     <OWText
                       style={{
-                        color: colors["neutral-text-body2"],
+                        color: colors["neutral-text-title"],
                       }}
                     >
                       APR:{" "}
@@ -348,10 +362,13 @@ export const ValidatorDetailsCard: FunctionComponent<{
                     </OWText>
                   </View>
                   <View style={styles.topSubInfo}>
-                    <ValidatorBlockIcon color={"#1E1E1E"} size={16} />
+                    <ValidatorBlockIcon
+                      color={colors["neutral-text-title"]}
+                      size={16}
+                    />
                     <OWText
                       style={{
-                        color: colors["neutral-text-body2"],
+                        color: colors["neutral-text-title"],
                         paddingLeft: 6,
                       }}
                     >
@@ -379,7 +396,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
                           }}
                         >
                           <ValidatorCommissionIcon
-                            color={"#1E1E1E"}
+                            color={colors["neutral-text-title"]}
                             size={16}
                           />
                         </View>
@@ -435,7 +452,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
                       }}
                     >
                       <View style={{ flexDirection: "row", paddingBottom: 6 }}>
-                        {renderIconValidator(label, 12, styles)}
+                        {renderIconValidator(label, 12, colors, styles)}
                         <Text style={styles.label}>{label}</Text>
                       </View>
 

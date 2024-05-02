@@ -176,7 +176,20 @@ export const AddressQRScreen: FunctionComponent<{}> = observer(({}) => {
                 alignItems: "center",
               }}
             >
-              {renderNetworkIcon()}
+              <View
+                style={{
+                  width: 22,
+                  height: 22,
+                  borderRadius: 999,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  overflow: "hidden",
+                  backgroundColor: colors["neutral-icon-on-dark"],
+                }}
+              >
+                {renderNetworkIcon()}
+              </View>
+
               <OWText style={{ paddingHorizontal: 4 }} weight="600" size={14}>
                 {networkAddress ? networkAddress.name : chainInfo.chainName}
               </OWText>

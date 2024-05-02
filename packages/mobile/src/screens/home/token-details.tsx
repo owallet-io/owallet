@@ -22,15 +22,14 @@ import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { DashboardCard } from "./dashboard";
 import { ChainIdEnum, getBase58Address, TRC20_LIST } from "@owallet/common";
-import { shortenAddress } from "@src/utils/helper";
+import { maskedNumber, shortenAddress } from "@src/utils/helper";
 import { CheckIcon, CopyFillIcon } from "@src/components/icon";
 import { LineGraph } from "react-native-graph";
 import { OWBox } from "@src/components/card";
 import { TokenChart } from "@src/screens/home/components/token-chart";
-import { CoinPretty, Dec, DecUtils, PricePretty } from "@owallet/unit";
 
 export const TokenDetails: FunctionComponent = observer((props) => {
-  const { chainStore, accountStore, priceStore, keyRingStore } = useStore();
+  const { chainStore, accountStore, keyRingStore } = useStore();
   const { isTimedOut, setTimer } = useSimpleTimer();
   const { colors } = useTheme();
   const styles = useStyles(colors);
@@ -52,15 +51,11 @@ export const TokenDetails: FunctionComponent = observer((props) => {
   >();
 
   const { item } = route.params;
-  console.log(item, "item");
+
   const account = accountStore.getAccount(item.chainId);
 
   const [tronTokens, setTronTokens] = useState([]);
-  const chainInfo = chainStore.getChain(item.chainId);
-  const currency = chainInfo.currencies.find(
-    (it) => it.coinGeckoId === item.coinGeckoId
-  );
-  console.log(currency, "currency");
+
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
       (async function get() {
@@ -157,11 +152,10 @@ export const TokenDetails: FunctionComponent = observer((props) => {
       });
     } catch (err) {}
   };
-  const fiat = priceStore.defaultVsCurrency;
-  const fiatCurrency = priceStore.getFiatCurrency(fiat);
+
   return (
     <View style={[styles.container, { paddingTop: safeAreaInsets.top }]}>
-      <PageHeader title={item.asset} subtitle={item.chain} />
+      <PageHeader title={item.asset} subtitle={item.chain} colors={colors} />
       <ScrollView
         contentContainerStyle={{ width: "100%" }}
         showsVerticalScrollIndicator={false}
@@ -201,12 +195,10 @@ export const TokenDetails: FunctionComponent = observer((props) => {
           </View>
           <View style={styles.overview}>
             <OWText variant="bigText" style={styles.labelTotalAmount}>
-              {`${Number(item.balance?.toFixed(4)).toLocaleString()} ${
-                item.asset
-              }`}
+              {maskedNumber(item.balance)} {item.asset}
             </OWText>
             <OWText style={styles.profit} color={colors["neutral-text-body"]}>
-              {new PricePretty(fiatCurrency, item.value).toString()}
+              ${maskedNumber(item.value)}
             </OWText>
           </View>
           <View style={styles.btnGroup}>

@@ -1,4 +1,10 @@
-import { ActivityIndicator, BackHandler, Platform, View } from "react-native";
+import {
+  ActivityIndicator,
+  BackHandler,
+  Platform,
+  StyleSheet,
+  View,
+} from "react-native";
 import { PageWithViewInBottomTabView } from "@src/components/page";
 import { TextInput } from "@src/components/input";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
@@ -284,6 +290,8 @@ export const DetailsBrowserScreen = observer((props) => {
       clearTimeout(timer.current);
     };
   }, []);
+  console.log(canGoBack, "canGoBack");
+  const styles = styling(colors);
   return (
     <PageWithViewInBottomTabView
       style={{
@@ -297,43 +305,33 @@ export const DetailsBrowserScreen = observer((props) => {
           flexGrow: 1,
         }}
       >
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "center",
-            alignItems: "center",
-            paddingHorizontal: 16,
-            paddingBottom: 8,
-          }}
-        >
+        <View style={styles.containerHeader}>
           <OWButtonIcon
             size={"medium"}
+            disabled={!canGoBack}
             onPress={onGoback}
-            style={{
-              width: 44,
-              height: 44,
-              borderRadius: 999,
-              backgroundColor: colors["neutral-surface-action3"],
-              marginRight: 3,
-            }}
+            style={styles.icon}
             fullWidth={false}
-            colorIcon={colors["neutral-text-action-on-light-bg"]}
+            colorIcon={
+              canGoBack
+                ? colors["neutral-text-action-on-light-bg"]
+                : colors["neutral-icon-disable"]
+            }
             name={"tdesignchevron-left"}
             sizeIcon={18}
           />
 
           <OWButtonIcon
             size={"medium"}
-            style={{
-              width: 44,
-              height: 44,
-              borderRadius: 999,
-              backgroundColor: colors["neutral-surface-action3"],
-              marginLeft: 3,
-            }}
+            style={styles.icon}
             onPress={onGoForward}
+            disabled={!canGoForward}
             fullWidth={false}
-            colorIcon={colors["neutral-text-action-on-light-bg"]}
+            colorIcon={
+              canGoForward
+                ? colors["neutral-text-action-on-light-bg"]
+                : colors["neutral-icon-disable"]
+            }
             name={"tdesignchevron-right"}
             sizeIcon={18}
           />
@@ -351,7 +349,6 @@ export const DetailsBrowserScreen = observer((props) => {
                 borderRadius: 999,
               }}
               containerStyle={{
-                paddingHorizontal: 12,
                 paddingBottom: 0,
                 width: "100%",
               }}
@@ -369,13 +366,7 @@ export const DetailsBrowserScreen = observer((props) => {
           </View>
           <OWButtonIcon
             size={"medium"}
-            style={{
-              width: 44,
-              height: 44,
-              marginRight: 3,
-              borderRadius: 999,
-              backgroundColor: colors["neutral-surface-action3"],
-            }}
+            style={styles.icon}
             fullWidth={false}
             onPress={() => onAddBookMark({ uri: currentURL })}
             colorIcon={
@@ -389,13 +380,7 @@ export const DetailsBrowserScreen = observer((props) => {
           <OWButtonIcon
             size={"medium"}
             onPress={onHomeBrowser}
-            style={{
-              width: 44,
-              height: 44,
-              borderRadius: 999,
-              marginLeft: 3,
-              backgroundColor: colors["neutral-surface-action3"],
-            }}
+            style={styles.icon}
             colorIcon={colors["neutral-text-action-on-light-bg"]}
             fullWidth={false}
             name={"tdesignhome"}
@@ -410,14 +395,7 @@ export const DetailsBrowserScreen = observer((props) => {
         >
           {visible && (
             <>
-              <View
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
+              <View style={styles.containerLoading}>
                 <LottieView
                   source={require("@src/assets/animations/loading_owallet.json")}
                   style={{ width: 130, height: 130 }}
@@ -434,7 +412,7 @@ export const DetailsBrowserScreen = observer((props) => {
               <WebView
                 originWhitelist={["*"]} // to allowing WebView to load blob
                 ref={webviewRef}
-                // style={pageLoaded ? {} : { flex: 0, height: 0, opacity: 0 }}
+                style={visible ? { flex: 0, height: 0, opacity: 0 } : {}}
                 cacheEnabled={true}
                 injectedJavaScriptBeforeContentLoaded={sourceCode}
                 // onLoad={handleWebViewLoaded}
@@ -442,7 +420,15 @@ export const DetailsBrowserScreen = observer((props) => {
                 onNavigationStateChange={(e) => {
                   // Strangely, `onNavigationStateChange` is only invoked whenever page changed only in IOS.
                   // Use two handlers to measure simultaneously in ios and android.
-                  setCanGoBack(e.canGoBack);
+                  console.log(e.canGoBack, "e.canGoBack");
+                  console.log(e.url, "e.url");
+                  console.log(e, "ekaka");
+                  if (e.url === route?.params?.url) {
+                    setCanGoBack(false);
+                  } else {
+                    setCanGoBack(e.canGoBack);
+                  }
+
                   setCanGoForward(e.canGoForward);
 
                   setCurrentURL(e.url);
@@ -454,7 +440,16 @@ export const DetailsBrowserScreen = observer((props) => {
                     ...prev,
                     percent: e.nativeEvent?.progress ?? 0.1,
                   }));
-                  setCanGoBack(e.nativeEvent.canGoBack);
+                  if (e.nativeEvent.url === route?.params?.url) {
+                    setCanGoBack(false);
+                  } else {
+                    setCanGoBack(e.nativeEvent.canGoBack);
+                  }
+
+                  console.log(
+                    e.nativeEvent.canGoBack,
+                    "e.nativeEvent.canGoBack"
+                  );
                   setCanGoForward(e.nativeEvent.canGoForward);
                   // const { progress } = e.nativeEvent;
                   setCurrentURL(e.nativeEvent.url);
@@ -492,3 +487,30 @@ export const DetailsBrowserScreen = observer((props) => {
     </PageWithViewInBottomTabView>
   );
 });
+
+const styling = (colors) => {
+  return StyleSheet.create({
+    icon: {
+      width: 44,
+      height: 44,
+      borderRadius: 999,
+
+      backgroundColor: colors["neutral-surface-action3"],
+    },
+    containerLoading: {
+      width: "100%",
+      height: "100%",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    containerHeader: {
+      flexDirection: "row",
+      justifyContent: "center",
+      alignItems: "center",
+      flexWrap: "wrap",
+      gap: 8,
+      paddingHorizontal: 16,
+      paddingBottom: 8,
+    },
+  });
+};

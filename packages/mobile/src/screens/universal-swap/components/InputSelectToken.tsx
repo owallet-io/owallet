@@ -50,7 +50,19 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
         onPress={onOpenTokenModal}
         style={styles.btnChainContainer}
       >
-        <OWIcon type="images" source={{ uri: tokenIcon?.Icon }} size={30} />
+        <View
+          style={{
+            width: 33,
+            height: 33,
+            borderRadius: 999,
+            backgroundColor: colors["neutral-icon-on-dark"],
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <OWIcon type="images" source={{ uri: tokenIcon?.Icon }} size={30} />
+        </View>
+
         <View style={[styles.ml8, styles.itemTopBtn]}>
           <View style={styles.pr4}>
             <Text weight="700" size={20} color={colors["text-title"]}>

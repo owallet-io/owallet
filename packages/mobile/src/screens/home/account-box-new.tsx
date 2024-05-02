@@ -20,11 +20,11 @@ import { getTotalUsd, chainIcons } from "@oraichain/oraidex-common";
 import { CheckIcon, CopyFillIcon, DownArrowIcon } from "@src/components/icon";
 import { metrics, spacing } from "@src/themes";
 import MyWalletModal from "./components/my-wallet-modal/my-wallet-modal";
-import { ChainIdEnum, getBase58Address } from "@owallet/common";
+import { ChainIdEnum } from "@owallet/common";
 import { OWButton } from "@src/components/button";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { CopyAddressModal } from "./components/copy-address/copy-address-modal";
-import { getTokenInfos, shortenAddress } from "@src/utils/helper";
+import { getTokenInfos, maskedNumber, shortenAddress } from "@src/utils/helper";
 import { useSmartNavigation } from "@src/navigation.provider";
 import { SCREENS } from "@src/common/constants";
 import { navigate } from "@src/router/root";
@@ -124,7 +124,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
     return (
       <>
         <Text variant="bigText" style={styles.labelTotalAmount}>
-          ${Number(totalUsd.toFixed(2)).toLocaleString()}
+          ${maskedNumber(totalUsd)}
         </Text>
         <Text
           style={styles.profit}
@@ -132,12 +132,10 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
         >
           {profit < 0 ? "" : "+"}
           {profit && totalUsd && totalUsd > 0
-            ? Number((profit / totalUsd) * 100 ?? 0)
-                .toFixed(2)
-                .toLocaleString()
+            ? (Number((profit / totalUsd) * 100 ?? 0), 2)
             : 0}
           % ($
-          {Number(profit?.toFixed(2)).toLocaleString() ?? 0}) Today
+          {maskedNumber(profit ?? 0, 2)}) Today
         </Text>
 
         {appInitStore.getInitApp.isAllNetworks ? null : (
@@ -160,7 +158,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
               >
                 <View
                   style={{
-                    backgroundColor: colors["neutral-text-action-on-dark-bg"],
+                    backgroundColor: colors["neutral-icon-on-dark"],
                     borderRadius: 16,
                   }}
                 >
@@ -183,7 +181,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
               </View>
 
               <Text size={16} weight="600" color={colors["neutral-text-title"]}>
-                ${Number(chainBalance.toFixed(2)).toLocaleString()}
+                ${maskedNumber(chainBalance)}
               </Text>
             </View>
             {chainStore.current.chainId === ChainIdEnum.TRON && (
