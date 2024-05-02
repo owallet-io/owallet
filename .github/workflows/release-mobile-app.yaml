@@ -147,9 +147,7 @@ jobs:
       - name: Build mobile images
         working-directory: packages/mobile
         run: yarn images
-      - name: Bundle mobile
-        working-directory: packages/mobile
-        run: yarn build:ios
+
       - name: restore lerna
         uses: actions/cache@v3
         with:
@@ -169,6 +167,9 @@ jobs:
           APP_ID: ${{ secrets.APP_ID_FIREBASE }}
           API_KEY_KADO: ${{ secrets.API_KEY_KADO }}
           MIX_PANEL_TOKEN: ${{ secrets.MIX_PANEL_TOKEN }}
+      - name: Bundle mobile
+        working-directory: packages/mobile
+        run: yarn build:ios
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
