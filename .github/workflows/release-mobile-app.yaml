@@ -147,6 +147,9 @@ jobs:
       - name: Build mobile images
         working-directory: packages/mobile
         run: yarn images
+      - name: Bundle mobile
+        working-directory: packages/mobile
+        run: yarn build:ios
       - name: restore lerna
         uses: actions/cache@v3
         with:
