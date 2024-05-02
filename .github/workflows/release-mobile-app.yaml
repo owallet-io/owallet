@@ -151,18 +151,18 @@ jobs:
       #     key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - name: Build Libs
         run: yarn build:libs
-      - name: Build provider
-        working-directory: packages/mobile
-        run: yarn build:provider
-        env:
-          SENTRY_TOKEN: ${{ secrets.SENTRY_TOKEN }}
-          API_KEY_ETH_SCAN: ${{ secrets.API_KEY_ETH_SCAN }}
-          API_KEY_BSC_SCAN: ${{ secrets.API_KEY_BSC_SCAN }}
-          API_KEY: ${{ secrets.API_KEY_FIREBASE }}
-          SENDER_ID: ${{ secrets.SENDER_ID_FIREBASE }}
-          APP_ID: ${{ secrets.APP_ID_FIREBASE }}
-          API_KEY_KADO: ${{ secrets.API_KEY_KADO }}
-          MIX_PANEL_TOKEN: ${{ secrets.MIX_PANEL_TOKEN }}
+      # - name: Build provider
+      #   working-directory: packages/mobile
+      #   run: yarn build:provider
+      #   env:
+      #     SENTRY_TOKEN: ${{ secrets.SENTRY_TOKEN }}
+      #     API_KEY_ETH_SCAN: ${{ secrets.API_KEY_ETH_SCAN }}
+      #     API_KEY_BSC_SCAN: ${{ secrets.API_KEY_BSC_SCAN }}
+      #     API_KEY: ${{ secrets.API_KEY_FIREBASE }}
+      #     SENDER_ID: ${{ secrets.SENDER_ID_FIREBASE }}
+      #     APP_ID: ${{ secrets.APP_ID_FIREBASE }}
+      #     API_KEY_KADO: ${{ secrets.API_KEY_KADO }}
+      #     MIX_PANEL_TOKEN: ${{ secrets.MIX_PANEL_TOKEN }}
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
