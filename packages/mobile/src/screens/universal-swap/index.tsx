@@ -41,10 +41,10 @@ import {
 import { openLink } from "../../utils/helper";
 import { feeEstimate, getTransferTokenFee } from "@owallet/common";
 import {
-  // handleSimulateSwap,
-  // filterNonPoolEvmTokens,
+  handleSimulateSwap,
+  filterNonPoolEvmTokens,
   SwapDirection,
-  // UniversalSwapHelper
+  UniversalSwapHelper,
 } from "@oraichain/oraidex-universal-swap";
 import { fetchTokenInfos, ChainIdEnum } from "@owallet/common";
 import { calculateMinReceive } from "@oraichain/oraidex-common";
@@ -73,10 +73,10 @@ import { Mixpanel } from "mixpanel-react-native";
 import { API } from "@src/common/api";
 // import { filterNonPoolEvmTokens } from "./handler/src/helper";
 import { metrics } from "@src/themes";
-import {
-  // UniversalSwapHandler,
-  UniversalSwapHelper,
-} from "./handler/src";
+// import {
+//   // UniversalSwapHandler,
+//   UniversalSwapHelper,
+// } from "./handler/src";
 const mixpanel = globalThis.mixpanel as Mixpanel;
 
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
