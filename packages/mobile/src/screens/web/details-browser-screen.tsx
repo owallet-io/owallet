@@ -420,17 +420,12 @@ export const DetailsBrowserScreen = observer((props) => {
                 onNavigationStateChange={(e) => {
                   // Strangely, `onNavigationStateChange` is only invoked whenever page changed only in IOS.
                   // Use two handlers to measure simultaneously in ios and android.
-                  console.log(e.canGoBack, "e.canGoBack");
-                  console.log(e.url, "e.url");
-                  console.log(e, "ekaka");
                   if (e.url === route?.params?.url) {
                     setCanGoBack(false);
                   } else {
                     setCanGoBack(e.canGoBack);
                   }
-
                   setCanGoForward(e.canGoForward);
-
                   setCurrentURL(e.url);
                 }}
                 onLoadProgress={(e) => {
@@ -445,16 +440,9 @@ export const DetailsBrowserScreen = observer((props) => {
                   } else {
                     setCanGoBack(e.nativeEvent.canGoBack);
                   }
-
-                  console.log(
-                    e.nativeEvent.canGoBack,
-                    "e.nativeEvent.canGoBack"
-                  );
                   setCanGoForward(e.nativeEvent.canGoForward);
                   // const { progress } = e.nativeEvent;
                   setCurrentURL(e.nativeEvent.url);
-
-                  // setIsLoading(false);
                 }}
                 onLoadStart={(syntheticEvent) => {
                   // update component to be aware of loading status
