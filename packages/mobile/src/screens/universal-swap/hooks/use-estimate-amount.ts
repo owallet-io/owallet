@@ -10,12 +10,12 @@ import {
   TokenItemType,
 } from "@oraichain/oraidex-common";
 import { OraiswapRouterQueryClient } from "@oraichain/oraidex-contracts-sdk";
+import { handleSimulateSwap } from "@oraichain/oraidex-universal-swap";
 import { fetchTokenInfos } from "@owallet/common";
 import { useRelayerFee } from "@owallet/hooks";
 import { useStore } from "@src/stores";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
-import { UniversalSwapHelper } from "../handler/src";
 
 /**
  * Simulate token fee between fromToken & toToken
@@ -92,7 +92,7 @@ export const useEstimateAmount = (
         simulateAmount = fromAmountToken;
       }
       try {
-        const data = await UniversalSwapHelper.handleSimulateSwap({
+        const data = await handleSimulateSwap({
           originalFromInfo: originalFromToken,
           originalToInfo: originalToToken,
           originalAmount: initAmount ?? simulateAmount,
@@ -134,7 +134,7 @@ export const useEstimateAmount = (
         (token) => token.coinGeckoId === "oraichain-token"
       );
 
-      const data = await UniversalSwapHelper.handleSimulateSwap({
+      const data = await handleSimulateSwap({
         // @ts-ignore
         originalFromInfo: oraiToken,
         originalToInfo: originalToToken,

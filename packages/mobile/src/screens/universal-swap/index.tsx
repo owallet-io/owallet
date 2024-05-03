@@ -43,6 +43,7 @@ import {
   isSupportedNoPoolSwapEvm,
   UniversalSwapData,
   UniversalSwapHandler,
+  UniversalSwapHelper,
 } from "@oraichain/oraidex-universal-swap";
 import { SwapCosmosWallet, SwapEvmWallet } from "./wallet";
 import { styling } from "./styles";
@@ -62,7 +63,7 @@ import {
 } from "./helpers";
 import { Mixpanel } from "mixpanel-react-native";
 import { metrics } from "@src/themes";
-import { UniversalSwapHelper } from "./handler/src";
+// import { UniversalSwapHelper } from "./handler/src";
 import { useTokenFee } from "./hooks/use-token-fee";
 import { useFilterToken } from "./hooks/use-filter-token";
 import { useEstimateAmount } from "./hooks/use-estimate-amount";
@@ -232,6 +233,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setSwapAmount,
     handleErrorSwap
   );
+
+  console.log("impactWarning", impactWarning, routersSwapData);
 
   const [isSelectFromTokenModal, setIsSelectFromTokenModal] = useState(false);
   const [isSelectToTokenModal, setIsSelectToTokenModal] = useState(false);
