@@ -77,6 +77,7 @@ import {
   // UniversalSwapHandler,
   UniversalSwapHelper,
 } from "./handler/src";
+import { useTokenFee } from "./hooks/use-token-fee";
 const mixpanel = globalThis.mixpanel as Mixpanel;
 
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
@@ -126,8 +127,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     [string, string]
   >(["orai", "usdt"]);
 
-  const [fromTokenFee, setFromTokenFee] = useState<number>(0);
-  const [toTokenFee, setToTokenFee] = useState<number>(0);
   const [relayerFeeAmount, setRelayerFeeAmount] = useState<number>(0);
 
   const [[fromAmountToken, toAmountToken], setSwapAmount] = useState([0, 0]);
@@ -232,51 +231,13 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     : getTokenOnOraichain(tokenMap[toTokenDenom].coinGeckoId) ??
       tokenMap[toTokenDenom];
 
-  const getTokenFee = async (
-    remoteTokenDenom: string,
-    fromChainId: NetworkChainId,
-    toChainId: NetworkChainId,
-    type: "from" | "to"
-  ) => {
-    // since we have supported evm swap, tokens that are on the same supported evm chain id don't have any token fees (because they are not bridged to Oraichain)
-    if (
-      isEvmNetworkNativeSwapSupported(fromChainId) &&
-      fromChainId === toChainId
-    )
-      return;
-    if (remoteTokenDenom) {
-      let tokenFee = 0;
-      const ratio = await getTransferTokenFee({ remoteTokenDenom, client });
-
-      if (ratio) {
-        tokenFee = (ratio.nominator / ratio.denominator) * 100;
-      }
-
-      if (type === "from") {
-        setFromTokenFee(tokenFee);
-      } else {
-        setToTokenFee(tokenFee);
-      }
-    }
-  };
-
-  useEffect(() => {
-    getTokenFee(
-      originalToToken.prefix + originalToToken.contractAddress,
-      fromToken.chainId,
-      toToken.chainId,
-      "to"
-    );
-  }, [originalToToken, fromToken, toToken, originalToToken, client]);
-
-  useEffect(() => {
-    getTokenFee(
-      originalFromToken.prefix + originalFromToken.contractAddress,
-      fromToken.chainId,
-      toToken.chainId,
-      "from"
-    );
-  }, [originalToToken, fromToken, toToken, originalToToken, client]);
+  const { fromTokenFee, toTokenFee } = useTokenFee(
+    originalFromToken,
+    originalToToken,
+    fromToken,
+    toToken,
+    client
+  );
 
   const {
     data: [fromTokenInfoData, toTokenInfoData],
@@ -499,6 +460,35 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           relayerFeeAmount
       );
 
+      const defaultRouterSwap = {
+        amount: "0",
+        displayAmount: 0,
+        routes: [],
+      };
+      let routersSwapData = defaultRouterSwap;
+
+      const fromTochainIdIsOraichain =
+        originalFromToken.chainId === "Oraichain" &&
+        originalToToken.chainId === "Oraichain";
+      if (fromAmountToken && data && fromTochainIdIsOraichain) {
+        routersSwapData = {
+          ...data,
+          routes: data?.routes ?? [],
+        };
+      }
+      const isRoutersSwapData = +routersSwapData.amount;
+
+      const isImpactPrice = fromAmountToken && data?.amount && ratio?.amount;
+      let impactWarning = 0;
+      if (isImpactPrice && fromTochainIdIsOraichain) {
+        const caculateImpactPrice = new BigDecimal(data.amount)
+          .div(toAmount(fromAmountToken, originalFromToken.decimals))
+          .div(ratio.displayAmount)
+          .mul(100)
+          .toNumber();
+        impactWarning = 100 - caculateImpactPrice;
+      }
+
       const fromAmountTokenBalance =
         fromTokenInfoData &&
         toAmount(fromAmountToken, fromTokenInfoData!.decimals);
@@ -647,8 +637,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           ).toString(),
         }
       );
-
-      console.log("smartRoutes", smartRoutes);
 
       const universalSwapData: UniversalSwapData = {
         sender: {
