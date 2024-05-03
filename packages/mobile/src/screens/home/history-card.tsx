@@ -14,7 +14,7 @@ import { _keyExtract } from "../../utils/helper";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { Text } from "@src/components/text";
 import { RightArrowIcon } from "@src/components/icon";
-import { ChainIdEnum } from "@owallet/common";
+import { ChainIdEnum, formatAddress } from "@owallet/common";
 import { API } from "@src/common/api";
 import moment from "moment";
 import { Bech32Address } from "@owallet/cosmos";
@@ -26,43 +26,49 @@ import FastImage from "react-native-fast-image";
 import OWText from "@src/components/text/ow-text";
 import { FlatList } from "react-native-gesture-handler";
 import { metrics } from "@src/themes";
+import { Network } from "@tatumio/tatum";
+import { CoinPretty, Dec, DecUtils, Int, PricePretty } from "@owallet/unit";
 
 export const HistoryCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
-  const { accountStore, appInitStore, chainStore } = useStore();
+  const { accountStore, appInitStore, chainStore, priceStore, keyRingStore } =
+    useStore();
   const { colors } = useTheme();
   const theme = appInitStore.getInitApp.theme;
 
-  const [histories, setHistories] = useState({});
+  const [histories, setHistories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [offset, setOffset] = useState(0);
 
-  const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
-
+  // const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
+  // const accountInfo = accountStore.getAccount(chainStore.current.chainId);
+  // const address = accountInfo.getAddressDisplay(keyRingStore.keyRingLedgerAddresses,false);
+  const address = "0x95222290dd7278aa3ddd389cc1e1d165cc4bafe5";
+  console.log(address, "address");
   const getWalletHistory = async (address) => {
     try {
       setLoading(true);
 
-      const res = await API.getGroupHistory(
+      const res = await API.getEvmTxs(
         {
           address,
-          offset,
-          limit: 2,
+          offset: 0,
+          limit: 20,
+          network: Network.ETHEREUM,
         },
         {
-          baseURL: "https://staging.owallet.dev/",
+          baseURL: "http://localhost:8000/",
         }
       );
-
+      console.log("res.data.data", res);
       if (res && res.status === 200) {
-        console.log("res.data.data", res.data.data);
-
-        setHistories({ ...histories, ...res.data.data });
+        // setHistories({ ...histories, ...res.data });
+        setHistories(res.data);
         setLoading(false);
-        if (Number(res.data.total) > offset) {
-          setOffset(offset + 2);
-        }
+        // if (Number(res.data.total) > offset) {
+        //   setOffset(offset + 2);
+        // }
       }
     } catch (err) {
       setLoading(false);
@@ -71,10 +77,9 @@ export const HistoryCard: FunctionComponent<{
   };
 
   useEffect(() => {
-    if (accountOrai.bech32Address) {
-      getWalletHistory(accountOrai.bech32Address);
-    }
-  }, [accountOrai.bech32Address, offset]);
+    if (!address) return;
+    getWalletHistory(address);
+  }, []);
 
   const styles = styling(colors);
 
@@ -102,168 +107,199 @@ export const HistoryCard: FunctionComponent<{
     return chainIcon;
   };
 
-  const renderHistoryItem = useCallback(
-    (item) => {
-      if (item) {
-        let fromChainInfo = chainStore.chainInfosInUI.find((c) => {
-          return c.chainId === item.fromToken?.chainId;
-        });
+  // const renderHistoryItem = useCallback(
+  //   (item) => {
+  //     if (item) {
+  //       let fromChainInfo = chainStore.chainInfosInUI.find((c) => {
+  //         return c.chainId === item.fromToken?.chainId;
+  //       });
+  //
+  //       let toChainInfo = chainStore.chainInfosInUI.find((c) => {
+  //         return c.chainId === item.toToken?.chainId;
+  //       });
+  //
+  //       const fromChainIcon = findChainIcon({
+  //         chainId: fromChainInfo?.chainId,
+  //         chainName: fromChainInfo?.chainName
+  //       });
+  //
+  //       const toChainIcon = findChainIcon({
+  //         chainId: toChainInfo?.chainId,
+  //         chainName: toChainInfo?.chainName
+  //       });
+  //
+  //       return (
+  //
+  //     }
+  //   },
+  //   [theme]
+  // );
+  const fiat = priceStore.defaultVsCurrency;
 
-        let toChainInfo = chainStore.chainInfosInUI.find((c) => {
-          return c.chainId === item.toToken?.chainId;
-        });
+  const price = priceStore.getPrice(
+    chainStore.current.stakeCurrency.coinGeckoId,
+    fiat
+  );
+  if (!price) return <EmptyTx />;
+  const renderListHistoryItem = ({ item, index }) => {
+    if (!item) return;
+    const amount = new CoinPretty(
+      chainStore.current.stakeCurrency,
+      new Dec(item.amount).mul(
+        DecUtils.getTenExponentN(chainStore.current.stakeCurrency.coinDecimals)
+      )
+    );
+    const priceAmount = priceStore.calculatePrice(amount, fiat);
+    const first =
+      index > 0 && moment(histories[index - 1].timestamp).format("MMM D, YYYY");
+    const now = moment(item.timestamp).format("MMM D, YYYY");
 
-        const fromChainIcon = findChainIcon({
-          chainId: fromChainInfo?.chainId,
-          chainName: fromChainInfo?.chainName,
-        });
+    return (
+      <View style={{ paddingTop: 16 }}>
+        {first !== now || index === 0 ? (
+          <Text size={14} color={colors["neutral-text-heading"]} weight="600">
+            {moment(item.timestamp).format("MMM D, YYYY")}
+          </Text>
+        ) : null}
 
-        const toChainIcon = findChainIcon({
-          chainId: toChainInfo?.chainId,
-          chainName: toChainInfo?.chainName,
-        });
-
-        return (
-          <TouchableOpacity
-            onPress={() => {
-              navigate(SCREENS.HistoryDetail, {
-                item,
-              });
+        <TouchableOpacity
+          // onPress={() => {
+          //   navigate(SCREENS.HistoryDetail, {
+          //     item
+          //   });
+          // }}
+          style={styles.btnItem}
+        >
+          <View style={styles.leftBoxItem}>
+            <View style={styles.iconWrap}>
+              <OWIcon
+                type="images"
+                source={{ uri: chainStore.current.raw.chainSymbolImageUrl }}
+                size={28}
+              />
+            </View>
+            <View style={styles.chainWrap}>
+              <OWIcon
+                type="images"
+                source={{ uri: chainStore.current.raw.chainSymbolImageUrl }}
+                size={16}
+              />
+            </View>
+          </View>
+          <View
+            style={{
+              flexDirection: "row",
+              borderBottomWidth: 0.5,
+              borderBottomColor: colors["neutral-border-default"],
+              paddingVertical: 8,
+              justifyContent: "space-between",
+              flex: 1,
             }}
-            style={styles.btnItem}
           >
             <View style={styles.leftBoxItem}>
-              <View style={styles.iconWrap}>
-                <OWIcon
-                  type="images"
-                  source={{ uri: fromChainIcon?.Icon }}
-                  size={28}
-                />
-              </View>
-              <View style={styles.chainWrap}>
-                <OWIcon
-                  type="images"
-                  source={{ uri: toChainIcon?.Icon }}
-                  size={16}
-                />
-              </View>
-
               <View style={styles.pl10}>
                 <Text
-                  size={14}
+                  size={16}
                   color={colors["neutral-text-heading"]}
-                  weight="600"
+                  weight="500"
                 >
-                  {item.type.split("_").join("")}
+                  {new Dec(item.amount).gte(new Dec(0)) ? "Receive" : "Send"}
                 </Text>
                 <Text weight="400" color={colors["neutral-text-body"]}>
-                  {Bech32Address.shortenAddress(item.fromAddress, 16)}
+                  {formatAddress(item.counterAddress)}
                 </Text>
               </View>
             </View>
             <View style={styles.rightBoxItem}>
               <View style={{ flexDirection: "row" }}>
                 <View style={{ alignItems: "flex-end" }}>
-                  <Text weight="500" color={colors["neutral-text-heading"]}>
-                    {item.fromAmount} {item.fromToken?.asset ?? ""}
+                  <Text
+                    weight="500"
+                    color={
+                      new Dec(item.amount).gte(new Dec(0))
+                        ? colors["success-text-body"]
+                        : colors["neutral-text-title"]
+                    }
+                  >
+                    {amount.maxDecimals(6).toString()}
                   </Text>
-                  {/* <Text style={styles.profit} color={colors["success-text-body"]}>
-                    {"+"}${item.value.toFixed(6)}
-                  </Text> */}
+                  <Text
+                    style={styles.profit}
+                    color={colors["neutral-text-body"]}
+                  >
+                    {priceAmount.toString()}
+                  </Text>
                 </View>
                 <View
                   style={{
-                    flex: 0.5,
                     justifyContent: "center",
-                    paddingLeft: 20,
+                    paddingLeft: 16,
                   }}
                 >
                   <RightArrowIcon
                     height={12}
-                    color={colors["neutral-text-heading"]}
+                    color={colors["neutral-text-action-on-light-bg"]}
                   />
                 </View>
               </View>
             </View>
-          </TouchableOpacity>
-        );
-      }
-    },
-    [theme]
-  );
-
-  const renderListHistoryItem = ({ item }) => {
-    if (item) {
-      return (
-        <View style={{ paddingTop: 16 }}>
-          <Text size={14} color={colors["neutral-text-heading"]} weight="600">
-            {moment(Number(item)).format("DD/MM/YY")}
-          </Text>
-          {histories?.[item]?.map((h) => {
-            return renderHistoryItem(h);
-          })}
-        </View>
-      );
-    }
-  };
-
-  const onEndReached = () => {
-    getWalletHistory(accountOrai.bech32Address);
-  };
-
-  const onRefresh = () => {
-    setLoading(true);
-    getWalletHistory(accountOrai.bech32Address);
-  };
-
-  const renderContent = () => {
-    return (
-      <View>
-        <FlatList
-          data={Object.keys(histories)}
-          contentContainerStyle={{
-            paddingHorizontal: 16,
-            marginBottom: metrics.screenHeight / 4,
-          }}
-          onEndReached={onEndReached}
-          renderItem={renderListHistoryItem}
-          onRefresh={onRefresh}
-          ListEmptyComponent={() => {
-            return (
-              <View
-                style={{
-                  justifyContent: "center",
-                  alignItems: "center",
-                  marginVertical: 42,
-                  marginBottom: 0,
-                }}
-              >
-                <FastImage
-                  source={require("../../assets/image/img_empty.png")}
-                  style={{
-                    width: 150,
-                    height: 150,
-                  }}
-                  resizeMode={"contain"}
-                />
-                <OWText
-                  color={colors["neutral-text-title"]}
-                  size={16}
-                  weight="700"
-                >
-                  {"NO TRANSACTIONS YET".toUpperCase()}
-                </OWText>
-              </View>
-            );
-          }}
-        />
+          </View>
+        </TouchableOpacity>
       </View>
     );
   };
 
-  return <>{renderContent()}</>;
-});
+  // const onEndReached = () => {
+  //   getWalletHistory(address);
+  // };
 
+  const onRefresh = () => {
+    setLoading(true);
+    // getWalletHistory(address);
+  };
+
+  histories.length = 20;
+  return (
+    <FlatList
+      data={histories}
+      contentContainerStyle={{
+        paddingHorizontal: 16,
+        // marginBottom: metrics.screenHeight / 4
+      }}
+      // onEndReached={onEndReached}
+      renderItem={renderListHistoryItem}
+      // onRefresh={onRefresh}
+      ListEmptyComponent={() => {
+        return <EmptyTx />;
+      }}
+    />
+  );
+});
+const EmptyTx = () => {
+  const { colors } = useTheme();
+  return (
+    <View
+      style={{
+        justifyContent: "center",
+        alignItems: "center",
+        marginVertical: 42,
+        marginBottom: 0,
+      }}
+    >
+      <FastImage
+        source={require("../../assets/image/img_empty.png")}
+        style={{
+          width: 150,
+          height: 150,
+        }}
+        resizeMode={"contain"}
+      />
+      <OWText color={colors["neutral-text-title"]} size={16} weight="700">
+        {"NO TRANSACTIONS YET".toUpperCase()}
+      </OWText>
+    </View>
+  );
+};
 const styling = (colors) =>
   StyleSheet.create({
     wrapHeaderTitle: {
@@ -281,9 +317,13 @@ const styling = (colors) =>
     },
     btnItem: {
       flexDirection: "row",
-      justifyContent: "space-between",
+      // justifyContent: 'space-between',
       alignItems: "center",
-      marginVertical: 8,
+      flex: 1,
+      flexWrap: "wrap",
+      gap: 16,
+
+      // marginVertical: 8,
     },
     profit: {
       fontWeight: "400",

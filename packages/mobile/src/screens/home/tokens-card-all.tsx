@@ -301,22 +301,6 @@ export const TokensCardAll: FunctionComponent<{
     if (activeTab === "tokens") {
       return (
         <>
-          {/* {renderTokensFromQueryBalances()} */}
-          {/* <OWFlatList
-            contentContainerStyle={{
-              paddingHorizontal: 0,
-              paddingTop: 16
-            }}
-            data={tokens?.filter(t => {
-              if (appInitStore.getInitApp.isAllNetworks) {
-                return true;
-              }
-              return t.chainId === chainStore.current.chainId;
-            })}
-            keyExtractor={_keyExtract}
-            renderItem={renderTokenItem}
-            ListEmptyComponent={<OWEmpty type="cash" />}
-          /> */}
           {tokens.length > 0
             ? tokens
                 .filter((t) => {

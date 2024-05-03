@@ -1096,6 +1096,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
         high: 1.5,
       },
     },
+    chainSymbolImageUrl:
+      "https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png",
     bech32Config: Bech32Address.defaultBech32Config("evmos"),
     networkType: "evm",
     currencies: [

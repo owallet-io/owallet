@@ -42,6 +42,7 @@
     "@cosmjs/stargate": "^0.31.0",
     "@oasisprotocol/client": "^1.0.0",
     "human-standard-token-abi": "2.0.0",
+    "@tatumio/tatum": "^4.2.24",
     "@oasisprotocol/client-rt": "^1.0.0",
     "react-native-graph": "^1.1.0",
     "@shopify/react-native-skia": "^1.2.0",

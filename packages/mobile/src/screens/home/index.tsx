@@ -6,7 +6,11 @@ import React, {
   //@ts-ignore
   useTransition,
 } from "react";
-import { PageWithScrollViewInBottomTabView } from "../../components/page";
+import {
+  PageWithScrollView,
+  PageWithScrollViewInBottomTabView,
+  PageWithViewInBottomTabView,
+} from "../../components/page";
 import { AccountCard } from "./account-card";
 import {
   AppState,
@@ -15,6 +19,7 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
+  View,
 } from "react-native";
 import { useStore } from "../../stores";
 import { observer } from "mobx-react-lite";
@@ -320,26 +325,29 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   })();
 
   return (
-    <PageWithScrollViewInBottomTabView
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ paddingTop: safeAreaInsets.top }}
-      ref={scrollViewRef}
+    <PageWithViewInBottomTabView
+      style={{
+        paddingTop: safeAreaInsets.top,
+      }}
     >
       <CommonPageHeader title="Assets" />
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        showsVerticalScrollIndicator={false}
+        // contentContainerStyle={{ marginTop: safeAreaInsets.top }}
+        ref={scrollViewRef}
+      >
+        {renderNewAccountCard}
 
-      {/* <BIP44Selectable /> */}
-      {renderNewAccountCard}
-      {/* <DashboardCard /> */}
-      {chainStore.current.networkType === "cosmos" &&
-      !appInitStore.getInitApp.isAllNetworks ? (
-        <EarningCardNew containerStyle={styles.containerEarnStyle} />
-      ) : null}
-      {renderNewTokenCard()}
-      {/* {chainStore.current.networkType === 'cosmos' ? <UndelegationsCard /> : null} */}
-    </PageWithScrollViewInBottomTabView>
+        {chainStore.current.networkType === "cosmos" &&
+        !appInitStore.getInitApp.isAllNetworks ? (
+          <EarningCardNew containerStyle={styles.containerEarnStyle} />
+        ) : null}
+        {renderNewTokenCard()}
+      </ScrollView>
+    </PageWithViewInBottomTabView>
   );
 });
 
