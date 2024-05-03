@@ -10,7 +10,11 @@ import React, {
 import { StyleSheet, TouchableOpacity, View, ViewStyle } from "react-native";
 import { CardBody } from "../../components/card";
 import { useStore } from "../../stores";
-import { _keyExtract } from "../../utils/helper";
+import {
+  _keyExtract,
+  capitalizedText,
+  MapChainIdToNetwork,
+} from "../../utils/helper";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { Text } from "@src/components/text";
 import { RightArrowIcon } from "@src/components/icon";
@@ -26,7 +30,7 @@ import FastImage from "react-native-fast-image";
 import OWText from "@src/components/text/ow-text";
 import { FlatList } from "react-native-gesture-handler";
 import { metrics } from "@src/themes";
-import { Network } from "@tatumio/tatum";
+import { Network, AddressTransaction } from "@tatumio/tatum";
 import { CoinPretty, Dec, DecUtils, Int, PricePretty } from "@owallet/unit";
 
 export const HistoryCard: FunctionComponent<{
@@ -55,7 +59,7 @@ export const HistoryCard: FunctionComponent<{
           address,
           offset: 0,
           limit: 20,
-          network: Network.ETHEREUM,
+          network: MapChainIdToNetwork[chainStore.current.chainId],
         },
         {
           baseURL: "http://localhost:8000/",
@@ -163,11 +167,11 @@ export const HistoryCard: FunctionComponent<{
         ) : null}
 
         <TouchableOpacity
-          // onPress={() => {
-          //   navigate(SCREENS.HistoryDetail, {
-          //     item
-          //   });
-          // }}
+          onPress={() => {
+            navigate(SCREENS.HistoryDetail, {
+              item,
+            });
+          }}
           style={styles.btnItem}
         >
           <View style={styles.leftBoxItem}>
@@ -203,7 +207,8 @@ export const HistoryCard: FunctionComponent<{
                   color={colors["neutral-text-heading"]}
                   weight="500"
                 >
-                  {new Dec(item.amount).gte(new Dec(0)) ? "Receive" : "Send"}
+                  {/*{item.transactionType === 'incoming' ? "Receive" : "Send"}*/}
+                  {capitalizedText(item.transactionType)}
                 </Text>
                 <Text weight="400" color={colors["neutral-text-body"]}>
                   {formatAddress(item.counterAddress)}
@@ -221,7 +226,7 @@ export const HistoryCard: FunctionComponent<{
                         : colors["neutral-text-title"]
                     }
                   >
-                    {amount.maxDecimals(6).toString()}
+                    {amount.maxDecimals(6).trim(true).toString()}
                   </Text>
                   <Text
                     style={styles.profit}
@@ -258,21 +263,37 @@ export const HistoryCard: FunctionComponent<{
     // getWalletHistory(address);
   };
 
-  histories.length = 20;
+  // histories.length = 20;
   return (
-    <FlatList
-      data={histories}
-      contentContainerStyle={{
+    // <FlatList
+    //   data={histories}
+    //   contentContainerStyle={{
+    //     paddingHorizontal: 16,
+    //     // marginBottom: metrics.screenHeight / 4
+    //   }}
+    //   // onEndReached={onEndReached}
+    //   renderItem={renderListHistoryItem}
+    //   // onRefresh={onRefresh}
+    //   ListEmptyComponent={() => {
+    //     return <EmptyTx />;
+    //   }}
+    // />
+    <View
+      style={{
         paddingHorizontal: 16,
-        // marginBottom: metrics.screenHeight / 4
       }}
-      // onEndReached={onEndReached}
-      renderItem={renderListHistoryItem}
-      // onRefresh={onRefresh}
-      ListEmptyComponent={() => {
-        return <EmptyTx />;
-      }}
-    />
+    >
+      {histories?.length > 0 ? (
+        histories.map((item, index) => {
+          return renderListHistoryItem({
+            item,
+            index,
+          });
+        })
+      ) : (
+        <EmptyTx />
+      )}
+    </View>
   );
 });
 const EmptyTx = () => {

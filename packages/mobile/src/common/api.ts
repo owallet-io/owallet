@@ -402,7 +402,14 @@ export const API = {
     { address, offset, limit = 1, network = Network.ETHEREUM },
     config: AxiosRequestConfig
   ) => {
-    let url = `raw-tx-history/evm/${address}?network=${network}`;
+    let url = `raw-tx-history/evm/${address}?network=${network}&limit=${limit}`;
+    return API.get(url, config);
+  },
+  getDetailTx: (
+    { hash, network = Network.ETHEREUM },
+    config: AxiosRequestConfig
+  ) => {
+    let url = `raw-tx-history/all/tx-detail/${hash}?network=${network}`;
     return API.get(url, config);
   },
   getHistoryDetail: ({ id }, config: AxiosRequestConfig) => {

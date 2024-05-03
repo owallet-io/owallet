@@ -23,6 +23,7 @@ import {
   capitalizedText,
   formatContractAddress,
   HISTORY_STATUS,
+  MapChainIdToNetwork,
   openLink,
 } from "@src/utils/helper";
 import { Bech32Address } from "@owallet/cosmos";
@@ -54,16 +55,17 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
   >();
   const [detail, setDetail] = useState<any>();
   const [loading, setLoading] = useState(false);
-  const history = route.params.item;
+  const { hash, chain } = route.params.item;
   const getHistoryDetail = async () => {
     try {
       setLoading(true);
-      const res = await API.getHistoryDetail(
+      const res = await API.getDetailTx(
         {
-          id: history._id,
+          hash,
+          network: chain,
         },
         {
-          baseURL: "https://staging.owallet.dev/",
+          baseURL: "http://localhost:8000/",
         }
       );
 
@@ -77,13 +79,13 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
     }
   };
 
-  useEffect(() => {
-    setDetail(history);
-  }, [history]);
+  // useEffect(() => {
+  //   setDetail(history);
+  // }, [history]);
 
   useEffect(() => {
     getHistoryDetail();
-  }, [history]);
+  }, [hash]);
   const { colors } = useTheme();
 
   const styles = useStyles(colors);
@@ -113,9 +115,11 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
       await openLink(url);
     }
   };
-  const toChainInfo = chainStore.getChain(
-    detail?.toToken?.chainId ?? chainStore.current.chainId
-  );
+  // const toChainInfo = chainStore.getChain(
+  //   detail?.toToken?.chainId ?? chainStore.current.chainId
+  // );
+  //
+  console.log(detail, "detail");
   return (
     <PageWithBottom
       bottomGroup={
@@ -142,136 +146,136 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
         <View style={styles.containerBox}>
           <PageHeader title={"Transaction details"} />
           <ScrollView showsVerticalScrollIndicator={false}>
-            <HeaderTx
-              type={capitalizedText(detail.type.split("_").join("")) || "Send"}
-              imageType={
-                <View style={styles.containerSuccess}>
-                  <OWText
-                    weight={"500"}
-                    size={14}
-                    color={colors["hightlight-text-title"]}
-                  >
-                    Success
-                  </OWText>
-                </View>
-              }
-              amount={`${detail.fromAmount} ${
-                detail.fromToken?.asset.toUpperCase() ?? ""
-              }`}
-              toAmount={
-                detail.type === HISTORY_STATUS.SWAP
-                  ? `+${detail.toAmount} ${detail.toToken?.asset.toUpperCase()}`
-                  : null
-              }
-              price={""}
-            />
-            <View style={styles.cardBody}>
-              <ItemReceivedToken
-                label={capitalizedText("From")}
-                valueDisplay={Bech32Address.shortenAddress(
-                  detail.fromAddress,
-                  24
-                )}
-                value={detail.fromAddress}
-              />
-              <ItemReceivedToken
-                label={capitalizedText("To")}
-                valueDisplay={Bech32Address.shortenAddress(
-                  detail.toAddress,
-                  24
-                )}
-                value={detail.toAddress}
-              />
-              <ItemReceivedToken
-                label={"From Network"}
-                valueDisplay={
-                  <View style={styles.viewNetwork}>
-                    {chainInfo?.raw?.chainSymbolImageUrl && (
-                      <Image
-                        style={styles.imgNetwork}
-                        source={{
-                          uri: chainInfo?.raw?.chainSymbolImageUrl,
-                        }}
-                      />
-                    )}
-                    <Text
-                      size={16}
-                      color={colors["neutral-text-body"]}
-                      weight={"400"}
-                      style={{
-                        paddingLeft: 3,
-                      }}
-                    >
-                      {chainInfo?.chainName}
-                    </Text>
-                  </View>
-                }
-                btnCopy={false}
-              />
-              {detail.type === HISTORY_STATUS.SWAP ? (
-                <ItemReceivedToken
-                  label={"To Network"}
-                  valueDisplay={
-                    <View style={styles.viewNetwork}>
-                      {toChainInfo?.raw?.chainSymbolImageUrl && (
-                        <Image
-                          style={styles.imgNetwork}
-                          source={{
-                            uri: toChainInfo?.raw?.chainSymbolImageUrl,
-                          }}
-                        />
-                      )}
-                      <Text
-                        size={16}
-                        color={colors["neutral-text-body"]}
-                        weight={"400"}
-                        style={{
-                          paddingLeft: 3,
-                        }}
-                      >
-                        {toChainInfo?.chainName}
-                      </Text>
-                    </View>
-                  }
-                  btnCopy={false}
-                />
-              ) : null}
-              <ItemReceivedToken
-                label={"Fee"}
-                valueDisplay={`${detail.fee}`}
-                value={`${detail.fee}`}
-                btnCopy={false}
-              />
-              <ItemReceivedToken
-                label={"Time"}
-                valueDisplay={moment(detail.createdAt).format(
-                  "DD/MM/YYYY hh:mm:ss"
-                )}
-                btnCopy={false}
-              />
-              <ItemReceivedToken
-                label={"Memo"}
-                valueDisplay={detail.memo || "-"}
-                btnCopy={false}
-              />
-              <ItemReceivedToken
-                label={"Hash"}
-                valueDisplay={formatContractAddress(detail.hash)}
-                value={detail.hash}
-                btnCopy={false}
-                IconRightComponent={
-                  <View>
-                    <OWButtonIcon
-                      name="tdesignjump"
-                      sizeIcon={20}
-                      fullWidth={false}
-                      onPress={handleOnExplorer}
-                      colorIcon={colors["neutral-text-action-on-light-bg"]}
-                    />
-                  </View>
-                }
-              />
-            </View>
+            {/*<HeaderTx*/}
+            {/*  type={capitalizedText(detail.type.split("_").join("")) || "Send"}*/}
+            {/*  imageType={*/}
+            {/*    <View style={styles.containerSuccess}>*/}
+            {/*      <OWText*/}
+            {/*        weight={"500"}*/}
+            {/*        size={14}*/}
+            {/*        color={colors["hightlight-text-title"]}*/}
+            {/*      >*/}
+            {/*        Success*/}
+            {/*      </OWText>*/}
+            {/*    </View>*/}
+            {/*  }*/}
+            {/*  amount={`${detail.fromAmount} ${*/}
+            {/*    detail.fromToken?.asset.toUpperCase() ?? ""*/}
+            {/*  }`}*/}
+            {/*  toAmount={*/}
+            {/*    detail.type === HISTORY_STATUS.SWAP*/}
+            {/*      ? `+${detail.toAmount} ${detail.toToken?.asset.toUpperCase()}`*/}
+            {/*      : null*/}
+            {/*  }*/}
+            {/*  price={""}*/}
+            {/*/>*/}
+            {/*<View style={styles.cardBody}>*/}
+            {/*  <ItemReceivedToken*/}
+            {/*    label={capitalizedText("From")}*/}
+            {/*    valueDisplay={Bech32Address.shortenAddress(*/}
+            {/*      detail.fromAddress,*/}
+            {/*      24*/}
+            {/*    )}*/}
+            {/*    value={detail.fromAddress}*/}
+            {/*  />*/}
+            {/*  <ItemReceivedToken*/}
+            {/*    label={capitalizedText("To")}*/}
+            {/*    valueDisplay={Bech32Address.shortenAddress(*/}
+            {/*      detail.toAddress,*/}
+            {/*      24*/}
+            {/*    )}*/}
+            {/*    value={detail.toAddress}*/}
+            {/*  />*/}
+            {/*  <ItemReceivedToken*/}
+            {/*    label={"From Network"}*/}
+            {/*    valueDisplay={*/}
+            {/*      <View style={styles.viewNetwork}>*/}
+            {/*        {chainInfo?.raw?.chainSymbolImageUrl && (*/}
+            {/*          <Image*/}
+            {/*            style={styles.imgNetwork}*/}
+            {/*            source={{*/}
+            {/*              uri: chainInfo?.raw?.chainSymbolImageUrl,*/}
+            {/*            }}*/}
+            {/*          />*/}
+            {/*        )}*/}
+            {/*        <Text*/}
+            {/*          size={16}*/}
+            {/*          color={colors["neutral-text-body"]}*/}
+            {/*          weight={"400"}*/}
+            {/*          style={{*/}
+            {/*            paddingLeft: 3,*/}
+            {/*          }}*/}
+            {/*        >*/}
+            {/*          {chainInfo?.chainName}*/}
+            {/*        </Text>*/}
+            {/*      </View>*/}
+            {/*    }*/}
+            {/*    btnCopy={false}*/}
+            {/*  />*/}
+            {/*  {detail.type === HISTORY_STATUS.SWAP ? (*/}
+            {/*    <ItemReceivedToken*/}
+            {/*      label={"To Network"}*/}
+            {/*      valueDisplay={*/}
+            {/*        <View style={styles.viewNetwork}>*/}
+            {/*          {toChainInfo?.raw?.chainSymbolImageUrl && (*/}
+            {/*            <Image*/}
+            {/*              style={styles.imgNetwork}*/}
+            {/*              source={{*/}
+            {/*                uri: toChainInfo?.raw?.chainSymbolImageUrl,*/}
+            {/*              }}*/}
+            {/*            />*/}
+            {/*          )}*/}
+            {/*          <Text*/}
+            {/*            size={16}*/}
+            {/*            color={colors["neutral-text-body"]}*/}
+            {/*            weight={"400"}*/}
+            {/*            style={{*/}
+            {/*              paddingLeft: 3,*/}
+            {/*            }}*/}
+            {/*          >*/}
+            {/*            {toChainInfo?.chainName}*/}
+            {/*          </Text>*/}
+            {/*        </View>*/}
+            {/*      }*/}
+            {/*      btnCopy={false}*/}
+            {/*    />*/}
+            {/*  ) : null}*/}
+            {/*  <ItemReceivedToken*/}
+            {/*    label={"Fee"}*/}
+            {/*    valueDisplay={`${detail.fee}`}*/}
+            {/*    value={`${detail.fee}`}*/}
+            {/*    btnCopy={false}*/}
+            {/*  />*/}
+            {/*  <ItemReceivedToken*/}
+            {/*    label={"Time"}*/}
+            {/*    valueDisplay={moment(detail.createdAt).format(*/}
+            {/*      "DD/MM/YYYY hh:mm:ss"*/}
+            {/*    )}*/}
+            {/*    btnCopy={false}*/}
+            {/*  />*/}
+            {/*  <ItemReceivedToken*/}
+            {/*    label={"Memo"}*/}
+            {/*    valueDisplay={detail.memo || "-"}*/}
+            {/*    btnCopy={false}*/}
+            {/*  />*/}
+            {/*  <ItemReceivedToken*/}
+            {/*    label={"Hash"}*/}
+            {/*    valueDisplay={formatContractAddress(detail.hash)}*/}
+            {/*    value={detail.hash}*/}
+            {/*    btnCopy={false}*/}
+            {/*    IconRightComponent={*/}
+            {/*      <View>*/}
+            {/*        <OWButtonIcon*/}
+            {/*          name="tdesignjump"*/}
+            {/*          sizeIcon={20}*/}
+            {/*          fullWidth={false}*/}
+            {/*          onPress={handleOnExplorer}*/}
+            {/*          colorIcon={colors["neutral-text-action-on-light-bg"]}*/}
+            {/*        />*/}
+            {/*      </View>*/}
+            {/*    }*/}
+            {/*  />*/}
+            {/*</View>*/}
           </ScrollView>
         </View>
       )}
