@@ -10,6 +10,7 @@ import {
   PAIRS_CHART,
 } from "@oraichain/oraidex-common";
 import { showToast } from "@src/utils/helper";
+import { API } from "@src/common/api";
 
 export const checkFnComponent = (
   titleRight: TypeTextAndCustomizeComponent,
@@ -24,6 +25,18 @@ export const checkFnComponent = (
     return titleRight;
   }
   return null;
+};
+
+export const handleSaveTokenInfos = async (address, tokenInfos) => {
+  await API.saveTokenInfos(
+    {
+      address,
+      tokesInfos: tokenInfos,
+    },
+    {
+      baseURL: "https://staging.owallet.dev/",
+    }
+  );
 };
 
 export const floatToPercent = (value: number): number => {
