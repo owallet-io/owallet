@@ -1,7 +1,9 @@
 import { TokenItemType } from "@oraichain/oraidex-common";
-import { SwapDirection } from "@oraichain/oraidex-universal-swap";
+import {
+  SwapDirection,
+  UniversalSwapHelper,
+} from "@oraichain/oraidex-universal-swap";
 import { useEffect, useState } from "react";
-import { UniversalSwapHelper } from "../handler/src";
 
 /**
  * Simulate token fee between fromToken & toToken
