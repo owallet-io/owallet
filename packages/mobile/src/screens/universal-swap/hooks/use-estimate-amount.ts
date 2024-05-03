@@ -46,9 +46,11 @@ export const useEstimateAmount = (
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const [amountLoading, setAmountLoading] = useState(false);
   const [isWarningSlippage, setIsWarningSlippage] = useState(false);
+  const [impactWarning, setImpactWarning] = useState(0);
   const [toAmountTokenString, setToAmountToken] = useState("0");
   const [minimumReceive, setMininumReceive] = useState(0);
   const [relayerFeeAmount, setRelayerFeeAmount] = useState<number>(0);
+  const [routersSwapData, setRoutersSwapData] = useState<any>(null);
 
   const [ratio, setRatio] = useState(null);
 
@@ -197,6 +199,9 @@ export const useEstimateAmount = (
         impactWarning = 100 - caculateImpactPrice;
       }
 
+      setImpactWarning(impactWarning);
+      setRoutersSwapData(routersSwapData);
+
       const fromAmountTokenBalance =
         fromTokenInfoData &&
         toAmount(fromAmountToken, fromTokenInfoData!.decimals);
@@ -261,5 +266,7 @@ export const useEstimateAmount = (
     relayerFeeAmount,
     relayerFeeToken,
     INIT_AMOUNT,
+    impactWarning,
+    routersSwapData,
   };
 };

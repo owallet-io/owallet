@@ -219,6 +219,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     relayerFeeAmount,
     relayerFeeToken,
     INIT_AMOUNT,
+    impactWarning,
+    routersSwapData,
   } = useEstimateAmount(
     originalFromToken,
     originalToToken,
