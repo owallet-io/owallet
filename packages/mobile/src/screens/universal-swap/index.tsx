@@ -275,16 +275,12 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     }
   };
 
-  const onFetchAmount = (
-    timeoutId: NodeJS.Timeout,
-    tokenReload?: Array<any>
-  ) => {
+  const onFetchAmount = (tokenReload?: Array<any>) => {
     universalSwapStore.clearAmounts();
     universalSwapStore.setLoaded(false);
     if (accountOrai.isNanoLedger) {
       if (Object.keys(keyRingStore.keyRingLedgerAddresses).length > 0) {
-        //@ts-ignore
-        timeoutId = setTimeout(() => {
+        setTimeout(() => {
           handleFetchAmounts({
             orai: accountOrai.bech32Address,
             eth: keyRingStore.keyRingLedgerAddresses.eth ?? null,
@@ -300,8 +296,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       accountTron.evmosHexAddress &&
       accountKawaiiCosmos.bech32Address
     ) {
-      //@ts-ignore
-      timeoutId = setTimeout(() => {
+      setTimeout(() => {
         handleFetchAmounts({
           orai: accountOrai.bech32Address,
           eth: accountEth.evmosHexAddress,
@@ -473,8 +468,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             }
           },
         });
-        let timeoutId: NodeJS.Timeout;
-        await onFetchAmount(timeoutId, [originalFromToken, originalToToken]);
+        await onFetchAmount([originalFromToken, originalToToken]);
         const tokens = getTokenInfos({
           tokens: universalSwapStore.getAmount,
           prices: appInitStore.getInitApp.prices,
@@ -540,10 +534,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         const currentDate = Date.now();
         const differenceInMilliseconds = Math.abs(currentDate - refreshDate);
         const differenceInSeconds = differenceInMilliseconds / 1000;
-        let timeoutId: NodeJS.Timeout;
+
         if (differenceInSeconds > 10) {
           universalSwapStore.setLoaded(false);
-          onFetchAmount(timeoutId);
+          onFetchAmount();
           setRefreshDate(Date.now());
         } else {
           console.log("The dates are 10 seconds or less apart.");

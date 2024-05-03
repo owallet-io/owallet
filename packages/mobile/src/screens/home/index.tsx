@@ -240,7 +240,8 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     universalSwapStore.setLoaded(false);
   }, [accountOrai.bech32Address]);
 
-  const onFetchAmount = (timeoutId: NodeJS.Timeout) => {
+  const onFetchAmount = () => {
+    let timeoutId;
     if (accountOrai.isNanoLedger) {
       if (Object.keys(keyRingStore.keyRingLedgerAddresses).length > 0) {
         timeoutId = setTimeout(() => {
@@ -267,14 +268,15 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         });
       }, 1000);
     }
+
+    return timeoutId;
   };
 
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
-
+    let timeoutId;
     InteractionManager.runAfterInteractions(() => {
       startTransition(() => {
-        onFetchAmount(timeoutId);
+        timeoutId = onFetchAmount();
       });
     });
     // Clean up the timeout if the component unmounts or the dependency changes
