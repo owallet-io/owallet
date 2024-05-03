@@ -83,7 +83,7 @@ export const HistoryCard: FunctionComponent<{
   useEffect(() => {
     if (!address) return;
     getWalletHistory(address);
-  }, []);
+  }, [address, chainStore.current.chainId]);
 
   const styles = styling(colors);
 

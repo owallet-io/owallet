@@ -25,6 +25,7 @@ import {
   HISTORY_STATUS,
   MapChainIdToNetwork,
   openLink,
+  shortenAddress,
 } from "@src/utils/helper";
 import { Bech32Address } from "@owallet/cosmos";
 import { getTransactionUrl } from "../universal-swap/helpers";
@@ -38,31 +39,37 @@ import ItemReceivedToken from "@src/screens/transactions/components/item-receive
 import { Text } from "@src/components/text";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { ChainIdEnum, TRON_ID } from "@owallet/common";
-
+import { AddressTransaction, Network } from "@tatumio/tatum";
+import { CoinPretty, Dec, Int } from "@owallet/unit";
+import { OwLoading } from "@src/components/owallet-loading/ow-loading";
+import { has } from "lodash";
+import { PageWithView } from "@src/components/page";
 export const HistoryDetail: FunctionComponent = observer((props) => {
-  const { chainStore } = useStore();
+  const { chainStore, priceStore } = useStore();
 
   const route = useRoute<
     RouteProp<
       Record<
         string,
         {
-          item: any;
+          item: AddressTransaction;
         }
       >,
       string
     >
   >();
-  const [detail, setDetail] = useState<any>();
+  const [detail, setDetail] = useState<TxDetail>();
   const [loading, setLoading] = useState(false);
-  const { hash, chain } = route.params.item;
+
+  const { item } = route.params;
+  const { hash, chain, transactionType } = item;
   const getHistoryDetail = async () => {
     try {
       setLoading(true);
       const res = await API.getDetailTx(
         {
           hash,
-          network: chain,
+          network: chain as Network,
         },
         {
           baseURL: "http://localhost:8000/",
@@ -89,13 +96,17 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
   const { colors } = useTheme();
 
   const styles = useStyles(colors);
-
-  const chainInfo = chainStore.getChain(
-    detail?.fromToken?.chainId ?? chainStore.current.chainId
-  );
+  if (!detail)
+    return (
+      <PageWithView>
+        <PageHeader title={"Transaction details"} />
+        <OwLoading />
+      </PageWithView>
+    );
+  const chainInfo = chainStore.getChain(chainStore.current.chainId);
   const handleUrl = (txHash) => {
     console.log(txHash, "txhas");
-    const chainInfo = chainStore.getChain(detail?.fromToken?.chainId);
+    const chainInfo = chainStore.getChain(detail.chainId);
     return chainInfo.raw.txExplorer.txUrl.replace(
       "{txHash}",
       chainInfo.chainId === TRON_ID ||
@@ -120,6 +131,14 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
   // );
   //
   console.log(detail, "detail");
+  const fee = new CoinPretty(
+    chainInfo.stakeCurrency,
+    new Int(Number(detail.gasPrice)).mul(new Int(detail.gasUsed))
+  );
+  const amount = new CoinPretty(
+    chainInfo.stakeCurrency,
+    new Int(Number(detail.value))
+  );
   return (
     <PageWithBottom
       bottomGroup={
@@ -132,153 +151,115 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
         </View>
       }
     >
-      {!detail ? (
-        <View
-          style={{
-            height: metrics.screenHeight / 7,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <ActivityIndicator />
-        </View>
-      ) : (
-        <View style={styles.containerBox}>
-          <PageHeader title={"Transaction details"} />
-          <ScrollView showsVerticalScrollIndicator={false}>
-            {/*<HeaderTx*/}
-            {/*  type={capitalizedText(detail.type.split("_").join("")) || "Send"}*/}
-            {/*  imageType={*/}
-            {/*    <View style={styles.containerSuccess}>*/}
-            {/*      <OWText*/}
-            {/*        weight={"500"}*/}
-            {/*        size={14}*/}
-            {/*        color={colors["hightlight-text-title"]}*/}
-            {/*      >*/}
-            {/*        Success*/}
-            {/*      </OWText>*/}
-            {/*    </View>*/}
-            {/*  }*/}
-            {/*  amount={`${detail.fromAmount} ${*/}
-            {/*    detail.fromToken?.asset.toUpperCase() ?? ""*/}
-            {/*  }`}*/}
-            {/*  toAmount={*/}
-            {/*    detail.type === HISTORY_STATUS.SWAP*/}
-            {/*      ? `+${detail.toAmount} ${detail.toToken?.asset.toUpperCase()}`*/}
-            {/*      : null*/}
-            {/*  }*/}
-            {/*  price={""}*/}
-            {/*/>*/}
-            {/*<View style={styles.cardBody}>*/}
-            {/*  <ItemReceivedToken*/}
-            {/*    label={capitalizedText("From")}*/}
-            {/*    valueDisplay={Bech32Address.shortenAddress(*/}
-            {/*      detail.fromAddress,*/}
-            {/*      24*/}
-            {/*    )}*/}
-            {/*    value={detail.fromAddress}*/}
-            {/*  />*/}
-            {/*  <ItemReceivedToken*/}
-            {/*    label={capitalizedText("To")}*/}
-            {/*    valueDisplay={Bech32Address.shortenAddress(*/}
-            {/*      detail.toAddress,*/}
-            {/*      24*/}
-            {/*    )}*/}
-            {/*    value={detail.toAddress}*/}
-            {/*  />*/}
-            {/*  <ItemReceivedToken*/}
-            {/*    label={"From Network"}*/}
-            {/*    valueDisplay={*/}
-            {/*      <View style={styles.viewNetwork}>*/}
-            {/*        {chainInfo?.raw?.chainSymbolImageUrl && (*/}
-            {/*          <Image*/}
-            {/*            style={styles.imgNetwork}*/}
-            {/*            source={{*/}
-            {/*              uri: chainInfo?.raw?.chainSymbolImageUrl,*/}
-            {/*            }}*/}
-            {/*          />*/}
-            {/*        )}*/}
-            {/*        <Text*/}
-            {/*          size={16}*/}
-            {/*          color={colors["neutral-text-body"]}*/}
-            {/*          weight={"400"}*/}
-            {/*          style={{*/}
-            {/*            paddingLeft: 3,*/}
-            {/*          }}*/}
-            {/*        >*/}
-            {/*          {chainInfo?.chainName}*/}
-            {/*        </Text>*/}
-            {/*      </View>*/}
-            {/*    }*/}
-            {/*    btnCopy={false}*/}
-            {/*  />*/}
-            {/*  {detail.type === HISTORY_STATUS.SWAP ? (*/}
-            {/*    <ItemReceivedToken*/}
-            {/*      label={"To Network"}*/}
-            {/*      valueDisplay={*/}
-            {/*        <View style={styles.viewNetwork}>*/}
-            {/*          {toChainInfo?.raw?.chainSymbolImageUrl && (*/}
-            {/*            <Image*/}
-            {/*              style={styles.imgNetwork}*/}
-            {/*              source={{*/}
-            {/*                uri: toChainInfo?.raw?.chainSymbolImageUrl,*/}
-            {/*              }}*/}
-            {/*            />*/}
-            {/*          )}*/}
-            {/*          <Text*/}
-            {/*            size={16}*/}
-            {/*            color={colors["neutral-text-body"]}*/}
-            {/*            weight={"400"}*/}
-            {/*            style={{*/}
-            {/*              paddingLeft: 3,*/}
-            {/*            }}*/}
-            {/*          >*/}
-            {/*            {toChainInfo?.chainName}*/}
-            {/*          </Text>*/}
-            {/*        </View>*/}
-            {/*      }*/}
-            {/*      btnCopy={false}*/}
-            {/*    />*/}
-            {/*  ) : null}*/}
-            {/*  <ItemReceivedToken*/}
-            {/*    label={"Fee"}*/}
-            {/*    valueDisplay={`${detail.fee}`}*/}
-            {/*    value={`${detail.fee}`}*/}
-            {/*    btnCopy={false}*/}
-            {/*  />*/}
-            {/*  <ItemReceivedToken*/}
-            {/*    label={"Time"}*/}
-            {/*    valueDisplay={moment(detail.createdAt).format(*/}
-            {/*      "DD/MM/YYYY hh:mm:ss"*/}
-            {/*    )}*/}
-            {/*    btnCopy={false}*/}
-            {/*  />*/}
-            {/*  <ItemReceivedToken*/}
-            {/*    label={"Memo"}*/}
-            {/*    valueDisplay={detail.memo || "-"}*/}
-            {/*    btnCopy={false}*/}
-            {/*  />*/}
-            {/*  <ItemReceivedToken*/}
-            {/*    label={"Hash"}*/}
-            {/*    valueDisplay={formatContractAddress(detail.hash)}*/}
-            {/*    value={detail.hash}*/}
-            {/*    btnCopy={false}*/}
-            {/*    IconRightComponent={*/}
-            {/*      <View>*/}
-            {/*        <OWButtonIcon*/}
-            {/*          name="tdesignjump"*/}
-            {/*          sizeIcon={20}*/}
-            {/*          fullWidth={false}*/}
-            {/*          onPress={handleOnExplorer}*/}
-            {/*          colorIcon={colors["neutral-text-action-on-light-bg"]}*/}
-            {/*        />*/}
-            {/*      </View>*/}
-            {/*    }*/}
-            {/*  />*/}
-            {/*</View>*/}
-          </ScrollView>
-        </View>
-      )}
+      <View style={styles.containerBox}>
+        <PageHeader title={"Transaction details"} />
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <HeaderTx
+            type={capitalizedText(transactionType)}
+            imageType={
+              <View
+                style={[
+                  styles.containerSuccess,
+                  {
+                    backgroundColor: detail.status
+                      ? colors["hightlight-surface-subtle"]
+                      : colors["error-surface-subtle"],
+                  },
+                ]}
+              >
+                <OWText
+                  weight={"500"}
+                  size={14}
+                  color={
+                    detail.status
+                      ? colors["hightlight-text-title"]
+                      : colors["error-text-body"]
+                  }
+                >
+                  {detail.status ? "Success" : "Failed"}
+                </OWText>
+              </View>
+            }
+            amount={amount.trim(true).maxDecimals(6).toString()}
+            toAmount={null}
+            price={priceStore.calculatePrice(amount).toString()}
+          />
+          <View style={styles.cardBody}>
+            <ItemReceivedToken
+              label={capitalizedText("From")}
+              valueDisplay={shortenAddress(detail.from)}
+              value={detail.from}
+              colorIconRight={colors["neutral-text-action-on-light-bg"]}
+            />
+            <ItemReceivedToken
+              label={capitalizedText("To")}
+              valueDisplay={shortenAddress(detail.to)}
+              value={detail.to}
+              colorIconRight={colors["neutral-text-action-on-light-bg"]}
+            />
+            <ItemReceivedToken
+              label={"From Network"}
+              valueDisplay={
+                <View style={styles.viewNetwork}>
+                  {chainInfo?.raw?.chainSymbolImageUrl && (
+                    <Image
+                      style={styles.imgNetwork}
+                      source={{
+                        uri: chainInfo?.raw?.chainSymbolImageUrl,
+                      }}
+                    />
+                  )}
+                  <Text
+                    size={16}
+                    color={colors["neutral-text-body"]}
+                    weight={"400"}
+                    style={{
+                      paddingLeft: 3,
+                    }}
+                  >
+                    {chainInfo?.chainName}
+                  </Text>
+                </View>
+              }
+              btnCopy={false}
+            />
+
+            <ItemReceivedToken
+              label={"Fee"}
+              valueDisplay={`${fee
+                .trim(true)
+                .maxDecimals(6)
+                .toString()} (${priceStore.calculatePrice(fee).toString()})`}
+              btnCopy={false}
+            />
+            <ItemReceivedToken
+              label={"Time"}
+              valueDisplay={moment(item.timestamp).format(
+                "MMM D, YYYY [at] HH:mm"
+              )}
+              btnCopy={false}
+            />
+
+            <ItemReceivedToken
+              label={"Hash"}
+              valueDisplay={formatContractAddress(detail.hash)}
+              value={detail.hash}
+              btnCopy={false}
+              IconRightComponent={
+                <View>
+                  <OWButtonIcon
+                    name="tdesignjump"
+                    sizeIcon={20}
+                    fullWidth={false}
+                    onPress={handleOnExplorer}
+                    colorIcon={colors["neutral-text-action-on-light-bg"]}
+                  />
+                </View>
+              }
+            />
+          </View>
+        </ScrollView>
+      </View>
     </PageWithBottom>
   );
 });
@@ -368,7 +349,6 @@ const useStyles = (colors) => {
       overflow: "hidden",
     },
     containerSuccess: {
-      backgroundColor: colors["hightlight-surface-subtle"],
       width: "100%",
       paddingHorizontal: 12,
       paddingVertical: 2,
@@ -403,3 +383,27 @@ const useStyles = (colors) => {
     },
   });
 };
+
+export interface TxDetail {
+  blockHash: string;
+  blockNumber: number;
+  from: string;
+  gas: number;
+  gasPrice: string;
+  input: string;
+  nonce: number;
+  to: string;
+  transactionIndex: number;
+  value: string;
+  type: string;
+  chainId: string;
+  contractAddress: any;
+  cumulativeGasUsed: string;
+  effectiveGasPrice: string;
+  gasUsed: string;
+  logs: any[];
+  logsBloom: string;
+  status: boolean;
+  transactionHash: string;
+  hash: string;
+}
