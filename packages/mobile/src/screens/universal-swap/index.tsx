@@ -78,6 +78,7 @@ import {
   UniversalSwapHelper,
 } from "./handler/src";
 import { useTokenFee } from "./hooks/use-token-fee";
+import { useFilterToken } from "./hooks/use-filter-token";
 const mixpanel = globalThis.mixpanel as Mixpanel;
 
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
@@ -115,12 +116,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const [isWarningSlippage, setIsWarningSlippage] = useState(false);
   const [loadingRefresh, setLoadingRefresh] = useState(false);
   const [searchTokenName, setSearchTokenName] = useState("");
-  const [filteredToTokens, setFilteredToTokens] = useState(
-    [] as TokenItemType[]
-  );
-  const [filteredFromTokens, setFilteredFromTokens] = useState(
-    [] as TokenItemType[]
-  );
+
   const [selectedChainFilter, setChainFilter] = useState(null);
 
   const [[fromTokenDenom, toTokenDenom], setSwapTokens] = useState<
@@ -238,6 +234,15 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     toToken,
     client
   );
+  const { filteredFromTokens, filteredToTokens } = useFilterToken(
+    originalFromToken,
+    originalToToken,
+    searchTokenName,
+    fromToken,
+    toToken,
+    fromTokenDenom,
+    toTokenDenom
+  );
 
   const {
     data: [fromTokenInfoData, toTokenInfoData],
@@ -340,32 +345,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   //     if (timeoutId) clearTimeout(timeoutId);
   //   };
   // }, [accountOrai.bech32Address]);
-
-  useEffect(() => {
-    const filteredToTokens = UniversalSwapHelper.filterNonPoolEvmTokens(
-      originalFromToken.chainId,
-      originalFromToken.coinGeckoId,
-      originalFromToken.denom,
-      searchTokenName,
-      SwapDirection.To
-      // universalSwapStore.getAmount
-    );
-
-    setFilteredToTokens(filteredToTokens);
-
-    const filteredFromTokens = UniversalSwapHelper.filterNonPoolEvmTokens(
-      originalToToken.chainId,
-      originalToToken.coinGeckoId,
-      originalToToken.denom,
-      searchTokenName,
-      SwapDirection.From
-      // universalSwapStore.getAmount
-    );
-
-    setFilteredFromTokens(filteredFromTokens);
-
-    // TODO: need to automatically update from / to token to the correct swappable one when clicking the swap button
-  }, [fromToken, toToken, toTokenDenom, fromTokenDenom]);
 
   // TODO: use this constant so we can temporary simulate for all pair (specifically AIRI/USDC, ORAIX/USDC), update later after migrate contract
   const isFromAiriToUsdc =
