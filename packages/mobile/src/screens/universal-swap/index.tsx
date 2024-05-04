@@ -3,7 +3,7 @@ import { PageWithScrollViewInBottomTabView } from "../../components/page";
 import { Text } from "@src/components/text";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
-import { Image, RefreshControl, View } from "react-native";
+import { RefreshControl, View } from "react-native";
 import { useStore } from "../../stores";
 import { SwapBox } from "./components/SwapBox";
 import { OWButton } from "@src/components/button";
@@ -15,7 +15,6 @@ import {
   handleSaveHistory,
   HISTORY_STATUS,
   maskedNumber,
-  numberWithCommas,
   showToast,
   _keyExtract,
 } from "@src/utils/helper";
@@ -94,6 +93,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     appInitStore.updatePrices(prices);
   }, [prices]);
   const [counter, setCounter] = useState(0);
+  const theme = appInitStore.getInitApp.theme;
 
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
@@ -801,7 +801,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                       path,
                       flattenTokens,
                       flattenTokensWithIcon,
-                      true
+                      theme === "light"
                     );
                   const [tokenIn, tokenOut] = infoPair?.info.split("-");
 
@@ -813,13 +813,15 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                           height: 40,
                           borderRadius: 40,
                           marginLeft: 20,
-                          backgroundColor: colors["plain-background"],
+                          backgroundColor: colors["neutral-icon-on-dark"],
+                          alignItems: "center",
+                          justifyContent: "center",
                         }}
                       >
                         <FastImage
                           style={{
-                            width: 40,
-                            height: 40,
+                            width: 36,
+                            height: 36,
                           }}
                           source={{
                             uri: TokenOutIcon,
@@ -833,14 +835,16 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                           height: 40,
                           borderRadius: 40,
                           position: "absolute",
-                          backgroundColor: colors["plain-background"],
+                          backgroundColor: colors["neutral-icon-on-dark"],
                           right: 20,
+                          alignItems: "center",
+                          justifyContent: "center",
                         }}
                       >
                         <FastImage
                           style={{
-                            width: 40,
-                            height: 40,
+                            width: 36,
+                            height: 36,
                             borderRadius: 40,
                           }}
                           source={{
