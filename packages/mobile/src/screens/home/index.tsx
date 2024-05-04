@@ -236,7 +236,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   };
 
   useEffect(() => {
-    universalSwapStore.clearAmounts();
     universalSwapStore.setLoaded(false);
   }, [accountOrai.bech32Address]);
 
@@ -290,10 +289,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   useEffect(() => {
     appInitStore.updatePrices(prices);
   }, [prices]);
-
-  useEffect(() => {
-    appInitStore.selectAllNetworks(true);
-  }, []);
 
   // const renderAccountCard = (() => {
   //   if (chainStore.current.networkType === "bitcoin") {

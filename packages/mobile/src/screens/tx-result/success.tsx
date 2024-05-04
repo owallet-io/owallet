@@ -102,7 +102,11 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
     smartNavigation.dispatch(
       CommonActions.reset({
         index: 1,
-        routes: [{ name: "MainTab" }],
+        routes: [
+          {
+            name: "MainTab",
+          },
+        ],
       })
     );
   };

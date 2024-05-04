@@ -18,8 +18,13 @@ import { PincodeModal } from "@src/screens/pincode/pincode-modal";
 export const SettingRemoveAccountItem: FunctionComponent<{
   topBorder?: boolean;
 }> = observer(({ topBorder }) => {
-  const { keychainStore, keyRingStore, analyticsStore, modalStore } =
-    useStore();
+  const {
+    keychainStore,
+    keyRingStore,
+    analyticsStore,
+    modalStore,
+    universalSwapStore,
+  } = useStore();
 
   const { colors } = useTheme();
 
@@ -139,6 +144,7 @@ export const SettingRemoveAccountItem: FunctionComponent<{
         paragraph="Remove current wallet"
         paragraphStyle={{ color: colors["error-text-action"] }}
         onPress={() => {
+          universalSwapStore.clearAmounts();
           _onPressPincodekModal();
           // setIsOpenModal(true);
         }}

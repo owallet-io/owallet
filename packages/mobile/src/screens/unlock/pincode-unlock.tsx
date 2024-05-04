@@ -179,6 +179,10 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
     }
   }, [appInitStore.getInitApp.passcodeType]);
 
+  useEffect(() => {
+    appInitStore.selectAllNetworks(true);
+  }, []);
+
   const pinRef = useRef(null);
   const numpadRef = useRef(null);
 
