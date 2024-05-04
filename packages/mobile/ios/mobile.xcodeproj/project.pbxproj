@@ -26,6 +26,7 @@
 		CE3280C52B2ABE5300172006 /* SpaceGrotesk-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CE3280C22B2ABD9100172006 /* SpaceGrotesk-Medium.ttf */; };
 		CE3280C62B2ABE5300172006 /* SpaceGrotesk-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CE3280BE2B2ABD9100172006 /* SpaceGrotesk-Regular.ttf */; };
 		CE3280C72B2ABE5300172006 /* SpaceGrotesk-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CE3280BF2B2ABD9100172006 /* SpaceGrotesk-SemiBold.ttf */; };
+		CE365EB92BE39F20006C7E8C /* assets in Resources */ = {isa = PBXBuildFile; fileRef = CE365EB82BE39F20006C7E8C /* assets */; };
 		FB566D94A088B2DC59492949 /* libPods-mobile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 09C8BC07455E264378C5A715 /* libPods-mobile.a */; };
 /* End PBXBuildFile section */
 
@@ -70,6 +71,7 @@
 		CE3280C02B2ABD9100172006 /* SpaceGrotesk-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SpaceGrotesk-Bold.ttf"; sourceTree = "<group>"; };
 		CE3280C12B2ABD9100172006 /* SpaceGrotesk-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SpaceGrotesk-Light.ttf"; sourceTree = "<group>"; };
 		CE3280C22B2ABD9100172006 /* SpaceGrotesk-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SpaceGrotesk-Medium.ttf"; sourceTree = "<group>"; };
+		CE365EB82BE39F20006C7E8C /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = assets; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -162,6 +164,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				CE365EB82BE39F20006C7E8C /* assets */,
 				177E368A2A56CE2C003072B1 /* AppCenter-Config.plist */,
 				17021CB12A555542006892B2 /* GoogleService-Info.plist */,
 				177E367D2A56CBF6003072B1 /* Resources */,
@@ -294,6 +297,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE365EB92BE39F20006C7E8C /* assets in Resources */,
 				CE3280C32B2ABE5300172006 /* SpaceGrotesk-Bold.ttf in Resources */,
 				CE3280C42B2ABE5300172006 /* SpaceGrotesk-Light.ttf in Resources */,
 				CE3280C52B2ABE5300172006 /* SpaceGrotesk-Medium.ttf in Resources */,

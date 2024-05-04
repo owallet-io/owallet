@@ -13,7 +13,7 @@ import { metrics, typography } from "../../themes";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 
 export const RegisterDoneScreen: FunctionComponent = observer(() => {
-  const { keychainStore, keyRingStore } = useStore();
+  const { keychainStore, keyRingStore, appInitStore } = useStore();
   const { colors } = useTheme();
   const smartNavigation = useSmartNavigation();
 
@@ -42,6 +42,10 @@ export const RegisterDoneScreen: FunctionComponent = observer(() => {
       setIsBiometricOn(true);
     }
   }, [keychainStore.isBiometrySupported, password]);
+
+  useEffect(() => {
+    appInitStore.selectAllNetworks(true);
+  }, []);
 
   const [isLoading, setIsLoading] = useState(false);
   return (

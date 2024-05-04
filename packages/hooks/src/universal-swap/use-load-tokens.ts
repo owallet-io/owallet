@@ -133,12 +133,7 @@ async function loadTokens(
                 oraiAddress,
                 tokenReload
               ),
-              loadCw20Balance(
-                universalSwapStore,
-                oraiAddress,
-                cwStargate,
-                tokenReload
-              ),
+              loadCw20Balance(universalSwapStore, oraiAddress, cwStargate),
               // different cointype but also require keplr connected by checking oraiAddress
               loadKawaiiSubnetAmount(
                 universalSwapStore,
@@ -194,12 +189,7 @@ async function loadTokens(
           oraiAddress,
           tokenReload
         ),
-        loadCw20Balance(
-          universalSwapStore,
-          oraiAddress,
-          cwStargate,
-          tokenReload
-        ),
+        loadCw20Balance(universalSwapStore, oraiAddress, cwStargate),
         // different cointype but also require keplr connected by checking oraiAddress
         loadKawaiiSubnetAmount(universalSwapStore, kwtAddress, tokenReload),
       ]);
@@ -286,22 +276,22 @@ async function loadCw20Balance(
   universalSwapStore: any,
   address: string,
   cwStargate: CWStargateType,
-  tokenReload?: any,
+  // tokenReload?: any,
   retryCount?: number
 ) {
   if (!address) return;
   // get all cw20 token contract
   let cw20Tokens = oraichainTokens.filter((t) => t.contractAddress);
 
-  if (tokenReload) {
-    tokenReload.map((token) => {
-      if (token.networkType === "cosmos") {
-        cw20Tokens = cw20Tokens.filter(
-          (c) => token.contractAddress === c.contractAddress
-        );
-      }
-    });
-  }
+  // if (tokenReload) {
+  //   tokenReload.map((token) => {
+  //     if (token.networkType === "cosmos") {
+  //       cw20Tokens = cw20Tokens.filter(
+  //         (c) => token.contractAddress === c.contractAddress
+  //       );
+  //     }
+  //   });
+  // }
 
   const data = toBinary({
     balance: { address },
@@ -344,13 +334,7 @@ async function loadCw20Balance(
     if (retry >= EVM_BALANCE_RETRY_COUNT)
       throw `Cannot query EVM balance with error: ${err}`;
     await new Promise((resolve) => setTimeout(resolve, 2500));
-    return loadCw20Balance(
-      universalSwapStore,
-      address,
-      cwStargate,
-      tokenReload,
-      retry
-    );
+    return loadCw20Balance(universalSwapStore, address, cwStargate, retry);
   }
 }
 

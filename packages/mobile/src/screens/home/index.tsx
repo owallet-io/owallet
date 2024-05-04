@@ -179,7 +179,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       let timeoutId: NodeJS.Timeout;
       if (differenceInSeconds > 10) {
         universalSwapStore.setLoaded(false);
-        onFetchAmount(timeoutId);
+        onFetchAmount();
       } else {
         console.log("The dates are 10 seconds or less apart.");
       }
@@ -241,11 +241,11 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   };
 
   useEffect(() => {
-    universalSwapStore.clearAmounts();
     universalSwapStore.setLoaded(false);
   }, [accountOrai.bech32Address]);
 
-  const onFetchAmount = (timeoutId: NodeJS.Timeout) => {
+  const onFetchAmount = () => {
+    let timeoutId;
     if (accountOrai.isNanoLedger) {
       if (Object.keys(keyRingStore.keyRingLedgerAddresses).length > 0) {
         timeoutId = setTimeout(() => {
@@ -272,14 +272,15 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         });
       }, 1000);
     }
+
+    return timeoutId;
   };
 
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
-
+    let timeoutId;
     InteractionManager.runAfterInteractions(() => {
       startTransition(() => {
-        onFetchAmount(timeoutId);
+        timeoutId = onFetchAmount();
       });
     });
     // Clean up the timeout if the component unmounts or the dependency changes
@@ -293,10 +294,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   useEffect(() => {
     appInitStore.updatePrices(prices);
   }, [prices]);
-
-  useEffect(() => {
-    appInitStore.selectAllNetworks(true);
-  }, []);
 
   // const renderAccountCard = (() => {
   //   if (chainStore.current.networkType === "bitcoin") {

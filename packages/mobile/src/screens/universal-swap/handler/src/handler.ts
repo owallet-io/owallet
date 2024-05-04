@@ -411,18 +411,12 @@ export class UniversalSwapHandler {
         ),
       }
     );
-    console.log("cosmos", this.swapData.sender.cosmos);
-    try {
-      const result = await client.executeMultiple(
-        this.swapData.sender.cosmos,
-        messages,
-        "auto"
-      );
-      return result;
-    } catch (err) {
-      console.log("errrr", err);
-      return Promise.resolve({} as ExecuteResult);
-    }
+    const result = await client.executeMultiple(
+      this.swapData.sender.cosmos,
+      messages,
+      "auto"
+    );
+    return result;
   }
 
   // TODO: write test cases
@@ -1045,7 +1039,6 @@ export class UniversalSwapHandler {
       const minimumReceive = Math.trunc(
         new BigDecimal(route.returnAmount)
           .mul((100 - this.swapData.userSlippage) / 100)
-          .div(10n ** BigInt(fromTokenOnOrai.decimals))
           .toNumber()
       ).toString();
 
