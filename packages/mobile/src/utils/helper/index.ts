@@ -247,10 +247,14 @@ export const getDataFromDataEvent = (itemEvents) => {
       };
 };
 
-export const maskedNumber = (number: number | string, digits?: number) => {
+export const maskedNumber = (
+  number: number | string,
+  digits: number = 4,
+  locales: string = "en-US"
+) => {
   return number
-    ? Number(number).toLocaleString(undefined, {
-        minimumFractionDigits: digits ?? 4,
+    ? Number(number).toLocaleString(locales, {
+        minimumFractionDigits: digits,
       })
     : 0;
 };

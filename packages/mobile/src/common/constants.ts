@@ -269,6 +269,9 @@ export const SCREENS_OPTIONS: IScreenOption = {
   [SCREENS.BtcFaucet]: {
     title: "Bitcoin Faucet",
   },
+  [SCREENS.HistoryDetail]: {
+    title: "Transaction details",
+  },
   [SCREENS.BuyFiat]: {
     title: HEADER_KEY.notShowHeader,
   },

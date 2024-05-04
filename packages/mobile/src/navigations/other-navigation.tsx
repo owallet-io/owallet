@@ -28,6 +28,8 @@ import BuyFiat from "@src/screens/home/buy-fiat";
 import { NewSendScreen } from "@src/screens/send/send";
 import { AddressQRScreen } from "@src/screens/qr";
 import { PincodeScreen } from "@src/screens/pincode/pincode";
+import TxTransactionsScreen from "@src/screens/transactions/tx-transaction-screen";
+import { HistoryDetail } from "@src/screens/home/history-detail";
 const Stack = createStackNavigator();
 export const OtherNavigation: FC = () => {
   const handleScreenOptions = ({ route, navigation }) => {
@@ -48,13 +50,10 @@ export const OtherNavigation: FC = () => {
       <Stack.Screen name={SCREENS.SendOasis} component={SendEvmScreen} />
       <Stack.Screen
         name={SCREENS.Transactions}
-        component={HistoryTransactionsScreen}
+        component={TxTransactionsScreen}
       />
       <Stack.Screen name={SCREENS.Dashboard} component={DashBoardScreen} />
-      <Stack.Screen
-        name={SCREENS.TransactionDetail}
-        component={TransactionDetailScreen}
-      />
+      <Stack.Screen name={SCREENS.HistoryDetail} component={HistoryDetail} />
       <Stack.Screen
         options={{
           headerShown: false,

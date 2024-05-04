@@ -18,6 +18,7 @@ import { useTheme } from "@src/themes/theme-provider";
 import OWButtonIcon from "../button/ow-button-icon";
 import delay from "delay";
 import { BottomSheetFlatList } from "@gorhom/bottom-sheet";
+import { OwLoading } from "@src/components/owallet-loading/ow-loading";
 interface IOWFlatListProps extends FlatListProps<any> {
   loadMore?: boolean;
   isBottomSheet?: boolean;
@@ -38,7 +39,7 @@ const OWFlatList: FC<IOWFlatListProps> = (props) => {
         borderRadius={12}
       >
         <SkeletonPlaceholder.Item
-          width={metrics.screenWidth - 48}
+          width={"100%"}
           marginVertical={8}
           height={65}
         ></SkeletonPlaceholder.Item>
@@ -115,9 +116,7 @@ const OWFlatList: FC<IOWFlatListProps> = (props) => {
         showsHorizontalScrollIndicator={false}
         ListFooterComponent={
           <View>
-            <View style={styles.footer}>
-              {loadMore ? SkeletonComponent : null}
-            </View>
+            <View style={styles.footer}>{loadMore ? <OwLoading /> : null}</View>
           </View>
         }
         refreshControl={
@@ -131,23 +130,23 @@ const OWFlatList: FC<IOWFlatListProps> = (props) => {
         }
         {...rest}
       />
-      {!hiddenButtonBottom && (
-        <Animated.View
-          style={[
-            styles.fixedScroll,
-            {
-              opacity,
-            },
-          ]}
-        >
-          <OWButtonIcon
-            onPress={onScrollToTop}
-            typeIcon="images"
-            source={images.scroll_to_top}
-            sizeIcon={48}
-          />
-        </Animated.View>
-      )}
+      {/*{!hiddenButtonBottom && (*/}
+      {/*  <Animated.View*/}
+      {/*    style={[*/}
+      {/*      styles.fixedScroll,*/}
+      {/*      {*/}
+      {/*        opacity,*/}
+      {/*      },*/}
+      {/*    ]}*/}
+      {/*  >*/}
+      {/*    <OWButtonIcon*/}
+      {/*      onPress={onScrollToTop}*/}
+      {/*      typeIcon="images"*/}
+      {/*      source={images.scroll_to_top}*/}
+      {/*      sizeIcon={48}*/}
+      {/*    />*/}
+      {/*  </Animated.View>*/}
+      {/*)}*/}
     </>
   );
 };

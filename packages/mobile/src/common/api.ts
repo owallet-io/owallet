@@ -402,7 +402,7 @@ export const API = {
     { address, offset, limit = 1, network = Network.ETHEREUM },
     config: AxiosRequestConfig
   ) => {
-    let url = `raw-tx-history/evm/${address}?network=${network}&limit=${limit}`;
+    let url = `raw-tx-history/evm/${address}?network=${network}&limit=${limit}&offset=${offset}`;
     return API.get(url, config);
   },
   getDetailTx: (

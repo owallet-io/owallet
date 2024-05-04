@@ -108,7 +108,7 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
           network: chain as Network,
         },
         {
-          baseURL: "http://localhost:8000/",
+          baseURL: "http://10.10.20.115:3333/",
         }
       );
 
@@ -138,7 +138,7 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
   if (!detail || loading)
     return (
       <PageWithView>
-        <PageHeader title={"Transaction details"} />
+        {/*<PageHeader title={"Transaction details"} />*/}
         <OwLoading />
       </PageWithView>
     );
@@ -189,6 +189,9 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
 
   return (
     <PageWithBottom
+      style={{
+        paddingTop: 5,
+      }}
       bottomGroup={
         <View style={styles.containerBottomButton}>
           <OWButton
@@ -200,7 +203,7 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
       }
     >
       <View style={styles.containerBox}>
-        <PageHeader title={"Transaction details"} />
+        {/*<PageHeader title={"Transaction details"} />*/}
         <ScrollView
           refreshControl={
             <RefreshControl refreshing={loading} onRefresh={onRefresh} />
@@ -233,9 +236,9 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
                 </OWText>
               </View>
             }
-            amount={`${parseFloat(
-              amount.trim(true).maxDecimals(6).hideDenom(true).toString()
-            ).toLocaleString()} ${currencyData.coinDenom}`}
+            amount={`${maskedNumber(amount.hideDenom(true).toString(), 0)} ${
+              currencyData.coinDenom
+            }`}
             toAmount={null}
             price={priceStore.calculatePrice(amount)?.toString()}
           />

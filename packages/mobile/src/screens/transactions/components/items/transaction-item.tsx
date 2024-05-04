@@ -1,168 +1,188 @@
 import { StyleSheet, TouchableOpacity, View } from "react-native";
-import React from "react";
+import React, { FC } from "react";
 import {
   formatContractAddress,
   getDataFromDataEvent,
   getValueFromDataEvents,
   limitString,
+  maskedNumber,
 } from "@src/utils/helper";
 import { useTheme } from "@src/themes/theme-provider";
 import { spacing } from "@src/themes";
 import { observer } from "mobx-react-lite";
 import { Text } from "@src/components/text";
 import OWIcon from "@src/components/ow-icon/ow-icon";
+import OWText from "@src/components/text/ow-text";
+import { CoinPretty, Dec, DecUtils } from "@owallet/unit";
+import moment from "moment/moment";
+import { navigate } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
+import { formatAddress } from "@owallet/common";
+import { RightArrowIcon } from "@src/components/icon";
+import { useStore } from "@src/stores";
 
-const OWTransactionItem = observer(
-  ({ item, time, ...props }: IOWTransactionItem) => {
-    const itemEvents = item.transfers && getValueFromDataEvents(item.transfers);
-    const itemTransfer = getDataFromDataEvent(itemEvents);
-    const { colors } = useTheme();
-    const styles = styling();
-    return (
-      <TouchableOpacity {...props}>
-        <View style={styles.item}>
-          <View style={[styles.flexRow, { paddingBottom: 5 }]}>
-            <Text color={colors["title-modal-login-failed"]} size={12}>
-              {formatContractAddress(item?.txHash, 5)}
-            </Text>
-            {!!itemTransfer?.typeEvent ? (
+const OWTransactionItem: FC<{
+  item: any;
+  index: number;
+  data: any;
+}> = observer(({ item, index, data, ...props }) => {
+  const { priceStore, chainStore } = useStore();
+  const fiat = priceStore.defaultVsCurrency;
+  if (!item) return;
+  const currency = chainStore.current.stakeCurrency;
+
+  const amount = new CoinPretty(
+    currency,
+    new Dec(item.amount).mul(DecUtils.getTenExponentN(currency.coinDecimals))
+  );
+  const priceAmount = priceStore.calculatePrice(amount, fiat);
+  const first =
+    index > 0 && moment(data[index - 1].timestamp).format("MMM D, YYYY");
+  const now = moment(item.timestamp).format("MMM D, YYYY");
+  const { colors } = useTheme();
+  const styles = styling(colors);
+  return (
+    <View style={{ paddingTop: 16 }}>
+      {first !== now || index === 0 ? (
+        <Text size={14} color={colors["neutral-text-heading"]} weight="600">
+          {moment(item.timestamp).format("MMM D, YYYY")}
+        </Text>
+      ) : null}
+
+      <TouchableOpacity {...props} style={styles.btnItem}>
+        <View style={styles.leftBoxItem}>
+          <View style={styles.iconWrap}>
+            <OWIcon
+              type="images"
+              source={{ uri: chainStore.current.raw.chainSymbolImageUrl }}
+              size={28}
+            />
+          </View>
+          <View style={styles.chainWrap}>
+            <OWIcon
+              type="images"
+              source={{ uri: chainStore.current.raw.chainSymbolImageUrl }}
+              size={16}
+            />
+          </View>
+        </View>
+        <View
+          style={{
+            flexDirection: "row",
+            borderBottomWidth: 0.5,
+            borderBottomColor: colors["neutral-border-default"],
+            paddingVertical: 8,
+            justifyContent: "space-between",
+            flex: 1,
+          }}
+        >
+          <View style={styles.leftBoxItem}>
+            <View style={styles.pl10}>
               <Text
-                variant="body2"
-                typo="regular"
-                color={colors["title-modal-login-failed"]}
+                size={16}
+                color={colors["neutral-text-heading"]}
+                weight="500"
               >
-                <Text color={colors["green-500"]}>
-                  {item?.countTypeEvent > 0 ? `+${item?.countTypeEvent}` : null}
-                </Text>{" "}
-                {limitString(itemTransfer?.typeEvent, 14)}
-                <View style={styles.iconstyle}>
-                  <OWIcon
-                    size={12}
-                    color={
-                      item?.status === "success"
-                        ? colors["green-500"]
-                        : item?.status === "pending"
-                        ? colors["primary-surface-default"]
-                        : colors["orange-800"]
-                    }
-                    name={
-                      item?.status === "success"
-                        ? "check_stroke"
-                        : item?.status === "pending"
-                        ? "history-1"
-                        : "close_shape"
-                    }
-                  />
-                </View>
+                {/*{item.transactionType === 'incoming' ? "Receive" : "Send"}*/}
+                {new Dec(item.amount).gte(new Dec(0)) ? "Received" : "Sent"}
               </Text>
-            ) : (
+              <Text weight="400" color={colors["neutral-text-body"]}>
+                {formatAddress(item.counterAddress)}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.rightBoxItem}>
+            <View style={{ flexDirection: "row" }}>
+              <View style={{ alignItems: "flex-end" }}>
+                <Text
+                  weight="500"
+                  color={
+                    new Dec(item.amount).gte(new Dec(0))
+                      ? colors["success-text-body"]
+                      : colors["neutral-text-title"]
+                  }
+                >
+                  {`${maskedNumber(amount.hideDenom(true).toString(), 0)} ${
+                    currency.coinDenom
+                  }`}
+                </Text>
+                <Text style={styles.profit} color={colors["neutral-text-body"]}>
+                  {priceAmount.toString()}
+                </Text>
+              </View>
               <View
                 style={{
-                  flexDirection: "row",
+                  justifyContent: "center",
+                  paddingLeft: 16,
                 }}
               >
-                <Text>--</Text>
-                <View style={styles.iconstyle}>
-                  <OWIcon
-                    size={12}
-                    color={
-                      item?.status === "success"
-                        ? colors["green-500"]
-                        : colors["orange-800"]
-                    }
-                    name={
-                      item?.status === "success"
-                        ? "check_stroke"
-                        : "close_shape"
-                    }
-                  />
-                </View>
+                <RightArrowIcon
+                  height={12}
+                  color={colors["neutral-text-action-on-light-bg"]}
+                />
               </View>
-            )}
-          </View>
-          <View style={styles.flexRow}>
-            <Text
-              variant="body1"
-              typo="bold"
-              weight={"500"}
-              size={13}
-              color={
-                itemTransfer?.amount &&
-                itemTransfer?.isPlus &&
-                !itemTransfer?.isMinus
-                  ? colors["green-500"]
-                  : itemTransfer?.amount &&
-                    itemTransfer?.isMinus &&
-                    !itemTransfer?.isPlus
-                  ? colors["orange-800"]
-                  : colors["title-modal-login-failed"]
-              }
-              style={
-                itemTransfer?.amount &&
-                (itemTransfer?.isPlus || itemTransfer?.isMinus) &&
-                styles.amount
-              }
-            >
-              {`${
-                itemTransfer?.amount &&
-                itemTransfer?.isPlus &&
-                !itemTransfer?.isMinus
-                  ? "+"
-                  : itemTransfer?.amount &&
-                    itemTransfer?.isMinus &&
-                    !itemTransfer?.isPlus
-                  ? "-"
-                  : ""
-              }${itemTransfer?.amount || 0}`}{" "}
-              {limitString(itemTransfer?.token, 14)}
-            </Text>
-            <Text style={styles.timeStyle} color={colors["blue-300"]}>
-              {item?.time?.timeShort || `Height ${item?.height}`}
-            </Text>
+            </View>
           </View>
         </View>
       </TouchableOpacity>
-    );
-  }
-);
+    </View>
+  );
+});
 
 export default OWTransactionItem;
 
-const styling = () => {
-  const { colors } = useTheme();
+const styling = (colors) => {
   return StyleSheet.create({
-    flexRow: {
+    wrapHeaderTitle: {
       flexDirection: "row",
-      justifyContent: "space-between",
+    },
+    pl10: {
+      paddingLeft: 10,
+    },
+    leftBoxItem: {
+      flexDirection: "row",
       alignItems: "center",
     },
-    amount: {
-      marginLeft: -8,
-      // textTransform: 'uppercase'
-    },
-    flex: {
-      flex: 1,
-    },
-    timeStyle: {
-      // paddingTop: 8
-    },
-    iconstyle: {
-      paddingLeft: 8,
-    },
-    centerItem: {
-      justifyContent: "center",
+    rightBoxItem: {
       alignItems: "flex-end",
-      flex: 1.3,
     },
-    item: {
-      // flexDirection: 'row',
+    btnItem: {
+      flexDirection: "row",
       // justifyContent: 'space-between',
-      paddingHorizontal: spacing["page-pad"],
-      height: 65,
-      backgroundColor: colors["background-item-list"],
-      marginVertical: 8,
+      alignItems: "center",
+      flex: 1,
+      flexWrap: "wrap",
+      gap: 16,
+
+      // marginVertical: 8,
+    },
+    profit: {
+      fontWeight: "400",
+      lineHeight: 20,
+    },
+    iconWrap: {
+      width: 32,
+      height: 32,
+      borderRadius: 32,
+      alignItems: "center",
       justifyContent: "center",
-      borderRadius: 8,
+      overflow: "hidden",
+      backgroundColor: colors["neutral-text-action-on-dark-bg"],
+    },
+    chainWrap: {
+      width: 18,
+      height: 18,
+      borderRadius: 32,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: colors["neutral-text-action-on-dark-bg"],
+      position: "absolute",
+      bottom: -6,
+      left: 20,
+    },
+    active: {
+      borderBottomColor: colors["primary-surface-default"],
+      borderBottomWidth: 2,
     },
   });
 };

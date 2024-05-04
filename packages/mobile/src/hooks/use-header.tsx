@@ -36,9 +36,7 @@ const useHeaderOptions = (
   return {
     headerStyle: {
       backgroundColor: colors["neutral-surface-bg2"],
-      shadowColor: colors["border-gray"],
-      // shadowRadius: 0,
-      // elevation: 1
+      shadowColor: colors["neutral-border-default"],
     },
     headerTitle: () => <OWHeaderTitle title={data?.title} />,
     headerTitleAlign: "center",
@@ -51,12 +49,17 @@ const useHeaderOptions = (
       if (navigation.canGoBack())
         return (
           <OWButtonIcon
-            colorIcon={colors["primary-text"]}
+            colorIcon={colors["neutral-icon-on-light"]}
             onPress={onGoBack}
             name="arrow-left"
             fullWidth={false}
-            style={styles.btnIcon}
-            sizeIcon={!!data?.title ? 24 : 20}
+            style={[
+              styles.btnIcon,
+              {
+                backgroundColor: colors["neutral-surface-card"],
+              },
+            ]}
+            sizeIcon={16}
           />
         );
       return null;
@@ -74,6 +77,11 @@ export default useHeaderOptions;
 
 const styles = StyleSheet.create({
   btnIcon: {
-    paddingRight: 35,
+    borderRadius: 999,
+    width: 44,
+    height: 44,
+    alignItems: "center",
+    justifyContent: "center",
+    marginLeft: 16,
   },
 });

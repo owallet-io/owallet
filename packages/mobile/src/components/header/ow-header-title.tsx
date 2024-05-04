@@ -56,7 +56,15 @@ const OWHeaderTitle = observer(({ title, ...props }: IOWHeaderTitle) => {
 
   return (
     <View style={styles.containerTitle}>
-      <Text variant="h3" typo="bold" color={colors["primary-text"]}>
+      <Text
+        style={{
+          fontSize: 16,
+          fontWeight: "700",
+          lineHeight: 24,
+          color: colors["neutral-text-title"],
+          textTransform: "uppercase",
+        }}
+      >
         {title}
       </Text>
     </View>
