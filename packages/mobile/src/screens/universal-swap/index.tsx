@@ -822,7 +822,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                             height: 40,
                           }}
                           source={{
-                            uri: TokenInIcon,
+                            uri: TokenOutIcon,
                           }}
                           resizeMode={FastImage.resizeMode.cover}
                         />
@@ -844,7 +844,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                             borderRadius: 40,
                           }}
                           source={{
-                            uri: TokenOutIcon,
+                            uri: TokenInIcon,
                           }}
                           resizeMode={FastImage.resizeMode.cover}
                         />
