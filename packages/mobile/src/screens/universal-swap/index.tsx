@@ -33,6 +33,8 @@ import {
   toSubAmount,
   getTokenOnOraichain,
   tokenMap,
+  flattenTokens,
+  flattenTokensWithIcon,
 } from "@oraichain/oraidex-common";
 import { openLink } from "../../utils/helper";
 import { feeEstimate } from "@owallet/common";
@@ -60,6 +62,7 @@ import {
   handleErrorSwap,
   floatToPercent,
   handleSaveTokenInfos,
+  getPairInfo,
 } from "./helpers";
 import { Mixpanel } from "mixpanel-react-native";
 import { metrics } from "@src/themes";
@@ -232,8 +235,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setSwapAmount,
     handleErrorSwap
   );
-
-  console.log("impactWarning", impactWarning, routersSwapData);
 
   const [isSelectFromTokenModal, setIsSelectFromTokenModal] = useState(false);
   const [isSelectToTokenModal, setIsSelectToTokenModal] = useState(false);
@@ -747,6 +748,29 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                 fullWidth={false}
                 onPress={() => handleActiveAmount(item)}
               />
+            );
+          })}
+        </View>
+        <View>
+          {routersSwapData?.routes.map((route, ind) => {
+            let volumn = (+route.returnAmount / +routersSwapData?.amount) * 100;
+            console.log("volumn", volumn);
+            return (
+              <View>
+                {route.paths.map((path, i, acc) => {
+                  const { infoPair, pairKey, TokenInIcon, TokenOutIcon } =
+                    getPairInfo(
+                      path,
+                      flattenTokens,
+                      flattenTokensWithIcon,
+                      true
+                    );
+                  const [tokenIn, tokenOut] = infoPair?.info.split("-");
+
+                  console.log("tokenIn", TokenInIcon, tokenIn);
+                  console.log("tokenOut", TokenOutIcon, tokenOut);
+                })}
+              </View>
             );
           })}
         </View>

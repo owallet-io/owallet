@@ -144,7 +144,7 @@ export const getPairInfo = (
       convertedArraySymbols.includes(tokenOutKey)
     );
   });
-  const tokenIn = infoPair?.assets.find(
+  const tokenIn = infoPair?.assets?.find(
     (info) => info.toUpperCase() !== path.tokenOut.toUpperCase()
   );
   const tokenOut = path.tokenOut;
