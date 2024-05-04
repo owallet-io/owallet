@@ -3,7 +3,7 @@ import { PageWithScrollViewInBottomTabView } from "../../components/page";
 import { Text } from "@src/components/text";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
-import { RefreshControl, View } from "react-native";
+import { Image, RefreshControl, View } from "react-native";
 import { useStore } from "../../stores";
 import { SwapBox } from "./components/SwapBox";
 import { OWButton } from "@src/components/button";
@@ -14,6 +14,8 @@ import {
   getTokenInfos,
   handleSaveHistory,
   HISTORY_STATUS,
+  maskedNumber,
+  numberWithCommas,
   showToast,
   _keyExtract,
 } from "@src/utils/helper";
@@ -69,6 +71,8 @@ import { metrics } from "@src/themes";
 import { useTokenFee } from "./hooks/use-token-fee";
 import { useFilterToken } from "./hooks/use-filter-token";
 import { useEstimateAmount } from "./hooks/use-estimate-amount";
+import { ProgressBar } from "@src/components/progress-bar";
+import FastImage from "react-native-fast-image";
 const mixpanel = globalThis.mixpanel as Mixpanel;
 
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
@@ -270,6 +274,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       loadTokenAmounts(loadTokenParams);
       universalSwapStore.clearTokenReload();
     } catch (error) {
+      setLoadingRefresh(false);
       console.log("error loadTokenAmounts", error);
       showToast({
         message: error?.message ?? error?.ex?.message,
@@ -753,10 +758,43 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         </View>
         <View>
           {routersSwapData?.routes.map((route, ind) => {
-            let volumn = (+route.returnAmount / +routersSwapData?.amount) * 100;
-            console.log("volumn", volumn);
+            const volumn = Number(
+              (+route.returnAmount / +routersSwapData?.amount) * 100
+            ).toFixed(0);
             return (
-              <View>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  paddingVertical: 20,
+                }}
+              >
+                <View
+                  style={{
+                    position: "absolute",
+                    zIndex: -999,
+                    alignSelf: "center",
+                  }}
+                >
+                  <ProgressBar
+                    progress={100}
+                    styles={{
+                      width: metrics.screenWidth - 32,
+                      height: 6,
+                      backgroundColor: colors["gray-250"],
+                    }}
+                    progressColor={colors["green-active"]}
+                  />
+                </View>
+                <View
+                  style={{
+                    backgroundColor: colors["plain-background"],
+                    padding: 4,
+                  }}
+                >
+                  <Text>{volumn}%</Text>
+                </View>
                 {route.paths.map((path, i, acc) => {
                   const { infoPair, pairKey, TokenInIcon, TokenOutIcon } =
                     getPairInfo(
@@ -767,12 +805,77 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                     );
                   const [tokenIn, tokenOut] = infoPair?.info.split("-");
 
-                  console.log("tokenIn", TokenInIcon, tokenIn);
-                  console.log("tokenOut", TokenOutIcon, tokenOut);
+                  return (
+                    <View style={{ flexDirection: "row" }}>
+                      <View
+                        style={{
+                          width: 40,
+                          height: 40,
+                          borderRadius: 40,
+                          marginLeft: 20,
+                          backgroundColor: colors["plain-background"],
+                        }}
+                      >
+                        <FastImage
+                          style={{
+                            width: 40,
+                            height: 40,
+                          }}
+                          source={{
+                            uri: TokenInIcon,
+                          }}
+                          resizeMode={FastImage.resizeMode.cover}
+                        />
+                      </View>
+                      <View
+                        style={{
+                          width: 40,
+                          height: 40,
+                          borderRadius: 40,
+                          position: "absolute",
+                          backgroundColor: colors["plain-background"],
+                          right: 20,
+                        }}
+                      >
+                        <FastImage
+                          style={{
+                            width: 40,
+                            height: 40,
+                            borderRadius: 40,
+                          }}
+                          source={{
+                            uri: TokenOutIcon,
+                          }}
+                          resizeMode={FastImage.resizeMode.cover}
+                        />
+                      </View>
+                    </View>
+                  );
                 })}
+                <View
+                  style={{
+                    backgroundColor: colors["plain-background"],
+                    padding: 4,
+                  }}
+                >
+                  <Text>{volumn}%</Text>
+                </View>
               </View>
             );
           })}
+          {impactWarning ? (
+            <BalanceText
+              color={
+                Number(impactWarning) > 5
+                  ? Number(impactWarning) > 10
+                    ? colors["error-text-body"]
+                    : colors["warning-text-body"]
+                  : colors["neutral-text-body"]
+              }
+            >
+              Price Impact: ≈ {maskedNumber(impactWarning)}%
+            </BalanceText>
+          ) : null}
         </View>
         <OWButton
           label="Swap"
