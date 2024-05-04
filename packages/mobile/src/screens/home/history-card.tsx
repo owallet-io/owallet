@@ -18,7 +18,7 @@ import {
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { Text } from "@src/components/text";
 import { RightArrowIcon } from "@src/components/icon";
-import { ChainIdEnum, formatAddress } from "@owallet/common";
+import { ChainIdEnum, formatAddress, getRpcByChainId } from "@owallet/common";
 import { API } from "@src/common/api";
 import moment from "moment";
 import { Bech32Address } from "@owallet/cosmos";
@@ -32,6 +32,12 @@ import { FlatList } from "react-native-gesture-handler";
 import { metrics } from "@src/themes";
 import { Network, AddressTransaction } from "@tatumio/tatum";
 import { CoinPretty, Dec, DecUtils, Int, PricePretty } from "@owallet/unit";
+import Web3 from "web3";
+import ERC20_ABI from "human-standard-token-abi";
+import CoinGeckoData from "@src/assets/data/coingecko.json";
+
+import { has } from "lodash";
+import { Currency } from "@owallet/types";
 
 export const HistoryCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -68,6 +74,7 @@ export const HistoryCard: FunctionComponent<{
       console.log("res.data.data", res);
       if (res && res.status === 200) {
         // setHistories({ ...histories, ...res.data });
+
         setHistories(res.data);
         setLoading(false);
         // if (Number(res.data.total) > offset) {
@@ -145,13 +152,38 @@ export const HistoryCard: FunctionComponent<{
     fiat
   );
   if (!price) return <EmptyTx />;
+  const getInfoToken = async (contractAddress): Promise<Currency> => {
+    const web3 = new Web3(
+      getRpcByChainId(chainStore.current, chainStore.current.chainId)
+    );
+    // @ts-ignore
+    const contract = new web3.eth.Contract(ERC20_ABI, contractAddress);
+    const tokenDecimal = await contract.methods.decimals().call();
+    const tokenSymbol = await contract.methods.symbol().call();
+    const tokenName = await contract.methods.name().call();
+
+    const coinGeckoInfo =
+      tokenSymbol &&
+      CoinGeckoData.find(
+        (item, index) => item.symbol.toUpperCase() === tokenSymbol.toUpperCase()
+      );
+    const coinGeckoId = coinGeckoInfo && coinGeckoInfo.id;
+
+    return {
+      coinDenom: tokenSymbol,
+      coinDecimals: Number(tokenDecimal),
+      coinMinimalDenom: `erc20:${contractAddress}:${tokenName}`,
+      coinGeckoId: coinGeckoId,
+      coinImageUrl: "",
+    } as Currency;
+  };
   const renderListHistoryItem = ({ item, index }) => {
     if (!item) return;
+    let currency = chainStore.current.stakeCurrency;
+
     const amount = new CoinPretty(
-      chainStore.current.stakeCurrency,
-      new Dec(item.amount).mul(
-        DecUtils.getTenExponentN(chainStore.current.stakeCurrency.coinDecimals)
-      )
+      currency,
+      new Dec(item.amount).mul(DecUtils.getTenExponentN(currency.coinDecimals))
     );
     const priceAmount = priceStore.calculatePrice(amount, fiat);
     const first =
@@ -208,7 +240,11 @@ export const HistoryCard: FunctionComponent<{
                   weight="500"
                 >
                   {/*{item.transactionType === 'incoming' ? "Receive" : "Send"}*/}
-                  {capitalizedText(item.transactionType)}
+                  {item.transactionType === "native"
+                    ? new Dec(item.amount).gte(new Dec(0))
+                      ? "Received"
+                      : "Sent"
+                    : capitalizedText(item.transactionType)}
                 </Text>
                 <Text weight="400" color={colors["neutral-text-body"]}>
                   {formatAddress(item.counterAddress)}
@@ -226,7 +262,13 @@ export const HistoryCard: FunctionComponent<{
                         : colors["neutral-text-title"]
                     }
                   >
-                    {amount.maxDecimals(6).trim(true).toString()}
+                    {`${parseFloat(
+                      amount
+                        .maxDecimals(6)
+                        .trim(true)
+                        .hideDenom(true)
+                        .toString()
+                    ).toLocaleString()} ${currency.coinDenom}`}
                   </Text>
                   <Text
                     style={styles.profit}

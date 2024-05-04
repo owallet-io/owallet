@@ -9,6 +9,7 @@ import {
   Image,
   ActivityIndicator,
   Clipboard,
+  RefreshControl,
 } from "react-native";
 import OWText from "@src/components/text/ow-text";
 import { useSmartNavigation } from "@src/navigation.provider";
@@ -24,12 +25,14 @@ import {
   formatContractAddress,
   HISTORY_STATUS,
   MapChainIdToNetwork,
+  maskedNumber,
   openLink,
   shortenAddress,
 } from "@src/utils/helper";
 import { Bech32Address } from "@owallet/cosmos";
 import { getTransactionUrl } from "../universal-swap/helpers";
 import { useSimpleTimer } from "@src/hooks";
+import ERC20_ABI from "human-standard-token-abi";
 import moment from "moment";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import OWButtonGroup from "@src/components/button/OWButtonGroup";
@@ -38,12 +41,15 @@ import { HeaderTx } from "@src/screens/tx-result/components/header-tx";
 import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
 import { Text } from "@src/components/text";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
-import { ChainIdEnum, TRON_ID } from "@owallet/common";
+import { ChainIdEnum, getRpcByChainId, TRON_ID } from "@owallet/common";
 import { AddressTransaction, Network } from "@tatumio/tatum";
-import { CoinPretty, Dec, Int } from "@owallet/unit";
+import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
 import { OwLoading } from "@src/components/owallet-loading/ow-loading";
 import { has } from "lodash";
 import { PageWithView } from "@src/components/page";
+import Web3 from "web3";
+import { Currency } from "@owallet/types";
+import CoinGeckoData from "@src/assets/data/coingecko.json";
 export const HistoryDetail: FunctionComponent = observer((props) => {
   const { chainStore, priceStore } = useStore();
 
@@ -60,9 +66,39 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
   >();
   const [detail, setDetail] = useState<TxDetail>();
   const [loading, setLoading] = useState(false);
+  const [currencyData, setCurrencyData] = useState<Currency>(
+    chainStore.current.stakeCurrency
+  );
 
   const { item } = route.params;
   const { hash, chain, transactionType } = item;
+  const getInfoToken = async (contractAddress) => {
+    const web3 = new Web3(
+      getRpcByChainId(chainStore.current, chainStore.current.chainId)
+    );
+    // @ts-ignore
+    const contract = new web3.eth.Contract(ERC20_ABI, contractAddress);
+    const tokenDecimal = await contract.methods.decimals().call();
+    const tokenSymbol = await contract.methods.symbol().call();
+    const tokenName = await contract.methods.name().call();
+
+    const coinGeckoInfo =
+      tokenSymbol &&
+      CoinGeckoData.find(
+        (item, index) => item.symbol.toUpperCase() === tokenSymbol.toUpperCase()
+      );
+    const coinGeckoId = coinGeckoInfo && coinGeckoInfo.id;
+    console.log(coinGeckoId, "coinGeckoId");
+    console.log(CoinGeckoData, "CoinGeckoData");
+    setCurrencyData({
+      coinDenom: tokenSymbol,
+      coinDecimals: Number(tokenDecimal),
+      coinMinimalDenom: `erc20:${contractAddress}:${tokenName}`,
+      coinGeckoId: coinGeckoId,
+      coinImageUrl: "",
+    });
+  };
+
   const getHistoryDetail = async () => {
     try {
       setLoading(true);
@@ -92,11 +128,14 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
 
   useEffect(() => {
     getHistoryDetail();
+    if (has(item, "tokenAddress")) {
+      getInfoToken(item.tokenAddress);
+    }
   }, [hash]);
   const { colors } = useTheme();
 
   const styles = useStyles(colors);
-  if (!detail)
+  if (!detail || loading)
     return (
       <PageWithView>
         <PageHeader title={"Transaction details"} />
@@ -135,10 +174,19 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
     chainInfo.stakeCurrency,
     new Int(Number(detail.gasPrice)).mul(new Int(detail.gasUsed))
   );
+  console.log(currencyData, "currencyData");
   const amount = new CoinPretty(
-    chainInfo.stakeCurrency,
-    new Int(Number(detail.value))
+    currencyData,
+    new Dec(item.amount).mul(
+      DecUtils.getTenExponentN(currencyData.coinDecimals)
+    )
   );
+
+  const onRefresh = () => {
+    getHistoryDetail();
+  };
+  console.log(item, "item");
+
   return (
     <PageWithBottom
       bottomGroup={
@@ -153,7 +201,12 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
     >
       <View style={styles.containerBox}>
         <PageHeader title={"Transaction details"} />
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView
+          refreshControl={
+            <RefreshControl refreshing={loading} onRefresh={onRefresh} />
+          }
+          showsVerticalScrollIndicator={false}
+        >
           <HeaderTx
             type={capitalizedText(transactionType)}
             imageType={
@@ -180,9 +233,11 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
                 </OWText>
               </View>
             }
-            amount={amount.trim(true).maxDecimals(6).toString()}
+            amount={`${parseFloat(
+              amount.trim(true).maxDecimals(6).hideDenom(true).toString()
+            ).toLocaleString()} ${currencyData.coinDenom}`}
             toAmount={null}
-            price={priceStore.calculatePrice(amount).toString()}
+            price={priceStore.calculatePrice(amount)?.toString()}
           />
           <View style={styles.cardBody}>
             <ItemReceivedToken
