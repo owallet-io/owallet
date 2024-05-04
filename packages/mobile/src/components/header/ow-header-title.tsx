@@ -34,22 +34,27 @@ const OWHeaderTitle = observer(({ title, ...props }: IOWHeaderTitle) => {
     return (
       <TouchableWithoutFeedback onPress={_onPressNetworkModal} {...props}>
         <View style={styles.containerTitle}>
-          <OWIcon
-            name="dot"
-            color={colors["primary-surface-default"]}
-            size={10}
-          />
-          <Text
-            style={styles.textHeader}
-            color={colors["primary-text"]}
-            variant="body1"
-            typo="regular"
-          >
-            {appInitStore.getInitApp.isAllNetworks
-              ? "All networks"
-              : chainStore.current.chainName}
+          <Text color={colors["neutral-text-title"]} weight="700" size={16}>
+            ASSETS
           </Text>
-          <DownArrowIcon height={10} color={colors["primary-text"]} />
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              paddingTop: 3,
+            }}
+          >
+            <Text
+              style={{ paddingRight: 6 }}
+              color={colors["neutral-text-title"]}
+              size={13}
+            >
+              {appInitStore.getInitApp.isAllNetworks
+                ? "All networks"
+                : chainStore.current.chainName}
+            </Text>
+            <DownArrowIcon height={10} color={colors["neutral-text-title"]} />
+          </View>
         </View>
       </TouchableWithoutFeedback>
     );
@@ -77,7 +82,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
   containerTitle: {
-    flexDirection: "row",
+    // flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     flex: 1,

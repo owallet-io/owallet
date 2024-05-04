@@ -19,11 +19,13 @@ const useHeaderOptions = (
   const onGoBack = () => {
     navigation.goBack();
   };
-  const onTransaction = () => {
-    navigation.navigate(SCREENS.STACK.Others, {
-      screen: SCREENS.Transactions,
+  const onAddWallet = () => {
+    navigation.navigate("Register", {
+      screen: "Register.Intro",
+      params: {
+        canBeBack: true,
+      },
     });
-    return;
   };
 
   const onScan = () => {
@@ -37,12 +39,13 @@ const useHeaderOptions = (
     headerStyle: {
       backgroundColor: colors["neutral-surface-bg2"],
       shadowColor: colors["neutral-border-default"],
+      height: 125,
     },
     headerTitle: () => <OWHeaderTitle title={data?.title} />,
     headerTitleAlign: "center",
     headerRight: () => {
       if (data?.title == HEADER_KEY.showNetworkHeader) {
-        return <OWHeaderRight onTransaction={onTransaction} onScan={onScan} />;
+        return <OWHeaderRight onAddWallet={onAddWallet} onScan={onScan} />;
       }
     },
     headerLeft: () => {

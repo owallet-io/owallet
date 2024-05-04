@@ -121,7 +121,7 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: "",
   },
   [SCREENS.Home]: {
-    title: HEADER_KEY.notShowHeader,
+    title: HEADER_KEY.showNetworkHeader,
     showTabBar: true,
   },
   [SCREENS.TransactionDetail]: {

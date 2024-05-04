@@ -325,29 +325,27 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   })();
 
   return (
-    <PageWithViewInBottomTabView
+    <PageWithScrollViewInBottomTabView
       style={{
-        paddingTop: safeAreaInsets.top,
+        paddingTop: 30,
       }}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+      showsVerticalScrollIndicator={false}
+      // contentContainerStyle={{ marginTop: safeAreaInsets.top }}
+      ref={scrollViewRef}
     >
-      <CommonPageHeader title="Assets" />
-      <ScrollView
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-        showsVerticalScrollIndicator={false}
-        // contentContainerStyle={{ marginTop: safeAreaInsets.top }}
-        ref={scrollViewRef}
-      >
-        {renderNewAccountCard}
+      {/*<CommonPageHeader title="Assets" />*/}
 
-        {chainStore.current.networkType === "cosmos" &&
-        !appInitStore.getInitApp.isAllNetworks ? (
-          <EarningCardNew containerStyle={styles.containerEarnStyle} />
-        ) : null}
-        {renderNewTokenCard()}
-      </ScrollView>
-    </PageWithViewInBottomTabView>
+      {renderNewAccountCard}
+
+      {chainStore.current.networkType === "cosmos" &&
+      !appInitStore.getInitApp.isAllNetworks ? (
+        <EarningCardNew containerStyle={styles.containerEarnStyle} />
+      ) : null}
+      {renderNewTokenCard()}
+    </PageWithScrollViewInBottomTabView>
   );
 });
 
