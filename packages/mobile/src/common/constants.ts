@@ -376,4 +376,4 @@ export const EVENTS = {
   hiddenTabBar: "hiddenTabBar",
 };
 
-export const urlTxHistory = "https://fa09-222-252-31-239.ngrok-free.app/";
+export const urlTxHistory = "http://localhost:8000/";

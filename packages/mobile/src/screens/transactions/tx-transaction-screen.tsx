@@ -58,51 +58,37 @@ const TxTransactionsScreen = observer(() => {
   const fetchData = async (address, isLoadMore = false) => {
     try {
       console.log(isLoadMore, "isLoadMore");
-      if (!isLoadMore) setRefreshing(true);
+      if (!isLoadMore) setLoading(true);
 
-      if (hasMore.current) {
-        console.log(isLoadMore, "isLoadMore");
-        // const rs = await requestData(
-        //   isLoadMore,
-        //   {
-        //     addressAccount: params?.address,
-        //     action: params?.action,
-        //   },
-        // );
-
-        // const newData = isLoadMore ? [...data, ...rs.result] : rs?.result;
-        // page.current = rs?.current_page + 1;
-        const res = await API.getEvmTxs(
-          {
-            address,
-            offset: !isLoadMore ? 0 : page.current * perPage,
-            limit: perPage,
-            network: MapChainIdToNetwork[chainStore.current.chainId],
-          },
-          {
-            baseURL: urlTxHistory,
-          }
-        );
-        console.log(res, "res");
-        if (res && res.status !== 200) throw Error("Failed");
-        page.current += 1;
-        const totalPage = Math.ceil(res.data.totalRecord / perPage);
-        console.log(totalPage, page.current, "page.current");
-        if (page.current === totalPage) {
-          hasMore.current = false;
+      if (!hasMore.current) throw Error("Failed");
+      const res = await API.getEvmTxs(
+        {
+          address,
+          offset: !isLoadMore ? 0 : page.current * perPage,
+          limit: perPage,
+          network: MapChainIdToNetwork[chainStore.current.chainId],
+        },
+        {
+          baseURL: urlTxHistory,
         }
-        if (get(res, "data.data.length") < 1) {
-          hasMore.current = false;
-        }
-
-        setData((prevData) => {
-          if (isLoadMore) return [...prevData, ...res.data.data];
-          return res.data.data;
-        });
-        setAllLoading();
-      } else {
-        setAllLoading();
+      );
+      console.log(res, "res");
+      if (res && res.status !== 200) throw Error("Failed");
+      page.current += 1;
+      const totalPage = Math.ceil(res.data.totalRecord / perPage);
+      console.log(totalPage, page.current, "page.current");
+      if (page.current === totalPage) {
+        hasMore.current = false;
       }
+      if (get(res, "data.data.length") < 1) {
+        hasMore.current = false;
+      }
+
+      setData((prevData) => {
+        if (isLoadMore) return [...prevData, ...res.data.data];
+        return res.data.data;
+      });
+      setAllLoading();
     } catch (error) {
       setAllLoading();
     }
@@ -127,13 +113,12 @@ const TxTransactionsScreen = observer(() => {
       return;
     }
   };
-  const onRefresh = useCallback(() => {
-    // setRefreshing(true);
-    // setActiveType(defaultAll);
+  const onRefresh = () => {
+    setRefreshing(true);
     page.current = 0;
     hasMore.current = true;
     fetchData(address, false);
-  }, []);
+  };
   const setAllLoading = () => {
     setLoadMore(false);
     setLoading(false);
