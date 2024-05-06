@@ -426,7 +426,7 @@ export const TokensCardAll: FunctionComponent<{
               {
                 width: "50%",
               },
-              activeTab === "tokens" ? styles.active : null,
+              activeTab === "tokens" ? styles.active : styles.inactive,
             ]}
           />
           <OWButton
@@ -449,7 +449,7 @@ export const TokensCardAll: FunctionComponent<{
               {
                 width: "50%",
               },
-              activeTab === "history" ? styles.active : null,
+              activeTab === "history" ? styles.active : styles.inactive,
             ]}
           />
         </View>
@@ -518,5 +518,9 @@ const styling = (colors) =>
     active: {
       borderBottomColor: colors["primary-surface-default"],
       borderBottomWidth: 2,
+    },
+    inactive: {
+      borderBottomColor: colors["neutral-border-default"],
+      borderBottomWidth: 1,
     },
   });
