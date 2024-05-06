@@ -376,4 +376,4 @@ export const EVENTS = {
   hiddenTabBar: "hiddenTabBar",
 };
 
-export const urlTxHistory = "http://localhost:8000/";
+export const urlTxHistory = "http://10.10.20.115:3333/";

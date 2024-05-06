@@ -212,7 +212,7 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
           showsVerticalScrollIndicator={false}
         >
           <HeaderTx
-            type={capitalizedText(transactionType)}
+            type={item.transactionSubtype === "incoming" ? "Received" : "Sent"}
             imageType={
               <View
                 style={[
@@ -237,7 +237,9 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
                 </OWText>
               </View>
             }
-            amount={`${maskedNumber(amount.hideDenom(true).toString(), 0)} ${
+            amount={`${
+              new Dec(item.amount).gt(new Dec(0)) ? "+" : ""
+            }${maskedNumber(amount.hideDenom(true).toString(), 0)} ${
               currencyData.coinDenom
             }`}
             toAmount={null}

@@ -198,6 +198,15 @@ export const HistoryCard: FunctionComponent<{
   const renderListHistoryItem = ({ item, index }) => {
     if (!item) return;
     let currency = chainStore.current.stakeCurrency;
+    if (item.transactionType === "fungible") {
+      currency = {
+        coinDecimals: item.tokenInfo.attributes.decimals,
+        coinImageUrl: item.tokenInfo.attributes.image_url,
+        coinGeckoId: item.tokenInfo.attributes.coingecko_coin_id,
+        coinMinimalDenom: `erc20:${item.tokenAddress}:${item.tokenInfo.attributes.name}`,
+        coinDenom: item.tokenInfo.attributes.symbol,
+      } as Currency;
+    }
 
     const amount = new CoinPretty(
       currency,
@@ -235,7 +244,7 @@ export const HistoryCard: FunctionComponent<{
             <View style={styles.chainWrap}>
               <OWIcon
                 type="images"
-                source={{ uri: chainStore.current.raw.chainSymbolImageUrl }}
+                source={{ uri: currency.coinImageUrl }}
                 size={16}
               />
             </View>
@@ -257,8 +266,7 @@ export const HistoryCard: FunctionComponent<{
                   color={colors["neutral-text-heading"]}
                   weight="500"
                 >
-                  {/*{item.transactionType === 'incoming' ? "Receive" : "Send"}*/}
-                  {new Dec(item.amount).gte(new Dec(0)) ? "Received" : "Sent"}
+                  {item.transactionSubtype === "incoming" ? "Received" : "Sent"}
                 </Text>
                 <Text weight="400" color={colors["neutral-text-body"]}>
                   {formatAddress(item.counterAddress)}
@@ -271,12 +279,14 @@ export const HistoryCard: FunctionComponent<{
                   <Text
                     weight="500"
                     color={
-                      new Dec(item.amount).gte(new Dec(0))
+                      new Dec(item.amount).gt(new Dec(0))
                         ? colors["success-text-body"]
                         : colors["neutral-text-title"]
                     }
                   >
-                    {`${maskedNumber(amount.hideDenom(true).toString(), 0)} ${
+                    {`${
+                      new Dec(item.amount).gt(new Dec(0)) ? "+" : ""
+                    }${maskedNumber(amount.hideDenom(true).toString(), 0)} ${
                       currency.coinDenom
                     }`}
                   </Text>
