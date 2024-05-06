@@ -55,37 +55,37 @@ const OWFlatList: FC<IOWFlatListProps> = (props) => {
     hiddenButtonBottom,
     ...rest
   } = props;
-  const onScrollToTop = () => {
-    listRef.current.scrollToOffset({ offset: 0, animated: true });
-  };
-  const [offset, setOffset] = useState(0);
-  const handleScroll = (event) => {
-    const scrollOffset = event.nativeEvent.contentOffset.y;
-    handleSetOffset(scrollOffset);
-  };
-  const handleSetOffset = async (scrollOffset) => {
-    try {
-      await delay(200);
-      setOffset(scrollOffset);
-    } catch (error) {}
-  };
-  const [opacity] = useState(new Animated.Value(0));
-  useEffect(() => {
-    if (offset > 350) {
-      Animated.timing(opacity, {
-        toValue: 1,
-        duration: 200,
-        useNativeDriver: true,
-      }).start();
-    } else {
-      Animated.timing(opacity, {
-        toValue: 0,
-        duration: 200,
-        useNativeDriver: true,
-      }).start();
-    }
-    return () => {};
-  }, [offset]);
+  // const onScrollToTop = () => {
+  //   listRef.current.scrollToOffset({ offset: 0, animated: true });
+  // };
+  // const [offset, setOffset] = useState(0);
+  // const handleScroll = (event) => {
+  //   const scrollOffset = event.nativeEvent.contentOffset.y;
+  //   handleSetOffset(scrollOffset);
+  // };
+  // const handleSetOffset = async (scrollOffset) => {
+  //   try {
+  //     await delay(200);
+  //     setOffset(scrollOffset);
+  //   } catch (error) {}
+  // };
+  // const [opacity] = useState(new Animated.Value(0));
+  // useEffect(() => {
+  //   if (offset > 350) {
+  //     Animated.timing(opacity, {
+  //       toValue: 1,
+  //       duration: 200,
+  //       useNativeDriver: true,
+  //     }).start();
+  //   } else {
+  //     Animated.timing(opacity, {
+  //       toValue: 0,
+  //       duration: 200,
+  //       useNativeDriver: true,
+  //     }).start();
+  //   }
+  //   return () => {};
+  // }, [offset]);
   //   useEffect(() => {
   //     onScrollToTop();
   //     return () => {};
@@ -95,7 +95,7 @@ const OWFlatList: FC<IOWFlatListProps> = (props) => {
     <>
       <ElementFlatlist
         ref={listRef}
-        onScroll={handleScroll}
+        // onScroll={handleScroll}
         ListEmptyComponent={
           loading ? (
             <View style={containerSkeletonStyle}>
@@ -155,7 +155,7 @@ export default OWFlatList;
 
 const styles = StyleSheet.create({
   footer: {
-    height: 80,
+    height: 90,
   },
   fixedScroll: {
     position: "absolute",

@@ -290,8 +290,56 @@ export const DetailsBrowserScreen = observer((props) => {
       clearTimeout(timer.current);
     };
   }, []);
-  console.log(canGoBack, "canGoBack");
+  console.log(visible, "visible");
   const styles = styling(colors);
+  const onLoadStart = (syntheticEvent) => {
+    syntheticEvent.persist();
+    // update component to be aware of loading status
+    setUseProperty((prev) => ({ ...prev, visible: true }));
+  };
+  const onLoadEnd = (syntheticEvent) => {
+    syntheticEvent.persist();
+    // update component to be aware of loading status
+    timer.current = setTimeout(() => {
+      setUseProperty((prev) => ({ ...prev, visible: false }));
+    }, 300) as any;
+  };
+  const onLoadProgress = (e) => {
+    e.persist();
+
+    if (e.nativeEvent.url === route?.params?.url) {
+      setCanGoBack(false);
+    } else {
+      setCanGoBack(e.nativeEvent.canGoBack);
+    }
+    setCanGoForward(e.nativeEvent.canGoForward);
+    // const { progress } = e.nativeEvent;
+    setCurrentURL(e.nativeEvent.url);
+    // Strangely, `onLoadProgress` is only invoked whenever page changed only in Android.
+    // Use two handlers to measure simultaneously in ios and android.
+    setUseProperty((prev) => ({
+      ...prev,
+      percent: e.nativeEvent?.progress ?? 0.1,
+    }));
+  };
+  const onNavStateChange = (e) => {
+    // Strangely, `onNavigationStateChange` is only invoked whenever page changed only in IOS.
+    // Use two handlers to measure simultaneously in ios and android.
+    if (e.url === route?.params?.url) {
+      setCanGoBack(false);
+    } else {
+      setCanGoBack(e.canGoBack);
+    }
+    setCanGoForward(e.canGoForward);
+    setCurrentURL(e.url);
+  };
+  const onError = () => {
+    setUseProperty((prev) => ({
+      ...prev,
+      percent: 1,
+      color: colors["error-border-default"],
+    }));
+  };
   return (
     <PageWithViewInBottomTabView
       style={{
@@ -393,7 +441,7 @@ export const DetailsBrowserScreen = observer((props) => {
             backgroundColor: colors["neutral-surface-bg"],
           }}
         >
-          {visible && (
+          {visible && percent < 1 && (
             <>
               <View style={styles.containerLoading}>
                 <LottieView
@@ -412,55 +460,20 @@ export const DetailsBrowserScreen = observer((props) => {
               <WebView
                 originWhitelist={["*"]} // to allowing WebView to load blob
                 ref={webviewRef}
-                style={visible ? { flex: 0, height: 0, opacity: 0 } : {}}
+                style={
+                  visible && percent < 1
+                    ? { flex: 0, height: 0, opacity: 0 }
+                    : {}
+                }
                 cacheEnabled={true}
                 injectedJavaScriptBeforeContentLoaded={sourceCode}
                 // onLoad={handleWebViewLoaded}
                 onMessage={onMessage}
-                onNavigationStateChange={(e) => {
-                  // Strangely, `onNavigationStateChange` is only invoked whenever page changed only in IOS.
-                  // Use two handlers to measure simultaneously in ios and android.
-                  if (e.url === route?.params?.url) {
-                    setCanGoBack(false);
-                  } else {
-                    setCanGoBack(e.canGoBack);
-                  }
-                  setCanGoForward(e.canGoForward);
-                  setCurrentURL(e.url);
-                }}
-                onLoadProgress={(e) => {
-                  // Strangely, `onLoadProgress` is only invoked whenever page changed only in Android.
-                  // Use two handlers to measure simultaneously in ios and android.
-                  setUseProperty((prev) => ({
-                    ...prev,
-                    percent: e.nativeEvent?.progress ?? 0.1,
-                  }));
-                  if (e.nativeEvent.url === route?.params?.url) {
-                    setCanGoBack(false);
-                  } else {
-                    setCanGoBack(e.nativeEvent.canGoBack);
-                  }
-                  setCanGoForward(e.nativeEvent.canGoForward);
-                  // const { progress } = e.nativeEvent;
-                  setCurrentURL(e.nativeEvent.url);
-                }}
-                onLoadStart={(syntheticEvent) => {
-                  // update component to be aware of loading status
-                  setUseProperty((prev) => ({ ...prev, visible: true }));
-                }}
-                onLoadEnd={(syntheticEvent) => {
-                  // update component to be aware of loading status
-                  timer.current = setTimeout(() => {
-                    setUseProperty((prev) => ({ ...prev, visible: false }));
-                  }, 300) as any;
-                }}
-                onError={() => {
-                  setUseProperty((prev) => ({
-                    ...prev,
-                    percent: 1,
-                    color: colors["error-border-default"],
-                  }));
-                }}
+                onNavigationStateChange={onNavStateChange}
+                onLoadProgress={onLoadProgress}
+                onLoadStart={onLoadStart}
+                onLoadEnd={onLoadEnd}
+                onError={onError}
                 contentInsetAdjustmentBehavior="never"
                 automaticallyAdjustContentInsets={false}
                 decelerationRate="normal"

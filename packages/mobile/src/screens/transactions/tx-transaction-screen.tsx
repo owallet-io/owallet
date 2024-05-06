@@ -120,13 +120,13 @@ const TxTransactionsScreen = observer(() => {
 
   const styles = styling();
 
-  const onEndReached = useCallback(() => {
+  const onEndReached = () => {
     if (page.current !== 0 && data.length > 0) {
       setLoadMore(true);
       fetchData(address, true);
       return;
     }
-  }, [data]);
+  };
   const onRefresh = useCallback(() => {
     // setRefreshing(true);
     // setActiveType(defaultAll);
