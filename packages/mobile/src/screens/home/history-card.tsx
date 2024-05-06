@@ -31,7 +31,7 @@ import moment from "moment";
 import { Bech32Address } from "@owallet/cosmos";
 import OWFlatList from "@src/components/page/ow-flat-list";
 import { chainIcons } from "@oraichain/oraidex-common";
-import { SCREENS } from "@src/common/constants";
+import { SCREENS, urlTxHistory } from "@src/common/constants";
 import { navigate } from "@src/router/root";
 import FastImage from "react-native-fast-image";
 import OWText from "@src/components/text/ow-text";
@@ -82,11 +82,11 @@ export const HistoryCard: FunctionComponent<{
         {
           address,
           offset: 0,
-          limit: 20,
+          limit: 10,
           network: MapChainIdToNetwork[chainStore.current.chainId],
         },
         {
-          baseURL: "http://10.10.20.115:3333/",
+          baseURL: urlTxHistory,
         }
       );
       console.log("res.data.data", res);
@@ -311,25 +311,11 @@ export const HistoryCard: FunctionComponent<{
   // };
 
   const onRefresh = () => {
-    setLoading(true);
-    // getWalletHistory(address);
+    if (!address) return;
+    getWalletHistory(address);
   };
 
-  // histories.length = 20;
   return (
-    // <FlatList
-    //   data={histories}
-    //   contentContainerStyle={{
-    //     paddingHorizontal: 16,
-    //     // marginBottom: metrics.screenHeight / 4
-    //   }}
-    //   // onEndReached={onEndReached}
-    //   renderItem={renderListHistoryItem}
-    //   // onRefresh={onRefresh}
-    //   ListEmptyComponent={() => {
-    //     return <EmptyTx />;
-    //   }}
-    // />
     <View
       style={{
         paddingHorizontal: 16,
@@ -345,7 +331,7 @@ export const HistoryCard: FunctionComponent<{
       ) : (
         <EmptyTx />
       )}
-      {histories?.length === 20 && (
+      {histories?.length > 9 && (
         <OWButton
           style={{
             marginTop: 16,
@@ -409,7 +395,6 @@ const styling = (colors) =>
       flexDirection: "row",
       // justifyContent: 'space-between',
       alignItems: "center",
-      flex: 1,
       flexWrap: "wrap",
       gap: 16,
 

@@ -50,6 +50,7 @@ import { PageWithView } from "@src/components/page";
 import Web3 from "web3";
 import { Currency } from "@owallet/types";
 import CoinGeckoData from "@src/assets/data/coingecko.json";
+import { urlTxHistory } from "@src/common/constants";
 export const HistoryDetail: FunctionComponent = observer((props) => {
   const { chainStore, priceStore } = useStore();
 
@@ -108,7 +109,7 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
           network: chain as Network,
         },
         {
-          baseURL: "http://10.10.20.18:3333/",
+          baseURL: urlTxHistory,
         }
       );
 

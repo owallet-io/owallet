@@ -39,7 +39,6 @@ const useHeaderOptions = (
     headerStyle: {
       backgroundColor: colors["neutral-surface-bg2"],
       shadowColor: colors["neutral-border-default"],
-      height: 125,
     },
     headerTitle: () => <OWHeaderTitle title={data?.title} />,
     headerTitleAlign: "center",
@@ -62,7 +61,7 @@ const useHeaderOptions = (
                 backgroundColor: colors["neutral-surface-card"],
               },
             ]}
-            sizeIcon={16}
+            sizeIcon={14}
           />
         );
       return null;
@@ -81,8 +80,8 @@ export default useHeaderOptions;
 const styles = StyleSheet.create({
   btnIcon: {
     borderRadius: 999,
-    width: 44,
-    height: 44,
+    width: 35,
+    height: 35,
     alignItems: "center",
     justifyContent: "center",
     marginLeft: 16,

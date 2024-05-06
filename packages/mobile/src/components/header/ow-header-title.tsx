@@ -41,7 +41,6 @@ const OWHeaderTitle = observer(({ title, ...props }: IOWHeaderTitle) => {
             style={{
               flexDirection: "row",
               alignItems: "center",
-              paddingTop: 3,
             }}
           >
             <Text

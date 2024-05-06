@@ -19,7 +19,7 @@ import crashlytics from "@react-native-firebase/crashlytics";
 import { OWBox } from "@src/components/card";
 import { metrics, spacing } from "@src/themes";
 import OWTransactionItem from "./components/items/transaction-item";
-import { SCREENS, defaultAll } from "@src/common/constants";
+import { SCREENS, defaultAll, urlTxHistory } from "@src/common/constants";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import OWFlatList from "@src/components/page/ow-flat-list";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder";
@@ -80,7 +80,7 @@ const TxTransactionsScreen = observer(() => {
             network: MapChainIdToNetwork[chainStore.current.chainId],
           },
           {
-            baseURL: "http://10.10.20.18:3333/",
+            baseURL: urlTxHistory,
           }
         );
         console.log(res, "res");

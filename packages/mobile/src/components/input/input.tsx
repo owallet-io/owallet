@@ -107,11 +107,15 @@ export const TextInput = React.forwardRef<
                   android: {
                     // On android, the text input's height does not equals to the line height by strange.
                     // To fix this problem, set the height explicitly.
-                    height: 38,
+                    // height: 38,
                   },
                 }),
               ]),
-              { color: colors["sub-primary-text"], flex: 1 },
+              {
+                color: colors["neutral-text-title"],
+                flex: 1,
+                paddingVertical: 0,
+              },
               propsStyle,
             ]}
             {...restProps}

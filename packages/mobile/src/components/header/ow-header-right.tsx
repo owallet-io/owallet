@@ -21,7 +21,7 @@ const OWHeaderRight = observer(
             },
           ]}
           colorIcon={colors["neutral-text-title"]}
-          sizeIcon={22}
+          sizeIcon={18}
           fullWidth={false}
           onPress={onScan}
           name="tdesignscan"
@@ -34,7 +34,7 @@ const OWHeaderRight = observer(
             },
           ]}
           colorIcon={colors["neutral-text-title"]}
-          sizeIcon={22}
+          sizeIcon={18}
           onPress={onAddWallet}
           name={"tdesignwallet"}
           fullWidth={false}
@@ -56,13 +56,13 @@ const styles = StyleSheet.create({
     marginRight: 16,
   },
   btnHistory: {
-    height: 44,
-    width: 44,
+    height: 35,
+    width: 35,
     borderRadius: 999,
   },
   btnScan: {
-    height: 44,
-    width: 44,
+    height: 35,
+    width: 35,
     borderRadius: 999,
   },
 });
