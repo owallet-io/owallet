@@ -80,7 +80,7 @@ const TxTransactionsScreen = observer(() => {
             network: MapChainIdToNetwork[chainStore.current.chainId],
           },
           {
-            baseURL: "http://10.10.20.115:3333/",
+            baseURL: "http://10.10.20.18:3333/",
           }
         );
         console.log(res, "res");

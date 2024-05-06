@@ -108,7 +108,7 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
           network: chain as Network,
         },
         {
-          baseURL: "http://10.10.20.115:3333/",
+          baseURL: "http://10.10.20.18:3333/",
         }
       );
 
