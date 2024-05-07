@@ -26,6 +26,7 @@ import { OWButton } from "@src/components/button";
 import OWTransactionItem from "@src/screens/transactions/components/items/transaction-item";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 import { TxSkeleton } from "@src/components/page";
+import { SearchFilter } from "@src/screens/transactions/tx-transaction-screen";
 
 export const HistoryCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -95,6 +96,7 @@ export const HistoryCard: FunctionComponent<{
         paddingHorizontal: 16,
       }}
     >
+      {/*<SearchFilter />*/}
       {histories?.length > 0 ? (
         histories.map((item, index) => {
           return (

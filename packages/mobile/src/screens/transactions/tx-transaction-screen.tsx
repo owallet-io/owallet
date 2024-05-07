@@ -115,15 +115,7 @@ const TxTransactionsScreen = observer(() => {
   return (
     <PageWithView>
       <OWBox style={[styles.container]}>
-        <View style={styles.containerTop}>
-          <OWSearchInput placeHolder={"Search for a chain"} />
-          <OWButtonIcon
-            fullWidth={false}
-            name={"tdesignfilter"}
-            sizeIcon={20}
-            style={styles.iconFilter}
-          />
-        </View>
+        <SearchFilter />
         <OWFlatList
           data={data}
           onEndReached={onEndReached}
@@ -139,6 +131,20 @@ const TxTransactionsScreen = observer(() => {
   );
 });
 
+export const SearchFilter = () => {
+  const styles = styling();
+  return (
+    <View style={styles.containerTop}>
+      <OWSearchInput placeHolder={"Search for a chain"} />
+      <OWButtonIcon
+        fullWidth={false}
+        name={"tdesignfilter"}
+        sizeIcon={20}
+        style={styles.iconFilter}
+      />
+    </View>
+  );
+};
 export default TxTransactionsScreen;
 
 const styling = () => {
