@@ -376,5 +376,5 @@ export const EVENTS = {
   hiddenTabBar: "hiddenTabBar",
 };
 
-export const urlTxHistory = "https://a897-222-252-31-239.ngrok-free.app/";
+export const urlTxHistory = "https://tx-history-backend-staging.oraidex.io/";
 export const listSkeleton = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];

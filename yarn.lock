@@ -59,9 +59,9 @@
     js-yaml "^4.1.0"
 
 "@apollo/client@^3.5.8":
-  version "3.10.1"
-  resolved "https://registry.yarnpkg.com/@apollo/client/-/client-3.10.1.tgz#4c8eec28fcce25b96f27c1f1e443ec5c676e4de0"
-  integrity sha512-QNacQBZzJla5UQ/LLBXJWM7/1v1C5cfpMQPAFjW4hg4T54wHWbg4Dr+Dp6N+hy/ygu8tepdM+/y/5VFLZhovlQ==
+  version "3.10.2"
+  resolved "https://registry.yarnpkg.com/@apollo/client/-/client-3.10.2.tgz#3c27edb7762fa60dc4064d31aa2723d7006e7ff1"
+  integrity sha512-J4e2RQN4DgMthCqBtBOXOawYTWmdJprAWqv8rdYLmeW4/Pnrlrl4Hvb/zvENlitDAiRUU33Dc/3OJqIMEJAxNw==
   dependencies:
     "@graphql-typed-document-node/core" "^3.1.1"
     "@wry/caches" "^1.0.0"
@@ -5315,24 +5315,19 @@
     ethers "^5.0.15"
 
 "@oraichain/oraidex-contracts-build@^1.0.22":
-  version "1.0.26"
-  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-contracts-build/-/oraidex-contracts-build-1.0.26.tgz#1c0ae238de6e09bb2ff525ae4cde897d56b01fff"
-  integrity sha512-A0Ngdw9lPS6Q0OKRw3lFCGBwYeieEzgC0GknnaIcZoU0PfxgUAUXHFmwl4F8X8I+GJT8UN+ImzXTHdxfgMmHFg==
+  version "1.0.33"
+  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-contracts-build/-/oraidex-contracts-build-1.0.33.tgz#928d76f25ce2d84c1c86aa8246e25421e8e63500"
+  integrity sha512-OYqlz3Z8BRV/lUe9dHIyXDHwZe3w/K/dOQWz0bKXYGOHEMmgukns8RCKw5KNwQI93niJMSLJ8E7zlMjUPhFT4g==
 
-"@oraichain/oraidex-contracts-sdk@^1.0.33":
-  version "1.0.35"
-  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-contracts-sdk/-/oraidex-contracts-sdk-1.0.35.tgz#d8231d3af62172bd488d364c7ced238393f26695"
-  integrity sha512-c4qyt6CUEdI4+NgX4vWmVVctcQqEle0S6ExKp+d94C5UsRBELxvmJWkCZczvtTtLEvSsydv+7PKwrPoROgV2BA==
-
-"@oraichain/oraidex-contracts-sdk@^1.0.43", "@oraichain/oraidex-contracts-sdk@latest":
+"@oraichain/oraidex-contracts-sdk@^1.0.33", "@oraichain/oraidex-contracts-sdk@^1.0.43", "@oraichain/oraidex-contracts-sdk@latest":
   version "1.0.44"
   resolved "https://registry.yarnpkg.com/@oraichain/oraidex-contracts-sdk/-/oraidex-contracts-sdk-1.0.44.tgz#9ff41ec388dd92ba112c2eef545d11fd6e18c684"
   integrity sha512-fMY/QOzO/afPlAVkLGH1bcpJTs6V/URrJju2r4UoE9f5HUWC/6OC6+H5dWuIgq26frp8wjH23mNCQAlmHzji8g==
 
-"@oraichain/oraidex-universal-swap@^1.0.75":
-  version "1.0.75"
-  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-universal-swap/-/oraidex-universal-swap-1.0.75.tgz#05a0f4fac8c70bbc8556feb695aa095b40fea660"
-  integrity sha512-vxYOX6bFEqc7HcSrlo2oEgj+UD+fzd9Y1TpeEU9AfQeLK/KjKiSrrraOQz2mSt8JjOqnItcpQ198C7GSiaAiMg==
+"@oraichain/oraidex-universal-swap@^1.0.78":
+  version "1.0.78"
+  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-universal-swap/-/oraidex-universal-swap-1.0.78.tgz#ef787c362812b0ddd39e367f43df14e4458d7475"
+  integrity sha512-kRevQgPzvCZ/PcWS8n3Ot35aualOi1P2ECDwyw0dzRrN64zjp+Q+u6nr+E82kDUFOZ1Bmdun3Nfvvc3zOawD6Q==
   dependencies:
     "@oraichain/oraidex-common" "^1.0.78"
     "@oraichain/oraidex-contracts-sdk" "^1.0.43"
@@ -6319,9 +6314,9 @@
     "@tanstack/query-core" "5.24.1"
 
 "@tatumio/tatum@^4.2.24":
-  version "4.2.24"
-  resolved "https://registry.yarnpkg.com/@tatumio/tatum/-/tatum-4.2.24.tgz#76895471f0b5e3a49e23fb521ab51d760c302834"
-  integrity sha512-IJJsy4qReUXY7tdotj/ttmVw6BpriOxA2Uv2Wbp2RRor4IYmhjg3/T/R3f30jygeDzbhg9w1NOdQOZoMsZNQcw==
+  version "4.2.26"
+  resolved "https://registry.yarnpkg.com/@tatumio/tatum/-/tatum-4.2.26.tgz#25b121b75c55ffad79c54de8c2eaae48defe5bd0"
+  integrity sha512-w6/TR5DVg8J+uNyaC48TkojZZ88j/JFRbBXPy81uBRDgmLIUyAevPFof7SbEFcrZm8cxeZruegit8geeec5sxA==
   dependencies:
     bignumber.js "^9.1.1"
     chalk "^4.1.2"
@@ -6895,9 +6890,9 @@
     "@types/lodash" "*"
 
 "@types/lodash@*":
-  version "4.17.0"
-  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.17.0.tgz#d774355e41f372d5350a4d0714abb48194a489c3"
-  integrity sha512-t7dhREVv6dbNj0q17X12j7yDG4bD/DHYX7o5/DbDxobP0HnGPgpRz2Ej77aL7TZT3DSw13fqUTj8J4mMnqa7WA==
+  version "4.17.1"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.17.1.tgz#0fabfcf2f2127ef73b119d98452bd317c4a17eb8"
+  integrity sha512-X+2qazGS3jxLAIz5JDXDzglAF3KpijdhFxlf/V1+hEsOUc+HnWi81L/uv/EvGuV90WY+7mPGFCUDGfQC3Gj95Q==
 
 "@types/long@^4.0.0", "@types/long@^4.0.1":
   version "4.0.2"
@@ -24011,10 +24006,10 @@ react-native-fresh-refresh@^2.1.1:
   resolved "https://registry.yarnpkg.com/react-native-fresh-refresh/-/react-native-fresh-refresh-2.1.1.tgz#1afd80650cccfcfc2ea5106063aaade49551d91c"
   integrity sha512-0X9yV9xlhxrABq5ov+Ja03qV350eUPKVSle4WIE5BZJQJZhm/4YeRO8l24wpysVygi7ZTk3opVCcrb83K9ynag==
 
-react-native-gesture-handler@2.12.0:
-  version "2.12.0"
-  resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-2.12.0.tgz#59ca9d97e4c71f70b9c258f14a1a081f4c689976"
-  integrity sha512-rr+XwVzXAVpY8co25ukvyI38fKCxTQjz7WajeZktl8qUPdh1twnSExgpT47DqDi4n+m+OiJPAnHfZOkqqAQMOg==
+react-native-gesture-handler@2.14.0:
+  version "2.14.0"
+  resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-2.14.0.tgz#d6aec0d8b2e55c67557fd6107e828c0a1a248be8"
+  integrity sha512-cOmdaqbpzjWrOLUpX3hdSjsMby5wq3PIEdMq7okJeg9DmCzanysHSrktw1cXWNc/B5MAgxAn9J7Km0/4UIqKAQ==
   dependencies:
     "@egjs/hammerjs" "^2.0.17"
     hoist-non-react-statics "^3.3.0"
@@ -24119,10 +24114,10 @@ react-native-rate@^1.2.12:
   resolved "https://registry.yarnpkg.com/react-native-rate/-/react-native-rate-1.2.12.tgz#d4307b2994f9c849b987eb65599ec467db4aee04"
   integrity sha512-A/z3s7Zth08aXcJnru6S4p71NG8acx2w5LhIfItwTJUbQruNJugk8WrN51dLBCSDv8W33kbS5YoUT4M9jOP5gA==
 
-react-native-reanimated@3.5.4:
-  version "3.5.4"
-  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-3.5.4.tgz#a6c2b0c43b6dad246f5d276213974afedb8e3fc7"
-  integrity sha512-8we9LLDO1o4Oj9/DICeEJ2K1tjfqkJagqQUglxeUAkol/HcEJ6PGxIrpBcNryLqCDYEcu6FZWld/FzizBIw6bg==
+react-native-reanimated@=3.6.2:
+  version "3.6.2"
+  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-3.6.2.tgz#8a48c37251cbd3b665a659444fa9778f5b510356"
+  integrity sha512-IIMREMOrxhtK35drfpzh2UhxNqAOHnuvGgtMofj7yHcMj16tmWZR2zFvMUf6z2MfmXv+aVgFQ6TRZ6yKYf7LNA==
   dependencies:
     "@babel/plugin-transform-object-assign" "^7.16.7"
     "@babel/preset-typescript" "^7.16.7"
@@ -27753,9 +27748,9 @@ type-fest@^3.12.0:
   integrity sha512-tLq3bSNx+xSpwvAJnzrK0Ep5CLNWjvFTOp71URMaAEWBfRb9nnJiBoUe0tF8bI4ZFO3omgBR6NvnbzVUT3Ly4g==
 
 type-fest@^4.4.0:
-  version "4.18.1"
-  resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-4.18.1.tgz#47e8d4e493cf7ed6c643bad698d5810d72cbdf79"
-  integrity sha512-qXhgeNsX15bM63h5aapNFcQid9jRF/l3ojDoDFmekDQEUufZ9U4ErVt6SjDxnHp48Ltrw616R8yNc3giJ3KvVQ==
+  version "4.18.2"
+  resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-4.18.2.tgz#8d765c42e7280a11f4d04fb77a00dacc417c8b05"
+  integrity sha512-+suCYpfJLAe4OXS6+PPXjW3urOS4IoP9waSiLuXfLgqZODKw/aWwASvzqE886wA0kQgGy0mIWyhd87VpqIy6Xg==
 
 type-is@~1.6.18:
   version "1.6.18"
