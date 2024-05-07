@@ -2,41 +2,22 @@ import React, { FunctionComponent, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
-import {
-  StyleSheet,
-  View,
-  TouchableOpacity,
-  Image,
-  ActivityIndicator,
-  Clipboard,
-  RefreshControl,
-} from "react-native";
+import { StyleSheet, View, Image, RefreshControl } from "react-native";
 import OWText from "@src/components/text/ow-text";
-import { useSmartNavigation } from "@src/navigation.provider";
 import { useStore } from "@src/stores";
-import OWIcon from "@src/components/ow-icon/ow-icon";
 import { OWButton } from "@src/components/button";
 import { metrics } from "@src/themes";
 import { ScrollView } from "react-native-gesture-handler";
-import { CheckIcon, CopyFillIcon, DownArrowIcon } from "@src/components/icon";
 import { API } from "@src/common/api";
 import {
   capitalizedText,
   formatContractAddress,
-  HISTORY_STATUS,
-  MapChainIdToNetwork,
   maskedNumber,
   openLink,
   shortenAddress,
 } from "@src/utils/helper";
-import { Bech32Address } from "@owallet/cosmos";
-import { getTransactionUrl } from "../universal-swap/helpers";
-import { useSimpleTimer } from "@src/hooks";
-import ERC20_ABI from "human-standard-token-abi";
 import moment from "moment";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
-import OWButtonGroup from "@src/components/button/OWButtonGroup";
-import { PageHeader } from "@src/components/header/header-new";
 import { HeaderTx } from "@src/screens/tx-result/components/header-tx";
 import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
 import { Text } from "@src/components/text";
@@ -107,7 +88,6 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
     );
   const chainInfo = chainStore.getChain(chainStore.current.chainId);
   const handleUrl = (txHash) => {
-    console.log(txHash, "txhas");
     const chainInfo = chainStore.getChain(detail.chainId);
     return chainInfo.raw.txExplorer.txUrl.replace(
       "{txHash}",
@@ -142,8 +122,6 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
   const onRefresh = () => {
     getHistoryDetail();
   };
-  console.log(item, "item");
-
   return (
     <PageWithBottom
       style={{
