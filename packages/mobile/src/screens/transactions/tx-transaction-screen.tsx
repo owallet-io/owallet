@@ -1,41 +1,21 @@
-import { StyleSheet, View, TouchableOpacity } from "react-native";
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { StyleSheet } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
 import { PageWithView } from "@src/components/page";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
 import { useStore } from "@src/stores";
-import {
-  _keyExtract,
-  limitString,
-  MapChainIdToNetwork,
-} from "@src/utils/helper";
-import crashlytics from "@react-native-firebase/crashlytics";
+import { MapChainIdToNetwork } from "@src/utils/helper";
 import { OWBox } from "@src/components/card";
-import { metrics, spacing } from "@src/themes";
+import { spacing } from "@src/themes";
 import OWTransactionItem from "./components/items/transaction-item";
-import { SCREENS, defaultAll, urlTxHistory } from "@src/common/constants";
-import { useIsFocused, useNavigation } from "@react-navigation/native";
+import { SCREENS, urlTxHistory } from "@src/common/constants";
 import OWFlatList from "@src/components/page/ow-flat-list";
-import SkeletonPlaceholder from "react-native-skeleton-placeholder";
-import { ChainIdEnum } from "@owallet/common";
-import TypeModal from "./components/type-modal";
-import ButtonFilter from "./components/button-filter";
-import { TendermintTxTracer } from "@owallet/cosmos";
-import { Text } from "@src/components/text";
 import { API } from "@src/common/api";
-import { has } from "lodash";
 import get from "lodash/get";
 import { navigate } from "@src/router/root";
 
 const TxTransactionsScreen = observer(() => {
-  const { chainStore, accountStore, txsStore, modalStore, keyRingStore } =
-    useStore();
+  const { chainStore, accountStore, keyRingStore } = useStore();
   const { colors } = useTheme();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const address = account.getAddressDisplay(
@@ -49,17 +29,10 @@ const TxTransactionsScreen = observer(() => {
   const page = useRef(0);
   const hasMore = useRef(true);
   const perPage = 10;
-  // const txs = txsStore(
-  //   chainStore.current.chainId === ChainIdEnum.KawaiiEvm
-  //     ? chainStore.getChain(ChainIdEnum.KawaiiCosmos)
-  //     : chainStore.current
-  // );
 
   const fetchData = async (address, isLoadMore = false) => {
     try {
-      console.log(isLoadMore, "isLoadMore");
       if (!isLoadMore) setLoading(true);
-
       if (!hasMore.current) throw Error("Failed");
       const res = await API.getEvmTxs(
         {
@@ -72,11 +45,9 @@ const TxTransactionsScreen = observer(() => {
           baseURL: urlTxHistory,
         }
       );
-      console.log(res, "res");
       if (res && res.status !== 200) throw Error("Failed");
       page.current += 1;
       const totalPage = Math.ceil(res.data.totalRecord / perPage);
-      console.log(totalPage, page.current, "page.current");
       if (page.current === totalPage) {
         hasMore.current = false;
       }
@@ -139,7 +110,6 @@ const TxTransactionsScreen = observer(() => {
       <OWTransactionItem
         key={`item-${index + 1}-${index}`}
         data={data}
-        onPress={() => onTransactionDetail(item)}
         item={item}
         index={index}
       />

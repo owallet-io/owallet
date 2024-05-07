@@ -25,7 +25,12 @@ import {
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { Text } from "@src/components/text";
 import { RightArrowIcon } from "@src/components/icon";
-import { ChainIdEnum, formatAddress, getRpcByChainId } from "@owallet/common";
+import {
+  ChainIdEnum,
+  formatAddress,
+  getRpcByChainId,
+  unknownToken,
+} from "@owallet/common";
 import { API } from "@src/common/api";
 import moment from "moment";
 import { Bech32Address } from "@owallet/cosmos";
@@ -197,15 +202,21 @@ export const HistoryCard: FunctionComponent<{
   // };
   const renderListHistoryItem = ({ item, index }) => {
     if (!item) return;
-    let currency = chainStore.current.stakeCurrency;
+    chainStore.current.stakeCurrency;
+    let currency = unknownToken;
+
     if (item.transactionType === "fungible") {
-      currency = {
-        coinDecimals: item.tokenInfo.attributes.decimals,
-        coinImageUrl: item.tokenInfo.attributes.image_url,
-        coinGeckoId: item.tokenInfo.attributes.coingecko_coin_id,
-        coinMinimalDenom: `erc20:${item.tokenAddress}:${item.tokenInfo.attributes.name}`,
-        coinDenom: item.tokenInfo.attributes.symbol,
-      } as Currency;
+      if (has(item, "tokenInfo.attributes")) {
+        currency = {
+          coinDecimals: item.tokenInfo.attributes.decimals,
+          coinImageUrl: item.tokenInfo.attributes.image_url,
+          coinGeckoId: item.tokenInfo.attributes.coingecko_coin_id,
+          coinMinimalDenom: `erc20:${item.tokenAddress}:${item.tokenInfo.attributes.name}`,
+          coinDenom: item.tokenInfo.attributes.symbol,
+        } as Currency;
+      }
+    } else if (item.transactionType === "native") {
+      currency = chainStore.current.stakeCurrency;
     }
 
     const amount = new CoinPretty(

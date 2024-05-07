@@ -1,5 +1,5 @@
 import { Bech32Address } from "@owallet/cosmos";
-import { AppChainInfo } from "@owallet/types";
+import { AppChainInfo, Currency } from "@owallet/types";
 import { IntlMessages, TypeLanguageToFiatCurrency } from "./languages";
 import { FiatCurrency } from "@owallet/types";
 import "dotenv/config";
@@ -1550,4 +1550,12 @@ export const ValidatorThumbnails: { [key: string]: string } = {
     "https://images.airight.io/validator/625522ca385ee50001b67f29.png",
   oraivaloper14vcw5qk0tdvknpa38wz46js5g7vrvut8ku5kaa:
     "https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png",
+};
+
+export const unknownToken: Currency = {
+  coinDecimals: 6,
+  coinImageUrl: "https://img.icons8.com/pulsar-gradient/96/help.png",
+  coinGeckoId: "unknown",
+  coinMinimalDenom: "unknown",
+  coinDenom: "UNKNOWN",
 };

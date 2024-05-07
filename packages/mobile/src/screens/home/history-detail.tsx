@@ -41,15 +41,14 @@ import { HeaderTx } from "@src/screens/tx-result/components/header-tx";
 import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
 import { Text } from "@src/components/text";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
-import { ChainIdEnum, getRpcByChainId, TRON_ID } from "@owallet/common";
+import { ChainIdEnum, TRON_ID } from "@owallet/common";
 import { AddressTransaction, Network } from "@tatumio/tatum";
 import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
 import { OwLoading } from "@src/components/owallet-loading/ow-loading";
-import { has } from "lodash";
 import { PageWithView } from "@src/components/page";
-import Web3 from "web3";
+
 import { Currency } from "@owallet/types";
-import CoinGeckoData from "@src/assets/data/coingecko.json";
+
 import { urlTxHistory } from "@src/common/constants";
 export const HistoryDetail: FunctionComponent = observer((props) => {
   const { chainStore, priceStore } = useStore();
@@ -60,6 +59,7 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
         string,
         {
           item: AddressTransaction;
+          currency: Currency;
         }
       >,
       string
@@ -67,38 +67,9 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
   >();
   const [detail, setDetail] = useState<TxDetail>();
   const [loading, setLoading] = useState(false);
-  const [currencyData, setCurrencyData] = useState<Currency>(
-    chainStore.current.stakeCurrency
-  );
 
-  const { item } = route.params;
+  const { item, currency } = route.params;
   const { hash, chain, transactionType } = item;
-  const getInfoToken = async (contractAddress) => {
-    const web3 = new Web3(
-      getRpcByChainId(chainStore.current, chainStore.current.chainId)
-    );
-    // @ts-ignore
-    const contract = new web3.eth.Contract(ERC20_ABI, contractAddress);
-    const tokenDecimal = await contract.methods.decimals().call();
-    const tokenSymbol = await contract.methods.symbol().call();
-    const tokenName = await contract.methods.name().call();
-
-    const coinGeckoInfo =
-      tokenSymbol &&
-      CoinGeckoData.find(
-        (item, index) => item.symbol.toUpperCase() === tokenSymbol.toUpperCase()
-      );
-    const coinGeckoId = coinGeckoInfo && coinGeckoInfo.id;
-    console.log(coinGeckoId, "coinGeckoId");
-    console.log(CoinGeckoData, "CoinGeckoData");
-    setCurrencyData({
-      coinDenom: tokenSymbol,
-      coinDecimals: Number(tokenDecimal),
-      coinMinimalDenom: `erc20:${contractAddress}:${tokenName}`,
-      coinGeckoId: coinGeckoId,
-      coinImageUrl: "",
-    });
-  };
 
   const getHistoryDetail = async () => {
     try {
@@ -123,15 +94,8 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
     }
   };
 
-  // useEffect(() => {
-  //   setDetail(history);
-  // }, [history]);
-
   useEffect(() => {
     getHistoryDetail();
-    if (has(item, "tokenAddress")) {
-      getInfoToken(item.tokenAddress);
-    }
   }, [hash]);
   const { colors } = useTheme();
 
@@ -166,21 +130,15 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
       await openLink(url);
     }
   };
-  // const toChainInfo = chainStore.getChain(
-  //   detail?.toToken?.chainId ?? chainStore.current.chainId
-  // );
-  //
-  console.log(detail, "detail");
+
   const fee = new CoinPretty(
     chainInfo.stakeCurrency,
     new Int(Number(detail.gasPrice)).mul(new Int(detail.gasUsed))
   );
-  console.log(currencyData, "currencyData");
+
   const amount = new CoinPretty(
-    currencyData,
-    new Dec(item.amount).mul(
-      DecUtils.getTenExponentN(currencyData.coinDecimals)
-    )
+    currency,
+    new Dec(item.amount).mul(DecUtils.getTenExponentN(currency.coinDecimals))
   );
 
   const onRefresh = () => {
@@ -204,7 +162,6 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
       }
     >
       <View style={styles.containerBox}>
-        {/*<PageHeader title={"Transaction details"} />*/}
         <ScrollView
           refreshControl={
             <RefreshControl refreshing={loading} onRefresh={onRefresh} />
@@ -213,6 +170,11 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
         >
           <HeaderTx
             type={item.transactionSubtype === "incoming" ? "Received" : "Sent"}
+            colorAmount={
+              new Dec(item.amount).gt(new Dec(0))
+                ? colors["success-text-body"]
+                : colors["neutral-text-title"]
+            }
             imageType={
               <View
                 style={[
@@ -240,7 +202,7 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
             amount={`${
               new Dec(item.amount).gt(new Dec(0)) ? "+" : ""
             }${maskedNumber(amount.hideDenom(true).toString(), 0)} ${
-              currencyData.coinDenom
+              currency.coinDenom
             }`}
             toAmount={null}
             price={priceStore.calculatePrice(amount)?.toString()}

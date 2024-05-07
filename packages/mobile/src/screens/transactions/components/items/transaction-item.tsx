@@ -17,9 +17,11 @@ import { CoinPretty, Dec, DecUtils } from "@owallet/unit";
 import moment from "moment/moment";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
-import { formatAddress } from "@owallet/common";
+import { formatAddress, unknownToken } from "@owallet/common";
 import { RightArrowIcon } from "@src/components/icon";
 import { useStore } from "@src/stores";
+import { has } from "lodash";
+import { Currency } from "@owallet/types";
 
 const OWTransactionItem: FC<{
   item: any;
@@ -29,7 +31,31 @@ const OWTransactionItem: FC<{
   const { priceStore, chainStore } = useStore();
   const fiat = priceStore.defaultVsCurrency;
   if (!item) return;
-  const currency = chainStore.current.stakeCurrency;
+  let currency = unknownToken;
+  const onTransactionDetail = (item, currency) => {
+    navigate(SCREENS.STACK.Others, {
+      screen: SCREENS.HistoryDetail,
+      params: {
+        item,
+        currency,
+      },
+    });
+
+    return;
+  };
+  if (item.transactionType === "fungible") {
+    if (has(item, "tokenInfo.attributes")) {
+      currency = {
+        coinDecimals: item.tokenInfo.attributes.decimals,
+        coinImageUrl: item.tokenInfo.attributes.image_url,
+        coinGeckoId: item.tokenInfo.attributes.coingecko_coin_id,
+        coinMinimalDenom: `erc20:${item.tokenAddress}:${item.tokenInfo.attributes.name}`,
+        coinDenom: item.tokenInfo.attributes.symbol,
+      } as Currency;
+    }
+  } else if (item.transactionType === "native") {
+    currency = chainStore.current.stakeCurrency;
+  }
 
   const amount = new CoinPretty(
     currency,
@@ -42,27 +68,37 @@ const OWTransactionItem: FC<{
   const { colors } = useTheme();
   const styles = styling(colors);
   return (
-    <View style={{ paddingTop: 16 }}>
+    <View style={{ paddingVertical: 8 }}>
       {first !== now || index === 0 ? (
         <Text size={14} color={colors["neutral-text-heading"]} weight="600">
           {moment(item.timestamp).format("MMM D, YYYY")}
         </Text>
       ) : null}
 
-      <TouchableOpacity {...props} style={styles.btnItem}>
+      <TouchableOpacity
+        onPress={() => onTransactionDetail(item, currency)}
+        {...props}
+        style={styles.btnItem}
+      >
         <View style={styles.leftBoxItem}>
           <View style={styles.iconWrap}>
             <OWIcon
               type="images"
-              source={{ uri: chainStore.current.raw.chainSymbolImageUrl }}
-              size={28}
+              source={{ uri: currency.coinImageUrl }}
+              size={32}
+              style={{
+                borderRadius: 999,
+              }}
             />
           </View>
           <View style={styles.chainWrap}>
             <OWIcon
               type="images"
               source={{ uri: chainStore.current.raw.chainSymbolImageUrl }}
-              size={16}
+              size={20}
+              style={{
+                borderRadius: 999,
+              }}
             />
           </View>
         </View>
@@ -83,8 +119,7 @@ const OWTransactionItem: FC<{
                 color={colors["neutral-text-heading"]}
                 weight="500"
               >
-                {/*{item.transactionType === 'incoming' ? "Receive" : "Send"}*/}
-                {new Dec(item.amount).gte(new Dec(0)) ? "Received" : "Sent"}
+                {item.transactionSubtype === "incoming" ? "Received" : "Sent"}
               </Text>
               <Text weight="400" color={colors["neutral-text-body"]}>
                 {formatAddress(item.counterAddress)}
@@ -97,12 +132,14 @@ const OWTransactionItem: FC<{
                 <Text
                   weight="500"
                   color={
-                    new Dec(item.amount).gte(new Dec(0))
+                    new Dec(item.amount).gt(new Dec(0))
                       ? colors["success-text-body"]
                       : colors["neutral-text-title"]
                   }
                 >
-                  {`${maskedNumber(amount.hideDenom(true).toString(), 0)} ${
+                  {`${
+                    new Dec(item.amount).gt(new Dec(0)) ? "+" : ""
+                  }${maskedNumber(amount.hideDenom(true).toString(), 0)} ${
                     currency.coinDenom
                   }`}
                 </Text>
@@ -161,24 +198,25 @@ const styling = (colors) => {
       lineHeight: 20,
     },
     iconWrap: {
-      width: 32,
-      height: 32,
-      borderRadius: 32,
+      width: 44,
+      height: 44,
+      borderRadius: 44,
       alignItems: "center",
       justifyContent: "center",
       overflow: "hidden",
-      backgroundColor: colors["neutral-text-action-on-dark-bg"],
+      backgroundColor: colors["neutral-surface-action2"],
     },
     chainWrap: {
-      width: 18,
-      height: 18,
-      borderRadius: 32,
+      width: 22,
+      height: 22,
+      borderRadius: 999,
       alignItems: "center",
       justifyContent: "center",
       backgroundColor: colors["neutral-text-action-on-dark-bg"],
       position: "absolute",
-      bottom: -6,
-      left: 20,
+      bottom: -3,
+      left: 27,
+      borderWidth: 1,
     },
     active: {
       borderBottomColor: colors["primary-surface-default"],
