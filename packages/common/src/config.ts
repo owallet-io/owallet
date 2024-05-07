@@ -393,77 +393,77 @@ export const EmbedChainInfos: AppChainInfo[] = [
     beta: true,
   },
 
-  // {
-  //   chainId: "oraibridge-subnet-2",
-  //   chainName: "OraiBridge",
-  //   rpc: "https://bridge-v2.rpc.orai.io",
-  //   rest: "https://bridge-v2.lcd.orai.io",
-  //   networkType: "cosmos",
-  //   stakeCurrency: {
-  //     coinDenom: "ORAIB",
-  //     coinMinimalDenom: "uoraib",
-  //     coinDecimals: 6,
-  //     gasPriceStep: {
-  //       low: 0,
-  //       average: 0,
-  //       high: 0,
-  //     },
-  //   },
-  //   bip44: {
-  //     coinType: 118,
-  //   },
-  //   coinType: 118,
-  //   bech32Config: Bech32Address.defaultBech32Config("oraib"),
-  //   // List of all coin/tokens used in this chain.
-  //   get currencies() {
-  //     return [
-  //       this.stakeCurrency,
-  //       {
-  //         coinDenom: "BEP20 ORAI",
-  //         coinMinimalDenom: "oraib0xA325Ad6D9c92B55A3Fc5aD7e412B1518F96441C0",
-  //         coinDecimals: 18,
-  //         coinGeckoId: "oraichain-token",
-  //         coinImageUrl:
-  //           "https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png",
-  //       },
-  //       {
-  //         coinDenom: "BEP20 AIRI",
-  //         coinMinimalDenom: "oraib0x7e2A35C746F2f7C240B664F1Da4DD100141AE71F",
-  //         coinDecimals: 18,
-  //         coinGeckoId: "airight",
-  //         coinImageUrl: "https://i.ibb.co/m8mCyMr/airi.png",
-  //       },
-  //       {
-  //         coinDenom: "BEP20 KWT",
-  //         coinMinimalDenom: "oraib0x257a8d1E03D17B8535a182301f15290F11674b53",
-  //         coinDecimals: 18,
-  //         coinGeckoId: "kawaii-islands",
-  //         coinImageUrl:
-  //           "https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png",
-  //       },
-  //       {
-  //         coinDenom: "BEP20 MILKY",
-  //         coinMinimalDenom: "oraib0x6fE3d0F096FC932A905accd1EB1783F6e4cEc717",
-  //         coinDecimals: 18,
-  //         coinGeckoId: "milky-token",
-  //         coinImageUrl:
-  //           "https://s2.coinmarketcap.com/static/img/coins/64x64/14418.png",
-  //       },
-  //       {
-  //         coinDenom: "BEP20 USDT",
-  //         coinMinimalDenom: "oraib0x55d398326f99059fF775485246999027B3197955",
-  //         coinDecimals: 18,
-  //         coinGeckoId: "tether",
-  //         coinImageUrl:
-  //           "https://s2.coinmarketcap.com/static/img/coins/64x64/825.png",
-  //       },
-  //     ];
-  //   },
-  //   get feeCurrencies() {
-  //     return [this.stakeCurrency];
-  //   },
-  //   features: ["stargate", "ibc-transfer", "cosmwasm"],
-  // },
+  {
+    chainId: "oraibridge-subnet-2",
+    chainName: "OraiBridge",
+    rpc: "https://bridge-v2.rpc.orai.io",
+    rest: "https://bridge-v2.lcd.orai.io",
+    networkType: "cosmos",
+    stakeCurrency: {
+      coinDenom: "ORAIB",
+      coinMinimalDenom: "uoraib",
+      coinDecimals: 6,
+      gasPriceStep: {
+        low: 0,
+        average: 0,
+        high: 0,
+      },
+    },
+    bip44: {
+      coinType: 118,
+    },
+    coinType: 118,
+    bech32Config: Bech32Address.defaultBech32Config("oraib"),
+    // List of all coin/tokens used in this chain.
+    get currencies() {
+      return [
+        this.stakeCurrency,
+        {
+          coinDenom: "BEP20 ORAI",
+          coinMinimalDenom: "oraib0xA325Ad6D9c92B55A3Fc5aD7e412B1518F96441C0",
+          coinDecimals: 18,
+          coinGeckoId: "oraichain-token",
+          coinImageUrl:
+            "https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png",
+        },
+        {
+          coinDenom: "BEP20 AIRI",
+          coinMinimalDenom: "oraib0x7e2A35C746F2f7C240B664F1Da4DD100141AE71F",
+          coinDecimals: 18,
+          coinGeckoId: "airight",
+          coinImageUrl: "https://i.ibb.co/m8mCyMr/airi.png",
+        },
+        {
+          coinDenom: "BEP20 KWT",
+          coinMinimalDenom: "oraib0x257a8d1E03D17B8535a182301f15290F11674b53",
+          coinDecimals: 18,
+          coinGeckoId: "kawaii-islands",
+          coinImageUrl:
+            "https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png",
+        },
+        {
+          coinDenom: "BEP20 MILKY",
+          coinMinimalDenom: "oraib0x6fE3d0F096FC932A905accd1EB1783F6e4cEc717",
+          coinDecimals: 18,
+          coinGeckoId: "milky-token",
+          coinImageUrl:
+            "https://s2.coinmarketcap.com/static/img/coins/64x64/14418.png",
+        },
+        {
+          coinDenom: "BEP20 USDT",
+          coinMinimalDenom: "oraib0x55d398326f99059fF775485246999027B3197955",
+          coinDecimals: 18,
+          coinGeckoId: "tether",
+          coinImageUrl:
+            "https://s2.coinmarketcap.com/static/img/coins/64x64/825.png",
+        },
+      ];
+    },
+    get feeCurrencies() {
+      return [this.stakeCurrency];
+    },
+    features: ["stargate", "ibc-transfer", "cosmwasm"],
+  },
   // {
   //   chainId: "oraibtc-mainnet-1",
   //   chainName: "OraiBtc Bridge",
