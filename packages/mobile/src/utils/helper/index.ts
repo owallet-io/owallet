@@ -254,7 +254,7 @@ export const maskedNumber = (
 ) => {
   return number
     ? Number(number).toLocaleString(locales, {
-        minimumFractionDigits: digits,
+        maximumFractionDigits: digits,
       })
     : 0;
 };

@@ -45,7 +45,7 @@ interface IOWFlatListProps extends FlatListProps<any> {
   containerSkeletonStyle?: ViewStyle;
   skeletonStyle?: ViewStyle;
   SkeletonComponent?: FlatListProps<any>["ListHeaderComponent"];
-  ListEmptyComponent: FlatListProps<any>["ListEmptyComponent"];
+  ListEmptyComponent?: FlatListProps<any>["ListEmptyComponent"];
 }
 
 const OWFlatList: FC<IOWFlatListProps> = (props) => {

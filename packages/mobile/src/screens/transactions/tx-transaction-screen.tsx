@@ -13,6 +13,7 @@ import OWFlatList from "@src/components/page/ow-flat-list";
 import { API } from "@src/common/api";
 import get from "lodash/get";
 import { navigate } from "@src/router/root";
+import { EmptyTx } from "@src/screens/home/history-card";
 
 const TxTransactionsScreen = observer(() => {
   const { chainStore, accountStore, keyRingStore } = useStore();
@@ -116,6 +117,7 @@ const TxTransactionsScreen = observer(() => {
           loadMore={loadMore}
           loading={loading}
           onRefresh={onRefresh}
+          ListEmptyComponent={<EmptyTx />}
           refreshing={refreshing}
         />
       </OWBox>

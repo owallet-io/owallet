@@ -139,7 +139,7 @@ const OWTransactionItem: FC<{
                 >
                   {`${
                     new Dec(item.amount).gt(new Dec(0)) ? "+" : ""
-                  }${maskedNumber(amount.hideDenom(true).toString(), 0)} ${
+                  }${maskedNumber(amount.hideDenom(true).toString())} ${
                     currency.coinDenom
                   }`}
                 </Text>

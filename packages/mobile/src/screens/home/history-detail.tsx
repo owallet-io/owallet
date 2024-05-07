@@ -199,7 +199,7 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
             }
             amount={`${
               new Dec(item.amount).gt(new Dec(0)) ? "+" : ""
-            }${maskedNumber(amount.hideDenom(true).toString(), 0)} ${
+            }${maskedNumber(amount.hideDenom(true).toString())} ${
               currency.coinDenom
             }`}
             toAmount={null}
