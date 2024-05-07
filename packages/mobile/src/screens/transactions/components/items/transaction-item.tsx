@@ -88,6 +88,10 @@ const OWTransactionItem: FC<{
               size={32}
               style={{
                 borderRadius: 999,
+                tintColor:
+                  currency.coinDenom === "ORAI"
+                    ? colors["neutral-text-title"]
+                    : null,
               }}
             />
           </View>
