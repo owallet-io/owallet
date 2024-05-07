@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { PageWithView } from "@src/components/page";
 import { useTheme } from "@src/themes/theme-provider";
@@ -14,6 +14,11 @@ import { API } from "@src/common/api";
 import get from "lodash/get";
 import { navigate } from "@src/router/root";
 import { EmptyTx } from "@src/screens/home/history-card";
+import { TextInput } from "@src/components/input";
+import OWIcon from "@src/components/ow-icon/ow-icon";
+import { OWButton } from "@src/components/button";
+import OWButtonIcon from "@src/components/button/ow-button-icon";
+import { OWSearchInput } from "@src/components/ow-search-input";
 
 const TxTransactionsScreen = observer(() => {
   const { chainStore, accountStore, keyRingStore } = useStore();
@@ -110,6 +115,15 @@ const TxTransactionsScreen = observer(() => {
   return (
     <PageWithView>
       <OWBox style={[styles.container]}>
+        <View style={styles.containerTop}>
+          <OWSearchInput placeHolder={"Search for a chain"} />
+          <OWButtonIcon
+            fullWidth={false}
+            name={"tdesignfilter"}
+            sizeIcon={20}
+            style={styles.iconFilter}
+          />
+        </View>
         <OWFlatList
           data={data}
           onEndReached={onEndReached}
@@ -152,9 +166,10 @@ const styling = () => {
       flex: 1,
       backgroundColor: colors["neutral-surface-card"],
       paddingHorizontal: 16,
-      paddingTop: 12,
+      paddingTop: 16,
       borderBottomLeftRadius: 0,
       borderBottomRightRadius: 0,
+      marginTop: 8,
     },
     containerFilter: {
       flexDirection: "row",
@@ -170,6 +185,17 @@ const styling = () => {
       marginVertical: 8,
       alignItems: "center",
       borderRadius: 8,
+    },
+    containerTop: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      gap: 8,
+    },
+    iconFilter: {
+      height: 44,
+      width: 44,
+      backgroundColor: colors["neutral-surface-action"],
+      borderRadius: 44,
     },
   });
 };
