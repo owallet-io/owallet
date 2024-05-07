@@ -95,16 +95,6 @@ const TxTransactionsScreen = observer(() => {
     setLoading(false);
     setRefreshing(false);
   };
-  const onTransactionDetail = (item) => {
-    navigate(SCREENS.STACK.Others, {
-      screen: SCREENS.HistoryDetail,
-      params: {
-        item,
-      },
-    });
-
-    return;
-  };
   const renderItem = ({ item, index }) => {
     return (
       <OWTransactionItem

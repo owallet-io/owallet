@@ -19,6 +19,24 @@ import OWButtonIcon from "../button/ow-button-icon";
 import delay from "delay";
 import { BottomSheetFlatList } from "@gorhom/bottom-sheet";
 import { OwLoading } from "@src/components/owallet-loading/ow-loading";
+
+export const TxSkeleton = () => {
+  const { colors, images } = useTheme();
+  return (
+    <SkeletonPlaceholder
+      highlightColor={colors["skeleton"]}
+      backgroundColor={colors["background-item-list"]}
+      borderRadius={12}
+    >
+      <SkeletonPlaceholder.Item
+        width={"100%"}
+        marginVertical={8}
+        height={65}
+      ></SkeletonPlaceholder.Item>
+    </SkeletonPlaceholder>
+  );
+};
+
 interface IOWFlatListProps extends FlatListProps<any> {
   loadMore?: boolean;
   isBottomSheet?: boolean;
@@ -27,24 +45,14 @@ interface IOWFlatListProps extends FlatListProps<any> {
   containerSkeletonStyle?: ViewStyle;
   skeletonStyle?: ViewStyle;
   SkeletonComponent?: FlatListProps<any>["ListHeaderComponent"];
+  ListEmptyComponent: FlatListProps<any>["ListEmptyComponent"];
 }
+
 const OWFlatList: FC<IOWFlatListProps> = (props) => {
   const { colors, images } = useTheme();
   const listRef = useRef(null);
   const {
-    SkeletonComponent = (
-      <SkeletonPlaceholder
-        highlightColor={colors["skeleton"]}
-        backgroundColor={colors["background-item-list"]}
-        borderRadius={12}
-      >
-        <SkeletonPlaceholder.Item
-          width={"100%"}
-          marginVertical={8}
-          height={65}
-        ></SkeletonPlaceholder.Item>
-      </SkeletonPlaceholder>
-    ),
+    SkeletonComponent = <TxSkeleton />,
     loadMore,
     loading,
     onRefresh,
@@ -53,6 +61,7 @@ const OWFlatList: FC<IOWFlatListProps> = (props) => {
     skeletonStyle = {},
     isBottomSheet = false,
     hiddenButtonBottom,
+    ListEmptyComponent = <OWEmpty />,
     ...rest
   } = props;
   // const onScrollToTop = () => {
@@ -108,7 +117,7 @@ const OWFlatList: FC<IOWFlatListProps> = (props) => {
               })}
             </View>
           ) : (
-            <OWEmpty />
+            ListEmptyComponent
           )
         }
         keyExtractor={_keyExtract}

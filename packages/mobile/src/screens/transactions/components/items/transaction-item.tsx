@@ -216,7 +216,8 @@ const styling = (colors) => {
       position: "absolute",
       bottom: -3,
       left: 27,
-      borderWidth: 1,
+      borderWidth: 2,
+      borderColor: colors["neutral-surface-action2"],
     },
     active: {
       borderBottomColor: colors["primary-surface-default"],

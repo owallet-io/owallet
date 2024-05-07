@@ -50,6 +50,7 @@ import { PageWithView } from "@src/components/page";
 import { Currency } from "@owallet/types";
 
 import { urlTxHistory } from "@src/common/constants";
+
 export const HistoryDetail: FunctionComponent = observer((props) => {
   const { chainStore, priceStore } = useStore();
 
@@ -83,11 +84,9 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
           baseURL: urlTxHistory,
         }
       );
-
-      if (res && res.status === 200) {
-        setDetail(res.data);
-        setLoading(false);
-      }
+      if (res && res.status !== 200) throw Error("Failed");
+      setDetail(res.data);
+      setLoading(false);
     } catch (err) {
       setLoading(false);
       console.log("getHistoryDetail err", err);
@@ -103,7 +102,6 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
   if (!detail || loading)
     return (
       <PageWithView>
-        {/*<PageHeader title={"Transaction details"} />*/}
         <OwLoading />
       </PageWithView>
     );
