@@ -389,16 +389,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         relayerAmount: relayerFeeToken.toString(),
         relayerDecimals: RELAYER_DECIMAL,
       };
-      const smartRoutes = await UniversalSwapHelper.simulateSwapUsingSmartRoute(
-        {
-          fromInfo: originalFromToken,
-          toInfo: originalToToken,
-          amount: toAmount(
-            fromAmountToken,
-            originalToToken.decimals
-          ).toString(),
-        }
-      );
 
       const universalSwapData: UniversalSwapData = {
         sender: {
@@ -416,7 +406,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         userSlippage: userSlippage,
         fromAmount: fromAmountToken,
         relayerFee,
-        smartRoutes: smartRoutes.routes,
+        smartRoutes: routersSwapData?.routeSwapOps,
       };
 
       const universalSwapHandler = new UniversalSwapHandler(
