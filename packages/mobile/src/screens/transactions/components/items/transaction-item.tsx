@@ -118,11 +118,7 @@ const OWTransactionItem: FC<{
         >
           <View style={styles.leftBoxItem}>
             <View style={styles.pl10}>
-              <Text
-                size={16}
-                color={colors["neutral-text-heading"]}
-                weight="500"
-              >
+              <Text size={16} color={colors["neutral-text-title"]} weight="600">
                 {item.transactionSubtype === "incoming" ? "Received" : "Sent"}
               </Text>
               <Text weight="400" color={colors["neutral-text-body"]}>
