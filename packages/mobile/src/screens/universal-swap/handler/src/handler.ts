@@ -225,6 +225,9 @@ export class UniversalSwapHandler {
         const msgExecuteSwap = getEncodedExecuteContractMsgs(sender, msgSwap);
         return [...msgExecuteSwap, ...getEncodedExecuteMsgs, ...msgTransfer];
       }
+
+      console.log("msg cosmos", [...getEncodedExecuteMsgs, ...msgTransfer]);
+
       return [...getEncodedExecuteMsgs, ...msgTransfer];
     }
 
@@ -397,6 +400,8 @@ export class UniversalSwapHandler {
       this.swapData.sender.cosmos,
       msgTransfer
     );
+    console.log("msg evm [...msgExecuteSwap, ...msgExecuteTransfer]");
+
     return [...msgExecuteSwap, ...msgExecuteTransfer];
   }
 
@@ -1019,6 +1024,13 @@ export class UniversalSwapHandler {
 
         msgs = [msg];
       }
+
+      console.log("msgs General 1", msgs);
+
+      console.log(
+        "msg General",
+        buildMultipleExecuteMessages(msgs, ...msgConvertsFrom, ...msgConvertTo)
+      );
       return buildMultipleExecuteMessages(
         msgs,
         ...msgConvertsFrom,
@@ -1073,6 +1085,8 @@ export class UniversalSwapHandler {
         };
       }
     });
+
+    console.log("msg smart route", msgs);
 
     return msgs;
   }
@@ -1145,6 +1159,7 @@ export class UniversalSwapHandler {
         msg: executeMsgSend,
         funds: [],
       };
+      console.log("msg ibc", [instruction]);
       return [instruction];
     } catch (error) {
       console.log({ error });
