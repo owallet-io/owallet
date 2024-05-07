@@ -144,7 +144,7 @@ const OWTransactionItem: FC<{
                   }`}
                 </Text>
                 <Text style={styles.profit} color={colors["neutral-text-body"]}>
-                  {priceAmount.toString()}
+                  {priceAmount.toString().replace("-", "")}
                 </Text>
               </View>
               <View

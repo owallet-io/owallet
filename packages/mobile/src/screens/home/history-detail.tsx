@@ -179,7 +179,10 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
               currency.coinDenom
             }`}
             toAmount={null}
-            price={priceStore.calculatePrice(amount)?.toString()}
+            price={priceStore
+              .calculatePrice(amount)
+              .toString()
+              .replace("-", "")}
           />
           <View style={styles.cardBody}>
             <ItemReceivedToken
