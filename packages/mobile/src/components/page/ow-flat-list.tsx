@@ -25,7 +25,7 @@ export const TxSkeleton = () => {
   return (
     <SkeletonPlaceholder
       highlightColor={colors["skeleton"]}
-      backgroundColor={colors["background-item-list"]}
+      backgroundColor={colors["neutral-surface-action"]}
       borderRadius={12}
     >
       <SkeletonPlaceholder.Item

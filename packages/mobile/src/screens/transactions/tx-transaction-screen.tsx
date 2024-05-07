@@ -12,11 +12,7 @@ import { SCREENS, urlTxHistory } from "@src/common/constants";
 import OWFlatList from "@src/components/page/ow-flat-list";
 import { API } from "@src/common/api";
 import get from "lodash/get";
-import { navigate } from "@src/router/root";
 import { EmptyTx } from "@src/screens/home/history-card";
-import { TextInput } from "@src/components/input";
-import OWIcon from "@src/components/ow-icon/ow-icon";
-import { OWButton } from "@src/components/button";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { OWSearchInput } from "@src/components/ow-search-input";
 
@@ -132,6 +128,7 @@ const TxTransactionsScreen = observer(() => {
 });
 
 export const SearchFilter = () => {
+  const { colors } = useTheme();
   const styles = styling();
   return (
     <View style={styles.containerTop}>
@@ -140,6 +137,7 @@ export const SearchFilter = () => {
         fullWidth={false}
         name={"tdesignfilter"}
         sizeIcon={20}
+        colorIcon={colors["neutral-text-action-on-light-bg"]}
         style={styles.iconFilter}
       />
     </View>
