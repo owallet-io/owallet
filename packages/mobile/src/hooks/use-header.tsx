@@ -37,7 +37,7 @@ const useHeaderOptions = (
 
   return {
     headerStyle: {
-      backgroundColor: colors["neutral-surface-bg2"],
+      backgroundColor: colors["neutral-surface-bg"],
       shadowColor: colors["neutral-border-default"],
     },
     headerTitle: () => <OWHeaderTitle title={data?.title} />,

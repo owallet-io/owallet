@@ -85,11 +85,6 @@ export const HistoryCard: FunctionComponent<{
     fiat
   );
   if (!price) return <EmptyTx />;
-  const onRefresh = () => {
-    if (!address) return;
-    getWalletHistory(address);
-  };
-
   return (
     <View
       style={{

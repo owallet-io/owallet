@@ -30,7 +30,7 @@ export const OWSearchInput = ({ placeHolder = "Search URL" }) => {
         backgroundColor: colors["neutral-surface-action"],
         borderWidth: 0,
         borderRadius: 999,
-        paddingVertical: 12,
+        height: 44,
       }}
       containerStyle={{
         backgroundColor: colors["neutral-surface-card"],
