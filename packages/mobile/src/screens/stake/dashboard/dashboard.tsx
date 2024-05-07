@@ -179,7 +179,7 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
                 }}
               >{`${
                 appInitStore.getInitApp.isAllNetworks
-                  ? "Please choose a networks."
+                  ? "Please choose a network."
                   : "Please try switching networks or exploring other functions."
               }`}</OWText>
             </View>

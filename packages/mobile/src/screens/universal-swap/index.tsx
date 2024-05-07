@@ -786,14 +786,12 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                   <Text>{volumn}%</Text>
                 </View>
                 {route.paths.map((path, i, acc) => {
-                  const { infoPair, pairKey, TokenInIcon, TokenOutIcon } =
-                    getPairInfo(
-                      path,
-                      flattenTokens,
-                      flattenTokensWithIcon,
-                      theme === "light"
-                    );
-                  const [tokenIn, tokenOut] = infoPair?.info.split("-");
+                  const { TokenInIcon, TokenOutIcon } = getPairInfo(
+                    path,
+                    flattenTokens,
+                    flattenTokensWithIcon,
+                    theme === "light"
+                  );
 
                   return (
                     <View style={{ flexDirection: "row" }}>
@@ -812,6 +810,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                           style={{
                             width: 36,
                             height: 36,
+                            borderRadius: 40,
                           }}
                           source={{
                             uri: TokenOutIcon,

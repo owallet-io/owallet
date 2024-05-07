@@ -7,7 +7,9 @@ import {
   KWT_SCAN,
   network,
   NetworkChainId,
-  PAIRS_CHART,
+  PAIRS,
+  USDC_CONTRACT,
+  ORAIX_CONTRACT,
 } from "@oraichain/oraidex-common";
 import { showToast } from "@src/utils/helper";
 import { API } from "@src/common/api";
@@ -120,6 +122,42 @@ export const findBaseTokenIcon = (
   const baseToken = flattenTokensWithIcon.find(
     (token) => token.coinGeckoId === coinGeckoId
   );
+  console.log("baseToken", coinGeckoId, baseToken);
+
+  return baseToken
+    ? isLightMode
+      ? baseToken.Icon
+      : baseToken.Icon
+    : DefaultIcon;
+};
+
+export const PAIRS_CHART = PAIRS.map((pair) => {
+  const assets = pair.asset_infos.map((info) => {
+    if ("native_token" in info) return info.native_token.denom;
+    return info.token.contract_addr;
+  });
+
+  // TODO: reverse symbol for pair oraix/usdc
+  let symbol = `${pair.symbols[0]}/${pair.symbols[1]}`;
+  if (assets[0] === USDC_CONTRACT && assets[1] === ORAIX_CONTRACT) {
+    symbol = `${pair.symbols[1]}/${pair.symbols[0]}`;
+  }
+  return {
+    ...pair,
+    symbol,
+    info: `${assets[0]}-${assets[1]}`,
+    assets,
+  };
+});
+
+export const findBaseToken = (
+  coinGeckoId,
+  flattenTokensWithIcon,
+  isLightMode
+) => {
+  const baseToken = flattenTokensWithIcon.find(
+    (token) => token.coinGeckoId === coinGeckoId
+  );
   return baseToken
     ? isLightMode
       ? baseToken.IconLight
@@ -144,7 +182,7 @@ export const getPairInfo = (
       convertedArraySymbols.includes(tokenOutKey)
     );
   });
-  const tokenIn = infoPair?.assets?.find(
+  const tokenIn = infoPair?.assets.find(
     (info) => info.toUpperCase() !== path.tokenOut.toUpperCase()
   );
   const tokenOut = path.tokenOut;
@@ -155,12 +193,12 @@ export const getPairInfo = (
     tokenOut: tokenOut,
   };
 
-  const TokenInIcon = findBaseTokenIcon(
+  const TokenInIcon = findBaseToken(
     findTokenInfo(tokenIn, flattenTokens)?.coinGeckoId,
     flattenTokensWithIcon,
     isLightMode
   );
-  const TokenOutIcon = findBaseTokenIcon(
+  const TokenOutIcon = findBaseToken(
     findTokenInfo(tokenOut, flattenTokens)?.coinGeckoId,
     flattenTokensWithIcon,
     isLightMode
