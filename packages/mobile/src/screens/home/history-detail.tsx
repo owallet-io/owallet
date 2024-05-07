@@ -31,6 +31,7 @@ import { PageWithView } from "@src/components/page";
 import { Currency } from "@owallet/types";
 
 import { urlTxHistory } from "@src/common/constants";
+import { OWEmpty } from "@src/components/empty";
 
 export const HistoryDetail: FunctionComponent = observer((props) => {
   const { chainStore, priceStore } = useStore();
@@ -80,12 +81,9 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
   const { colors } = useTheme();
 
   const styles = useStyles(colors);
-  if (!detail || loading)
-    return (
-      <PageWithView>
-        <OwLoading />
-      </PageWithView>
-    );
+
+  if (loading) return <OwLoading />;
+  if (!detail) return <OWEmpty />;
   const chainInfo = chainStore.getChain(chainStore.current.chainId);
   const handleUrl = (txHash) => {
     const chainInfo = chainStore.getChain(detail.chainId);
