@@ -120,13 +120,13 @@ export const TxBtcItem: FC<{
                 <Text
                   weight="500"
                   color={
-                    new Dec(item.amount).gt(new Dec(0))
+                    item.transactionType === "incoming"
                       ? colors["success-text-body"]
                       : colors["neutral-text-title"]
                   }
                 >
                   {`${
-                    new Dec(item.amount).gt(new Dec(0)) ? "+" : ""
+                    item.transactionType === "incoming" ? "+" : "-"
                   }${maskedNumber(amount.hideDenom(true).toString())} ${
                     currency.coinDenom
                   }`}
