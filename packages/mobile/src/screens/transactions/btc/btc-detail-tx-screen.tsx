@@ -40,7 +40,7 @@ export const BtcDetailTx: FunctionComponent = observer((props) => {
       Record<
         string,
         {
-          item: AddressTransaction;
+          item: any;
           currency: Currency;
         }
       >,
@@ -169,39 +169,6 @@ export const BtcDetailTx: FunctionComponent = observer((props) => {
               .replace("-", "")}
           />
           <View style={styles.cardBody}>
-            {detail.inputs.map((it, index) => (
-              <ItemReceivedToken
-                label={capitalizedText("From")}
-                valueDisplay={shortenAddress(it.coin.address)}
-                value={it.coin.address}
-                btnCopy={false}
-                IconRightComponent={
-                  <Text>
-                    {new CoinPretty(currency, new Int(it.coin.value))
-                      .maxDecimals(6)
-                      .trim(true)
-                      .toString()}
-                  </Text>
-                }
-              />
-            ))}
-            {detail.outputs.map((itOut, index) => (
-              <ItemReceivedToken
-                label={capitalizedText("To")}
-                valueDisplay={shortenAddress(itOut.address)}
-                value={itOut.address}
-                btnCopy={false}
-                IconRightComponent={
-                  <Text>
-                    {new CoinPretty(currency, new Int(itOut.value))
-                      .maxDecimals(6)
-                      .trim(true)
-                      .toString()}
-                  </Text>
-                }
-              />
-            ))}
-
             <ItemReceivedToken
               label={"From Network"}
               valueDisplay={
@@ -262,6 +229,38 @@ export const BtcDetailTx: FunctionComponent = observer((props) => {
                 </View>
               }
             />
+            {detail.inputs.map((it, index) => (
+              <ItemReceivedToken
+                label={capitalizedText("From")}
+                valueDisplay={shortenAddress(it.coin.address)}
+                value={it.coin.address}
+                btnCopy={false}
+                IconRightComponent={
+                  <Text>
+                    {new CoinPretty(currency, new Int(it.coin.value))
+                      .maxDecimals(6)
+                      .trim(true)
+                      .toString()}
+                  </Text>
+                }
+              />
+            ))}
+            {detail.outputs.map((itOut, index) => (
+              <ItemReceivedToken
+                label={capitalizedText("To")}
+                valueDisplay={shortenAddress(itOut.address)}
+                value={itOut.address}
+                btnCopy={false}
+                IconRightComponent={
+                  <Text>
+                    {new CoinPretty(currency, new Int(itOut.value))
+                      .maxDecimals(6)
+                      .trim(true)
+                      .toString()}
+                  </Text>
+                }
+              />
+            ))}
           </View>
         </ScrollView>
       </View>

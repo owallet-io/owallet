@@ -12,10 +12,12 @@ import { SCREENS, urlTxHistory } from "@src/common/constants";
 import OWFlatList from "@src/components/page/ow-flat-list";
 import { API } from "@src/common/api";
 import get from "lodash/get";
-import { EmptyTx } from "@src/screens/home/history-card";
+
 import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { OWSearchInput } from "@src/components/ow-search-input";
 import OWTransactionItem from "@src/screens/transactions/components/items/transaction-item";
+import { EmptyTx } from "@src/screens/transactions/components/empty-tx";
+import { TxBtcItem } from "@src/screens/transactions/components/items/tx-btc-item";
 
 const BtcTxsScreen = observer(() => {
   const { chainStore, accountStore, keyRingStore } = useStore();
@@ -37,7 +39,7 @@ const BtcTxsScreen = observer(() => {
     try {
       if (!isLoadMore) setLoading(true);
       if (!hasMore.current) throw Error("Failed");
-      const res = await API.getEvmTxs(
+      const res = await API.getBtcTxs(
         {
           address,
           offset: !isLoadMore ? 0 : page.current * perPage,
@@ -100,7 +102,7 @@ const BtcTxsScreen = observer(() => {
   };
   const renderItem = ({ item, index }) => {
     return (
-      <OWTransactionItem
+      <TxBtcItem
         key={`item-${index + 1}-${index}`}
         data={data}
         item={item}
