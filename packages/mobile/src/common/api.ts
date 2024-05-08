@@ -405,6 +405,13 @@ export const API = {
     let url = `raw-tx-history/evm/${address}?network=${network}&limit=${limit}&offset=${offset}`;
     return API.get(url, config);
   },
+  getBtcTxs: (
+    { address, offset, limit = 1, network = Network.ETHEREUM },
+    config: AxiosRequestConfig
+  ) => {
+    let url = `raw-tx-history/btc/${address}?network=${network}&limit=${limit}&offset=${offset}`;
+    return API.get(url, config);
+  },
   getDetailTx: (
     { hash, network = Network.ETHEREUM },
     config: AxiosRequestConfig

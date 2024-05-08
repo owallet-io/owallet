@@ -12,10 +12,11 @@ import { SCREENS, urlTxHistory } from "@src/common/constants";
 import OWFlatList from "@src/components/page/ow-flat-list";
 import { API } from "@src/common/api";
 import get from "lodash/get";
-import { EmptyTx } from "@src/screens/home/history-card";
+
 import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { OWSearchInput } from "@src/components/ow-search-input";
 import OWTransactionItem from "@src/screens/transactions/components/items/transaction-item";
+import { EmptyTx } from "@src/screens/transactions/components/empty-tx";
 
 const EvmTxsScreen = observer(() => {
   const { chainStore, accountStore, keyRingStore } = useStore();

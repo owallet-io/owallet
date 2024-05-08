@@ -26,7 +26,6 @@ import { ChainIdEnum, TRON_ID } from "@owallet/common";
 import { AddressTransaction, Network } from "@tatumio/tatum";
 import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
 import { OwLoading } from "@src/components/owallet-loading/ow-loading";
-import { PageWithView } from "@src/components/page";
 
 import { Currency } from "@owallet/types";
 

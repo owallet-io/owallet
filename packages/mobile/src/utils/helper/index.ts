@@ -22,6 +22,7 @@ import { Network } from "@tatumio/tatum";
 export const MapChainIdToNetwork = {
   [ChainIdEnum.BNBChain]: Network.BINANCE_SMART_CHAIN,
   [ChainIdEnum.Ethereum]: Network.ETHEREUM,
+  [ChainIdEnum.Bitcoin]: Network.BITCOIN,
 };
 const SCHEME_IOS = "owallet://open_url?url=";
 const SCHEME_ANDROID = "app.owallet.oauth://google/open_url?url=";
