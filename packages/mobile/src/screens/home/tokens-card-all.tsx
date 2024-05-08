@@ -27,11 +27,11 @@ import { navigate } from "@src/router/root";
 import { ChainIdEnum } from "@owallet/common";
 import { API } from "@src/common/api";
 import { chainIcons } from "@oraichain/oraidex-common";
-import { TokenItem } from "../tokens/components/token-item";
-import { HistoryCard } from "./history-card";
+
 import { metrics } from "@src/themes";
 import FastImage from "react-native-fast-image";
 import OWText from "@src/components/text/ow-text";
+import { HistoryCard } from "@src/screens/transactions";
 
 export const TokensCardAll: FunctionComponent<{
   containerStyle?: ViewStyle;

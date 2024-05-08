@@ -295,28 +295,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     appInitStore.updatePrices(prices);
   }, [prices]);
 
-  // const renderAccountCard = (() => {
-  //   if (chainStore.current.networkType === "bitcoin") {
-  //     return <AccountCardBitcoin containerStyle={styles.containerStyle} />;
-  //   } else if (chainStore.current.networkType === "evm") {
-  //     return <AccountCardEVM containerStyle={styles.containerStyle} />;
-  //   }
-  //   return <AccountCard containerStyle={styles.containerStyle} />;
-  // })();
-
-  // const renderTokenCard = useMemo(() => {
-  //   if (chainStore.current.networkType === 'bitcoin') {
-  //     return <TokensBitcoinCard refreshDate={refreshDate} />;
-  //   } else if (chainStore.current.chainId === ChainIdEnum.TRON) {
-  //     return <TronTokensCard />;
-  //   }
-  //   return <TokensCard refreshDate={refreshDate} />;
-  // }, []);
-
-  const renderNewTokenCard = useCallback(() => {
-    return <TokensCardAll />;
-  }, []);
-
   const renderNewAccountCard = (() => {
     return <AccountBoxAll />;
   })();
@@ -333,15 +311,13 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       // contentContainerStyle={{ marginTop: safeAreaInsets.top }}
       ref={scrollViewRef}
     >
-      {/*<CommonPageHeader title="Assets" />*/}
-
       {renderNewAccountCard}
 
       {chainStore.current.networkType === "cosmos" &&
       !appInitStore.getInitApp.isAllNetworks ? (
         <EarningCardNew containerStyle={styles.containerEarnStyle} />
       ) : null}
-      {renderNewTokenCard()}
+      <TokensCardAll />
     </PageWithScrollViewInBottomTabView>
   );
 });

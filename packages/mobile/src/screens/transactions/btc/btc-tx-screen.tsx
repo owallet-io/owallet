@@ -7,17 +7,17 @@ import { useStore } from "@src/stores";
 import { MapChainIdToNetwork } from "@src/utils/helper";
 import { OWBox } from "@src/components/card";
 import { spacing } from "@src/themes";
-import OWTransactionItem from "./components/items/transaction-item";
+
 import { SCREENS, urlTxHistory } from "@src/common/constants";
 import OWFlatList from "@src/components/page/ow-flat-list";
 import { API } from "@src/common/api";
 import get from "lodash/get";
-
+import { EmptyTx } from "@src/screens/home/history-card";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { OWSearchInput } from "@src/components/ow-search-input";
-import { EmptyTx } from "@src/screens/transactions/history-card";
+import OWTransactionItem from "@src/screens/transactions/components/items/transaction-item";
 
-const TxTransactionsScreen = observer(() => {
+const BtcTxsScreen = observer(() => {
   const { chainStore, accountStore, keyRingStore } = useStore();
   const { colors } = useTheme();
   const account = accountStore.getAccount(chainStore.current.chainId);
@@ -144,7 +144,7 @@ export const SearchFilter = () => {
     </View>
   );
 };
-export default TxTransactionsScreen;
+export default BtcTxsScreen;
 
 const styling = () => {
   const { colors } = useTheme();

@@ -14,8 +14,7 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import { useStore } from "../../stores";
-import { MapChainIdToNetwork } from "../../utils/helper";
+
 import { API } from "@src/common/api";
 import { listSkeleton, SCREENS, urlTxHistory } from "@src/common/constants";
 import { navigate } from "@src/router/root";
@@ -27,8 +26,10 @@ import OWTransactionItem from "@src/screens/transactions/components/items/transa
 import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 import { TxSkeleton } from "@src/components/page";
 import { SearchFilter } from "@src/screens/transactions/tx-transaction-screen";
+import { MapChainIdToNetwork } from "@src/utils/helper";
+import { useStore } from "@src/stores";
 
-export const HistoryCard: FunctionComponent<{
+export const EvmTxCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
   const { accountStore, appInitStore, chainStore, priceStore, keyRingStore } =

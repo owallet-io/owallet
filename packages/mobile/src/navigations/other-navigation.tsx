@@ -18,9 +18,6 @@ import {
   TxSuccessResultScreen,
 } from "@src/screens/tx-result";
 import { SendTronScreen } from "@src/screens/send/send-tron";
-import { NotificationScreen } from "@src/screens/notifications/home";
-import HistoryTransactionsScreen from "@src/screens/transactions/history-transactions-screen";
-import TransactionDetailScreen from "@src/screens/transactions/transaction-detail-screen";
 import { AddTokenScreen } from "@src/screens/network/add-token";
 import { SendBtcScreen } from "@src/screens/send/send-btc";
 import BtcFaucet from "@src/screens/home/btc-faucet";
@@ -29,7 +26,8 @@ import { NewSendScreen } from "@src/screens/send/send";
 import { AddressQRScreen } from "@src/screens/qr";
 import { PincodeScreen } from "@src/screens/pincode/pincode";
 import TxTransactionsScreen from "@src/screens/transactions/tx-transaction-screen";
-import { HistoryDetail } from "@src/screens/home/history-detail";
+import { HistoryDetail } from "@src/screens/transactions/history-detail";
+
 const Stack = createStackNavigator();
 export const OtherNavigation: FC = () => {
   const handleScreenOptions = ({ route, navigation }) => {
@@ -103,10 +101,6 @@ export const OtherNavigation: FC = () => {
       <Stack.Screen name={SCREENS.BtcFaucet} component={BtcFaucet} />
       <Stack.Screen name={SCREENS.BuyFiat} component={BuyFiat} />
       <Stack.Screen name={SCREENS.SendTron} component={SendTronScreen} />
-      <Stack.Screen
-        name={SCREENS.Notifications}
-        component={NotificationScreen}
-      />
       <Stack.Screen name={SCREENS.SendBtc} component={SendBtcScreen} />
       <Stack.Screen
         options={{
