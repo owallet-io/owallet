@@ -154,7 +154,7 @@ export const EvmDetailTx: FunctionComponent = observer((props) => {
                   styles.containerSuccess,
                   {
                     backgroundColor: detail.status
-                      ? colors["hightlight-surface-subtle"]
+                      ? colors["highlight-surface-subtle"]
                       : colors["error-surface-subtle"],
                   },
                 ]}
@@ -164,7 +164,7 @@ export const EvmDetailTx: FunctionComponent = observer((props) => {
                   size={14}
                   color={
                     detail.status
-                      ? colors["hightlight-text-title"]
+                      ? colors["highlight-text-title"]
                       : colors["error-text-body"]
                   }
                 >
@@ -331,7 +331,7 @@ const useStyles = (colors) => {
       padding: 16,
     },
     status: {
-      backgroundColor: colors["hightlight-surface-subtle"],
+      backgroundColor: colors["highlight-surface-subtle"],
       paddingHorizontal: 12,
       paddingVertical: 2,
       borderRadius: 12,

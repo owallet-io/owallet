@@ -319,7 +319,7 @@ export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
           <RadioButton
             color={
               selected
-                ? colors["hightlight-surface-active"]
+                ? colors["highlight-surface-active"]
                 : colors["neutral-text-body"]
             }
             id={item.chainId}

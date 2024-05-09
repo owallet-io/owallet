@@ -3,7 +3,12 @@ import { PageWithScrollViewInBottomTabView } from "../../components/page";
 import { Text } from "@src/components/text";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
-import { RefreshControl, ScrollView, View } from "react-native";
+import {
+  RefreshControl,
+  ScrollView,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { useStore } from "../../stores";
 import { SwapBox } from "./components/SwapBox";
 import { OWButton } from "@src/components/button";
@@ -76,6 +81,8 @@ import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import OWCard from "@src/components/card/ow-card";
 import { Toggle } from "@src/components/toggle";
 import { SendToModal } from "./modals/SendToModal";
+import OWIcon from "@src/components/ow-icon/ow-icon";
+import { PriceSettingModal } from "./modals/PriceSettingModal";
 const mixpanel = globalThis.mixpanel as Mixpanel;
 
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
@@ -105,6 +112,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const accountKawaiiCosmos = accountStore.getAccount(ChainIdEnum.KawaiiCosmos);
 
   const [isSlippageModal, setIsSlippageModal] = useState(false);
+  const [priceSettingModal, setPriceSettingModal] = useState(false);
   const [userSlippage, setUserSlippage] = useState(DEFAULT_SLIPPAGE);
   const [swapLoading, setSwapLoading] = useState(false);
 
@@ -616,6 +624,15 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           isOpen={isSlippageModal}
           setUserSlippage={setUserSlippage}
         />
+        <PriceSettingModal
+          close={() => {
+            setPriceSettingModal(false);
+          }}
+          //@ts-ignore
+          currentSlippage={userSlippage}
+          isOpen={priceSettingModal}
+          setUserSlippage={setUserSlippage}
+        />
         <SelectTokenModal
           bottomSheetModalConfig={{
             snapPoints: ["50%", "90%"],
@@ -934,7 +951,102 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               <BalanceText>{userSlippage}%</BalanceText>
             </View>
           </View> */}
-          <OWCard>
+          <OWCard
+            type="normal"
+            style={{
+              marginVertical: 16,
+              borderColor: colors["neutral-border-bold"],
+              borderWidth: 2,
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Text color={colors["neutral-text-title"]} weight="500" size={15}>
+                Smart Route
+              </Text>
+              <View style={{ flexDirection: "row" }}>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    backgroundColor: colors["highlight-surface-subtle"],
+                    paddingHorizontal: 8,
+                    paddingVertical: 4,
+                    borderRadius: 4,
+                    marginRight: 8,
+                  }}
+                >
+                  <OWIcon
+                    name="tdesignwindy"
+                    color={colors["highlight-text-title"]}
+                    size={14}
+                  />
+                  <Text
+                    color={colors["highlight-text-title"]}
+                    weight="600"
+                    size={12}
+                  >
+                    {" "}
+                    FASTEST
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    backgroundColor: colors["primary-surface-subtle"],
+                    paddingHorizontal: 8,
+                    paddingVertical: 4,
+                    borderRadius: 4,
+                  }}
+                >
+                  <Text
+                    color={colors["primary-text-action"]}
+                    weight="600"
+                    size={12}
+                  >
+                    BEST RETURN
+                  </Text>
+                </View>
+              </View>
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginVertical: 10,
+              }}
+            >
+              <Text>Rate</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setPriceSettingModal(true);
+                }}
+                style={{ flexDirection: "row", alignItems: "center" }}
+              >
+                <Text weight="600" color={colors["primary-text-action"]}>
+                  1 USDT = 0.08715 ORAI{" "}
+                </Text>
+                <OWIcon
+                  name="setting-outline"
+                  color={colors["primary-text-action"]}
+                  size={20}
+                />
+              </TouchableOpacity>
+            </View>
+            <View style={styles.borderline} />
+            <View style={{ marginVertical: 10 }}>
+              <Text>
+                Min. Received: <Text weight="600">0.08715 ORAI</Text>
+                {"  •  "}Est. Fee: <Text weight="600">0 ORAI</Text>
+              </Text>
+            </View>
+          </OWCard>
+
+          <OWCard type="normal">
             <View
               style={{
                 flexDirection: "row",

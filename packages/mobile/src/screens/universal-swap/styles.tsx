@@ -198,4 +198,8 @@ export const styling = (colors: TypeTheme["colors"]) =>
     jc: {
       alignItems: "center",
     },
+    borderline: {
+      backgroundColor: colors["neutral-border-default"],
+      height: 1,
+    },
   });
