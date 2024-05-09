@@ -61,7 +61,7 @@ const useHeaderOptions = (
                 backgroundColor: colors["neutral-surface-card"],
               },
             ]}
-            sizeIcon={14}
+            sizeIcon={16}
           />
         );
       return null;
@@ -80,8 +80,8 @@ export default useHeaderOptions;
 const styles = StyleSheet.create({
   btnIcon: {
     borderRadius: 999,
-    width: 35,
-    height: 35,
+    width: 44,
+    height: 44,
     alignItems: "center",
     justifyContent: "center",
     marginLeft: 16,

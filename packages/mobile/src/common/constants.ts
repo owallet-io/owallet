@@ -166,7 +166,6 @@ export const SCREENS_OPTIONS: IScreenOption = {
   [SCREENS.UniversalSwapScreen]: {
     // title: HEADER_KEY.notShowHeader,
     title: "Universal Swap",
-    // showTabBar: true,
   },
   [SCREENS.RegisterIntro]: {
     title: HEADER_KEY.notShowHeader,
