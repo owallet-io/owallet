@@ -7,6 +7,9 @@ import { EmptyTx } from "@src/screens/transactions/components/empty-tx";
 import { ChainIdEnum } from "@owallet/common";
 import { EvmTxCard } from "@src/screens/transactions/evm/evm-tx-card";
 import { BtcTxCard } from "@src/screens/transactions/btc/btc-tx-card";
+import { metrics } from "@src/themes";
+import { useGetHeightHeader } from "@src/hooks";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
 export const HistoryCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -18,9 +21,32 @@ export const HistoryCard: FunctionComponent<{
     chainStore.current.stakeCurrency.coinGeckoId,
     fiat
   );
-  if (!price) return <EmptyTx />;
+  const heightHeader = useGetHeightHeader();
+  const heightBottom = useBottomTabBarHeight();
+  const containerStyle = {
+    minHeight: (metrics.screenHeight - (heightHeader + heightBottom + 100)) / 2,
+  };
+  if (!price)
+    return (
+      <View style={containerStyle}>
+        <EmptyTx />
+      </View>
+    );
   if (chainId === ChainIdEnum.BNBChain || chainId === ChainIdEnum.Ethereum)
-    return <EvmTxCard />;
-  if (chainId === ChainIdEnum.Bitcoin) return <BtcTxCard />;
-  return <EmptyTx />;
+    return (
+      <View style={containerStyle}>
+        <EvmTxCard />
+      </View>
+    );
+  if (chainId === ChainIdEnum.Bitcoin)
+    return (
+      <View style={containerStyle}>
+        <BtcTxCard />
+      </View>
+    );
+  return (
+    <View style={containerStyle}>
+      <EmptyTx />
+    </View>
+  );
 });

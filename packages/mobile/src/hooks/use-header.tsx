@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Platform, StatusBar, StyleSheet, Text, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import OWHeaderTitle from "@src/components/header/ow-header-title";
 import OWHeaderRight from "@src/components/header/ow-header-right";
@@ -10,12 +10,36 @@ import {
   TransitionPresets,
 } from "@react-navigation/stack";
 import { HEADER_KEY, SCREENS } from "@src/common/constants";
+import {
+  getDefaultHeaderHeight,
+  useHeaderHeight,
+} from "@react-navigation/elements";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useGetHeightHeader } from "@src/hooks/use-height-header";
+import { metrics } from "@src/themes";
+
 interface IUseHeaderOptions extends StackNavigationOptions {}
 const useHeaderOptions = (
   data?: IUseHeaderOptions,
   navigation?: any
 ): IUseHeaderOptions => {
   const { colors } = useTheme();
+  // const headerHeight = useHeaderHeight();
+  // console.log(headerHeight,"headerHeight")
+  const headerHeight = useGetHeightHeader();
+  const header = getDefaultHeaderHeight(
+    { width: metrics.screenWidth, height: metrics.screenHeight },
+    false,
+    StatusBar.currentHeight || 0
+  );
+  console.log(header, "header");
+  const { top } = useSafeAreaInsets();
+  const headerHeightWrap =
+    headerHeight +
+    top +
+    (StatusBar.currentHeight || 0) +
+    Math.ceil(headerHeight * 0.5);
+
   const onGoBack = () => {
     navigation.goBack();
   };
@@ -39,6 +63,7 @@ const useHeaderOptions = (
     headerStyle: {
       backgroundColor: colors["neutral-surface-bg"],
       shadowColor: colors["neutral-border-default"],
+      height: headerHeightWrap,
     },
     headerTitle: () => <OWHeaderTitle title={data?.title} />,
     headerTitleAlign: "center",
@@ -61,7 +86,7 @@ const useHeaderOptions = (
                 backgroundColor: colors["neutral-surface-card"],
               },
             ]}
-            sizeIcon={14}
+            sizeIcon={16}
           />
         );
       return null;
@@ -80,8 +105,8 @@ export default useHeaderOptions;
 const styles = StyleSheet.create({
   btnIcon: {
     borderRadius: 999,
-    width: 35,
-    height: 35,
+    width: 44,
+    height: 44,
     alignItems: "center",
     justifyContent: "center",
     marginLeft: 16,

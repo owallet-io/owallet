@@ -84,6 +84,5 @@ const styles = StyleSheet.create({
     // flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    flex: 1,
   },
 });

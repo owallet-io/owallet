@@ -302,7 +302,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   return (
     <PageWithScrollViewInBottomTabView
       style={{
-        paddingTop: 30,
+        paddingTop: 16,
       }}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
