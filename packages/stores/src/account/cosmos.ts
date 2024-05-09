@@ -248,7 +248,25 @@ export class CosmosAccount {
               ],
             },
           };
-
+          const simulateTx = await this.simulateTx(
+            this.hasNoLegacyStdFeature()
+              ? [
+                  {
+                    typeUrl: "/cosmos.bank.v1beta1.MsgSend",
+                    value: MsgSend.encode({
+                      fromAddress: msg.value.from_address,
+                      toAddress: msg.value.to_address,
+                      amount: msg.value.amount,
+                    }).finish(),
+                  },
+                ]
+              : undefined,
+            {
+              amount: stdFee.amount ?? [],
+            },
+            memo
+          );
+          console.log(simulateTx, "simulateTx");
           await this.base.sendMsgs(
             "send",
             {
@@ -280,7 +298,9 @@ export class CosmosAccount {
             memo,
             {
               amount: stdFee.amount ?? [],
-              gas: stdFee.gas ?? this.base.msgOpts.send.native.gas.toString(),
+              gas: simulateTx?.gasUsed
+                ? (simulateTx.gasUsed * 1.3).toString()
+                : stdFee.gas ?? this.base.msgOpts.send.native.gas.toString(),
             },
             signOptions,
             this.txEventsWithPreOnFulfill(onTxEvents, (tx) => {

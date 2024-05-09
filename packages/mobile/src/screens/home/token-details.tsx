@@ -197,7 +197,7 @@ export const TokenDetails: FunctionComponent = observer((props) => {
             <OWText variant="bigText" style={styles.labelTotalAmount}>
               {maskedNumber(item.balance)} {item.asset}
             </OWText>
-            <OWText style={styles.profit} color={colors["success-text-body"]}>
+            <OWText style={styles.profit} color={colors["neutral-text-body"]}>
               ${maskedNumber(item.value)}
             </OWText>
           </View>

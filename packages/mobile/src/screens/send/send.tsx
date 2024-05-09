@@ -212,9 +212,10 @@ export const NewSendScreen: FunctionComponent = observer(() => {
                 toAmount: sendConfigs.amountConfig.amount,
                 value: sendConfigs.amountConfig.amount,
                 fee: sendConfigs.feeConfig.fee
-                  ?.trim(true)
-                  ?.hideDenom(true)
-                  ?.toString(),
+                  .trim(true)
+                  .hideDenom(true)
+                  .maxDecimals(4)
+                  .toString(),
                 type: HISTORY_STATUS.SEND,
                 fromToken: {
                   asset: sendConfigs.amountConfig.sendCurrency.coinDenom,

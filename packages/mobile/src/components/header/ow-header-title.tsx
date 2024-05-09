@@ -34,29 +34,41 @@ const OWHeaderTitle = observer(({ title, ...props }: IOWHeaderTitle) => {
     return (
       <TouchableWithoutFeedback onPress={_onPressNetworkModal} {...props}>
         <View style={styles.containerTitle}>
-          <OWIcon
-            name="dot"
-            color={colors["primary-surface-default"]}
-            size={10}
-          />
-          <Text
-            style={styles.textHeader}
-            color={colors["primary-text"]}
-            variant="body1"
-            typo="regular"
-          >
-            {appInitStore.getInitApp.isAllNetworks
-              ? "All networks"
-              : chainStore.current.chainName}
+          <Text color={colors["neutral-text-title"]} weight="700" size={16}>
+            ASSETS
           </Text>
-          <DownArrowIcon height={10} color={colors["primary-text"]} />
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            <Text
+              style={{ paddingRight: 6 }}
+              color={colors["neutral-text-title"]}
+              size={13}
+            >
+              {appInitStore.getInitApp.isAllNetworks
+                ? "All networks"
+                : chainStore.current.chainName}
+            </Text>
+            <DownArrowIcon height={10} color={colors["neutral-text-title"]} />
+          </View>
         </View>
       </TouchableWithoutFeedback>
     );
 
   return (
     <View style={styles.containerTitle}>
-      <Text variant="h3" typo="bold" color={colors["primary-text"]}>
+      <Text
+        style={{
+          fontSize: 16,
+          fontWeight: "700",
+          lineHeight: 24,
+          color: colors["neutral-text-title"],
+          textTransform: "uppercase",
+        }}
+      >
         {title}
       </Text>
     </View>
@@ -69,7 +81,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
   containerTitle: {
-    flexDirection: "row",
+    // flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     flex: 1,

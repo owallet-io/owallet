@@ -19,11 +19,13 @@ const useHeaderOptions = (
   const onGoBack = () => {
     navigation.goBack();
   };
-  const onTransaction = () => {
-    navigation.navigate(SCREENS.STACK.Others, {
-      screen: SCREENS.Transactions,
+  const onAddWallet = () => {
+    navigation.navigate("Register", {
+      screen: "Register.Intro",
+      params: {
+        canBeBack: true,
+      },
     });
-    return;
   };
 
   const onScan = () => {
@@ -35,28 +37,31 @@ const useHeaderOptions = (
 
   return {
     headerStyle: {
-      backgroundColor: colors["neutral-surface-bg2"],
-      shadowColor: colors["border-gray"],
-      // shadowRadius: 0,
-      // elevation: 1
+      backgroundColor: colors["neutral-surface-bg"],
+      shadowColor: colors["neutral-border-default"],
     },
     headerTitle: () => <OWHeaderTitle title={data?.title} />,
     headerTitleAlign: "center",
     headerRight: () => {
       if (data?.title == HEADER_KEY.showNetworkHeader) {
-        return <OWHeaderRight onTransaction={onTransaction} onScan={onScan} />;
+        return <OWHeaderRight onAddWallet={onAddWallet} onScan={onScan} />;
       }
     },
     headerLeft: () => {
       if (navigation.canGoBack())
         return (
           <OWButtonIcon
-            colorIcon={colors["primary-text"]}
+            colorIcon={colors["neutral-icon-on-light"]}
             onPress={onGoBack}
             name="arrow-left"
             fullWidth={false}
-            style={styles.btnIcon}
-            sizeIcon={!!data?.title ? 24 : 20}
+            style={[
+              styles.btnIcon,
+              {
+                backgroundColor: colors["neutral-surface-card"],
+              },
+            ]}
+            sizeIcon={14}
           />
         );
       return null;
@@ -74,6 +79,11 @@ export default useHeaderOptions;
 
 const styles = StyleSheet.create({
   btnIcon: {
-    paddingRight: 35,
+    borderRadius: 999,
+    width: 35,
+    height: 35,
+    alignItems: "center",
+    justifyContent: "center",
+    marginLeft: 16,
   },
 });

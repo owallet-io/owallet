@@ -17,7 +17,12 @@ import {
   tokensIcon,
 } from "@oraichain/oraidex-common";
 import { API } from "@src/common/api";
-
+import { ChainIdEnum } from "@owallet/common";
+import { Network } from "@tatumio/tatum";
+export const MapChainIdToNetwork = {
+  [ChainIdEnum.BNBChain]: Network.BINANCE_SMART_CHAIN,
+  [ChainIdEnum.Ethereum]: Network.ETHEREUM,
+};
 const SCHEME_IOS = "owallet://open_url?url=";
 const SCHEME_ANDROID = "app.owallet.oauth://google/open_url?url=";
 export const ORAICHAIN_ID = "Oraichain";
@@ -242,10 +247,14 @@ export const getDataFromDataEvent = (itemEvents) => {
       };
 };
 
-export const maskedNumber = (number: number | string, digits?: number) => {
+export const maskedNumber = (
+  number: number | string,
+  digits: number = 4,
+  locales: string = "en-US"
+) => {
   return number
-    ? Number(number).toLocaleString(undefined, {
-        minimumFractionDigits: digits ?? 4,
+    ? Number(number).toLocaleString(locales, {
+        maximumFractionDigits: digits,
       })
     : 0;
 };

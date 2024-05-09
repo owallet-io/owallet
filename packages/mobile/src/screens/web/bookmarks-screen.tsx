@@ -1,10 +1,13 @@
-import React from "react";
-import { PageWithView } from "@src/components/page";
+import React, { useState } from "react";
+import {
+  PageWithView,
+  PageWithViewInBottomTabView,
+} from "@src/components/page";
 import { PageHeader } from "@src/components/header/header-new";
 
 import { observer } from "mobx-react-lite";
 import { useTheme } from "@src/themes/theme-provider";
-import { TouchableOpacity, View } from "react-native";
+import { FlatList, TouchableOpacity, View } from "react-native";
 import DraggableFlatList from "react-native-draggable-flatlist";
 import { useStore } from "@src/stores";
 import OWIcon from "@src/components/ow-icon/ow-icon";
@@ -18,10 +21,12 @@ import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { metrics } from "@src/themes";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export const BookmarksScreen = observer(() => {
   const { colors } = useTheme();
   const { browserStore } = useStore();
+
   const onDetailBrowser = (url) => {
     if (!url) return;
     navigate(SCREENS.DetailsBrowser, {
@@ -34,6 +39,7 @@ export const BookmarksScreen = observer(() => {
     browserStore.removeBoorkmark(uri);
     return;
   };
+
   const renderItem = ({ item, drag, isActive }) => {
     return (
       <TouchableOpacity
@@ -110,16 +116,23 @@ export const BookmarksScreen = observer(() => {
       </TouchableOpacity>
     );
   };
+  const { top } = useSafeAreaInsets();
   return (
-    <PageWithView>
+    <PageWithViewInBottomTabView
+      style={{
+        // backgroundColor: colors["neutral-surface-action"],
+        paddingTop: top,
+      }}
+    >
       <PageHeader
         title="BOOKMARKS"
         // subtitle={chainStore.current.chainName}
-        colors={colors}
+        // colors={colors}
       />
       <View
         style={{
           paddingHorizontal: 16,
+          flex: 1,
         }}
       >
         <DraggableFlatList
@@ -133,6 +146,6 @@ export const BookmarksScreen = observer(() => {
           containerStyle={{ paddingBottom: metrics.screenHeight / 7 }}
         />
       </View>
-    </PageWithView>
+    </PageWithViewInBottomTabView>
   );
 });

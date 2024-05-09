@@ -15,7 +15,6 @@ import HapticFeedback, {
 } from "react-native-haptic-feedback";
 import { Dec, PricePretty } from "@owallet/unit";
 import { useStore } from "@src/stores";
-import { maskedNumber } from "@src/utils/helper";
 
 export interface GraphPoint {
   value: number;
@@ -79,7 +78,6 @@ export const TokenChart: FC<{
   const [currentPrice, setCurrentPrice] = useState<GraphPoint>();
   const [simplePrice, setSimplePrice] = useState<GraphPoint>();
   const [change24h, setChange24h] = useState<number>();
-  console.log(currentPrice, "currentPrice");
   const { data: res, refetch } = useQuery({
     queryKey: ["chart-range", coinGeckoId, typeActive],
     queryFn: () => {
@@ -123,10 +121,6 @@ export const TokenChart: FC<{
   });
   useEffect(() => {
     if (resPriceSimple?.data?.length > 0 && typeActive?.value) {
-      // console.log(
-      //   resPriceSimple?.data?.[coinGeckoId]?.[fiat],
-      //   "resPriceSimple?.data"
-      // );
       if (resPriceSimple?.data?.[0]?.["current_price"]) {
         setCurrentPrice({
           value: resPriceSimple?.data?.[0]?.["current_price"],
@@ -137,7 +131,7 @@ export const TokenChart: FC<{
           date: new Date(),
         });
         if (typeActive.value === "max") {
-          setChange24h(resPriceSimple?.data?.[0]?.roi?.percentage);
+          setChange24h(0);
         } else {
           setChange24h(
             resPriceSimple?.data?.[0]?.[
@@ -205,7 +199,13 @@ export const TokenChart: FC<{
         }}
       >
         <OWText size={28} weight={"500"} color={colors["neutral-text-heading"]}>
-          ${currentPrice?.value ? `${maskedNumber(currentPrice?.value)}` : ""}
+          {new PricePretty(
+            {
+              ...fiatCurrency,
+              maxDecimals: 6,
+            },
+            currentPrice?.value
+          ).toString()}
         </OWText>
         <View
           style={{

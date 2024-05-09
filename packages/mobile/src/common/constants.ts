@@ -121,7 +121,7 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: "",
   },
   [SCREENS.Home]: {
-    title: HEADER_KEY.notShowHeader,
+    title: HEADER_KEY.showNetworkHeader,
     showTabBar: true,
   },
   [SCREENS.TransactionDetail]: {
@@ -270,6 +270,9 @@ export const SCREENS_OPTIONS: IScreenOption = {
   [SCREENS.BtcFaucet]: {
     title: "Bitcoin Faucet",
   },
+  [SCREENS.HistoryDetail]: {
+    title: "Transaction details",
+  },
   [SCREENS.BuyFiat]: {
     title: HEADER_KEY.notShowHeader,
   },
@@ -373,3 +376,6 @@ export const TITLE_TYPE_ACTIONS_COSMOS_HISTORY = {
 export const EVENTS = {
   hiddenTabBar: "hiddenTabBar",
 };
+
+export const urlTxHistory = "https://tx-history-backend-staging.oraidex.io/";
+export const listSkeleton = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];

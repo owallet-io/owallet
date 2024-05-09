@@ -1,4 +1,10 @@
-import { ActivityIndicator, BackHandler, Platform, View } from "react-native";
+import {
+  ActivityIndicator,
+  BackHandler,
+  Platform,
+  StyleSheet,
+  View,
+} from "react-native";
 import { PageWithViewInBottomTabView } from "@src/components/page";
 import { TextInput } from "@src/components/input";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
@@ -27,6 +33,8 @@ import { URL } from "react-native-url-polyfill";
 import DeviceInfo from "react-native-device-info";
 import { SCREENS } from "@src/common/constants";
 import LottieView from "lottie-react-native";
+import { LoadingBar } from "@src/screens/web/components/loadingBar";
+import get from "lodash/get";
 
 export const DetailsBrowserScreen = observer((props) => {
   const { top } = useSafeAreaInsets();
@@ -40,6 +48,12 @@ export const DetailsBrowserScreen = observer((props) => {
   const navigation = useNavigation();
   const { keyRingStore, chainStore, browserStore } = useStore();
   const route = useRoute();
+  const [useProperty, setUseProperty] = useState({
+    percent: 0, //range:  0 - 1
+    color: "#3B78E7",
+    visible: false,
+    height: 3,
+  });
   const [currentURL, setCurrentURL] = useState(() => {
     if (route?.params?.url) {
       return route?.params?.url;
@@ -256,11 +270,7 @@ export const DetailsBrowserScreen = observer((props) => {
     if (!canGoForward) return;
     webviewRef.current?.goForward();
   };
-  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    setIsLoading(true);
-  }, []);
   const onAddBookMark = (bookmark) => {
     if (!bookmark) return;
     browserStore.addBoorkmark(bookmark);
@@ -273,7 +283,63 @@ export const DetailsBrowserScreen = observer((props) => {
     );
     return isActive !== -1 ? true : false;
   };
+  const { color, percent, visible, height } = useProperty;
+  const timer = useRef();
+  useEffect(() => {
+    return () => {
+      clearTimeout(timer.current);
+    };
+  }, []);
+  console.log(visible, "visible");
+  const styles = styling(colors);
+  const onLoadStart = (syntheticEvent) => {
+    syntheticEvent.persist();
+    // update component to be aware of loading status
+    setUseProperty((prev) => ({ ...prev, visible: true }));
+  };
+  const onLoadEnd = (syntheticEvent) => {
+    syntheticEvent.persist();
+    // update component to be aware of loading status
+    timer.current = setTimeout(() => {
+      setUseProperty((prev) => ({ ...prev, visible: false }));
+    }, 300) as any;
+  };
+  const onLoadProgress = (e) => {
+    e.persist();
 
+    if (e.nativeEvent.url === route?.params?.url) {
+      setCanGoBack(false);
+    } else {
+      setCanGoBack(e.nativeEvent.canGoBack);
+    }
+    setCanGoForward(e.nativeEvent.canGoForward);
+    // const { progress } = e.nativeEvent;
+    setCurrentURL(e.nativeEvent.url);
+    // Strangely, `onLoadProgress` is only invoked whenever page changed only in Android.
+    // Use two handlers to measure simultaneously in ios and android.
+    setUseProperty((prev) => ({
+      ...prev,
+      percent: e.nativeEvent?.progress ?? 0.1,
+    }));
+  };
+  const onNavStateChange = (e) => {
+    // Strangely, `onNavigationStateChange` is only invoked whenever page changed only in IOS.
+    // Use two handlers to measure simultaneously in ios and android.
+    if (e.url === route?.params?.url) {
+      setCanGoBack(false);
+    } else {
+      setCanGoBack(e.canGoBack);
+    }
+    setCanGoForward(e.canGoForward);
+    setCurrentURL(e.url);
+  };
+  const onError = () => {
+    setUseProperty((prev) => ({
+      ...prev,
+      percent: 1,
+      color: colors["error-border-default"],
+    }));
+  };
   return (
     <PageWithViewInBottomTabView
       style={{
@@ -287,43 +353,33 @@ export const DetailsBrowserScreen = observer((props) => {
           flexGrow: 1,
         }}
       >
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "center",
-            alignItems: "center",
-            paddingHorizontal: 16,
-            paddingBottom: 8,
-          }}
-        >
+        <View style={styles.containerHeader}>
           <OWButtonIcon
             size={"medium"}
+            disabled={!canGoBack}
             onPress={onGoback}
-            style={{
-              width: 44,
-              height: 44,
-              borderRadius: 999,
-              backgroundColor: colors["neutral-surface-action3"],
-              marginRight: 3,
-            }}
+            style={styles.icon}
             fullWidth={false}
-            colorIcon={colors["neutral-text-action-on-light-bg"]}
+            colorIcon={
+              canGoBack
+                ? colors["neutral-text-action-on-light-bg"]
+                : colors["neutral-icon-disable"]
+            }
             name={"tdesignchevron-left"}
             sizeIcon={18}
           />
 
           <OWButtonIcon
             size={"medium"}
-            style={{
-              width: 44,
-              height: 44,
-              borderRadius: 999,
-              backgroundColor: colors["neutral-surface-action3"],
-              marginLeft: 3,
-            }}
+            style={styles.icon}
             onPress={onGoForward}
+            disabled={!canGoForward}
             fullWidth={false}
-            colorIcon={colors["neutral-text-action-on-light-bg"]}
+            colorIcon={
+              canGoForward
+                ? colors["neutral-text-action-on-light-bg"]
+                : colors["neutral-icon-disable"]
+            }
             name={"tdesignchevron-right"}
             sizeIcon={18}
           />
@@ -341,7 +397,6 @@ export const DetailsBrowserScreen = observer((props) => {
                 borderRadius: 999,
               }}
               containerStyle={{
-                paddingHorizontal: 12,
                 paddingBottom: 0,
                 width: "100%",
               }}
@@ -359,13 +414,7 @@ export const DetailsBrowserScreen = observer((props) => {
           </View>
           <OWButtonIcon
             size={"medium"}
-            style={{
-              width: 44,
-              height: 44,
-              marginRight: 3,
-              borderRadius: 999,
-              backgroundColor: colors["neutral-surface-action3"],
-            }}
+            style={styles.icon}
             fullWidth={false}
             onPress={() => onAddBookMark({ uri: currentURL })}
             colorIcon={
@@ -379,13 +428,7 @@ export const DetailsBrowserScreen = observer((props) => {
           <OWButtonIcon
             size={"medium"}
             onPress={onHomeBrowser}
-            style={{
-              width: 44,
-              height: 44,
-              borderRadius: 999,
-              marginLeft: 3,
-              backgroundColor: colors["neutral-surface-action3"],
-            }}
+            style={styles.icon}
             colorIcon={colors["neutral-text-action-on-light-bg"]}
             fullWidth={false}
             name={"tdesignhome"}
@@ -398,84 +441,77 @@ export const DetailsBrowserScreen = observer((props) => {
             backgroundColor: colors["neutral-surface-bg"],
           }}
         >
-          {isLoading && (
-            <View
-              style={{
-                width: "100%",
-                height: "100%",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <LottieView
-                source={require("@src/assets/animations/loading_owallet.json")}
-                style={{ width: 130, height: 130 }}
-                autoPlay
-                loop
-              />
-            </View>
+          {visible && percent < 1 && (
+            <>
+              <View style={styles.containerLoading}>
+                <LottieView
+                  source={require("@src/assets/animations/loading_owallet.json")}
+                  style={{ width: 130, height: 130 }}
+                  autoPlay
+                  loop
+                />
+              </View>
+              <LoadingBar height={height} color={color} percent={percent} />
+            </>
           )}
-          {sourceCode && route?.params?.url ? (
-            <WebView
-              originWhitelist={["*"]} // to allowing WebView to load blob
-              ref={webviewRef}
-              // incognito={true}
-              // style={pageLoaded ? {} : { flex: 0, height: 0, opacity: 0 }}
-              cacheEnabled={true}
-              injectedJavaScriptBeforeContentLoaded={sourceCode}
-              // onLoad={handleWebViewLoaded}
-              onMessage={onMessage}
-              onNavigationStateChange={(e) => {
-                // Strangely, `onNavigationStateChange` is only invoked whenever page changed only in IOS.
-                // Use two handlers to measure simultaneously in ios and android.
-                setCanGoBack(e.canGoBack);
-                setCanGoForward(e.canGoForward);
 
-                setCurrentURL(e.url);
-              }}
-              onLoadProgress={(e) => {
-                // Strangely, `onLoadProgress` is only invoked whenever page changed only in Android.
-                // Use two handlers to measure simultaneously in ios and android.
-                setCanGoBack(e.nativeEvent.canGoBack);
-                setCanGoForward(e.nativeEvent.canGoForward);
-
-                setCurrentURL(e.nativeEvent.url);
-                // setIsLoading(false);
-              }}
-              onLoadStart={(syntheticEvent) => {
-                // update component to be aware of loading status
-                setIsLoading(true);
-              }}
-              onLoadEnd={(syntheticEvent) => {
-                // update component to be aware of loading status
-                setIsLoading(false);
-              }}
-              contentInsetAdjustmentBehavior="never"
-              automaticallyAdjustContentInsets={false}
-              decelerationRate="normal"
-              allowsBackForwardNavigationGestures={true}
-              // onScroll={_onScroll}
-              source={{ uri: route?.params?.url }}
-            />
-          ) : (
-            <View
-              style={{
-                width: "100%",
-                height: "100%",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <LottieView
-                source={require("@src/assets/animations/loading_owallet.json")}
-                style={{ width: 200, height: 200 }}
-                autoPlay
-                loop
+          {sourceCode && route?.params?.url && (
+            <>
+              <WebView
+                originWhitelist={["*"]} // to allowing WebView to load blob
+                ref={webviewRef}
+                style={
+                  visible && percent < 1
+                    ? { flex: 0, height: 0, opacity: 0 }
+                    : {}
+                }
+                cacheEnabled={true}
+                injectedJavaScriptBeforeContentLoaded={sourceCode}
+                // onLoad={handleWebViewLoaded}
+                onMessage={onMessage}
+                onNavigationStateChange={onNavStateChange}
+                onLoadProgress={onLoadProgress}
+                onLoadStart={onLoadStart}
+                onLoadEnd={onLoadEnd}
+                onError={onError}
+                contentInsetAdjustmentBehavior="never"
+                automaticallyAdjustContentInsets={false}
+                decelerationRate="normal"
+                allowsBackForwardNavigationGestures={true}
+                // onScroll={_onScroll}
+                source={{ uri: route?.params?.url }}
               />
-            </View>
+            </>
           )}
         </View>
       </View>
     </PageWithViewInBottomTabView>
   );
 });
+
+const styling = (colors) => {
+  return StyleSheet.create({
+    icon: {
+      width: 44,
+      height: 44,
+      borderRadius: 999,
+
+      backgroundColor: colors["neutral-surface-action3"],
+    },
+    containerLoading: {
+      width: "100%",
+      height: "100%",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    containerHeader: {
+      flexDirection: "row",
+      justifyContent: "center",
+      alignItems: "center",
+      flexWrap: "wrap",
+      gap: 8,
+      paddingHorizontal: 16,
+      paddingBottom: 8,
+    },
+  });
+};

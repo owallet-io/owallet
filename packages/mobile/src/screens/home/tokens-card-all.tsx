@@ -27,11 +27,11 @@ import { navigate } from "@src/router/root";
 import { ChainIdEnum } from "@owallet/common";
 import { API } from "@src/common/api";
 import { chainIcons } from "@oraichain/oraidex-common";
-import { TokenItem } from "../tokens/components/token-item";
-import { HistoryCard } from "./history-card";
+
 import { metrics } from "@src/themes";
 import FastImage from "react-native-fast-image";
 import OWText from "@src/components/text/ow-text";
+import { HistoryCard } from "@src/screens/transactions";
 
 export const TokensCardAll: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -301,22 +301,6 @@ export const TokensCardAll: FunctionComponent<{
     if (activeTab === "tokens") {
       return (
         <>
-          {/* {renderTokensFromQueryBalances()} */}
-          {/* <OWFlatList
-            contentContainerStyle={{
-              paddingHorizontal: 0,
-              paddingTop: 16
-            }}
-            data={tokens?.filter(t => {
-              if (appInitStore.getInitApp.isAllNetworks) {
-                return true;
-              }
-              return t.chainId === chainStore.current.chainId;
-            })}
-            keyExtractor={_keyExtract}
-            renderItem={renderTokenItem}
-            ListEmptyComponent={<OWEmpty type="cash" />}
-          /> */}
           {tokens.length > 0
             ? tokens
                 .filter((t) => {
@@ -442,7 +426,7 @@ export const TokensCardAll: FunctionComponent<{
               {
                 width: "50%",
               },
-              activeTab === "tokens" ? styles.active : null,
+              activeTab === "tokens" ? styles.active : styles.inactive,
             ]}
           />
           <OWButton
@@ -465,7 +449,7 @@ export const TokensCardAll: FunctionComponent<{
               {
                 width: "50%",
               },
-              activeTab === "history" ? styles.active : null,
+              activeTab === "history" ? styles.active : styles.inactive,
             ]}
           />
         </View>
@@ -534,5 +518,9 @@ const styling = (colors) =>
     active: {
       borderBottomColor: colors["primary-surface-default"],
       borderBottomWidth: 2,
+    },
+    inactive: {
+      borderBottomColor: colors["neutral-border-default"],
+      borderBottomWidth: 1,
     },
   });

@@ -1,5 +1,5 @@
 import { Bech32Address } from "@owallet/cosmos";
-import { AppChainInfo } from "@owallet/types";
+import { AppChainInfo, Currency } from "@owallet/types";
 import { IntlMessages, TypeLanguageToFiatCurrency } from "./languages";
 import { FiatCurrency } from "@owallet/types";
 import "dotenv/config";
@@ -701,7 +701,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinMinimalDenom: "uatom",
       coinDecimals: 6,
       coinGeckoId: "cosmos",
-      coinImageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/atom.png",
+      coinImageUrl:
+        "https://assets.coingecko.com/coins/images/1481/standard/cosmos_hub.png",
       gasPriceStep: {
         low: 0,
         average: 0.025,
@@ -718,7 +719,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinMinimalDenom: "uatom",
         coinDecimals: 6,
         coinGeckoId: "cosmos",
-        coinImageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/atom.png",
+        coinImageUrl:
+          "https://assets.coingecko.com/coins/images/1481/standard/cosmos_hub.png",
       },
     ],
     get feeCurrencies() {
@@ -726,7 +728,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
     coinType: 118,
     features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
-    chainSymbolImageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/atom.png",
+    chainSymbolImageUrl:
+      "https://assets.coingecko.com/coins/images/1481/standard/cosmos_hub.png",
     txExplorer: {
       name: "Mintscan",
       txUrl: "https://www.mintscan.io/cosmos/txs/{txHash}",
@@ -744,7 +747,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinMinimalDenom: "uosmo",
       coinDecimals: 6,
       coinGeckoId: "osmosis",
-      coinImageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/osmo.png",
+      coinImageUrl:
+        "https://assets.coingecko.com/coins/images/16724/standard/osmo.png",
       gasPriceStep: {
         low: 0,
         average: 0.025,
@@ -761,7 +765,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinMinimalDenom: "uosmo",
         coinDecimals: 6,
         coinGeckoId: "osmosis",
-        coinImageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/osmo.png",
+        coinImageUrl:
+          "https://assets.coingecko.com/coins/images/16724/standard/osmo.png",
       },
       {
         coinDenom: "ION",
@@ -769,7 +774,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinDecimals: 6,
         coinGeckoId: "ion",
         coinImageUrl:
-          "https://dhj8dql1kzq2v.cloudfront.net/white/osmosis-ion.png",
+          "https://assets.coingecko.com/coins/images/16731/standard/ion-osmosis.png",
       },
     ],
     get feeCurrencies() {
@@ -777,7 +782,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
     coinType: 118,
     features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
-    chainSymbolImageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/osmo.png",
+    chainSymbolImageUrl:
+      "https://assets.coingecko.com/coins/images/16724/standard/osmo.png",
     txExplorer: {
       name: "Mintscan",
       txUrl: "https://www.mintscan.io/osmosis/txs/{txHash}",
@@ -795,7 +801,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinMinimalDenom: "ujuno",
       coinDecimals: 6,
       coinGeckoId: "juno-network",
-      coinImageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/juno.png",
+      coinImageUrl:
+        "https://assets.coingecko.com/coins/images/19249/standard/Juno_Logo_%28Salmon%29_%282%29.png",
       gasPriceStep: {
         low: 0.001,
         average: 0.0025,
@@ -812,7 +819,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinMinimalDenom: "ujuno",
         coinDecimals: 6,
         coinGeckoId: "juno-network",
-        coinImageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/juno.png",
+        coinImageUrl:
+          "https://assets.coingecko.com/coins/images/19249/standard/Juno_Logo_%28Salmon%29_%282%29.png",
       },
     ],
     get feeCurrencies() {
@@ -825,7 +833,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
       "ibc-transfer",
       "ibc-go",
     ],
-    chainSymbolImageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/juno.png",
+    chainSymbolImageUrl:
+      "https://assets.coingecko.com/coins/images/19249/standard/Juno_Logo_%28Salmon%29_%282%29.png",
     txExplorer: {
       name: "Mintscan",
       txUrl: "https://www.mintscan.io/juno/txs/{txHash}",
@@ -888,7 +897,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
           "ibc/EF48E6B1A1A19F47ECAEA62F5670C37C0580E86A9E88498B7E393EB6F49F33C0",
         coinDecimals: 6,
         coinGeckoId: "cosmos",
-        coinImageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/atom.png",
+        coinImageUrl:
+          "https://assets.coingecko.com/coins/images/1481/standard/cosmos_hub.png",
         gasPriceStep: {
           low: 0.001,
           average: 0.001,
@@ -1086,6 +1096,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
         high: 1.5,
       },
     },
+    chainSymbolImageUrl:
+      "https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png",
     bech32Config: Bech32Address.defaultBech32Config("evmos"),
     networkType: "evm",
     currencies: [
@@ -1161,6 +1173,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
       },
     },
     bech32Config: Bech32Address.defaultBech32Config("evmos"),
+    chainSymbolImageUrl:
+      "https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png",
     networkType: "evm",
     get currencies() {
       return [
@@ -1225,7 +1239,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
 
     features: ["ibc-go", "stargate", "isEvm"],
     txExplorer: {
-      name: "Bsc Scan Testnet",
+      name: "Bsc Scan",
       txUrl: "https://bscscan.com/tx/{txHash}",
       accountUrl: "https://bscscan.com/address/{address}",
     },
@@ -1536,4 +1550,12 @@ export const ValidatorThumbnails: { [key: string]: string } = {
     "https://images.airight.io/validator/625522ca385ee50001b67f29.png",
   oraivaloper14vcw5qk0tdvknpa38wz46js5g7vrvut8ku5kaa:
     "https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png",
+};
+
+export const unknownToken: Currency = {
+  coinDecimals: 6,
+  coinImageUrl: "https://img.icons8.com/pulsar-gradient/96/help.png",
+  coinGeckoId: "unknown",
+  coinMinimalDenom: "unknown",
+  coinDenom: "UNKNOWN",
 };

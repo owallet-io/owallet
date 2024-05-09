@@ -1,7 +1,7 @@
 import { handleError, parseObjectToQueryString } from "@src/utils/helper";
 import axios, { AxiosRequestConfig } from "axios";
 import moment from "moment";
-
+import { Network } from "@tatumio/tatum";
 export const API = {
   post: (path: string, params: any, config: AxiosRequestConfig) => {
     return axios.post(path, params, config);
@@ -396,6 +396,20 @@ export const API = {
     config: AxiosRequestConfig
   ) => {
     let url = `history/${address}?offset=${offset}&limit=${limit}`;
+    return API.get(url, config);
+  },
+  getEvmTxs: (
+    { address, offset, limit = 1, network = Network.ETHEREUM },
+    config: AxiosRequestConfig
+  ) => {
+    let url = `raw-tx-history/evm/${address}?network=${network}&limit=${limit}&offset=${offset}`;
+    return API.get(url, config);
+  },
+  getDetailTx: (
+    { hash, network = Network.ETHEREUM },
+    config: AxiosRequestConfig
+  ) => {
+    let url = `raw-tx-history/all/tx-detail/${hash}?network=${network}`;
     return API.get(url, config);
   },
   getHistoryDetail: ({ id }, config: AxiosRequestConfig) => {
