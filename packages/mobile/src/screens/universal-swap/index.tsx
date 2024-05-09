@@ -596,6 +596,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   return (
     <PageWithBottom
+      style={{ paddingTop: 16 }}
       bottomGroup={
         <OWButton
           label="Swap"
@@ -730,38 +731,41 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             </View>
           </View> */}
 
-          {/* <View>
-            <View>
-              <SwapBox
-                amount={fromAmountToken?.toString() ?? "0"}
-                balanceValue={toDisplay(fromTokenBalance, originalFromToken?.decimals)}
-                onChangeAmount={onChangeFromAmount}
-                tokenActive={originalFromToken}
-                onOpenTokenModal={() => setIsSelectFromTokenModal(true)}
-                tokenFee={fromTokenFee}
-              />
-              <SwapBox
-                amount={toAmountToken.toString() ?? "0"}
-                balanceValue={toDisplay(toTokenBalance, originalToToken?.decimals)}
-                tokenActive={originalToToken}
-                onOpenTokenModal={() => setIsSelectToTokenModal(true)}
-                editable={false}
-                tokenFee={toTokenFee}
-              />
+          <View>
+            <SwapBox
+              amount={fromAmountToken?.toString() ?? "0"}
+              balanceValue={toDisplay(
+                fromTokenBalance,
+                originalFromToken?.decimals
+              )}
+              onChangeAmount={onChangeFromAmount}
+              tokenActive={originalFromToken}
+              onOpenTokenModal={() => setSelectFromTokenModal(true)}
+              tokenFee={fromTokenFee}
+            />
+            <SwapBox
+              amount={toAmountToken.toString() ?? "0"}
+              balanceValue={toDisplay(
+                toTokenBalance,
+                originalToToken?.decimals
+              )}
+              tokenActive={originalToToken}
+              onOpenTokenModal={() => setSelectToTokenModal(true)}
+              editable={false}
+              tokenFee={toTokenFee}
+            />
 
-              <View style={styles.containerBtnCenter}>
-                <OWButtonIcon
-                  fullWidth={false}
-                  name="arrow_down_2"
-                  circle
-                  style={styles.btnSwapBox}
-                  colorIcon={"#7C8397"}
-                  sizeIcon={24}
-                  onPress={handleReverseDirection}
-                />
-              </View>
-            </View>
-          </View> */}
+            <TouchableOpacity
+              onPress={handleReverseDirection}
+              style={styles.containerBtnCenter}
+            >
+              <OWIcon
+                name="tdesignarrow-up-down-1"
+                size={16}
+                color={colors["neutral-text-title"]}
+              />
+            </TouchableOpacity>
+          </View>
           {/* <View style={styles.containerBtnBalance}>
             {balances.map((item, index) => {
               return (

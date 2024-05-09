@@ -301,14 +301,11 @@ export const HomeScreen: FunctionComponent = observer((props) => {
 
   return (
     <PageWithScrollViewInBottomTabView
-      style={{
-        paddingTop: 30,
-      }}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
       showsVerticalScrollIndicator={false}
-      // contentContainerStyle={{ marginTop: safeAreaInsets.top }}
+      contentContainerStyle={styles.containerStyle}
       ref={scrollViewRef}
     >
       {renderNewAccountCard}
@@ -327,6 +324,7 @@ const styling = (colors) =>
     containerStyle: {
       paddingBottom: 12,
       backgroundColor: colors["neutral-surface-bg2"],
+      paddingTop: 30,
     },
     containerEarnStyle: {
       backgroundColor: colors["neutral-surface-bg2"],

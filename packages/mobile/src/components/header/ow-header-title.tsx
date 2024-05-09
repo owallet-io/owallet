@@ -35,7 +35,7 @@ const OWHeaderTitle = observer(({ title, ...props }: IOWHeaderTitle) => {
       <TouchableWithoutFeedback onPress={_onPressNetworkModal} {...props}>
         <View style={styles.containerTitle}>
           <Text color={colors["neutral-text-title"]} weight="700" size={16}>
-            ASSETS
+            {appInitStore.getInitApp.visibleTabBar.toUpperCase() ?? "ASSETS"}
           </Text>
           <View
             style={{

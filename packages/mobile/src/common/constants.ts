@@ -124,6 +124,10 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: HEADER_KEY.showNetworkHeader,
     showTabBar: true,
   },
+  [SCREENS.Invest]: {
+    title: HEADER_KEY.showNetworkHeader,
+    showTabBar: true,
+  },
   [SCREENS.TransactionDetail]: {
     title: "Transaction Details",
   },
@@ -303,10 +307,6 @@ export const SCREENS_OPTIONS: IScreenOption = {
   },
   [SCREENS.WebDApp]: {
     title: "",
-  },
-  [SCREENS.Invest]: {
-    title: HEADER_KEY.notShowHeader,
-    showTabBar: true,
   },
   [SCREENS.Delegate]: {
     // title: HEADER_KEY.showNetworkHeader,

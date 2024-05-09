@@ -17,6 +17,7 @@ export interface ISwapBox extends IInputSelectToken {
   balanceValue: string | number;
   tokenActive: TokenItemType;
   editable?: boolean;
+  type?: string;
 }
 
 export interface IInputSelectToken {

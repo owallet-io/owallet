@@ -2,11 +2,11 @@ import { View } from "react-native";
 import React, { FunctionComponent } from "react";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
-import { OWBox } from "@src/components/card";
 import { ISwapBox } from "../types";
 import InputSelectToken from "./InputSelectToken";
 import { BalanceText } from "./BalanceText";
 import { styling } from "../styles";
+import OWCard from "@src/components/card/ow-card";
 
 export const SwapBox: FunctionComponent<ISwapBox> = observer(
   ({
@@ -14,13 +14,14 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
     currencyValue,
     balanceValue,
     editable,
-    tokenFee,
+    type = "from",
     ...props
   }) => {
     const { colors } = useTheme();
     const styles = styling(colors);
+
     return (
-      <OWBox
+      <OWCard
         style={{
           ...styles.containerInfo,
         }}
@@ -35,17 +36,10 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
             <BalanceText weight="500">
               Balance: {balanceValue || 0.0} {tokenActive.name}
             </BalanceText>
-            {tokenFee > 0 ? (
-              <BalanceText size={13} style={styles.pt2} weight="500">
-                Fee: {tokenFee || 0}%
-              </BalanceText>
-            ) : (
-              <BalanceText size={13} style={styles.pt2} weight="500" />
-            )}
           </View>
-          {/* <BalanceText weight="500">≈ ${currencyValue || 0}</BalanceText> */}
+          <BalanceText weight="500">≈ ${currencyValue || 0}</BalanceText>
         </View>
-      </OWBox>
+      </OWCard>
     );
   }
 );
