@@ -14,6 +14,16 @@ export const styling = (colors: TypeTheme["colors"]) =>
     textBtnBalanceAtive: {
       color: colors["primary-surface-default"],
     },
+    txtBtnSend: {
+      fontSize: 16,
+      fontWeight: "600",
+      color: colors["neutral-text-action-on-dark-bg"],
+    },
+    bottomBtn: {
+      marginTop: 20,
+      width: metrics.screenWidth / 2.3,
+      borderRadius: 999,
+    },
     textBtnBalanceInActive: {
       color: "#7C8397",
     },
