@@ -83,6 +83,7 @@ import { Toggle } from "@src/components/toggle";
 import { SendToModal } from "./modals/SendToModal";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { PriceSettingModal } from "./modals/PriceSettingModal";
+import images from "@src/assets/images";
 const mixpanel = globalThis.mixpanel as Mixpanel;
 
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
@@ -1061,7 +1062,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                 on={toggle}
                 onChange={(value) => {
                   setToggle(value);
-                  console.log("value", value);
 
                   if (value) {
                     setSendToModal(true);
@@ -1070,6 +1070,16 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               />
             </View>
           </OWCard>
+          <View
+            style={{
+              flexDirection: "row",
+              alignSelf: "center",
+              alignItems: "center",
+            }}
+          >
+            <Text color={colors["neutral-text-body2"]}>Powered by{"  "}</Text>
+            <OWIcon type="images" size={80} source={images.obridge} />
+          </View>
         </View>
       </ScrollView>
     </PageWithBottom>

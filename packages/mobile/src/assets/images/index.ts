@@ -57,5 +57,6 @@ const images = {
   success: require("./success.png"),
   success_dark: require("./success_dark.png"),
   swap: require("./swap.png"),
+  obridge: require("./obridge.png"),
 };
 export default images;
