@@ -89,12 +89,8 @@ export const EvmDetailTx: FunctionComponent = observer((props) => {
     const chainInfo = chainStore.getChain(detail.chainId);
     return chainInfo.raw.txExplorer.txUrl.replace(
       "{txHash}",
-      chainInfo.chainId === TRON_ID ||
-        chainInfo.networkType === "bitcoin" ||
-        chainInfo.chainId === ChainIdEnum.OasisSapphire ||
-        chainInfo.chainId === ChainIdEnum.OasisEmerald ||
-        chainInfo.chainId === ChainIdEnum.Oasis ||
-        chainInfo.chainId === ChainIdEnum.BNBChain
+
+      chainInfo.chainId === ChainIdEnum.BNBChain
         ? txHash.toLowerCase()
         : txHash.toUpperCase()
     );
@@ -123,8 +119,9 @@ export const EvmDetailTx: FunctionComponent = observer((props) => {
   return (
     <PageWithBottom
       style={{
-        paddingTop: 5,
+        paddingTop: 0,
       }}
+      backgroundColor={colors["neutral-surface-bg"]}
       bottomGroup={
         <View style={styles.containerBottomButton}>
           <OWButton

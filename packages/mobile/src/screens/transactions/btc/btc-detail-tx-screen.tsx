@@ -113,8 +113,9 @@ export const BtcDetailTx: FunctionComponent = observer((props) => {
   return (
     <PageWithBottom
       style={{
-        paddingTop: 5,
+        paddingTop: 0,
       }}
+      backgroundColor={colors["neutral-surface-bg"]}
       bottomGroup={
         <View style={styles.containerBottomButton}>
           <OWButton
