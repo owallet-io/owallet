@@ -240,7 +240,7 @@ export const BtcDetailTx: FunctionComponent = observer((props) => {
               {detail.inputs.map((it, index) => (
                 <ItemReceivedToken
                   containerStyle={{
-                    height: 22,
+                    height: 25,
                   }}
                   label={""}
                   key={index.toString()}
@@ -273,7 +273,7 @@ export const BtcDetailTx: FunctionComponent = observer((props) => {
               {detail.outputs.map((itOut, index) => (
                 <ItemReceivedToken
                   containerStyle={{
-                    height: 22,
+                    height: 25,
                   }}
                   label={""}
                   key={index.toString()}
