@@ -8,14 +8,13 @@ import { MapChainIdToNetwork } from "@src/utils/helper";
 import { OWBox } from "@src/components/card";
 import { spacing } from "@src/themes";
 
-import { SCREENS, urlTxHistory } from "@src/common/constants";
+import { urlTxHistory } from "@src/common/constants";
 import OWFlatList from "@src/components/page/ow-flat-list";
 import { API } from "@src/common/api";
 import get from "lodash/get";
 
 import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { OWSearchInput } from "@src/components/ow-search-input";
-import OWTransactionItem from "@src/screens/transactions/components/items/transaction-item";
 import { EmptyTx } from "@src/screens/transactions/components/empty-tx";
 import { TxBtcItem } from "@src/screens/transactions/components/items/tx-btc-item";
 

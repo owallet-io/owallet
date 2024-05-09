@@ -1,4 +1,3 @@
-import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { StyleSheet, View, ViewStyle } from "react-native";
@@ -6,10 +5,7 @@ import { StyleSheet, View, ViewStyle } from "react-native";
 import { API } from "@src/common/api";
 import { listSkeleton, SCREENS, urlTxHistory } from "@src/common/constants";
 import { navigate } from "@src/router/root";
-import FastImage from "react-native-fast-image";
-import OWText from "@src/components/text/ow-text";
 import { OWButton } from "@src/components/button";
-import OWTransactionItem from "@src/screens/transactions/components/items/transaction-item";
 import { TxSkeleton } from "@src/components/page";
 import { MapChainIdToNetwork } from "@src/utils/helper";
 import { useStore } from "@src/stores";

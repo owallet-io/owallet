@@ -59,7 +59,7 @@ export const TxBtcItem: FC<{
     <View style={{ paddingVertical: 8 }}>
       {first !== now || index === 0 ? (
         <Text size={14} color={colors["neutral-text-heading"]} weight="600">
-          {moment(item.timestamp * 1000).format("MMM D, YYYY")}
+          {moment(item.timestamp).format("MMM D, YYYY")}
         </Text>
       ) : null}
 

@@ -206,7 +206,7 @@ export const BtcDetailTx: FunctionComponent = observer((props) => {
             />
             <ItemReceivedToken
               label={"Time"}
-              valueDisplay={moment(item.timestamp * 1000).format(
+              valueDisplay={moment(item.timestamp).format(
                 "MMM D, YYYY [at] HH:mm"
               )}
               btnCopy={false}
@@ -229,38 +229,72 @@ export const BtcDetailTx: FunctionComponent = observer((props) => {
                 </View>
               }
             />
-            {detail.inputs.map((it, index) => (
-              <ItemReceivedToken
-                label={capitalizedText("From")}
-                valueDisplay={shortenAddress(it.coin.address)}
-                value={it.coin.address}
-                btnCopy={false}
-                IconRightComponent={
-                  <Text>
-                    {new CoinPretty(currency, new Int(it.coin.value))
-                      .maxDecimals(6)
-                      .trim(true)
-                      .toString()}
-                  </Text>
-                }
-              />
-            ))}
-            {detail.outputs.map((itOut, index) => (
-              <ItemReceivedToken
-                label={capitalizedText("To")}
-                valueDisplay={shortenAddress(itOut.address)}
-                value={itOut.address}
-                btnCopy={false}
-                IconRightComponent={
-                  <Text>
-                    {new CoinPretty(currency, new Int(itOut.value))
-                      .maxDecimals(6)
-                      .trim(true)
-                      .toString()}
-                  </Text>
-                }
-              />
-            ))}
+            <View>
+              <Text
+                weight={"600"}
+                size={16}
+                color={colors["neutral-text-title"]}
+              >
+                {"From"}
+              </Text>
+              {detail.inputs.map((it, index) => (
+                <ItemReceivedToken
+                  containerStyle={{
+                    height: 22,
+                  }}
+                  label={""}
+                  key={index.toString()}
+                  valueDisplay={shortenAddress(it.coin.address)}
+                  value={it.coin.address}
+                  btnCopy={false}
+                  IconRightComponent={
+                    <Text
+                      size={16}
+                      weight={"400"}
+                      color={colors["neutral-text-body"]}
+                    >
+                      {new CoinPretty(currency, new Int(it.coin.value))
+                        .maxDecimals(6)
+                        .trim(true)
+                        .toString()}
+                    </Text>
+                  }
+                />
+              ))}
+            </View>
+            <View>
+              <Text
+                weight={"600"}
+                size={16}
+                color={colors["neutral-text-title"]}
+              >
+                {"To"}
+              </Text>
+              {detail.outputs.map((itOut, index) => (
+                <ItemReceivedToken
+                  containerStyle={{
+                    height: 22,
+                  }}
+                  label={""}
+                  key={index.toString()}
+                  valueDisplay={shortenAddress(itOut.address)}
+                  value={itOut.address}
+                  btnCopy={false}
+                  IconRightComponent={
+                    <Text
+                      size={16}
+                      weight={"400"}
+                      color={colors["neutral-text-body"]}
+                    >
+                      {new CoinPretty(currency, new Int(itOut.value))
+                        .maxDecimals(6)
+                        .trim(true)
+                        .toString()}
+                    </Text>
+                  }
+                />
+              ))}
+            </View>
           </View>
         </ScrollView>
       </View>

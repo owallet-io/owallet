@@ -1,34 +1,19 @@
-import { OWEmpty } from "@src/components/empty";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
-import React, {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
-import {
-  Platform,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-  ViewStyle,
-} from "react-native";
+import React, { FunctionComponent, useEffect, useState } from "react";
+import { View, ViewStyle } from "react-native";
 
 import { API } from "@src/common/api";
 import { listSkeleton, SCREENS, urlTxHistory } from "@src/common/constants";
 import { navigate } from "@src/router/root";
-import FastImage from "react-native-fast-image";
-import OWText from "@src/components/text/ow-text";
 
 import { OWButton } from "@src/components/button";
-import OWTransactionItem from "@src/screens/transactions/components/items/transaction-item";
-import SkeletonPlaceholder from "react-native-skeleton-placeholder";
+
 import { TxSkeleton } from "@src/components/page";
-import { SearchFilter } from "@src/screens/transactions/tx-transaction-screen";
 import { MapChainIdToNetwork } from "@src/utils/helper";
 import { useStore } from "@src/stores";
 import { EmptyTx } from "@src/screens/transactions/components/empty-tx";
+import { TxEvmItem } from "@src/screens/transactions/components/items/tx-evm-item";
 
 export const EvmTxCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -61,6 +46,7 @@ export const EvmTxCard: FunctionComponent<{
         }
       );
       if (res && res.status !== 200) throw Error("Failed");
+
       setHistories(res.data.data);
       setLoading(false);
     } catch (err) {
@@ -92,11 +78,10 @@ export const EvmTxCard: FunctionComponent<{
         paddingHorizontal: 16,
       }}
     >
-      {/*<SearchFilter />*/}
       {histories?.length > 0 ? (
         histories.map((item, index) => {
           return (
-            <OWTransactionItem
+            <TxEvmItem
               key={`item-${index + 1}-${index}`}
               data={histories}
               item={item}

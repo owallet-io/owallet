@@ -15,12 +15,11 @@ import get from "lodash/get";
 
 import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { OWSearchInput } from "@src/components/ow-search-input";
-import OWTransactionItem from "@src/screens/transactions/components/items/transaction-item";
 import { EmptyTx } from "@src/screens/transactions/components/empty-tx";
+import { TxEvmItem } from "@src/screens/transactions/components/items/tx-evm-item";
 
 const EvmTxsScreen = observer(() => {
   const { chainStore, accountStore, keyRingStore } = useStore();
-  const { colors } = useTheme();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const address = account.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses,
@@ -101,7 +100,7 @@ const EvmTxsScreen = observer(() => {
   };
   const renderItem = ({ item, index }) => {
     return (
-      <OWTransactionItem
+      <TxEvmItem
         key={`item-${index + 1}-${index}`}
         data={data}
         item={item}

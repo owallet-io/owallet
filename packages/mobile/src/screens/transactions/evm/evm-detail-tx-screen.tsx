@@ -52,6 +52,7 @@ export const EvmDetailTx: FunctionComponent = observer((props) => {
 
   const { item, currency } = route.params;
   const { hash, chain, transactionType } = item;
+  console.log(item, detail, "item detail");
 
   const getHistoryDetail = async () => {
     try {
@@ -186,13 +187,21 @@ export const EvmDetailTx: FunctionComponent = observer((props) => {
           <View style={styles.cardBody}>
             <ItemReceivedToken
               label={capitalizedText("From")}
-              valueDisplay={shortenAddress(detail.from)}
+              valueDisplay={
+                item.transactionSubtype === "incoming"
+                  ? shortenAddress(item.counterAddress)
+                  : shortenAddress(item.address)
+              }
               value={detail.from}
               colorIconRight={colors["neutral-text-action-on-light-bg"]}
             />
             <ItemReceivedToken
               label={capitalizedText("To")}
-              valueDisplay={shortenAddress(detail.to)}
+              valueDisplay={
+                item.transactionSubtype === "incoming"
+                  ? shortenAddress(item.address)
+                  : shortenAddress(item.counterAddress)
+              }
               value={detail.to}
               colorIconRight={colors["neutral-text-action-on-light-bg"]}
             />

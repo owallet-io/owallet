@@ -122,7 +122,7 @@ const OWTransactionItem: FC<{
                 {item.transactionSubtype === "incoming" ? "Received" : "Sent"}
               </Text>
               <Text weight="400" color={colors["neutral-text-body"]}>
-                {formatAddress(item.counterAddress)}
+                {formatContractAddress(item.hash)}
               </Text>
             </View>
           </View>
