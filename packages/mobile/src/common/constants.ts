@@ -164,8 +164,9 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: HEADER_KEY.showNetworkHeader,
   },
   [SCREENS.UniversalSwapScreen]: {
-    title: HEADER_KEY.notShowHeader,
-    showTabBar: true,
+    // title: HEADER_KEY.notShowHeader,
+    title: "Universal Swap",
+    // showTabBar: true,
   },
   [SCREENS.RegisterIntro]: {
     title: HEADER_KEY.notShowHeader,
