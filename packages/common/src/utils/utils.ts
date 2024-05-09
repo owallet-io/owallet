@@ -358,3 +358,7 @@ export const formatAddress = (address: string, limitFirst = 10) => {
 };
 
 export const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+export const isMilliseconds = (timestamp: number | string): boolean => {
+  const timestampString = timestamp.toString();
+  return timestampString.length === 13;
+};

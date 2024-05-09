@@ -17,7 +17,7 @@ import { CoinPretty, Dec, DecUtils } from "@owallet/unit";
 import moment from "moment/moment";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
-import { formatAddress, unknownToken } from "@owallet/common";
+import { formatAddress, isMilliseconds, unknownToken } from "@owallet/common";
 import { RightArrowIcon } from "@src/components/icon";
 import { useStore } from "@src/stores";
 import { has } from "lodash";
@@ -59,7 +59,11 @@ export const TxBtcItem: FC<{
     <View style={{ paddingVertical: 8 }}>
       {first !== now || index === 0 ? (
         <Text size={14} color={colors["neutral-text-heading"]} weight="600">
-          {moment(item.timestamp).format("MMM D, YYYY")}
+          {moment(
+            isMilliseconds(item.timestamp)
+              ? item.timestamp
+              : item.timestamp * 1000
+          ).format("MMM D, YYYY")}
         </Text>
       ) : null}
 

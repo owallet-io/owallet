@@ -22,7 +22,7 @@ import { HeaderTx } from "@src/screens/tx-result/components/header-tx";
 import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
 import { Text } from "@src/components/text";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
-import { ChainIdEnum, TRON_ID } from "@owallet/common";
+import { ChainIdEnum, isMilliseconds, TRON_ID } from "@owallet/common";
 import { AddressTransaction, Network } from "@tatumio/tatum";
 import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
 import { OwLoading } from "@src/components/owallet-loading/ow-loading";
@@ -207,9 +207,11 @@ export const BtcDetailTx: FunctionComponent = observer((props) => {
             />
             <ItemReceivedToken
               label={"Time"}
-              valueDisplay={moment(item.timestamp).format(
-                "MMM D, YYYY [at] HH:mm"
-              )}
+              valueDisplay={moment(
+                isMilliseconds(item.timestamp)
+                  ? item.timestamp
+                  : item.timestamp * 1000
+              ).format("MMM D, YYYY [at] HH:mm")}
               btnCopy={false}
             />
 
