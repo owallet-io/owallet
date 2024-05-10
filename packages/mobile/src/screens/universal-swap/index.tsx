@@ -677,8 +677,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             `${toDisplay(
               relayerFeeToken.toString(),
               RELAYER_DECIMAL
-            )} ORAI ≈ ${relayerFeeAmount}{" "}
-          ${originalToToken.name}`
+            )} ORAI ≈ ${relayerFeeAmount} ${originalToToken.name}`
           }
           ratio={`1 ${originalFromToken.name} ≈ ${
             ratio ? Number((ratio.displayAmount / INIT_AMOUNT).toFixed(6)) : "0"
@@ -1071,7 +1070,11 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             }}
           >
             <Text color={colors["neutral-text-body2"]}>Powered by{"  "}</Text>
-            <OWIcon type="images" size={80} source={images.obridge} />
+            <OWIcon
+              type="images"
+              size={80}
+              source={theme === "dark" ? images.obridgeLight : images.obridge}
+            />
           </View>
         </View>
       </ScrollView>

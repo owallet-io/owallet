@@ -31,7 +31,6 @@ export const PriceSettingModal = registerModal(
     routersSwapData,
     minimumReceive,
     tokenFee,
-    taxRate,
     swapFee,
     relayerFee,
     ratio,
@@ -335,6 +334,7 @@ export const PriceSettingModal = registerModal(
                 )
               : null}
             {renderInfo("Minimum Received", minimumReceive)}
+            {renderInfo("Slippage", `${currentSlippage}%`)}
             {tokenFee ? renderInfo("Token Fee", tokenFee) : null}
             {relayerFee ? renderInfo("Relayer Fee", relayerFee) : null}
             {swapFee ? renderInfo("Swap Fee", swapFee) : null}
