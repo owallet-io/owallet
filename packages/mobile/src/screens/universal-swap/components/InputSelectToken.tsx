@@ -3,6 +3,7 @@ import React, {
   FunctionComponent,
   useCallback,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import { IInputSelectToken } from "../types";
@@ -13,19 +14,31 @@ import { TypeTheme, useTheme } from "@src/themes/theme-provider";
 import { find } from "lodash";
 import _debounce from "lodash/debounce";
 import { tokensIcon } from "@oraichain/oraidex-common";
+import { useStore } from "@src/stores";
 
 const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
   tokenActive,
   amount,
-  currencyValue,
   onChangeAmount,
   onOpenTokenModal,
   editable,
 }) => {
   const { colors } = useTheme();
+  const { appInitStore } = useStore();
+
   const styles = styling(colors);
   const [txt, setText] = useState("0");
   const [tokenIcon, setTokenIcon] = useState(null);
+
+  const prices = appInitStore.getInitApp.prices;
+
+  const currencyValue = useMemo(() => {
+    const usdPrice = prices[tokenActive.coinGeckoId];
+    if (usdPrice) {
+      return (Number(amount) * Number(usdPrice)).toFixed(4);
+    }
+    return 0;
+  }, [amount]);
 
   useEffect(() => {
     setText(Number(Number(amount).toFixed(6)).toString());

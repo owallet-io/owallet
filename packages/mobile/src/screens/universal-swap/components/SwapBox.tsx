@@ -1,5 +1,5 @@
 import { TouchableOpacity, View } from "react-native";
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useMemo } from "react";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
 import { ISwapBox } from "../types";
@@ -17,7 +17,6 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
   ({
     network,
     tokenActive,
-    currencyValue,
     balanceValue,
     editable,
     onOpenNetworkModal,
@@ -175,7 +174,6 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
 
         <InputSelectToken
           editable={editable}
-          currencyValue={currencyValue}
           tokenActive={tokenActive}
           {...props}
         />

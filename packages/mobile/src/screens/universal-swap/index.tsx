@@ -104,6 +104,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   useEffect(() => {
     appInitStore.updatePrices(prices);
   }, [prices]);
+
   const [counter, setCounter] = useState(0);
   const theme = appInitStore.getInitApp.theme;
 
@@ -682,8 +683,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           }}
           selectedChainFilter={fromNetwork}
           setToken={(denom) => {
-            console.log("fromTokenDenom", denom, toTokenDenom);
-
             setSwapTokens([denom, toTokenDenom]);
             setSwapAmount([0, 0]);
             setBalanceActive(null);
@@ -709,7 +708,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             setNetworkModal(true);
           }}
           setToken={(denom) => {
-            console.log("toTokenDenom", denom, fromTokenDenom);
             setSwapTokens([fromTokenDenom, denom]);
             setSwapAmount([0, 0]);
             setBalanceActive(null);
