@@ -35,9 +35,11 @@ export const SelectTokenModal: FunctionComponent<{
 }> = registerModal(
   ({ close, onNetworkModal, data, setToken, selectedChainFilter }) => {
     const safeAreaInsets = useSafeAreaInsets();
-    const { universalSwapStore } = useStore();
+    const { universalSwapStore, appInitStore } = useStore();
     const [filteredTokens, setTokens] = useState([]);
     const [keyword, setKeyword] = useState("");
+
+    const prices = appInitStore.getInitApp.prices;
 
     const onFilter = (key, chain) => {
       if (key && chain && key !== "" && chain !== "") {
@@ -91,22 +93,20 @@ export const SelectTokenModal: FunctionComponent<{
     const renderTokenItem = useCallback(
       (item) => {
         if (item) {
-          // if (item.coinGeckoId === 'tether' && item.chainId === '0x01') {
-          //   return null;
-          // }
-          //@ts-ignore
-          // const subAmounts = Object.fromEntries(
-          //   Object?.entries(universalSwapStore?.getAmount ?? {}).filter(
-          //     ([denom]) => tokenMap?.[denom]?.chainId === item.chainId
-          //   )
-          // ) as AmountDetails;
-
           const tokenIcon = find(
             tokensIcon,
             (tk) => tk.coinGeckoId === item.coinGeckoId
           );
+          const usdPrice = prices[item.coinGeckoId];
 
-          // const totalUsd = getTotalUsd(subAmounts, prices);
+          const amount = toDisplay(
+            universalSwapStore?.getAmount?.[item.denom],
+            item.decimals
+          );
+
+          const totalUsd = usdPrice
+            ? (Number(amount) * Number(usdPrice)).toFixed(2)
+            : 0;
           return (
             <TouchableOpacity
               onPress={() => {
@@ -147,15 +147,10 @@ export const SelectTokenModal: FunctionComponent<{
                 </View>
               </View>
               <View style={styles.rightBoxItem}>
-                <Text color={colors["neutral-text-title"]}>
-                  {toDisplay(
-                    universalSwapStore?.getAmount?.[item.denom],
-                    item.decimals
-                  )}
+                <Text color={colors["neutral-text-title"]}>{amount}</Text>
+                <Text weight="500" color={colors["neutral-icon-on-light"]}>
+                  ${totalUsd ?? 0}
                 </Text>
-                {/* <Text weight="500" color={colors['neutral-icon-on-light']}>
-                ${totalUsd.toFixed(2) ?? 0}
-              </Text> */}
               </View>
             </TouchableOpacity>
           );

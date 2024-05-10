@@ -35,7 +35,7 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
   const currencyValue = useMemo(() => {
     const usdPrice = prices[tokenActive.coinGeckoId];
     if (usdPrice) {
-      return (Number(amount) * Number(usdPrice)).toFixed(4);
+      return (Number(amount) * Number(usdPrice)).toFixed(2);
     }
     return 0;
   }, [amount]);
