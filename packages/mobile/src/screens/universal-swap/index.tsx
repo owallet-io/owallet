@@ -609,8 +609,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       if (listFromToken.length > 0) {
         setSwapTokens([listFromToken[0].denom, toTokenDenom]);
         setSwapAmount([0, 0]);
+      } else {
+        setFromNetwork(ChainIdEnum.Oraichain);
       }
-      return;
     }
   }, [fromNetwork]);
 
@@ -622,8 +623,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       if (listToToken.length > 0) {
         setSwapTokens([fromTokenDenom, listToToken[0].denom]);
         setSwapAmount([0, 0]);
+      } else {
+        setToNetwork(ChainIdEnum.Oraichain);
       }
-      return;
     }
   }, [toNetwork]);
 
