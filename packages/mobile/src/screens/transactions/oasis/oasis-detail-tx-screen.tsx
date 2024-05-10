@@ -136,7 +136,7 @@ export const OasisDetailTx: FunctionComponent = observer((props) => {
           showsVerticalScrollIndicator={false}
         >
           <HeaderTx
-            type={item.method.replace("staking.", "")}
+            type={item.method.split(".")[1]}
             colorAmount={
               item.transactionType === "incoming"
                 ? colors["success-text-body"]

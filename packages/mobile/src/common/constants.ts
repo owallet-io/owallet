@@ -1,5 +1,6 @@
 import images from "@src/assets/images";
 import { Platform } from "react-native";
+import { isMilliseconds } from "@owallet/common";
 
 export const HEADER_KEY = {
   notShowHeader: "NOT_SHOW_HEADER",
@@ -376,6 +377,12 @@ export const EVENTS = {
   hiddenTabBar: "hiddenTabBar",
 };
 
-// export const urlTxHistory = "https://tx-history-backend-staging.oraidex.io/";
-export const urlTxHistory = "http://localhost:8000/";
+export const urlTxHistory = "https://tx-history-backend-staging.oraidex.io/";
+// export const urlTxHistory = "http://localhost:8000/";
 export const listSkeleton = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+export const getTimeMilliSeconds = (timeStamp) => {
+  if (isMilliseconds(timeStamp)) {
+    return timeStamp;
+  }
+  return timeStamp * 1000;
+};

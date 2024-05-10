@@ -16,7 +16,11 @@ import OWText from "@src/components/text/ow-text";
 import { CoinPretty, Dec, DecUtils } from "@owallet/unit";
 import moment from "moment/moment";
 import { navigate } from "@src/router/root";
-import { SCREENS } from "@src/common/constants";
+import {
+  checkIsMilliseconds,
+  getTimeMilliSeconds,
+  SCREENS,
+} from "@src/common/constants";
 import { formatAddress, isMilliseconds, unknownToken } from "@owallet/common";
 import { RightArrowIcon } from "@src/components/icon";
 import { useStore } from "@src/stores";
@@ -51,19 +55,19 @@ export const TxOasisItem: FC<{
   );
   const priceAmount = priceStore.calculatePrice(amount, fiat);
   const first =
-    index > 0 && moment(data[index - 1].timestamp).format("MMM D, YYYY");
-  const now = moment(item.timestamp).format("MMM D, YYYY");
+    index > 0 &&
+    moment(getTimeMilliSeconds(data[index - 1].timestamp)).format(
+      "MMM D, YYYY"
+    );
+  const now = moment(getTimeMilliSeconds(item.timestamp)).format("MMM D, YYYY");
+  console.log(first, now, "test");
   const { colors } = useTheme();
   const styles = styling(colors);
   return (
     <View style={{ paddingVertical: 8 }}>
-      {first !== now || index === 0 ? (
+      {first != now || index === 0 ? (
         <Text size={14} color={colors["neutral-text-heading"]} weight="600">
-          {moment(
-            isMilliseconds(item.timestamp)
-              ? item.timestamp
-              : item.timestamp * 1000
-          ).format("MMM D, YYYY")}
+          {moment(getTimeMilliSeconds(item.timestamp)).format("MMM D, YYYY")}
         </Text>
       ) : null}
 
@@ -111,7 +115,7 @@ export const TxOasisItem: FC<{
           <View style={styles.leftBoxItem}>
             <View style={styles.pl10}>
               <Text size={16} color={colors["neutral-text-title"]} weight="600">
-                {item.method.replace("staking.", "")}
+                {item.method.split(".")[1]}
               </Text>
               <Text weight="400" color={colors["neutral-text-body"]}>
                 {formatContractAddress(item.txHash)}
