@@ -18,6 +18,7 @@ export interface ISwapBox extends IInputSelectToken {
   balanceValue: string | number;
   tokenActive: TokenItemType;
   editable?: boolean;
+  onOpenNetworkModal: Function;
   type?: string;
 }
 

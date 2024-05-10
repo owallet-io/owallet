@@ -10,6 +10,8 @@ import OWCard from "@src/components/card/ow-card";
 import OWText from "@src/components/text/ow-text";
 import { metrics } from "@src/themes";
 import OWIcon from "@src/components/ow-icon/ow-icon";
+import { useStore } from "@src/stores";
+import { chainIcons } from "@oraichain/oraidex-common";
 
 export const SwapBox: FunctionComponent<ISwapBox> = observer(
   ({
@@ -18,11 +20,15 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
     currencyValue,
     balanceValue,
     editable,
+    onOpenNetworkModal,
     type = "from",
     ...props
   }) => {
     const { colors } = useTheme();
+    const { chainStore } = useStore();
     const styles = styling(colors);
+    const chainInfo = chainStore.getChain(network);
+    const chainIcon = chainIcons.find((c) => c.chainId === network);
 
     return (
       <OWCard
@@ -83,6 +89,9 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
               </View>
             </View>
             <TouchableOpacity
+              onPress={() => {
+                onOpenNetworkModal(true);
+              }}
               style={{ flexDirection: "row", alignItems: "center" }}
             >
               <View
@@ -93,13 +102,10 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
                 }}
               >
                 <View style={{ marginRight: 4 }}>
-                  <View
-                    style={{
-                      width: 22,
-                      height: 22,
-                      borderRadius: 44,
-                      backgroundColor: "red",
-                    }}
+                  <OWIcon
+                    type="images"
+                    source={{ uri: chainIcon?.Icon }}
+                    size={20}
                   />
                 </View>
                 <OWText
@@ -107,7 +113,7 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
                   size={16}
                   color={colors["neutral-text-action-on-light-bg"]}
                 >
-                  {tokenActive?.name}
+                  {chainInfo?.chainName}
                 </OWText>
               </View>
               <OWIcon
@@ -120,6 +126,9 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
         ) : (
           <View style={[styles.containerItemBottom, { paddingBottom: 16 }]}>
             <TouchableOpacity
+              onPress={() => {
+                onOpenNetworkModal(true);
+              }}
               style={{ flexDirection: "row", alignItems: "center" }}
             >
               <View
@@ -130,13 +139,10 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
                 }}
               >
                 <View style={{ marginRight: 4 }}>
-                  <View
-                    style={{
-                      width: 22,
-                      height: 22,
-                      borderRadius: 44,
-                      backgroundColor: "red",
-                    }}
+                  <OWIcon
+                    type="images"
+                    source={{ uri: chainIcon?.Icon }}
+                    size={20}
                   />
                 </View>
                 <OWText
@@ -144,7 +150,7 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
                   size={16}
                   color={colors["neutral-text-action-on-light-bg"]}
                 >
-                  {tokenActive?.name}
+                  {chainInfo?.chainName}
                 </OWText>
               </View>
               <OWIcon

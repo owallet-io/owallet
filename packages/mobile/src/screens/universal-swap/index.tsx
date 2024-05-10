@@ -124,8 +124,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const [toNetworkOpen, setToNetworkOpen] = useState(false);
   const [toNetwork, setToNetwork] = useState("Oraichain");
 
-  const [selectedChainFilter, setChainFilter] = useState(null);
-
   const [[fromTokenDenom, toTokenDenom], setSwapTokens] = useState<
     [string, string]
   >(["orai", "usdt"]);
@@ -149,6 +147,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   // get token on oraichain to simulate swap amount.
   const originalFromToken = tokenMap[fromTokenDenom];
   const originalToToken = tokenMap[toTokenDenom];
+
+  console.log("originalFromToken111", fromTokenDenom, originalFromToken);
 
   const subAmountFrom = toSubAmount(
     universalSwapStore.getAmount,
@@ -600,6 +600,33 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     }
   };
 
+  useEffect(() => {
+    if (fromNetwork) {
+      const listFromToken = filteredFromTokens.filter(
+        (t) => t.chainId === fromNetwork
+      );
+
+      if (listFromToken.length > 0) {
+        setSwapTokens([listFromToken[0].denom, toTokenDenom]);
+        setSwapAmount([0, 0]);
+      }
+      return;
+    }
+  }, [fromNetwork]);
+
+  useEffect(() => {
+    if (toNetwork) {
+      const listToToken = filteredToTokens.filter(
+        (t) => t.chainId === toNetwork
+      );
+      if (listToToken.length > 0) {
+        setSwapTokens([fromTokenDenom, listToToken[0].denom]);
+        setSwapAmount([0, 0]);
+      }
+      return;
+    }
+  }, [toNetwork]);
+
   return (
     <PageWithBottom
       style={{ paddingTop: 16 }}
@@ -653,13 +680,14 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           })}
           close={() => {
             setSelectFromTokenModal(false);
-            setChainFilter(null);
           }}
           onNetworkModal={() => {
             setNetworkModal(true);
           }}
-          selectedChainFilter={selectedChainFilter}
+          selectedChainFilter={fromNetwork}
           setToken={(denom) => {
+            console.log("fromTokenDenom", denom, toTokenDenom);
+
             setSwapTokens([denom, toTokenDenom]);
             setSwapAmount([0, 0]);
             setBalanceActive(null);
@@ -677,15 +705,15 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             //@ts-ignore
             return b.value - a.value;
           })}
-          selectedChainFilter={selectedChainFilter}
+          selectedChainFilter={toNetwork}
           close={() => {
             setSelectToTokenModal(false);
-            setChainFilter(null);
           }}
           onNetworkModal={() => {
             setNetworkModal(true);
           }}
           setToken={(denom) => {
+            console.log("toTokenDenom", denom, fromTokenDenom);
             setSwapTokens([fromTokenDenom, denom]);
             setSwapAmount([0, 0]);
             setBalanceActive(null);
@@ -756,6 +784,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               onChangeAmount={onChangeFromAmount}
               tokenActive={originalFromToken}
               onOpenTokenModal={() => setSelectFromTokenModal(true)}
+              onOpenNetworkModal={setFromNetworkOpen}
               tokenFee={fromTokenFee}
               type={"from"}
             />
@@ -770,6 +799,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               onOpenTokenModal={() => setSelectToTokenModal(true)}
               editable={false}
               tokenFee={toTokenFee}
+              onOpenNetworkModal={setToNetworkOpen}
               type={"to"}
             />
 

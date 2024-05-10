@@ -119,7 +119,7 @@ export const styling = (colors: TypeTheme["colors"]) =>
       position: "absolute",
       top: "50%",
       alignSelf: "center",
-      marginTop: -16,
+      marginTop: -4,
       backgroundColor: colors["neutral-surface-card"],
       borderColor: colors["neutral-surface-action"],
       borderWidth: 4,
