@@ -21,6 +21,7 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
     balanceValue,
     editable,
     onOpenNetworkModal,
+    onSelectAmount,
     type = "from",
     ...props
   }) => {
@@ -56,7 +57,9 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
                     justifyContent: "center",
                     marginLeft: 4,
                   }}
-                  onPress={() => {}}
+                  onPress={() => {
+                    onSelectAmount("50");
+                  }}
                 >
                   <OWText
                     color={colors["neutral-text-action-on-dark-bg"]}
@@ -76,7 +79,9 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
                     justifyContent: "center",
                     marginLeft: 4,
                   }}
-                  onPress={() => {}}
+                  onPress={() => {
+                    onSelectAmount("100");
+                  }}
                 >
                   <OWText
                     color={colors["neutral-text-action-on-dark-bg"]}

@@ -148,8 +148,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const originalFromToken = tokenMap[fromTokenDenom];
   const originalToToken = tokenMap[toTokenDenom];
 
-  console.log("originalFromToken111", fromTokenDenom, originalFromToken);
-
   const subAmountFrom = toSubAmount(
     universalSwapStore.getAmount,
     originalFromToken
@@ -581,12 +579,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setBalanceActive(null);
   };
 
-  const handleActiveAmount = (item) => {
-    handleBalanceActive(item);
-    onMaxFromAmount(
-      (fromTokenBalance * BigInt(item.value)) / BigInt(MAX),
-      item.value
-    );
+  const handleActiveAmount = (value) => {
+    onMaxFromAmount((fromTokenBalance * BigInt(value)) / BigInt(MAX), value);
   };
 
   const renderSwapFee = () => {
@@ -788,6 +782,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               onOpenTokenModal={() => setSelectFromTokenModal(true)}
               onOpenNetworkModal={setFromNetworkOpen}
               tokenFee={fromTokenFee}
+              onSelectAmount={handleActiveAmount}
               type={"from"}
             />
             <SwapBox
