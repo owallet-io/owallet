@@ -376,6 +376,6 @@ export const EVENTS = {
   hiddenTabBar: "hiddenTabBar",
 };
 
-export const urlTxHistory = "https://tx-history-backend-staging.oraidex.io/";
-// export const urlTxHistory = "http://localhost:8000/";
+// export const urlTxHistory = "https://tx-history-backend-staging.oraidex.io/";
+export const urlTxHistory = "http://localhost:8000/";
 export const listSkeleton = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];

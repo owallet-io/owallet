@@ -17,12 +17,13 @@ import {
   tokensIcon,
 } from "@oraichain/oraidex-common";
 import { API } from "@src/common/api";
-import { ChainIdEnum } from "@owallet/common";
+import { ChainIdEnum, OasisNetwork } from "@owallet/common";
 import { Network } from "@tatumio/tatum";
 export const MapChainIdToNetwork = {
   [ChainIdEnum.BNBChain]: Network.BINANCE_SMART_CHAIN,
   [ChainIdEnum.Ethereum]: Network.ETHEREUM,
   [ChainIdEnum.Bitcoin]: Network.BITCOIN,
+  [ChainIdEnum.Oasis]: OasisNetwork.MAINNET,
 };
 const SCHEME_IOS = "owallet://open_url?url=";
 const SCHEME_ANDROID = "app.owallet.oauth://google/open_url?url=";

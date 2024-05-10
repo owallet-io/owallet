@@ -6,6 +6,7 @@ import { useStore } from "@src/stores";
 import { ChainIdEnum } from "@owallet/common";
 import { EvmDetailTx } from "@src/screens/transactions/evm/evm-detail-tx-screen";
 import { BtcDetailTx } from "@src/screens/transactions/btc/btc-detail-tx-screen";
+import { OasisDetailTx } from "@src/screens/transactions/oasis/oasis-detail-tx-screen";
 
 export const HistoryDetail: FunctionComponent = observer((props) => {
   const { chainStore } = useStore();
@@ -13,5 +14,6 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
   if (chainId === ChainIdEnum.BNBChain || chainId === ChainIdEnum.Ethereum)
     return <EvmDetailTx />;
   if (chainId === ChainIdEnum.Bitcoin) return <BtcDetailTx />;
+  if (chainId === ChainIdEnum.Oasis) return <OasisDetailTx />;
   return <OWEmpty />;
 });

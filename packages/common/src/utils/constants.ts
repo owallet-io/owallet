@@ -12,7 +12,11 @@ export enum NetworkEnum {
   Evm = "evm",
   Bitcoin = "bitcoin",
 }
-
+export enum OasisNetwork {
+  MAINNET = "oasis-mainnet",
+  SAPPHIRE = "oasis-sapphire-mainnet",
+  EMERALD = "oasis-emerald-mainnet",
+}
 export enum ChainIdEnum {
   Oraichain = "Oraichain",
   OraichainTestnet = "Oraichain-testnet",

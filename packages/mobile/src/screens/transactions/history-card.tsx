@@ -10,6 +10,7 @@ import { BtcTxCard } from "@src/screens/transactions/btc/btc-tx-card";
 import { metrics } from "@src/themes";
 import { useGetHeightHeader } from "@src/hooks";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { OasisTxCard } from "@src/screens/transactions/oasis/oasis-tx-card";
 
 export const HistoryCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -36,6 +37,12 @@ export const HistoryCard: FunctionComponent<{
     return (
       <View style={containerStyle}>
         <EvmTxCard />
+      </View>
+    );
+  if (chainId === ChainIdEnum.Oasis)
+    return (
+      <View style={containerStyle}>
+        <OasisTxCard />
       </View>
     );
   if (chainId === ChainIdEnum.Bitcoin)
