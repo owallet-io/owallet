@@ -662,6 +662,27 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           }}
           //@ts-ignore
           currentSlippage={userSlippage}
+          impactWarning={impactWarning}
+          routersSwapData={routersSwapData}
+          minimumReceive={(minimumReceive || "0") + " " + toToken.name}
+          swapFee={fee ? `${floatToPercent(fee) + "%"}` : null}
+          tokenFee={
+            (!fromTokenFee && !toTokenFee) ||
+            (fromTokenFee === 0 && toTokenFee === 0)
+              ? null
+              : `${Number(taxRate) * 100}%`
+          }
+          relayerFee={
+            !!relayerFeeToken &&
+            `${toDisplay(
+              relayerFeeToken.toString(),
+              RELAYER_DECIMAL
+            )} ORAI ≈ ${relayerFeeAmount}{" "}
+          ${originalToToken.name}`
+          }
+          ratio={`1 ${originalFromToken.name} ≈ ${
+            ratio ? Number((ratio.displayAmount / INIT_AMOUNT).toFixed(6)) : "0"
+          } ${originalToToken.name}`}
           isOpen={priceSettingModal}
           setUserSlippage={setUserSlippage}
         />
@@ -825,128 +846,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               );
             })}
           </View> */}
-          {/* <View>
-            {routersSwapData?.routes.map((route, ind) => {
-              const volumn = Number((+route.returnAmount / +routersSwapData?.amount) * 100).toFixed(0);
-              return (
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    paddingVertical: 20
-                  }}
-                >
-                  <View
-                    style={{
-                      position: "absolute",
-                      zIndex: -999,
-                      alignSelf: "center"
-                    }}
-                  >
-                    <ProgressBar
-                      progress={100}
-                      styles={{
-                        width: metrics.screenWidth - 32,
-                        height: 6,
-                        backgroundColor: colors["gray-250"]
-                      }}
-                      progressColor={colors["green-active"]}
-                    />
-                  </View>
-                  <View
-                    style={{
-                      backgroundColor: colors["plain-background"],
-                      padding: 4
-                    }}
-                  >
-                    <Text>{volumn}%</Text>
-                  </View>
-                  {route.paths.map((path, i, acc) => {
-                    const { TokenInIcon, TokenOutIcon } = getPairInfo(
-                      path,
-                      flattenTokens,
-                      flattenTokensWithIcon,
-                      theme === "light"
-                    );
-
-                    return (
-                      <View style={{ flexDirection: "row" }}>
-                        <View
-                          style={{
-                            width: 40,
-                            height: 40,
-                            borderRadius: 40,
-                            marginLeft: 20,
-                            backgroundColor: colors["neutral-icon-on-dark"],
-                            alignItems: "center",
-                            justifyContent: "center"
-                          }}
-                        >
-                          <FastImage
-                            style={{
-                              width: 36,
-                              height: 36,
-                              borderRadius: 40
-                            }}
-                            source={{
-                              uri: TokenOutIcon
-                            }}
-                            resizeMode={FastImage.resizeMode.cover}
-                          />
-                        </View>
-                        <View
-                          style={{
-                            width: 40,
-                            height: 40,
-                            borderRadius: 40,
-                            position: "absolute",
-                            backgroundColor: colors["neutral-icon-on-dark"],
-                            right: 20,
-                            alignItems: "center",
-                            justifyContent: "center"
-                          }}
-                        >
-                          <FastImage
-                            style={{
-                              width: 36,
-                              height: 36,
-                              borderRadius: 40
-                            }}
-                            source={{
-                              uri: TokenInIcon
-                            }}
-                            resizeMode={FastImage.resizeMode.cover}
-                          />
-                        </View>
-                      </View>
-                    );
-                  })}
-                  <View
-                    style={{
-                      backgroundColor: colors["plain-background"],
-                      padding: 4
-                    }}
-                  >
-                    <Text>{volumn}%</Text>
-                  </View>
-                </View>
-              );
-            })}
-            {impactWarning ? (
-              <BalanceText
-                color={
-                  Number(impactWarning) > 5
-                    ? Number(impactWarning) > 10
-                      ? colors["error-text-body"]
-                      : colors["warning-text-body"]
-                    : colors["neutral-text-body"]
-                }
-              >
-                Price Impact: ≈ {maskedNumber(impactWarning)}%
-              </BalanceText>
-            ) : null}
-          </View> */}
 
           {/* <View style={styles.containerInfoToken}>
             <View style={styles.itemBottom}>
@@ -1077,7 +976,11 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                 style={{ flexDirection: "row", alignItems: "center" }}
               >
                 <Text weight="600" color={colors["primary-text-action"]}>
-                  1 USDT = 0.08715 ORAI{" "}
+                  {`1 ${originalFromToken.name} ≈ ${
+                    ratio
+                      ? Number((ratio.displayAmount / INIT_AMOUNT).toFixed(6))
+                      : "0"
+                  } ${originalToToken.name}`}{" "}
                 </Text>
                 <OWIcon
                   name="setting-outline"
@@ -1086,13 +989,55 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                 />
               </TouchableOpacity>
             </View>
+
+            <View style={styles.borderline} />
+            {!swapLoading &&
+            (!fromAmountToken || !toAmountToken) &&
+            fromToken.denom === TRON_DENOM ? (
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginVertical: 10,
+                }}
+              >
+                <Text>Minimum Amount</Text>
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <Text weight="600" color={colors["primary-text-action"]}>
+                    {(fromToken.minAmountSwap || "0") + " " + fromToken.name}
+                  </Text>
+                </View>
+              </View>
+            ) : null}
+
             <View style={styles.borderline} />
             <View style={{ marginVertical: 10 }}>
               <Text>
-                Min. Received: <Text weight="600">0.08715 ORAI</Text>
-                {"  •  "}Est. Fee: <Text weight="600">0 ORAI</Text>
+                Min. Received:{" "}
+                <Text weight="600">
+                  {(minimumReceive.toFixed(4) || "0") + " " + toToken.name}
+                </Text>
+                {"  •  "}Swap Fee:{" "}
+                <Text weight="600">{floatToPercent(fee) + "%"}</Text>
               </Text>
             </View>
+
+            {minimumReceive < 0 && (
+              <View style={{ marginTop: 10 }}>
+                <Text color={colors["danger"]}>
+                  Current swap amount is too small
+                </Text>
+              </View>
+            )}
+
+            {!fromTokenFee && !toTokenFee && isWarningSlippage && (
+              <View style={{ marginTop: 10 }}>
+                <Text color={colors["danger"]}>
+                  Current slippage exceed configuration!
+                </Text>
+              </View>
+            )}
           </OWCard>
 
           <OWCard type="normal">

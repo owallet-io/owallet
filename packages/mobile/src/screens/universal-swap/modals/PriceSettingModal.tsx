@@ -11,14 +11,40 @@ import { metrics } from "@src/themes";
 import { DEFAULT_SLIPPAGE } from "@owallet/common";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { TextInput } from "@src/components/input";
+import { getPairInfo } from "../helpers";
+import {
+  flattenTokens,
+  flattenTokensWithIcon,
+} from "@oraichain/oraidex-common";
+import FastImage from "react-native-fast-image";
+import { BalanceText } from "../components/BalanceText";
+import { maskedNumber } from "@src/utils/helper";
+import { ProgressBar } from "@src/components/progress-bar";
+import { useStore } from "@src/stores";
 
 export const PriceSettingModal = registerModal(
-  //@ts-ignore
-  ({ close, setUserSlippage, currentSlippage = 0 }) => {
+  ({
+    close,
+    setUserSlippage,
+    currentSlippage = 0,
+    impactWarning,
+    routersSwapData,
+    minimumReceive,
+    tokenFee,
+    taxRate,
+    swapFee,
+    relayerFee,
+    ratio,
+  }) => {
     const safeAreaInsets = useSafeAreaInsets();
+    const { appInitStore } = useStore();
+
+    console.log("swapFee", swapFee);
+
     const [slippage, setSlippage] = useState(DEFAULT_SLIPPAGE);
     const { colors } = useTheme();
     const styles = styling(colors);
+    const theme = appInitStore.getInitApp.theme;
 
     const handleChangeSlippage = (direction) => {
       if (direction === "minus") {
@@ -44,7 +70,7 @@ export const PriceSettingModal = registerModal(
       setUserSlippage(slippage);
     };
 
-    const renderInfo = () => {
+    const renderInfo = (label, info, impact?) => {
       return (
         <>
           <View
@@ -55,8 +81,19 @@ export const PriceSettingModal = registerModal(
               marginVertical: 10,
             }}
           >
-            <Text>Rate</Text>
-            <Text weight="600">1 USDT = 0.08715 ORAI</Text>
+            <Text>{label}</Text>
+            <Text
+              weight="600"
+              color={
+                Number(impact) > 5
+                  ? Number(impact) > 10
+                    ? colors["error-text-body"]
+                    : colors["warning-text-body"]
+                  : colors["neutral-text-body"]
+              }
+            >
+              {info}
+            </Text>
           </View>
           <View style={styles.borderline} />
         </>
@@ -177,18 +214,136 @@ export const PriceSettingModal = registerModal(
               </View>
             </View>
           </View>
+          <View>
+            {routersSwapData?.routes.map((route, ind) => {
+              const volumn = Number(
+                (+route.returnAmount / +routersSwapData?.amount) * 100
+              ).toFixed(0);
+              return (
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    paddingVertical: 20,
+                  }}
+                >
+                  <View
+                    style={{
+                      position: "absolute",
+                      zIndex: -999,
+                      alignSelf: "center",
+                    }}
+                  >
+                    <ProgressBar
+                      progress={100}
+                      styles={{
+                        width: metrics.screenWidth - 32,
+                        height: 6,
+                        backgroundColor: colors["gray-250"],
+                      }}
+                      progressColor={colors["green-active"]}
+                    />
+                  </View>
+                  <View
+                    style={{
+                      backgroundColor: colors["plain-background"],
+                      padding: 4,
+                    }}
+                  >
+                    <Text>{volumn}%</Text>
+                  </View>
+                  {route.paths.map((path, i, acc) => {
+                    const { TokenInIcon, TokenOutIcon } = getPairInfo(
+                      path,
+                      flattenTokens,
+                      flattenTokensWithIcon,
+                      theme === "light"
+                    );
+
+                    return (
+                      <View style={{ flexDirection: "row" }}>
+                        <View
+                          style={{
+                            width: 40,
+                            height: 40,
+                            borderRadius: 40,
+                            marginLeft: 20,
+                            backgroundColor: colors["neutral-icon-on-dark"],
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <FastImage
+                            style={{
+                              width: 36,
+                              height: 36,
+                              borderRadius: 40,
+                            }}
+                            source={{
+                              uri: TokenOutIcon,
+                            }}
+                            resizeMode={FastImage.resizeMode.cover}
+                          />
+                        </View>
+                        <View
+                          style={{
+                            width: 40,
+                            height: 40,
+                            borderRadius: 40,
+                            position: "absolute",
+                            backgroundColor: colors["neutral-icon-on-dark"],
+                            right: 20,
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <FastImage
+                            style={{
+                              width: 36,
+                              height: 36,
+                              borderRadius: 40,
+                            }}
+                            source={{
+                              uri: TokenInIcon,
+                            }}
+                            resizeMode={FastImage.resizeMode.cover}
+                          />
+                        </View>
+                      </View>
+                    );
+                  })}
+                  <View
+                    style={{
+                      backgroundColor: colors["plain-background"],
+                      padding: 4,
+                    }}
+                  >
+                    <Text>{volumn}%</Text>
+                  </View>
+                </View>
+              );
+            })}
+          </View>
           <View style={{ marginTop: 18, marginBottom: 36 }}>
-            {renderInfo()}
-            {renderInfo()}
-            {renderInfo()}
-            {renderInfo()}
-            {renderInfo()}
+            {renderInfo("Rate", ratio)}
+            {impactWarning
+              ? renderInfo(
+                  "Price Impact",
+                  `≈ ${maskedNumber(impactWarning)}%`,
+                  impactWarning
+                )
+              : null}
+            {renderInfo("Minimum Received", minimumReceive)}
+            {tokenFee ? renderInfo("Token Fee", tokenFee) : null}
+            {relayerFee ? renderInfo("Relayer Fee", relayerFee) : null}
+            {swapFee ? renderInfo("Swap Fee", swapFee) : null}
           </View>
           <OWButton
             style={styles.confirmBtn}
             textStyle={styles.txtBtn}
             type="primary"
-            label="Save"
+            label="Confirm"
             size="medium"
             onPress={() => {
               handleSubmitSlippage();
