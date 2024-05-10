@@ -162,6 +162,7 @@ export const styling = (colors: TypeTheme["colors"]) =>
     containerItemBottom: {
       flexDirection: "row",
       justifyContent: "space-between",
+      alignItems: "center",
     },
     flR: {
       flexDirection: "row",

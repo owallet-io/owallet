@@ -119,6 +119,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const [loadingRefresh, setLoadingRefresh] = useState(false);
   const [searchTokenName, setSearchTokenName] = useState("");
+  const [fromNetworkOpen, setFromNetworkOpen] = useState(false);
+  const [fromNetwork, setFromNetwork] = useState("Oraichain");
+  const [toNetworkOpen, setToNetworkOpen] = useState(false);
+  const [toNetwork, setToNetwork] = useState("Oraichain");
 
   const [selectedChainFilter, setChainFilter] = useState(null);
 
@@ -378,11 +382,13 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       }
     }
 
-    const fromNetwork = chainStore.getChain(
+    const tokenFromNetwork = chainStore.getChain(
       originalFromToken.chainId
     ).chainName;
 
-    const toNetwork = chainStore.getChain(originalToToken.chainId).chainName;
+    const tokenToNetwork = chainStore.getChain(
+      originalToToken.chainId
+    ).chainName;
 
     const logEvent = {
       address: accountOrai.bech32Address,
@@ -390,8 +396,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       fromAmount: `${fromAmountToken}`,
       toToken: originalToToken.name,
       toAmount: `${toAmountToken}`,
-      fromNetwork,
-      toNetwork,
+      tokenFromNetwork,
+      tokenToNetwork,
     };
 
     try {
@@ -689,11 +695,19 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         />
         <SelectNetworkModal
           close={() => {
-            setNetworkModal(false);
+            setFromNetworkOpen(false);
           }}
-          selectedChainFilter={selectedChainFilter}
-          setChainFilter={setChainFilter}
-          isOpen={networkModal}
+          selectedChainFilter={fromNetwork}
+          setChainFilter={setFromNetwork}
+          isOpen={fromNetworkOpen}
+        />
+        <SelectNetworkModal
+          close={() => {
+            setToNetworkOpen(false);
+          }}
+          selectedChainFilter={toNetwork}
+          setChainFilter={setToNetwork}
+          isOpen={toNetworkOpen}
         />
         <SendToModal
           close={() => {
@@ -733,6 +747,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
           <View>
             <SwapBox
+              network={fromNetwork}
               amount={fromAmountToken?.toString() ?? "0"}
               balanceValue={toDisplay(
                 fromTokenBalance,
@@ -742,8 +757,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               tokenActive={originalFromToken}
               onOpenTokenModal={() => setSelectFromTokenModal(true)}
               tokenFee={fromTokenFee}
+              type={"from"}
             />
             <SwapBox
+              network={toNetwork}
               amount={toAmountToken.toString() ?? "0"}
               balanceValue={toDisplay(
                 toTokenBalance,
@@ -753,6 +770,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               onOpenTokenModal={() => setSelectToTokenModal(true)}
               editable={false}
               tokenFee={toTokenFee}
+              type={"to"}
             />
 
             <TouchableOpacity
@@ -960,6 +978,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             type="normal"
             style={{
               marginVertical: 16,
+              marginTop: 16,
               borderColor: colors["neutral-border-bold"],
               borderWidth: 2,
             }}

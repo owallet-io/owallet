@@ -17,6 +17,7 @@ import { tokensIcon } from "@oraichain/oraidex-common";
 const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
   tokenActive,
   amount,
+  currencyValue,
   onChangeAmount,
   onOpenTokenModal,
   editable,
@@ -104,6 +105,9 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
           style={[styles.textInput, styles.colorInput]}
           placeholderTextColor={colors["text-place-holder"]}
         />
+        <View style={{ alignSelf: "flex-end" }}>
+          <BalanceText weight="500">≈ ${currencyValue || 0}</BalanceText>
+        </View>
       </View>
     </View>
   );

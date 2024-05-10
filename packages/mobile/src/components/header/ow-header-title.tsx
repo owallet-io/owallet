@@ -5,7 +5,6 @@ import {
   View,
 } from "react-native";
 import React from "react";
-import OWIcon from "../ow-icon/ow-icon";
 import { useTheme } from "@src/themes/theme-provider";
 import { Text } from "../text";
 import { observer } from "mobx-react-lite";
