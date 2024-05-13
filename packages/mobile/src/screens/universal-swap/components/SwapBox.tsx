@@ -1,51 +1,195 @@
-import { View } from "react-native";
-import React, { FunctionComponent } from "react";
+import { TouchableOpacity, View } from "react-native";
+import React, { FunctionComponent, useMemo } from "react";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
-import { OWBox } from "@src/components/card";
 import { ISwapBox } from "../types";
 import InputSelectToken from "./InputSelectToken";
 import { BalanceText } from "./BalanceText";
 import { styling } from "../styles";
+import OWCard from "@src/components/card/ow-card";
+import OWText from "@src/components/text/ow-text";
+import { metrics } from "@src/themes";
+import OWIcon from "@src/components/ow-icon/ow-icon";
+import { useStore } from "@src/stores";
+import { chainIcons } from "@oraichain/oraidex-common";
 
 export const SwapBox: FunctionComponent<ISwapBox> = observer(
   ({
+    network,
     tokenActive,
-    currencyValue,
     balanceValue,
     editable,
-    tokenFee,
+    onOpenNetworkModal,
+    onSelectAmount,
+    type = "from",
     ...props
   }) => {
     const { colors } = useTheme();
+    const { chainStore } = useStore();
     const styles = styling(colors);
+    const chainInfo = chainStore.getChain(network);
+    const chainIcon = chainIcons.find((c) => c.chainId === network);
+
     return (
-      <OWBox
+      <OWCard
         style={{
           ...styles.containerInfo,
         }}
       >
+        {type === "from" ? (
+          <View style={{ paddingBottom: 16 }}>
+            <View style={styles.containerItemBottom}>
+              <View style={{ maxWidth: metrics.screenWidth / 2 }}>
+                <BalanceText color={colors["neutral-text-title"]} weight="500">
+                  <OWText color={colors["neutral-text-body2"]}>Balance:</OWText>{" "}
+                  {balanceValue || 0.0} {tokenActive.name}
+                </BalanceText>
+              </View>
+              <View style={{ flexDirection: "row", alignSelf: "flex-end" }}>
+                <TouchableOpacity
+                  style={{
+                    backgroundColor: colors["primary-surface-default"],
+                    borderRadius: 999,
+                    paddingHorizontal: 12,
+                    paddingVertical: 8,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginLeft: 4,
+                  }}
+                  onPress={() => {
+                    onSelectAmount("50");
+                  }}
+                >
+                  <OWText
+                    color={colors["neutral-text-action-on-dark-bg"]}
+                    weight="600"
+                    size={14}
+                  >
+                    50%
+                  </OWText>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={{
+                    backgroundColor: colors["primary-surface-default"],
+                    borderRadius: 999,
+                    paddingHorizontal: 12,
+                    paddingVertical: 8,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginLeft: 4,
+                  }}
+                  onPress={() => {
+                    onSelectAmount("100");
+                  }}
+                >
+                  <OWText
+                    color={colors["neutral-text-action-on-dark-bg"]}
+                    weight="600"
+                    size={14}
+                  >
+                    100%
+                  </OWText>
+                </TouchableOpacity>
+              </View>
+            </View>
+            <TouchableOpacity
+              onPress={() => {
+                onOpenNetworkModal(true);
+              }}
+              style={{ flexDirection: "row", alignItems: "center" }}
+            >
+              <View
+                style={{
+                  paddingRight: 4,
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+                <View
+                  style={{
+                    marginRight: 4,
+                    backgroundColor: colors["neutral-icon-on-dark"],
+                    borderRadius: 99,
+                  }}
+                >
+                  <OWIcon
+                    type="images"
+                    source={{ uri: chainIcon?.Icon }}
+                    size={20}
+                  />
+                </View>
+                <OWText
+                  weight="600"
+                  size={16}
+                  color={colors["neutral-text-action-on-light-bg"]}
+                >
+                  {chainInfo?.chainName}
+                </OWText>
+              </View>
+              <OWIcon
+                color={colors["neutral-icon-on-light"]}
+                name="down"
+                size={14}
+              />
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View style={[styles.containerItemBottom, { paddingBottom: 16 }]}>
+            <TouchableOpacity
+              onPress={() => {
+                onOpenNetworkModal(true);
+              }}
+              style={{ flexDirection: "row", alignItems: "center" }}
+            >
+              <View
+                style={{
+                  paddingRight: 4,
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+                <View
+                  style={{
+                    marginRight: 4,
+                    backgroundColor: colors["neutral-icon-on-dark"],
+                    borderRadius: 99,
+                  }}
+                >
+                  <OWIcon
+                    type="images"
+                    source={{ uri: chainIcon?.Icon }}
+                    size={20}
+                  />
+                </View>
+                <OWText
+                  weight="600"
+                  size={16}
+                  color={colors["neutral-text-action-on-light-bg"]}
+                >
+                  {chainInfo?.chainName}
+                </OWText>
+              </View>
+              <OWIcon
+                color={colors["neutral-icon-on-light"]}
+                name="down"
+                size={14}
+              />
+            </TouchableOpacity>
+            <View>
+              <BalanceText color={colors["neutral-text-title"]} weight="500">
+                <OWText color={colors["neutral-text-body2"]}>Balance:</OWText>{" "}
+                {balanceValue || 0.0} {tokenActive.name}
+              </BalanceText>
+            </View>
+          </View>
+        )}
+
         <InputSelectToken
           editable={editable}
           tokenActive={tokenActive}
           {...props}
         />
-        <View style={styles.containerItemBottom}>
-          <View>
-            <BalanceText weight="500">
-              Balance: {balanceValue || 0.0} {tokenActive.name}
-            </BalanceText>
-            {tokenFee > 0 ? (
-              <BalanceText size={13} style={styles.pt2} weight="500">
-                Fee: {tokenFee || 0}%
-              </BalanceText>
-            ) : (
-              <BalanceText size={13} style={styles.pt2} weight="500" />
-            )}
-          </View>
-          {/* <BalanceText weight="500">≈ ${currencyValue || 0}</BalanceText> */}
-        </View>
-      </OWBox>
+      </OWCard>
     );
   }
 );

@@ -131,6 +131,22 @@ export const findBaseTokenIcon = (
     : DefaultIcon;
 };
 
+export const getSpecialCoingecko = (
+  fromCoingecko: string,
+  toCoingecko: string
+) => {
+  const isSpecialCoingecko = (coinGeckoId) =>
+    ["kawaii-islands", "milky-token", "injective-protocol"].includes(
+      coinGeckoId
+    );
+  const isSpecialFromCoingecko = isSpecialCoingecko(fromCoingecko);
+  const isSpecialToCoingecko = isSpecialCoingecko(toCoingecko);
+  return {
+    isSpecialFromCoingecko,
+    isSpecialToCoingecko,
+  };
+};
+
 export const PAIRS_CHART = PAIRS.map((pair) => {
   const assets = pair.asset_infos.map((info) => {
     if ("native_token" in info) return info.native_token.denom;

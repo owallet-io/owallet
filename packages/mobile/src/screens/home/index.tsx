@@ -6,7 +6,11 @@ import React, {
   //@ts-ignore
   useTransition,
 } from "react";
-import { PageWithScrollViewInBottomTabView } from "../../components/page";
+import {
+  PageWithScrollView,
+  PageWithScrollViewInBottomTabView,
+  PageWithViewInBottomTabView,
+} from "../../components/page";
 import { AccountCard } from "./account-card";
 import {
   AppState,
@@ -15,6 +19,7 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
+  View,
 } from "react-native";
 import { useStore } from "../../stores";
 import { observer } from "mobx-react-lite";
@@ -290,28 +295,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     appInitStore.updatePrices(prices);
   }, [prices]);
 
-  // const renderAccountCard = (() => {
-  //   if (chainStore.current.networkType === "bitcoin") {
-  //     return <AccountCardBitcoin containerStyle={styles.containerStyle} />;
-  //   } else if (chainStore.current.networkType === "evm") {
-  //     return <AccountCardEVM containerStyle={styles.containerStyle} />;
-  //   }
-  //   return <AccountCard containerStyle={styles.containerStyle} />;
-  // })();
-
-  // const renderTokenCard = useMemo(() => {
-  //   if (chainStore.current.networkType === 'bitcoin') {
-  //     return <TokensBitcoinCard refreshDate={refreshDate} />;
-  //   } else if (chainStore.current.chainId === ChainIdEnum.TRON) {
-  //     return <TronTokensCard />;
-  //   }
-  //   return <TokensCard refreshDate={refreshDate} />;
-  // }, []);
-
-  const renderNewTokenCard = useCallback(() => {
-    return <TokensCardAll />;
-  }, []);
-
   const renderNewAccountCard = (() => {
     return <AccountBoxAll />;
   })();
@@ -322,20 +305,16 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ paddingTop: safeAreaInsets.top }}
+      contentContainerStyle={styles.containerStyle}
       ref={scrollViewRef}
     >
-      <CommonPageHeader title="Assets" />
-
-      {/* <BIP44Selectable /> */}
       {renderNewAccountCard}
-      {/* <DashboardCard /> */}
+
       {chainStore.current.networkType === "cosmos" &&
       !appInitStore.getInitApp.isAllNetworks ? (
         <EarningCardNew containerStyle={styles.containerEarnStyle} />
       ) : null}
-      {renderNewTokenCard()}
-      {/* {chainStore.current.networkType === 'cosmos' ? <UndelegationsCard /> : null} */}
+      <TokensCardAll />
     </PageWithScrollViewInBottomTabView>
   );
 });
@@ -345,6 +324,7 @@ const styling = (colors) =>
     containerStyle: {
       paddingBottom: 12,
       backgroundColor: colors["neutral-surface-bg2"],
+      paddingTop: 30,
     },
     containerEarnStyle: {
       backgroundColor: colors["neutral-surface-bg2"],

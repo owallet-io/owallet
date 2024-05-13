@@ -53,7 +53,8 @@ export const HeaderTx: FC<{
   amount: string;
   price: string;
   toAmount: string;
-}> = ({ type, imageType, amount, price, toAmount }) => {
+  colorAmount: string;
+}> = ({ type, imageType, amount, price, toAmount, colorAmount }) => {
   const { colors } = useTheme();
   const styles = styling(colors);
   return (
@@ -80,7 +81,7 @@ export const HeaderTx: FC<{
         </Text>
         {imageType ? imageType : null}
         <Text
-          color={colors["neutral-text-title"]}
+          color={colorAmount ?? colors["neutral-text-title"]}
           style={styles.amount}
           size={28}
           weight={"500"}

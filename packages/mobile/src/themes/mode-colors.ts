@@ -250,10 +250,10 @@ const modeColors = {
   "primary-surface-pressed": ["#A22DFF", "#7C00DB"],
   "primary-text-action": ["#C170FF", "#7C00DB"],
   "primary-text-pressed": ["#AD42FF", "#A22DFF"],
-  // III.Hightlight
-  "hightlight-surface-subtle": ["#46580B", "#E4F5B0"],
-  "hightlight-surface-active": ["#A3CE1A", "#90B51B"],
-  "hightlight-text-title": ["#CAEB60", "#46580B"],
+  // III.Highlight
+  "highlight-surface-subtle": ["#46580B", "#E4F5B0"],
+  "highlight-surface-active": ["#A3CE1A", "#90B51B"],
+  "highlight-text-title": ["#CAEB60", "#46580B"],
   // IV.Error
   "error-surface-subtle": ["#700B00", "#FFEDEB"],
   "error-surface-active": ["#A81100", "#FFACA3"],

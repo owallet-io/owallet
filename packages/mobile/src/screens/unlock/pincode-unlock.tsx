@@ -515,7 +515,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
                       height: 24,
                       borderRadius: 48,
                       opacity: 0.7,
-                      backgroundColor: colors["hightlight-surface-active"],
+                      backgroundColor: colors["highlight-surface-active"],
                     }}
                   />
                 }

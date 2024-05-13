@@ -299,7 +299,7 @@ export const Pincode: FunctionComponent<{
                       height: 24,
                       borderRadius: 48,
                       opacity: 0.7,
-                      backgroundColor: colors["hightlight-surface-active"],
+                      backgroundColor: colors["highlight-surface-active"],
                     }}
                   />
                 }

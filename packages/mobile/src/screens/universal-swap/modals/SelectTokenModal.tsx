@@ -18,14 +18,15 @@ import {
   tokensIcon,
 } from "@oraichain/oraidex-common";
 import { useStore } from "@src/stores";
-import { ChainIdEnum } from "@owallet/common";
 import { CoinGeckoPrices } from "@owallet/hooks";
 import { find } from "lodash";
+import { maskedNumber, shortenAddress } from "@src/utils/helper";
 
 export const SelectTokenModal: FunctionComponent<{
   onNetworkModal?: () => void;
   close?: () => void;
   data: TokenItemType[];
+  activeToken: TokenItemType;
   isOpen?: boolean;
   prices: CoinGeckoPrices<string>;
   selectedChainFilter?: string;
@@ -33,11 +34,24 @@ export const SelectTokenModal: FunctionComponent<{
   setToken: (denom: string) => void;
   setSearchTokenName: Function;
 }> = registerModal(
-  ({ close, onNetworkModal, data, setToken, selectedChainFilter }) => {
+  ({ close, activeToken, data, setToken, selectedChainFilter }) => {
     const safeAreaInsets = useSafeAreaInsets();
-    const { universalSwapStore } = useStore();
+    const { universalSwapStore, appInitStore, accountStore, keyRingStore } =
+      useStore();
     const [filteredTokens, setTokens] = useState([]);
     const [keyword, setKeyword] = useState("");
+    const [chainAddress, setChainAddress] = useState("");
+
+    const account = accountStore.getAccount(selectedChainFilter);
+
+    useEffect(() => {
+      const address = account.getAddressDisplay(
+        keyRingStore.keyRingLedgerAddresses
+      );
+      setChainAddress(address);
+    }, [selectedChainFilter]);
+
+    const prices = appInitStore.getInitApp.prices;
 
     const onFilter = (key, chain) => {
       if (key && chain && key !== "" && chain !== "") {
@@ -55,7 +69,7 @@ export const SelectTokenModal: FunctionComponent<{
           }
         });
 
-        setTokens(tmpData);
+        handleSetTokensWithAmount(tmpData);
         return;
       } else {
         if (key && key !== "") {
@@ -66,7 +80,7 @@ export const SelectTokenModal: FunctionComponent<{
               .includes(key.toLowerCase());
           });
 
-          setTokens(tmpData);
+          handleSetTokensWithAmount(tmpData);
           return;
         }
 
@@ -74,12 +88,33 @@ export const SelectTokenModal: FunctionComponent<{
           const tmpData = data.filter((d) =>
             d.chainId.toString().toLowerCase().includes(chain.toLowerCase())
           );
-          setTokens(tmpData);
+          handleSetTokensWithAmount(tmpData);
           return;
         }
         setTokens(data);
       }
     };
+
+    const handleSetTokensWithAmount = useCallback(
+      (tokens) => {
+        const tmpTokens = [];
+        tokens.map((t) => {
+          const usdPrice = prices[t.coinGeckoId];
+
+          const amount = toDisplay(
+            universalSwapStore?.getAmount?.[t.denom],
+            t.decimals
+          );
+
+          const totalUsd = usdPrice
+            ? (Number(amount) * Number(usdPrice)).toFixed(2)
+            : 0;
+          tmpTokens.push({ ...t, amount, totalUsd });
+        });
+        setTokens(tmpTokens);
+      },
+      [data]
+    );
 
     useEffect(() => {
       onFilter(keyword, selectedChainFilter);
@@ -91,77 +126,84 @@ export const SelectTokenModal: FunctionComponent<{
     const renderTokenItem = useCallback(
       (item) => {
         if (item) {
-          // if (item.coinGeckoId === 'tether' && item.chainId === '0x01') {
-          //   return null;
-          // }
-          //@ts-ignore
-          // const subAmounts = Object.fromEntries(
-          //   Object?.entries(universalSwapStore?.getAmount ?? {}).filter(
-          //     ([denom]) => tokenMap?.[denom]?.chainId === item.chainId
-          //   )
-          // ) as AmountDetails;
-
           const tokenIcon = find(
             tokensIcon,
             (tk) => tk.coinGeckoId === item.coinGeckoId
           );
 
-          // const totalUsd = getTotalUsd(subAmounts, prices);
           return (
-            <TouchableOpacity
-              onPress={() => {
-                close();
-                setToken(item.denom);
-              }}
-              style={styles.btnItem}
-            >
-              <View style={styles.leftBoxItem}>
-                <View
-                  style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: 12,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    overflow: "hidden",
-                    backgroundColor: colors["gray-10"],
-                  }}
-                >
-                  <OWIcon
-                    type="images"
-                    source={{ uri: tokenIcon?.Icon }}
-                    size={35}
-                  />
+            <>
+              <TouchableOpacity
+                onPress={() => {
+                  close();
+                  setToken(item.denom);
+                }}
+                style={[
+                  styles.btnItem,
+                  activeToken.coinGeckoId === item.coinGeckoId
+                    ? styles.active
+                    : { paddingHorizontal: 16 },
+                ]}
+              >
+                <View style={styles.leftBoxItem}>
+                  <View
+                    style={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: 36,
+                      alignItems: "center",
+                      justifyContent: "center",
+                      overflow: "hidden",
+                      backgroundColor: colors["neutral-icon-on-dark"],
+                      padding: 4,
+                    }}
+                  >
+                    <OWIcon
+                      type="images"
+                      source={{ uri: tokenIcon?.Icon }}
+                      size={30}
+                    />
+                  </View>
+                  <View style={styles.pl10}>
+                    <Text
+                      size={16}
+                      color={colors["neutral-text-title"]}
+                      weight="500"
+                    >
+                      {item.name}
+                    </Text>
+                    {chainAddress ? (
+                      <Text weight="400" color={colors["neutral-text-body"]}>
+                        {shortenAddress(chainAddress, 9)}
+                      </Text>
+                    ) : null}
+
+                    <Text weight="400" color={colors["neutral-text-body"]}>
+                      {item.org}
+                    </Text>
+                  </View>
                 </View>
-                <View style={styles.pl10}>
+                <View style={styles.rightBoxItem}>
                   <Text
                     size={16}
-                    color={colors["neutral-text-title"]}
                     weight="500"
+                    color={colors["neutral-text-title"]}
                   >
-                    {item.name}
+                    {maskedNumber(item.amount)}
                   </Text>
-                  <Text weight="500" color={colors["neutral-text-body"]}>
-                    {item.org}
+                  <Text weight="400" color={colors["neutral-text-body"]}>
+                    ${maskedNumber(item.totalUsd) ?? 0}
                   </Text>
                 </View>
-              </View>
-              <View style={styles.rightBoxItem}>
-                <Text color={colors["neutral-text-title"]}>
-                  {toDisplay(
-                    universalSwapStore?.getAmount?.[item.denom],
-                    item.decimals
-                  )}
-                </Text>
-                {/* <Text weight="500" color={colors['neutral-icon-on-light']}>
-                ${totalUsd.toFixed(2) ?? 0}
-              </Text> */}
-              </View>
-            </TouchableOpacity>
+              </TouchableOpacity>
+              {activeToken.coinGeckoId === item.coinGeckoId ? null : (
+                <View style={styles.borderLine} />
+              )}
+            </>
           );
         }
       },
-      [universalSwapStore?.getAmount]
+      [universalSwapStore?.getAmount, chainAddress]
     );
 
     return (
@@ -171,54 +213,46 @@ export const SelectTokenModal: FunctionComponent<{
           { paddingBottom: safeAreaInsets.bottom },
         ]}
       >
-        <View>
-          <TextInput
-            style={styles.textInput}
-            placeholder="Search Token"
-            onChangeText={(t) => setKeyword(t)}
-            placeholderTextColor={colors["neutral-text-body"]}
-            value={keyword}
-          />
-          <View style={styles.iconSearch}>
-            <OWIcon
-              color={colors["neutral-icon-on-light"]}
-              name="tdesign_search"
-              size={16}
+        <Text
+          style={{
+            fontWeight: "900",
+            color: colors["neutral-text-title"],
+            width: "100%",
+            textAlign: "center",
+          }}
+        >
+          {`choose token`.toUpperCase()}
+        </Text>
+
+        <View style={styles.header}>
+          <View style={styles.searchInput}>
+            <View style={{ paddingRight: 4 }}>
+              <OWIcon
+                color={colors["neutral-icon-on-light"]}
+                name="tdesign_search"
+                size={16}
+              />
+            </View>
+            <TextInput
+              style={{
+                fontFamily: "SpaceGrotesk-Regular",
+                width: "100%",
+                color: colors["neutral-icon-on-light"],
+              }}
+              onChangeText={(t) => setKeyword(t)}
+              value={keyword}
+              placeholderTextColor={colors["neutral-text-body"]}
+              placeholder="Search for a token"
             />
           </View>
         </View>
 
-        <View style={styles.containerTitle}>
-          <Text color={colors["neutral-icon-on-light"]} weight="500">
-            Token list
-          </Text>
-          <TouchableOpacity
-            onPress={() => {
-              onNetworkModal();
-            }}
-            style={styles.btnNetwork}
-          >
-            <OWIcon name="browser-bold" size={16} />
-            <Text
-              style={styles.txtNetwork}
-              color={colors["neutral-icon-on-light"]}
-              weight="500"
-            >
-              {Object.keys(ChainIdEnum).find(
-                (key) => ChainIdEnum[key] === selectedChainFilter
-              ) ?? "Network"}
-            </Text>
-            <OWIcon
-              size={16}
-              color={colors["neutral-icon-on-light"]}
-              name="down"
-            />
-          </TouchableOpacity>
-        </View>
         <OWFlatList
           isBottomSheet
           keyboardShouldPersistTaps="handled"
-          data={filteredTokens}
+          data={filteredTokens.sort((a, b) => {
+            return Number(b?.totalUsd) - Number(a?.totalUsd);
+          })}
           renderItem={({ item }) => {
             return renderTokenItem(item);
           }}
@@ -232,6 +266,11 @@ const styling = (colors: TypeTheme["colors"]) =>
   StyleSheet.create({
     pl10: {
       paddingLeft: 10,
+    },
+    active: {
+      backgroundColor: colors["neutral-surface-bg2"],
+      padding: 16,
+      borderRadius: 12,
     },
     leftBoxItem: {
       flexDirection: "row",
@@ -276,7 +315,29 @@ const styling = (colors: TypeTheme["colors"]) =>
       marginVertical: 10,
     },
     containerModal: {
-      paddingHorizontal: 24,
+      paddingHorizontal: 12,
       height: metrics.screenHeight / 1.3,
+    },
+    header: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginBottom: 16,
+      alignSelf: "center",
+      marginTop: 16,
+    },
+    searchInput: {
+      flexDirection: "row",
+      backgroundColor: colors["neutral-surface-action"],
+      height: 40,
+      borderRadius: 999,
+      width: metrics.screenWidth - 32,
+      alignItems: "center",
+      paddingHorizontal: 12,
+    },
+    borderLine: {
+      width: "100%",
+      height: 1,
+      backgroundColor: colors["neutral-border-default"],
+      marginTop: 4,
     },
   });

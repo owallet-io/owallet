@@ -255,22 +255,21 @@ export const SendTronScreen: FunctionComponent = observer(() => {
                           txHash: tx.txid,
                           data: {
                             memo: sendConfigs.memoConfig.memo,
-                            toAddress: sendConfigs.recipientConfig.recipient,
+                            from: address,
+                            to: sendConfigs.recipientConfig.recipient,
                             amount:
                               sendConfigs.amountConfig.getAmountPrimitive(),
-                            fromAddress: address,
                             fee: sendConfigs.feeConfig.toStdFee(),
                             currency: sendConfigs.amountConfig.sendCurrency,
                           },
                         },
                       });
                     }
-                    const fee = Number(
-                      sendConfigs.feeConfig.fee
-                        .trim(true)
-                        .hideDenom(true)
-                        .toString()
-                    );
+                    const fee = sendConfigs.feeConfig.fee
+                      .trim(true)
+                      .hideDenom(true)
+                      .maxDecimals(4)
+                      .toString();
                     const historyInfos = {
                       fromAddress: address,
                       toAddress: sendConfigs.recipientConfig.recipient,

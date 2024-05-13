@@ -121,7 +121,11 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: "",
   },
   [SCREENS.Home]: {
-    title: HEADER_KEY.notShowHeader,
+    title: HEADER_KEY.showNetworkHeader,
+    showTabBar: true,
+  },
+  [SCREENS.Invest]: {
+    title: HEADER_KEY.showNetworkHeader,
     showTabBar: true,
   },
   [SCREENS.TransactionDetail]: {
@@ -164,8 +168,8 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: HEADER_KEY.showNetworkHeader,
   },
   [SCREENS.UniversalSwapScreen]: {
-    title: HEADER_KEY.notShowHeader,
-    showTabBar: true,
+    // title: HEADER_KEY.notShowHeader,
+    title: "Universal Swap",
   },
   [SCREENS.RegisterIntro]: {
     title: HEADER_KEY.notShowHeader,
@@ -269,6 +273,9 @@ export const SCREENS_OPTIONS: IScreenOption = {
   [SCREENS.BtcFaucet]: {
     title: "Bitcoin Faucet",
   },
+  [SCREENS.HistoryDetail]: {
+    title: "Transaction details",
+  },
   [SCREENS.BuyFiat]: {
     title: HEADER_KEY.notShowHeader,
   },
@@ -300,10 +307,6 @@ export const SCREENS_OPTIONS: IScreenOption = {
   },
   [SCREENS.WebDApp]: {
     title: "",
-  },
-  [SCREENS.Invest]: {
-    title: HEADER_KEY.notShowHeader,
-    showTabBar: true,
   },
   [SCREENS.Delegate]: {
     // title: HEADER_KEY.showNetworkHeader,
@@ -372,3 +375,6 @@ export const TITLE_TYPE_ACTIONS_COSMOS_HISTORY = {
 export const EVENTS = {
   hiddenTabBar: "hiddenTabBar",
 };
+
+export const urlTxHistory = "https://tx-history-backend-staging.oraidex.io/";
+export const listSkeleton = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];

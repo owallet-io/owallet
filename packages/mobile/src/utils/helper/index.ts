@@ -17,7 +17,12 @@ import {
   tokensIcon,
 } from "@oraichain/oraidex-common";
 import { API } from "@src/common/api";
-
+import { ChainIdEnum } from "@owallet/common";
+import { Network } from "@tatumio/tatum";
+export const MapChainIdToNetwork = {
+  [ChainIdEnum.BNBChain]: Network.BINANCE_SMART_CHAIN,
+  [ChainIdEnum.Ethereum]: Network.ETHEREUM,
+};
 const SCHEME_IOS = "owallet://open_url?url=";
 const SCHEME_ANDROID = "app.owallet.oauth://google/open_url?url=";
 export const ORAICHAIN_ID = "Oraichain";
@@ -242,10 +247,14 @@ export const getDataFromDataEvent = (itemEvents) => {
       };
 };
 
-export const maskedNumber = (number: number | string, digits?: number) => {
+export const maskedNumber = (
+  number: number | string,
+  digits: number = 4,
+  locales: string = "en-US"
+) => {
   return number
-    ? Number(number).toLocaleString(undefined, {
-        minimumFractionDigits: digits ?? 4,
+    ? Number(number).toLocaleString(locales, {
+        maximumFractionDigits: digits,
       })
     : 0;
 };
@@ -692,19 +701,16 @@ export const getCurrencyByMinimalDenom = (
   };
 };
 
-export function numberWithCommas(x) {
-  return x ? x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : "";
-}
-
+export const isNegative = (number) => number <= 0;
 export function createTxsHelper() {
   return new TxsHelper();
 }
 
-export function shortenAddress(address): string {
+export function shortenAddress(address, digits = 6): string {
   if (address) {
-    const firstSix = address.substring(0, 6);
-    const lastSix = address.substring(address.length - 6);
-    return firstSix + "..." + lastSix;
+    const firstDigits = address.substring(0, digits);
+    const lastDigits = address.substring(address.length - digits);
+    return firstDigits + "..." + lastDigits;
   }
 
   return "";

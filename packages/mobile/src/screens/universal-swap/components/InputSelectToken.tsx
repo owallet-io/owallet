@@ -3,6 +3,7 @@ import React, {
   FunctionComponent,
   useCallback,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import { IInputSelectToken } from "../types";
@@ -13,6 +14,7 @@ import { TypeTheme, useTheme } from "@src/themes/theme-provider";
 import { find } from "lodash";
 import _debounce from "lodash/debounce";
 import { tokensIcon } from "@oraichain/oraidex-common";
+import { useStore } from "@src/stores";
 
 const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
   tokenActive,
@@ -22,9 +24,21 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
   editable,
 }) => {
   const { colors } = useTheme();
+  const { appInitStore } = useStore();
+
   const styles = styling(colors);
   const [txt, setText] = useState("0");
   const [tokenIcon, setTokenIcon] = useState(null);
+
+  const prices = appInitStore.getInitApp.prices;
+
+  const currencyValue = useMemo(() => {
+    const usdPrice = prices[tokenActive.coinGeckoId];
+    if (usdPrice) {
+      return (Number(amount) * Number(usdPrice)).toFixed(2);
+    }
+    return 0;
+  }, [amount]);
 
   useEffect(() => {
     setText(Number(Number(amount).toFixed(6)).toString());
@@ -65,14 +79,18 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
 
         <View style={[styles.ml8, styles.itemTopBtn]}>
           <View style={styles.pr4}>
-            <Text weight="700" size={20} color={colors["text-title"]}>
+            <Text weight="600" size={16} color={colors["neutral-text-action"]}>
               {tokenActive?.name}
             </Text>
-            <BalanceText size={12} weight="500" style={styles.mt_4}>
+            {/* <BalanceText size={12} weight="500" style={styles.mt_4}>
               {tokenActive?.org}
-            </BalanceText>
+            </BalanceText> */}
           </View>
-          <OWIcon color={colors["blue-300"]} name="down" size={16} />
+          <OWIcon
+            color={colors["neutral-icon-on-light"]}
+            name="down"
+            size={16}
+          />
         </View>
       </TouchableOpacity>
 
@@ -100,6 +118,9 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
           style={[styles.textInput, styles.colorInput]}
           placeholderTextColor={colors["text-place-holder"]}
         />
+        <View style={{ alignSelf: "flex-end" }}>
+          <BalanceText weight="500">≈ ${currencyValue || 0}</BalanceText>
+        </View>
       </View>
     </View>
   );
@@ -113,7 +134,8 @@ const styling = (colors: TypeTheme["colors"]) =>
       marginTop: -4,
     },
     colorInput: {
-      color: colors["text-title"],
+      color: colors["neutral-text-title"],
+      fontWeight: "500",
     },
     pr4: {
       paddingRight: 4,
@@ -143,11 +165,12 @@ const styling = (colors: TypeTheme["colors"]) =>
     btnChainContainer: {
       flexDirection: "row",
       alignItems: "center",
-      paddingHorizontal: 7,
-      borderRadius: 24,
-      backgroundColor: colors["bg-btn-select-token"],
-      paddingVertical: 2,
-      marginRight: 3,
+      borderRadius: 999,
+      backgroundColor: colors["neutral-surface-action"],
+      paddingHorizontal: 12,
+      height: 54,
+      borderWidth: 1,
+      borderColor: colors["neutral-surface-pressed"],
     },
     containerInputSelectToken: {
       width: "100%",

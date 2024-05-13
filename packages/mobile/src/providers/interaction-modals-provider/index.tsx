@@ -31,10 +31,7 @@ export const InteractionModalsProivder: FunctionComponent = observer(
     // }, [permissionStore, permissionStore.waitingDatas]);
 
     const renderAccessModal = () => {
-      if (
-        permissionStore.waitingDatas &&
-        navigationRef?.current?.getCurrentRoute().name === "Web.dApp"
-      ) {
+      if (permissionStore.waitingDatas) {
         return permissionStore.waitingDatas.map((wd) => {
           return (
             <AccessModal

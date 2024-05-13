@@ -140,7 +140,7 @@ export const ModalBtcTypeList = observer(() => {
                 <RadioButton
                   color={
                     selected
-                      ? colors["hightlight-surface-active"]
+                      ? colors["highlight-surface-active"]
                       : colors["neutral-text-body"]
                   }
                   id={item.id}
@@ -303,9 +303,9 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
                   txHash: tx,
                   data: {
                     memo: sendConfigs.memoConfig.memo,
-                    toAddress: sendConfigs.recipientConfig.recipient,
+                    from: address,
+                    to: sendConfigs.recipientConfig.recipient,
                     amount: sendConfigs.amountConfig.getAmountPrimitive(),
-                    fromAddress: address,
                     fee: sendConfigs.feeConfig.toStdFee(),
                     currency: sendConfigs.amountConfig.sendCurrency,
                   },
@@ -317,9 +317,11 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
           },
           onBroadcasted: async (txHash) => {
             try {
-              const fee = Number(
-                sendConfigs.feeConfig.fee.trim(true).hideDenom(true).toString()
-              );
+              const fee = sendConfigs.feeConfig.fee
+                .trim(true)
+                .hideDenom(true)
+                .maxDecimals(4)
+                .toString();
               const historyInfos = {
                 fromAddress: address,
                 toAddress: sendConfigs.recipientConfig.recipient,

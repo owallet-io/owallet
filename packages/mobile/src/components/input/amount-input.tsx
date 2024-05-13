@@ -140,7 +140,7 @@ export const NewAmountInput: FunctionComponent<{
                 android: {
                   // On android, the text input's height does not equals to the line height by strange.
                   // To fix this problem, set the height explicitly.
-                  height: 42,
+                  // height: 42,
                 },
               }),
               {
