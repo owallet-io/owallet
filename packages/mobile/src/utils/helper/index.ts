@@ -701,10 +701,13 @@ export const getCurrencyByMinimalDenom = (
   };
 };
 
-export function numberWithCommas(x) {
-  return x ? x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : "";
-}
+// add `,` when split thounsand value.
+export const numberWithCommas = (x: number, maximumFractionDigits: number) => {
+  if (isNegative(x)) return "0";
+  return x.toLocaleString(maximumFractionDigits);
+};
 
+export const isNegative = (number) => number <= 0;
 export function createTxsHelper() {
   return new TxsHelper();
 }

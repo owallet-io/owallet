@@ -20,6 +20,7 @@ import {
   handleSaveHistory,
   HISTORY_STATUS,
   maskedNumber,
+  numberWithCommas,
   shortenAddress,
   showToast,
   _keyExtract,
@@ -261,9 +262,31 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     handleErrorSwap
   );
 
+  const simulateDisplayAmount =
+    ratio && ratio.displayAmount ? ratio.displayAmount : 0;
+
+  const bridgeTokenFee =
+    simulateDisplayAmount && (fromTokenFee || toTokenFee)
+      ? new BigDecimal(new BigDecimal(simulateDisplayAmount).mul(fromTokenFee))
+          .add(new BigDecimal(simulateDisplayAmount).mul(toTokenFee))
+          .div(100)
+          .toNumber()
+      : 0;
+
+  const estSwapFee = new BigDecimal(simulateDisplayAmount || 0)
+    .mul(fee || 0)
+    .toNumber();
+
+  const totalFeeEst =
+    new BigDecimal(bridgeTokenFee || 0)
+      .add(relayerFeeAmount || 0)
+      .add(estSwapFee)
+      .toNumber() || 0;
+
+  console.log("totalFeeEst", totalFeeEst);
+
   const [selectFromTokenModal, setSelectFromTokenModal] = useState(false);
   const [selectToTokenModal, setSelectToTokenModal] = useState(false);
-  const [networkModal, setNetworkModal] = useState(false);
   const [sendToModal, setSendToModal] = useState(false);
 
   const loadTokenAmounts = useLoadTokens(universalSwapStore);
@@ -337,11 +360,11 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     }
   };
 
-  // TODO: use this constant so we can temporary simulate for all pair (specifically AIRI/USDC, ORAIX/USDC), update later after migrate contract
+  // // TODO: use this constant so we can temporary simulate for all pair (specifically AIRI/USDC, ORAIX/USDC), update later after migrate contract
 
-  const handleBalanceActive = (item: BalanceType) => {
-    setBalanceActive(item);
-  };
+  // const handleBalanceActive = (item: BalanceType) => {
+  //   setBalanceActive(item);
+  // };
 
   const handleSubmit = async () => {
     setSwapLoading(true);
@@ -767,9 +790,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           close={() => {
             setSelectFromTokenModal(false);
           }}
-          onNetworkModal={() => {
-            setNetworkModal(true);
-          }}
           selectedChainFilter={fromNetwork}
           setToken={(denom) => {
             setSwapTokens([denom, toTokenDenom]);
@@ -792,9 +812,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           selectedChainFilter={toNetwork}
           close={() => {
             setSelectToTokenModal(false);
-          }}
-          onNetworkModal={() => {
-            setNetworkModal(true);
           }}
           setToken={(denom) => {
             setSwapTokens([fromTokenDenom, denom]);
@@ -825,6 +842,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             setSendToModal(false);
           }}
           isOpen={sendToModal}
+          //@ts-ignore
           handleSendToAddress={handleSendToAddress}
           handleToggle={setToggle}
         />
@@ -1094,8 +1112,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                   <Text weight="600">
                     {(minimumReceive.toFixed(4) || "0") + " " + toToken.name}
                   </Text>
-                  {"  •  "}Swap Fee:{" "}
-                  <Text weight="600">{floatToPercent(fee) + "%"}</Text>
+                  {"  •  "}Est. Fee:{" "}
+                  <Text weight="600">
+                    {maskedNumber(totalFeeEst)} {originalToToken.name}
+                  </Text>
                 </Text>
               </View>
 
