@@ -24,347 +24,360 @@ import { registerModal } from "@src/modals/base";
 
 export const SelectNetworkModal: FunctionComponent<{
   close?: () => void;
+  tokenList: any;
   selectedChainFilter: string;
   setChainFilter: Function;
   isOpen?: boolean;
-}> = registerModal(({ close, selectedChainFilter, setChainFilter }) => {
-  const { colors } = useTheme();
-  const [keyword, setKeyword] = useState("");
-  const [activeTab, setActiveTab] = useState<"mainnet" | "testnet">("mainnet");
-
-  const { chainStore, appInitStore, universalSwapStore } = useStore();
-  const [chains, setChains] = useState(chainStore.chainInfosInUI);
-
-  const styles = styling(colors);
-  let totalUsd: number = 0;
-  let todayAssets;
-  if (
-    Object.keys(appInitStore.getInitApp.prices).length > 0 &&
-    Object.keys(universalSwapStore.getAmount).length > 0
-  ) {
-    totalUsd = getTotalUsd(
-      universalSwapStore.getAmount,
-      appInitStore.getInitApp.prices
+}> = registerModal(
+  ({ close, selectedChainFilter, setChainFilter, tokenList }) => {
+    const { colors } = useTheme();
+    const [keyword, setKeyword] = useState("");
+    const [activeTab, setActiveTab] = useState<"mainnet" | "testnet">(
+      "mainnet"
     );
-    todayAssets = getTokenInfos({
-      tokens: universalSwapStore.getAmount,
-      prices: appInitStore.getInitApp.prices,
-    });
-  }
 
-  const handleChangeNetwork = (network) => {
-    setChainFilter(network.chainId);
-    close();
-  };
+    const { chainStore, appInitStore, universalSwapStore } = useStore();
+    const [chains, setChains] = useState(chainStore.chainInfosInUI);
 
-  const groupedData = todayAssets?.reduce((result, element) => {
-    const key = element.chainId;
-
-    if (!result[key]) {
-      result[key] = {
-        sum: 0,
-      };
-    }
-
-    result[key].sum += element.value;
-
-    return result;
-  }, {});
-
-  useEffect(() => {
-    if (activeTab === "mainnet") {
-      const tmpChainInfos = [];
-      chainStore.chainInfosInUI.map((c) => {
-        if (!c.chainName.toLowerCase().includes("test")) {
-          tmpChainInfos.push(c);
-        }
+    const styles = styling(colors);
+    let totalUsd: number = 0;
+    let todayAssets;
+    if (
+      Object.keys(appInitStore.getInitApp.prices).length > 0 &&
+      Object.keys(universalSwapStore.getAmount).length > 0
+    ) {
+      totalUsd = getTotalUsd(
+        universalSwapStore.getAmount,
+        appInitStore.getInitApp.prices
+      );
+      todayAssets = getTokenInfos({
+        tokens: universalSwapStore.getAmount,
+        prices: appInitStore.getInitApp.prices,
       });
-      setChains(tmpChainInfos);
-    } else {
-      const tmpChainInfos = [];
-      chainStore.chainInfosInUI.map((c) => {
-        if (c.chainName.toLowerCase().includes("test")) {
-          tmpChainInfos.push(c);
-        }
-      });
-      setChains(tmpChainInfos);
-    }
-  }, [activeTab]);
-
-  useEffect(() => {
-    if (activeTab === "mainnet") {
-      let tmpChainInfos = [];
-      chainStore.chainInfosInUI.map((c) => {
-        if (
-          !c.chainName.toLowerCase().includes("test") &&
-          c.chainName.toLowerCase().includes(keyword.toLowerCase())
-        ) {
-          tmpChainInfos.push(c);
-        }
-      });
-
-      setChains(tmpChainInfos);
-    } else {
-      let tmpChainInfos = [];
-      chainStore.chainInfosInUI.map((c) => {
-        if (
-          c.chainName.toLowerCase().includes("test") &&
-          c.chainName.toLowerCase().includes(keyword.toLowerCase())
-        ) {
-          tmpChainInfos.push(c);
-        }
-      });
-
-      setChains(tmpChainInfos);
-    }
-  }, [keyword, activeTab]);
-
-  useEffect(() => {
-    if (chainStore.current.chainName.toLowerCase().includes("test")) {
-      setActiveTab("testnet");
-    }
-  }, [chainStore.current.chainName]);
-
-  const _renderItem = ({ item }) => {
-    let selected = item?.chainId === selectedChainFilter;
-
-    if (item.isAll && appInitStore.getInitApp.isAllNetworks) {
-      selected = true;
     }
 
-    let chainIcon = chainIcons.find((c) => c.chainId === item.chainId);
+    const handleChangeNetwork = (network) => {
+      setChainFilter(network.chainId);
+      close();
+    };
 
-    // Hardcode for Oasis because oraidex-common does not have icon yet
-    if (item.chainName.includes("Oasis")) {
-      chainIcon = {
-        chainId: item.chainId,
-        Icon: "https://s2.coinmarketcap.com/static/img/coins/200x200/7653.png",
-      };
-    }
-    // Hardcode for BTC because oraidex-common does not have icon yet
-    if (item.chainName.includes("Bit")) {
-      chainIcon = {
-        chainId: item.chainId,
-        Icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Bitcoin.svg/1200px-Bitcoin.svg.png",
-      };
-    }
+    const groupedData = todayAssets?.reduce((result, element) => {
+      const key = element.chainId;
 
-    if (!chainIcon) {
-      chainIcon = chainIcons.find((c) => c.chainId === ChainIdEnum.Oraichain);
-    }
+      if (!result[key]) {
+        result[key] = {
+          sum: 0,
+        };
+      }
 
-    return (
-      <TouchableOpacity
-        style={{
-          paddingLeft: 12,
-          paddingRight: 8,
-          paddingVertical: 9.5,
-          borderRadius: 12,
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-          backgroundColor: selected ? colors["neutral-surface-bg2"] : null,
-        }}
-        onPress={() => {
-          handleChangeNetwork(item);
-        }}
-      >
-        <View
+      result[key].sum += element.value;
+
+      return result;
+    }, {});
+
+    useEffect(() => {
+      if (activeTab === "mainnet") {
+        const tmpChainInfos = [];
+        chainStore.chainInfosInUI.map((c) => {
+          if (!c.chainName.toLowerCase().includes("test")) {
+            tmpChainInfos.push(c);
+          }
+        });
+        setChains(tmpChainInfos);
+      } else {
+        const tmpChainInfos = [];
+        chainStore.chainInfosInUI.map((c) => {
+          if (c.chainName.toLowerCase().includes("test")) {
+            tmpChainInfos.push(c);
+          }
+        });
+        setChains(tmpChainInfos);
+      }
+    }, [activeTab]);
+
+    useEffect(() => {
+      if (activeTab === "mainnet") {
+        let tmpChainInfos = [];
+        chainStore.chainInfosInUI.map((c) => {
+          if (
+            !c.chainName.toLowerCase().includes("test") &&
+            c.chainName.toLowerCase().includes(keyword.toLowerCase())
+          ) {
+            tmpChainInfos.push(c);
+          }
+        });
+
+        setChains(tmpChainInfos);
+      } else {
+        let tmpChainInfos = [];
+        chainStore.chainInfosInUI.map((c) => {
+          if (
+            c.chainName.toLowerCase().includes("test") &&
+            c.chainName.toLowerCase().includes(keyword.toLowerCase())
+          ) {
+            tmpChainInfos.push(c);
+          }
+        });
+
+        setChains(tmpChainInfos);
+      }
+    }, [keyword, activeTab]);
+
+    useEffect(() => {
+      if (chainStore.current.chainName.toLowerCase().includes("test")) {
+        setActiveTab("testnet");
+      }
+    }, [chainStore.current.chainName]);
+
+    const _renderItem = ({ item }) => {
+      let selected = item?.chainId === selectedChainFilter;
+
+      const tokenListByChain = tokenList.filter(
+        (t) => t.chainId === item?.chainId
+      );
+
+      if (tokenListByChain.length <= 0) {
+        return null;
+      }
+
+      if (item.isAll && appInitStore.getInitApp.isAllNetworks) {
+        selected = true;
+      }
+
+      let chainIcon = chainIcons.find((c) => c.chainId === item.chainId);
+
+      // Hardcode for Oasis because oraidex-common does not have icon yet
+      if (item.chainName.includes("Oasis")) {
+        chainIcon = {
+          chainId: item.chainId,
+          Icon: "https://s2.coinmarketcap.com/static/img/coins/200x200/7653.png",
+        };
+      }
+      // Hardcode for BTC because oraidex-common does not have icon yet
+      if (item.chainName.includes("Bit")) {
+        chainIcon = {
+          chainId: item.chainId,
+          Icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Bitcoin.svg/1200px-Bitcoin.svg.png",
+        };
+      }
+
+      if (!chainIcon) {
+        chainIcon = chainIcons.find((c) => c.chainId === ChainIdEnum.Oraichain);
+      }
+
+      return (
+        <TouchableOpacity
           style={{
+            paddingLeft: 12,
+            paddingRight: 8,
+            paddingVertical: 9.5,
+            borderRadius: 12,
+            display: "flex",
             flexDirection: "row",
             alignItems: "center",
-            justifyContent: "center",
+            justifyContent: "space-between",
+            backgroundColor: selected ? colors["neutral-surface-bg2"] : null,
+          }}
+          onPress={() => {
+            handleChangeNetwork(item);
           }}
         >
           <View
             style={{
+              flexDirection: "row",
               alignItems: "center",
               justifyContent: "center",
-              width: 44,
-              height: 44,
-              borderRadius: 44,
-              backgroundColor: colors["neutral-icon-on-dark"],
-              marginRight: 16,
             }}
           >
-            {chainIcon ? (
-              <OWIcon
-                type="images"
-                source={{ uri: chainIcon.Icon }}
-                size={28}
-              />
-            ) : (
-              <VectorCharacter
-                char={item.chainName[0]}
-                height={15}
-                color={colors["white"]}
-              />
-            )}
+            <View
+              style={{
+                alignItems: "center",
+                justifyContent: "center",
+                width: 44,
+                height: 44,
+                borderRadius: 44,
+                backgroundColor: colors["neutral-icon-on-dark"],
+                marginRight: 16,
+              }}
+            >
+              {chainIcon ? (
+                <OWIcon
+                  type="images"
+                  source={{ uri: chainIcon.Icon }}
+                  size={28}
+                />
+              ) : (
+                <VectorCharacter
+                  char={item.chainName[0]}
+                  height={15}
+                  color={colors["white"]}
+                />
+              )}
+            </View>
+            <View>
+              <Text
+                style={{
+                  fontSize: 14,
+                  color: colors["neutral-text-title"],
+                  fontWeight: "600",
+                }}
+              >
+                {item.chainName}
+              </Text>
+
+              <Text
+                style={{
+                  fontSize: 14,
+                  color: colors["sub-text"],
+                  fontWeight: "400",
+                }}
+              >
+                $
+                {!item.chainId
+                  ? maskedNumber(totalUsd)
+                  : maskedNumber(groupedData?.[item.chainId]?.sum)}
+              </Text>
+            </View>
           </View>
+
           <View>
-            <Text
-              style={{
-                fontSize: 14,
-                color: colors["neutral-text-title"],
-                fontWeight: "600",
-              }}
-            >
-              {item.chainName}
-            </Text>
-
-            <Text
-              style={{
-                fontSize: 14,
-                color: colors["sub-text"],
-                fontWeight: "400",
-              }}
-            >
-              $
-              {!item.chainId
-                ? maskedNumber(totalUsd)
-                : maskedNumber(groupedData?.[item.chainId]?.sum)}
-            </Text>
-          </View>
-        </View>
-
-        <View>
-          <RadioButton
-            color={
-              selected
-                ? colors["highlight-surface-active"]
-                : colors["neutral-text-body"]
-            }
-            id={item.chainId}
-            selected={selected}
-            onPress={() => handleChangeNetwork(item)}
-          />
-        </View>
-      </TouchableOpacity>
-    );
-  };
-
-  useEffect(() => {
-    if (groupedData) {
-      const sortedData = Object.entries(groupedData).sort(
-        (a, b) => b[1].sum - a[1].sum
-      );
-      const keysArray = sortedData.map(([key]) => key);
-
-      chains.sort((a, b) => {
-        const indexA = keysArray.indexOf(a.chainId);
-        const indexB = keysArray.indexOf(b.chainId);
-
-        if (indexA === -1 && indexB === -1) {
-          return 0;
-        } else if (indexA === -1) {
-          return 1;
-        } else if (indexB === -1) {
-          return -1;
-        } else {
-          if (indexA < indexB) {
-            return -1;
-          }
-          if (indexA > indexB) {
-            return 1;
-          }
-          return 0;
-        }
-      });
-    }
-  }, [groupedData]);
-
-  return (
-    <View
-      style={{
-        alignItems: "center",
-      }}
-    >
-      <Text
-        style={{
-          ...typography.h6,
-          fontWeight: "900",
-          color: colors["neutral-text-title"],
-          width: "100%",
-          textAlign: "center",
-        }}
-      >
-        {`choose networks`.toUpperCase()}
-      </Text>
-      <View style={styles.header}>
-        <View style={styles.searchInput}>
-          <View style={{ paddingRight: 4 }}>
-            <OWIcon
-              color={colors["neutral-icon-on-light"]}
-              name="tdesign_search"
-              size={16}
+            <RadioButton
+              color={
+                selected
+                  ? colors["highlight-surface-active"]
+                  : colors["neutral-text-body"]
+              }
+              id={item.chainId}
+              selected={selected}
+              onPress={() => handleChangeNetwork(item)}
             />
           </View>
-          <TextInput
-            style={{
-              fontFamily: "SpaceGrotesk-Regular",
-              width: "100%",
-              color: colors["neutral-icon-on-light"],
+        </TouchableOpacity>
+      );
+    };
+
+    useEffect(() => {
+      if (groupedData) {
+        const sortedData = Object.entries(groupedData).sort(
+          (a, b) => b[1].sum - a[1].sum
+        );
+        const keysArray = sortedData.map(([key]) => key);
+
+        chains.sort((a, b) => {
+          const indexA = keysArray.indexOf(a.chainId);
+          const indexB = keysArray.indexOf(b.chainId);
+
+          if (indexA === -1 && indexB === -1) {
+            return 0;
+          } else if (indexA === -1) {
+            return 1;
+          } else if (indexB === -1) {
+            return -1;
+          } else {
+            if (indexA < indexB) {
+              return -1;
+            }
+            if (indexA > indexB) {
+              return 1;
+            }
+            return 0;
+          }
+        });
+      }
+    }, [groupedData]);
+
+    return (
+      <View
+        style={{
+          alignItems: "center",
+        }}
+      >
+        <Text
+          style={{
+            ...typography.h6,
+            fontWeight: "900",
+            color: colors["neutral-text-title"],
+            width: "100%",
+            textAlign: "center",
+          }}
+        >
+          {`choose networks`.toUpperCase()}
+        </Text>
+        <View style={styles.header}>
+          <View style={styles.searchInput}>
+            <View style={{ paddingRight: 4 }}>
+              <OWIcon
+                color={colors["neutral-icon-on-light"]}
+                name="tdesign_search"
+                size={16}
+              />
+            </View>
+            <TextInput
+              style={{
+                fontFamily: "SpaceGrotesk-Regular",
+                width: "100%",
+                color: colors["neutral-icon-on-light"],
+              }}
+              onChangeText={(t) => setKeyword(t)}
+              value={keyword}
+              placeholderTextColor={colors["neutral-text-body"]}
+              placeholder="Search by name"
+            />
+          </View>
+        </View>
+        <View style={styles.wrapHeaderTitle}>
+          <OWButton
+            type="link"
+            label={"Mainnet"}
+            textStyle={{
+              color: colors["primary-surface-default"],
+              fontWeight: "600",
+              fontSize: 16,
             }}
-            onChangeText={(t) => setKeyword(t)}
-            value={keyword}
-            placeholderTextColor={colors["neutral-text-body"]}
-            placeholder="Search by name"
+            onPress={() => setActiveTab("mainnet")}
+            style={[
+              {
+                width: "50%",
+              },
+              activeTab === "mainnet" ? styles.active : null,
+            ]}
+          />
+          <OWButton
+            type="link"
+            label={"Testnet"}
+            onPress={() => setActiveTab("testnet")}
+            textStyle={{
+              color: colors["primary-surface-default"],
+              fontWeight: "600",
+              fontSize: 16,
+            }}
+            style={[
+              {
+                width: "50%",
+              },
+              activeTab === "testnet" ? styles.active : null,
+            ]}
+          />
+        </View>
+        <View
+          style={{
+            marginTop: spacing["12"],
+            width: metrics.screenWidth - 48,
+            justifyContent: "space-between",
+            height: metrics.screenHeight / 2,
+          }}
+        >
+          <BottomSheetFlatList
+            showsVerticalScrollIndicator={false}
+            data={chains}
+            renderItem={_renderItem}
+            keyExtractor={_keyExtract}
           />
         </View>
       </View>
-      <View style={styles.wrapHeaderTitle}>
-        <OWButton
-          type="link"
-          label={"Mainnet"}
-          textStyle={{
-            color: colors["primary-surface-default"],
-            fontWeight: "600",
-            fontSize: 16,
-          }}
-          onPress={() => setActiveTab("mainnet")}
-          style={[
-            {
-              width: "50%",
-            },
-            activeTab === "mainnet" ? styles.active : null,
-          ]}
-        />
-        <OWButton
-          type="link"
-          label={"Testnet"}
-          onPress={() => setActiveTab("testnet")}
-          textStyle={{
-            color: colors["primary-surface-default"],
-            fontWeight: "600",
-            fontSize: 16,
-          }}
-          style={[
-            {
-              width: "50%",
-            },
-            activeTab === "testnet" ? styles.active : null,
-          ]}
-        />
-      </View>
-      <View
-        style={{
-          marginTop: spacing["12"],
-          width: metrics.screenWidth - 48,
-          justifyContent: "space-between",
-          height: metrics.screenHeight / 2,
-        }}
-      >
-        <BottomSheetFlatList
-          showsVerticalScrollIndicator={false}
-          data={chains}
-          renderItem={_renderItem}
-          keyExtractor={_keyExtract}
-        />
-      </View>
-    </View>
-  );
-});
+    );
+  }
+);
 
 const styling = (colors) =>
   StyleSheet.create({

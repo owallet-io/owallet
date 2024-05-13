@@ -817,6 +817,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           isOpen={selectToTokenModal}
         />
         <SelectNetworkModal
+          tokenList={filteredFromTokens}
           close={() => {
             setFromNetworkOpen(false);
           }}
@@ -825,6 +826,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           isOpen={fromNetworkOpen}
         />
         <SelectNetworkModal
+          tokenList={filteredToTokens}
           close={() => {
             setToNetworkOpen(false);
           }}
