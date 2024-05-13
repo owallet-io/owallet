@@ -39,7 +39,11 @@ export const HistoryCard: FunctionComponent<{
         <EvmTxCard />
       </View>
     );
-  if (chainId === ChainIdEnum.Oasis)
+  if (
+    chainId === ChainIdEnum.Oasis ||
+    chainId === ChainIdEnum.OasisSapphire ||
+    chainId === ChainIdEnum.OasisEmerald
+  )
     return (
       <View style={containerStyle}>
         <OasisTxCard />

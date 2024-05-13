@@ -18,6 +18,7 @@ import { OWSearchInput } from "@src/components/ow-search-input";
 import { EmptyTx } from "@src/screens/transactions/components/empty-tx";
 import { TxEvmItem } from "@src/screens/transactions/components/items/tx-evm-item";
 import { TxOasisItem } from "@src/screens/transactions/components/items/tx-oasis-item";
+import { getOasisAddress } from "@owallet/common";
 
 const OasisTxsScreen = observer(() => {
   const { chainStore, accountStore, keyRingStore } = useStore();
@@ -38,9 +39,10 @@ const OasisTxsScreen = observer(() => {
     try {
       if (!isLoadMore) setLoading(true);
       if (!hasMore.current) throw Error("Failed");
+      const oasisAddress = getOasisAddress(address);
       const res = await API.getOasisTxs(
         {
-          address,
+          address: oasisAddress,
           offset: !isLoadMore ? 0 : page.current * perPage,
           limit: perPage,
           network: MapChainIdToNetwork[chainStore.current.chainId],

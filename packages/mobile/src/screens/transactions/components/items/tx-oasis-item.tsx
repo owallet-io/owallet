@@ -116,7 +116,7 @@ export const TxOasisItem: FC<{
           <View style={styles.leftBoxItem}>
             <View style={styles.pl10}>
               <Text size={16} color={colors["neutral-text-title"]} weight="600">
-                {method[method.length]}
+                {method[method.length - 1]}
               </Text>
               <Text weight="400" color={colors["neutral-text-body"]}>
                 {formatContractAddress(item.txHash)}

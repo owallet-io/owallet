@@ -15,7 +15,12 @@ const TxTransactionsScreen = observer(() => {
   if (chainId === ChainIdEnum.Bitcoin) return <BtcTxsScreen />;
   if (chainId === ChainIdEnum.BNBChain || chainId === ChainIdEnum.Ethereum)
     return <EvmTxsScreen />;
-  if (chainId === ChainIdEnum.Oasis) return <OasisTxsScreen />;
+  if (
+    chainId === ChainIdEnum.Oasis ||
+    chainId === ChainIdEnum.OasisSapphire ||
+    chainId === ChainIdEnum.OasisEmerald
+  )
+    return <OasisTxsScreen />;
   return <EmptyTx />;
 });
 

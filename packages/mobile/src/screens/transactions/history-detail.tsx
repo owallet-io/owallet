@@ -14,6 +14,11 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
   if (chainId === ChainIdEnum.BNBChain || chainId === ChainIdEnum.Ethereum)
     return <EvmDetailTx />;
   if (chainId === ChainIdEnum.Bitcoin) return <BtcDetailTx />;
-  if (chainId === ChainIdEnum.Oasis) return <OasisDetailTx />;
+  if (
+    chainId === ChainIdEnum.Oasis ||
+    chainId === ChainIdEnum.OasisSapphire ||
+    chainId === ChainIdEnum.OasisEmerald
+  )
+    return <OasisDetailTx />;
   return <OWEmpty />;
 });

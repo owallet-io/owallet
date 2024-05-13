@@ -15,6 +15,7 @@ import { useStore } from "@src/stores";
 import { EmptyTx } from "@src/screens/transactions/components/empty-tx";
 import { TxEvmItem } from "@src/screens/transactions/components/items/tx-evm-item";
 import { TxOasisItem } from "@src/screens/transactions/components/items/tx-oasis-item";
+import { getOasisAddress } from "@owallet/common";
 
 export const OasisTxCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -34,10 +35,11 @@ export const OasisTxCard: FunctionComponent<{
   const getWalletHistory = async (address) => {
     try {
       setLoading(true);
+      const oasisAddress = getOasisAddress(address);
 
       const res = await API.getOasisTxs(
         {
-          address,
+          address: oasisAddress,
           offset: 0,
           limit: 10,
           network: MapChainIdToNetwork[chainStore.current.chainId],

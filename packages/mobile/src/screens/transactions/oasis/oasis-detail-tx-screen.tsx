@@ -72,7 +72,15 @@ export const OasisDetailTx: FunctionComponent = observer((props) => {
         }
       );
       if (res && res.status !== 200) throw Error("Failed");
-      setDetail(res.data.data);
+      console.log(res.data, "res.data.data");
+      if (chainStore.current.chainId === ChainIdEnum.Oasis) {
+        setDetail(res.data.data);
+      } else {
+        setDetail(
+          res.data.transactions?.length > 0 ? res.data.transactions[0] : null
+        );
+      }
+
       setLoading(false);
     } catch (err) {
       setLoading(false);
@@ -102,8 +110,10 @@ export const OasisDetailTx: FunctionComponent = observer((props) => {
     }
   };
 
-  const fee = new CoinPretty(chainInfo.stakeCurrency, new Dec(item.fee || 0));
-
+  const fee = new CoinPretty(
+    chainInfo.stakeCurrency,
+    new Dec(item.fee).mul(DecUtils.getTenExponentN(currency.coinDecimals))
+  );
   const amount = new CoinPretty(
     currency,
     new Dec(item.amount).mul(DecUtils.getTenExponentN(currency.coinDecimals))
@@ -137,7 +147,7 @@ export const OasisDetailTx: FunctionComponent = observer((props) => {
           showsVerticalScrollIndicator={false}
         >
           <HeaderTx
-            type={method[method.length]}
+            type={method[method.length - 1]}
             colorAmount={
               item.transactionType === "incoming"
                 ? colors["success-text-body"]
@@ -181,14 +191,14 @@ export const OasisDetailTx: FunctionComponent = observer((props) => {
           <View style={styles.cardBody}>
             <ItemReceivedToken
               label={capitalizedText("From")}
-              valueDisplay={shortenAddress(detail.from)}
-              value={detail.from}
+              valueDisplay={shortenAddress(item.fromAddress)}
+              value={item.fromAddress}
               colorIconRight={colors["neutral-text-action-on-light-bg"]}
             />
             <ItemReceivedToken
               label={capitalizedText("To")}
-              valueDisplay={shortenAddress(detail.to)}
-              value={detail.to}
+              valueDisplay={shortenAddress(item.toAddress)}
+              value={item.toAddress}
               colorIconRight={colors["neutral-text-action-on-light-bg"]}
             />
             <ItemReceivedToken
