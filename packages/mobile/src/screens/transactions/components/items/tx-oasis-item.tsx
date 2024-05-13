@@ -63,11 +63,12 @@ export const TxOasisItem: FC<{
   console.log(first, now, "test");
   const { colors } = useTheme();
   const styles = styling(colors);
+  const method = item.method.split(".");
   return (
     <View style={{ paddingVertical: 8 }}>
       {first != now || index === 0 ? (
         <Text size={14} color={colors["neutral-text-heading"]} weight="600">
-          {moment(getTimeMilliSeconds(item.timestamp)).format("MMM D, YYYY")}
+          {now}
         </Text>
       ) : null}
 
@@ -115,7 +116,7 @@ export const TxOasisItem: FC<{
           <View style={styles.leftBoxItem}>
             <View style={styles.pl10}>
               <Text size={16} color={colors["neutral-text-title"]} weight="600">
-                {item.method.split(".")[1]}
+                {method[method.length]}
               </Text>
               <Text weight="400" color={colors["neutral-text-body"]}>
                 {formatContractAddress(item.txHash)}

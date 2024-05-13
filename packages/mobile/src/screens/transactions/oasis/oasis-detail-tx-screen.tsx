@@ -112,6 +112,7 @@ export const OasisDetailTx: FunctionComponent = observer((props) => {
   const onRefresh = () => {
     getHistoryDetail();
   };
+  const method = item.method.split(".");
   return (
     <PageWithBottom
       style={{
@@ -136,7 +137,7 @@ export const OasisDetailTx: FunctionComponent = observer((props) => {
           showsVerticalScrollIndicator={false}
         >
           <HeaderTx
-            type={item.method.split(".")[1]}
+            type={method[method.length]}
             colorAmount={
               item.transactionType === "incoming"
                 ? colors["success-text-body"]
