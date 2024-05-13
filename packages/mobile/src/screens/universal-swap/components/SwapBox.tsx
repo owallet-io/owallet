@@ -105,7 +105,13 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
                   alignItems: "center",
                 }}
               >
-                <View style={{ marginRight: 4 }}>
+                <View
+                  style={{
+                    marginRight: 4,
+                    backgroundColor: colors["neutral-icon-on-dark"],
+                    borderRadius: 99,
+                  }}
+                >
                   <OWIcon
                     type="images"
                     source={{ uri: chainIcon?.Icon }}
@@ -142,7 +148,13 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
                   alignItems: "center",
                 }}
               >
-                <View style={{ marginRight: 4 }}>
+                <View
+                  style={{
+                    marginRight: 4,
+                    backgroundColor: colors["neutral-icon-on-dark"],
+                    borderRadius: 99,
+                  }}
+                >
                   <OWIcon
                     type="images"
                     source={{ uri: chainIcon?.Icon }}

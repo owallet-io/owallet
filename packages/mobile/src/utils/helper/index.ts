@@ -701,22 +701,16 @@ export const getCurrencyByMinimalDenom = (
   };
 };
 
-// add `,` when split thounsand value.
-export const numberWithCommas = (x: number, maximumFractionDigits: number) => {
-  if (isNegative(x)) return "0";
-  return x.toLocaleString(maximumFractionDigits);
-};
-
 export const isNegative = (number) => number <= 0;
 export function createTxsHelper() {
   return new TxsHelper();
 }
 
-export function shortenAddress(address): string {
+export function shortenAddress(address, digits = 6): string {
   if (address) {
-    const firstSix = address.substring(0, 6);
-    const lastSix = address.substring(address.length - 6);
-    return firstSix + "..." + lastSix;
+    const firstDigits = address.substring(0, digits);
+    const lastDigits = address.substring(address.length - digits);
+    return firstDigits + "..." + lastDigits;
   }
 
   return "";

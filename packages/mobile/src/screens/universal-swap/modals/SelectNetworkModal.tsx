@@ -24,7 +24,7 @@ export const SelectNetworkModal: FunctionComponent<{
       <Text style={styles.title} weight="500" size={16}>
         Select Network
       </Text>
-      <TouchableOpacity
+      {/* <TouchableOpacity
         style={styles.clear}
         onPress={() => {
           setChainFilter(null);
@@ -34,7 +34,7 @@ export const SelectNetworkModal: FunctionComponent<{
         <Text size={16} color={colors["blue-400"]} weight="500">
           Clear
         </Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       <OWFlatList
         data={chainIcons}
         isBottomSheet

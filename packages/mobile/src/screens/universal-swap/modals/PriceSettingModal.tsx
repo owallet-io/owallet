@@ -273,7 +273,7 @@ export const PriceSettingModal = registerModal(
                               width: 24,
                               height: 24,
                               borderRadius: 24,
-                              backgroundColor: colors["neutral-surface-action"],
+                              backgroundColor: colors["neutral-icon-on-dark"],
                               alignItems: "center",
                               justifyContent: "center",
                             }}
@@ -296,7 +296,7 @@ export const PriceSettingModal = registerModal(
                               height: 24,
                               borderRadius: 24,
 
-                              backgroundColor: colors["neutral-surface-action"],
+                              backgroundColor: colors["neutral-icon-on-dark"],
 
                               alignItems: "center",
                               justifyContent: "center",

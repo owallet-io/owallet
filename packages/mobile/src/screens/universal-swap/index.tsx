@@ -782,6 +782,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             snapPoints: ["50%", "90%"],
             index: 1,
           }}
+          activeToken={originalFromToken}
           prices={prices}
           data={filteredFromTokens.sort((a, b) => {
             // @ts-ignore
@@ -804,6 +805,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             snapPoints: ["50%", "90%"],
             index: 1,
           }}
+          activeToken={originalToToken}
           prices={prices}
           data={filteredToTokens.sort((a, b) => {
             //@ts-ignore

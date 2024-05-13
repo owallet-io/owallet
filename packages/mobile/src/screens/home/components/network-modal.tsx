@@ -371,7 +371,7 @@ export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
         style={{
           ...typography.h6,
           fontWeight: "900",
-          color: colors["primary-text"],
+          color: colors["neutral-text-title"],
           width: "100%",
           textAlign: "center",
         }}
@@ -457,7 +457,7 @@ export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
 const styling = (colors) =>
   StyleSheet.create({
     containerBtn: {
-      backgroundColor: colors["background-item-list"],
+      backgroundColor: colors["neutral-surface-card"],
       paddingVertical: spacing["16"],
       borderRadius: spacing["8"],
       paddingHorizontal: spacing["16"],
