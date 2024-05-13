@@ -20,6 +20,7 @@ import {
   handleSaveHistory,
   HISTORY_STATUS,
   maskedNumber,
+  shortenAddress,
   showToast,
   _keyExtract,
 } from "@src/utils/helper";
@@ -69,6 +70,7 @@ import {
   floatToPercent,
   handleSaveTokenInfos,
   getPairInfo,
+  getSpecialCoingecko,
 } from "./helpers";
 import { Mixpanel } from "mixpanel-react-native";
 import { metrics } from "@src/themes";
@@ -113,7 +115,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
   const accountKawaiiCosmos = accountStore.getAccount(ChainIdEnum.KawaiiCosmos);
 
-  const [isSlippageModal, setIsSlippageModal] = useState(false);
+  // const [isSlippageModal, setIsSlippageModal] = useState(false);
+  const [sendToAddress, setSendToAddress] = useState(null);
   const [priceSettingModal, setPriceSettingModal] = useState(false);
   const [userSlippage, setUserSlippage] = useState(DEFAULT_SLIPPAGE);
   const [swapLoading, setSwapLoading] = useState(false);
@@ -381,6 +384,49 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       }
     }
 
+    const isCustomRecipient = sendToAddress && sendToAddress !== "";
+
+    let amountsBalance = universalSwapStore.getAmount;
+    let simulateAmount = ratio.amount;
+
+    const { isSpecialFromCoingecko } = getSpecialCoingecko(
+      originalFromToken.coinGeckoId,
+      originalToToken.coinGeckoId
+    );
+
+    if (isSpecialFromCoingecko && originalFromToken.chainId === "Oraichain") {
+      const tokenInfo = getTokenOnOraichain(originalFromToken.coinGeckoId);
+      const IBC_DECIMALS = 18;
+      const fromTokenInOrai = getTokenOnOraichain(
+        tokenInfo.coinGeckoId,
+        IBC_DECIMALS
+      );
+      const [nativeAmount, cw20Amount] = await Promise.all([
+        client.getBalance(accountOrai.bech32Address, fromTokenInOrai.denom),
+        client.queryContractSmart(tokenInfo.contractAddress, {
+          balance: {
+            address: accountOrai.bech32Address,
+          },
+        }),
+      ]);
+
+      amountsBalance = {
+        [fromTokenInOrai.denom]: nativeAmount?.amount,
+        [originalFromToken.denom]: cw20Amount.balance,
+      };
+    }
+
+    if (
+      (originalToToken.chainId === "injective-1" &&
+        originalToToken.coinGeckoId === "injective-protocol") ||
+      originalToToken.chainId === "kawaii_6886-1"
+    ) {
+      simulateAmount = toAmount(
+        ratio.displayAmount,
+        originalToToken.decimals
+      ).toString();
+    }
+
     const tokenFromNetwork = chainStore.getChain(
       originalFromToken.chainId
     ).chainName;
@@ -419,7 +465,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         },
         originalFromToken: originalFromToken,
         originalToToken: originalToToken,
-        simulateAmount: toAmountTokenString,
+        simulateAmount,
+        amounts: amountsBalance,
         simulatePrice:
           ratio?.amount &&
           // @ts-ignore
@@ -430,9 +477,16 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         smartRoutes: routersSwapData?.routeSwapOps,
       };
 
+      const compileSwapData = isCustomRecipient
+        ? {
+            ...universalSwapData,
+            recipientAddress: sendToAddress,
+          }
+        : universalSwapData;
+
       const universalSwapHandler = new UniversalSwapHandler(
         {
-          ...universalSwapData,
+          ...compileSwapData,
         },
         {
           cosmosWallet,
@@ -584,15 +638,19 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     onMaxFromAmount((fromTokenBalance * BigInt(value)) / BigInt(MAX), value);
   };
 
-  const renderSwapFee = () => {
-    if (fee) {
-      return (
-        <View style={styles.itemBottom}>
-          <BalanceText>Swapp Fee</BalanceText>
-          <BalanceText>{floatToPercent(fee) + "%"}</BalanceText>
-        </View>
-      );
-    }
+  // const renderSwapFee = () => {
+  //   if (fee) {
+  //     return (
+  //       <View style={styles.itemBottom}>
+  //         <BalanceText>Swapp Fee</BalanceText>
+  //         <BalanceText>{floatToPercent(fee) + "%"}</BalanceText>
+  //       </View>
+  //     );
+  //   }
+  // };
+
+  const handleSendToAddress = (address) => {
+    setSendToAddress(address);
   };
 
   useEffect(() => {
@@ -624,6 +682,14 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     }
   }, [toNetwork]);
 
+  useEffect(() => {
+    if (sendToAddress && sendToAddress !== "") {
+      setToggle(true);
+    } else {
+      setToggle(false);
+    }
+  }, [sendToAddress, sendToModal]);
+
   return (
     <PageWithBottom
       style={{ paddingTop: 16 }}
@@ -650,7 +716,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           <RefreshControl refreshing={loadingRefresh} onRefresh={onRefresh} />
         }
       >
-        <SlippageModal
+        {/* <SlippageModal
           close={() => {
             setIsSlippageModal(false);
           }}
@@ -658,7 +724,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           currentSlippage={userSlippage}
           isOpen={isSlippageModal}
           setUserSlippage={setUserSlippage}
-        />
+        /> */}
         <PriceSettingModal
           close={() => {
             setPriceSettingModal(false);
@@ -758,10 +824,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           close={() => {
             setSendToModal(false);
           }}
-          //@ts-ignore
-          currentSlippage={userSlippage}
           isOpen={sendToModal}
-          setUserSlippage={setUserSlippage}
+          handleSendToAddress={handleSendToAddress}
+          handleToggle={setToggle}
         />
         <View style={{ padding: 16, paddingTop: 0 }}>
           {/* <View style={styles.boxTop}>
@@ -1067,13 +1132,25 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                 on={toggle}
                 onChange={(value) => {
                   setToggle(value);
-
                   if (value) {
                     setSendToModal(true);
+                  } else {
+                    setSendToAddress("");
                   }
                 }}
               />
             </View>
+            {sendToAddress ? (
+              <View style={{ paddingTop: 6 }}>
+                <Text
+                  size={16}
+                  weight="500"
+                  color={colors["neutral-text-title"]}
+                >
+                  {shortenAddress(sendToAddress)}
+                </Text>
+              </View>
+            ) : null}
           </OWCard>
           <View
             style={{

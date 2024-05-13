@@ -1,4 +1,10 @@
-import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  Clipboard,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import { registerModal } from "@src/modals/base";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -13,11 +19,24 @@ import { AlertIcon } from "@src/components/icon";
 
 export const SendToModal = registerModal(
   //@ts-ignore
-  ({ close }) => {
+  ({ close, handleSendToAddress, sendToAddress, handleToggle }) => {
     const safeAreaInsets = useSafeAreaInsets();
+
+    const [address, setAdress] = useState("");
 
     const { colors } = useTheme();
     const styles = styling(colors);
+
+    const onPaste = async () => {
+      const text = await Clipboard.getString();
+      if (text) {
+        setAdress(text);
+      }
+    };
+
+    useEffect(() => {
+      setAdress(sendToAddress);
+    }, [sendToAddress]);
 
     return (
       <ScrollView
@@ -36,6 +55,7 @@ export const SendToModal = registerModal(
                 <OWText>Address</OWText>
               </View>
             }
+            onChangeText={(txt) => setAdress(txt.toLowerCase())}
             inputContainerStyle={{
               borderColor: colors["neutral-border-strong"],
               borderRadius: 12,
@@ -57,19 +77,25 @@ export const SendToModal = registerModal(
               </View>
             }
             inputRight={
-              <TouchableOpacity onPress={() => {}}>
-                <OWIcon
-                  size={22}
-                  name="tdesign_scan"
-                  color={colors["neutral-icon-on-light"]}
-                />
+              <TouchableOpacity
+                style={{
+                  backgroundColor: colors["neutral-surface-action3"],
+                  paddingHorizontal: 8,
+                  paddingVertical: 4,
+                  borderRadius: 999,
+                }}
+                onPress={() => {
+                  onPaste();
+                }}
+              >
+                <OWText weight="600">Paste</OWText>
               </TouchableOpacity>
             }
             autoCorrect={false}
             autoCapitalize="none"
             autoCompleteType="off"
           />
-          <TextInput
+          {/* <TextInput
             // multiline
             topInInputContainer={
               <View style={{ paddingBottom: 4 }}>
@@ -78,19 +104,19 @@ export const SendToModal = registerModal(
             }
             inputContainerStyle={{
               borderColor: colors["neutral-border-strong"],
-              borderRadius: 12,
+              borderRadius: 12
             }}
             labelStyle={{
               fontSize: 16,
               fontWeight: "700",
               color: colors["label"],
-              lineHeight: 22,
+              lineHeight: 22
             }}
             placeholder="Required if send to some CEX"
             autoCorrect={false}
             autoCapitalize="none"
             autoCompleteType="off"
-          />
+          /> */}
         </View>
         <View
           style={{
@@ -128,6 +154,7 @@ export const SendToModal = registerModal(
             size="medium"
             onPress={() => {
               close();
+              handleToggle(false);
             }}
           />
           <OWButton
@@ -138,6 +165,7 @@ export const SendToModal = registerModal(
             size="medium"
             onPress={() => {
               close();
+              handleSendToAddress(address);
             }}
           />
         </View>
