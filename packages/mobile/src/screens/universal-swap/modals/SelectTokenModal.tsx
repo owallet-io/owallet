@@ -69,7 +69,7 @@ export const SelectTokenModal: FunctionComponent<{
           }
         });
 
-        setTokens(tmpData);
+        handleSetTokensWithAmount(tmpData);
         return;
       } else {
         if (key && key !== "") {
@@ -80,7 +80,7 @@ export const SelectTokenModal: FunctionComponent<{
               .includes(key.toLowerCase());
           });
 
-          setTokens(tmpData);
+          handleSetTokensWithAmount(tmpData);
           return;
         }
 
@@ -88,12 +88,33 @@ export const SelectTokenModal: FunctionComponent<{
           const tmpData = data.filter((d) =>
             d.chainId.toString().toLowerCase().includes(chain.toLowerCase())
           );
-          setTokens(tmpData);
+          handleSetTokensWithAmount(tmpData);
           return;
         }
         setTokens(data);
       }
     };
+
+    const handleSetTokensWithAmount = useCallback(
+      (tokens) => {
+        const tmpTokens = [];
+        tokens.map((t) => {
+          const usdPrice = prices[t.coinGeckoId];
+
+          const amount = toDisplay(
+            universalSwapStore?.getAmount?.[t.denom],
+            t.decimals
+          );
+
+          const totalUsd = usdPrice
+            ? (Number(amount) * Number(usdPrice)).toFixed(2)
+            : 0;
+          tmpTokens.push({ ...t, amount, totalUsd });
+        });
+        setTokens(tmpTokens);
+      },
+      [data]
+    );
 
     useEffect(() => {
       onFilter(keyword, selectedChainFilter);
@@ -109,16 +130,7 @@ export const SelectTokenModal: FunctionComponent<{
             tokensIcon,
             (tk) => tk.coinGeckoId === item.coinGeckoId
           );
-          const usdPrice = prices[item.coinGeckoId];
 
-          const amount = toDisplay(
-            universalSwapStore?.getAmount?.[item.denom],
-            item.decimals
-          );
-
-          const totalUsd = usdPrice
-            ? (Number(amount) * Number(usdPrice)).toFixed(2)
-            : 0;
           return (
             <>
               <TouchableOpacity
@@ -177,10 +189,10 @@ export const SelectTokenModal: FunctionComponent<{
                     weight="500"
                     color={colors["neutral-text-title"]}
                   >
-                    {maskedNumber(amount)}
+                    {maskedNumber(item.amount)}
                   </Text>
                   <Text weight="400" color={colors["neutral-text-body"]}>
-                    ${maskedNumber(totalUsd) ?? 0}
+                    ${maskedNumber(item.totalUsd) ?? 0}
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -238,7 +250,9 @@ export const SelectTokenModal: FunctionComponent<{
         <OWFlatList
           isBottomSheet
           keyboardShouldPersistTaps="handled"
-          data={filteredTokens}
+          data={filteredTokens.sort((a, b) => {
+            return Number(b?.totalUsd) - Number(a?.totalUsd);
+          })}
           renderItem={({ item }) => {
             return renderTokenItem(item);
           }}

@@ -244,7 +244,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     ratio,
     amountLoading,
     estimateAverageRatio,
-    toAmountTokenString,
     relayerFeeAmount,
     relayerFeeToken,
     INIT_AMOUNT,
@@ -784,10 +783,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           }}
           activeToken={originalFromToken}
           prices={prices}
-          data={filteredFromTokens.sort((a, b) => {
-            // @ts-ignore
-            return b.value - a.value;
-          })}
+          data={filteredFromTokens}
           close={() => {
             setSelectFromTokenModal(false);
           }}
@@ -807,10 +803,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           }}
           activeToken={originalToToken}
           prices={prices}
-          data={filteredToTokens.sort((a, b) => {
-            //@ts-ignore
-            return b.value - a.value;
-          })}
+          data={filteredToTokens}
           selectedChainFilter={toNetwork}
           close={() => {
             setSelectToTokenModal(false);
