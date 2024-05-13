@@ -1,12 +1,11 @@
+//@ts-nocheck
 import { ScrollView, StyleSheet, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import { registerModal } from "@src/modals/base";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Text } from "@src/components/text";
-import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { OWButton } from "@src/components/button";
 import { TypeTheme, useTheme } from "@src/themes/theme-provider";
-import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 import { metrics } from "@src/themes";
 import { DEFAULT_SLIPPAGE } from "@owallet/common";
 import OWIcon from "@src/components/ow-icon/ow-icon";
@@ -17,9 +16,7 @@ import {
   flattenTokensWithIcon,
 } from "@oraichain/oraidex-common";
 import FastImage from "react-native-fast-image";
-import { BalanceText } from "../components/BalanceText";
 import { maskedNumber } from "@src/utils/helper";
-import { ProgressBar } from "@src/components/progress-bar";
 import { useStore } from "@src/stores";
 
 export const PriceSettingModal = registerModal(
@@ -38,26 +35,16 @@ export const PriceSettingModal = registerModal(
     const safeAreaInsets = useSafeAreaInsets();
     const { appInitStore } = useStore();
 
-    console.log("swapFee", swapFee);
-
     const [slippage, setSlippage] = useState(DEFAULT_SLIPPAGE);
     const { colors } = useTheme();
     const styles = styling(colors);
     const theme = appInitStore.getInitApp.theme;
 
-    const handleChangeSlippage = (direction) => {
-      if (direction === "minus") {
-        if (slippage > 1) {
-          setSlippage(slippage - 1);
-        } else {
-          setSlippage(1);
-        }
+    const handleChangeSlippage = (value: number) => {
+      if (value <= 100) {
+        setSlippage(value);
       } else {
-        if (slippage < 100) {
-          setSlippage(slippage + 1);
-        } else {
-          setSlippage(100);
-        }
+        setSlippage(100);
       }
     };
 
@@ -80,15 +67,16 @@ export const PriceSettingModal = registerModal(
               marginVertical: 10,
             }}
           >
-            <Text>{label}</Text>
+            <Text size={15}>{label}</Text>
             <Text
               weight="600"
+              size={15}
               color={
                 Number(impact) > 5
                   ? Number(impact) > 10
                     ? colors["error-text-body"]
                     : colors["warning-text-body"]
-                  : colors["neutral-text-body"]
+                  : colors["neutral-text-title"]
               }
             >
               {info}
@@ -144,6 +132,8 @@ export const PriceSettingModal = registerModal(
                   height: 44,
                   width: metrics.screenWidth / 3,
                 }}
+                value={slippage.toString()}
+                onChangeText={(txt) => handleChangeSlippage(Number(txt))}
                 inputRight={
                   <Text
                     color={colors["neutral-text-title"]}
@@ -153,6 +143,7 @@ export const PriceSettingModal = registerModal(
                     %
                   </Text>
                 }
+                keyboardType="number-pad"
                 placeholder="Custom"
                 autoCorrect={false}
                 autoCapitalize="none"
@@ -234,23 +225,23 @@ export const PriceSettingModal = registerModal(
                       alignSelf: "center",
                     }}
                   >
-                    <ProgressBar
-                      progress={100}
-                      styles={{
+                    <View
+                      style={{
                         width: metrics.screenWidth - 32,
-                        height: 6,
-                        backgroundColor: colors["gray-250"],
+                        height: 2,
+                        backgroundColor: colors["neutral-text-disable"],
                       }}
-                      progressColor={colors["green-active"]}
                     />
                   </View>
                   <View
                     style={{
-                      backgroundColor: colors["plain-background"],
+                      backgroundColor: colors["neutral-surface-card"],
                       padding: 4,
                     }}
                   >
-                    <Text>{volumn}%</Text>
+                    <Text weight="500" color={colors["neutral-text-body"]}>
+                      {volumn}%
+                    </Text>
                   </View>
                   {route.paths.map((path, i, acc) => {
                     const { TokenInIcon, TokenOutIcon } = getPairInfo(
@@ -261,64 +252,81 @@ export const PriceSettingModal = registerModal(
                     );
 
                     return (
-                      <View style={{ flexDirection: "row" }}>
+                      <View
+                        style={{
+                          backgroundColor: colors["neutral-surface-card"],
+                          borderRadius: 999,
+                          paddingHorizontal: 4,
+                        }}
+                      >
                         <View
                           style={{
-                            width: 40,
-                            height: 40,
-                            borderRadius: 40,
-                            marginLeft: 20,
-                            backgroundColor: colors["neutral-icon-on-dark"],
-                            alignItems: "center",
-                            justifyContent: "center",
+                            flexDirection: "row",
+                            backgroundColor: colors["neutral-surface-action"],
+                            borderRadius: 999,
+                            paddingHorizontal: 6,
+                            paddingVertical: 4,
                           }}
                         >
-                          <FastImage
+                          <View
                             style={{
-                              width: 36,
-                              height: 36,
-                              borderRadius: 40,
+                              width: 24,
+                              height: 24,
+                              borderRadius: 24,
+                              backgroundColor: colors["neutral-surface-action"],
+                              alignItems: "center",
+                              justifyContent: "center",
                             }}
-                            source={{
-                              uri: TokenOutIcon,
-                            }}
-                            resizeMode={FastImage.resizeMode.cover}
-                          />
-                        </View>
-                        <View
-                          style={{
-                            width: 40,
-                            height: 40,
-                            borderRadius: 40,
-                            position: "absolute",
-                            backgroundColor: colors["neutral-icon-on-dark"],
-                            right: 20,
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                        >
-                          <FastImage
+                          >
+                            <FastImage
+                              style={{
+                                width: 24,
+                                height: 24,
+                                borderRadius: 24,
+                              }}
+                              source={{
+                                uri: TokenOutIcon,
+                              }}
+                              resizeMode={FastImage.resizeMode.cover}
+                            />
+                          </View>
+                          <View
                             style={{
-                              width: 36,
-                              height: 36,
-                              borderRadius: 40,
+                              width: 24,
+                              height: 24,
+                              borderRadius: 24,
+
+                              backgroundColor: colors["neutral-surface-action"],
+
+                              alignItems: "center",
+                              justifyContent: "center",
                             }}
-                            source={{
-                              uri: TokenInIcon,
-                            }}
-                            resizeMode={FastImage.resizeMode.cover}
-                          />
+                          >
+                            <FastImage
+                              style={{
+                                width: 24,
+                                height: 24,
+                                borderRadius: 24,
+                              }}
+                              source={{
+                                uri: TokenInIcon,
+                              }}
+                              resizeMode={FastImage.resizeMode.cover}
+                            />
+                          </View>
                         </View>
                       </View>
                     );
                   })}
                   <View
                     style={{
-                      backgroundColor: colors["plain-background"],
+                      backgroundColor: colors["neutral-surface-card"],
                       padding: 4,
                     }}
                   >
-                    <Text>{volumn}%</Text>
+                    <Text weight="500" color={colors["neutral-text-body"]}>
+                      {volumn}%
+                    </Text>
                   </View>
                 </View>
               );
@@ -329,12 +337,12 @@ export const PriceSettingModal = registerModal(
             {impactWarning
               ? renderInfo(
                   "Price Impact",
-                  `≈ ${maskedNumber(impactWarning)}%`,
+                  `${maskedNumber(impactWarning)}%`,
                   impactWarning
                 )
               : null}
             {renderInfo("Minimum Received", minimumReceive)}
-            {renderInfo("Slippage", `${currentSlippage}%`)}
+            {renderInfo("Slippage", `${slippage}%`)}
             {tokenFee ? renderInfo("Token Fee", tokenFee) : null}
             {relayerFee ? renderInfo("Relayer Fee", relayerFee) : null}
             {swapFee ? renderInfo("Swap Fee", swapFee) : null}

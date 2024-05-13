@@ -906,93 +906,68 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               borderWidth: 2,
             }}
           >
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
+            <TouchableOpacity
+              onPress={() => {
+                setPriceSettingModal(true);
               }}
             >
-              <Text color={colors["neutral-text-title"]} weight="500" size={15}>
-                Smart Route
-              </Text>
-              <View style={{ flexDirection: "row" }}>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    backgroundColor: colors["highlight-surface-subtle"],
-                    paddingHorizontal: 8,
-                    paddingVertical: 4,
-                    borderRadius: 4,
-                    marginRight: 8,
-                  }}
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Text
+                  color={colors["neutral-text-title"]}
+                  weight="500"
+                  size={15}
                 >
-                  <OWIcon
-                    name="tdesignwindy"
-                    color={colors["highlight-text-title"]}
-                    size={14}
-                  />
-                  <Text
-                    color={colors["highlight-text-title"]}
-                    weight="600"
-                    size={12}
+                  Smart Route
+                </Text>
+                <View style={{ flexDirection: "row" }}>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      backgroundColor: colors["highlight-surface-subtle"],
+                      paddingHorizontal: 8,
+                      paddingVertical: 4,
+                      borderRadius: 4,
+                      marginRight: 8,
+                    }}
                   >
-                    {" "}
-                    FASTEST
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    backgroundColor: colors["primary-surface-subtle"],
-                    paddingHorizontal: 8,
-                    paddingVertical: 4,
-                    borderRadius: 4,
-                  }}
-                >
-                  <Text
-                    color={colors["primary-text-action"]}
-                    weight="600"
-                    size={12}
+                    <OWIcon
+                      name="tdesignwindy"
+                      color={colors["highlight-text-title"]}
+                      size={14}
+                    />
+                    <Text
+                      color={colors["highlight-text-title"]}
+                      weight="600"
+                      size={12}
+                    >
+                      {" "}
+                      FASTEST
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      backgroundColor: colors["primary-surface-subtle"],
+                      paddingHorizontal: 8,
+                      paddingVertical: 4,
+                      borderRadius: 4,
+                    }}
                   >
-                    BEST RETURN
-                  </Text>
+                    <Text
+                      color={colors["primary-text-action"]}
+                      weight="600"
+                      size={12}
+                    >
+                      BEST RETURN
+                    </Text>
+                  </View>
                 </View>
               </View>
-            </View>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginVertical: 10,
-              }}
-            >
-              <Text>Rate</Text>
-              <TouchableOpacity
-                onPress={() => {
-                  setPriceSettingModal(true);
-                }}
-                style={{ flexDirection: "row", alignItems: "center" }}
-              >
-                <Text weight="600" color={colors["primary-text-action"]}>
-                  {`1 ${originalFromToken.name} ≈ ${
-                    ratio
-                      ? Number((ratio.displayAmount / INIT_AMOUNT).toFixed(6))
-                      : "0"
-                  } ${originalToToken.name}`}{" "}
-                </Text>
-                <OWIcon
-                  name="setting-outline"
-                  color={colors["primary-text-action"]}
-                  size={20}
-                />
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.borderline} />
-            {!swapLoading &&
-            (!fromAmountToken || !toAmountToken) &&
-            fromToken.denom === TRON_DENOM ? (
               <View
                 style={{
                   flexDirection: "row",
@@ -1001,42 +976,77 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                   marginVertical: 10,
                 }}
               >
-                <Text>Minimum Amount</Text>
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Text>Rate</Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    setPriceSettingModal(true);
+                  }}
+                  style={{ flexDirection: "row", alignItems: "center" }}
+                >
                   <Text weight="600" color={colors["primary-text-action"]}>
-                    {(fromToken.minAmountSwap || "0") + " " + fromToken.name}
+                    {`1 ${originalFromToken.name} ≈ ${
+                      ratio
+                        ? Number((ratio.displayAmount / INIT_AMOUNT).toFixed(6))
+                        : "0"
+                    } ${originalToToken.name}`}{" "}
+                  </Text>
+                  <OWIcon
+                    name="setting-outline"
+                    color={colors["primary-text-action"]}
+                    size={20}
+                  />
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.borderline} />
+              {!swapLoading &&
+              (!fromAmountToken || !toAmountToken) &&
+              fromToken.denom === TRON_DENOM ? (
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginVertical: 10,
+                  }}
+                >
+                  <Text>Minimum Amount</Text>
+                  <View style={{ flexDirection: "row", alignItems: "center" }}>
+                    <Text weight="600" color={colors["primary-text-action"]}>
+                      {(fromToken.minAmountSwap || "0") + " " + fromToken.name}
+                    </Text>
+                  </View>
+                </View>
+              ) : null}
+
+              <View style={styles.borderline} />
+              <View style={{ marginVertical: 10 }}>
+                <Text>
+                  Min. Received:{" "}
+                  <Text weight="600">
+                    {(minimumReceive.toFixed(4) || "0") + " " + toToken.name}
+                  </Text>
+                  {"  •  "}Swap Fee:{" "}
+                  <Text weight="600">{floatToPercent(fee) + "%"}</Text>
+                </Text>
+              </View>
+
+              {minimumReceive < 0 && (
+                <View style={{ marginTop: 10 }}>
+                  <Text color={colors["danger"]}>
+                    Current swap amount is too small
                   </Text>
                 </View>
-              </View>
-            ) : null}
+              )}
 
-            <View style={styles.borderline} />
-            <View style={{ marginVertical: 10 }}>
-              <Text>
-                Min. Received:{" "}
-                <Text weight="600">
-                  {(minimumReceive.toFixed(4) || "0") + " " + toToken.name}
-                </Text>
-                {"  •  "}Swap Fee:{" "}
-                <Text weight="600">{floatToPercent(fee) + "%"}</Text>
-              </Text>
-            </View>
-
-            {minimumReceive < 0 && (
-              <View style={{ marginTop: 10 }}>
-                <Text color={colors["danger"]}>
-                  Current swap amount is too small
-                </Text>
-              </View>
-            )}
-
-            {!fromTokenFee && !toTokenFee && isWarningSlippage && (
-              <View style={{ marginTop: 10 }}>
-                <Text color={colors["danger"]}>
-                  Current slippage exceed configuration!
-                </Text>
-              </View>
-            )}
+              {!fromTokenFee && !toTokenFee && isWarningSlippage && (
+                <View style={{ marginTop: 10 }}>
+                  <Text color={colors["danger"]}>
+                    Current slippage exceed configuration!
+                  </Text>
+                </View>
+              )}
+            </TouchableOpacity>
           </OWCard>
 
           <OWCard type="normal">
