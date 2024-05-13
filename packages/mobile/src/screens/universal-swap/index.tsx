@@ -646,6 +646,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       <ScrollView
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={loadingRefresh} onRefresh={onRefresh} />
+        }
       >
         <SlippageModal
           close={() => {
