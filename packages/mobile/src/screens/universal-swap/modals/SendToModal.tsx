@@ -146,6 +146,7 @@ export const SendToModal = registerModal(
             </OWText>
           </View>
           <OWText
+            style={{ paddingBottom: 6 }}
             color={colors["warning-border-default"]}
             weight="500"
             size={14}
