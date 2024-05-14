@@ -321,7 +321,6 @@ const styling = (colors) =>
     containerStyle: {
       paddingBottom: 12,
       backgroundColor: colors["neutral-surface-bg"],
-      paddingTop: 30,
     },
     containerEarnStyle: {
       backgroundColor: colors["neutral-surface-bg2"],
