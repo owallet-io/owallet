@@ -131,7 +131,11 @@ export const SendToModal = registerModal(
           }}
         >
           <View style={{ flexDirection: "row", paddingBottom: 6 }}>
-            <AlertIcon color={colors["warning-text-body"]} size={16} />
+            <OWIcon
+              name="tdesignerror-triangle"
+              color={colors["warning-text-body"]}
+              size={16}
+            />
             <OWText
               style={{ paddingLeft: 8 }}
               color={colors["warning-border-default"]}

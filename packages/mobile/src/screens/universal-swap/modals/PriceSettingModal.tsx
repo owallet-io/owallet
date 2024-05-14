@@ -79,7 +79,20 @@ export const PriceSettingModal = registerModal(
                   : colors["neutral-text-title"]
               }
             >
-              {info}
+              {impact ? (
+                <OWIcon
+                  name="tdesignerror-triangle"
+                  color={
+                    Number(impact) > 5
+                      ? Number(impact) > 10
+                        ? colors["error-text-body"]
+                        : colors["warning-text-body"]
+                      : colors["neutral-text-title"]
+                  }
+                  size={16}
+                />
+              ) : null}
+              {" " + info}
             </Text>
           </View>
           <View style={styles.borderline} />
@@ -349,6 +362,7 @@ export const PriceSettingModal = registerModal(
           </View>
           <View style={{ marginTop: 18, marginBottom: 36 }}>
             {renderInfo("Rate", ratio)}
+            {renderInfo("Minimum Received", minimumReceive)}
             {impactWarning
               ? renderInfo(
                   "Price Impact",
@@ -356,7 +370,6 @@ export const PriceSettingModal = registerModal(
                   impactWarning
                 )
               : null}
-            {renderInfo("Minimum Received", minimumReceive)}
             {renderInfo("Slippage", `${slippage}%`)}
             {tokenFee && tokenFee > 0
               ? renderInfo("Token Fee", tokenFee)
