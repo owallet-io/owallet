@@ -16,7 +16,7 @@ export const EmptyTx = () => {
       }}
     >
       <FastImage
-        source={require("../../assets/image/img_empty.png")}
+        source={require("@src/assets/image/img_empty.png")}
         style={{
           width: 150,
           height: 150,

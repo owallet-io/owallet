@@ -22,7 +22,12 @@ import { HeaderTx } from "@src/screens/tx-result/components/header-tx";
 import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
 import { Text } from "@src/components/text";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
-import { ChainIdEnum, TRON_ID } from "@owallet/common";
+import {
+  ChainIdEnum,
+  isMilliseconds,
+  OasisNetwork,
+  TRON_ID,
+} from "@owallet/common";
 import { AddressTransaction, Network } from "@tatumio/tatum";
 import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
 import { OwLoading } from "@src/components/owallet-loading/ow-loading";
@@ -31,8 +36,9 @@ import { Currency } from "@owallet/types";
 
 import { urlTxHistory } from "@src/common/constants";
 import { OWEmpty } from "@src/components/empty";
+import get from "lodash/get";
 
-export const EvmDetailTx: FunctionComponent = observer((props) => {
+export const TronDetailTx: FunctionComponent = observer((props) => {
   const { chainStore, priceStore } = useStore();
 
   const route = useRoute<
@@ -40,34 +46,36 @@ export const EvmDetailTx: FunctionComponent = observer((props) => {
       Record<
         string,
         {
-          item: AddressTransaction;
+          item: any;
           currency: Currency;
         }
       >,
       string
     >
   >();
-  const [detail, setDetail] = useState<TxDetail>();
+  const [detail, setDetail] = useState<DataTxDetail>();
   const [loading, setLoading] = useState(false);
 
   const { item, currency } = route.params;
-  const { hash, chain, transactionType } = item;
+  const { txID: hash, chain, transactionType } = item;
   console.log(item, detail, "item detail");
 
   const getHistoryDetail = async () => {
     try {
       setLoading(true);
-      const res = await API.getDetailTx(
+      const res = await API.getDetailTronTx(
         {
           hash,
-          network: chain as Network,
+          network: Network.TRON,
         },
         {
           baseURL: urlTxHistory,
         }
       );
+      console.log(res, "kakak");
       if (res && res.status !== 200) throw Error("Failed");
       setDetail(res.data);
+
       setLoading(false);
     } catch (err) {
       setLoading(false);
@@ -84,38 +92,26 @@ export const EvmDetailTx: FunctionComponent = observer((props) => {
 
   if (loading) return <OwLoading />;
   if (!detail) return <OWEmpty />;
+  console.log(detail, "detail");
   const chainInfo = chainStore.getChain(chainStore.current.chainId);
   const handleUrl = (txHash) => {
-    const chainInfo = chainStore.getChain(detail.chainId);
-    return chainInfo.raw.txExplorer.txUrl.replace(
-      "{txHash}",
-
-      chainInfo.chainId === ChainIdEnum.BNBChain
-        ? txHash.toLowerCase()
-        : txHash.toUpperCase()
-    );
+    return chainInfo.raw.txExplorer.txUrl.replace("{txHash}", txHash);
   };
   const handleOnExplorer = async () => {
-    if (chainInfo.raw.txExplorer && detail.hash) {
-      const url = handleUrl(detail.hash);
+    if (chainInfo.raw.txExplorer && hash) {
+      const url = handleUrl(hash);
       console.log(url, "url");
       await openLink(url);
     }
   };
 
-  const fee = new CoinPretty(
-    chainInfo.stakeCurrency,
-    new Int(Number(detail.gasPrice)).mul(new Int(detail.gasUsed))
-  );
-
-  const amount = new CoinPretty(
-    currency,
-    new Dec(item.amount).mul(DecUtils.getTenExponentN(currency.coinDecimals))
-  );
+  const fee = new CoinPretty(chainInfo.stakeCurrency, new Dec(item.totalFee));
+  const amount = new CoinPretty(currency, new Dec(item.amount));
 
   const onRefresh = () => {
     getHistoryDetail();
   };
+  const method = item.transactionType === "incoming" ? "Received" : "Sent";
   return (
     <PageWithBottom
       style={{
@@ -140,9 +136,9 @@ export const EvmDetailTx: FunctionComponent = observer((props) => {
           showsVerticalScrollIndicator={false}
         >
           <HeaderTx
-            type={item.transactionSubtype === "incoming" ? "Received" : "Sent"}
+            type={method}
             colorAmount={
-              new Dec(item.amount).gt(new Dec(0))
+              item.transactionType === "incoming"
                 ? colors["success-text-body"]
                 : colors["neutral-text-title"]
             }
@@ -151,9 +147,10 @@ export const EvmDetailTx: FunctionComponent = observer((props) => {
                 style={[
                   styles.containerSuccess,
                   {
-                    backgroundColor: detail.status
-                      ? colors["highlight-surface-subtle"]
-                      : colors["error-surface-subtle"],
+                    backgroundColor:
+                      get(detail, "ret[0].contractRet") === "SUCCESS"
+                        ? colors["hightlight-surface-subtle"]
+                        : colors["error-surface-subtle"],
                   },
                 ]}
               >
@@ -161,17 +158,19 @@ export const EvmDetailTx: FunctionComponent = observer((props) => {
                   weight={"500"}
                   size={14}
                   color={
-                    detail.status
-                      ? colors["highlight-text-title"]
+                    get(detail, "ret[0].contractRet") === "SUCCESS"
+                      ? colors["hightlight-text-title"]
                       : colors["error-text-body"]
                   }
                 >
-                  {detail.status ? "Success" : "Failed"}
+                  {get(detail, "ret[0].contractRet") === "SUCCESS"
+                    ? "Success"
+                    : "Failed"}
                 </OWText>
               </View>
             }
             amount={`${
-              new Dec(item.amount).gt(new Dec(0)) ? "+" : ""
+              item.transactionType === "incoming" ? "+" : "-"
             }${maskedNumber(amount.hideDenom(true).toString())} ${
               currency.coinDenom
             }`}
@@ -184,36 +183,26 @@ export const EvmDetailTx: FunctionComponent = observer((props) => {
           <View style={styles.cardBody}>
             <ItemReceivedToken
               label={capitalizedText("From")}
-              valueDisplay={
-                item.transactionSubtype === "incoming"
-                  ? shortenAddress(item.counterAddress)
-                  : shortenAddress(item.address)
-              }
-              value={detail.from}
+              valueDisplay={shortenAddress(item.fromAddress)}
+              value={item.fromAddress}
               colorIconRight={colors["neutral-text-action-on-light-bg"]}
             />
             <ItemReceivedToken
               label={capitalizedText("To")}
-              valueDisplay={
-                item.transactionSubtype === "incoming"
-                  ? shortenAddress(item.address)
-                  : shortenAddress(item.counterAddress)
-              }
-              value={detail.to}
+              valueDisplay={shortenAddress(item.toAddress)}
+              value={item.toAddress}
               colorIconRight={colors["neutral-text-action-on-light-bg"]}
             />
             <ItemReceivedToken
               label={"From Network"}
               valueDisplay={
                 <View style={styles.viewNetwork}>
-                  {chainInfo?.raw?.chainSymbolImageUrl && (
-                    <Image
-                      style={styles.imgNetwork}
-                      source={{
-                        uri: chainInfo?.raw?.chainSymbolImageUrl,
-                      }}
-                    />
-                  )}
+                  <Image
+                    style={styles.imgNetwork}
+                    source={{
+                      uri: chainInfo.stakeCurrency.coinImageUrl,
+                    }}
+                  />
                   <Text
                     size={16}
                     color={colors["neutral-text-body"]}
@@ -239,16 +228,18 @@ export const EvmDetailTx: FunctionComponent = observer((props) => {
             />
             <ItemReceivedToken
               label={"Time"}
-              valueDisplay={moment(item.timestamp).format(
-                "MMM D, YYYY [at] HH:mm"
-              )}
+              valueDisplay={moment(
+                isMilliseconds(item.timestamp)
+                  ? item.timestamp
+                  : item.timestamp * 1000
+              ).format("MMM D, YYYY [at] HH:mm")}
               btnCopy={false}
             />
 
             <ItemReceivedToken
               label={"Hash"}
-              valueDisplay={formatContractAddress(detail.hash)}
-              value={detail.hash}
+              valueDisplay={formatContractAddress(hash)}
+              value={hash}
               btnCopy={false}
               IconRightComponent={
                 <View>
@@ -337,7 +328,7 @@ const useStyles = (colors) => {
       padding: 16,
     },
     status: {
-      backgroundColor: colors["highlight-surface-subtle"],
+      backgroundColor: colors["hightlight-surface-subtle"],
       paddingHorizontal: 12,
       paddingVertical: 2,
       borderRadius: 12,
@@ -389,26 +380,23 @@ const useStyles = (colors) => {
   });
 };
 
-export interface TxDetail {
-  blockHash: string;
-  blockNumber: number;
-  from: string;
-  gas: number;
-  gasPrice: string;
-  input: string;
+export interface RootTxDetail {
+  code: number;
+  data: DataTxDetail;
+}
+
+export interface DataTxDetail {
+  txHash: string;
+  timestamp: number;
+  time: number;
+  height: number;
+  fee: any;
   nonce: number;
+  method: string;
+  from: string;
   to: string;
-  transactionIndex: number;
-  value: string;
-  type: string;
-  chainId: string;
-  contractAddress: any;
-  cumulativeGasUsed: string;
-  effectiveGasPrice: string;
-  gasUsed: string;
-  logs: any[];
-  logsBloom: string;
+  amount: string;
+  raw: string;
   status: boolean;
-  transactionHash: string;
-  hash: string;
+  errorMessage: any;
 }

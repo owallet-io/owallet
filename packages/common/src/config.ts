@@ -3,7 +3,6 @@ import { AppChainInfo, Currency } from "@owallet/types";
 import { IntlMessages, TypeLanguageToFiatCurrency } from "./languages";
 import { FiatCurrency } from "@owallet/types";
 import "dotenv/config";
-console.log(process.env.API_KEY_TRON_SCAN, "process.env.API_KEY_TRON_SCAN");
 
 export const AutoFetchingFiatValueInterval = 300 * 1000; // 5min
 
@@ -1319,7 +1318,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     ],
     restConfig: {
       headers: {
-        "TRON-PRO-API-KEY": process.env.API_KEY_TRON_SCAN,
+        // TODO: This is key free for test tron
+        "TRON-PRO-API-KEY": "8ab42c7c-b664-46c2-80b9-3acde86d01e3",
       },
     },
     bip44: {

@@ -16,14 +16,18 @@ import OWText from "@src/components/text/ow-text";
 import { CoinPretty, Dec, DecUtils } from "@owallet/unit";
 import moment from "moment/moment";
 import { navigate } from "@src/router/root";
-import { SCREENS } from "@src/common/constants";
-import { formatAddress, unknownToken } from "@owallet/common";
+import {
+  checkIsMilliseconds,
+  getTimeMilliSeconds,
+  SCREENS,
+} from "@src/common/constants";
+import { formatAddress, isMilliseconds, unknownToken } from "@owallet/common";
 import { RightArrowIcon } from "@src/components/icon";
 import { useStore } from "@src/stores";
 import { has } from "lodash";
 import { Currency } from "@owallet/types";
 
-const OWTransactionItem: FC<{
+export const TxOasisItem: FC<{
   item: any;
   index: number;
   data: any;
@@ -31,7 +35,8 @@ const OWTransactionItem: FC<{
   const { priceStore, chainStore } = useStore();
   const fiat = priceStore.defaultVsCurrency;
   if (!item) return;
-  let currency = unknownToken;
+  console.log(item, "item");
+  const currency = chainStore.current.stakeCurrency;
   const onTransactionDetail = (item, currency) => {
     navigate(SCREENS.STACK.Others, {
       screen: SCREENS.HistoryDetail,
@@ -43,19 +48,6 @@ const OWTransactionItem: FC<{
 
     return;
   };
-  if (item.transactionType === "fungible") {
-    if (has(item, "tokenInfo.attributes")) {
-      currency = {
-        coinDecimals: item.tokenInfo.attributes.decimals,
-        coinImageUrl: item.tokenInfo.attributes.image_url,
-        coinGeckoId: item.tokenInfo.attributes.coingecko_coin_id,
-        coinMinimalDenom: `erc20:${item.tokenAddress}:${item.tokenInfo.attributes.name}`,
-        coinDenom: item.tokenInfo.attributes.symbol,
-      } as Currency;
-    }
-  } else if (item.transactionType === "native") {
-    currency = chainStore.current.stakeCurrency;
-  }
 
   const amount = new CoinPretty(
     currency,
@@ -63,15 +55,20 @@ const OWTransactionItem: FC<{
   );
   const priceAmount = priceStore.calculatePrice(amount, fiat);
   const first =
-    index > 0 && moment(data[index - 1].timestamp).format("MMM D, YYYY");
-  const now = moment(item.timestamp).format("MMM D, YYYY");
+    index > 0 &&
+    moment(getTimeMilliSeconds(data[index - 1].timestamp)).format(
+      "MMM D, YYYY"
+    );
+  const now = moment(getTimeMilliSeconds(item.timestamp)).format("MMM D, YYYY");
+  console.log(first, now, "test");
   const { colors } = useTheme();
   const styles = styling(colors);
+  const method = item.method.split(".");
   return (
     <View style={{ paddingVertical: 8 }}>
-      {first !== now || index === 0 ? (
+      {first != now || index === 0 ? (
         <Text size={14} color={colors["neutral-text-heading"]} weight="600">
-          {moment(item.timestamp).format("MMM D, YYYY")}
+          {now}
         </Text>
       ) : null}
 
@@ -98,7 +95,7 @@ const OWTransactionItem: FC<{
           <View style={styles.chainWrap}>
             <OWIcon
               type="images"
-              source={{ uri: chainStore.current.raw.chainSymbolImageUrl }}
+              source={{ uri: currency.coinImageUrl }}
               size={20}
               style={{
                 borderRadius: 999,
@@ -119,10 +116,10 @@ const OWTransactionItem: FC<{
           <View style={styles.leftBoxItem}>
             <View style={styles.pl10}>
               <Text size={16} color={colors["neutral-text-title"]} weight="600">
-                {item.transactionSubtype === "incoming" ? "Received" : "Sent"}
+                {method[method.length - 1]}
               </Text>
               <Text weight="400" color={colors["neutral-text-body"]}>
-                {formatContractAddress(item.hash)}
+                {formatContractAddress(item.txHash)}
               </Text>
             </View>
           </View>
@@ -132,13 +129,13 @@ const OWTransactionItem: FC<{
                 <Text
                   weight="500"
                   color={
-                    new Dec(item.amount).gt(new Dec(0))
+                    item.transactionType === "incoming"
                       ? colors["success-text-body"]
                       : colors["neutral-text-title"]
                   }
                 >
                   {`${
-                    new Dec(item.amount).gt(new Dec(0)) ? "+" : ""
+                    item.transactionType === "incoming" ? "+" : "-"
                   }${maskedNumber(amount.hideDenom(true).toString())} ${
                     currency.coinDenom
                   }`}
@@ -165,8 +162,6 @@ const OWTransactionItem: FC<{
     </View>
   );
 });
-
-export default OWTransactionItem;
 
 const styling = (colors) => {
   return StyleSheet.create({

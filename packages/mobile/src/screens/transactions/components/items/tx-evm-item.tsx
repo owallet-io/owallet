@@ -23,7 +23,7 @@ import { useStore } from "@src/stores";
 import { has } from "lodash";
 import { Currency } from "@owallet/types";
 
-const OWTransactionItem: FC<{
+export const TxEvmItem: FC<{
   item: any;
   index: number;
   data: any;
@@ -165,8 +165,6 @@ const OWTransactionItem: FC<{
     </View>
   );
 });
-
-export default OWTransactionItem;
 
 const styling = (colors) => {
   return StyleSheet.create({

@@ -63,7 +63,10 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   const currentChain = chainStore.current;
   const currentChainId = currentChain?.chainId;
   const account = accountStore.getAccount(chainStore.current.chainId);
-
+  const address = account.getAddressDisplay(
+    keyRingStore.keyRingLedgerAddresses,
+    false
+  );
   const previousChainId = usePrevious(currentChainId);
   const chainStoreIsInitializing = chainStore.isInitializing;
   const previousChainStoreIsInitializing = usePrevious(
@@ -126,7 +129,9 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       checkAndUpdateChainInfo,
     ])
   );
-
+  useEffect(() => {
+    onRefresh();
+  }, [address, chainStore.current.chainId]);
   const onRefresh = React.useCallback(async () => {
     const queries = queriesStore.get(chainStore.current.chainId);
     if (chainStore.current.chainId === ChainIdEnum.TRON) {
@@ -150,19 +155,10 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       await Promise.all([
         priceStore.waitFreshResponse(),
         ...queries.queryBalances
-          .getQueryBech32Address(account.bech32Address)
+          .getQueryBech32Address(address)
           .balances.map((bal) => {
             return bal.waitFreshResponse();
           }),
-        // queries.cosmos.queryRewards
-        //   .getQueryBech32Address(account.bech32Address)
-        //   .waitFreshResponse(),
-        // queries.cosmos.queryDelegations
-        //   .getQueryBech32Address(account.bech32Address)
-        //   .waitFreshResponse(),
-        // queries.cosmos.queryUnbondingDelegations
-        //   .getQueryBech32Address(account.bech32Address)
-        //   .waitFreshResponse(),
       ]);
     }
     setRefreshing(false);
@@ -188,6 +184,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     chainStore.current.chainId,
     refreshDate,
     universalSwapStore.getTokenReload,
+    address,
   ]);
 
   // This section for getting all tokens of all chains

@@ -8,7 +8,7 @@ import { MapChainIdToNetwork } from "@src/utils/helper";
 import { OWBox } from "@src/components/card";
 import { spacing } from "@src/themes";
 
-import { urlTxHistory } from "@src/common/constants";
+import { SCREENS, urlTxHistory } from "@src/common/constants";
 import OWFlatList from "@src/components/page/ow-flat-list";
 import { API } from "@src/common/api";
 import get from "lodash/get";
@@ -16,15 +16,13 @@ import get from "lodash/get";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { OWSearchInput } from "@src/components/ow-search-input";
 import { EmptyTx } from "@src/screens/transactions/components/empty-tx";
-import { TxBtcItem } from "@src/screens/transactions/components/items/tx-btc-item";
+import { TxTronItem } from "@src/screens/transactions/components/items/tx-tron-item";
 
-const BtcTxsScreen = observer(() => {
+const TronTxsScreen = observer(() => {
   const { chainStore, accountStore, keyRingStore } = useStore();
-  const { colors } = useTheme();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const address = account.getAddressDisplay(
-    keyRingStore.keyRingLedgerAddresses,
-    false
+    keyRingStore.keyRingLedgerAddresses
   );
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -38,9 +36,10 @@ const BtcTxsScreen = observer(() => {
     try {
       if (!isLoadMore) setLoading(true);
       if (!hasMore.current) throw Error("Failed");
-      const res = await API.getBtcTxs(
+
+      const res = await API.getTronTxs(
         {
-          address,
+          address: address,
           offset: !isLoadMore ? 0 : page.current * perPage,
           limit: perPage,
           network: MapChainIdToNetwork[chainStore.current.chainId],
@@ -49,6 +48,7 @@ const BtcTxsScreen = observer(() => {
           baseURL: urlTxHistory,
         }
       );
+      console.log(res, "res");
       if (res && res.status !== 200) throw Error("Failed");
       page.current += 1;
       const totalPage = Math.ceil(res.data.totalRecord / perPage);
@@ -60,8 +60,8 @@ const BtcTxsScreen = observer(() => {
       }
 
       setData((prevData) => {
-        if (isLoadMore) return [...prevData, ...res.data.data];
-        return res.data.data;
+        if (isLoadMore) return [...prevData, ...res.data.data.txHistory];
+        return res.data.data.txHistory;
       });
       setAllLoading();
     } catch (error) {
@@ -101,7 +101,7 @@ const BtcTxsScreen = observer(() => {
   };
   const renderItem = ({ item, index }) => {
     return (
-      <TxBtcItem
+      <TxTronItem
         key={`item-${index + 1}-${index}`}
         data={data}
         item={item}
@@ -145,7 +145,7 @@ export const SearchFilter = () => {
     </View>
   );
 };
-export default BtcTxsScreen;
+export default TronTxsScreen;
 
 const styling = () => {
   const { colors } = useTheme();

@@ -8,7 +8,7 @@ import { MapChainIdToNetwork } from "@src/utils/helper";
 import { OWBox } from "@src/components/card";
 import { spacing } from "@src/themes";
 
-import { urlTxHistory } from "@src/common/constants";
+import { SCREENS, urlTxHistory } from "@src/common/constants";
 import OWFlatList from "@src/components/page/ow-flat-list";
 import { API } from "@src/common/api";
 import get from "lodash/get";
@@ -16,11 +16,12 @@ import get from "lodash/get";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { OWSearchInput } from "@src/components/ow-search-input";
 import { EmptyTx } from "@src/screens/transactions/components/empty-tx";
-import { TxBtcItem } from "@src/screens/transactions/components/items/tx-btc-item";
+import { TxEvmItem } from "@src/screens/transactions/components/items/tx-evm-item";
+import { TxOasisItem } from "@src/screens/transactions/components/items/tx-oasis-item";
+import { getOasisAddress } from "@owallet/common";
 
-const BtcTxsScreen = observer(() => {
+const OasisTxsScreen = observer(() => {
   const { chainStore, accountStore, keyRingStore } = useStore();
-  const { colors } = useTheme();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const address = account.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses,
@@ -38,9 +39,10 @@ const BtcTxsScreen = observer(() => {
     try {
       if (!isLoadMore) setLoading(true);
       if (!hasMore.current) throw Error("Failed");
-      const res = await API.getBtcTxs(
+      const oasisAddress = getOasisAddress(address);
+      const res = await API.getOasisTxs(
         {
-          address,
+          address: oasisAddress,
           offset: !isLoadMore ? 0 : page.current * perPage,
           limit: perPage,
           network: MapChainIdToNetwork[chainStore.current.chainId],
@@ -101,7 +103,7 @@ const BtcTxsScreen = observer(() => {
   };
   const renderItem = ({ item, index }) => {
     return (
-      <TxBtcItem
+      <TxOasisItem
         key={`item-${index + 1}-${index}`}
         data={data}
         item={item}
@@ -145,7 +147,7 @@ export const SearchFilter = () => {
     </View>
   );
 };
-export default BtcTxsScreen;
+export default OasisTxsScreen;
 
 const styling = () => {
   const { colors } = useTheme();

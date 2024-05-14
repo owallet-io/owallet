@@ -1,33 +1,19 @@
-import { OWEmpty } from "@src/components/empty";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
-import React, {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
-import {
-  Platform,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-  ViewStyle,
-} from "react-native";
+import React, { FunctionComponent, useEffect, useState } from "react";
+import { View, ViewStyle } from "react-native";
 
 import { API } from "@src/common/api";
 import { listSkeleton, SCREENS, urlTxHistory } from "@src/common/constants";
 import { navigate } from "@src/router/root";
-import FastImage from "react-native-fast-image";
-import OWText from "@src/components/text/ow-text";
 
 import { OWButton } from "@src/components/button";
-import OWTransactionItem from "@src/screens/transactions/components/items/transaction-item";
-import SkeletonPlaceholder from "react-native-skeleton-placeholder";
+
 import { TxSkeleton } from "@src/components/page";
-import { SearchFilter } from "@src/screens/transactions/tx-transaction-screen";
 import { MapChainIdToNetwork } from "@src/utils/helper";
 import { useStore } from "@src/stores";
+import { EmptyTx } from "@src/screens/transactions/components/empty-tx";
+import { TxEvmItem } from "@src/screens/transactions/components/items/tx-evm-item";
 
 export const EvmTxCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -60,6 +46,7 @@ export const EvmTxCard: FunctionComponent<{
         }
       );
       if (res && res.status !== 200) throw Error("Failed");
+
       setHistories(res.data.data);
       setLoading(false);
     } catch (err) {
@@ -78,7 +65,6 @@ export const EvmTxCard: FunctionComponent<{
     appInitStore.getInitApp.isAllNetworks,
   ]);
 
-  const styles = styling(colors);
   const fiat = priceStore.defaultVsCurrency;
 
   const price = priceStore.getPrice(
@@ -92,11 +78,10 @@ export const EvmTxCard: FunctionComponent<{
         paddingHorizontal: 16,
       }}
     >
-      {/*<SearchFilter />*/}
       {histories?.length > 0 ? (
         histories.map((item, index) => {
           return (
-            <OWTransactionItem
+            <TxEvmItem
               key={`item-${index + 1}-${index}`}
               data={histories}
               item={item}
@@ -133,81 +118,3 @@ export const EvmTxCard: FunctionComponent<{
     </View>
   );
 });
-export const EmptyTx = () => {
-  const { colors } = useTheme();
-  return (
-    <View
-      style={{
-        justifyContent: "center",
-        alignItems: "center",
-        marginVertical: 42,
-        marginBottom: 0,
-      }}
-    >
-      <FastImage
-        source={require("../../assets/image/img_empty.png")}
-        style={{
-          width: 150,
-          height: 150,
-        }}
-        resizeMode={"contain"}
-      />
-      <OWText color={colors["neutral-text-title"]} size={16} weight="700">
-        {"NO TRANSACTIONS YET".toUpperCase()}
-      </OWText>
-    </View>
-  );
-};
-const styling = (colors) =>
-  StyleSheet.create({
-    wrapHeaderTitle: {
-      flexDirection: "row",
-    },
-    pl10: {
-      paddingLeft: 10,
-    },
-    leftBoxItem: {
-      flexDirection: "row",
-      alignItems: "center",
-    },
-    rightBoxItem: {
-      alignItems: "flex-end",
-    },
-    btnItem: {
-      flexDirection: "row",
-      // justifyContent: 'space-between',
-      alignItems: "center",
-      flexWrap: "wrap",
-      gap: 16,
-
-      // marginVertical: 8,
-    },
-    profit: {
-      fontWeight: "400",
-      lineHeight: 20,
-    },
-    iconWrap: {
-      width: 32,
-      height: 32,
-      borderRadius: 32,
-      alignItems: "center",
-      justifyContent: "center",
-      overflow: "hidden",
-      backgroundColor: colors["neutral-text-action-on-dark-bg"],
-    },
-    chainWrap: {
-      width: 18,
-      height: 18,
-      borderRadius: 32,
-      alignItems: "center",
-      justifyContent: "center",
-      backgroundColor: colors["neutral-text-action-on-dark-bg"],
-      position: "absolute",
-      bottom: -6,
-      left: 20,
-    },
-    active: {
-      borderBottomColor: colors["primary-surface-default"],
-      borderBottomWidth: 2,
-    },
-  });

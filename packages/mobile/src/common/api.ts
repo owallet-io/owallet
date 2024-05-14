@@ -2,6 +2,7 @@ import { handleError, parseObjectToQueryString } from "@src/utils/helper";
 import axios, { AxiosRequestConfig } from "axios";
 import moment from "moment";
 import { Network } from "@tatumio/tatum";
+import { OasisNetwork } from "@owallet/common";
 export const API = {
   post: (path: string, params: any, config: AxiosRequestConfig) => {
     return axios.post(path, params, config);
@@ -388,28 +389,64 @@ export const API = {
     { address, offset, limit },
     config: AxiosRequestConfig
   ) => {
-    let url = `query-history/${address}?offset=${offset}&limit=${limit}`;
+    const url = `query-history/${address}?offset=${offset}&limit=${limit}`;
     return API.get(url, config);
   },
   getGroupHistory: (
     { address, offset, limit = 1 },
     config: AxiosRequestConfig
   ) => {
-    let url = `history/${address}?offset=${offset}&limit=${limit}`;
+    const url = `history/${address}?offset=${offset}&limit=${limit}`;
     return API.get(url, config);
   },
   getEvmTxs: (
     { address, offset, limit = 1, network = Network.ETHEREUM },
     config: AxiosRequestConfig
   ) => {
-    let url = `raw-tx-history/evm/${address}?network=${network}&limit=${limit}&offset=${offset}`;
+    const url = `raw-tx-history/evm/${address}?network=${network}&limit=${limit}&offset=${offset}`;
+    return API.get(url, config);
+  },
+  getBtcTxs: (
+    { address, offset, limit = 1, network = Network.BITCOIN },
+    config: AxiosRequestConfig
+  ) => {
+    const url = `raw-tx-history/btc/${address}?network=${network}&limit=${limit}&offset=${offset}`;
+    return API.get(url, config);
+  },
+  getOasisTxs: (
+    { address, offset, limit = 1, network = OasisNetwork.MAINNET },
+    config: AxiosRequestConfig
+  ) => {
+    const url = `raw-tx-history/oasis/${address}?network=${network}&limit=${limit}&offset=${offset}`;
+    return API.get(url, config);
+  },
+  getTronTxs: (
+    { address, offset, limit = 1, network = Network.TRON },
+    config: AxiosRequestConfig
+  ) => {
+    const url = `raw-tx-history/tron/${address}?network=${network}&limit=${limit}&offset=${offset}`;
     return API.get(url, config);
   },
   getDetailTx: (
     { hash, network = Network.ETHEREUM },
     config: AxiosRequestConfig
   ) => {
-    let url = `raw-tx-history/all/tx-detail/${hash}?network=${network}`;
+    const url = `raw-tx-history/all/tx-detail/${hash}?network=${network}`;
+    return API.get(url, config);
+  },
+  getDetailOasisTx: (
+    { hash, network = OasisNetwork.MAINNET },
+    config: AxiosRequestConfig
+  ) => {
+    let url = `raw-tx-history/oasis/tx-detail/${hash}?network=${network}`;
+    return API.get(url, config);
+  },
+  getDetailTronTx: (
+    { hash, network = Network.TRON },
+    config: AxiosRequestConfig
+  ) => {
+    let url = `raw-tx-history/tron/tx-detail/${hash}`;
+    console.log(url, "url");
     return API.get(url, config);
   },
   getHistoryDetail: ({ id }, config: AxiosRequestConfig) => {

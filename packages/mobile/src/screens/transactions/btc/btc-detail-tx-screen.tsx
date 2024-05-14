@@ -22,7 +22,7 @@ import { HeaderTx } from "@src/screens/tx-result/components/header-tx";
 import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
 import { Text } from "@src/components/text";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
-import { ChainIdEnum, TRON_ID } from "@owallet/common";
+import { ChainIdEnum, isMilliseconds, TRON_ID } from "@owallet/common";
 import { AddressTransaction, Network } from "@tatumio/tatum";
 import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
 import { OwLoading } from "@src/components/owallet-loading/ow-loading";
@@ -40,14 +40,14 @@ export const BtcDetailTx: FunctionComponent = observer((props) => {
       Record<
         string,
         {
-          item: AddressTransaction;
+          item: any;
           currency: Currency;
         }
       >,
       string
     >
   >();
-  const [detail, setDetail] = useState<TxDetail>();
+  const [detail, setDetail] = useState<any>();
   const [loading, setLoading] = useState(false);
 
   const { item, currency } = route.params;
@@ -65,6 +65,7 @@ export const BtcDetailTx: FunctionComponent = observer((props) => {
           baseURL: urlTxHistory,
         }
       );
+      console.log(res.data, "res data");
       if (res && res.status !== 200) throw Error("Failed");
       setDetail(res.data);
       setLoading(false);
@@ -85,17 +86,9 @@ export const BtcDetailTx: FunctionComponent = observer((props) => {
   if (!detail) return <OWEmpty />;
   const chainInfo = chainStore.getChain(chainStore.current.chainId);
   const handleUrl = (txHash) => {
-    const chainInfo = chainStore.getChain(detail.chainId);
     return chainInfo.raw.txExplorer.txUrl.replace(
       "{txHash}",
-      chainInfo.chainId === TRON_ID ||
-        chainInfo.networkType === "bitcoin" ||
-        chainInfo.chainId === ChainIdEnum.OasisSapphire ||
-        chainInfo.chainId === ChainIdEnum.OasisEmerald ||
-        chainInfo.chainId === ChainIdEnum.Oasis ||
-        chainInfo.chainId === ChainIdEnum.BNBChain
-        ? txHash.toLowerCase()
-        : txHash.toUpperCase()
+      txHash.toLowerCase()
     );
   };
   const handleOnExplorer = async () => {
@@ -106,10 +99,7 @@ export const BtcDetailTx: FunctionComponent = observer((props) => {
     }
   };
 
-  const fee = new CoinPretty(
-    chainInfo.stakeCurrency,
-    new Int(Number(detail.gasPrice)).mul(new Int(detail.gasUsed))
-  );
+  const fee = new CoinPretty(chainInfo.stakeCurrency, new Int(detail.fee));
 
   const amount = new CoinPretty(
     currency,
@@ -122,8 +112,9 @@ export const BtcDetailTx: FunctionComponent = observer((props) => {
   return (
     <PageWithBottom
       style={{
-        paddingTop: 5,
+        paddingTop: 0,
       }}
+      backgroundColor={colors["neutral-surface-bg"]}
       bottomGroup={
         <View style={styles.containerBottomButton}>
           <OWButton
@@ -142,9 +133,9 @@ export const BtcDetailTx: FunctionComponent = observer((props) => {
           showsVerticalScrollIndicator={false}
         >
           <HeaderTx
-            type={item.transactionSubtype === "incoming" ? "Received" : "Sent"}
+            type={transactionType === "incoming" ? "Received" : "Sent"}
             colorAmount={
-              new Dec(item.amount).gt(new Dec(0))
+              transactionType === "incoming"
                 ? colors["success-text-body"]
                 : colors["neutral-text-title"]
             }
@@ -153,7 +144,7 @@ export const BtcDetailTx: FunctionComponent = observer((props) => {
                 style={[
                   styles.containerSuccess,
                   {
-                    backgroundColor: detail.status
+  backgroundColor: detail.status
                       ? colors["highlight-surface-subtle"]
                       : colors["error-surface-subtle"],
                   },
@@ -162,18 +153,18 @@ export const BtcDetailTx: FunctionComponent = observer((props) => {
                 <OWText
                   weight={"500"}
                   size={14}
-                  color={
+     color={
                     detail.status
                       ? colors["highlight-text-title"]
                       : colors["error-text-body"]
                   }
                 >
-                  {detail.status ? "Success" : "Failed"}
+                  {"Success"}
                 </OWText>
               </View>
             }
             amount={`${
-              new Dec(item.amount).gt(new Dec(0)) ? "+" : ""
+              transactionType === "incoming" ? "+" : "-"
             }${maskedNumber(amount.hideDenom(true).toString())} ${
               currency.coinDenom
             }`}
@@ -185,26 +176,14 @@ export const BtcDetailTx: FunctionComponent = observer((props) => {
           />
           <View style={styles.cardBody}>
             <ItemReceivedToken
-              label={capitalizedText("From")}
-              valueDisplay={shortenAddress(detail.from)}
-              value={detail.from}
-              colorIconRight={colors["neutral-text-action-on-light-bg"]}
-            />
-            <ItemReceivedToken
-              label={capitalizedText("To")}
-              valueDisplay={shortenAddress(detail.to)}
-              value={detail.to}
-              colorIconRight={colors["neutral-text-action-on-light-bg"]}
-            />
-            <ItemReceivedToken
               label={"From Network"}
               valueDisplay={
                 <View style={styles.viewNetwork}>
-                  {chainInfo?.raw?.chainSymbolImageUrl && (
+                  {currency.coinImageUrl && (
                     <Image
                       style={styles.imgNetwork}
                       source={{
-                        uri: chainInfo?.raw?.chainSymbolImageUrl,
+                        uri: currency.coinImageUrl,
                       }}
                     />
                   )}
@@ -233,9 +212,11 @@ export const BtcDetailTx: FunctionComponent = observer((props) => {
             />
             <ItemReceivedToken
               label={"Time"}
-              valueDisplay={moment(item.timestamp).format(
-                "MMM D, YYYY [at] HH:mm"
-              )}
+              valueDisplay={moment(
+                isMilliseconds(item.timestamp)
+                  ? item.timestamp
+                  : item.timestamp * 1000
+              ).format("MMM D, YYYY [at] HH:mm")}
               btnCopy={false}
             />
 
@@ -256,6 +237,72 @@ export const BtcDetailTx: FunctionComponent = observer((props) => {
                 </View>
               }
             />
+            <View>
+              <Text
+                weight={"600"}
+                size={16}
+                color={colors["neutral-text-title"]}
+              >
+                {"From"}
+              </Text>
+              {detail.inputs.map((it, index) => (
+                <ItemReceivedToken
+                  containerStyle={{
+                    height: 25,
+                  }}
+                  label={""}
+                  key={index.toString()}
+                  valueDisplay={shortenAddress(it.coin.address)}
+                  value={it.coin.address}
+                  btnCopy={false}
+                  IconRightComponent={
+                    <Text
+                      size={16}
+                      weight={"400"}
+                      color={colors["neutral-text-body"]}
+                    >
+                      {new CoinPretty(currency, new Int(it.coin.value))
+                        .maxDecimals(6)
+                        .trim(true)
+                        .toString()}
+                    </Text>
+                  }
+                />
+              ))}
+            </View>
+            <View>
+              <Text
+                weight={"600"}
+                size={16}
+                color={colors["neutral-text-title"]}
+              >
+                {"To"}
+              </Text>
+              {detail.outputs.map((itOut, index) => (
+                <ItemReceivedToken
+                  containerStyle={{
+                    height: 25,
+                  }}
+                  label={""}
+                  key={index.toString()}
+                  valueDisplay={shortenAddress(itOut.address)}
+                  value={itOut.address}
+                  btnCopy={false}
+                  IconRightComponent={
+                    <Text
+                      size={16}
+                      weight={"400"}
+                      color={colors["neutral-text-body"]}
+                    >
+                      {new CoinPretty(currency, new Int(itOut.value))
+                        .maxDecimals(6)
+                        .trim(true)
+                        .toString()}
+                    </Text>
+                  }
+                />
+              ))}
+            </View>
           </View>
         </ScrollView>
       </View>
@@ -382,27 +429,3 @@ const useStyles = (colors) => {
     },
   });
 };
-
-export interface TxDetail {
-  blockHash: string;
-  blockNumber: number;
-  from: string;
-  gas: number;
-  gasPrice: string;
-  input: string;
-  nonce: number;
-  to: string;
-  transactionIndex: number;
-  value: string;
-  type: string;
-  chainId: string;
-  contractAddress: any;
-  cumulativeGasUsed: string;
-  effectiveGasPrice: string;
-  gasUsed: string;
-  logs: any[];
-  logsBloom: string;
-  status: boolean;
-  transactionHash: string;
-  hash: string;
-}
