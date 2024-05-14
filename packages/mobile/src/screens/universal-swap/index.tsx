@@ -76,7 +76,7 @@ import { Toggle } from "@src/components/toggle";
 import { SendToModal } from "./modals/SendToModal";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { PriceSettingModal } from "./modals/PriceSettingModal";
-import images from "@src/assets/images";
+
 const mixpanel = globalThis.mixpanel as Mixpanel;
 
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
