@@ -11,9 +11,7 @@ import {
 import { useStore } from "../../stores";
 import { SwapBox } from "./components/SwapBox";
 import { OWButton } from "@src/components/button";
-import OWButtonIcon from "@src/components/button/ow-button-icon";
-import { BalanceText } from "./components/BalanceText";
-import { SelectNetworkModal, SelectTokenModal, SlippageModal } from "./modals/";
+import { SelectNetworkModal, SelectTokenModal } from "./modals/";
 import {
   getTokenInfos,
   handleSaveHistory,
@@ -39,8 +37,6 @@ import {
   toSubAmount,
   getTokenOnOraichain,
   tokenMap,
-  flattenTokens,
-  flattenTokensWithIcon,
 } from "@oraichain/oraidex-common";
 import { openLink } from "../../utils/helper";
 import { feeEstimate } from "@owallet/common";
@@ -51,11 +47,10 @@ import {
   isSupportedNoPoolSwapEvm,
   UniversalSwapData,
   UniversalSwapHandler,
-  UniversalSwapHelper,
 } from "@oraichain/oraidex-universal-swap";
 import { SwapCosmosWallet, SwapEvmWallet } from "./wallet";
 import { styling } from "./styles";
-import { BalanceType, MAX, balances } from "./types";
+import { MAX } from "./types";
 import {
   useLoadTokens,
   useCoinGeckoPrices,
@@ -68,7 +63,6 @@ import {
   handleErrorSwap,
   floatToPercent,
   handleSaveTokenInfos,
-  getPairInfo,
   getSpecialCoingecko,
 } from "./helpers";
 import { Mixpanel } from "mixpanel-react-native";
@@ -76,8 +70,6 @@ import { metrics } from "@src/themes";
 import { useTokenFee } from "./hooks/use-token-fee";
 import { useFilterToken } from "./hooks/use-filter-token";
 import { useEstimateAmount } from "./hooks/use-estimate-amount";
-import { ProgressBar } from "@src/components/progress-bar";
-import FastImage from "react-native-fast-image";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import OWCard from "@src/components/card/ow-card";
 import { Toggle } from "@src/components/toggle";
@@ -114,7 +106,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
   const accountKawaiiCosmos = accountStore.getAccount(ChainIdEnum.KawaiiCosmos);
 
-  // const [isSlippageModal, setIsSlippageModal] = useState(false);
   const [sendToAddress, setSendToAddress] = useState(null);
   const [priceSettingModal, setPriceSettingModal] = useState(false);
   const [userSlippage, setUserSlippage] = useState(DEFAULT_SLIPPAGE);
@@ -133,8 +124,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const [[fromAmountToken, toAmountToken], setSwapAmount] = useState([0, 0]);
 
-  const [balanceActive, setBalanceActive] = useState<BalanceType>(null);
-
   const [toggle, setToggle] = useState(false);
 
   const client = useClient(accountOrai);
@@ -144,7 +133,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const onChangeFromAmount = (amount: string | undefined) => {
     if (!amount) return setSwapAmount([0, toAmountToken]);
     setSwapAmount([parseFloat(amount), toAmountToken]);
-    setBalanceActive(null);
   };
 
   // get token on oraichain to simulate swap amount.
@@ -280,8 +268,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       .add(estSwapFee)
       .toNumber() || 0;
 
-  console.log("totalFeeEst", totalFeeEst);
-
   const [selectFromTokenModal, setSelectFromTokenModal] = useState(false);
   const [selectToTokenModal, setSelectToTokenModal] = useState(false);
   const [sendToModal, setSendToModal] = useState(false);
@@ -356,12 +342,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       }, 1000);
     }
   };
-
-  // // TODO: use this constant so we can temporary simulate for all pair (specifically AIRI/USDC, ORAIX/USDC), update later after migrate contract
-
-  // const handleBalanceActive = (item: BalanceType) => {
-  //   setBalanceActive(item);
-  // };
 
   const handleSubmit = async () => {
     setSwapLoading(true);
@@ -651,23 +631,11 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       return;
     setSwapTokens([toTokenDenom, fromTokenDenom]);
     setSwapAmount([0, 0]);
-    setBalanceActive(null);
   };
 
   const handleActiveAmount = (value) => {
     onMaxFromAmount((fromTokenBalance * BigInt(value)) / BigInt(MAX), value);
   };
-
-  // const renderSwapFee = () => {
-  //   if (fee) {
-  //     return (
-  //       <View style={styles.itemBottom}>
-  //         <BalanceText>Swapp Fee</BalanceText>
-  //         <BalanceText>{floatToPercent(fee) + "%"}</BalanceText>
-  //       </View>
-  //     );
-  //   }
-  // };
 
   const handleSendToAddress = (address) => {
     setSendToAddress(address);
@@ -738,15 +706,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           <RefreshControl refreshing={loadingRefresh} onRefresh={onRefresh} />
         }
       >
-        {/* <SlippageModal
-          close={() => {
-            setIsSlippageModal(false);
-          }}
-          //@ts-ignore
-          currentSlippage={userSlippage}
-          isOpen={isSlippageModal}
-          setUserSlippage={setUserSlippage}
-        /> */}
         <PriceSettingModal
           close={() => {
             setPriceSettingModal(false);
@@ -791,7 +750,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           setToken={(denom) => {
             setSwapTokens([denom, toTokenDenom]);
             setSwapAmount([0, 0]);
-            setBalanceActive(null);
           }}
           setSearchTokenName={setSearchTokenName}
           isOpen={selectFromTokenModal}
@@ -811,7 +769,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           setToken={(denom) => {
             setSwapTokens([fromTokenDenom, denom]);
             setSwapAmount([0, 0]);
-            setBalanceActive(null);
           }}
           setSearchTokenName={setSearchTokenName}
           isOpen={selectToTokenModal}
@@ -844,32 +801,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           handleToggle={setToggle}
         />
         <View style={{ padding: 16, paddingTop: 0 }}>
-          {/* <View style={styles.boxTop}>
-            <Text color={colors["text-title-login"]} variant="h3" weight="700">
-              Universal Swap
-            </Text>
-            <View style={styles.buttonGroup}>
-              <OWButtonIcon
-                fullWidth={false}
-                style={[styles.btnTitleRight]}
-                sizeIcon={24}
-                colorIcon={"#7C8397"}
-                name="round_refresh"
-                onPress={onRefresh}
-              />
-              <OWButtonIcon
-                fullWidth={false}
-                style={[styles.btnTitleRight]}
-                sizeIcon={24}
-                colorIcon={"#7C8397"}
-                name="setting-bold"
-                onPress={() => {
-                  setIsSlippageModal(true);
-                }}
-              />
-            </View>
-          </View> */}
-
           <View>
             <SwapBox
               network={fromNetwork}
@@ -912,74 +843,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               />
             </TouchableOpacity>
           </View>
-          {/* <View style={styles.containerBtnBalance}>
-            {balances.map((item, index) => {
-              return (
-                <OWButton
-                  key={item.id ?? index}
-                  size="small"
-                  disabled={amountLoading || swapLoading}
-                  style={balanceActive?.id === item.id ? styles.btnBalanceActive : styles.btnBalanceInactive}
-                  textStyle={balanceActive?.id === item.id ? styles.textBtnBalanceAtive : styles.textBtnBalanceInActive}
-                  label={`${item.value}%`}
-                  fullWidth={false}
-                  onPress={() => handleActiveAmount(item)}
-                />
-              );
-            })}
-          </View> */}
 
-          {/* <View style={styles.containerInfoToken}>
-            <View style={styles.itemBottom}>
-              <BalanceText>Quote</BalanceText>
-              <BalanceText>
-                {`1 ${originalFromToken.name} ≈ ${
-                  ratio ? Number((ratio.displayAmount / INIT_AMOUNT).toFixed(6)) : "0"
-                } ${originalToToken.name}`}
-              </BalanceText>
-            </View>
-            {!swapLoading && (!fromAmountToken || !toAmountToken) && fromToken.denom === TRON_DENOM ? (
-              <View style={styles.itemBottom}>
-                <BalanceText>Minimum Amount</BalanceText>
-                <BalanceText>{(fromToken.minAmountSwap || "0") + " " + fromToken.name}</BalanceText>
-              </View>
-            ) : null}
-
-            <View style={styles.itemBottom}>
-              <BalanceText>Minimum Received</BalanceText>
-              <BalanceText>{(minimumReceive || "0") + " " + toToken.name}</BalanceText>
-            </View>
-            {(!fromTokenFee && !toTokenFee) || (fromTokenFee === 0 && toTokenFee === 0) ? null : (
-              <View style={styles.itemBottom}>
-                <BalanceText>Token fee</BalanceText>
-                <BalanceText>{Number(taxRate) * 100}%</BalanceText>
-              </View>
-            )}
-            {!!relayerFeeToken && (
-              <View style={styles.itemBottom}>
-                <BalanceText>Relayer Fee</BalanceText>
-                <BalanceText>
-                  {toDisplay(relayerFeeToken.toString(), RELAYER_DECIMAL)} ORAI ≈ {relayerFeeAmount}{" "}
-                  {originalToToken.name}
-                </BalanceText>
-              </View>
-            )}
-            {renderSwapFee()}
-            {minimumReceive < 0 && (
-              <View style={styles.itemBottom}>
-                <BalanceText color={colors["danger"]}>Current swap amount is too small</BalanceText>
-              </View>
-            )}
-            {!fromTokenFee && !toTokenFee && isWarningSlippage && (
-              <View style={styles.itemBottom}>
-                <BalanceText color={colors["danger"]}>Current slippage exceed configuration!</BalanceText>
-              </View>
-            )}
-            <View style={styles.itemBottom}>
-              <BalanceText>Slippage</BalanceText>
-              <BalanceText>{userSlippage}%</BalanceText>
-            </View>
-          </View> */}
           <OWCard
             type="normal"
             style={{
