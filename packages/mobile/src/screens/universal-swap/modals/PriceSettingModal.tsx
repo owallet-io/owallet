@@ -313,7 +313,7 @@ export const PriceSettingModal = registerModal(
                                 borderRadius: 24,
                               }}
                               source={{
-                                uri: TokenOutIcon,
+                                uri: TokenInIcon,
                               }}
                               resizeMode={FastImage.resizeMode.cover}
                             />
@@ -337,7 +337,7 @@ export const PriceSettingModal = registerModal(
                                 borderRadius: 24,
                               }}
                               source={{
-                                uri: TokenInIcon,
+                                uri: TokenOutIcon,
                               }}
                               resizeMode={FastImage.resizeMode.cover}
                             />
