@@ -18,7 +18,6 @@ import {
   getTotalUsd,
 } from "@oraichain/oraidex-common";
 import OWIcon from "@src/components/ow-icon/ow-icon";
-import { OWButton } from "@src/components/button";
 import { RadioButton } from "react-native-radio-buttons-group";
 import { registerModal } from "@src/modals/base";
 import { useSafeAreaInsets } from "react-native-safe-area-context";

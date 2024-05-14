@@ -11,7 +11,7 @@ import OWFlatList from "@src/components/page/ow-flat-list";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { Text } from "@src/components/text";
 import { TypeTheme, useTheme } from "@src/themes/theme-provider";
-import { metrics } from "@src/themes";
+import { metrics, typography } from "@src/themes";
 import {
   TokenItemType,
   toDisplay,
@@ -223,6 +223,7 @@ export const SelectTokenModal: FunctionComponent<{
       >
         <Text
           style={{
+            ...typography.h6,
             fontWeight: "900",
             color: colors["neutral-text-title"],
             width: "100%",

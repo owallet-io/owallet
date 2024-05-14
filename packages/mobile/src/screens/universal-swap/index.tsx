@@ -981,7 +981,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                   <Text weight="600">
                     {(maskedNumber(minimumReceive) || "0") + " " + toToken.name}
                   </Text>
-                  {"  •  "}Est. Fee:{" "}
+                  <Text weight="600" size={18}>
+                    {"  •  "}
+                  </Text>
+                  Est. Fee:{" "}
                   <Text weight="600">
                     {maskedNumber(totalFeeEst)} {originalToToken.name}
                   </Text>
@@ -1052,7 +1055,11 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             <OWIcon
               type="images"
               size={80}
-              source={theme === "dark" ? images.obridgeLight : images.obridge}
+              source={
+                theme === "dark"
+                  ? require("../../assets/image/obridge-light.png")
+                  : require("../../assets/image/obridge.png")
+              }
             />
           </View>
         </View>
