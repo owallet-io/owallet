@@ -716,7 +716,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           currentSlippage={userSlippage}
           impactWarning={impactWarning}
           routersSwapData={routersSwapData}
-          minimumReceive={(minimumReceive || "0") + " " + toToken.name}
+          minimumReceive={
+            (maskedNumber(minimumReceive) || "0") + " " + toToken.name
+          }
           swapFee={fee ? `${floatToPercent(fee) + "%"}` : null}
           tokenFee={
             (!fromTokenFee && !toTokenFee) ||
@@ -729,10 +731,12 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             `${toDisplay(
               relayerFeeToken.toString(),
               RELAYER_DECIMAL
-            )} ORAI ≈ ${relayerFeeAmount} ${originalToToken.name}`
+            )} ORAI ≈ ${maskedNumber(relayerFeeAmount)} ${originalToToken.name}`
           }
           ratio={`1 ${originalFromToken.name} ≈ ${
-            ratio ? Number((ratio.displayAmount / INIT_AMOUNT).toFixed(6)) : "0"
+            ratio
+              ? maskedNumber(Number(ratio.displayAmount / INIT_AMOUNT))
+              : "0"
           } ${originalToToken.name}`}
           isOpen={priceSettingModal}
           setUserSlippage={setUserSlippage}
@@ -935,7 +939,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                   <Text weight="600" color={colors["primary-text-action"]}>
                     {`1 ${originalFromToken.name} ≈ ${
                       ratio
-                        ? Number((ratio.displayAmount / INIT_AMOUNT).toFixed(6))
+                        ? maskedNumber(
+                            Number(ratio.displayAmount / INIT_AMOUNT)
+                          )
                         : "0"
                     } ${originalToToken.name}`}{" "}
                   </Text>
@@ -973,7 +979,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                 <Text>
                   Min. Received:{" "}
                   <Text weight="600">
-                    {(minimumReceive.toFixed(4) || "0") + " " + toToken.name}
+                    {(maskedNumber(minimumReceive) || "0") + " " + toToken.name}
                   </Text>
                   {"  •  "}Est. Fee:{" "}
                   <Text weight="600">
