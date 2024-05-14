@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Text } from "@src/components/text";
 import { OWButton } from "@src/components/button";
 import { TypeTheme, useTheme } from "@src/themes/theme-provider";
-import { metrics } from "@src/themes";
+import { metrics, typography } from "@src/themes";
 import { DEFAULT_SLIPPAGE } from "@owallet/common";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { TextInput } from "@src/components/input";
@@ -95,8 +95,16 @@ export const PriceSettingModal = registerModal(
       >
         <View>
           <View style={styles.containerTitle}>
-            <Text style={styles.title} size={16} weight="500">
-              PRICE SETTINGS
+            <Text
+              style={{
+                ...typography.h6,
+                fontWeight: "900",
+                color: colors["neutral-text-title"],
+                width: "100%",
+                textAlign: "center",
+              }}
+            >
+              {`Price settings`.toUpperCase()}
             </Text>
           </View>
           <Text style={styles.title} size={16} weight="600">
