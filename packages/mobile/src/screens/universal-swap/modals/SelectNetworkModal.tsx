@@ -21,6 +21,7 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { OWButton } from "@src/components/button";
 import { RadioButton } from "react-native-radio-buttons-group";
 import { registerModal } from "@src/modals/base";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export const SelectNetworkModal: FunctionComponent<{
   close?: () => void;
@@ -30,6 +31,8 @@ export const SelectNetworkModal: FunctionComponent<{
   isOpen?: boolean;
 }> = registerModal(
   ({ close, selectedChainFilter, setChainFilter, tokenList }) => {
+    const safeAreaInsets = useSafeAreaInsets();
+
     const { colors } = useTheme();
     const [keyword, setKeyword] = useState("");
     const [activeTab, setActiveTab] = useState<"mainnet" | "testnet">(
@@ -290,6 +293,7 @@ export const SelectNetworkModal: FunctionComponent<{
       <View
         style={{
           alignItems: "center",
+          paddingBottom: safeAreaInsets.bottom,
         }}
       >
         <Text
@@ -329,7 +333,7 @@ export const SelectNetworkModal: FunctionComponent<{
         <View
           style={{
             marginTop: spacing["12"],
-            width: metrics.screenWidth - 48,
+            width: metrics.screenWidth - 32,
             justifyContent: "space-between",
             height: metrics.screenHeight / 2,
           }}
