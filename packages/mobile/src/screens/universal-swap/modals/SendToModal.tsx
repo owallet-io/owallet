@@ -49,6 +49,7 @@ export const SendToModal = registerModal(
         </Text>
         <View>
           <TextInput
+            value={address}
             // multiline
             topInInputContainer={
               <View style={{ paddingBottom: 4 }}>
