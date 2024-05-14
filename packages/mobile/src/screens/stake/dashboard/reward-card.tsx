@@ -4,9 +4,8 @@ import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 import { StyleSheet, View, ViewStyle } from "react-native";
-import { Button, OWButton } from "../../../components/button";
+import { OWButton } from "../../../components/button";
 import { OWBox } from "../../../components/card";
-import { DownArrowIcon } from "../../../components/icon";
 import { useSmartNavigation } from "../../../navigation.provider";
 import { useStore } from "../../../stores";
 import { spacing, typography } from "../../../themes";
@@ -141,12 +140,6 @@ export const MyRewardCard: FunctionComponent<{
                   });
 
                   return;
-
-                  // if (smartNavigation.canGoBack) {
-                  //   smartNavigation.goBack();
-                  // } else {
-                  //   smartNavigation.navigateSmart('Home', {});
-                  // }
                 }
               }}
               type="secondary"

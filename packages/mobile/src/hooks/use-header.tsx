@@ -10,10 +10,7 @@ import {
   TransitionPresets,
 } from "@react-navigation/stack";
 import { HEADER_KEY, SCREENS } from "@src/common/constants";
-import {
-  getDefaultHeaderHeight,
-  useHeaderHeight,
-} from "@react-navigation/elements";
+import { getDefaultHeaderHeight } from "@react-navigation/elements";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useGetHeightHeader } from "@src/hooks/use-height-header";
 import { metrics } from "@src/themes";
@@ -24,15 +21,13 @@ const useHeaderOptions = (
   navigation?: any
 ): IUseHeaderOptions => {
   const { colors } = useTheme();
-  // const headerHeight = useHeaderHeight();
-  // console.log(headerHeight,"headerHeight")
+
   const headerHeight = useGetHeightHeader();
   const header = getDefaultHeaderHeight(
     { width: metrics.screenWidth, height: metrics.screenHeight },
     false,
     StatusBar.currentHeight || 0
   );
-  console.log(header, "header");
   const { top } = useSafeAreaInsets();
   const headerHeightWrap =
     headerHeight +
@@ -61,8 +56,8 @@ const useHeaderOptions = (
 
   return {
     headerStyle: {
-      backgroundColor: colors["neutral-surface-bg"],
-      shadowColor: "transparent",
+      backgroundColor: colors["neutral-surface-bg2"],
+      shadowColor: colors["neutral-border-default"],
       borderBottomWidth: 0,
       elevation: 0,
       height: headerHeightWrap,

@@ -5,7 +5,6 @@ import {
   View,
 } from "react-native";
 import React from "react";
-import OWIcon from "../ow-icon/ow-icon";
 import { useTheme } from "@src/themes/theme-provider";
 import { Text } from "../text";
 import { observer } from "mobx-react-lite";
@@ -13,6 +12,7 @@ import { useStore } from "@src/stores";
 import { NetworkModal } from "@src/screens/home/components";
 import { HEADER_KEY } from "@src/common/constants";
 import { DownArrowIcon } from "../icon";
+import { useNavigation } from "@react-navigation/native";
 
 interface IOWHeaderTitle extends TouchableWithoutFeedbackProps {
   title?: string;
@@ -20,6 +20,9 @@ interface IOWHeaderTitle extends TouchableWithoutFeedbackProps {
 const OWHeaderTitle = observer(({ title, ...props }: IOWHeaderTitle) => {
   const { chainStore, modalStore, appInitStore } = useStore();
   const { colors } = useTheme();
+  const navigation = useNavigation();
+  const currentTab =
+    navigation.getState().routeNames[navigation.getState().index];
 
   const _onPressNetworkModal = () => {
     modalStore.setOptions({
@@ -35,7 +38,7 @@ const OWHeaderTitle = observer(({ title, ...props }: IOWHeaderTitle) => {
       <TouchableWithoutFeedback onPress={_onPressNetworkModal} {...props}>
         <View style={styles.containerTitle}>
           <Text color={colors["neutral-text-title"]} weight="700" size={16}>
-            ASSETS
+            {currentTab.toUpperCase() ?? "ASSETS"}
           </Text>
           <View
             style={{

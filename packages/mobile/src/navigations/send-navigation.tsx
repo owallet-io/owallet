@@ -19,9 +19,7 @@ export const SendNavigation: FC = () => {
       initialRouteName={SCREENS.UniversalSwapScreen}
     >
       <Stack.Screen
-        options={{
-          headerLeft: null,
-        }}
+        options={{}}
         name={SCREENS.UniversalSwapScreen}
         component={UniversalSwapScreen}
       />
