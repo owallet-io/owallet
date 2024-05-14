@@ -629,6 +629,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       !isEvmNetworkNativeSwapSupported(toToken.chainId)
     )
       return;
+    setFromNetwork(toNetwork);
+    setToNetwork(fromNetwork);
     setSwapTokens([toTokenDenom, fromTokenDenom]);
     setSwapAmount([0, 0]);
   };
@@ -641,36 +643,36 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setSendToAddress(address);
   };
 
-  useEffect(() => {
-    if (fromNetwork) {
+  const handleSelectFromNetwork = (network) => {
+    if (network) {
       const listFromToken = filteredFromTokens.filter(
-        (t) => t.chainId === fromNetwork
+        (t) => t.chainId === network
       );
 
       if (listFromToken.length > 0) {
+        setFromNetwork(network);
         setSwapTokens([listFromToken[0].denom, toTokenDenom]);
         setSwapAmount([0, 0]);
       } else {
-        handleErrorSwap("There is no token to swap");
+        handleErrorSwap("There is no token to swap!");
         setFromNetwork(ChainIdEnum.Oraichain);
       }
     }
-  }, [fromNetwork]);
+  };
 
-  useEffect(() => {
-    if (toNetwork) {
-      const listToToken = filteredToTokens.filter(
-        (t) => t.chainId === toNetwork
-      );
+  const handleSelectToNetwork = (network) => {
+    if (network) {
+      const listToToken = filteredToTokens.filter((t) => t.chainId === network);
       if (listToToken.length > 0) {
+        setToNetwork(network);
         setSwapTokens([fromTokenDenom, listToToken[0].denom]);
         setSwapAmount([0, 0]);
       } else {
-        handleErrorSwap("There is no token to swap");
+        handleErrorSwap("There is no token to swap!");
         setToNetwork(ChainIdEnum.Oraichain);
       }
     }
-  }, [toNetwork]);
+  };
 
   useEffect(() => {
     if (sendToAddress && sendToAddress !== "") {
@@ -779,7 +781,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             setFromNetworkOpen(false);
           }}
           selectedChainFilter={fromNetwork}
-          setChainFilter={setFromNetwork}
+          setChainFilter={handleSelectFromNetwork}
           isOpen={fromNetworkOpen}
         />
         <SelectNetworkModal
@@ -788,7 +790,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             setToNetworkOpen(false);
           }}
           selectedChainFilter={toNetwork}
-          setChainFilter={setToNetwork}
+          setChainFilter={handleSelectToNetwork}
           isOpen={toNetworkOpen}
         />
         <SendToModal
