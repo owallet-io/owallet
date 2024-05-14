@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
-import { BasicSettingItem, SettingItem } from "../components";
+import { BasicSettingItem } from "../components";
 import { Toggle } from "../../../components/toggle";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../../stores";
