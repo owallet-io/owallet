@@ -683,6 +683,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         setSwapTokens([listFromToken[0].denom, toTokenDenom]);
         setSwapAmount([0, 0]);
       } else {
+        handleErrorSwap("There is no token to swap");
         setFromNetwork(ChainIdEnum.Oraichain);
       }
     }
@@ -697,6 +698,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         setSwapTokens([fromTokenDenom, listToToken[0].denom]);
         setSwapAmount([0, 0]);
       } else {
+        handleErrorSwap("There is no token to swap");
         setToNetwork(ChainIdEnum.Oraichain);
       }
     }
