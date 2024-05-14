@@ -69,6 +69,9 @@ export const TxTronItem: FC<{
   const { colors } = useTheme();
   const styles = styling(colors);
   const method = item.transactionType === "incoming" ? "Received" : "Sent";
+  const amountStr = amount.hideDenom(true).trim(true).toString();
+  const checkInOut =
+    amountStr !== "0" ? (item.transactionType === "incoming" ? "+" : "-") : "";
   return (
     <View style={{ paddingVertical: 8 }}>
       {first != now || index === 0 ? (
@@ -139,9 +142,7 @@ export const TxTronItem: FC<{
                       : colors["neutral-text-title"]
                   }
                 >
-                  {`${
-                    item.transactionType === "incoming" ? "+" : "-"
-                  }${maskedNumber(amount.hideDenom(true).toString(), 6)} ${
+                  {`${checkInOut}${maskedNumber(amountStr, 6)} ${
                     currency.coinDenom
                   }`}
                 </Text>
