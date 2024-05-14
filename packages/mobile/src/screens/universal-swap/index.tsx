@@ -1006,7 +1006,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             </TouchableOpacity>
           </OWCard>
 
-          <OWCard type="normal">
+          <OWCard>
             <View
               style={{
                 flexDirection: "row",

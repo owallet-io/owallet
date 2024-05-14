@@ -34,6 +34,7 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
 
     return (
       <OWCard
+        type="normal"
         style={{
           ...styles.containerInfo,
         }}
