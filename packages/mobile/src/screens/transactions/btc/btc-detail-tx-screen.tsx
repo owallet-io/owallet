@@ -144,14 +144,20 @@ export const BtcDetailTx: FunctionComponent = observer((props) => {
                 style={[
                   styles.containerSuccess,
                   {
-                    backgroundColor: colors["hightlight-surface-subtle"],
+  backgroundColor: detail.status
+                      ? colors["highlight-surface-subtle"]
+                      : colors["error-surface-subtle"],
                   },
                 ]}
               >
                 <OWText
                   weight={"500"}
                   size={14}
-                  color={colors["hightlight-text-title"]}
+     color={
+                    detail.status
+                      ? colors["highlight-text-title"]
+                      : colors["error-text-body"]
+                  }
                 >
                   {"Success"}
                 </OWText>
@@ -372,7 +378,7 @@ const useStyles = (colors) => {
       padding: 16,
     },
     status: {
-      backgroundColor: colors["hightlight-surface-subtle"],
+      backgroundColor: colors["highlight-surface-subtle"],
       paddingHorizontal: 12,
       paddingVertical: 2,
       borderRadius: 12,

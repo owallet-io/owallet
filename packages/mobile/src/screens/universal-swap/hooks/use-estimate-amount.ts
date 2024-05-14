@@ -91,6 +91,7 @@ export const useEstimateAmount = (
       if (fromAmountToken > 0) {
         simulateAmount = fromAmountToken;
       }
+
       try {
         const data = await handleSimulateSwap({
           originalFromInfo: originalFromToken,
@@ -186,7 +187,6 @@ export const useEstimateAmount = (
           routes: data?.routes ?? [],
         };
       }
-      const isRoutersSwapData = +routersSwapData.amount;
 
       const isImpactPrice = fromAmountToken && data?.amount && ratio?.amount;
       let impactWarning = 0;
@@ -236,7 +236,10 @@ export const useEstimateAmount = (
   useEffect(() => {
     setMininumReceive(0);
     if (fromAmountToken > 0) {
+      setSwapAmount([fromAmountToken, 0]);
       estimateSwapAmount(fromAmountToken);
+    } else {
+      setSwapAmount([0, 0]);
     }
   }, [
     originalFromToken,

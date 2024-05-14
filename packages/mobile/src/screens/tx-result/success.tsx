@@ -186,7 +186,7 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
                 <OWText
                   weight={"500"}
                   size={14}
-                  color={colors["hightlight-text-title"]}
+                  color={colors["highlight-text-title"]}
                 >
                   Success
                 </OWText>
@@ -283,7 +283,7 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
 const styling = (colors) => {
   return StyleSheet.create({
     containerSuccess: {
-      backgroundColor: colors["hightlight-surface-subtle"],
+      backgroundColor: colors["highlight-surface-subtle"],
       width: "100%",
       paddingHorizontal: 12,
       paddingVertical: 2,

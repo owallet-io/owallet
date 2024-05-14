@@ -340,7 +340,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
             <RadioButton
               color={
                 selected
-                  ? colors["hightlight-surface-active"]
+                  ? colors["highlight-surface-active"]
                   : colors["neutral-text-body"]
               }
               id={label}

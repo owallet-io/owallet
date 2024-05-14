@@ -177,7 +177,7 @@ export const Pincode: FunctionComponent<{
           setPassword(txt);
         }}
         inputContainerStyle={{
-          width: metrics.screenWidth - 32,
+          width: metrics.screenWidth - 40,
           borderWidth: 2,
           borderColor: colors["primary-surface-default"],
           borderRadius: 8,
@@ -299,7 +299,7 @@ export const Pincode: FunctionComponent<{
                       height: 24,
                       borderRadius: 48,
                       opacity: 0.7,
-                      backgroundColor: colors["hightlight-surface-active"],
+                      backgroundColor: colors["highlight-surface-active"],
                     }}
                   />
                 }

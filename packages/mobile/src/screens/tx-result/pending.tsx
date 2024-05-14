@@ -266,7 +266,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
 const styling = (colors) => {
   return StyleSheet.create({
     containerSuccess: {
-      backgroundColor: colors["hightlight-surface-subtle"],
+      backgroundColor: colors["highlight-surface-subtle"],
       width: "100%",
       paddingHorizontal: 12,
       paddingVertical: 2,

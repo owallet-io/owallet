@@ -39,7 +39,6 @@ export const useFilterToken = (
       originalFromToken.denom,
       searchTokenName,
       SwapDirection.To
-      // universalSwapStore.getAmount
     );
 
     setFilteredToTokens(filteredToTokens);
@@ -50,7 +49,6 @@ export const useFilterToken = (
       originalToToken.denom,
       searchTokenName,
       SwapDirection.From
-      // universalSwapStore.getAmount
     );
 
     setFilteredFromTokens(filteredFromTokens);

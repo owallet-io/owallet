@@ -61,8 +61,8 @@ const useHeaderOptions = (
 
   return {
     headerStyle: {
-      backgroundColor: colors["neutral-surface-bg"],
-      shadowColor: "transparent",
+     backgroundColor: colors["neutral-surface-bg2"],
+      shadowColor: colors["neutral-border-default"],
       borderBottomWidth: 0,
       elevation: 0,
       height: headerHeightWrap,
