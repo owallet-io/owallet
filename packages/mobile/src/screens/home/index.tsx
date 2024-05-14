@@ -323,7 +323,7 @@ const styling = (colors) =>
   StyleSheet.create({
     containerStyle: {
       paddingBottom: 12,
-      backgroundColor: colors["neutral-surface-bg2"],
+      backgroundColor: colors["neutral-surface-bg"],
       paddingTop: 30,
     },
     containerEarnStyle: {
