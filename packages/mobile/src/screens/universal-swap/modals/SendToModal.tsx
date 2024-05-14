@@ -142,13 +142,19 @@ export const SendToModal = registerModal(
               weight="500"
               size={14}
             >
-              Double check your address
+              Verify your address!
             </OWText>
           </View>
-
+          <OWText
+            color={colors["warning-border-default"]}
+            weight="500"
+            size={14}
+          >
+            Sending to CEX needing a memo isn't supported
+          </OWText>
           <OWText weight="400" size={12}>
             Ensure that the network of the recipient address match your entered
-            token to avoid potential loss of funds. Not support Kucoin!
+            token to avoid potential loss of funds
           </OWText>
         </View>
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
