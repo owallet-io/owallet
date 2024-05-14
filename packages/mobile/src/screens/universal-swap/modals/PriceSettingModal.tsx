@@ -370,7 +370,7 @@ export const PriceSettingModal = registerModal(
                   impactWarning
                 )
               : null}
-            {renderInfo("Slippage", `${slippage}%`)}
+            {/* {renderInfo("Slippage", `${slippage}%`)} */}
             {tokenFee && tokenFee > 0
               ? renderInfo("Token Fee", tokenFee)
               : null}
