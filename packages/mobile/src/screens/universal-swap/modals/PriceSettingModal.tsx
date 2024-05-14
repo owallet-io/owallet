@@ -102,54 +102,61 @@ export const PriceSettingModal = registerModal(
           <Text style={styles.title} size={16} weight="600">
             Slippage rate
           </Text>
-          <View style={styles.containerSlippagePercent}>
-            {[1, 3, 5].map((item, index) => {
-              return (
-                <OWButton
-                  key={item}
-                  size="medium"
-                  style={
-                    slippage === Number(item)
-                      ? styles.btnSlippgaePercentActive
-                      : styles.btnSlippgaePercentInActive
-                  }
-                  textStyle={
-                    slippage === Number(item)
-                      ? styles.txtSlippgaePercentActive
-                      : styles.txtSlippgaePercentInActive
-                  }
-                  label={`${item}%`}
-                  fullWidth={false}
-                  onPress={() => setSlippage(item)}
-                />
-              );
-            })}
-            <View style={styles.containerInputSlippage}>
-              <TextInput
-                inputContainerStyle={{
-                  borderColor: colors["neutral-border-strong"],
-                  borderRadius: 8,
-                  height: 44,
-                  width: metrics.screenWidth / 2.5,
-                }}
-                value={slippage.toString()}
-                onChangeText={(txt) => handleChangeSlippage(Number(txt))}
-                inputRight={
-                  <Text
-                    color={colors["neutral-text-title"]}
-                    weight="500"
-                    size={15}
-                  >
-                    %
-                  </Text>
-                }
-                keyboardType="number-pad"
-                placeholder="Custom"
-                autoCorrect={false}
-                autoCapitalize="none"
-              />
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <View style={styles.containerSlippagePercent}>
+              {[1, 3, 5].map((item, index) => {
+                return (
+                  <OWButton
+                    key={item}
+                    size="medium"
+                    style={
+                      slippage === Number(item)
+                        ? styles.btnSlippgaePercentActive
+                        : styles.btnSlippgaePercentInActive
+                    }
+                    textStyle={
+                      slippage === Number(item)
+                        ? styles.txtSlippgaePercentActive
+                        : styles.txtSlippgaePercentInActive
+                    }
+                    label={`${item}%`}
+                    fullWidth={false}
+                    onPress={() => setSlippage(item)}
+                  />
+                );
+              })}
             </View>
+            <TextInput
+              inputContainerStyle={{
+                borderColor: colors["neutral-border-strong"],
+                borderRadius: 8,
+                height: 44,
+                width: metrics.screenWidth / 2.5,
+              }}
+              value={slippage.toString()}
+              onChangeText={(txt) => handleChangeSlippage(Number(txt))}
+              inputRight={
+                <Text
+                  color={colors["neutral-text-body"]}
+                  weight="500"
+                  size={15}
+                >
+                  %
+                </Text>
+              }
+              keyboardType="number-pad"
+              placeholder="Custom"
+              autoCorrect={false}
+              autoCapitalize="none"
+            />
           </View>
+
           <View
             style={{
               flexDirection: "row",
@@ -382,7 +389,7 @@ const styling = (colors: TypeTheme["colors"]) =>
     btnSlippgaePercentInActive: {
       width: metrics.screenWidth / 5 - 24,
       backgroundColor: colors["background-item-list"],
-      height: 40,
+      height: 44,
     },
     txtSlippgaePercentActive: {
       color: colors["neutral-border-bold"],
@@ -390,7 +397,7 @@ const styling = (colors: TypeTheme["colors"]) =>
     btnSlippgaePercentActive: {
       width: metrics.screenWidth / 5 - 24,
       backgroundColor: colors["background-item-list"],
-      height: 40,
+      height: 44,
       borderWidth: 1,
       borderColor: colors["neutral-border-bold"],
     },
@@ -399,7 +406,9 @@ const styling = (colors: TypeTheme["colors"]) =>
       justifyContent: "space-between",
       paddingVertical: 16,
       paddingTop: 8,
-      width: "100%",
+      alignItems: "center",
+      alignContent: "center",
+      width: metrics.screenWidth / 2.2,
     },
     addBtn: {
       width: 60,
@@ -427,7 +436,9 @@ const styling = (colors: TypeTheme["colors"]) =>
       alignItems: "center",
       marginHorizontal: 10,
     },
-    containerInputSlippage: {},
+    containerInputSlippage: {
+      alignSelf: "center",
+    },
 
     title: {
       paddingVertical: 10,
