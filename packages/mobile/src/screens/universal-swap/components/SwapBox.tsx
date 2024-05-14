@@ -1,5 +1,5 @@
 import { TouchableOpacity, View } from "react-native";
-import React, { FunctionComponent, useMemo } from "react";
+import React, { FunctionComponent } from "react";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
 import { ISwapBox } from "../types";
@@ -12,6 +12,7 @@ import { metrics } from "@src/themes";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { useStore } from "@src/stores";
 import { chainIcons } from "@oraichain/oraidex-common";
+import { maskedNumber } from "@src/utils/helper";
 
 export const SwapBox: FunctionComponent<ISwapBox> = observer(
   ({
@@ -42,7 +43,7 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
               <View style={{ maxWidth: metrics.screenWidth / 2 }}>
                 <BalanceText color={colors["neutral-text-title"]} weight="500">
                   <OWText color={colors["neutral-text-body2"]}>Balance:</OWText>{" "}
-                  {balanceValue || 0.0} {tokenActive.name}
+                  {maskedNumber(balanceValue) || 0.0} {tokenActive.name}
                 </BalanceText>
               </View>
               <View style={{ flexDirection: "row", alignSelf: "flex-end" }}>
@@ -178,7 +179,7 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
             <View>
               <BalanceText color={colors["neutral-text-title"]} weight="500">
                 <OWText color={colors["neutral-text-body2"]}>Balance:</OWText>{" "}
-                {balanceValue || 0.0} {tokenActive.name}
+                {maskedNumber(balanceValue) || 0.0} {tokenActive.name}
               </BalanceText>
             </View>
           </View>

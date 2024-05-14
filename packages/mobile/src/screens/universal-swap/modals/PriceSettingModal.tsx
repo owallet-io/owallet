@@ -130,7 +130,7 @@ export const PriceSettingModal = registerModal(
                   borderColor: colors["neutral-border-strong"],
                   borderRadius: 8,
                   height: 44,
-                  width: metrics.screenWidth / 3,
+                  width: metrics.screenWidth / 2.5,
                 }}
                 value={slippage.toString()}
                 onChangeText={(txt) => handleChangeSlippage(Number(txt))}

@@ -15,6 +15,7 @@ import { find } from "lodash";
 import _debounce from "lodash/debounce";
 import { tokensIcon } from "@oraichain/oraidex-common";
 import { useStore } from "@src/stores";
+import { maskedNumber } from "@src/utils/helper";
 
 const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
   tokenActive,
@@ -119,7 +120,9 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
           placeholderTextColor={colors["text-place-holder"]}
         />
         <View style={{ alignSelf: "flex-end" }}>
-          <BalanceText weight="500">≈ ${currencyValue || 0}</BalanceText>
+          <BalanceText weight="500">
+            ≈ ${maskedNumber(currencyValue) || 0}
+          </BalanceText>
         </View>
       </View>
     </View>
