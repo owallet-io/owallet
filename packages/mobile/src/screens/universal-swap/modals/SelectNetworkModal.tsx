@@ -301,7 +301,7 @@ export const SelectNetworkModal: FunctionComponent<{
             textAlign: "center",
           }}
         >
-          {`choose networks`.toUpperCase()}
+          {`choose network`.toUpperCase()}
         </Text>
         <View style={styles.header}>
           <View style={styles.searchInput}>
