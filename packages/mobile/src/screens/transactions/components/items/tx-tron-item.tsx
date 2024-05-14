@@ -141,7 +141,7 @@ export const TxTronItem: FC<{
                 >
                   {`${
                     item.transactionType === "incoming" ? "+" : "-"
-                  }${maskedNumber(amount.hideDenom(true).toString())} ${
+                  }${maskedNumber(amount.hideDenom(true).toString(), 6)} ${
                     currency.coinDenom
                   }`}
                 </Text>

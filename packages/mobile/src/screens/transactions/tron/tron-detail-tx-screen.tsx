@@ -149,7 +149,7 @@ export const TronDetailTx: FunctionComponent = observer((props) => {
                   {
                     backgroundColor:
                       get(detail, "ret[0].contractRet") === "SUCCESS"
-                        ? colors["hightlight-surface-subtle"]
+                        ? colors["highlight-surface-subtle"]
                         : colors["error-surface-subtle"],
                   },
                 ]}
@@ -159,7 +159,7 @@ export const TronDetailTx: FunctionComponent = observer((props) => {
                   size={14}
                   color={
                     get(detail, "ret[0].contractRet") === "SUCCESS"
-                      ? colors["hightlight-text-title"]
+                      ? colors["highlight-text-title"]
                       : colors["error-text-body"]
                   }
                 >
@@ -171,7 +171,7 @@ export const TronDetailTx: FunctionComponent = observer((props) => {
             }
             amount={`${
               item.transactionType === "incoming" ? "+" : "-"
-            }${maskedNumber(amount.hideDenom(true).toString())} ${
+            }${maskedNumber(amount.hideDenom(true).toString(), 6)} ${
               currency.coinDenom
             }`}
             toAmount={null}
@@ -328,7 +328,7 @@ const useStyles = (colors) => {
       padding: 16,
     },
     status: {
-      backgroundColor: colors["hightlight-surface-subtle"],
+      backgroundColor: colors["highlight-surface-subtle"],
       paddingHorizontal: 12,
       paddingVertical: 2,
       borderRadius: 12,
