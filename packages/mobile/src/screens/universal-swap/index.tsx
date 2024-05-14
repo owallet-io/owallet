@@ -976,7 +976,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
               <View style={styles.borderline} />
               <View style={{ marginVertical: 10 }}>
-                <Text>
+                <Text style={{ lineHeight: 24 }}>
                   Min. Received:{" "}
                   <Text weight="600">
                     {(maskedNumber(minimumReceive) || "0") + " " + toToken.name}
