@@ -79,7 +79,7 @@ export const PriceSettingModal = registerModal(
                   : colors["neutral-text-title"]
               }
             >
-              {impact ? (
+              {Number(impact) > 5 ? (
                 <OWIcon
                   name="tdesignerror-triangle"
                   color={
