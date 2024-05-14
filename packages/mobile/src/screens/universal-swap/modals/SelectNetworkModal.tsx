@@ -61,7 +61,7 @@ export const SelectNetworkModal: FunctionComponent<{
       close();
     };
 
-    const groupedData = todayAssets?.reduce((result, element) => {
+    const chainAssets = todayAssets?.reduce((result, element) => {
       const key = element.chainId;
 
       if (!result[key]) {
@@ -235,7 +235,7 @@ export const SelectNetworkModal: FunctionComponent<{
                 $
                 {!item.chainId
                   ? maskedNumber(totalUsd)
-                  : maskedNumber(groupedData?.[item.chainId]?.sum)}
+                  : maskedNumber(chainAssets?.[item.chainId]?.sum)}
               </Text>
             </View>
           </View>
@@ -257,8 +257,8 @@ export const SelectNetworkModal: FunctionComponent<{
     };
 
     useEffect(() => {
-      if (groupedData) {
-        const sortedData = Object.entries(groupedData).sort(
+      if (chainAssets) {
+        const sortedData = Object.entries(chainAssets).sort(
           (a, b) => b[1].sum - a[1].sum
         );
         const keysArray = sortedData.map(([key]) => key);
@@ -284,7 +284,7 @@ export const SelectNetworkModal: FunctionComponent<{
           }
         });
       }
-    }, [groupedData]);
+    }, [chainAssets]);
 
     return (
       <View

@@ -1,5 +1,4 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
-import { PageWithScrollViewInBottomTabView } from "../../components/page";
 import { Text } from "@src/components/text";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
@@ -20,7 +19,6 @@ import {
   handleSaveHistory,
   HISTORY_STATUS,
   maskedNumber,
-  numberWithCommas,
   shortenAddress,
   showToast,
   _keyExtract,
