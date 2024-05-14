@@ -148,7 +148,7 @@ export const SendToModal = registerModal(
 
           <OWText weight="400" size={12}>
             Ensure that the network of the recipient address match your entered
-            token to avoid potential loss of funds
+            token to avoid potential loss of funds. Not support Kucoin!
           </OWText>
         </View>
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
