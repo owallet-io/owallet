@@ -17,6 +17,7 @@ export const SettingSwitchModeItem: FunctionComponent<{
   useEffect(() => {
     handleUpdateTheme(toggle, appInitStore.getInitApp.theme);
   }, [toggle, appInitStore.getInitApp.theme]);
+
   const handleUpdateTheme = async (toggle, theme) => {
     if (toggle && theme === "light") {
       await delay(130);
