@@ -18,8 +18,6 @@ import Web3 from "web3";
 import TronWeb from "tronweb";
 import "dotenv/config";
 
-console.log(process.env.API_KEY_TRON_NODE, "process.env.API_KEY_TRON_NODE");
-
 export type LedgerAppType = "cosmos" | "eth" | "trx" | "btc";
 export const COINTYPE_NETWORK = {
   118: "Cosmos",
@@ -144,15 +142,11 @@ export const DEFAULT_TX_BLOCK_INCLUSION_TIMEOUT_IN_MS =
 export const TronWebProvider = (rpc: string = "https://api.trongrid.io") => {
   try {
     if (!rpc) return;
-    console.log(rpc, "rpcrpc");
     const tronWeb = new TronWeb({
       fullHost: rpc,
-      headers: { "TRON-PRO-API-KEY": process.env.API_KEY_TRON_NODE },
+      // TODO: This is key free for test tron
+      headers: { "TRON-PRO-API-KEY": "adb28290-fa79-4542-a6ee-910628cae6f1" },
     });
-    console.log(process.env.API_KEY_TRON_NODE, "process.env.API_KEY_TRON_NODE");
-
-    // tronWeb.setHeader({ 'TRON-PRO-API-KEY': process.env.API_KEY_TRON_NODE });
-    console.log(tronWeb, "tronWebtronWeb");
     return tronWeb;
   } catch (e) {
     console.log(e, "ee");
