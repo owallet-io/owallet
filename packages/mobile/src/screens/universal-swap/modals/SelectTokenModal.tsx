@@ -39,17 +39,25 @@ export const SelectTokenModal: FunctionComponent<{
     const { universalSwapStore, appInitStore, accountStore, keyRingStore } =
       useStore();
     const [filteredTokens, setTokens] = useState([]);
+    const [refresh, setRefresh] = useState(Date.now());
+
     const [keyword, setKeyword] = useState("");
     const [chainAddress, setChainAddress] = useState("");
 
     const account = accountStore.getAccount(selectedChainFilter);
 
     useEffect(() => {
+      setTimeout(() => {
+        setRefresh(Date.now());
+      }, 300);
+    }, []);
+
+    useEffect(() => {
       const address = account.getAddressDisplay(
         keyRingStore.keyRingLedgerAddresses
       );
       setChainAddress(address);
-    }, [selectedChainFilter]);
+    }, [selectedChainFilter, refresh]);
 
     const prices = appInitStore.getInitApp.prices;
 
