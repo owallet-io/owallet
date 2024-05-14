@@ -822,6 +822,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               tokenFee={fromTokenFee}
               onSelectAmount={handleActiveAmount}
               type={"from"}
+              disabled={amountLoading || swapLoading}
+              editable={!amountLoading && !swapLoading}
             />
             <SwapBox
               network={toNetwork}

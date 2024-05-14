@@ -24,6 +24,7 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
     onSelectAmount,
     onChangeAmount,
     type = "from",
+    disabled,
     ...props
   }) => {
     const { colors } = useTheme();
@@ -59,6 +60,7 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
                     justifyContent: "center",
                     marginLeft: 4,
                   }}
+                  disabled={disabled}
                   onPress={() => {
                     onSelectAmount("50");
                   }}
@@ -81,6 +83,7 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
                     justifyContent: "center",
                     marginLeft: 4,
                   }}
+                  disabled={disabled}
                   onPress={() => {
                     onSelectAmount("100");
                   }}
