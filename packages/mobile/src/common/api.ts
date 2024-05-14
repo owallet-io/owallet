@@ -420,6 +420,13 @@ export const API = {
     const url = `raw-tx-history/oasis/${address}?network=${network}&limit=${limit}&offset=${offset}`;
     return API.get(url, config);
   },
+  getTronTxs: (
+    { address, offset, limit = 1, network = Network.TRON },
+    config: AxiosRequestConfig
+  ) => {
+    const url = `raw-tx-history/tron/${address}?network=${network}&limit=${limit}&offset=${offset}`;
+    return API.get(url, config);
+  },
   getDetailTx: (
     { hash, network = Network.ETHEREUM },
     config: AxiosRequestConfig
@@ -432,6 +439,14 @@ export const API = {
     config: AxiosRequestConfig
   ) => {
     let url = `raw-tx-history/oasis/tx-detail/${hash}?network=${network}`;
+    return API.get(url, config);
+  },
+  getDetailTronTx: (
+    { hash, network = Network.TRON },
+    config: AxiosRequestConfig
+  ) => {
+    let url = `raw-tx-history/tron/tx-detail/${hash}`;
+    console.log(url, "url");
     return API.get(url, config);
   },
   getHistoryDetail: ({ id }, config: AxiosRequestConfig) => {

@@ -26,6 +26,7 @@ export const MapChainIdToNetwork = {
   [ChainIdEnum.Oasis]: OasisNetwork.MAINNET,
   [ChainIdEnum.OasisEmerald]: OasisNetwork.EMERALD,
   [ChainIdEnum.OasisSapphire]: OasisNetwork.SAPPHIRE,
+  [ChainIdEnum.TRON]: Network.TRON,
 };
 const SCHEME_IOS = "owallet://open_url?url=";
 const SCHEME_ANDROID = "app.owallet.oauth://google/open_url?url=";
