@@ -1,26 +1,18 @@
-import { PageHeader } from "@src/components/header/header-new";
 import OWCard from "@src/components/card/ow-card";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import OWText from "@src/components/text/ow-text";
 import { EarningCardNew } from "@src/screens/home/earning-card-new";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, { FunctionComponent } from "react";
 import { Image, StyleSheet, View } from "react-native";
-import { API } from "../../../common/api";
 import { PageWithScrollViewInBottomTabView } from "../../../components/page";
-import { useSmartNavigation } from "../../../navigation.provider";
 import { useStore } from "../../../stores";
 import { ValidatorList } from "../validator-list/new-list";
-import { DelegationsCard } from "./delegations-card";
-import { MyRewardCard } from "./reward-card";
-import { OWEmpty } from "@src/components/empty";
 import { metrics } from "@src/themes";
 import { OWButton } from "@src/components/button";
 import { UndelegationsCard } from "./undelegations-card";
 import { NetworkModal } from "@src/screens/home/components";
-import { CommonPageHeader } from "@src/components/header/common-header";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 export const StakingDashboardScreen: FunctionComponent = observer(() => {
   const {
     chainStore,
@@ -30,9 +22,6 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
     modalStore,
     appInitStore,
   } = useStore();
-  const [validators, setValidators] = useState([]);
-  const smartNavigation = useSmartNavigation();
-  const safeAreaInsets = useSafeAreaInsets();
 
   const { colors } = useTheme();
   const styles = styling(colors);
@@ -43,20 +32,6 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
     account.bech32Address
   );
   const delegated = queryDelegated.total;
-
-  useEffect(() => {
-    (async function get() {
-      try {
-        const res = await API.getValidatorList(
-          {},
-          {
-            baseURL: "https://api.scan.orai.io",
-          }
-        );
-        setValidators(res.data.data);
-      } catch (error) {}
-    })();
-  }, []);
 
   const _onPressNetworkModal = () => {
     modalStore.setOptions({
@@ -201,83 +176,6 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
           </View>
         </View>
       )}
-
-      {/* <MyRewardCard /> */}
-      {/* <OWBox>
-          {chainStore.current.networkType === "cosmos" ? (
-            <MyRewardCard />
-          ) : (
-            <OWEmpty />
-          )}
-
-          {chainStore.current.networkType === "cosmos" ? (
-            <View
-              style={{
-                alignItems: "flex-start",
-                justifyContent: "center",
-                marginTop: spacing["12"],
-              }}
-            >
-              <OWButton
-                label="Stake now"
-                onPress={() => {
-                  smartNavigation.navigate("Validator.List", {});
-                }}
-                size="small"
-                fullWidth={false}
-              />
-            </View>
-          ) : null}
-
-          <View
-            style={{
-              position: "absolute",
-              right: -10,
-              bottom: 0,
-            }}
-          >
-            {chainStore.current.networkType === "cosmos" ? (
-              <Image
-                style={{
-                  width: 148,
-                  height: 148,
-                }}
-                source={require("../../../assets/image/stake_gift.png")}
-                resizeMode="contain"
-                fadeDuration={0}
-              />
-            ) : null}
-          </View>
-        </OWBox> */}
-      {/* <View>
-          {chainStore.current.networkType === "cosmos" ? (
-            <View
-              style={{
-                ...styles.containerTitle,
-              }}
-            >
-              <Text
-                style={{
-                  ...typography.h6,
-                  fontWeight: "600",
-                }}
-              >
-                <Text
-                  style={{
-                    fontWeight: "400",
-                  }}
-                >
-                  Total stake:{" "}
-                </Text>
-                {`${staked.maxDecimals(6).trim(true).shrink(true).toString()}`}
-              </Text>
-            </View>
-          ) : null}
-
-          {chainStore.current.networkType === "cosmos" ? (
-            <DelegationsCard validatorList={validators} />
-          ) : null}
-        </View> */}
     </PageWithScrollViewInBottomTabView>
   );
 });
