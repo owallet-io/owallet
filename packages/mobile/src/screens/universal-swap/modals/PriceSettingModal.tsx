@@ -343,7 +343,9 @@ export const PriceSettingModal = registerModal(
               : null}
             {renderInfo("Minimum Received", minimumReceive)}
             {renderInfo("Slippage", `${slippage}%`)}
-            {tokenFee ? renderInfo("Token Fee", tokenFee) : null}
+            {tokenFee && tokenFee > 0
+              ? renderInfo("Token Fee", tokenFee)
+              : null}
             {relayerFee ? renderInfo("Relayer Fee", relayerFee) : null}
             {swapFee ? renderInfo("Swap Fee", swapFee) : null}
           </View>

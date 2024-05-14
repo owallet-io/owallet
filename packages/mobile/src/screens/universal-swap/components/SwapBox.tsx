@@ -22,6 +22,7 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
     editable,
     onOpenNetworkModal,
     onSelectAmount,
+    onChangeAmount,
     type = "from",
     ...props
   }) => {
@@ -188,6 +189,7 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
         <InputSelectToken
           editable={editable}
           tokenActive={tokenActive}
+          onChangeAmount={onChangeAmount}
           {...props}
         />
       </OWCard>

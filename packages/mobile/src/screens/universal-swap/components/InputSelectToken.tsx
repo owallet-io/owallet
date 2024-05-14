@@ -46,6 +46,8 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
   }, [amount]);
 
   const handleChangeAmount = (amount) => {
+    console.log("onChangeAmount", Number(Number(amount).toFixed(6)).toString());
+
     onChangeAmount(Number(Number(amount).toFixed(6)).toString());
   };
 
