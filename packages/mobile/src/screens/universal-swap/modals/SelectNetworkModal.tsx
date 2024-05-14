@@ -325,40 +325,7 @@ export const SelectNetworkModal: FunctionComponent<{
             />
           </View>
         </View>
-        <View style={styles.wrapHeaderTitle}>
-          <OWButton
-            type="link"
-            label={"Mainnet"}
-            textStyle={{
-              color: colors["primary-surface-default"],
-              fontWeight: "600",
-              fontSize: 16,
-            }}
-            onPress={() => setActiveTab("mainnet")}
-            style={[
-              {
-                width: "50%",
-              },
-              activeTab === "mainnet" ? styles.active : null,
-            ]}
-          />
-          <OWButton
-            type="link"
-            label={"Testnet"}
-            onPress={() => setActiveTab("testnet")}
-            textStyle={{
-              color: colors["primary-surface-default"],
-              fontWeight: "600",
-              fontSize: 16,
-            }}
-            style={[
-              {
-                width: "50%",
-              },
-              activeTab === "testnet" ? styles.active : null,
-            ]}
-          />
-        </View>
+
         <View
           style={{
             marginTop: spacing["12"],

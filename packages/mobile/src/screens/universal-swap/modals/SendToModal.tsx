@@ -127,6 +127,7 @@ export const SendToModal = registerModal(
             marginTop: 8,
             borderWidth: 1,
             borderColor: colors["warning-border-default"],
+            marginBottom: metrics.screenHeight / 6,
           }}
         >
           <View style={{ flexDirection: "row", paddingBottom: 6 }}>
