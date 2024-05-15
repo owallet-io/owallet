@@ -38,7 +38,6 @@ export const MyRewardCard: FunctionComponent<{
     !account.isReadyToSendMsgs ||
     pendingStakableReward.toDec().equals(new Dec(0)) ||
     queryReward.pendingRewardValidatorAddresses.length === 0;
-  const decimalChain = chainStore?.current?.stakeCurrency?.coinDecimals;
   return (
     <OWBox
       style={{
@@ -51,7 +50,7 @@ export const MyRewardCard: FunctionComponent<{
           style={{
             ...styles.textInfo,
             fontWeight: "700",
-            color: colors["sub-primary-text"],
+            color: colors["neutral-text-title"],
           }}
         >
           My Pending Rewards
@@ -72,7 +71,7 @@ export const MyRewardCard: FunctionComponent<{
               marginTop: spacing["4"],
               fontWeight: "400",
               fontSize: 20,
-              color: colors["sub-primary-text"],
+              color: colors["neutral-text-body"],
             }}
           >
             {pendingStakableReward.toDec().gt(new Dec(0.001))
@@ -171,7 +170,7 @@ const styling = (colors) =>
   StyleSheet.create({
     textInfo: {
       ...typography.h6,
-      color: colors["text-black-medium"],
+      color: colors["neutral-text-title"],
     },
     containerBtn: {
       borderWidth: 0,

@@ -6,12 +6,7 @@ import React, {
   //@ts-ignore
   useTransition,
 } from "react";
-import {
-  PageWithScrollView,
-  PageWithScrollViewInBottomTabView,
-  PageWithViewInBottomTabView,
-} from "../../components/page";
-import { AccountCard } from "./account-card";
+import { PageWithScrollViewInBottomTabView } from "../../components/page";
 import {
   AppState,
   AppStateStatus,
@@ -19,7 +14,6 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
-  View,
 } from "react-native";
 import { useStore } from "../../stores";
 import { observer } from "mobx-react-lite";
@@ -35,13 +29,10 @@ import { useCoinGeckoPrices, useLoadTokens } from "@owallet/hooks";
 import { showToast } from "@src/utils/helper";
 import { EarningCardNew } from "./earning-card-new";
 import { InjectedProviderUrl } from "../web/config";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { CommonPageHeader } from "@src/components/header/common-header";
 
 export const HomeScreen: FunctionComponent = observer((props) => {
   const [refreshing, setRefreshing] = React.useState(false);
   const [refreshDate, setRefreshDate] = React.useState(Date.now());
-  const safeAreaInsets = useSafeAreaInsets();
 
   const { colors } = useTheme();
   const [isPending, startTransition] = useTransition();

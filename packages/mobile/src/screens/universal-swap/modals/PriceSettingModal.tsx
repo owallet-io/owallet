@@ -25,6 +25,7 @@ export const PriceSettingModal = registerModal(
     setUserSlippage,
     currentSlippage = 0,
     impactWarning,
+    fromAmountToken,
     routersSwapData,
     minimumReceive,
     tokenFee,
@@ -98,6 +99,197 @@ export const PriceSettingModal = registerModal(
           <View style={styles.borderline} />
         </>
       );
+    };
+
+    const renderSmartRoutes = () => {
+      if (fromAmountToken > 0 && routersSwapData?.routes.length > 0) {
+        return (
+          <>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginVertical: 16,
+              }}
+            >
+              <Text color={colors["neutral-text-title"]} weight="500" size={15}>
+                Smart Route
+              </Text>
+              <View style={{ flexDirection: "row" }}>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    backgroundColor: colors["highlight-surface-subtle"],
+                    paddingHorizontal: 8,
+                    paddingVertical: 4,
+                    borderRadius: 4,
+                    marginRight: 8,
+                  }}
+                >
+                  <OWIcon
+                    name="tdesignwindy"
+                    color={colors["highlight-text-title"]}
+                    size={14}
+                  />
+                  <Text
+                    color={colors["highlight-text-title"]}
+                    weight="600"
+                    size={12}
+                  >
+                    {" "}
+                    FASTEST
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    backgroundColor: colors["primary-surface-subtle"],
+                    paddingHorizontal: 8,
+                    paddingVertical: 4,
+                    borderRadius: 4,
+                  }}
+                >
+                  <Text
+                    color={colors["primary-text-action"]}
+                    weight="600"
+                    size={12}
+                  >
+                    BEST RETURN
+                  </Text>
+                </View>
+              </View>
+            </View>
+            <View>
+              {routersSwapData?.routes.map((route, ind) => {
+                const volumn = Number(
+                  (+route.returnAmount / +routersSwapData?.amount) * 100
+                ).toFixed(0);
+                return (
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      paddingVertical: 20,
+                    }}
+                  >
+                    <View
+                      style={{
+                        position: "absolute",
+                        zIndex: -999,
+                        alignSelf: "center",
+                      }}
+                    >
+                      <View
+                        style={{
+                          width: metrics.screenWidth - 32,
+                          height: 2,
+                          backgroundColor: colors["neutral-text-disable"],
+                        }}
+                      />
+                    </View>
+                    <View
+                      style={{
+                        backgroundColor: colors["neutral-surface-card"],
+                        padding: 4,
+                      }}
+                    >
+                      <Text weight="500" color={colors["neutral-text-body"]}>
+                        {volumn}%
+                      </Text>
+                    </View>
+                    {route.paths.map((path, i, acc) => {
+                      const { TokenInIcon, TokenOutIcon } = getPairInfo(
+                        path,
+                        flattenTokens,
+                        flattenTokensWithIcon,
+                        theme === "light"
+                      );
+
+                      return (
+                        <View
+                          style={{
+                            backgroundColor: colors["neutral-surface-card"],
+                            borderRadius: 999,
+                            paddingHorizontal: 4,
+                          }}
+                        >
+                          <View
+                            style={{
+                              flexDirection: "row",
+                              backgroundColor: colors["neutral-surface-action"],
+                              borderRadius: 999,
+                              paddingHorizontal: 6,
+                              paddingVertical: 4,
+                            }}
+                          >
+                            <View
+                              style={{
+                                width: 24,
+                                height: 24,
+                                borderRadius: 24,
+                                backgroundColor: colors["neutral-icon-on-dark"],
+                                alignItems: "center",
+                                justifyContent: "center",
+                              }}
+                            >
+                              <FastImage
+                                style={{
+                                  width: 24,
+                                  height: 24,
+                                  borderRadius: 24,
+                                }}
+                                source={{
+                                  uri: TokenInIcon,
+                                }}
+                                resizeMode={FastImage.resizeMode.cover}
+                              />
+                            </View>
+                            <View
+                              style={{
+                                width: 24,
+                                height: 24,
+                                borderRadius: 24,
+
+                                backgroundColor: colors["neutral-icon-on-dark"],
+
+                                alignItems: "center",
+                                justifyContent: "center",
+                              }}
+                            >
+                              <FastImage
+                                style={{
+                                  width: 24,
+                                  height: 24,
+                                  borderRadius: 24,
+                                }}
+                                source={{
+                                  uri: TokenOutIcon,
+                                }}
+                                resizeMode={FastImage.resizeMode.cover}
+                              />
+                            </View>
+                          </View>
+                        </View>
+                      );
+                    })}
+                    <View
+                      style={{
+                        backgroundColor: colors["neutral-surface-card"],
+                        padding: 4,
+                      }}
+                    >
+                      <Text weight="500" color={colors["neutral-text-body"]}>
+                        {volumn}%
+                      </Text>
+                    </View>
+                  </View>
+                );
+              })}
+            </View>
+          </>
+        );
+      }
     };
 
     return (
@@ -177,189 +369,7 @@ export const PriceSettingModal = registerModal(
               autoCapitalize="none"
             />
           </View>
-
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginVertical: 16,
-            }}
-          >
-            <Text color={colors["neutral-text-title"]} weight="500" size={15}>
-              Smart Route
-            </Text>
-            <View style={{ flexDirection: "row" }}>
-              <View
-                style={{
-                  flexDirection: "row",
-                  backgroundColor: colors["highlight-surface-subtle"],
-                  paddingHorizontal: 8,
-                  paddingVertical: 4,
-                  borderRadius: 4,
-                  marginRight: 8,
-                }}
-              >
-                <OWIcon
-                  name="tdesignwindy"
-                  color={colors["highlight-text-title"]}
-                  size={14}
-                />
-                <Text
-                  color={colors["highlight-text-title"]}
-                  weight="600"
-                  size={12}
-                >
-                  {" "}
-                  FASTEST
-                </Text>
-              </View>
-              <View
-                style={{
-                  backgroundColor: colors["primary-surface-subtle"],
-                  paddingHorizontal: 8,
-                  paddingVertical: 4,
-                  borderRadius: 4,
-                }}
-              >
-                <Text
-                  color={colors["primary-text-action"]}
-                  weight="600"
-                  size={12}
-                >
-                  BEST RETURN
-                </Text>
-              </View>
-            </View>
-          </View>
-          <View>
-            {routersSwapData?.routes.map((route, ind) => {
-              const volumn = Number(
-                (+route.returnAmount / +routersSwapData?.amount) * 100
-              ).toFixed(0);
-              return (
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    paddingVertical: 20,
-                  }}
-                >
-                  <View
-                    style={{
-                      position: "absolute",
-                      zIndex: -999,
-                      alignSelf: "center",
-                    }}
-                  >
-                    <View
-                      style={{
-                        width: metrics.screenWidth - 32,
-                        height: 2,
-                        backgroundColor: colors["neutral-text-disable"],
-                      }}
-                    />
-                  </View>
-                  <View
-                    style={{
-                      backgroundColor: colors["neutral-surface-card"],
-                      padding: 4,
-                    }}
-                  >
-                    <Text weight="500" color={colors["neutral-text-body"]}>
-                      {volumn}%
-                    </Text>
-                  </View>
-                  {route.paths.map((path, i, acc) => {
-                    const { TokenInIcon, TokenOutIcon } = getPairInfo(
-                      path,
-                      flattenTokens,
-                      flattenTokensWithIcon,
-                      theme === "light"
-                    );
-
-                    return (
-                      <View
-                        style={{
-                          backgroundColor: colors["neutral-surface-card"],
-                          borderRadius: 999,
-                          paddingHorizontal: 4,
-                        }}
-                      >
-                        <View
-                          style={{
-                            flexDirection: "row",
-                            backgroundColor: colors["neutral-surface-action"],
-                            borderRadius: 999,
-                            paddingHorizontal: 6,
-                            paddingVertical: 4,
-                          }}
-                        >
-                          <View
-                            style={{
-                              width: 24,
-                              height: 24,
-                              borderRadius: 24,
-                              backgroundColor: colors["neutral-icon-on-dark"],
-                              alignItems: "center",
-                              justifyContent: "center",
-                            }}
-                          >
-                            <FastImage
-                              style={{
-                                width: 24,
-                                height: 24,
-                                borderRadius: 24,
-                              }}
-                              source={{
-                                uri: TokenInIcon,
-                              }}
-                              resizeMode={FastImage.resizeMode.cover}
-                            />
-                          </View>
-                          <View
-                            style={{
-                              width: 24,
-                              height: 24,
-                              borderRadius: 24,
-
-                              backgroundColor: colors["neutral-icon-on-dark"],
-
-                              alignItems: "center",
-                              justifyContent: "center",
-                            }}
-                          >
-                            <FastImage
-                              style={{
-                                width: 24,
-                                height: 24,
-                                borderRadius: 24,
-                              }}
-                              source={{
-                                uri: TokenOutIcon,
-                              }}
-                              resizeMode={FastImage.resizeMode.cover}
-                            />
-                          </View>
-                        </View>
-                      </View>
-                    );
-                  })}
-                  <View
-                    style={{
-                      backgroundColor: colors["neutral-surface-card"],
-                      padding: 4,
-                    }}
-                  >
-                    <Text weight="500" color={colors["neutral-text-body"]}>
-                      {volumn}%
-                    </Text>
-                  </View>
-                </View>
-              );
-            })}
-          </View>
+          {renderSmartRoutes()}
           <View style={{ marginTop: 18, marginBottom: 36 }}>
             {renderInfo("Rate", ratio)}
             {renderInfo("Minimum Received", minimumReceive)}

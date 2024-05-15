@@ -682,6 +682,68 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     }
   }, [sendToAddress, sendToModal]);
 
+  const renderSmartRoutes = () => {
+    if (fromAmountToken > 0 && routersSwapData?.routes.length > 0) {
+      return (
+        <>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Text color={colors["neutral-text-title"]} weight="500" size={15}>
+              Smart Route
+            </Text>
+            <View style={{ flexDirection: "row" }}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  backgroundColor: colors["highlight-surface-subtle"],
+                  paddingHorizontal: 8,
+                  paddingVertical: 4,
+                  borderRadius: 4,
+                  marginRight: 8,
+                }}
+              >
+                <OWIcon
+                  name="tdesignwindy"
+                  color={colors["highlight-text-title"]}
+                  size={14}
+                />
+                <Text
+                  color={colors["highlight-text-title"]}
+                  weight="600"
+                  size={12}
+                >
+                  {" "}
+                  FASTEST
+                </Text>
+              </View>
+              <View
+                style={{
+                  backgroundColor: colors["primary-surface-subtle"],
+                  paddingHorizontal: 8,
+                  paddingVertical: 4,
+                  borderRadius: 4,
+                }}
+              >
+                <Text
+                  color={colors["primary-text-action"]}
+                  weight="600"
+                  size={12}
+                >
+                  BEST RETURN
+                </Text>
+              </View>
+            </View>
+          </View>
+        </>
+      );
+    }
+  };
+
   return (
     <PageWithBottom
       style={{ paddingTop: 16 }}
@@ -716,6 +778,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           currentSlippage={userSlippage}
           impactWarning={impactWarning}
           routersSwapData={routersSwapData}
+          fromAmountToken={fromAmountToken}
           minimumReceive={
             (maskedNumber(minimumReceive) || "0") + " " + toToken.name
           }
@@ -866,63 +929,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                 setPriceSettingModal(true);
               }}
             >
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <Text
-                  color={colors["neutral-text-title"]}
-                  weight="500"
-                  size={15}
-                >
-                  Smart Route
-                </Text>
-                <View style={{ flexDirection: "row" }}>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      backgroundColor: colors["highlight-surface-subtle"],
-                      paddingHorizontal: 8,
-                      paddingVertical: 4,
-                      borderRadius: 4,
-                      marginRight: 8,
-                    }}
-                  >
-                    <OWIcon
-                      name="tdesignwindy"
-                      color={colors["highlight-text-title"]}
-                      size={14}
-                    />
-                    <Text
-                      color={colors["highlight-text-title"]}
-                      weight="600"
-                      size={12}
-                    >
-                      {" "}
-                      FASTEST
-                    </Text>
-                  </View>
-                  <View
-                    style={{
-                      backgroundColor: colors["primary-surface-subtle"],
-                      paddingHorizontal: 8,
-                      paddingVertical: 4,
-                      borderRadius: 4,
-                    }}
-                  >
-                    <Text
-                      color={colors["primary-text-action"]}
-                      weight="600"
-                      size={12}
-                    >
-                      BEST RETURN
-                    </Text>
-                  </View>
-                </View>
-              </View>
+              {renderSmartRoutes()}
               <View
                 style={{
                   flexDirection: "row",
