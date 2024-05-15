@@ -370,7 +370,7 @@ const styling = (colors) =>
       color: colors["gray-700"],
     },
     container: {
-      backgroundColor: colors["background"],
+      backgroundColor: colors["neutral-surface-bg"],
       flexDirection: "row",
       paddingTop: spacing["8"],
       paddingBottom: spacing["8"],

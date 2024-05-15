@@ -18,9 +18,9 @@ import {
   getTotalUsd,
 } from "@oraichain/oraidex-common";
 import OWIcon from "@src/components/ow-icon/ow-icon";
-import { OWButton } from "@src/components/button";
 import { RadioButton } from "react-native-radio-buttons-group";
 import { registerModal } from "@src/modals/base";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export const SelectNetworkModal: FunctionComponent<{
   close?: () => void;
@@ -30,6 +30,8 @@ export const SelectNetworkModal: FunctionComponent<{
   isOpen?: boolean;
 }> = registerModal(
   ({ close, selectedChainFilter, setChainFilter, tokenList }) => {
+    const safeAreaInsets = useSafeAreaInsets();
+
     const { colors } = useTheme();
     const [keyword, setKeyword] = useState("");
     const [activeTab, setActiveTab] = useState<"mainnet" | "testnet">(
@@ -61,7 +63,7 @@ export const SelectNetworkModal: FunctionComponent<{
       close();
     };
 
-    const groupedData = todayAssets?.reduce((result, element) => {
+    const chainAssets = todayAssets?.reduce((result, element) => {
       const key = element.chainId;
 
       if (!result[key]) {
@@ -235,7 +237,7 @@ export const SelectNetworkModal: FunctionComponent<{
                 $
                 {!item.chainId
                   ? maskedNumber(totalUsd)
-                  : maskedNumber(groupedData?.[item.chainId]?.sum)}
+                  : maskedNumber(chainAssets?.[item.chainId]?.sum)}
               </Text>
             </View>
           </View>
@@ -257,8 +259,8 @@ export const SelectNetworkModal: FunctionComponent<{
     };
 
     useEffect(() => {
-      if (groupedData) {
-        const sortedData = Object.entries(groupedData).sort(
+      if (chainAssets) {
+        const sortedData = Object.entries(chainAssets).sort(
           (a, b) => b[1].sum - a[1].sum
         );
         const keysArray = sortedData.map(([key]) => key);
@@ -284,12 +286,13 @@ export const SelectNetworkModal: FunctionComponent<{
           }
         });
       }
-    }, [groupedData]);
+    }, [chainAssets]);
 
     return (
       <View
         style={{
           alignItems: "center",
+          paddingBottom: safeAreaInsets.bottom,
         }}
       >
         <Text
@@ -301,7 +304,7 @@ export const SelectNetworkModal: FunctionComponent<{
             textAlign: "center",
           }}
         >
-          {`choose networks`.toUpperCase()}
+          {`choose network`.toUpperCase()}
         </Text>
         <View style={styles.header}>
           <View style={styles.searchInput}>
@@ -325,44 +328,11 @@ export const SelectNetworkModal: FunctionComponent<{
             />
           </View>
         </View>
-        <View style={styles.wrapHeaderTitle}>
-          <OWButton
-            type="link"
-            label={"Mainnet"}
-            textStyle={{
-              color: colors["primary-surface-default"],
-              fontWeight: "600",
-              fontSize: 16,
-            }}
-            onPress={() => setActiveTab("mainnet")}
-            style={[
-              {
-                width: "50%",
-              },
-              activeTab === "mainnet" ? styles.active : null,
-            ]}
-          />
-          <OWButton
-            type="link"
-            label={"Testnet"}
-            onPress={() => setActiveTab("testnet")}
-            textStyle={{
-              color: colors["primary-surface-default"],
-              fontWeight: "600",
-              fontSize: 16,
-            }}
-            style={[
-              {
-                width: "50%",
-              },
-              activeTab === "testnet" ? styles.active : null,
-            ]}
-          />
-        </View>
+
         <View
           style={{
             marginTop: spacing["12"],
-            width: metrics.screenWidth - 48,
+            width: metrics.screenWidth - 32,
             justifyContent: "space-between",
             height: metrics.screenHeight / 2,
           }}

@@ -49,6 +49,7 @@ export const SendToModal = registerModal(
         </Text>
         <View>
           <TextInput
+            value={address}
             // multiline
             topInInputContainer={
               <View style={{ paddingBottom: 4 }}>
@@ -126,20 +127,32 @@ export const SendToModal = registerModal(
             marginTop: 8,
             borderWidth: 1,
             borderColor: colors["warning-border-default"],
+            marginBottom: metrics.screenHeight / 6,
           }}
         >
           <View style={{ flexDirection: "row", paddingBottom: 6 }}>
-            <AlertIcon color={colors["warning-text-body"]} size={16} />
+            <OWIcon
+              name="tdesignerror-triangle"
+              color={colors["warning-text-body"]}
+              size={16}
+            />
             <OWText
               style={{ paddingLeft: 8 }}
               color={colors["warning-border-default"]}
               weight="500"
               size={14}
             >
-              Double check your address
+              Verify your address!
             </OWText>
           </View>
-
+          <OWText
+            style={{ paddingBottom: 6 }}
+            color={colors["warning-border-default"]}
+            weight="500"
+            size={14}
+          >
+            Sending to CEX needing a memo isn't supported
+          </OWText>
           <OWText weight="400" size={12}>
             Ensure that the network of the recipient address match your entered
             token to avoid potential loss of funds

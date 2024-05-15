@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Text } from "@src/components/text";
 import { OWButton } from "@src/components/button";
 import { TypeTheme, useTheme } from "@src/themes/theme-provider";
-import { metrics } from "@src/themes";
+import { metrics, typography } from "@src/themes";
 import { DEFAULT_SLIPPAGE } from "@owallet/common";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { TextInput } from "@src/components/input";
@@ -79,7 +79,20 @@ export const PriceSettingModal = registerModal(
                   : colors["neutral-text-title"]
               }
             >
-              {info}
+              {Number(impact) > 5 ? (
+                <OWIcon
+                  name="tdesignerror-triangle"
+                  color={
+                    Number(impact) > 5
+                      ? Number(impact) > 10
+                        ? colors["error-text-body"]
+                        : colors["warning-text-body"]
+                      : colors["neutral-text-title"]
+                  }
+                  size={16}
+                />
+              ) : null}
+              {" " + info}
             </Text>
           </View>
           <View style={styles.borderline} />
@@ -95,61 +108,76 @@ export const PriceSettingModal = registerModal(
       >
         <View>
           <View style={styles.containerTitle}>
-            <Text style={styles.title} size={16} weight="500">
-              PRICE SETTINGS
+            <Text
+              style={{
+                ...typography.h6,
+                fontWeight: "900",
+                color: colors["neutral-text-title"],
+                width: "100%",
+                textAlign: "center",
+              }}
+            >
+              {`Price settings`.toUpperCase()}
             </Text>
           </View>
           <Text style={styles.title} size={16} weight="600">
             Slippage rate
           </Text>
-          <View style={styles.containerSlippagePercent}>
-            {[1, 3, 5].map((item, index) => {
-              return (
-                <OWButton
-                  key={item}
-                  size="medium"
-                  style={
-                    slippage === Number(item)
-                      ? styles.btnSlippgaePercentActive
-                      : styles.btnSlippgaePercentInActive
-                  }
-                  textStyle={
-                    slippage === Number(item)
-                      ? styles.txtSlippgaePercentActive
-                      : styles.txtSlippgaePercentInActive
-                  }
-                  label={`${item}%`}
-                  fullWidth={false}
-                  onPress={() => setSlippage(item)}
-                />
-              );
-            })}
-            <View style={styles.containerInputSlippage}>
-              <TextInput
-                inputContainerStyle={{
-                  borderColor: colors["neutral-border-strong"],
-                  borderRadius: 8,
-                  height: 44,
-                  width: metrics.screenWidth / 3,
-                }}
-                value={slippage.toString()}
-                onChangeText={(txt) => handleChangeSlippage(Number(txt))}
-                inputRight={
-                  <Text
-                    color={colors["neutral-text-title"]}
-                    weight="500"
-                    size={15}
-                  >
-                    %
-                  </Text>
-                }
-                keyboardType="number-pad"
-                placeholder="Custom"
-                autoCorrect={false}
-                autoCapitalize="none"
-              />
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <View style={styles.containerSlippagePercent}>
+              {[1, 3, 5].map((item, index) => {
+                return (
+                  <OWButton
+                    key={item}
+                    size="medium"
+                    style={
+                      slippage === Number(item)
+                        ? styles.btnSlippgaePercentActive
+                        : styles.btnSlippgaePercentInActive
+                    }
+                    textStyle={
+                      slippage === Number(item)
+                        ? styles.txtSlippgaePercentActive
+                        : styles.txtSlippgaePercentInActive
+                    }
+                    label={`${item}%`}
+                    fullWidth={false}
+                    onPress={() => setSlippage(item)}
+                  />
+                );
+              })}
             </View>
+            <TextInput
+              inputContainerStyle={{
+                borderColor: colors["neutral-border-strong"],
+                borderRadius: 8,
+                height: 44,
+                width: metrics.screenWidth / 2.5,
+              }}
+              value={slippage.toString()}
+              onChangeText={(txt) => handleChangeSlippage(Number(txt))}
+              inputRight={
+                <Text
+                  color={colors["neutral-text-body"]}
+                  weight="500"
+                  size={15}
+                >
+                  %
+                </Text>
+              }
+              keyboardType="number-pad"
+              placeholder="Custom"
+              autoCorrect={false}
+              autoCapitalize="none"
+            />
           </View>
+
           <View
             style={{
               flexDirection: "row",
@@ -285,7 +313,7 @@ export const PriceSettingModal = registerModal(
                                 borderRadius: 24,
                               }}
                               source={{
-                                uri: TokenOutIcon,
+                                uri: TokenInIcon,
                               }}
                               resizeMode={FastImage.resizeMode.cover}
                             />
@@ -309,7 +337,7 @@ export const PriceSettingModal = registerModal(
                                 borderRadius: 24,
                               }}
                               source={{
-                                uri: TokenInIcon,
+                                uri: TokenOutIcon,
                               }}
                               resizeMode={FastImage.resizeMode.cover}
                             />
@@ -334,6 +362,7 @@ export const PriceSettingModal = registerModal(
           </View>
           <View style={{ marginTop: 18, marginBottom: 36 }}>
             {renderInfo("Rate", ratio)}
+            {renderInfo("Minimum Received", minimumReceive)}
             {impactWarning
               ? renderInfo(
                   "Price Impact",
@@ -341,9 +370,10 @@ export const PriceSettingModal = registerModal(
                   impactWarning
                 )
               : null}
-            {renderInfo("Minimum Received", minimumReceive)}
-            {renderInfo("Slippage", `${slippage}%`)}
-            {tokenFee ? renderInfo("Token Fee", tokenFee) : null}
+            {/* {renderInfo("Slippage", `${slippage}%`)} */}
+            {tokenFee && tokenFee > 0
+              ? renderInfo("Token Fee", tokenFee)
+              : null}
             {relayerFee ? renderInfo("Relayer Fee", relayerFee) : null}
             {swapFee ? renderInfo("Swap Fee", swapFee) : null}
           </View>
@@ -380,7 +410,7 @@ const styling = (colors: TypeTheme["colors"]) =>
     btnSlippgaePercentInActive: {
       width: metrics.screenWidth / 5 - 24,
       backgroundColor: colors["background-item-list"],
-      height: 40,
+      height: 44,
     },
     txtSlippgaePercentActive: {
       color: colors["neutral-border-bold"],
@@ -388,7 +418,7 @@ const styling = (colors: TypeTheme["colors"]) =>
     btnSlippgaePercentActive: {
       width: metrics.screenWidth / 5 - 24,
       backgroundColor: colors["background-item-list"],
-      height: 40,
+      height: 44,
       borderWidth: 1,
       borderColor: colors["neutral-border-bold"],
     },
@@ -397,7 +427,9 @@ const styling = (colors: TypeTheme["colors"]) =>
       justifyContent: "space-between",
       paddingVertical: 16,
       paddingTop: 8,
-      width: "100%",
+      alignItems: "center",
+      alignContent: "center",
+      width: metrics.screenWidth / 2.2,
     },
     addBtn: {
       width: 60,
@@ -425,7 +457,9 @@ const styling = (colors: TypeTheme["colors"]) =>
       alignItems: "center",
       marginHorizontal: 10,
     },
-    containerInputSlippage: {},
+    containerInputSlippage: {
+      alignSelf: "center",
+    },
 
     title: {
       paddingVertical: 10,

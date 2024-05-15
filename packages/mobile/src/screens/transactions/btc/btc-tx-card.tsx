@@ -1,4 +1,3 @@
-import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { StyleSheet, View, ViewStyle } from "react-native";
@@ -6,20 +5,18 @@ import { StyleSheet, View, ViewStyle } from "react-native";
 import { API } from "@src/common/api";
 import { listSkeleton, SCREENS, urlTxHistory } from "@src/common/constants";
 import { navigate } from "@src/router/root";
-import FastImage from "react-native-fast-image";
-import OWText from "@src/components/text/ow-text";
 import { OWButton } from "@src/components/button";
-import OWTransactionItem from "@src/screens/transactions/components/items/transaction-item";
 import { TxSkeleton } from "@src/components/page";
 import { MapChainIdToNetwork } from "@src/utils/helper";
 import { useStore } from "@src/stores";
+import { EmptyTx } from "@src/screens/transactions/components/empty-tx";
+import { TxBtcItem } from "@src/screens/transactions/components/items/tx-btc-item";
 
 export const BtcTxCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
   const { accountStore, appInitStore, chainStore, priceStore, keyRingStore } =
     useStore();
-  const { colors } = useTheme();
 
   const [histories, setHistories] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -33,7 +30,7 @@ export const BtcTxCard: FunctionComponent<{
     try {
       setLoading(true);
 
-      const res = await API.getEvmTxs(
+      const res = await API.getBtcTxs(
         {
           address,
           offset: 0,
@@ -63,7 +60,6 @@ export const BtcTxCard: FunctionComponent<{
     appInitStore.getInitApp.isAllNetworks,
   ]);
 
-  const styles = styling(colors);
   const fiat = priceStore.defaultVsCurrency;
 
   const price = priceStore.getPrice(
@@ -77,11 +73,10 @@ export const BtcTxCard: FunctionComponent<{
         paddingHorizontal: 16,
       }}
     >
-      {/*<SearchFilter />*/}
       {histories?.length > 0 ? (
         histories.map((item, index) => {
           return (
-            <OWTransactionItem
+            <TxBtcItem
               key={`item-${index + 1}-${index}`}
               data={histories}
               item={item}
@@ -118,81 +113,3 @@ export const BtcTxCard: FunctionComponent<{
     </View>
   );
 });
-export const EmptyTx = () => {
-  const { colors } = useTheme();
-  return (
-    <View
-      style={{
-        justifyContent: "center",
-        alignItems: "center",
-        marginVertical: 42,
-        marginBottom: 0,
-      }}
-    >
-      <FastImage
-        source={require("../../assets/image/img_empty.png")}
-        style={{
-          width: 150,
-          height: 150,
-        }}
-        resizeMode={"contain"}
-      />
-      <OWText color={colors["neutral-text-title"]} size={16} weight="700">
-        {"NO TRANSACTIONS YET".toUpperCase()}
-      </OWText>
-    </View>
-  );
-};
-const styling = (colors) =>
-  StyleSheet.create({
-    wrapHeaderTitle: {
-      flexDirection: "row",
-    },
-    pl10: {
-      paddingLeft: 10,
-    },
-    leftBoxItem: {
-      flexDirection: "row",
-      alignItems: "center",
-    },
-    rightBoxItem: {
-      alignItems: "flex-end",
-    },
-    btnItem: {
-      flexDirection: "row",
-      // justifyContent: 'space-between',
-      alignItems: "center",
-      flexWrap: "wrap",
-      gap: 16,
-
-      // marginVertical: 8,
-    },
-    profit: {
-      fontWeight: "400",
-      lineHeight: 20,
-    },
-    iconWrap: {
-      width: 32,
-      height: 32,
-      borderRadius: 32,
-      alignItems: "center",
-      justifyContent: "center",
-      overflow: "hidden",
-      backgroundColor: colors["neutral-text-action-on-dark-bg"],
-    },
-    chainWrap: {
-      width: 18,
-      height: 18,
-      borderRadius: 32,
-      alignItems: "center",
-      justifyContent: "center",
-      backgroundColor: colors["neutral-text-action-on-dark-bg"],
-      position: "absolute",
-      bottom: -6,
-      left: 20,
-    },
-    active: {
-      borderBottomColor: colors["primary-surface-default"],
-      borderBottomWidth: 2,
-    },
-  });

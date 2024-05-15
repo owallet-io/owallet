@@ -1,10 +1,10 @@
 import React, { FunctionComponent, useMemo, useState } from "react";
-import { RightArrow } from "../components";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../../stores";
 import { SelectorModal } from "../../../components/input";
 import { View, TouchableOpacity } from "react-native";
 import { Text } from "@src/components/text";
+import OWIcon from "@src/components/ow-icon/ow-icon";
 
 export const SettingFiatCurrencyTopItem: FunctionComponent<{
   style?: any;
@@ -56,7 +56,7 @@ export const SettingFiatCurrencyTopItem: FunctionComponent<{
             {priceStore.defaultVsCurrency.toUpperCase()}
           </Text>
         </View>
-        <RightArrow />
+        <OWIcon name="tdesignarrow-right" size={16} />
       </TouchableOpacity>
     </React.Fragment>
   );

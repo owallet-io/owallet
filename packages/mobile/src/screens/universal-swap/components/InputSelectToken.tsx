@@ -15,6 +15,7 @@ import { find } from "lodash";
 import _debounce from "lodash/debounce";
 import { tokensIcon } from "@oraichain/oraidex-common";
 import { useStore } from "@src/stores";
+import { maskedNumber } from "@src/utils/helper";
 
 const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
   tokenActive,
@@ -45,6 +46,8 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
   }, [amount]);
 
   const handleChangeAmount = (amount) => {
+    console.log("onChangeAmount", Number(Number(amount).toFixed(6)).toString());
+
     onChangeAmount(Number(Number(amount).toFixed(6)).toString());
   };
 
@@ -74,7 +77,12 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
             justifyContent: "center",
           }}
         >
-          <OWIcon type="images" source={{ uri: tokenIcon?.Icon }} size={30} />
+          <OWIcon
+            style={{ borderRadius: 999 }}
+            type="images"
+            source={{ uri: tokenIcon?.Icon }}
+            size={30}
+          />
         </View>
 
         <View style={[styles.ml8, styles.itemTopBtn]}>
@@ -82,9 +90,6 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
             <Text weight="600" size={16} color={colors["neutral-text-action"]}>
               {tokenActive?.name}
             </Text>
-            {/* <BalanceText size={12} weight="500" style={styles.mt_4}>
-              {tokenActive?.org}
-            </BalanceText> */}
           </View>
           <OWIcon
             color={colors["neutral-icon-on-light"]}
@@ -119,7 +124,9 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
           placeholderTextColor={colors["text-place-holder"]}
         />
         <View style={{ alignSelf: "flex-end" }}>
-          <BalanceText weight="500">≈ ${currencyValue || 0}</BalanceText>
+          <BalanceText weight="500">
+            ≈ ${maskedNumber(currencyValue) || 0}
+          </BalanceText>
         </View>
       </View>
     </View>

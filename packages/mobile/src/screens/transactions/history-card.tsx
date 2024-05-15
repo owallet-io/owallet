@@ -1,210 +1,70 @@
-import { OWEmpty } from "@src/components/empty";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
-import React, {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
-import {
-  Platform,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-  ViewStyle,
-} from "react-native";
+import React, { FunctionComponent } from "react";
+import { StyleSheet, View, ViewStyle } from "react-native";
 import { useStore } from "../../stores";
-import { MapChainIdToNetwork } from "../../utils/helper";
-import { API } from "@src/common/api";
-import { listSkeleton, SCREENS, urlTxHistory } from "@src/common/constants";
-import { navigate } from "@src/router/root";
-import FastImage from "react-native-fast-image";
-import OWText from "@src/components/text/ow-text";
-
-import { OWButton } from "@src/components/button";
-import OWTransactionItem from "@src/screens/transactions/components/items/transaction-item";
-import { TxSkeleton } from "@src/components/page";
+import { EmptyTx } from "@src/screens/transactions/components/empty-tx";
+import { ChainIdEnum } from "@owallet/common";
+import { EvmTxCard } from "@src/screens/transactions/evm/evm-tx-card";
+import { BtcTxCard } from "@src/screens/transactions/btc/btc-tx-card";
+import { metrics } from "@src/themes";
+import { useGetHeightHeader } from "@src/hooks";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { OasisTxCard } from "@src/screens/transactions/oasis/oasis-tx-card";
+import { TronTxCard } from "@src/screens/transactions/tron/tron-tx-card";
 
 export const HistoryCard: FunctionComponent<{
   containerStyle?: ViewStyle;
-}> = observer(({ containerStyle }) => {
-  const { accountStore, appInitStore, chainStore, priceStore, keyRingStore } =
-    useStore();
-  const { colors } = useTheme();
-
-  const [histories, setHistories] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  const accountInfo = accountStore.getAccount(chainStore.current.chainId);
-  const address = accountInfo.getAddressDisplay(
-    keyRingStore.keyRingLedgerAddresses,
-    false
-  );
-  const getWalletHistory = async (address) => {
-    try {
-      setLoading(true);
-
-      const res = await API.getEvmTxs(
-        {
-          address,
-          offset: 0,
-          limit: 10,
-          network: MapChainIdToNetwork[chainStore.current.chainId],
-        },
-        {
-          baseURL: urlTxHistory,
-        }
-      );
-      if (res && res.status !== 200) throw Error("Failed");
-      setHistories(res.data.data);
-      setLoading(false);
-    } catch (err) {
-      setLoading(false);
-      console.log("getWalletHistory err", err);
-    }
-  };
-
-  useEffect(() => {
-    setHistories([]);
-    if (!address || appInitStore.getInitApp.isAllNetworks) return;
-    getWalletHistory(address);
-  }, [
-    address,
-    chainStore.current.chainId,
-    appInitStore.getInitApp.isAllNetworks,
-  ]);
-
-  const styles = styling(colors);
+}> = observer(() => {
+  const { chainStore, priceStore } = useStore();
   const fiat = priceStore.defaultVsCurrency;
-
+  const { chainId } = chainStore.current;
   const price = priceStore.getPrice(
     chainStore.current.stakeCurrency.coinGeckoId,
     fiat
   );
-  if (!price) return <EmptyTx />;
-  return (
-    <View
-      style={{
-        paddingHorizontal: 16,
-      }}
-    >
-      {/*<SearchFilter />*/}
-      {histories?.length > 0 ? (
-        histories.map((item, index) => {
-          return (
-            <OWTransactionItem
-              key={`item-${index + 1}-${index}`}
-              data={histories}
-              item={item}
-              index={index}
-            />
-          );
-        })
-      ) : loading ? (
-        <View>
-          {listSkeleton.map((item, index) => (
-            <TxSkeleton key={index.toString()} />
-          ))}
-        </View>
-      ) : (
+  const heightHeader = useGetHeightHeader();
+  const heightBottom = useBottomTabBarHeight();
+  const containerStyle = {
+    minHeight: (metrics.screenHeight - (heightHeader + heightBottom + 100)) / 2,
+  };
+  if (!price)
+    return (
+      <View style={containerStyle}>
         <EmptyTx />
-      )}
-      {histories?.length > 9 && (
-        <OWButton
-          style={{
-            marginTop: 16,
-          }}
-          label={"View all"}
-          size="medium"
-          type="secondary"
-          onPress={() => {
-            // setMore(!more);
-            navigate(SCREENS.STACK.Others, {
-              screen: SCREENS.Transactions,
-            });
-            return;
-          }}
-        />
-      )}
+      </View>
+    );
+  if (chainId === ChainIdEnum.BNBChain || chainId === ChainIdEnum.Ethereum)
+    return (
+      <View style={containerStyle}>
+        <EvmTxCard />
+      </View>
+    );
+  if (
+    chainId === ChainIdEnum.Oasis ||
+    chainId === ChainIdEnum.OasisSapphire ||
+    chainId === ChainIdEnum.OasisEmerald
+  )
+    return (
+      <View style={containerStyle}>
+        <OasisTxCard />
+      </View>
+    );
+  if (chainId === ChainIdEnum.Bitcoin)
+    return (
+      <View style={containerStyle}>
+        <BtcTxCard />
+      </View>
+    );
+  if (chainId === ChainIdEnum.TRON)
+    return (
+      <View style={containerStyle}>
+        <TronTxCard />
+      </View>
+    );
+  return (
+    <View style={containerStyle}>
+      <EmptyTx />
     </View>
   );
 });
-export const EmptyTx = () => {
-  const { colors } = useTheme();
-  return (
-    <View
-      style={{
-        justifyContent: "center",
-        alignItems: "center",
-        marginVertical: 42,
-        marginBottom: 0,
-      }}
-    >
-      <FastImage
-        source={require("../../assets/image/img_empty.png")}
-        style={{
-          width: 150,
-          height: 150,
-        }}
-        resizeMode={"contain"}
-      />
-      <OWText color={colors["neutral-text-title"]} size={16} weight="700">
-        {"NO TRANSACTIONS YET".toUpperCase()}
-      </OWText>
-    </View>
-  );
-};
-const styling = (colors) =>
-  StyleSheet.create({
-    wrapHeaderTitle: {
-      flexDirection: "row",
-    },
-    pl10: {
-      paddingLeft: 10,
-    },
-    leftBoxItem: {
-      flexDirection: "row",
-      alignItems: "center",
-    },
-    rightBoxItem: {
-      alignItems: "flex-end",
-    },
-    btnItem: {
-      flexDirection: "row",
-      // justifyContent: 'space-between',
-      alignItems: "center",
-      flexWrap: "wrap",
-      gap: 16,
-
-      // marginVertical: 8,
-    },
-    profit: {
-      fontWeight: "400",
-      lineHeight: 20,
-    },
-    iconWrap: {
-      width: 32,
-      height: 32,
-      borderRadius: 32,
-      alignItems: "center",
-      justifyContent: "center",
-      overflow: "hidden",
-      backgroundColor: colors["neutral-text-action-on-dark-bg"],
-    },
-    chainWrap: {
-      width: 18,
-      height: 18,
-      borderRadius: 32,
-      alignItems: "center",
-      justifyContent: "center",
-      backgroundColor: colors["neutral-text-action-on-dark-bg"],
-      position: "absolute",
-      bottom: -6,
-      left: 20,
-    },
-    active: {
-      borderBottomColor: colors["primary-surface-default"],
-      borderBottomWidth: 2,
-    },
-  });

@@ -7,7 +7,7 @@ import { PageHeader } from "@src/components/header/header-new";
 
 import { observer } from "mobx-react-lite";
 import { useTheme } from "@src/themes/theme-provider";
-import { FlatList, TouchableOpacity, View } from "react-native";
+import { FlatList, Platform, TouchableOpacity, View } from "react-native";
 import DraggableFlatList from "react-native-draggable-flatlist";
 import { useStore } from "@src/stores";
 import OWIcon from "@src/components/ow-icon/ow-icon";
@@ -143,7 +143,10 @@ export const BookmarksScreen = observer(() => {
           }}
           keyExtractor={(item: any) => item?.uri}
           renderItem={renderItem}
-          containerStyle={{ paddingBottom: metrics.screenHeight / 7 }}
+          containerStyle={{
+            paddingBottom:
+              Platform.OS === "android" ? metrics.screenHeight / 7 : 0,
+          }}
         />
       </View>
     </PageWithViewInBottomTabView>

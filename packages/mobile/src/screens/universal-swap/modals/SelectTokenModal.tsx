@@ -11,7 +11,7 @@ import OWFlatList from "@src/components/page/ow-flat-list";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { Text } from "@src/components/text";
 import { TypeTheme, useTheme } from "@src/themes/theme-provider";
-import { metrics } from "@src/themes";
+import { metrics, typography } from "@src/themes";
 import {
   TokenItemType,
   toDisplay,
@@ -39,17 +39,25 @@ export const SelectTokenModal: FunctionComponent<{
     const { universalSwapStore, appInitStore, accountStore, keyRingStore } =
       useStore();
     const [filteredTokens, setTokens] = useState([]);
+    const [refresh, setRefresh] = useState(Date.now());
+
     const [keyword, setKeyword] = useState("");
     const [chainAddress, setChainAddress] = useState("");
 
     const account = accountStore.getAccount(selectedChainFilter);
 
     useEffect(() => {
+      setTimeout(() => {
+        setRefresh(Date.now());
+      }, 300);
+    }, []);
+
+    useEffect(() => {
       const address = account.getAddressDisplay(
         keyRingStore.keyRingLedgerAddresses
       );
       setChainAddress(address);
-    }, [selectedChainFilter]);
+    }, [selectedChainFilter, refresh]);
 
     const prices = appInitStore.getInitApp.prices;
 
@@ -215,6 +223,7 @@ export const SelectTokenModal: FunctionComponent<{
       >
         <Text
           style={{
+            ...typography.h6,
             fontWeight: "900",
             color: colors["neutral-text-title"],
             width: "100%",
