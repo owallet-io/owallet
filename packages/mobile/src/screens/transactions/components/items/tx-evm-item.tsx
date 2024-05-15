@@ -22,6 +22,8 @@ import { RightArrowIcon } from "@src/components/icon";
 import { useStore } from "@src/stores";
 import { has } from "lodash";
 import { Currency } from "@owallet/types";
+import Coingecko from "@src/assets/data/coingecko.json";
+import get from "lodash/get";
 
 export const TxEvmItem: FC<{
   item: any;
@@ -45,10 +47,21 @@ export const TxEvmItem: FC<{
   };
   if (item.transactionType === "fungible") {
     if (has(item, "tokenInfo.attributes")) {
+      const itemCoingecko = Coingecko.find(
+        (it, index) =>
+          it.symbol.toUpperCase() ==
+          get(item, "tokenInfo.attributes.symbol").toUpperCase()
+      );
       currency = {
         coinDecimals: item.tokenInfo.attributes.decimals,
-        coinImageUrl: item.tokenInfo.attributes.image_url,
-        coinGeckoId: item.tokenInfo.attributes.coingecko_coin_id,
+        coinImageUrl:
+          item.tokenInfo.attributes.image_url == "missing.png"
+            ? unknownToken.coinImageUrl
+            : item.tokenInfo.attributes.image_url,
+        coinGeckoId:
+          item.tokenInfo.attributes.coingecko_coin_id ||
+          get(itemCoingecko, "id") ||
+          "unknown",
         coinMinimalDenom: `erc20:${item.tokenAddress}:${item.tokenInfo.attributes.name}`,
         coinDenom: item.tokenInfo.attributes.symbol,
       } as Currency;

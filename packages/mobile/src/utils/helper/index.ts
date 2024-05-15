@@ -261,7 +261,7 @@ export const maskedNumber = (
     ? Number(number).toLocaleString(locales, {
         maximumFractionDigits: digits,
       })
-    : 0;
+    : "0";
 };
 
 const countAmountValue = (array) => {

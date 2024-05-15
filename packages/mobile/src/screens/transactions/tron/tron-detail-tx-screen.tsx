@@ -75,7 +75,6 @@ export const TronDetailTx: FunctionComponent = observer((props) => {
       console.log(res, "kakak");
       if (res && res.status !== 200) throw Error("Failed");
       setDetail(res.data);
-
       setLoading(false);
     } catch (err) {
       setLoading(false);
@@ -112,6 +111,9 @@ export const TronDetailTx: FunctionComponent = observer((props) => {
     getHistoryDetail();
   };
   const method = item.transactionType === "incoming" ? "Received" : "Sent";
+  const amountStr = amount.hideDenom(true).trim(true).toString();
+  const checkInOut =
+    amountStr !== "0" ? (item.transactionType === "incoming" ? "+" : "-") : "";
   return (
     <PageWithBottom
       style={{
@@ -149,7 +151,7 @@ export const TronDetailTx: FunctionComponent = observer((props) => {
                   {
                     backgroundColor:
                       get(detail, "ret[0].contractRet") === "SUCCESS"
-                        ? colors["hightlight-surface-subtle"]
+                        ? colors["highlight-surface-subtle"]
                         : colors["error-surface-subtle"],
                   },
                 ]}
@@ -159,7 +161,7 @@ export const TronDetailTx: FunctionComponent = observer((props) => {
                   size={14}
                   color={
                     get(detail, "ret[0].contractRet") === "SUCCESS"
-                      ? colors["hightlight-text-title"]
+                      ? colors["highlight-text-title"]
                       : colors["error-text-body"]
                   }
                 >
@@ -169,9 +171,7 @@ export const TronDetailTx: FunctionComponent = observer((props) => {
                 </OWText>
               </View>
             }
-            amount={`${
-              item.transactionType === "incoming" ? "+" : "-"
-            }${maskedNumber(amount.hideDenom(true).toString())} ${
+            amount={`${checkInOut}${maskedNumber(amountStr, 6)} ${
               currency.coinDenom
             }`}
             toAmount={null}
@@ -217,6 +217,22 @@ export const TronDetailTx: FunctionComponent = observer((props) => {
               }
               btnCopy={false}
             />
+            {item.energyUsageTotal ? (
+              <ItemReceivedToken
+                label={"Energy"}
+                valueDisplay={`${maskedNumber(item.energyUsageTotal)}`}
+                btnCopy={false}
+              />
+            ) : null}
+            {item.netFee ? (
+              <ItemReceivedToken
+                label={"Bandwidth"}
+                valueDisplay={`${maskedNumber(
+                  new Int(item.netFee).div(new Int(1e3)).toString()
+                )}`}
+                btnCopy={false}
+              />
+            ) : null}
 
             <ItemReceivedToken
               label={"Fee"}
@@ -226,6 +242,7 @@ export const TronDetailTx: FunctionComponent = observer((props) => {
                 .toString()} (${priceStore.calculatePrice(fee).toString()})`}
               btnCopy={false}
             />
+
             <ItemReceivedToken
               label={"Time"}
               valueDisplay={moment(
@@ -328,7 +345,7 @@ const useStyles = (colors) => {
       padding: 16,
     },
     status: {
-      backgroundColor: colors["hightlight-surface-subtle"],
+      backgroundColor: colors["highlight-surface-subtle"],
       paddingHorizontal: 12,
       paddingVertical: 2,
       borderRadius: 12,
