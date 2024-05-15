@@ -134,13 +134,13 @@ export const SelectNetworkModal: FunctionComponent<{
     const _renderItem = ({ item }) => {
       let selected = item?.chainId === selectedChainFilter;
 
-      // const tokenListByChain = tokenList.filter(
-      //   (t) => t.chainId === item?.chainId
-      // );
+      const tokenListByChain = tokenList.filter(
+        (t) => t.chainId === item?.chainId
+      );
 
-      // if (tokenListByChain.length <= 0) {
-      //   return null;
-      // }
+      if (tokenListByChain.length <= 0) {
+        return null;
+      }
 
       if (item.isAll && appInitStore.getInitApp.isAllNetworks) {
         selected = true;

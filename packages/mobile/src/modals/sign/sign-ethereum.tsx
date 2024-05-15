@@ -1,19 +1,10 @@
-import React, {
-  FunctionComponent,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { registerModal } from "../base";
-import { View, Platform } from "react-native";
+import { View } from "react-native";
 import { useStore } from "../../stores";
 import Web3 from "web3";
-
 import { observer } from "mobx-react-lite";
-
 import ERC20_ABI from "human-standard-token-abi";
-
 import {
   useAmountConfig,
   useGasEvmConfig,
@@ -26,10 +17,9 @@ import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
 import { FeeInSign } from "@src/modals/sign/fee";
 import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
 import OWButtonGroup from "@src/components/button/OWButtonGroup";
-import { CoinPretty, CoinUtils, Dec, Int } from "@owallet/unit";
+import { CoinPretty, Dec, Int } from "@owallet/unit";
 import { useTheme } from "@src/themes/theme-provider";
 import OWText from "@src/components/text/ow-text";
-import OWCard from "@src/components/card/ow-card";
 import FastImage from "react-native-fast-image";
 import { ChainIdEnum, DenomHelper } from "@owallet/common";
 import { Bech32Address } from "@owallet/cosmos";
@@ -51,8 +41,6 @@ export const SignEthereumModal: FunctionComponent<{
       chainStore,
       signInteractionStore,
       accountStore,
-      sendStore,
-      appInitStore,
       queriesStore,
       keyRingStore,
       priceStore,
@@ -86,7 +74,6 @@ export const SignEthereumModal: FunctionComponent<{
       queriesStore.get(current.chainId).queryBalances,
       null
     );
-    console.log(gasPrice, "gasPrice");
     const memoConfig = useMemoConfig(chainStore, current.chainId);
     const feeConfig = useFeeEvmConfig(
       chainStore,
@@ -171,9 +158,11 @@ export const SignEthereumModal: FunctionComponent<{
         }
       }
     }, [signInteractionStore.waitingEthereumData]);
+
     const approveIsDisabled = (() => {
       return feeConfig.getError() != null || gasConfig.getError() != null;
     })();
+
     const _onPressApprove = async () => {
       if (!dataSign) return;
       await signInteractionStore.approveEthereumAndWaitEnd({
@@ -182,6 +171,7 @@ export const SignEthereumModal: FunctionComponent<{
       });
       return;
     };
+
     const { colors } = useTheme();
     const currencies = chainStore.current.currencies;
     const currency = useMemo(() => {
@@ -200,6 +190,7 @@ export const SignEthereumModal: FunctionComponent<{
       });
       return currency;
     }, [infoSign, currencies]);
+
     const checkPrice = () => {
       if (!currency || !infoSign?.value) return;
       const coin = new CoinPretty(
@@ -209,6 +200,7 @@ export const SignEthereumModal: FunctionComponent<{
       const totalPrice = priceStore.calculatePrice(coin);
       return totalPrice?.toString();
     };
+
     const checkImageCoin = () => {
       if (!currency) return;
       if (currency?.coinImageUrl)
