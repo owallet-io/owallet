@@ -39,25 +39,25 @@ export const SelectTokenModal: FunctionComponent<{
     const { universalSwapStore, appInitStore, accountStore, keyRingStore } =
       useStore();
     const [filteredTokens, setTokens] = useState([]);
-    const [refresh, setRefresh] = useState(Date.now());
+    // const [refresh, setRefresh] = useState(Date.now());
 
     const [keyword, setKeyword] = useState("");
-    const [chainAddress, setChainAddress] = useState("");
+    // const [chainAddress, setChainAddress] = useState("");
 
-    const account = accountStore.getAccount(selectedChainFilter);
+    // const account = accountStore.getAccount(selectedChainFilter);
 
-    useEffect(() => {
-      setTimeout(() => {
-        setRefresh(Date.now());
-      }, 300);
-    }, []);
+    // useEffect(() => {
+    //   setTimeout(() => {
+    //     setRefresh(Date.now());
+    //   }, 300);
+    // }, []);
 
-    useEffect(() => {
-      const address = account.getAddressDisplay(
-        keyRingStore.keyRingLedgerAddresses
-      );
-      setChainAddress(address);
-    }, [selectedChainFilter, refresh]);
+    // useEffect(() => {
+    //   const address = account.getAddressDisplay(
+    //     keyRingStore.keyRingLedgerAddresses
+    //   );
+    //   setChainAddress(address);
+    // }, [selectedChainFilter, refresh]);
 
     const prices = appInitStore.getInitApp.prices;
 
@@ -180,11 +180,11 @@ export const SelectTokenModal: FunctionComponent<{
                     >
                       {item.name}
                     </Text>
-                    {chainAddress ? (
+                    {/* {chainAddress ? (
                       <Text weight="400" color={colors["neutral-text-body"]}>
                         {shortenAddress(chainAddress, 9)}
                       </Text>
-                    ) : null}
+                    ) : null} */}
 
                     <Text weight="400" color={colors["neutral-text-body"]}>
                       {item.org}
@@ -211,7 +211,7 @@ export const SelectTokenModal: FunctionComponent<{
           );
         }
       },
-      [universalSwapStore?.getAmount, chainAddress]
+      [universalSwapStore?.getAmount]
     );
 
     return (
