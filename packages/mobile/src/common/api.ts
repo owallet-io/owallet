@@ -48,6 +48,7 @@ export const API = {
       retryWrapper(axios, { retry_time: 3 });
       let qs = params ? parseObjectToQueryString(params) : "";
       let url = `${prefix}${method}${qs}`;
+      console.log(url, "url lcd");
       const rs = await API.get(url, { baseURL: lcdUrl });
       return Promise.resolve(rs?.data);
     } catch (error) {

@@ -53,10 +53,139 @@ type TokenInfo = {
   total_supply: any;
 };
 
+class FlowCancelerError extends Error {
+  constructor(m?: string) {
+    super(m);
+    // Set the prototype explicitly.
+    Object.setPrototypeOf(this, FlowCancelerError.prototype);
+  }
+}
+
+class FlowCanceler {
+  protected rejectors: {
+    reject: (e: Error) => void;
+    onCancel?: () => void;
+  }[] = [];
+
+  get hasCancelable(): boolean {
+    return this.rejectors.length > 0;
+  }
+
+  cancel(message?: string) {
+    while (this.rejectors.length > 0) {
+      const rejector = this.rejectors.shift();
+      if (rejector) {
+        rejector.reject(new FlowCancelerError(message));
+        if (rejector.onCancel) {
+          rejector.onCancel();
+        }
+      }
+    }
+  }
+
+  callOrCanceledWithPromise<R>(
+    promise: PromiseLike<R>,
+    onCancel?: () => void
+  ): Promise<R> {
+    return new Promise<R>((resolve, reject) => {
+      this.rejectors.push({
+        reject,
+        onCancel,
+      });
+
+      promise.then(
+        (r) => {
+          const i = this.rejectors.findIndex((r) => r.reject === reject);
+          if (i >= 0) {
+            this.rejectors.splice(i, 1);
+          }
+
+          resolve(r);
+        },
+        (e) => {
+          const i = this.rejectors.findIndex((r) => r.reject === reject);
+          if (i >= 0) {
+            this.rejectors.splice(i, 1);
+          }
+
+          reject(e);
+        }
+      );
+    });
+  }
+
+  callOrCanceled<R>(
+    fn: () => PromiseLike<R>,
+    onCancel?: () => void
+  ): Promise<R> {
+    return new Promise<R>((resolve, reject) => {
+      this.rejectors.push({
+        reject,
+        onCancel,
+      });
+
+      Promise.resolve().then(() => {
+        if (!this.rejectors.find((r) => r.reject === reject)) {
+          return;
+        }
+
+        fn().then(
+          (r) => {
+            const i = this.rejectors.findIndex((r) => r.reject === reject);
+            if (i >= 0) {
+              this.rejectors.splice(i, 1);
+            }
+
+            resolve(r);
+          },
+          (e) => {
+            const i = this.rejectors.findIndex((r) => r.reject === reject);
+            if (i >= 0) {
+              this.rejectors.splice(i, 1);
+            }
+
+            reject(e);
+          }
+        );
+      });
+    });
+  }
+}
+
+class FunctionQueue {
+  protected queue: (() => void | Promise<void>)[] = [];
+  protected isPendingPromise = false;
+
+  enqueue(fn: () => void | Promise<void>) {
+    this.queue.push(fn);
+
+    this.handleQueue();
+  }
+
+  protected handleQueue() {
+    if (!this.isPendingPromise && this.queue.length > 0) {
+      const fn = this.queue.shift();
+      if (fn) {
+        const r = fn();
+        if (typeof r === "object" && "then" in r) {
+          this.isPendingPromise = true;
+          r.then(() => {
+            this.isPendingPromise = false;
+            this.handleQueue();
+          });
+        } else {
+          this.handleQueue();
+        }
+      }
+    }
+  }
+}
+
 /**
  * Base of the observable query classes.
  * This recommends to use the Axios to query the response.
  */
+
 export abstract class ObservableQueryBase<T = unknown, E = unknown> {
   protected static suspectedResponseDatasWithInvalidValue: string[] = [
     "The network connection was lost.",
@@ -78,7 +207,9 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
   @observable
   private _isStarted: boolean = false;
 
-  private cancelToken?: CancelTokenSource;
+  private stateQueue = new FunctionQueue();
+  private pendingOnStart = false;
+  private readonly queryCanceler: FlowCanceler;
 
   private observedCount: number = 0;
 
@@ -98,7 +229,7 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
       ...defaultOptions,
       ...options,
     };
-
+    this.queryCanceler = new FlowCanceler();
     this._instance = instance;
 
     makeObservable(this);
@@ -134,27 +265,61 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
   private start() {
     if (!this._isStarted) {
       this._isStarted = true;
-      this.onStart();
+      // For async onStart() method, set isFetching as true in advance.
+      this._isFetching = true;
+      this.pendingOnStart = true;
+      this.stateQueue.enqueue(() => {
+        return this.onStart();
+      });
+      this.stateQueue.enqueue(() => {
+        this.pendingOnStart = false;
+      });
+      this.stateQueue.enqueue(() => {
+        return this.postStart();
+      });
     }
   }
 
   @action
   private stop() {
     if (this._isStarted) {
-      this.onStop();
+      if (this.isFetching && this.queryCanceler.hasCancelable) {
+        this.cancel();
+      }
+
+      this._isFetching = false;
+
+      if (this.intervalId != null) {
+        clearInterval(this.intervalId as NodeJS.Timeout);
+      }
+      this.intervalId = undefined;
+
+      this.stateQueue.enqueue(() => {
+        return this.onStop();
+      });
       this._isStarted = false;
+    }
+  }
+  private readonly intervalFetch = () => {
+    if (!this.isFetching) {
+      this.fetch();
+    }
+  };
+
+  private postStart() {
+    this.fetch();
+
+    if (this.options.fetchingInterval > 0) {
+      this.intervalId = setInterval(
+        this.intervalFetch,
+        this.options.fetchingInterval
+      );
     }
   }
 
   public get isStarted(): boolean {
     return this._isStarted;
   }
-
-  private readonly intervalFetch = () => {
-    if (!this.isFetching) {
-      this.fetch();
-    }
-  };
 
   protected onStart() {
     this.fetch();
@@ -195,19 +360,22 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
   @flow
   *fetch(): Generator<unknown, any, any> {
     // If not started, do nothing.
-    if (!this.isStarted) {
+    if (!this.isStarted || this.pendingOnStart) {
       return;
     }
 
     if (!this.canFetch()) {
+      if (this._isFetching) {
+        this._isFetching = false;
+      }
       return;
     }
 
     // If response is fetching, cancel the previous query.
-    if (this.isFetching) {
-      this.cancel();
+    if (this.isFetching && this.queryCanceler.hasCancelable) {
+      // When cancel for the next fetching, it behaves differently from other explicit cancels because fetching continues. Use an error message to identify this.
+      this.cancel("__fetching__proceed__next__");
     }
-
     this._isFetching = true;
 
     // If there is no existing response, try to load saved reponse.
@@ -226,11 +394,22 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
       });
     }
 
-    this.cancelToken = Axios.CancelToken.source();
+    const abortController = new AbortController();
 
     try {
+      let hasStarted = false;
       let response = yield* toGenerator(
-        this.fetchResponse(this.cancelToken.token)
+        this.queryCanceler.callOrCanceled(
+          () => {
+            hasStarted = true;
+            return this.fetchResponse(abortController);
+          },
+          () => {
+            if (hasStarted) {
+              abortController.abort();
+            }
+          }
+        )
       );
       if (
         response.data &&
@@ -244,14 +423,29 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
         // It's not that they can't query at all, it seems that they get weird response from time to time.
         // These causes are not clear.
         // To solve this problem, if this problem occurs, try the query again, and if that fails, an error is raised.
-        if (this.cancelToken && this.cancelToken.token.reason) {
+        if (abortController.signal.aborted) {
           // In this case, it is assumed that it is caused by cancel() and do nothing.
           return;
         }
 
+        console.log(
+          "There is an unknown problem to the response. Request one more time."
+        );
+
         // Try to query again.
+        let hasStarted = false;
         response = yield* toGenerator(
-          this.fetchResponse(this.cancelToken.token)
+          this.queryCanceler.callOrCanceled(
+            () => {
+              hasStarted = true;
+              return this.fetchResponse(abortController);
+            },
+            () => {
+              if (hasStarted) {
+                abortController.abort();
+              }
+            }
+          )
         );
 
         if (
@@ -270,10 +464,10 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
       this.setError(undefined);
       yield this.saveResponse(response);
     } catch (e: any) {
-      // If canceld, do nothing.
-      if (Axios.isCancel(e)) {
-        return;
-      }
+      // // If canceld, do nothing.
+      // if (Axios.isCancel(e)) {
+      //   return;
+      // }
 
       // If error is from Axios, and get response.
       if (e.response) {
@@ -306,7 +500,7 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
       }
     } finally {
       this._isFetching = false;
-      this.cancelToken = undefined;
+      // this.cancelToken = undefined;
     }
   }
 
@@ -328,29 +522,49 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
     this._error = error;
   }
 
-  public cancel(): void {
-    if (this.cancelToken) {
-      this.cancelToken.cancel();
-    }
+  private cancel(message?: string): void {
+    this.queryCanceler.cancel(message);
   }
 
   /**
    * Wait the response and return the response without considering it is staled or fresh.
    */
   waitResponse(): Promise<Readonly<QueryResponse<T>> | undefined> {
-    if (!this.isFetching) {
+    if (this.response) {
       return Promise.resolve(this.response);
     }
 
-    return new Promise((resolve) => {
+    const disposers: (() => void)[] = [];
+    let onceCoerce = false;
+    // Make sure that the fetching is tracked to force to be fetched.
+    disposers.push(
+      reaction(
+        () => this.isFetching,
+        () => {
+          if (!onceCoerce) {
+            if (!this.isFetching) {
+              this.fetch();
+            }
+            onceCoerce = true;
+          }
+        },
+        {
+          fireImmediately: true,
+        }
+      )
+    );
+
+    return new Promise<Readonly<QueryResponse<T>> | undefined>((resolve) => {
       const disposer = autorun(() => {
         if (!this.isFetching) {
           resolve(this.response);
-          if (disposer) {
-            disposer();
-          }
         }
       });
+      disposers.push(disposer);
+    }).finally(() => {
+      for (const disposer of disposers) {
+        disposer();
+      }
     });
   }
 
@@ -358,38 +572,42 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
    * Wait the response and return the response until it is fetched.
    */
   waitFreshResponse(): Promise<Readonly<QueryResponse<T>> | undefined> {
+    const disposers: (() => void)[] = [];
     let onceCoerce = false;
     // Make sure that the fetching is tracked to force to be fetched.
-    const reactionDisposer = reaction(
-      () => this.isFetching,
-      () => {
-        if (!onceCoerce) {
-          this.fetch();
-          onceCoerce = true;
+    disposers.push(
+      reaction(
+        () => this.isFetching,
+        () => {
+          if (!onceCoerce) {
+            if (!this.isFetching) {
+              this.fetch();
+            }
+            onceCoerce = true;
+          }
+        },
+        {
+          fireImmediately: true,
         }
-      },
-      {
-        fireImmediately: true,
-      }
+      )
     );
 
-    return new Promise((resolve) => {
+    return new Promise<Readonly<QueryResponse<T>> | undefined>((resolve) => {
       const disposer = autorun(() => {
         if (!this.isFetching) {
           resolve(this.response);
-          if (reactionDisposer) {
-            reactionDisposer();
-          }
-          if (disposer) {
-            disposer();
-          }
         }
       });
+      disposers.push(disposer);
+    }).finally(() => {
+      for (const disposer of disposers) {
+        disposer();
+      }
     });
   }
 
   protected abstract fetchResponse(
-    cancelToken: CancelToken
+    abortController: AbortController
   ): Promise<QueryResponse<T>>;
 
   protected abstract saveResponse(
@@ -484,15 +702,15 @@ export class ObservableQuery<
   }
 
   protected async fetchResponse(
-    cancelToken: CancelToken
+    abortController: AbortController
   ): Promise<QueryResponse<T>> {
     // may be post method in case of ethereum
     const result = this.options.data
       ? await this.instance.post<T>(this.url, this.options.data, {
-          cancelToken,
+          signal: abortController.signal,
         })
       : await this.instance.get<T>(this.url, {
-          cancelToken,
+          signal: abortController.signal,
         });
 
     return {

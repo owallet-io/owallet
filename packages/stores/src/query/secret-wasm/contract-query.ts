@@ -102,11 +102,11 @@ export class ObservableSecretContractChainQuery<
   }
 
   protected async fetchResponse(
-    cancelToken: CancelToken
+    abortController: AbortController
   ): Promise<QueryResponse<T>> {
     let response: QueryResponse<T>;
     try {
-      response = await super.fetchResponse(cancelToken);
+      response = await super.fetchResponse(abortController);
     } catch (e) {
       if (!Axios.isCancel(e) && e.response?.data?.error) {
         const encryptedError = e.response.data.error;

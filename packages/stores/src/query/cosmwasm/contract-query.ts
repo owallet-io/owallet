@@ -61,9 +61,9 @@ export class ObservableCosmwasmContractChainQuery<
   }
 
   protected async fetchResponse(
-    cancelToken: CancelToken
+    abortController: AbortController
   ): Promise<QueryResponse<T>> {
-    const response = await super.fetchResponse(cancelToken);
+    const response = await super.fetchResponse(abortController);
 
     const wasmResult = response.data as unknown as
       | {

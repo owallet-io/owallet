@@ -51,9 +51,9 @@ export class ObservableQueryEvmBalanceInner extends ObservableChainQuery<
     }
   }
   protected async fetchResponse(
-    cancelToken: CancelToken
+    abortController: AbortController
   ): Promise<QueryResponse<Result | OasisBalance>> {
-    const response = await super.fetchResponse(cancelToken);
+    const response = await super.fetchResponse(abortController);
 
     if (this._chainId === ChainIdEnum.Oasis) {
       const oasisRs = await this.getOasisBalance();

@@ -71,11 +71,11 @@ export class ObservableQueryValidatorThumbnail extends ObservableQuery<KeybaseRe
   }
 
   protected async fetchResponse(
-    cancelToken: CancelToken
+    abortController: AbortController
   ): Promise<QueryResponse<KeybaseResult>> {
     return await ObservableQueryValidatorThumbnail.fetchingThumbnailQueue.add(
       () => {
-        return super.fetchResponse(cancelToken);
+        return super.fetchResponse(abortController);
       }
     );
   }
