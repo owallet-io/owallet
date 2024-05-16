@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { PageWithScrollView } from "../../components/page";
-import { colors, typography } from "../../themes";
+import { metrics, typography } from "../../themes";
 import { OWalletLogo } from "../register/owallet-logo";
 import { Text } from "@src/components/text";
 import { Controller, useForm } from "react-hook-form";
@@ -13,6 +13,14 @@ import CheckBox from "react-native-check-box";
 import { CW20Currency, Secret20Currency } from "@owallet/types";
 import { observer } from "mobx-react-lite";
 import { showToast } from "@src/utils/helper";
+import { API } from "@src/common/api";
+import { PageWithBottom } from "@src/components/page/page-with-bottom";
+import { OWButton } from "@src/components/button";
+import { PageHeader } from "@src/components/header/header-new";
+import { OWBox } from "@src/components/card";
+import OWText from "@src/components/text/ow-text";
+import OWIcon from "@src/components/ow-icon/ow-icon";
+import { useTheme } from "@src/themes/theme-provider";
 
 interface FormData {
   viewingKey: string;
@@ -29,12 +37,14 @@ export const AddTokenCosmosScreen = observer(() => {
     formState: { errors },
   } = useForm<FormData>();
   const smartNavigation = useSmartNavigation();
+  const { colors } = useTheme();
 
   const { chainStore, queriesStore, accountStore, tokensStore } = useStore();
   const tokensOf = tokensStore.getTokensOf(chainStore.current.chainId);
 
   const accountInfo = accountStore.getAccount(chainStore.current.chainId);
   const [loading, setLoading] = useState(false);
+  const [coidgeckoId, setCoingeckoID] = useState(null);
 
   const form = useForm<FormData>({
     defaultValues: {
@@ -73,7 +83,40 @@ export const AddTokenCosmosScreen = observer(() => {
 
   const tokenInfo = queryContractInfo.tokenInfo;
 
-  console.log("token cosmso", tokenInfo);
+  const getTokenCoingeckoId = async () => {
+    try {
+      if (tokenInfo) {
+        const response = await API.getCoingeckoCoins(
+          {},
+          {
+            baseURL: "https://api.coingecko.com/api/v3",
+          }
+        );
+        const coins = response.data;
+
+        // Find the matching coin based on contract address
+        const coin = coins.find((c) => {
+          return (
+            c.id.toLowerCase() === tokenInfo?.symbol.toLowerCase() ||
+            c.symbol.toLowerCase() === tokenInfo?.symbol.toLowerCase() ||
+            c.name.toLowerCase() === tokenInfo?.symbol.toLowerCase()
+          );
+        });
+
+        if (coin) {
+          setCoingeckoID(coin.id);
+        } else {
+          throw new Error("Coingecko ID not found for the contract address.");
+        }
+      }
+    } catch (err) {
+      console.log("getTokenCoingeckoId err", err);
+    }
+  };
+
+  useEffect(() => {
+    getTokenCoingeckoId();
+  }, [contractAddress, tokenInfo]);
 
   const [isOpenSecret20ViewingKey, setIsOpenSecret20ViewingKey] =
     useState(false);
@@ -103,7 +146,7 @@ export const AddTokenCosmosScreen = observer(() => {
     });
   };
 
-  const submit = handleSubmit(async (data) => {
+  const submit = handleSubmit(async (data: any) => {
     try {
       if (tokenInfo?.decimals != null && tokenInfo.name && tokenInfo.symbol) {
         setLoading(true);
@@ -165,184 +208,148 @@ export const AddTokenCosmosScreen = observer(() => {
   });
 
   return (
-    <PageWithScrollView
-      contentContainerStyle={{
-        paddingLeft: 20,
-        paddingRight: 20,
-      }}
+    <PageWithBottom
+      bottomGroup={
+        <OWButton
+          label="Save"
+          disabled={loading}
+          loading={loading}
+          onPress={submit}
+          style={[
+            {
+              width: metrics.screenWidth - 32,
+              marginTop: 20,
+              borderRadius: 999,
+            },
+          ]}
+          textStyle={{
+            fontSize: 14,
+            fontWeight: "600",
+            color: colors["neutral-text-action-on-dark-bg"],
+          }}
+        />
+      }
     >
-      <View
-        style={{
-          height: 72,
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <Text
-          style={{
-            fontSize: 24,
-            lineHeight: 34,
-            fontWeight: "700",
-          }}
-        >
-          Add Token (Cosmos)
-        </Text>
-        <View>
-          <OWalletLogo size={72} />
-        </View>
-      </View>
-
-      <View style={{ height: 20 }} />
-      <Text
-        style={{
-          ...typography.h3,
-          fontWeight: "900",
-          paddingBottom: 20,
-        }}
-      >
-        {`Token Info`}
-      </Text>
-      <Controller
-        control={control}
-        render={({ field: { onChange, onBlur, value, ref } }) => {
-          return (
-            <TextInput
-              label="Contract Address"
-              labelStyle={{
-                fontWeight: "700",
-              }}
-              placeholder={"Contract Address"}
-              inputStyle={{
-                ...styles.borderInput,
-              }}
-              onSubmitEditing={() => {
-                submit();
-              }}
-              error={errors.contractAddress?.message}
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
-              ref={ref}
-            />
-          );
-        }}
-        name="contractAddress"
-        defaultValue=""
-      />
-
-      <TextInput
-        label="Name"
-        labelStyle={{
-          fontWeight: "700",
-        }}
-        inputStyle={{
-          ...styles.borderInput,
-        }}
-        onSubmitEditing={() => {
-          submit();
-        }}
-        error={errors.contractAddress?.message}
-        value={tokenInfo?.name ?? "-"}
-        defaultValue={"-"}
-        editable={false}
-      />
-
-      <TextInput
-        label="Symbol"
-        labelStyle={{
-          fontWeight: "700",
-        }}
-        inputStyle={{
-          ...styles.borderInput,
-        }}
-        onSubmitEditing={() => {
-          submit();
-        }}
-        error={errors.contractAddress?.message}
-        value={tokenInfo?.symbol ?? "-"}
-        defaultValue={"-"}
-        editable={false}
-      />
-
-      <TextInput
-        label="Decimals"
-        labelStyle={{
-          fontWeight: "700",
-        }}
-        inputStyle={{
-          ...styles.borderInput,
-        }}
-        onSubmitEditing={() => {
-          submit();
-        }}
-        error={errors.contractAddress?.message}
-        value={tokenInfo?.decimals.toString() ?? "-"}
-        defaultValue={"-"}
-        editable={false}
-      />
-
-      {isSecret20 ? (
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <CheckBox
-            style={{ flex: 1, padding: 14 }}
-            checkBoxColor={colors["primary-text"]}
-            checkedCheckBoxColor={colors["primary-text"]}
-            onClick={() => {
-              setIsOpenSecret20ViewingKey((value) => !value);
+      <PageHeader title="Add Token" />
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <OWBox>
+          <Controller
+            control={control}
+            render={({ field: { onChange, onBlur, value, ref } }) => {
+              return (
+                <TextInput
+                  label=""
+                  topInInputContainer={
+                    <View style={{ paddingBottom: 4 }}>
+                      <OWText>Contract address</OWText>
+                    </View>
+                  }
+                  returnKeyType="next"
+                  inputStyle={{
+                    borderColor: colors["neutral-border-strong"],
+                    borderRadius: 12,
+                  }}
+                  style={styles.textInput}
+                  inputLeft={
+                    <OWIcon
+                      size={22}
+                      name="tdesign_book"
+                      color={colors["neutral-icon-on-light"]}
+                    />
+                  }
+                  onSubmitEditing={() => {
+                    submit();
+                  }}
+                  error={errors.contractAddress?.message}
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                  placeholder="Enter contract address"
+                />
+              );
             }}
-            isChecked={isOpenSecret20ViewingKey}
+            name="contractAddress"
+            defaultValue=""
           />
-          <Text style={{ paddingLeft: 16 }}>{"Viewing key"}</Text>
-        </View>
-      ) : null}
-
-      <TouchableOpacity
-        disabled={loading}
-        onPress={submit}
-        style={{
-          marginBottom: 24,
-          marginTop: 20,
-          backgroundColor: colors["primary-surface-default"],
-          borderRadius: 8,
-        }}
-      >
-        {loading ? (
-          <View style={{ padding: 16, alignItems: "center" }}>
-            <LoadingSpinner color={colors["white"]} size={20} />
-          </View>
-        ) : (
-          <Text
-            style={{
-              color: "white",
-              textAlign: "center",
-              fontWeight: "700",
-              fontSize: 16,
-              padding: 16,
+          <TextInput
+            inputStyle={{
+              borderColor: colors["neutral-border-strong"],
+              borderRadius: 12,
             }}
-          >
-            Submit
-          </Text>
-        )}
-      </TouchableOpacity>
-      <TouchableOpacity
-        onPress={() => {
-          smartNavigation.goBack();
-        }}
-      >
-        <Text
-          style={{
-            color: colors["primary-surface-default"],
-            textAlign: "center",
-            fontWeight: "700",
-            fontSize: 16,
-          }}
-        >
-          Go back
-        </Text>
-      </TouchableOpacity>
-    </PageWithScrollView>
+            style={styles.textInput}
+            onSubmitEditing={() => {
+              submit();
+            }}
+            label=""
+            topInInputContainer={
+              <View style={{ paddingBottom: 4 }}>
+                <OWText>Name</OWText>
+              </View>
+            }
+            returnKeyType="next"
+            error={errors.contractAddress?.message}
+            value={tokenInfo?.name ?? "-"}
+            defaultValue={"-"}
+            editable={false}
+          />
+          <TextInput
+            inputStyle={{
+              borderColor: colors["neutral-border-strong"],
+              borderRadius: 12,
+            }}
+            style={styles.textInput}
+            onSubmitEditing={() => {
+              submit();
+            }}
+            label=""
+            topInInputContainer={
+              <View style={{ paddingBottom: 4 }}>
+                <OWText>Symbol</OWText>
+              </View>
+            }
+            returnKeyType="next"
+            value={tokenInfo?.symbol ?? "-"}
+            defaultValue={"-"}
+            editable={false}
+          />
+          <TextInput
+            inputStyle={{
+              borderColor: colors["neutral-border-strong"],
+              borderRadius: 12,
+            }}
+            style={styles.textInput}
+            onSubmitEditing={() => {
+              submit();
+            }}
+            label=""
+            topInInputContainer={
+              <View style={{ paddingBottom: 4 }}>
+                <OWText>Decimals</OWText>
+              </View>
+            }
+            returnKeyType="next"
+            value={tokenInfo?.decimals.toString() ?? "-"}
+            defaultValue={"-"}
+            editable={false}
+          />
+
+          {isSecret20 ? (
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <CheckBox
+                style={{ flex: 1, padding: 14 }}
+                checkBoxColor={colors["primary-text"]}
+                checkedCheckBoxColor={colors["primary-text"]}
+                onClick={() => {
+                  setIsOpenSecret20ViewingKey((value) => !value);
+                }}
+                isChecked={isOpenSecret20ViewingKey}
+              />
+              <Text style={{ paddingLeft: 16 }}>{"Viewing key"}</Text>
+            </View>
+          ) : null}
+        </OWBox>
+      </ScrollView>
+    </PageWithBottom>
   );
 });
 
@@ -355,4 +362,6 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
     borderRadius: 8,
   },
+
+  textInput: { fontWeight: "600", paddingLeft: 4, fontSize: 15 },
 });
