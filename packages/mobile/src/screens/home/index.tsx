@@ -34,6 +34,7 @@ import { InjectedProviderUrl } from "../web/config";
 import { Dec, PricePretty } from "@owallet/unit";
 import OWText from "@src/components/text/ow-text";
 import { OwLoading } from "@src/components/owallet-loading/ow-loading";
+import OWFlatList from "@src/components/page/ow-flat-list";
 
 export const HomeScreen: FunctionComponent = observer((props) => {
   const [refreshing, setRefreshing] = React.useState(false);
@@ -294,25 +295,25 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   // const renderNewAccountCard = (() => {
   //   return <AccountBoxAll />;
   // })();
-  const chainTxs =
-    chainStore.current.chainId === ChainIdEnum.KawaiiEvm
-      ? chainStore.getChain(ChainIdEnum.KawaiiCosmos)
-      : chainStore.current;
-  const txs = txsStore(chainTxs);
-  useEffect(() => {
-    (async () => {
-      const txsData = await txs.getTxs(10, 0, {
-        addressAccount: address,
-      });
-      console.log(txsData, "txsData");
-    })();
-  }, []);
+  // const chainTxs =
+  //   chainStore.current.chainId === ChainIdEnum.KawaiiEvm
+  //     ? chainStore.getChain(ChainIdEnum.KawaiiCosmos)
+  //     : chainStore.current;
+  // const txs = txsStore(chainTxs);
+  // useEffect(() => {
+  //   (async () => {
+  //     const txsData = await txs.getTxs(10, 0, {
+  //       addressAccount: address,
+  //     });
+  //     console.log(txsData, "txsData");
+  //   })();
+  // }, []);
 
-  const hasBalance = (() => {
-    const balances = hugeQueriesStore.getAllBalances(true);
-    return balances.find((bal) => bal.token.toDec().gt(new Dec(0))) != null;
-  })();
-
+  // const hasBalance = (() => {
+  //   const balances = hugeQueriesStore.getAllBalances(true);
+  //   return balances.find((bal) => bal.token.toDec().gt(new Dec(0))) != null;
+  // })();
+  const balances = hugeQueriesStore.getAllBalances(true);
   const availableTotalPrice = useMemo(() => {
     let result: PricePretty | undefined;
     for (const bal of hugeQueriesStore.allKnownBalances) {
@@ -337,11 +338,25 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     >
       {/*{renderNewAccountCard}*/}
 
-      {hasBalance ? <OWText>{"done:" + address}</OWText> : <OwLoading />}
+      {/*{hasBalance ? <OWText>{"done:" + address}</OWText> : <OwLoading />}*/}
 
       <OWText size={22} weight={"700"}>
         {availableTotalPrice?.toString()}
       </OWText>
+      <OWFlatList
+        data={balances}
+        renderItem={({ item, index }) => {
+          const pricePretty = priceStore.calculatePrice(item.token);
+          return (
+            <OWText key={index.toString()}>
+              {item.token.currency.coinDenom} :{" "}
+              {pricePretty
+                ? pricePretty.inequalitySymbol(true).toString()
+                : "-"}
+            </OWText>
+          );
+        }}
+      />
       {/*{chainStore.current.networkType === "cosmos" &&*/}
       {/*!appInitStore.getInitApp.isAllNetworks ? (*/}
       {/*  <EarningCardNew containerStyle={styles.containerEarnStyle} />*/}
