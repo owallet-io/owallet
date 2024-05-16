@@ -73,6 +73,8 @@ export const AddTokenCosmosScreen = observer(() => {
 
   const tokenInfo = queryContractInfo.tokenInfo;
 
+  console.log("token cosmso", tokenInfo);
+
   const [isOpenSecret20ViewingKey, setIsOpenSecret20ViewingKey] =
     useState(false);
 

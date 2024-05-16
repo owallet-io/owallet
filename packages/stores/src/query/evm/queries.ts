@@ -7,6 +7,7 @@ import { ObservableQueryEvmBalanceRegistry } from "./balance";
 import { DeepReadonly } from "utility-types";
 import { ObservableQueryGasPrice } from "./gas-price";
 import { ObservableQueryGas } from "./gas";
+import { ObservableQueryErc20ContractInfo } from "./erc20-contract-info";
 
 export interface HasEvmQueries {
   evm: EvmQueries;
@@ -33,6 +34,8 @@ export class QueriesWrappedEvm
 export class EvmQueries {
   public readonly queryGasPrice: DeepReadonly<ObservableQueryGasPrice>;
   public readonly queryGas: DeepReadonly<ObservableQueryGas>;
+  public readonly queryErc20ContractInfo: DeepReadonly<ObservableQueryErc20ContractInfo>;
+
   constructor(
     base: QueriesSetBase,
     kvStore: KVStore,
@@ -48,5 +51,10 @@ export class EvmQueries {
       chainGetter
     );
     this.queryGas = new ObservableQueryGas(kvStore, chainId, chainGetter);
+    this.queryErc20ContractInfo = new ObservableQueryErc20ContractInfo(
+      kvStore,
+      chainId,
+      chainGetter
+    );
   }
 }

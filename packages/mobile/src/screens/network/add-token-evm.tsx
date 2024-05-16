@@ -66,6 +66,8 @@ export const AddTokenEVMScreen = observer(() => {
 
   const tokenInfo = queryContractInfo.tokenInfo;
 
+  console.log("tokenInfo", tokenInfo);
+
   const [isOpenSecret20ViewingKey, setIsOpenSecret20ViewingKey] =
     useState(false);
 
@@ -94,14 +96,14 @@ export const AddTokenEVMScreen = observer(() => {
     });
   };
 
-  const submit = handleSubmit(async (data) => {
+  const submit = handleSubmit(async (data: any) => {
     try {
       if (tokenInfo?.decimals != null && tokenInfo.name && tokenInfo.symbol) {
         setLoading(true);
         if (!isSecret20) {
           const currency: ERC20Currency = {
             type: "erc20",
-            contractAddress: data.contractAddress,
+            contractAddress: data?.contractAddress,
             coinMinimalDenom: tokenInfo.name,
             coinDenom: tokenInfo.symbol,
             coinDecimals: tokenInfo.decimals,
@@ -110,7 +112,7 @@ export const AddTokenEVMScreen = observer(() => {
           await tokensOf.addToken(currency);
           addTokenSuccess();
         } else {
-          let viewingKey = data.viewingKey;
+          let viewingKey = data?.viewingKey;
           if (!viewingKey && !isOpenSecret20ViewingKey) {
             try {
               viewingKey = await createViewingKey();
@@ -270,7 +272,7 @@ export const AddTokenEVMScreen = observer(() => {
           submit();
         }}
         error={errors.contractAddress?.message}
-        value={tokenInfo?.decimals.toString() ?? "-"}
+        value={tokenInfo?.decimals?.toString() ?? "-"}
         defaultValue={"-"}
         editable={false}
       />

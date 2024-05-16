@@ -329,6 +329,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
               return;
             }}
           />
+
           <OWButton
             textStyle={{
               fontSize: 14,
@@ -371,6 +372,21 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
             }}
           />
         </View>
+        <OWButton
+          style={styles.getStarted}
+          textStyle={{
+            fontSize: 14,
+            fontWeight: "600",
+            color: colors["neutral-text-action-on-dark-bg"],
+          }}
+          label="Add token"
+          onPress={() => {
+            navigate(SCREENS.STACK.Others, {
+              screen: SCREENS.NetworkToken,
+            });
+            return;
+          }}
+        />
       </OWBox>
     </View>
   );
