@@ -121,7 +121,7 @@ async function loadTokens(
     customChainInfos,
   }: LoadTokenParams
 ) {
-  console.log("customChainInfo loadTokens", customChainInfos.length);
+  console.log("customChainInfo loadTokens", customChainInfos);
 
   const customEvmTokens = uniqBy(
     customChainInfos.filter(
