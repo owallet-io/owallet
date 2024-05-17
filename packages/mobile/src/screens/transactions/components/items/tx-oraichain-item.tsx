@@ -84,7 +84,7 @@ export const TxOraichainItem: FC<{
               style={{
                 borderRadius: 999,
                 tintColor:
-                  currency.coinDenom === "ORAI"
+                  currency.coinDenom === "ORAI" || currency.coinDenom === "AIRI"
                     ? colors["neutral-text-title"]
                     : null,
               }}
@@ -97,6 +97,7 @@ export const TxOraichainItem: FC<{
               size={20}
               style={{
                 borderRadius: 999,
+                tintColor: colors["neutral-text-title"],
               }}
             />
           </View>
