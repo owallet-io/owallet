@@ -135,6 +135,9 @@ async function loadTokens(
     (c) => c.denom
   );
 
+  const och = customEvmTokens.filter((cem) => cem.denom.includes("pendle"));
+  console.log("och", och);
+
   if (tokenReload) {
     tokenReload.map((t) => {
       if (t.networkType === "cosmos") {

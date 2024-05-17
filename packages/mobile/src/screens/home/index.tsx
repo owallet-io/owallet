@@ -299,6 +299,8 @@ export const HomeScreen: FunctionComponent = observer((props) => {
 
   useEffect(() => {
     if (appInitStore.getChainInfos) {
+      console.log("new Chain info", appInitStore.getChainInfos);
+
       let timeoutId;
       InteractionManager.runAfterInteractions(() => {
         startTransition(() => {

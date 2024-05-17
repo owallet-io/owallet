@@ -21,6 +21,27 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import OWText from "@src/components/text/ow-text";
 import { useTheme } from "@src/themes/theme-provider";
 
+const mockToken = {
+  coinDenom: "USDC",
+  coinMinimalDenom: "erc20_usdc",
+  contractAddress: "0x19373EcBB4B8cC2253D70F2a246fa299303227Ba",
+  coinDecimals: 6,
+  bridgeTo: ["Oraichain"],
+  coinGeckoId: "usd-coin",
+  prefixToken: "eth-mainnet",
+  coinImageUrl: "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png",
+};
+
+interface TokenType {
+  coinDenom: string;
+  coinMinimalDenom: string;
+  contractAddress: string;
+  coinDecimals: number;
+  bridgeTo: Array<string>;
+  coinGeckoId: string;
+  prefixToken: string;
+  coinImageUrl?: string;
+}
 interface FormData {
   viewingKey: string;
   contractAddress: string;
@@ -36,7 +57,8 @@ export const AddTokenEVMScreen = observer(() => {
   const smartNavigation = useSmartNavigation();
   const { colors } = useTheme();
 
-  const { chainStore, queriesStore, accountStore, tokensStore } = useStore();
+  const { chainStore, queriesStore, accountStore, tokensStore, appInitStore } =
+    useStore();
   const tokensOf = tokensStore.getTokensOf(chainStore.current.chainId);
   const [loading, setLoading] = useState(false);
   const [coidgeckoId, setCoingeckoID] = useState(null);
@@ -126,8 +148,36 @@ export const AddTokenEVMScreen = observer(() => {
     });
   };
 
-  const addTokenSuccess = () => {
+  const addTokenSuccess = (currency) => {
+    const currentChainInfos = appInitStore.getChainInfos;
+
+    const ethChain = currentChainInfos.find((c) => c.chainId === "0x01");
+
     setLoading(false);
+    const token: TokenType = {
+      coinDenom: currency.coinDenom,
+      coinMinimalDenom: `${currency.type}_${currency.coinDenom.toLowerCase()}`,
+      contractAddress: currency.contractAddress,
+      coinDecimals: currency.coinDecimals,
+      bridgeTo: ["Oraichain"],
+      coinGeckoId: coidgeckoId,
+      prefixToken: "eth-mainnet",
+    };
+
+    const newCurrencies = [...ethChain.currencies];
+    newCurrencies.push(token);
+
+    const newChainInfos = [...currentChainInfos];
+
+    // Find the object with name 'Jane' and update its age
+    for (let i = 0; i < newChainInfos.length; i++) {
+      if (newChainInfos[i].chainId === "0x01") {
+        newChainInfos[i].currencies = newCurrencies;
+        break; // Exit the loop since we found the object
+      }
+    }
+
+    appInitStore.updateChainInfos(newChainInfos);
     smartNavigation.navigateSmart("Home", {});
     showToast({
       message: "Token added",
@@ -148,7 +198,7 @@ export const AddTokenEVMScreen = observer(() => {
           };
 
           await tokensOf.addToken(currency);
-          addTokenSuccess();
+          addTokenSuccess(currency);
         } else {
           let viewingKey = data?.viewingKey;
           if (!viewingKey && !isOpenSecret20ViewingKey) {
@@ -181,7 +231,7 @@ export const AddTokenEVMScreen = observer(() => {
             };
 
             await tokensOf.addToken(currency);
-            addTokenSuccess();
+            addTokenSuccess(currency);
           }
         }
       }
