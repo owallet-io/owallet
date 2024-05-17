@@ -556,6 +556,31 @@ export const API = {
     let url = `raw-tx-history/oasis/tx-detail/${hash}?network=${network}`;
     return API.get(url, config);
   },
+  getDetailOraichainTx: async (
+    { hash, network = CosmosNetwork.ORAICHAIN },
+    config: AxiosRequestConfig
+  ) => {
+    // let url = `raw-tx-history/oraichain/tx-detail/${hash}?network=${network}`;
+    // return API.get(url, config);
+    const data = {
+      height: "21108086",
+      txhash:
+        "BF05DD904AE68E8FDD9C91D0A6BF4BB83F17293329E5C35628AFF2FD0CE96F83",
+      timestamp: 1715854887,
+      userAddress: "orai1hvr9d72r5um9lvt0rpkd4r75vrsqtw6yujhqs2",
+      fromAddress: "orai1hvr9d72r5um9lvt0rpkd4r75vrsqtw6yujhqs2",
+      toAddress:
+        "orai1xu9yw2xwd55d09pjce28yjklvk2kwwrqw4ql9gvyrs607z26kv0sl99040",
+      amount: "10000",
+      denom: "",
+      tokenContractAddress:
+        "orai1065qe48g7aemju045aeyprflytemx7kecxkf5m7u5h5mphd0qlcs47pclp",
+    };
+    return {
+      data: data,
+      status: 200,
+    };
+  },
   getDetailTronTx: (
     { hash, network = Network.TRON },
     config: AxiosRequestConfig

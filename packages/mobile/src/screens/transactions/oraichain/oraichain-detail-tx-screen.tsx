@@ -28,7 +28,7 @@ import { OwLoading } from "@src/components/owallet-loading/ow-loading";
 
 import { Currency } from "@owallet/types";
 
-import { urlTxHistory } from "@src/common/constants";
+import { getTimeMilliSeconds, urlTxHistory } from "@src/common/constants";
 import { OWEmpty } from "@src/components/empty";
 
 export const OraichainDetailTx: FunctionComponent = observer((props) => {
@@ -50,31 +50,23 @@ export const OraichainDetailTx: FunctionComponent = observer((props) => {
   const [loading, setLoading] = useState(false);
 
   const { item, currency } = route.params;
-  const { txHash: hash, chain, transactionType } = item;
+  const { txhash: hash, chain } = item;
   console.log(item, detail, "item detail");
 
   const getHistoryDetail = async () => {
     try {
       setLoading(true);
-      const res = await API.getDetailOasisTx(
+      const res = await API.getDetailOraichainTx(
         {
           hash,
-          network: chain as OasisNetwork,
+          network: chain,
         },
         {
           baseURL: urlTxHistory,
         }
       );
       if (res && res.status !== 200) throw Error("Failed");
-      console.log(res.data, "res.data.data");
-      if (chainStore.current.chainId === ChainIdEnum.Oasis) {
-        setDetail(res.data.data);
-      } else {
-        setDetail(
-          res.data.transactions?.length > 0 ? res.data.transactions[0] : null
-        );
-      }
-
+      setDetail(res.data);
       setLoading(false);
     } catch (err) {
       setLoading(false);
@@ -104,19 +96,16 @@ export const OraichainDetailTx: FunctionComponent = observer((props) => {
     }
   };
 
-  const fee = new CoinPretty(
-    chainInfo.stakeCurrency,
-    new Dec(item.fee).mul(DecUtils.getTenExponentN(currency.coinDecimals))
-  );
-  const amount = new CoinPretty(
-    currency,
-    new Dec(item.amount).mul(DecUtils.getTenExponentN(currency.coinDecimals))
-  );
+  const fee = new CoinPretty(chainInfo.stakeCurrency, new Dec(item.fee));
+  const amount = new CoinPretty(currency, new Dec(item.amount));
 
   const onRefresh = () => {
     getHistoryDetail();
   };
-  const method = item.method.split(".");
+  const isSent =
+    item.userAddress === item.fromAddress ||
+    item.fromAddress === item.toAddress;
+  const method = isSent ? "Sent" : "Received";
   return (
     <PageWithBottom
       style={{
@@ -141,9 +130,9 @@ export const OraichainDetailTx: FunctionComponent = observer((props) => {
           showsVerticalScrollIndicator={false}
         >
           <HeaderTx
-            type={method[method.length - 1]}
+            type={method}
             colorAmount={
-              item.transactionType === "incoming"
+              !isSent
                 ? colors["success-text-body"]
                 : colors["neutral-text-title"]
             }
@@ -152,7 +141,7 @@ export const OraichainDetailTx: FunctionComponent = observer((props) => {
                 style={[
                   styles.containerSuccess,
                   {
-                    backgroundColor: detail.status
+                    backgroundColor: !detail.status
                       ? colors["highlight-surface-subtle"]
                       : colors["error-surface-subtle"],
                   },
@@ -162,20 +151,18 @@ export const OraichainDetailTx: FunctionComponent = observer((props) => {
                   weight={"500"}
                   size={14}
                   color={
-                    detail.status
+                    !detail.status
                       ? colors["highlight-text-title"]
                       : colors["error-text-body"]
                   }
                 >
-                  {detail.status ? "Success" : "Failed"}
+                  {!detail.status ? "Success" : "Failed"}
                 </OWText>
               </View>
             }
-            amount={`${
-              item.transactionType === "incoming" ? "+" : "-"
-            }${maskedNumber(amount.hideDenom(true).toString())} ${
-              currency.coinDenom
-            }`}
+            amount={`${!isSent ? "+" : "-"}${maskedNumber(
+              amount.hideDenom(true).toString()
+            )} ${currency.coinDenom}`}
             toAmount={null}
             price={priceStore
               .calculatePrice(amount)
@@ -230,11 +217,9 @@ export const OraichainDetailTx: FunctionComponent = observer((props) => {
             />
             <ItemReceivedToken
               label={"Time"}
-              valueDisplay={moment(
-                isMilliseconds(item.timestamp)
-                  ? item.timestamp
-                  : item.timestamp * 1000
-              ).format("MMM D, YYYY [at] HH:mm")}
+              valueDisplay={moment(getTimeMilliSeconds(item.timestamp)).format(
+                "MMM D, YYYY [at] HH:mm"
+              )}
               btnCopy={false}
             />
 
