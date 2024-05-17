@@ -15,13 +15,13 @@ import { useStore } from "@src/stores";
 import { EmptyTx } from "@src/screens/transactions/components/empty-tx";
 import { TxOasisItem } from "@src/screens/transactions/components/items/tx-oasis-item";
 import { getOasisAddress } from "@owallet/common";
+import { TxOraichainItem } from "@src/screens/transactions/components/items/tx-oraichain-item";
 
 export const OraichainTxCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
   const { accountStore, appInitStore, chainStore, priceStore, keyRingStore } =
     useStore();
-  const { colors } = useTheme();
 
   const [histories, setHistories] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -34,11 +34,9 @@ export const OraichainTxCard: FunctionComponent<{
   const getWalletHistory = async (address) => {
     try {
       setLoading(true);
-      const oasisAddress = getOasisAddress(address);
-
-      const res = await API.getOasisTxs(
+      const res = await API.getOraichainTxs(
         {
-          address: oasisAddress,
+          address: address,
           offset: 0,
           limit: 10,
           network: MapChainIdToNetwork[chainStore.current.chainId],
@@ -53,7 +51,7 @@ export const OraichainTxCard: FunctionComponent<{
       setLoading(false);
     } catch (err) {
       setLoading(false);
-      console.log("getWalletHistory err", err);
+      console.log("getWalletHistoryOraichain err", err);
     }
   };
 
@@ -74,6 +72,7 @@ export const OraichainTxCard: FunctionComponent<{
     fiat
   );
   if (!price) return <EmptyTx />;
+  console.log(histories, "histories");
   return (
     <View
       style={{
@@ -83,7 +82,7 @@ export const OraichainTxCard: FunctionComponent<{
       {histories?.length > 0 ? (
         histories.map((item, index) => {
           return (
-            <TxOasisItem
+            <TxOraichainItem
               key={`item-${index + 1}-${index}`}
               data={histories}
               item={item}

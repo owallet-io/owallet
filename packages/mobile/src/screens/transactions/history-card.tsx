@@ -1,7 +1,6 @@
-import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
-import { StyleSheet, View, ViewStyle } from "react-native";
+import { View, ViewStyle } from "react-native";
 import { useStore } from "../../stores";
 import { EmptyTx } from "@src/screens/transactions/components/empty-tx";
 import { ChainIdEnum } from "@owallet/common";
@@ -12,7 +11,27 @@ import { useGetHeightHeader } from "@src/hooks";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { OasisTxCard } from "@src/screens/transactions/oasis/oasis-tx-card";
 import { TronTxCard } from "@src/screens/transactions/tron/tron-tx-card";
+import { OraichainTxCard } from "@src/screens/transactions/oraichain/oraichain-tx-card";
 
+const mappingChainIdToHistory = (network: ChainIdEnum) => {
+  switch (network) {
+    case ChainIdEnum.Bitcoin:
+      return <BtcTxCard />;
+    case ChainIdEnum.Oasis:
+    case ChainIdEnum.OasisSapphire:
+    case ChainIdEnum.OasisEmerald:
+      return <OasisTxCard />;
+    case ChainIdEnum.TRON:
+      return <TronTxCard />;
+    case ChainIdEnum.Ethereum:
+    case ChainIdEnum.BNBChain:
+      return <EvmTxCard />;
+    case ChainIdEnum.Oraichain:
+      return <OraichainTxCard />;
+    default:
+      return <EmptyTx />;
+  }
+};
 export const HistoryCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(() => {
@@ -34,37 +53,10 @@ export const HistoryCard: FunctionComponent<{
         <EmptyTx />
       </View>
     );
-  if (chainId === ChainIdEnum.BNBChain || chainId === ChainIdEnum.Ethereum)
-    return (
-      <View style={containerStyle}>
-        <EvmTxCard />
-      </View>
-    );
-  if (
-    chainId === ChainIdEnum.Oasis ||
-    chainId === ChainIdEnum.OasisSapphire ||
-    chainId === ChainIdEnum.OasisEmerald
-  )
-    return (
-      <View style={containerStyle}>
-        <OasisTxCard />
-      </View>
-    );
-  if (chainId === ChainIdEnum.Bitcoin)
-    return (
-      <View style={containerStyle}>
-        <BtcTxCard />
-      </View>
-    );
-  if (chainId === ChainIdEnum.TRON)
-    return (
-      <View style={containerStyle}>
-        <TronTxCard />
-      </View>
-    );
+
   return (
     <View style={containerStyle}>
-      <EmptyTx />
+      {mappingChainIdToHistory(chainId as ChainIdEnum)}
     </View>
   );
 });

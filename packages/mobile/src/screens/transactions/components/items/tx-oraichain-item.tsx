@@ -13,6 +13,8 @@ import { navigate } from "@src/router/root";
 import { getTimeMilliSeconds, SCREENS } from "@src/common/constants";
 import { RightArrowIcon } from "@src/components/icon";
 import { useStore } from "@src/stores";
+import { unknownToken } from "@owallet/common";
+import { has } from "lodash";
 export const TxOraichainItem: FC<{
   item: any;
   index: number;
@@ -22,7 +24,18 @@ export const TxOraichainItem: FC<{
   const fiat = priceStore.defaultVsCurrency;
   if (!item) return;
   console.log(item, "item");
-  const currency = chainStore.current.stakeCurrency;
+  let currency = unknownToken;
+  if (!!item.denom) {
+    currency = chainStore.current.stakeCurrency;
+  } else if (!!item.tokenContractAddress) {
+    const token = chainStore.current.currencies.find(({ coinMinimalDenom }) =>
+      coinMinimalDenom.includes(item.tokenContractAddress)
+    );
+    if (token) {
+      currency = token;
+      console.log(currency, "token");
+    }
+  }
   const onTransactionDetail = (item, currency) => {
     navigate(SCREENS.STACK.Others, {
       screen: SCREENS.HistoryDetail,
@@ -35,10 +48,7 @@ export const TxOraichainItem: FC<{
     return;
   };
 
-  const amount = new CoinPretty(
-    currency,
-    new Dec(item.amount).mul(DecUtils.getTenExponentN(currency.coinDecimals))
-  );
+  const amount = new CoinPretty(currency, new Dec(item.amount));
   const priceAmount = priceStore.calculatePrice(amount, fiat);
   const first =
     index > 0 &&
@@ -46,10 +56,12 @@ export const TxOraichainItem: FC<{
       "MMM D, YYYY"
     );
   const now = moment(getTimeMilliSeconds(item.timestamp)).format("MMM D, YYYY");
-  console.log(first, now, "test");
   const { colors } = useTheme();
   const styles = styling(colors);
-  const method = item.method.split(".");
+  const isSent =
+    item.userAddress === item.fromAddress ||
+    item.fromAddress === item.toAddress;
+  const method = isSent ? "Sent" : "Received";
   return (
     <View style={{ paddingVertical: 8 }}>
       {first != now || index === 0 ? (
@@ -81,7 +93,7 @@ export const TxOraichainItem: FC<{
           <View style={styles.chainWrap}>
             <OWIcon
               type="images"
-              source={{ uri: currency.coinImageUrl }}
+              source={{ uri: chainStore.current.stakeCurrency.coinImageUrl }}
               size={20}
               style={{
                 borderRadius: 999,
@@ -102,10 +114,10 @@ export const TxOraichainItem: FC<{
           <View style={styles.leftBoxItem}>
             <View style={styles.pl10}>
               <Text size={16} color={colors["neutral-text-title"]} weight="600">
-                {method[method.length - 1]}
+                {method}
               </Text>
               <Text weight="400" color={colors["neutral-text-body"]}>
-                {formatContractAddress(item.txHash)}
+                {formatContractAddress(item.txhash)}
               </Text>
             </View>
           </View>
@@ -115,16 +127,14 @@ export const TxOraichainItem: FC<{
                 <Text
                   weight="500"
                   color={
-                    item.transactionType === "incoming"
+                    !isSent
                       ? colors["success-text-body"]
                       : colors["neutral-text-title"]
                   }
                 >
-                  {`${
-                    item.transactionType === "incoming" ? "+" : "-"
-                  }${maskedNumber(amount.hideDenom(true).toString())} ${
-                    currency.coinDenom
-                  }`}
+                  {`${!isSent ? "+" : "-"}${maskedNumber(
+                    amount.hideDenom(true).toString()
+                  )} ${currency.coinDenom}`}
                 </Text>
                 <Text style={styles.profit} color={colors["neutral-text-body"]}>
                   {priceAmount.toString().replace("-", "")}
