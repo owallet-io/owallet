@@ -425,115 +425,8 @@ export const API = {
     { address, offset, limit = 1, network = CosmosNetwork.ORAICHAIN },
     config: AxiosRequestConfig
   ) => {
-    // const url = `raw-tx-history/oraichain/${address}?network=${network}&limit=${limit}&offset=${offset}`;
-    // return API.get(url, config);
-    const data = {
-      data: [
-        {
-          height: "21177295",
-          txhash:
-            "2D34968232EF0396F3D0049AE1197152B6FAF2100E5C3CA32B15F8A333981938",
-          timestamp: 1715914126,
-          userAddress: "orai1hvr9d72r5um9lvt0rpkd4r75vrsqtw6yujhqs2",
-          fromAddress: "orai1hvr9d72r5um9lvt0rpkd4r75vrsqtw6yujhqs2",
-          toAddress: "orai12zyu8w93h0q2lcnt50g3fn0w3yqnhy4fvawaqz",
-          amount: "1000000",
-          denom: "",
-          tokenContractAddress: "orai10ldgzued6zjp0mkqwsv2mux3ml50l97c74x8sg",
-        },
-        {
-          height: "21136108",
-          txhash:
-            "0A3E602DFBDB5471F111E8653FEE5D51E74D5B9B5CC527FE873D5B368CBE94A7",
-          timestamp: 1715879067,
-          userAddress: "orai1hvr9d72r5um9lvt0rpkd4r75vrsqtw6yujhqs2",
-          fromAddress: "orai1hvr9d72r5um9lvt0rpkd4r75vrsqtw6yujhqs2",
-          toAddress: "orai12zyu8w93h0q2lcnt50g3fn0w3yqnhy4fvawaqz",
-          amount: "10000",
-          denom: "orai",
-          tokenContractAddress: "",
-        },
-        {
-          height: "21134732",
-          txhash:
-            "7C736DEB7F952BDB9E1247F46DBF3CC9386F4E0BCA3ADA0B0CDF4099F978116E",
-          timestamp: 1715877888,
-          userAddress: "orai1hvr9d72r5um9lvt0rpkd4r75vrsqtw6yujhqs2",
-          fromAddress: "orai1hvr9d72r5um9lvt0rpkd4r75vrsqtw6yujhqs2",
-          toAddress: "orai12zyu8w93h0q2lcnt50g3fn0w3yqnhy4fvawaqz",
-          amount: "1000000",
-          denom: "",
-          tokenContractAddress: "orai10ldgzued6zjp0mkqwsv2mux3ml50l97c74x8sg",
-        },
-        {
-          height: "21113871",
-          txhash:
-            "F2AA0DE845F80FDAC310A55E4ACC08C540313FA0900C41F16F38115CCA17EC35",
-          timestamp: 1715859858,
-          userAddress: "orai1hvr9d72r5um9lvt0rpkd4r75vrsqtw6yujhqs2",
-          fromAddress: "orai1hvr9d72r5um9lvt0rpkd4r75vrsqtw6yujhqs2",
-          toAddress:
-            "orai1nt58gcu4e63v7k55phnr3gaym9tvk3q4apqzqccjuwppgjuyjy6sxk8yzp",
-          amount: "600000",
-          denom: "",
-          tokenContractAddress:
-            "orai1lplapmgqnelqn253stz6kmvm3ulgdaytn89a8mz9y85xq8wd684s6xl3lt",
-        },
-        {
-          height: "21113677",
-          txhash:
-            "1B3FB17794B046D591E83875AD0528D3E95FDCBC3DD83DE7FA26D04E38146C37",
-          timestamp: 1715859690,
-          userAddress: "orai1hvr9d72r5um9lvt0rpkd4r75vrsqtw6yujhqs2",
-          fromAddress: "orai1hvr9d72r5um9lvt0rpkd4r75vrsqtw6yujhqs2",
-          toAddress:
-            "orai1nt58gcu4e63v7k55phnr3gaym9tvk3q4apqzqccjuwppgjuyjy6sxk8yzp",
-          amount: "48177",
-          denom: "",
-          tokenContractAddress: "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh",
-        },
-        {
-          height: "21111860",
-          txhash:
-            "95E24DD50410031246A4FDC2F441DE9ED3C658FAA8F4066882739A9A246CB5F9",
-          timestamp: 1715858124,
-          userAddress: "orai1hvr9d72r5um9lvt0rpkd4r75vrsqtw6yujhqs2",
-          fromAddress: "orai1hvr9d72r5um9lvt0rpkd4r75vrsqtw6yujhqs2",
-          toAddress:
-            "orai1nt58gcu4e63v7k55phnr3gaym9tvk3q4apqzqccjuwppgjuyjy6sxk8yzp",
-          amount: "48177",
-          denom: "",
-          tokenContractAddress: "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh",
-        },
-        {
-          height: "21109501",
-          txhash:
-            "08CE9AB77AB9483A09795A1D2E69F45233496F33DA4F60B1C1317667AF29B5D1",
-          timestamp: 1715856112,
-          userAddress: "orai1hvr9d72r5um9lvt0rpkd4r75vrsqtw6yujhqs2",
-          fromAddress: "orai1hvr9d72r5um9lvt0rpkd4r75vrsqtw6yujhqs2",
-          toAddress: "orai12zyu8w93h0q2lcnt50g3fn0w3yqnhy4fvawaqz",
-          amount: "100000",
-          denom: "orai",
-          tokenContractAddress: "",
-        },
-        {
-          height: "21108086",
-          txhash:
-            "BF05DD904AE68E8FDD9C91D0A6BF4BB83F17293329E5C35628AFF2FD0CE96F83",
-          timestamp: 1715854887,
-          userAddress: "orai1hvr9d72r5um9lvt0rpkd4r75vrsqtw6yujhqs2",
-          fromAddress: "orai1hvr9d72r5um9lvt0rpkd4r75vrsqtw6yujhqs2",
-          toAddress:
-            "orai1xu9yw2xwd55d09pjce28yjklvk2kwwrqw4ql9gvyrs607z26kv0sl99040",
-          amount: "10000",
-          denom: "",
-          tokenContractAddress:
-            "orai1065qe48g7aemju045aeyprflytemx7kecxkf5m7u5h5mphd0qlcs47pclp",
-        },
-      ],
-    };
-    return { data, status: 200 };
+    const url = `raw-tx-history/oraichain/${address}?network=${network}&limit=${limit}&offset=${offset}`;
+    return API.get(url, config);
   },
   getTronTxs: (
     { address, offset, limit = 1, network = Network.TRON },
@@ -560,26 +453,8 @@ export const API = {
     { hash, network = CosmosNetwork.ORAICHAIN },
     config: AxiosRequestConfig
   ) => {
-    // let url = `raw-tx-history/oraichain/tx-detail/${hash}?network=${network}`;
-    // return API.get(url, config);
-    const data = {
-      height: "21108086",
-      txhash:
-        "BF05DD904AE68E8FDD9C91D0A6BF4BB83F17293329E5C35628AFF2FD0CE96F83",
-      timestamp: 1715854887,
-      userAddress: "orai1hvr9d72r5um9lvt0rpkd4r75vrsqtw6yujhqs2",
-      fromAddress: "orai1hvr9d72r5um9lvt0rpkd4r75vrsqtw6yujhqs2",
-      toAddress:
-        "orai1xu9yw2xwd55d09pjce28yjklvk2kwwrqw4ql9gvyrs607z26kv0sl99040",
-      amount: "10000",
-      denom: "",
-      tokenContractAddress:
-        "orai1065qe48g7aemju045aeyprflytemx7kecxkf5m7u5h5mphd0qlcs47pclp",
-    };
-    return {
-      data: data,
-      status: 200,
-    };
+    let url = `raw-tx-history/oraichain/tx-detail/${hash}`;
+    return API.get(url, config);
   },
   getDetailTronTx: (
     { hash, network = Network.TRON },
