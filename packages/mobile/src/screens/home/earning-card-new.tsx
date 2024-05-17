@@ -115,6 +115,10 @@ export const EarningCardNew: FunctionComponent<{
       }
     }
   };
+  const isDisableClaim =
+    !account.isReadyToSendMsgs ||
+    stakingReward.toDec().equals(new Dec(0)) ||
+    queryReward.pendingRewardValidatorAddresses.length === 0;
   return (
     <OWBox
       style={{
@@ -173,20 +177,25 @@ export const EarningCardNew: FunctionComponent<{
             </Text>
           </TouchableOpacity>
           <OWButton
-            style={styles["btn-claim"]}
+            style={[
+              styles["btn-claim"],
+              {
+                backgroundColor: isDisableClaim
+                  ? colors["neutral-surface-disable"]
+                  : colors["primary-surface-default"],
+              },
+            ]}
             textStyle={{
               fontSize: 14,
               fontWeight: "600",
-              color: colors["neutral-text-action-on-dark-bg"],
+              color: isDisableClaim
+                ? colors["neutral-text-disable"]
+                : colors["neutral-text-action-on-dark-bg"],
             }}
             label="Claim"
             onPress={_onPressClaim}
             loading={account.isSendingMsg === "withdrawRewards"}
-            disabled={
-              !account.isReadyToSendMsgs ||
-              stakingReward.toDec().equals(new Dec(0)) ||
-              queryReward.pendingRewardValidatorAddresses.length === 0
-            }
+            disabled={isDisableClaim}
           />
         </View>
         <View
@@ -250,7 +259,7 @@ const styling = (colors) =>
     },
     "btn-claim": {
       backgroundColor: colors["primary-surface-default"],
-      borderWidth: 0.5,
+      // borderWidth: 0.5,
       marginTop: 16,
       borderRadius: 999,
       width: metrics.screenWidth / 4.5,
