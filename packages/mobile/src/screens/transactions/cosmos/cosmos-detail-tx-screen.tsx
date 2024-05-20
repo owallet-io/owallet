@@ -22,13 +22,8 @@ import { HeaderTx } from "@src/screens/tx-result/components/header-tx";
 import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
 import { Text } from "@src/components/text";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
-import {
-  ChainIdEnum,
-  isMilliseconds,
-  OasisNetwork,
-  TRON_ID,
-} from "@owallet/common";
-import { AddressTransaction, Network } from "@tatumio/tatum";
+import { ChainIdEnum, isMilliseconds, OasisNetwork } from "@owallet/common";
+
 import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
 import { OwLoading } from "@src/components/owallet-loading/ow-loading";
 
@@ -36,8 +31,9 @@ import { Currency } from "@owallet/types";
 
 import { urlTxHistory } from "@src/common/constants";
 import { OWEmpty } from "@src/components/empty";
+import { CosmosItem } from "@src/screens/transactions/cosmos/types";
 
-export const OasisDetailTx: FunctionComponent = observer((props) => {
+export const CosmosDetailTx: FunctionComponent = observer((props) => {
   const { chainStore, priceStore } = useStore();
 
   const route = useRoute<
@@ -45,41 +41,35 @@ export const OasisDetailTx: FunctionComponent = observer((props) => {
       Record<
         string,
         {
-          item: any;
+          item: CosmosItem;
           currency: Currency;
         }
       >,
       string
     >
   >();
-  const [detail, setDetail] = useState<DataTxDetail>();
+  const [detail, setDetail] = useState<CosmosItem>();
   const [loading, setLoading] = useState(false);
 
   const { item, currency } = route.params;
-  const { txHash: hash, chain, transactionType } = item;
+  const { txhash: hash, chainId: chain } = item;
   console.log(item, detail, "item detail");
 
   const getHistoryDetail = async () => {
     try {
       setLoading(true);
-      const res = await API.getDetailOasisTx(
+      const { status, data } = await API.getDetailCosmosTx(
         {
           hash,
-          network: chain as OasisNetwork,
+          network: chain as ChainIdEnum,
         },
         {
           baseURL: urlTxHistory,
         }
       );
-      if (res && res.status !== 200) throw Error("Failed");
-      console.log(res.data, "res.data.data");
-      if (chainStore.current.chainId === ChainIdEnum.Oasis) {
-        setDetail(res.data.data);
-      } else {
-        setDetail(
-          res.data.transactions?.length > 0 ? res.data.transactions[0] : null
-        );
-      }
+      if (status !== 200) throw Error("Failed");
+      console.log(data, "res.data.data");
+      setDetail(data);
 
       setLoading(false);
     } catch (err) {
@@ -112,17 +102,17 @@ export const OasisDetailTx: FunctionComponent = observer((props) => {
 
   const fee = new CoinPretty(
     chainInfo.stakeCurrency,
-    new Dec(item.fee).mul(DecUtils.getTenExponentN(currency.coinDecimals))
+    new Dec(item.fee[0].amount)
   );
-  const amount = new CoinPretty(
-    currency,
-    new Dec(item.amount).mul(DecUtils.getTenExponentN(currency.coinDecimals))
-  );
+  const amount = new CoinPretty(currency, new Dec(item.amount[0].amount));
 
   const onRefresh = () => {
     getHistoryDetail();
   };
-  const method = item.method.split(".");
+  const isSent =
+    item.userAddress === item.fromAddress ||
+    item.fromAddress === item.toAddress;
+  const method = isSent ? "Sent" : "Received";
   return (
     <PageWithBottom
       style={{
@@ -147,9 +137,9 @@ export const OasisDetailTx: FunctionComponent = observer((props) => {
           showsVerticalScrollIndicator={false}
         >
           <HeaderTx
-            type={method[method.length - 1]}
+            type={method}
             colorAmount={
-              item.transactionType === "incoming"
+              !isSent
                 ? colors["success-text-body"]
                 : colors["neutral-text-title"]
             }
@@ -158,9 +148,10 @@ export const OasisDetailTx: FunctionComponent = observer((props) => {
                 style={[
                   styles.containerSuccess,
                   {
-                    backgroundColor: detail.status
-                      ? colors["highlight-surface-subtle"]
-                      : colors["error-surface-subtle"],
+                    backgroundColor:
+                      detail.code != 0
+                        ? colors["error-surface-subtle"]
+                        : colors["highlight-surface-subtle"],
                   },
                 ]}
               >
@@ -168,20 +159,18 @@ export const OasisDetailTx: FunctionComponent = observer((props) => {
                   weight={"500"}
                   size={14}
                   color={
-                    detail.status
-                      ? colors["highlight-text-title"]
-                      : colors["error-text-body"]
+                    detail.code != 0
+                      ? colors["error-text-body"]
+                      : colors["highlight-text-title"]
                   }
                 >
-                  {detail.status ? "Success" : "Failed"}
+                  {detail.code != 0 ? "Failed" : "Success"}
                 </OWText>
               </View>
             }
-            amount={`${
-              item.transactionType === "incoming" ? "+" : "-"
-            }${maskedNumber(amount.hideDenom(true).toString())} ${
-              currency.coinDenom
-            }`}
+            amount={`${!isSent ? "+" : "-"}${maskedNumber(
+              amount.hideDenom(true).toString()
+            )} ${currency.coinDenom}`}
             toAmount={null}
             price={priceStore
               .calculatePrice(amount)

@@ -15,16 +15,18 @@ import { useStore } from "@src/stores";
 import { EmptyTx } from "@src/screens/transactions/components/empty-tx";
 import { TxEvmItem } from "@src/screens/transactions/components/items/tx-evm-item";
 import { TxOasisItem } from "@src/screens/transactions/components/items/tx-oasis-item";
-import { getOasisAddress } from "@owallet/common";
+import { ChainIdEnum, getOasisAddress } from "@owallet/common";
+import { CosmosItem } from "@src/screens/transactions/cosmos/types";
+import { TxCosmosItem } from "@src/screens/transactions/components/items/tx-cosmos-item";
 
-export const OasisTxCard: FunctionComponent<{
+export const CosmosTxCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
   const { accountStore, appInitStore, chainStore, priceStore, keyRingStore } =
     useStore();
   const { colors } = useTheme();
 
-  const [histories, setHistories] = useState([]);
+  const [histories, setHistories] = useState<CosmosItem[]>([]);
   const [loading, setLoading] = useState(false);
 
   const accountInfo = accountStore.getAccount(chainStore.current.chainId);
@@ -35,22 +37,21 @@ export const OasisTxCard: FunctionComponent<{
   const getWalletHistory = async (address) => {
     try {
       setLoading(true);
-      const oasisAddress = getOasisAddress(address);
-
-      const res = await API.getOasisTxs(
+      const { status, data } = await API.getCosmosTxs(
         {
-          address: oasisAddress,
+          address: address,
           offset: 0,
           limit: 10,
-          network: MapChainIdToNetwork[chainStore.current.chainId],
+          network: chainStore.current.chainId as ChainIdEnum,
         },
         {
           baseURL: urlTxHistory,
         }
       );
-      if (res && res.status !== 200) throw Error("Failed");
+      console.log(data, "data");
+      if (status !== 200) throw Error("Failed");
 
-      setHistories(res.data.data);
+      setHistories(data.data);
       setLoading(false);
     } catch (err) {
       setLoading(false);
@@ -84,7 +85,7 @@ export const OasisTxCard: FunctionComponent<{
       {histories?.length > 0 ? (
         histories.map((item, index) => {
           return (
-            <TxOasisItem
+            <TxCosmosItem
               key={`item-${index + 1}-${index}`}
               data={histories}
               item={item}

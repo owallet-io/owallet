@@ -95,18 +95,18 @@ jobs:
           PASS_ALIAS_KEY_STORE: ${{ secrets.PASS_KEY_STORE }}
           SENTRY_TOKEN: ${{ secrets.SENTRY_TOKEN }}
           FILE_PATH: "/OWalletKeystore"
-      - name: Archive artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: app
-          path: app/build/outputs/apk/release/app-release.apk
-      - name: Upload APK to Target Repo
-        run: |
-          curl \
-            -H "Authorization: token ${{ secrets.TARGET_REPO_TOKEN }}" \
-            -H "Content-Type: $(file -b --mime-type app/build/outputs/apk/release/app-release.apk)" \
-            --data-binary @app/build/outputs/apk/release/app-release.apk \
-            "https://uploads.github.com/repos/oraichain/owallet-provider/releases/latest/assets?name=app-release.apk"
+#      - name: Archive artifacts
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: app
+#          path: app/build/outputs/apk/release/app-release.apk
+#      - name: Upload APK to Target Repo
+#        run: |
+#          curl \
+#            -H "Authorization: token ${{ secrets.TARGET_REPO_TOKEN }}" \
+#            -H "Content-Type: $(file -b --mime-type app/build/outputs/apk/release/app-release.apk)" \
+#            --data-binary @app/build/outputs/apk/release/app-release.apk \
+#            "https://uploads.github.com/repos/oraichain/owallet-provider/releases/latest/assets?name=app-release.apk"
   release-ios-mobile:
     name: release-ios-mobile
     runs-on: macos-latest #orai-self-hosted

@@ -8,7 +8,7 @@ import { MapChainIdToNetwork } from "@src/utils/helper";
 import { OWBox } from "@src/components/card";
 import { spacing } from "@src/themes";
 
-import { SCREENS, urlTxHistory } from "@src/common/constants";
+import { urlTxHistory } from "@src/common/constants";
 import OWFlatList from "@src/components/page/ow-flat-list";
 import { API } from "@src/common/api";
 import get from "lodash/get";
@@ -16,9 +16,9 @@ import get from "lodash/get";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { OWSearchInput } from "@src/components/ow-search-input";
 import { EmptyTx } from "@src/screens/transactions/components/empty-tx";
-import { TxEvmItem } from "@src/screens/transactions/components/items/tx-evm-item";
-import { TxOasisItem } from "@src/screens/transactions/components/items/tx-oasis-item";
+
 import { getOasisAddress } from "@owallet/common";
+import { TxCosmosItem } from "@src/screens/transactions/components/items/tx-cosmos-item";
 
 const CosmosTxsScreen = observer(() => {
   const { chainStore, accountStore, keyRingStore } = useStore();
@@ -39,13 +39,13 @@ const CosmosTxsScreen = observer(() => {
     try {
       if (!isLoadMore) setLoading(true);
       if (!hasMore.current) throw Error("Failed");
-      const oasisAddress = getOasisAddress(address);
-      const res = await API.getOasisTxs(
+
+      const res = await API.getCosmosTxs(
         {
-          address: oasisAddress,
+          address: address,
           offset: !isLoadMore ? 0 : page.current * perPage,
           limit: perPage,
-          network: MapChainIdToNetwork[chainStore.current.chainId],
+          network: chainStore.current.chainId,
         },
         {
           baseURL: urlTxHistory,
@@ -103,7 +103,7 @@ const CosmosTxsScreen = observer(() => {
   };
   const renderItem = ({ item, index }) => {
     return (
-      <TxOasisItem
+      <TxCosmosItem
         key={`item-${index + 1}-${index}`}
         data={data}
         item={item}

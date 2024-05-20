@@ -377,8 +377,8 @@ export const TITLE_TYPE_ACTIONS_COSMOS_HISTORY = {
 export const EVENTS = {
   hiddenTabBar: "hiddenTabBar",
 };
-
-export const urlTxHistory = "https://tx-history-backend-staging.oraidex.io/";
+export const urlTxHistory = "http://10.10.20.115:8000/";
+// export const urlTxHistory = "https://tx-history-backend-staging.oraidex.io/";
 export const listSkeleton = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 export const getTimeMilliSeconds = (timeStamp) => {
   if (isMilliseconds(timeStamp)) {

@@ -13,8 +13,12 @@ import { navigate } from "@src/router/root";
 import { getTimeMilliSeconds, SCREENS } from "@src/common/constants";
 import { RightArrowIcon } from "@src/components/icon";
 import { useStore } from "@src/stores";
+import { CosmosItem } from "@src/screens/transactions/cosmos/types";
+import { unknownToken } from "@owallet/common";
+import get from "lodash/get";
+
 export const TxCosmosItem: FC<{
-  item: any;
+  item: CosmosItem;
   index: number;
   data: any;
 }> = observer(({ item, index, data, ...props }) => {
@@ -22,7 +26,32 @@ export const TxCosmosItem: FC<{
   const fiat = priceStore.defaultVsCurrency;
   if (!item) return;
   console.log(item, "item");
-  const currency = chainStore.current.stakeCurrency;
+  let currency = unknownToken;
+  if (!!get(item, "tokenInfos[0].contractAddress")) {
+    currency = {
+      coinDenom: item.tokenInfos[0].abbr,
+      coinImageUrl: item.tokenInfos[0].imgUrl,
+      coinGeckoId: item.tokenInfos[0].coingeckoId,
+      coinMinimalDenom: `cw20:${item.tokenInfos[0].contractAddress}:${item.tokenInfos[0].name}`,
+      coinDecimals: item.tokenInfos[0].decimal,
+    };
+  } else if (
+    !!get(item, "tokenInfos[0].denom") &&
+    get(item, "tokenInfos[0].denom").startsWith("ibc")
+  ) {
+    currency = {
+      coinDenom: item.tokenInfos[0].abbr,
+      coinImageUrl: item.tokenInfos[0].imgUrl,
+      coinGeckoId: item.tokenInfos[0].coingeckoId,
+      coinMinimalDenom: get(item, "tokenInfos[0].denom"),
+      coinDecimals: item.tokenInfos[0].decimal,
+    };
+  } else if (
+    !!get(item, "tokenInfos[0].denom") &&
+    !get(item, "tokenInfos[0].denom").startsWith("ibc")
+  ) {
+    currency = chainStore.current.stakeCurrency;
+  }
   const onTransactionDetail = (item, currency) => {
     navigate(SCREENS.STACK.Others, {
       screen: SCREENS.HistoryDetail,
@@ -35,10 +64,7 @@ export const TxCosmosItem: FC<{
     return;
   };
 
-  const amount = new CoinPretty(
-    currency,
-    new Dec(item.amount).mul(DecUtils.getTenExponentN(currency.coinDecimals))
-  );
+  const amount = new CoinPretty(currency, new Dec(item.amount[0].amount));
   const priceAmount = priceStore.calculatePrice(amount, fiat);
   const first =
     index > 0 &&
@@ -46,10 +72,13 @@ export const TxCosmosItem: FC<{
       "MMM D, YYYY"
     );
   const now = moment(getTimeMilliSeconds(item.timestamp)).format("MMM D, YYYY");
-  console.log(first, now, "test");
   const { colors } = useTheme();
   const styles = styling(colors);
-  const method = item.method.split(".");
+
+  const isSent =
+    item.userAddress === item.fromAddress ||
+    item.fromAddress === item.toAddress;
+  const method = isSent ? "Sent" : "Received";
   return (
     <View style={{ paddingVertical: 8 }}>
       {first != now || index === 0 ? (
@@ -72,7 +101,8 @@ export const TxCosmosItem: FC<{
               style={{
                 borderRadius: 999,
                 tintColor:
-                  currency.coinDenom === "ORAI"
+                  currency.coinDenom.toUpperCase() === "ORAI" ||
+                  currency.coinDenom.toUpperCase() === "AIRI"
                     ? colors["neutral-text-title"]
                     : null,
               }}
@@ -81,7 +111,7 @@ export const TxCosmosItem: FC<{
           <View style={styles.chainWrap}>
             <OWIcon
               type="images"
-              source={{ uri: currency.coinImageUrl }}
+              source={{ uri: chainStore.current.stakeCurrency.coinImageUrl }}
               size={20}
               style={{
                 borderRadius: 999,
@@ -102,10 +132,10 @@ export const TxCosmosItem: FC<{
           <View style={styles.leftBoxItem}>
             <View style={styles.pl10}>
               <Text size={16} color={colors["neutral-text-title"]} weight="600">
-                {method[method.length - 1]}
+                {method}
               </Text>
               <Text weight="400" color={colors["neutral-text-body"]}>
-                {formatContractAddress(item.txHash)}
+                {formatContractAddress(item.txhash)}
               </Text>
             </View>
           </View>
@@ -115,16 +145,14 @@ export const TxCosmosItem: FC<{
                 <Text
                   weight="500"
                   color={
-                    item.transactionType === "incoming"
+                    !isSent
                       ? colors["success-text-body"]
                       : colors["neutral-text-title"]
                   }
                 >
-                  {`${
-                    item.transactionType === "incoming" ? "+" : "-"
-                  }${maskedNumber(amount.hideDenom(true).toString())} ${
-                    currency.coinDenom
-                  }`}
+                  {`${!isSent ? "+" : "-"}${maskedNumber(
+                    amount.hideDenom(true).toString()
+                  )} ${currency.coinDenom}`}
                 </Text>
                 <Text style={styles.profit} color={colors["neutral-text-body"]}>
                   {priceAmount.toString().replace("-", "")}
