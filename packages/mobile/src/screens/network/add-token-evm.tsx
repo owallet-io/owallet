@@ -66,7 +66,7 @@ export const AddTokenEVMScreen = observer(
       tokensStore,
       appInitStore,
     } = useStore();
-    const tokensOf = tokensStore.getTokensOf(chainStore.current.chainId);
+    const tokensOf = tokensStore.getTokensOf(selectedChain?.chainId);
     const [loading, setLoading] = useState(false);
     const [coidgeckoId, setCoingeckoID] = useState(null);
 
@@ -98,7 +98,7 @@ export const AddTokenEVMScreen = observer(
 
     const isSecret20 = false;
 
-    const queries = queriesStore.get(chainStore.current.chainId);
+    const queries = queriesStore.get(selectedChain.chainId);
     const query = queries.evmContract.queryErc20ContractInfo;
     const queryContractInfo = query.getQueryContract(contractAddress);
 
