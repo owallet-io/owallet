@@ -1,8 +1,12 @@
 import { handleError, parseObjectToQueryString } from "@src/utils/helper";
-import axios, { AxiosRequestConfig } from "axios";
+import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import moment from "moment";
 import { Network } from "@tatumio/tatum";
-import { CosmosNetwork, OasisNetwork } from "@owallet/common";
+import { ChainIdEnum, CosmosNetwork, OasisNetwork } from "@owallet/common";
+import {
+  CosmosItem,
+  ResTxsCosmos,
+} from "@src/screens/transactions/cosmos/types";
 
 export const API = {
   post: (path: string, params: any, config: AxiosRequestConfig) => {
@@ -421,6 +425,13 @@ export const API = {
     const url = `raw-tx-history/oasis/${address}?network=${network}&limit=${limit}&offset=${offset}`;
     return API.get(url, config);
   },
+  getCosmosTxs: (
+    { address, offset, limit = 1, network = ChainIdEnum.CosmosHub },
+    config: AxiosRequestConfig
+  ) => {
+    const url = `raw-tx-history/cosmos/${address}?network=${network}&limit=${limit}&offset=${offset}`;
+    return API.get(url, config) as Promise<AxiosResponse<ResTxsCosmos>>;
+  },
   getOraichainTxs: async (
     { address, offset, limit = 1, network = CosmosNetwork.ORAICHAIN },
     config: AxiosRequestConfig
@@ -448,6 +459,13 @@ export const API = {
   ) => {
     let url = `raw-tx-history/oasis/tx-detail/${hash}?network=${network}`;
     return API.get(url, config);
+  },
+  getDetailCosmosTx: (
+    { hash, network = ChainIdEnum.CosmosHub },
+    config: AxiosRequestConfig
+  ) => {
+    let url = `raw-tx-history/cosmos/tx-detail/${hash}?network=${network}`;
+    return API.get(url, config) as Promise<AxiosResponse<CosmosItem>>;
   },
   getDetailOraichainTx: async (
     { hash, network = CosmosNetwork.ORAICHAIN },
