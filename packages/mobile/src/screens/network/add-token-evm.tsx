@@ -158,7 +158,9 @@ export const AddTokenEVMScreen = observer(
     const addTokenSuccess = (currency) => {
       const currentChainInfos = appInitStore.getChainInfos;
 
-      const ethChain = currentChainInfos.find((c) => c.chainId === "0x01");
+      const chain = currentChainInfos.find(
+        (c) => c.chainId === selectedChain.chainId
+      );
 
       setLoading(false);
       const token: TokenType = {
@@ -170,17 +172,18 @@ export const AddTokenEVMScreen = observer(
         coinDecimals: currency.coinDecimals,
         bridgeTo: ["Oraichain"],
         coinGeckoId: coidgeckoId,
-        prefixToken: "eth-mainnet",
+        prefixToken:
+          currency?.prefixToken ?? chain.bech32Config?.bech32PrefixAccAddr,
       };
 
-      const newCurrencies = [...ethChain.currencies];
+      const newCurrencies = [...chain.currencies];
       newCurrencies.push(token);
 
       const newChainInfos = [...currentChainInfos];
 
       // Find the object with name 'Jane' and update its age
       for (let i = 0; i < newChainInfos.length; i++) {
-        if (newChainInfos[i].chainId === "0x01") {
+        if (newChainInfos[i].chainId === selectedChain.chainId) {
           newChainInfos[i].currencies = newCurrencies;
           break; // Exit the loop since we found the object
         }
@@ -367,7 +370,7 @@ export const AddTokenEVMScreen = observer(
               error={errors.contractAddress?.message}
               value={tokenInfo?.name ?? "-"}
               defaultValue={"-"}
-              editable={false}
+              editable={true}
             />
             <TextInput
               inputStyle={{
@@ -387,7 +390,7 @@ export const AddTokenEVMScreen = observer(
               returnKeyType="next"
               value={tokenInfo?.symbol ?? "-"}
               defaultValue={"-"}
-              editable={false}
+              editable={true}
             />
             <TextInput
               inputStyle={{
@@ -407,7 +410,7 @@ export const AddTokenEVMScreen = observer(
               returnKeyType="next"
               value={tokenInfo?.decimals?.toString() ?? "-"}
               defaultValue={"-"}
-              editable={false}
+              editable={true}
             />
 
             {isSecret20 ? (

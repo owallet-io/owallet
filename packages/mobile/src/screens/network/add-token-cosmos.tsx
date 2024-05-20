@@ -318,7 +318,7 @@ export const AddTokenCosmosScreen = observer(
               error={errors.contractAddress?.message}
               value={tokenInfo?.name ?? "-"}
               defaultValue={"-"}
-              editable={false}
+              editable={true}
             />
             <TextInput
               inputStyle={{
@@ -338,7 +338,7 @@ export const AddTokenCosmosScreen = observer(
               returnKeyType="next"
               value={tokenInfo?.symbol ?? "-"}
               defaultValue={"-"}
-              editable={false}
+              editable={true}
             />
             <TextInput
               inputStyle={{
@@ -358,7 +358,7 @@ export const AddTokenCosmosScreen = observer(
               returnKeyType="next"
               value={tokenInfo?.decimals.toString() ?? "-"}
               defaultValue={"-"}
-              editable={false}
+              editable={true}
             />
 
             {isSecret20 ? (
