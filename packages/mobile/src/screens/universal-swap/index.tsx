@@ -37,6 +37,9 @@ import {
   toSubAmount,
   getTokenOnOraichain,
   tokenMap,
+  chainInfos,
+  TokenItemType,
+  getTokensFromNetwork,
 } from "@oraichain/oraidex-common";
 import { openLink } from "../../utils/helper";
 import { feeEstimate } from "@owallet/common";
@@ -76,6 +79,7 @@ import { Toggle } from "@src/components/toggle";
 import { SendToModal } from "./modals/SendToModal";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { PriceSettingModal } from "./modals/PriceSettingModal";
+import { flatten } from "lodash";
 
 const mixpanel = globalThis.mixpanel as Mixpanel;
 
@@ -274,13 +278,16 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const loadTokenAmounts = useLoadTokens(universalSwapStore);
   // handle fetch all tokens of all chains
-  const handleFetchAmounts = async (params: {
-    orai?: string;
-    eth?: string;
-    tron?: string;
-    kwt?: string;
-    tokenReload?: Array<any>;
-  }) => {
+  const handleFetchAmounts = async (
+    params: {
+      orai?: string;
+      eth?: string;
+      tron?: string;
+      kwt?: string;
+      tokenReload?: Array<any>;
+    },
+    customChainInfos?: Array<any>
+  ) => {
     const { orai, eth, tron, kwt, tokenReload } = params;
     let loadTokenParams = {};
     try {
@@ -289,6 +296,19 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         chainId: ChainIdEnum.Oraichain,
         rpc: oraichainNetwork.rpc,
       };
+
+      // other chains, oraichain
+      const otherChainTokens = flatten(
+        customChainInfos
+          .filter((chainInfo) => chainInfo.chainId !== "Oraichain")
+          .map(getTokensFromNetwork)
+      );
+      const oraichainTokens: TokenItemType[] =
+        getTokensFromNetwork(oraichainNetwork);
+
+      const tokens = [otherChainTokens, oraichainTokens];
+      const flattenTokens = flatten(tokens);
+
       loadTokenParams = {
         ...loadTokenParams,
         oraiAddress: orai ?? accountOrai.bech32Address,
@@ -297,6 +317,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         tronAddress: tron ?? null,
         cwStargate,
         tokenReload: tokenReload?.length > 0 ? tokenReload : null,
+        customChainInfos: flattenTokens,
       };
 
       loadTokenAmounts(loadTokenParams);
@@ -314,16 +335,20 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const onFetchAmount = (tokenReload?: Array<any>) => {
     universalSwapStore.clearAmounts();
     universalSwapStore.setLoaded(false);
+    const customChainInfos = chainInfos;
     if (accountOrai.isNanoLedger) {
       if (Object.keys(keyRingStore.keyRingLedgerAddresses).length > 0) {
         setTimeout(() => {
-          handleFetchAmounts({
-            orai: accountOrai.bech32Address,
-            eth: keyRingStore.keyRingLedgerAddresses.eth ?? null,
-            tron: keyRingStore.keyRingLedgerAddresses.trx ?? null,
-            kwt: accountKawaiiCosmos.bech32Address,
-            tokenReload: tokenReload?.length > 0 ? tokenReload : null,
-          });
+          handleFetchAmounts(
+            {
+              orai: accountOrai.bech32Address,
+              eth: keyRingStore.keyRingLedgerAddresses.eth ?? null,
+              tron: keyRingStore.keyRingLedgerAddresses.trx ?? null,
+              kwt: accountKawaiiCosmos.bech32Address,
+              tokenReload: tokenReload?.length > 0 ? tokenReload : null,
+            },
+            customChainInfos
+          );
         }, 800);
       }
     } else if (
@@ -333,12 +358,15 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       accountKawaiiCosmos.bech32Address
     ) {
       setTimeout(() => {
-        handleFetchAmounts({
-          orai: accountOrai.bech32Address,
-          eth: accountEth.evmosHexAddress,
-          tron: getBase58Address(accountTron.evmosHexAddress),
-          kwt: accountKawaiiCosmos.bech32Address,
-        });
+        handleFetchAmounts(
+          {
+            orai: accountOrai.bech32Address,
+            eth: accountEth.evmosHexAddress,
+            tron: getBase58Address(accountTron.evmosHexAddress),
+            kwt: accountKawaiiCosmos.bech32Address,
+          },
+          customChainInfos
+        );
       }, 1000);
     }
   };

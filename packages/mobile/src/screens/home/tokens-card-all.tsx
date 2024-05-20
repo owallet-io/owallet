@@ -32,6 +32,7 @@ import { metrics } from "@src/themes";
 import FastImage from "react-native-fast-image";
 import OWText from "@src/components/text/ow-text";
 import { HistoryCard } from "@src/screens/transactions";
+import { ArrowOpsiteUpDownIcon, DownArrowIcon } from "@src/components/icon";
 
 export const TokensCardAll: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -371,20 +372,63 @@ export const TokensCardAll: FunctionComponent<{
             }
             return t.chainId === chainStore.current.chainId;
           }).length > 3 ? (
-            <OWButton
-              style={{
-                marginTop: Platform.OS === "android" ? 24 : 16,
-                marginHorizontal: 16,
-                width: metrics.screenWidth - 32,
-              }}
-              label={more ? "View all" : "Hide"}
-              size="medium"
-              type="secondary"
+            <TouchableOpacity
               onPress={() => {
                 setMore(!more);
               }}
-            />
+              style={{
+                alignItems: "center",
+                paddingTop: 30,
+                flexDirection: "row",
+                width: metrics.screenWidth,
+                justifyContent: "center",
+              }}
+            >
+              <OWText
+                style={{ paddingRight: 4 }}
+                weight="600"
+                color={colors["primary-text-action"]}
+              >
+                {more ? "View all tokens" : "Hide"}
+              </OWText>
+              {more ? (
+                <DownArrowIcon
+                  height={10}
+                  color={colors["primary-text-action"]}
+                />
+              ) : (
+                <OWIcon
+                  name="tdesignchevron-up"
+                  color={colors["primary-text-action"]}
+                  size={16}
+                />
+              )}
+            </TouchableOpacity>
           ) : null}
+          <OWButton
+            style={{
+              marginTop: Platform.OS === "android" ? 28 : 22,
+              marginHorizontal: 16,
+              width: metrics.screenWidth - 32,
+              borderRadius: 999,
+            }}
+            icon={
+              <OWIcon
+                name="tdesignplus"
+                color={colors["neutral-text-title"]}
+                size={20}
+              />
+            }
+            label={"Add token"}
+            size="large"
+            type="secondary"
+            onPress={() => {
+              navigate(SCREENS.STACK.Others, {
+                screen: SCREENS.NetworkToken,
+              });
+              return;
+            }}
+          />
         </>
       );
     } else {

@@ -106,7 +106,7 @@ const styling = () => {
     dashed: {
       borderWidth: 1,
       borderStyle: "dashed",
-      borderColor: colors["background-btn-primary"],
+      borderColor: colors["neutral-border-default"],
     },
     hasIcon: { height: "auto" },
     fullWidth: { width: "100%" },
