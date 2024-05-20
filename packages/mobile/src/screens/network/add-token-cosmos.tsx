@@ -66,7 +66,7 @@ export const AddTokenCosmosScreen = observer(
 
     const accountInfo = accountStore.getAccount(selectedChain.chainId);
     const [loading, setLoading] = useState(false);
-    const [coidgeckoId, setCoingeckoID] = useState(null);
+    const [coingeckoId, setCoingeckoID] = useState(null);
     const [selectedType, setSelectedType] = useState<"cw20">("cw20");
 
     const form = useForm<FormData>({
@@ -148,7 +148,7 @@ export const AddTokenCosmosScreen = observer(
       modalStore.setChildren(
         <SelectTokenTypeModal
           selected={selectedType}
-          list={["cw20"]}
+          list={["cw20", "secret20"]}
           onPress={(type) => {
             setSelectedType(type);
             modalStore.close();
@@ -183,7 +183,7 @@ export const AddTokenCosmosScreen = observer(
         }_${currency.coinDenom.toLowerCase()}`,
         contractAddress: currency.contractAddress,
         coinDecimals: currency.coinDecimals,
-        coinGeckoId: coidgeckoId,
+        coinGeckoId: coingeckoId,
         prefixToken:
           currency?.prefixToken ?? chain.bech32Config?.bech32PrefixAccAddr,
         coinImageUrl: getValues("icon") ?? null,
