@@ -27,12 +27,11 @@ import { navigate } from "@src/router/root";
 import { ChainIdEnum } from "@owallet/common";
 import { API } from "@src/common/api";
 import { chainIcons } from "@oraichain/oraidex-common";
-
 import { metrics } from "@src/themes";
 import FastImage from "react-native-fast-image";
 import OWText from "@src/components/text/ow-text";
 import { HistoryCard } from "@src/screens/transactions";
-import { ArrowOpsiteUpDownIcon, DownArrowIcon } from "@src/components/icon";
+import { DownArrowIcon } from "@src/components/icon";
 
 export const TokensCardAll: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -52,22 +51,10 @@ export const TokensCardAll: FunctionComponent<{
   const [more, setMore] = useState(true);
   const [activeTab, setActiveTab] = useState("tokens");
   const [yesterdayAssets, setYesterdayAssets] = useState([]);
-  const [queryBalances, setQueryBalances] = useState({});
   const [isPending, startTransition] = useTransition();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
-
-  useEffect(() => {
-    InteractionManager.runAfterInteractions(() => {
-      const queries = queriesStore.get(chainStore.current.chainId);
-      const address = account.getAddressDisplay(
-        keyRingStore.keyRingLedgerAddresses
-      );
-      const balances = queries.queryBalances.getQueryBech32Address(address);
-      setQueryBalances(balances);
-    });
-  }, [chainStore.current.chainId]);
 
   const getYesterdayAssets = async () => {
     appInitStore.updateYesterdayPriceFeed({});
