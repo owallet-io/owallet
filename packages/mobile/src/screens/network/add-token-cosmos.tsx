@@ -60,9 +60,9 @@ export const AddTokenCosmosScreen = observer(
       tokensStore,
       appInitStore,
     } = useStore();
-    const tokensOf = tokensStore.getTokensOf(chainStore.current.chainId);
+    const tokensOf = tokensStore.getTokensOf(selectedChain.chainId);
 
-    const accountInfo = accountStore.getAccount(chainStore.current.chainId);
+    const accountInfo = accountStore.getAccount(selectedChain.chainId);
     const [loading, setLoading] = useState(false);
     const [coidgeckoId, setCoingeckoID] = useState(null);
 
@@ -91,11 +91,11 @@ export const AddTokenCosmosScreen = observer(
     }, [chainStore, contractAddress, form, tokensStore.waitingSuggestedToken]);
 
     const isSecret20 =
-      (chainStore.current.features ?? []).find(
+      (selectedChain.features ?? []).find(
         (feature) => feature === "secretwasm"
       ) != null;
 
-    const queries = queriesStore.get(chainStore.current.chainId);
+    const queries = queriesStore.get(selectedChain.chainId);
     const query = isSecret20
       ? queries.secret.querySecret20ContractInfo
       : queries.cosmwasm.querycw20ContractInfo;
