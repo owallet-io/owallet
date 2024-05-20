@@ -19,6 +19,7 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import OWText from "@src/components/text/ow-text";
 import { useTheme } from "@src/themes/theme-provider";
 import { DownArrowIcon } from "@src/components/icon";
+import { SelectTokenTypeModal } from "./select-token-type";
 
 const mockToken = {
   coinDenom: "USDC",
@@ -69,10 +70,12 @@ export const AddTokenEVMScreen = observer(
       accountStore,
       tokensStore,
       appInitStore,
+      modalStore,
     } = useStore();
     const tokensOf = tokensStore.getTokensOf(selectedChain?.chainId);
     const [loading, setLoading] = useState(false);
-    const [coidgeckoId, setCoingeckoID] = useState(null);
+    const [coingeckoId, setCoingeckoID] = useState(null);
+    const [selectedType, setSelectedType] = useState("erc20");
 
     const accountInfo = accountStore.getAccount(chainStore.current.chainId);
 
@@ -138,6 +141,26 @@ export const AddTokenEVMScreen = observer(
       }
     };
 
+    const _onPressSelectType = () => {
+      modalStore.setOptions({
+        bottomSheetModalConfig: {
+          enablePanDownToClose: false,
+          enableOverDrag: false,
+        },
+      });
+
+      modalStore.setChildren(
+        <SelectTokenTypeModal
+          selected={selectedType}
+          list={["erc20", "trc20", "bep20", "secret20"]}
+          onPress={(type) => {
+            setSelectedType(type);
+            modalStore.close();
+          }}
+        />
+      );
+    };
+
     useEffect(() => {
       getTokenCoingeckoId();
       if (tokenInfo) {
@@ -177,12 +200,10 @@ export const AddTokenEVMScreen = observer(
       setLoading(false);
       const token: TokenType = {
         coinDenom: currency.coinDenom,
-        coinMinimalDenom: `${
-          currency.type
-        }_${currency.coinDenom.toLowerCase()}`,
+        coinMinimalDenom: `${selectedType}_${currency.coinDenom.toLowerCase()}`,
         contractAddress: currency.contractAddress,
         coinDecimals: currency.coinDecimals,
-        coinGeckoId: coidgeckoId,
+        coinGeckoId: coingeckoId,
         prefixToken:
           currency?.prefixToken ?? chain.bech32Config?.bech32PrefixAccAddr,
         coinImageUrl: getValues("icon") ?? null,
@@ -213,8 +234,8 @@ export const AddTokenEVMScreen = observer(
         if (tokenInfo?.decimals != null && tokenInfo.name && tokenInfo.symbol) {
           setLoading(true);
           if (!isSecret20) {
-            const currency: ERC20Currency = {
-              type: "erc20",
+            const currency: any = {
+              type: selectedType,
               contractAddress: data?.contractAddress,
               coinMinimalDenom: tokenInfo.name,
               coinDenom: tokenInfo.symbol,
@@ -363,6 +384,35 @@ export const AddTokenEVMScreen = observer(
               name="contractAddress"
               defaultValue=""
             />
+            <TouchableOpacity
+              onPress={_onPressSelectType}
+              style={{
+                borderColor: colors["neutral-border-strong"],
+                borderRadius: 12,
+                borderWidth: 1,
+                padding: 16,
+                marginBottom: 12,
+              }}
+            >
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <OWText style={{ paddingRight: 4 }}>Select Type</OWText>
+                <DownArrowIcon
+                  height={10}
+                  color={colors["neutral-text-title"]}
+                />
+              </View>
+              {selectedType ? (
+                <OWText
+                  style={{
+                    fontSize: 14,
+                    color: colors["neutral-text-title"],
+                    fontWeight: "600",
+                  }}
+                >
+                  {selectedType.toUpperCase()}
+                </OWText>
+              ) : null}
+            </TouchableOpacity>
             <Controller
               control={control}
               rules={{
