@@ -10,22 +10,29 @@ import OasisTxsScreen from "@src/screens/transactions/oasis/oasis-txs-screen";
 import TronTxsScreen from "@src/screens/transactions/tron/tron-txs-screen";
 import OraichainTxsScreen from "@src/screens/transactions/oraichain/oraichain-txs-screen";
 
+const mappingChainIdToHistoryScreen = (network: ChainIdEnum) => {
+  switch (network) {
+    case ChainIdEnum.Bitcoin:
+      return <BtcTxsScreen />;
+    case ChainIdEnum.Oasis:
+    case ChainIdEnum.OasisSapphire:
+    case ChainIdEnum.OasisEmerald:
+      return <OasisTxsScreen />;
+    case ChainIdEnum.TRON:
+      return <TronTxsScreen />;
+    case ChainIdEnum.Ethereum:
+    case ChainIdEnum.BNBChain:
+      return <EvmTxsScreen />;
+    case ChainIdEnum.Oraichain:
+      return <OraichainTxsScreen />;
+    default:
+      return <EmptyTx />;
+  }
+};
 const TxTransactionsScreen = observer(() => {
-  const { chainStore, accountStore, keyRingStore } = useStore();
-
+  const { chainStore } = useStore();
   const { chainId } = chainStore.current;
-  if (chainId === ChainIdEnum.Bitcoin) return <BtcTxsScreen />;
-  if (chainId === ChainIdEnum.TRON) return <TronTxsScreen />;
-  if (chainId === ChainIdEnum.Oraichain) return <OraichainTxsScreen />;
-  if (chainId === ChainIdEnum.BNBChain || chainId === ChainIdEnum.Ethereum)
-    return <EvmTxsScreen />;
-  if (
-    chainId === ChainIdEnum.Oasis ||
-    chainId === ChainIdEnum.OasisSapphire ||
-    chainId === ChainIdEnum.OasisEmerald
-  )
-    return <OasisTxsScreen />;
-  return <EmptyTx />;
+  return <>{mappingChainIdToHistoryScreen(chainId as ChainIdEnum)}</>;
 });
 
 export default TxTransactionsScreen;
