@@ -37,7 +37,8 @@ export const AddTokenScreen = observer(() => {
   };
 
   if (selectedChain) {
-    if (selectedChain.features.includes("cosmwasm")) {
+    // if (selectedChain.features.includes("cosmwasm")) {
+    if (selectedChain.networkType === "cosmos") {
       return (
         <AddTokenCosmosScreen
           _onPressNetworkModal={_onPressNetworkModal}
@@ -73,24 +74,6 @@ export const AddTokenScreen = observer(() => {
             <DownArrowIcon height={10} color={colors["neutral-text-title"]} />
           </View>
         </TouchableOpacity>
-        {/* <TextInput
-          inputStyle={{
-            borderColor: colors["neutral-border-strong"],
-            borderRadius: 12
-          }}
-          style={{ fontWeight: "600", paddingLeft: 4, fontSize: 15 }}
-          onSubmitEditing={() => {}}
-          label=""
-          topInInputContainer={
-            <View style={{ paddingBottom: 4 }}>
-              <OWText>Select Chain</OWText>
-            </View>
-          }
-          returnKeyType="next"
-          value={"-"}
-          defaultValue={"-"}
-          editable={false}
-        /> */}
       </ScrollView>
     </PageWithBottom>
   );
