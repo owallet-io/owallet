@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
-import { metrics, typography } from "../../themes";
-import { OWalletLogo } from "../register/owallet-logo";
+import { metrics } from "../../themes";
 import { Text } from "@src/components/text";
 import { Controller, useForm } from "react-hook-form";
 import { TextInput } from "../../components/input";
-import { LoadingSpinner } from "../../components/spinner";
 import { useSmartNavigation } from "../../navigation.provider";
 import { useStore } from "../../stores";
 import CheckBox from "react-native-check-box";
@@ -38,14 +36,18 @@ interface TokenType {
   coinMinimalDenom: string;
   contractAddress: string;
   coinDecimals: number;
-  bridgeTo: Array<string>;
   coinGeckoId: string;
   prefixToken: string;
+  bridgeTo?: Array<string>;
   coinImageUrl?: string;
 }
 interface FormData {
-  viewingKey: string;
+  viewingKey?: string;
+  icon?: string;
   contractAddress: string;
+  name: string;
+  symbol: string;
+  decimals: string;
 }
 
 export const AddTokenEVMScreen = observer(
@@ -54,6 +56,8 @@ export const AddTokenEVMScreen = observer(
       control,
       handleSubmit,
       watch,
+      setValue,
+      getValues,
       formState: { errors },
     } = useForm<FormData>();
     const smartNavigation = useSmartNavigation();
@@ -117,9 +121,12 @@ export const AddTokenEVMScreen = observer(
 
           // Find the matching coin based on contract address
           const coin = coins.find((c) => {
-            return c.symbol.toLowerCase() === tokenInfo?.symbol.toLowerCase();
+            return (
+              c.id.toLowerCase() === tokenInfo?.symbol.toLowerCase() ||
+              c.symbol.toLowerCase() === tokenInfo?.symbol.toLowerCase() ||
+              c.name.toLowerCase() === tokenInfo?.symbol.toLowerCase()
+            );
           });
-
           if (coin) {
             setCoingeckoID(coin.id);
           } else {
@@ -133,6 +140,11 @@ export const AddTokenEVMScreen = observer(
 
     useEffect(() => {
       getTokenCoingeckoId();
+      if (tokenInfo) {
+        setValue("name", tokenInfo.name);
+        setValue("symbol", tokenInfo.symbol);
+        setValue("decimals", tokenInfo.decimals?.toString());
+      }
     }, [contractAddress, tokenInfo]);
 
     const [isOpenSecret20ViewingKey, setIsOpenSecret20ViewingKey] =
@@ -170,10 +182,10 @@ export const AddTokenEVMScreen = observer(
         }_${currency.coinDenom.toLowerCase()}`,
         contractAddress: currency.contractAddress,
         coinDecimals: currency.coinDecimals,
-        bridgeTo: ["Oraichain"],
         coinGeckoId: coidgeckoId,
         prefixToken:
           currency?.prefixToken ?? chain.bech32Config?.bech32PrefixAccAddr,
+        coinImageUrl: getValues("icon") ?? null,
       };
 
       const newCurrencies = [...chain.currencies];
@@ -181,7 +193,7 @@ export const AddTokenEVMScreen = observer(
 
       const newChainInfos = [...currentChainInfos];
 
-      // Find the object with name 'Jane' and update its age
+      // Find the object with chainId and update its age
       for (let i = 0; i < newChainInfos.length; i++) {
         if (newChainInfos[i].chainId === selectedChain.chainId) {
           newChainInfos[i].currencies = newCurrencies;
@@ -351,66 +363,146 @@ export const AddTokenEVMScreen = observer(
               name="contractAddress"
               defaultValue=""
             />
-            <TextInput
-              inputStyle={{
-                borderColor: colors["neutral-border-strong"],
-                borderRadius: 12,
+            <Controller
+              control={control}
+              rules={{
+                required: "Name is required",
               }}
-              style={styles.textInput}
-              onSubmitEditing={() => {
-                submit();
+              render={({ field: { onChange, onBlur, value, ref } }) => {
+                return (
+                  <TextInput
+                    inputStyle={{
+                      borderColor: errors.name?.message
+                        ? colors["error-border-default"]
+                        : colors["neutral-border-strong"],
+                      borderRadius: 12,
+                    }}
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value}
+                    style={styles.textInput}
+                    onSubmitEditing={() => {
+                      submit();
+                    }}
+                    label=""
+                    topInInputContainer={
+                      <View style={{ paddingBottom: 4 }}>
+                        <OWText>Name</OWText>
+                      </View>
+                    }
+                    returnKeyType="next"
+                    placeholder={"Enter token name"}
+                    editable={true}
+                  />
+                );
               }}
-              label=""
-              topInInputContainer={
-                <View style={{ paddingBottom: 4 }}>
-                  <OWText>Name</OWText>
-                </View>
-              }
-              returnKeyType="next"
-              error={errors.contractAddress?.message}
-              value={tokenInfo?.name ?? "-"}
-              defaultValue={"-"}
-              editable={true}
+              name="name"
+              defaultValue={tokenInfo?.name}
             />
-            <TextInput
-              inputStyle={{
-                borderColor: colors["neutral-border-strong"],
-                borderRadius: 12,
+            <Controller
+              control={control}
+              rules={{
+                required: "Symbol is required",
               }}
-              style={styles.textInput}
-              onSubmitEditing={() => {
-                submit();
+              render={({ field: { onChange, onBlur, value, ref } }) => {
+                return (
+                  <TextInput
+                    inputStyle={{
+                      borderColor: errors.symbol?.message
+                        ? colors["error-border-default"]
+                        : colors["neutral-border-strong"],
+                      borderRadius: 12,
+                    }}
+                    style={styles.textInput}
+                    onSubmitEditing={() => {
+                      submit();
+                    }}
+                    label=""
+                    placeholder={"Enter token symbol"}
+                    topInInputContainer={
+                      <View style={{ paddingBottom: 4 }}>
+                        <OWText>Symbol</OWText>
+                      </View>
+                    }
+                    returnKeyType="next"
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value}
+                    editable={true}
+                  />
+                );
               }}
-              label=""
-              topInInputContainer={
-                <View style={{ paddingBottom: 4 }}>
-                  <OWText>Symbol</OWText>
-                </View>
-              }
-              returnKeyType="next"
-              value={tokenInfo?.symbol ?? "-"}
-              defaultValue={"-"}
-              editable={true}
+              name="symbol"
+              defaultValue={tokenInfo?.symbol}
             />
-            <TextInput
-              inputStyle={{
-                borderColor: colors["neutral-border-strong"],
-                borderRadius: 12,
+
+            <Controller
+              control={control}
+              rules={{
+                required: "Decimals is required",
               }}
-              style={styles.textInput}
-              onSubmitEditing={() => {
-                submit();
+              render={({ field: { onChange, onBlur, value, ref } }) => {
+                return (
+                  <TextInput
+                    inputStyle={{
+                      borderColor: errors.decimals?.message
+                        ? colors["error-border-default"]
+                        : colors["neutral-border-strong"],
+                      borderRadius: 12,
+                    }}
+                    style={styles.textInput}
+                    onSubmitEditing={() => {
+                      submit();
+                    }}
+                    placeholder={"Enter token decimals"}
+                    label=""
+                    topInInputContainer={
+                      <View style={{ paddingBottom: 4 }}>
+                        <OWText>Decimals</OWText>
+                      </View>
+                    }
+                    returnKeyType="next"
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value}
+                    editable={true}
+                  />
+                );
               }}
-              label=""
-              topInInputContainer={
-                <View style={{ paddingBottom: 4 }}>
-                  <OWText>Decimals</OWText>
-                </View>
-              }
-              returnKeyType="next"
-              value={tokenInfo?.decimals?.toString() ?? "-"}
-              defaultValue={"-"}
-              editable={true}
+              name="decimals"
+              defaultValue={tokenInfo?.decimals?.toString()}
+            />
+
+            <Controller
+              control={control}
+              render={({ field: { onChange, onBlur, value, ref } }) => {
+                return (
+                  <TextInput
+                    inputStyle={{
+                      borderColor: colors["neutral-border-strong"],
+                      borderRadius: 12,
+                    }}
+                    style={styles.textInput}
+                    onSubmitEditing={() => {
+                      submit();
+                    }}
+                    placeholder={"Enter token icon URL"}
+                    label=""
+                    topInInputContainer={
+                      <View style={{ paddingBottom: 4 }}>
+                        <OWText>Token icon (Optional)</OWText>
+                      </View>
+                    }
+                    returnKeyType="next"
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value}
+                    editable={true}
+                  />
+                );
+              }}
+              name="icon"
+              defaultValue={""}
             />
 
             {isSecret20 ? (

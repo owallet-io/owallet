@@ -21,8 +21,23 @@ import { useTheme } from "@src/themes/theme-provider";
 import { DownArrowIcon } from "@src/components/icon";
 
 interface FormData {
-  viewingKey: string;
+  viewingKey?: string;
+  icon?: string;
   contractAddress: string;
+  name: string;
+  symbol: string;
+  decimals: string;
+}
+
+interface TokenType {
+  coinDenom: string;
+  coinMinimalDenom: string;
+  contractAddress: string;
+  coinDecimals: number;
+  coinGeckoId: string;
+  prefixToken: string;
+  bridgeTo?: Array<string>;
+  coinImageUrl?: string;
 }
 
 export const AddTokenCosmosScreen = observer(
@@ -32,13 +47,19 @@ export const AddTokenCosmosScreen = observer(
       handleSubmit,
       watch,
       setValue,
-
+      getValues,
       formState: { errors },
     } = useForm<FormData>();
     const smartNavigation = useSmartNavigation();
     const { colors } = useTheme();
 
-    const { chainStore, queriesStore, accountStore, tokensStore } = useStore();
+    const {
+      chainStore,
+      queriesStore,
+      accountStore,
+      tokensStore,
+      appInitStore,
+    } = useStore();
     const tokensOf = tokensStore.getTokensOf(chainStore.current.chainId);
 
     const accountInfo = accountStore.getAccount(chainStore.current.chainId);
@@ -115,13 +136,50 @@ export const AddTokenCosmosScreen = observer(
 
     useEffect(() => {
       getTokenCoingeckoId();
+      if (tokenInfo) {
+        setValue("name", tokenInfo.name);
+        setValue("symbol", tokenInfo.symbol);
+        setValue("decimals", tokenInfo.decimals?.toString());
+      }
     }, [contractAddress, tokenInfo]);
 
     const [isOpenSecret20ViewingKey, setIsOpenSecret20ViewingKey] =
       useState(false);
+    const addTokenSuccess = (currency) => {
+      const currentChainInfos = appInitStore.getChainInfos;
 
-    const addTokenSuccess = () => {
+      const chain = currentChainInfos.find(
+        (c) => c.chainId === selectedChain.chainId
+      );
+
       setLoading(false);
+      const token: TokenType = {
+        coinDenom: currency.coinDenom,
+        coinMinimalDenom: `${
+          currency.type
+        }_${currency.coinDenom.toLowerCase()}`,
+        contractAddress: currency.contractAddress,
+        coinDecimals: currency.coinDecimals,
+        coinGeckoId: coidgeckoId,
+        prefixToken:
+          currency?.prefixToken ?? chain.bech32Config?.bech32PrefixAccAddr,
+        coinImageUrl: getValues("icon") ?? null,
+      };
+
+      const newCurrencies = [...chain.currencies];
+      newCurrencies.push(token);
+
+      const newChainInfos = [...currentChainInfos];
+
+      // Find the object with chainId and update its age
+      for (let i = 0; i < newChainInfos.length; i++) {
+        if (newChainInfos[i].chainId === selectedChain.chainId) {
+          newChainInfos[i].currencies = newCurrencies;
+          break; // Exit the loop since we found the object
+        }
+      }
+
+      appInitStore.updateChainInfos(newChainInfos);
       smartNavigation.navigateSmart("Home", {});
       showToast({
         message: "Token added",
@@ -159,7 +217,7 @@ export const AddTokenCosmosScreen = observer(
             };
 
             await tokensOf.addToken(currency);
-            addTokenSuccess();
+            addTokenSuccess(currency);
           } else {
             let viewingKey = data.viewingKey;
             if (!viewingKey && !isOpenSecret20ViewingKey) {
@@ -192,7 +250,7 @@ export const AddTokenCosmosScreen = observer(
               };
 
               await tokensOf.addToken(currency);
-              addTokenSuccess();
+              addTokenSuccess(currency);
             }
           }
         }
@@ -299,66 +357,146 @@ export const AddTokenCosmosScreen = observer(
               name="contractAddress"
               defaultValue=""
             />
-            <TextInput
-              inputStyle={{
-                borderColor: colors["neutral-border-strong"],
-                borderRadius: 12,
+            <Controller
+              control={control}
+              rules={{
+                required: "Name is required",
               }}
-              style={styles.textInput}
-              onSubmitEditing={() => {
-                submit();
+              render={({ field: { onChange, onBlur, value, ref } }) => {
+                return (
+                  <TextInput
+                    inputStyle={{
+                      borderColor: errors.name?.message
+                        ? colors["error-border-default"]
+                        : colors["neutral-border-strong"],
+                      borderRadius: 12,
+                    }}
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value}
+                    style={styles.textInput}
+                    onSubmitEditing={() => {
+                      submit();
+                    }}
+                    label=""
+                    topInInputContainer={
+                      <View style={{ paddingBottom: 4 }}>
+                        <OWText>Name</OWText>
+                      </View>
+                    }
+                    returnKeyType="next"
+                    placeholder={"Enter token name"}
+                    editable={true}
+                  />
+                );
               }}
-              label=""
-              topInInputContainer={
-                <View style={{ paddingBottom: 4 }}>
-                  <OWText>Name</OWText>
-                </View>
-              }
-              returnKeyType="next"
-              error={errors.contractAddress?.message}
-              value={tokenInfo?.name ?? "-"}
-              defaultValue={"-"}
-              editable={true}
+              name="name"
+              defaultValue={tokenInfo?.name}
             />
-            <TextInput
-              inputStyle={{
-                borderColor: colors["neutral-border-strong"],
-                borderRadius: 12,
+            <Controller
+              control={control}
+              rules={{
+                required: "Symbol is required",
               }}
-              style={styles.textInput}
-              onSubmitEditing={() => {
-                submit();
+              render={({ field: { onChange, onBlur, value, ref } }) => {
+                return (
+                  <TextInput
+                    inputStyle={{
+                      borderColor: errors.symbol?.message
+                        ? colors["error-border-default"]
+                        : colors["neutral-border-strong"],
+                      borderRadius: 12,
+                    }}
+                    style={styles.textInput}
+                    onSubmitEditing={() => {
+                      submit();
+                    }}
+                    label=""
+                    placeholder={"Enter token symbol"}
+                    topInInputContainer={
+                      <View style={{ paddingBottom: 4 }}>
+                        <OWText>Symbol</OWText>
+                      </View>
+                    }
+                    returnKeyType="next"
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value}
+                    editable={true}
+                  />
+                );
               }}
-              label=""
-              topInInputContainer={
-                <View style={{ paddingBottom: 4 }}>
-                  <OWText>Symbol</OWText>
-                </View>
-              }
-              returnKeyType="next"
-              value={tokenInfo?.symbol ?? "-"}
-              defaultValue={"-"}
-              editable={true}
+              name="symbol"
+              defaultValue={tokenInfo?.symbol}
             />
-            <TextInput
-              inputStyle={{
-                borderColor: colors["neutral-border-strong"],
-                borderRadius: 12,
+
+            <Controller
+              control={control}
+              rules={{
+                required: "Decimals is required",
               }}
-              style={styles.textInput}
-              onSubmitEditing={() => {
-                submit();
+              render={({ field: { onChange, onBlur, value, ref } }) => {
+                return (
+                  <TextInput
+                    inputStyle={{
+                      borderColor: errors.decimals?.message
+                        ? colors["error-border-default"]
+                        : colors["neutral-border-strong"],
+                      borderRadius: 12,
+                    }}
+                    style={styles.textInput}
+                    onSubmitEditing={() => {
+                      submit();
+                    }}
+                    placeholder={"Enter token decimals"}
+                    label=""
+                    topInInputContainer={
+                      <View style={{ paddingBottom: 4 }}>
+                        <OWText>Decimals</OWText>
+                      </View>
+                    }
+                    returnKeyType="next"
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value}
+                    editable={true}
+                  />
+                );
               }}
-              label=""
-              topInInputContainer={
-                <View style={{ paddingBottom: 4 }}>
-                  <OWText>Decimals</OWText>
-                </View>
-              }
-              returnKeyType="next"
-              value={tokenInfo?.decimals.toString() ?? "-"}
-              defaultValue={"-"}
-              editable={true}
+              name="decimals"
+              defaultValue={tokenInfo?.decimals?.toString()}
+            />
+
+            <Controller
+              control={control}
+              render={({ field: { onChange, onBlur, value, ref } }) => {
+                return (
+                  <TextInput
+                    inputStyle={{
+                      borderColor: colors["neutral-border-strong"],
+                      borderRadius: 12,
+                    }}
+                    style={styles.textInput}
+                    onSubmitEditing={() => {
+                      submit();
+                    }}
+                    placeholder={"Enter token icon URL"}
+                    label=""
+                    topInInputContainer={
+                      <View style={{ paddingBottom: 4 }}>
+                        <OWText>Token icon (Optional)</OWText>
+                      </View>
+                    }
+                    returnKeyType="next"
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value}
+                    editable={true}
+                  />
+                );
+              }}
+              name="icon"
+              defaultValue={""}
             />
 
             {isSecret20 ? (
