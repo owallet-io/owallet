@@ -16,13 +16,11 @@ import React, { FunctionComponent, useEffect, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { OWButton } from "../../../../components/button";
-import { Scanner } from "../../../../components/icon";
 import {
   AddressInput,
   MemoInput,
   TextInput,
 } from "../../../../components/input";
-import { PageWithScrollView } from "../../../../components/page";
 import { useSmartNavigation } from "../../../../navigation.provider";
 import { useStore } from "../../../../stores";
 import { metrics, spacing } from "../../../../themes";
@@ -140,7 +138,7 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
         />
       }
     >
-      <PageHeader title="add new contact" colors={colors} />
+      <PageHeader title="add new contact" />
       <ScrollView
         contentContainerStyle={{ height: metrics.screenHeight }}
         showsVerticalScrollIndicator={false}
@@ -233,81 +231,5 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
         </OWBox>
       </ScrollView>
     </PageWithBottom>
-  );
-
-  return (
-    // <PageWithScrollView behavior='position' keyboardVerticalOffset={keyboardVerticalOffset}>
-    <PageWithScrollView
-      backgroundColor={colors["background"]}
-      style={{ marginTop: spacing["24"] }}
-    >
-      <OWBox>
-        <TextInput
-          label="User name"
-          value={name}
-          onChangeText={(text) => setName(text)}
-          labelStyle={styles.addNewBookLabel}
-          inputContainerStyle={styles.addNewBookInput}
-          placeholder="Type your user name"
-        />
-        <AddressInput
-          label="Wallet address"
-          recipientConfig={recipientConfig}
-          memoConfig={memoConfig}
-          disableAddressBook={false}
-          labelStyle={styles.addNewBookLabel}
-          inputContainerStyle={styles.addNewBookInput}
-          placeholder="Tap to paste"
-          inputRight={
-            <TouchableOpacity
-              onPress={() => {
-                smartNavigation.navigateSmart("Camera", {
-                  screenCurrent: "addressbook",
-                  name,
-                });
-              }}
-            >
-              <Scanner color={colors["neutral-icon-on-light"]} />
-            </TouchableOpacity>
-          }
-        />
-        <MemoInput
-          label="Memo (optional)"
-          memoConfig={memoConfig}
-          labelStyle={styles.addNewBookLabel}
-          inputContainerStyle={{
-            ...styles.addNewBookInput,
-            height: 190,
-          }}
-          multiline={false}
-          placeholder="Type memo here"
-        />
-        <OWButton
-          label="Save"
-          size="large"
-          type="primary"
-          disabled={
-            !name ||
-            recipientConfig.getError() != null ||
-            memoConfig.getError() != null
-          }
-          onPress={async () => {
-            if (
-              name &&
-              recipientConfig.getError() == null &&
-              memoConfig.getError() == null
-            ) {
-              await addressBookConfig.addAddressBook({
-                name,
-                address: recipientConfig.rawRecipient,
-                memo: memoConfig.memo,
-              });
-              smartNavigation.goBack();
-              // smartNavigation.navigateSmart('AddressBook', {});
-            }
-          }}
-        />
-      </OWBox>
-    </PageWithScrollView>
   );
 });

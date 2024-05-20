@@ -24,11 +24,17 @@ import { ChainUpdaterService } from "@owallet/background";
 import { getBase58Address, ChainIdEnum } from "@owallet/common";
 import { TokensCardAll } from "./tokens-card-all";
 import { AccountBoxAll } from "./account-box-new";
-import { oraichainNetwork } from "@oraichain/oraidex-common";
+import {
+  chainInfos,
+  getTokensFromNetwork,
+  oraichainNetwork,
+  TokenItemType,
+} from "@oraichain/oraidex-common";
 import { useCoinGeckoPrices, useLoadTokens } from "@owallet/hooks";
 import { showToast } from "@src/utils/helper";
 import { EarningCardNew } from "./earning-card-new";
 import { InjectedProviderUrl } from "../web/config";
+import { flatten } from "lodash";
 
 export const HomeScreen: FunctionComponent = observer((props) => {
   const [refreshing, setRefreshing] = React.useState(false);
@@ -50,6 +56,15 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   } = useStore();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
+
+  useEffect(() => {
+    if (
+      appInitStore.getChainInfos?.length <= 0 ||
+      !appInitStore.getChainInfos
+    ) {
+      appInitStore.updateChainInfos(chainInfos);
+    }
+  }, []);
 
   const currentChain = chainStore.current;
   const currentChainId = currentChain?.chainId;
@@ -122,7 +137,8 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   );
   useEffect(() => {
     onRefresh();
-  }, [address, chainStore.current.chainId]);
+  }, [address]);
+
   const onRefresh = React.useCallback(async () => {
     const queries = queriesStore.get(chainStore.current.chainId);
     if (chainStore.current.chainId === ChainIdEnum.TRON) {
@@ -160,13 +176,14 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       accountTron.evmosHexAddress &&
       accountKawaiiCosmos.bech32Address
     ) {
+      const customChainInfos = appInitStore.getChainInfos ?? chainInfos;
       const currentDate = Date.now();
       const differenceInMilliseconds = Math.abs(currentDate - refreshDate);
       const differenceInSeconds = differenceInMilliseconds / 1000;
       let timeoutId: NodeJS.Timeout;
       if (differenceInSeconds > 10) {
         universalSwapStore.setLoaded(false);
-        onFetchAmount();
+        onFetchAmount(customChainInfos);
       } else {
         console.log("The dates are 10 seconds or less apart.");
       }
@@ -188,12 +205,10 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   const loadTokenAmounts = useLoadTokens(universalSwapStore);
 
   // handle fetch all tokens of all chains
-  const handleFetchAmounts = async (params: {
-    orai?: string;
-    eth?: string;
-    tron?: string;
-    kwt?: string;
-  }) => {
+  const handleFetchAmounts = async (
+    params: { orai?: string; eth?: string; tron?: string; kwt?: string },
+    customChainInfos
+  ) => {
     const { orai, eth, tron, kwt } = params;
 
     let loadTokenParams = {};
@@ -203,6 +218,18 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         chainId: ChainIdEnum.Oraichain,
         rpc: oraichainNetwork.rpc,
       };
+
+      // other chains, oraichain
+      const otherChainTokens = flatten(
+        customChainInfos
+          .filter((chainInfo) => chainInfo.chainId !== "Oraichain")
+          .map(getTokensFromNetwork)
+      );
+      const oraichainTokens: TokenItemType[] =
+        getTokensFromNetwork(oraichainNetwork);
+
+      const tokens = [otherChainTokens, oraichainTokens];
+      const flattenTokens = flatten(tokens);
 
       loadTokenParams = {
         ...loadTokenParams,
@@ -215,6 +242,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
           universalSwapStore?.getTokenReload?.length > 0
             ? universalSwapStore.getTokenReload
             : null,
+        customChainInfos: flattenTokens,
       };
 
       loadTokenAmounts(loadTokenParams);
@@ -232,17 +260,20 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     universalSwapStore.setLoaded(false);
   }, [accountOrai.bech32Address]);
 
-  const onFetchAmount = () => {
+  const onFetchAmount = (customChainInfos) => {
     let timeoutId;
     if (accountOrai.isNanoLedger) {
       if (Object.keys(keyRingStore.keyRingLedgerAddresses).length > 0) {
         timeoutId = setTimeout(() => {
-          handleFetchAmounts({
-            orai: accountOrai.bech32Address,
-            eth: keyRingStore.keyRingLedgerAddresses.eth ?? null,
-            tron: keyRingStore.keyRingLedgerAddresses.trx ?? null,
-            kwt: accountKawaiiCosmos.bech32Address,
-          });
+          handleFetchAmounts(
+            {
+              orai: accountOrai.bech32Address,
+              eth: keyRingStore.keyRingLedgerAddresses.eth ?? null,
+              tron: keyRingStore.keyRingLedgerAddresses.trx ?? null,
+              kwt: accountKawaiiCosmos.bech32Address,
+            },
+            customChainInfos
+          );
         }, 800);
       }
     } else if (
@@ -252,12 +283,15 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       accountKawaiiCosmos.bech32Address
     ) {
       timeoutId = setTimeout(() => {
-        handleFetchAmounts({
-          orai: accountOrai.bech32Address,
-          eth: accountEth.evmosHexAddress,
-          tron: getBase58Address(accountTron.evmosHexAddress),
-          kwt: accountKawaiiCosmos.bech32Address,
-        });
+        handleFetchAmounts(
+          {
+            orai: accountOrai.bech32Address,
+            eth: accountEth.evmosHexAddress,
+            tron: getBase58Address(accountTron.evmosHexAddress),
+            kwt: accountKawaiiCosmos.bech32Address,
+          },
+          customChainInfos
+        );
       }, 1000);
     }
 
@@ -265,17 +299,19 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   };
 
   useEffect(() => {
-    let timeoutId;
-    InteractionManager.runAfterInteractions(() => {
-      startTransition(() => {
-        timeoutId = onFetchAmount();
+    if (appInitStore.getChainInfos) {
+      let timeoutId;
+      InteractionManager.runAfterInteractions(() => {
+        startTransition(() => {
+          timeoutId = onFetchAmount(appInitStore.getChainInfos);
+        });
       });
-    });
-    // Clean up the timeout if the component unmounts or the dependency changes
-    return () => {
-      if (timeoutId) clearTimeout(timeoutId);
-    };
-  }, [accountOrai.bech32Address]);
+      // Clean up the timeout if the component unmounts or the dependency changes
+      return () => {
+        if (timeoutId) clearTimeout(timeoutId);
+      };
+    }
+  }, [accountOrai.bech32Address, appInitStore.getChainInfos]);
 
   const { data: prices } = useCoinGeckoPrices();
 

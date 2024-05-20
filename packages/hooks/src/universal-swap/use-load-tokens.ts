@@ -25,7 +25,7 @@ import {
 import { ChainIdEnum, isEvmNetworkNativeSwapSupported } from "@owallet/common";
 import { CWStargate } from "@owallet/common";
 import { AccountWithAll } from "@owallet/stores";
-import { reduce } from "lodash";
+import { uniqBy } from "lodash";
 import axios from "axios";
 
 export const getUtxos = async (address: string, baseUrl: string) => {
@@ -56,6 +56,7 @@ export type LoadTokenParams = {
   kwtAddress?: string;
   cwStargate?: CWStargateType;
   tokenReload?: Array<any>;
+  customChainInfos?: Array<any>;
 };
 type AmountDetails = { [denom: string]: string };
 
@@ -117,8 +118,26 @@ async function loadTokens(
     kwtAddress,
     cwStargate,
     tokenReload,
+    customChainInfos,
   }: LoadTokenParams
 ) {
+  console.log("customChainInfo loadTokens", customChainInfos);
+
+  const customEvmTokens = uniqBy(
+    customChainInfos.filter(
+      (token) =>
+        // !token.contractAddress &&
+        token.denom &&
+        !token.cosmosBased &&
+        token.coinGeckoId &&
+        token.chainId !== "kawaii_6886-1"
+    ),
+    (c) => c.denom
+  );
+
+  const och = customEvmTokens.filter((cem) => cem.denom.includes("pendle"));
+  console.log("och", och);
+
   if (tokenReload) {
     tokenReload.map((t) => {
       if (t.networkType === "cosmos") {
@@ -204,7 +223,8 @@ async function loadTokens(
         metamaskAddress,
         evmChains,
         false,
-        tokenReload
+        tokenReload,
+        customEvmTokens
       );
     }, 500);
   }
@@ -395,11 +415,13 @@ async function loadEvmEntries(
   address: string,
   chain: CustomChainInfo,
   tokenReload?: Array<any>,
+  customEvmTokens?: Array<any>,
   multicallCustomContractAddress?: string,
   retryCount?: number
 ): Promise<[string, string][]> {
   try {
-    const tokens = evmTokens.filter((t) => {
+    const tokensEVM = customEvmTokens ?? evmTokens;
+    const tokens = tokensEVM.filter((t) => {
       let result;
       if (tokenReload) {
         tokenReload.map((token) => {
@@ -419,7 +441,7 @@ async function loadEvmEntries(
       return !!result;
     });
 
-    const nativeEvmToken = evmTokens.find(
+    const nativeEvmToken = tokensEVM.find(
       (t) =>
         !t.contractAddress &&
         isEvmNetworkNativeSwapSupported(chain.chainId) &&
@@ -467,6 +489,7 @@ async function loadEvmEntries(
       address,
       chain,
       tokenReload,
+      customEvmTokens,
       multicallCustomContractAddress,
       retry
     );
@@ -478,13 +501,16 @@ async function loadEvmAmounts(
   evmAddress: string,
   chains: CustomChainInfo[],
   isTronAddress: boolean,
-  tokenReload?: Array<any>
+  tokenReload?: Array<any>,
+  customEvmTokens?: Array<any>
 ) {
   //@ts-ignore
   const amountDetails = Object.fromEntries(
     flatten(
       await Promise.all(
-        chains.map((chain) => loadEvmEntries(evmAddress, chain, tokenReload))
+        chains.map((chain) =>
+          loadEvmEntries(evmAddress, chain, tokenReload, customEvmTokens)
+        )
       )
     )
   );

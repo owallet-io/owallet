@@ -468,6 +468,10 @@ export const API = {
     let url = `history-detail/${id}?`;
     return API.get(url, config);
   },
+  getCoingeckoCoins: ({}, config: AxiosRequestConfig) => {
+    let url = `coins/list`;
+    return API.get(url, config);
+  },
 };
 const retryWrapper = (axios, options) => {
   const max_time = 1;

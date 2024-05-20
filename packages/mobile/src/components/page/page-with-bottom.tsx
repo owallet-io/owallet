@@ -16,11 +16,11 @@ export const PageWithBottom: FunctionComponent<
   ViewProps & {
     disableSafeArea?: boolean;
     backgroundColor?: string;
-    bottomGroup: ReactElement;
+    bottomGroup?: ReactElement;
     style?: object;
-    showHeader?: boolean;
+    showBottom?: boolean;
   }
-> = ({ children, bottomGroup, style, backgroundColor, showHeader = false }) => {
+> = ({ children, bottomGroup, style, backgroundColor, showBottom = true }) => {
   const { colors } = useTheme();
   const safeAreaInsets = useSafeAreaInsets();
 
@@ -40,18 +40,16 @@ export const PageWithBottom: FunctionComponent<
         },
       ]}
     >
-      {/*<View >*/}
-      {/*{showHeader ? <PageHeader title="" colors={colors} /> : null}*/}
-
       {children}
-      <View style={styles.aic}>
-        <View style={[styles.bottom, { paddingBottom: 20 + (bottom || 0) }]}>
-          {bottomGroup}
+      {showBottom && bottomGroup ? (
+        <View style={styles.aic}>
+          <View style={[styles.bottom, { paddingBottom: 20 + (bottom || 0) }]}>
+            {bottomGroup}
+          </View>
         </View>
-      </View>
-
-      {/*  <View>{children}</View>*/}
-      {/*</View>*/}
+      ) : (
+        <View />
+      )}
     </Wrapper>
   );
 };

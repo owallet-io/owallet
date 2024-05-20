@@ -100,6 +100,9 @@ export const SignEthereumModal: FunctionComponent<{
         console.error(error);
       }
     };
+
+    console.log("dataSign", dataSign);
+
     useEffect(() => {
       if (signInteractionStore.waitingEthereumData) {
         const data = signInteractionStore.waitingEthereumData;
