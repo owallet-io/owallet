@@ -137,7 +137,8 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   );
   useEffect(() => {
     onRefresh();
-  }, [address, chainStore.current.chainId]);
+  }, [address]);
+
   const onRefresh = React.useCallback(async () => {
     const queries = queriesStore.get(chainStore.current.chainId);
     if (chainStore.current.chainId === ChainIdEnum.TRON) {
