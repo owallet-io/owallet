@@ -224,11 +224,14 @@ export const TronDetailTx: FunctionComponent = observer((props) => {
                 btnCopy={false}
               />
             ) : null}
-            {item.netFee ? (
+            {item.netFee || item.netUsage ? (
               <ItemReceivedToken
                 label={"Bandwidth"}
                 valueDisplay={`${maskedNumber(
-                  new Int(item.netFee).div(new Int(1e3)).toString()
+                  new Int(item.netFee || 0)
+                    .add(new Int(item.netUsage || 0).mul(new Int(1e3)))
+                    .div(new Int(1e3))
+                    .toString()
                 )}`}
                 btnCopy={false}
               />

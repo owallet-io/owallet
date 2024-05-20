@@ -2,7 +2,8 @@ import { handleError, parseObjectToQueryString } from "@src/utils/helper";
 import axios, { AxiosRequestConfig } from "axios";
 import moment from "moment";
 import { Network } from "@tatumio/tatum";
-import { OasisNetwork } from "@owallet/common";
+import { CosmosNetwork, OasisNetwork } from "@owallet/common";
+
 export const API = {
   post: (path: string, params: any, config: AxiosRequestConfig) => {
     return axios.post(path, params, config);
@@ -420,6 +421,13 @@ export const API = {
     const url = `raw-tx-history/oasis/${address}?network=${network}&limit=${limit}&offset=${offset}`;
     return API.get(url, config);
   },
+  getOraichainTxs: async (
+    { address, offset, limit = 1, network = CosmosNetwork.ORAICHAIN },
+    config: AxiosRequestConfig
+  ) => {
+    const url = `raw-tx-history/oraichain/${address}?network=${network}&limit=${limit}&offset=${offset}`;
+    return API.get(url, config);
+  },
   getTronTxs: (
     { address, offset, limit = 1, network = Network.TRON },
     config: AxiosRequestConfig
@@ -439,6 +447,13 @@ export const API = {
     config: AxiosRequestConfig
   ) => {
     let url = `raw-tx-history/oasis/tx-detail/${hash}?network=${network}`;
+    return API.get(url, config);
+  },
+  getDetailOraichainTx: async (
+    { hash, network = CosmosNetwork.ORAICHAIN },
+    config: AxiosRequestConfig
+  ) => {
+    let url = `raw-tx-history/oraichain/tx-detail/${hash}`;
     return API.get(url, config);
   },
   getDetailTronTx: (

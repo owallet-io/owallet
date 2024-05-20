@@ -2,17 +2,20 @@ import { StyleSheet, TouchableOpacity, View } from "react-native";
 import React, { FC } from "react";
 import { formatContractAddress, maskedNumber } from "@src/utils/helper";
 import { useTheme } from "@src/themes/theme-provider";
+
 import { observer } from "mobx-react-lite";
 import { Text } from "@src/components/text";
 import OWIcon from "@src/components/ow-icon/ow-icon";
+
 import { CoinPretty, Dec, DecUtils } from "@owallet/unit";
 import moment from "moment/moment";
 import { navigate } from "@src/router/root";
 import { getTimeMilliSeconds, SCREENS } from "@src/common/constants";
 import { RightArrowIcon } from "@src/components/icon";
 import { useStore } from "@src/stores";
-
-export const TxOasisItem: FC<{
+import { unknownToken } from "@owallet/common";
+import { has } from "lodash";
+export const TxOraichainItem: FC<{
   item: any;
   index: number;
   data: any;
@@ -20,7 +23,19 @@ export const TxOasisItem: FC<{
   const { priceStore, chainStore } = useStore();
   const fiat = priceStore.defaultVsCurrency;
   if (!item) return;
-  const currency = chainStore.current.stakeCurrency;
+  console.log(item, "item");
+  let currency = unknownToken;
+  if (!!item.denom) {
+    currency = chainStore.current.stakeCurrency;
+  } else if (!!item.tokenContractAddress) {
+    const token = chainStore.current.currencies.find(({ coinMinimalDenom }) =>
+      coinMinimalDenom.includes(item.tokenContractAddress)
+    );
+    if (token) {
+      currency = token;
+      console.log(currency, "token");
+    }
+  }
   const onTransactionDetail = (item, currency) => {
     navigate(SCREENS.STACK.Others, {
       screen: SCREENS.HistoryDetail,
@@ -33,10 +48,7 @@ export const TxOasisItem: FC<{
     return;
   };
 
-  const amount = new CoinPretty(
-    currency,
-    new Dec(item.amount).mul(DecUtils.getTenExponentN(currency.coinDecimals))
-  );
+  const amount = new CoinPretty(currency, new Dec(item.amount));
   const priceAmount = priceStore.calculatePrice(amount, fiat);
   const first =
     index > 0 &&
@@ -46,7 +58,10 @@ export const TxOasisItem: FC<{
   const now = moment(getTimeMilliSeconds(item.timestamp)).format("MMM D, YYYY");
   const { colors } = useTheme();
   const styles = styling(colors);
-  const method = item.method.split(".");
+  const isSent =
+    item.userAddress === item.fromAddress ||
+    item.fromAddress === item.toAddress;
+  const method = isSent ? "Sent" : "Received";
   return (
     <View style={{ paddingVertical: 8 }}>
       {first != now || index === 0 ? (
@@ -69,7 +84,7 @@ export const TxOasisItem: FC<{
               style={{
                 borderRadius: 999,
                 tintColor:
-                  currency.coinDenom === "ORAI"
+                  currency.coinDenom === "ORAI" || currency.coinDenom === "AIRI"
                     ? colors["neutral-text-title"]
                     : null,
               }}
@@ -78,10 +93,11 @@ export const TxOasisItem: FC<{
           <View style={styles.chainWrap}>
             <OWIcon
               type="images"
-              source={{ uri: currency.coinImageUrl }}
+              source={{ uri: chainStore.current.stakeCurrency.coinImageUrl }}
               size={20}
               style={{
                 borderRadius: 999,
+                tintColor: colors["neutral-text-title"],
               }}
             />
           </View>
@@ -99,10 +115,10 @@ export const TxOasisItem: FC<{
           <View style={styles.leftBoxItem}>
             <View style={styles.pl10}>
               <Text size={16} color={colors["neutral-text-title"]} weight="600">
-                {method[method.length - 1]}
+                {method}
               </Text>
               <Text weight="400" color={colors["neutral-text-body"]}>
-                {formatContractAddress(item.txHash)}
+                {formatContractAddress(item.txhash)}
               </Text>
             </View>
           </View>
@@ -112,16 +128,14 @@ export const TxOasisItem: FC<{
                 <Text
                   weight="500"
                   color={
-                    item.transactionType === "incoming"
+                    !isSent
                       ? colors["success-text-body"]
                       : colors["neutral-text-title"]
                   }
                 >
-                  {`${
-                    item.transactionType === "incoming" ? "+" : "-"
-                  }${maskedNumber(amount.hideDenom(true).toString())} ${
-                    currency.coinDenom
-                  }`}
+                  {`${!isSent ? "+" : "-"}${maskedNumber(
+                    amount.hideDenom(true).toString()
+                  )} ${currency.coinDenom}`}
                 </Text>
                 <Text style={styles.profit} color={colors["neutral-text-body"]}>
                   {priceAmount.toString().replace("-", "")}

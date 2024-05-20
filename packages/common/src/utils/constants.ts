@@ -17,6 +17,9 @@ export enum OasisNetwork {
   SAPPHIRE = "oasis-sapphire-mainnet",
   EMERALD = "oasis-emerald-mainnet",
 }
+export enum CosmosNetwork {
+  ORAICHAIN = "oraichain",
+}
 export enum ChainIdEnum {
   Oraichain = "Oraichain",
   OraichainTestnet = "Oraichain-testnet",

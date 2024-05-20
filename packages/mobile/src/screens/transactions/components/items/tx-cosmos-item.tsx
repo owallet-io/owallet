@@ -2,17 +2,18 @@ import { StyleSheet, TouchableOpacity, View } from "react-native";
 import React, { FC } from "react";
 import { formatContractAddress, maskedNumber } from "@src/utils/helper";
 import { useTheme } from "@src/themes/theme-provider";
+
 import { observer } from "mobx-react-lite";
 import { Text } from "@src/components/text";
 import OWIcon from "@src/components/ow-icon/ow-icon";
+
 import { CoinPretty, Dec, DecUtils } from "@owallet/unit";
 import moment from "moment/moment";
 import { navigate } from "@src/router/root";
 import { getTimeMilliSeconds, SCREENS } from "@src/common/constants";
 import { RightArrowIcon } from "@src/components/icon";
 import { useStore } from "@src/stores";
-
-export const TxOasisItem: FC<{
+export const TxCosmosItem: FC<{
   item: any;
   index: number;
   data: any;
@@ -20,6 +21,7 @@ export const TxOasisItem: FC<{
   const { priceStore, chainStore } = useStore();
   const fiat = priceStore.defaultVsCurrency;
   if (!item) return;
+  console.log(item, "item");
   const currency = chainStore.current.stakeCurrency;
   const onTransactionDetail = (item, currency) => {
     navigate(SCREENS.STACK.Others, {
@@ -44,6 +46,7 @@ export const TxOasisItem: FC<{
       "MMM D, YYYY"
     );
   const now = moment(getTimeMilliSeconds(item.timestamp)).format("MMM D, YYYY");
+  console.log(first, now, "test");
   const { colors } = useTheme();
   const styles = styling(colors);
   const method = item.method.split(".");

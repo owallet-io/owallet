@@ -8,6 +8,7 @@ import { EvmDetailTx } from "@src/screens/transactions/evm/evm-detail-tx-screen"
 import { BtcDetailTx } from "@src/screens/transactions/btc/btc-detail-tx-screen";
 import { OasisDetailTx } from "@src/screens/transactions/oasis/oasis-detail-tx-screen";
 import { TronDetailTx } from "@src/screens/transactions/tron/tron-detail-tx-screen";
+import { OraichainDetailTx } from "@src/screens/transactions/oraichain/oraichain-detail-tx-screen";
 
 export const HistoryDetail: FunctionComponent = observer((props) => {
   const { chainStore } = useStore();
@@ -16,6 +17,7 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
     return <EvmDetailTx />;
   if (chainId === ChainIdEnum.Bitcoin) return <BtcDetailTx />;
   if (chainId === ChainIdEnum.TRON) return <TronDetailTx />;
+  if (chainId === ChainIdEnum.Oraichain) return <OraichainDetailTx />;
   if (
     chainId === ChainIdEnum.Oasis ||
     chainId === ChainIdEnum.OasisSapphire ||
