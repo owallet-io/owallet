@@ -153,7 +153,7 @@ export const AddTokenEVMScreen = observer(
       modalStore.setChildren(
         <SelectTokenTypeModal
           selected={selectedType}
-          list={["erc20", "trc20", "bep20", "secret20"]}
+          list={["erc20", "trc20", "bep20"]}
           onPress={(type) => {
             setSelectedType(type);
             modalStore.close();

@@ -148,7 +148,7 @@ export const AddTokenCosmosScreen = observer(
       modalStore.setChildren(
         <SelectTokenTypeModal
           selected={selectedType}
-          list={["cw20", "secret20"]}
+          list={["cw20"]}
           onPress={(type) => {
             setSelectedType(type);
             modalStore.close();
