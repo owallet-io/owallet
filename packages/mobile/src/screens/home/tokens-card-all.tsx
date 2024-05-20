@@ -36,25 +36,30 @@ import { DownArrowIcon } from "@src/components/icon";
 export const TokensCardAll: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
-  const {
-    accountStore,
-    universalSwapStore,
-    chainStore,
-    appInitStore,
-    queriesStore,
-    keyRingStore,
-    priceStore,
-  } = useStore();
+  const { accountStore, universalSwapStore, chainStore, appInitStore } =
+    useStore();
   const { colors } = useTheme();
   const theme = appInitStore.getInitApp.theme;
 
   const [more, setMore] = useState(true);
   const [activeTab, setActiveTab] = useState("tokens");
   const [yesterdayAssets, setYesterdayAssets] = useState([]);
+  // const [queryBalances, setQueryBalances] = useState({});
   const [isPending, startTransition] = useTransition();
 
-  const account = accountStore.getAccount(chainStore.current.chainId);
+  // const account = accountStore.getAccount(chainStore.current.chainId);
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
+
+  // useEffect(() => {
+  //   InteractionManager.runAfterInteractions(() => {
+  //     const queries = queriesStore.get(chainStore.current.chainId);
+  //     const address = account.getAddressDisplay(
+  //       keyRingStore.keyRingLedgerAddresses
+  //     );
+  //     const balances = queries.queryBalances.getQueryBech32Address(address);
+  //     setQueryBalances(balances);
+  //   });
+  // }, [chainStore.current.chainId]);
 
   const getYesterdayAssets = async () => {
     appInitStore.updateYesterdayPriceFeed({});
@@ -217,9 +222,6 @@ export const TokensCardAll: FunctionComponent<{
                 </View>
 
                 <View style={styles.pl12}>
-                  {/* <Text size={16} color={colors["neutral-text-heading"]} weight="600">
-                  {item.balance.toFixed(4)} {item.asset}
-                </Text> */}
                   <Text
                     size={16}
                     color={colors["neutral-text-heading"]}
@@ -263,18 +265,6 @@ export const TokensCardAll: FunctionComponent<{
                       {percent}% (${profit ?? 0})
                     </Text>
                   </View>
-                  {/* <View
-                  style={{
-                    flex: 0.5,
-                    justifyContent: "center",
-                    paddingLeft: 20,
-                  }}
-                >
-                  <RightArrowIcon
-                    height={12}
-                    color={colors["neutral-text-heading"]}
-                  />
-                </View> */}
                 </View>
               </View>
             </View>
