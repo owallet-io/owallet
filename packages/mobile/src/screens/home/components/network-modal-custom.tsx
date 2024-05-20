@@ -28,11 +28,22 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { OWButton } from "@src/components/button";
 import { RadioButton } from "react-native-radio-buttons-group";
 
-export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
+export const NetworkModalCustom = ({
+  cosmosOnly,
+  customAction,
+  selectedChain,
+}: {
+  selectedChain?: string;
+  cosmosOnly?: boolean;
+  customAction?: Function;
+}) => {
   const { colors } = useTheme();
   const [keyword, setKeyword] = useState("");
   const [selected, setSelected] = useState(null);
-  const [activeTab, setActiveTab] = useState<"mainnet" | "testnet">("mainnet");
+
+  useEffect(() => {
+    setSelected(selectedChain);
+  }, [selectedChain]);
 
   const bip44Option = useBIP44Option();
   const {
@@ -102,64 +113,31 @@ export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
   }, {});
 
   useEffect(() => {
-    if (activeTab === "mainnet") {
-      const tmpChainInfos = [];
-      chainStore.chainInfosInUI.map((c) => {
-        if (!c.chainName.toLowerCase().includes("test")) {
-          tmpChainInfos.push(c);
-        }
-      });
-      setChains(tmpChainInfos);
-    } else {
-      const tmpChainInfos = [];
-      chainStore.chainInfosInUI.map((c) => {
-        if (c.chainName.toLowerCase().includes("test")) {
-          tmpChainInfos.push(c);
-        }
-      });
-      setChains(tmpChainInfos);
-    }
-  }, [activeTab]);
+    const tmpChainInfos = [];
+    chainStore.chainInfosInUI.map((c) => {
+      if (!c.chainName.toLowerCase().includes("test")) {
+        tmpChainInfos.push(c);
+      }
+    });
+    setChains(tmpChainInfos);
+  }, []);
 
   useEffect(() => {
-    if (activeTab === "mainnet") {
-      let tmpChainInfos = [];
-      chainStore.chainInfosInUI.map((c) => {
-        if (
-          !c.chainName.toLowerCase().includes("test") &&
-          c.chainName.toLowerCase().includes(keyword.toLowerCase())
-        ) {
-          tmpChainInfos.push(c);
-        }
-      });
-      if (stakeable) {
-        tmpChainInfos = tmpChainInfos.filter((c) => c.networkType === "cosmos");
-        setChains(tmpChainInfos);
+    let tmpChainInfos = [];
+    chainStore.chainInfosInUI.map((c) => {
+      if (
+        !c.chainName.toLowerCase().includes("test") &&
+        c.chainName.toLowerCase().includes(keyword.toLowerCase())
+      ) {
+        tmpChainInfos.push(c);
       }
-      setChains(tmpChainInfos);
-    } else {
-      let tmpChainInfos = [];
-      chainStore.chainInfosInUI.map((c) => {
-        if (
-          c.chainName.toLowerCase().includes("test") &&
-          c.chainName.toLowerCase().includes(keyword.toLowerCase())
-        ) {
-          tmpChainInfos.push(c);
-        }
-      });
-      if (stakeable) {
-        tmpChainInfos = tmpChainInfos.filter((c) => c.networkType === "cosmos");
-        setChains(tmpChainInfos);
-      }
+    });
+    if (cosmosOnly) {
+      tmpChainInfos = tmpChainInfos.filter((c) => c.networkType === "cosmos");
       setChains(tmpChainInfos);
     }
-  }, [keyword, activeTab, stakeable]);
-
-  useEffect(() => {
-    if (chainStore.current.chainName.toLowerCase().includes("test")) {
-      setActiveTab("testnet");
-    }
-  }, [chainStore.current.chainName]);
+    setChains(tmpChainInfos);
+  }, [keyword, cosmosOnly]);
 
   const handleSwitchNetwork = useCallback(async (item) => {
     try {
@@ -212,14 +190,7 @@ export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
   }, []);
 
   const _renderItem = ({ item }) => {
-    let selected =
-      item?.chainId === chainStore.current.chainId &&
-      !appInitStore.getInitApp.isAllNetworks;
-
-    if (item.isAll && appInitStore.getInitApp.isAllNetworks) {
-      selected = true;
-    }
-
+    const isSelected = item.chainId === selected;
     let chainIcon = chainIcons.find((c) => c.chainId === item.chainId);
 
     // Hardcode for Oasis because oraidex-common does not have icon yet
@@ -252,10 +223,10 @@ export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "space-between",
-          backgroundColor: selected ? colors["neutral-surface-bg2"] : null,
+          backgroundColor: isSelected ? colors["neutral-surface-bg2"] : null,
         }}
         onPress={() => {
-          handleSwitchNetwork(item);
+          customAction ? customAction(item) : handleSwitchNetwork(item);
         }}
       >
         <View
@@ -319,12 +290,12 @@ export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
         <View>
           <RadioButton
             color={
-              selected
+              isSelected
                 ? colors["highlight-surface-active"]
                 : colors["neutral-text-body"]
             }
             id={item.chainId}
-            selected={selected}
+            selected={isSelected}
             onPress={() => handleSwitchNetwork(item)}
           />
         </View>
@@ -401,40 +372,7 @@ export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
           />
         </View>
       </View>
-      <View style={styles.wrapHeaderTitle}>
-        <OWButton
-          type="link"
-          label={"Mainnet"}
-          textStyle={{
-            color: colors["primary-surface-default"],
-            fontWeight: "600",
-            fontSize: 16,
-          }}
-          onPress={() => setActiveTab("mainnet")}
-          style={[
-            {
-              width: "50%",
-            },
-            activeTab === "mainnet" ? styles.active : null,
-          ]}
-        />
-        <OWButton
-          type="link"
-          label={"Testnet"}
-          onPress={() => setActiveTab("testnet")}
-          textStyle={{
-            color: colors["primary-surface-default"],
-            fontWeight: "600",
-            fontSize: 16,
-          }}
-          style={[
-            {
-              width: "50%",
-            },
-            activeTab === "testnet" ? styles.active : null,
-          ]}
-        />
-      </View>
+
       <View
         style={{
           marginTop: spacing["12"],
@@ -443,7 +381,6 @@ export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
           height: metrics.screenHeight / 2,
         }}
       >
-        {_renderItem({ item: { chainName: "All networks", isAll: true } })}
         <BottomSheetFlatList
           showsVerticalScrollIndicator={false}
           data={chains}
