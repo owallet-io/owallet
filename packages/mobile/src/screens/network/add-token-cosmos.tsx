@@ -108,7 +108,7 @@ export const AddTokenCosmosScreen = observer(
 
     const getTokenCoingeckoId = async () => {
       try {
-        if (tokenInfo) {
+        if (tokenInfo && tokenInfo.symbol) {
           const response = await API.getCoingeckoCoins(
             {},
             {

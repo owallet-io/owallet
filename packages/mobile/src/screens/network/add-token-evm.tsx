@@ -113,7 +113,7 @@ export const AddTokenEVMScreen = observer(
 
     const getTokenCoingeckoId = async () => {
       try {
-        if (tokenInfo) {
+        if (tokenInfo && tokenInfo.symbol) {
           const response = await API.getCoingeckoCoins(
             {},
             {
@@ -130,6 +130,7 @@ export const AddTokenEVMScreen = observer(
               c.name.toLowerCase() === tokenInfo?.symbol.toLowerCase()
             );
           });
+
           if (coin) {
             setCoingeckoID(coin.id);
           } else {
