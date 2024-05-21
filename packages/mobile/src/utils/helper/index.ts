@@ -616,6 +616,19 @@ export const getAddressFromLedgerWhenChangeNetwork = (
   return null;
 };
 
+export enum PlatformsCoingecko {
+  TRON = "tron",
+  COSMOS = "cosmos",
+  NOBLE = "noble",
+  BSC = "binance-smart-chain",
+  ETH = "ethereum",
+  OASIS_SAPPHIRE = "oasis-sapphire",
+  OASIS = "oasis",
+  ORAICHAIN = "oraichain",
+  INJECTIVE = "injective",
+  OSMOSIS = "osmosis",
+}
+
 export const getTokenInfos = (
   { tokens, prices, networkFilter = "" },
   flatTokens?

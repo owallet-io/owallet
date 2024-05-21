@@ -79,7 +79,7 @@ import { Toggle } from "@src/components/toggle";
 import { SendToModal } from "./modals/SendToModal";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { PriceSettingModal } from "./modals/PriceSettingModal";
-import { flatten } from "lodash";
+import { flatten, uniqBy } from "lodash";
 
 const mixpanel = globalThis.mixpanel as Mixpanel;
 
@@ -94,8 +94,47 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     keyRingStore,
   } = useStore();
   const { colors } = useTheme();
+  const customChainInfos = appInitStore.getChainInfos ?? chainInfos;
+
   const styles = styling(colors);
-  const { data: prices } = useCoinGeckoPrices();
+  // other chains, oraichain
+  const otherChainTokens = flatten(
+    customChainInfos
+      .filter((chainInfo) => chainInfo.chainId !== "Oraichain")
+      .map(getTokensFromNetwork)
+  );
+
+  const oraichainTokens = flatten(
+    customChainInfos
+      .filter((chainInfo) => chainInfo.chainId == "Oraichain")
+      .map(getTokensFromNetwork)
+  );
+
+  const tokens = [otherChainTokens, oraichainTokens];
+  const flattenTokens = flatten(tokens);
+
+  const evmTokens = uniqBy(
+    flattenTokens.filter(
+      (token) =>
+        // !token.contractAddress &&
+        token.denom &&
+        !token.cosmosBased &&
+        token.coinGeckoId &&
+        token.chainId !== "kawaii_6886-1"
+    ),
+    (c) => c.denom
+  );
+
+  const cosmosTokens = uniqBy(
+    flattenTokens.filter(
+      (token) =>
+        // !token.contractAddress &&
+        token.denom && token.cosmosBased && token.coinGeckoId
+    ),
+    (c) => c.denom
+  );
+
+  const { data: prices } = useCoinGeckoPrices(evmTokens, cosmosTokens);
   const [refreshDate, setRefreshDate] = React.useState(Date.now());
 
   useEffect(() => {

@@ -5314,6 +5314,27 @@
     cosmjs-types "0.8.0"
     ethers "^5.0.15"
 
+"@oraichain/oraidex-common@^1.0.86":
+  version "1.0.86"
+  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-common/-/oraidex-common-1.0.86.tgz#41ff557609a02f9c61503f92af04b1490908ad2f"
+  integrity sha512-YzNy3RAXqIuDg4Lw/7yjc9vQJSwtUhqAdO714TgkLETsRD/AakWGyYOPxyV+MZGg6m3s6ujna+1ves0HexPUhg==
+  dependencies:
+    "@cosmjs/amino" "0.31.3"
+    "@cosmjs/cosmwasm-stargate" "0.31.3"
+    "@cosmjs/crypto" "0.31.3"
+    "@cosmjs/proto-signing" "0.31.3"
+    "@cosmjs/stargate" "0.31.3"
+    "@cosmjs/tendermint-rpc" "0.31.3"
+    "@ethersproject/providers" "^5.0.10"
+    "@injectivelabs/sdk-ts" "1.12.1"
+    "@keplr-wallet/types" "^0.11.38"
+    "@oraichain/oraidex-contracts-sdk" latest
+    axios "0.26.1"
+    axios-extensions "3.1.3"
+    bignumber.js "^9.1.2"
+    cosmjs-types "0.8.0"
+    ethers "^5.0.15"
+
 "@oraichain/oraidex-contracts-build@^1.0.22":
   version "1.0.33"
   resolved "https://registry.yarnpkg.com/@oraichain/oraidex-contracts-build/-/oraidex-contracts-build-1.0.33.tgz#928d76f25ce2d84c1c86aa8246e25421e8e63500"

@@ -24,11 +24,7 @@ import { ChainUpdaterService } from "@owallet/background";
 import { getBase58Address, ChainIdEnum } from "@owallet/common";
 import { TokensCardAll } from "./tokens-card-all";
 import { AccountBoxAll } from "./account-box-new";
-import {
-  chainInfos,
-  oraichainNetwork,
-  TokenItemType,
-} from "@oraichain/oraidex-common";
+import { chainInfos, oraichainNetwork } from "@oraichain/oraidex-common";
 import { useCoinGeckoPrices, useLoadTokens } from "@owallet/hooks";
 import { getTokensFromNetwork, showToast } from "@src/utils/helper";
 import { EarningCardNew } from "./earning-card-new";
@@ -209,8 +205,12 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       .filter((chainInfo) => chainInfo.chainId !== "Oraichain")
       .map(getTokensFromNetwork)
   );
-  const oraichainTokens: TokenItemType[] =
-    getTokensFromNetwork(oraichainNetwork);
+
+  const oraichainTokens = flatten(
+    customChainInfos
+      .filter((chainInfo) => chainInfo.chainId == "Oraichain")
+      .map(getTokensFromNetwork)
+  );
 
   const tokens = [otherChainTokens, oraichainTokens];
   const flattenTokens = flatten(tokens);
@@ -264,7 +264,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
           universalSwapStore?.getTokenReload?.length > 0
             ? universalSwapStore.getTokenReload
             : null,
-        customChainInfos: flattenTokens,
+        customChainInfos: customChainInfos,
       };
 
       loadTokenAmounts(loadTokenParams);

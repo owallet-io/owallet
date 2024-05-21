@@ -336,7 +336,7 @@ export const AddTokenCosmosScreen: FunctionComponent<{
       <ScrollView showsVerticalScrollIndicator={false}>
         <OWBox>
           <TouchableOpacity
-            onPress={_onPressNetworkModal}
+            onPress={() => _onPressNetworkModal()}
             style={{
               borderColor: colors["neutral-border-strong"],
               borderRadius: 12,
