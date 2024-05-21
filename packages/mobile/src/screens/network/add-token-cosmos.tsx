@@ -70,6 +70,7 @@ export const AddTokenCosmosScreen: FunctionComponent<{
   const [loading, setLoading] = useState(false);
   const [coingeckoId, setCoingeckoID] = useState(null);
   const [selectedType, setSelectedType] = useState<"cw20">("cw20");
+  const [coingeckoImg, setCoingeckoImg] = useState(null);
 
   const form = useForm<FormData>({
     defaultValues: {
@@ -129,6 +130,27 @@ export const AddTokenCosmosScreen: FunctionComponent<{
         });
 
         if (coin) {
+          if (selectedChain && contractAddress && contractAddress !== "") {
+            const res = await API.getCoingeckoImageURL(
+              {
+                contractAddress: contractAddress,
+                id: selectedChain.chainName.toLowerCase().split(" ").join("-"),
+              },
+              {
+                baseURL: "https://pro-api.coingecko.com/api/v3",
+                headers: {
+                  "x-cg-pro-api-key": process.env.COINGECKO_API_KEY,
+                },
+              }
+            );
+            const data = res.data;
+
+            if (data && data.image && data.image.large) {
+              setCoingeckoImg(data.image.large);
+            } else {
+              throw new Error("Image URL not found for the Coingecko ID.");
+            }
+          }
           setCoingeckoID(coin.id);
         } else {
           throw new Error("Coingecko ID not found for the contract address.");
@@ -536,7 +558,7 @@ export const AddTokenCosmosScreen: FunctionComponent<{
                   returnKeyType="next"
                   onBlur={onBlur}
                   onChangeText={onChange}
-                  value={value}
+                  value={coingeckoImg}
                   editable={true}
                 />
               );

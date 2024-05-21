@@ -490,6 +490,13 @@ export const API = {
     let url = `coins/list`;
     return API.get(url, config);
   },
+  getCoingeckoImageURL: (
+    { contractAddress, id },
+    config: AxiosRequestConfig
+  ) => {
+    let url = `coins/${id}/contract/${contractAddress}`;
+    return API.get(url, config);
+  },
 };
 const retryWrapper = (axios, options) => {
   const max_time = 1;

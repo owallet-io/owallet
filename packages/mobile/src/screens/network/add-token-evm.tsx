@@ -77,6 +77,7 @@ export const AddTokenEVMScreen: FunctionComponent<{
   const tokensOf = tokensStore.getTokensOf(selectedChain?.chainId);
   const [loading, setLoading] = useState(false);
   const [coingeckoId, setCoingeckoID] = useState(null);
+  const [coingeckoImg, setCoingeckoImg] = useState(null);
   const [selectedType, setSelectedType] = useState("erc20");
 
   const accountInfo = accountStore.getAccount(chainStore.current.chainId);
@@ -134,6 +135,27 @@ export const AddTokenEVMScreen: FunctionComponent<{
         });
 
         if (coin) {
+          if (selectedChain && contractAddress && contractAddress !== "") {
+            const res = await API.getCoingeckoImageURL(
+              {
+                contractAddress: contractAddress,
+                id: selectedChain.chainName.toLowerCase().split(" ").join("-"),
+              },
+              {
+                baseURL: "https://pro-api.coingecko.com/api/v3",
+                headers: {
+                  "x-cg-pro-api-key": process.env.COINGECKO_API_KEY,
+                },
+              }
+            );
+            const data = res.data;
+
+            if (data && data.image && data.image.large) {
+              setCoingeckoImg(data.image.large);
+            } else {
+              throw new Error("Image URL not found for the Coingecko ID.");
+            }
+          }
           setCoingeckoID(coin.id);
         } else {
           throw new Error("Coingecko ID not found for the contract address.");
@@ -543,7 +565,7 @@ export const AddTokenEVMScreen: FunctionComponent<{
                   returnKeyType="next"
                   onBlur={onBlur}
                   onChangeText={onChange}
-                  value={value}
+                  value={coingeckoImg}
                   editable={true}
                 />
               );
