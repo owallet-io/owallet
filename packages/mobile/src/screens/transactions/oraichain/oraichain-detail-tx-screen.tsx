@@ -96,7 +96,10 @@ export const OraichainDetailTx: FunctionComponent = observer((props) => {
     }
   };
 
-  const fee = new CoinPretty(chainInfo.stakeCurrency, new Dec(item.fee));
+  const fee = new CoinPretty(
+    chainInfo.stakeCurrency,
+    new Dec(item.fee[0].amount)
+  );
   const amount = new CoinPretty(currency, new Dec(item.amount));
 
   const onRefresh = () => {
@@ -187,7 +190,12 @@ export const OraichainDetailTx: FunctionComponent = observer((props) => {
               valueDisplay={
                 <View style={styles.viewNetwork}>
                   <Image
-                    style={styles.imgNetwork}
+                    style={[
+                      styles.imgNetwork,
+                      {
+                        tintColor: colors["neutral-text-title"],
+                      },
+                    ]}
                     source={{
                       uri: chainInfo.stakeCurrency.coinImageUrl,
                     }}

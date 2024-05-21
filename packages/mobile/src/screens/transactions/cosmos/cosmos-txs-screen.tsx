@@ -53,7 +53,7 @@ const CosmosTxsScreen = observer(() => {
       );
       if (res && res.status !== 200) throw Error("Failed");
       page.current += 1;
-      const totalPage = Math.ceil(res.data.totalRecord / perPage);
+      const totalPage = Math.ceil(res.data.totaRecord / perPage);
       if (page.current === totalPage) {
         hasMore.current = false;
       }

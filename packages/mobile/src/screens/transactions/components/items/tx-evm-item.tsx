@@ -102,7 +102,9 @@ export const TxEvmItem: FC<{
               style={{
                 borderRadius: 999,
                 tintColor:
-                  currency.coinDenom === "ORAI"
+                  currency.coinDenom === "ORAI" ||
+                  currency.coinDenom === "AIRI" ||
+                  currency.coinDenom === "ORAIX"
                     ? colors["neutral-text-title"]
                     : null,
               }}

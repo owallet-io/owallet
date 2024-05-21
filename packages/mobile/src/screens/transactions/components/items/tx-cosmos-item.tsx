@@ -100,11 +100,6 @@ export const TxCosmosItem: FC<{
               size={32}
               style={{
                 borderRadius: 999,
-                tintColor:
-                  currency.coinDenom.toUpperCase() === "ORAI" ||
-                  currency.coinDenom.toUpperCase() === "AIRI"
-                    ? colors["neutral-text-title"]
-                    : null,
               }}
             />
           </View>
