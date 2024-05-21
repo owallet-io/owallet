@@ -15,6 +15,11 @@ import {
   toDisplay,
   toSumDisplay,
   tokensIcon,
+  KWTBSC_ORAICHAIN_DENOM,
+  MILKYBSC_ORAICHAIN_DENOM,
+  INJECTIVE_ORAICHAIN_DENOM,
+  CustomChainInfo,
+  TokenItemType,
 } from "@oraichain/oraidex-common";
 import { API } from "@src/common/api";
 import { ChainIdEnum, CosmosNetwork, OasisNetwork } from "@owallet/common";
@@ -611,55 +616,86 @@ export const getAddressFromLedgerWhenChangeNetwork = (
   return null;
 };
 
-export const getTokenInfos = ({ tokens, prices, networkFilter = "" }) => {
-  const dataTokens = flattenTokens
+export const getTokenInfos = (
+  { tokens, prices, networkFilter = "" },
+  flatTokens?
+) => {
+  const tokenList = flatTokens ?? flattenTokens;
+
+  const dataTokens = tokenList
     .reduce((result, token) => {
       // not display because it is evm map and no bridge to option, also no smart contract and is ibc native
       if (token.bridgeTo || token.contractAddress) {
         const isValidNetwork =
           !networkFilter || token.chainId === networkFilter;
         if (isValidNetwork) {
-          const amount = BigInt(tokens?.[token.denom] ?? 0);
+          try {
+            const amount = BigInt(tokens?.[token.denom] ?? 0);
 
-          const isHaveSubAmounts = token.contractAddress && token.evmDenoms;
-          const subAmounts = isHaveSubAmounts
-            ? getSubAmountDetails(tokens, token)
-            : {};
-          const totalAmount =
-            amount +
-            (isHaveSubAmounts
-              ? toAmount(toSumDisplay(subAmounts), token.decimals)
-              : 0n);
-          const value =
-            toDisplay(totalAmount.toString(), token.decimals) *
-            (prices?.[token.coinGeckoId] || 0);
+            const isHaveSubAmounts = token.contractAddress && token.evmDenoms;
 
-          const SMALL_BALANCE = 0.01;
-          const isHide = value < SMALL_BALANCE;
-          if (isHide) return result;
+            const subAmounts = isHaveSubAmounts
+              ? getSubAmountDetails(tokens, token)
+              : {};
+            const totalAmount =
+              amount +
+              (isHaveSubAmounts
+                ? toAmount(toSumDisplay(subAmounts), token.decimals)
+                : 0n);
+            if (token.denom.includes("pond") && token.chainId === "0x01") {
+              console.log(
+                "loggggg 2",
+                token.contractAddress,
+                totalAmount,
+                amount,
+                token
+              );
+            }
+            const value =
+              toDisplay(totalAmount.toString(), token.decimals) *
+              (prices?.[token.coinGeckoId] || 0);
 
-          const tokenIcon = tokensIcon.find(
-            (tIcon) => tIcon.coinGeckoId === token.coinGeckoId
-          );
+            const SMALL_BALANCE = 0.01;
+            const isHide = value < SMALL_BALANCE;
 
-          result.push({
-            asset: token.name,
-            chain: token.org,
-            chainId: token.chainId,
-            cosmosBased: token.cosmosBased,
-            contractAddress: token.contractAddress,
-            decimals: token.decimals,
-            coinType: token.coinType,
-            coinGeckoId: token.coinGeckoId,
-            icon: tokenIcon?.Icon,
-            iconLight: tokenIcon?.IconLight,
-            price: prices[token.coinGeckoId] || 0,
-            balance: toDisplay(totalAmount.toString(), token.decimals),
-            denom: token.denom,
-            value,
-            coeff: 0,
-            coeffType: "increase",
-          });
+            if (isHide) return result;
+
+            let icon;
+
+            const tokenIcon = tokensIcon.find(
+              (tIcon) => tIcon.coinGeckoId === token.coinGeckoId
+            );
+
+            if (!tokenIcon) {
+              icon = {
+                Icon: token.Icon,
+                IconLight: token.IconLight,
+              };
+            } else {
+              icon = tokenIcon;
+            }
+
+            result.push({
+              asset: token.name,
+              chain: token.org,
+              chainId: token.chainId,
+              cosmosBased: token.cosmosBased,
+              contractAddress: token.contractAddress,
+              decimals: token.decimals,
+              coinType: token.coinType,
+              coinGeckoId: token.coinGeckoId,
+              icon: icon?.Icon,
+              iconLight: icon?.IconLight,
+              price: prices[token.coinGeckoId] || 0,
+              balance: toDisplay(totalAmount.toString(), token.decimals),
+              denom: token.denom,
+              value,
+              coeff: 0,
+              coeffType: "increase",
+            });
+          } catch (err) {
+            console.log("getTokenInfos err", err);
+          }
         }
       }
       return result;
@@ -667,6 +703,43 @@ export const getTokenInfos = ({ tokens, prices, networkFilter = "" }) => {
     .sort((a, b) => b.value - a.value);
 
   return dataTokens;
+};
+
+const evmDenomsMap = {
+  kwt: [KWTBSC_ORAICHAIN_DENOM],
+  milky: [MILKYBSC_ORAICHAIN_DENOM],
+  injective: [INJECTIVE_ORAICHAIN_DENOM],
+};
+const minAmountSwapMap = {
+  trx: 10,
+};
+
+export const getTokensFromNetwork = (
+  network: CustomChainInfo
+): TokenItemType[] => {
+  return network.currencies.map((currency) => ({
+    name: currency.coinDenom,
+    org: network.chainName,
+    coinType: network.bip44.coinType,
+    contractAddress: currency.contractAddress,
+    prefix: currency?.prefixToken ?? network.bech32Config?.bech32PrefixAccAddr,
+    coinGeckoId: currency.coinGeckoId,
+    denom: currency.coinMinimalDenom,
+    bridgeNetworkIdentifier: currency.bridgeNetworkIdentifier,
+    decimals: currency.coinDecimals,
+    bridgeTo: currency.bridgeTo,
+    chainId: network.chainId,
+    rpc: network.rpc,
+    lcd: network.rest,
+    cosmosBased: network.networkType === "cosmos",
+    maxGas: (network.feeCurrencies?.[0].gasPriceStep?.high ?? 0) * 20000,
+    gasPriceStep: currency.gasPriceStep,
+    feeCurrencies: network.feeCurrencies,
+    minAmountSwap: minAmountSwapMap[currency.coinMinimalDenom],
+    evmDenoms: evmDenomsMap[currency.coinMinimalDenom],
+    Icon: currency.Icon ?? currency.coinImageUrl,
+    IconLight: currency?.IconLight ?? currency.coinImageUrl,
+  }));
 };
 
 export const getCurrencyByMinimalDenom = (

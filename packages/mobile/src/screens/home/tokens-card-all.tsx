@@ -19,19 +19,29 @@ import {
 } from "react-native";
 import { OWBox } from "../../components/card";
 import { useStore } from "../../stores";
-import { getTokenInfos, maskedNumber, _keyExtract } from "../../utils/helper";
+import {
+  getTokenInfos,
+  getTokensFromNetwork,
+  maskedNumber,
+  _keyExtract,
+} from "../../utils/helper";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { Text } from "@src/components/text";
 import { SCREENS } from "@src/common/constants";
 import { navigate } from "@src/router/root";
 import { ChainIdEnum } from "@owallet/common";
 import { API } from "@src/common/api";
-import { chainIcons } from "@oraichain/oraidex-common";
+import {
+  chainIcons,
+  oraichainNetwork,
+  TokenItemType,
+} from "@oraichain/oraidex-common";
 import { metrics } from "@src/themes";
 import FastImage from "react-native-fast-image";
 import OWText from "@src/components/text/ow-text";
 import { HistoryCard } from "@src/screens/transactions";
 import { DownArrowIcon } from "@src/components/icon";
+import { flatten } from "lodash";
 
 export const TokensCardAll: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -111,11 +121,26 @@ export const TokensCardAll: FunctionComponent<{
     );
   };
 
-  const tokens = getTokenInfos({
-    tokens: universalSwapStore.getAmount,
-    prices: appInitStore.getInitApp.prices,
-    networkFilter: "",
-  });
+  const otherChainTokens = flatten(
+    appInitStore.getChainInfos
+      .filter((chainInfo) => chainInfo.chainId !== "Oraichain")
+      .map(getTokensFromNetwork)
+  );
+  const oraichainTokens: TokenItemType[] =
+    getTokensFromNetwork(oraichainNetwork);
+
+  const allTokens = [otherChainTokens, oraichainTokens];
+  const flattenTokens = flatten(allTokens);
+
+  let tokens = getTokenInfos(
+    {
+      tokens: universalSwapStore.getAmount,
+      prices: appInitStore.getInitApp.prices,
+      networkFilter: "",
+    },
+    flattenTokens
+  );
+  console.log("tolens", tokens);
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
@@ -167,6 +192,8 @@ export const TokensCardAll: FunctionComponent<{
       if (more && index > 3) return null;
 
       if (item) {
+        console.log("item", item);
+
         let profit = 0;
         let percent = "0";
 
@@ -186,13 +213,13 @@ export const TokensCardAll: FunctionComponent<{
         let tokenIcon = item.icon;
 
         // Hardcode for Neutaro because oraidex-common does not have icon yet
-        if (item.chain.toLowerCase().includes("neutaro")) {
+        if (item.chain?.toLowerCase().includes("neutaro")) {
           chainIcon = {
             chainId: item.chainId,
             Icon: "https://assets.coingecko.com/coins/images/36277/large/Neutaro_logo.jpg?1711371142",
           };
         }
-        if (item.asset.toLowerCase().includes("ntmpi")) {
+        if (item.asset?.toLowerCase().includes("ntmpi")) {
           tokenIcon =
             "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPW-5R-30JcMNKXbm6vSsi5e_YfRYgQxqIuUCpTbkzpQ&s";
         }

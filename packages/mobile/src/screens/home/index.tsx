@@ -26,15 +26,14 @@ import { TokensCardAll } from "./tokens-card-all";
 import { AccountBoxAll } from "./account-box-new";
 import {
   chainInfos,
-  getTokensFromNetwork,
   oraichainNetwork,
   TokenItemType,
 } from "@oraichain/oraidex-common";
 import { useCoinGeckoPrices, useLoadTokens } from "@owallet/hooks";
-import { showToast } from "@src/utils/helper";
+import { getTokensFromNetwork, showToast } from "@src/utils/helper";
 import { EarningCardNew } from "./earning-card-new";
 import { InjectedProviderUrl } from "../web/config";
-import { flatten } from "lodash";
+import { flatten, uniqBy } from "lodash";
 
 export const HomeScreen: FunctionComponent = observer((props) => {
   const [refreshing, setRefreshing] = React.useState(false);
@@ -65,6 +64,8 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       appInitStore.updateChainInfos(chainInfos);
     }
   }, []);
+
+  const customChainInfos = appInitStore.getChainInfos ?? chainInfos;
 
   const currentChain = chainStore.current;
   const currentChainId = currentChain?.chainId;
@@ -176,14 +177,13 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       accountTron.evmosHexAddress &&
       accountKawaiiCosmos.bech32Address
     ) {
-      const customChainInfos = appInitStore.getChainInfos ?? chainInfos;
       const currentDate = Date.now();
       const differenceInMilliseconds = Math.abs(currentDate - refreshDate);
       const differenceInSeconds = differenceInMilliseconds / 1000;
       let timeoutId: NodeJS.Timeout;
       if (differenceInSeconds > 10) {
         universalSwapStore.setLoaded(false);
-        onFetchAmount(customChainInfos);
+        onFetchAmount();
       } else {
         console.log("The dates are 10 seconds or less apart.");
       }
@@ -203,12 +203,46 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   const accountKawaiiCosmos = accountStore.getAccount(ChainIdEnum.KawaiiCosmos);
 
   const loadTokenAmounts = useLoadTokens(universalSwapStore);
+  // other chains, oraichain
+  const otherChainTokens = flatten(
+    customChainInfos
+      .filter((chainInfo) => chainInfo.chainId !== "Oraichain")
+      .map(getTokensFromNetwork)
+  );
+  const oraichainTokens: TokenItemType[] =
+    getTokensFromNetwork(oraichainNetwork);
+
+  const tokens = [otherChainTokens, oraichainTokens];
+  const flattenTokens = flatten(tokens);
+
+  const evmTokens = uniqBy(
+    flattenTokens.filter(
+      (token) =>
+        // !token.contractAddress &&
+        token.denom &&
+        !token.cosmosBased &&
+        token.coinGeckoId &&
+        token.chainId !== "kawaii_6886-1"
+    ),
+    (c) => c.denom
+  );
+
+  const cosmosTokens = uniqBy(
+    flattenTokens.filter(
+      (token) =>
+        // !token.contractAddress &&
+        token.denom && token.cosmosBased && token.coinGeckoId
+    ),
+    (c) => c.denom
+  );
 
   // handle fetch all tokens of all chains
-  const handleFetchAmounts = async (
-    params: { orai?: string; eth?: string; tron?: string; kwt?: string },
-    customChainInfos
-  ) => {
+  const handleFetchAmounts = async (params: {
+    orai?: string;
+    eth?: string;
+    tron?: string;
+    kwt?: string;
+  }) => {
     const { orai, eth, tron, kwt } = params;
 
     let loadTokenParams = {};
@@ -218,18 +252,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         chainId: ChainIdEnum.Oraichain,
         rpc: oraichainNetwork.rpc,
       };
-
-      // other chains, oraichain
-      const otherChainTokens = flatten(
-        customChainInfos
-          .filter((chainInfo) => chainInfo.chainId !== "Oraichain")
-          .map(getTokensFromNetwork)
-      );
-      const oraichainTokens: TokenItemType[] =
-        getTokensFromNetwork(oraichainNetwork);
-
-      const tokens = [otherChainTokens, oraichainTokens];
-      const flattenTokens = flatten(tokens);
 
       loadTokenParams = {
         ...loadTokenParams,
@@ -260,20 +282,17 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     universalSwapStore.setLoaded(false);
   }, [accountOrai.bech32Address]);
 
-  const onFetchAmount = (customChainInfos) => {
+  const onFetchAmount = () => {
     let timeoutId;
     if (accountOrai.isNanoLedger) {
       if (Object.keys(keyRingStore.keyRingLedgerAddresses).length > 0) {
         timeoutId = setTimeout(() => {
-          handleFetchAmounts(
-            {
-              orai: accountOrai.bech32Address,
-              eth: keyRingStore.keyRingLedgerAddresses.eth ?? null,
-              tron: keyRingStore.keyRingLedgerAddresses.trx ?? null,
-              kwt: accountKawaiiCosmos.bech32Address,
-            },
-            customChainInfos
-          );
+          handleFetchAmounts({
+            orai: accountOrai.bech32Address,
+            eth: keyRingStore.keyRingLedgerAddresses.eth ?? null,
+            tron: keyRingStore.keyRingLedgerAddresses.trx ?? null,
+            kwt: accountKawaiiCosmos.bech32Address,
+          });
         }, 800);
       }
     } else if (
@@ -283,15 +302,12 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       accountKawaiiCosmos.bech32Address
     ) {
       timeoutId = setTimeout(() => {
-        handleFetchAmounts(
-          {
-            orai: accountOrai.bech32Address,
-            eth: accountEth.evmosHexAddress,
-            tron: getBase58Address(accountTron.evmosHexAddress),
-            kwt: accountKawaiiCosmos.bech32Address,
-          },
-          customChainInfos
-        );
+        handleFetchAmounts({
+          orai: accountOrai.bech32Address,
+          eth: accountEth.evmosHexAddress,
+          tron: getBase58Address(accountTron.evmosHexAddress),
+          kwt: accountKawaiiCosmos.bech32Address,
+        });
       }, 1000);
     }
 
@@ -303,7 +319,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       let timeoutId;
       InteractionManager.runAfterInteractions(() => {
         startTransition(() => {
-          timeoutId = onFetchAmount(appInitStore.getChainInfos);
+          timeoutId = onFetchAmount();
         });
       });
       // Clean up the timeout if the component unmounts or the dependency changes
@@ -311,9 +327,9 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         if (timeoutId) clearTimeout(timeoutId);
       };
     }
-  }, [accountOrai.bech32Address, appInitStore.getChainInfos]);
+  }, [accountOrai.bech32Address]);
 
-  const { data: prices } = useCoinGeckoPrices();
+  const { data: prices } = useCoinGeckoPrices(evmTokens, cosmosTokens);
 
   useEffect(() => {
     appInitStore.updatePrices(prices);

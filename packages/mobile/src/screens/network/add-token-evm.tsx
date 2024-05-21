@@ -231,7 +231,7 @@ export const AddTokenEVMScreen: FunctionComponent<{
       coinGeckoId: coingeckoId,
       prefixToken:
         currency?.prefixToken ?? chain.bech32Config?.bech32PrefixAccAddr,
-      coinImageUrl: getValues("icon") ?? null,
+      coinImageUrl: coingeckoImg ?? null,
     };
 
     const newCurrencies = [...chain.currencies];

@@ -335,6 +335,8 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
     });
   }, [isReadyBalance, address, sendConfigs.amountConfig.sendCurrency]);
 
+  console.log("amount", amount);
+
   const _onPressFee = () => {
     modalStore.setOptions({
       bottomSheetModalConfig: {
@@ -465,7 +467,7 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
                 style={{ paddingLeft: 4 }}
                 color={colors["neutral-text-body"]}
               >
-                {priceStore.calculatePrice(amount).toString()}
+                {/* {priceStore.calculatePrice(amount).toString()} */}
               </OWText>
             </View>
           </OWCard>

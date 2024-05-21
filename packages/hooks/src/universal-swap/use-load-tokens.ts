@@ -121,8 +121,6 @@ async function loadTokens(
     customChainInfos,
   }: LoadTokenParams
 ) {
-  console.log("customChainInfo loadTokens", customChainInfos);
-
   const customEvmTokens = uniqBy(
     customChainInfos.filter(
       (token) =>
@@ -134,9 +132,6 @@ async function loadTokens(
     ),
     (c) => c.denom
   );
-
-  const och = customEvmTokens.filter((cem) => cem.denom.includes("pendle"));
-  console.log("och", och);
 
   if (tokenReload) {
     tokenReload.map((t) => {
@@ -186,7 +181,8 @@ async function loadTokens(
                 metamaskAddress,
                 evmChains,
                 false,
-                tokenReload
+                tokenReload,
+                customEvmTokens
               );
             }, 500);
           }
@@ -216,6 +212,8 @@ async function loadTokens(
   }
 
   if (metamaskAddress) {
+    console.log("customEvmTokens 1", customEvmTokens);
+
     clearTimeout(timer[metamaskAddress]);
     timer[metamaskAddress] = setTimeout(() => {
       loadEvmAmounts(
@@ -421,6 +419,13 @@ async function loadEvmEntries(
 ): Promise<[string, string][]> {
   try {
     const tokensEVM = customEvmTokens ?? evmTokens;
+    console.log("customEvmTokens", customEvmTokens);
+
+    console.log("tokensEVM", tokensEVM);
+
+    const findPond = tokensEVM.find((t) => t.name === "POND");
+    console.log("find pond", findPond);
+
     const tokens = tokensEVM.filter((t) => {
       let result;
       if (tokenReload) {
@@ -514,6 +519,8 @@ async function loadEvmAmounts(
       )
     )
   );
+
+  console.log("amountDetails", amountDetails);
 
   if (!isTronAddress) {
     Object.keys(amountDetails).forEach(function (key) {

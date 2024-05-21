@@ -23,10 +23,12 @@ export type CoinGeckoPrices<T extends string> = {
  * Fetches prices of tokens from CoinGecko.
  * @returns The CoinGecko prices.
  */
-export const useCoinGeckoPrices = () => {
+export const useCoinGeckoPrices = (customEVM, customCosmos) => {
+  const tokensEVM = customEVM ?? evmTokens;
+  const tokensCosmos = customCosmos ?? cosmosTokens;
   const [data, setData] = useState<CoinGeckoPrices<string>>({});
   const tokens = [
-    ...new Set([...cosmosTokens, ...evmTokens].map((t) => t.coinGeckoId)),
+    ...new Set([...tokensCosmos, ...tokensEVM].map((t) => t.coinGeckoId)),
   ];
   tokens.sort();
 

@@ -14,6 +14,7 @@ import { OWButton } from "@src/components/button";
 import { SelectNetworkModal, SelectTokenModal } from "./modals/";
 import {
   getTokenInfos,
+  getTokensFromNetwork,
   handleSaveHistory,
   HISTORY_STATUS,
   maskedNumber,
@@ -39,7 +40,6 @@ import {
   tokenMap,
   chainInfos,
   TokenItemType,
-  getTokensFromNetwork,
 } from "@oraichain/oraidex-common";
 import { openLink } from "../../utils/helper";
 import { feeEstimate } from "@owallet/common";
