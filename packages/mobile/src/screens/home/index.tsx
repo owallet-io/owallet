@@ -137,18 +137,18 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   }, [account.bech32Address]);
 
   const onRefresh = React.useCallback(async () => {
+    const queries = queriesStore.get(chainStore.current.chainId);
     if (chainStore.current.chainId === ChainIdEnum.TRON) {
-      // await queries.tron.queryAccount
-      //   .getQueryWalletAddress(getBase58Address(account.evmosHexAddress))
-      //   .waitFreshResponse();
-      // setRefreshing(false);
-      // setRefreshDate(Date.now());
-      // return;
+      await queries.tron.queryAccount
+        .getQueryWalletAddress(getBase58Address(account.evmosHexAddress))
+        .waitFreshResponse();
+      setRefreshing(false);
+      setRefreshDate(Date.now());
+      return;
     }
     // Because the components share the states related to the queries,
     // fetching new query responses here would make query responses on all other components also refresh.
     if (chainStore.current.networkType === "bitcoin") {
-      const queries = queriesStore.get(ChainIdEnum.Bitcoin);
       await queries.bitcoin.queryBitcoinBalance
         .getQueryBalance(account.bech32Address)
         .waitFreshResponse();
@@ -183,7 +183,12 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         console.log("The dates are 10 seconds or less apart.");
       }
     }
-  }, [refreshDate, universalSwapStore.getTokenReload, address]);
+  }, [
+    refreshDate,
+    universalSwapStore.getTokenReload,
+    address,
+    chainStore.current.chainId,
+  ]);
 
   // This section for getting all tokens of all chains
 
