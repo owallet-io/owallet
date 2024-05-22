@@ -15,6 +15,7 @@ import { RightArrowIcon } from "@src/components/icon";
 import { useStore } from "@src/stores";
 import { unknownToken } from "@owallet/common";
 import { has } from "lodash";
+
 export const TxOraichainItem: FC<{
   item: any;
   index: number;
@@ -25,16 +26,22 @@ export const TxOraichainItem: FC<{
   if (!item) return;
   console.log(item, "item");
   let currency = unknownToken;
-  if (!!item.denom) {
-    currency = chainStore.current.stakeCurrency;
-  } else if (!!item.tokenContractAddress) {
+  if (item.denom) {
+    if (item.denom.startsWith("ibc/")) {
+      const token = chainStore.current.currencies.find(({ coinMinimalDenom }) =>
+        coinMinimalDenom.includes(item.denom)
+      );
+      if (!token) currency = unknownToken;
+      currency = token;
+    } else {
+      currency = chainStore.current.stakeCurrency;
+    }
+  } else if (item.tokenContractAddress) {
     const token = chainStore.current.currencies.find(({ coinMinimalDenom }) =>
       coinMinimalDenom.includes(item.tokenContractAddress)
     );
-    if (token) {
-      currency = token;
-      console.log(currency, "token");
-    }
+    if (!token) currency = unknownToken;
+    currency = token;
   }
   const onTransactionDetail = (item, currency) => {
     navigate(SCREENS.STACK.Others, {
