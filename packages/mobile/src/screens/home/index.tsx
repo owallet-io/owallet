@@ -134,21 +134,21 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   );
   useEffect(() => {
     onRefresh();
-  }, [address]);
+  }, [account.bech32Address]);
 
   const onRefresh = React.useCallback(async () => {
-    const queries = queriesStore.get(chainStore.current.chainId);
     if (chainStore.current.chainId === ChainIdEnum.TRON) {
-      await queries.tron.queryAccount
-        .getQueryWalletAddress(getBase58Address(account.evmosHexAddress))
-        .waitFreshResponse();
-      setRefreshing(false);
-      setRefreshDate(Date.now());
-      return;
+      // await queries.tron.queryAccount
+      //   .getQueryWalletAddress(getBase58Address(account.evmosHexAddress))
+      //   .waitFreshResponse();
+      // setRefreshing(false);
+      // setRefreshDate(Date.now());
+      // return;
     }
     // Because the components share the states related to the queries,
     // fetching new query responses here would make query responses on all other components also refresh.
     if (chainStore.current.networkType === "bitcoin") {
+      const queries = queriesStore.get(ChainIdEnum.Bitcoin);
       await queries.bitcoin.queryBitcoinBalance
         .getQueryBalance(account.bech32Address)
         .waitFreshResponse();
@@ -156,17 +156,14 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       setRefreshDate(Date.now());
       return;
     } else {
-      await Promise.all([
-        priceStore.waitFreshResponse(),
-        ...queries.queryBalances
-          .getQueryBech32Address(address)
-          .balances.map((bal) => {
-            return bal.waitFreshResponse();
-          }),
-      ]);
+      // await Promise.all([
+      //   priceStore.waitFreshResponse(),
+      //   ...queries.queryBalances.getQueryBech32Address(address).balances.map(bal => {
+      //     return bal.waitFreshResponse();
+      //   })
+      // ]);
     }
-    setRefreshing(false);
-    setRefreshDate(Date.now());
+
     if (
       accountOrai.bech32Address &&
       accountEth.evmosHexAddress &&
@@ -178,18 +175,15 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       const differenceInSeconds = differenceInMilliseconds / 1000;
       let timeoutId: NodeJS.Timeout;
       if (differenceInSeconds > 10) {
-        universalSwapStore.setLoaded(false);
         onFetchAmount();
+        setRefreshing(false);
+        setRefreshDate(Date.now());
+        universalSwapStore.setLoaded(false);
       } else {
         console.log("The dates are 10 seconds or less apart.");
       }
     }
-  }, [
-    chainStore.current.chainId,
-    refreshDate,
-    universalSwapStore.getTokenReload,
-    address,
-  ]);
+  }, [refreshDate, universalSwapStore.getTokenReload, address]);
 
   // This section for getting all tokens of all chains
 
