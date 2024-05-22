@@ -27,7 +27,7 @@ export const TxCosmosItem: FC<{
   if (!item) return;
   console.log(item, "item");
   let currency = unknownToken;
-  if (!!get(item, "tokenInfos[0].contractAddress")) {
+  if (get(item, "tokenInfos[0].contractAddress")) {
     currency = {
       coinDenom: item.tokenInfos[0].abbr,
       coinImageUrl: item.tokenInfos[0].imgUrl,
@@ -36,7 +36,7 @@ export const TxCosmosItem: FC<{
       coinDecimals: item.tokenInfos[0].decimal,
     };
   } else if (
-    !!get(item, "tokenInfos[0].denom") &&
+    get(item, "tokenInfos[0].denom") &&
     get(item, "tokenInfos[0].denom").startsWith("ibc")
   ) {
     currency = {
@@ -47,7 +47,7 @@ export const TxCosmosItem: FC<{
       coinDecimals: item.tokenInfos[0].decimal,
     };
   } else if (
-    !!get(item, "tokenInfos[0].denom") &&
+    get(item, "tokenInfos[0].denom") &&
     !get(item, "tokenInfos[0].denom").startsWith("ibc")
   ) {
     currency = chainStore.current.stakeCurrency;
