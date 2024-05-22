@@ -655,15 +655,7 @@ export const getTokenInfos = (
               (isHaveSubAmounts
                 ? toAmount(toSumDisplay(subAmounts), token.decimals)
                 : 0n);
-            if (token.denom.includes("pond") && token.chainId === "0x01") {
-              console.log(
-                "loggggg 2",
-                token.contractAddress,
-                totalAmount,
-                amount,
-                token
-              );
-            }
+
             const value =
               toDisplay(totalAmount.toString(), token.decimals) *
               (prices?.[token.coinGeckoId] || 0);

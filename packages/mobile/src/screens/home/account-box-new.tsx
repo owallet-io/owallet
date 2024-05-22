@@ -16,7 +16,7 @@ import {
 import { Text } from "@src/components/text";
 import { useStore } from "../../stores";
 import { useTheme } from "@src/themes/theme-provider";
-import { getTotalUsd, chainIcons } from "@oraichain/oraidex-common";
+import { getTotalUsd, chainIcons, chainInfos } from "@oraichain/oraidex-common";
 import { CheckIcon, CopyFillIcon, DownArrowIcon } from "@src/components/icon";
 import { metrics, spacing } from "@src/themes";
 import MyWalletModal from "./components/my-wallet-modal/my-wallet-modal";
@@ -24,13 +24,19 @@ import { ChainIdEnum } from "@owallet/common";
 import { OWButton } from "@src/components/button";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { CopyAddressModal } from "./components/copy-address/copy-address-modal";
-import { getTokenInfos, maskedNumber, shortenAddress } from "@src/utils/helper";
+import {
+  getTokenInfos,
+  getTokensFromNetwork,
+  maskedNumber,
+  shortenAddress,
+} from "@src/utils/helper";
 import { useSmartNavigation } from "@src/navigation.provider";
 import { SCREENS } from "@src/common/constants";
 import { navigate } from "@src/router/root";
 import { LoadingSpinner } from "@src/components/spinner";
 import OWText from "@src/components/text/ow-text";
 import { useSimpleTimer } from "@src/hooks";
+import { flatten } from "lodash";
 
 export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
   const { colors } = useTheme();
@@ -50,12 +56,32 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
   const smartNavigation = useSmartNavigation();
 
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
+  const customChainInfos = appInitStore.getChainInfos ?? chainInfos;
 
-  const chainAssets = getTokenInfos({
-    tokens: universalSwapStore.getAmount,
-    prices: appInitStore.getInitApp.prices,
-    networkFilter: chainStore.current.chainId,
-  });
+  // other chains, oraichain
+  const otherChainTokens = flatten(
+    customChainInfos
+      .filter((chainInfo) => chainInfo.chainId !== "Oraichain")
+      .map(getTokensFromNetwork)
+  );
+
+  const oraichainTokens = flatten(
+    customChainInfos
+      .filter((chainInfo) => chainInfo.chainId == "Oraichain")
+      .map(getTokensFromNetwork)
+  );
+
+  const tokens = [otherChainTokens, oraichainTokens];
+  const flattenTokens = flatten(tokens);
+
+  const chainAssets = getTokenInfos(
+    {
+      tokens: universalSwapStore.getAmount,
+      prices: appInitStore.getInitApp.prices,
+      networkFilter: chainStore.current.chainId,
+    },
+    flattenTokens
+  );
   const queries = queriesStore.get(chainStore.current.chainId);
   const styles = styling(colors);
   let totalUsd: number = 0;

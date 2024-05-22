@@ -33,6 +33,7 @@ import { ChainIdEnum } from "@owallet/common";
 import { API } from "@src/common/api";
 import {
   chainIcons,
+  chainInfos,
   oraichainNetwork,
   TokenItemType,
 } from "@oraichain/oraidex-common";
@@ -121,16 +122,23 @@ export const TokensCardAll: FunctionComponent<{
     );
   };
 
+  const customChainInfos = appInitStore.getChainInfos ?? chainInfos;
+
+  // other chains, oraichain
   const otherChainTokens = flatten(
-    appInitStore.getChainInfos
+    customChainInfos
       .filter((chainInfo) => chainInfo.chainId !== "Oraichain")
       .map(getTokensFromNetwork)
   );
-  const oraichainTokens: TokenItemType[] =
-    getTokensFromNetwork(oraichainNetwork);
 
-  const allTokens = [otherChainTokens, oraichainTokens];
-  const flattenTokens = flatten(allTokens);
+  const oraichainTokens = flatten(
+    customChainInfos
+      .filter((chainInfo) => chainInfo.chainId == "Oraichain")
+      .map(getTokensFromNetwork)
+  );
+
+  const assets = [otherChainTokens, oraichainTokens];
+  const flattenTokens = flatten(assets);
 
   let tokens = getTokenInfos(
     {
@@ -140,7 +148,6 @@ export const TokensCardAll: FunctionComponent<{
     },
     flattenTokens
   );
-  console.log("tolens", tokens);
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
@@ -192,8 +199,6 @@ export const TokensCardAll: FunctionComponent<{
       if (more && index > 3) return null;
 
       if (item) {
-        console.log("item", item);
-
         let profit = 0;
         let percent = "0";
 

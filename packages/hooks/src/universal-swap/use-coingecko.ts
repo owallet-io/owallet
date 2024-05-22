@@ -26,6 +26,8 @@ export type CoinGeckoPrices<T extends string> = {
 export const useCoinGeckoPrices = (customEVM?, customCosmos?) => {
   const tokensEVM = customEVM ?? evmTokens;
   const tokensCosmos = customCosmos ?? cosmosTokens;
+  // const tokensEVM = evmTokens;
+  // const tokensCosmos = cosmosTokens;
   const [data, setData] = useState<CoinGeckoPrices<string>>({});
   const tokens = [
     ...new Set([...tokensCosmos, ...tokensEVM].map((t) => t.coinGeckoId)),
@@ -45,8 +47,9 @@ export const useCoinGeckoPrices = (customEVM?, customCosmos?) => {
       for (const key in rawData) {
         prices[key] = rawData[key].usd;
       }
-    } catch {
+    } catch (err) {
       // remain old cache
+      console.log("got some error", err);
     }
     setData(
       Object.fromEntries(tokens.map((token: any) => [token, prices[token]]))
@@ -54,7 +57,10 @@ export const useCoinGeckoPrices = (customEVM?, customCosmos?) => {
   };
 
   useEffect(() => {
-    getCoingeckoPrices();
-  }, []);
+    if (Object.keys(data).length <= 0 && tokens.length > 0) {
+      getCoingeckoPrices();
+    }
+  }, [data, tokens]);
+
   return { data };
 };

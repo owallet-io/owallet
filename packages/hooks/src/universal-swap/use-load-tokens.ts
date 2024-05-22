@@ -245,8 +245,6 @@ async function loadTokens(
   }
 
   if (metamaskAddress) {
-    console.log("customEvmTokens 1", customEvmTokens);
-
     clearTimeout(timer[metamaskAddress]);
     timer[metamaskAddress] = setTimeout(() => {
       loadEvmAmounts(
@@ -460,12 +458,6 @@ async function loadEvmEntries(
 ): Promise<[string, string][]> {
   try {
     const tokensEVM = customEvmTokens ?? evmTokens;
-    console.log("customEvmTokens", customEvmTokens);
-
-    console.log("tokensEVM", tokensEVM);
-
-    const findPond = tokensEVM.find((t) => t.name === "POND");
-    console.log("find pond", findPond);
 
     const tokens = tokensEVM.filter((t) => {
       let result;
@@ -560,8 +552,6 @@ async function loadEvmAmounts(
       )
     )
   );
-
-  console.log("amountDetails", amountDetails);
 
   if (!isTronAddress) {
     Object.keys(amountDetails).forEach(function (key) {

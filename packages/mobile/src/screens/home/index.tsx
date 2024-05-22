@@ -59,7 +59,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     ) {
       appInitStore.updateChainInfos(chainInfos);
     }
-  }, []);
+  }, [appInitStore.getChainInfos]);
 
   const customChainInfos = appInitStore.getChainInfos ?? chainInfos;
 

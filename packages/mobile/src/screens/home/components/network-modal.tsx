@@ -6,6 +6,7 @@ import {
   showToast,
   getTokenInfos,
   maskedNumber,
+  getTokensFromNetwork,
 } from "../../../utils/helper";
 import { VectorCharacter } from "../../../components/vector-character";
 import { Text } from "@src/components/text";
@@ -22,11 +23,13 @@ import { Popup } from "react-native-popup-confirm-toast";
 import {
   chainIcons,
   ChainIdEnum,
+  chainInfos,
   getTotalUsd,
 } from "@oraichain/oraidex-common";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { OWButton } from "@src/components/button";
 import { RadioButton } from "react-native-radio-buttons-group";
+import { flatten } from "lodash";
 
 export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
   const { colors } = useTheme();
@@ -49,6 +52,24 @@ export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
   const styles = styling(colors);
   let totalUsd: number = 0;
   let todayAssets;
+  const customChainInfos = appInitStore.getChainInfos ?? chainInfos;
+
+  // other chains, oraichain
+  const otherChainTokens = flatten(
+    customChainInfos
+      .filter((chainInfo) => chainInfo.chainId !== "Oraichain")
+      .map(getTokensFromNetwork)
+  );
+
+  const oraichainTokens = flatten(
+    customChainInfos
+      .filter((chainInfo) => chainInfo.chainId == "Oraichain")
+      .map(getTokensFromNetwork)
+  );
+
+  const assets = [otherChainTokens, oraichainTokens];
+  const flattenTokens = flatten(assets);
+
   if (
     Object.keys(appInitStore.getInitApp.prices).length > 0 &&
     Object.keys(universalSwapStore.getAmount).length > 0
@@ -57,10 +78,13 @@ export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
       universalSwapStore.getAmount,
       appInitStore.getInitApp.prices
     );
-    todayAssets = getTokenInfos({
-      tokens: universalSwapStore.getAmount,
-      prices: appInitStore.getInitApp.prices,
-    });
+    todayAssets = getTokenInfos(
+      {
+        tokens: universalSwapStore.getAmount,
+        prices: appInitStore.getInitApp.prices,
+      },
+      flattenTokens
+    );
   }
 
   const onConfirm = async (item: any) => {
