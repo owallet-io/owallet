@@ -11,6 +11,7 @@ import { useStore } from "../../../../stores";
 import moment from "moment";
 import { useTheme } from "@src/themes/theme-provider";
 import { PageHeader } from "@src/components/header/header-new";
+import OWCard from "@src/components/card/ow-card";
 export const OWalletVersionScreen: FunctionComponent = observer(() => {
   const [appVersion] = useState(() => DeviceInfo.getVersion());
   const { colors } = useTheme();
@@ -84,75 +85,72 @@ export const OWalletVersionScreen: FunctionComponent = observer(() => {
       contentContainerStyle={{}}
       backgroundColor={colors["neutral-surface-bg"]}
     >
-      <PageHeader title="About" colors={colors} />
-      <View
+      <PageHeader title="About" />
+      <OWCard
         style={{
           marginTop: spacing["16"],
           marginBottom: spacing["12"],
         }}
-      />
-      <TouchableWithoutFeedback
-        style={{
-          backgroundColor: colors["neutral-surface-bg2"],
-          borderRadius: spacing["24"],
-          marginHorizontal: spacing["20"],
-        }}
-        onPress={() => {
-          testErrorReportRef.current++;
-
-          if (testErrorReportRef.current === 10) {
-            setTimeout(() => {
-              throw new Error("This is an runtime error for error report test");
-            }, 200);
-          }
-
-          if (testErrorReportRef.current === 20) {
-            setBlockRender(true);
-          }
-        }}
       >
-        <SettingItem
-          label="App Version"
-          paragraph={appVersion}
-          divider={false}
-        />
-        <SettingItem
-          label="Build Number"
-          paragraph={parseVersion(buildNumber)}
-          divider={false}
-        />
-        <SettingItem
-          label="Code Version"
-          paragraph={parseVersion(currentCodeVersion)}
-        />
-      </TouchableWithoutFeedback>
+        <TouchableWithoutFeedback
+          onPress={() => {
+            testErrorReportRef.current++;
 
-      <View
+            if (testErrorReportRef.current === 10) {
+              setTimeout(() => {
+                throw new Error(
+                  "This is an runtime error for error report test"
+                );
+              }, 200);
+            }
+
+            if (testErrorReportRef.current === 20) {
+              setBlockRender(true);
+            }
+          }}
+        >
+          <SettingItem
+            label="App Version"
+            paragraph={appVersion}
+            divider={false}
+          />
+          <SettingItem
+            label="Build Number"
+            paragraph={parseVersion(buildNumber)}
+            divider={false}
+          />
+          <SettingItem
+            label="Code Version"
+            paragraph={parseVersion(currentCodeVersion)}
+          />
+        </TouchableWithoutFeedback>
+      </OWCard>
+      <OWCard
+        type="normal"
         style={{
           marginTop: spacing["32"],
           marginBottom: spacing["12"],
         }}
-      />
-      <TouchableWithoutFeedback
-        style={{
-          backgroundColor: colors["neutral-surface-bg2"],
-          borderRadius: spacing["24"],
-          marginHorizontal: spacing["20"],
-        }}
       >
-        <SettingItem
-          label="Latest Code Version"
-          paragraph={parseVersion(latestCodeVersion)}
-          divider={false}
-        />
-        {appInitStore.getInitApp.date_updated ? (
-          <SettingItem label="Date Updated" paragraph={date} divider={false} />
-        ) : null}
-        <SettingItem
-          label="Pending Code Version"
-          paragraph={parseVersion(pendingCodeVersion)}
-        />
-      </TouchableWithoutFeedback>
+        <TouchableWithoutFeedback>
+          <SettingItem
+            label="Latest Code Version"
+            paragraph={parseVersion(latestCodeVersion)}
+            divider={false}
+          />
+          {appInitStore.getInitApp.date_updated ? (
+            <SettingItem
+              label="Date Updated"
+              paragraph={date}
+              divider={false}
+            />
+          ) : null}
+          <SettingItem
+            label="Pending Code Version"
+            paragraph={parseVersion(pendingCodeVersion)}
+          />
+        </TouchableWithoutFeedback>
+      </OWCard>
     </PageWithScrollView>
   );
 });
