@@ -336,8 +336,10 @@ export const HomeScreen: FunctionComponent = observer((props) => {
 
       {chainStore.current.networkType === "cosmos" &&
       !appInitStore.getInitApp.isAllNetworks ? (
-        <EarningCardNew containerStyle={styles.containerEarnStyle} />
-      ) : null}
+        <EarningCardNew />
+      ) : (
+        <EarningCardNew defaultChain={ChainIdEnum.Oraichain} />
+      )}
       <TokensCardAll />
     </PageWithScrollViewInBottomTabView>
   );
