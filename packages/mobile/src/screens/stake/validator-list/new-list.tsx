@@ -233,7 +233,6 @@ export const ValidatorList: FunctionComponent = observer(() => {
             style={{
               fontFamily: "SpaceGrotesk-Regular",
               width: "100%",
-              backgroundColor: colors["neutral-surface-action"],
               color: colors["neutral-text-body"],
             }}
             value={search}
