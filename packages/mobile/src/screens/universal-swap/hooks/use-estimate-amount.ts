@@ -89,6 +89,7 @@ export const useEstimateAmount = (
           originalAmount: initAmount ?? simulateAmount,
           routerClient,
           useSmartRoute: true,
+          urlRouter: "https://osor.oraidex.io",
         });
 
         setAmountLoading(false);
@@ -132,6 +133,7 @@ export const useEstimateAmount = (
         originalAmount: toDisplay(relayerFeeToken.toString()),
         routerClient,
         useSmartRoute: true,
+        urlRouter: "https://osor.oraidex.io",
       });
 
       setRelayerFeeAmount(data?.displayAmount);
