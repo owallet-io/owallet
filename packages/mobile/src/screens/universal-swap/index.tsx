@@ -195,7 +195,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     toContractAddr: originalToToken.contractAddress,
   });
 
-  const { fee } = useSwapFee({
+  const { fee, isDependOnNetwork } = useSwapFee({
     fromToken: originalFromToken,
     toToken: originalToToken,
   });
@@ -239,6 +239,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     INIT_AMOUNT,
     impactWarning,
     routersSwapData,
+    simulateData,
   } = useEstimateAmount(
     originalFromToken,
     originalToToken,
@@ -252,7 +253,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   );
 
   const simulateDisplayAmount =
-    ratio && ratio.displayAmount ? ratio.displayAmount : 0;
+    simulateData && simulateData.displayAmount ? simulateData.displayAmount : 0;
 
   const bridgeTokenFee =
     simulateDisplayAmount && (fromTokenFee || toTokenFee)
@@ -810,7 +811,13 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           minimumReceive={
             (maskedNumber(minimumReceive) || "0") + " " + toToken.name
           }
-          swapFee={fee ? `${floatToPercent(fee) + "%"}` : null}
+          swapFee={
+            !isDependOnNetwork
+              ? estSwapFee
+                ? `${estSwapFee + " " + toToken.name}`
+                : 0
+              : 0
+          }
           tokenFee={
             (!fromTokenFee && !toTokenFee) ||
             (fromTokenFee === 0 && toTokenFee === 0)

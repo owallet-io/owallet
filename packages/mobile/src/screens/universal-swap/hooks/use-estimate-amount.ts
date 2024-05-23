@@ -51,25 +51,15 @@ export const useEstimateAmount = (
   const [minimumReceive, setMininumReceive] = useState(0);
   const [relayerFeeAmount, setRelayerFeeAmount] = useState<number>(0);
   const [routersSwapData, setRoutersSwapData] = useState<any>(null);
+  const [simulateData, setSimulateData] = useState<any>(null);
 
   const [ratio, setRatio] = useState(null);
+  const isFromBTC = originalFromToken.coinGeckoId === "bitcoin";
 
-  const isFromAiriToUsdc =
-    originalFromToken.coinGeckoId === "airight" &&
-    originalToToken.coinGeckoId === "usd-coin";
-  const isFromOraixToUsdc =
-    originalFromToken.coinGeckoId === "oraidex" &&
-    originalToToken.coinGeckoId === "usd-coin";
-  const isFromUsdc = originalFromToken.coinGeckoId === "usd-coin";
+  const INIT_SIMULATE_NOUGHT_POINT_OH_ONE_AMOUNT = 0.00001;
 
-  const INIT_SIMULATE_AIRI_TO_USDC = 1000;
-  const INIT_SIMULATE_FROM_USDC = 10;
-  const INIT_AMOUNT =
-    isFromAiriToUsdc || isFromOraixToUsdc
-      ? INIT_SIMULATE_AIRI_TO_USDC
-      : isFromUsdc
-      ? INIT_SIMULATE_FROM_USDC
-      : 1;
+  let INIT_AMOUNT = 1;
+  if (isFromBTC) INIT_AMOUNT = INIT_SIMULATE_NOUGHT_POINT_OH_ONE_AMOUNT;
 
   const {
     data: [fromTokenInfoData, toTokenInfoData],
@@ -199,6 +189,8 @@ export const useEstimateAmount = (
         impactWarning = 100 - caculateImpactPrice;
       }
 
+      console.log("impactWarning", impactWarning, data?.amount, ratio?.amount);
+
       setImpactWarning(impactWarning);
       setRoutersSwapData(routersSwapData);
 
@@ -224,6 +216,7 @@ export const useEstimateAmount = (
         setToAmountToken(data.amount);
         setSwapAmount([fromAmountBalance, Number(data.displayAmount)]);
       }
+      setSimulateData(data);
       setAmountLoading(false);
     } catch (error) {
       console.log("error", error);
@@ -271,5 +264,6 @@ export const useEstimateAmount = (
     INIT_AMOUNT,
     impactWarning,
     routersSwapData,
+    simulateData,
   };
 };
