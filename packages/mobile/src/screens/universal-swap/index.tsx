@@ -814,12 +814,14 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           swapFee={
             !isDependOnNetwork
               ? estSwapFee
-                ? `${estSwapFee + " " + toToken.name}`
+                ? `${maskedNumber(estSwapFee) + " " + toToken.name}`
                 : 0
               : 0
           }
           bridgeFee={
-            bridgeTokenFee ? `${bridgeTokenFee + " " + toToken.name}` : 0
+            bridgeTokenFee
+              ? `${maskedNumber(bridgeTokenFee) + " " + toToken.name}`
+              : 0
           }
           tokenFee={
             (!fromTokenFee && !toTokenFee) ||
