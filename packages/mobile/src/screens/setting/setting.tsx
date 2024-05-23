@@ -183,37 +183,42 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
       contentContainerStyle={{ paddingTop: safeAreaInsets.top }}
       backgroundColor={colors["neutral-surface-bg"]}
     >
-      <PageHeader title="Settings" colors={colors} />
+      <PageHeader title="Settings" />
       <View>
-        <BasicSettingItem
-          left={
-            <View style={{ paddingRight: 12 }}>
-              <Image
-                style={{ width: 44, height: 44, borderRadius: 44 }}
-                source={require("../../assets/images/default-avatar.png")}
-                fadeDuration={0}
-                resizeMode="contain"
-              />
-            </View>
-          }
-          icon="owallet"
-          paragraph={
-            selected ? selected.meta?.name || "OWallet Account" : "No Account"
-          }
-          subtitle={Bech32Address.shortenAddress(accountOrai.bech32Address, 24)}
-          onPress={() =>
-            smartNavigation.navigateSmart("SettingSelectAccount", {})
-          }
-        />
-        {keychainStore.isBiometrySupported || keychainStore.isBiometryOn ? (
-          <SettingBiometricLockItem />
-        ) : null}
-        {canShowPrivateData(keyRingStore.keyRingType) && (
-          <SettingViewPrivateDataItem />
-        )}
-        <SettingRemoveAccountItem />
+        <OWCard style={{ marginBottom: 16 }} type="normal">
+          <BasicSettingItem
+            left={
+              <View style={{ paddingRight: 12 }}>
+                <Image
+                  style={{ width: 44, height: 44, borderRadius: 44 }}
+                  source={require("../../assets/images/default-avatar.png")}
+                  fadeDuration={0}
+                  resizeMode="contain"
+                />
+              </View>
+            }
+            icon="owallet"
+            paragraph={
+              selected ? selected.meta?.name || "OWallet Account" : "No Account"
+            }
+            subtitle={Bech32Address.shortenAddress(
+              accountOrai.bech32Address,
+              24
+            )}
+            onPress={() =>
+              smartNavigation.navigateSmart("SettingSelectAccount", {})
+            }
+          />
+          <View style={styles.border} />
+          {keychainStore.isBiometrySupported || keychainStore.isBiometryOn ? (
+            <SettingBiometricLockItem />
+          ) : null}
+          {canShowPrivateData(keyRingStore.keyRingType) && (
+            <SettingViewPrivateDataItem />
+          )}
+          <SettingRemoveAccountItem />
+        </OWCard>
 
-        <View style={styles.border} />
         {/* <BasicSettingItem
           icon="tdesign_money"
           paragraph="Currency"
@@ -238,19 +243,19 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
             </View>
           }
         /> */}
-        <SettingSwitchModeItem />
-        <View style={styles.border} />
-        <BasicSettingItem
-          icon="tdesign_book"
-          paragraph="Address book"
-          onPress={() => {
-            smartNavigation.navigateSmart("AddressBook", {});
-          }}
-        />
 
-        <View style={styles.border} />
+        <OWCard style={{ marginBottom: 16 }} type="normal">
+          <SettingSwitchModeItem />
+          <BasicSettingItem
+            icon="tdesign_book"
+            paragraph="Address book"
+            onPress={() => {
+              smartNavigation.navigateSmart("AddressBook", {});
+            }}
+          />
+        </OWCard>
+
         {renderRating()}
-        <View style={styles.border} />
         <BasicSettingItem
           left={
             <View style={{ padding: 12 }}>
@@ -262,6 +267,7 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
               />
             </View>
           }
+          containerStyle={{ marginHorizontal: 16 }}
           icon="owallet"
           paragraph="About OWallet"
           onPress={() => {
@@ -290,7 +296,6 @@ const styling = (colors: object) =>
       height: 1,
       backgroundColor: colors["neutral-border-default"],
       marginBottom: 16,
-      marginHorizontal: 16,
     },
     icon: {
       borderRadius: 99,

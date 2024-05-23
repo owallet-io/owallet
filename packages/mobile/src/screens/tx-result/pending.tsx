@@ -295,6 +295,7 @@ const styling = (colors) => {
     imgNetwork: {
       height: 20,
       width: 20,
+      backgroundColor: colors["neutral-icon-on-dark"],
     },
     containerBox: {
       flex: 1,

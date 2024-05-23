@@ -3,7 +3,6 @@ import React from "react";
 import OWButtonIcon from "../button/ow-button-icon";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
-import { useStore } from "@src/stores";
 interface IOWHeaderRightProps {
   onAddWallet: () => void;
   onScan: () => void;
@@ -36,7 +35,7 @@ const OWHeaderRight = observer(
           colorIcon={colors["neutral-text-title"]}
           sizeIcon={20}
           onPress={onAddWallet}
-          name={"tdesignwallet"}
+          name={"tdesigncreditcard-add"}
           fullWidth={false}
         />
       </View>

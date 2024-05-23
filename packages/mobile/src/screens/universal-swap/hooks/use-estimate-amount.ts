@@ -191,8 +191,6 @@ export const useEstimateAmount = (
         impactWarning = 100 - caculateImpactPrice;
       }
 
-      console.log("impactWarning", impactWarning, data?.amount, ratio?.amount);
-
       setImpactWarning(impactWarning);
       setRoutersSwapData(routersSwapData);
 

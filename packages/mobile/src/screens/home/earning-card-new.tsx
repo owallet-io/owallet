@@ -26,8 +26,8 @@ import { useStore } from "../../stores";
 import { metrics } from "../../themes";
 
 export const EarningCardNew: FunctionComponent<{
-  containerStyle?: ViewStyle;
-}> = observer(({}) => {
+  defaultChain?: string;
+}> = observer(({ defaultChain }) => {
   const route = useRoute<RouteProp<Record<string, {}>, string>>();
   const smartNavigation = useSmartNavigation();
   const { chainStore, accountStore, queriesStore, priceStore, analyticsStore } =
@@ -35,7 +35,7 @@ export const EarningCardNew: FunctionComponent<{
   const navigation = useNavigation();
 
   const { colors } = useTheme();
-  const chainId = chainStore.current.chainId;
+  const chainId = defaultChain ?? chainStore.current.chainId;
   const styles = styling(colors);
   const queries = queriesStore.get(chainId);
   const account = accountStore.getAccount(chainId);
@@ -89,11 +89,11 @@ export const EarningCardNew: FunctionComponent<{
               type: HISTORY_STATUS.CLAIM,
               fromToken: {
                 asset: stakingReward.toCoin().denom.toUpperCase(),
-                chainId: chainStore.current.chainId,
+                chainId: chainId,
               },
               toToken: {
                 asset: stakingReward.toCoin().denom.toUpperCase(),
-                chainId: chainStore.current.chainId,
+                chainId: chainId,
               },
               status: "SUCCESS",
             };
