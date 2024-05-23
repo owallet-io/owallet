@@ -51,7 +51,7 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
       {chainStore.current.networkType === "cosmos" &&
       !appInitStore.getInitApp.isAllNetworks ? (
         <>
-          <OWCard>
+          <OWCard style={{ padding: 24 }}>
             <View
               style={{ flexDirection: "row", justifyContent: "space-between" }}
             >
@@ -59,7 +59,7 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
                 <View style={{ flexDirection: "row" }}>
                   <View style={styles["claim-title"]}>
                     <OWIcon
-                      name={"trending-outline"}
+                      name={"tdesignmoney"}
                       size={14}
                       color={colors["neutral-text-title"]}
                     />
@@ -75,15 +75,15 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
                     },
                   ]}
                 >
+                  {priceStore.calculatePrice(delegated)?.toString() ?? 0}
+                </OWText>
+                <OWText style={[styles["amount"]]}>
                   {delegated
                     .shrink(true)
                     .maxDecimals(6)
                     .trim(true)
                     .upperCase(true)
                     .toString()}
-                </OWText>
-                <OWText style={[styles["amount"]]}>
-                  {priceStore.calculatePrice(delegated)?.toString() ?? 0}
                 </OWText>
               </View>
               <Image
