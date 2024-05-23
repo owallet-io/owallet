@@ -183,7 +183,7 @@ const SettingItem: FunctionComponent<{
             <Text
               style={{
                 ...typography.h6,
-                color: colors["primary-text"],
+                color: colors["neutral-text-title"],
                 fontWeight: "600",
                 textAlign: "left",
               }}
@@ -194,7 +194,7 @@ const SettingItem: FunctionComponent<{
               <Text
                 style={{
                   ...typography.h6,
-                  color: colors["primary-text"],
+                  color: colors["neutral-text-title"],
                   textAlign: "right",
                 }}
               >
@@ -206,7 +206,7 @@ const SettingItem: FunctionComponent<{
             <Divider
               orientation="vertical"
               width={1}
-              color={colors['primary-text']}
+              color={colors['neutral-text-title']}
               style={{
                 marginTop: spacing['24']
               }}
