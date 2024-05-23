@@ -88,7 +88,7 @@ export const ValidatorList: FunctionComponent = observer(() => {
       const foundValidator = validators.find(
         (v) => v?.operator_address === v?.operator_address
       );
-      const uptime = foundValidator.uptime;
+      const uptime = foundValidator?.uptime;
       v["uptime"] = uptime;
       return v;
     });
@@ -406,7 +406,6 @@ const ValidatorItem: FunctionComponent<{
               new Dec(validator.tokens)
             )
               .shrink(true)
-              .separator(" ")
               .maxDecimals(0)
               .toString()}
           </OWText>
