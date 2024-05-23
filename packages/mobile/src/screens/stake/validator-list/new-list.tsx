@@ -84,6 +84,24 @@ export const ValidatorList: FunctionComponent = observer(() => {
       );
     }
 
+    data = data.map((v) => {
+      const foundValidator = validators.find(
+        (v) => v?.operator_address === v?.operator_address
+      );
+      const uptime = foundValidator.uptime;
+      v["uptime"] = uptime;
+      return v;
+    });
+
+    data.sort((val1, val2) => {
+      let condition;
+      let conditionA = Number(val1.uptime) * 10 ** 6 + val1.tokens;
+      let conditionB = Number(val2.uptime) * 10 ** 6 + val2.tokens;
+      condition = conditionA > conditionB;
+
+      return condition ? -1 : 1;
+    });
+
     switch (sort) {
       case "APR":
         data.sort((val1, val2) => {
