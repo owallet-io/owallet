@@ -818,6 +818,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                 : 0
               : 0
           }
+          bridgeFee={
+            bridgeTokenFee ? `${bridgeTokenFee + " " + toToken.name}` : 0
+          }
           tokenFee={
             (!fromTokenFee && !toTokenFee) ||
             (fromTokenFee === 0 && toTokenFee === 0)
