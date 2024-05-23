@@ -30,6 +30,7 @@ export const PriceSettingModal = registerModal(
     minimumReceive,
     tokenFee,
     swapFee,
+    bridgeFee,
     relayerFee,
     ratio,
   }) => {
@@ -386,6 +387,7 @@ export const PriceSettingModal = registerModal(
               : null}
             {relayerFee ? renderInfo("Relayer Fee", relayerFee) : null}
             {swapFee ? renderInfo("Swap Fee", swapFee) : null}
+            {bridgeFee ? renderInfo("Bridge Fee", bridgeFee) : null}
           </View>
           <OWButton
             style={styles.confirmBtn}

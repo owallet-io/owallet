@@ -66,6 +66,11 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     }
   }, []);
 
+  const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
+  const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
+  const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
+  const accountKawaiiCosmos = accountStore.getAccount(ChainIdEnum.KawaiiCosmos);
+
   const currentChain = chainStore.current;
   const currentChainId = currentChain?.chainId;
   const account = accountStore.getAccount(chainStore.current.chainId);
@@ -137,7 +142,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   );
   useEffect(() => {
     onRefresh();
-  }, [address]);
+  }, [accountOrai.bech32Address]);
 
   const onRefresh = React.useCallback(async () => {
     const queries = queriesStore.get(chainStore.current.chainId);
@@ -196,11 +201,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   ]);
 
   // This section for getting all tokens of all chains
-
-  const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
-  const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
-  const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
-  const accountKawaiiCosmos = accountStore.getAccount(ChainIdEnum.KawaiiCosmos);
 
   const loadTokenAmounts = useLoadTokens(universalSwapStore);
 
