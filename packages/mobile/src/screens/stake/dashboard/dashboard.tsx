@@ -14,22 +14,31 @@ import { OWButton } from "@src/components/button";
 import { UndelegationsCard } from "./undelegations-card";
 import { NetworkModal } from "@src/screens/home/components";
 export const StakingDashboardScreen: FunctionComponent = observer(() => {
-  const { chainStore, accountStore, queriesStore, priceStore, modalStore, appInitStore } = useStore();
+  const {
+    chainStore,
+    accountStore,
+    queriesStore,
+    priceStore,
+    modalStore,
+    appInitStore,
+  } = useStore();
 
   const { colors } = useTheme();
   const styles = styling(colors);
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
 
-  const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(account.bech32Address);
+  const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(
+    account.bech32Address
+  );
   const delegated = queryDelegated.total;
 
   const _onPressNetworkModal = () => {
     modalStore.setOptions({
       bottomSheetModalConfig: {
         enablePanDownToClose: false,
-        enableOverDrag: false
-      }
+        enableOverDrag: false,
+      },
     });
     modalStore.setChildren(<NetworkModal stakeable={true} />);
   };
@@ -39,14 +48,21 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
       scrollEnabled={chainStore.current.networkType === "cosmos"}
       backgroundColor={colors["neutral-surface-bg"]}
     >
-      {chainStore.current.networkType === "cosmos" && !appInitStore.getInitApp.isAllNetworks ? (
+      {chainStore.current.networkType === "cosmos" &&
+      !appInitStore.getInitApp.isAllNetworks ? (
         <>
           <OWCard style={{ padding: 24 }}>
-            <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+            <View
+              style={{ flexDirection: "row", justifyContent: "space-between" }}
+            >
               <View>
                 <View style={{ flexDirection: "row" }}>
                   <View style={styles["claim-title"]}>
-                    <OWIcon name={"tdesignmoney"} size={14} color={colors["neutral-text-title"]} />
+                    <OWIcon
+                      name={"tdesignmoney"}
+                      size={14}
+                      color={colors["neutral-text-title"]}
+                    />
                   </View>
                   <OWText style={[{ ...styles["text-earn"] }]}>Staked</OWText>
                 </View>
@@ -55,20 +71,25 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
                   style={[
                     {
                       ...styles["text-amount"],
-                      paddingTop: 8
-                    }
+                      paddingTop: 8,
+                    },
                   ]}
                 >
                   {priceStore.calculatePrice(delegated)?.toString() ?? 0}
                 </OWText>
                 <OWText style={[styles["amount"]]}>
-                  {delegated.shrink(true).maxDecimals(6).trim(true).upperCase(true).toString()}
+                  {delegated
+                    .shrink(true)
+                    .maxDecimals(6)
+                    .trim(true)
+                    .upperCase(true)
+                    .toString()}
                 </OWText>
               </View>
               <Image
                 style={{
                   width: 120,
-                  height: 68
+                  height: 68,
                 }}
                 source={require("../../../assets/images/img_invest.png")}
                 resizeMode="contain"
@@ -84,7 +105,7 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
       ) : (
         <View
           style={{
-            position: "relative"
+            position: "relative",
           }}
         >
           <Image
@@ -92,7 +113,7 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
               width: metrics.screenWidth,
               height: metrics.screenHeight / 3,
               position: "absolute",
-              top: 0
+              top: 0,
             }}
             source={require("../../../assets/image/img-bg.png")}
           />
@@ -101,21 +122,25 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
               justifyContent: "center",
               alignItems: "center",
               width: metrics.screenWidth,
-              height: metrics.screenHeight / 1.4
+              height: metrics.screenHeight / 1.4,
             }}
           >
             <Image
               style={{
                 width: 140,
-                height: 140
+                height: 140,
               }}
               source={require("../../../assets/image/img_search.png")}
               resizeMode="contain"
               fadeDuration={0}
             />
-            <View style={{ alignItems: "center", margin: 24, marginBottom: 32 }}>
+            <View
+              style={{ alignItems: "center", margin: 24, marginBottom: 32 }}
+            >
               <OWText size={22} weight={"700"}>
-                {appInitStore.getInitApp.isAllNetworks ? `Looking for Validators?`.toUpperCase() : `NOT SUPPORTED YET`}
+                {appInitStore.getInitApp.isAllNetworks
+                  ? `Looking for Validators?`.toUpperCase()
+                  : `NOT SUPPORTED YET`}
               </OWText>
               <OWText
                 size={14}
@@ -123,7 +148,7 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
                 weight={"500"}
                 style={{
                   textAlign: "center",
-                  paddingTop: 4
+                  paddingTop: 4,
                 }}
               >{`${
                 appInitStore.getInitApp.isAllNetworks
@@ -136,12 +161,12 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
               textStyle={{
                 color: colors["neutral-text-action-on-dark-bg"],
                 fontSize: 14,
-                fontWeight: "500"
+                fontWeight: "500",
               }}
               style={{
                 width: metrics.screenWidth / 2.5,
                 borderRadius: 999,
-                padding: 8
+                padding: 8,
               }}
               label="Choose network"
               onPress={() => {
@@ -155,17 +180,17 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
   );
 });
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     containerEarnStyle: {
       backgroundColor: colors["neutral-surface-bg2"],
-      margin: 0
+      margin: 0,
     },
     "text-earn": {
       fontWeight: "600",
       fontSize: 16,
       lineHeight: 24,
-      color: colors["neutral-text-title"]
+      color: colors["neutral-text-title"],
     },
     "claim-title": {
       width: 24,
@@ -174,19 +199,19 @@ const styling = colors =>
       backgroundColor: colors["neutral-surface-action"],
       marginRight: 5,
       alignItems: "center",
-      justifyContent: "center"
+      justifyContent: "center",
     },
 
     "text-amount": {
       fontWeight: "500",
       fontSize: 28,
-      lineHeight: 34
+      lineHeight: 34,
     },
 
     amount: {
       fontWeight: "400",
       fontSize: 14,
       lineHeight: 20,
-      color: colors["neutral-text-title"]
-    }
+      color: colors["neutral-text-title"],
+    },
   });

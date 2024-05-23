@@ -1,12 +1,22 @@
 import { Dec } from "@owallet/unit";
-import { RouteProp, StackActions, useNavigation, useRoute } from "@react-navigation/native";
+import {
+  RouteProp,
+  StackActions,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 import { SCREENS } from "@src/common/constants";
 import { OWButton } from "@src/components/button";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { Text } from "@src/components/text";
 import { checkRouter } from "@src/router/root";
 import { useTheme } from "@src/themes/theme-provider";
-import { convertArrToObject, handleSaveHistory, HISTORY_STATUS, showToast } from "@src/utils/helper";
+import {
+  convertArrToObject,
+  handleSaveHistory,
+  HISTORY_STATUS,
+  showToast,
+} from "@src/utils/helper";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useState } from "react";
 import { StyleSheet, TouchableOpacity, View, ViewStyle } from "react-native";
@@ -20,7 +30,8 @@ export const EarningCardNew: FunctionComponent<{
 }> = observer(({ defaultChain }) => {
   const route = useRoute<RouteProp<Record<string, {}>, string>>();
   const smartNavigation = useSmartNavigation();
-  const { chainStore, accountStore, queriesStore, priceStore, analyticsStore } = useStore();
+  const { chainStore, accountStore, queriesStore, priceStore, analyticsStore } =
+    useStore();
   const navigation = useNavigation();
 
   const { colors } = useTheme();
@@ -28,10 +39,14 @@ export const EarningCardNew: FunctionComponent<{
   const styles = styling(colors);
   const queries = queriesStore.get(chainId);
   const account = accountStore.getAccount(chainId);
-  const queryReward = queries.cosmos.queryRewards.getQueryBech32Address(account.bech32Address);
+  const queryReward = queries.cosmos.queryRewards.getQueryBech32Address(
+    account.bech32Address
+  );
   const stakingReward = queryReward.stakableReward;
   const totalStakingReward = priceStore.calculatePrice(stakingReward);
-  const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(account.bech32Address);
+  const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(
+    account.bech32Address
+  );
   const delegated = queryDelegated.total;
   const totalPrice = priceStore.calculatePrice(delegated);
 
@@ -43,13 +58,15 @@ export const EarningCardNew: FunctionComponent<{
         {},
         {},
         {
-          onBroadcasted: txHash => {
+          onBroadcasted: (txHash) => {
             analyticsStore.logEvent("Claim reward tx broadcasted", {
               chainId: chainId,
-              chainName: chainStore.current.chainName
+              chainName: chainStore.current.chainName,
             });
 
-            const validatorObject = convertArrToObject(queryReward.pendingRewardValidatorAddresses);
+            const validatorObject = convertArrToObject(
+              queryReward.pendingRewardValidatorAddresses
+            );
             smartNavigation.pushSmart("TxPendingResult", {
               txHash: Buffer.from(txHash).toString("hex"),
               title: "Withdraw rewards",
@@ -57,8 +74,8 @@ export const EarningCardNew: FunctionComponent<{
                 ...validatorObject,
                 amount: stakingReward?.toCoin(),
                 currency: chainStore.current.stakeCurrency,
-                type: "claim"
-              }
+                type: "claim",
+              },
             });
             const historyInfos = {
               fromAddress: account.bech32Address,
@@ -72,17 +89,17 @@ export const EarningCardNew: FunctionComponent<{
               type: HISTORY_STATUS.CLAIM,
               fromToken: {
                 asset: stakingReward.toCoin().denom.toUpperCase(),
-                chainId: chainId
+                chainId: chainId,
               },
               toToken: {
                 asset: stakingReward.toCoin().denom.toUpperCase(),
-                chainId: chainId
+                chainId: chainId,
               },
-              status: "SUCCESS"
+              status: "SUCCESS",
             };
 
             handleSaveHistory(account.bech32Address, historyInfos);
-          }
+          },
         },
         stakingReward.currency.coinMinimalDenom
       );
@@ -90,8 +107,9 @@ export const EarningCardNew: FunctionComponent<{
       console.error({ errorClaim: e });
       if (!e?.message?.startWith("Transaction Rejected")) {
         showToast({
-          message: e?.message ?? "Something went wrong! Please try again later.",
-          type: "danger"
+          message:
+            e?.message ?? "Something went wrong! Please try again later.",
+          type: "danger",
         });
         return;
       }
@@ -107,7 +125,7 @@ export const EarningCardNew: FunctionComponent<{
         marginHorizontal: 16,
         width: metrics.screenWidth - 32,
         marginTop: 2,
-        backgroundColor: colors["neutral-surface-card"]
+        backgroundColor: colors["neutral-surface-card"],
       }}
     >
       <View>
@@ -117,21 +135,29 @@ export const EarningCardNew: FunctionComponent<{
               if (checkRouter(route?.name, SCREENS.Invest)) {
                 return;
               }
-              navigation.dispatch(StackActions.replace("MainTab", { screen: SCREENS.TABS.Invest }));
+              navigation.dispatch(
+                StackActions.replace("MainTab", { screen: SCREENS.TABS.Invest })
+              );
             }}
           >
             <View style={{ flexDirection: "row", paddingBottom: 6 }}>
               <View style={styles["claim-title"]}>
-                <OWIcon name={"trending-outline"} size={14} color={colors["neutral-text-title"]} />
+                <OWIcon
+                  name={"trending-outline"}
+                  size={14}
+                  color={colors["neutral-text-title"]}
+                />
               </View>
-              <Text style={[{ ...styles["text-earn"] }]}>Claimable rewards</Text>
+              <Text style={[{ ...styles["text-earn"] }]}>
+                Claimable rewards
+              </Text>
             </View>
 
             <Text
               style={[
                 {
-                  ...styles["text-amount"]
-                }
+                  ...styles["text-amount"],
+                },
               ]}
             >
               +
@@ -141,7 +167,12 @@ export const EarningCardNew: FunctionComponent<{
             </Text>
             <Text style={[styles["amount"]]}>
               {stakingReward.toDec().gt(new Dec(0.001))
-                ? stakingReward.shrink(true).maxDecimals(6).trim(true).upperCase(true).toString()
+                ? stakingReward
+                    .shrink(true)
+                    .maxDecimals(6)
+                    .trim(true)
+                    .upperCase(true)
+                    .toString()
                 : `< 0.001 ${stakingReward.toCoin().denom.toUpperCase()}`}
             </Text>
           </TouchableOpacity>
@@ -149,13 +180,17 @@ export const EarningCardNew: FunctionComponent<{
             style={[
               styles["btn-claim"],
               {
-                backgroundColor: isDisableClaim ? colors["neutral-surface-disable"] : colors["primary-surface-default"]
-              }
+                backgroundColor: isDisableClaim
+                  ? colors["neutral-surface-disable"]
+                  : colors["primary-surface-default"],
+              },
             ]}
             textStyle={{
               fontSize: 14,
               fontWeight: "600",
-              color: isDisableClaim ? colors["neutral-text-disable"] : colors["neutral-text-action-on-dark-bg"]
+              color: isDisableClaim
+                ? colors["neutral-text-disable"]
+                : colors["neutral-text-action-on-dark-bg"],
             }}
             label="Claim"
             onPress={_onPressClaim}
@@ -171,14 +206,22 @@ export const EarningCardNew: FunctionComponent<{
             paddingHorizontal: 12,
             paddingVertical: 4,
             flexDirection: "row",
-            justifyContent: "space-between"
+            justifyContent: "space-between",
           }}
         >
           <Text weight="500" color={colors["neutral-text-action-on-light-bg"]}>
-            Staked: {totalPrice ? totalPrice.toString() : delegated.shrink(true).maxDecimals(6).toString()}
+            Staked:{" "}
+            {totalPrice
+              ? totalPrice.toString()
+              : delegated.shrink(true).maxDecimals(6).toString()}
           </Text>
           <Text weight="500" color={colors["neutral-text-action-on-light-bg"]}>
-            {delegated.shrink(true).maxDecimals(6).trim(true).upperCase(true).toString()}
+            {delegated
+              .shrink(true)
+              .maxDecimals(6)
+              .trim(true)
+              .upperCase(true)
+              .toString()}
           </Text>
         </View>
       </View>
@@ -186,33 +229,33 @@ export const EarningCardNew: FunctionComponent<{
   );
 });
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     cardBody: {},
     "flex-center": {
       display: "flex",
       justifyContent: "center",
-      alignItems: "center"
+      alignItems: "center",
     },
 
     "text-earn": {
       fontWeight: "600",
       fontSize: 16,
       lineHeight: 24,
-      color: colors["neutral-text-title"]
+      color: colors["neutral-text-title"],
     },
     "text-amount": {
       fontWeight: "500",
       fontSize: 28,
       lineHeight: 34,
-      color: colors["success-text-body"]
+      color: colors["success-text-body"],
     },
 
     amount: {
       fontWeight: "400",
       fontSize: 14,
       lineHeight: 20,
-      color: colors["neutral-text-title"]
+      color: colors["neutral-text-title"],
     },
     "btn-claim": {
       backgroundColor: colors["primary-surface-default"],
@@ -223,7 +266,7 @@ const styling = colors =>
       height: 32,
       position: "absolute",
       right: 0,
-      bottom: 10
+      bottom: 10,
     },
     "claim-title": {
       width: 24,
@@ -232,6 +275,6 @@ const styling = colors =>
       backgroundColor: colors["neutral-surface-action"],
       marginRight: 5,
       alignItems: "center",
-      justifyContent: "center"
-    }
+      justifyContent: "center",
+    },
   });
