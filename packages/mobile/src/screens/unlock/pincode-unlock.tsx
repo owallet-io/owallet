@@ -41,6 +41,7 @@ import { useAutoBiomtric } from "./index";
 import SmoothPinCodeInput from "react-native-smooth-pincode-input";
 import NumericPad from "react-native-numeric-pad";
 import OWText from "@src/components/text/ow-text";
+import { HugeQueriesStore } from "@src/stores/huge-queries";
 
 async function waitAccountLoad(
   accountStore: AccountStore<any, any, any, any>,
@@ -53,6 +54,24 @@ async function waitAccountLoad(
   return new Promise((resolve) => {
     const disposer = autorun(() => {
       if (accountStore.getAccount(chainId).bech32Address) {
+        resolve();
+        if (disposer) {
+          disposer();
+        }
+      }
+    });
+  });
+}
+async function waitChainLoad(
+  hugeQueriesStore: HugeQueriesStore
+): Promise<void> {
+  if (hugeQueriesStore.setupDoneAllChain) {
+    return;
+  }
+
+  return new Promise((resolve) => {
+    const disposer = autorun(() => {
+      if (hugeQueriesStore.setupDoneAllChain) {
         resolve();
         if (disposer) {
           disposer();
@@ -89,6 +108,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
     accountStore,
     chainStore,
     appInitStore,
+    hugeQueriesStore,
   } = useStore();
   const navigation = useNavigation();
   const { colors } = useTheme();
@@ -110,10 +130,11 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
       ) {
         navigation.dispatch(StackActions.replace("MainTab"));
       } else {
-        await waitAccountLoad(accountStore, chainId);
+        // await waitAccountLoad(accountStore, chainId);
+        await waitChainLoad(hugeQueriesStore);
         setTimeout(() => {
           navigation.dispatch(StackActions.replace("MainTab"));
-        }, 3000);
+        }, 1000);
       }
     }
     navigateToHomeOnce.current = true;

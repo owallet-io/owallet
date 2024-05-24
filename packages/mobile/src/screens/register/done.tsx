@@ -196,14 +196,16 @@ export const RegisterDoneScreen: FunctionComponent = observer(() => {
                     keyRingStore.multiKeyStoreInfo.length - 1
                   );
                 }
-                smartNavigation.reset({
-                  index: 0,
-                  routes: [
-                    {
-                      name: "MainTab",
-                    },
-                  ],
-                });
+                setTimeout(() => {
+                  smartNavigation.reset({
+                    index: 0,
+                    routes: [
+                      {
+                        name: "MainTab",
+                      },
+                    ],
+                  });
+                }, 2000);
               } catch (e) {
                 console.log(e);
                 // alert(JSON.stringify(e));

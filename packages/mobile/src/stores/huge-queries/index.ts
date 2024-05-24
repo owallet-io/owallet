@@ -4,6 +4,7 @@ import {
   AccountWithAll,
   CoinGeckoPriceStore,
   CosmosQueries,
+  KeyRingStore,
   QueriesStore,
   QueriesWrappedTron,
   // IAccountStore,
@@ -18,13 +19,18 @@ import { computedFn } from "mobx-utils";
 import { ChainIdHelper } from "@owallet/cosmos";
 import { ChainInfo } from "@owallet/types";
 
-interface ViewToken {
+export interface ViewToken {
   //TODO: need check type for chain info
   chainInfo: ChainInfo;
   token: CoinPretty;
   price: PricePretty | undefined;
   isFetching: boolean;
   error: QueryError<any> | undefined;
+}
+
+interface ViewChainAddress {
+  chainInfo: ChainInfo;
+  address: string;
 }
 
 /**
@@ -42,7 +48,8 @@ export class HugeQueriesStore {
     //TODO: need check type for queriesStore and accountStore
     public readonly queriesStore: QueriesStore<QueriesWrappedTron>,
     public readonly accountStore: AccountStore<AccountWithAll>,
-    protected readonly priceStore: CoinGeckoPriceStore
+    protected readonly priceStore: CoinGeckoPriceStore,
+    protected readonly keyRingStore: KeyRingStore
   ) {
     makeObservable(this);
   }
@@ -54,13 +61,15 @@ export class HugeQueriesStore {
 
     for (const chainInfo of this.chainStore.chainInfosInUI) {
       const account = this.accountStore.getAccount(chainInfo.chainId);
-      if (account.bech32Address === "") {
+      const address = account.getAddressDisplay(
+        this.keyRingStore.keyRingLedgerAddresses,
+        false
+      );
+      if (address === "") {
         continue;
       }
       const queries = this.queriesStore.get(chainInfo.chainId);
-      const queryBalance = queries.queryBalances.getQueryBech32Address(
-        account.bech32Address
-      );
+      const queryBalance = queries.queryBalances.getQueryBech32Address(address);
 
       const currencies = [...chainInfo.currencies];
       if (chainInfo.stakeCurrency) {
@@ -144,6 +153,31 @@ export class HugeQueriesStore {
       return 1;
     }
   };
+
+  @computed
+  get getAllChainMap(): Map<string, ViewChainAddress> {
+    const map = new Map<string, ViewChainAddress>();
+    for (const chainInfo of this.chainStore.chainInfosInUI) {
+      const account = this.accountStore.getAccount(chainInfo.chainId);
+      const address = account.getAddressDisplay(
+        this.keyRingStore.keyRingLedgerAddresses,
+        false
+      );
+      map.set(chainInfo.chainId, {
+        address,
+        chainInfo,
+      });
+    }
+    return map;
+  }
+
+  @computed
+  get setupDoneAllChain(): boolean {
+    const allChainMap = Array.from([...this.getAllChainMap.entries()]);
+    if (allChainMap.length == this.chainStore.chainInfosInUI.length)
+      return true;
+    return false;
+  }
 
   getAllBalances = computedFn((allowIBCToken: boolean): ViewToken[] => {
     const res: ViewToken[] = [];
