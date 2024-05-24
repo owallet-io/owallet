@@ -31,8 +31,9 @@ export const TxOraichainItem: FC<{
       const token = chainStore.current.currencies.find(({ coinMinimalDenom }) =>
         coinMinimalDenom.includes(item.denom)
       );
-      if (!token) currency = unknownToken;
-      currency = token;
+      if (token) {
+        currency = token;
+      }
     } else {
       currency = chainStore.current.stakeCurrency;
     }
@@ -40,8 +41,9 @@ export const TxOraichainItem: FC<{
     const token = chainStore.current.currencies.find(({ coinMinimalDenom }) =>
       coinMinimalDenom.includes(item.tokenContractAddress)
     );
-    if (!token) currency = unknownToken;
-    currency = token;
+    if (token) {
+      currency = token;
+    }
   }
   const onTransactionDetail = (item, currency) => {
     navigate(SCREENS.STACK.Others, {

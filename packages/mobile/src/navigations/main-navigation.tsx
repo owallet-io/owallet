@@ -20,6 +20,7 @@ import { BackupMnemonicScreen } from "@src/screens/register/mnemonic/backup-mnem
 import { RecoverPhraseScreen } from "@src/screens/register/mnemonic/recover-phrase";
 import { RegisterDoneScreen } from "@src/screens/register/done";
 import { TokenDetails } from "@src/screens/home/token-details";
+import { TestScreen } from "@src/screens/home/test";
 
 const Stack = createStackNavigator();
 
@@ -47,7 +48,7 @@ export const MainNavigation: FC = observer(() => {
           };
         }}
         name={SCREENS.Home}
-        component={HomeScreen}
+        component={TestScreen}
       />
 
       <Stack.Screen
