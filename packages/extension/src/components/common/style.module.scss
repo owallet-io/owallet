@@ -1,0 +1,15 @@
+@import "../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/functions";
+@import "../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/mixins";
+@import "../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/variables";
+@import "../../styles/var";
+
+.text {
+  font-size: 12px;
+  font-weight: 400;
+  color: $neutral-text-title;
+}
+
+.card {
+  padding: 16;
+  background-color: $neutral-surface-card;
+}

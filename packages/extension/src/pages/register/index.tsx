@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 
 import { EmptyLayout } from "../../layouts/empty-layout";
 
@@ -45,6 +45,24 @@ export const BackButton: FunctionComponent<{ onClick: () => void }> = ({
   );
 };
 
+const slides = [
+  {
+    imageSrc: require("../../public/assets/images/img_owallet.png"),
+    title: "LEVERAGE EXPERIENCES\nWITH POWER OF AI",
+    paragraph: "Simplify DeFi activities with AI via DeFi Lens",
+  },
+  {
+    imageSrc: require("../../public/assets/images/img_planet.png"),
+    title: "SEAMLESSLY\nMANAGING ASSETS",
+    paragraph: "Portfolio management with\nmulti-chain assets & multi-accounts",
+  },
+  {
+    imageSrc: require("../../public/assets/images/img_leverage.png"),
+    title: "UNIVERSAL\nWEB3 GATEWAY",
+    paragraph: "Bitcoin x EVM x Oraichain x Cosmos-SDK\nblockchains",
+  },
+];
+
 export const RegisterPage: FunctionComponent = observer(() => {
   useEffect(() => {
     document.body.setAttribute("data-centered", "true");
@@ -53,6 +71,22 @@ export const RegisterPage: FunctionComponent = observer(() => {
       document.body.removeAttribute("data-centered");
     };
   }, []);
+
+  const [slide, setSlide] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (slide < 2) {
+        setSlide((prevSlide) => prevSlide + 1);
+      } else {
+        setSlide(0);
+      }
+    }, 3000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [slide]);
 
   const { keyRingStore } = useStore();
 
@@ -84,23 +118,22 @@ export const RegisterPage: FunctionComponent = observer(() => {
             : "start",
       }}
     >
-      <div className={style.logoContainer}>
-        <div>
-          <img
-            className={style.icon}
-            src={require("../../public/assets/orai_wallet_logo.png")}
-            alt="logo"
-          />
+      {
+        <div className={style.logoContainer}>
+          <div>
+            <img
+              className={style.icon}
+              src={slides[slide].imageSrc}
+              alt="logo"
+            />
+          </div>
+          <div className={style.logoInnerContainer}>
+            <div className={style.title}>{slides[slide].title}</div>
+            <div className={style.paragraph}>{slides[slide].paragraph}</div>
+          </div>
         </div>
-        <div className={style.logoInnerContainer}>
-          <img
-            className={style.logo}
-            src={require("../../public/assets/logo.svg")}
-            alt="logo"
-          />
-          <div className={style.paragraph}>Cosmos x EVM in one Wallet</div>
-        </div>
-      </div>
+      }
+
       {registerConfig.render()}
       {registerConfig.isFinalized ? <WelcomePage /> : null}
       {registerConfig.isIntro ? (

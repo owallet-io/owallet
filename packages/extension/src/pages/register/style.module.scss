@@ -1,8 +1,8 @@
-@import '../../styles/var';
+@import "../../styles/var";
 
 $container-width: 420px;
 
-:global(body)[data-centered='true'] {
+:global(body)[data-centered="true"] {
   // margin: auto;
   background-color: $background-color;
   height: 100%;
@@ -56,7 +56,7 @@ $container-width: 420px;
     justify-content: center;
 
     .icon {
-      width: 120px;
+      max-width: 100%;
       height: 120px;
     }
 
@@ -69,7 +69,12 @@ $container-width: 420px;
         max-width: 100%;
         margin-bottom: 22px;
       }
-
+      .title {
+        font-size: 28px;
+        line-height: 1;
+        color: $neutral-text-title;
+        font-weight: 700;
+      }
       .paragraph {
         font-size: 20px;
         line-height: 1;
@@ -88,7 +93,7 @@ $container-width: 420px;
   }
 
   .mnemonic {
-    font-family: 'Courier Prime', serif;
+    font-family: "Courier Prime", serif;
     font-size: 16px;
     letter-spacing: -0.36px;
 
