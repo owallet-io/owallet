@@ -1,39 +1,57 @@
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import React, { FC } from "react";
-import {
-  formatContractAddress,
-  getDataFromDataEvent,
-  getValueFromDataEvents,
-  limitString,
-  maskedNumber,
-} from "@src/utils/helper";
+import { formatContractAddress, maskedNumber } from "@src/utils/helper";
 import { useTheme } from "@src/themes/theme-provider";
-import { spacing } from "@src/themes";
+
 import { observer } from "mobx-react-lite";
 import { Text } from "@src/components/text";
 import OWIcon from "@src/components/ow-icon/ow-icon";
-import OWText from "@src/components/text/ow-text";
+
 import { CoinPretty, Dec, DecUtils } from "@owallet/unit";
 import moment from "moment/moment";
 import { navigate } from "@src/router/root";
-import { SCREENS } from "@src/common/constants";
-import { formatAddress, unknownToken } from "@owallet/common";
+import { getTimeMilliSeconds, SCREENS } from "@src/common/constants";
 import { RightArrowIcon } from "@src/components/icon";
 import { useStore } from "@src/stores";
-import { has } from "lodash";
-import { Currency } from "@owallet/types";
-import Coingecko from "@src/assets/data/coingecko.json";
+import { CosmosItem } from "@src/screens/transactions/cosmos/types";
+import { unknownToken } from "@owallet/common";
 import get from "lodash/get";
 
-export const TxEvmItem: FC<{
-  item: any;
+export const TxCosmosItem: FC<{
+  item: CosmosItem;
   index: number;
   data: any;
 }> = observer(({ item, index, data, ...props }) => {
   const { priceStore, chainStore } = useStore();
   const fiat = priceStore.defaultVsCurrency;
   if (!item) return;
+  console.log(item, "item");
   let currency = unknownToken;
+  if (!!get(item, "tokenInfos[0].contractAddress")) {
+    currency = {
+      coinDenom: item.tokenInfos[0].abbr,
+      coinImageUrl: item.tokenInfos[0].imgUrl,
+      coinGeckoId: item.tokenInfos[0].coingeckoId,
+      coinMinimalDenom: `cw20:${item.tokenInfos[0].contractAddress}:${item.tokenInfos[0].name}`,
+      coinDecimals: item.tokenInfos[0].decimal,
+    };
+  } else if (
+    !!get(item, "tokenInfos[0].denom") &&
+    get(item, "tokenInfos[0].denom").startsWith("ibc")
+  ) {
+    currency = {
+      coinDenom: item.tokenInfos[0].abbr,
+      coinImageUrl: item.tokenInfos[0].imgUrl,
+      coinGeckoId: item.tokenInfos[0].coingeckoId,
+      coinMinimalDenom: get(item, "tokenInfos[0].denom"),
+      coinDecimals: item.tokenInfos[0].decimal,
+    };
+  } else if (
+    !!get(item, "tokenInfos[0].denom") &&
+    !get(item, "tokenInfos[0].denom").startsWith("ibc")
+  ) {
+    currency = chainStore.current.stakeCurrency;
+  }
   const onTransactionDetail = (item, currency) => {
     navigate(SCREENS.STACK.Others, {
       screen: SCREENS.HistoryDetail,
@@ -45,46 +63,27 @@ export const TxEvmItem: FC<{
 
     return;
   };
-  if (item.transactionType === "fungible") {
-    if (has(item, "tokenInfo.attributes")) {
-      const itemCoingecko = Coingecko.find(
-        (it, index) =>
-          it.symbol.toUpperCase() ==
-          get(item, "tokenInfo.attributes.symbol").toUpperCase()
-      );
-      currency = {
-        coinDecimals: item.tokenInfo.attributes.decimals,
-        coinImageUrl:
-          item.tokenInfo.attributes.image_url == "missing.png"
-            ? unknownToken.coinImageUrl
-            : item.tokenInfo.attributes.image_url,
-        coinGeckoId:
-          item.tokenInfo.attributes.coingecko_coin_id ||
-          get(itemCoingecko, "id") ||
-          "unknown",
-        coinMinimalDenom: `erc20:${item.tokenAddress}:${item.tokenInfo.attributes.name}`,
-        coinDenom: item.tokenInfo.attributes.symbol,
-      } as Currency;
-    }
-  } else if (item.transactionType === "native") {
-    currency = chainStore.current.stakeCurrency;
-  }
 
-  const amount = new CoinPretty(
-    currency,
-    new Dec(item.amount).mul(DecUtils.getTenExponentN(currency.coinDecimals))
-  );
+  const amount = new CoinPretty(currency, new Dec(item.amount[0].amount));
   const priceAmount = priceStore.calculatePrice(amount, fiat);
   const first =
-    index > 0 && moment(data[index - 1].timestamp).format("MMM D, YYYY");
-  const now = moment(item.timestamp).format("MMM D, YYYY");
+    index > 0 &&
+    moment(getTimeMilliSeconds(data[index - 1].timestamp)).format(
+      "MMM D, YYYY"
+    );
+  const now = moment(getTimeMilliSeconds(item.timestamp)).format("MMM D, YYYY");
   const { colors } = useTheme();
   const styles = styling(colors);
+
+  const isSent =
+    item.userAddress === item.fromAddress ||
+    item.fromAddress === item.toAddress;
+  const method = isSent ? "Sent" : "Received";
   return (
     <View style={{ paddingVertical: 8 }}>
-      {first !== now || index === 0 ? (
+      {first != now || index === 0 ? (
         <Text size={14} color={colors["neutral-text-heading"]} weight="600">
-          {moment(item.timestamp).format("MMM D, YYYY")}
+          {now}
         </Text>
       ) : null}
 
@@ -101,19 +100,13 @@ export const TxEvmItem: FC<{
               size={32}
               style={{
                 borderRadius: 999,
-                tintColor:
-                  currency.coinDenom === "ORAI" ||
-                  currency.coinDenom === "AIRI" ||
-                  currency.coinDenom === "ORAIX"
-                    ? colors["neutral-text-title"]
-                    : null,
               }}
             />
           </View>
           <View style={styles.chainWrap}>
             <OWIcon
               type="images"
-              source={{ uri: chainStore.current.raw.chainSymbolImageUrl }}
+              source={{ uri: chainStore.current.stakeCurrency.coinImageUrl }}
               size={20}
               style={{
                 borderRadius: 999,
@@ -134,10 +127,10 @@ export const TxEvmItem: FC<{
           <View style={styles.leftBoxItem}>
             <View style={styles.pl10}>
               <Text size={16} color={colors["neutral-text-title"]} weight="600">
-                {item.transactionSubtype === "incoming" ? "Received" : "Sent"}
+                {method}
               </Text>
               <Text weight="400" color={colors["neutral-text-body"]}>
-                {formatContractAddress(item.hash)}
+                {formatContractAddress(item.txhash)}
               </Text>
             </View>
           </View>
@@ -147,16 +140,14 @@ export const TxEvmItem: FC<{
                 <Text
                   weight="500"
                   color={
-                    new Dec(item.amount).gt(new Dec(0))
+                    !isSent
                       ? colors["success-text-body"]
                       : colors["neutral-text-title"]
                   }
                 >
-                  {`${
-                    new Dec(item.amount).gt(new Dec(0)) ? "+" : ""
-                  }${maskedNumber(amount.hideDenom(true).toString())} ${
-                    currency.coinDenom
-                  }`}
+                  {`${!isSent ? "+" : "-"}${maskedNumber(
+                    amount.hideDenom(true).toString()
+                  )} ${currency.coinDenom}`}
                 </Text>
                 <Text style={styles.profit} color={colors["neutral-text-body"]}>
                   {priceAmount.toString().replace("-", "")}
@@ -198,13 +189,9 @@ const styling = (colors) => {
     },
     btnItem: {
       flexDirection: "row",
-      // justifyContent: 'space-between',
       alignItems: "center",
-      // flex: 1,
       flexWrap: "wrap",
       gap: 16,
-
-      // marginVertical: 8,
     },
     profit: {
       fontWeight: "400",

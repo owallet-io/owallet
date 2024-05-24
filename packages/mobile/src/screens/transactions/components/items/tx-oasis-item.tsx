@@ -1,31 +1,16 @@
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import React, { FC } from "react";
-import {
-  formatContractAddress,
-  getDataFromDataEvent,
-  getValueFromDataEvents,
-  limitString,
-  maskedNumber,
-} from "@src/utils/helper";
+import { formatContractAddress, maskedNumber } from "@src/utils/helper";
 import { useTheme } from "@src/themes/theme-provider";
-import { spacing } from "@src/themes";
 import { observer } from "mobx-react-lite";
 import { Text } from "@src/components/text";
 import OWIcon from "@src/components/ow-icon/ow-icon";
-import OWText from "@src/components/text/ow-text";
 import { CoinPretty, Dec, DecUtils } from "@owallet/unit";
 import moment from "moment/moment";
 import { navigate } from "@src/router/root";
-import {
-  checkIsMilliseconds,
-  getTimeMilliSeconds,
-  SCREENS,
-} from "@src/common/constants";
-import { formatAddress, isMilliseconds, unknownToken } from "@owallet/common";
+import { getTimeMilliSeconds, SCREENS } from "@src/common/constants";
 import { RightArrowIcon } from "@src/components/icon";
 import { useStore } from "@src/stores";
-import { has } from "lodash";
-import { Currency } from "@owallet/types";
 
 export const TxOasisItem: FC<{
   item: any;
@@ -35,7 +20,6 @@ export const TxOasisItem: FC<{
   const { priceStore, chainStore } = useStore();
   const fiat = priceStore.defaultVsCurrency;
   if (!item) return;
-  console.log(item, "item");
   const currency = chainStore.current.stakeCurrency;
   const onTransactionDetail = (item, currency) => {
     navigate(SCREENS.STACK.Others, {
@@ -60,7 +44,6 @@ export const TxOasisItem: FC<{
       "MMM D, YYYY"
     );
   const now = moment(getTimeMilliSeconds(item.timestamp)).format("MMM D, YYYY");
-  console.log(first, now, "test");
   const { colors } = useTheme();
   const styles = styling(colors);
   const method = item.method.split(".");
@@ -85,10 +68,6 @@ export const TxOasisItem: FC<{
               size={32}
               style={{
                 borderRadius: 999,
-                tintColor:
-                  currency.coinDenom === "ORAI"
-                    ? colors["neutral-text-title"]
-                    : null,
               }}
             />
           </View>
@@ -180,13 +159,9 @@ const styling = (colors) => {
     },
     btnItem: {
       flexDirection: "row",
-      // justifyContent: 'space-between',
       alignItems: "center",
-      // flex: 1,
       flexWrap: "wrap",
       gap: 16,
-
-      // marginVertical: 8,
     },
     profit: {
       fontWeight: "400",

@@ -17,7 +17,7 @@ import {
   tokensIcon,
 } from "@oraichain/oraidex-common";
 import { API } from "@src/common/api";
-import { ChainIdEnum, OasisNetwork } from "@owallet/common";
+import { ChainIdEnum, CosmosNetwork, OasisNetwork } from "@owallet/common";
 import { Network } from "@tatumio/tatum";
 export const MapChainIdToNetwork = {
   [ChainIdEnum.BNBChain]: Network.BINANCE_SMART_CHAIN,
@@ -27,6 +27,7 @@ export const MapChainIdToNetwork = {
   [ChainIdEnum.OasisEmerald]: OasisNetwork.EMERALD,
   [ChainIdEnum.OasisSapphire]: OasisNetwork.SAPPHIRE,
   [ChainIdEnum.TRON]: Network.TRON,
+  [ChainIdEnum.Oraichain]: CosmosNetwork.ORAICHAIN,
 };
 const SCHEME_IOS = "owallet://open_url?url=";
 const SCHEME_ANDROID = "app.owallet.oauth://google/open_url?url=";

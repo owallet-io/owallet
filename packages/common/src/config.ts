@@ -359,7 +359,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinDecimals: 18,
       coinGeckoId: "injective-protocol",
       coinImageUrl:
-        "https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png",
+        "https://s2.coinmarketcap.com/static/img/coins/64x64/7226.png",
       gasPriceStep: {
         low: 5000000000,
         average: 25000000000,
