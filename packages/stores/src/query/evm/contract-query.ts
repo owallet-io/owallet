@@ -25,10 +25,10 @@ export class ObservableEvmContractChainQuery<
   }
 
   protected async fetchResponse(
-    cancelToken: CancelToken
+    abortController: AbortController
   ): Promise<QueryResponse<T>> {
     try {
-      const response = await super.fetchResponse(cancelToken);
+      const response = await super.fetchResponse(abortController);
       const resultFetchBalance = response.data;
       const provider = this.chainGetter.getChain(this.chainId).rest;
       const web3 = new Web3(provider);
