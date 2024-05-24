@@ -1,7 +1,7 @@
 import { observable, action, makeObservable, computed } from "mobx";
 import { create, persist } from "mobx-persist";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { CoinGeckoPrices } from "@oraichain/oraidex-common";
+import { CoinGeckoPrices, TokenItemType } from "@oraichain/oraidex-common";
 
 export class AppInit {
   @persist("object")
@@ -16,6 +16,7 @@ export class AppInit {
     prices: CoinGeckoPrices<string>;
     yesterdayPriceFeed: Array<any>;
     balances: object;
+    chainInfos: Array<any>;
   };
   @observable
   protected notiData: {};
@@ -31,6 +32,7 @@ export class AppInit {
       isAllNetworks: false,
       prices: {},
       balances: {},
+      chainInfos: [],
       yesterdayPriceFeed: [],
     };
   }
@@ -38,6 +40,11 @@ export class AppInit {
   @computed
   get getInitApp() {
     return this.initApp;
+  }
+
+  @computed
+  get getChainInfos() {
+    return this.initApp.chainInfos;
   }
 
   @action
@@ -50,6 +57,14 @@ export class AppInit {
     this.initApp = {
       ...this.initApp,
       balances: { ...this.getInitApp.balances, [address]: balance },
+    };
+  }
+
+  @action
+  updateChainInfos(chains) {
+    this.initApp = {
+      ...this.initApp,
+      chainInfos: chains,
     };
   }
 
@@ -88,49 +103,6 @@ export class AppInit {
   updateYesterdayPriceFeed(priceFeed) {
     this.initApp.yesterdayPriceFeed = priceFeed;
   }
-
-  // @action
-  // updatePriceFeed(address, balances) {
-  //   // TODO: save balances with address
-  //   let tmpPrice = {};
-  //   if (this.initApp.priceFeed[address]) {
-  //     tmpPrice = { ...this.initApp.priceFeed[address] };
-  //   }
-  //   if (Object.keys(tmpPrice).length === 0) {
-  //     // Pricefeed is empty, we never call to get balances of this address before
-  //     tmpPrice = {
-  //       [Math.floor(Date.now() / 1000)]: balances,
-  //       [Math.floor(Date.now() / 1000) + 1]: balances
-  //     };
-  //     // console.log('not yet ?', tmpPrice);
-  //   } else {
-  //     const today = moment.unix(Math.floor(Date.now() / 1000));
-  //     const yesterday = moment.unix(Number(Object.keys(tmpPrice)[1]));
-  //     // console.log('tmpPrice', yesterday.format('DD/MM/YYYY'), today.format('DD/MM/YYYY'), tmpPrice);
-
-  //     if (today.isSame(yesterday, 'day')) {
-  //       // Today is the same day as the day when the last balances were called
-  //       // Replace the today balances with the new one
-  //       tmpPrice[Object.keys(tmpPrice)[1] ?? Math.floor(Date.now() / 1000)] = balances;
-  //       // console.log('today again ?', tmpPrice);
-  //     } else {
-  //       // Today is not the same day as the day when the last balances were called
-  //       // Remove the first element of object, which is the outdated data
-  //       delete tmpPrice[Object.keys(tmpPrice)[0]];
-  //       // The second element now become first, which is yesterday data
-  //       // Push new element into object, become today's data
-  //       tmpPrice[Math.floor(Date.now() / 1000) + Math.floor(Math.random() * 7)] = balances;
-  //       // console.log('next day ?', tmpPrice);
-  //     }
-  //   }
-  //   // Assign new balances into address
-  //   const newPriceFeed = { ...this.getInitApp.priceFeed };
-  //   // console.log('newPriceFeed', newPriceFeed);
-
-  //   newPriceFeed[address] = tmpPrice;
-
-  //   this.initApp = { ...this.initApp, ...{ priceFeed: newPriceFeed } };
-  // }
 
   @action
   selectAllNetworks(isAllNetworks) {

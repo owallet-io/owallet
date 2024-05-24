@@ -43,11 +43,18 @@ export const useSwapFee = ({ fromToken, toToken }) => {
 
   const SWAP_FEE_PER_ROUTE = 0.003;
 
+  const isDependOnNetwork =
+    fromToken.chainId !== "Oraichain" || toToken.chainId !== "Oraichain";
+
   useEffect(() => {
     if (!fromToken || !toToken) return;
 
-    const { name: fromName = "", chainId: fromChainId } = fromToken;
-    const { name: toName = "", chainId: toChainId } = toToken;
+    const {
+      denom: fromDenom,
+      name: fromName = "",
+      chainId: fromChainId,
+    } = fromToken;
+    const { denom: toDenom, name: toName = "", chainId: toChainId } = toToken;
 
     // case: same chainId as evm, or bnb => swap fee = 0
     // case: same Token Name and !== chainId => bridge token => swap fee = 0
@@ -67,6 +74,12 @@ export const useSwapFee = ({ fromToken, toToken }) => {
       return;
     }
 
+    // bridge
+    if (fromChainId !== toChainId && toName === fromName) {
+      setFee(() => 0);
+      return;
+    }
+
     // swap to oraichain and bridge
     if (
       fromChainId !== toChainId &&
@@ -78,5 +91,5 @@ export const useSwapFee = ({ fromToken, toToken }) => {
     }
   }, [fromToken, toToken]);
 
-  return { fee };
+  return { fee, isDependOnNetwork };
 };

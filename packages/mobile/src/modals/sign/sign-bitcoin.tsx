@@ -202,6 +202,7 @@ export const SignBitcoinModal: FunctionComponent<{
             style={{
               alignSelf: "center",
               paddingVertical: 8,
+              backgroundColor: colors["neutral-icon-on-dark"],
             }}
           >
             <FastImage

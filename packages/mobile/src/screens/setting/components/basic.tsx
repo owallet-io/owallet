@@ -232,8 +232,7 @@ const styling = (colors) =>
       justifyContent: "space-between",
       alignItems: "center",
       borderRadius: 12,
-      paddingHorizontal: 16,
-      marginHorizontal: 16,
+
       paddingVertical: 8,
       backgroundColor: colors["neutral-surface-card"],
       marginBottom: 16,

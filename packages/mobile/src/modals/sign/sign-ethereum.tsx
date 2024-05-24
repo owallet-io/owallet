@@ -100,6 +100,9 @@ export const SignEthereumModal: FunctionComponent<{
         console.error(error);
       }
     };
+
+    console.log("dataSign", dataSign);
+
     useEffect(() => {
       if (signInteractionStore.waitingEthereumData) {
         const data = signInteractionStore.waitingEthereumData;
@@ -209,6 +212,7 @@ export const SignEthereumModal: FunctionComponent<{
             style={{
               alignSelf: "center",
               paddingVertical: 8,
+              backgroundColor: colors["neutral-icon-on-dark"],
             }}
           >
             <FastImage
