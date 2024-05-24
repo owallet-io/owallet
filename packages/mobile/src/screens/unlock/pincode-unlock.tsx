@@ -111,7 +111,9 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
         navigation.dispatch(StackActions.replace("MainTab"));
       } else {
         await waitAccountLoad(accountStore, chainId);
-        navigation.dispatch(StackActions.replace("MainTab"));
+        setTimeout(() => {
+          navigation.dispatch(StackActions.replace("MainTab"));
+        }, 3000);
       }
     }
     navigateToHomeOnce.current = true;
@@ -550,7 +552,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
                     justifyContent: "center",
                   }}
                   onSubmitEditing={tryUnlock}
-                  placeholder="Enter your passcode"
+                  placeholder="Enter your passcode2"
                   inputRight={
                     <OWButtonIcon
                       style={styles.padIcon}
