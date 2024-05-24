@@ -1,5 +1,5 @@
 import { View } from "react-native";
-// import { LineGraph } from "react-native-graph";
+import { LineGraph } from "react-native-graph";
 import { metrics } from "@src/themes";
 import OWText from "@src/components/text/ow-text";
 import React, { FC, FunctionComponent, useEffect, useState } from "react";
@@ -243,28 +243,28 @@ export const TokenChart: FC<{
           </OWText>
         </View>
       </View>
-      {/*{dataPriceChart && (*/}
-      {/*  <LineGraph*/}
-      {/*    animated={true}*/}
-      {/*    style={{*/}
-      {/*      width: "100%",*/}
-      {/*      height: "77%",*/}
-      {/*      // marginLeft: 5,*/}
-      {/*    }}*/}
-      {/*    enablePanGesture={true}*/}
-      {/*    onPointSelected={(p) => setCurrentPrice(p)}*/}
-      {/*    onGestureStart={hapticStart}*/}
-      {/*    onGestureEnd={resetPrice}*/}
-      {/*    enableIndicator={true}*/}
-      {/*    panGestureDelay={0}*/}
-      {/*    points={dataPriceChart}*/}
-      {/*    color={*/}
-      {/*      change24h < 0*/}
-      {/*        ? colors["error-text-body"]*/}
-      {/*        : colors["success-text-body"]*/}
-      {/*    }*/}
-      {/*  />*/}
-      {/*)}*/}
+      {dataPriceChart && (
+        <LineGraph
+          animated={true}
+          style={{
+            width: "100%",
+            height: "77%",
+            // marginLeft: 5,
+          }}
+          enablePanGesture={true}
+          onPointSelected={(p) => setCurrentPrice(p)}
+          onGestureStart={hapticStart}
+          onGestureEnd={resetPrice}
+          enableIndicator={true}
+          panGestureDelay={0}
+          points={dataPriceChart}
+          color={
+            change24h < 0
+              ? colors["error-text-body"]
+              : colors["success-text-body"]
+          }
+        />
+      )}
       <View
         style={{
           flexDirection: "row",
