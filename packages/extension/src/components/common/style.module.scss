@@ -13,3 +13,34 @@
   padding: 16;
   background-color: $neutral-surface-card;
 }
+
+.button {
+  padding: 14px 20px;
+  border-radius: 90px;
+  border-width: 0;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.primaryBtn {
+  background-color: $primary-surface-default;
+  color: $neutral-text-action-on-dark-bg;
+}
+
+.secondaryBtn {
+  background-color: $neutral-surface-action3;
+  color: $neutral-icon-on-light;
+}
+
+.dangerBtn {
+  background-color: $error-surface-default;
+  color: $neutral-icon-on-dark;
+}
+
+.buttonFill {
+}
+
+.buttonOutline {
+  background-color: transparent;
+  color: $primary-text-action;
+}

@@ -1,12 +1,11 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
 
 import { EmptyLayout } from "../../layouts/empty-layout";
+import { Button } from "../../components/common/button";
 
 import { observer } from "mobx-react-lite";
 
 import style from "./style.module.scss";
-
-import { Button } from "reactstrap";
 
 import { FormattedMessage } from "react-intl";
 
@@ -133,7 +132,7 @@ export const RegisterPage: FunctionComponent = observer(() => {
           </div>
         </div>
       }
-
+      <Button text="Button" />
       {registerConfig.render()}
       {registerConfig.isFinalized ? <WelcomePage /> : null}
       {registerConfig.isIntro ? (
