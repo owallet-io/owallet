@@ -10,7 +10,7 @@
 }
 
 .card {
-  padding: 16;
+  padding: 16px;
   background-color: $neutral-surface-card;
 }
 
@@ -20,6 +20,12 @@
   border-width: 0;
   font-weight: 600;
   font-size: 14px;
+  flex-direction: row;
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+  width: 100%;
+  justify-content: center;
 }
 
 .primaryBtn {

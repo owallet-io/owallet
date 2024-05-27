@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from "react";
 
-import { Button, Form } from "reactstrap";
+import { Form } from "reactstrap";
 
 import { FormattedMessage, useIntl } from "react-intl";
 import style from "../style.module.scss";
@@ -13,6 +13,7 @@ import { AdvancedBIP44Option, useBIP44Option } from "../advanced-bip44";
 
 import { Buffer } from "buffer";
 import { useStore } from "../../../stores";
+import { Button } from "../../../components/common/button";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require("bip39");
@@ -46,8 +47,7 @@ export const RecoverMnemonicIntro: FunctionComponent<{
 
   return (
     <Button
-      color=""
-      block
+      color="secondary"
       onClick={(e) => {
         e.preventDefault();
 
@@ -56,10 +56,10 @@ export const RecoverMnemonicIntro: FunctionComponent<{
           registerType: "seed",
         });
       }}
-      className={style.importWalletBtn}
-    >
-      <FormattedMessage id="register.intro.button.import-account.title" />
-    </Button>
+      text={
+        <FormattedMessage id="register.intro.button.import-account.title" />
+      }
+    />
   );
 });
 

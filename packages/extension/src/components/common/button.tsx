@@ -6,12 +6,12 @@ export const Button: FunctionComponent<{
   color?: "primary" | "secondary" | "danger";
   size?: "default" | "small" | "large";
   mode?: "fill" | "light" | "outline" | "text";
-  text: string;
+  text: string | ReactElement;
   leftIcon?: ReactElement;
   rightIcon?: ReactElement;
   loading?: boolean;
   disabled?: boolean;
-  onClick?: () => void;
+  onClick?: (e) => void;
   containerStyle?: CSSProperties;
   style?: CSSProperties;
   textStyle?: CSSProperties;
@@ -20,7 +20,7 @@ export const Button: FunctionComponent<{
 }> = ({
   color = "primary",
   size = "default",
-  mode = "outline",
+  mode = "fill",
   text,
   leftIcon,
   rightIcon,

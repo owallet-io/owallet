@@ -9,12 +9,13 @@ import {
   useBIP44Option,
 } from "../advanced-bip44";
 import style from "../style.module.scss";
-import { Alert, Button, ButtonGroup, Form } from "reactstrap";
+import { Alert, ButtonGroup, Form } from "reactstrap";
 import { Input, PasswordInput, TextArea } from "../../../components/form";
 import { BackButton } from "../index";
 import { NewMnemonicConfig, useNewMnemonicConfig, NumWords } from "./hook";
 import { useStore } from "../../../stores";
 import classNames from "classnames";
+import { Button } from "../../../components/common/button";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require("bip39");
@@ -35,7 +36,6 @@ export const NewMnemonicIntro: FunctionComponent<{
 
   return (
     <Button
-      block
       onClick={(e) => {
         e.preventDefault();
 
@@ -44,10 +44,8 @@ export const NewMnemonicIntro: FunctionComponent<{
           registerType: "seed",
         });
       }}
-      className={style.newWalletBtn}
-    >
-      <FormattedMessage id="register.intro.button.new-account.title" />
-    </Button>
+      text={<FormattedMessage id="register.intro.button.new-account.title" />}
+    />
   );
 });
 

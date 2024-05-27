@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from "react";
 import { RegisterConfig } from "@owallet/hooks";
 import { FormattedMessage, useIntl } from "react-intl";
-import { Button, Form } from "reactstrap";
+import { Form } from "reactstrap";
 import useForm from "react-hook-form";
 import style from "../style.module.scss";
 import { Input, PasswordInput } from "../../../components/form";
@@ -9,6 +9,7 @@ import { AdvancedBIP44Option, useBIP44Option } from "../advanced-bip44";
 import { BackButton } from "../index";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../../stores";
+import { Button } from "../../../components/common/button";
 
 export const TypeImportLedger = "import-ledger";
 
@@ -22,10 +23,10 @@ export const ImportLedgerIntro: FunctionComponent<{
   registerConfig: RegisterConfig;
 }> = observer(({ registerConfig }) => {
   const { analyticsStore } = useStore();
+
   return (
     <Button
-      color=""
-      block
+      color="secondary"
       onClick={(e) => {
         e.preventDefault();
 
@@ -34,10 +35,8 @@ export const ImportLedgerIntro: FunctionComponent<{
           registerType: "ledger",
         });
       }}
-      className={style.importWalletBtn}
-    >
-      <FormattedMessage id="register.ledger.title" />
-    </Button>
+      text={<FormattedMessage id="register.ledger.title" />}
+    />
   );
 });
 

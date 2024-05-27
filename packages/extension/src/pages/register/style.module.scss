@@ -145,6 +145,10 @@ $container-width: 420px;
   }
 }
 
+.backButton {
+  flex-direction: row;
+}
+
 .new-wallet-btn,
 .next-btn {
   background: linear-gradient(90deg, $primary-color 0%, $second-color 100%);
