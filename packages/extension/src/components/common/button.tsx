@@ -6,7 +6,7 @@ export const Button: FunctionComponent<{
   color?: "primary" | "secondary" | "danger";
   size?: "default" | "small" | "large";
   mode?: "fill" | "light" | "outline" | "text";
-  text: string | ReactElement;
+  text?: string | ReactElement;
   leftIcon?: ReactElement;
   rightIcon?: ReactElement;
   loading?: boolean;
@@ -28,6 +28,7 @@ export const Button: FunctionComponent<{
   disabled = false,
   onClick,
   containerStyle,
+  ...props
 }) => {
   const type = (() => {
     switch (color) {
@@ -53,16 +54,27 @@ export const Button: FunctionComponent<{
     }
   })();
 
+  const buttonSize = (() => {
+    switch (size) {
+      case "small":
+        return style.buttonSmall;
+      case "large":
+        return style.buttonLarge;
+      default:
+        return style.buttonDefault;
+    }
+  })();
+
   return (
     <button
       onClick={onClick}
       disabled={disabled || loading}
-      className={[style.button, type, buttonMode].join(" ")}
+      className={[style.button, type, buttonMode, buttonSize].join(" ")}
       style={containerStyle}
     >
       {loading ? <i className="fa fa-spinner fa-spin"></i> : null}
       {leftIcon ? <div>{leftIcon}</div> : null}
-      {text}
+      {text ?? props.children}
       {rightIcon ? <div>{rightIcon}</div> : null}
     </button>
   );

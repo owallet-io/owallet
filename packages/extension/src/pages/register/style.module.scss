@@ -47,6 +47,13 @@ $container-width: 420px;
     margin-right: 0;
   }
 
+  .titleGroup {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
   .logo-container {
     margin-top: 40px;
     margin-bottom: 40px;
@@ -75,6 +82,7 @@ $container-width: 420px;
         color: $neutral-text-title;
         font-weight: 700;
       }
+
       .paragraph {
         font-size: 20px;
         line-height: 1;

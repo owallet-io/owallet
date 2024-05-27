@@ -14,7 +14,6 @@ import { Input, PasswordInput, TextArea } from "../../../components/form";
 import { BackButton } from "../index";
 import { NewMnemonicConfig, useNewMnemonicConfig, NumWords } from "./hook";
 import { useStore } from "../../../stores";
-import classNames from "classnames";
 import { Button } from "../../../components/common/button";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -106,26 +105,16 @@ export const GenerateMnemonicModePage: FunctionComponent<{
           </li>
         </ul>
       </Alert>
-      <div className={style.title}>
+      <div className={style.titleGroup}>
         {intl.formatMessage({
           id: "register.create.title",
         })}
+
         <div style={{ float: "right" }}>
           <ButtonGroup size="sm" style={{ marginBottom: "4px" }}>
             <Button
-              type="button"
-              color=""
-              outline={newMnemonicConfig.numWords !== NumWords.WORDS12}
-              style={{
-                backgroundColor:
-                  newMnemonicConfig.numWords !== NumWords.WORDS12
-                    ? "white"
-                    : "#7664E4",
-                color:
-                  newMnemonicConfig.numWords !== NumWords.WORDS12
-                    ? "gray"
-                    : "white",
-              }}
+              size="small"
+              // outline={newMnemonicConfig.numWords !== NumWords.WORDS12}
               onClick={() => {
                 newMnemonicConfig.setNumWords(NumWords.WORDS12);
               }}
@@ -133,19 +122,8 @@ export const GenerateMnemonicModePage: FunctionComponent<{
               <FormattedMessage id="register.create.toggle.word12" />
             </Button>
             <Button
-              type="button"
-              color=""
-              style={{
-                backgroundColor:
-                  newMnemonicConfig.numWords !== NumWords.WORDS24
-                    ? "white"
-                    : "#7664E4",
-                color:
-                  newMnemonicConfig.numWords !== NumWords.WORDS24
-                    ? "gray"
-                    : "white",
-              }}
-              outline={newMnemonicConfig.numWords !== NumWords.WORDS24}
+              size="small"
+              // outline={newMnemonicConfig.numWords !== NumWords.WORDS24}
               onClick={() => {
                 newMnemonicConfig.setNumWords(NumWords.WORDS24);
               }}
