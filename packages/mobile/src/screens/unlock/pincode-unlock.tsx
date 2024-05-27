@@ -24,7 +24,7 @@ import delay from "delay";
 import { useStore } from "../../stores";
 import { StackActions, useNavigation } from "@react-navigation/native";
 import { KeyRingStatus } from "@owallet/background";
-import { AccountStore } from "@owallet/stores";
+import { AccountStore, KeyRingStore, WalletStatus } from "@owallet/stores";
 import { autorun } from "mobx";
 import { metrics, spacing } from "../../themes";
 import { ProgressBar } from "../../components/progress-bar";
@@ -42,44 +42,38 @@ import SmoothPinCodeInput from "react-native-smooth-pincode-input";
 import NumericPad from "react-native-numeric-pad";
 import OWText from "@src/components/text/ow-text";
 import { HugeQueriesStore } from "@src/stores/huge-queries";
+import { ChainStore } from "@src/stores/chain";
 
-async function waitAccountLoad(
-  accountStore: AccountStore<any, any, any, any>,
-  chainId: string
-): Promise<void> {
-  if (accountStore.getAccount(chainId).bech32Address) {
-    return;
-  }
-
-  return new Promise((resolve) => {
-    const disposer = autorun(() => {
-      if (accountStore.getAccount(chainId).bech32Address) {
-        resolve();
-        if (disposer) {
-          disposer();
-        }
+export const waitAccountInit = async (
+  chainStore: ChainStore,
+  accountStore: AccountStore<any>,
+  keyRingStore: KeyRingStore
+) => {
+  if (keyRingStore.status == KeyRingStatus.UNLOCKED) {
+    for (const chainInfo of chainStore.chainInfos) {
+      const account = accountStore.getAccount(chainInfo.chainId);
+      if (account.walletStatus === WalletStatus.NotInit) {
+        account.init();
       }
-    });
-  });
-}
-async function waitChainLoad(
-  hugeQueriesStore: HugeQueriesStore
-): Promise<void> {
-  if (hugeQueriesStore.setupDoneAllChain) {
-    return;
-  }
+    }
 
-  return new Promise((resolve) => {
-    const disposer = autorun(() => {
-      if (hugeQueriesStore.setupDoneAllChain) {
-        resolve();
-        if (disposer) {
-          disposer();
+    await new Promise<void>((resolve) => {
+      const disposal = autorun(() => {
+        // account init은 동시에 발생했을때 debounce가 되므로
+        // 첫번째꺼 하나만 확인해도 된다.
+        if (
+          accountStore.getAccount(chainStore.chainInfos[0].chainId)
+            .bech32Address
+        ) {
+          resolve();
+          if (disposal) {
+            disposal();
+          }
         }
-      }
+      });
     });
-  });
-}
+  }
+};
 
 enum AutoBiomtricStatus {
   NO_NEED,
@@ -130,11 +124,8 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
       ) {
         navigation.dispatch(StackActions.replace("MainTab"));
       } else {
-        // await waitAccountLoad(accountStore, chainId);
-        await waitChainLoad(hugeQueriesStore);
-        setTimeout(() => {
-          navigation.dispatch(StackActions.replace("MainTab"));
-        }, 1000);
+        await waitAccountInit(chainStore, accountStore, keyRingStore);
+        navigation.dispatch(StackActions.replace("MainTab"));
       }
     }
     navigateToHomeOnce.current = true;

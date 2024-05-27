@@ -40,6 +40,7 @@
     "react-native-haptic-feedback": "^2.2.0",
     "@cosmjs/proto-signing": "^0.29.3",
     "@cosmjs/stargate": "^0.31.0",
+    "fetch-retry": "^6.0.0",
     "@oasisprotocol/client": "^1.0.0",
     "human-standard-token-abi": "2.0.0",
     "@tatumio/tatum": "^4.2.24",

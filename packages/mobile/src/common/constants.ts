@@ -2,6 +2,17 @@ import images from "@src/assets/images";
 import { Platform } from "react-native";
 import { isMilliseconds } from "@owallet/common";
 
+const fetchWrap = require("fetch-retry")(global.fetch);
+
+export const fetchRetry = async (url) => {
+  const response = await fetchWrap(url, {
+    retries: 3,
+    retryDelay: 1000,
+  });
+  if (response.status !== 200) return;
+  const jsonRes = await response.json();
+  return jsonRes;
+};
 export const HEADER_KEY = {
   notShowHeader: "NOT_SHOW_HEADER",
   showNetworkHeader: "SHOW_NETWORK_HEADER",

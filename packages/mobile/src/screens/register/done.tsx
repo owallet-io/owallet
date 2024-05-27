@@ -11,9 +11,19 @@ import OWButton from "@src/components/button/OWButton";
 import { useTheme } from "@src/themes/theme-provider";
 import { metrics, typography } from "../../themes";
 import OWIcon from "@src/components/ow-icon/ow-icon";
+import { HugeQueriesStore } from "@src/stores/huge-queries";
+import { autorun } from "mobx";
+import { waitAccountInit } from "@src/screens/unlock/pincode-unlock";
 
 export const RegisterDoneScreen: FunctionComponent = observer(() => {
-  const { keychainStore, keyRingStore, appInitStore } = useStore();
+  const {
+    keychainStore,
+    chainStore,
+    accountStore,
+    keyRingStore,
+    appInitStore,
+    hugeQueriesStore,
+  } = useStore();
   const { colors } = useTheme();
   const smartNavigation = useSmartNavigation();
 
@@ -48,6 +58,7 @@ export const RegisterDoneScreen: FunctionComponent = observer(() => {
   }, []);
 
   const [isLoading, setIsLoading] = useState(false);
+
   return (
     <PageWithView
       disableSafeArea
@@ -196,16 +207,15 @@ export const RegisterDoneScreen: FunctionComponent = observer(() => {
                     keyRingStore.multiKeyStoreInfo.length - 1
                   );
                 }
-                setTimeout(() => {
-                  smartNavigation.reset({
-                    index: 0,
-                    routes: [
-                      {
-                        name: "MainTab",
-                      },
-                    ],
-                  });
-                }, 2000);
+                await waitAccountInit(chainStore, accountStore, keyRingStore);
+                smartNavigation.reset({
+                  index: 0,
+                  routes: [
+                    {
+                      name: "MainTab",
+                    },
+                  ],
+                });
               } catch (e) {
                 console.log(e);
                 // alert(JSON.stringify(e));

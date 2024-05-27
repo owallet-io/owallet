@@ -320,38 +320,6 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
   }
 
   getPrice(coinId: string, vsCurrency?: string): number | undefined {
-    // if (!vsCurrency) {
-    //   vsCurrency = this.defaultVsCurrency;
-    // }
-    //
-    // if (!this.supportedVsCurrencies[vsCurrency]) {
-    //   return undefined;
-    // }
-    //
-    // if (
-    //   !this.coinIds.includes(coinId) ||
-    //   !this.vsCurrencies.includes(vsCurrency)
-    // ) {
-    //   if (!this.coinIds.includes(coinId)) {
-    //     this.coinIds.push(coinId);
-    //   }
-    //
-    //   if (!this.vsCurrencies.includes(vsCurrency)) {
-    //     this.vsCurrencies.push(vsCurrency);
-    //   }
-    //
-    //   this.refetch();
-    // }
-    //
-    // if (!this.response) {
-    //   return undefined;
-    // }
-    //
-    // const coinPrices = this.response.data[coinId];
-    // if (!coinPrices) {
-    //   return undefined;
-    // }
-    // return coinPrices[vsCurrency];
     if (!vsCurrency) {
       vsCurrency = this.defaultVsCurrency;
     }
@@ -396,5 +364,118 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
     const priceDec = new Dec(price.toString());
     const pricePretty = new PricePretty(fiatCurrency, dec.mul(priceDec));
     return pricePretty;
+  }
+  async waitPrice(
+    coinId: string,
+    vsCurrency?: string
+  ): Promise<number | undefined> {
+    if (!vsCurrency) {
+      vsCurrency = this.defaultVsCurrency;
+    }
+
+    if (!this.supportedVsCurrencies[vsCurrency]) {
+      return Promise.resolve(undefined);
+    }
+
+    if (this.response?.data[coinId] && this.response.data[coinId][vsCurrency]) {
+      return Promise.resolve(this.response.data[coinId][vsCurrency]);
+    }
+
+    this.updateURL([coinId], [vsCurrency]);
+
+    await this.waitResponse();
+
+    const coinPrices = this.response?.data[coinId];
+    if (!coinPrices) {
+      return undefined;
+    }
+    return coinPrices[vsCurrency];
+  }
+  async waitFreshPrice(
+    coinId: string,
+    vsCurrency?: string
+  ): Promise<number | undefined> {
+    if (!vsCurrency) {
+      vsCurrency = this.defaultVsCurrency;
+    }
+
+    if (!this.supportedVsCurrencies[vsCurrency]) {
+      return Promise.resolve(undefined);
+    }
+
+    this.updateURL([coinId], [vsCurrency]);
+
+    await this.waitFreshResponse();
+
+    const coinPrices = this.response?.data[coinId];
+    if (!coinPrices) {
+      return undefined;
+    }
+    return coinPrices[vsCurrency];
+  }
+  async waitCalculatePrice(
+    coin: CoinPretty,
+    vsCurrrency?: string
+  ): Promise<PricePretty | undefined> {
+    if (!coin.currency.coinGeckoId) {
+      return undefined;
+    }
+
+    if (!vsCurrrency) {
+      vsCurrrency = this.defaultVsCurrency;
+    }
+
+    const fiatCurrency = this.supportedVsCurrencies[vsCurrrency];
+    if (!fiatCurrency) {
+      return undefined;
+    }
+
+    if (coin.toDec().isZero()) {
+      return new PricePretty(fiatCurrency, 0);
+    }
+
+    const price = await this.waitPrice(coin.currency.coinGeckoId, vsCurrrency);
+    if (price === undefined) {
+      return new PricePretty(fiatCurrency, new Int(0)).ready(false);
+    }
+
+    const dec = coin.toDec();
+    const priceDec = new Dec(price.toString());
+
+    return new PricePretty(fiatCurrency, dec.mul(priceDec));
+  }
+  async waitFreshCalculatePrice(
+    coin: CoinPretty,
+    vsCurrrency?: string
+  ): Promise<PricePretty | undefined> {
+    if (!coin.currency.coinGeckoId) {
+      return undefined;
+    }
+
+    if (!vsCurrrency) {
+      vsCurrrency = this.defaultVsCurrency;
+    }
+
+    const fiatCurrency = this.supportedVsCurrencies[vsCurrrency];
+    if (!fiatCurrency) {
+      return undefined;
+    }
+
+    if (coin.toDec().isZero()) {
+      return new PricePretty(fiatCurrency, 0);
+    }
+
+    const price = await this.waitFreshPrice(
+      coin.currency.coinGeckoId,
+      vsCurrrency
+    );
+    if (price === undefined) {
+      return new PricePretty(fiatCurrency, new Int(0)).ready(false);
+    }
+
+    const dec = coin.toDec();
+    const priceDec = new Dec(price.toString());
+
+    return new PricePretty(fiatCurrency, dec.mul(priceDec));
   }
 }
