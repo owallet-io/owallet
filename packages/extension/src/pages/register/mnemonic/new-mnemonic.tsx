@@ -2,7 +2,6 @@ import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { RegisterConfig } from "@owallet/hooks";
 import { observer } from "mobx-react-lite";
 import { FormattedMessage, useIntl } from "react-intl";
-import useForm from "react-hook-form";
 import {
   AdvancedBIP44Option,
   BIP44Option,
@@ -17,6 +16,7 @@ import { useStore } from "../../../stores";
 import { Button } from "../../../components/common/button";
 import { Text } from "../../../components/common/text";
 import { Card } from "../../../components/common/card";
+import useForm from "react-hook-form";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require("bip39");
@@ -83,14 +83,15 @@ export const GenerateMnemonicModePage: FunctionComponent<{
 }> = observer(({ registerConfig, newMnemonicConfig, bip44Option }) => {
   const intl = useIntl();
 
-  const { register, handleSubmit, getValues, errors } = useForm<FormData>({
-    defaultValues: {
-      name: newMnemonicConfig.name,
-      words: newMnemonicConfig.mnemonic,
-      password: "",
-      confirmPassword: "",
-    },
-  });
+  const { register, handleSubmit, getValues, errors, setValue } =
+    useForm<FormData>({
+      defaultValues: {
+        name: newMnemonicConfig.name,
+        words: newMnemonicConfig.mnemonic,
+        password: "",
+        confirmPassword: "",
+      },
+    });
 
   return (
     <div>
@@ -200,10 +201,13 @@ export const GenerateMnemonicModePage: FunctionComponent<{
           }
           rightIcon={
             <img
-              src={require("../../../public/assets/icon/wallet.svg")}
+              src={require("../../../public/assets/icon/circle-del.svg")}
               alt=""
             />
           }
+          onAction={() => {
+            setValue("name", "");
+          }}
           styleInputGroup={{}}
           type="text"
           name="name"
@@ -217,7 +221,7 @@ export const GenerateMnemonicModePage: FunctionComponent<{
         {registerConfig.mode === "create" ? (
           <React.Fragment>
             <PasswordInput
-              label={intl.formatMessage({
+              placeHolder={intl.formatMessage({
                 id: "register.create.input.password",
               })}
               styleInputGroup={{}}
@@ -237,7 +241,7 @@ export const GenerateMnemonicModePage: FunctionComponent<{
               error={errors.password && errors.password.message}
             />
             <PasswordInput
-              label={intl.formatMessage({
+              placeHolder={intl.formatMessage({
                 id: "register.create.input.confirm-password",
               })}
               styleInputGroup={{}}

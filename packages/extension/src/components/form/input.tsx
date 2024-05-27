@@ -24,7 +24,7 @@ export interface InputProps {
   error?: string;
   leftIcon?: React.ReactElement;
   rightIcon?: React.ReactElement;
-  onAction?: Function;
+  onAction?: () => void;
   append?: React.ReactElement;
   styleInputGroup?: CSSProperties;
   typeInput?: string | any;
@@ -72,7 +72,7 @@ export const Input = forwardRef<
     <div>
       <div
         style={{
-          padding: 12,
+          padding: 8,
           marginTop: 4,
           border: "1px solid",
           borderRadius: 8,
@@ -95,6 +95,7 @@ export const Input = forwardRef<
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+              width: "100%",
             }}
           >
             {leftIcon ? (
@@ -110,7 +111,7 @@ export const Input = forwardRef<
             />
           </div>
 
-          {rightIcon ? <div>{rightIcon}</div> : null}
+          {rightIcon ? <div onClick={onAction}>{rightIcon}</div> : null}
         </div>
 
         {append}
