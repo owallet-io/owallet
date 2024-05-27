@@ -3,6 +3,7 @@ import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
 // @ts-ignore
 import React, {
+  FC,
   FunctionComponent,
   useCallback,
   useEffect,
@@ -33,10 +34,12 @@ import FastImage from "react-native-fast-image";
 import OWText from "@src/components/text/ow-text";
 import { HistoryCard } from "@src/screens/transactions";
 import { ArrowOpsiteUpDownIcon, DownArrowIcon } from "@src/components/icon";
+import { ViewToken } from "@src/stores/huge-queries";
 
 export const TokensCardAll: FunctionComponent<{
   containerStyle?: ViewStyle;
-}> = observer(({ containerStyle }) => {
+  dataTokens: ViewToken[];
+}> = observer(({ containerStyle, dataTokens }) => {
   const {
     accountStore,
     universalSwapStore,
@@ -107,35 +110,35 @@ export const TokensCardAll: FunctionComponent<{
     });
   }, [accountOrai.bech32Address]);
 
-  const handleSaveTokenInfos = async (tokenInfos) => {
-    await API.saveTokenInfos(
-      {
-        address: accountOrai.bech32Address,
-        tokesInfos: tokenInfos,
-      },
-      {
-        baseURL: "https://staging.owallet.dev/",
-      }
-    );
-  };
+  // const handleSaveTokenInfos = async (tokenInfos) => {
+  //   await API.saveTokenInfos(
+  //     {
+  //       address: accountOrai.bech32Address,
+  //       tokesInfos: tokenInfos
+  //     },
+  //     {
+  //       baseURL: 'https://staging.owallet.dev/'
+  //     }
+  //   );
+  // };
 
-  const tokens = getTokenInfos({
-    tokens: universalSwapStore.getAmount,
-    prices: appInitStore.getInitApp.prices,
-    networkFilter: "",
-  });
+  // const tokens = getTokenInfos({
+  //   tokens: universalSwapStore.getAmount,
+  //   prices: appInitStore.getInitApp.prices,
+  //   networkFilter: ''
+  // });
 
-  useEffect(() => {
-    InteractionManager.runAfterInteractions(() => {
-      if (universalSwapStore.getLoadStatus.isLoad) {
-        handleSaveTokenInfos(tokens);
-      }
-    });
-  }, [
-    accountOrai.bech32Address,
-    tokens,
-    universalSwapStore.getLoadStatus.isLoad,
-  ]);
+  // useEffect(() => {
+  //   InteractionManager.runAfterInteractions(() => {
+  //     if (universalSwapStore.getLoadStatus.isLoad) {
+  //       handleSaveTokenInfos(tokens);
+  //     }
+  //   });
+  // }, [
+  //   accountOrai.bech32Address,
+  //   tokens,
+  //   universalSwapStore.getLoadStatus.isLoad
+  // ]);
 
   const styles = styling(colors);
 
@@ -146,186 +149,141 @@ export const TokensCardAll: FunctionComponent<{
     return;
   };
 
-  // const renderTokensFromQueryBalances = () => {
-  //   //@ts-ignore
-  //   const tokens = queryBalances?.positiveBalances;
-  //   if (tokens?.length > 0) {
-  //     return tokens.map((token, index) => {
-  //       const priceBalance = priceStore.calculatePrice(token.balance);
+  // const renderTokenItem = useCallback(
+  //   ({ item, index }) => {
+  //     // if (more && index > 3) return null;
+  //     //
+  //     // if (item) {
+  //     //   let profit = 0;
+  //     //   let percent = "0";
+  //     //
+  //     //   if (yesterdayAssets && yesterdayAssets.length > 0) {
+  //     //     const yesterday = yesterdayAssets.find(
+  //     //       (obj) => obj["denom"] === item.denom
+  //     //     );
+  //     //     if (yesterday && yesterday.value) {
+  //     //       profit = Number(
+  //     //         Number(item.value - (yesterday.value ?? 0))?.toFixed(2) ?? 0
+  //     //       );
+  //     //       percent = Number((profit / yesterday.value) * 100 ?? 0).toFixed(2);
+  //     //     }
+  //     //   }
+  //     //
+  //     //   let chainIcon = chainIcons.find((c) => c.chainId === item.chainId);
+  //     //   let tokenIcon = item.icon;
+  //     //
+  //     //   // Hardcode for Neutaro because oraidex-common does not have icon yet
+  //     //   if (item.chain.toLowerCase().includes("neutaro")) {
+  //     //     chainIcon = {
+  //     //       chainId: item.chainId,
+  //     //       Icon: "https://assets.coingecko.com/coins/images/36277/large/Neutaro_logo.jpg?1711371142",
+  //     //     };
+  //     //   }
+  //     //   if (item.asset.toLowerCase().includes("ntmpi")) {
+  //     //     tokenIcon =
+  //     //       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPW-5R-30JcMNKXbm6vSsi5e_YfRYgQxqIuUCpTbkzpQ&s";
+  //     //   }
   //       return (
-  //         <TokenItem
-  //           key={index?.toString()}
-  //           chainInfo={{
-  //             stakeCurrency: chainStore.current.stakeCurrency,
-  //             networkType: chainStore.current.networkType,
-  //             chainId: chainStore.current.chainId
+  //         <TouchableOpacity
+  //           onPress={() => {
+  //             onPressToken(item);
   //           }}
-  //           balance={token.balance}
-  //           priceBalance={priceBalance}
-  //         />
+  //           style={styles.btnItem}
+  //         >
+  //           <View style={[styles.wraperItem]}>
+  //             <View style={styles.leftBoxItem}>
+  //               <View style={styles.iconWrap}>
+  //                 <OWIcon
+  //                   style={{ borderRadius: 999 }}
+  //                   type="images"
+  //                   source={{ uri: tokenIcon }}
+  //                   size={32}
+  //                 />
+  //               </View>
+  //               <View style={styles.chainWrap}>
+  //                 <OWIcon
+  //                   type="images"
+  //                   source={{ uri: chainIcon?.Icon }}
+  //                   size={16}
+  //                 />
+  //               </View>
+  //
+  //               <View style={styles.pl12}>
+  //                 {/* <Text size={16} color={colors["neutral-text-heading"]} weight="600">
+  //                 {item.balance.toFixed(4)} {item.asset}
+  //               </Text> */}
+  //                 <Text
+  //                   size={16}
+  //                   color={colors["neutral-text-heading"]}
+  //                   weight="600"
+  //                 >
+  //                   {item.asset}
+  //                 </Text>
+  //                 <Text weight="400" color={colors["neutral-text-body"]}>
+  //                   {item.chain}
+  //                 </Text>
+  //               </View>
+  //             </View>
+  //             <View style={styles.rightBoxItem}>
+  //               <View style={{ flexDirection: "row" }}>
+  //                 <View style={{ alignItems: "flex-end" }}>
+  //                   <Text
+  //                     size={16}
+  //                     style={{ lineHeight: 24 }}
+  //                     weight="500"
+  //                     color={colors["neutral-text-heading"]}
+  //                   >
+  //                     {maskedNumber(item.balance)} {item.asset}
+  //                   </Text>
+  //                   <Text
+  //                     size={14}
+  //                     style={{ lineHeight: 24 }}
+  //                     color={colors["neutral-text-body"]}
+  //                   >
+  //                     ${maskedNumber(item.value)}
+  //                   </Text>
+  //                   <Text
+  //                     size={14}
+  //                     style={styles.profit}
+  //                     color={
+  //                       colors[
+  //                         profit < 0 ? "error-text-body" : "success-text-body"
+  //                       ]
+  //                     }
+  //                   >
+  //                     {profit < 0 ? "" : "+"}
+  //                     {percent}% (${profit ?? 0})
+  //                   </Text>
+  //                 </View>
+  //                 {/* <View
+  //                 style={{
+  //                   flex: 0.5,
+  //                   justifyContent: "center",
+  //                   paddingLeft: 20,
+  //                 }}
+  //               >
+  //                 <RightArrowIcon
+  //                   height={12}
+  //                   color={colors["neutral-text-heading"]}
+  //                 />
+  //               </View> */}
+  //               </View>
+  //             </View>
+  //           </View>
+  //         </TouchableOpacity>
   //       );
-  //     });
-  //   } else {
-  //     return <OWEmpty />;
-  //   }
-  // };
-
-  const renderTokenItem = useCallback(
-    ({ item, index }) => {
-      if (more && index > 3) return null;
-
-      if (item) {
-        let profit = 0;
-        let percent = "0";
-
-        if (yesterdayAssets && yesterdayAssets.length > 0) {
-          const yesterday = yesterdayAssets.find(
-            (obj) => obj["denom"] === item.denom
-          );
-          if (yesterday && yesterday.value) {
-            profit = Number(
-              Number(item.value - (yesterday.value ?? 0))?.toFixed(2) ?? 0
-            );
-            percent = Number((profit / yesterday.value) * 100 ?? 0).toFixed(2);
-          }
-        }
-
-        let chainIcon = chainIcons.find((c) => c.chainId === item.chainId);
-        let tokenIcon = item.icon;
-
-        // Hardcode for Neutaro because oraidex-common does not have icon yet
-        if (item.chain.toLowerCase().includes("neutaro")) {
-          chainIcon = {
-            chainId: item.chainId,
-            Icon: "https://assets.coingecko.com/coins/images/36277/large/Neutaro_logo.jpg?1711371142",
-          };
-        }
-        if (item.asset.toLowerCase().includes("ntmpi")) {
-          tokenIcon =
-            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPW-5R-30JcMNKXbm6vSsi5e_YfRYgQxqIuUCpTbkzpQ&s";
-        }
-        return (
-          <TouchableOpacity
-            onPress={() => {
-              onPressToken(item);
-            }}
-            style={styles.btnItem}
-          >
-            <View style={[styles.wraperItem]}>
-              <View style={styles.leftBoxItem}>
-                <View style={styles.iconWrap}>
-                  <OWIcon
-                    style={{ borderRadius: 999 }}
-                    type="images"
-                    source={{ uri: tokenIcon }}
-                    size={32}
-                  />
-                </View>
-                <View style={styles.chainWrap}>
-                  <OWIcon
-                    type="images"
-                    source={{ uri: chainIcon?.Icon }}
-                    size={16}
-                  />
-                </View>
-
-                <View style={styles.pl12}>
-                  {/* <Text size={16} color={colors["neutral-text-heading"]} weight="600">
-                  {item.balance.toFixed(4)} {item.asset}
-                </Text> */}
-                  <Text
-                    size={16}
-                    color={colors["neutral-text-heading"]}
-                    weight="600"
-                  >
-                    {item.asset}
-                  </Text>
-                  <Text weight="400" color={colors["neutral-text-body"]}>
-                    {item.chain}
-                  </Text>
-                </View>
-              </View>
-              <View style={styles.rightBoxItem}>
-                <View style={{ flexDirection: "row" }}>
-                  <View style={{ alignItems: "flex-end" }}>
-                    <Text
-                      size={16}
-                      style={{ lineHeight: 24 }}
-                      weight="500"
-                      color={colors["neutral-text-heading"]}
-                    >
-                      {maskedNumber(item.balance)} {item.asset}
-                    </Text>
-                    <Text
-                      size={14}
-                      style={{ lineHeight: 24 }}
-                      color={colors["neutral-text-body"]}
-                    >
-                      ${maskedNumber(item.value)}
-                    </Text>
-                    <Text
-                      size={14}
-                      style={styles.profit}
-                      color={
-                        colors[
-                          profit < 0 ? "error-text-body" : "success-text-body"
-                        ]
-                      }
-                    >
-                      {profit < 0 ? "" : "+"}
-                      {percent}% (${profit ?? 0})
-                    </Text>
-                  </View>
-                  {/* <View
-                  style={{
-                    flex: 0.5,
-                    justifyContent: "center",
-                    paddingLeft: 20,
-                  }}
-                >
-                  <RightArrowIcon
-                    height={12}
-                    color={colors["neutral-text-heading"]}
-                  />
-                </View> */}
-                </View>
-              </View>
-            </View>
-          </TouchableOpacity>
-        );
-      }
-    },
-    [universalSwapStore?.getAmount, theme, more]
-  );
+  //     }
+  //   },
+  //   [universalSwapStore?.getAmount, theme, more]
+  // );
 
   const renderContent = () => {
     if (activeTab === "tokens") {
       return (
         <>
-          {tokens.length > 0
-            ? tokens
-                .filter((t) => {
-                  if (appInitStore.getInitApp.isAllNetworks) {
-                    return true;
-                  }
-                  return t.chainId === chainStore.current.chainId;
-                })
-                .map((token, index) => {
-                  if (more) {
-                    if (index < 3)
-                      return renderTokenItem({ item: token, index });
-                  } else {
-                    return renderTokenItem({ item: token, index });
-                  }
-                })
-            : null}
-          {/* Section for empty token  */}
-          {tokens.filter((t) => {
-            if (appInitStore.getInitApp.isAllNetworks) {
-              return true;
-            }
-            return t.chainId === chainStore.current.chainId;
-          }).length <= 0 ? (
+          {dataTokens?.length > 0 ? (
+            dataTokens.map((item, index) => <TokenItem item={item} />)
+          ) : (
             <View
               style={{
                 justifyContent: "center",
@@ -365,46 +323,7 @@ export const TokensCardAll: FunctionComponent<{
                 }}
               />
             </View>
-          ) : null}
-          {tokens?.filter((t) => {
-            if (appInitStore.getInitApp.isAllNetworks) {
-              return true;
-            }
-            return t.chainId === chainStore.current.chainId;
-          }).length > 3 ? (
-            <TouchableOpacity
-              onPress={() => {
-                setMore(!more);
-              }}
-              style={{
-                alignItems: "center",
-                paddingTop: 30,
-                flexDirection: "row",
-                width: metrics.screenWidth,
-                justifyContent: "center",
-              }}
-            >
-              <OWText
-                style={{ paddingRight: 4 }}
-                weight="600"
-                color={colors["primary-text-action"]}
-              >
-                {more ? "View all tokens" : "Hide"}
-              </OWText>
-              {more ? (
-                <DownArrowIcon
-                  height={10}
-                  color={colors["primary-text-action"]}
-                />
-              ) : (
-                <OWIcon
-                  name="tdesignchevron-up"
-                  color={colors["primary-text-action"]}
-                  size={16}
-                />
-              )}
-            </TouchableOpacity>
-          ) : null}
+          )}
           <OWButton
             style={{
               marginTop: Platform.OS === "android" ? 28 : 22,
@@ -504,6 +423,88 @@ export const TokensCardAll: FunctionComponent<{
   );
 });
 
+const TokenItem: FC<{
+  item: ViewToken;
+}> = ({ item }) => {
+  const { colors } = useTheme();
+  const styles = styling(colors);
+
+  return (
+    <TouchableOpacity
+      // onPress={() => {
+      //   onPressToken(item);
+      // }}
+      key={`${item.chainInfo.chainId}-${item.token.toString()}`}
+      style={styles.btnItem}
+    >
+      <View style={[styles.wraperItem]}>
+        <View style={styles.leftBoxItem}>
+          <View style={styles.iconWrap}>
+            <OWIcon
+              style={{ borderRadius: 999 }}
+              type="images"
+              source={{ uri: item.token.currency.coinImageUrl }}
+              size={32}
+            />
+          </View>
+          <View style={styles.chainWrap}>
+            <OWIcon
+              type="images"
+              source={{ uri: item.chainInfo.stakeCurrency.coinImageUrl }}
+              size={16}
+            />
+          </View>
+
+          <View style={styles.pl12}>
+            {/*<Text size={16} color={colors['neutral-text-heading']} weight="600">*/}
+            {/*  {item.token.trim(true).maxDecimals(4).toString()}*/}
+            {/*</Text>*/}
+            <Text size={16} color={colors["neutral-text-heading"]} weight="600">
+              {item.token.currency.coinDenom}
+            </Text>
+            <Text weight="400" color={colors["neutral-text-body"]}>
+              {item.chainInfo.chainName}
+            </Text>
+          </View>
+        </View>
+        <View style={styles.rightBoxItem}>
+          <View style={{ flexDirection: "row" }}>
+            <View style={{ alignItems: "flex-end" }}>
+              <Text
+                size={16}
+                style={{ lineHeight: 24 }}
+                weight="500"
+                color={colors["neutral-text-heading"]}
+              >
+                {maskedNumber(item.token.trim(true).hideDenom(true).toString())}
+              </Text>
+              <Text
+                size={14}
+                style={{ lineHeight: 24 }}
+                color={colors["neutral-text-body"]}
+              >
+                {item.price.toString()}
+              </Text>
+              {/*<Text*/}
+              {/*  size={14}*/}
+              {/*  style={styles.profit}*/}
+              {/*  // color={*/}
+              {/*  //   colors[*/}
+              {/*  //     profit < 0 ? 'error-text-body' : 'success-text-body'*/}
+              {/*  //     ]*/}
+              {/*  // }*/}
+              {/*>*/}
+              {/*  0*/}
+              {/*  /!*{profit < 0 ? '' : '+'}*!/*/}
+              {/*  /!*{percent}% (${profit ?? 0})*!/*/}
+              {/*</Text>*/}
+            </View>
+          </View>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+};
 const styling = (colors) =>
   StyleSheet.create({
     wrapHeaderTitle: {

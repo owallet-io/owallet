@@ -168,7 +168,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       ) : (
         <EarningCardNew defaultChain={ChainIdEnum.Oraichain} />
       )}
-      <TokensCardAll />
+      <TokensCardAll dataTokens={dataTokens} />
     </PageWithScrollViewInBottomTabView>
   );
 });

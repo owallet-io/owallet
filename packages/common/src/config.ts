@@ -849,6 +849,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinDenom: "STAKE",
       coinMinimalDenom: "ustake",
       coinDecimals: 6,
+      coinImageUrl:
+        "https://www.mintscan.io/assets/chains/_rendered/noble@3x.png",
       gasPriceStep: {
         low: 1,
         average: 1.5,
