@@ -208,14 +208,16 @@ export const RegisterDoneScreen: FunctionComponent = observer(() => {
                   );
                 }
                 await waitAccountInit(chainStore, accountStore, keyRingStore);
-                smartNavigation.reset({
-                  index: 0,
-                  routes: [
-                    {
-                      name: "MainTab",
-                    },
-                  ],
-                });
+                setTimeout(() => {
+                  smartNavigation.reset({
+                    index: 0,
+                    routes: [
+                      {
+                        name: "MainTab",
+                      },
+                    ],
+                  });
+                }, 1500);
               } catch (e) {
                 console.log(e);
                 // alert(JSON.stringify(e));

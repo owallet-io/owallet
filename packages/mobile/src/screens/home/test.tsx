@@ -1,185 +1,172 @@
 import { observer } from "mobx-react-lite";
-import { MulticallQueryClient } from "@oraichain/common-contracts-sdk";
-import { fromBinary, toBinary } from "@cosmjs/cosmwasm-stargate";
+import React, { useEffect, useState } from "react";
+import { FlatList, InteractionManager, Text, View } from "react-native";
+import { useStore } from "@src/stores";
+import { ChainIdEnum } from "@owallet/common";
+import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
+import Web3 from "web3";
+import axios from "axios";
 import {
   addressToPublicKey,
-  ChainIdEnum,
-  CWStargate,
-  DenomHelper,
-  EmbedChainInfos,
   getOasisNic,
   getRpcByChainId,
   parseRpcBalance,
 } from "@owallet/common";
-import React, { useEffect, useState } from "react";
+import { MulticallQueryClient } from "@oraichain/common-contracts-sdk";
+import { fromBinary, toBinary } from "@cosmjs/cosmwasm-stargate";
+import { CWStargate, DenomHelper } from "@owallet/common";
+import { OraiswapTokenTypes } from "@oraichain/oraidex-contracts-sdk";
+import { ContractCallResults, Multicall } from "@oraichain/ethereum-multicall";
 import {
   ERC20__factory,
   network,
   oraichainNetwork,
 } from "@oraichain/oraidex-common";
-import { useStore } from "@src/stores";
-import { OraiswapTokenTypes } from "@oraichain/oraidex-contracts-sdk";
-import axios from "axios";
-import { FlatList, InteractionManager, Text, View } from "react-native";
-import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
-import { AppCurrency, ChainInfo } from "@owallet/types";
-import { ContractCallResults, Multicall } from "@oraichain/ethereum-multicall";
 import OWFlatList from "@src/components/page/ow-flat-list";
 import { ViewToken } from "@src/stores/huge-queries";
-import { EmptyTx } from "@src/screens/transactions/components/empty-tx";
-import { OwLoading } from "@src/components/owallet-loading/ow-loading";
-import Web3 from "web3";
+import { AppCurrency, ChainInfo } from "@owallet/types";
 
 export const TestScreen = observer(() => {
-  const {
-    accountStore,
-    priceStore,
-    hugeQueriesStore,
-    chainStore,
-    keyRingStore,
-  } = useStore();
-
-  const allChainMap = hugeQueriesStore.getAllChainMap;
-  const initPriceBalance = new PricePretty(
-    {
-      currency: "usd",
-      symbol: "$",
-      maxDecimals: 2,
-      locale: "en-US",
-    },
-    new Dec("0")
+  const { accountStore, priceStore, hugeQueriesStore } = useStore();
+  const [dataTokens, setDataTokens] = useState<ViewToken[]>([]);
+  const [totalPriceBalance, setTotalPriceBalance] = useState<PricePretty>(
+    new PricePretty(
+      {
+        currency: "usd",
+        symbol: "$",
+        maxDecimals: 2,
+        locale: "en-US",
+      },
+      new Dec("0")
+    )
   );
-  const [dataTokens, setDataTokens] = useState<ViewToken[]>();
-  const [totalPriceBalance, setTotalPriceBalance] =
-    useState<PricePretty>(initPriceBalance);
-  const allChain = Array.from(hugeQueriesStore.getAllChainMap.values());
-  console.log(allChain, "allChain");
-  const fiat = priceStore.defaultVsCurrency;
-  //
+  const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
 
-  const fiatCurrency = priceStore.getFiatCurrency(fiat);
-  if (!fiatCurrency) {
-    return undefined;
-  }
+  if (!fiatCurrency) return;
+
   const tokens: ViewToken[] = [];
-  let totalBalance: PricePretty = new PricePretty(fiatCurrency, new Dec("0"));
-
+  let totalBalance = new PricePretty(fiatCurrency, new Dec("0"));
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
       init();
     });
   }, []);
+
   const init = async () => {
     try {
-      console.log("start init");
-
-      const allBalance = allChain.map(async ({ address, chainInfo }, index) => {
-        if (chainInfo.networkType === "cosmos") {
-          if (chainInfo.chainId == ChainIdEnum.Oraichain) {
-            return Promise.all([
-              getBalanceCW20Oraichain(),
-              getBalanceNativeCosmos(address, chainInfo),
-            ]);
+      const allChain = Array.from(hugeQueriesStore.getAllChainMap.values());
+      const allBalancePromises = allChain.map(
+        async ({ address, chainInfo }) => {
+          switch (chainInfo.networkType) {
+            case "cosmos":
+              return chainInfo.chainId === ChainIdEnum.Oraichain
+                ? Promise.all([
+                    getBalanceCW20Oraichain(),
+                    getBalanceNativeCosmos(address, chainInfo),
+                  ])
+                : getBalanceNativeCosmos(address, chainInfo);
+            case "evm":
+              return chainInfo.chainId === ChainIdEnum.Oasis
+                ? getBalanceOasis(address, chainInfo)
+                : Promise.all([
+                    getBalanceNativeEvm(address, chainInfo),
+                    getBalanceErc20(address, chainInfo),
+                  ]);
+            case "bitcoin":
+              return getBalanceBtc(address, chainInfo);
           }
-          return getBalanceNativeCosmos(address, chainInfo);
-        } else if (chainInfo.networkType === "evm") {
-          if (chainInfo.chainId === ChainIdEnum.Oasis) {
-            return getBalanceOasis(address, chainInfo);
-          }
-          return Promise.all([
-            getBalanceNativeEvm(address, chainInfo),
-            getBalanceErc20(address, chainInfo),
-          ]);
-        } else if (chainInfo.networkType === "bitcoin") {
-          return getBalanceBtc(address, chainInfo);
         }
-      });
+      );
 
-      //@ts-ignore
-      const allData = await Promise.allSettled([...allBalance]);
-    } catch (e) {
-      console.log(e, "e22");
-    } finally {
-      setDataTokens(tokens);
-      console.log(totalBalance.toString(), "totalBalance");
-      console.log(totalPriceBalance.toString(), "totalPriceBalance");
+      const allData = await Promise.allSettled(allBalancePromises);
+      setDataTokens(sortTokensByPrice(tokens));
       setTotalPriceBalance(totalBalance);
-      // setDataTokens([...mergedMaps.values()]);
-      // console.log([...mergedMaps.values()], 'mergedMaps');
+    } catch (error) {
+      console.error("Initialization error:", error);
     }
   };
+
+  const sortTokensByPrice = (tokens: ViewToken[]) => {
+    return tokens.sort(
+      (a, b) =>
+        Number(b.price.toDec().toString()) - Number(a.price.toDec().toString())
+    );
+  };
+
   const getBalanceNativeEvm = async (address, chainInfo: ChainInfo) => {
     const web3 = new Web3(getRpcByChainId(chainInfo, chainInfo.chainId));
     const ethBalance = await web3.eth.getBalance(address);
-    if (!ethBalance) return;
-    const balance = new CoinPretty(chainInfo.stakeCurrency, Number(ethBalance));
-    const price = await priceStore.waitCalculatePrice(balance);
-    totalBalance = totalBalance.add(price);
-    tokens.push({
-      price,
-      token: balance,
-      isFetching: null,
-      error: null,
-      chainInfo,
-    });
+    if (ethBalance) {
+      const balance = new CoinPretty(
+        chainInfo.stakeCurrency,
+        Number(ethBalance)
+      );
+      const price = await priceStore.waitCalculatePrice(balance);
+      tokens.push({
+        token: balance,
+        chainInfo,
+        price,
+        isFetching: null,
+        error: null,
+      });
+      totalBalance = totalBalance.add(price);
+    }
   };
-  const getBalanceBtc = async (address, chainInfo: ChainInfo) => {
-    const client = axios.create({
-      baseURL: chainInfo.rest,
-    });
-    const url = `/address/${address}/utxo`;
-    const { data } = await client.get(url);
-    if (!data) return;
-    const initialValue = 0;
-    const totalBtc = data.reduce((accumulator, currentValue) => {
-      return accumulator + currentValue.value;
-    }, initialValue);
-    const balance = new CoinPretty(chainInfo.stakeCurrency, totalBtc);
 
-    const price = await priceStore.waitCalculatePrice(balance);
-    totalBalance = totalBalance.add(price);
-    tokens.push({
-      token: balance,
-      chainInfo,
-      price,
-      isFetching: false,
-      error: null,
-    });
+  const getBalanceBtc = async (address, chainInfo: ChainInfo) => {
+    const client = axios.create({ baseURL: chainInfo.rest });
+    const { data } = await client.get(`/address/${address}/utxo`);
+    if (data) {
+      const totalBtc = data.reduce((acc, curr) => acc + curr.value, 0);
+      const balance = new CoinPretty(chainInfo.stakeCurrency, totalBtc);
+      const price = await priceStore.waitCalculatePrice(balance);
+      tokens.push({
+        token: balance,
+        chainInfo,
+        price,
+        isFetching: null,
+        error: null,
+      });
+      totalBalance = totalBalance.add(price);
+    }
   };
 
   const getBalanceNativeCosmos = async (address, chainInfo: ChainInfo) => {
+    const client = axios.create({ baseURL: chainInfo.rest });
+    const { data } = await client.get(
+      `/cosmos/bank/v1beta1/balances/${address}?pagination.limit=1000`
+    );
     const mergedMaps = chainInfo.currencyMap;
-    const client = axios.create({
-      baseURL: chainInfo.rest,
-    });
-    const url = `/cosmos/bank/v1beta1/balances/${address}?pagination.limit=1000`;
-    const { data } = await client.get(url);
-    data.balances.map(async ({ denom, amount }, index) => {
-      const token = mergedMaps.get(denom) as AppCurrency;
-      if (!token) {
-        // console.log(hasToken, 'faile test');
-      } else {
+
+    data.balances.forEach(async ({ denom, amount }) => {
+      const token = mergedMaps.get(denom);
+      if (token) {
         const balance = new CoinPretty(token, amount);
         const price = await priceStore.waitCalculatePrice(balance);
-        totalBalance = totalBalance.add(price);
         tokens.push({
           token: balance,
           chainInfo,
           price,
-          isFetching: false,
+          isFetching: null,
           error: null,
         });
+        totalBalance = totalBalance.add(price);
       }
     });
-    return tokens;
   };
+
   const getBalanceCW20Oraichain = async () => {
-    const mergedMaps = allChainMap.get(ChainIdEnum.Oraichain).chainInfo
-      .currencyMap;
+    const mergedMaps = hugeQueriesStore.getAllChainMap.get(
+      ChainIdEnum.Oraichain
+    ).chainInfo.currencyMap;
+    const data = toBinary({
+      balance: {
+        address: hugeQueriesStore.getAllChainMap.get(ChainIdEnum.Oraichain)
+          .address,
+      },
+    });
+
     try {
-      const data = toBinary({
-        balance: { address: allChainMap.get(ChainIdEnum.Oraichain).address },
-      });
       const cwStargate = {
         account: accountStore.getAccount(ChainIdEnum.Oraichain),
         chainId: ChainIdEnum.Oraichain,
@@ -190,13 +177,11 @@ export const TestScreen = observer(() => {
         cwStargate.chainId,
         cwStargate.rpc
       );
-      const tokensCw20 = allChainMap
+      const tokensCw20 = hugeQueriesStore.getAllChainMap
         .get(ChainIdEnum.Oraichain)
-        .chainInfo.currencies.filter((item, index) => {
-          const { contractAddress } = new DenomHelper(item.coinMinimalDenom);
-          if (contractAddress) return true;
-          return false;
-        });
+        .chainInfo.currencies.filter(
+          (item) => new DenomHelper(item.coinMinimalDenom).contractAddress
+        );
       const multicall = new MulticallQueryClient(client, network.multicall);
       const res = await multicall.aggregate({
         queries: tokensCw20.map((t) => ({
@@ -205,56 +190,57 @@ export const TestScreen = observer(() => {
         })),
       });
 
-      return tokensCw20.map(async (t, ind) => {
-        if (!res.return_data[ind].success) {
-          return [t.coinDenom, 0];
-        }
-        const balanceRes = fromBinary(
-          res.return_data[ind].data
-        ) as OraiswapTokenTypes.BalanceResponse;
-        const amount = balanceRes.balance;
-        const token = mergedMaps.get(t.coinMinimalDenom);
-        if (!token) {
-          console.log(token, "faile test2");
-        } else {
-          const balance = new CoinPretty(token, amount);
-          const price = await priceStore.waitCalculatePrice(balance);
-          totalBalance = totalBalance.add(price);
-          tokens.push({
-            token: balance,
-            chainInfo: allChainMap.get(ChainIdEnum.Oraichain).chainInfo,
-            price,
-            isFetching: false,
-            error: null,
-          });
-        }
-        return mergedMaps;
-      });
-    } catch (e) {
-      console.log(e, "Error getBalanceCW20Oraichain");
-      return Promise.resolve(true);
+      await Promise.all(
+        tokensCw20.map(async (t, ind) => {
+          if (res.return_data[ind].success) {
+            const balanceRes = fromBinary(
+              res.return_data[ind].data
+            ) as OraiswapTokenTypes.BalanceResponse;
+            const token = mergedMaps.get(t.coinMinimalDenom);
+            if (token) {
+              const balance = new CoinPretty(token, balanceRes.balance);
+              const price = await priceStore.waitCalculatePrice(balance);
+              tokens.push({
+                token: balance,
+                chainInfo: hugeQueriesStore.getAllChainMap.get(
+                  ChainIdEnum.Oraichain
+                ).chainInfo,
+                price,
+                isFetching: null,
+                error: null,
+              });
+              totalBalance = totalBalance.add(price);
+            }
+          }
+        })
+      );
+    } catch (error) {
+      console.error("Error fetching CW20 balance:", error);
     }
   };
-  const getBalanceOasis = async (address, chainInfo: ChainIxnfo) => {
+
+  const getBalanceOasis = async (address, chainInfo: ChainInfo) => {
     const nic = getOasisNic(chainInfo.raw.grpc);
     const publicKey = await addressToPublicKey(address);
     const account = await nic.stakingAccount({ owner: publicKey, height: 0 });
     const grpcBalance = parseRpcBalance(account);
-    if (!grpcBalance) return;
-    const balance = new CoinPretty(
-      chainInfo.stakeCurrency,
-      grpcBalance.available
-    );
-    const price = await priceStore.waitCalculatePrice(balance);
-    totalBalance = totalBalance.add(price);
-    tokens.push({
-      chainInfo,
-      token: balance,
-      price,
-      isFetching: false,
-      error: null,
-    });
+    if (grpcBalance) {
+      const balance = new CoinPretty(
+        chainInfo.stakeCurrency,
+        grpcBalance.available
+      );
+      const price = await priceStore.waitCalculatePrice(balance);
+      tokens.push({
+        token: balance,
+        chainInfo,
+        price,
+        isFetching: null,
+        error: null,
+      });
+      totalBalance = totalBalance.add(price);
+    }
   };
+
   const getBalanceErc20 = async (address, chainInfo: ChainInfo) => {
     const multicall = new Multicall({
       nodeUrl: getRpcByChainId(chainInfo, chainInfo.chainId),
@@ -262,7 +248,7 @@ export const TestScreen = observer(() => {
       chainId: Number(chainInfo.chainId),
     });
     const tokensErc20 = chainInfo.currencies.filter(
-      (item, index) => new DenomHelper(item.coinMinimalDenom).type !== "native"
+      (item) => new DenomHelper(item.coinMinimalDenom).type !== "native"
     );
     const input = tokensErc20.map((token) => ({
       reference: token.coinDenom,
@@ -278,47 +264,31 @@ export const TestScreen = observer(() => {
     }));
 
     const results: ContractCallResults = await multicall.call(input as any);
-    tokensErc20.map(async (token) => {
+    tokensErc20.forEach(async (token) => {
       const amount =
         results.results[token.coinDenom].callsReturnContext[0].returnValues[0]
           .hex;
       const balance = new CoinPretty(token, Number(amount));
       const price = await priceStore.waitCalculatePrice(balance);
-      totalBalance = totalBalance.add(price);
       tokens.push({
         token: balance,
         chainInfo,
-        error: null,
+        price,
         isFetching: null,
-        price: price,
+        error: null,
       });
+      totalBalance = totalBalance.add(price);
     });
   };
+
   return (
     <View>
-      {/*{dataTokens &&*/}
-      {/*  dataTokens.map((item, index) => {*/}
-      {/*    return (*/}
-      {/*      <Text key={item.coinMinimalDenom}>*/}
-      {/*        {item.coinDenom} -{' '}*/}
-      {/*        {new CoinPretty(*/}
-      {/*          {*/}
-      {/*            ...item*/}
-      {/*          },*/}
-      {/*          item.amount*/}
-      {/*        )*/}
-      {/*          .trim(true)*/}
-      {/*          .toString()}*/}
-      {/*      </Text>*/}
-      {/*    );*/}
-      {/*  })}*/}
       <Text>TOTAL BALANCE: {totalPriceBalance.toString()}</Text>
-
       <FlatList
         data={dataTokens}
         renderItem={({ item, index }) => (
           <Text key={index.toString()}>
-            {item.token.trim(true).maxDecimals(4).toString()} -
+            {item.token.trim(true).maxDecimals(4).toString()} -{" "}
             {item.chainInfo.chainName} - {item.price?.toString()}
           </Text>
         )}
