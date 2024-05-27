@@ -3,9 +3,14 @@
 @import "../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/variables";
 
 .input {
-  // box-shadow: $input-alternative-box-shadow !important;
+  border-width: 0 !important;
+  background-color: transparent;
+  padding: 0;
 
   &:focus {
-    // box-shadow: $input-focus-alternative-box-shadow !important;
+    background-color: transparent;
   }
+}
+
+.label {
 }

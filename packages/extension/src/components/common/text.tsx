@@ -1,24 +1,27 @@
-import React, { FunctionComponent } from "react";
+import React, { CSSProperties, FunctionComponent } from "react";
+import colors from "../../theme/colors";
 
 import style from "./style.module.scss";
 
-export const Text: FunctionComponent<{ color; size; weight }> = ({
-  color,
-  size,
-  weight,
-  ...props
-}) => {
+export const Text: FunctionComponent<{
+  color?: string;
+  size?: number;
+  weight?: string;
+  containerStyle?: CSSProperties;
+}> = ({ color, size, weight, containerStyle, ...props }) => {
   const textStyle = {
-    fontSize: size ?? null,
-    fontWeight: weight ?? null,
-    color: color ?? null,
+    fontSize: size ?? 14,
+    fontWeight: weight ?? 300,
+    color: colors[color] ?? null,
   };
 
   return (
-    <div>
-      <p className={style.text} style={{ ...textStyle }}>
-        {props.children}
-      </p>
-    </div>
+    <span
+      className={style.text}
+      style={{ ...textStyle, ...containerStyle }}
+      {...props}
+    >
+      {props.children}
+    </span>
   );
 };

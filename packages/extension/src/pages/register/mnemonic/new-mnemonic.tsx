@@ -9,12 +9,14 @@ import {
   useBIP44Option,
 } from "../advanced-bip44";
 import style from "../style.module.scss";
-import { Alert, ButtonGroup, Form } from "reactstrap";
+import { ButtonGroup, Form } from "reactstrap";
 import { Input, PasswordInput, TextArea } from "../../../components/form";
 import { BackButton } from "../index";
 import { NewMnemonicConfig, useNewMnemonicConfig, NumWords } from "./hook";
 import { useStore } from "../../../stores";
 import { Button } from "../../../components/common/button";
+import { Text } from "../../../components/common/text";
+import { Card } from "../../../components/common/card";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require("bip39");
@@ -92,38 +94,52 @@ export const GenerateMnemonicModePage: FunctionComponent<{
 
   return (
     <div>
-      <Alert color="warning">
-        <h3 style={{ color: "white" }}>
-          <FormattedMessage id="register.create.warning.keep-your-mnemonic.header" />
-        </h3>
-        <ul>
-          <li>
-            <FormattedMessage id="register.create.warning.keep-your-mnemonic.paragraph1" />
-          </li>
-          <li>
-            <FormattedMessage id="register.create.warning.keep-your-mnemonic.paragraph2" />
-          </li>
-        </ul>
-      </Alert>
+      <Card
+        containerStyle={{
+          alignItems: "center",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+        }}
+      >
+        <Text containerStyle={{ textAlign: "center" }} size={28} weight="700">
+          Save your Recovery Phrase
+        </Text>
+        <Text
+          containerStyle={{ textAlign: "center" }}
+          weight="500"
+          color="neutral-text-body"
+        >
+          Write down this recovery phrase in the exact order and keep it in a
+          safe place
+        </Text>
+      </Card>
       <div className={style.titleGroup}>
-        {intl.formatMessage({
-          id: "register.create.title",
-        })}
+        <span />
 
         <div style={{ float: "right" }}>
           <ButtonGroup size="sm" style={{ marginBottom: "4px" }}>
             <Button
               size="small"
-              // outline={newMnemonicConfig.numWords !== NumWords.WORDS12}
+              color={
+                newMnemonicConfig.numWords !== NumWords.WORDS12
+                  ? "secondary"
+                  : "primary"
+              }
               onClick={() => {
                 newMnemonicConfig.setNumWords(NumWords.WORDS12);
               }}
+              containerStyle={{ marginRight: 4 }}
             >
               <FormattedMessage id="register.create.toggle.word12" />
             </Button>
             <Button
               size="small"
-              // outline={newMnemonicConfig.numWords !== NumWords.WORDS24}
+              color={
+                newMnemonicConfig.numWords !== NumWords.WORDS24
+                  ? "secondary"
+                  : "primary"
+              }
               onClick={() => {
                 newMnemonicConfig.setNumWords(NumWords.WORDS24);
               }}
@@ -144,7 +160,6 @@ export const GenerateMnemonicModePage: FunctionComponent<{
         <TextArea
           className={style.mnemonic}
           style={{
-            border: "1px solid rgba(8, 4, 28, 0.12)",
             color: "#7664e4",
           }}
           autoCapitalize="none"
@@ -177,9 +192,19 @@ export const GenerateMnemonicModePage: FunctionComponent<{
           label={intl.formatMessage({
             id: "register.name",
           })}
-          styleInputGroup={{
-            border: "1px solid rgba(8, 4, 28, 0.12)",
-          }}
+          leftIcon={
+            <img
+              src={require("../../../public/assets/icon/wallet.svg")}
+              alt=""
+            />
+          }
+          rightIcon={
+            <img
+              src={require("../../../public/assets/icon/wallet.svg")}
+              alt=""
+            />
+          }
+          styleInputGroup={{}}
           type="text"
           name="name"
           ref={register({
@@ -195,9 +220,7 @@ export const GenerateMnemonicModePage: FunctionComponent<{
               label={intl.formatMessage({
                 id: "register.create.input.password",
               })}
-              styleInputGroup={{
-                border: "1px solid rgba(8, 4, 28, 0.12)",
-              }}
+              styleInputGroup={{}}
               name="password"
               ref={register({
                 required: intl.formatMessage({
@@ -217,9 +240,7 @@ export const GenerateMnemonicModePage: FunctionComponent<{
               label={intl.formatMessage({
                 id: "register.create.input.confirm-password",
               })}
-              styleInputGroup={{
-                border: "1px solid rgba(8, 4, 28, 0.12)",
-              }}
+              styleInputGroup={{}}
               name="confirmPassword"
               ref={register({
                 required: intl.formatMessage({
@@ -237,8 +258,8 @@ export const GenerateMnemonicModePage: FunctionComponent<{
             />
           </React.Fragment>
         ) : null}
-        <AdvancedBIP44Option bip44Option={bip44Option} />
-        <Button color="" type="submit" block className={style.nextBtn}>
+        {/* <AdvancedBIP44Option bip44Option={bip44Option} /> */}
+        <Button color="primary">
           <FormattedMessage id="register.create.button.next" />
         </Button>
       </Form>
