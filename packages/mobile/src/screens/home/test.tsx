@@ -113,7 +113,7 @@ export const TestScreen = observer(() => {
     const ethBalance = await web3.eth.getBalance(address);
     if (!ethBalance) return;
     const balance = new CoinPretty(chainInfo.stakeCurrency, Number(ethBalance));
-    const price = await priceStore.calculatePrice(balance);
+    const price = await priceStore.waitCalculatePrice(balance);
     totalBalance = totalBalance.add(price);
     tokens.push({
       price,
@@ -284,7 +284,6 @@ export const TestScreen = observer(() => {
           .hex;
       const balance = new CoinPretty(token, Number(amount));
       const price = await priceStore.waitCalculatePrice(balance);
-      console.log(price, "price new ");
       totalBalance = totalBalance.add(price);
       tokens.push({
         token: balance,
