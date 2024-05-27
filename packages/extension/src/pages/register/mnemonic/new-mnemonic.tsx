@@ -17,6 +17,7 @@ import { Button } from "../../../components/common/button";
 import { Text } from "../../../components/common/text";
 import { Card } from "../../../components/common/card";
 import useForm from "react-hook-form";
+import colors from "../../../theme/colors";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require("bip39");
@@ -115,41 +116,7 @@ export const GenerateMnemonicModePage: FunctionComponent<{
           safe place
         </Text>
       </Card>
-      <div className={style.titleGroup}>
-        <span />
 
-        <div style={{ float: "right" }}>
-          <ButtonGroup size="sm" style={{ marginBottom: "4px" }}>
-            <Button
-              size="small"
-              color={
-                newMnemonicConfig.numWords !== NumWords.WORDS12
-                  ? "secondary"
-                  : "primary"
-              }
-              onClick={() => {
-                newMnemonicConfig.setNumWords(NumWords.WORDS12);
-              }}
-              containerStyle={{ marginRight: 4 }}
-            >
-              <FormattedMessage id="register.create.toggle.word12" />
-            </Button>
-            <Button
-              size="small"
-              color={
-                newMnemonicConfig.numWords !== NumWords.WORDS24
-                  ? "secondary"
-                  : "primary"
-              }
-              onClick={() => {
-                newMnemonicConfig.setNumWords(NumWords.WORDS24);
-              }}
-            >
-              <FormattedMessage id="register.create.toggle.word24" />
-            </Button>
-          </ButtonGroup>
-        </div>
-      </div>
       <Form
         className={style.formContainer}
         onSubmit={handleSubmit(async (data: FormData) => {
@@ -158,37 +125,6 @@ export const GenerateMnemonicModePage: FunctionComponent<{
           newMnemonicConfig.setMode("verify");
         })}
       >
-        <TextArea
-          className={style.mnemonic}
-          style={{
-            color: "#7664e4",
-          }}
-          autoCapitalize="none"
-          placeholder={intl.formatMessage({
-            id: "register.create.textarea.mnemonic.place-holder",
-          })}
-          name="words"
-          rows={newMnemonicConfig.numWords === NumWords.WORDS24 ? 5 : 3}
-          readOnly={true}
-          value={newMnemonicConfig.mnemonic}
-          ref={register({
-            required: "Mnemonic is required",
-            validate: (value: string): string | undefined => {
-              if (value.split(" ").length < 8) {
-                return intl.formatMessage({
-                  id: "register.create.textarea.mnemonic.error.too-short",
-                });
-              }
-
-              if (!bip39.validateMnemonic(value)) {
-                return intl.formatMessage({
-                  id: "register.create.textarea.mnemonic.error.invalid",
-                });
-              }
-            },
-          })}
-          error={errors.words && errors.words.message}
-        />
         <Input
           label={intl.formatMessage({
             id: "register.name",
@@ -218,13 +154,155 @@ export const GenerateMnemonicModePage: FunctionComponent<{
           })}
           error={errors.name && errors.name.message}
         />
+        <div className={style.titleGroup}>
+          <span />
+
+          <div style={{ float: "right" }}>
+            <ButtonGroup size="sm" style={{ marginBottom: "4px" }}>
+              <Button
+                size="small"
+                color={
+                  newMnemonicConfig.numWords !== NumWords.WORDS12
+                    ? "secondary"
+                    : "primary"
+                }
+                onClick={() => {
+                  newMnemonicConfig.setNumWords(NumWords.WORDS12);
+                }}
+                containerStyle={{ marginRight: 4 }}
+              >
+                <FormattedMessage id="register.create.toggle.word12" />
+              </Button>
+              <Button
+                size="small"
+                color={
+                  newMnemonicConfig.numWords !== NumWords.WORDS24
+                    ? "secondary"
+                    : "primary"
+                }
+                onClick={() => {
+                  newMnemonicConfig.setNumWords(NumWords.WORDS24);
+                }}
+              >
+                <FormattedMessage id="register.create.toggle.word24" />
+              </Button>
+            </ButtonGroup>
+          </div>
+        </div>
+        <div
+          style={{
+            border: "1px solid",
+            borderRadius: 8,
+            borderColor: colors["primary-surface-default"],
+            padding: "12px 0px 8px 8px",
+            flexDirection: "row",
+            display: "flex",
+            flexWrap: "wrap",
+            width: "100%",
+          }}
+        >
+          {newMnemonicConfig.mnemonic.split(" ").map((word, index) => {
+            return (
+              <div
+                style={{
+                  padding: "4px 8px",
+                  backgroundColor: colors["neutral-surface-action3"],
+                  borderRadius: 999,
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginRight: 12,
+                  marginBottom: 12,
+                }}
+              >
+                <div
+                  style={{
+                    backgroundColor: colors["primary-surface-subtle"],
+                    borderRadius: 999,
+                    marginRight: 2,
+                    padding: 7,
+                    paddingTop: 0,
+                    paddingBottom: 0,
+                  }}
+                >
+                  <Text
+                    weight="600"
+                    color={colors["primary-surface-default"]}
+                    size={12}
+                  >
+                    {index + 1}
+                  </Text>
+                </div>
+                <Text weight="500">{word}</Text>
+              </div>
+            );
+          })}
+        </div>
+        {/* <TextArea
+          className={style.mnemonic}
+          style={{
+            color: "#7664e4"
+          }}
+          autoCapitalize="none"
+          placeholder={intl.formatMessage({
+            id: "register.create.textarea.mnemonic.place-holder"
+          })}
+          name="words"
+          rows={newMnemonicConfig.numWords === NumWords.WORDS24 ? 5 : 3}
+          readOnly={true}
+          value={newMnemonicConfig.mnemonic}
+          ref={register({
+            required: "Mnemonic is required",
+            validate: (value: string): string | undefined => {
+              if (value.split(" ").length < 8) {
+                return intl.formatMessage({
+                  id: "register.create.textarea.mnemonic.error.too-short"
+                });
+              }
+
+              if (!bip39.validateMnemonic(value)) {
+                return intl.formatMessage({
+                  id: "register.create.textarea.mnemonic.error.invalid"
+                });
+              }
+            }
+          })}
+          error={errors.words && errors.words.message}
+        /> */}
+
+        <div
+          onClick={async (e) => {
+            e.preventDefault();
+            await navigator.clipboard.writeText(newMnemonicConfig.mnemonic);
+          }}
+          style={{
+            flexDirection: "row",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "100%",
+            cursor: "pointer",
+            padding: 22,
+          }}
+        >
+          <img
+            src={require("../../../public/assets/icon/tdesign_copy.svg")}
+            alt=""
+          />
+          <Text color={"primary-text-action"} weight="600">
+            Copy to clipboard
+          </Text>
+        </div>
+
         {registerConfig.mode === "create" ? (
           <React.Fragment>
             <PasswordInput
               placeHolder={intl.formatMessage({
                 id: "register.create.input.password",
               })}
-              styleInputGroup={{}}
+              styleInputGroup={{
+                marginBottom: 15,
+              }}
               name="password"
               ref={register({
                 required: intl.formatMessage({
@@ -244,7 +322,9 @@ export const GenerateMnemonicModePage: FunctionComponent<{
               placeHolder={intl.formatMessage({
                 id: "register.create.input.confirm-password",
               })}
-              styleInputGroup={{}}
+              styleInputGroup={{
+                marginBottom: 15,
+              }}
               name="confirmPassword"
               ref={register({
                 required: intl.formatMessage({
