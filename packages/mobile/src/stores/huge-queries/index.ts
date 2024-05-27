@@ -27,7 +27,10 @@ export interface ViewToken {
   isFetching: boolean;
   error: QueryError<any> | undefined;
 }
-
+export interface ViewTokenData {
+  tokens: ViewToken[];
+  totalBalance: PricePretty;
+}
 interface ViewChainAddress {
   chainInfo: ChainInfo;
   address: string;
