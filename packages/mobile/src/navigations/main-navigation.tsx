@@ -48,7 +48,7 @@ export const MainNavigation: FC = observer(() => {
           };
         }}
         name={SCREENS.Home}
-        component={TestScreen}
+        component={HomeScreen}
       />
 
       <Stack.Screen

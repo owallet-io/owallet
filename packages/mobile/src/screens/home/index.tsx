@@ -3,8 +3,6 @@ import React, {
   useCallback,
   useEffect,
   useRef,
-  //@ts-ignore
-  useTransition,
 } from "react";
 import { PageWithScrollViewInBottomTabView } from "../../components/page";
 import {
@@ -21,27 +19,19 @@ import { usePrevious } from "../../hooks";
 import { useTheme } from "@src/themes/theme-provider";
 import { useFocusEffect } from "@react-navigation/native";
 import { ChainUpdaterService } from "@owallet/background";
-import { getBase58Address, ChainIdEnum } from "@owallet/common";
+import { ChainIdEnum } from "@owallet/common";
 import { TokensCardAll } from "./tokens-card-all";
 import { AccountBoxAll } from "./account-box-new";
-import {
-  chainInfos,
-  getTokensFromNetwork,
-  oraichainNetwork,
-  TokenItemType,
-} from "@oraichain/oraidex-common";
-import { useCoinGeckoPrices, useLoadTokens } from "@owallet/hooks";
-import { showToast } from "@src/utils/helper";
+
 import { EarningCardNew } from "./earning-card-new";
 import { InjectedProviderUrl } from "../web/config";
-import { flatten } from "lodash";
+import { useMultipleAssets } from "@src/screens/home/hooks/use-multiple-assets";
 
 export const HomeScreen: FunctionComponent = observer((props) => {
   const [refreshing, setRefreshing] = React.useState(false);
   const [refreshDate, setRefreshDate] = React.useState(Date.now());
 
   const { colors } = useTheme();
-  const [isPending, startTransition] = useTransition();
 
   const styles = styling(colors);
   const {
@@ -51,26 +41,16 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     priceStore,
     browserStore,
     appInitStore,
-    universalSwapStore,
     keyRingStore,
+    hugeQueriesStore,
   } = useStore();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
-
-  useEffect(() => {
-    if (
-      appInitStore.getChainInfos?.length <= 0 ||
-      !appInitStore.getChainInfos
-    ) {
-      appInitStore.updateChainInfos(chainInfos);
-    }
-  }, []);
-
-  const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
-  const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
-  const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
-  const accountKawaiiCosmos = accountStore.getAccount(ChainIdEnum.KawaiiCosmos);
-
+  const { totalPriceBalance, dataTokens } = useMultipleAssets(
+    accountStore,
+    priceStore,
+    hugeQueriesStore
+  );
   const currentChain = chainStore.current;
   const currentChainId = currentChain?.chainId;
   const account = accountStore.getAccount(chainStore.current.chainId);
@@ -142,186 +122,35 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   );
   useEffect(() => {
     onRefresh();
-  }, [accountOrai.bech32Address]);
-
-  const onRefresh = React.useCallback(async () => {
-    const queries = queriesStore.get(chainStore.current.chainId);
-    if (chainStore.current.chainId === ChainIdEnum.TRON) {
-      await queries.tron.queryAccount
-        .getQueryWalletAddress(getBase58Address(account.evmosHexAddress))
-        .waitFreshResponse();
-      setRefreshing(false);
-      setRefreshDate(Date.now());
-      return;
-    }
-    // Because the components share the states related to the queries,
-    // fetching new query responses here would make query responses on all other components also refresh.
-    if (chainStore.current.networkType === "bitcoin") {
-      await queries.bitcoin.queryBitcoinBalance
-        .getQueryBalance(account.bech32Address)
-        .waitFreshResponse();
-      setRefreshing(false);
-      setRefreshDate(Date.now());
-      return;
-    } else {
-      await Promise.all([
-        priceStore.waitFreshResponse(),
-        ...queries.queryBalances
-          .getQueryBech32Address(address)
-          .balances.map((bal) => {
-            return bal.waitFreshResponse();
-          }),
-      ]);
-    }
-    setRefreshing(false);
-    setRefreshDate(Date.now());
-    if (
-      accountOrai.bech32Address &&
-      accountEth.evmosHexAddress &&
-      accountTron.evmosHexAddress &&
-      accountKawaiiCosmos.bech32Address
-    ) {
-      const customChainInfos = appInitStore.getChainInfos ?? chainInfos;
-      const currentDate = Date.now();
-      const differenceInMilliseconds = Math.abs(currentDate - refreshDate);
-      const differenceInSeconds = differenceInMilliseconds / 1000;
-      let timeoutId: NodeJS.Timeout;
-      if (differenceInSeconds > 10) {
-        universalSwapStore.setLoaded(false);
-        onFetchAmount(customChainInfos);
-      } else {
-        console.log("The dates are 10 seconds or less apart.");
-      }
-    }
-  }, [
-    chainStore.current.chainId,
-    refreshDate,
-    universalSwapStore.getTokenReload,
-    address,
-  ]);
-
-  // This section for getting all tokens of all chains
-
-  const loadTokenAmounts = useLoadTokens(universalSwapStore);
-
-  // handle fetch all tokens of all chains
-  const handleFetchAmounts = async (
-    params: { orai?: string; eth?: string; tron?: string; kwt?: string },
-    customChainInfos
-  ) => {
-    const { orai, eth, tron, kwt } = params;
-
-    let loadTokenParams = {};
+  }, [address, chainStore.current.chainId]);
+  console.log(totalPriceBalance.toString(), "totalPriceBalance");
+  const onRefresh = async () => {
     try {
-      const cwStargate = {
-        account: accountOrai,
-        chainId: ChainIdEnum.Oraichain,
-        rpc: oraichainNetwork.rpc,
-      };
-
-      // other chains, oraichain
-      const otherChainTokens = flatten(
-        customChainInfos
-          .filter((chainInfo) => chainInfo.chainId !== "Oraichain")
-          .map(getTokensFromNetwork)
-      );
-      const oraichainTokens: TokenItemType[] =
-        getTokensFromNetwork(oraichainNetwork);
-
-      const tokens = [otherChainTokens, oraichainTokens];
-      const flattenTokens = flatten(tokens);
-
-      loadTokenParams = {
-        ...loadTokenParams,
-        oraiAddress: orai ?? accountOrai.bech32Address,
-        metamaskAddress: eth ?? null,
-        kwtAddress: kwt ?? accountKawaiiCosmos.bech32Address,
-        tronAddress: tron ?? null,
-        cwStargate,
-        tokenReload:
-          universalSwapStore?.getTokenReload?.length > 0
-            ? universalSwapStore.getTokenReload
-            : null,
-        customChainInfos: flattenTokens,
-      };
-
-      loadTokenAmounts(loadTokenParams);
-      universalSwapStore.clearTokenReload();
-    } catch (error) {
-      console.log("error loadTokenAmounts", error);
-      showToast({
-        message: error?.message ?? error?.ex?.message,
-        type: "danger",
-      });
-    }
-  };
-
-  useEffect(() => {
-    universalSwapStore.setLoaded(false);
-  }, [accountOrai.bech32Address]);
-
-  const onFetchAmount = (customChainInfos) => {
-    let timeoutId;
-    if (accountOrai.isNanoLedger) {
-      if (Object.keys(keyRingStore.keyRingLedgerAddresses).length > 0) {
-        timeoutId = setTimeout(() => {
-          handleFetchAmounts(
-            {
-              orai: accountOrai.bech32Address,
-              eth: keyRingStore.keyRingLedgerAddresses.eth ?? null,
-              tron: keyRingStore.keyRingLedgerAddresses.trx ?? null,
-              kwt: accountKawaiiCosmos.bech32Address,
-            },
-            customChainInfos
-          );
-        }, 800);
+      const queries = queriesStore.get(chainStore.current.chainId);
+      // Because the components share the states related to the queries,
+      // fetching new query responses here would make query responses on all other components also refresh.
+      if (chainStore.current.networkType === "bitcoin") {
+        await queries.bitcoin.queryBitcoinBalance
+          .getQueryBalance(account.bech32Address)
+          .waitFreshResponse();
+        return;
+      } else {
+        await Promise.all([
+          priceStore.waitFreshResponse(),
+          ...queries.queryBalances
+            .getQueryBech32Address(address)
+            .balances.map((bal) => {
+              return bal.waitFreshResponse();
+            }),
+        ]);
       }
-    } else if (
-      accountOrai.bech32Address &&
-      accountEth.evmosHexAddress &&
-      accountTron.evmosHexAddress &&
-      accountKawaiiCosmos.bech32Address
-    ) {
-      timeoutId = setTimeout(() => {
-        handleFetchAmounts(
-          {
-            orai: accountOrai.bech32Address,
-            eth: accountEth.evmosHexAddress,
-            tron: getBase58Address(accountTron.evmosHexAddress),
-            kwt: accountKawaiiCosmos.bech32Address,
-          },
-          customChainInfos
-        );
-      }, 1000);
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setRefreshing(false);
+      setRefreshDate(Date.now());
     }
-
-    return timeoutId;
   };
-
-  useEffect(() => {
-    if (appInitStore.getChainInfos) {
-      let timeoutId;
-      InteractionManager.runAfterInteractions(() => {
-        startTransition(() => {
-          timeoutId = onFetchAmount(appInitStore.getChainInfos);
-        });
-      });
-      // Clean up the timeout if the component unmounts or the dependency changes
-      return () => {
-        if (timeoutId) clearTimeout(timeoutId);
-      };
-    }
-  }, [accountOrai.bech32Address, appInitStore.getChainInfos]);
-
-  const { data: prices } = useCoinGeckoPrices();
-
-  useEffect(() => {
-    appInitStore.updatePrices(prices);
-  }, [prices]);
-
-  const renderNewAccountCard = (() => {
-    return <AccountBoxAll />;
-  })();
 
   return (
     <PageWithScrollViewInBottomTabView
@@ -332,8 +161,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       contentContainerStyle={styles.containerStyle}
       ref={scrollViewRef}
     >
-      {renderNewAccountCard}
-
+      <AccountBoxAll totalPriceBalance={totalPriceBalance.toString()} />
       {chainStore.current.networkType === "cosmos" &&
       !appInitStore.getInitApp.isAllNetworks ? (
         <EarningCardNew />

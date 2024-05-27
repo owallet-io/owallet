@@ -32,7 +32,10 @@ import { LoadingSpinner } from "@src/components/spinner";
 import OWText from "@src/components/text/ow-text";
 import { useSimpleTimer } from "@src/hooks";
 
-export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
+export const AccountBoxAll: FunctionComponent<{
+  totalPriceBalance: string;
+}> = observer(({ totalPriceBalance }) => {
+  console.log(totalPriceBalance, "totalPriceBalance2");
   const { colors } = useTheme();
   const {
     universalSwapStore,
@@ -124,7 +127,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
     return (
       <>
         <Text variant="bigText" style={styles.labelTotalAmount}>
-          ${maskedNumber(totalUsd)}
+          {totalPriceBalance}
         </Text>
         <Text
           style={styles.profit}
@@ -246,11 +249,6 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
       />
       <OWBox style={styles.containerOWBox}>
         <View style={styles.containerInfoAccount}>
-          {!universalSwapStore.getLoadStatus.isLoad && (
-            <View style={styles.containerLoading}>
-              <LoadingSpinner color={colors["gray-150"]} size={22} />
-            </View>
-          )}
           <TouchableOpacity
             disabled={!universalSwapStore.getLoadStatus.isLoad}
             onPress={_onPressMyWallet}
