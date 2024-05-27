@@ -57,11 +57,11 @@ export const ImportLedgerPage: FunctionComponent<{
 
   return (
     <div>
-      <div className={style.title}>
+      {/* <div className={style.title}>
         {intl.formatMessage({
-          id: "register.name",
+          id: "register.name"
         })}
-      </div>
+      </div> */}
       <Form
         className={style.formContainer}
         onSubmit={handleSubmit(async (data: FormData) => {
@@ -88,8 +88,20 @@ export const ImportLedgerPage: FunctionComponent<{
             id: "register.name",
           })}
           styleInputGroup={{
-            border: "1px solid rgba(8, 4, 28, 0.12)",
+            marginBottom: 15,
           }}
+          leftIcon={
+            <img
+              src={require("../../../public/assets/icon/wallet.svg")}
+              alt=""
+            />
+          }
+          rightIcon={
+            <img
+              src={require("../../../public/assets/icon/circle-del.svg")}
+              alt=""
+            />
+          }
           type="text"
           name="name"
           ref={register({
@@ -102,11 +114,11 @@ export const ImportLedgerPage: FunctionComponent<{
         {registerConfig.mode === "create" ? (
           <React.Fragment>
             <PasswordInput
-              label={intl.formatMessage({
+              placeHolder={intl.formatMessage({
                 id: "register.create.input.password",
               })}
               styleInputGroup={{
-                border: "1px solid rgba(8, 4, 28, 0.12)",
+                marginBottom: 15,
               }}
               name="password"
               ref={register({
@@ -124,11 +136,11 @@ export const ImportLedgerPage: FunctionComponent<{
               error={errors.password && errors.password.message}
             />
             <PasswordInput
-              label={intl.formatMessage({
+              placeHolder={intl.formatMessage({
                 id: "register.create.input.confirm-password",
               })}
               styleInputGroup={{
-                border: "1px solid rgba(8, 4, 28, 0.12)",
+                marginBottom: 15,
               }}
               style={{ position: "relative" }}
               name="confirmPassword"
@@ -148,14 +160,8 @@ export const ImportLedgerPage: FunctionComponent<{
             />
           </React.Fragment>
         ) : null}
-        <AdvancedBIP44Option bip44Option={bip44Option} />
-        <Button
-          color=""
-          type="submit"
-          block
-          data-loading={registerConfig.isLoading}
-          className={style.nextBtn}
-        >
+        {/* <AdvancedBIP44Option bip44Option={bip44Option} /> */}
+        <Button data-loading={registerConfig.isLoading}>
           <FormattedMessage id="register.create.button.next" />
         </Button>
       </Form>
