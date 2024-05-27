@@ -59,27 +59,21 @@ export const useMultipleAssets = (
   const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
 
   if (!fiatCurrency) return;
-  const tokensByChain = useRef<Record<ChainIdEnum, ViewTokenData>>({});
-  const tokensByChainId = tokensByChain.current;
-  let overallTotalBalance = initPrice;
-  let allTokens: ViewToken[] = [];
+
+  const tokensByChainId: Record<ChainIdEnum, ViewTokenData> = {};
+
+  const [dataMultipleAssets, setDataMultipleAssets] = useState({
+    allBalance: initPrice,
+    allTokens: [],
+    tokensByChain: tokensByChainId,
+  });
+
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
       init();
     });
   }, []);
-  console.log(isAllNetwork, tokensByChainId[chainId], "isAllNetwork");
-  useEffect(() => {
-    if (isAllNetwork) {
-      setDataTokens(sortTokensByPrice(allTokens));
-      setTotalPriceBalance(overallTotalBalance);
-      return;
-    } else if (tokensByChainId[chainId]) {
-      setDataTokens(sortTokensByPrice(tokensByChainId[chainId].tokens));
-      setTotalPriceBalance(tokensByChainId[chainId].totalBalance);
-      return;
-    }
-  }, [chainId, isAllNetwork]);
+
   const init = async () => {
     try {
       const allChain = Array.from(hugeQueriesStore.getAllChainMap.values());
@@ -107,6 +101,8 @@ export const useMultipleAssets = (
       );
 
       const allData = await Promise.allSettled(allBalancePromises);
+      let overallTotalBalance = initPrice;
+      let allTokens: ViewToken[] = [];
       // Loop through each key in the data object
       for (const chain in tokensByChainId) {
         if (tokensByChainId.hasOwnProperty(chain)) {
@@ -118,8 +114,12 @@ export const useMultipleAssets = (
           allTokens = allTokens.concat(tokensByChainId[chain].tokens);
         }
       }
-      setDataTokens(sortTokensByPrice(allTokens));
-      setTotalPriceBalance(overallTotalBalance);
+      setDataMultipleAssets((prevState) => ({
+        ...prevState,
+        allTokens: sortTokensByPrice(allTokens),
+        allBalance: overallTotalBalance,
+        tokensByChain: tokensByChainId,
+      }));
     } catch (error) {
       console.error("Initialization error:", error);
     }
@@ -368,7 +368,11 @@ export const useMultipleAssets = (
     });
   };
   return {
-    totalPriceBalance,
-    dataTokens,
+    totalPriceBalance: isAllNetwork
+      ? dataMultipleAssets.allBalance
+      : dataMultipleAssets.tokensByChain[chainId].totalBalance,
+    dataTokens: isAllNetwork
+      ? dataMultipleAssets.allTokens
+      : sortTokensByPrice(dataMultipleAssets.tokensByChain[chainId].tokens),
   };
 };
