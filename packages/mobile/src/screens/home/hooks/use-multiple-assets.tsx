@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FlatList, InteractionManager, Text, View } from "react-native";
 import { useStore } from "@src/stores";
 import { ChainIdEnum } from "@owallet/common";
@@ -34,6 +34,7 @@ import {
   AccountWithAll,
   CoinGeckoPriceStore,
 } from "@owallet/stores";
+import { ChainStore } from "@src/stores/chain";
 
 const initPrice = new PricePretty(
   {
@@ -47,15 +48,19 @@ const initPrice = new PricePretty(
 export const useMultipleAssets = (
   accountStore: AccountStore<AccountWithAll>,
   priceStore: CoinGeckoPriceStore,
-  hugeQueriesStore: HugeQueriesStore
+  hugeQueriesStore: HugeQueriesStore,
+  chainId: string,
+  isAllNetwork: boolean
 ) => {
+  console.log(chainId, "chainId");
   const [dataTokens, setDataTokens] = useState<ViewToken[]>([]);
   const [totalPriceBalance, setTotalPriceBalance] =
     useState<PricePretty>(initPrice);
   const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
 
   if (!fiatCurrency) return;
-  const tokensByChainId: Record<ChainIdEnum, ViewTokenData> = {};
+  const tokensByChain = useRef<Record<ChainIdEnum, ViewTokenData>>({});
+  const tokensByChainId = tokensByChain.current;
   let overallTotalBalance = initPrice;
   let allTokens: ViewToken[] = [];
   useEffect(() => {
@@ -63,7 +68,18 @@ export const useMultipleAssets = (
       init();
     });
   }, []);
-
+  console.log(isAllNetwork, tokensByChainId[chainId], "isAllNetwork");
+  useEffect(() => {
+    if (isAllNetwork) {
+      setDataTokens(sortTokensByPrice(allTokens));
+      setTotalPriceBalance(overallTotalBalance);
+      return;
+    } else if (tokensByChainId[chainId]) {
+      setDataTokens(sortTokensByPrice(tokensByChainId[chainId].tokens));
+      setTotalPriceBalance(tokensByChainId[chainId].totalBalance);
+      return;
+    }
+  }, [chainId, isAllNetwork]);
   const init = async () => {
     try {
       const allChain = Array.from(hugeQueriesStore.getAllChainMap.values());

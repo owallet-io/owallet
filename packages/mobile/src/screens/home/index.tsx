@@ -49,7 +49,9 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   const { totalPriceBalance, dataTokens } = useMultipleAssets(
     accountStore,
     priceStore,
-    hugeQueriesStore
+    hugeQueriesStore,
+    chainStore.current.chainId,
+    appInitStore.getInitApp.isAllNetworks
   );
   const currentChain = chainStore.current;
   const currentChainId = currentChain?.chainId;
