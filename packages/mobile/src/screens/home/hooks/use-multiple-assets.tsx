@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import React, { useEffect, useRef, useState } from "react";
 import { FlatList, InteractionManager, Text, View } from "react-native";
 import { useStore } from "@src/stores";
-import { ChainIdEnum } from "@owallet/common";
+import { ChainIdEnum, Network } from "@owallet/common";
 import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
 import Web3 from "web3";
 import axios from "axios";
@@ -36,6 +36,8 @@ import {
 } from "@owallet/stores";
 import { ChainStore } from "@src/stores/chain";
 import { AppInit } from "@src/stores/app_init";
+import { fetchRetry, urlTxHistory } from "@src/common/constants";
+import { MapChainIdToNetwork } from "@src/utils/helper";
 
 export const initPrice = new PricePretty(
   {
@@ -222,6 +224,15 @@ export const useMultipleAssets = (
           ).add(price),
         };
       }
+      // else
+
+      // {
+      //   console.log(denom,"denom not token");
+      //   const url =`${urlTxHistory}v1/token-info/Oraichain/orai10ldgzued6zjp0mkqwsv2mux3ml50l97c74x8sg`;
+      //   console.log(url,"url");
+      //   const res = await fetchRetry(url);
+      //   console.log(res,"Ress");
+      // }
     });
   };
 
@@ -266,6 +277,7 @@ export const useMultipleAssets = (
             res.return_data[ind].data
           ) as OraiswapTokenTypes.BalanceResponse;
           const token = mergedMaps.get(t.coinMinimalDenom);
+
           if (token) {
             const balance = new CoinPretty(token, balanceRes.balance);
             const price = priceStore.calculatePrice(balance);

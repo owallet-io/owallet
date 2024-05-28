@@ -17,17 +17,26 @@ import {
   tokensIcon,
 } from "@oraichain/oraidex-common";
 import { API } from "@src/common/api";
-import { ChainIdEnum, CosmosNetwork, OasisNetwork } from "@owallet/common";
-import { Network } from "@tatumio/tatum";
+import {
+  ChainIdEnum,
+  CosmosNetwork,
+  OasisNetwork,
+  Network,
+} from "@owallet/common";
+// import { Network } from "@tatumio/tatum";
 export const MapChainIdToNetwork = {
   [ChainIdEnum.BNBChain]: Network.BINANCE_SMART_CHAIN,
   [ChainIdEnum.Ethereum]: Network.ETHEREUM,
   [ChainIdEnum.Bitcoin]: Network.BITCOIN,
-  [ChainIdEnum.Oasis]: OasisNetwork.MAINNET,
-  [ChainIdEnum.OasisEmerald]: OasisNetwork.EMERALD,
-  [ChainIdEnum.OasisSapphire]: OasisNetwork.SAPPHIRE,
+  [ChainIdEnum.Oasis]: Network.MAINNET,
+  [ChainIdEnum.OasisEmerald]: Network.EMERALD,
+  [ChainIdEnum.OasisSapphire]: Network.SAPPHIRE,
   [ChainIdEnum.TRON]: Network.TRON,
-  [ChainIdEnum.Oraichain]: CosmosNetwork.ORAICHAIN,
+  [ChainIdEnum.Oraichain]: Network.ORAICHAIN,
+  [ChainIdEnum.Osmosis]: Network.OSMOSIS,
+  [ChainIdEnum.CosmosHub]: Network.COSMOSHUB,
+  [ChainIdEnum.Injective]: Network.INJECTIVE,
+  [ChainIdEnum.Neutaro]: Network.NEUTARO,
 };
 const SCHEME_IOS = "owallet://open_url?url=";
 const SCHEME_ANDROID = "app.owallet.oauth://google/open_url?url=";
