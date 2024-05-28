@@ -256,7 +256,11 @@ export const RecoverMnemonicPage: FunctionComponent<{
             </React.Fragment>
           ) : null}
           {/* <AdvancedBIP44Option bip44Option={bip44Option} /> */}
-          <Button color="primary" data-loading={registerConfig.isLoading}>
+          <Button
+            color="primary"
+            data-loading={registerConfig.isLoading}
+            loading={registerConfig.isLoading}
+          >
             <FormattedMessage id="register.create.button.next" />
           </Button>
         </Form>

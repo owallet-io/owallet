@@ -31,6 +31,64 @@ interface FormData {
   confirmPassword: string;
 }
 
+const MnemonicBoard: FunctionComponent<{
+  mnemonic: string;
+  type?: "solid" | "dashed";
+  onWordClick?: (index: number) => void;
+}> = ({ mnemonic, onWordClick, type = "solid" }) => {
+  return (
+    <div
+      style={{
+        border: `1px ${type}`,
+        borderRadius: 8,
+        borderColor: colors["primary-surface-default"],
+        padding: "12px 0px 8px 8px",
+        flexDirection: "row",
+        display: "flex",
+        flexWrap: "wrap",
+        width: "100%",
+      }}
+    >
+      {mnemonic.split(" ").map((word, index) => {
+        return (
+          <div
+            onClick={() => {
+              onWordClick && onWordClick(index);
+            }}
+            style={{
+              cursor: "pointer",
+              padding: "4px 8px",
+              backgroundColor: colors["neutral-surface-action3"],
+              borderRadius: 999,
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              marginRight: 12,
+              marginBottom: 12,
+            }}
+          >
+            <div
+              style={{
+                backgroundColor: colors["primary-surface-subtle"],
+                borderRadius: 999,
+                marginRight: 2,
+                padding: 7,
+                paddingTop: 0,
+                paddingBottom: 0,
+              }}
+            >
+              <Text weight="600" color={"primary-surface-default"} size={12}>
+                {index + 1}
+              </Text>
+            </div>
+            <Text weight="500">{word}</Text>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
 export const NewMnemonicIntro: FunctionComponent<{
   registerConfig: RegisterConfig;
 }> = observer(({ registerConfig }) => {
@@ -189,55 +247,7 @@ export const GenerateMnemonicModePage: FunctionComponent<{
             </ButtonGroup>
           </div>
         </div>
-        <div
-          style={{
-            border: "1px solid",
-            borderRadius: 8,
-            borderColor: colors["primary-surface-default"],
-            padding: "12px 0px 8px 8px",
-            flexDirection: "row",
-            display: "flex",
-            flexWrap: "wrap",
-            width: "100%",
-          }}
-        >
-          {newMnemonicConfig.mnemonic.split(" ").map((word, index) => {
-            return (
-              <div
-                style={{
-                  padding: "4px 8px",
-                  backgroundColor: colors["neutral-surface-action3"],
-                  borderRadius: 999,
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  marginRight: 12,
-                  marginBottom: 12,
-                }}
-              >
-                <div
-                  style={{
-                    backgroundColor: colors["primary-surface-subtle"],
-                    borderRadius: 999,
-                    marginRight: 2,
-                    padding: 7,
-                    paddingTop: 0,
-                    paddingBottom: 0,
-                  }}
-                >
-                  <Text
-                    weight="600"
-                    color={colors["primary-surface-default"]}
-                    size={12}
-                  >
-                    {index + 1}
-                  </Text>
-                </div>
-                <Text weight="500">{word}</Text>
-              </div>
-            );
-          })}
-        </div>
+        <MnemonicBoard mnemonic={newMnemonicConfig.mnemonic} />
         {/* <TextArea
           className={style.mnemonic}
           style={{
@@ -393,17 +403,13 @@ export const VerifyMnemonicModePage: FunctionComponent<{
     <div>
       <div style={{ minHeight: "153px" }}>
         <div className={style.buttons}>
-          {suggestedWords.map((word, i) => {
+          {/* {suggestedWords.map((word, i) => {
             return (
               <Button
                 key={word + i.toString()}
                 onClick={() => {
                   const word = suggestedWords[i];
-                  setSuggestedWords(
-                    suggestedWords
-                      .slice(0, i)
-                      .concat(suggestedWords.slice(i + 1))
-                  );
+                  setSuggestedWords(suggestedWords.slice(0, i).concat(suggestedWords.slice(i + 1)));
                   randomizedWords.push(word);
                   setRandomizedWords(randomizedWords.slice());
                 }}
@@ -411,15 +417,36 @@ export const VerifyMnemonicModePage: FunctionComponent<{
                 {word}
               </Button>
             );
-          })}
+          })} */}
+
+          <MnemonicBoard
+            mnemonic={suggestedWords.join(" ")}
+            type="dashed"
+            onWordClick={(i) => {
+              const word = suggestedWords[i];
+              setSuggestedWords(
+                suggestedWords.slice(0, i).concat(suggestedWords.slice(i + 1))
+              );
+              randomizedWords.push(word);
+              setRandomizedWords(randomizedWords.slice());
+            }}
+          />
         </div>
       </div>
-      <hr />
-      <div style={{ minHeight: "153px" }}>
+      <div
+        style={{
+          minHeight: "153px",
+          border: "1px solid",
+          borderColor: colors["primary-surface-default"],
+          borderRadius: 8,
+          padding: "12px 0px 8px 8px",
+        }}
+      >
         <div className={style.buttons}>
           {randomizedWords.map((word, i) => {
             return (
               <Button
+                size="small"
                 key={word + i.toString()}
                 onClick={() => {
                   const word = randomizedWords[i];
@@ -440,9 +467,7 @@ export const VerifyMnemonicModePage: FunctionComponent<{
       </div>
       <Button
         color="primary"
-        type="submit"
         disabled={suggestedWords.join(" ") !== wordsSlice.join(" ")}
-        block
         style={{
           marginTop: "30px",
         }}
@@ -466,6 +491,7 @@ export const VerifyMnemonicModePage: FunctionComponent<{
           }
         }}
         data-loading={registerConfig.isLoading}
+        loading={registerConfig.isLoading}
       >
         <FormattedMessage id="register.verify.button.register" />
       </Button>
