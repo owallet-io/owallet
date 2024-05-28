@@ -84,7 +84,7 @@ export const RegisterPage: FunctionComponent = observer(() => {
       } else {
         setSlide(0);
       }
-    }, 3000);
+    }, 6000);
 
     return () => {
       clearInterval(interval);
