@@ -66,7 +66,6 @@ export const AddTokenCosmosScreen: FunctionComponent<{
   } = useStore();
   const tokensOf = tokensStore.getTokensOf(selectedChain.chainId);
 
-  const accountInfo = accountStore.getAccount(selectedChain.chainId);
   const [loading, setLoading] = useState(false);
   const [coingeckoId, setCoingeckoID] = useState(null);
   const [selectedType, setSelectedType] = useState<"cw20">("cw20");
@@ -102,9 +101,7 @@ export const AddTokenCosmosScreen: FunctionComponent<{
     ) != null;
 
   const queries = queriesStore.get(selectedChain.chainId);
-  const query = isSecret20
-    ? queries.secret.querySecret20ContractInfo
-    : queries.cosmwasm.querycw20ContractInfo;
+  const query = queries.cosmwasm.querycw20ContractInfo;
   const queryContractInfo = query.getQueryContract(contractAddress);
 
   const tokenInfo = queryContractInfo.tokenInfo;
@@ -112,48 +109,26 @@ export const AddTokenCosmosScreen: FunctionComponent<{
   const getTokenCoingeckoId = async () => {
     try {
       if (tokenInfo && tokenInfo.symbol) {
-        const response = await API.getCoingeckoCoins(
-          {},
-          {
-            baseURL: "https://api.coingecko.com/api/v3",
-          }
-        );
-        const coins = response.data;
-
-        // Find the matching coin based on contract address
-        const coin = coins.find((c) => {
-          return (
-            c.id.toLowerCase() === tokenInfo?.symbol.toLowerCase() ||
-            c.symbol.toLowerCase() === tokenInfo?.symbol.toLowerCase() ||
-            c.name.toLowerCase() === tokenInfo?.symbol.toLowerCase()
-          );
-        });
-
-        if (coin) {
-          if (selectedChain && contractAddress && contractAddress !== "") {
-            const res = await API.getCoingeckoImageURL(
-              {
-                contractAddress: contractAddress,
-                id: selectedChain.chainName.toLowerCase().split(" ").join("-"),
+        if (selectedChain && contractAddress && contractAddress !== "") {
+          const res = await API.getCoingeckoImageURL(
+            {
+              contractAddress: contractAddress,
+              id: selectedChain.chainName.toLowerCase().split(" ").join("-"),
+            },
+            {
+              baseURL: "https://pro-api.coingecko.com/api/v3",
+              headers: {
+                "x-cg-pro-api-key": process.env.COINGECKO_API_KEY,
               },
-              {
-                baseURL: "https://pro-api.coingecko.com/api/v3",
-                headers: {
-                  "x-cg-pro-api-key": process.env.COINGECKO_API_KEY,
-                },
-              }
-            );
-            const data = res.data;
-
-            if (data && data.image && data.image.large) {
-              setCoingeckoImg(data.image.large);
-            } else {
-              throw new Error("Image URL not found for the Coingecko ID.");
             }
+          );
+          const data = res.data;
+          if (data && data.image && data.image.large) {
+            setCoingeckoImg(data.image.large);
+            setCoingeckoID(data.id);
+          } else {
+            throw new Error("Image URL not found for the Coingecko ID.");
           }
-          setCoingeckoID(coin.id);
-        } else {
-          throw new Error("Coingecko ID not found for the contract address.");
         }
       }
     } catch (err) {
@@ -193,58 +168,49 @@ export const AddTokenCosmosScreen: FunctionComponent<{
   const [isOpenSecret20ViewingKey, setIsOpenSecret20ViewingKey] =
     useState(false);
   const addTokenSuccess = (currency) => {
-    const currentChainInfos = appInitStore.getChainInfos;
-
-    const chain = currentChainInfos.find(
-      (c) => c.chainId === selectedChain.chainId
-    );
+    // const currentChainInfos = appInitStore.getChainInfos;
+    //
+    // const chain = currentChainInfos.find(
+    //   (c) => c.chainId === selectedChain.chainId
+    // );
 
     setLoading(false);
-    const token: TokenType = {
-      coinDenom: currency.coinDenom,
-      coinMinimalDenom: `${currency.type}_${currency.coinDenom.toLowerCase()}`,
-      contractAddress: currency.contractAddress,
-      coinDecimals: currency.coinDecimals,
-      coinGeckoId: coingeckoId,
-      prefixToken:
-        currency?.prefixToken ?? chain.bech32Config?.bech32PrefixAccAddr,
-      coinImageUrl: getValues("icon") ?? null,
-    };
+    // const token: TokenType = {
+    //   coinDenom: currency.coinDenom,
+    //   coinMinimalDenom: `${currency.type}_${currency.coinDenom.toLowerCase()}`,
+    //   contractAddress: currency.contractAddress,
+    //   coinDecimals: currency.coinDecimals,
+    //   coinGeckoId: coingeckoId,
+    //   prefixToken:
+    //     currency?.prefixToken ?? null,
+    //   coinImageUrl: getValues('icon') ?? null
+    // };
 
-    const newCurrencies = [...chain.currencies];
-    newCurrencies.push(token);
+    // const newCurrencies = [...chain.currencies];
+    // newCurrencies.push(token);
+    //
+    // const newChainInfos = [...currentChainInfos];
+    //
+    // // Find the object with chainId and update its age
+    // for (let i = 0; i < newChainInfos.length; i++) {
+    //   if (newChainInfos[i].chainId === selectedChain.chainId) {
+    //     newChainInfos[i].currencies = newCurrencies;
+    //     break; // Exit the loop since we found the object
+    //   }
+    // }
 
-    const newChainInfos = [...currentChainInfos];
-
-    // Find the object with chainId and update its age
-    for (let i = 0; i < newChainInfos.length; i++) {
-      if (newChainInfos[i].chainId === selectedChain.chainId) {
-        newChainInfos[i].currencies = newCurrencies;
-        break; // Exit the loop since we found the object
-      }
-    }
-
-    appInitStore.updateChainInfos(newChainInfos);
-    smartNavigation.navigateSmart("Home", {});
+    // appInitStore.updateChainInfos(newChainInfos);
+    // smartNavigation.navigateSmart('Home', {});
+    smartNavigation.reset({
+      index: 0,
+      routes: [
+        {
+          name: "MainTab",
+        },
+      ],
+    });
     showToast({
       message: "Token added",
-    });
-  };
-
-  const createViewingKey = async (): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      accountInfo.secret
-        .createSecret20ViewingKey(
-          contractAddress,
-          "",
-          {},
-          {},
-          (_, viewingKey) => {
-            resolve(viewingKey);
-          }
-        )
-        .then(() => {})
-        .catch(reject);
     });
   };
 
@@ -252,52 +218,17 @@ export const AddTokenCosmosScreen: FunctionComponent<{
     try {
       if (tokenInfo?.decimals != null && tokenInfo.name && tokenInfo.symbol) {
         setLoading(true);
-        if (!isSecret20) {
-          const currency: CW20Currency = {
-            type: selectedType,
-            contractAddress: data.contractAddress,
-            coinMinimalDenom: tokenInfo.name,
-            coinDenom: tokenInfo.symbol,
-            coinDecimals: tokenInfo.decimals,
-          };
-
-          await tokensOf.addToken(currency);
-          addTokenSuccess(currency);
-        } else {
-          let viewingKey = data.viewingKey;
-          if (!viewingKey && !isOpenSecret20ViewingKey) {
-            try {
-              viewingKey = await createViewingKey();
-            } catch (e) {
-              if (tokensStore.waitingSuggestedToken) {
-                await tokensStore.rejectAllSuggestedTokens();
-              }
-
-              return;
-            }
-          }
-
-          if (!viewingKey) {
-            setLoading(false);
-            smartNavigation.navigateSmart("Home", {});
-            showToast({
-              message: "Failed to create the viewing key",
-              type: "danger",
-            });
-          } else {
-            const currency: Secret20Currency = {
-              type: "secret20",
-              contractAddress: data.contractAddress,
-              viewingKey,
-              coinMinimalDenom: tokenInfo.name,
-              coinDenom: tokenInfo.symbol,
-              coinDecimals: tokenInfo.decimals,
-            };
-
-            await tokensOf.addToken(currency);
-            addTokenSuccess(currency);
-          }
-        }
+        const currency: CW20Currency = {
+          type: selectedType,
+          contractAddress: data.contractAddress,
+          coinMinimalDenom: tokenInfo.name,
+          coinDenom: tokenInfo.symbol,
+          coinDecimals: tokenInfo.decimals,
+          coinImageUrl: coingeckoImg,
+          coinGeckoId: coingeckoId,
+        };
+        await tokensOf.addToken(currency);
+        addTokenSuccess(currency);
       }
     } catch (err) {
       setLoading(false);

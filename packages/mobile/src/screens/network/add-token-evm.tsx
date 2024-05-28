@@ -182,14 +182,21 @@ export const AddTokenEVMScreen: FunctionComponent<{
     useState(false);
 
   const addTokenSuccess = (currency) => {
-    const currentChainInfos = appInitStore.getChainInfos;
-
-    const chain = currentChainInfos.find(
-      (c) => c.chainId === selectedChain.chainId
-    );
+    // const currentChainInfos = appInitStore.getChainInfos;
+    //
+    // const chain = currentChainInfos.find(
+    //   (c) => c.chainId === selectedChain.chainId
+    // );
     setLoading(false);
     // appInitStore.updateChainInfos(newChainInfos);
-    smartNavigation.navigateSmart("Home", {});
+    smartNavigation.reset({
+      index: 0,
+      routes: [
+        {
+          name: "MainTab",
+        },
+      ],
+    });
     showToast({
       message: "Token added",
     });
