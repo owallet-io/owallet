@@ -7,7 +7,13 @@ export const Card: FunctionComponent<{
   containerStyle?: CSSProperties;
 }> = ({ type = "normal", containerStyle, ...props }) => {
   return (
-    <div className={style.card} style={containerStyle}>
+    <div
+      className={(style.card, type === "ink" ? style.bg : null)}
+      style={containerStyle}
+    >
+      <div>
+        <img />
+      </div>
       {props.children}
     </div>
   );

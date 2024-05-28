@@ -158,6 +158,7 @@ export const GenerateMnemonicModePage: FunctionComponent<{
   return (
     <div>
       <Card
+        type="ink"
         containerStyle={{
           alignItems: "center",
           display: "flex",

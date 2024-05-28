@@ -121,7 +121,7 @@ export const RegisterPage: FunctionComponent = observer(() => {
             : "start",
       }}
     >
-      <Card>
+      <Card type="ink">
         {!registerConfig.isFinalized ? (
           <div className={style.logoContainer}>
             <div>

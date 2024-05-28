@@ -12,6 +12,14 @@
 .card {
   padding: 16px;
   background-color: $neutral-surface-card;
+  position: relative;
+  z-index: 999;
+}
+
+.bg {
+  background-image: url("../../public/assets/images/img-bg.png");
+  background-repeat: no-repeat;
+  background-size: contain;
 }
 
 .button {
@@ -43,9 +51,6 @@
 .dangerBtn {
   background-color: $error-surface-default;
   color: $neutral-icon-on-dark;
-}
-
-.buttonFill {
 }
 
 .buttonOutline {

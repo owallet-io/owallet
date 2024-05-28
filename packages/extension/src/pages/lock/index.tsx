@@ -54,7 +54,7 @@ export const LockPage: FunctionComponent = observer(() => {
 
   return (
     <EmptyLayout style={{ height: "100%" }}>
-      <Card containerStyle={{ height: "100%" }}>
+      <Card type="ink" containerStyle={{ height: "100%" }}>
         <Form
           className={style.formContainer}
           onSubmit={handleSubmit(async (data) => {
