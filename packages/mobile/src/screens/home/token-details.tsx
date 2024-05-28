@@ -31,10 +31,11 @@ import { maskedNumber, shortenAddress } from "@src/utils/helper";
 import { CheckIcon, CopyFillIcon } from "@src/components/icon";
 import { OWBox } from "@src/components/card";
 import { TokenChart } from "@src/screens/home/components/token-chart";
-import { ViewToken } from "@src/stores/huge-queries";
+import { ViewRawToken, ViewToken } from "@src/stores/huge-queries";
+import { CoinPretty, PricePretty } from "@owallet/unit";
 
 export const TokenDetails: FunctionComponent = observer((props) => {
-  const { chainStore, accountStore, keyRingStore } = useStore();
+  const { chainStore, priceStore, accountStore, keyRingStore } = useStore();
   const { isTimedOut, setTimer } = useSimpleTimer();
   const { colors } = useTheme();
   const styles = useStyles(colors);
@@ -47,7 +48,7 @@ export const TokenDetails: FunctionComponent = observer((props) => {
       Record<
         string,
         {
-          item: ViewToken;
+          item: ViewRawToken;
         }
       >,
       string
@@ -160,11 +161,11 @@ export const TokenDetails: FunctionComponent = observer((props) => {
       });
     } catch (err) {}
   };
-
+  const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
   return (
     <View style={[styles.container, { paddingTop: safeAreaInsets.top }]}>
       <PageHeader
-        title={item.token.denom}
+        title={item.token.currency.coinDenom}
         subtitle={item.chainInfo.chainName}
         colors={colors}
       />
@@ -207,11 +208,16 @@ export const TokenDetails: FunctionComponent = observer((props) => {
           </View>
           <View style={styles.overview}>
             <OWText variant="bigText" style={styles.labelTotalAmount}>
-              {maskedNumber(item.token.hideDenom(true).trim(true).toString())}{" "}
-              {item.token.denom}
+              {maskedNumber(
+                new CoinPretty(item.token.currency, item.token.amount)
+                  .hideDenom(true)
+                  .trim(true)
+                  .toString()
+              )}{" "}
+              {item.token.currency.coinDenom}
             </OWText>
             <OWText style={styles.profit} color={colors["neutral-text-body"]}>
-              {item.price?.toString()}
+              {new PricePretty(fiatCurrency, item.price)?.toString()}
             </OWText>
           </View>
           <View style={styles.btnGroup}>

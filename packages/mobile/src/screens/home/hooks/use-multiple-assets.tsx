@@ -186,7 +186,7 @@ export const useMultipleAssets = (
     }
   };
   const sortTokensByPrice = (tokens: ViewRawToken[]) => {
-    return tokens.slice().sort((a, b) => Number(b.price) - Number(a.price));
+    return tokens.sort((a, b) => Number(b.price) - Number(a.price));
   };
 
   const getBalanceNativeEvm = async (address, chainInfo: ChainInfo) => {
@@ -503,7 +503,7 @@ export const useMultipleAssets = (
   return {
     totalPriceBalance: appInit.getMultipleAssets.totalPriceBalance,
     dataTokens: isAllNetwork
-      ? sortTokensByPrice(appInit.getMultipleAssets.dataTokens)
+      ? sortTokensByPrice([...(appInit.getMultipleAssets.dataTokens || [])])
       : sortTokensByPrice([
           ...(appInit.getMultipleAssets.dataTokensByChain?.[chainId]?.tokens ||
             []),
