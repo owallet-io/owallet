@@ -22,9 +22,10 @@ export class AppInit {
     balances: object;
     chainInfos: Array<any>;
   };
-
+  @persist("object")
   @observable
   protected multipleAssets: IMultipleAsset;
+
   @observable
   protected notiData: {};
 
@@ -43,7 +44,7 @@ export class AppInit {
       yesterdayPriceFeed: [],
     };
     this.multipleAssets = {
-      totalPriceBalance: initPrice,
+      totalPriceBalance: "0",
       dataTokens: [],
       dataTokensByChain: null,
     };
@@ -71,6 +72,7 @@ export class AppInit {
   get getMultipleAssets(): IMultipleAsset {
     return this.multipleAssets;
   }
+
   @action
   updateBalanceByAddress(address, balance) {
     this.initApp = {

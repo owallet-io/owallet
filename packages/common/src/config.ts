@@ -402,6 +402,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinDenom: "ORAIB",
       coinMinimalDenom: "uoraib",
       coinDecimals: 6,
+      coinImageUrl:
+        "https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png",
       gasPriceStep: {
         low: 0,
         average: 0,
@@ -595,6 +597,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinMinimalDenom: "oraie",
       coinDecimals: 18,
       coinGeckoId: "oraie",
+      coinImageUrl:
+        "https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png",
       gasPriceStep: {
         low: 0,
         average: 0.000025,
@@ -650,6 +654,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinMinimalDenom: "oraie",
       coinDecimals: 18,
       coinGeckoId: "oraie",
+      coinImageUrl:
+        "https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png",
       gasPriceStep: {
         low: 0,
         average: 0.000025,

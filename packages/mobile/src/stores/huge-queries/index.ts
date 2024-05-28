@@ -14,10 +14,10 @@ import {
 } from "@owallet/stores";
 import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
 import { computed, makeObservable } from "mobx";
-import { DenomHelper } from "@owallet/common";
+import { ChainIdEnum, DenomHelper } from "@owallet/common";
 import { computedFn } from "mobx-utils";
 import { ChainIdHelper } from "@owallet/cosmos";
-import { ChainInfo } from "@owallet/types";
+import { AppCurrency, ChainInfo } from "@owallet/types";
 
 export interface ViewToken {
   //TODO: need check type for chain info
@@ -27,10 +27,27 @@ export interface ViewToken {
   isFetching: boolean;
   error: QueryError<any> | undefined;
 }
-export interface ViewTokenData {
-  tokens: ViewToken[];
-  totalBalance: PricePretty;
+
+export interface RawToken {
+  currency: AppCurrency;
+  amount: string;
 }
+export interface RawChainInfo {
+  chainId: ChainIdEnum & string;
+  chainName: string;
+  chainImage: RawChainInfo;
+}
+export interface ViewRawToken {
+  chainInfo: RawChainInfo;
+  token: RawToken;
+  price: string;
+}
+
+export interface ViewTokenData {
+  tokens: ViewRawToken[];
+  totalBalance: string;
+}
+
 interface ViewChainAddress {
   chainInfo: ChainInfo;
   address: string;

@@ -23,6 +23,7 @@ import {
 } from "@oraichain/oraidex-common";
 import {
   HugeQueriesStore,
+  ViewRawToken,
   ViewToken,
   ViewTokenData,
 } from "@src/stores/huge-queries";
@@ -52,8 +53,8 @@ export const initPrice = new PricePretty(
 );
 
 export interface IMultipleAsset {
-  totalPriceBalance: PricePretty;
-  dataTokens: ViewToken[];
+  totalPriceBalance: string;
+  dataTokens: ViewRawToken[];
   dataTokensByChain: Record<ChainIdEnum, ViewTokenData>;
 }
 
@@ -63,13 +64,8 @@ export const useMultipleAssets = (
   hugeQueriesStore: HugeQueriesStore,
   chainId: string,
   isAllNetwork: boolean,
-  appInit: AppInit,
-  tokensStore: TokensStore
+  appInit: AppInit
 ): IMultipleAsset => {
-  console.log(chainId, "chainId");
-  // const [dataTokens, setDataTokens] = useState<ViewToken[]>([]);
-  // const [totalPriceBalance, setTotalPriceBalance] =
-  //   useState<PricePretty>(initPrice);
   const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
 
   if (!fiatCurrency) return;
@@ -98,7 +94,6 @@ export const useMultipleAssets = (
             case "evm":
               if (ChainIdEnum.BNBChain || ChainIdEnum.Ethereum) {
                 await getBalancessErc20(address, chainInfo);
-                console.log(chainInfo.currencies, "chainInfo.currencies");
               }
 
               return chainInfo.chainId === ChainIdEnum.Oasis
@@ -114,21 +109,28 @@ export const useMultipleAssets = (
       );
 
       const allData = await Promise.allSettled(allBalancePromises);
-      let overallTotalBalance = initPrice;
-      let allTokens: ViewToken[] = [];
+      let overallTotalBalance = "0";
+      let allTokens: ViewRawToken[] = [];
       // Loop through each key in the data object
       for (const chain in tokensByChainId) {
         if (tokensByChainId.hasOwnProperty(chain)) {
           // Add the total balance for each chain to the overall total balance
-          overallTotalBalance = overallTotalBalance.add(
-            tokensByChainId[chain].totalBalance
-          );
+          overallTotalBalance = new PricePretty(
+            fiatCurrency,
+            overallTotalBalance
+          )
+            .add(
+              new PricePretty(fiatCurrency, tokensByChainId[chain].totalBalance)
+            )
+            .toDec()
+            .toString();
           // Concatenate the tokens for each chain to the allTokens array
           allTokens = allTokens.concat(tokensByChainId[chain].tokens);
         }
       }
+
       appInit.updateMultipleAssets({
-        dataTokens: sortTokensByPrice(allTokens),
+        dataTokens: allTokens,
         totalPriceBalance: overallTotalBalance,
         dataTokensByChain: tokensByChainId,
       });
@@ -183,11 +185,8 @@ export const useMultipleAssets = (
       console.log(e, "e1");
     }
   };
-  const sortTokensByPrice = (tokens: ViewToken[]) => {
-    return tokens.sort(
-      (a, b) =>
-        Number(b.price.toDec().toString()) - Number(a.price.toDec().toString())
-    );
+  const sortTokensByPrice = (tokens: ViewRawToken[]) => {
+    return tokens.slice().sort((a, b) => Number(b.price) - Number(a.price));
   };
 
   const getBalanceNativeEvm = async (address, chainInfo: ChainInfo) => {
@@ -200,21 +199,31 @@ export const useMultipleAssets = (
       );
 
       const price = priceStore.calculatePrice(balance);
-      const infoToken = {
-        token: balance,
-        chainInfo,
-        price,
-        isFetching: null,
-        error: null,
-      };
       tokensByChainId[chainInfo.chainId] = {
         tokens: [
           ...(tokensByChainId[chainInfo.chainId]?.tokens || []),
-          infoToken,
+          {
+            token: {
+              currency: balance.currency,
+              amount: Number(ethBalance),
+            },
+            chainInfo: {
+              chainId: chainInfo.chainId,
+              chainName: chainInfo.chainName,
+              chainImage: chainInfo.stakeCurrency.coinImageUrl,
+            },
+            price: price.toDec().toString(),
+          },
         ],
         totalBalance: (
-          tokensByChainId[chainInfo.chainId]?.totalBalance || initPrice
-        ).add(price),
+          new PricePretty(
+            fiatCurrency,
+            tokensByChainId[chainInfo.chainId]?.totalBalance
+          ) || initPrice
+        )
+          .add(price)
+          .toDec()
+          .toString(),
       };
     }
   };
@@ -226,21 +235,31 @@ export const useMultipleAssets = (
       const totalBtc = data.reduce((acc, curr) => acc + curr.value, 0);
       const balance = new CoinPretty(chainInfo.stakeCurrency, totalBtc);
       const price = await priceStore.waitCalculatePrice(balance);
-      const infoToken = {
-        token: balance,
-        chainInfo,
-        price,
-        isFetching: null,
-        error: null,
-      };
       tokensByChainId[chainInfo.chainId] = {
         tokens: [
           ...(tokensByChainId[chainInfo.chainId]?.tokens || []),
-          infoToken,
+          {
+            token: {
+              currency: balance.currency,
+              amount: totalBtc,
+            },
+            chainInfo: {
+              chainId: chainInfo.chainId,
+              chainName: chainInfo.chainName,
+              chainImage: chainInfo.stakeCurrency.coinImageUrl,
+            },
+            price: price.toDec().toString(),
+          },
         ],
         totalBalance: (
-          tokensByChainId[chainInfo.chainId]?.totalBalance || initPrice
-        ).add(price),
+          new PricePretty(
+            fiatCurrency,
+            tokensByChainId[chainInfo.chainId]?.totalBalance
+          ) || initPrice
+        )
+          .add(price)
+          .toDec()
+          .toString(),
       };
     }
   };
@@ -257,21 +276,32 @@ export const useMultipleAssets = (
       if (token) {
         const balance = new CoinPretty(token, amount);
         const price = priceStore.calculatePrice(balance);
-        const infoToken = {
-          token: balance,
-          chainInfo,
-          price,
-          isFetching: null,
-          error: null,
-        };
+
         tokensByChainId[chainInfo.chainId] = {
           tokens: [
             ...(tokensByChainId[chainInfo.chainId]?.tokens || []),
-            infoToken,
+            {
+              token: {
+                currency: balance.currency,
+                amount: amount,
+              },
+              chainInfo: {
+                chainId: chainInfo.chainId,
+                chainName: chainInfo.chainName,
+                chainImage: chainInfo.stakeCurrency.coinImageUrl,
+              },
+              price: price.toDec().toString(),
+            },
           ],
           totalBalance: (
-            tokensByChainId[chainInfo.chainId]?.totalBalance || initPrice
-          ).add(price),
+            new PricePretty(
+              fiatCurrency,
+              tokensByChainId[chainInfo.chainId]?.totalBalance
+            ) || initPrice
+          )
+            .add(price)
+            .toDec()
+            .toString(),
         };
       }
       // else
@@ -308,11 +338,12 @@ export const useMultipleAssets = (
         cwStargate.chainId,
         cwStargate.rpc
       );
-      const tokensCw20 = hugeQueriesStore.getAllChainMap
-        .get(ChainIdEnum.Oraichain)
-        .chainInfo.currencies.filter(
-          (item) => new DenomHelper(item.coinMinimalDenom).contractAddress
-        );
+      const chainInfo = hugeQueriesStore.getAllChainMap.get(
+        ChainIdEnum.Oraichain
+      ).chainInfo;
+      const tokensCw20 = chainInfo.currencies.filter(
+        (item) => new DenomHelper(item.coinMinimalDenom).contractAddress
+      );
       const multicall = new MulticallQueryClient(client, network.multicall);
       const res = await multicall.aggregate({
         queries: tokensCw20.map((t) => ({
@@ -331,24 +362,31 @@ export const useMultipleAssets = (
           if (token) {
             const balance = new CoinPretty(token, balanceRes.balance);
             const price = priceStore.calculatePrice(balance);
-            const infoToken = {
-              token: balance,
-              chainInfo: hugeQueriesStore.getAllChainMap.get(
-                ChainIdEnum.Oraichain
-              ).chainInfo,
-              price,
-              isFetching: null,
-              error: null,
-            };
-            tokensByChainId[ChainIdEnum.Oraichain] = {
+            tokensByChainId[chainInfo.chainId] = {
               tokens: [
-                ...(tokensByChainId[ChainIdEnum.Oraichain]?.tokens || []),
-                infoToken,
+                ...(tokensByChainId[chainInfo.chainId]?.tokens || []),
+                {
+                  token: {
+                    currency: balance.currency,
+                    amount: balanceRes.balance,
+                  },
+                  chainInfo: {
+                    chainId: chainInfo.chainId,
+                    chainName: chainInfo.chainName,
+                    chainImage: chainInfo.stakeCurrency.coinImageUrl,
+                  },
+                  price: price.toDec().toString(),
+                },
               ],
               totalBalance: (
-                tokensByChainId[ChainIdEnum.Oraichain]?.totalBalance ||
-                initPrice
-              ).add(price),
+                new PricePretty(
+                  fiatCurrency,
+                  tokensByChainId[chainInfo.chainId]?.totalBalance
+                ) || initPrice
+              )
+                .add(price)
+                .toDec()
+                .toString(),
             };
           }
         }
@@ -369,21 +407,31 @@ export const useMultipleAssets = (
         grpcBalance.available
       );
       const price = await priceStore.waitCalculatePrice(balance);
-      const infoToken = {
-        token: balance,
-        chainInfo,
-        price,
-        isFetching: null,
-        error: null,
-      };
       tokensByChainId[chainInfo.chainId] = {
         tokens: [
           ...(tokensByChainId[chainInfo.chainId]?.tokens || []),
-          infoToken,
+          {
+            token: {
+              currency: balance.currency,
+              amount: grpcBalance.available,
+            },
+            chainInfo: {
+              chainId: chainInfo.chainId,
+              chainName: chainInfo.chainName,
+              chainImage: chainInfo.stakeCurrency.coinImageUrl,
+            },
+            price: price.toDec().toString(),
+          },
         ],
         totalBalance: (
-          tokensByChainId[chainInfo.chainId]?.totalBalance || initPrice
-        ).add(price),
+          new PricePretty(
+            fiatCurrency,
+            tokensByChainId[chainInfo.chainId]?.totalBalance
+          ) || initPrice
+        )
+          .add(price)
+          .toDec()
+          .toString(),
       };
     }
   };
@@ -394,7 +442,7 @@ export const useMultipleAssets = (
       multicallCustomContractAddress: null,
       chainId: Number(chainInfo.chainId),
     });
-    console.log(chainInfo.currencies, "chainInfo.currencies2");
+
     const tokensErc20 = chainInfo.currencies.filter(
       (item) => new DenomHelper(item.coinMinimalDenom).type !== "native"
     );
@@ -420,29 +468,42 @@ export const useMultipleAssets = (
       const balance = new CoinPretty(token, Number(amount));
       const price = priceStore.calculatePrice(balance);
 
-      const infoToken = {
-        token: balance,
-        chainInfo,
-        price,
-        isFetching: null,
-        error: null,
-      };
       tokensByChainId[chainInfo.chainId] = {
         tokens: [
           ...(tokensByChainId[chainInfo.chainId]?.tokens || []),
-          infoToken,
+          {
+            token: {
+              currency: balance.currency,
+              amount: Number(amount),
+            },
+            chainInfo: {
+              chainId: chainInfo.chainId,
+              chainName: chainInfo.chainName,
+              chainImage: chainInfo.stakeCurrency.coinImageUrl,
+            },
+            price: price.toDec().toString(),
+          },
         ],
         totalBalance: (
-          tokensByChainId[chainInfo.chainId]?.totalBalance || initPrice
-        ).add(price),
+          new PricePretty(
+            fiatCurrency,
+            tokensByChainId[chainInfo.chainId]?.totalBalance
+          ) || initPrice
+        )
+          .add(price)
+          .toDec()
+          .toString(),
       };
     });
   };
-
+  console.log(
+    appInit.getMultipleAssets.dataTokens,
+    "appInit.getMultipleAssets.dataTokens"
+  );
   return {
     totalPriceBalance: appInit.getMultipleAssets.totalPriceBalance,
     dataTokens: isAllNetwork
-      ? appInit.getMultipleAssets.dataTokens
+      ? sortTokensByPrice(appInit.getMultipleAssets.dataTokens)
       : sortTokensByPrice([
           ...(appInit.getMultipleAssets.dataTokensByChain?.[chainId]?.tokens ||
             []),

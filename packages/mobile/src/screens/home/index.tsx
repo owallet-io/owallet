@@ -26,6 +26,7 @@ import { AccountBoxAll } from "./account-box-new";
 import { EarningCardNew } from "./earning-card-new";
 import { InjectedProviderUrl } from "../web/config";
 import { useMultipleAssets } from "@src/screens/home/hooks/use-multiple-assets";
+import { PricePretty } from "@owallet/unit";
 
 export const HomeScreen: FunctionComponent = observer((props) => {
   const [refreshing, setRefreshing] = React.useState(false);
@@ -43,7 +44,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     appInitStore,
     keyRingStore,
     hugeQueriesStore,
-    tokensStore,
   } = useStore();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
@@ -54,8 +54,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       hugeQueriesStore,
       chainStore.current.chainId,
       appInitStore.getInitApp.isAllNetworks,
-      appInitStore,
-      tokensStore
+      appInitStore
     );
   console.log(appInitStore.getMultipleAssets, "appInitStore.getMultipleAssets");
   const currentChain = chainStore.current;
@@ -130,7 +129,8 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   useEffect(() => {
     onRefresh();
   }, [address, chainStore.current.chainId]);
-  console.log(totalPriceBalance.toString(), "totalPriceBalance");
+  const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
+  console.log(chainStore.current.currencies, "chainInfo.currencies3");
   const onRefresh = async () => {
     try {
       const queries = queriesStore.get(chainStore.current.chainId);
@@ -169,10 +169,14 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       ref={scrollViewRef}
     >
       <AccountBoxAll
-        totalBalanceByChain={dataTokensByChain?.[
-          chainStore.current.chainId
-        ]?.totalBalance?.toString()}
-        totalPriceBalance={totalPriceBalance.toString()}
+        totalBalanceByChain={new PricePretty(
+          fiatCurrency,
+          dataTokensByChain?.[chainStore.current.chainId]?.totalBalance
+        ).toString()}
+        totalPriceBalance={new PricePretty(
+          fiatCurrency,
+          totalPriceBalance
+        ).toString()}
       />
       {chainStore.current.networkType === "cosmos" &&
       !appInitStore.getInitApp.isAllNetworks ? (

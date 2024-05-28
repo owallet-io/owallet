@@ -116,15 +116,6 @@ export const AccountBoxAll: FunctionComponent<{
       ? queries.tron.queryAccount.getQueryWalletAddress(address)
       : null;
   const renderTotalBalance = () => {
-    // const chainIcon = chainIcons.find(
-    //   (c) => c.chainId === chainStore.current.chainId
-    // );
-    // let chainBalance = 0;
-
-    // chainAssets?.map((a) => {
-    //   chainBalance += a.value;
-    // });
-
     return (
       <>
         <Text variant="bigText" style={styles.labelTotalAmount}>

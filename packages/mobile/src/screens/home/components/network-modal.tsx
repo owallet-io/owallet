@@ -32,6 +32,7 @@ import { ChainInfoWithEmbed } from "@owallet/background";
 import { ChainInfoInner } from "@owallet/stores";
 import { initPrice } from "@src/screens/home/hooks/use-multiple-assets";
 import { ViewToken } from "@src/stores/huge-queries";
+import { PricePretty } from "@owallet/unit";
 
 export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
   const { colors } = useTheme();
@@ -46,6 +47,7 @@ export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
     accountStore,
     appInitStore,
     universalSwapStore,
+    priceStore,
   } = useStore();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
@@ -133,6 +135,7 @@ export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
   }, []);
   const { totalPriceBalance, dataTokens, dataTokensByChain } =
     appInitStore.getMultipleAssets;
+  const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
   const _renderItem = ({
     item,
   }: {
@@ -145,6 +148,8 @@ export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
     if (item.isAll && appInitStore.getInitApp.isAllNetworks) {
       selected = true;
     }
+    const oraiIcon =
+      "https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png";
     return (
       <TouchableOpacity
         style={{
@@ -183,8 +188,7 @@ export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
             <OWIcon
               type="images"
               source={{
-                uri:
-                  item.stakeCurrency?.coinImageUrl || unknownToken.coinImageUrl,
+                uri: item.stakeCurrency?.coinImageUrl || oraiIcon,
               }}
               size={28}
             />
@@ -208,9 +212,12 @@ export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
               }}
             >
               {!item.chainId
-                ? totalPriceBalance?.toString()
+                ? new PricePretty(fiatCurrency, totalPriceBalance)?.toString()
                 : (
-                    dataTokensByChain?.[item.chainId]?.totalBalance || initPrice
+                    new PricePretty(
+                      fiatCurrency,
+                      dataTokensByChain?.[item.chainId]?.totalBalance
+                    ) || initPrice
                   ).toString()}
             </Text>
           </View>

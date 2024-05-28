@@ -34,11 +34,12 @@ import FastImage from "react-native-fast-image";
 import OWText from "@src/components/text/ow-text";
 import { HistoryCard } from "@src/screens/transactions";
 import { ArrowOpsiteUpDownIcon, DownArrowIcon } from "@src/components/icon";
-import { ViewToken } from "@src/stores/huge-queries";
+import { ViewRawToken, ViewToken } from "@src/stores/huge-queries";
+import { CoinPretty, PricePretty } from "@owallet/unit";
 
 export const TokensCardAll: FunctionComponent<{
   containerStyle?: ViewStyle;
-  dataTokens: ViewToken[];
+  dataTokens: ViewRawToken[];
 }> = observer(({ containerStyle, dataTokens }) => {
   const {
     accountStore,
@@ -51,6 +52,7 @@ export const TokensCardAll: FunctionComponent<{
   } = useStore();
   const { colors } = useTheme();
   const theme = appInitStore.getInitApp.theme;
+  const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
 
   const [more, setMore] = useState(true);
   const [activeTab, setActiveTab] = useState("tokens");
@@ -417,9 +419,13 @@ export const TokensCardAll: FunctionComponent<{
 });
 
 const TokenItem: FC<{
-  item: ViewToken;
-}> = ({ item }) => {
+  item: ViewRawToken;
+}> = observer(({ item }) => {
   const { colors } = useTheme();
+  const { priceStore } = useStore();
+  const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
+
+  if (!fiatCurrency) return;
   const styles = styling(colors);
   const onPressToken = async (item) => {
     navigate(SCREENS.TokenDetails, {
@@ -448,7 +454,7 @@ const TokenItem: FC<{
           <View style={styles.chainWrap}>
             <OWIcon
               type="images"
-              source={{ uri: item.chainInfo.stakeCurrency.coinImageUrl }}
+              source={{ uri: item.chainInfo.chainImage }}
               size={16}
             />
           </View>
@@ -471,14 +477,19 @@ const TokenItem: FC<{
                 weight="500"
                 color={colors["neutral-text-heading"]}
               >
-                {maskedNumber(item.token.trim(true).hideDenom(true).toString())}
+                {maskedNumber(
+                  new CoinPretty(item.token.currency, item.token.amount)
+                    .trim(true)
+                    .hideDenom(true)
+                    .toString()
+                )}
               </Text>
               <Text
                 size={14}
                 style={{ lineHeight: 24 }}
                 color={colors["neutral-text-body"]}
               >
-                {item.price.toString()}
+                {new PricePretty(fiatCurrency, item.price).toString()}
               </Text>
               {/*<Text*/}
               {/*  size={14}*/}
@@ -499,7 +510,7 @@ const TokenItem: FC<{
       </View>
     </TouchableOpacity>
   );
-};
+});
 const styling = (colors) =>
   StyleSheet.create({
     wrapHeaderTitle: {
