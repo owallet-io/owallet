@@ -36,7 +36,7 @@ export const MapChainIdToNetwork = {
   [ChainIdEnum.Osmosis]: Network.OSMOSIS,
   [ChainIdEnum.CosmosHub]: Network.COSMOSHUB,
   [ChainIdEnum.Injective]: Network.INJECTIVE,
-  [ChainIdEnum.Neutaro]: Network.NEUTARO,
+  // [ChainIdEnum.Neutaro]: Network.NEUTARO,
 };
 const SCHEME_IOS = "owallet://open_url?url=";
 const SCHEME_ANDROID = "app.owallet.oauth://google/open_url?url=";

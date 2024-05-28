@@ -1,20 +1,19 @@
-import { observer } from "mobx-react-lite";
-import React, { useEffect, useRef, useState } from "react";
-import { FlatList, InteractionManager, Text, View } from "react-native";
-import { useStore } from "@src/stores";
-import { ChainIdEnum, Network } from "@owallet/common";
-import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
-import Web3 from "web3";
-import axios from "axios";
+import { useEffect } from "react";
+import { InteractionManager } from "react-native";
 import {
   addressToPublicKey,
+  ChainIdEnum,
+  CWStargate,
+  DenomHelper,
   getOasisNic,
   getRpcByChainId,
   parseRpcBalance,
 } from "@owallet/common";
+import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
+import Web3 from "web3";
+import axios from "axios";
 import { MulticallQueryClient } from "@oraichain/common-contracts-sdk";
 import { fromBinary, toBinary } from "@cosmjs/cosmwasm-stargate";
-import { CWStargate, DenomHelper } from "@owallet/common";
 import { OraiswapTokenTypes } from "@oraichain/oraidex-contracts-sdk";
 import { ContractCallResults, Multicall } from "@oraichain/ethereum-multicall";
 import {
@@ -22,21 +21,24 @@ import {
   network,
   oraichainNetwork,
 } from "@oraichain/oraidex-common";
-import OWFlatList from "@src/components/page/ow-flat-list";
 import {
   HugeQueriesStore,
   ViewToken,
   ViewTokenData,
 } from "@src/stores/huge-queries";
-import { AppCurrency, ChainInfo } from "@owallet/types";
+import { ChainInfo } from "@owallet/types";
 import {
   AccountStore,
   AccountWithAll,
   CoinGeckoPriceStore,
+  TokensStore,
 } from "@owallet/stores";
-import { ChainStore } from "@src/stores/chain";
 import { AppInit } from "@src/stores/app_init";
-import { fetchRetry, urlTxHistory } from "@src/common/constants";
+import {
+  fetchRetry,
+  mapChainIdToChainEndpoint,
+  urlTxHistory,
+} from "@src/common/constants";
 import { MapChainIdToNetwork } from "@src/utils/helper";
 
 export const initPrice = new PricePretty(
@@ -48,18 +50,21 @@ export const initPrice = new PricePretty(
   },
   new Dec("0")
 );
+
 export interface IMultipleAsset {
   totalPriceBalance: PricePretty;
   dataTokens: ViewToken[];
   dataTokensByChain: Record<ChainIdEnum, ViewTokenData>;
 }
+
 export const useMultipleAssets = (
   accountStore: AccountStore<AccountWithAll>,
   priceStore: CoinGeckoPriceStore,
   hugeQueriesStore: HugeQueriesStore,
   chainId: string,
   isAllNetwork: boolean,
-  appInit: AppInit
+  appInit: AppInit,
+  tokensStore: TokensStore
 ): IMultipleAsset => {
   console.log(chainId, "chainId");
   // const [dataTokens, setDataTokens] = useState<ViewToken[]>([]);
@@ -70,12 +75,6 @@ export const useMultipleAssets = (
   if (!fiatCurrency) return;
 
   const tokensByChainId: Record<ChainIdEnum, ViewTokenData> = {};
-
-  // const [dataMultipleAssets, setDataMultipleAssets] = useState({
-  //   allBalance: initPrice,
-  //   allTokens: [],
-  //   tokensByChain: tokensByChainId,
-  // });
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
@@ -97,6 +96,11 @@ export const useMultipleAssets = (
                   ])
                 : getBalanceNativeCosmos(address, chainInfo);
             case "evm":
+              if (ChainIdEnum.BNBChain || ChainIdEnum.Ethereum) {
+                await getBalancessErc20(address, chainInfo);
+                console.log(chainInfo.currencies, "chainInfo.currencies");
+              }
+
               return chainInfo.chainId === ChainIdEnum.Oasis
                 ? getBalanceOasis(address, chainInfo)
                 : Promise.all([
@@ -132,7 +136,53 @@ export const useMultipleAssets = (
       console.error("Initialization error:", error);
     }
   };
-
+  const getBalancessErc20 = async (address, chainInfo: ChainInfo) => {
+    try {
+      const url = `https://api.tatum.io/v4/data/balances?chain=${
+        mapChainIdToChainEndpoint[chainInfo.chainId]
+      }&addresses=${address}&tokenTypes=fungible`;
+      const res = await fetchRetry(url, {
+        headers: {
+          "Content-Type": "application/json",
+          "x-cg-pro-api-key": process.env.TATUM_KEY,
+        },
+      });
+      if (!res?.result) return;
+      await Promise.all(
+        res.result.map(async (item, index) => {
+          try {
+            const url = `${urlTxHistory}v1/token-info/${
+              MapChainIdToNetwork[chainInfo.chainId]
+            }/${item.tokenAddress}`;
+            const res = await fetchRetry(url);
+            if (!res?.data) return;
+            const { data } = res;
+            const token = chainInfo.currencies.find(
+              (item, index) => item.coinGeckoId === data.coingeckoId
+            );
+            if (!token) {
+              const infoToken: any = [
+                {
+                  coinImageUrl: data.imgUrl,
+                  coinDenom: data.abbr,
+                  coinGeckoId: data.coingeckoId,
+                  coinDecimals: data.decimal,
+                  coinMinimalDenom: `erc20:${data.contractAddress}:${data.name}`,
+                },
+              ];
+              chainInfo.addCurrencies(...infoToken);
+              console.log(data, "res22");
+            }
+          } catch (e) {
+            console.log(e, "E2");
+          }
+        })
+      );
+      console.log(res.result, "resss");
+    } catch (e) {
+      console.log(e, "e1");
+    }
+  };
   const sortTokensByPrice = (tokens: ViewToken[]) => {
     return tokens.sort(
       (a, b) =>
@@ -344,9 +394,11 @@ export const useMultipleAssets = (
       multicallCustomContractAddress: null,
       chainId: Number(chainInfo.chainId),
     });
+    console.log(chainInfo.currencies, "chainInfo.currencies2");
     const tokensErc20 = chainInfo.currencies.filter(
       (item) => new DenomHelper(item.coinMinimalDenom).type !== "native"
     );
+
     const input = tokensErc20.map((token) => ({
       reference: token.coinDenom,
       contractAddress: new DenomHelper(token.coinMinimalDenom).contractAddress,
@@ -367,6 +419,7 @@ export const useMultipleAssets = (
           .hex;
       const balance = new CoinPretty(token, Number(amount));
       const price = priceStore.calculatePrice(balance);
+
       const infoToken = {
         token: balance,
         chainInfo,
@@ -385,6 +438,7 @@ export const useMultipleAssets = (
       };
     });
   };
+
   return {
     totalPriceBalance: appInit.getMultipleAssets.totalPriceBalance,
     dataTokens: isAllNetwork

@@ -43,6 +43,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     appInitStore,
     keyRingStore,
     hugeQueriesStore,
+    tokensStore,
   } = useStore();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
@@ -53,7 +54,8 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       hugeQueriesStore,
       chainStore.current.chainId,
       appInitStore.getInitApp.isAllNetworks,
-      appInitStore
+      appInitStore,
+      tokensStore
     );
   console.log(appInitStore.getMultipleAssets, "appInitStore.getMultipleAssets");
   const currentChain = chainStore.current;

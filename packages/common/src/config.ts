@@ -1164,11 +1164,11 @@ export const EmbedChainInfos: AppChainInfo[] = [
             "https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png",
         },
         {
-          coinDenom: "USDT",
+          coinDenom: "BSC-USD",
           coinMinimalDenom:
-            "erc20:0x55d398326f99059fF775485246999027B3197955:Tether",
+            "erc20:0x55d398326f99059fF775485246999027B3197955:Binance Bridged USDT (BNB Smart Chain)",
           coinDecimals: 18,
-          coinGeckoId: "tether",
+          coinGeckoId: "binance-bridged-usdt-bnb-smart-chain",
           coinImageUrl:
             "https://s2.coinmarketcap.com/static/img/coins/64x64/825.png",
         },
