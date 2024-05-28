@@ -18,6 +18,7 @@ import { Text } from "../../../components/common/text";
 import { Card } from "../../../components/common/card";
 import useForm from "react-hook-form";
 import colors from "../../../theme/colors";
+import { useNotification } from "../../../components/notification";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require("bip39");
@@ -52,6 +53,7 @@ const MnemonicBoard: FunctionComponent<{
       {mnemonic.split(" ").map((word, index) => {
         return (
           <div
+            key={word + index}
             onClick={() => {
               onWordClick && onWordClick(index);
             }}
@@ -141,6 +143,7 @@ export const GenerateMnemonicModePage: FunctionComponent<{
   bip44Option: BIP44Option;
 }> = observer(({ registerConfig, newMnemonicConfig, bip44Option }) => {
   const intl = useIntl();
+  const notification = useNotification();
 
   const { register, handleSubmit, getValues, errors, setValue } =
     useForm<FormData>({
@@ -284,6 +287,16 @@ export const GenerateMnemonicModePage: FunctionComponent<{
           onClick={async (e) => {
             e.preventDefault();
             await navigator.clipboard.writeText(newMnemonicConfig.mnemonic);
+            notification.push({
+              placement: "top-center",
+              type: "success",
+              duration: 2,
+              content: "Copied!",
+              canDelete: true,
+              transition: {
+                duration: 0.25,
+              },
+            });
           }}
           style={{
             flexDirection: "row",
@@ -433,38 +446,41 @@ export const VerifyMnemonicModePage: FunctionComponent<{
           />
         </div>
       </div>
-      <div
-        style={{
-          border: "1px solid",
-          borderColor: colors["primary-surface-default"],
-          borderRadius: 8,
-          padding: "12px 0px 8px 8px",
-          marginTop: 27,
-        }}
-      >
-        <div className={style.buttons}>
-          {randomizedWords.map((word, i) => {
-            return (
-              <Button
-                size="small"
-                key={word + i.toString()}
-                onClick={() => {
-                  const word = randomizedWords[i];
-                  setRandomizedWords(
-                    randomizedWords
-                      .slice(0, i)
-                      .concat(randomizedWords.slice(i + 1))
-                  );
-                  suggestedWords.push(word);
-                  setSuggestedWords(suggestedWords.slice());
-                }}
-              >
-                {word}
-              </Button>
-            );
-          })}
+      {randomizedWords.length > 0 ? (
+        <div
+          style={{
+            border: "1px solid",
+            borderColor: colors["primary-surface-default"],
+            borderRadius: 8,
+            padding: "12px 0px 8px 8px",
+            marginTop: 27,
+          }}
+        >
+          <div className={style.buttons}>
+            {randomizedWords.map((word, i) => {
+              return (
+                <Button
+                  size="small"
+                  key={word + i.toString()}
+                  onClick={() => {
+                    const word = randomizedWords[i];
+                    setRandomizedWords(
+                      randomizedWords
+                        .slice(0, i)
+                        .concat(randomizedWords.slice(i + 1))
+                    );
+                    suggestedWords.push(word);
+                    setSuggestedWords(suggestedWords.slice());
+                  }}
+                >
+                  {word}
+                </Button>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      ) : null}
+
       <Button
         color="primary"
         disabled={suggestedWords.join(" ") !== wordsSlice.join(" ")}
