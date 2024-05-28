@@ -60,7 +60,6 @@ export const Input = forwardRef<
   delete attributes.children;
   delete attributes.append;
   delete attributes.styleInputGroup;
-  delete attributes.typeInput;
 
   const [inputId] = useState(() => {
     const bytes = new Uint8Array(4);

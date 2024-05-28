@@ -1,6 +1,7 @@
 @import "../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/functions";
 @import "../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/mixins";
 @import "../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/variables";
+@import "../../styles/var";
 
 .input {
   border-width: 0 !important;
@@ -12,5 +13,8 @@
   }
 }
 
-.label {
+.textArea {
+  border: 1px solid;
+  border-color: $neutral-border-bold;
+  box-shadow: none;
 }

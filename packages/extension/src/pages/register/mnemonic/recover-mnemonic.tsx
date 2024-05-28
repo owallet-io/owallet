@@ -72,14 +72,15 @@ export const RecoverMnemonicPage: FunctionComponent<{
 
   const { analyticsStore } = useStore();
 
-  const { register, handleSubmit, getValues, errors } = useForm<FormData>({
-    defaultValues: {
-      name: "",
-      words: "",
-      password: "",
-      confirmPassword: "",
-    },
-  });
+  const { register, handleSubmit, getValues, errors, setValue } =
+    useForm<FormData>({
+      defaultValues: {
+        name: "",
+        words: "",
+        password: "",
+        confirmPassword: "",
+      },
+    });
 
   return (
     <React.Fragment>
@@ -125,16 +126,77 @@ export const RecoverMnemonicPage: FunctionComponent<{
             }
           })}
         >
-          <TextArea
+          {/* <TextArea
+            className={style.mnemonic}
+            placeholder={intl.formatMessage({
+              id: "register.create.textarea.mnemonic.place-holder"
+            })}
+            style={{
+              border: "1px solid rgba(8, 4, 28, 0.12)"
+            }}
+            name="words"
+            rows={3}
+            ref={register({
+              required: "Mnemonic is required",
+              validate: (value: string): string | undefined => {
+                if (!isPrivateKey(value)) {
+                  value = trimWordsStr(value);
+                  if (value.split(" ").length < 8) {
+                    return intl.formatMessage({
+                      id: "register.create.textarea.mnemonic.error.too-short"
+                    });
+                  }
+
+                  if (!bip39.validateMnemonic(value)) {
+                    return intl.formatMessage({
+                      id: "register.create.textarea.mnemonic.error.invalid"
+                    });
+                  }
+                } else {
+                  value = value.replace("0x", "");
+                  if (value.length !== 64) {
+                    return intl.formatMessage({
+                      id: "register.import.textarea.private-key.error.invalid-length"
+                    });
+                  }
+
+                  try {
+                    if (Buffer.from(value, "hex").toString("hex").toLowerCase() !== value.toLowerCase()) {
+                      return intl.formatMessage({
+                        id: "register.import.textarea.private-key.error.invalid"
+                      });
+                    }
+                  } catch {
+                    return intl.formatMessage({
+                      id: "register.import.textarea.private-key.error.invalid"
+                    });
+                  }
+                }
+              }
+            })}
+            error={errors.words && errors.words.message}
+          /> */}
+          <Input
             className={style.mnemonic}
             placeholder={intl.formatMessage({
               id: "register.create.textarea.mnemonic.place-holder",
             })}
-            style={{
-              border: "1px solid rgba(8, 4, 28, 0.12)",
-            }}
+            label={"Mnemonic / Private key"}
+            typeInput="textarea"
             name="words"
-            rows={3}
+            styleInputGroup={{
+              marginBottom: 15,
+            }}
+            rightIcon={
+              <img
+                src={require("../../../public/assets/icon/circle-del.svg")}
+                alt=""
+              />
+            }
+            onAction={() => {
+              setValue("words", "");
+            }}
+            type="text"
             ref={register({
               required: "Mnemonic is required",
               validate: (value: string): string | undefined => {
