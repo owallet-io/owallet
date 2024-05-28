@@ -21,11 +21,17 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { DashboardCard } from "./dashboard";
-import { ChainIdEnum, getBase58Address, TRC20_LIST } from "@owallet/common";
+import {
+  ChainIdEnum,
+  DenomHelper,
+  getBase58Address,
+  TRC20_LIST,
+} from "@owallet/common";
 import { maskedNumber, shortenAddress } from "@src/utils/helper";
 import { CheckIcon, CopyFillIcon } from "@src/components/icon";
 import { OWBox } from "@src/components/card";
 import { TokenChart } from "@src/screens/home/components/token-chart";
+import { ViewToken } from "@src/stores/huge-queries";
 
 export const TokenDetails: FunctionComponent = observer((props) => {
   const { chainStore, accountStore, keyRingStore } = useStore();
@@ -35,14 +41,13 @@ export const TokenDetails: FunctionComponent = observer((props) => {
   const safeAreaInsets = useSafeAreaInsets();
 
   const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
-  const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
 
   const route = useRoute<
     RouteProp<
       Record<
         string,
         {
-          item: any;
+          item: ViewToken;
         }
       >,
       string
@@ -51,7 +56,7 @@ export const TokenDetails: FunctionComponent = observer((props) => {
 
   const { item } = route.params;
 
-  const account = accountStore.getAccount(item.chainId);
+  const account = accountStore.getAccount(item.chainInfo.chainId);
 
   const [tronTokens, setTronTokens] = useState([]);
 
@@ -94,7 +99,7 @@ export const TokenDetails: FunctionComponent = observer((props) => {
     keyRingStore.keyRingLedgerAddresses
   );
   const onPressToken = async () => {
-    chainStore.selectChain(item?.chainId);
+    chainStore.selectChain(item.chainInfo.chainId);
     await chainStore.saveLastViewChainId();
 
     if (chainStore.current.networkType === "bitcoin") {
@@ -104,23 +109,25 @@ export const TokenDetails: FunctionComponent = observer((props) => {
       return;
     }
     if (chainStore.current.networkType === "evm") {
-      if (item.chainId === ChainIdEnum.TRON) {
+      if (item.chainInfo.chainId === ChainIdEnum.TRON) {
         const itemTron = tronTokens?.find((t) => {
-          return t.coinGeckoId === item.coinGeckoId;
+          return t.coinGeckoId === item.token.currency.coinGeckoId;
         });
 
         navigate(SCREENS.STACK.Others, {
           screen: SCREENS.SendTron,
           params: {
             item: itemTron,
-            currency: item.denom,
-            contractAddress: item.contractAddress,
+            currency: item.token.currency.coinDenom,
+            contractAddress: new DenomHelper(
+              item.token.currency.coinMinimalDenom
+            ).contractAddress,
           },
         });
 
         return;
       }
-      if (item.chainId === ChainIdEnum.Oasis) {
+      if (item.chainInfo.chainId === ChainIdEnum.Oasis) {
         navigate(SCREENS.STACK.Others, {
           screen: SCREENS.SendOasis,
           params: {
@@ -132,9 +139,10 @@ export const TokenDetails: FunctionComponent = observer((props) => {
       navigate(SCREENS.STACK.Others, {
         screen: SCREENS.SendEvm,
         params: {
-          currency: item.denom,
-          contractAddress: item.contractAddress,
-          coinGeckoId: item.coinGeckoId,
+          currency: item.token.currency.coinDenom,
+          contractAddress: new DenomHelper(item.token.currency.coinMinimalDenom)
+            .contractAddress,
+          coinGeckoId: item.token.currency.coinGeckoId,
         },
       });
       return;
@@ -144,9 +152,10 @@ export const TokenDetails: FunctionComponent = observer((props) => {
       navigate(SCREENS.STACK.Others, {
         screen: SCREENS.NewSend,
         params: {
-          currency: item.denom,
-          contractAddress: item.contractAddress,
-          coinGeckoId: item.coinGeckoId,
+          currency: item.token.currency.coinDenom,
+          contractAddress: new DenomHelper(item.token.currency.coinMinimalDenom)
+            .contractAddress,
+          coinGeckoId: item.token.currency.coinGeckoId,
         },
       });
     } catch (err) {}
@@ -154,7 +163,11 @@ export const TokenDetails: FunctionComponent = observer((props) => {
 
   return (
     <View style={[styles.container, { paddingTop: safeAreaInsets.top }]}>
-      <PageHeader title={item.asset} subtitle={item.chain} colors={colors} />
+      <PageHeader
+        title={item.token.denom}
+        subtitle={item.chainInfo.chainName}
+        colors={colors}
+      />
       <ScrollView
         contentContainerStyle={{ width: "100%" }}
         showsVerticalScrollIndicator={false}
@@ -194,10 +207,11 @@ export const TokenDetails: FunctionComponent = observer((props) => {
           </View>
           <View style={styles.overview}>
             <OWText variant="bigText" style={styles.labelTotalAmount}>
-              {maskedNumber(item.balance)} {item.asset}
+              {maskedNumber(item.token.hideDenom(true).trim(true).toString())}{" "}
+              {item.token.denom}
             </OWText>
             <OWText style={styles.profit} color={colors["neutral-text-body"]}>
-              ${maskedNumber(item.value)}
+              {item.price?.toString()}
             </OWText>
           </View>
           <View style={styles.btnGroup}>
@@ -213,7 +227,7 @@ export const TokenDetails: FunctionComponent = observer((props) => {
                 navigate(SCREENS.STACK.Others, {
                   screen: SCREENS.QRScreen,
                   params: {
-                    chainId: item?.chainId,
+                    chainId: item.chainInfo.chainId,
                   },
                 });
                 return;
@@ -231,7 +245,7 @@ export const TokenDetails: FunctionComponent = observer((props) => {
             />
           </View>
         </View>
-        <TokenChart coinGeckoId={item.coinGeckoId} />
+        <TokenChart coinGeckoId={item.token.currency.coinGeckoId} />
       </ScrollView>
     </View>
   );

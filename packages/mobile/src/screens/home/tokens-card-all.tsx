@@ -142,13 +142,6 @@ export const TokensCardAll: FunctionComponent<{
 
   const styles = styling(colors);
 
-  const onPressToken = async (item) => {
-    navigate(SCREENS.TokenDetails, {
-      item,
-    });
-    return;
-  };
-
   // const renderTokenItem = useCallback(
   //   ({ item, index }) => {
   //     // if (more && index > 3) return null;
@@ -428,12 +421,17 @@ const TokenItem: FC<{
 }> = ({ item }) => {
   const { colors } = useTheme();
   const styles = styling(colors);
-
+  const onPressToken = async (item) => {
+    navigate(SCREENS.TokenDetails, {
+      item,
+    });
+    return;
+  };
   return (
     <TouchableOpacity
-      // onPress={() => {
-      //   onPressToken(item);
-      // }}
+      onPress={() => {
+        onPressToken(item);
+      }}
       key={`${item.chainInfo.chainId}-${item.token.toString()}`}
       style={styles.btnItem}
     >
