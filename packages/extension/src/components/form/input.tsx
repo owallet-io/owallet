@@ -112,7 +112,11 @@ export const Input = forwardRef<
             />
           </div>
 
-          {rightIcon ? <div onClick={onAction}>{rightIcon}</div> : null}
+          {rightIcon ? (
+            <div style={{ cursor: "pointer" }} onClick={onAction}>
+              {rightIcon}
+            </div>
+          ) : null}
         </div>
 
         {append}
