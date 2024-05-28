@@ -1,4 +1,5 @@
 import React, { FunctionComponent, CSSProperties, ReactElement } from "react";
+import colors from "../../theme/colors";
 
 import style from "./style.module.scss";
 
@@ -65,12 +66,24 @@ export const Button: FunctionComponent<{
     }
   })();
 
+  const disabledBtn = (() => {
+    if (disabled) {
+      return {
+        backgroundColor: colors["neutral-surface-action3"],
+        color: colors["neutral-text-action-on-dark-bg"],
+        cursor: "not-allowed",
+      };
+    }
+  })();
+
   return (
     <button
       onClick={onClick}
       disabled={disabled || loading}
-      className={[style.button, type, buttonMode, buttonSize].join(" ")}
-      style={containerStyle}
+      className={[style.button, type, buttonMode, buttonSize, disabledBtn].join(
+        " "
+      )}
+      style={{ ...containerStyle, ...disabledBtn }}
     >
       {loading ? <i className="fa fa-spinner fa-spin"></i> : null}
       {leftIcon ? <div>{leftIcon}</div> : null}

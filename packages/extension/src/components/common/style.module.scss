@@ -26,6 +26,10 @@
   justify-content: center;
 }
 
+.buttonDisabled {
+  cursor: not-allowed !important;
+}
+
 .primaryBtn {
   background-color: $primary-surface-default;
   color: $neutral-text-action-on-dark-bg;
