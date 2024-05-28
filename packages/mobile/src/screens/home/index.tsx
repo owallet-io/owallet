@@ -54,7 +54,8 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       hugeQueriesStore,
       chainStore.current.chainId,
       appInitStore.getInitApp.isAllNetworks,
-      appInitStore
+      appInitStore,
+      refreshing
     );
   console.log(appInitStore.getMultipleAssets, "appInitStore.getMultipleAssets");
   const currentChain = chainStore.current;
@@ -162,7 +163,16 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   return (
     <PageWithScrollViewInBottomTabView
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={() => {
+            setRefreshing(true);
+            onRefresh();
+            setTimeout(() => {
+              setRefreshing(false);
+            }, 2000);
+          }}
+        />
       }
       showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.containerStyle}

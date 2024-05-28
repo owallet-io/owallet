@@ -64,7 +64,8 @@ export const useMultipleAssets = (
   hugeQueriesStore: HugeQueriesStore,
   chainId: string,
   isAllNetwork: boolean,
-  appInit: AppInit
+  appInit: AppInit,
+  isRefreshing: boolean
 ): IMultipleAsset => {
   const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
 
@@ -77,6 +78,12 @@ export const useMultipleAssets = (
       init();
     });
   }, []);
+  useEffect(() => {
+    if (!isRefreshing) return;
+    InteractionManager.runAfterInteractions(() => {
+      init();
+    });
+  }, [isRefreshing]);
 
   const init = async () => {
     try {
@@ -134,6 +141,7 @@ export const useMultipleAssets = (
         totalPriceBalance: overallTotalBalance,
         dataTokensByChain: tokensByChainId,
       });
+      console.log("done");
     } catch (error) {
       console.error("Initialization error:", error);
     }
