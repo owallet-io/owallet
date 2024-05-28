@@ -25,7 +25,7 @@ html {
 body {
   font-family: "Space Grotesk", sans-serif !important;
   color: $color;
-  background-color: $background-color;
+  background-color: $neutral-surface-card;
   width: $popup-size-width;
   height: $popup-size-height;
   overflow: hidden;
@@ -209,7 +209,7 @@ button[data-loading="true"] {
     &:hover,
     &:focus,
     &:active {
-      color: $background-color;
+      color: $neutral-surface-card;
     }
   }
 }

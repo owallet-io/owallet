@@ -1,7 +1,7 @@
-@import '../../../../styles/var';
-@import '../../../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/functions';
-@import '../../../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/mixins';
-@import '../../../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/variables';
+@import "../../../../styles/var";
+@import "../../../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/functions";
+@import "../../../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/mixins";
+@import "../../../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/variables";
 
 .container {
   display: flex;
@@ -10,16 +10,16 @@
 
   input:read-only {
     box-shadow: none !important;
-    background: transparent;    
-    color: $color-lighter;        
+    background: transparent;
+    color: $color-lighter;
   }
 }
 
 .input {
   border-radius: 4px;
-  background-color: $background-color;
+  background-color: $neutral-surface-card;
   color: $color-neutral-2 !important;
- 
+
   &::placeholder {
     color: $color-gray-70 !important;
     opacity: 1 !important; /* Firefox */
@@ -28,7 +28,6 @@
   &:focus {
     border-radius: 4px;
   }
-  
 }
 
 .input-group {

@@ -4,7 +4,7 @@ $container-width: 420px;
 
 :global(body)[data-centered="true"] {
   // margin: auto;
-  background-color: $background-color;
+  background-color: $neutral-surface-card;
   height: 100%;
   overflow: visible !important;
 

@@ -72,6 +72,8 @@ export const Input = forwardRef<
       <div
         style={{
           padding: 8,
+          paddingTop: 4,
+          paddingBottom: 4,
           marginTop: 4,
           border: "1px solid",
           borderRadius: 8,

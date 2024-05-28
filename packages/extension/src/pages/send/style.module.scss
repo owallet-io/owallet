@@ -22,7 +22,7 @@
   margin: 0;
   padding: 0;
   color: $color;
-  background-color: $background-color;
+  background-color: $neutral-surface-card;
   &:global(.modal-content) {
     box-shadow: none;
   }

@@ -22,7 +22,7 @@
   margin: 0;
   padding: 0;
   color: $color;
-  background-color: $background-color;
+  background-color: $neutral-surface-card;
   &:global(.modal-content) {
     box-shadow: none;
   }
@@ -58,7 +58,7 @@
   color: $color-gray-70 !important;
   &::placeholder {
     color: $color-gray-70 !important;
-    opacity: 1 !important; 
+    opacity: 1 !important;
   }
 
   &:focus {
@@ -67,7 +67,6 @@
   }
 }
 
-
 .input-group {
   display: flex;
   box-shadow: 0 1px 3px rgb(50 50 93 / 15%), 0 1px 0 rgb(0 0 0 / 2%);
@@ -75,4 +74,3 @@
     box-shadow: $input-focus-alternative-box-shadow !important;
   }
 }
-

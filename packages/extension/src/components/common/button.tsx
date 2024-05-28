@@ -18,6 +18,7 @@ export const Button: FunctionComponent<{
   textStyle?: CSSProperties;
   rippleColor?: string;
   underlayColor?: string;
+  className?: string;
 }> = ({
   color = "primary",
   size = "default",
@@ -29,6 +30,7 @@ export const Button: FunctionComponent<{
   disabled = false,
   onClick,
   containerStyle,
+  className,
   ...props
 }) => {
   const type = (() => {
