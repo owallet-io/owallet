@@ -1,18 +1,12 @@
 import React, { FunctionComponent, useEffect, useRef, useState } from "react";
-
 import { PasswordInput } from "../../components/form";
-
 import { Form } from "reactstrap";
-
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
 import { Banner } from "../../components/banner";
 import useForm from "react-hook-form";
-
 import { EmptyLayout } from "../../layouts/empty-layout";
-
 import style from "./style.module.scss";
-
 import { FormattedMessage, useIntl } from "react-intl";
 import { useInteractionInfo } from "@owallet/hooks";
 import { useHistory } from "react-router";
@@ -94,7 +88,7 @@ export const LockPage: FunctionComponent = observer(() => {
             icon={require("../../public/assets/images/img_owallet.png")}
             logo={require("../../public/assets/orai_wallet_logo.png")}
             subtitle={`UNIVERSAL`}
-            subtitle2={` WEB3 GATEWAY`}
+            subtitle2={`WEB3 GATEWAY`}
           />
           <PasswordInput
             styleInputGroup={{

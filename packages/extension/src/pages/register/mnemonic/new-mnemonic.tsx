@@ -2,14 +2,10 @@ import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { RegisterConfig } from "@owallet/hooks";
 import { observer } from "mobx-react-lite";
 import { FormattedMessage, useIntl } from "react-intl";
-import {
-  AdvancedBIP44Option,
-  BIP44Option,
-  useBIP44Option,
-} from "../advanced-bip44";
+import { BIP44Option, useBIP44Option } from "../advanced-bip44";
 import style from "../style.module.scss";
 import { ButtonGroup, Form } from "reactstrap";
-import { Input, PasswordInput, TextArea } from "../../../components/form";
+import { Input, PasswordInput } from "../../../components/form";
 import { BackButton } from "../index";
 import { NewMnemonicConfig, useNewMnemonicConfig, NumWords } from "./hook";
 import { useStore } from "../../../stores";
@@ -455,6 +451,7 @@ export const VerifyMnemonicModePage: FunctionComponent<{
             borderRadius: 8,
             padding: "12px 0px 8px 8px",
             marginTop: 27,
+            minHeight: 157,
           }}
         >
           <div className={style.buttons}>

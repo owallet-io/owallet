@@ -1,14 +1,9 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
-
 import { EmptyLayout } from "../../layouts/empty-layout";
 import { Button } from "../../components/common/button";
-
 import { observer } from "mobx-react-lite";
-
 import style from "./style.module.scss";
-
 import { FormattedMessage } from "react-intl";
-
 import { RegisterOption, useRegisterConfig } from "@owallet/hooks";
 import { useStore } from "../../stores";
 import { NewMnemonicIntro, NewMnemonicPage, TypeNewMnemonic } from "./mnemonic";
