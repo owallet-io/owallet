@@ -401,7 +401,7 @@ export const VerifyMnemonicModePage: FunctionComponent<{
 
   return (
     <div>
-      <div style={{ minHeight: "153px" }}>
+      <div>
         <div className={style.buttons}>
           {/* {suggestedWords.map((word, i) => {
             return (
@@ -435,11 +435,11 @@ export const VerifyMnemonicModePage: FunctionComponent<{
       </div>
       <div
         style={{
-          minHeight: "153px",
           border: "1px solid",
           borderColor: colors["primary-surface-default"],
           borderRadius: 8,
           padding: "12px 0px 8px 8px",
+          marginTop: 27,
         }}
       >
         <div className={style.buttons}>
@@ -468,8 +468,8 @@ export const VerifyMnemonicModePage: FunctionComponent<{
       <Button
         color="primary"
         disabled={suggestedWords.join(" ") !== wordsSlice.join(" ")}
-        style={{
-          marginTop: "30px",
+        containerStyle={{
+          marginTop: "27px",
         }}
         onClick={async (e) => {
           e.preventDefault();
