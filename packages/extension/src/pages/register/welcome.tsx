@@ -1,28 +1,37 @@
 import React, { FunctionComponent } from "react";
 
 import styleWelcome from "./welcome.module.scss";
-import { Button } from "reactstrap";
 
 import { useIntl } from "react-intl";
+import { Button } from "../../components/common/button";
+import { Text } from "../../components/common/text";
 
 export const WelcomePage: FunctionComponent = () => {
   const intl = useIntl();
 
   return (
-    <div style={{ paddingTop: "20px" }}>
-      <div className={styleWelcome.title}>
-        {intl.formatMessage({
-          id: "register.welcome.title",
-        })}
-      </div>
-      <div className={styleWelcome.content}>
-        {intl.formatMessage({
-          id: "register.welcome.content",
-        })}
+    <div
+      style={{
+        paddingTop: "20px",
+        justifyContent: "center",
+        alignItems: "center",
+        width: "100%",
+      }}
+    >
+      <div style={{ paddingBottom: 32 }}>
+        <div className={styleWelcome.title}>
+          <Text size={28} weight="700">
+            ALL DONE!
+          </Text>
+        </div>
+        <div className={styleWelcome.content}>
+          <Text weight="500" color="neutral-text-body">
+            Congratulations! Your wallet was successfully created
+          </Text>
+        </div>
       </div>
       <Button
-        color=""
-        type="submit"
+        color="primary"
         onClick={() => {
           if (typeof browser !== "undefined") {
             browser.tabs.getCurrent().then((tab) => {
@@ -36,12 +45,8 @@ export const WelcomePage: FunctionComponent = () => {
             window.close();
           }
         }}
-        block
-        className={styleWelcome.doneBtn}
       >
-        {intl.formatMessage({
-          id: "register.welcome.button.done",
-        })}
+        Get Started
       </Button>
     </div>
   );

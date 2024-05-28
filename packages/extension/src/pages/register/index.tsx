@@ -122,19 +122,32 @@ export const RegisterPage: FunctionComponent = observer(() => {
       }}
     >
       <Card>
-        <div className={style.logoContainer}>
-          <div>
-            <img
-              className={style.icon}
-              src={slides[slide].imageSrc}
-              alt="logo"
-            />
+        {!registerConfig.isFinalized ? (
+          <div className={style.logoContainer}>
+            <div>
+              <img
+                className={style.icon}
+                src={slides[slide].imageSrc}
+                alt="logo"
+              />
+            </div>
+            <div className={style.logoInnerContainer}>
+              <div className={style.title}>{slides[slide].title}</div>
+              <div className={style.paragraph}>{slides[slide].paragraph}</div>
+            </div>
           </div>
-          <div className={style.logoInnerContainer}>
-            <div className={style.title}>{slides[slide].title}</div>
-            <div className={style.paragraph}>{slides[slide].paragraph}</div>
+        ) : (
+          <div className={style.logoContainer}>
+            <div>
+              <img
+                style={{ width: "100%" }}
+                src={require("../../public/assets/images/img-all-done.png")}
+                alt="logo"
+              />
+            </div>
           </div>
-        </div>
+        )}
+
         {registerConfig.render()}
         {registerConfig.isFinalized ? <WelcomePage /> : null}
         {registerConfig.isIntro ? (
