@@ -7,7 +7,6 @@ import { fromBech32, toBech32 } from "@cosmjs/encoding";
 import {
   CustomChainInfo,
   ERC20__factory,
-  evmChains,
   getTokensFromNetwork,
 } from "@oraichain/oraidex-common";
 import flatten from "lodash/flatten";
@@ -148,6 +147,10 @@ async function loadTokens(
     (c) => c.denom
   );
 
+  const customEvmChains = customChainInfos.filter(
+    (c) => c.networkType === "evm"
+  );
+
   if (tokenReload) {
     tokenReload.map((t) => {
       if (t.networkType === "cosmos") {
@@ -188,7 +191,7 @@ async function loadTokens(
               loadEvmAmounts(
                 universalSwapStore,
                 tronToEthAddress(tronAddress),
-                chainInfos.filter((c) => c.chainId == "0x2b6653dc"),
+                customEvmChains.filter((c) => c.chainId == "0x2b6653dc"),
                 true,
                 tokenReload
               );
@@ -201,7 +204,7 @@ async function loadTokens(
               loadEvmAmounts(
                 universalSwapStore,
                 metamaskAddress,
-                evmChains,
+                customEvmChains,
                 false,
                 tokenReload,
                 customEvmTokens
@@ -250,7 +253,7 @@ async function loadTokens(
       loadEvmAmounts(
         universalSwapStore,
         metamaskAddress,
-        evmChains,
+        customEvmChains,
         false,
         tokenReload,
         customEvmTokens
@@ -264,7 +267,7 @@ async function loadTokens(
       loadEvmAmounts(
         universalSwapStore,
         tronToEthAddress(tronAddress),
-        chainInfos.filter((c) => c.chainId == "0x2b6653dc"),
+        customEvmChains.filter((c) => c.chainId == "0x2b6653dc"),
         true,
         tokenReload
       );
@@ -459,6 +462,8 @@ async function loadEvmEntries(
   try {
     const tokensEVM = customEvmTokens ?? evmTokens;
 
+    console.log("tokensEVM customEvmTokens", tokensEVM);
+
     const tokens = tokensEVM.filter((t) => {
       let result;
       if (tokenReload) {
@@ -478,6 +483,8 @@ async function loadEvmEntries(
 
       return !!result;
     });
+
+    console.log("tokens customEvmTokens", tokens);
 
     const nativeEvmToken = tokensEVM.find(
       (t) =>
@@ -542,6 +549,8 @@ async function loadEvmAmounts(
   tokenReload?: Array<any>,
   customEvmTokens?: Array<any>
 ) {
+  console.log("chains loadEvmAmounts customEvmTokens", chains);
+
   //@ts-ignore
   const amountDetails = Object.fromEntries(
     flatten(
