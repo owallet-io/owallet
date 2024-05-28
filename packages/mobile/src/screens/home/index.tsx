@@ -46,13 +46,16 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   } = useStore();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
-  const { totalPriceBalance, dataTokens } = useMultipleAssets(
-    accountStore,
-    priceStore,
-    hugeQueriesStore,
-    chainStore.current.chainId,
-    appInitStore.getInitApp.isAllNetworks
-  );
+  const { totalPriceBalance, dataTokens, dataTokensByChain } =
+    useMultipleAssets(
+      accountStore,
+      priceStore,
+      hugeQueriesStore,
+      chainStore.current.chainId,
+      appInitStore.getInitApp.isAllNetworks,
+      appInitStore
+    );
+  console.log(appInitStore.getMultipleAssets, "appInitStore.getMultipleAssets");
   const currentChain = chainStore.current;
   const currentChainId = currentChain?.chainId;
   const account = accountStore.getAccount(chainStore.current.chainId);
@@ -163,13 +166,19 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       contentContainerStyle={styles.containerStyle}
       ref={scrollViewRef}
     >
-      <AccountBoxAll totalPriceBalance={totalPriceBalance.toString()} />
+      <AccountBoxAll
+        totalBalanceByChain={dataTokensByChain?.[
+          chainStore.current.chainId
+        ]?.totalBalance?.toString()}
+        totalPriceBalance={totalPriceBalance.toString()}
+      />
       {chainStore.current.networkType === "cosmos" &&
       !appInitStore.getInitApp.isAllNetworks ? (
         <EarningCardNew />
-      ) : (
-        <EarningCardNew defaultChain={ChainIdEnum.Oraichain} />
-      )}
+      ) : null}
+      {/*(*/}
+      {/*<EarningCardNew defaultChain={ChainIdEnum.Oraichain} />*/}
+      {/*)*/}
       <TokensCardAll dataTokens={dataTokens} />
     </PageWithScrollViewInBottomTabView>
   );

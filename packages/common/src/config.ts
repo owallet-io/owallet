@@ -788,57 +788,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
       txUrl: "https://www.mintscan.io/osmosis/txs/{txHash}",
     },
   },
-
-  {
-    rpc: "https://rpc-juno.keplr.app",
-    rest: "https://lcd-juno.keplr.app",
-    chainId: "juno-1",
-    chainName: "Juno",
-    networkType: "cosmos",
-    stakeCurrency: {
-      coinDenom: "JUNO",
-      coinMinimalDenom: "ujuno",
-      coinDecimals: 6,
-      coinGeckoId: "juno-network",
-      coinImageUrl:
-        "https://assets.coingecko.com/coins/images/19249/standard/Juno_Logo_%28Salmon%29_%282%29.png",
-      gasPriceStep: {
-        low: 0.001,
-        average: 0.0025,
-        high: 0.004,
-      },
-    },
-    bip44: {
-      coinType: 118,
-    },
-    bech32Config: Bech32Address.defaultBech32Config("juno"),
-    currencies: [
-      {
-        coinDenom: "JUNO",
-        coinMinimalDenom: "ujuno",
-        coinDecimals: 6,
-        coinGeckoId: "juno-network",
-        coinImageUrl:
-          "https://assets.coingecko.com/coins/images/19249/standard/Juno_Logo_%28Salmon%29_%282%29.png",
-      },
-    ],
-    get feeCurrencies() {
-      return [this.stakeCurrency];
-    },
-    features: [
-      "stargate",
-      "no-legacy-stdTx",
-      "cosmwasm",
-      "ibc-transfer",
-      "ibc-go",
-    ],
-    chainSymbolImageUrl:
-      "https://assets.coingecko.com/coins/images/19249/standard/Juno_Logo_%28Salmon%29_%282%29.png",
-    txExplorer: {
-      name: "Mintscan",
-      txUrl: "https://www.mintscan.io/juno/txs/{txHash}",
-    },
-  },
   {
     rpc: "https://rpc-noble.keplr.app",
     rest: "https://lcd-noble.keplr.app",

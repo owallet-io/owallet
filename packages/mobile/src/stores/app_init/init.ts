@@ -2,6 +2,10 @@ import { observable, action, makeObservable, computed } from "mobx";
 import { create, persist } from "mobx-persist";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { CoinGeckoPrices, TokenItemType } from "@oraichain/oraidex-common";
+import {
+  IMultipleAsset,
+  initPrice,
+} from "@src/screens/home/hooks/use-multiple-assets";
 
 export class AppInit {
   @persist("object")
@@ -18,6 +22,9 @@ export class AppInit {
     balances: object;
     chainInfos: Array<any>;
   };
+
+  @observable
+  protected multipleAssets: IMultipleAsset;
   @observable
   protected notiData: {};
 
@@ -35,6 +42,11 @@ export class AppInit {
       chainInfos: [],
       yesterdayPriceFeed: [],
     };
+    this.multipleAssets = {
+      totalPriceBalance: initPrice,
+      dataTokens: [],
+      dataTokensByChain: null,
+    };
   }
 
   @computed
@@ -51,7 +63,14 @@ export class AppInit {
   updateInitApp() {
     this.initApp = { ...this.initApp, status: false };
   }
-
+  @action
+  updateMultipleAssets(data: IMultipleAsset) {
+    this.multipleAssets = { ...data };
+  }
+  @computed
+  get getMultipleAssets(): IMultipleAsset {
+    return this.multipleAssets;
+  }
   @action
   updateBalanceByAddress(address, balance) {
     this.initApp = {

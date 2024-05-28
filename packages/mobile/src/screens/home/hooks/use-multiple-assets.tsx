@@ -35,8 +35,9 @@ import {
   CoinGeckoPriceStore,
 } from "@owallet/stores";
 import { ChainStore } from "@src/stores/chain";
+import { AppInit } from "@src/stores/app_init";
 
-const initPrice = new PricePretty(
+export const initPrice = new PricePretty(
   {
     currency: "usd",
     symbol: "$",
@@ -45,28 +46,34 @@ const initPrice = new PricePretty(
   },
   new Dec("0")
 );
+export interface IMultipleAsset {
+  totalPriceBalance: PricePretty;
+  dataTokens: ViewToken[];
+  dataTokensByChain: Record<ChainIdEnum, ViewTokenData>;
+}
 export const useMultipleAssets = (
   accountStore: AccountStore<AccountWithAll>,
   priceStore: CoinGeckoPriceStore,
   hugeQueriesStore: HugeQueriesStore,
   chainId: string,
-  isAllNetwork: boolean
-) => {
+  isAllNetwork: boolean,
+  appInit: AppInit
+): IMultipleAsset => {
   console.log(chainId, "chainId");
-  const [dataTokens, setDataTokens] = useState<ViewToken[]>([]);
-  const [totalPriceBalance, setTotalPriceBalance] =
-    useState<PricePretty>(initPrice);
+  // const [dataTokens, setDataTokens] = useState<ViewToken[]>([]);
+  // const [totalPriceBalance, setTotalPriceBalance] =
+  //   useState<PricePretty>(initPrice);
   const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
 
   if (!fiatCurrency) return;
 
   const tokensByChainId: Record<ChainIdEnum, ViewTokenData> = {};
 
-  const [dataMultipleAssets, setDataMultipleAssets] = useState({
-    allBalance: initPrice,
-    allTokens: [],
-    tokensByChain: tokensByChainId,
-  });
+  // const [dataMultipleAssets, setDataMultipleAssets] = useState({
+  //   allBalance: initPrice,
+  //   allTokens: [],
+  //   tokensByChain: tokensByChainId,
+  // });
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
@@ -114,12 +121,11 @@ export const useMultipleAssets = (
           allTokens = allTokens.concat(tokensByChainId[chain].tokens);
         }
       }
-      setDataMultipleAssets((prevState) => ({
-        ...prevState,
-        allTokens: sortTokensByPrice(allTokens),
-        allBalance: overallTotalBalance,
-        tokensByChain: tokensByChainId,
-      }));
+      appInit.updateMultipleAssets({
+        dataTokens: sortTokensByPrice(allTokens),
+        totalPriceBalance: overallTotalBalance,
+        dataTokensByChain: tokensByChainId,
+      });
     } catch (error) {
       console.error("Initialization error:", error);
     }
@@ -368,11 +374,13 @@ export const useMultipleAssets = (
     });
   };
   return {
-    totalPriceBalance: isAllNetwork
-      ? dataMultipleAssets.allBalance
-      : dataMultipleAssets.tokensByChain[chainId].totalBalance,
+    totalPriceBalance: appInit.getMultipleAssets.totalPriceBalance,
     dataTokens: isAllNetwork
-      ? dataMultipleAssets.allTokens
-      : sortTokensByPrice(dataMultipleAssets.tokensByChain[chainId].tokens),
+      ? appInit.getMultipleAssets.dataTokens
+      : sortTokensByPrice([
+          ...(appInit.getMultipleAssets.dataTokensByChain?.[chainId]?.tokens ||
+            []),
+        ]),
+    dataTokensByChain: appInit.getMultipleAssets.dataTokensByChain,
   };
 };

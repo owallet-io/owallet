@@ -12,6 +12,7 @@ import { Text } from "@src/components/text";
 import {
   COINTYPE_NETWORK,
   getKeyDerivationFromAddressType,
+  unknownToken,
 } from "@owallet/common";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { BottomSheetFlatList } from "@gorhom/bottom-sheet";
@@ -27,11 +28,14 @@ import {
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { OWButton } from "@src/components/button";
 import { RadioButton } from "react-native-radio-buttons-group";
+import { ChainInfoWithEmbed } from "@owallet/background";
+import { ChainInfoInner } from "@owallet/stores";
+import { initPrice } from "@src/screens/home/hooks/use-multiple-assets";
+import { ViewToken } from "@src/stores/huge-queries";
 
 export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
   const { colors } = useTheme();
   const [keyword, setKeyword] = useState("");
-  const [selected, setSelected] = useState(null);
   const [activeTab, setActiveTab] = useState<"mainnet" | "testnet">("mainnet");
 
   const bip44Option = useBIP44Option();
@@ -43,25 +47,9 @@ export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
     appInitStore,
     universalSwapStore,
   } = useStore();
-  const [chains, setChains] = useState(chainStore.chainInfosInUI);
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const styles = styling(colors);
-  let totalUsd: number = 0;
-  let todayAssets;
-  if (
-    Object.keys(appInitStore.getInitApp.prices).length > 0 &&
-    Object.keys(universalSwapStore.getAmount).length > 0
-  ) {
-    totalUsd = getTotalUsd(
-      universalSwapStore.getAmount,
-      appInitStore.getInitApp.prices
-    );
-    todayAssets = getTokenInfos({
-      tokens: universalSwapStore.getAmount,
-      prices: appInitStore.getInitApp.prices,
-    });
-  }
 
   const onConfirm = async (item: any) => {
     const { networkType } = chainStore.getChain(item?.chainId);
@@ -87,73 +75,6 @@ export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
       item?.chainId
     );
   };
-  const groupedData = todayAssets?.reduce((result, element) => {
-    const key = element.chainId;
-
-    if (!result[key]) {
-      result[key] = {
-        sum: 0,
-      };
-    }
-
-    result[key].sum += element.value;
-
-    return result;
-  }, {});
-
-  useEffect(() => {
-    if (activeTab === "mainnet") {
-      const tmpChainInfos = [];
-      chainStore.chainInfosInUI.map((c) => {
-        if (!c.chainName.toLowerCase().includes("test")) {
-          tmpChainInfos.push(c);
-        }
-      });
-      setChains(tmpChainInfos);
-    } else {
-      const tmpChainInfos = [];
-      chainStore.chainInfosInUI.map((c) => {
-        if (c.chainName.toLowerCase().includes("test")) {
-          tmpChainInfos.push(c);
-        }
-      });
-      setChains(tmpChainInfos);
-    }
-  }, [activeTab]);
-
-  useEffect(() => {
-    if (activeTab === "mainnet") {
-      let tmpChainInfos = [];
-      chainStore.chainInfosInUI.map((c) => {
-        if (
-          !c.chainName.toLowerCase().includes("test") &&
-          c.chainName.toLowerCase().includes(keyword.toLowerCase())
-        ) {
-          tmpChainInfos.push(c);
-        }
-      });
-      if (stakeable) {
-        tmpChainInfos = tmpChainInfos.filter((c) => c.networkType === "cosmos");
-        setChains(tmpChainInfos);
-      }
-      setChains(tmpChainInfos);
-    } else {
-      let tmpChainInfos = [];
-      chainStore.chainInfosInUI.map((c) => {
-        if (
-          c.chainName.toLowerCase().includes("test") &&
-          c.chainName.toLowerCase().includes(keyword.toLowerCase())
-        ) {
-          tmpChainInfos.push(c);
-        }
-      });
-      if (stakeable) {
-        tmpChainInfos = tmpChainInfos.filter((c) => c.networkType === "cosmos");
-        setChains(tmpChainInfos);
-      }
-      setChains(tmpChainInfos);
-    }
-  }, [keyword, activeTab, stakeable]);
 
   useEffect(() => {
     if (chainStore.current.chainName.toLowerCase().includes("test")) {
@@ -210,8 +131,13 @@ export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
       });
     }
   }, []);
-
-  const _renderItem = ({ item }) => {
+  const { totalPriceBalance, dataTokens, dataTokensByChain } =
+    appInitStore.getMultipleAssets;
+  const _renderItem = ({
+    item,
+  }: {
+    item: ChainInfoInner<ChainInfoWithEmbed>;
+  }) => {
     let selected =
       item?.chainId === chainStore.current.chainId &&
       !appInitStore.getInitApp.isAllNetworks;
@@ -219,28 +145,6 @@ export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
     if (item.isAll && appInitStore.getInitApp.isAllNetworks) {
       selected = true;
     }
-
-    let chainIcon = chainIcons.find((c) => c.chainId === item.chainId);
-
-    // Hardcode for Oasis because oraidex-common does not have icon yet
-    if (item.chainName.includes("Oasis")) {
-      chainIcon = {
-        chainId: item.chainId,
-        Icon: "https://s2.coinmarketcap.com/static/img/coins/200x200/7653.png",
-      };
-    }
-    // Hardcode for BTC because oraidex-common does not have icon yet
-    if (item.chainName.includes("Bit")) {
-      chainIcon = {
-        chainId: item.chainId,
-        Icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Bitcoin.svg/1200px-Bitcoin.svg.png",
-      };
-    }
-
-    if (!chainIcon) {
-      chainIcon = chainIcons.find((c) => c.chainId === ChainIdEnum.Oraichain);
-    }
-
     return (
       <TouchableOpacity
         style={{
@@ -276,19 +180,14 @@ export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
               marginRight: 16,
             }}
           >
-            {chainIcon ? (
-              <OWIcon
-                type="images"
-                source={{ uri: chainIcon.Icon }}
-                size={28}
-              />
-            ) : (
-              <VectorCharacter
-                char={item.chainName[0]}
-                height={15}
-                color={colors["white"]}
-              />
-            )}
+            <OWIcon
+              type="images"
+              source={{
+                uri:
+                  item.stakeCurrency?.coinImageUrl || unknownToken.coinImageUrl,
+              }}
+              size={28}
+            />
           </View>
           <View>
             <Text
@@ -308,10 +207,11 @@ export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
                 fontWeight: "400",
               }}
             >
-              $
               {!item.chainId
-                ? maskedNumber(totalUsd)
-                : maskedNumber(groupedData?.[item.chainId]?.sum)}
+                ? totalPriceBalance?.toString()
+                : (
+                    dataTokensByChain?.[item.chainId]?.totalBalance || initPrice
+                  ).toString()}
             </Text>
           </View>
         </View>
@@ -331,36 +231,23 @@ export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
       </TouchableOpacity>
     );
   };
-
-  useEffect(() => {
-    if (groupedData) {
-      const sortedData = Object.entries(groupedData).sort(
-        (a, b) => b[1].sum - a[1].sum
-      );
-      const keysArray = sortedData.map(([key]) => key);
-
-      chains.sort((a, b) => {
-        const indexA = keysArray.indexOf(a.chainId);
-        const indexB = keysArray.indexOf(b.chainId);
-
-        if (indexA === -1 && indexB === -1) {
-          return 0;
-        } else if (indexA === -1) {
-          return 1;
-        } else if (indexB === -1) {
-          return -1;
-        } else {
-          if (indexA < indexB) {
-            return -1;
-          }
-          if (indexA > indexB) {
-            return 1;
-          }
-          return 0;
-        }
-      });
-    }
-  }, [groupedData]);
+  const sortChainsByPrice = (tokens: ViewToken[]) => {
+    return tokens.sort(
+      (a, b) =>
+        Number(b.price.toDec().toString()) - Number(a.price.toDec().toString())
+    );
+  };
+  const dataTestnet = chainStore.chainInfosInUI.filter(
+    (c) =>
+      c.chainName.toLowerCase().includes("test") &&
+      c.chainName.toLowerCase().includes(keyword.toLowerCase())
+  );
+  const dataMainnet = chainStore.chainInfosInUI.filter(
+    (c) =>
+      !c.chainName.toLowerCase().includes("test") &&
+      c.chainName.toLowerCase().includes(keyword.toLowerCase())
+  );
+  const dataChains = activeTab === "testnet" ? dataTestnet : dataMainnet;
 
   return (
     <View
@@ -446,7 +333,7 @@ export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
         {_renderItem({ item: { chainName: "All networks", isAll: true } })}
         <BottomSheetFlatList
           showsVerticalScrollIndicator={false}
-          data={chains}
+          data={dataChains}
           renderItem={_renderItem}
           keyExtractor={_keyExtract}
         />

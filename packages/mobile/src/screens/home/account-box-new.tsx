@@ -20,7 +20,7 @@ import { getTotalUsd, chainIcons } from "@oraichain/oraidex-common";
 import { CheckIcon, CopyFillIcon, DownArrowIcon } from "@src/components/icon";
 import { metrics, spacing } from "@src/themes";
 import MyWalletModal from "./components/my-wallet-modal/my-wallet-modal";
-import { ChainIdEnum } from "@owallet/common";
+import { ChainIdEnum, unknownToken } from "@owallet/common";
 import { OWButton } from "@src/components/button";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { CopyAddressModal } from "./components/copy-address/copy-address-modal";
@@ -34,7 +34,8 @@ import { useSimpleTimer } from "@src/hooks";
 
 export const AccountBoxAll: FunctionComponent<{
   totalPriceBalance: string;
-}> = observer(({ totalPriceBalance }) => {
+  totalBalanceByChain: string;
+}> = observer(({ totalPriceBalance, totalBalanceByChain }) => {
   console.log(totalPriceBalance, "totalPriceBalance2");
   const { colors } = useTheme();
   const {
@@ -54,11 +55,11 @@ export const AccountBoxAll: FunctionComponent<{
 
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
 
-  const chainAssets = getTokenInfos({
-    tokens: universalSwapStore.getAmount,
-    prices: appInitStore.getInitApp.prices,
-    networkFilter: chainStore.current.chainId,
-  });
+  // const chainAssets = getTokenInfos({
+  //   tokens: universalSwapStore.getAmount,
+  //   prices: appInitStore.getInitApp.prices,
+  //   networkFilter: chainStore.current.chainId,
+  // });
   const queries = queriesStore.get(chainStore.current.chainId);
   const styles = styling(colors);
   let totalUsd: number = 0;
@@ -115,14 +116,14 @@ export const AccountBoxAll: FunctionComponent<{
       ? queries.tron.queryAccount.getQueryWalletAddress(address)
       : null;
   const renderTotalBalance = () => {
-    const chainIcon = chainIcons.find(
-      (c) => c.chainId === chainStore.current.chainId
-    );
-    let chainBalance = 0;
+    // const chainIcon = chainIcons.find(
+    //   (c) => c.chainId === chainStore.current.chainId
+    // );
+    // let chainBalance = 0;
 
-    chainAssets?.map((a) => {
-      chainBalance += a.value;
-    });
+    // chainAssets?.map((a) => {
+    //   chainBalance += a.value;
+    // });
 
     return (
       <>
@@ -167,7 +168,11 @@ export const AccountBoxAll: FunctionComponent<{
                 >
                   <OWIcon
                     type="images"
-                    source={{ uri: chainIcon?.Icon }}
+                    source={{
+                      uri:
+                        chainStore.current.stakeCurrency.coinImageUrl ||
+                        unknownToken.coinImageUrl,
+                    }}
                     size={16}
                   />
                 </View>
@@ -184,7 +189,7 @@ export const AccountBoxAll: FunctionComponent<{
               </View>
 
               <Text size={16} weight="600" color={colors["neutral-text-title"]}>
-                ${maskedNumber(chainBalance)}
+                {totalBalanceByChain}
               </Text>
             </View>
             {chainStore.current.chainId === ChainIdEnum.TRON && (

@@ -456,9 +456,6 @@ const TokenItem: FC<{
           </View>
 
           <View style={styles.pl12}>
-            {/*<Text size={16} color={colors['neutral-text-heading']} weight="600">*/}
-            {/*  {item.token.trim(true).maxDecimals(4).toString()}*/}
-            {/*</Text>*/}
             <Text size={16} color={colors["neutral-text-heading"]} weight="600">
               {item.token.currency.coinDenom}
             </Text>
