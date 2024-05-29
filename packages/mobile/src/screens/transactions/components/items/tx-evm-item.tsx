@@ -149,7 +149,7 @@ export const TxEvmItem: FC<{
                   color={
                     new Dec(item.amount).gt(new Dec(0))
                       ? colors["success-text-body"]
-                      : colors["neutral-text-title"]
+                      : colors["error-text-body"]
                   }
                 >
                   {`${

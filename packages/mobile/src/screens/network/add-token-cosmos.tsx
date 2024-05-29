@@ -7,7 +7,7 @@ import { TextInput } from "../../components/input";
 import { useSmartNavigation } from "../../navigation.provider";
 import { useStore } from "../../stores";
 import CheckBox from "react-native-check-box";
-import { CW20Currency, Secret20Currency } from "@owallet/types";
+import { AppCurrency, CW20Currency, Secret20Currency } from "@owallet/types";
 import { observer } from "mobx-react-lite";
 import { showToast } from "@src/utils/helper";
 import { API } from "@src/common/api";
@@ -65,7 +65,7 @@ export const AddTokenCosmosScreen: FunctionComponent<{
     modalStore,
   } = useStore();
   const tokensOf = tokensStore.getTokensOf(selectedChain.chainId);
-
+  const chainInfo = chainStore.getChain(selectedChain.chainId);
   const [loading, setLoading] = useState(false);
   const [coingeckoId, setCoingeckoID] = useState("");
   const [selectedType, setSelectedType] = useState<"cw20">("cw20");
@@ -218,17 +218,19 @@ export const AddTokenCosmosScreen: FunctionComponent<{
     try {
       if (tokenInfo?.decimals != null && tokenInfo.name && tokenInfo.symbol) {
         setLoading(true);
-        const currency: CW20Currency = {
-          type: selectedType,
-          contractAddress: data.contractAddress,
-          coinMinimalDenom: tokenInfo.name,
-          coinDenom: tokenInfo.symbol,
-          coinDecimals: tokenInfo.decimals,
-          coinImageUrl: coingeckoImg,
-          coinGeckoId: coingeckoId,
-        };
+        const currency: AppCurrency[] = [
+          {
+            contractAddress: data.contractAddress,
+            coinMinimalDenom: `${selectedType}:${data.contractAddress}:${tokenInfo.name}`,
+            coinDenom: tokenInfo.symbol,
+            coinDecimals: tokenInfo.decimals,
+            coinImageUrl: coingeckoImg,
+            coinGeckoId: coingeckoId,
+          },
+        ];
         console.log(currency, "currency");
-        await tokensOf.addToken(currency);
+        // await tokensOf.addToken(currency);
+        chainInfo.addCurrencies(...currency);
         addTokenSuccess(currency);
       }
     } catch (err) {

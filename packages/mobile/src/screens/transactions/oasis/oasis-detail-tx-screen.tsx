@@ -151,7 +151,7 @@ export const OasisDetailTx: FunctionComponent = observer((props) => {
             colorAmount={
               item.transactionType === "incoming"
                 ? colors["success-text-body"]
-                : colors["neutral-text-title"]
+                : colors["error-text-body"]
             }
             imageType={
               <View

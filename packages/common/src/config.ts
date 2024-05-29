@@ -133,7 +133,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
           coinGeckoId: "airight",
           coinImageUrl: "https://i.ibb.co/m8mCyMr/airi.png",
         },
-
         {
           type: "cw20",
           coinDenom: "OCH",

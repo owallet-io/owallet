@@ -65,7 +65,8 @@ export const useMultipleAssets = (
   chainId: string,
   isAllNetwork: boolean,
   appInit: AppInit,
-  isRefreshing: boolean
+  isRefreshing: boolean,
+  bech32Address
 ): IMultipleAsset => {
   const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
   const [isLoading, setIsLoading] = useState(false);
@@ -77,7 +78,7 @@ export const useMultipleAssets = (
     InteractionManager.runAfterInteractions(() => {
       init();
     });
-  }, []);
+  }, [bech32Address]);
   useEffect(() => {
     if (!isRefreshing) return;
     InteractionManager.runAfterInteractions(() => {

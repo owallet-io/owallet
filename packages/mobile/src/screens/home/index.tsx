@@ -47,6 +47,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   } = useStore();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
+  const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const { totalPriceBalance, dataTokens, dataTokensByChain, isLoading } =
     useMultipleAssets(
       accountStore,
@@ -55,12 +56,14 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       chainStore.current.chainId,
       appInitStore.getInitApp.isAllNetworks,
       appInitStore,
-      refreshing
+      refreshing,
+      accountOrai.bech32Address
     );
   console.log(appInitStore.getMultipleAssets, "appInitStore.getMultipleAssets");
   const currentChain = chainStore.current;
   const currentChainId = currentChain?.chainId;
   const account = accountStore.getAccount(chainStore.current.chainId);
+
   const address = account.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses,
     false

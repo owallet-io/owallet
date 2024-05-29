@@ -137,7 +137,7 @@ export const BtcDetailTx: FunctionComponent = observer((props) => {
             colorAmount={
               transactionType === "incoming"
                 ? colors["success-text-body"]
-                : colors["neutral-text-title"]
+                : colors["error-text-body"]
             }
             imageType={
               <View

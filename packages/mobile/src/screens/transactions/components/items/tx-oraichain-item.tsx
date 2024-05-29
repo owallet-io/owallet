@@ -141,7 +141,7 @@ export const TxOraichainItem: FC<{
                   color={
                     !isSent
                       ? colors["success-text-body"]
-                      : colors["neutral-text-title"]
+                      : colors["error-text-body"]
                   }
                 >
                   {`${!isSent ? "+" : "-"}${maskedNumber(

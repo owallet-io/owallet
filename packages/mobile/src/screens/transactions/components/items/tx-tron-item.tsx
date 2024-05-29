@@ -139,7 +139,7 @@ export const TxTronItem: FC<{
                   color={
                     item.transactionType === "incoming"
                       ? colors["success-text-body"]
-                      : colors["neutral-text-title"]
+                      : colors["error-text-body"]
                   }
                 >
                   {`${checkInOut}${maskedNumber(amountStr, 6)} ${
