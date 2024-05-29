@@ -67,9 +67,9 @@ export const AddTokenCosmosScreen: FunctionComponent<{
   const tokensOf = tokensStore.getTokensOf(selectedChain.chainId);
 
   const [loading, setLoading] = useState(false);
-  const [coingeckoId, setCoingeckoID] = useState(null);
+  const [coingeckoId, setCoingeckoID] = useState("");
   const [selectedType, setSelectedType] = useState<"cw20">("cw20");
-  const [coingeckoImg, setCoingeckoImg] = useState(null);
+  const [coingeckoImg, setCoingeckoImg] = useState("");
 
   const form = useForm<FormData>({
     defaultValues: {
@@ -227,6 +227,7 @@ export const AddTokenCosmosScreen: FunctionComponent<{
           coinImageUrl: coingeckoImg,
           coinGeckoId: coingeckoId,
         };
+        console.log(currency, "currency");
         await tokensOf.addToken(currency);
         addTokenSuccess(currency);
       }

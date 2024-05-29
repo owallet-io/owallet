@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   Image,
   Clipboard,
+  ActivityIndicator,
 } from "react-native";
 import { Text } from "@src/components/text";
 import { useStore } from "../../stores";
@@ -35,7 +36,8 @@ import { useSimpleTimer } from "@src/hooks";
 export const AccountBoxAll: FunctionComponent<{
   totalPriceBalance: string;
   totalBalanceByChain: string;
-}> = observer(({ totalPriceBalance, totalBalanceByChain }) => {
+  isLoading: boolean;
+}> = observer(({ totalPriceBalance, totalBalanceByChain, isLoading }) => {
   console.log(totalPriceBalance, "totalPriceBalance2");
   const { colors } = useTheme();
   const {
@@ -119,7 +121,15 @@ export const AccountBoxAll: FunctionComponent<{
     return (
       <>
         <Text variant="bigText" style={styles.labelTotalAmount}>
-          {totalPriceBalance}
+          {totalPriceBalance}{" "}
+          {isLoading ? (
+            <ActivityIndicator
+              size={"small"}
+              style={{
+                paddingBottom: 5,
+              }}
+            />
+          ) : null}
         </Text>
         <Text
           style={styles.profit}

@@ -47,7 +47,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   } = useStore();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
-  const { totalPriceBalance, dataTokens, dataTokensByChain } =
+  const { totalPriceBalance, dataTokens, dataTokensByChain, isLoading } =
     useMultipleAssets(
       accountStore,
       priceStore,
@@ -170,7 +170,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
             onRefresh();
             setTimeout(() => {
               setRefreshing(false);
-            }, 2000);
+            }, 500);
           }}
         />
       }
@@ -179,6 +179,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       ref={scrollViewRef}
     >
       <AccountBoxAll
+        isLoading={isLoading}
         totalBalanceByChain={new PricePretty(
           fiatCurrency,
           dataTokensByChain?.[chainStore.current.chainId]?.totalBalance

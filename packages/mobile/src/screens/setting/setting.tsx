@@ -50,24 +50,24 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
 
   const smartNavigation = useSmartNavigation();
 
-  // const _onPressCountryModal = () => {
-  //   modalStore.setOptions({
-  //     bottomSheetModalConfig: {
-  //       enablePanDownToClose: false,
-  //       enableOverDrag: false,
-  //     },
-  //   });
+  const _onPressCountryModal = () => {
+    modalStore.setOptions({
+      bottomSheetModalConfig: {
+        enablePanDownToClose: false,
+        enableOverDrag: false,
+      },
+    });
 
-  //   modalStore.setChildren(
-  //     CountryModal({
-  //       data: currencyItems,
-  //       current: priceStore.defaultVsCurrency,
-  //       priceStore,
-  //       modalStore,
-  //       colors,
-  //     })
-  //   );
-  // };
+    modalStore.setChildren(
+      CountryModal({
+        data: currencyItems,
+        current: priceStore.defaultVsCurrency,
+        priceStore,
+        modalStore,
+        colors,
+      })
+    );
+  };
 
   const onRatingApp = () => {
     const options = {
@@ -219,33 +219,32 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
           <SettingRemoveAccountItem />
         </OWCard>
 
-        {/* <BasicSettingItem
-          icon="tdesign_money"
-          paragraph="Currency"
-          onPress={_onPressCountryModal}
-          right={
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              {renderFlag(priceStore.defaultVsCurrency, 20)}
-              <OWText
-                style={{ paddingHorizontal: 8 }}
-                weight="600"
-                color={colors["neutral-text-body"]}
-              >
-                {priceStore.defaultVsCurrency.toUpperCase()}
-              </OWText>
-              <OWIcon name="chevron_right" size={16} />
-            </View>
-          }
-        /> */}
-
         <OWCard style={{ marginBottom: 16 }} type="normal">
           <SettingSwitchModeItem />
+          <BasicSettingItem
+            icon="tdesign_money"
+            paragraph="Currency"
+            onPress={_onPressCountryModal}
+            right={
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {renderFlag(priceStore.defaultVsCurrency, 20)}
+                <OWText
+                  style={{ paddingHorizontal: 8 }}
+                  weight="600"
+                  color={colors["neutral-text-body"]}
+                >
+                  {priceStore.defaultVsCurrency.toUpperCase()}
+                </OWText>
+                <OWIcon name="chevron_right" size={16} />
+              </View>
+            }
+          />
           <BasicSettingItem
             icon="tdesign_book"
             paragraph="Address book"

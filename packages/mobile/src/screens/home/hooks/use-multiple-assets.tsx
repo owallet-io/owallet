@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { InteractionManager } from "react-native";
 import {
   addressToPublicKey,
@@ -68,7 +68,7 @@ export const useMultipleAssets = (
   isRefreshing: boolean
 ): IMultipleAsset => {
   const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
-
+  const [isLoading, setIsLoading] = useState(false);
   if (!fiatCurrency) return;
 
   const tokensByChainId: Record<ChainIdEnum, ViewTokenData> = {};
@@ -86,6 +86,7 @@ export const useMultipleAssets = (
   }, [isRefreshing]);
 
   const init = async () => {
+    setIsLoading(true);
     try {
       const allChain = Array.from(hugeQueriesStore.getAllChainMap.values());
       const allBalancePromises = allChain.map(
@@ -144,6 +145,8 @@ export const useMultipleAssets = (
       console.log("done");
     } catch (error) {
       console.error("Initialization error:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
   const getBalancessErc20 = async (address, chainInfo: ChainInfo) => {
@@ -517,5 +520,6 @@ export const useMultipleAssets = (
             []),
         ]),
     dataTokensByChain: appInit.getMultipleAssets.dataTokensByChain,
+    isLoading: isLoading,
   };
 };
