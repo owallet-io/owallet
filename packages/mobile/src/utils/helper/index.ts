@@ -139,6 +139,41 @@ export const showToast = ({ ...params }: MessageOptions) => {
   });
   return;
 };
+export function splitAndSortChains(data) {
+  // Initialize arrays for test and non-test chains
+  const testChains = [];
+  const mainChains = [];
+
+  // Iterate through each key in the data object
+  for (const chainId in data) {
+    const chain = data[chainId];
+    const chainName = chain.chainInfo.chainName;
+    const chainImage = chain.chainInfo.chainImage;
+    const totalBalance = Number(chain.totalBalance || 0);
+
+    // Create an object for easy sorting and storing
+    const chainData = {
+      chainId: chainId,
+      chainName: chainName,
+      chainImage: chainImage,
+      totalBalance: totalBalance,
+    };
+
+    // Check if chainName contains "test" and push to respective array
+    if (chainName.toLowerCase().includes("test")) {
+      testChains.push(chainData);
+    } else {
+      mainChains.push(chainData);
+    }
+  }
+
+  // Sort arrays by totalBalance in descending order
+  testChains.sort((a, b) => b.totalBalance - a.totalBalance);
+  mainChains.sort((a, b) => b.totalBalance - a.totalBalance);
+
+  return { testChains, mainChains };
+}
+
 export const handleDeepLink = async ({ url }) => {
   if (url) {
     const path = url.replace(SCHEME_ANDROID, "").replace(SCHEME_IOS, "");

@@ -6,6 +6,7 @@ import {
   showToast,
   getTokenInfos,
   maskedNumber,
+  splitAndSortChains,
 } from "../../../utils/helper";
 import { VectorCharacter } from "../../../components/vector-character";
 import { Text } from "@src/components/text";
@@ -31,7 +32,7 @@ import { RadioButton } from "react-native-radio-buttons-group";
 import { ChainInfoWithEmbed } from "@owallet/background";
 import { ChainInfoInner } from "@owallet/stores";
 import { initPrice } from "@src/screens/home/hooks/use-multiple-assets";
-import { ViewToken } from "@src/stores/huge-queries";
+import { ViewRawToken, ViewToken } from "@src/stores/huge-queries";
 import { PricePretty } from "@owallet/unit";
 
 export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
@@ -136,11 +137,7 @@ export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
   const { totalPriceBalance, dataTokens, dataTokensByChain } =
     appInitStore.getMultipleAssets;
   const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
-  const _renderItem = ({
-    item,
-  }: {
-    item: ChainInfoInner<ChainInfoWithEmbed>;
-  }) => {
+  const _renderItem = ({ item }: { item }) => {
     let selected =
       item?.chainId === chainStore.current.chainId &&
       !appInitStore.getInitApp.isAllNetworks;
@@ -188,7 +185,7 @@ export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
             <OWIcon
               type="images"
               source={{
-                uri: item.stakeCurrency?.coinImageUrl || oraiIcon,
+                uri: item.chainImage || oraiIcon,
               }}
               size={28}
             />
@@ -238,21 +235,14 @@ export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
       </TouchableOpacity>
     );
   };
-  const sortChainsByPrice = (tokens: ViewToken[]) => {
-    return tokens.sort(
-      (a, b) =>
-        Number(b.price.toDec().toString()) - Number(a.price.toDec().toString())
-    );
-  };
-  const dataTestnet = chainStore.chainInfosInUI.filter(
-    (c) =>
-      c.chainName.toLowerCase().includes("test") &&
-      c.chainName.toLowerCase().includes(keyword.toLowerCase())
+  const { testChains, mainChains } = splitAndSortChains({
+    ...(appInitStore.getMultipleAssets.dataTokensByChain || {}),
+  });
+  const dataTestnet = testChains.filter((c) =>
+    c.chainName.toLowerCase().includes(keyword.toLowerCase())
   );
-  const dataMainnet = chainStore.chainInfosInUI.filter(
-    (c) =>
-      !c.chainName.toLowerCase().includes("test") &&
-      c.chainName.toLowerCase().includes(keyword.toLowerCase())
+  const dataMainnet = mainChains.filter((c) =>
+    c.chainName.toLowerCase().includes(keyword.toLowerCase())
   );
   const dataChains = activeTab === "testnet" ? dataTestnet : dataMainnet;
 

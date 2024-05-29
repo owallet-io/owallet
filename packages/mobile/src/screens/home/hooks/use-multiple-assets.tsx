@@ -95,7 +95,11 @@ export const useMultipleAssets = (
     const price = balance.currency?.coinGeckoId
       ? priceStore.calculatePrice(balance)
       : initPrice;
-
+    const rawChainInfo = {
+      chainId: chainInfo.chainId,
+      chainName: chainInfo.chainName,
+      chainImage: chainInfo.stakeCurrency.coinImageUrl,
+    };
     tokensByChainId[chainInfo.chainId] = {
       tokens: [
         ...(tokensByChainId[chainInfo.chainId]?.tokens || []),
@@ -104,11 +108,7 @@ export const useMultipleAssets = (
             currency: balance.currency,
             amount: amount,
           },
-          chainInfo: {
-            chainId: chainInfo.chainId,
-            chainName: chainInfo.chainName,
-            chainImage: chainInfo.stakeCurrency.coinImageUrl,
-          },
+          chainInfo: rawChainInfo,
           price: price.toDec().toString(),
         },
       ],
@@ -121,20 +121,8 @@ export const useMultipleAssets = (
         .add(price)
         .toDec()
         .toString(),
+      chainInfo: rawChainInfo,
     };
-  };
-  const fetchPrice = async (currencies: Currency[]) => {
-    try {
-      if (currencies?.length > 0) {
-        await Promise.all(
-          currencies.map(async (currency: Currency) => {
-            await priceStore.waitPrice(currency.coinGeckoId);
-          })
-        );
-      }
-    } catch (error) {
-      console.log(error, "fetchPrice");
-    }
   };
   const init = async () => {
     setIsLoading(true);
@@ -249,7 +237,6 @@ export const useMultipleAssets = (
   };
 
   const getBalanceNativeEvm = async (address, chainInfo: ChainInfo) => {
-    await fetchPrice([chainInfo.stakeCurrency]);
     const web3 = new Web3(getRpcByChainId(chainInfo, chainInfo.chainId));
     const ethBalance = await web3.eth.getBalance(address);
     if (ethBalance) {
@@ -258,7 +245,6 @@ export const useMultipleAssets = (
   };
 
   const getBalanceBtc = async (address, chainInfo: ChainInfo) => {
-    await fetchPrice(chainInfo.currencies);
     const client = axios.create({ baseURL: chainInfo.rest });
     const { data } = await client.get(`/address/${address}/utxo`);
     if (data) {
@@ -268,7 +254,6 @@ export const useMultipleAssets = (
   };
 
   const getBalanceNativeCosmos = async (address, chainInfo: ChainInfo) => {
-    await fetchPrice(chainInfo.currencies);
     const client = axios.create({ baseURL: chainInfo.rest });
     const { data } = await client.get(
       `/cosmos/bank/v1beta1/balances/${address}?pagination.limit=1000`
@@ -287,7 +272,6 @@ export const useMultipleAssets = (
       ChainIdEnum.Oraichain
     );
     const chainInfo = oraiNetwork.chainInfo;
-    await fetchPrice(chainInfo.currencies);
     const mergedMaps = chainInfo.currencyMap;
     const data = toBinary({
       balance: {
@@ -335,7 +319,6 @@ export const useMultipleAssets = (
   };
 
   const getBalanceOasis = async (address, chainInfo: ChainInfo) => {
-    await fetchPrice(chainInfo.currencies);
     const nic = getOasisNic(chainInfo.raw.grpc);
     const publicKey = await addressToPublicKey(address);
     const account = await nic.stakingAccount({ owner: publicKey, height: 0 });
@@ -346,7 +329,6 @@ export const useMultipleAssets = (
   };
 
   const getBalanceErc20 = async (address, chainInfo: ChainInfo) => {
-    await fetchPrice(chainInfo.currencies);
     const multicall = new Multicall({
       nodeUrl: getRpcByChainId(chainInfo, chainInfo.chainId),
       multicallCustomContractAddress: null,
@@ -378,7 +360,10 @@ export const useMultipleAssets = (
       pushTokenQueue(token, Number(amount), chainInfo);
     });
   };
-
+  console.log(
+    appInit.getMultipleAssets.dataTokensByChain,
+    "appInit.getMultipleAssets.dataTokensByChain"
+  );
   return {
     totalPriceBalance: appInit.getMultipleAssets.totalPriceBalance,
     dataTokens: isAllNetwork

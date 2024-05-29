@@ -46,6 +46,7 @@ export interface ViewRawToken {
 export interface ViewTokenData {
   tokens: ViewRawToken[];
   totalBalance: string;
+  chainInfo: RawChainInfo;
 }
 
 interface ViewChainAddress {
