@@ -32,6 +32,7 @@ import { navigate } from "@src/router/root";
 import { LoadingSpinner } from "@src/components/spinner";
 import OWText from "@src/components/text/ow-text";
 import { useSimpleTimer } from "@src/hooks";
+import LottieView from "lottie-react-native";
 
 export const AccountBoxAll: FunctionComponent<{
   totalPriceBalance: string;
@@ -120,17 +121,37 @@ export const AccountBoxAll: FunctionComponent<{
   const renderTotalBalance = () => {
     return (
       <>
-        <Text variant="bigText" style={styles.labelTotalAmount}>
-          {totalPriceBalance}{" "}
+        <View
+          style={{
+            alignItems: "center",
+            flexDirection: "row",
+          }}
+        >
+          <Text variant="bigText" style={styles.labelTotalAmount}>
+            {totalPriceBalance}
+          </Text>
           {isLoading ? (
-            <ActivityIndicator
-              size={"small"}
+            <View
               style={{
-                paddingBottom: 5,
+                maxHeight: 30,
               }}
-            />
+            >
+              <LottieView
+                source={require("@src/assets/animations/loading.json")}
+                resizeMode={"contain"}
+                style={{
+                  width: 70,
+                  height: 70,
+                  marginLeft: -10,
+                  marginTop: -20,
+                }}
+                autoPlay
+                loop
+              />
+            </View>
           ) : null}
-        </Text>
+        </View>
+
         <Text
           style={styles.profit}
           color={colors[profit < 0 ? "error-text-body" : "success-text-body"]}
