@@ -53,6 +53,7 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
     keyRingStore,
     priceStore,
     modalStore,
+    appInitStore,
   } = useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
@@ -319,8 +320,12 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
     if (sendConfigs.feeConfig.feeCurrency && !sendConfigs.feeConfig.fee) {
       sendConfigs.feeConfig.setFeeType("average");
     }
+    if (appInitStore.getInitApp.feeOption) {
+      sendConfigs.feeConfig.setFeeType(appInitStore.getInitApp.feeOption);
+    }
     return;
-  }, [sendConfigs.feeConfig]);
+  }, [sendConfigs.feeConfig, appInitStore.getInitApp.feeOption]);
+
   const isReadyBalance = queries.queryBalances
     .getQueryBech32Address(address)
     .getBalanceFromCurrency(sendConfigs.amountConfig.sendCurrency).isReady;

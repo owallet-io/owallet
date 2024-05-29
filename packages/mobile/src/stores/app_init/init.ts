@@ -13,6 +13,7 @@ export class AppInit {
     date_updated: null | number;
     theme: "dark" | "light";
     visibleTabBar?: string;
+    feeOption?: "low" | "average" | "high";
     prices: CoinGeckoPrices<string>;
     yesterdayPriceFeed: Array<any>;
     balances: object;
@@ -29,6 +30,7 @@ export class AppInit {
       passcodeType: "alphabet",
       date_updated: null,
       theme: "light",
+      feeOption: "average",
       isAllNetworks: false,
       prices: {},
       balances: {},
@@ -50,6 +52,11 @@ export class AppInit {
   @action
   updateInitApp() {
     this.initApp = { ...this.initApp, status: false };
+  }
+
+  @action
+  updateFeeOption(fee) {
+    this.initApp = { ...this.initApp, feeOption: fee };
   }
 
   @action

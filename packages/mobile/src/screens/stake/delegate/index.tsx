@@ -57,6 +57,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     priceStore,
     modalStore,
     keyRingStore,
+    appInitStore,
   } = useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
@@ -102,6 +103,15 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   useEffect(() => {
     sendConfigs.recipientConfig.setRawRecipient(validatorAddress);
   }, [sendConfigs.recipientConfig, validatorAddress]);
+
+  useEffect(() => {
+    if (sendConfigs.feeConfig.feeCurrency && !sendConfigs.feeConfig.fee) {
+      sendConfigs.feeConfig.setFeeType("average");
+    }
+    if (appInitStore.getInitApp.feeOption) {
+      sendConfigs.feeConfig.setFeeType(appInitStore.getInitApp.feeOption);
+    }
+  }, [sendConfigs.feeConfig, appInitStore.getInitApp.feeOption]);
 
   const sendConfigError =
     sendConfigs.recipientConfig.getError() ??

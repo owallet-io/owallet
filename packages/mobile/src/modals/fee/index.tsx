@@ -50,7 +50,15 @@ export const FeeModal: FunctionComponent<{
 }> = ({ sendConfigs, vertical }) => {
   const [customGas, setCustomGas] = useState(false);
   const { colors } = useTheme();
-  const { modalStore, chainStore } = useStore();
+  const { modalStore, chainStore, appInitStore } = useStore();
+
+  console.log("is it get herereee");
+
+  useEffect(() => {
+    if (appInitStore.getInitApp.feeOption) {
+      sendConfigs.feeConfig.setFeeType(appInitStore.getInitApp.feeOption);
+    }
+  }, [appInitStore.getInitApp.feeOption]);
 
   return (
     <WrapViewModal

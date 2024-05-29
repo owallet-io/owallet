@@ -23,12 +23,7 @@ import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { View, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 import { OWButton } from "../../../components/button";
-import {
-  AmountInput,
-  FeeButtons,
-  MemoInput,
-  TextInput,
-} from "../../../components/input";
+
 import { ValidatorThumbnail } from "../../../components/thumbnail";
 import { useSmartNavigation } from "../../../navigation.provider";
 import { useStore } from "../../../stores";
@@ -58,6 +53,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
     queriesStore,
     analyticsStore,
     priceStore,
+    appInitStore,
   } = useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
@@ -127,8 +123,10 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
     if (sendConfigs.feeConfig.feeCurrency && !sendConfigs.feeConfig.fee) {
       sendConfigs.feeConfig.setFeeType("average");
     }
-    return;
-  }, [sendConfigs.feeConfig]);
+    if (appInitStore.getInitApp.feeOption) {
+      sendConfigs.feeConfig.setFeeType(appInitStore.getInitApp.feeOption);
+    }
+  }, [sendConfigs.feeConfig, appInitStore.getInitApp.feeOption]);
   const isDisable = !account.isReadyToSendMsgs || !txStateIsValid;
   const _onPressFee = () => {
     modalStore.setOptions({

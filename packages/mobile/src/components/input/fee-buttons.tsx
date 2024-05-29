@@ -100,7 +100,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
     feeConfig,
     vertical,
   }) => {
-    const { priceStore, chainStore } = useStore();
+    const { priceStore, chainStore, appInitStore } = useStore();
     const style = useStyle();
     const { colors } = useTheme();
     const styles = styling(colors);
@@ -109,7 +109,10 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
       if (feeConfig.feeCurrency && !feeConfig.fee) {
         feeConfig.setFeeType("average");
       }
-    }, [feeConfig]);
+      if (appInitStore.getInitApp.feeOption) {
+        feeConfig.setFeeType(appInitStore.getInitApp.feeOption);
+      }
+    }, [feeConfig, appInitStore.getInitApp.feeOption]);
 
     // For chains without feeCurrencies, OWallet assumes tx doesn’t need to include information about the fee and the fee button does not have to be rendered.
     // The architecture is designed so that fee button is not rendered if the parental component doesn’t have a feeCurrency.
@@ -361,6 +364,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
           feeConfig.feeType === "low",
           () => {
             feeConfig.setFeeType("low");
+            appInitStore.updateFeeOption("low");
           }
         )}
         {renderVerticalButton(
@@ -370,6 +374,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
           feeConfig.feeType === "average",
           () => {
             feeConfig.setFeeType("average");
+            appInitStore.updateFeeOption("average");
           }
         )}
         {renderVerticalButton(
@@ -379,6 +384,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
           feeConfig.feeType === "high",
           () => {
             feeConfig.setFeeType("high");
+            appInitStore.updateFeeOption("high");
           }
         )}
       </View>
@@ -416,6 +422,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
             feeConfig.feeType === "low",
             () => {
               feeConfig.setFeeType("low");
+              appInitStore.updateFeeOption("low");
             }
           )}
           {renderButton(
@@ -425,6 +432,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
             feeConfig.feeType === "average",
             () => {
               feeConfig.setFeeType("average");
+              appInitStore.updateFeeOption("average");
             }
           )}
           {renderButton(
@@ -434,6 +442,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
             feeConfig.feeType === "high",
             () => {
               feeConfig.setFeeType("high");
+              appInitStore.updateFeeOption("high");
             }
           )}
         </View>

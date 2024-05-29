@@ -70,6 +70,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
     analyticsStore,
     modalStore,
     priceStore,
+    appInitStore,
   } = useStore();
 
   const styles = styling(colors);
@@ -137,6 +138,15 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
   const stakedDst = queries.cosmos.queryDelegations
     .getQueryBech32Address(account.bech32Address)
     .getDelegationTo(dstValidatorAddress);
+
+  useEffect(() => {
+    if (sendConfigs.feeConfig.feeCurrency && !sendConfigs.feeConfig.fee) {
+      sendConfigs.feeConfig.setFeeType("average");
+    }
+    if (appInitStore.getInitApp.feeOption) {
+      sendConfigs.feeConfig.setFeeType(appInitStore.getInitApp.feeOption);
+    }
+  }, [sendConfigs.feeConfig, appInitStore.getInitApp.feeOption]);
 
   const sendConfigError =
     sendConfigs.recipientConfig.getError() ??
