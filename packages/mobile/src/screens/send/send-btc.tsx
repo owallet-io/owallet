@@ -46,14 +46,11 @@ import OWText from "@src/components/text/ow-text";
 import { NewAmountInput } from "@src/components/input/amount-input";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { DownArrowIcon } from "@src/components/icon";
-import { CoinPretty, Dec, Int } from "@owallet/unit";
+import { CoinPretty, Dec } from "@owallet/unit";
 import { FeeModal } from "@src/modals/fee";
 import { ChainIdEnum } from "@oraichain/oraidex-common";
-import ValidatorsList from "@src/screens/stake/redelegate/validators-list";
-import { ValidatorThumbnail } from "@src/components/thumbnail";
 import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
 import OWFlatList from "@src/components/page/ow-flat-list";
-import { VectorCharacter } from "@src/components/vector-character";
 import { Text } from "@src/components/text";
 import { RadioButton } from "react-native-radio-buttons-group";
 import { AddressBtcType } from "@owallet/types";
@@ -67,7 +64,8 @@ const dataTypeBtc = [
   },
 ];
 export const ModalBtcTypeList = observer(() => {
-  const { accountStore, chainStore, modalStore, keyRingStore } = useStore();
+  const { accountStore, chainStore, modalStore, keyRingStore, appInitStore } =
+    useStore();
   const accountInfo = accountStore.getAccount(chainStore.current.chainId);
   const bip44Option = useBIP44Option();
   const { coinType, chainId, bip44 } = chainStore.current;
@@ -387,8 +385,11 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
     if (sendConfigs.feeConfig.feeCurrency && !sendConfigs.feeConfig.fee) {
       sendConfigs.feeConfig.setFeeType("average");
     }
+    if (appInitStore.getInitApp.feeOption) {
+      sendConfigs.feeConfig.setFeeType(appInitStore.getInitApp.feeOption);
+    }
     return;
-  }, [sendConfigs.feeConfig]);
+  }, [sendConfigs.feeConfig, appInitStore.getInitApp.feeOption]);
   const amount = new CoinPretty(
     sendConfigs.amountConfig.sendCurrency,
     new Dec(sendConfigs.amountConfig.getAmountPrimitive().amount)

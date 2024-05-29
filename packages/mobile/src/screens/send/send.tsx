@@ -52,6 +52,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
     modalStore,
     priceStore,
     universalSwapStore,
+    appInitStore,
   } = useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
@@ -142,6 +143,15 @@ export const NewSendScreen: FunctionComponent = observer(() => {
       sendConfigs.recipientConfig.setRawRecipient(route.params.recipient);
     }
   }, [route?.params?.recipient, sendConfigs.recipientConfig]);
+
+  useEffect(() => {
+    if (sendConfigs.feeConfig.feeCurrency && !sendConfigs.feeConfig.fee) {
+      sendConfigs.feeConfig.setFeeType("average");
+    }
+    if (appInitStore.getInitApp.feeOption) {
+      sendConfigs.feeConfig.setFeeType(appInitStore.getInitApp.feeOption);
+    }
+  }, [sendConfigs.feeConfig, appInitStore.getInitApp.feeOption]);
 
   const sendConfigError =
     sendConfigs.recipientConfig.getError() ??
