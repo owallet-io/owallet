@@ -133,6 +133,8 @@ async function loadTokens(
       .map(getTokensFromNetwork)
   );
 
+  console.log("oraichainTokens loadCw20Balance", oraichainTokens);
+
   const tokens = [otherChainTokens, oraichainTokens];
   const flattenTokens = flatten(tokens);
   const customEvmTokens = uniqBy(
@@ -334,8 +336,11 @@ async function loadCw20Balance(
 ) {
   if (!address) return;
   const chains = customChainInfos ?? oraichainTokens;
+
+  console.log("chains loadCw20Balance", chains);
+
   // get all cw20 token contract
-  let cw20Tokens = oraichainTokens.filter((t) => t.contractAddress);
+  let cw20Tokens = chains.filter((t) => t.contractAddress);
 
   // if (tokenReload) {
   //   tokenReload.map((token) => {
@@ -346,6 +351,8 @@ async function loadCw20Balance(
   //     }
   //   });
   // }
+
+  console.log("cw20Tokens loadCw20Balance", cw20Tokens);
 
   const data = toBinary({
     balance: { address },
@@ -380,6 +387,8 @@ async function loadCw20Balance(
         return [t.denom, amount];
       })
     );
+
+    console.log("amountDetails loadCw20Balance", amountDetails);
 
     universalSwapStore.updateAmounts(amountDetails);
   } catch (err) {
