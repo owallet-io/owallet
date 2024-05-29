@@ -27,7 +27,7 @@ import {
   ViewToken,
   ViewTokenData,
 } from "@src/stores/huge-queries";
-import { ChainInfo } from "@owallet/types";
+import { AppCurrency, ChainInfo } from "@owallet/types";
 import {
   AccountStore,
   AccountWithAll,
@@ -56,6 +56,7 @@ export interface IMultipleAsset {
   totalPriceBalance: string;
   dataTokens: ViewRawToken[];
   dataTokensByChain: Record<ChainIdEnum, ViewTokenData>;
+  isLoading?: boolean;
 }
 
 export const useMultipleAssets = (
@@ -85,7 +86,43 @@ export const useMultipleAssets = (
       init();
     });
   }, [isRefreshing]);
+  const pushTokenQueue = (
+    token: AppCurrency,
+    amount: string | number,
+    chainInfo: ChainInfo
+  ) => {
+    const balance = new CoinPretty(token, amount);
+    const price = balance.currency.coinGeckoId
+      ? priceStore.calculatePrice(balance)
+      : initPrice;
 
+    tokensByChainId[chainInfo.chainId] = {
+      tokens: [
+        ...(tokensByChainId[chainInfo.chainId]?.tokens || []),
+        {
+          token: {
+            currency: balance.currency,
+            amount: amount,
+          },
+          chainInfo: {
+            chainId: chainInfo.chainId,
+            chainName: chainInfo.chainName,
+            chainImage: chainInfo.stakeCurrency.coinImageUrl,
+          },
+          price: price.toDec().toString(),
+        },
+      ],
+      totalBalance: (
+        new PricePretty(
+          fiatCurrency,
+          tokensByChainId[chainInfo.chainId]?.totalBalance
+        ) || initPrice
+      )
+        .add(price)
+        .toDec()
+        .toString(),
+    };
+  };
   const init = async () => {
     setIsLoading(true);
     try {
@@ -117,7 +154,7 @@ export const useMultipleAssets = (
         }
       );
 
-      const allData = await Promise.allSettled(allBalancePromises);
+      await Promise.all(allBalancePromises);
       let overallTotalBalance = "0";
       let allTokens: ViewRawToken[] = [];
       // Loop through each key in the data object
@@ -185,14 +222,12 @@ export const useMultipleAssets = (
                 },
               ];
               chainInfo.addCurrencies(...infoToken);
-              console.log(data, "res22");
             }
           } catch (e) {
             console.log(e, "E2");
           }
         })
       );
-      console.log(res.result, "resss");
     } catch (e) {
       console.log(e, "e1");
     }
@@ -204,40 +239,8 @@ export const useMultipleAssets = (
   const getBalanceNativeEvm = async (address, chainInfo: ChainInfo) => {
     const web3 = new Web3(getRpcByChainId(chainInfo, chainInfo.chainId));
     const ethBalance = await web3.eth.getBalance(address);
-    if (ethBalance) {
-      const balance = new CoinPretty(
-        chainInfo.stakeCurrency,
-        Number(ethBalance)
-      );
-
-      const price = priceStore.calculatePrice(balance);
-      tokensByChainId[chainInfo.chainId] = {
-        tokens: [
-          ...(tokensByChainId[chainInfo.chainId]?.tokens || []),
-          {
-            token: {
-              currency: balance.currency,
-              amount: Number(ethBalance),
-            },
-            chainInfo: {
-              chainId: chainInfo.chainId,
-              chainName: chainInfo.chainName,
-              chainImage: chainInfo.stakeCurrency.coinImageUrl,
-            },
-            price: price.toDec().toString(),
-          },
-        ],
-        totalBalance: (
-          new PricePretty(
-            fiatCurrency,
-            tokensByChainId[chainInfo.chainId]?.totalBalance
-          ) || initPrice
-        )
-          .add(price)
-          .toDec()
-          .toString(),
-      };
-    }
+    if (ethBalance)
+      pushTokenQueue(chainInfo.stakeCurrency, Number(ethBalance), chainInfo);
   };
 
   const getBalanceBtc = async (address, chainInfo: ChainInfo) => {
@@ -245,34 +248,7 @@ export const useMultipleAssets = (
     const { data } = await client.get(`/address/${address}/utxo`);
     if (data) {
       const totalBtc = data.reduce((acc, curr) => acc + curr.value, 0);
-      const balance = new CoinPretty(chainInfo.stakeCurrency, totalBtc);
-      const price = await priceStore.waitCalculatePrice(balance);
-      tokensByChainId[chainInfo.chainId] = {
-        tokens: [
-          ...(tokensByChainId[chainInfo.chainId]?.tokens || []),
-          {
-            token: {
-              currency: balance.currency,
-              amount: totalBtc,
-            },
-            chainInfo: {
-              chainId: chainInfo.chainId,
-              chainName: chainInfo.chainName,
-              chainImage: chainInfo.stakeCurrency.coinImageUrl,
-            },
-            price: price.toDec().toString(),
-          },
-        ],
-        totalBalance: (
-          new PricePretty(
-            fiatCurrency,
-            tokensByChainId[chainInfo.chainId]?.totalBalance
-          ) || initPrice
-        )
-          .add(price)
-          .toDec()
-          .toString(),
-      };
+      pushTokenQueue(chainInfo.stakeCurrency, totalBtc, chainInfo);
     }
   };
 
@@ -286,45 +262,8 @@ export const useMultipleAssets = (
     data.balances.forEach(({ denom, amount }) => {
       const token = mergedMaps.get(denom);
       if (token) {
-        const balance = new CoinPretty(token, amount);
-        const price = priceStore.calculatePrice(balance);
-
-        tokensByChainId[chainInfo.chainId] = {
-          tokens: [
-            ...(tokensByChainId[chainInfo.chainId]?.tokens || []),
-            {
-              token: {
-                currency: balance.currency,
-                amount: amount,
-              },
-              chainInfo: {
-                chainId: chainInfo.chainId,
-                chainName: chainInfo.chainName,
-                chainImage: chainInfo.stakeCurrency.coinImageUrl,
-              },
-              price: price.toDec().toString(),
-            },
-          ],
-          totalBalance: (
-            new PricePretty(
-              fiatCurrency,
-              tokensByChainId[chainInfo.chainId]?.totalBalance
-            ) || initPrice
-          )
-            .add(price)
-            .toDec()
-            .toString(),
-        };
+        pushTokenQueue(token, amount, chainInfo);
       }
-      // else
-
-      // {
-      //   console.log(denom,"denom not token");
-      //   const url =`${urlTxHistory}v1/token-info/Oraichain/orai10ldgzued6zjp0mkqwsv2mux3ml50l97c74x8sg`;
-      //   console.log(url,"url");
-      //   const res = await fetchRetry(url);
-      //   console.log(res,"Ress");
-      // }
     });
   };
 
@@ -370,37 +309,7 @@ export const useMultipleAssets = (
             res.return_data[ind].data
           ) as OraiswapTokenTypes.BalanceResponse;
           const token = mergedMaps.get(t.coinMinimalDenom);
-
-          if (token) {
-            const balance = new CoinPretty(token, balanceRes.balance);
-            const price = priceStore.calculatePrice(balance);
-            tokensByChainId[chainInfo.chainId] = {
-              tokens: [
-                ...(tokensByChainId[chainInfo.chainId]?.tokens || []),
-                {
-                  token: {
-                    currency: balance.currency,
-                    amount: balanceRes.balance,
-                  },
-                  chainInfo: {
-                    chainId: chainInfo.chainId,
-                    chainName: chainInfo.chainName,
-                    chainImage: chainInfo.stakeCurrency.coinImageUrl,
-                  },
-                  price: price.toDec().toString(),
-                },
-              ],
-              totalBalance: (
-                new PricePretty(
-                  fiatCurrency,
-                  tokensByChainId[chainInfo.chainId]?.totalBalance
-                ) || initPrice
-              )
-                .add(price)
-                .toDec()
-                .toString(),
-            };
-          }
+          if (token) pushTokenQueue(token, balanceRes.balance, chainInfo);
         }
       });
     } catch (error) {
@@ -413,39 +322,8 @@ export const useMultipleAssets = (
     const publicKey = await addressToPublicKey(address);
     const account = await nic.stakingAccount({ owner: publicKey, height: 0 });
     const grpcBalance = parseRpcBalance(account);
-    if (grpcBalance) {
-      const balance = new CoinPretty(
-        chainInfo.stakeCurrency,
-        grpcBalance.available
-      );
-      const price = await priceStore.waitCalculatePrice(balance);
-      tokensByChainId[chainInfo.chainId] = {
-        tokens: [
-          ...(tokensByChainId[chainInfo.chainId]?.tokens || []),
-          {
-            token: {
-              currency: balance.currency,
-              amount: grpcBalance.available,
-            },
-            chainInfo: {
-              chainId: chainInfo.chainId,
-              chainName: chainInfo.chainName,
-              chainImage: chainInfo.stakeCurrency.coinImageUrl,
-            },
-            price: price.toDec().toString(),
-          },
-        ],
-        totalBalance: (
-          new PricePretty(
-            fiatCurrency,
-            tokensByChainId[chainInfo.chainId]?.totalBalance
-          ) || initPrice
-        )
-          .add(price)
-          .toDec()
-          .toString(),
-      };
-    }
+    if (grpcBalance)
+      pushTokenQueue(chainInfo.stakeCurrency, grpcBalance.available, chainInfo);
   };
 
   const getBalanceErc20 = async (address, chainInfo: ChainInfo) => {
@@ -477,41 +355,10 @@ export const useMultipleAssets = (
       const amount =
         results.results[token.coinDenom].callsReturnContext[0].returnValues[0]
           .hex;
-      const balance = new CoinPretty(token, Number(amount));
-      const price = priceStore.calculatePrice(balance);
-
-      tokensByChainId[chainInfo.chainId] = {
-        tokens: [
-          ...(tokensByChainId[chainInfo.chainId]?.tokens || []),
-          {
-            token: {
-              currency: balance.currency,
-              amount: Number(amount),
-            },
-            chainInfo: {
-              chainId: chainInfo.chainId,
-              chainName: chainInfo.chainName,
-              chainImage: chainInfo.stakeCurrency.coinImageUrl,
-            },
-            price: price.toDec().toString(),
-          },
-        ],
-        totalBalance: (
-          new PricePretty(
-            fiatCurrency,
-            tokensByChainId[chainInfo.chainId]?.totalBalance
-          ) || initPrice
-        )
-          .add(price)
-          .toDec()
-          .toString(),
-      };
+      pushTokenQueue(token, Number(amount), chainInfo);
     });
   };
-  console.log(
-    appInit.getMultipleAssets.dataTokens,
-    "appInit.getMultipleAssets.dataTokens"
-  );
+
   return {
     totalPriceBalance: appInit.getMultipleAssets.totalPriceBalance,
     dataTokens: isAllNetwork
