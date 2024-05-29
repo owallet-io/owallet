@@ -48,6 +48,17 @@ export const ValidatorList: FunctionComponent = observer(() => {
     );
   const delegations = queryDelegations.delegations;
 
+  const queryReward = queries.cosmos.queryRewards.getQueryBech32Address(
+    account.bech32Address
+  );
+  const stakingReward = queryReward.stakableReward;
+
+  useEffect(() => {
+    if (!stakingReward.toDec().equals(new Dec(0))) {
+      setActive("my");
+    }
+  }, [stakingReward]);
+
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
       (async function get() {
@@ -89,14 +100,16 @@ export const ValidatorList: FunctionComponent = observer(() => {
         (v) => v?.operator_address === v?.operator_address
       );
       const uptime = foundValidator?.uptime;
-      v["uptime"] = uptime;
-      return v;
+      if (v) {
+        v["uptime"] = uptime;
+        return v;
+      }
     });
 
     data.sort((val1, val2) => {
       let condition;
-      let conditionA = Number(val1.uptime) * 10 ** 6 + val1.tokens;
-      let conditionB = Number(val2.uptime) * 10 ** 6 + val2.tokens;
+      let conditionA = Number(val1?.uptime) * 10 ** 6 + val1?.tokens;
+      let conditionB = Number(val2?.uptime) * 10 ** 6 + val2?.tokens;
       condition = conditionA > conditionB;
 
       return condition ? -1 : 1;
