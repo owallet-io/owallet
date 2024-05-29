@@ -27,7 +27,7 @@ import {
   ViewToken,
   ViewTokenData,
 } from "@src/stores/huge-queries";
-import { AppCurrency, ChainInfo } from "@owallet/types";
+import { AppCurrency, ChainInfo, Currency } from "@owallet/types";
 import {
   AccountStore,
   AccountWithAll,
@@ -122,6 +122,19 @@ export const useMultipleAssets = (
         .toDec()
         .toString(),
     };
+  };
+  const fetchPrice = async (currencies: Currency[]) => {
+    try {
+      if (currencies?.length > 0) {
+        await Promise.all(
+          currencies.map(async (currency: Currency) => {
+            await priceStore.waitPrice(currency.coinGeckoId);
+          })
+        );
+      }
+    } catch (error) {
+      console.log(error, "fetchPrice");
+    }
   };
   const init = async () => {
     setIsLoading(true);
@@ -236,6 +249,7 @@ export const useMultipleAssets = (
   };
 
   const getBalanceNativeEvm = async (address, chainInfo: ChainInfo) => {
+    await fetchPrice([chainInfo.stakeCurrency]);
     const web3 = new Web3(getRpcByChainId(chainInfo, chainInfo.chainId));
     const ethBalance = await web3.eth.getBalance(address);
     if (ethBalance) {
@@ -244,6 +258,7 @@ export const useMultipleAssets = (
   };
 
   const getBalanceBtc = async (address, chainInfo: ChainInfo) => {
+    await fetchPrice(chainInfo.currencies);
     const client = axios.create({ baseURL: chainInfo.rest });
     const { data } = await client.get(`/address/${address}/utxo`);
     if (data) {
@@ -253,12 +268,12 @@ export const useMultipleAssets = (
   };
 
   const getBalanceNativeCosmos = async (address, chainInfo: ChainInfo) => {
+    await fetchPrice(chainInfo.currencies);
     const client = axios.create({ baseURL: chainInfo.rest });
     const { data } = await client.get(
       `/cosmos/bank/v1beta1/balances/${address}?pagination.limit=1000`
     );
     const mergedMaps = chainInfo.currencyMap;
-
     data.balances.forEach(({ denom, amount }) => {
       const token = mergedMaps.get(denom);
       if (token) {
@@ -268,13 +283,15 @@ export const useMultipleAssets = (
   };
 
   const getBalanceCW20Oraichain = async () => {
-    const mergedMaps = hugeQueriesStore.getAllChainMap.get(
+    const oraiNetwork = hugeQueriesStore.getAllChainMap.get(
       ChainIdEnum.Oraichain
-    ).chainInfo.currencyMap;
+    );
+    const chainInfo = oraiNetwork.chainInfo;
+    await fetchPrice(chainInfo.currencies);
+    const mergedMaps = chainInfo.currencyMap;
     const data = toBinary({
       balance: {
-        address: hugeQueriesStore.getAllChainMap.get(ChainIdEnum.Oraichain)
-          .address,
+        address: oraiNetwork.address,
       },
     });
 
@@ -289,9 +306,7 @@ export const useMultipleAssets = (
         cwStargate.chainId,
         cwStargate.rpc
       );
-      const chainInfo = hugeQueriesStore.getAllChainMap.get(
-        ChainIdEnum.Oraichain
-      ).chainInfo;
+
       const tokensCw20 = chainInfo.currencies.filter(
         (item) => new DenomHelper(item.coinMinimalDenom).contractAddress
       );
@@ -320,6 +335,7 @@ export const useMultipleAssets = (
   };
 
   const getBalanceOasis = async (address, chainInfo: ChainInfo) => {
+    await fetchPrice(chainInfo.currencies);
     const nic = getOasisNic(chainInfo.raw.grpc);
     const publicKey = await addressToPublicKey(address);
     const account = await nic.stakingAccount({ owner: publicKey, height: 0 });
@@ -330,6 +346,7 @@ export const useMultipleAssets = (
   };
 
   const getBalanceErc20 = async (address, chainInfo: ChainInfo) => {
+    await fetchPrice(chainInfo.currencies);
     const multicall = new Multicall({
       nodeUrl: getRpcByChainId(chainInfo, chainInfo.chainId),
       multicallCustomContractAddress: null,
