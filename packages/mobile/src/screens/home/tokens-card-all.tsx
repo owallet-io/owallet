@@ -30,7 +30,7 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { Text } from "@src/components/text";
 import { SCREENS } from "@src/common/constants";
 import { navigate } from "@src/router/root";
-import { ChainIdEnum } from "@owallet/common";
+import { ChainIdEnum, unknownToken } from "@owallet/common";
 import { API } from "@src/common/api";
 import { chainIcons } from "@oraichain/oraidex-common";
 
@@ -116,167 +116,7 @@ export const TokensCardAll: FunctionComponent<{
       getYesterdayAssets();
     });
   }, [accountOrai.bech32Address]);
-
-  // const handleSaveTokenInfos = async (tokenInfos) => {
-  //   await API.saveTokenInfos(
-  //     {
-  //       address: accountOrai.bech32Address,
-  //       tokesInfos: tokenInfos
-  //     },
-  //     {
-  //       baseURL: 'https://staging.owallet.dev/'
-  //     }
-  //   );
-  // };
-
-  // const tokens = getTokenInfos({
-  //   tokens: universalSwapStore.getAmount,
-  //   prices: appInitStore.getInitApp.prices,
-  //   networkFilter: ''
-  // });
-
-  // useEffect(() => {
-  //   InteractionManager.runAfterInteractions(() => {
-  //     if (universalSwapStore.getLoadStatus.isLoad) {
-  //       handleSaveTokenInfos(tokens);
-  //     }
-  //   });
-  // }, [
-  //   accountOrai.bech32Address,
-  //   tokens,
-  //   universalSwapStore.getLoadStatus.isLoad
-  // ]);
-
   const styles = styling(colors);
-
-  // const renderTokenItem = useCallback(
-  //   ({ item, index }) => {
-  //     // if (more && index > 3) return null;
-  //     //
-  //     // if (item) {
-  //     //   let profit = 0;
-  //     //   let percent = "0";
-  //     //
-  //     //   if (yesterdayAssets && yesterdayAssets.length > 0) {
-  //     //     const yesterday = yesterdayAssets.find(
-  //     //       (obj) => obj["denom"] === item.denom
-  //     //     );
-  //     //     if (yesterday && yesterday.value) {
-  //     //       profit = Number(
-  //     //         Number(item.value - (yesterday.value ?? 0))?.toFixed(2) ?? 0
-  //     //       );
-  //     //       percent = Number((profit / yesterday.value) * 100 ?? 0).toFixed(2);
-  //     //     }
-  //     //   }
-  //     //
-  //     //   let chainIcon = chainIcons.find((c) => c.chainId === item.chainId);
-  //     //   let tokenIcon = item.icon;
-  //     //
-  //     //   // Hardcode for Neutaro because oraidex-common does not have icon yet
-  //     //   if (item.chain.toLowerCase().includes("neutaro")) {
-  //     //     chainIcon = {
-  //     //       chainId: item.chainId,
-  //     //       Icon: "https://assets.coingecko.com/coins/images/36277/large/Neutaro_logo.jpg?1711371142",
-  //     //     };
-  //     //   }
-  //     //   if (item.asset.toLowerCase().includes("ntmpi")) {
-  //     //     tokenIcon =
-  //     //       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPW-5R-30JcMNKXbm6vSsi5e_YfRYgQxqIuUCpTbkzpQ&s";
-  //     //   }
-  //       return (
-  //         <TouchableOpacity
-  //           onPress={() => {
-  //             onPressToken(item);
-  //           }}
-  //           style={styles.btnItem}
-  //         >
-  //           <View style={[styles.wraperItem]}>
-  //             <View style={styles.leftBoxItem}>
-  //               <View style={styles.iconWrap}>
-  //                 <OWIcon
-  //                   style={{ borderRadius: 999 }}
-  //                   type="images"
-  //                   source={{ uri: tokenIcon }}
-  //                   size={32}
-  //                 />
-  //               </View>
-  //               <View style={styles.chainWrap}>
-  //                 <OWIcon
-  //                   type="images"
-  //                   source={{ uri: chainIcon?.Icon }}
-  //                   size={16}
-  //                 />
-  //               </View>
-  //
-  //               <View style={styles.pl12}>
-  //                 {/* <Text size={16} color={colors["neutral-text-heading"]} weight="600">
-  //                 {item.balance.toFixed(4)} {item.asset}
-  //               </Text> */}
-  //                 <Text
-  //                   size={16}
-  //                   color={colors["neutral-text-heading"]}
-  //                   weight="600"
-  //                 >
-  //                   {item.asset}
-  //                 </Text>
-  //                 <Text weight="400" color={colors["neutral-text-body"]}>
-  //                   {item.chain}
-  //                 </Text>
-  //               </View>
-  //             </View>
-  //             <View style={styles.rightBoxItem}>
-  //               <View style={{ flexDirection: "row" }}>
-  //                 <View style={{ alignItems: "flex-end" }}>
-  //                   <Text
-  //                     size={16}
-  //                     style={{ lineHeight: 24 }}
-  //                     weight="500"
-  //                     color={colors["neutral-text-heading"]}
-  //                   >
-  //                     {maskedNumber(item.balance)} {item.asset}
-  //                   </Text>
-  //                   <Text
-  //                     size={14}
-  //                     style={{ lineHeight: 24 }}
-  //                     color={colors["neutral-text-body"]}
-  //                   >
-  //                     ${maskedNumber(item.value)}
-  //                   </Text>
-  //                   <Text
-  //                     size={14}
-  //                     style={styles.profit}
-  //                     color={
-  //                       colors[
-  //                         profit < 0 ? "error-text-body" : "success-text-body"
-  //                       ]
-  //                     }
-  //                   >
-  //                     {profit < 0 ? "" : "+"}
-  //                     {percent}% (${profit ?? 0})
-  //                   </Text>
-  //                 </View>
-  //                 {/* <View
-  //                 style={{
-  //                   flex: 0.5,
-  //                   justifyContent: "center",
-  //                   paddingLeft: 20,
-  //                 }}
-  //               >
-  //                 <RightArrowIcon
-  //                   height={12}
-  //                   color={colors["neutral-text-heading"]}
-  //                 />
-  //               </View> */}
-  //               </View>
-  //             </View>
-  //           </View>
-  //         </TouchableOpacity>
-  //       );
-  //     }
-  //   },
-  //   [universalSwapStore?.getAmount, theme, more]
-  // );
-
   const renderContent = () => {
     if (activeTab === "tokens") {
       return (
@@ -381,9 +221,7 @@ export const TokensCardAll: FunctionComponent<{
               fontSize: 16,
             }}
             onPress={() => {
-              startTransition(() => {
-                setActiveTab("tokens");
-              });
+              setActiveTab("tokens");
             }}
             style={[
               {
@@ -396,9 +234,7 @@ export const TokensCardAll: FunctionComponent<{
             type="link"
             label={"History"}
             onPress={() => {
-              startTransition(() => {
-                setActiveTab("history");
-              });
+              setActiveTab("history");
             }}
             textStyle={{
               color:
@@ -452,14 +288,19 @@ const TokenItem: FC<{
             <OWIcon
               style={{ borderRadius: 999 }}
               type="images"
-              source={{ uri: item.token.currency.coinImageUrl }}
+              source={{
+                uri:
+                  item.token.currency.coinImageUrl || unknownToken.coinImageUrl,
+              }}
               size={32}
             />
           </View>
           <View style={styles.chainWrap}>
             <OWIcon
               type="images"
-              source={{ uri: item.chainInfo.chainImage }}
+              source={{
+                uri: item.chainInfo.chainImage || unknownToken.coinImageUrl,
+              }}
               size={16}
             />
           </View>

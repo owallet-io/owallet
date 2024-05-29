@@ -104,6 +104,7 @@ export class TokensService {
       const chainInfo = await this.chainsService.getChainInfo(chainId);
 
       currency = await TokensService.validateCurrency(chainInfo, currency);
+      console.log(currency, "currency validate");
       // Update coinMinimalDenom here ?
       currency = {
         ...currency,

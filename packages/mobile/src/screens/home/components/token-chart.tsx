@@ -152,11 +152,10 @@ export const TokenChart: FC<{
     return dataConvered;
   };
   useEffect(() => {
-    if (res?.status === 200 && typeof res?.data === "object") {
-      // console.log(res, 'ress');
-      const dataPrice = handlePriceData(res.data?.prices);
-      setDataPriceChart(dataPrice);
-    }
+    if (res?.status !== 200 || !res?.data?.prices) return;
+
+    const dataPrice = handlePriceData(res.data?.prices);
+    setDataPriceChart(dataPrice);
   }, [res]);
   const hapticFeedback = (
     type: HapticFeedbackTypes = "impactLight",

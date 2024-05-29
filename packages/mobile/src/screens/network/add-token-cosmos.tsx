@@ -20,6 +20,7 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { useTheme } from "@src/themes/theme-provider";
 import { DownArrowIcon } from "@src/components/icon";
 import { SelectTokenTypeModal } from "./select-token-type";
+import { unknownToken } from "@owallet/common";
 
 interface FormData {
   viewingKey?: string;
@@ -67,9 +68,9 @@ export const AddTokenCosmosScreen: FunctionComponent<{
   const tokensOf = tokensStore.getTokensOf(selectedChain.chainId);
   const chainInfo = chainStore.getChain(selectedChain.chainId);
   const [loading, setLoading] = useState(false);
-  const [coingeckoId, setCoingeckoID] = useState("");
+  const [coingeckoId, setCoingeckoID] = useState(null);
   const [selectedType, setSelectedType] = useState<"cw20">("cw20");
-  const [coingeckoImg, setCoingeckoImg] = useState("");
+  const [coingeckoImg, setCoingeckoImg] = useState(null);
 
   const form = useForm<FormData>({
     defaultValues: {
@@ -218,19 +219,17 @@ export const AddTokenCosmosScreen: FunctionComponent<{
     try {
       if (tokenInfo?.decimals != null && tokenInfo.name && tokenInfo.symbol) {
         setLoading(true);
-        const currency: AppCurrency[] = [
-          {
-            contractAddress: data.contractAddress,
-            coinMinimalDenom: `${selectedType}:${data.contractAddress}:${tokenInfo.name}`,
-            coinDenom: tokenInfo.symbol,
-            coinDecimals: tokenInfo.decimals,
-            coinImageUrl: coingeckoImg,
-            coinGeckoId: coingeckoId,
-          },
-        ];
+        const currency: CW20Currency = {
+          type: selectedType,
+          contractAddress: data.contractAddress,
+          coinMinimalDenom: tokenInfo.name,
+          coinDenom: tokenInfo.symbol,
+          coinDecimals: tokenInfo.decimals,
+          coinImageUrl: coingeckoImg || unknownToken.coinImageUrl,
+          coinGeckoId: coingeckoId,
+        };
         console.log(currency, "currency");
-        // await tokensOf.addToken(currency);
-        chainInfo.addCurrencies(...currency);
+        await tokensOf.addToken(currency);
         addTokenSuccess(currency);
       }
     } catch (err) {

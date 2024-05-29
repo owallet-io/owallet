@@ -20,6 +20,7 @@ import OWText from "@src/components/text/ow-text";
 import { useTheme } from "@src/themes/theme-provider";
 import { DownArrowIcon } from "@src/components/icon";
 import { SelectTokenTypeModal } from "./select-token-type";
+import { unknownToken } from "@owallet/common";
 
 const mockToken = {
   coinDenom: "USDC",
@@ -213,7 +214,7 @@ export const AddTokenEVMScreen: FunctionComponent<{
           coinDenom: tokenInfo.symbol,
           coinDecimals: tokenInfo.decimals,
           coinGeckoId: coingeckoId,
-          coinImageUrl: coingeckoImg,
+          coinImageUrl: coingeckoImg || unknownToken.coinImageUrl,
           type: "erc20",
         };
 
