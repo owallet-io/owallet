@@ -20,7 +20,12 @@ import {
 } from "react-native";
 import { OWBox } from "../../components/card";
 import { useStore } from "../../stores";
-import { getTokenInfos, maskedNumber, _keyExtract } from "../../utils/helper";
+import {
+  getTokenInfos,
+  maskedNumber,
+  _keyExtract,
+  removeDataInParentheses,
+} from "../../utils/helper";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { Text } from "@src/components/text";
 import { SCREENS } from "@src/common/constants";
@@ -461,7 +466,7 @@ const TokenItem: FC<{
 
           <View style={styles.pl12}>
             <Text size={16} color={colors["neutral-text-heading"]} weight="600">
-              {item.token.currency.coinDenom}
+              {removeDataInParentheses(item.token.currency.coinDenom)}
             </Text>
             <Text weight="400" color={colors["neutral-text-body"]}>
               {item.chainInfo.chainName}

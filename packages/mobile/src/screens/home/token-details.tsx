@@ -27,7 +27,11 @@ import {
   getBase58Address,
   TRC20_LIST,
 } from "@owallet/common";
-import { maskedNumber, shortenAddress } from "@src/utils/helper";
+import {
+  maskedNumber,
+  removeDataInParentheses,
+  shortenAddress,
+} from "@src/utils/helper";
 import { CheckIcon, CopyFillIcon } from "@src/components/icon";
 import { OWBox } from "@src/components/card";
 import { TokenChart } from "@src/screens/home/components/token-chart";
@@ -165,7 +169,7 @@ export const TokenDetails: FunctionComponent = observer((props) => {
   return (
     <View style={[styles.container, { paddingTop: safeAreaInsets.top }]}>
       <PageHeader
-        title={item.token.currency.coinDenom}
+        title={removeDataInParentheses(item.token.currency.coinDenom)}
         subtitle={item.chainInfo.chainName}
         colors={colors}
       />
@@ -214,7 +218,7 @@ export const TokenDetails: FunctionComponent = observer((props) => {
                   .trim(true)
                   .toString()
               )}{" "}
-              {item.token.currency.coinDenom}
+              {removeDataInParentheses(item.token.currency.coinDenom)}
             </OWText>
             <OWText style={styles.profit} color={colors["neutral-text-body"]}>
               {new PricePretty(fiatCurrency, item.price)?.toString()}

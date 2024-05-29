@@ -92,7 +92,7 @@ export const useMultipleAssets = (
     chainInfo: ChainInfo
   ) => {
     const balance = new CoinPretty(token, amount);
-    const price = balance.currency.coinGeckoId
+    const price = balance.currency?.coinGeckoId
       ? priceStore.calculatePrice(balance)
       : initPrice;
 
@@ -141,7 +141,6 @@ export const useMultipleAssets = (
               if (ChainIdEnum.BNBChain || ChainIdEnum.Ethereum) {
                 await getBalancessErc20(address, chainInfo);
               }
-
               return chainInfo.chainId === ChainIdEnum.Oasis
                 ? getBalanceOasis(address, chainInfo)
                 : Promise.all([
@@ -154,7 +153,7 @@ export const useMultipleAssets = (
         }
       );
 
-      await Promise.all(allBalancePromises);
+      await Promise.allSettled(allBalancePromises);
       let overallTotalBalance = "0";
       let allTokens: ViewRawToken[] = [];
       // Loop through each key in the data object
@@ -239,8 +238,9 @@ export const useMultipleAssets = (
   const getBalanceNativeEvm = async (address, chainInfo: ChainInfo) => {
     const web3 = new Web3(getRpcByChainId(chainInfo, chainInfo.chainId));
     const ethBalance = await web3.eth.getBalance(address);
-    if (ethBalance)
+    if (ethBalance) {
       pushTokenQueue(chainInfo.stakeCurrency, Number(ethBalance), chainInfo);
+    }
   };
 
   const getBalanceBtc = async (address, chainInfo: ChainInfo) => {
@@ -309,7 +309,9 @@ export const useMultipleAssets = (
             res.return_data[ind].data
           ) as OraiswapTokenTypes.BalanceResponse;
           const token = mergedMaps.get(t.coinMinimalDenom);
-          if (token) pushTokenQueue(token, balanceRes.balance, chainInfo);
+          if (token) {
+            pushTokenQueue(token, balanceRes.balance, chainInfo);
+          }
         }
       });
     } catch (error) {
@@ -322,8 +324,9 @@ export const useMultipleAssets = (
     const publicKey = await addressToPublicKey(address);
     const account = await nic.stakingAccount({ owner: publicKey, height: 0 });
     const grpcBalance = parseRpcBalance(account);
-    if (grpcBalance)
+    if (grpcBalance) {
       pushTokenQueue(chainInfo.stakeCurrency, grpcBalance.available, chainInfo);
+    }
   };
 
   const getBalanceErc20 = async (address, chainInfo: ChainInfo) => {
