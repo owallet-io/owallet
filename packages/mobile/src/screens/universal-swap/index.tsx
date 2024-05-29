@@ -1030,13 +1030,17 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                   <Text weight="600">
                     {(maskedNumber(minimumReceive) || "0") + " " + toToken.name}
                   </Text>
-                  <Text weight="600" size={18}>
-                    {"  •  "}
-                  </Text>
-                  Est. Fee:{" "}
-                  <Text weight="600">
-                    {maskedNumber(totalFeeEst)} {originalToToken.name}
-                  </Text>
+                  {fromAmountToken > 0 ? (
+                    <React.Fragment>
+                      <Text weight="600" size={18}>
+                        {"  •  "}
+                      </Text>
+                      Est. Fee:{" "}
+                      <Text weight="600">
+                        {maskedNumber(totalFeeEst)} {originalToToken.name}
+                      </Text>
+                    </React.Fragment>
+                  ) : null}
                 </Text>
               </View>
 
