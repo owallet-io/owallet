@@ -287,9 +287,9 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
   }
 
   protected async fetchResponse(
-    abortController: AbortController
+    cancelToken: CancelToken
   ): Promise<QueryResponse<CoinGeckoSimplePrice>> {
-    const response = await super.fetchResponse(abortController);
+    const response = await super.fetchResponse(cancelToken);
     // Because this store only queries the price of the tokens that have been requested from start,
     // it will remove the prior prices that have not been requested to just return the fetching result.
     // So, to prevent this problem, merge the prior response and current response with retaining the prior response's price.

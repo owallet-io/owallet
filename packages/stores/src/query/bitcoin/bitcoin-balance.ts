@@ -45,9 +45,9 @@ export class ObservableQueryBtcBalances extends ObservableChainQuery<Result> {
     return this.bech32Address.length > 0;
   }
   protected async fetchResponse(
-    abortController: AbortController
+    cancelToken: CancelToken
   ): Promise<QueryResponse<Result>> {
-    const resApi = await super.fetchResponse(abortController);
+    const resApi = await super.fetchResponse(cancelToken);
     const addressType = getAddressTypeByAddress(
       this.bech32Address
     ) as AddressBtcType;

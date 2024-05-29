@@ -45,9 +45,9 @@ export class ObservableQueryBitcoinBalanceInner extends ObservableChainQuery<Res
     return this.address.length !== 0;
   }
   protected async fetchResponse(
-    abortController: AbortController
+    cancelToken: CancelToken
   ): Promise<QueryResponse<Result>> {
-    const resApi = await super.fetchResponse(abortController);
+    const resApi = await super.fetchResponse(cancelToken);
     const addressType = getAddressTypeByAddress(this.address) as AddressBtcType;
     const keyDerivation = getKeyDerivationFromAddressType(addressType);
     const path = getBaseDerivationPath({

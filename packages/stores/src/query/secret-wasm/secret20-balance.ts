@@ -71,9 +71,9 @@ export class ObservableQuerySecret20Balance extends ObservableSecretContractChai
   }
 
   protected async fetchResponse(
-    abortController: AbortController
+    cancelToken: CancelToken
   ): Promise<QueryResponse<{ balance: { amount: string } }>> {
-    const result = await super.fetchResponse(abortController);
+    const result = await super.fetchResponse(cancelToken);
 
     if (result.data["viewing_key_error"]) {
       throw new WrongViewingKeyError(result.data["viewing_key_error"]?.msg);
