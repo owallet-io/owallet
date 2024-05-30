@@ -8,19 +8,31 @@ import { Text } from "../../../components/common/text";
 import ReactSwitch from "react-switch";
 import { FeeButtons, Input } from "../../../components/form";
 import { useStore } from "../../../stores";
+import { CoinPretty, Dec } from "@owallet/unit";
 
 export const FeeModal: FunctionComponent<{
   feeConfig: FeeConfig;
   gasConfig: GasConfig;
   onClose: () => void;
 }> = observer(({ feeConfig, gasConfig, onClose }) => {
-  const { priceStore } = useStore();
+  const { priceStore, chainStore } = useStore();
 
   const [customFee, setCustomFee] = useState(false);
 
   const handleToggle = () => {
     setCustomFee(!customFee);
   };
+
+  const fee =
+    feeConfig.fee ??
+    new CoinPretty(
+      chainStore.getChain(feeConfig.chainId).stakeCurrency,
+      new Dec("0")
+    );
+
+  const feePrice = priceStore.calculatePrice(fee);
+
+  console.log("feePrice", feePrice);
 
   return (
     <div className={style.feeModal} style={{ height: "100vh" }}>
@@ -97,7 +109,7 @@ export const FeeModal: FunctionComponent<{
               styleInputGroup={{}}
               onChange={(e) => {
                 e.preventDefault();
-                console.log(e.target.value);
+                gasConfig.setGas(e.target.value);
               }}
               type="text"
               name="name"
@@ -111,7 +123,7 @@ export const FeeModal: FunctionComponent<{
               }}
             >
               <Text size={16}>Expected Fee</Text>
-              <Text size={16}>$0.01</Text>
+              <Text size={16}>{feePrice ? feePrice.toString() : "-"}</Text>
             </div>
           </div>
         ) : (
