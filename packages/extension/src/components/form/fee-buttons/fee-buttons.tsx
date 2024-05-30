@@ -32,6 +32,8 @@ import { action, makeObservable, observable } from "mobx";
 import classNames from "classnames";
 import { useStore } from "../../../stores";
 import { FeeInput } from "../fee-input";
+import colors from "../../../theme/colors";
+import { Text } from "../../common/text";
 
 export interface FeeButtonsProps {
   feeConfig: IFeeConfig;
@@ -41,6 +43,7 @@ export interface FeeButtonsProps {
 
   className?: string;
   label?: string;
+  dimensional?: "horizontal" | "vertical";
   feeSelectLabels?: {
     low: string;
     average: string;
@@ -78,6 +81,7 @@ export const FeeButtons: FunctionComponent<FeeButtonsProps> = observer(
     feeSelectLabels = { low: "Low", average: "Average", high: "High" },
     gasLabel,
     isGasInput = true,
+    dimensional = "horizontal",
     // customFee,
   }) => {
     // This may be not the good way to handle the states across the components.
@@ -94,6 +98,7 @@ export const FeeButtons: FunctionComponent<FeeButtonsProps> = observer(
           />
         ) : ( */}
         <FeeButtonsInner
+          dimensional={dimensional}
           feeConfig={feeConfig}
           priceStore={priceStore}
           label={label}
@@ -115,8 +120,10 @@ export const FeeButtons: FunctionComponent<FeeButtonsProps> = observer(
 export const FeeButtonsInner: FunctionComponent<
   Pick<
     FeeButtonsProps,
-    "feeConfig" | "priceStore" | "label" | "feeSelectLabels"
-  > & { feeButtonState: FeeButtonState }
+    "feeConfig" | "priceStore" | "dimensional" | "label" | "feeSelectLabels"
+  > & {
+    feeButtonState: FeeButtonState;
+  }
 > = observer(
   ({
     feeConfig,
@@ -124,6 +131,7 @@ export const FeeButtonsInner: FunctionComponent<
     label,
     feeSelectLabels = { low: "Low", average: "Average", high: "High" },
     feeButtonState,
+    dimensional,
   }) => {
     const { chainStore } = useStore();
     useEffect(() => {
@@ -145,6 +153,7 @@ export const FeeButtonsInner: FunctionComponent<
         case "low":
           return (
             <img
+              style={{ width: 44, height: 44, borderRadius: 44 }}
               src={require("../../../public/assets/img/slow.svg")}
               alt={label}
             />
@@ -152,6 +161,7 @@ export const FeeButtonsInner: FunctionComponent<
         case "average":
           return (
             <img
+              style={{ width: 44, height: 44, borderRadius: 44 }}
               src={require("../../../public/assets/img/average.svg")}
               alt={label}
             />
@@ -159,6 +169,7 @@ export const FeeButtonsInner: FunctionComponent<
         case "high":
           return (
             <img
+              style={{ width: 44, height: 44, borderRadius: 44 }}
               src={require("../../../public/assets/img/fast.svg")}
               alt={label}
             />
@@ -213,13 +224,8 @@ export const FeeButtonsInner: FunctionComponent<
       }
     })();
 
-    return (
-      <FormGroup style={{ position: "relative", marginBottom: "0px" }}>
-        {label ? (
-          <Label for={inputId} className="form-control-label">
-            {label}
-          </Label>
-        ) : null}
+    const renderHorizontalFee = () => {
+      return (
         <div style={{ width: "100%", display: "flex", flexDirection: "row" }}>
           {["low", "average", "high"].map((fee, i) => {
             return (
@@ -270,6 +276,100 @@ export const FeeButtonsInner: FunctionComponent<
             );
           })}
         </div>
+      );
+    };
+
+    const renderVerticalFee = () => {
+      return (
+        <div>
+          {["low", "average", "high"].map((fee, i) => {
+            return (
+              <div
+                key={i}
+                style={{
+                  marginBottom: 8,
+                  borderRadius: 8,
+                  display: "flex",
+                  padding: 8,
+                  alignItems: "center",
+                  cursor: "pointer",
+                  backgroundColor:
+                    feeConfig.feeType == fee
+                      ? colors["neutral-surface-bg2"]
+                      : "transparent",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+                onClick={(e) => {
+                  feeConfig.setFeeType(
+                    fee == "low" ? "low" : fee == "average" ? "average" : "high"
+                  );
+                  e.preventDefault();
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                  }}
+                >
+                  {renderIconTypeFee(fee)}
+                  <div style={{ marginLeft: 4 }}>
+                    <Text size={16} weight="600">
+                      {feeSelectLabels[fee]}
+                    </Text>
+                    <div>
+                      <Text color={"neutral-text-body"} size={14}>
+                        {chainStore.current.networkType === "bitcoin"
+                          ? "≤"
+                          : null}{" "}
+                        {[lowFee, averageFee, highFee][i]
+                          .trim(true)
+                          .toString() || 0}
+                        (
+                        {[lowFeePrice, averageFeePrice, highFeePrice][i] ? (
+                          <Text>
+                            {chainStore.current.networkType === "bitcoin"
+                              ? "≈ "
+                              : null}
+                            {[lowFeePrice, averageFeePrice, highFeePrice][
+                              i
+                            ].toString()}
+                          </Text>
+                        ) : null}
+                        )
+                      </Text>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <input
+                    style={{ accentColor: "green", height: 20 }}
+                    type="radio"
+                    name="address"
+                    value={""}
+                    checked={feeConfig.feeType == fee}
+                    onChange={() => console.log("ddd")}
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      );
+    };
+
+    return (
+      <FormGroup style={{ position: "relative", marginBottom: "0px" }}>
+        {label ? (
+          <Label for={inputId} className="form-control-label">
+            {label}
+          </Label>
+        ) : null}
+        {dimensional === "horizontal"
+          ? renderHorizontalFee()
+          : renderVerticalFee()}
 
         {isFeeLoading ? (
           <FormText>

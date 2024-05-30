@@ -6,20 +6,24 @@ import { Button } from "../../../components/common/button";
 import colors from "../../../theme/colors";
 import { Text } from "../../../components/common/text";
 import ReactSwitch from "react-switch";
+import { FeeButtons, Input } from "../../../components/form";
+import { useStore } from "../../../stores";
 
 export const FeeModal: FunctionComponent<{
   feeConfig: FeeConfig;
   gasConfig: GasConfig;
   onClose: () => void;
 }> = observer(({ feeConfig, gasConfig, onClose }) => {
-  const [isOn, setIsOn] = useState(false);
+  const { priceStore } = useStore();
+
+  const [customFee, setCustomFee] = useState(false);
 
   const handleToggle = () => {
-    setIsOn(!isOn);
+    setCustomFee(!customFee);
   };
 
   return (
-    <div className={style.feeModal} style={{}}>
+    <div className={style.feeModal} style={{ height: "100vh" }}>
       <div
         style={{
           display: "flex",
@@ -39,16 +43,87 @@ export const FeeModal: FunctionComponent<{
           />
         </div>
       </div>
-      <h4>Toggle switch in React</h4>
-      <ReactSwitch
-        onColor={colors["highlight-surface-active"]}
-        uncheckedIcon={false}
-        checkedIcon={false}
-        checked={isOn}
-        onChange={handleToggle}
-        height={24}
-        width={40}
-      />
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+          padding: 16,
+          borderBottom: "1px solid" + colors["neutral-border-default"],
+          alignItems: "center",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
+          <div
+            style={{
+              marginRight: 4,
+              backgroundColor: colors["neutral-surface-action"],
+              borderRadius: 999,
+              padding: "8px 12px",
+            }}
+          >
+            <img
+              style={{ width: 16, height: 16 }}
+              src={require("../../../public/assets/icon/wrench.svg")}
+              alt=""
+            />
+          </div>
+          <Text size={16} weight="600">
+            Custom Fee
+          </Text>
+        </div>
+
+        <ReactSwitch
+          onColor={colors["highlight-surface-active"]}
+          uncheckedIcon={false}
+          checkedIcon={false}
+          checked={customFee}
+          onChange={handleToggle}
+          height={24}
+          width={40}
+        />
+      </div>
+      <div style={{ height: "60%", overflow: "scroll", padding: 16 }}>
+        {customFee ? (
+          <div>
+            <Input
+              label={"Gas"}
+              styleInputGroup={{}}
+              onChange={(e) => {
+                e.preventDefault();
+                console.log(e.target.value);
+              }}
+              type="text"
+              name="name"
+            />
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                paddingTop: 16,
+              }}
+            >
+              <Text size={16}>Expected Fee</Text>
+              <Text size={16}>$0.01</Text>
+            </div>
+          </div>
+        ) : (
+          <FeeButtons
+            feeConfig={feeConfig}
+            gasConfig={gasConfig}
+            priceStore={priceStore}
+            dimensional={"vertical"}
+            isGasInput={false}
+          />
+        )}
+      </div>
 
       <div
         style={{
@@ -58,6 +133,7 @@ export const FeeModal: FunctionComponent<{
           width: "100%",
           paddingBottom: 16,
           paddingTop: 8,
+          backgroundColor: colors["neutral-surface-card"],
         }}
       >
         <div
@@ -66,7 +142,7 @@ export const FeeModal: FunctionComponent<{
             marginRight: 16,
           }}
         >
-          <Button>Confirm</Button>
+          <Button onClick={onClose}>Confirm</Button>
         </div>
       </div>
     </div>
