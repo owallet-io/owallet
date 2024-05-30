@@ -1,7 +1,7 @@
-@import '../../styles/var';
+@import "../../styles/var";
 
 .tabs {
-  background-color: '#F8F8F9';
+  background-color: "#F8F8F9";
   border-radius: 16;
   height: 40;
   ul {
@@ -9,9 +9,9 @@
     display: flex;
     flex: 1;
     padding: 0;
-    background-color: #F8F8F9;
+    background-color: #f8f8f9;
     border-radius: 16px;
-    color: #777E90;
+    color: #777e90;
     li {
       flex: 1;
       text-align: center;
@@ -78,7 +78,7 @@
   display: flex;
   flex-direction: column;
   // overflow-y: scroll;
-  color: '#353945' !important;
+  color: "#353945" !important;
 }
 
 .tab-container {
@@ -95,4 +95,31 @@
   overflow: visible;
   color: rgb(53, 57, 69);
   // background: transparent;
+}
+
+.setting {
+  z-index: 1;
+  width: 100%;
+  height: 35%;
+
+  position: absolute;
+  bottom: 0;
+
+  transition: all 0.5s;
+  transform: translateY(100%);
+
+  &.activeSetting {
+    transform: translateY(0);
+  }
+
+  &.modal {
+    width: 100%;
+    height: 95%;
+    display: "flex";
+    justify-content: "center";
+    align-items: "center";
+    background-color: $neutral-surface-card;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+  }
 }

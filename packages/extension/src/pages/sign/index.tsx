@@ -1,4 +1,10 @@
-import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
+import React, {
+  FunctionComponent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Button } from "reactstrap";
 
 import { HeaderLayout } from "../../layouts";
@@ -11,7 +17,7 @@ import classnames from "classnames";
 import { DataTab } from "./data-tab";
 import { DetailsTab } from "./details-tab";
 import { FormattedMessage, useIntl } from "react-intl";
-
+import cn from "classnames/bind";
 import { useHistory } from "react-router";
 import { observer } from "mobx-react-lite";
 import {
@@ -24,11 +30,15 @@ import {
 } from "@owallet/hooks";
 import { ADR36SignDocDetailsTab } from "./adr-36";
 import { ChainIdHelper } from "@owallet/cosmos";
+import useOnClickOutside from "../../hooks/use-click-outside";
+import colors from "../../theme/colors";
+import { FeeModal } from "./modals/fee-modal";
 
 enum Tab {
   Details,
   Data,
 }
+const cx = cn.bind(style);
 
 export const SignPage: FunctionComponent = observer(() => {
   const history = useHistory();
@@ -56,6 +66,7 @@ export const SignPage: FunctionComponent = observer(() => {
   const [isADR36WithString, setIsADR36WithString] = useState<
     boolean | undefined
   >();
+  const [openSetting, setOpenSetting] = useState(false);
 
   const current = chainStore.current;
   // Make the gas config with 1 gas initially to prevent the temporary 0 gas error at the beginning.
@@ -78,7 +89,7 @@ export const SignPage: FunctionComponent = observer(() => {
 
   const signDocHelper = useSignDocHelper(feeConfig, memoConfig);
   amountConfig.setSignDocHelper(signDocHelper);
-
+  const settingRef = useRef();
   useEffect(() => {
     if (signInteractionStore.waitingData) {
       const data = signInteractionStore.waitingData;
@@ -196,6 +207,10 @@ export const SignPage: FunctionComponent = observer(() => {
     return undefined;
   })();
 
+  useOnClickOutside(settingRef, () => {
+    setOpenSetting(false);
+  });
+
   const approveIsDisabled = (() => {
     if (!isLoaded) {
       return true;
@@ -229,7 +244,6 @@ export const SignPage: FunctionComponent = observer(() => {
     // >
     <div
       style={{
-        padding: 20,
         backgroundColor: "#FFFFFF",
         height: "100%",
         overflowX: "auto",
@@ -240,7 +254,7 @@ export const SignPage: FunctionComponent = observer(() => {
          Show the informations of tx when the sign data is delivered.
          If sign data not delivered yet, show the spinner alternatively.
          */
-        isLoaded ? (
+        !isLoaded ? (
           <div className={style.container}>
             <div
               style={{
@@ -317,6 +331,27 @@ export const SignPage: FunctionComponent = observer(() => {
               ) : null}
             </div>
             <div style={{ flex: 1 }} />
+            <div
+              onClick={() => {
+                setOpenSetting(true);
+              }}
+            >
+              Fee settings
+            </div>
+            <div
+              className={cx(
+                "setting",
+                openSetting ? "activeSetting" : "",
+                "modal"
+              )}
+              ref={settingRef}
+            >
+              <FeeModal
+                onClose={() => setOpenSetting(false)}
+                feeConfig={feeConfig}
+                gasConfig={gasConfig}
+              />
+            </div>
             <div className={style.buttons}>
               {keyRingStore.keyRingType === "ledger" &&
               signInteractionStore.isLoading ? (
