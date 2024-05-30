@@ -161,6 +161,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
     queriesStore,
     priceStore,
     modalStore,
+    appInitStore,
   } = useStore();
   const route = useRoute<
     RouteProp<

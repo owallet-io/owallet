@@ -35,6 +35,9 @@ import { initPrice } from "@src/screens/home/hooks/use-multiple-assets";
 import { ViewRawToken, ViewToken } from "@src/stores/huge-queries";
 import { PricePretty } from "@owallet/unit";
 
+interface ChainInfoItem extends ChainInfoInner<ChainInfoWithEmbed> {
+  balance: PricePretty;
+}
 export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
   const { colors } = useTheme();
   const [keyword, setKeyword] = useState("");
@@ -138,6 +141,7 @@ export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
     appInitStore.getMultipleAssets;
   const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
   const _renderItem = ({ item }: { item }) => {
+    console.log(item?.chainId, item, "item2");
     let selected =
       item?.chainId === chainStore.current.chainId &&
       !appInitStore.getInitApp.isAllNetworks;
@@ -185,7 +189,7 @@ export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
             <OWIcon
               type="images"
               source={{
-                uri: item.chainImage || oraiIcon,
+                uri: item?.stakeCurrency?.coinImageUrl || oraiIcon,
               }}
               size={28}
             />
@@ -198,7 +202,7 @@ export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
                 fontWeight: "600",
               }}
             >
-              {item.chainName}
+              {item?.chainName || item?.chainName}
             </Text>
 
             <Text
@@ -235,14 +239,34 @@ export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
       </TouchableOpacity>
     );
   };
-  const { testChains, mainChains } = splitAndSortChains({
-    ...(appInitStore.getMultipleAssets.dataTokensByChain || {}),
+
+  const chainsInfoWithBalance = chainStore.chainInfosInUI.map((item, index) => {
+    return {
+      ...item._chainInfo,
+      balance: new PricePretty(
+        fiatCurrency,
+        appInitStore.getMultipleAssets.dataTokensByChain?.[
+          item.chainId
+        ]?.totalBalance
+      ),
+    };
   });
-  const dataTestnet = testChains.filter((c) =>
-    c.chainName.toLowerCase().includes(keyword.toLowerCase())
+  const sortChainsByPrice = (chains) => {
+    return chains.sort(
+      (a, b) =>
+        Number(b.balance.toDec().toString()) -
+        Number(a.balance.toDec().toString())
+    );
+  };
+  const dataTestnet = sortChainsByPrice(chainsInfoWithBalance).filter(
+    (c) =>
+      c.chainName.toLowerCase().includes("test") &&
+      c.chainName.toLowerCase().includes(keyword.toLowerCase())
   );
-  const dataMainnet = mainChains.filter((c) =>
-    c.chainName.toLowerCase().includes(keyword.toLowerCase())
+  const dataMainnet = sortChainsByPrice(chainsInfoWithBalance).filter(
+    (c) =>
+      !c.chainName.toLowerCase().includes("test") &&
+      c.chainName.toLowerCase().includes(keyword.toLowerCase())
   );
   const dataChains = activeTab === "testnet" ? dataTestnet : dataMainnet;
 

@@ -92,7 +92,7 @@ export const useMultipleAssets = (
     chainInfo: ChainInfo
   ) => {
     const balance = new CoinPretty(token, amount);
-    const price = balance.currency?.coinGeckoId
+    const price = token?.coinGeckoId
       ? priceStore.calculatePrice(balance)
       : initPrice;
     const rawChainInfo = {
@@ -121,7 +121,6 @@ export const useMultipleAssets = (
         .add(price)
         .toDec()
         .toString(),
-      chainInfo: rawChainInfo,
     };
   };
   const init = async () => {
