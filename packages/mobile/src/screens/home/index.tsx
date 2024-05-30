@@ -134,7 +134,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     onRefresh();
   }, [address, chainStore.current.chainId]);
   const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
-  console.log(chainStore.current.currencies, "chainInfo.currencies3");
   const onRefresh = async () => {
     try {
       const queries = queriesStore.get(chainStore.current.chainId);

@@ -141,7 +141,6 @@ export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
     appInitStore.getMultipleAssets;
   const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
   const _renderItem = ({ item }: { item }) => {
-    console.log(item?.chainId, item, "item2");
     let selected =
       item?.chainId === chainStore.current.chainId &&
       !appInitStore.getInitApp.isAllNetworks;

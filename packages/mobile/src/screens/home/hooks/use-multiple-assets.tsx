@@ -5,6 +5,8 @@ import {
   ChainIdEnum,
   CWStargate,
   DenomHelper,
+  getBase58Address,
+  getEvmAddress,
   getOasisNic,
   getRpcByChainId,
   parseRpcBalance,
@@ -138,8 +140,13 @@ export const useMultipleAssets = (
                   ])
                 : getBalanceNativeCosmos(address, chainInfo);
             case "evm":
-              if (ChainIdEnum.BNBChain || ChainIdEnum.Ethereum) {
+              if (
+                chainInfo.chainId === ChainIdEnum.BNBChain ||
+                chainInfo.chainId === ChainIdEnum.Ethereum
+              ) {
                 await getBalancessErc20(address, chainInfo);
+              } else if (chainInfo.chainId === ChainIdEnum.TRON) {
+                await getBalancessTrc20(address, chainInfo);
               }
               return chainInfo.chainId === ChainIdEnum.Oasis
                 ? getBalanceOasis(address, chainInfo)
@@ -220,6 +227,58 @@ export const useMultipleAssets = (
                   coinMinimalDenom: `erc20:${data.contractAddress}:${data.name}`,
                 },
               ];
+              chainInfo.addCurrencies(...infoToken);
+            }
+          } catch (e) {
+            console.log(e, "E2");
+          }
+        })
+      );
+    } catch (e) {
+      console.log(e, "e1");
+    }
+  };
+  const getBalancessTrc20 = async (address, chainInfo: ChainInfo) => {
+    try {
+      console.log(getBase58Address(address), "address tron");
+      const url = `https://api.tatum.io/v3/tron/account/${getBase58Address(
+        address
+      )}`;
+      const res = await fetchRetry(url, {
+        headers: {
+          "Content-Type": "application/json",
+          "x-cg-pro-api-key": process.env.TATUM_KEY,
+        },
+      });
+      if (!res?.trc20) return;
+      await Promise.all(
+        res.trc20.map(async (item, index) => {
+          try {
+            const url = `${urlTxHistory}v1/token-info/${
+              MapChainIdToNetwork[chainInfo.chainId]
+            }/${Object.keys(item)[0]}`;
+            const res = await fetchRetry(url);
+
+            if (!res?.data) return;
+            const { data } = res;
+            const token = chainInfo.currencies.find(
+              (item, index) => item.coinGeckoId === data.coingeckoId
+            );
+            if (!token) {
+              const infoToken: any = [
+                {
+                  coinImageUrl: data.imgUrl,
+                  coinDenom: data.abbr,
+                  coinGeckoId: data.coingeckoId,
+                  coinDecimals: data.decimal,
+                  coinMinimalDenom: `erc20:${getEvmAddress(
+                    data.contractAddress
+                  )}:${data.name}`,
+                  contractAddress: data.contractAddress,
+                },
+              ];
+
+              console.log(infoToken, "infoToken");
               chainInfo.addCurrencies(...infoToken);
             }
           } catch (e) {
@@ -359,10 +418,6 @@ export const useMultipleAssets = (
       pushTokenQueue(token, Number(amount), chainInfo);
     });
   };
-  console.log(
-    appInit.getMultipleAssets.dataTokensByChain,
-    "appInit.getMultipleAssets.dataTokensByChain"
-  );
   return {
     totalPriceBalance: appInit.getMultipleAssets.totalPriceBalance,
     dataTokens: isAllNetwork

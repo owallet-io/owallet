@@ -1264,10 +1264,10 @@ export const EmbedChainInfos: AppChainInfo[] = [
       {
         contractAddress: "TNUC9Qb1rRpS5CbWLmNMxXBjyFoydXjWFR",
         coinMinimalDenom:
-          "erc20:0x891cdb91d149f23B1a45D9c5Ca78a88d0cB44C18:WTRX Token",
+          "erc20:0x891cdb91d149f23B1a45D9c5Ca78a88d0cB44C18:Wrapped Tron",
         coinDenom: "WTRX",
         coinDecimals: 6,
-        coinGeckoId: "tron",
+        coinGeckoId: "wrapped-tron",
         coinImageUrl:
           "https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png",
       },
