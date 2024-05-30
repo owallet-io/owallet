@@ -170,7 +170,9 @@ export const TokenDetails: FunctionComponent = observer((props) => {
     <View style={[styles.container, { paddingTop: safeAreaInsets.top }]}>
       <PageHeader
         title={removeDataInParentheses(item.token.currency.coinDenom)}
-        subtitle={item.chainInfo.chainName}
+        subtitle={
+          item.chainInfo.chainName + `${item?.type ? ` (${item?.type})` : ""}`
+        }
         colors={colors}
       />
       <ScrollView
@@ -203,7 +205,13 @@ export const TokenDetails: FunctionComponent = observer((props) => {
                 )
               }
               style={styles.copy}
-              label={shortenAddress(address)}
+              label={
+                item?.type
+                  ? item?.type?.includes("Legacy")
+                    ? shortenAddress(account.legacyAddress)
+                    : shortenAddress(address)
+                  : shortenAddress(address)
+              }
               onPress={() => {
                 Clipboard.setString(address);
                 setTimer(2000);
