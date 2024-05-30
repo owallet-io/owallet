@@ -29,7 +29,12 @@ import {
   ViewToken,
   ViewTokenData,
 } from "@src/stores/huge-queries";
-import { AppCurrency, ChainInfo, Currency } from "@owallet/types";
+import {
+  AddressBtcType,
+  AppCurrency,
+  ChainInfo,
+  Currency,
+} from "@owallet/types";
 import {
   AccountStore,
   AccountWithAll,
@@ -81,17 +86,18 @@ export const useMultipleAssets = (
     InteractionManager.runAfterInteractions(() => {
       init();
     });
-  }, [bech32Address]);
+  }, [bech32Address, priceStore.defaultVsCurrency]);
   useEffect(() => {
     if (!isRefreshing) return;
     InteractionManager.runAfterInteractions(() => {
       init();
     });
   }, [isRefreshing]);
-  const pushTokenQueue = (
+  const pushTokenQueue = async (
     token: AppCurrency,
     amount: string | number,
-    chainInfo: ChainInfo
+    chainInfo: ChainInfo,
+    type?: string
   ) => {
     const balance = new CoinPretty(token, amount);
     const price = token?.coinGeckoId
@@ -112,6 +118,11 @@ export const useMultipleAssets = (
           },
           chainInfo: rawChainInfo,
           price: price.toDec().toString(),
+          type: type
+            ? type === AddressBtcType.Bech32
+              ? "Segwit"
+              : "Legacy"
+            : null,
         },
       ],
       totalBalance: (
@@ -155,7 +166,14 @@ export const useMultipleAssets = (
                     getBalanceErc20(address, chainInfo),
                   ]);
             case "bitcoin":
-              return getBalanceBtc(address, chainInfo);
+              const btcAddress = accountStore.getAccount(
+                ChainIdEnum.Bitcoin
+              ).legacyAddress;
+              console.log(btcAddress, "btcAddress");
+              return Promise.all([
+                getBalanceBtc(address, chainInfo, AddressBtcType.Bech32),
+                getBalanceBtc(btcAddress, chainInfo, AddressBtcType.Legacy),
+              ]);
           }
         }
       );
@@ -302,12 +320,16 @@ export const useMultipleAssets = (
     }
   };
 
-  const getBalanceBtc = async (address, chainInfo: ChainInfo) => {
+  const getBalanceBtc = async (
+    address,
+    chainInfo: ChainInfo,
+    type: AddressBtcType
+  ) => {
     const client = axios.create({ baseURL: chainInfo.rest });
     const { data } = await client.get(`/address/${address}/utxo`);
     if (data) {
       const totalBtc = data.reduce((acc, curr) => acc + curr.value, 0);
-      pushTokenQueue(chainInfo.stakeCurrency, totalBtc, chainInfo);
+      pushTokenQueue(chainInfo.stakeCurrency, totalBtc, chainInfo, type);
     }
   };
 

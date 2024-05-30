@@ -312,6 +312,25 @@ const TokenItem: FC<{
             <Text weight="400" color={colors["neutral-text-body"]}>
               {item.chainInfo.chainName}
             </Text>
+            {item.type && (
+              <View
+                style={{
+                  backgroundColor: colors["neutral-surface-action2"],
+                  borderRadius: 4,
+                  paddingHorizontal: 8,
+                  paddingVertical: 2,
+                  marginHorizontal: 2,
+                }}
+              >
+                <Text
+                  weight="400"
+                  size={12}
+                  color={colors["neutral-text-body-2"]}
+                >
+                  {item.type}
+                </Text>
+              </View>
+            )}
           </View>
         </View>
         <View style={styles.rightBoxItem}>

@@ -55,14 +55,21 @@ const cosmosNetwork = {
   [typeTxEnum.DETAIL]: <CosmosDetailTx />,
   [typeTxEnum.CARD]: <CosmosTxCard />,
 };
-
+const allNetwork = {
+  [typeTxEnum.LIST]: <CosmosTxsScreen />,
+  [typeTxEnum.DETAIL]: <CosmosDetailTx />,
+  [typeTxEnum.CARD]: <CosmosTxCard />,
+};
 export const mappingChainIdToHistoryScreen = (
-  network: ChainIdEnum,
+  network: ChainIdEnum | boolean,
   type: typeTxEnum
 ) => {
   if (!type || Object.values(typeTxEnum).includes(type) === false)
     return <EmptyTx />;
+
   switch (network) {
+    case true:
+      return allNetwork[type];
     case ChainIdEnum.Bitcoin:
       return btcNetwork[type];
     case ChainIdEnum.Oasis:

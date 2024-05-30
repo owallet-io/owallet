@@ -230,7 +230,7 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
   get defaultVsCurrency(): string {
     return this._defaultVsCurrency;
   }
-  protected updateURL(
+  updateURL(
     coinIds: string[],
     vsCurrencies: string[],
     forceSetUrl: boolean = false
