@@ -152,17 +152,17 @@ export const AccountBoxAll: FunctionComponent<{
           ) : null}
         </View>
 
-        <Text
-          style={styles.profit}
-          color={colors[profit < 0 ? "error-text-body" : "success-text-body"]}
-        >
-          {profit < 0 ? "" : "+"}
-          {profit && totalUsd && totalUsd > 0
-            ? Number((profit / totalUsd) * 100 ?? 0).toFixed(2)
-            : 0}
-          % ($
-          {maskedNumber(profit ?? 0, 2)}) Today
-        </Text>
+        {/*<Text*/}
+        {/*  style={styles.profit}*/}
+        {/*  color={colors[profit < 0 ? "error-text-body" : "success-text-body"]}*/}
+        {/*>*/}
+        {/*  {profit < 0 ? "" : "+"}*/}
+        {/*  {profit && totalUsd && totalUsd > 0*/}
+        {/*    ? Number((profit / totalUsd) * 100 ?? 0).toFixed(2)*/}
+        {/*    : 0}*/}
+        {/*  % ($*/}
+        {/*  {maskedNumber(profit ?? 0, 2)}) Today*/}
+        {/*</Text>*/}
 
         {appInitStore.getInitApp.isAllNetworks ? null : (
           <>
@@ -288,7 +288,7 @@ export const AccountBoxAll: FunctionComponent<{
               fadeDuration={0}
             />
             <Text style={styles.labelName}>{account?.name || ".."}</Text>
-            <DownArrowIcon height={15} color={colors["primary-text"]} />
+            {/*<DownArrowIcon height={15} color={colors["primary-text"]} />*/}
           </TouchableOpacity>
           {appInitStore.getInitApp.isAllNetworks ? (
             <OWButton

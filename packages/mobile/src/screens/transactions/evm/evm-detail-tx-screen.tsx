@@ -30,7 +30,7 @@ import { OwLoading } from "@src/components/owallet-loading/ow-loading";
 
 import { Currency } from "@owallet/types";
 
-import { urlTxHistory } from "@src/common/constants";
+import { getTimeMilliSeconds, urlTxHistory } from "@src/common/constants";
 import { OWEmpty } from "@src/components/empty";
 import { AllNetworkItemTx } from "@src/screens/transactions/all-network/all-network.types";
 
@@ -229,7 +229,7 @@ export const EvmDetailTx: FunctionComponent = observer((props) => {
             />
             <ItemReceivedToken
               label={"Time"}
-              valueDisplay={moment(item.timestamp).format(
+              valueDisplay={moment(getTimeMilliSeconds(item.timestamp)).format(
                 "MMM D, YYYY [at] HH:mm"
               )}
               btnCopy={false}

@@ -69,6 +69,7 @@ export const AllNetworkTxItem: FC<{
     item.userAddress?.toLowerCase() === item.fromAddress?.toLowerCase() ||
     item.fromAddress?.toLowerCase() === item.toAddress?.toLowerCase();
   const method = isSent ? "Sent" : "Received";
+  const chainInfo = chainStore.getChain(MapNetworkToChainId[item.network]);
   return (
     <View
       style={{
@@ -98,9 +99,12 @@ export const AllNetworkTxItem: FC<{
               style={{
                 borderRadius: 999,
                 tintColor:
-                  currency.coinDenom === "ORAI" ||
-                  currency.coinDenom === "AIRI" ||
-                  currency.coinDenom === "ORAIX"
+                  (chainInfo.stakeCurrency.coinDenom === "ORAI" &&
+                    currency.coinDenom === "ORAI") ||
+                  (chainInfo.stakeCurrency.coinDenom === "ORAI" &&
+                    currency.coinDenom === "AIRI") ||
+                  (chainInfo.stakeCurrency.coinDenom === "ORAI" &&
+                    currency.coinDenom === "ORAIX")
                     ? colors["neutral-text-title"]
                     : null,
               }}
@@ -110,15 +114,13 @@ export const AllNetworkTxItem: FC<{
             <OWIcon
               type="images"
               source={{
-                uri: chainStore.getChain(MapNetworkToChainId[item.network])
-                  .stakeCurrency.coinImageUrl,
+                uri: chainInfo.stakeCurrency.coinImageUrl,
               }}
               size={20}
               style={{
                 borderRadius: 999,
                 tintColor:
-                  chainStore.getChain(MapNetworkToChainId[item.network])
-                    .stakeCurrency.coinDenom === "ORAI"
+                  chainInfo.stakeCurrency.coinDenom === "ORAI"
                     ? colors["neutral-text-title"]
                     : null,
               }}
