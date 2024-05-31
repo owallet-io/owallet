@@ -193,7 +193,15 @@ export const AllNetworkDetailTxScreen: FunctionComponent = observer((props) => {
               valueDisplay={
                 <View style={styles.viewNetwork}>
                   <Image
-                    style={styles.imgNetwork}
+                    style={[
+                      styles.imgNetwork,
+                      {
+                        tintColor:
+                          chainInfo.stakeCurrency.coinDenom === "ORAI"
+                            ? colors["neutral-text-title"]
+                            : null,
+                      },
+                    ]}
                     source={{
                       uri:
                         chainInfo.stakeCurrency.coinImageUrl ||

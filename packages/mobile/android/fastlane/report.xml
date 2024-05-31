@@ -5,42 +5,42 @@
     
     
       
-      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.000334">
+      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.000428">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="1: firebase_app_distribution_get_latest_release" time="0.94707">
+      <testcase classname="fastlane.lanes" name="1: firebase_app_distribution_get_latest_release" time="1.685394">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="2: increment_version_code" time="0.008742">
+      <testcase classname="fastlane.lanes" name="2: increment_version_code" time="0.007406">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="3: sentry_upload_dif" time="1.255097">
+      <testcase classname="fastlane.lanes" name="3: sentry_upload_dif" time="1.390337">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="4: assembleRelease" time="332.112978">
+      <testcase classname="fastlane.lanes" name="4: assembleRelease" time="447.899171">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="5: firebase_app_distribution" time="38.212607">
+      <testcase classname="fastlane.lanes" name="5: firebase_app_distribution" time="52.939168">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="6: android_get_version_name" time="0.002566">
+      <testcase classname="fastlane.lanes" name="6: android_get_version_name" time="0.014077">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="7: discord_notifier" time="0.536029">
+      <testcase classname="fastlane.lanes" name="7: discord_notifier" time="0.593445">
         
       </testcase>
     

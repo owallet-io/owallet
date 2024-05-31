@@ -97,6 +97,12 @@ export const AllNetworkTxItem: FC<{
               size={32}
               style={{
                 borderRadius: 999,
+                tintColor:
+                  currency.coinDenom === "ORAI" ||
+                  currency.coinDenom === "AIRI" ||
+                  currency.coinDenom === "ORAIX"
+                    ? colors["neutral-text-title"]
+                    : null,
               }}
             />
           </View>
@@ -110,6 +116,11 @@ export const AllNetworkTxItem: FC<{
               size={20}
               style={{
                 borderRadius: 999,
+                tintColor:
+                  chainStore.getChain(MapNetworkToChainId[item.network])
+                    .stakeCurrency.coinDenom === "ORAI"
+                    ? colors["neutral-text-title"]
+                    : null,
               }}
             />
           </View>

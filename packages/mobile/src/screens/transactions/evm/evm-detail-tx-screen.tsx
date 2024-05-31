@@ -170,14 +170,14 @@ export const EvmDetailTx: FunctionComponent = observer((props) => {
             }
             amount={`${
               new Dec(amountRaw).gt(new Dec(0)) ? "+" : ""
-            }${maskedNumber(amount.hideDenom(true).toString())} ${
+            }${maskedNumber(amount.hideDenom(true)?.toString())} ${
               currency.coinDenom
             }`}
             toAmount={null}
             price={priceStore
               .calculatePrice(amount)
-              .toString()
-              .replace("-", "")}
+              ?.toString()
+              ?.replace("-", "")}
           />
           <View style={styles.cardBody}>
             <ItemReceivedToken
@@ -224,7 +224,7 @@ export const EvmDetailTx: FunctionComponent = observer((props) => {
               valueDisplay={`${fee
                 .trim(true)
                 .maxDecimals(6)
-                .toString()} (${priceStore.calculatePrice(fee).toString()})`}
+                ?.toString()} (${priceStore.calculatePrice(fee)?.toString()})`}
               btnCopy={false}
             />
             <ItemReceivedToken
