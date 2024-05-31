@@ -5,6 +5,7 @@ import styleWelcome from "./welcome.module.scss";
 import { useIntl } from "react-intl";
 import { Button } from "../../components/common/button";
 import { Text } from "../../components/common/text";
+import colors from "../../theme/colors";
 
 export const WelcomePage: FunctionComponent = () => {
   const intl = useIntl();
@@ -25,7 +26,7 @@ export const WelcomePage: FunctionComponent = () => {
           </Text>
         </div>
         <div className={styleWelcome.content}>
-          <Text weight="500" color="neutral-text-body">
+          <Text weight="500" color={colors["neutral-text-body"]}>
             Congratulations! Your wallet was successfully created
           </Text>
         </div>

@@ -5,7 +5,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { Button } from "reactstrap";
 
 import { HeaderLayout } from "../../layouts";
 
@@ -33,6 +32,9 @@ import { ChainIdHelper } from "@owallet/cosmos";
 import useOnClickOutside from "../../hooks/use-click-outside";
 import colors from "../../theme/colors";
 import { FeeModal } from "./modals/fee-modal";
+import { Button } from "../../components/common/button";
+import { Text } from "../../components/common/text";
+import { Card } from "../../components/common/card";
 
 enum Tab {
   Details,
@@ -244,11 +246,21 @@ export const SignPage: FunctionComponent = observer(() => {
     // >
     <div
       style={{
-        backgroundColor: "#FFFFFF",
         height: "100%",
+        width: "100vw",
         overflowX: "auto",
       }}
     >
+      <div
+        className={cx("setting", openSetting ? "activeSetting" : "", "modal")}
+        ref={settingRef}
+      >
+        <FeeModal
+          onClose={() => setOpenSetting(false)}
+          feeConfig={feeConfig}
+          gasConfig={gasConfig}
+        />
+      </div>
       {
         /*
          Show the informations of tx when the sign data is delivered.
@@ -256,172 +268,246 @@ export const SignPage: FunctionComponent = observer(() => {
          */
         !isLoaded ? (
           <div className={style.container}>
+            <div style={{ height: "75%", overflow: "scroll", padding: 16 }}>
+              <div
+                style={{
+                  color: "#353945",
+                  fontSize: 24,
+                  fontWeight: 500,
+                  textAlign: "center",
+                  paddingBottom: 24,
+                }}
+              >
+                {chainStore?.current?.raw?.chainName || "Oraichain"}
+              </div>
+              <div className={classnames(style.tabs)}>
+                <ul>
+                  <li
+                    className={classnames({ activeTabs: tab === Tab.Details })}
+                  >
+                    <a
+                      className={classnames(style.tab, {
+                        activeText: tab === Tab.Details,
+                      })}
+                      onClick={() => {
+                        setTab(Tab.Details);
+                      }}
+                    >
+                      {intl.formatMessage({
+                        id: "sign.tab.details",
+                      })}
+                    </a>
+                  </li>
+                  <li className={classnames({ activeTabs: tab === Tab.Data })}>
+                    <a
+                      className={classnames(style.tab, {
+                        activeText: tab === Tab.Data,
+                      })}
+                      onClick={() => {
+                        setTab(Tab.Data);
+                      }}
+                    >
+                      {intl.formatMessage({
+                        id: "sign.tab.data",
+                      })}
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div
+                className={classnames(style.tabContainer, {
+                  [style.dataTab]: tab === Tab.Data,
+                })}
+              >
+                {tab === Tab.Data ? (
+                  <DataTab signDocHelper={signDocHelper} />
+                ) : null}
+                {tab === Tab.Details ? (
+                  signDocHelper.signDocWrapper?.isADR36SignDoc ? (
+                    <ADR36SignDocDetailsTab
+                      signDocWrapper={signDocHelper.signDocWrapper}
+                      isADR36WithString={isADR36WithString}
+                      origin={origin}
+                    />
+                  ) : (
+                    <DetailsTab
+                      signDocHelper={signDocHelper}
+                      memoConfig={memoConfig}
+                      feeConfig={feeConfig}
+                      gasConfig={gasConfig}
+                      isInternal={
+                        interactionInfo.interaction &&
+                        interactionInfo.interactionInternal
+                      }
+                      preferNoSetFee={preferNoSetFee}
+                      preferNoSetMemo={preferNoSetMemo}
+                    />
+                  )
+                ) : null}
+              </div>
+              <Card
+                containerStyle={{
+                  borderRadius: 12,
+                  border: "1px solid" + colors["neutral-border-default"],
+                  padding: 8,
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
+                  onClick={() => {
+                    setOpenSetting(true);
+                  }}
+                >
+                  <Text weight="600">Transaction fee</Text>
+                  <div
+                    style={{
+                      flexDirection: "column",
+                      display: "flex",
+                      alignItems: "flex-end",
+                    }}
+                  >
+                    <Text
+                      size={16}
+                      weight="600"
+                      color={colors["primary-text-action"]}
+                    >
+                      0.00075 ORAI
+                    </Text>
+                    <Text color={colors["neutral-text-body"]}>≈ $524.23</Text>
+                  </div>
+                </div>
+              </Card>
+            </div>
             <div
               style={{
-                color: "#353945",
-                fontSize: 24,
-                fontWeight: 500,
-                textAlign: "center",
-                paddingBottom: 24,
+                position: "absolute",
+                bottom: 0,
+                width: "100%",
+                height: "25%",
+                backgroundColor: colors["neutral-surface-card"],
+                borderTop: "1px solid" + colors["neutral-border-default"],
               }}
             >
-              {chainStore?.current?.raw?.chainName || "Oraichain"}
-            </div>
-            <div className={classnames(style.tabs)}>
-              <ul>
-                <li className={classnames({ activeTabs: tab === Tab.Details })}>
-                  <a
-                    className={classnames(style.tab, {
-                      activeText: tab === Tab.Details,
-                    })}
-                    onClick={() => {
-                      setTab(Tab.Details);
-                    }}
-                  >
-                    {intl.formatMessage({
-                      id: "sign.tab.details",
-                    })}
-                  </a>
-                </li>
-                <li className={classnames({ activeTabs: tab === Tab.Data })}>
-                  <a
-                    className={classnames(style.tab, {
-                      activeText: tab === Tab.Data,
-                    })}
-                    onClick={() => {
-                      setTab(Tab.Data);
-                    }}
-                  >
-                    {intl.formatMessage({
-                      id: "sign.tab.data",
-                    })}
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div
-              className={classnames(style.tabContainer, {
-                [style.dataTab]: tab === Tab.Data,
-              })}
-            >
-              {tab === Tab.Data ? (
-                <DataTab signDocHelper={signDocHelper} />
-              ) : null}
-              {tab === Tab.Details ? (
-                signDocHelper.signDocWrapper?.isADR36SignDoc ? (
-                  <ADR36SignDocDetailsTab
-                    signDocWrapper={signDocHelper.signDocWrapper}
-                    isADR36WithString={isADR36WithString}
-                    origin={origin}
-                  />
-                ) : (
-                  <DetailsTab
-                    signDocHelper={signDocHelper}
-                    memoConfig={memoConfig}
-                    feeConfig={feeConfig}
-                    gasConfig={gasConfig}
-                    isInternal={
-                      interactionInfo.interaction &&
-                      interactionInfo.interactionInternal
-                    }
-                    preferNoSetFee={preferNoSetFee}
-                    preferNoSetMemo={preferNoSetMemo}
-                  />
-                )
-              ) : null}
-            </div>
-            <div style={{ flex: 1 }} />
-            <div
-              onClick={() => {
-                setOpenSetting(true);
-              }}
-            >
-              Fee settings
-            </div>
-            <div
-              className={cx(
-                "setting",
-                openSetting ? "activeSetting" : "",
-                "modal"
-              )}
-              ref={settingRef}
-            >
-              <FeeModal
-                onClose={() => setOpenSetting(false)}
-                feeConfig={feeConfig}
-                gasConfig={gasConfig}
-              />
-            </div>
-            <div className={style.buttons}>
               {keyRingStore.keyRingType === "ledger" &&
               signInteractionStore.isLoading ? (
-                <Button className={style.button} disabled={true} outline>
+                <Button className={style.button} disabled={true} mode="outline">
                   <FormattedMessage id="sign.button.confirm-ledger" />{" "}
                   <i className="fa fa-spinner fa-spin fa-fw" />
                 </Button>
               ) : (
-                <React.Fragment>
-                  <Button
-                    className={classnames(style.button, style.rejectBtn)}
-                    color=""
-                    disabled={signDocHelper.signDocWrapper == null}
-                    // data-loading={signInteractionStore.isLoading}
-                    onClick={async (e) => {
-                      e.preventDefault();
+                <div>
+                  <div
+                    style={{
+                      flexDirection: "row",
+                      display: "flex",
+                      padding: 8,
+                      justifyContent: "space-between",
+                      backgroundColor: colors["neutral-surface-bg"],
+                      margin: 16,
+                      marginBottom: 8,
+                      borderRadius: 12,
+                    }}
+                  >
+                    <div
+                      style={{
+                        flexDirection: "row",
+                        display: "flex",
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: 40,
+                          height: 40,
+                          borderRadius: 40,
+                          backgroundColor: "red",
+                          marginRight: 4,
+                        }}
+                      />
+                      <div style={{ flexDirection: "column", display: "flex" }}>
+                        <Text size={14} weight="600">
+                          123
+                        </Text>
+                        <Text color={colors["neutral-text-body"]}>123</Text>
+                      </div>
+                    </div>
+                    <Text color={colors["neutral-text-body"]}>123</Text>
+                  </div>
+                  <div
+                    style={{
+                      flexDirection: "row",
+                      display: "flex",
+                      padding: 16,
+                      paddingTop: 0,
+                    }}
+                  >
+                    <Button
+                      containerStyle={{ marginRight: 8 }}
+                      className={classnames(style.button, style.rejectBtn)}
+                      // disabled={signDocHelper.signDocWrapper == null}
+                      color={"danger"}
+                      data-loading={signInteractionStore.isLoading}
+                      loading={signInteractionStore.isLoading}
+                      onClick={async (e) => {
+                        e.preventDefault();
 
-                      if (needSetIsProcessing) {
-                        setIsProcessing(true);
-                      }
+                        if (needSetIsProcessing) {
+                          setIsProcessing(true);
+                        }
 
-                      await signInteractionStore.reject();
+                        await signInteractionStore.reject();
 
-                      if (
-                        interactionInfo.interaction &&
-                        !interactionInfo.interactionInternal
-                      ) {
-                        window.close();
-                      } else {
+                        if (
+                          interactionInfo.interaction &&
+                          !interactionInfo.interactionInternal
+                        ) {
+                          window.close();
+                        } else {
+                          history.goBack();
+                        }
+                      }}
+                    >
+                      {intl.formatMessage({
+                        id: "sign.button.reject",
+                      })}
+                    </Button>
+                    <Button
+                      className={classnames(style.button, style.approveBtn)}
+                      // disabled={approveIsDisabled}
+                      data-loading={signInteractionStore.isLoading}
+                      loading={signInteractionStore.isLoading}
+                      onClick={async (e) => {
+                        e.preventDefault();
+
+                        if (needSetIsProcessing) {
+                          setIsProcessing(true);
+                        }
+
+                        if (signDocHelper.signDocWrapper) {
+                          await signInteractionStore.approveAndWaitEnd(
+                            signDocHelper.signDocWrapper
+                          );
+                        }
+
                         history.goBack();
-                      }
-                    }}
-                  >
-                    {intl.formatMessage({
-                      id: "sign.button.reject",
-                    })}
-                  </Button>
-                  <Button
-                    className={classnames(style.button, style.approveBtn)}
-                    color=""
-                    disabled={approveIsDisabled}
-                    data-loading={signInteractionStore.isLoading}
-                    onClick={async (e) => {
-                      e.preventDefault();
 
-                      if (needSetIsProcessing) {
-                        setIsProcessing(true);
-                      }
-
-                      if (signDocHelper.signDocWrapper) {
-                        await signInteractionStore.approveAndWaitEnd(
-                          signDocHelper.signDocWrapper
-                        );
-                      }
-
-                      history.goBack();
-
-                      if (
-                        interactionInfo.interaction &&
-                        !interactionInfo.interactionInternal
-                      ) {
-                        window.close();
-                      }
-                    }}
-                  >
-                    {intl.formatMessage({
-                      id: "sign.button.approve",
-                    })}
-                  </Button>
-                </React.Fragment>
+                        if (
+                          interactionInfo.interaction &&
+                          !interactionInfo.interactionInternal
+                        ) {
+                          window.close();
+                        }
+                      }}
+                    >
+                      {intl.formatMessage({
+                        id: "sign.button.approve",
+                      })}
+                    </Button>
+                  </div>
+                </div>
               )}
             </div>
           </div>

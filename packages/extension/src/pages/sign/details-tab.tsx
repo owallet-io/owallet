@@ -92,6 +92,69 @@ export const DetailsTab: FunctionComponent<{
       }
     })();
 
+    const renderFees = () => {
+      return !preferNoSetFee || !feeConfig.isManual ? (
+        <FeeButtons
+          feeConfig={feeConfig}
+          gasConfig={gasConfig}
+          priceStore={priceStore}
+          label={intl.formatMessage({ id: "sign.info.fee" })}
+          gasLabel={intl.formatMessage({ id: "sign.info.gas" })}
+        />
+      ) : feeConfig.fee ? (
+        <React.Fragment>
+          <Label for="fee-price" className="form-control-label">
+            <FormattedMessage id="sign.info.fee" />
+          </Label>
+          <div id="fee-price">
+            <div className={styleDetailsTab.feePrice}>
+              {feeConfig.fee.maxDecimals(6).trim(true).toString()}
+              {priceStore.calculatePrice(
+                feeConfig.fee,
+                language.fiatCurrency
+              ) ? (
+                <div
+                  style={{
+                    display: "inline-block",
+                    fontSize: "12px",
+                    color: "#353945",
+                  }}
+                >
+                  {priceStore
+                    .calculatePrice(feeConfig.fee, language.fiatCurrency)
+                    ?.toString()}
+                </div>
+              ) : null}
+            </div>
+          </div>
+          {
+            /*
+              Even if the "preferNoSetFee" option is turned on, it provides the way to edit the fee to users.
+              However, if the interaction is internal, you can be sure that the fee is set well inside OWallet.
+              Therefore, the button is not shown in this case.
+            */
+            !isInternal ? (
+              <div style={{ fontSize: "12px" }}>
+                <Button
+                  color="link"
+                  size="sm"
+                  style={{
+                    padding: 0,
+                  }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    feeConfig.setFeeType("average");
+                  }}
+                >
+                  <FormattedMessage id="sign.info.fee.override" />
+                </Button>
+              </div>
+            ) : null
+          }
+        </React.Fragment>
+      ) : null;
+    };
+
     return (
       <div className={styleDetailsTab.container}>
         <Label
@@ -107,66 +170,7 @@ export const DetailsTab: FunctionComponent<{
         <div id="signing-messages" className={styleDetailsTab.msgContainer}>
           {renderedMsgs}
         </div>
-        {!preferNoSetFee || !feeConfig.isManual ? (
-          <FeeButtons
-            feeConfig={feeConfig}
-            gasConfig={gasConfig}
-            priceStore={priceStore}
-            label={intl.formatMessage({ id: "sign.info.fee" })}
-            gasLabel={intl.formatMessage({ id: "sign.info.gas" })}
-          />
-        ) : feeConfig.fee ? (
-          <React.Fragment>
-            <Label for="fee-price" className="form-control-label">
-              <FormattedMessage id="sign.info.fee" />
-            </Label>
-            <div id="fee-price">
-              <div className={styleDetailsTab.feePrice}>
-                {feeConfig.fee.maxDecimals(6).trim(true).toString()}
-                {priceStore.calculatePrice(
-                  feeConfig.fee,
-                  language.fiatCurrency
-                ) ? (
-                  <div
-                    style={{
-                      display: "inline-block",
-                      fontSize: "12px",
-                      color: "#353945",
-                    }}
-                  >
-                    {priceStore
-                      .calculatePrice(feeConfig.fee, language.fiatCurrency)
-                      ?.toString()}
-                  </div>
-                ) : null}
-              </div>
-            </div>
-            {
-              /*
-                Even if the "preferNoSetFee" option is turned on, it provides the way to edit the fee to users.
-                However, if the interaction is internal, you can be sure that the fee is set well inside OWallet.
-                Therefore, the button is not shown in this case.
-              */
-              !isInternal ? (
-                <div style={{ fontSize: "12px" }}>
-                  <Button
-                    color="link"
-                    size="sm"
-                    style={{
-                      padding: 0,
-                    }}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      feeConfig.setFeeType("average");
-                    }}
-                  >
-                    <FormattedMessage id="sign.info.fee.override" />
-                  </Button>
-                </div>
-              ) : null
-            }
-          </React.Fragment>
-        ) : null}
+        {/* {renderFees()} */}
         {!preferNoSetMemo ? (
           <MemoInput
             memoConfig={memoConfig}

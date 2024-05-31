@@ -320,7 +320,7 @@ export const FeeButtonsInner: FunctionComponent<
                       {feeSelectLabels[fee]}
                     </Text>
                     <div>
-                      <Text color={"neutral-text-body"} size={14}>
+                      <Text color={colors["neutral-text-body"]} size={14}>
                         {chainStore.current.networkType === "bitcoin"
                           ? "≤"
                           : null}{" "}

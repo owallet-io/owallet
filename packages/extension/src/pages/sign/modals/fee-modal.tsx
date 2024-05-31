@@ -32,8 +32,6 @@ export const FeeModal: FunctionComponent<{
 
   const feePrice = priceStore.calculatePrice(fee);
 
-  console.log("feePrice", feePrice);
-
   return (
     <div className={style.feeModal} style={{ height: "100vh" }}>
       <div

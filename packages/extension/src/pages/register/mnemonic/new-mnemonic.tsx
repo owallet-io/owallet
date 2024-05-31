@@ -75,7 +75,11 @@ const MnemonicBoard: FunctionComponent<{
                 paddingBottom: 0,
               }}
             >
-              <Text weight="600" color={"primary-surface-default"} size={12}>
+              <Text
+                weight="600"
+                color={colors["primary-surface-default"]}
+                size={12}
+              >
                 {index + 1}
               </Text>
             </div>
@@ -168,7 +172,7 @@ export const GenerateMnemonicModePage: FunctionComponent<{
         <Text
           containerStyle={{ textAlign: "center" }}
           weight="500"
-          color="neutral-text-body"
+          color={colors["neutral-text-body"]}
         >
           Write down this recovery phrase in the exact order and keep it in a
           safe place
@@ -309,7 +313,7 @@ export const GenerateMnemonicModePage: FunctionComponent<{
             src={require("../../../public/assets/icon/tdesign_copy.svg")}
             alt=""
           />
-          <Text color={"primary-text-action"} weight="600">
+          <Text color={colors["primary-text-action"]} weight="600">
             Copy to clipboard
           </Text>
         </div>

@@ -11,9 +11,6 @@ export const Card: FunctionComponent<{
       className={(style.card, type === "ink" ? style.bg : null)}
       style={containerStyle}
     >
-      <div>
-        <img />
-      </div>
       {props.children}
     </div>
   );

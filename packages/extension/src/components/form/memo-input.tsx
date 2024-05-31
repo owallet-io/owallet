@@ -1,9 +1,10 @@
 import React, { FunctionComponent, useState } from "react";
-import { FormGroup, Input, Label } from "reactstrap";
+import { FormGroup, Label } from "reactstrap";
 import { IMemoConfig } from "@owallet/hooks";
 import { observer } from "mobx-react-lite";
 import classNames from "classnames";
 import styleMemo from "./address-input.module.scss";
+import { Input } from "./input";
 
 export interface MemoInputProps {
   memoConfig: IMemoConfig;
@@ -28,17 +29,9 @@ export const MemoInput: FunctionComponent<MemoInputProps> = observer(
 
     return (
       <FormGroup className={className}>
-        {label ? (
-          <Label for={inputId} className="form-control-label">
-            {label}
-          </Label>
-        ) : null}
         <Input
+          label={label ?? ""}
           id={inputId}
-          className={classNames("form-control-alternative", styleMemo.input)}
-          type="textarea"
-          rows={rows ? rows : 2}
-          style={{ resize: "none" }}
           value={memoConfig.memo}
           onChange={(e) => {
             memoConfig.setMemo(e.target.value);

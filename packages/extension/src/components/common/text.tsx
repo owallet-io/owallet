@@ -12,7 +12,7 @@ export const Text: FunctionComponent<{
   const textStyle = {
     fontSize: size ?? 14,
     fontWeight: weight ?? 300,
-    color: colors[color] ?? null,
+    color: color ?? null,
   };
 
   return (
