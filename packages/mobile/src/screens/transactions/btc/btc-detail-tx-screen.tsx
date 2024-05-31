@@ -12,6 +12,7 @@ import { API } from "@src/common/api";
 import {
   capitalizedText,
   formatContractAddress,
+  MapNetworkToChainId,
   maskedNumber,
   openLink,
   shortenAddress,
@@ -29,8 +30,9 @@ import { OwLoading } from "@src/components/owallet-loading/ow-loading";
 
 import { Currency } from "@owallet/types";
 
-import { urlTxHistory } from "@src/common/constants";
+import { getTimeMilliSeconds, urlTxHistory } from "@src/common/constants";
 import { OWEmpty } from "@src/components/empty";
+import { AllNetworkItemTx } from "@src/screens/transactions/all-network/all-network.types";
 
 export const BtcDetailTx: FunctionComponent = observer((props) => {
   const { chainStore, priceStore } = useStore();
@@ -40,7 +42,7 @@ export const BtcDetailTx: FunctionComponent = observer((props) => {
       Record<
         string,
         {
-          item: any;
+          item: AllNetworkItemTx;
           currency: Currency;
         }
       >,
@@ -51,7 +53,7 @@ export const BtcDetailTx: FunctionComponent = observer((props) => {
   const [loading, setLoading] = useState(false);
 
   const { item, currency } = route.params;
-  const { hash, chain, transactionType } = item;
+  const { txhash: hash, network: chain, transactionType } = item;
 
   const getHistoryDetail = async () => {
     try {
@@ -84,7 +86,7 @@ export const BtcDetailTx: FunctionComponent = observer((props) => {
 
   if (loading) return <OwLoading />;
   if (!detail) return <OWEmpty />;
-  const chainInfo = chainStore.getChain(chainStore.current.chainId);
+  const chainInfo = chainStore.getChain(MapNetworkToChainId[item?.network]);
   const handleUrl = (txHash) => {
     return chainInfo.raw.txExplorer.txUrl.replace(
       "{txHash}",
@@ -101,14 +103,15 @@ export const BtcDetailTx: FunctionComponent = observer((props) => {
 
   const fee = new CoinPretty(chainInfo.stakeCurrency, new Int(detail.fee));
 
-  const amount = new CoinPretty(
-    currency,
-    new Dec(item.amount).mul(DecUtils.getTenExponentN(currency.coinDecimals))
-  );
+  const amount = new CoinPretty(currency, new Dec(item.amount[0]));
 
   const onRefresh = () => {
     getHistoryDetail();
   };
+  const isSent =
+    item.userAddress?.toLowerCase() === item.fromAddress?.toLowerCase() ||
+    item.fromAddress?.toLowerCase() === item.toAddress?.toLowerCase();
+  const method = isSent ? "Sent" : "Received";
   return (
     <PageWithBottom
       style={{
@@ -133,11 +136,9 @@ export const BtcDetailTx: FunctionComponent = observer((props) => {
           showsVerticalScrollIndicator={false}
         >
           <HeaderTx
-            type={transactionType === "incoming" ? "Received" : "Sent"}
+            type={method}
             colorAmount={
-              transactionType === "incoming"
-                ? colors["success-text-body"]
-                : colors["error-text-body"]
+              !isSent ? colors["success-text-body"] : colors["error-text-body"]
             }
             imageType={
               <View
@@ -157,11 +158,9 @@ export const BtcDetailTx: FunctionComponent = observer((props) => {
                 </OWText>
               </View>
             }
-            amount={`${
-              transactionType === "incoming" ? "+" : "-"
-            }${maskedNumber(amount.hideDenom(true).toString())} ${
-              currency.coinDenom
-            }`}
+            amount={`${!isSent ? "+" : "-"}${maskedNumber(
+              amount.hideDenom(true).toString()
+            )} ${currency.coinDenom}`}
             toAmount={null}
             price={priceStore
               .calculatePrice(amount)
@@ -206,11 +205,9 @@ export const BtcDetailTx: FunctionComponent = observer((props) => {
             />
             <ItemReceivedToken
               label={"Time"}
-              valueDisplay={moment(
-                isMilliseconds(item.timestamp)
-                  ? item.timestamp
-                  : item.timestamp * 1000
-              ).format("MMM D, YYYY [at] HH:mm")}
+              valueDisplay={moment(getTimeMilliSeconds(item.timestamp)).format(
+                "MMM D, YYYY [at] HH:mm"
+              )}
               btnCopy={false}
             />
 

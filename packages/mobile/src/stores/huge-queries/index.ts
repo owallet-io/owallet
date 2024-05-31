@@ -14,10 +14,11 @@ import {
 } from "@owallet/stores";
 import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
 import { computed, makeObservable } from "mobx";
-import { ChainIdEnum, DenomHelper } from "@owallet/common";
+import { ChainIdEnum, DenomHelper, getOasisAddress } from "@owallet/common";
 import { computedFn } from "mobx-utils";
 import { ChainIdHelper } from "@owallet/cosmos";
 import { AppCurrency, ChainInfo } from "@owallet/types";
+import { MapChainIdToNetwork } from "@src/utils/helper";
 
 export interface ViewToken {
   //TODO: need check type for chain info
@@ -32,11 +33,13 @@ export interface RawToken {
   currency: AppCurrency;
   amount: string;
 }
+
 export interface RawChainInfo {
   chainId: ChainIdEnum & string;
   chainName: string;
   chainImage: RawChainInfo;
 }
+
 export interface ViewRawToken {
   chainInfo: RawChainInfo;
   token: RawToken;
@@ -190,6 +193,25 @@ export class HugeQueriesStore {
       });
     }
     return map;
+  }
+
+  @computed
+  get getAllAddrByChain(): Record<string, string> {
+    const data: Record<string, string> = {};
+    for (const chainInfo of this.chainStore.chainInfosInUI) {
+      const account = this.accountStore.getAccount(chainInfo.chainId);
+      const address = account.getAddressDisplay(
+        this.keyRingStore.keyRingLedgerAddresses
+      );
+      const mapChainNetwork = MapChainIdToNetwork[chainInfo.chainId];
+      if (!mapChainNetwork) continue;
+      data[mapChainNetwork] =
+        chainInfo.chainId === ChainIdEnum.OasisSapphire ||
+        chainInfo.chainId === ChainIdEnum.OasisEmerald
+          ? getOasisAddress(address)
+          : address;
+    }
+    return data;
   }
 
   @computed

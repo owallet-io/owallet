@@ -38,6 +38,20 @@ export const MapChainIdToNetwork = {
   [ChainIdEnum.Injective]: Network.INJECTIVE,
   // [ChainIdEnum.Neutaro]: Network.NEUTARO,
 };
+export const MapNetworkToChainId = {
+  [Network.BINANCE_SMART_CHAIN]: ChainIdEnum.BNBChain,
+  [Network.ETHEREUM]: ChainIdEnum.Ethereum,
+  [Network.BITCOIN]: ChainIdEnum.Bitcoin,
+  [Network.MAINNET]: ChainIdEnum.Oasis,
+  [Network.EMERALD]: ChainIdEnum.OasisEmerald,
+  [Network.SAPPHIRE]: ChainIdEnum.OasisSapphire,
+  [Network.TRON]: ChainIdEnum.TRON,
+  [Network.ORAICHAIN]: ChainIdEnum.Oraichain,
+  [Network.OSMOSIS]: ChainIdEnum.Osmosis,
+  [Network.COSMOSHUB]: ChainIdEnum.CosmosHub,
+  [Network.INJECTIVE]: ChainIdEnum.Injective,
+  // [ChainIdEnum.Neutaro]: Network.NEUTARO,
+};
 const SCHEME_IOS = "owallet://open_url?url=";
 const SCHEME_ANDROID = "app.owallet.oauth://google/open_url?url=";
 export const ORAICHAIN_ID = "Oraichain";

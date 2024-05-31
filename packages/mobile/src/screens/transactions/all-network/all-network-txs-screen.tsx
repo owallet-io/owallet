@@ -16,16 +16,15 @@ import get from "lodash/get";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { OWSearchInput } from "@src/components/ow-search-input";
 import { EmptyTx } from "@src/screens/transactions/components/empty-tx";
-import { TxBtcItem } from "@src/screens/transactions/components/items/tx-btc-item";
 
-const BtcTxsScreen = observer(() => {
-  const { chainStore, accountStore, keyRingStore } = useStore();
-  const { colors } = useTheme();
-  const account = accountStore.getAccount(chainStore.current.chainId);
-  const address = account.getAddressDisplay(
-    keyRingStore.keyRingLedgerAddresses,
-    false
-  );
+import { getOasisAddress } from "@owallet/common";
+import { TxCosmosItem } from "@src/screens/transactions/components/items/tx-cosmos-item";
+import { AllNetworkTxItem } from "@src/screens/transactions/all-network/all-network-tx-item";
+import { convertObjChainAddressToString } from "@src/screens/transactions/all-network/all-network.helper";
+
+const AllNetworkTxsScreen = observer(() => {
+  const { hugeQueriesStore } = useStore();
+
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadMore, setLoadMore] = useState(false);
@@ -33,17 +32,17 @@ const BtcTxsScreen = observer(() => {
   const page = useRef(0);
   const hasMore = useRef(true);
   const perPage = 10;
-
-  const fetchData = async (address, isLoadMore = false) => {
+  const allArr = hugeQueriesStore.getAllAddrByChain;
+  const fetchData = async (addrByNetworks, isLoadMore = false) => {
     try {
       if (!isLoadMore) setLoading(true);
       if (!hasMore.current) throw Error("Failed");
-      const res = await API.getBtcTxs(
+
+      const res = await API.getTxsAllNetwork(
         {
-          address,
+          addrByNetworks: convertObjChainAddressToString(addrByNetworks),
           offset: !isLoadMore ? 0 : page.current * perPage,
           limit: perPage,
-          network: MapChainIdToNetwork[chainStore.current.chainId],
         },
         {
           baseURL: urlTxHistory,
@@ -70,21 +69,21 @@ const BtcTxsScreen = observer(() => {
   };
 
   useEffect(() => {
-    if (!address) return;
+    if (!allArr) return;
     page.current = 0;
     hasMore.current = true;
-    fetchData(address, false);
+    fetchData(allArr, false);
     return () => {
       setData([]);
     };
-  }, [address]);
+  }, [allArr]);
 
   const styles = styling();
 
   const onEndReached = () => {
     if (page.current !== 0 && data.length > 0) {
       setLoadMore(true);
-      fetchData(address, true);
+      fetchData(allArr, true);
       return;
     }
   };
@@ -92,7 +91,7 @@ const BtcTxsScreen = observer(() => {
     setRefreshing(true);
     page.current = 0;
     hasMore.current = true;
-    fetchData(address, false);
+    fetchData(allArr, false);
   };
   const setAllLoading = () => {
     setLoadMore(false);
@@ -101,7 +100,7 @@ const BtcTxsScreen = observer(() => {
   };
   const renderItem = ({ item, index }) => {
     return (
-      <TxBtcItem
+      <AllNetworkTxItem
         key={`item-${index + 1}-${index}`}
         data={data}
         item={item}
@@ -145,7 +144,7 @@ export const SearchFilter = () => {
     </View>
   );
 };
-export default BtcTxsScreen;
+export default AllNetworkTxsScreen;
 
 const styling = () => {
   const { colors } = useTheme();

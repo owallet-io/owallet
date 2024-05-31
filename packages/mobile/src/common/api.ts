@@ -7,6 +7,7 @@ import {
   CosmosItem,
   ResTxsCosmos,
 } from "@src/screens/transactions/cosmos/types";
+import { TxsAllNetwork } from "@src/screens/transactions/all-network/all-network.types";
 
 export const API = {
   post: (path: string, params: any, config: AxiosRequestConfig) => {
@@ -432,6 +433,13 @@ export const API = {
   ) => {
     const url = `raw-tx-history/cosmos/${address}?network=${network}&limit=${limit}&offset=${offset}`;
     return API.get(url, config) as Promise<AxiosResponse<ResTxsCosmos>>;
+  },
+  getTxsAllNetwork: (
+    { addrByNetworks, offset, limit = 1 },
+    config: AxiosRequestConfig
+  ) => {
+    const url = `v1/txs-history/?addrByNetworks=${addrByNetworks}&limit=${limit}&offset=${offset}`;
+    return API.get(url, config) as Promise<AxiosResponse<TxsAllNetwork>>;
   },
   getOraichainTxs: async (
     { address, offset, limit = 1, network = CosmosNetwork.ORAICHAIN },

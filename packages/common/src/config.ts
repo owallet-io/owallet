@@ -1511,7 +1511,7 @@ export const ValidatorThumbnails: { [key: string]: string } = {
 export const unknownToken: Currency = {
   coinDecimals: 6,
   coinImageUrl: "https://img.icons8.com/pulsar-gradient/96/help.png",
-  coinGeckoId: "",
+  coinGeckoId: "unknown",
   coinMinimalDenom: "unknown",
   coinDenom: "UNKNOWN",
 };

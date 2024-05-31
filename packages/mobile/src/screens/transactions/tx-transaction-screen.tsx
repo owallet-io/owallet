@@ -10,11 +10,14 @@ import {
 } from "@src/screens/transactions/tx-helper";
 
 const TxTransactionsScreen = observer(() => {
-  const { chainStore } = useStore();
+  const { chainStore, appInitStore } = useStore();
   const { chainId } = chainStore.current;
   return (
     <>
-      {mappingChainIdToHistoryScreen(chainId as ChainIdEnum, typeTxEnum.LIST)}
+      {mappingChainIdToHistoryScreen(
+        appInitStore.getInitApp.isAllNetworks || (chainId as ChainIdEnum),
+        typeTxEnum.LIST
+      )}
     </>
   );
 });

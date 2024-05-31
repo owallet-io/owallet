@@ -115,7 +115,7 @@ const OasisTxsScreen = observer(() => {
   return (
     <PageWithView>
       <OWBox style={[styles.container]}>
-        <SearchFilter />
+        {/*<SearchFilter />*/}
         <OWFlatList
           data={data}
           onEndReached={onEndReached}

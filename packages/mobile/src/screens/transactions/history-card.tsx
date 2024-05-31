@@ -15,7 +15,7 @@ import {
 export const HistoryCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(() => {
-  const { chainStore, priceStore } = useStore();
+  const { chainStore, priceStore, appInitStore } = useStore();
   const fiat = priceStore.defaultVsCurrency;
   const { chainId } = chainStore.current;
   const price = priceStore.getPrice(
@@ -36,7 +36,10 @@ export const HistoryCard: FunctionComponent<{
 
   return (
     <View style={containerStyle}>
-      {mappingChainIdToHistoryScreen(chainId as ChainIdEnum, typeTxEnum.CARD)}
+      {mappingChainIdToHistoryScreen(
+        appInitStore.getInitApp.isAllNetworks || (chainId as ChainIdEnum),
+        typeTxEnum.CARD
+      )}
     </View>
   );
 });

@@ -19,6 +19,9 @@ import { OraichainTxCard } from "@src/screens/transactions/oraichain/oraichain-t
 import CosmosTxsScreen from "@src/screens/transactions/cosmos/cosmos-txs-screen";
 import { CosmosDetailTx } from "@src/screens/transactions/cosmos/cosmos-detail-tx-screen";
 import { CosmosTxCard } from "@src/screens/transactions/cosmos/cosmos-tx-card";
+import AllNetworkTxsScreen from "@src/screens/transactions/all-network/all-network-txs-screen";
+import { AllNetworkDetailTxScreen } from "@src/screens/transactions/all-network/all-network-detail-tx-screen";
+import { AllNetworkTxCard } from "@src/screens/transactions/all-network/all-network-tx-card";
 
 export enum typeTxEnum {
   DETAIL = "DETAIL",
@@ -56,9 +59,9 @@ const cosmosNetwork = {
   [typeTxEnum.CARD]: <CosmosTxCard />,
 };
 const allNetwork = {
-  [typeTxEnum.LIST]: <CosmosTxsScreen />,
-  [typeTxEnum.DETAIL]: <CosmosDetailTx />,
-  [typeTxEnum.CARD]: <CosmosTxCard />,
+  [typeTxEnum.LIST]: <AllNetworkTxsScreen />,
+  [typeTxEnum.DETAIL]: <AllNetworkDetailTxScreen />,
+  [typeTxEnum.CARD]: <AllNetworkTxCard />,
 };
 export const mappingChainIdToHistoryScreen = (
   network: ChainIdEnum | boolean,
