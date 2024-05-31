@@ -93,10 +93,7 @@ export const EvmDetailTx: FunctionComponent = observer((props) => {
     // const chainInfo = chainStore.getChain(detail.chainId);
     return chainInfo.raw.txExplorer.txUrl.replace(
       "{txHash}",
-
-      chainInfo.chainId === ChainIdEnum.BNBChain
-        ? txHash.toLowerCase()
-        : txHash.toUpperCase()
+      txHash.toLowerCase()
     );
   };
   const handleOnExplorer = async () => {

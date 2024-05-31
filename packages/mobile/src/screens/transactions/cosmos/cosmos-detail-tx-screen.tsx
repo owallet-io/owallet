@@ -12,6 +12,7 @@ import { API } from "@src/common/api";
 import {
   capitalizedText,
   formatContractAddress,
+  MapNetworkToChainId,
   maskedNumber,
   openLink,
   shortenAddress,
@@ -32,6 +33,7 @@ import { Currency } from "@owallet/types";
 import { urlTxHistory } from "@src/common/constants";
 import { OWEmpty } from "@src/components/empty";
 import { CosmosItem } from "@src/screens/transactions/cosmos/types";
+import { AllNetworkItemTx } from "@src/screens/transactions/all-network/all-network.types";
 
 export const CosmosDetailTx: FunctionComponent = observer((props) => {
   const { chainStore, priceStore } = useStore();
@@ -41,7 +43,7 @@ export const CosmosDetailTx: FunctionComponent = observer((props) => {
       Record<
         string,
         {
-          item: CosmosItem;
+          item: AllNetworkItemTx;
           currency: Currency;
         }
       >,
@@ -52,7 +54,7 @@ export const CosmosDetailTx: FunctionComponent = observer((props) => {
   const [loading, setLoading] = useState(false);
 
   const { item, currency } = route.params;
-  const { txhash: hash, chainId: chain } = item;
+  const { txhash: hash, network: chain } = item;
   console.log(item, detail, "item detail");
 
   const getHistoryDetail = async () => {
@@ -88,7 +90,7 @@ export const CosmosDetailTx: FunctionComponent = observer((props) => {
   if (loading) return <OwLoading />;
   if (!detail) return <OWEmpty />;
   console.log(detail, "detail");
-  const chainInfo = chainStore.getChain(chainStore.current.chainId);
+  const chainInfo = chainStore.getChain(MapNetworkToChainId[item?.network]);
   const handleUrl = (txHash) => {
     return chainInfo.raw.txExplorer.txUrl.replace("{txHash}", txHash);
   };
@@ -100,11 +102,8 @@ export const CosmosDetailTx: FunctionComponent = observer((props) => {
     }
   };
 
-  const fee = new CoinPretty(
-    chainInfo.stakeCurrency,
-    new Dec(item.fee[0].amount)
-  );
-  const amount = new CoinPretty(currency, new Dec(item.amount[0].amount));
+  const fee = new CoinPretty(chainInfo.stakeCurrency, new Dec(item.fee[0]));
+  const amount = new CoinPretty(currency, new Dec(item.amount[0]));
 
   const onRefresh = () => {
     getHistoryDetail();

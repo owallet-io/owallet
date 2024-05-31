@@ -29,34 +29,34 @@ export enum typeTxEnum {
   CARD = "CARD",
 }
 const btcNetwork = {
-  [typeTxEnum.LIST]: <BtcTxsScreen />,
+  [typeTxEnum.LIST]: <AllNetworkTxsScreen />,
   [typeTxEnum.DETAIL]: <BtcDetailTx />,
-  [typeTxEnum.CARD]: <BtcTxCard />,
+  [typeTxEnum.CARD]: <AllNetworkTxCard />,
 };
 const oasisNetwork = {
-  [typeTxEnum.LIST]: <OasisTxsScreen />,
-  [typeTxEnum.DETAIL]: <OasisDetailTx />,
-  [typeTxEnum.CARD]: <OasisTxCard />,
+  [typeTxEnum.LIST]: <AllNetworkTxsScreen />,
+  [typeTxEnum.DETAIL]: <AllNetworkDetailTxScreen />,
+  [typeTxEnum.CARD]: <AllNetworkTxCard />,
 };
 const tronNetwork = {
-  [typeTxEnum.LIST]: <TronTxsScreen />,
-  [typeTxEnum.DETAIL]: <TronDetailTx />,
-  [typeTxEnum.CARD]: <TronTxCard />,
+  [typeTxEnum.LIST]: <AllNetworkTxsScreen />,
+  [typeTxEnum.DETAIL]: <AllNetworkDetailTxScreen />,
+  [typeTxEnum.CARD]: <AllNetworkTxCard />,
 };
 const evmNetwork = {
-  [typeTxEnum.LIST]: <EvmTxsScreen />,
+  [typeTxEnum.LIST]: <AllNetworkTxsScreen />,
   [typeTxEnum.DETAIL]: <EvmDetailTx />,
-  [typeTxEnum.CARD]: <EvmTxCard />,
+  [typeTxEnum.CARD]: <AllNetworkTxCard />,
 };
 const oraichainNetwork = {
-  [typeTxEnum.LIST]: <OraichainTxsScreen />,
-  [typeTxEnum.DETAIL]: <OraichainDetailTx />,
-  [typeTxEnum.CARD]: <OraichainTxCard />,
+  [typeTxEnum.LIST]: <AllNetworkTxsScreen />,
+  [typeTxEnum.DETAIL]: <AllNetworkDetailTxScreen />,
+  [typeTxEnum.CARD]: <AllNetworkTxCard />,
 };
 const cosmosNetwork = {
-  [typeTxEnum.LIST]: <CosmosTxsScreen />,
-  [typeTxEnum.DETAIL]: <CosmosDetailTx />,
-  [typeTxEnum.CARD]: <CosmosTxCard />,
+  [typeTxEnum.LIST]: <AllNetworkTxsScreen />,
+  [typeTxEnum.DETAIL]: <AllNetworkDetailTxScreen />,
+  [typeTxEnum.CARD]: <AllNetworkTxCard />,
 };
 const allNetwork = {
   [typeTxEnum.LIST]: <AllNetworkTxsScreen />,

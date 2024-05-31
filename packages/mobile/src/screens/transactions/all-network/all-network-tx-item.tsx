@@ -70,7 +70,12 @@ export const AllNetworkTxItem: FC<{
     item.fromAddress?.toLowerCase() === item.toAddress?.toLowerCase();
   const method = isSent ? "Sent" : "Received";
   return (
-    <View style={{ paddingVertical: 8 }}>
+    <View
+      style={{
+        paddingVertical: 8,
+        opacity: currency === unknownToken ? 0.5 : 1,
+      }}
+    >
       {first != now || index === 0 ? (
         <Text size={14} color={colors["neutral-text-heading"]} weight="600">
           {now}

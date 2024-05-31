@@ -7,7 +7,10 @@ import {
   CosmosItem,
   ResTxsCosmos,
 } from "@src/screens/transactions/cosmos/types";
-import { TxsAllNetwork } from "@src/screens/transactions/all-network/all-network.types";
+import {
+  ResDetailAllTx,
+  TxsAllNetwork,
+} from "@src/screens/transactions/all-network/all-network.types";
 
 export const API = {
   post: (path: string, params: any, config: AxiosRequestConfig) => {
@@ -461,6 +464,10 @@ export const API = {
   ) => {
     const url = `raw-tx-history/all/tx-detail/${hash}?network=${network}`;
     return API.get(url, config);
+  },
+  getDetailAllTx: ({ hash, network }, config: AxiosRequestConfig) => {
+    const url = `v1/txs-history/tx-detail/?network=${network}&txhash=${hash}`;
+    return API.get(url, config) as Promise<AxiosResponse<ResDetailAllTx>>;
   },
   getDetailOasisTx: (
     { hash, network = OasisNetwork.MAINNET },

@@ -343,6 +343,9 @@ export const useMultipleAssets = (
       const token = mergedMaps.get(denom);
       if (token) {
         pushTokenQueue(token, amount, chainInfo);
+      } else {
+        //Need handle more for case ibc/ denom
+        console.log(denom, amount, "denom amount");
       }
     });
   };

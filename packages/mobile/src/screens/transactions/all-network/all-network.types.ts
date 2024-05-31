@@ -36,3 +36,22 @@ export interface TokenInfo {
   coingeckoId: string;
   tokenType?: string;
 }
+
+export interface ResDetailAllTx {
+  uniqKey: string;
+  network: string;
+  height: string;
+  txhash: string;
+  status: number;
+  timestamp: number;
+  transactionType: string;
+  userAddress: string;
+  fromAddress: string;
+  toAddress: string;
+  amount: string[];
+  fee: string[];
+  tokenInfos: TokenInfo[];
+  energyUsage: string;
+  netFee: string;
+  explorer: string;
+}

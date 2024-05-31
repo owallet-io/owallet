@@ -11,6 +11,8 @@ import { EmptyTx } from "@src/screens/transactions/components/empty-tx";
 import { convertObjChainAddressToString } from "@src/screens/transactions/all-network/all-network.helper";
 import { AllNetworkItemTx } from "@src/screens/transactions/all-network/all-network.types";
 import { AllNetworkTxItem } from "@src/screens/transactions/all-network/all-network-tx-item";
+import { MapChainIdToNetwork } from "@src/utils/helper";
+import { ChainIdEnum, getOasisAddress } from "@owallet/common";
 
 export const AllNetworkTxCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -23,7 +25,21 @@ export const AllNetworkTxCard: FunctionComponent<{
     priceStore,
     keyRingStore,
   } = useStore();
-  const allArr = hugeQueriesStore.getAllAddrByChain;
+  const { chainId } = chainStore.current;
+  const mapChainNetwork = MapChainIdToNetwork[chainId];
+  const account = accountStore.getAccount(chainId);
+  const address = account.getAddressDisplay(
+    keyRingStore.keyRingLedgerAddresses
+  );
+  const allArr = appInitStore.getInitApp.isAllNetworks
+    ? hugeQueriesStore.getAllAddrByChain
+    : {
+        [mapChainNetwork]:
+          chainId === ChainIdEnum.OasisSapphire ||
+          chainId === ChainIdEnum.OasisEmerald
+            ? getOasisAddress(address)
+            : address,
+      };
   const [histories, setHistories] = useState<AllNetworkItemTx[]>([]);
   const [loading, setLoading] = useState(false);
   const getWalletHistory = async (addrByNetworks) => {
@@ -52,9 +68,10 @@ export const AllNetworkTxCard: FunctionComponent<{
   useEffect(() => {
     setHistories([]);
     const allAddress = convertObjChainAddressToString(allArr);
-    if (!allAddress || !appInitStore.getInitApp.isAllNetworks) return;
+    console.log(allAddress, "allAddress");
+    if (!allAddress) return;
     getWalletHistory(allAddress);
-  }, [allArr, appInitStore.getInitApp.isAllNetworks]);
+  }, [chainId, appInitStore.getInitApp.isAllNetworks]);
 
   const fiat = priceStore.defaultVsCurrency;
 

@@ -12,6 +12,7 @@ import { API } from "@src/common/api";
 import {
   capitalizedText,
   formatContractAddress,
+  MapNetworkToChainId,
   maskedNumber,
   openLink,
   shortenAddress,
@@ -22,7 +23,12 @@ import { HeaderTx } from "@src/screens/tx-result/components/header-tx";
 import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
 import { Text } from "@src/components/text";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
-import { ChainIdEnum, isMilliseconds, OasisNetwork } from "@owallet/common";
+import {
+  ChainIdEnum,
+  isMilliseconds,
+  OasisNetwork,
+  unknownToken,
+} from "@owallet/common";
 
 import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
 import { OwLoading } from "@src/components/owallet-loading/ow-loading";
@@ -32,6 +38,10 @@ import { Currency } from "@owallet/types";
 import { urlTxHistory } from "@src/common/constants";
 import { OWEmpty } from "@src/components/empty";
 import { CosmosItem } from "@src/screens/transactions/cosmos/types";
+import {
+  AllNetworkItemTx,
+  ResDetailAllTx,
+} from "@src/screens/transactions/all-network/all-network.types";
 
 export const AllNetworkDetailTxScreen: FunctionComponent = observer((props) => {
   const { chainStore, priceStore } = useStore();
@@ -41,27 +51,27 @@ export const AllNetworkDetailTxScreen: FunctionComponent = observer((props) => {
       Record<
         string,
         {
-          item: CosmosItem;
+          item: AllNetworkItemTx;
           currency: Currency;
         }
       >,
       string
     >
   >();
-  const [detail, setDetail] = useState<CosmosItem>();
+  const [detail, setDetail] = useState<ResDetailAllTx>();
   const [loading, setLoading] = useState(false);
 
   const { item, currency } = route.params;
-  const { txhash: hash, chainId: chain } = item;
+  const { txhash: hash, network: chain } = item;
   console.log(item, detail, "item detail");
 
   const getHistoryDetail = async () => {
     try {
       setLoading(true);
-      const { status, data } = await API.getDetailCosmosTx(
+      const { status, data } = await API.getDetailAllTx(
         {
           hash,
-          network: chain as ChainIdEnum,
+          network: chain,
         },
         {
           baseURL: urlTxHistory,
@@ -88,23 +98,13 @@ export const AllNetworkDetailTxScreen: FunctionComponent = observer((props) => {
   if (loading) return <OwLoading />;
   if (!detail) return <OWEmpty />;
   console.log(detail, "detail");
-  const chainInfo = chainStore.getChain(chainStore.current.chainId);
-  const handleUrl = (txHash) => {
-    return chainInfo.raw.txExplorer.txUrl.replace("{txHash}", txHash);
-  };
+  const chainInfo = chainStore.getChain(MapNetworkToChainId[item?.network]);
   const handleOnExplorer = async () => {
-    if (chainInfo.raw.txExplorer && hash) {
-      const url = handleUrl(hash);
-      console.log(url, "url");
-      await openLink(url);
-    }
+    await openLink(detail?.explorer);
   };
 
-  const fee = new CoinPretty(
-    chainInfo.stakeCurrency,
-    new Dec(item.fee[0].amount)
-  );
-  const amount = new CoinPretty(currency, new Dec(item.amount[0].amount));
+  const fee = new CoinPretty(chainInfo.stakeCurrency, new Dec(detail.fee[0]));
+  const amount = new CoinPretty(currency, new Dec(detail.amount[0]));
 
   const onRefresh = () => {
     getHistoryDetail();
@@ -139,9 +139,7 @@ export const AllNetworkDetailTxScreen: FunctionComponent = observer((props) => {
           <HeaderTx
             type={method}
             colorAmount={
-              !isSent
-                ? colors["success-text-body"]
-                : colors["neutral-text-title"]
+              !isSent ? colors["success-text-body"] : colors["error-text-body"]
             }
             imageType={
               <View
@@ -149,7 +147,7 @@ export const AllNetworkDetailTxScreen: FunctionComponent = observer((props) => {
                   styles.containerSuccess,
                   {
                     backgroundColor:
-                      detail.code != 0
+                      detail.status != 0
                         ? colors["error-surface-subtle"]
                         : colors["highlight-surface-subtle"],
                   },
@@ -159,12 +157,12 @@ export const AllNetworkDetailTxScreen: FunctionComponent = observer((props) => {
                   weight={"500"}
                   size={14}
                   color={
-                    detail.code != 0
+                    detail.status != 0
                       ? colors["error-text-body"]
                       : colors["highlight-text-title"]
                   }
                 >
-                  {detail.code != 0 ? "Failed" : "Success"}
+                  {detail.status != 0 ? "Failed" : "Success"}
                 </OWText>
               </View>
             }
@@ -174,20 +172,20 @@ export const AllNetworkDetailTxScreen: FunctionComponent = observer((props) => {
             toAmount={null}
             price={priceStore
               .calculatePrice(amount)
-              .toString()
-              .replace("-", "")}
+              ?.toString()
+              ?.replace("-", "")}
           />
           <View style={styles.cardBody}>
             <ItemReceivedToken
               label={capitalizedText("From")}
-              valueDisplay={shortenAddress(item.fromAddress)}
-              value={item.fromAddress}
+              valueDisplay={shortenAddress(detail.fromAddress)}
+              value={detail.fromAddress}
               colorIconRight={colors["neutral-text-action-on-light-bg"]}
             />
             <ItemReceivedToken
               label={capitalizedText("To")}
-              valueDisplay={shortenAddress(item.toAddress)}
-              value={item.toAddress}
+              valueDisplay={shortenAddress(detail.toAddress)}
+              value={detail.toAddress}
               colorIconRight={colors["neutral-text-action-on-light-bg"]}
             />
             <ItemReceivedToken
@@ -197,7 +195,9 @@ export const AllNetworkDetailTxScreen: FunctionComponent = observer((props) => {
                   <Image
                     style={styles.imgNetwork}
                     source={{
-                      uri: chainInfo.stakeCurrency.coinImageUrl,
+                      uri:
+                        chainInfo.stakeCurrency.coinImageUrl ||
+                        unknownToken.coinImageUrl,
                     }}
                   />
                   <Text

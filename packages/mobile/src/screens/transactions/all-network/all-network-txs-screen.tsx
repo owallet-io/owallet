@@ -17,13 +17,19 @@ import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { OWSearchInput } from "@src/components/ow-search-input";
 import { EmptyTx } from "@src/screens/transactions/components/empty-tx";
 
-import { getOasisAddress } from "@owallet/common";
+import { ChainIdEnum, getOasisAddress } from "@owallet/common";
 import { TxCosmosItem } from "@src/screens/transactions/components/items/tx-cosmos-item";
 import { AllNetworkTxItem } from "@src/screens/transactions/all-network/all-network-tx-item";
 import { convertObjChainAddressToString } from "@src/screens/transactions/all-network/all-network.helper";
 
 const AllNetworkTxsScreen = observer(() => {
-  const { hugeQueriesStore } = useStore();
+  const {
+    hugeQueriesStore,
+    chainStore,
+    accountStore,
+    keyRingStore,
+    appInitStore,
+  } = useStore();
 
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -32,7 +38,21 @@ const AllNetworkTxsScreen = observer(() => {
   const page = useRef(0);
   const hasMore = useRef(true);
   const perPage = 10;
-  const allArr = hugeQueriesStore.getAllAddrByChain;
+  const { chainId } = chainStore.current;
+  const mapChainNetwork = MapChainIdToNetwork[chainId];
+  const account = accountStore.getAccount(chainId);
+  const address = account.getAddressDisplay(
+    keyRingStore.keyRingLedgerAddresses
+  );
+  const allArr = appInitStore.getInitApp.isAllNetworks
+    ? hugeQueriesStore.getAllAddrByChain
+    : {
+        [mapChainNetwork]:
+          chainId === ChainIdEnum.OasisSapphire ||
+          chainId === ChainIdEnum.OasisEmerald
+            ? getOasisAddress(address)
+            : address,
+      };
   const fetchData = async (addrByNetworks, isLoadMore = false) => {
     try {
       if (!isLoadMore) setLoading(true);
@@ -76,7 +96,7 @@ const AllNetworkTxsScreen = observer(() => {
     return () => {
       setData([]);
     };
-  }, [allArr]);
+  }, [chainId, appInitStore.getInitApp.isAllNetworks]);
 
   const styles = styling();
 
