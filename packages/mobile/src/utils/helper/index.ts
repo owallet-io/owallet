@@ -828,3 +828,6 @@ export function trimWordsStr(str: string): string {
     .filter((word) => word.trim().length > 0);
   return words.join(" ");
 }
+export const delay = (delayInms) => {
+  return new Promise((resolve) => setTimeout(resolve, delayInms));
+};

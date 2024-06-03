@@ -27,6 +27,7 @@ import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
 import Web3 from "web3";
 import FastImage from "react-native-fast-image";
 import { useTheme } from "@src/themes/theme-provider";
+import { shortenAddress } from "@src/utils/helper";
 // eslint-disable-next-line @typescript-eslint/no-var-requires,import/no-extraneous-dependencies
 const { BitcoinUnit } = require("bitcoin-units");
 
@@ -280,20 +281,14 @@ export const SignBitcoinModal: FunctionComponent<{
             {msgData?.changeAddress && (
               <ItemReceivedToken
                 label={"From"}
-                valueDisplay={Bech32Address.shortenAddress(
-                  msgData?.changeAddress,
-                  20
-                )}
+                valueDisplay={shortenAddress(msgData?.changeAddress)}
                 value={msgData?.changeAddress}
               />
             )}
             {msgData?.address && (
               <ItemReceivedToken
                 label={"To"}
-                valueDisplay={Bech32Address.shortenAddress(
-                  msgData?.address,
-                  20
-                )}
+                valueDisplay={shortenAddress(msgData?.address)}
                 value={msgData?.address}
               />
             )}

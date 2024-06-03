@@ -11,6 +11,7 @@ import { useStyleMyWallet } from "./styles";
 import OWFlatList from "@src/components/page/ow-flat-list";
 import { RightArrowIcon } from "@src/components/icon";
 import { ChainIdEnum } from "@oraichain/oraidex-common";
+import { PricePretty } from "@owallet/unit";
 
 const MnemonicSeed = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -20,6 +21,7 @@ const MnemonicSeed = () => {
     modalStore,
     universalSwapStore,
     appInitStore,
+    priceStore,
     accountStore,
   } = useStore();
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
@@ -51,7 +53,8 @@ const MnemonicSeed = () => {
       await keyRingStore.changeKeyRing(index);
     }
   }, []);
-
+  const { totalPriceBalance } = appInitStore.getMultipleAssets;
+  const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
   const renderItem = ({ item }) => {
     return (
       <>
@@ -96,10 +99,7 @@ const MnemonicSeed = () => {
               </Text>
               {item.selected ? (
                 <Text color={colors["neutral-text-title"]} numberOfLines={1}>
-                  $
-                  {appInitStore.getInitApp.balances?.[
-                    accountOrai.bech32Address
-                  ].toFixed(2) ?? 0.0}
+                  {new PricePretty(fiatCurrency, totalPriceBalance)?.toString()}
                 </Text>
               ) : null}
             </View>

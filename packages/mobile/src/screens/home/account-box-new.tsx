@@ -277,7 +277,7 @@ export const AccountBoxAll: FunctionComponent<{
       <OWBox style={styles.containerOWBox}>
         <View style={styles.containerInfoAccount}>
           <TouchableOpacity
-            disabled={!universalSwapStore.getLoadStatus.isLoad}
+            // disabled={!universalSwapStore.getLoadStatus.isLoad}
             onPress={_onPressMyWallet}
             style={styles.btnAcc}
           >
@@ -288,7 +288,7 @@ export const AccountBoxAll: FunctionComponent<{
               fadeDuration={0}
             />
             <Text style={styles.labelName}>{account?.name || ".."}</Text>
-            {/*<DownArrowIcon height={15} color={colors["primary-text"]} />*/}
+            <DownArrowIcon height={15} color={colors["primary-text"]} />
           </TouchableOpacity>
           {appInitStore.getInitApp.isAllNetworks ? (
             <OWButton

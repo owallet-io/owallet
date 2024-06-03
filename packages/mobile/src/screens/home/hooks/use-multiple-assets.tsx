@@ -5,6 +5,7 @@ import {
   ChainIdEnum,
   CWStargate,
   DenomHelper,
+  FiatCurrencies,
   getBase58Address,
   getEvmAddress,
   getOasisNic,
@@ -47,7 +48,7 @@ import {
   mapChainIdToChainEndpoint,
   urlTxHistory,
 } from "@src/common/constants";
-import { MapChainIdToNetwork } from "@src/utils/helper";
+import { delay, MapChainIdToNetwork } from "@src/utils/helper";
 
 export const initPrice = new PricePretty(
   {
@@ -78,6 +79,7 @@ export const useMultipleAssets = (
 ): IMultipleAsset => {
   const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
   const [isLoading, setIsLoading] = useState(false);
+  const coinIds = new Map<string, boolean>();
   if (!fiatCurrency) return;
 
   const tokensByChainId: Record<ChainIdEnum, ViewTokenData> = {};
@@ -100,9 +102,10 @@ export const useMultipleAssets = (
     type?: string
   ) => {
     const balance = new CoinPretty(token, amount);
-    const price = token?.coinGeckoId
-      ? priceStore.calculatePrice(balance)
-      : initPrice;
+    coinIds.set(token?.coinGeckoId, true);
+    // const price = token?.coinGeckoId
+    //   ? priceStore.calculatePrice(balance)
+    //   : initPrice;
     const rawChainInfo = {
       chainId: chainInfo.chainId,
       chainName: chainInfo.chainName,
@@ -117,7 +120,7 @@ export const useMultipleAssets = (
             amount: amount,
           },
           chainInfo: rawChainInfo,
-          price: price.toDec().toString(),
+          // price: price.toDec().toString(),
           type: type
             ? type === AddressBtcType.Bech32
               ? "Segwit"
@@ -125,15 +128,16 @@ export const useMultipleAssets = (
             : null,
         },
       ],
-      totalBalance: (
-        new PricePretty(
-          fiatCurrency,
-          tokensByChainId[chainInfo.chainId]?.totalBalance
-        ) || initPrice
-      )
-        .add(price)
-        .toDec()
-        .toString(),
+      totalBalance: "0",
+      // totalBalance: (
+      //   new PricePretty(
+      //     fiatCurrency,
+      //     tokensByChainId[chainInfo.chainId]?.totalBalance
+      //   ) || initPrice
+      // )
+      //   .add(price)
+      //   .toDec()
+      //   .toString()
     };
   };
   const init = async () => {
@@ -179,6 +183,11 @@ export const useMultipleAssets = (
       );
 
       await Promise.allSettled(allBalancePromises);
+      console.log(Array.from(coinIds.keys()), "coinIds");
+      const currencies = FiatCurrencies.map(({ currency }) => currency);
+      console.log(currencies, "currencies");
+      priceStore.updateURL(Array.from(coinIds.keys()), currencies, true);
+      await delay(500);
       let overallTotalBalance = "0";
       let allTokens: ViewRawToken[] = [];
       // Loop through each key in the data object
@@ -189,6 +198,19 @@ export const useMultipleAssets = (
             ?.toLowerCase()
             ?.includes("test")
         ) {
+          let totalBalance = initPrice;
+          const tokensData = await Promise.all(
+            tokensByChainId[chain].tokens.map(async (infoToken) => {
+              const { token } = infoToken;
+              const balance = new CoinPretty(token.currency, token.amount);
+              const price = token?.currency?.coinGeckoId
+                ? await priceStore.waitFreshCalculatePrice(balance)
+                : initPrice;
+              totalBalance = totalBalance.add(price);
+              return { ...infoToken, price: price.toDec().toString() };
+            })
+          );
+          tokensByChainId[chain].totalBalance = totalBalance.toDec().toString();
           // Add the total balance for each chain to the overall total balance
           overallTotalBalance = new PricePretty(
             fiatCurrency,
@@ -200,7 +222,7 @@ export const useMultipleAssets = (
             .toDec()
             .toString();
           // Concatenate the tokens for each chain to the allTokens array
-          allTokens = allTokens.concat(tokensByChainId[chain].tokens);
+          allTokens = allTokens.concat(tokensData);
         }
       }
 
