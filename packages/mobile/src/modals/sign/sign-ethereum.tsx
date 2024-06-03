@@ -25,6 +25,7 @@ import { ChainIdEnum, DenomHelper } from "@owallet/common";
 import { Bech32Address } from "@owallet/cosmos";
 import { AmountCard, WasmExecutionMsgView } from "@src/modals/sign/components";
 import { ScrollView } from "react-native-gesture-handler";
+import { formatContractAddress, shortenAddress } from "@src/utils/helper";
 
 export const SignEthereumModal: FunctionComponent<{
   isOpen: boolean;
@@ -134,6 +135,7 @@ export const SignEthereumModal: FunctionComponent<{
         }
         setDataSign(signInteractionStore.waitingEthereumData);
         const dataSigning = data?.data?.data?.data;
+        console.log(dataSigning, "dataSigning");
         const hstInterface = new ethers.utils.Interface(ERC20_ABI);
         try {
           const { data, type } = dataSigning;
@@ -144,9 +146,10 @@ export const SignEthereumModal: FunctionComponent<{
             });
           } else if (data && type && type === "erc20") {
             const token = hstInterface.parseTransaction({ data });
+            console.log(token, "token");
             const to = token?.args?._to || token?.args?.[0];
             const value = token?.args?._value || token?.args?.[1];
-
+            console.log(to, value, "to and value");
             setInfoSign({
               ...dataSigning,
               value: Web3.utils.toHex(value?.toString()),
@@ -239,7 +242,7 @@ export const SignEthereumModal: FunctionComponent<{
         ?.trim(true)
         ?.toString();
     };
-
+    console.log(infoSign, "infoSign");
     return (
       <WrapViewModal
         style={{
@@ -292,24 +295,29 @@ export const SignEthereumModal: FunctionComponent<{
             {chainStore.current.chainId === ChainIdEnum.Oasis && signer && (
               <ItemReceivedToken
                 label={"From"}
-                valueDisplay={Bech32Address.shortenAddress(signer, 20)}
+                valueDisplay={shortenAddress(signer)}
                 value={signer}
               />
             )}
             {infoSign?.from && (
               <ItemReceivedToken
                 label={"From"}
-                valueDisplay={Bech32Address.shortenAddress(infoSign?.from, 20)}
+                valueDisplay={shortenAddress(infoSign?.from)}
                 value={infoSign?.from}
               />
             )}
             {infoSign?.to && (
               <ItemReceivedToken
                 label={"To"}
-                valueDisplay={
-                  infoSign?.to && Bech32Address.shortenAddress(infoSign?.to, 20)
-                }
+                valueDisplay={shortenAddress(infoSign?.to)}
                 value={infoSign?.to}
+              />
+            )}
+            {infoSign?.contractAddress && (
+              <ItemReceivedToken
+                label={"Contract"}
+                valueDisplay={formatContractAddress(infoSign?.contractAddress)}
+                value={infoSign?.contractAddress}
               />
             )}
             <FeeInSign

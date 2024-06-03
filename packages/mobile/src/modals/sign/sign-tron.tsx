@@ -38,6 +38,7 @@ import { useTheme } from "@src/themes/theme-provider";
 import { FeeInSign } from "@src/modals/sign/fee";
 import ItemDetail from "@src/screens/transactions/components/item-details";
 import { metrics } from "@src/themes";
+import { formatContractAddress, shortenAddress } from "@src/utils/helper";
 
 export const SignTronModal: FunctionComponent<{
   isOpen: boolean;
@@ -329,10 +330,7 @@ export const SignTronModal: FunctionComponent<{
             {addressTronBase58 && (
               <ItemReceivedToken
                 label={"From"}
-                valueDisplay={Bech32Address.shortenAddress(
-                  addressTronBase58,
-                  20
-                )}
+                valueDisplay={shortenAddress(addressTronBase58)}
                 value={addressTronBase58}
               />
             )}
@@ -346,17 +344,14 @@ export const SignTronModal: FunctionComponent<{
             {txInfo?.address && (
               <ItemReceivedToken
                 label={"Contract"}
-                valueDisplay={formatAddress(txInfo?.address, 12)}
+                valueDisplay={formatContractAddress(txInfo?.address)}
                 value={txInfo?.address}
               />
             )}
             {recipientConfig?.recipient && (
               <ItemReceivedToken
                 label={"To"}
-                valueDisplay={
-                  recipientConfig.recipient &&
-                  Bech32Address.shortenAddress(recipientConfig.recipient, 20)
-                }
+                valueDisplay={shortenAddress(recipientConfig.recipient)}
                 value={recipientConfig.recipient}
               />
             )}
