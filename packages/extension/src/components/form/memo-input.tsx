@@ -31,6 +31,7 @@ export const MemoInput: FunctionComponent<MemoInputProps> = observer(
       <FormGroup className={className}>
         <Input
           label={label ?? ""}
+          placeHolder={label}
           id={inputId}
           value={memoConfig.memo}
           onChange={(e) => {

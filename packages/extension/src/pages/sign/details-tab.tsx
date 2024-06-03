@@ -16,9 +16,11 @@ import {
   SignDocHelper,
 } from "@owallet/hooks";
 import { useLanguage } from "@owallet/common";
-import { Badge, Button, Label } from "reactstrap";
+import { Button, Label } from "reactstrap";
 import { renderDirectMessage } from "./direct";
-import classnames from "classnames";
+import { Text } from "../../components/common/text";
+import colors from "../../theme/colors";
+import { Card } from "../../components/common/card";
 
 export const DetailsTab: FunctionComponent<{
   signDocHelper: SignDocHelper;
@@ -155,18 +157,148 @@ export const DetailsTab: FunctionComponent<{
       ) : null;
     };
 
+    const renderMsg = () => {
+      return (
+        <div>
+          <Card
+            containerStyle={{
+              flexDirection: "row",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              backgroundColor: colors["neutral-surface-action"],
+              borderTopRightRadius: 12,
+              borderBottomRightRadius: 12,
+              borderLeftWidth: 4,
+              borderLeftStyle: "solid",
+              borderColor: colors["primary-surface-default"],
+              padding: 12,
+              marginTop: 12,
+            }}
+          >
+            <div
+              style={{
+                flexDirection: "row",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <div
+                className="logo"
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 40,
+                  backgroundColor: "red",
+                }}
+              />
+              <div
+                className="infos"
+                style={{
+                  flexDirection: "column",
+                  display: "flex",
+                  marginLeft: 8,
+                }}
+              >
+                <Text size={16} weight="600">
+                  Execute Wasm Contract
+                </Text>
+                <Text
+                  size={14}
+                  weight="500"
+                  color={colors["neutral-text-body"]}
+                >
+                  orai051E23F...C52D28F
+                </Text>
+                <Text
+                  size={14}
+                  weight="500"
+                  color={colors["neutral-text-body"]}
+                >
+                  Sending: 134.2345 ORAI
+                </Text>
+              </div>
+            </div>
+            <div className="img">
+              <img
+                style={{ paddingRight: 4 }}
+                src={require("../../public/assets/icon/tdesign_chevron-down.svg")}
+              />
+            </div>
+          </Card>
+          <div
+            style={{
+              backgroundColor: colors["neutral-surface-bg"],
+              borderRadius: 12,
+              marginTop: 8,
+              padding: 8,
+              overflow: "hidden",
+            }}
+          >
+            {JSON.stringify({
+              provide_liquidity: {
+                assets: [
+                  {
+                    info: {
+                      token: {
+                        contract_addr:
+                          "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh",
+                      },
+                    },
+                    amount: "257853",
+                  },
+                  {
+                    info: {
+                      native_token: {
+                        denom: "orai",
+                      },
+                    },
+                    amount: "23191",
+                  },
+                ],
+                slippage_tolerance: "0.01",
+              },
+            })}
+          </div>
+        </div>
+      );
+    };
+
     return (
       <div className={styleDetailsTab.container}>
-        <Label
-          for="signing-messages"
-          className="form-control-label"
-          style={{ display: "flex" }}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+          }}
         >
-          <FormattedMessage id="sign.list.messages.label" />
-          <Badge className={classnames("ml-2", styleDetailsTab.msgsBadge)}>
-            {msgs.length}
-          </Badge>
-        </Label>
+          <img
+            style={{ paddingRight: 4 }}
+            src={require("../../public/assets/icon/tdesign_code-1.svg")}
+          />
+          <Text color={colors["neutral-text-body"]} weight="500">
+            <FormattedMessage id="sign.list.messages.label" />:
+          </Text>
+          <div
+            className="ml-2"
+            style={{
+              backgroundColor: colors["primary-surface-default"],
+              padding: "0px 8px",
+              borderRadius: 8,
+            }}
+          >
+            <Text
+              size={12}
+              weight="600"
+              color={colors["neutral-text-action-on-dark-bg"]}
+            >
+              {msgs.length}
+            </Text>
+          </div>
+        </div>
+        {renderMsg()}
+        {renderMsg()}
         <div id="signing-messages" className={styleDetailsTab.msgContainer}>
           {renderedMsgs}
         </div>

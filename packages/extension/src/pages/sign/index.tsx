@@ -269,7 +269,7 @@ export const SignPage: FunctionComponent = observer(() => {
         !isLoaded ? (
           <div className={style.container}>
             <div style={{ height: "75%", overflow: "scroll", padding: 16 }}>
-              <div
+              {/* <div
                 style={{
                   color: "#353945",
                   fontSize: 24,
@@ -279,49 +279,67 @@ export const SignPage: FunctionComponent = observer(() => {
                 }}
               >
                 {chainStore?.current?.raw?.chainName || "Oraichain"}
-              </div>
-              <div className={classnames(style.tabs)}>
-                <ul>
-                  <li
-                    className={classnames({ activeTabs: tab === Tab.Details })}
-                  >
+              </div> */}
+              <div
+                className={classnames(style.tabs)}
+                style={{ display: "flex", paddingBottom: 12 }}
+              >
+                <div>
+                  <Text size={16} weight="700">
+                    {"Approve transaction".toUpperCase()}
+                  </Text>
+                </div>
+                <div
+                  style={{
+                    padding: "6px 12px",
+                    backgroundColor: colors["neutral-surface-action3"],
+                    borderRadius: 999,
+                    alignItems: "center",
+                    cursor: "pointer",
+                  }}
+                >
+                  <Text weight="600">Raw Data</Text>
+                  <img
+                    src={require("../../public/assets/icon/tdesign_chevron-right.svg")}
+                  />
+                </div>
+                {/* <ul>
+                  <li className={classnames({ activeTabs: tab === Tab.Details })}>
                     <a
                       className={classnames(style.tab, {
-                        activeText: tab === Tab.Details,
+                        activeText: tab === Tab.Details
                       })}
                       onClick={() => {
                         setTab(Tab.Details);
                       }}
                     >
                       {intl.formatMessage({
-                        id: "sign.tab.details",
+                        id: "sign.tab.details"
                       })}
                     </a>
                   </li>
                   <li className={classnames({ activeTabs: tab === Tab.Data })}>
                     <a
                       className={classnames(style.tab, {
-                        activeText: tab === Tab.Data,
+                        activeText: tab === Tab.Data
                       })}
                       onClick={() => {
                         setTab(Tab.Data);
                       }}
                     >
                       {intl.formatMessage({
-                        id: "sign.tab.data",
+                        id: "sign.tab.data"
                       })}
                     </a>
                   </li>
-                </ul>
+                </ul> */}
               </div>
               <div
                 className={classnames(style.tabContainer, {
                   [style.dataTab]: tab === Tab.Data,
                 })}
               >
-                {tab === Tab.Data ? (
-                  <DataTab signDocHelper={signDocHelper} />
-                ) : null}
+                {/* {tab === Tab.Data ? <DataTab signDocHelper={signDocHelper} /> : null} */}
                 {tab === Tab.Details ? (
                   signDocHelper.signDocWrapper?.isADR36SignDoc ? (
                     <ADR36SignDocDetailsTab
@@ -370,13 +388,25 @@ export const SignPage: FunctionComponent = observer(() => {
                       alignItems: "flex-end",
                     }}
                   >
-                    <Text
-                      size={16}
-                      weight="600"
-                      color={colors["primary-text-action"]}
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        cursor: "pointer",
+                      }}
                     >
-                      0.00075 ORAI
-                    </Text>
+                      <Text
+                        size={16}
+                        weight="600"
+                        color={colors["primary-text-action"]}
+                      >
+                        0.00075 ORAI
+                      </Text>
+                      <img
+                        src={require("../../public/assets/icon/tdesign_chevron-down.svg")}
+                      />
+                    </div>
                     <Text color={colors["neutral-text-body"]}>≈ $524.23</Text>
                   </div>
                 </div>

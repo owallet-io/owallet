@@ -1,47 +1,10 @@
 @import "../../styles/var";
 
 .tabs {
-  background-color: "#F8F8F9";
-  border-radius: 16;
-  height: 40;
-  ul {
-    list-style: none;
-    display: flex;
-    flex: 1;
-    padding: 0;
-    background-color: #f8f8f9;
-    border-radius: 16px;
-    color: #777e90;
-    li {
-      flex: 1;
-      text-align: center;
-      // border-bottom-color: $color-gray-70;
-      // border-bottom-style: solid;
-      // border-bottom-width: 1px;
-      padding: 8px;
-      &:global(.active) {
-        border-bottom-width: 4px;
-        border-bottom-color: $primary-color;
-        color: $primary-color;
-      }
-      &:global(.activeTabs) {
-        background-color: $color-white;
-        border-radius: 16px;
-        color: $primary-color !important;
-        border: 1px solid #f3f3f3;
-        box-shadow: 0px 6.68657px 15.0448px -5.01493px rgba(24, 39, 75, 0.12);
-      }
-    }
-  }
-
-  .tab {
-    cursor: pointer;
-    text-decoration: none;
-    color: $color-neutral-3;
-    &:global(.activeText) {
-      color: $primary-color;
-    }
-  }
+  display: "flex";
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .buttons {

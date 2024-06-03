@@ -8,6 +8,7 @@ export const Card: FunctionComponent<{
 }> = ({ type = "normal", containerStyle, ...props }) => {
   return (
     <div
+      id="card"
       className={(style.card, type === "ink" ? style.bg : null)}
       style={containerStyle}
     >
