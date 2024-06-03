@@ -183,7 +183,12 @@ export const useMultipleAssets = (
       let allTokens: ViewRawToken[] = [];
       // Loop through each key in the data object
       for (const chain in tokensByChainId) {
-        if (tokensByChainId.hasOwnProperty(chain)) {
+        if (
+          tokensByChainId.hasOwnProperty(chain) &&
+          !tokensByChainId[chain]?.tokens?.[0].chainInfo?.chainName
+            ?.toLowerCase()
+            ?.includes("test")
+        ) {
           // Add the total balance for each chain to the overall total balance
           overallTotalBalance = new PricePretty(
             fiatCurrency,
