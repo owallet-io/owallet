@@ -134,6 +134,18 @@ export const EmbedChainInfos: AppChainInfo[] = [
         },
         {
           type: "cw20",
+          coinDenom: "SCORAI",
+          coinMinimalDenom:
+            "cw20:orai1065qe48g7aemju045aeyprflytemx7kecxkf5m7u5h5mphd0qlcs47pclp:stake-comp-orai",
+          contractAddress:
+            "orai1065qe48g7aemju045aeyprflytemx7kecxkf5m7u5h5mphd0qlcs47pclp",
+          coinDecimals: 6,
+          coinGeckoId: "scorai",
+          coinImageUrl:
+            "https://assets.coingecko.com/coins/images/28897/standard/Orchai_LOGO.png",
+        },
+        {
+          type: "cw20",
           coinDenom: "OCH",
           coinMinimalDenom:
             "cw20:orai1hn8w33cqvysun2aujk5sv33tku4pgcxhhnsxmvnkfvdxagcx0p8qa4l98q:OCH",
