@@ -150,10 +150,10 @@ export const FeeInSign: FunctionComponent<{
   const [isSetFeeModalOpen, setIsSetFeeModalOpen] = useState(false);
 
   useEffect(() => {
-    if (feeConfig.feeCurrency && !feeConfig.fee) {
+    if (feeConfig.feeCurrency && !feeConfig.fee && feeConfig.setFeeType) {
       feeConfig.setFeeType("average");
     }
-    if (appInitStore.getInitApp.feeOption) {
+    if (appInitStore.getInitApp.feeOption && feeConfig.setFeeType) {
       feeConfig.setFeeType(appInitStore.getInitApp.feeOption);
     }
   }, [feeConfig, appInitStore.getInitApp.feeOption]);
