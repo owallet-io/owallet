@@ -211,6 +211,7 @@ export const useMultipleAssets = (
             })
           );
           tokensByChainId[chain].totalBalance = totalBalance.toDec().toString();
+          tokensByChainId[chain].tokens = tokensData;
           // Add the total balance for each chain to the overall total balance
           overallTotalBalance = new PricePretty(
             fiatCurrency,

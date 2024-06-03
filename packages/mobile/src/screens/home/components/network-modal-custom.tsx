@@ -272,18 +272,18 @@ export const NetworkModalCustom = ({
               {item.chainName}
             </Text>
 
-            <Text
-              style={{
-                fontSize: 14,
-                color: colors["sub-text"],
-                fontWeight: "400",
-              }}
-            >
-              $
-              {!item.chainId
-                ? maskedNumber(totalUsd)
-                : maskedNumber(groupedData?.[item.chainId]?.sum)}
-            </Text>
+            {/*<Text*/}
+            {/*  style={{*/}
+            {/*    fontSize: 14,*/}
+            {/*    color: colors["sub-text"],*/}
+            {/*    fontWeight: "400",*/}
+            {/*  }}*/}
+            {/*>*/}
+            {/*  $*/}
+            {/*  {!item.chainId*/}
+            {/*    ? maskedNumber(totalUsd)*/}
+            {/*    : maskedNumber(groupedData?.[item.chainId]?.sum)}*/}
+            {/*</Text>*/}
           </View>
         </View>
 

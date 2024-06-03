@@ -71,7 +71,7 @@ export const AllNetworkTxCard: FunctionComponent<{
     console.log(allAddress, "allAddress");
     if (!allAddress) return;
     getWalletHistory(allAddress);
-  }, [chainId, appInitStore.getInitApp.isAllNetworks]);
+  }, [chainId, appInitStore.getInitApp.isAllNetworks, address]);
 
   const fiat = priceStore.defaultVsCurrency;
 
