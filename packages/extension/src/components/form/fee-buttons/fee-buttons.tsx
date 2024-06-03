@@ -19,6 +19,7 @@ import {
 import classnames from "classnames";
 import { observer } from "mobx-react-lite";
 import {
+  FeeType,
   IFeeConfig,
   IGasConfig,
   InsufficientFeeError,
@@ -280,6 +281,8 @@ export const FeeButtonsInner: FunctionComponent<
     };
 
     const renderVerticalFee = () => {
+      console.log("feeConfig.feeType 2", feeConfig.feeType);
+
       return (
         <div>
           {["low", "average", "high"].map((fee, i) => {
@@ -301,9 +304,7 @@ export const FeeButtonsInner: FunctionComponent<
                   justifyContent: "space-between",
                 }}
                 onClick={(e) => {
-                  feeConfig.setFeeType(
-                    fee == "low" ? "low" : fee == "average" ? "average" : "high"
-                  );
+                  feeConfig.setFeeType(fee as FeeType);
                   e.preventDefault();
                 }}
               >
@@ -349,7 +350,11 @@ export const FeeButtonsInner: FunctionComponent<
                     type="radio"
                     name="address"
                     value={""}
-                    checked={feeConfig.feeType == fee}
+                    checked={
+                      feeConfig.feeType == fee ||
+                      feeConfig?.fee?.maxDecimals(6).trim(true).toString() ===
+                        [lowFee, averageFee, highFee][i].trim(true).toString()
+                    }
                     onChange={() => console.log("ddd")}
                   />
                 </div>

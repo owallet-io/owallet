@@ -103,9 +103,6 @@ export const SignPage: FunctionComponent = observer(() => {
   const language = useLanguage();
   const fiatCurrency = language.fiatCurrency;
 
-  const currenFeeConfig = feeConfig.getFeeTypePretty(feeConfig.feeType);
-  const feePrice = priceStore.calculatePrice(currenFeeConfig, fiatCurrency);
-
   const signDocHelper = useSignDocHelper(feeConfig, memoConfig);
   amountConfig.setSignDocHelper(signDocHelper);
   const settingRef = useRef();
@@ -304,7 +301,7 @@ export const SignPage: FunctionComponent = observer(() => {
          Show the informations of tx when the sign data is delivered.
          If sign data not delivered yet, show the spinner alternatively.
          */
-        !isLoaded ? (
+        isLoaded ? (
           <div className={style.container}>
             <div style={{ height: "75%", overflow: "scroll", padding: 16 }}>
               {/* <div
@@ -443,14 +440,18 @@ export const SignPage: FunctionComponent = observer(() => {
                         weight="600"
                         color={colors["primary-text-action"]}
                       >
-                        {currenFeeConfig.trim(true).toString() || 0}
+                        {feeConfig.fee.maxDecimals(6).trim(true).toString() ||
+                          0}
                       </Text>
                       <img
                         src={require("../../public/assets/icon/tdesign_chevron-down.svg")}
                       />
                     </div>
                     <Text color={colors["neutral-text-body"]}>
-                      ≈{feePrice.toString() || 0}
+                      ≈
+                      {priceStore
+                        .calculatePrice(feeConfig.fee, language.fiatCurrency)
+                        ?.toString() || 0}
                     </Text>
                   </div>
                 </div>
