@@ -161,6 +161,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
     queriesStore,
     priceStore,
     modalStore,
+    appInitStore,
   } = useStore();
   const route = useRoute<
     RouteProp<
@@ -416,11 +417,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
         />
       }
     >
-      <PageHeader
-        title="Send"
-        subtitle={chainStore.current.chainName}
-        colors={colors}
-      />
+      <PageHeader title="Send" subtitle={chainStore.current.chainName} />
       <ScrollView
         style={{ height: metrics.screenHeight / 1.4 }}
         showsVerticalScrollIndicator={false}
