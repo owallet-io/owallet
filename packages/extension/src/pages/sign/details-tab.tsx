@@ -298,7 +298,6 @@ export const DetailsTab: FunctionComponent<{
           </div>
         </div>
         {renderMsg()}
-        {renderMsg()}
         <div id="signing-messages" className={styleDetailsTab.msgContainer}>
           {renderedMsgs}
         </div>

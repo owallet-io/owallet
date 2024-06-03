@@ -35,6 +35,10 @@ import { FeeModal } from "./modals/fee-modal";
 import { Button } from "../../components/common/button";
 import { Text } from "../../components/common/text";
 import { Card } from "../../components/common/card";
+import { DataModal } from "./modals/data-modal";
+import { WalletStatus } from "@owallet/stores";
+import { Address } from "../../components/address";
+import { useLanguage } from "@owallet/common";
 
 enum Tab {
   Details,
@@ -61,6 +65,7 @@ export const SignPage: FunctionComponent = observer(() => {
     signInteractionStore,
     accountStore,
     queriesStore,
+    priceStore,
   } = useStore();
 
   const [signer, setSigner] = useState("");
@@ -69,6 +74,12 @@ export const SignPage: FunctionComponent = observer(() => {
     boolean | undefined
   >();
   const [openSetting, setOpenSetting] = useState(false);
+  const [dataSetting, setDataSetting] = useState(false);
+
+  const accountInfo = accountStore.getAccount(chainStore.current.chainId);
+  const addressDisplay = accountInfo.getAddressDisplay(
+    keyRingStore.keyRingLedgerAddresses
+  );
 
   const current = chainStore.current;
   // Make the gas config with 1 gas initially to prevent the temporary 0 gas error at the beginning.
@@ -89,9 +100,16 @@ export const SignPage: FunctionComponent = observer(() => {
   );
   const memoConfig = useMemoConfig(chainStore, current.chainId);
 
+  const language = useLanguage();
+  const fiatCurrency = language.fiatCurrency;
+
+  const currenFeeConfig = feeConfig.getFeeTypePretty(feeConfig.feeType);
+  const feePrice = priceStore.calculatePrice(currenFeeConfig, fiatCurrency);
+
   const signDocHelper = useSignDocHelper(feeConfig, memoConfig);
   amountConfig.setSignDocHelper(signDocHelper);
   const settingRef = useRef();
+  const dataRef = useRef();
   useEffect(() => {
     if (signInteractionStore.waitingData) {
       const data = signInteractionStore.waitingData;
@@ -213,6 +231,15 @@ export const SignPage: FunctionComponent = observer(() => {
     setOpenSetting(false);
   });
 
+  useOnClickOutside(dataRef, () => {
+    handleCloseDataModal();
+  });
+
+  const handleCloseDataModal = () => {
+    setDataSetting(false);
+    setTab(Tab.Details);
+  };
+
   const approveIsDisabled = (() => {
     if (!isLoaded) {
       return true;
@@ -261,6 +288,17 @@ export const SignPage: FunctionComponent = observer(() => {
           gasConfig={gasConfig}
         />
       </div>
+      <div
+        className={cx("setting", dataSetting ? "activeSetting" : "", "modal")}
+        ref={dataRef}
+      >
+        <DataModal
+          onClose={() => {
+            handleCloseDataModal();
+          }}
+          renderData={() => <DataTab signDocHelper={signDocHelper} />}
+        />
+      </div>
       {
         /*
          Show the informations of tx when the sign data is delivered.
@@ -290,6 +328,10 @@ export const SignPage: FunctionComponent = observer(() => {
                   </Text>
                 </div>
                 <div
+                  onClick={() => {
+                    setDataSetting(true);
+                    setTab(Tab.Data);
+                  }}
                   style={{
                     padding: "6px 12px",
                     backgroundColor: colors["neutral-surface-action3"],
@@ -401,13 +443,15 @@ export const SignPage: FunctionComponent = observer(() => {
                         weight="600"
                         color={colors["primary-text-action"]}
                       >
-                        0.00075 ORAI
+                        {currenFeeConfig.trim(true).toString() || 0}
                       </Text>
                       <img
                         src={require("../../public/assets/icon/tdesign_chevron-down.svg")}
                       />
                     </div>
-                    <Text color={colors["neutral-text-body"]}>≈ $524.23</Text>
+                    <Text color={colors["neutral-text-body"]}>
+                      ≈{feePrice.toString() || 0}
+                    </Text>
                   </div>
                 </div>
               </Card>
@@ -448,23 +492,34 @@ export const SignPage: FunctionComponent = observer(() => {
                         display: "flex",
                       }}
                     >
-                      <div
+                      <img
                         style={{
                           width: 40,
                           height: 40,
                           borderRadius: 40,
-                          backgroundColor: "red",
-                          marginRight: 4,
+                          marginRight: 8,
                         }}
+                        src={require("../../public/assets/images/default-avatar.png")}
                       />
                       <div style={{ flexDirection: "column", display: "flex" }}>
                         <Text size={14} weight="600">
-                          123
+                          {accountInfo.name}
                         </Text>
-                        <Text color={colors["neutral-text-body"]}>123</Text>
+                        <Text color={colors["neutral-text-body"]}>
+                          {" "}
+                          <Address
+                            maxCharacters={18}
+                            lineBreakBeforePrefix={false}
+                          >
+                            {accountInfo.walletStatus === WalletStatus.Loaded &&
+                            addressDisplay
+                              ? addressDisplay
+                              : "..."}
+                          </Address>
+                        </Text>
                       </div>
                     </div>
-                    <Text color={colors["neutral-text-body"]}>123</Text>
+                    {/* <Text color={colors["neutral-text-body"]}>123</Text> */}
                   </div>
                   <div
                     style={{
