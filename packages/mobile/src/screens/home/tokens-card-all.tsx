@@ -40,89 +40,31 @@ import OWText from "@src/components/text/ow-text";
 import { HistoryCard } from "@src/screens/transactions";
 import { ArrowOpsiteUpDownIcon, DownArrowIcon } from "@src/components/icon";
 import { ViewRawToken, ViewToken } from "@src/stores/huge-queries";
-import { CoinPretty, PricePretty } from "@owallet/unit";
+import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
 
 export const TokensCardAll: FunctionComponent<{
   containerStyle?: ViewStyle;
   dataTokens: ViewRawToken[];
 }> = observer(({ containerStyle, dataTokens }) => {
-  const {
-    accountStore,
-    universalSwapStore,
-    chainStore,
-    appInitStore,
-    queriesStore,
-    keyRingStore,
-    priceStore,
-  } = useStore();
+  const { priceStore, appInitStore } = useStore();
   const { colors } = useTheme();
-  const theme = appInitStore.getInitApp.theme;
   const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
-
-  const [more, setMore] = useState(true);
   const [activeTab, setActiveTab] = useState("tokens");
-  const [yesterdayAssets, setYesterdayAssets] = useState([]);
-  const [queryBalances, setQueryBalances] = useState({});
-  const [isPending, startTransition] = useTransition();
-
-  const account = accountStore.getAccount(chainStore.current.chainId);
-  const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
-
-  useEffect(() => {
-    InteractionManager.runAfterInteractions(() => {
-      const queries = queriesStore.get(chainStore.current.chainId);
-      const address = account.getAddressDisplay(
-        keyRingStore.keyRingLedgerAddresses
-      );
-      const balances = queries.queryBalances.getQueryBech32Address(address);
-      setQueryBalances(balances);
-    });
-  }, [chainStore.current.chainId]);
-
-  const getYesterdayAssets = async () => {
-    appInitStore.updateYesterdayPriceFeed({});
-    setYesterdayAssets([]);
-    const res = await API.getYesterdayAssets(
-      {
-        address: accountOrai.bech32Address,
-        time: "YESTERDAY",
-      },
-      {
-        baseURL: "https://staging.owallet.dev/",
-      }
-    );
-
-    if (res && res.status === 200) {
-      const dataKeys = Object.keys(res.data);
-      const yesterday = dataKeys.find((k) => {
-        // const isToday = moment(Number(k)).isSame(moment(), "day");
-        // return !isToday;
-        return true;
-      });
-
-      if (yesterday) {
-        const yesterdayData = res.data[yesterday];
-        setYesterdayAssets(yesterdayData);
-        appInitStore.updateYesterdayPriceFeed(yesterdayData);
-      } else {
-        setYesterdayAssets([]);
-        appInitStore.updateYesterdayPriceFeed([]);
-      }
-    }
-  };
-
-  useEffect(() => {
-    InteractionManager.runAfterInteractions(() => {
-      getYesterdayAssets();
-    });
-  }, [accountOrai.bech32Address]);
   const styles = styling(colors);
+
+  const tokens = appInitStore.getInitApp.hideTokensWithoutBalance
+    ? dataTokens.filter((item, index) => {
+        return new Dec(item.token.amount).gt(new Dec("1000"));
+      })
+    : dataTokens;
   const renderContent = () => {
     if (activeTab === "tokens") {
       return (
         <>
-          {dataTokens?.length > 0 ? (
-            dataTokens.map((item, index) => <TokenItem item={item} />)
+          {tokens?.length > 0 ? (
+            tokens.map((item, index) => (
+              <TokenItem key={index.toString()} item={item} />
+            ))
           ) : (
             <View
               style={{

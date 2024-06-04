@@ -16,6 +16,7 @@ export class AppInit {
     isAllNetworks: boolean;
     date_updated: null | number;
     theme: "dark" | "light";
+    hideTokensWithoutBalance: boolean;
     visibleTabBar?: string;
     feeOption?: "low" | "average" | "high";
     prices: CoinGeckoPrices<string>;
@@ -38,6 +39,7 @@ export class AppInit {
       passcodeType: "alphabet",
       date_updated: null,
       theme: "light",
+      hideTokensWithoutBalance: true,
       feeOption: "average",
       isAllNetworks: false,
       prices: {},
@@ -106,6 +108,10 @@ export class AppInit {
     this.initApp = { ...this.initApp, theme };
   }
 
+  @action
+  updateHideTokensWithoutBalance(hideTokensWithoutBalance) {
+    this.initApp = { ...this.initApp, hideTokensWithoutBalance };
+  }
   @action
   updateVisibleTabBar(visibleTabBar) {
     this.initApp = { ...this.initApp, visibleTabBar };

@@ -103,9 +103,9 @@ export const useMultipleAssets = (
   ) => {
     const balance = new CoinPretty(token, amount);
     coinIds.set(token?.coinGeckoId, true);
-    // const price = token?.coinGeckoId
-    //   ? priceStore.calculatePrice(balance)
-    //   : initPrice;
+    const price = token?.coinGeckoId
+      ? priceStore.calculatePrice(balance)
+      : initPrice;
     const rawChainInfo = {
       chainId: chainInfo.chainId,
       chainName: chainInfo.chainName,
@@ -128,16 +128,16 @@ export const useMultipleAssets = (
             : null,
         },
       ],
-      totalBalance: "0",
-      // totalBalance: (
-      //   new PricePretty(
-      //     fiatCurrency,
-      //     tokensByChainId[chainInfo.chainId]?.totalBalance
-      //   ) || initPrice
-      // )
-      //   .add(price)
-      //   .toDec()
-      //   .toString()
+      // totalBalance: '0'
+      totalBalance: (
+        new PricePretty(
+          fiatCurrency,
+          tokensByChainId[chainInfo.chainId]?.totalBalance
+        ) || initPrice
+      )
+        .add(price)
+        .toDec()
+        .toString(),
     };
   };
   const init = async () => {
@@ -183,9 +183,7 @@ export const useMultipleAssets = (
       );
 
       await Promise.allSettled(allBalancePromises);
-      console.log(Array.from(coinIds.keys()), "coinIds");
       const currencies = FiatCurrencies.map(({ currency }) => currency);
-      console.log(currencies, "currencies");
       priceStore.updateURL(Array.from(coinIds.keys()), currencies, true);
       await delay(500);
       let overallTotalBalance = "0";
