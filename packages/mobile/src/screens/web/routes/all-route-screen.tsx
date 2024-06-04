@@ -12,10 +12,22 @@ import React from "react";
 import { dataAll } from "@src/screens/web/helper/browser-helper";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
+import { useStore } from "@src/stores";
+import { showToast } from "@src/utils/helper";
 
 export const AllRoute = observer(() => {
   const { colors } = useTheme();
+  const { browserStore } = useStore();
+  const { inject } = browserStore;
+  const sourceCode = inject;
   const onToBrowser = (url) => {
+    if (!sourceCode) {
+      showToast({
+        type: "danger",
+        message: "Not connected! Please try again.",
+      });
+      return;
+    }
     if (!url) return;
     navigate(SCREENS.DetailsBrowser, {
       url: url,

@@ -11,10 +11,23 @@ import React from "react";
 import { aiData } from "@src/screens/web/helper/browser-helper";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
+import { showToast } from "@src/utils/helper";
+import { useStore } from "@src/stores";
+import { observer } from "mobx-react-lite";
 
-export const AiRoute = () => {
+export const AiRoute = observer(() => {
   const { colors } = useTheme();
+  const { browserStore } = useStore();
+  const { inject } = browserStore;
+  const sourceCode = inject;
   const onToBrowser = (url) => {
+    if (!sourceCode) {
+      showToast({
+        type: "danger",
+        message: "Not connected! Please try again.",
+      });
+      return;
+    }
     if (!url) return;
     navigate(SCREENS.DetailsBrowser, {
       url: url,
@@ -88,4 +101,4 @@ export const AiRoute = () => {
       />
     </View>
   );
-};
+});

@@ -20,7 +20,7 @@ import {
 } from "@src/screens/web/helper/browser-helper";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
-import { checkValidDomain } from "@src/utils/helper";
+import { checkValidDomain, showToast } from "@src/utils/helper";
 import { useStore } from "@src/stores";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
 
@@ -28,6 +28,8 @@ export const BrowserScreen = observer(() => {
   const layout = useWindowDimensions();
   const { colors } = useTheme();
   const { browserStore } = useStore();
+  const { inject } = browserStore;
+  const sourceCode = inject;
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
     { key: "all", title: "All" },
@@ -53,6 +55,13 @@ export const BrowserScreen = observer(() => {
     />
   );
   const onDetailBrowser = (url) => {
+    if (!sourceCode) {
+      showToast({
+        type: "danger",
+        message: "Not connected! Please try again.",
+      });
+      return;
+    }
     if (!url) return;
     navigate(SCREENS.DetailsBrowser, {
       url: url,
@@ -68,6 +77,13 @@ export const BrowserScreen = observer(() => {
       link = url?.indexOf("http") >= 0 ? url : "https://" + url;
     } else {
       link = `https://www.google.com/search?q=${url}`;
+    }
+    if (!sourceCode) {
+      showToast({
+        type: "danger",
+        message: "Not connected! Please try again.",
+      });
+      return;
     }
     navigate(SCREENS.DetailsBrowser, {
       url: link,
@@ -86,6 +102,13 @@ export const BrowserScreen = observer(() => {
     const text = await Clipboard.getString();
     if (text) {
       setUrl(text);
+      if (!sourceCode) {
+        showToast({
+          type: "danger",
+          message: "Not connected! Please try again.",
+        });
+        return;
+      }
       navigate(SCREENS.DetailsBrowser, {
         url: text,
       });
