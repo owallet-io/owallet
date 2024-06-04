@@ -18,9 +18,9 @@ import { OWSearchInput } from "@src/components/ow-search-input";
 import { EmptyTx } from "@src/screens/transactions/components/empty-tx";
 
 import { ChainIdEnum, getOasisAddress } from "@owallet/common";
-import { TxCosmosItem } from "@src/screens/transactions/components/items/tx-cosmos-item";
 import { AllNetworkTxItem } from "@src/screens/transactions/all-network/all-network-tx-item";
 import { convertObjChainAddressToString } from "@src/screens/transactions/all-network/all-network.helper";
+import { useRoute } from "@react-navigation/native";
 
 const AllNetworkTxsScreen = observer(() => {
   const {
@@ -30,7 +30,8 @@ const AllNetworkTxsScreen = observer(() => {
     keyRingStore,
     appInitStore,
   } = useStore();
-
+  const params = useRoute().params;
+  console.log(params, "params");
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadMore, setLoadMore] = useState(false);
@@ -58,7 +59,7 @@ const AllNetworkTxsScreen = observer(() => {
       if (!isLoadMore) setLoading(true);
       if (!hasMore.current) throw Error("Failed");
 
-      const res = await API.getTxsAllNetwork(
+      let res = await API.getTxsAllNetwork(
         {
           addrByNetworks: convertObjChainAddressToString(addrByNetworks),
           offset: !isLoadMore ? 0 : page.current * perPage,
@@ -68,6 +69,20 @@ const AllNetworkTxsScreen = observer(() => {
           baseURL: urlTxHistory,
         }
       );
+      if (params?.tokenAddr) {
+        res = await API.getTxsByToken(
+          {
+            tokenAddr: params.tokenAddr,
+            userAddr: params.userAddress,
+            network: params.network,
+            offset: !isLoadMore ? 0 : page.current * perPage,
+            limit: perPage,
+          },
+          {
+            baseURL: urlTxHistory,
+          }
+        );
+      }
       if (res && res.status !== 200) throw Error("Failed");
       page.current += 1;
       const totalPage = Math.ceil(res.data.totalRecord / perPage);

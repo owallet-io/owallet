@@ -10,25 +10,22 @@ import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { AllNetworkTxItem } from "@src/screens/transactions/all-network/all-network-tx-item";
 import { AllNetworkItemTx } from "@src/screens/transactions/all-network/all-network.types";
 import { API } from "@src/common/api";
-import { urlTxHistory } from "@src/common/constants";
+import { SCREENS, urlTxHistory } from "@src/common/constants";
 import { MapChainIdToNetwork } from "@src/utils/helper";
+import { OWButton } from "@src/components/button";
+import { navigate } from "@src/router/root";
 
 export const HistoryByToken: FunctionComponent<{
   chainId: string;
   tokenAddr: string;
 }> = observer(({ chainId, tokenAddr }) => {
-  const { chainStore, priceStore, keyRingStore, accountStore } = useStore();
-  const fiat = priceStore.defaultVsCurrency;
-  // const { chainId } = chainStore.current;
-  const price = priceStore.getPrice(
-    chainStore.current.stakeCurrency.coinGeckoId,
-    fiat
-  );
+  const { keyRingStore, accountStore } = useStore();
+  if (!tokenAddr || !chainId) return;
   const heightHeader = useGetHeightHeader();
   const heightBottom = useBottomTabBarHeight();
-  // const containerStyle = {
-  //   minHeight: (metrics.screenHeight - (heightHeader + heightBottom + 100)) / 2
-  // };
+  const containerStyle = {
+    minHeight: (metrics.screenHeight - (heightHeader + heightBottom + 100)) / 2,
+  };
   const mapChainNetwork = MapChainIdToNetwork[chainId];
   const account = accountStore.getAccount(chainId);
   const address = account.getAddressDisplay(
@@ -70,7 +67,7 @@ export const HistoryByToken: FunctionComponent<{
 
     if (!allArr) return;
     getWalletHistory(allArr);
-  }, []);
+  }, [allArr]);
 
   if (histories?.length <= 0 || !histories?.length)
     return (
@@ -80,7 +77,7 @@ export const HistoryByToken: FunctionComponent<{
     );
 
   return (
-    <View>
+    <View style={containerStyle}>
       {histories?.length > 0
         ? histories.map((item, index) => {
             return (
@@ -93,6 +90,27 @@ export const HistoryByToken: FunctionComponent<{
             );
           })
         : null}
+      {histories?.length > 9 && (
+        <OWButton
+          style={{
+            marginTop: 16,
+          }}
+          label={"View all"}
+          size="medium"
+          type="secondary"
+          onPress={() => {
+            navigate(SCREENS.STACK.Others, {
+              screen: SCREENS.Transactions,
+              params: {
+                network: mapChainNetwork,
+                userAddress: allArr,
+                tokenAddr,
+              },
+            });
+            return;
+          }}
+        />
+      )}
     </View>
   );
 });
