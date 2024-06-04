@@ -48,6 +48,7 @@ export const DataModal: FunctionComponent<{
             backgroundColor: colors["neutral-surface-bg"],
             borderRadius: 12,
             padding: 8,
+            width: "100vw",
           }}
         >
           {renderData()}

@@ -101,7 +101,6 @@ export const SignPage: FunctionComponent = observer(() => {
   const memoConfig = useMemoConfig(chainStore, current.chainId);
 
   const language = useLanguage();
-  const fiatCurrency = language.fiatCurrency;
 
   const signDocHelper = useSignDocHelper(feeConfig, memoConfig);
   amountConfig.setSignDocHelper(signDocHelper);

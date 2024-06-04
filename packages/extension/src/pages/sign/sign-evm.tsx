@@ -1,5 +1,10 @@
-import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
-import { Button } from "reactstrap";
+import React, {
+  FunctionComponent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import { HeaderLayout } from "../../layouts";
 
@@ -8,8 +13,7 @@ import style from "./style.module.scss";
 import { useStore } from "../../stores";
 
 import classnames from "classnames";
-import { DataTab } from "./data-tab";
-import { DetailsTab } from "./details-tab";
+
 import { FormattedMessage, useIntl } from "react-intl";
 
 import { useHistory } from "react-router";
@@ -30,17 +34,35 @@ import Web3 from "web3";
 import { DetailsTabEvm } from "./details-tab-evm";
 import { DataTabEvm } from "./data-tab-evm";
 import { Dec, Int } from "@owallet/unit";
+import { Text } from "../../components/common/text";
+import { Address } from "../../components/address";
+import colors from "../../theme/colors";
+import { Card } from "../../components/common/card";
+import { FeeModal } from "./modals/fee-modal";
+import { WalletStatus } from "@owallet/stores";
+import { useLanguage } from "@owallet/common";
+import { DataModal } from "./modals/data-modal";
+import useOnClickOutside from "../../hooks/use-click-outside";
+import cn from "classnames/bind";
+import { Button } from "../../components/common/button";
 
 enum Tab {
   Details,
   Data,
 }
 
+const cx = cn.bind(style);
+
 export const SignEvmPage: FunctionComponent = observer(() => {
   const history = useHistory();
 
   const [tab, setTab] = useState<Tab>(Tab.Details);
   const [dataSign, setDataSign] = useState(null);
+  const [openSetting, setOpenSetting] = useState(false);
+  const [dataSetting, setDataSetting] = useState(false);
+
+  const settingRef = useRef();
+  const dataRef = useRef();
 
   const intl = useIntl();
 
@@ -56,6 +78,7 @@ export const SignEvmPage: FunctionComponent = observer(() => {
     signInteractionStore,
     accountStore,
     queriesStore,
+    priceStore,
   } = useStore();
 
   const current = chainStore.current;
@@ -79,6 +102,8 @@ export const SignEvmPage: FunctionComponent = observer(() => {
     null
   );
 
+  const language = useLanguage();
+
   const memoConfig = useMemoConfig(chainStore, current.chainId);
   const feeConfig = useFeeEvmConfig(
     chainStore,
@@ -98,6 +123,11 @@ export const SignEvmPage: FunctionComponent = observer(() => {
   const preferNoSetFee = !!account.isSendingMsg || isProcessing;
   const preferNoSetMemo = !!account.isSendingMsg || isProcessing;
 
+  const accountInfo = accountStore.getAccount(chainStore.current.chainId);
+  const addressDisplay = accountInfo.getAddressDisplay(
+    keyRingStore.keyRingLedgerAddresses
+  );
+
   const interactionInfo = useInteractionInfo(() => {
     if (needSetIsProcessing) {
       setIsProcessing(true);
@@ -112,6 +142,20 @@ export const SignEvmPage: FunctionComponent = observer(() => {
 
     return () => {};
   }, [gasPrice, amountConfig?.sendCurrency]);
+
+  useOnClickOutside(settingRef, () => {
+    setOpenSetting(false);
+  });
+
+  useOnClickOutside(dataRef, () => {
+    handleCloseDataModal();
+  });
+
+  const handleCloseDataModal = () => {
+    setDataSetting(false);
+    setTab(Tab.Details);
+  };
+
   useEffect(() => {
     if (signInteractionStore.waitingEthereumData) {
       const data = signInteractionStore.waitingEthereumData;
@@ -156,6 +200,354 @@ export const SignEvmPage: FunctionComponent = observer(() => {
     }
     return feeConfig.getError() != null || gasConfig.getError() != null;
   })();
+
+  return (
+    // <HeaderLayout
+    //   showChainName={alternativeTitle == null}
+    //   alternativeTitle={alternativeTitle != null ? alternativeTitle : undefined}
+    //   canChangeChainInfo={false}
+    //   onBackButton={
+    //     interactionInfo.interactionInternal
+    //       ? () => {
+    //           history.goBack();
+    //         }
+    //       : undefined
+    //   }
+    // >
+    <div
+      style={{
+        height: "100%",
+        width: "100vw",
+        overflowX: "auto",
+      }}
+    >
+      <div
+        className={cx("setting", openSetting ? "activeSetting" : "", "modal")}
+        ref={settingRef}
+      >
+        <FeeModal
+          onClose={() => setOpenSetting(false)}
+          feeConfig={feeConfig}
+          gasConfig={gasConfig}
+        />
+      </div>
+      <div
+        className={cx("setting", dataSetting ? "activeSetting" : "", "modal")}
+        ref={dataRef}
+      >
+        <DataModal
+          onClose={() => {
+            handleCloseDataModal();
+          }}
+          renderData={() => <DataTabEvm data={dataSign} />}
+        />
+      </div>
+      {
+        /*
+         Show the informations of tx when the sign data is delivered.
+         If sign data not delivered yet, show the spinner alternatively.
+         */
+        isLoaded ? (
+          <div className={style.container}>
+            <div style={{ height: "75%", overflow: "scroll", padding: 16 }}>
+              {/* <div
+                style={{
+                  color: "#353945",
+                  fontSize: 24,
+                  fontWeight: 500,
+                  textAlign: "center",
+                  paddingBottom: 24,
+                }}
+              >
+                {chainStore?.current?.raw?.chainName || "Oraichain"}
+              </div> */}
+              <div
+                className={classnames(style.tabs)}
+                style={{ display: "flex", paddingBottom: 12 }}
+              >
+                <div>
+                  <Text size={16} weight="700">
+                    {"Approve transaction".toUpperCase()}
+                  </Text>
+                </div>
+                <div
+                  onClick={() => {
+                    setDataSetting(true);
+                    setTab(Tab.Data);
+                  }}
+                  style={{
+                    padding: "6px 12px",
+                    backgroundColor: colors["neutral-surface-action3"],
+                    borderRadius: 999,
+                    alignItems: "center",
+                    cursor: "pointer",
+                  }}
+                >
+                  <Text weight="600">Raw Data</Text>
+                  <img
+                    src={require("../../public/assets/icon/tdesign_chevron-right.svg")}
+                  />
+                </div>
+                {/* <ul>
+                  <li className={classnames({ activeTabs: tab === Tab.Details })}>
+                    <a
+                      className={classnames(style.tab, {
+                        activeText: tab === Tab.Details
+                      })}
+                      onClick={() => {
+                        setTab(Tab.Details);
+                      }}
+                    >
+                      {intl.formatMessage({
+                        id: "sign.tab.details"
+                      })}
+                    </a>
+                  </li>
+                  <li className={classnames({ activeTabs: tab === Tab.Data })}>
+                    <a
+                      className={classnames(style.tab, {
+                        activeText: tab === Tab.Data
+                      })}
+                      onClick={() => {
+                        setTab(Tab.Data);
+                      }}
+                    >
+                      {intl.formatMessage({
+                        id: "sign.tab.data"
+                      })}
+                    </a>
+                  </li>
+                </ul> */}
+              </div>
+              <div
+                className={classnames(style.tabContainer, {
+                  [style.dataTab]: tab === Tab.Data,
+                })}
+              >
+                {tab === Tab.Data ? <DataTabEvm data={dataSign} /> : null}
+                {tab === Tab.Details ? (
+                  <DetailsTabEvm
+                    msgSign={dataSign?.data?.data?.data}
+                    memoConfig={memoConfig}
+                    feeConfig={feeConfig}
+                    gasConfig={gasConfig}
+                    isInternal={
+                      interactionInfo.interaction &&
+                      interactionInfo.interactionInternal
+                    }
+                    preferNoSetFee={preferNoSetFee}
+                    preferNoSetMemo={preferNoSetMemo}
+                  />
+                ) : null}
+              </div>
+              <Card
+                containerStyle={{
+                  borderRadius: 12,
+                  border: "1px solid" + colors["neutral-border-default"],
+                  padding: 8,
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
+                  onClick={() => {
+                    setOpenSetting(true);
+                  }}
+                >
+                  <Text weight="600">Transaction fee</Text>
+                  <div
+                    style={{
+                      flexDirection: "column",
+                      display: "flex",
+                      alignItems: "flex-end",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        cursor: "pointer",
+                      }}
+                    >
+                      <Text
+                        size={16}
+                        weight="600"
+                        color={colors["primary-text-action"]}
+                      >
+                        {feeConfig?.fee?.maxDecimals(6).trim(true).toString() ||
+                          0}
+                      </Text>
+                      <img
+                        src={require("../../public/assets/icon/tdesign_chevron-down.svg")}
+                      />
+                    </div>
+                    <Text color={colors["neutral-text-body"]}>
+                      ≈
+                      {priceStore
+                        .calculatePrice(feeConfig?.fee, language.fiatCurrency)
+                        ?.toString() || 0}
+                    </Text>
+                  </div>
+                </div>
+              </Card>
+            </div>
+            <div
+              style={{
+                position: "absolute",
+                bottom: 0,
+                width: "100%",
+                height: "25%",
+                backgroundColor: colors["neutral-surface-card"],
+                borderTop: "1px solid" + colors["neutral-border-default"],
+              }}
+            >
+              {keyRingStore.keyRingType === "ledger" &&
+              signInteractionStore.isLoading ? (
+                <Button className={style.button} disabled={true} mode="outline">
+                  <FormattedMessage id="sign.button.confirm-ledger" />{" "}
+                  <i className="fa fa-spinner fa-spin fa-fw" />
+                </Button>
+              ) : (
+                <div>
+                  <div
+                    style={{
+                      flexDirection: "row",
+                      display: "flex",
+                      padding: 8,
+                      justifyContent: "space-between",
+                      backgroundColor: colors["neutral-surface-bg"],
+                      margin: 16,
+                      marginBottom: 8,
+                      borderRadius: 12,
+                    }}
+                  >
+                    <div
+                      style={{
+                        flexDirection: "row",
+                        display: "flex",
+                      }}
+                    >
+                      <img
+                        style={{
+                          width: 40,
+                          height: 40,
+                          borderRadius: 40,
+                          marginRight: 8,
+                        }}
+                        src={require("../../public/assets/images/default-avatar.png")}
+                      />
+                      <div style={{ flexDirection: "column", display: "flex" }}>
+                        <Text size={14} weight="600">
+                          {accountInfo.name}
+                        </Text>
+                        <Text color={colors["neutral-text-body"]}>
+                          {" "}
+                          <Address
+                            maxCharacters={18}
+                            lineBreakBeforePrefix={false}
+                          >
+                            {accountInfo.walletStatus === WalletStatus.Loaded &&
+                            addressDisplay
+                              ? addressDisplay
+                              : "..."}
+                          </Address>
+                        </Text>
+                      </div>
+                    </div>
+                    {/* <Text color={colors["neutral-text-body"]}>123</Text> */}
+                  </div>
+                  <div
+                    style={{
+                      flexDirection: "row",
+                      display: "flex",
+                      padding: 16,
+                      paddingTop: 0,
+                    }}
+                  >
+                    <Button
+                      containerStyle={{ marginRight: 8 }}
+                      className={classnames(style.button, style.rejectBtn)}
+                      // disabled={signDocHelper.signDocWrapper == null}
+                      color={"danger"}
+                      data-loading={signInteractionStore.isLoading}
+                      loading={signInteractionStore.isLoading}
+                      onClick={async (e) => {
+                        e.preventDefault();
+
+                        if (needSetIsProcessing) {
+                          setIsProcessing(true);
+                        }
+
+                        await signInteractionStore.reject();
+
+                        if (
+                          interactionInfo.interaction &&
+                          !interactionInfo.interactionInternal
+                        ) {
+                          window.close();
+                        } else {
+                          history.goBack();
+                        }
+                      }}
+                    >
+                      {intl.formatMessage({
+                        id: "sign.button.reject",
+                      })}
+                    </Button>
+                    <Button
+                      className={classnames(style.button, style.approveBtn)}
+                      // disabled={approveIsDisabled}
+                      data-loading={signInteractionStore.isLoading}
+                      loading={signInteractionStore.isLoading}
+                      onClick={async (e) => {
+                        e.preventDefault();
+                        if (needSetIsProcessing) {
+                          setIsProcessing(true);
+                        }
+                        if (!dataSign) return;
+                        await signInteractionStore.approveEthereumAndWaitEnd({
+                          gasPrice: Web3.utils.toHex(gasConfig.gasPrice),
+                          gasLimit: Web3.utils.toHex(gasConfig.gas),
+                        });
+                        history.goBack();
+                        if (
+                          interactionInfo.interaction &&
+                          !interactionInfo.interactionInternal
+                        ) {
+                          window.close();
+                        }
+                      }}
+                    >
+                      {intl.formatMessage({
+                        id: "sign.button.approve",
+                      })}
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div
+            style={{
+              width: "100%",
+              height: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <i className="fas fa-spinner fa-spin fa-2x text-gray" />
+          </div>
+        )
+      }
+      {/* </HeaderLayout> */}
+    </div>
+  );
 
   return (
     // <HeaderLayout

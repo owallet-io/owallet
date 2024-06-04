@@ -1,6 +1,11 @@
 import React, { FunctionComponent, useState } from "react";
 import { observer } from "mobx-react-lite";
-import { FeeConfig, GasConfig } from "@owallet/hooks";
+import {
+  FeeConfig,
+  FeeEvmConfig,
+  GasConfig,
+  GasEvmConfig,
+} from "@owallet/hooks";
 import style from "../style.module.scss";
 import { Button } from "../../../components/common/button";
 import colors from "../../../theme/colors";
@@ -11,8 +16,8 @@ import { useStore } from "../../../stores";
 import { CoinPretty, Dec } from "@owallet/unit";
 
 export const FeeModal: FunctionComponent<{
-  feeConfig: FeeConfig;
-  gasConfig: GasConfig;
+  feeConfig: FeeConfig | FeeEvmConfig;
+  gasConfig: GasConfig | GasEvmConfig;
   onClose: () => void;
 }> = observer(({ feeConfig, gasConfig, onClose }) => {
   const { priceStore, chainStore } = useStore();
