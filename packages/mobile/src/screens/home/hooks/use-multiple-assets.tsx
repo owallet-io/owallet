@@ -284,7 +284,6 @@ export const useMultipleAssets = (
   };
   const getBalancessTrc20 = async (address, chainInfo: ChainInfo) => {
     try {
-      console.log(getBase58Address(address), "address tron");
       const url = `https://api.tatum.io/v3/tron/account/${getBase58Address(
         address
       )}`;
@@ -302,7 +301,6 @@ export const useMultipleAssets = (
               MapChainIdToNetwork[chainInfo.chainId]
             }/${Object.keys(item)[0]}`;
             const res = await fetchRetry(url);
-
             if (!res?.data) return;
             const { data } = res;
             const token = chainInfo.currencies.find(
@@ -321,8 +319,6 @@ export const useMultipleAssets = (
                   contractAddress: data.contractAddress,
                 },
               ];
-
-              console.log(infoToken, "infoToken");
               chainInfo.addCurrencies(...infoToken);
             }
           } catch (e) {

@@ -69,7 +69,6 @@ export const AllNetworkTxCard: FunctionComponent<{
   useEffect(() => {
     setHistories([]);
     const allAddress = convertObjChainAddressToString(allArr);
-    console.log(allAddress, "allAddress");
     if (!allAddress) return;
     getWalletHistory(allAddress);
   }, [

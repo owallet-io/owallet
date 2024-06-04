@@ -93,7 +93,11 @@ export const AllNetworkTxItem: FC<{
             <OWIcon
               type="images"
               source={{
-                uri: currency?.coinImageUrl || unknownToken.coinImageUrl,
+                uri:
+                  currency.coinImageUrl.includes("missing.png") ||
+                  !currency.coinImageUrl
+                    ? unknownToken.coinImageUrl
+                    : currency.coinImageUrl,
               }}
               size={32}
               style={{

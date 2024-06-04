@@ -8,7 +8,12 @@ export const HideTokensItem: FunctionComponent<{
   topBorder?: boolean;
 }> = observer(({ topBorder }) => {
   const { appInitStore } = useStore();
-
+  const [toggle, setToggle] = useState(
+    appInitStore.getInitApp.hideTokensWithoutBalance
+  );
+  useEffect(() => {
+    appInitStore.updateHideTokensWithoutBalance(toggle);
+  }, [toggle]);
   return (
     <React.Fragment>
       <BasicSettingItem
@@ -16,9 +21,9 @@ export const HideTokensItem: FunctionComponent<{
         paragraph="Hide tokens < 0"
         right={
           <Toggle
-            on={appInitStore.getInitApp.hideTokensWithoutBalance}
+            on={toggle}
             onChange={(value) => {
-              appInitStore.updateHideTokensWithoutBalance(value);
+              setToggle(value);
             }}
           />
         }

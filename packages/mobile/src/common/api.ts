@@ -444,6 +444,13 @@ export const API = {
     const url = `v1/txs-history/?addrByNetworks=${addrByNetworks}&limit=${limit}&offset=${offset}`;
     return API.get(url, config) as Promise<AxiosResponse<TxsAllNetwork>>;
   },
+  getTxsByToken: (
+    { tokenAddr, userAddr, network, offset, limit = 1 },
+    config: AxiosRequestConfig
+  ) => {
+    const url = `v1/txs-history/by-token?userAddr=${userAddr}&network=${network}&tokenAddr=${tokenAddr}&limit=${limit}&offset=${offset}`;
+    return API.get(url, config) as Promise<AxiosResponse<TxsAllNetwork>>;
+  },
   getOraichainTxs: async (
     { address, offset, limit = 1, network = CosmosNetwork.ORAICHAIN },
     config: AxiosRequestConfig

@@ -70,7 +70,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       refreshing,
       accountOrai.bech32Address
     );
-  console.log(appInitStore.getMultipleAssets, "appInitStore.getMultipleAssets");
   const [isPending, startTransition] = useTransition();
   const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
   const accountTron = accountStore.getAccount(ChainIdEnum.TRON);

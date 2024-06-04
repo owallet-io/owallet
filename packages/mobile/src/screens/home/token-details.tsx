@@ -37,6 +37,10 @@ import { OWBox } from "@src/components/card";
 import { TokenChart } from "@src/screens/home/components/token-chart";
 import { ViewRawToken, ViewToken } from "@src/stores/huge-queries";
 import { CoinPretty, PricePretty } from "@owallet/unit";
+import { HistoryCard } from "@src/screens/transactions";
+import OWCard from "@src/components/card/ow-card";
+import { HistoryByToken } from "@src/screens/transactions/history-by-token";
+import { PageWithScrollView } from "@src/components/page";
 
 export const TokenDetails: FunctionComponent = observer((props) => {
   const { chainStore, priceStore, accountStore, keyRingStore } = useStore();
@@ -166,19 +170,25 @@ export const TokenDetails: FunctionComponent = observer((props) => {
     } catch (err) {}
   };
   const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
+  const denomHelper = new DenomHelper(item.token.currency.coinMinimalDenom);
   return (
-    <View style={[styles.container, { paddingTop: safeAreaInsets.top }]}>
-      <PageHeader
-        title={removeDataInParentheses(item.token.currency.coinDenom)}
-        subtitle={
-          item.chainInfo.chainName + `${item?.type ? ` (${item?.type})` : ""}`
-        }
-        colors={colors}
-      />
-      <ScrollView
-        contentContainerStyle={{ width: "100%" }}
-        showsVerticalScrollIndicator={false}
+    <>
+      <View
+        style={{
+          zIndex: 1000,
+          paddingTop: useSafeAreaInsets().top,
+          backgroundColor: colors["neutral-surface-bg"],
+        }}
       >
+        <PageHeader
+          title={removeDataInParentheses(item.token.currency.coinDenom)}
+          subtitle={
+            item.chainInfo.chainName + `${item?.type ? ` (${item?.type})` : ""}`
+          }
+        />
+      </View>
+
+      <PageWithScrollView style={{}} showsVerticalScrollIndicator={false}>
         <View style={styles.containerOWBox}>
           <View style={styles.containerInfoAccount}>
             <View style={styles.btnAcc}>
@@ -264,8 +274,39 @@ export const TokenDetails: FunctionComponent = observer((props) => {
           </View>
         </View>
         <TokenChart coinGeckoId={item.token.currency.coinGeckoId} />
-      </ScrollView>
-    </View>
+        <View
+          style={{
+            backgroundColor: colors["neutral-surface-card"],
+            width: metrics.screenWidth,
+            paddingHorizontal: 16,
+            borderTopRightRadius: 24,
+            borderTopLeftRadius: 24,
+            marginTop: 16,
+            paddingBottom: 32,
+          }}
+        >
+          <View
+            style={{
+              paddingVertical: 16,
+              borderBottomWidth: 1,
+              borderBottomColor: colors["neutral-border-default"],
+            }}
+          >
+            <OWText
+              color={colors["neutral-text-body"]}
+              size={16}
+              weight={"500"}
+            >
+              History
+            </OWText>
+          </View>
+          <HistoryByToken
+            tokenAddr={denomHelper.contractAddress || denomHelper.denom}
+            chainId={item.chainInfo.chainId}
+          />
+        </View>
+      </PageWithScrollView>
+    </>
   );
 });
 
