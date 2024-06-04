@@ -365,24 +365,25 @@ export const useMultipleAssets = (
       `/cosmos/bank/v1beta1/balances/${address}?pagination.limit=1000`
     );
     const mergedMaps = chainInfo.currencyMap;
-    await Promise.all(data.balances.map(async ({ denom, amount }) => {
-      const token = mergedMaps.get(denom);
-      if (token) {
-        pushTokenQueue(token, amount, chainInfo);
-      } else {
-        //Need handle more for case ibc/ denom
-        console.log(denom, amount, "denom amount");
-        try {
-          if(!MapChainIdToNetwork[chainInfo.chainId]) return;
-          const url = `${urlTxHistory}v1/token-info/${
-            MapChainIdToNetwork[chainInfo.chainId]
-          }/${new URLSearchParams(denom).toString().replace("=","")}`;
-          console.log(url,"url kaka");
-          const res = await fetchRetry(url);
-          console.log(res,"res ibc")
-          if (!res?.data) return;
+    await Promise.all(
+      data.balances.map(async ({ denom, amount }) => {
+        const token = mergedMaps.get(denom);
+        if (token) {
+          pushTokenQueue(token, amount, chainInfo);
+        } else {
+          //Need handle more for case ibc/ denom
+          console.log(denom, amount, "denom amount");
+          try {
+            if (!MapChainIdToNetwork[chainInfo.chainId]) return;
+            const url = `${urlTxHistory}v1/token-info/${
+              MapChainIdToNetwork[chainInfo.chainId]
+            }/${new URLSearchParams(denom).toString().replace("=", "")}`;
+            console.log(url, "url kaka");
+            const res = await fetchRetry(url);
+            console.log(res, "res ibc");
+            if (!res?.data) return;
 
-          const { data } = res;
+            const { data } = res;
             const infoToken: any = [
               {
                 coinImageUrl: data.imgUrl,
@@ -392,15 +393,14 @@ export const useMultipleAssets = (
                 coinMinimalDenom: data.denom,
               },
             ];
-            console.log(infoToken,"infoToken")
+            console.log(infoToken, "infoToken");
             chainInfo.addCurrencies(...infoToken);
-
-        } catch (e) {
-          console.log(e, "E2");
+          } catch (e) {
+            console.log(e, "E2");
+          }
         }
-
-      }
-    }));
+      })
+    );
   };
 
   const getBalanceCW20Oraichain = async () => {

@@ -153,6 +153,7 @@ export const showToast = ({ ...params }: MessageOptions) => {
   });
   return;
 };
+
 export function splitAndSortChains(data) {
   // Initialize arrays for test and non-test chains
   const testChains = [];
@@ -314,11 +315,13 @@ export const getDataFromDataEvent = (itemEvents) => {
 export const maskedNumber = (
   number: number | string,
   digits: number = 4,
+  minDigits: number = 0,
   locales: string = "en-US"
 ) => {
   return number
     ? Number(number).toLocaleString(locales, {
         maximumFractionDigits: digits,
+        minimumFractionDigits: minDigits,
       })
     : "0";
 };
@@ -766,6 +769,7 @@ export const getCurrencyByMinimalDenom = (
 };
 
 export const isNegative = (number) => number <= 0;
+
 export function createTxsHelper() {
   return new TxsHelper();
 }
@@ -828,6 +832,7 @@ export function trimWordsStr(str: string): string {
     .filter((word) => word.trim().length > 0);
   return words.join(" ");
 }
+
 export const delay = (delayInms) => {
   return new Promise((resolve) => setTimeout(resolve, delayInms));
 };

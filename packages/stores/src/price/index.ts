@@ -179,7 +179,7 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
     defaultVsCurrency: string
   ) {
     const instance = Axios.create({
-      baseURL: 'https://api.coingecko.com/api/v3',
+      baseURL: "https://api.coingecko.com/api/v3",
       // baseURL: MarketAPIEndPoint,
       adapter: fetchAdapter,
     });
@@ -241,7 +241,9 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
     if (coinIdsUpdated || vsCurrenciesUpdated || forceSetUrl) {
       const url = `/simple/price?ids=${this._coinIds.values.join(
         ","
-      )}&vs_currencies=${this._vsCurrencies.values.join(",")}&include_24hr_change=true`;
+      )}&vs_currencies=${this._vsCurrencies.values.join(
+        ","
+      )}&include_24hr_change=true`;
 
       if (!this._isInitialized) {
         this.setUrl(url);
@@ -355,11 +357,12 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
       return undefined;
     }
 
-    const coinPrices = this.response.data[coinId];
-    if (!coinPrices) {
+    const coinPrices24h = this.response.data[coinId];
+    if (!coinPrices24h) {
       return undefined;
     }
-    return coinPrices[vsCurrency];
+    console.log(coinPrices24h, "coinPrices24h");
+    return coinPrices24h[`${vsCurrency}_24h_change`];
   }
 
   calculatePrice(
