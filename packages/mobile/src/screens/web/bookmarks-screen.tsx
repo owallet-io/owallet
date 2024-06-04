@@ -16,7 +16,7 @@ import {
   getNameBookmark,
 } from "@src/screens/web/helper/browser-helper";
 import OWText from "@src/components/text/ow-text";
-import { limitString } from "@src/utils/helper";
+import { limitString, showToast } from "@src/utils/helper";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
@@ -26,8 +26,16 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 export const BookmarksScreen = observer(() => {
   const { colors } = useTheme();
   const { browserStore } = useStore();
-
+  const { inject } = browserStore;
+  const sourceCode = inject;
   const onDetailBrowser = (url) => {
+    if (!sourceCode) {
+      showToast({
+        type: "danger",
+        message: "Not connected! Please try again.",
+      });
+      return;
+    }
     if (!url) return;
     navigate(SCREENS.DetailsBrowser, {
       url: url,
@@ -136,7 +144,7 @@ export const BookmarksScreen = observer(() => {
         }}
       >
         <DraggableFlatList
-          data={browserStore.getBookmarks}
+          data={[...(browserStore.getBookmarks || [])]}
           onDragEnd={({ data }) => {
             browserStore.updateBookmarks(data);
             // setData(data);

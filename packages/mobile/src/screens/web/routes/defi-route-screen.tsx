@@ -11,11 +11,24 @@ import React from "react";
 import { defiData } from "@src/screens/web/helper/browser-helper";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
+import { useStore } from "@src/stores";
+import { showToast } from "@src/utils/helper";
+import { observer } from "mobx-react-lite";
 
-export const DefiRoute = () => {
+export const DefiRoute = observer(() => {
   const { colors } = useTheme();
+  const { browserStore } = useStore();
+  const { inject } = browserStore;
+  const sourceCode = inject;
   const onToBrowser = (url) => {
     if (!url) return;
+    if (!sourceCode) {
+      showToast({
+        type: "danger",
+        message: "Not connected! Please try again.",
+      });
+      return;
+    }
     navigate(SCREENS.DetailsBrowser, {
       url: url,
     });
@@ -88,4 +101,4 @@ export const DefiRoute = () => {
       />
     </View>
   );
-};
+});
