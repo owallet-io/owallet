@@ -1,20 +1,8 @@
-import React, {
-  FunctionComponent,
-  MouseEvent,
-  useEffect,
-  useState,
-} from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 
 import styleFeeButtons from "./fee-buttons.module.scss";
 
-import {
-  Button,
-  ButtonGroup,
-  FormFeedback,
-  FormGroup,
-  FormText,
-  Label,
-} from "reactstrap";
+import { FormFeedback, FormGroup, FormText, Label } from "reactstrap";
 
 import classnames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -30,11 +18,10 @@ import { useLanguage } from "@owallet/common";
 import { useIntl } from "react-intl";
 import { GasInput } from "../gas-input";
 import { action, makeObservable, observable } from "mobx";
-import classNames from "classnames";
 import { useStore } from "../../../stores";
-import { FeeInput } from "../fee-input";
 import colors from "../../../theme/colors";
 import { Text } from "../../common/text";
+import { RadioButton } from "../../common/radio";
 
 export interface FeeButtonsProps {
   feeConfig: IFeeConfig;
@@ -281,8 +268,6 @@ export const FeeButtonsInner: FunctionComponent<
     };
 
     const renderVerticalFee = () => {
-      console.log("feeConfig.feeType 2", feeConfig.feeType);
-
       return (
         <div>
           {["low", "average", "high"].map((fee, i) => {
@@ -344,18 +329,17 @@ export const FeeButtonsInner: FunctionComponent<
                     </div>
                   </div>
                 </div>
-                <div>
-                  <input
-                    style={{ accentColor: "green", height: 20 }}
-                    type="radio"
-                    name="address"
-                    value={""}
+                <div className={styleFeeButtons.radio}>
+                  <RadioButton
                     checked={
                       feeConfig.feeType == fee ||
-                      feeConfig?.fee?.maxDecimals(6).trim(true).toString() ===
+                      feeConfig?.fee?.maxDecimals(8).trim(true).toString() ===
                         [lowFee, averageFee, highFee][i].trim(true).toString()
                     }
-                    onChange={() => console.log("ddd")}
+                    onChange={(e) => {
+                      feeConfig.setFeeType(fee as FeeType);
+                      e.preventDefault();
+                    }}
                   />
                 </div>
               </div>

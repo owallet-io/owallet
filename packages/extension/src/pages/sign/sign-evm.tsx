@@ -378,7 +378,7 @@ export const SignEvmPage: FunctionComponent = observer(() => {
                         weight="600"
                         color={colors["primary-text-action"]}
                       >
-                        {feeConfig?.fee?.maxDecimals(6).trim(true).toString() ||
+                        {feeConfig?.fee?.maxDecimals(8).trim(true).toString() ||
                           0}
                       </Text>
                       <img
