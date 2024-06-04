@@ -79,14 +79,19 @@ export const Pincode: FunctionComponent<{
   };
 
   const handleContinue = () => {
-    setPrevPad("numeric");
-    appInitStore.updateKeyboardType("numeric");
+    setPrevPad("alphabet");
+    appInitStore.updateKeyboardType("alphabet");
+
     if (password.length >= 6) {
-      if (!confirmCode) {
-        setConfirmCode(password);
-        setPassword("");
+      if (needConfirmation) {
+        if (!confirmCode) {
+          setConfirmCode(password);
+          setPassword("");
+        } else {
+          handleCheckConfirm(password);
+        }
       } else {
-        handleCheckConfirm(password);
+        onVerifyPincode(password);
       }
     } else {
       showToast({
