@@ -185,7 +185,7 @@ export const useMultipleAssets = (
       await Promise.allSettled(allBalancePromises);
       const currencies = FiatCurrencies.map(({ currency }) => currency);
       priceStore.updateURL(Array.from(coinIds.keys()), currencies, true);
-      await delay(500);
+      await delay(1000);
       let overallTotalBalance = "0";
       let allTokens: ViewRawToken[] = [];
       // Loop through each key in the data object
@@ -202,7 +202,7 @@ export const useMultipleAssets = (
               const { token } = infoToken;
               const balance = new CoinPretty(token.currency, token.amount);
               const price = token?.currency?.coinGeckoId
-                ? await priceStore.waitFreshCalculatePrice(balance)
+                ? priceStore.calculatePrice(balance)
                 : initPrice;
               totalBalance = totalBalance.add(price);
               return { ...infoToken, price: price.toDec().toString() };
@@ -365,15 +365,42 @@ export const useMultipleAssets = (
       `/cosmos/bank/v1beta1/balances/${address}?pagination.limit=1000`
     );
     const mergedMaps = chainInfo.currencyMap;
-    data.balances.forEach(({ denom, amount }) => {
+    await Promise.all(data.balances.map(async ({ denom, amount }) => {
       const token = mergedMaps.get(denom);
       if (token) {
         pushTokenQueue(token, amount, chainInfo);
       } else {
         //Need handle more for case ibc/ denom
         console.log(denom, amount, "denom amount");
+        try {
+          if(!MapChainIdToNetwork[chainInfo.chainId]) return;
+          const url = `${urlTxHistory}v1/token-info/${
+            MapChainIdToNetwork[chainInfo.chainId]
+          }/${new URLSearchParams(denom).toString().replace("=","")}`;
+          console.log(url,"url kaka");
+          const res = await fetchRetry(url);
+          console.log(res,"res ibc")
+          if (!res?.data) return;
+
+          const { data } = res;
+            const infoToken: any = [
+              {
+                coinImageUrl: data.imgUrl,
+                coinDenom: data.abbr,
+                coinGeckoId: data.coingeckoId,
+                coinDecimals: data.decimal,
+                coinMinimalDenom: data.denom,
+              },
+            ];
+            console.log(infoToken,"infoToken")
+            chainInfo.addCurrencies(...infoToken);
+
+        } catch (e) {
+          console.log(e, "E2");
+        }
+
       }
-    });
+    }));
   };
 
   const getBalanceCW20Oraichain = async () => {

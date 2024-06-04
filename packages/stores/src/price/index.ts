@@ -179,8 +179,8 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
     defaultVsCurrency: string
   ) {
     const instance = Axios.create({
-      // baseURL: 'https://api.coingecko.com/api/v3',
-      baseURL: MarketAPIEndPoint,
+      baseURL: 'https://api.coingecko.com/api/v3',
+      // baseURL: MarketAPIEndPoint,
       adapter: fetchAdapter,
     });
 
@@ -241,7 +241,7 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
     if (coinIdsUpdated || vsCurrenciesUpdated || forceSetUrl) {
       const url = `/simple/price?ids=${this._coinIds.values.join(
         ","
-      )}&vs_currencies=${this._vsCurrencies.values.join(",")}`;
+      )}&vs_currencies=${this._vsCurrencies.values.join(",")}&include_24hr_change=true`;
 
       if (!this._isInitialized) {
         this.setUrl(url);
@@ -320,6 +320,27 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
   }
 
   getPrice(coinId: string, vsCurrency?: string): number | undefined {
+    if (!vsCurrency) {
+      vsCurrency = this.defaultVsCurrency;
+    }
+
+    if (!this.supportedVsCurrencies[vsCurrency]) {
+      return undefined;
+    }
+
+    this.updateURL([coinId], [vsCurrency]);
+
+    if (!this.response) {
+      return undefined;
+    }
+
+    const coinPrices = this.response.data[coinId];
+    if (!coinPrices) {
+      return undefined;
+    }
+    return coinPrices[vsCurrency];
+  }
+  getPrice24hChange(coinId: string, vsCurrency?: string): number | undefined {
     if (!vsCurrency) {
       vsCurrency = this.defaultVsCurrency;
     }
