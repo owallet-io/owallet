@@ -28,6 +28,7 @@ export const AllNetworkTxCard: FunctionComponent<{
   const { chainId } = chainStore.current;
   const mapChainNetwork = MapChainIdToNetwork[chainId];
   const account = accountStore.getAccount(chainId);
+  const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const address = account.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses
   );
@@ -71,7 +72,11 @@ export const AllNetworkTxCard: FunctionComponent<{
     console.log(allAddress, "allAddress");
     if (!allAddress) return;
     getWalletHistory(allAddress);
-  }, [chainId, appInitStore.getInitApp.isAllNetworks, address]);
+  }, [
+    chainId,
+    appInitStore.getInitApp.isAllNetworks,
+    accountOrai.bech32Address,
+  ]);
 
   const fiat = priceStore.defaultVsCurrency;
 

@@ -249,7 +249,6 @@ const TokenItem: FC<{
                 }
                 style={styles.profit}
               >
-                {" "}
                 {price24h > 0 ? "+" : ""}
                 {maskedNumber(price24h, 2, 2)}%
               </Text>
@@ -293,19 +292,6 @@ const TokenItem: FC<{
               >
                 {new PricePretty(fiatCurrency, item.price).toString()}
               </Text>
-              {/*<Text*/}
-              {/*  size={14}*/}
-              {/*  style={styles.profit}*/}
-              {/*  // color={*/}
-              {/*  //   colors[*/}
-              {/*  //     profit < 0 ? 'error-text-body' : 'success-text-body'*/}
-              {/*  //     ]*/}
-              {/*  // }*/}
-              {/*>*/}
-              {/*  0*/}
-              {/*  /!*{profit < 0 ? '' : '+'}*!/*/}
-              {/*  /!*{percent}% (${profit ?? 0})*!/*/}
-              {/*</Text>*/}
             </View>
           </View>
         </View>
@@ -382,5 +368,6 @@ const styling = (colors) =>
       paddingHorizontal: 8,
       paddingVertical: 2,
       marginHorizontal: 2,
+      alignItems: "center",
     },
   });
