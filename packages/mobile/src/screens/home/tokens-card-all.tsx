@@ -2,16 +2,8 @@ import { OWButton } from "@src/components/button";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
 // @ts-ignore
-import React, {
-  FC,
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useState,
-  useTransition,
-} from "react";
+import React, { FC, FunctionComponent, useState, useTransition } from "react";
 import {
-  InteractionManager,
   Platform,
   StyleSheet,
   TouchableOpacity,
@@ -20,25 +12,17 @@ import {
 } from "react-native";
 import { OWBox } from "../../components/card";
 import { useStore } from "../../stores";
-import {
-  getTokenInfos,
-  maskedNumber,
-  _keyExtract,
-  removeDataInParentheses,
-} from "../../utils/helper";
+import { maskedNumber, removeDataInParentheses } from "../../utils/helper";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { Text } from "@src/components/text";
 import { SCREENS } from "@src/common/constants";
 import { navigate } from "@src/router/root";
-import { ChainIdEnum, unknownToken } from "@owallet/common";
-import { API } from "@src/common/api";
-import { chainIcons } from "@oraichain/oraidex-common";
+import { unknownToken } from "@owallet/common";
 
 import { metrics } from "@src/themes";
 import FastImage from "react-native-fast-image";
 import OWText from "@src/components/text/ow-text";
 import { HistoryCard } from "@src/screens/transactions";
-import { ArrowOpsiteUpDownIcon, DownArrowIcon } from "@src/components/icon";
 import { ViewRawToken, ViewToken } from "@src/stores/huge-queries";
 import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
 
@@ -255,15 +239,7 @@ const TokenItem: FC<{
               {item.chainInfo.chainName}
             </Text>
             {item.type && (
-              <View
-                style={{
-                  backgroundColor: colors["neutral-surface-action2"],
-                  borderRadius: 4,
-                  paddingHorizontal: 8,
-                  paddingVertical: 2,
-                  marginHorizontal: 2,
-                }}
-              >
+              <View style={styles.type}>
                 <Text
                   weight="400"
                   size={12}
@@ -380,5 +356,12 @@ const styling = (colors) =>
     inactive: {
       borderBottomColor: colors["neutral-border-default"],
       borderBottomWidth: 1,
+    },
+    type: {
+      backgroundColor: colors["neutral-surface-action2"],
+      borderRadius: 4,
+      paddingHorizontal: 8,
+      paddingVertical: 2,
+      marginHorizontal: 2,
     },
   });
