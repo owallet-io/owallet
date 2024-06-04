@@ -1,14 +1,11 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, { FunctionComponent } from "react";
 
 import { observer } from "mobx-react-lite";
 
 import styleDetailsTab from "../details-tab.module.scss";
 import { FormattedMessage } from "react-intl";
-import { Badge, FormFeedback, FormText, Label } from "reactstrap";
-import classnames from "classnames";
-import TronWeb from "tronweb";
+import { FormFeedback, FormText } from "reactstrap";
 import { useStore } from "../../../stores";
-import { ChainIdEnum } from "@owallet/common";
 import { CoinPretty, Int, IntPretty } from "@owallet/unit";
 import { CoinPrimitive } from "@owallet/stores";
 import {
@@ -16,6 +13,9 @@ import {
   InsufficientFeeError,
   NotLoadedFeeError,
 } from "@owallet/hooks";
+import { Text } from "../../../components/common/text";
+import colors from "../../../theme/colors";
+import { Card } from "../../../components/common/card";
 
 export const TronDetailsTab: FunctionComponent<{
   dataSign;
@@ -54,133 +54,178 @@ export const TronDetailsTab: FunctionComponent<{
     }
   })();
 
+  const renderMsg = (content) => {
+    return (
+      <div>
+        <Card
+          containerStyle={{
+            backgroundColor: colors["neutral-surface-action"],
+            borderTopRightRadius: 12,
+            borderBottomRightRadius: 12,
+            borderLeftWidth: 4,
+            borderLeftStyle: "solid",
+            borderColor: colors["primary-surface-default"],
+            padding: 12,
+            marginTop: 12,
+            overflow: "scroll",
+          }}
+        >
+          {content}
+        </Card>
+      </div>
+    );
+  };
+
   return (
     <div className={styleDetailsTab.container}>
-      <Label
-        for="signing-messages"
-        className="form-control-label"
-        style={{ display: "flex" }}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+        }}
       >
-        <FormattedMessage id="sign.list.messages.label" />
-        <Badge className={classnames("ml-2", styleDetailsTab.msgsBadge)}>
-          {JSON.stringify(dataSign).length}
-        </Badge>
-      </Label>
+        <img
+          style={{ paddingRight: 4 }}
+          src={require("../../../public/assets/icon/tdesign_code-1.svg")}
+        />
+        <Text color={colors["neutral-text-body"]} weight="500">
+          <FormattedMessage id="sign.list.messages.label" />:
+        </Text>
+        <div
+          className="ml-2"
+          style={{
+            backgroundColor: colors["primary-surface-default"],
+            padding: "0px 8px",
+            borderRadius: 8,
+          }}
+        >
+          <Text
+            size={12}
+            weight="600"
+            color={colors["neutral-text-action-on-dark-bg"]}
+          >
+            {JSON.stringify(dataSign).length}
+          </Text>
+        </div>
+      </div>
       <div id="signing-messages" className={styleDetailsTab.msgContainer}>
-        <React.Fragment>
-          {dataSign?.currency && (
-            <MsgRender
-              icon={"fas fa-paper-plane"}
-              title={intl.formatMessage({
-                id: "sign.list.message.cosmos-sdk/MsgSend.title",
-              })}
-            >
-              <FormattedMessage
-                id="sign.list.message.cosmos-sdk/MsgSend.content"
-                values={{
-                  b: (...chunks: any[]) => <b>{chunks}</b>,
-                  recipient: dataSign?.recipient,
-                  amount:
-                    dataSign?.amount + " " + dataSign?.currency?.coinDenom,
-                }}
-              />
-            </MsgRender>
-          )}
-          {txInfo?.functionSelector && (
-            <MsgRender icon={null} title={"Trigger Smart Contract"}>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                }}
+        {renderMsg(
+          <React.Fragment>
+            {dataSign?.currency && (
+              <MsgRender
+                icon={"fas fa-paper-plane"}
+                title={intl.formatMessage({
+                  id: "sign.list.message.cosmos-sdk/MsgSend.title",
+                })}
               >
+                <FormattedMessage
+                  id="sign.list.message.cosmos-sdk/MsgSend.content"
+                  values={{
+                    b: (...chunks: any[]) => <b>{chunks}</b>,
+                    recipient: dataSign?.recipient,
+                    amount:
+                      dataSign?.amount + " " + dataSign?.currency?.coinDenom,
+                  }}
+                />
+              </MsgRender>
+            )}
+            {txInfo?.functionSelector && (
+              <MsgRender icon={null} title={"Trigger Smart Contract"}>
                 <div
                   style={{
                     display: "flex",
-                    flexDirection: "column",
-                    flex: 1,
+                    justifyContent: "space-between",
                   }}
                 >
-                  <span>Contract:</span>
-                  <span>Method:</span>
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    flex: 2,
-                    // justifyContent:"flex-end",
-                    alignItems: "flex-end",
-                  }}
-                >
-                  <a
-                    rel="noreferrer"
-                    href={`https://tronscan.org/#/contract/${txInfo?.address}`}
-                    target="_blank"
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      flex: 1,
+                    }}
                   >
-                    {txInfo?.address}
-                  </a>
-                  <span>{txInfo?.functionSelector}</span>
+                    <span>Contract:</span>
+                    <span>Method:</span>
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      flex: 2,
+                      // justifyContent:"flex-end",
+                      alignItems: "flex-end",
+                    }}
+                  >
+                    <a
+                      rel="noreferrer"
+                      href={`https://tronscan.org/#/contract/${txInfo?.address}`}
+                      target="_blank"
+                    >
+                      {txInfo?.address}
+                    </a>
+                    <span>{txInfo?.functionSelector}</span>
+                  </div>
                 </div>
-              </div>
-            </MsgRender>
-          )}
-          {isFeeLoading ? (
-            <FormText>
-              <i className="fa fa-spinner fa-spin fa-fw" />
-            </FormText>
-          ) : (
-            <>
-              {dataInfo?.estimateBandwidth?.lte(new Int(0)) &&
-              dataInfo?.estimateEnergy?.lte(new Int(0)) ? null : (
+              </MsgRender>
+            )}
+            {isFeeLoading ? (
+              <FormText>
+                <i className="fa fa-spinner fa-spin fa-fw" />
+              </FormText>
+            ) : (
+              <>
+                {dataInfo?.estimateBandwidth?.lte(new Int(0)) &&
+                dataInfo?.estimateEnergy?.lte(new Int(0)) ? null : (
+                  <div
+                    style={{
+                      justifyContent: "space-between",
+                      display: "flex",
+                    }}
+                  >
+                    <span>Resources:</span>
+                    <span>
+                      {dataInfo?.estimateBandwidth?.gt(new Int(0)) &&
+                        `${dataInfo?.estimateBandwidth?.toString()} Bandwidth`}
+                      {dataInfo?.estimateEnergy?.gt(new Int(0)) &&
+                        ` + ${new IntPretty(
+                          dataInfo?.estimateEnergy?.toDec()
+                        )?.toString()} Energy`}
+                    </span>
+                  </div>
+                )}
+
                 <div
                   style={{
                     justifyContent: "space-between",
                     display: "flex",
                   }}
                 >
-                  <span>Resources:</span>
-                  <span>
-                    {dataInfo?.estimateBandwidth?.gt(new Int(0)) &&
-                      `${dataInfo?.estimateBandwidth?.toString()} Bandwidth`}
-                    {dataInfo?.estimateEnergy?.gt(new Int(0)) &&
-                      ` + ${new IntPretty(
-                        dataInfo?.estimateEnergy?.toDec()
-                      )?.toString()} Energy`}
-                  </span>
+                  <span>Fee:</span>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "flex-end",
+                    }}
+                  >
+                    <span>{feePretty?.trim(true)?.toString()}</span>
+                    <span>
+                      ~{priceStore.calculatePrice(feePretty)?.toString()}
+                    </span>
+                  </div>
                 </div>
-              )}
 
-              <div
-                style={{
-                  justifyContent: "space-between",
-                  display: "flex",
-                }}
-              >
-                <span>Fee:</span>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "flex-end",
-                  }}
-                >
-                  <span>{feePretty?.trim(true)?.toString()}</span>
-                  <span>
-                    ~{priceStore.calculatePrice(feePretty)?.toString()}
-                  </span>
-                </div>
-              </div>
-
-              <hr />
-              {errorText != null ? (
-                <FormFeedback style={{ display: "block", marginTop: -15 }}>
-                  {errorText}
-                </FormFeedback>
-              ) : null}
-            </>
-          )}
-        </React.Fragment>
+                <hr />
+                {errorText != null ? (
+                  <FormFeedback style={{ display: "block", marginTop: -15 }}>
+                    {errorText}
+                  </FormFeedback>
+                ) : null}
+              </>
+            )}
+          </React.Fragment>
+        )}
       </div>
     </div>
   );

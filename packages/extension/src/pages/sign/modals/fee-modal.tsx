@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 import {
   FeeConfig,
   FeeEvmConfig,
+  FeeTronConfig,
   GasConfig,
   GasEvmConfig,
 } from "@owallet/hooks";
@@ -16,7 +17,7 @@ import { useStore } from "../../../stores";
 import { CoinPretty, Dec } from "@owallet/unit";
 
 export const FeeModal: FunctionComponent<{
-  feeConfig: FeeConfig | FeeEvmConfig;
+  feeConfig: FeeConfig | FeeEvmConfig | FeeTronConfig;
   gasConfig: GasConfig | GasEvmConfig;
   onClose: () => void;
 }> = observer(({ feeConfig, gasConfig, onClose }) => {

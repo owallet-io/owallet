@@ -36,16 +36,7 @@ export const DetailsTabEvm: FunctionComponent<{
   preferNoSetFee: boolean;
   preferNoSetMemo: boolean;
 }> = observer(
-  ({
-    msgSign,
-    memoConfig,
-    feeConfig,
-    gasConfig,
-    isInternal,
-    preferNoSetFee,
-    preferNoSetMemo,
-  }) => {
-    console.log("🚀 ~ feeConfig:", feeConfig.fee);
+  ({ msgSign, feeConfig, gasConfig, isInternal, preferNoSetFee }) => {
     const { chainStore, priceStore, accountStore } = useStore();
     const intl = useIntl();
     const language = useLanguage();
@@ -67,6 +58,7 @@ export const DetailsTabEvm: FunctionComponent<{
               borderColor: colors["primary-surface-default"],
               padding: 12,
               marginTop: 12,
+              overflow: "scroll",
             }}
           >
             {content}
@@ -117,6 +109,7 @@ export const DetailsTabEvm: FunctionComponent<{
       //   } else {
       //     return null;
       //   }
+
       if (msgs && amount && !msgs?.data) {
         return (
           <React.Fragment>
@@ -147,6 +140,23 @@ export const DetailsTabEvm: FunctionComponent<{
               </MsgRender>
             )}
             <hr />
+          </React.Fragment>
+        );
+      }
+
+      if (Object.keys(msgs).length > 0) {
+        return (
+          <React.Fragment>
+            {renderMsg(
+              <MsgRender
+                icon={"fas fa-paper-plane"}
+                title={intl.formatMessage({
+                  id: "sign.list.message.cosmos-sdk/MsgSend.title",
+                })}
+              >
+                {JSON.stringify(msgs, null, 4)}
+              </MsgRender>
+            )}
           </React.Fragment>
         );
       }

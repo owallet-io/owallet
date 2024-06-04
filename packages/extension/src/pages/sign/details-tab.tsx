@@ -72,6 +72,7 @@ export const DetailsTab: FunctionComponent<{
               borderColor: colors["primary-surface-default"],
               padding: 12,
               marginTop: 12,
+              overflow: "scroll",
             }}
           >
             {content}
