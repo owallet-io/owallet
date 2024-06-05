@@ -53,9 +53,13 @@ export const TokensCardAll: FunctionComponent<{
         return price?.toDec().gte(new Dec("1")) ?? false;
       })
     : dataTokens;
-  const tokensAll = tokens.filter((item, index) =>
-    item.token.currency.coinDenom.toLowerCase().includes(keyword.toLowerCase())
-  );
+  const tokensAll =
+    tokens &&
+    tokens.filter((item, index) =>
+      item.token.currency.coinDenom
+        .toLowerCase()
+        .includes(keyword.toLowerCase())
+    );
   const renderContent = () => {
     if (activeTab === "tokens") {
       return (
