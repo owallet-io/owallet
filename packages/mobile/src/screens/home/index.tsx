@@ -348,9 +348,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       !appInitStore.getInitApp.isAllNetworks ? (
         <EarningCardNew />
       ) : null}
-      {/*(*/}
-      {/*<EarningCardNew defaultChain={ChainIdEnum.Oraichain} />*/}
-      {/*)*/}
       <TokensCardAll dataTokens={dataTokens} />
     </PageWithScrollViewInBottomTabView>
   );

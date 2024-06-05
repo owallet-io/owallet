@@ -33,7 +33,6 @@ import { HistoryCard } from "@src/screens/transactions";
 import { ViewRawToken, ViewToken } from "@src/stores/huge-queries";
 import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
 import { OWSearchInput } from "@src/components/ow-search-input";
-import { Toggle } from "@src/components/toggle";
 
 export const TokensCardAll: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -42,7 +41,6 @@ export const TokensCardAll: FunctionComponent<{
   const { priceStore, appInitStore } = useStore();
   const [keyword, setKeyword] = useState("");
   const { colors } = useTheme();
-  const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
   const [activeTab, setActiveTab] = useState("tokens");
   const styles = styling(colors);
 
@@ -203,52 +201,53 @@ export const TokensCardAll: FunctionComponent<{
             ]}
           />
         </View>
-        <View
-          style={{
-            flexDirection: "row",
-            flexWrap: "wrap",
-            gap: 16,
-            paddingHorizontal: 16,
-            paddingBottom: 10,
-            paddingTop: 6,
-            alignItems: "center",
-            justifyContent: "space-between",
-            // backgroundColor: "red",
-          }}
-        >
-          <OWSearchInput
-            containerStyle={{
-              height: 35,
-            }}
-            onValueChange={(txt) => {
-              setKeyword(txt);
-            }}
-            style={{
-              height: 35,
-              paddingVertical: 8,
-            }}
-            placeHolder={"Search for a token"}
-          />
+        {activeTab === "tokens" ? (
           <View
             style={{
               flexDirection: "row",
+              flexWrap: "wrap",
+              gap: 16,
+              paddingHorizontal: 16,
+              paddingBottom: 10,
+              paddingTop: 6,
               alignItems: "center",
               justifyContent: "space-between",
             }}
           >
-            <OWText color={colors["neutral-text-body"]}>{`Hide <$1`}</OWText>
-            <Switch
-              onValueChange={(value) => {
-                setToggle(value);
+            <OWSearchInput
+              containerStyle={{
+                height: 35,
+              }}
+              onValueChange={(txt) => {
+                setKeyword(txt);
               }}
               style={{
-                transform: [{ scaleX: 0.7 }, { scaleY: 0.7 }],
-                marginRight: -5,
+                height: 35,
+                paddingVertical: 8,
               }}
-              value={toggle}
+              placeHolder={"Search for a token"}
             />
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <OWText color={colors["neutral-text-body"]}>{`Hide <$1`}</OWText>
+              <Switch
+                onValueChange={(value) => {
+                  setToggle(value);
+                }}
+                style={{
+                  transform: [{ scaleX: 0.7 }, { scaleY: 0.7 }],
+                  marginRight: -5,
+                }}
+                value={toggle}
+              />
+            </View>
           </View>
-        </View>
+        ) : null}
         {renderContent()}
       </OWBox>
     </View>
