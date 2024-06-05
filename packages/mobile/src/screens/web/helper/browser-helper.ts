@@ -41,7 +41,13 @@ export const defiData = [
     subTitle: "Universal swap, Bridge and earn tokens",
     url: "https://oraidex.io/",
   },
-
+  {
+    images: images.img_homebase,
+    logo: images.dapps_gpu_logo,
+    title: "GPU Staking",
+    subTitle: "Compound staking to earn GPU demand and block rewards",
+    url: "https://hub.orai.io/gpu-staking",
+  },
   {
     images: images.img_orderbook,
     logo: images.dapps_orderbook_logo,
@@ -64,7 +70,18 @@ export const defiData = [
     url: "https://app.orchai.io/",
   },
 ];
-export const dataAll = [...defiData, ...explorerData, ...aiData];
+export const dataAll = [
+  {
+    images: images.img_homebase,
+    logo: images.dapps_oraichain_logo,
+    title: "Homebase",
+    subTitle: "Start your Oraichain journey now",
+    url: "https://hub.orai.io/",
+  },
+  ...defiData,
+  ...explorerData,
+  ...aiData,
+];
 
 export const getFavicon = (url) => {
   const serviceGG =
