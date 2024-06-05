@@ -16,7 +16,7 @@ export const ItemBanner: FC<{ item: any }> = observer(({ item }) => {
     if (!sourceCode) {
       showToast({
         type: "danger",
-        message: "Your connection is too weak, please try again later.",
+        message: "Please check your network connection and try again.",
       });
       return;
     }
