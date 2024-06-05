@@ -192,82 +192,84 @@ export const BrowserScreen = observer(() => {
           paddingBottom: 0,
         }}
       >
-        <View style={{}}>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-              marginBottom: 16,
-            }}
-          >
-            <OWText size={16} weight={"600"}>
-              Bookmarks
-            </OWText>
-            <OWButton
-              label={"View all"}
-              type={"link"}
-              onPress={onBookmarks}
-              fullWidth={false}
-              size={"medium"}
-              textStyle={{
-                fontWeight: "600",
-                fontSize: 14,
-                color: colors["primary-surface-default"],
+        {[...(browserStore.getBookmarks || [])].length > 0 ? (
+          <View style={{}}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginBottom: 16,
               }}
-              iconRight={
-                <View
-                  style={{
-                    paddingLeft: 10,
-                  }}
-                >
-                  <RightArrowIcon
-                    color={colors["primary-surface-default"]}
-                    height={14}
-                  />
-                </View>
-              }
+            >
+              <OWText size={16} weight={"600"}>
+                Bookmarks
+              </OWText>
+              <OWButton
+                label={"View all"}
+                type={"link"}
+                onPress={onBookmarks}
+                fullWidth={false}
+                size={"medium"}
+                textStyle={{
+                  fontWeight: "600",
+                  fontSize: 14,
+                  color: colors["primary-surface-default"],
+                }}
+                iconRight={
+                  <View
+                    style={{
+                      paddingLeft: 10,
+                    }}
+                  >
+                    <RightArrowIcon
+                      color={colors["primary-surface-default"]}
+                      height={14}
+                    />
+                  </View>
+                }
+              />
+            </View>
+            <FlatList
+              horizontal={true}
+              style={{
+                paddingBottom: 16,
+              }}
+              showsHorizontalScrollIndicator={false}
+              data={[...(browserStore.getBookmarks || [])]}
+              renderItem={({ item, index }) => {
+                return (
+                  <TouchableOpacity
+                    onPress={() => onDetailBrowser(item?.uri)}
+                    style={{
+                      alignItems: "center",
+                      marginHorizontal: 16,
+                    }}
+                  >
+                    <OWIcon
+                      size={30}
+                      type={"images"}
+                      source={{
+                        uri: getFavicon(item?.uri),
+                      }}
+                      style={{ borderRadius: 999 }}
+                    />
+                    <OWText
+                      style={{
+                        paddingTop: 3,
+                      }}
+                      color={colors["neutral-text-title"]}
+                      size={14}
+                      weight={"400"}
+                    >
+                      {getNameBookmark(item?.name ? item?.name : item?.uri)}
+                    </OWText>
+                  </TouchableOpacity>
+                );
+              }}
             />
           </View>
-          <FlatList
-            horizontal={true}
-            style={{
-              paddingBottom: 16,
-            }}
-            showsHorizontalScrollIndicator={false}
-            data={browserStore.getBookmarks}
-            renderItem={({ item, index }) => {
-              return (
-                <TouchableOpacity
-                  onPress={() => onDetailBrowser(item?.uri)}
-                  style={{
-                    alignItems: "center",
-                    marginHorizontal: 16,
-                  }}
-                >
-                  <OWIcon
-                    size={30}
-                    type={"images"}
-                    source={{
-                      uri: getFavicon(item?.uri),
-                    }}
-                    style={{ borderRadius: 999 }}
-                  />
-                  <OWText
-                    style={{
-                      paddingTop: 3,
-                    }}
-                    color={colors["neutral-text-title"]}
-                    size={14}
-                    weight={"400"}
-                  >
-                    {getNameBookmark(item?.name ? item?.name : item?.uri)}
-                  </OWText>
-                </TouchableOpacity>
-              );
-            }}
-          />
-        </View>
+        ) : null}
       </View>
       <View
         style={{
