@@ -1,11 +1,21 @@
-import { View } from "react-native";
+import { View, ViewProps } from "react-native";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { TextInput } from "@src/components/input";
-import React, { useState } from "react";
+import React, { FC, useState } from "react";
 import { useTheme } from "@src/themes/theme-provider";
 
-export const OWSearchInput = ({ placeHolder = "Search URL" }) => {
+export const OWSearchInput: FC<{
+  placeHolder: string;
+  style: ViewProps["style"];
+  containerStyle: ViewProps["style"];
+  onValueChange: (txt) => void;
+}> = ({
+  placeHolder = "Search URL",
+  style,
+  containerStyle,
+  onValueChange = () => {},
+}) => {
   const [search, setSearch] = useState<string>();
   const { colors } = useTheme();
   return (
@@ -31,14 +41,19 @@ export const OWSearchInput = ({ placeHolder = "Search URL" }) => {
         borderWidth: 0,
         borderRadius: 999,
         height: 44,
+        ...style,
       }}
       containerStyle={{
         backgroundColor: colors["neutral-surface-card"],
         flex: 1,
+        ...containerStyle,
       }}
       returnKeyType={"next"}
       defaultValue={search}
-      onChangeText={(txt) => setSearch(txt.toLowerCase())}
+      onChangeText={(txt) => {
+        setSearch(txt.toLowerCase());
+        onValueChange(txt.toLowerCase());
+      }}
       inputRight={
         <>
           {search?.length > 0 && (
@@ -49,6 +64,7 @@ export const OWSearchInput = ({ placeHolder = "Search URL" }) => {
               sizeIcon={20}
               onPress={() => {
                 setSearch("");
+                onValueChange("");
               }}
             />
           )}

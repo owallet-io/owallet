@@ -2,10 +2,17 @@ import { OWButton } from "@src/components/button";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
 // @ts-ignore
-import React, { FC, FunctionComponent, useState, useTransition } from "react";
+import React, {
+  FC,
+  FunctionComponent,
+  useEffect,
+  useState,
+  useTransition,
+} from "react";
 import {
   Platform,
   StyleSheet,
+  Switch,
   TouchableOpacity,
   View,
   ViewStyle,
@@ -25,12 +32,15 @@ import OWText from "@src/components/text/ow-text";
 import { HistoryCard } from "@src/screens/transactions";
 import { ViewRawToken, ViewToken } from "@src/stores/huge-queries";
 import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
+import { OWSearchInput } from "@src/components/ow-search-input";
+import { Toggle } from "@src/components/toggle";
 
 export const TokensCardAll: FunctionComponent<{
   containerStyle?: ViewStyle;
   dataTokens: ViewRawToken[];
 }> = observer(({ containerStyle, dataTokens }) => {
   const { priceStore, appInitStore } = useStore();
+  const [keyword, setKeyword] = useState("");
   const { colors } = useTheme();
   const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
   const [activeTab, setActiveTab] = useState("tokens");
@@ -38,15 +48,20 @@ export const TokensCardAll: FunctionComponent<{
 
   const tokens = appInitStore.getInitApp.hideTokensWithoutBalance
     ? dataTokens.filter((item, index) => {
-        return new Dec(item.token.amount).gt(new Dec("1000"));
+        const balance = new CoinPretty(item.token.currency, item.token.amount);
+        const price = priceStore.calculatePrice(balance, "usd");
+        return price?.toDec().gte(new Dec("1")) ?? false;
       })
     : dataTokens;
+  const tokensAll = tokens.filter((item, index) =>
+    item.token.currency.coinDenom.toLowerCase().includes(keyword.toLowerCase())
+  );
   const renderContent = () => {
     if (activeTab === "tokens") {
       return (
         <>
-          {tokens?.length > 0 ? (
-            tokens.map((item, index) => (
+          {tokensAll?.length > 0 ? (
+            tokensAll.map((item, index) => (
               <TokenItem key={index.toString()} item={item} />
             ))
           ) : (
@@ -125,6 +140,12 @@ export const TokensCardAll: FunctionComponent<{
     }
   };
 
+  const [toggle, setToggle] = useState(
+    appInitStore.getInitApp.hideTokensWithoutBalance
+  );
+  useEffect(() => {
+    appInitStore.updateHideTokensWithoutBalance(toggle);
+  }, [toggle]);
   return (
     <View style={styles.container}>
       <OWBox
@@ -178,7 +199,52 @@ export const TokensCardAll: FunctionComponent<{
             ]}
           />
         </View>
-
+        <View
+          style={{
+            flexDirection: "row",
+            flexWrap: "wrap",
+            gap: 16,
+            paddingHorizontal: 16,
+            paddingBottom: 10,
+            paddingTop: 6,
+            alignItems: "center",
+            justifyContent: "space-between",
+            // backgroundColor: "red",
+          }}
+        >
+          <OWSearchInput
+            containerStyle={{
+              height: 35,
+            }}
+            onValueChange={(txt) => {
+              setKeyword(txt);
+            }}
+            style={{
+              height: 35,
+              paddingVertical: 8,
+            }}
+            placeHolder={"Search for a token"}
+          />
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <OWText color={colors["neutral-text-body"]}>{`Hide <$1`}</OWText>
+            <Switch
+              onValueChange={(value) => {
+                setToggle(value);
+              }}
+              style={{
+                transform: [{ scaleX: 0.7 }, { scaleY: 0.7 }],
+                marginRight: -5,
+              }}
+              value={toggle}
+            />
+          </View>
+        </View>
         {renderContent()}
       </OWBox>
     </View>
@@ -292,6 +358,18 @@ const TokenItem: FC<{
               >
                 {new PricePretty(fiatCurrency, item.price).toString()}
               </Text>
+              {/*<Text*/}
+              {/*  size={14}*/}
+              {/*  style={styles.profit}*/}
+              {/*  color={*/}
+              {/*    colors[*/}
+              {/*       "success-text-body"*/}
+              {/*      ]*/}
+              {/*  }*/}
+              {/*>*/}
+
+              {/*  +1.2% (${2.2 ?? 0})*/}
+              {/*</Text>*/}
             </View>
           </View>
         </View>
