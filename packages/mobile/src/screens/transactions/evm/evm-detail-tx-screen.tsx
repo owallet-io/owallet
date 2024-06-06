@@ -59,7 +59,7 @@ export const EvmDetailTx: FunctionComponent = observer((props) => {
   const getHistoryDetail = async () => {
     try {
       setLoading(true);
-      const res = await API.getDetailTx(
+      const res = await API.getDetailAllTx(
         {
           hash,
           network: chain as Network,
