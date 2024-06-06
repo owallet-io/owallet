@@ -88,7 +88,6 @@ async function loadNativeBalance(
           .map((coin) => [coin.denom, coin.amount])
       )
     );
-    console.log("success with address ", address);
     universalSwapStore.updateAmounts(amountDetails);
   } catch (err) {
     console.log("error address,", address, err);
@@ -285,8 +284,6 @@ async function loadTokensCosmos(
       kwtAddress,
       oraiAddress
     );
-
-    console.log("cosmosAddress", cosmosAddress);
 
     loadNativeBalance(updateAmounts, cosmosAddress, chainInfo);
   }

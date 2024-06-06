@@ -8,9 +8,11 @@ import {
   ResTxsCosmos,
 } from "@src/screens/transactions/cosmos/types";
 import {
+  ResBalanceEvm,
   ResDetailAllTx,
-  TxsAllNetwork,
-} from "@src/screens/transactions/all-network/all-network.types";
+  TxsAllNetwork
+} from '@src/screens/transactions/all-network/all-network.types';
+import { fetchRetry, urlTxHistory } from '@src/common/constants';
 
 export const API = {
   post: (path: string, params: any, config: AxiosRequestConfig) => {
@@ -475,6 +477,10 @@ export const API = {
   getDetailAllTx: ({ hash, network }, config: AxiosRequestConfig) => {
     const url = `v1/txs-history/tx-detail/?network=${network}&txhash=${hash}`;
     return API.get(url, config) as Promise<AxiosResponse<ResDetailAllTx>>;
+  },
+  getAllBalancesEvm: ({ address, network }, config?: AxiosRequestConfig) => {
+    const url = `${urlTxHistory}raw-tx-history/all/balances?network=${network}&address=${address}`;
+    return fetchRetry(url, config) as Promise<ResBalanceEvm>;
   },
   getDetailOasisTx: (
     { hash, network = OasisNetwork.MAINNET },

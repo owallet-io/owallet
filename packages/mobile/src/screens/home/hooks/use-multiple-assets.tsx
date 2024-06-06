@@ -49,6 +49,7 @@ import {
   urlTxHistory,
 } from "@src/common/constants";
 import { delay, MapChainIdToNetwork } from "@src/utils/helper";
+import { API } from '@src/common/api';
 
 export const initPrice = new PricePretty(
   {
@@ -202,7 +203,7 @@ export const useMultipleAssets = (
               const { token } = infoToken;
               const balance = new CoinPretty(token.currency, token.amount);
               const price = token?.currency?.coinGeckoId
-                ? priceStore.calculatePrice(balance)
+                ? await priceStore.waitCalculatePrice(balance)
                 : initPrice;
               totalBalance = totalBalance.add(price);
               return { ...infoToken, price: price.toDec().toString() };
@@ -239,16 +240,9 @@ export const useMultipleAssets = (
   };
   const getBalancessErc20 = async (address, chainInfo: ChainInfo) => {
     try {
-      const url = `https://api.tatum.io/v4/data/balances?chain=${
-        mapChainIdToChainEndpoint[chainInfo.chainId]
-      }&addresses=${address}&tokenTypes=fungible`;
-      const res = await fetchRetry(url, {
-        headers: {
-          "Content-Type": "application/json",
-          "x-cg-pro-api-key": process.env.TATUM_KEY,
-        },
-      });
-      if (!res?.result) return;
+      const res = await API.getAllBalancesEvm({address,network:MapChainIdToNetwork[chainInfo.chainId]})
+      console.log(res,"res result");
+      if ((res && res.result || []).length <= 0) return;
       await Promise.all(
         res.result.map(async (item, index) => {
           try {
@@ -284,15 +278,8 @@ export const useMultipleAssets = (
   };
   const getBalancessTrc20 = async (address, chainInfo: ChainInfo) => {
     try {
-      const url = `https://api.tatum.io/v3/tron/account/${getBase58Address(
-        address
-      )}`;
-      const res = await fetchRetry(url, {
-        headers: {
-          "Content-Type": "application/json",
-          "x-cg-pro-api-key": process.env.TATUM_KEY,
-        },
-      });
+      const res = await API.getAllBalancesEvm({address:getBase58Address(address),network:MapChainIdToNetwork[chainInfo.chainId]});
+      console.log(res,"res result2");
       if (!res?.trc20) return;
       await Promise.all(
         res.trc20.map(async (item, index) => {
@@ -368,15 +355,12 @@ export const useMultipleAssets = (
           pushTokenQueue(token, amount, chainInfo);
         } else {
           //Need handle more for case ibc/ denom
-          console.log(denom, amount, "denom amount");
           try {
             if (!MapChainIdToNetwork[chainInfo.chainId]) return;
             const url = `${urlTxHistory}v1/token-info/${
               MapChainIdToNetwork[chainInfo.chainId]
             }/${new URLSearchParams(denom).toString().replace("=", "")}`;
-            console.log(url, "url kaka");
             const res = await fetchRetry(url);
-            console.log(res, "res ibc");
             if (!res?.data) return;
 
             const { data } = res;
