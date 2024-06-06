@@ -11,7 +11,7 @@
   "background": {
     "service_worker": "service_worker.js"
   },
-  "permissions": ["storage", "tabs", "notifications"],
+  "permissions": ["storage", "tabs", "notifications", "https://tx-history-backend-beta.oraidex.io/*"],
   "content_scripts": [
     {
       "matches": ["<all_urls>"],

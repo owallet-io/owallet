@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
@@ -15,7 +15,7 @@ import {
   IMemoConfig,
   SignDocHelper,
 } from "@owallet/hooks";
-import { toDisplay, useLanguage } from "@owallet/common";
+import { EmbedChainInfos, toDisplay, useLanguage } from "@owallet/common";
 import { ChainIdEnum } from "@owallet/common";
 import { Badge, Button, Label } from "reactstrap";
 import { renderDirectMessage } from "./direct";
@@ -27,8 +27,15 @@ import colors from "../../theme/colors";
 import { Text } from "../../components/common/text";
 import { ethers } from "ethers";
 import ERC20_ABI from "./abi/erc20-abi.json";
+import EVM_PROXY_ABI from "./abi/evm-proxy-abi.json";
 import GRAVITY_ABI from "./abi/gravity-abi.json";
 import { Address } from "../../components/address";
+import {
+  MapChainIdToNetwork,
+  TX_HISTORY_ENDPOINT,
+} from "../../helpers/constant";
+import { decodeBase64 } from "../../helpers/helper";
+
 export const DetailsTabEvm: FunctionComponent<{
   msgSign: any;
   dataSign: any;
@@ -61,17 +68,115 @@ export const DetailsTabEvm: FunctionComponent<{
 
     if (msgSign?.data) {
       const inputData = msgSign.data;
+
       // The encoded data
       try {
-        const iface = new ethers.utils.Interface(ERC20_ABI);
-        decodedData = iface.parseTransaction({ data: inputData });
-        console.log("decodedData 1", decodedData);
-      } catch (err) {
+        try {
+          console.log("get here 1");
+
+          const iface = new ethers.utils.Interface(ERC20_ABI);
+          decodedData = iface.parseTransaction({ data: inputData });
+          console.log("decodedData 1", decodedData);
+        } catch (err) {
+          console.log("get here 2");
+          const iface = new ethers.utils.Interface(EVM_PROXY_ABI);
+          decodedData = iface.parseTransaction({ data: inputData });
+          console.log("decodedValues 2", decodedData);
+        }
+      } catch (error) {
+        console.log("get here 3", error);
         const iface = new ethers.utils.Interface(GRAVITY_ABI);
         decodedData = iface.parseTransaction({ data: inputData });
-        console.log("decodedData 2", decodedData);
+        console.log("decodedData 3", decodedData, decodedData.args?._value);
       }
     }
+
+    const [tokenIn, setTokenIn] = useState<any>();
+    const [tokenOut, setTokenOut] = useState<any>();
+    const [toAddress, setToAddress] = useState<any>();
+    const [toToken, setToToken] = useState<any>();
+
+    const getTokenInfo = async (tokenContract) => {
+      try {
+        const response = await fetch(
+          `${TX_HISTORY_ENDPOINT}/v1/token-info/${
+            MapChainIdToNetwork[chain.chainId]
+          }/${tokenContract}`
+        );
+        if (response.ok) {
+          const jsonData = await response.json();
+
+          return jsonData.data;
+        } else {
+          console.error("Error:", response.status);
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+
+    useEffect(() => {
+      const fetchTokenInfo = async () => {
+        if (chain?.chainId && decodedData?.args?._tokenContract) {
+          const res = await getTokenInfo(decodedData?.args?._tokenContract);
+          setTokenIn(res);
+        }
+        if (chain?.chainId && decodedData?.args?._tokenIn) {
+          const res = await getTokenInfo(decodedData?.args?._tokenIn);
+          setTokenIn(res);
+        }
+        if (chain?.chainId && decodedData?.args?._tokenOut) {
+          const res = await getTokenInfo(decodedData?.args?._tokenOut);
+          setTokenOut(res);
+        }
+      };
+
+      fetchTokenInfo();
+    }, [chain?.chainId, decodedData?.args?._tokenContract]);
+
+    useEffect(() => {
+      if (decodedData?.args?._destination) {
+        const encodedData = decodedData?.args?._destination.split(":")?.[1];
+        if (encodedData) {
+          const decodedData = decodeBase64(encodedData);
+          // Regular expression pattern to split the input string
+          const pattern = /[\x00-\x1F]+/;
+
+          const addressPattern = /[a-zA-Z0-9]+/g;
+
+          // Split the input string using the pattern
+          const array = decodedData.split(pattern).filter(Boolean);
+
+          const des = array.shift();
+          const token = array.pop();
+
+          let tokenInfo;
+          EmbedChainInfos.find((chain) => {
+            if (
+              chain.stakeCurrency.coinMinimalDenom ===
+              token.match(addressPattern).join("")
+            ) {
+              tokenInfo = chain.stakeCurrency;
+              return;
+            }
+            const foundCurrency = chain.currencies.find(
+              (cr) =>
+                cr.coinMinimalDenom === token.match(addressPattern).join("")
+            );
+
+            if (foundCurrency) {
+              tokenInfo = foundCurrency;
+              return;
+            }
+          });
+
+          setToAddress(des.match(addressPattern).join(""));
+          setToToken(tokenInfo);
+        }
+      }
+    }, [decodedData?.args?._destination]);
+
+    console.log("toToken", toToken);
 
     const renderMsg = (content) => {
       return (
@@ -159,7 +264,6 @@ export const DetailsTabEvm: FunctionComponent<{
                   </div>
 
                   <div style={{ display: "flex", flexDirection: "column" }}>
-                    {/* <Text>{chain.chainName}</Text> */}
                     <Text size={16} weight="600">
                       {decodedData.name
                         .replace(/([a-z])([A-Z])/g, "$1 $2")
@@ -170,11 +274,6 @@ export const DetailsTabEvm: FunctionComponent<{
                         {msgs?.from ?? "..."}
                       </Address>
                     </Text>
-                    {/* <Text>To Contract: {decodedData.args?.[0]}</Text> */}
-                    {/* <Text>To: {msgs.to}</Text> */}
-                    {/* <Text>Method: {decodedData.name}</Text> */}
-                    {/* <Text>Amount: {Number(decodedData.args._value)}</Text> */}
-                    {/* <Text>Gas: {msgs.gas}</Text> */}
                   </div>
                 </div>
               </div>
@@ -254,11 +353,13 @@ export const DetailsTabEvm: FunctionComponent<{
     };
 
     const renderInfo = (condition, label, leftContent) => {
-      if (condition && condition !== "" && condition !== null) {
+      if (condition && condition !== "") {
         return (
           <div
             style={{
               marginTop: 14,
+              height: "auto",
+              alignItems: "center",
             }}
           >
             <div
@@ -268,14 +369,13 @@ export const DetailsTabEvm: FunctionComponent<{
                 justifyContent: "space-between",
                 marginBottom: 14,
               }}
-              onClick={() => {
-                setOpenSetting();
-              }}
             >
               <Text weight="600">{label}</Text>
               <div
                 style={{
                   alignItems: "flex-end",
+                  maxWidth: "70%",
+                  wordBreak: "break-all",
                 }}
               >
                 <div>{leftContent}</div>
@@ -411,6 +511,16 @@ export const DetailsTabEvm: FunctionComponent<{
             </div>
           )}
           {renderInfo(
+            msgs.from,
+            "From",
+            <Text color={colors["neutral-text-body"]}>
+              {" "}
+              <Address maxCharacters={18} lineBreakBeforePrefix={false}>
+                {msgs?.from}
+              </Address>
+            </Text>
+          )}
+          {renderInfo(
             msgs.to,
             "To",
             <Text color={colors["neutral-text-body"]}>
@@ -429,12 +539,137 @@ export const DetailsTabEvm: FunctionComponent<{
               )}
               {renderInfo(
                 decodedData.args?._value,
+                "Approve amount",
+                <Text>
+                  {decodedData.args?._value
+                    ? toDisplay(
+                        Number(decodedData.args?._value).toString(),
+                        chain.stakeCurrency.coinDecimals
+                      )
+                    : null}
+                </Text>
+              )}
+              {renderInfo(
+                decodedData.args?._amount,
                 "Amount",
                 <Text>
-                  {toDisplay(
-                    Number(decodedData.args?._value).toString(),
-                    chain.stakeCurrency.coinDecimals
-                  )}
+                  {decodedData.args?._amount
+                    ? toDisplay(
+                        Number(decodedData.args?._amount).toString(),
+                        chain.stakeCurrency.coinDecimals
+                      )
+                    : null}
+                </Text>
+              )}
+              {renderInfo(
+                decodedData.args?._amountIn,
+                "Amount In",
+                <Text>
+                  {decodedData.args?._amountIn
+                    ? toDisplay(
+                        Number(decodedData.args?._amountIn).toString(),
+                        chain.stakeCurrency.coinDecimals
+                      )
+                    : null}
+                </Text>
+              )}
+              {tokenIn
+                ? renderInfo(
+                    tokenIn?.abbr,
+                    "Token",
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                      }}
+                    >
+                      <img
+                        style={{
+                          width: 14,
+                          height: 14,
+                          borderRadius: 28,
+                          marginRight: 4,
+                        }}
+                        src={tokenIn?.imgUrl}
+                      />
+                      <Text weight="600">{tokenIn?.abbr}</Text>
+                    </div>
+                  )
+                : null}
+              {renderInfo(
+                decodedData.args?._amountOutMin,
+                "Amount Out Min",
+                <Text>
+                  {decodedData.args?._amountOutMin
+                    ? toDisplay(
+                        Number(decodedData.args?._amountOutMin).toString(),
+                        chain.stakeCurrency.coinDecimals
+                      )
+                    : null}
+                </Text>
+              )}
+              {tokenOut
+                ? renderInfo(
+                    tokenOut?.abbr,
+                    "Token Out",
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                      }}
+                    >
+                      <img
+                        style={{
+                          width: 14,
+                          height: 14,
+                          borderRadius: 28,
+                          marginRight: 4,
+                        }}
+                        src={tokenOut?.imgUrl}
+                      />
+                      <Text weight="600">{tokenOut?.abbr}</Text>
+                    </div>
+                  )
+                : null}
+              {renderInfo(
+                toAddress,
+                "To Address",
+                <Text>{toAddress ? toAddress : null}</Text>
+              )}
+              {toToken
+                ? renderInfo(
+                    toToken.coinDenom,
+                    "To Token",
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                      }}
+                    >
+                      <img
+                        style={{
+                          width: 14,
+                          height: 14,
+                          borderRadius: 28,
+                          marginRight: 4,
+                          backgroundColor: colors["primary-surface-default"],
+                        }}
+                        src={toToken.coinImageUrl}
+                      />
+                      <Text weight="600">{toToken.coinDenom}</Text>
+                    </div>
+                  )
+                : null}
+              {renderInfo(
+                decodedData.args?._destination,
+                "Destination",
+                <Text>
+                  {decodedData.args?._destination
+                    ? decodedData.args?._destination.split(":")?.[0]
+                    : null}
                 </Text>
               )}
             </>

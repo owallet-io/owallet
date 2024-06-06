@@ -460,7 +460,9 @@ export const SignEvmPage: FunctionComponent = observer(() => {
                         if (!dataSign) return;
                         await signInteractionStore.approveEthereumAndWaitEnd({
                           gasPrice: Web3.utils.toHex(gasConfig.gasPrice),
-                          gasLimit: Web3.utils.toHex(gasConfig.gas),
+                          gasLimit: Web3.utils.toHex(
+                            Math.round(gasConfig.gas * 1.1)
+                          ),
                         });
                         history.goBack();
                         if (

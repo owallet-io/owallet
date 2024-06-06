@@ -43,6 +43,7 @@
     "@thresholdkey/default": "^1.0.8",
     "@thresholdkey/security-questions": "^1.0.8",
     "ethers": "5.4.2",
+    "@tatumio/tatum": "^4.2.32",
     "@walletconnect/client": "^1.6.4",
     "firebase": "^10.7.0",
     "aes-js": "^3.1.2",
