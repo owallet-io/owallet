@@ -9,7 +9,7 @@ import { useStore } from "../../stores";
 import CheckBox from "react-native-check-box";
 import { AppCurrency, CW20Currency, Secret20Currency } from "@owallet/types";
 import { observer } from "mobx-react-lite";
-import { showToast } from "@src/utils/helper";
+import { MapChainIdToNetwork, showToast } from "@src/utils/helper";
 import { API } from "@src/common/api";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import { OWButton } from "@src/components/button";
@@ -111,22 +111,15 @@ export const AddTokenCosmosScreen: FunctionComponent<{
     try {
       if (tokenInfo && tokenInfo.symbol) {
         if (selectedChain && contractAddress && contractAddress !== "") {
-          const res = await API.getCoingeckoImageURL(
-            {
-              contractAddress: contractAddress,
-              id: selectedChain.chainName.toLowerCase().split(" ").join("-"),
-            },
-            {
-              baseURL: "https://pro-api.coingecko.com/api/v3",
-              headers: {
-                "x-cg-pro-api-key": process.env.COINGECKO_API_KEY,
-              },
-            }
-          );
+          const res = await API.getTokenInfo({
+            network: MapChainIdToNetwork[selectedChain.chainId],
+            tokenAddress: contractAddress,
+          });
           const data = res.data;
-          if (data && data.image && data.image.large) {
-            setCoingeckoImg(data.image.large);
-            setCoingeckoID(data.id);
+
+          if (data && data.imgUrl) {
+            setCoingeckoImg(data.imgUrl);
+            setCoingeckoID(data.coingeckoId);
           } else {
             throw new Error("Image URL not found for the Coingecko ID.");
           }

@@ -494,6 +494,10 @@ export const API = {
     const url = `${urlTxHistory}v1/token-info/by-addresses?tokenAddresses=${tokenAddresses}`;
     return fetchRetry(url, config) as Promise<TokenInfo[]>;
   },
+  getTokenInfo: ({ tokenAddress, network }, config?: AxiosRequestConfig) => {
+    const url = `${urlTxHistory}v1/token-info/${network}/${tokenAddress}`;
+    return fetchRetry(url, config) as Promise<TokenInfo>;
+  },
   getDetailOasisTx: (
     { hash, network = OasisNetwork.MAINNET },
     config: AxiosRequestConfig
