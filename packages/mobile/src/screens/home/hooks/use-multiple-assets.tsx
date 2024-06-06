@@ -378,7 +378,7 @@ export const useMultipleAssets = (
         allTokensAddress.push(str);
       }
     });
-
+    if (allTokensAddress.length === 0) return;
     const tokenInfos = await API.getMultipleTokenInfo({
       tokenAddresses: allTokensAddress.join(","),
     });
