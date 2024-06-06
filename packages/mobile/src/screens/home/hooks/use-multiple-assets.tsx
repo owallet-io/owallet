@@ -49,7 +49,8 @@ import {
   urlTxHistory,
 } from "@src/common/constants";
 import { delay, MapChainIdToNetwork } from "@src/utils/helper";
-import { API } from '@src/common/api';
+import { API } from "@src/common/api";
+import { convertObjChainAddressToString } from "@src/screens/transactions/all-network/all-network.helper";
 
 export const initPrice = new PricePretty(
   {
@@ -141,10 +142,29 @@ export const useMultipleAssets = (
         .toString(),
     };
   };
+  const fetchAllBalancesEvm = async (chains) => {
+    const allBalanceChains = chains.map((chain, index) => {
+      const { address, chainInfo } = hugeQueriesStore.getAllChainMap.get(chain);
+      switch (chain) {
+        case ChainIdEnum.BNBChain:
+        case ChainIdEnum.Ethereum:
+          return getBalancessErc20(address, chainInfo);
+        case ChainIdEnum.TRON:
+          return getBalancessTrc20(address, chainInfo);
+      }
+    });
+    return Promise.all(allBalanceChains);
+  };
   const init = async () => {
     setIsLoading(true);
     try {
       const allChain = Array.from(hugeQueriesStore.getAllChainMap.values());
+      const chainIdsEvm = [
+        ChainIdEnum.Ethereum,
+        ChainIdEnum.BNBChain,
+        ChainIdEnum.TRON,
+      ];
+      await fetchAllBalancesEvm(chainIdsEvm);
       const allBalancePromises = allChain.map(
         async ({ address, chainInfo }) => {
           switch (chainInfo.networkType) {
@@ -156,14 +176,6 @@ export const useMultipleAssets = (
                   ])
                 : getBalanceNativeCosmos(address, chainInfo);
             case "evm":
-              if (
-                chainInfo.chainId === ChainIdEnum.BNBChain ||
-                chainInfo.chainId === ChainIdEnum.Ethereum
-              ) {
-                await getBalancessErc20(address, chainInfo);
-              } else if (chainInfo.chainId === ChainIdEnum.TRON) {
-                await getBalancessTrc20(address, chainInfo);
-              }
               return chainInfo.chainId === ChainIdEnum.Oasis
                 ? getBalanceOasis(address, chainInfo)
                 : Promise.all([
@@ -186,7 +198,7 @@ export const useMultipleAssets = (
       await Promise.allSettled(allBalancePromises);
       const currencies = FiatCurrencies.map(({ currency }) => currency);
       priceStore.updateURL(Array.from(coinIds.keys()), currencies, true);
-      await delay(1000);
+      await delay(300);
       let overallTotalBalance = "0";
       let allTokens: ViewRawToken[] = [];
       // Loop through each key in the data object
@@ -240,79 +252,78 @@ export const useMultipleAssets = (
   };
   const getBalancessErc20 = async (address, chainInfo: ChainInfo) => {
     try {
-      const res = await API.getAllBalancesEvm({address,network:MapChainIdToNetwork[chainInfo.chainId]})
-      console.log(res,"res result");
-      if ((res && res.result || []).length <= 0) return;
-      await Promise.all(
-        res.result.map(async (item, index) => {
-          try {
-            const url = `${urlTxHistory}v1/token-info/${
-              MapChainIdToNetwork[chainInfo.chainId]
-            }/${item.tokenAddress}`;
-            const res = await fetchRetry(url);
-            if (!res?.data) return;
-            const { data } = res;
-            const token = chainInfo.currencies.find(
-              (item, index) => item.coinGeckoId === data.coingeckoId
-            );
-            if (!token) {
-              const infoToken: any = [
-                {
-                  coinImageUrl: data.imgUrl,
-                  coinDenom: data.abbr,
-                  coinGeckoId: data.coingeckoId,
-                  coinDecimals: data.decimal,
-                  coinMinimalDenom: `erc20:${data.contractAddress}:${data.name}`,
-                },
-              ];
-              chainInfo.addCurrencies(...infoToken);
-            }
-          } catch (e) {
-            console.log(e, "E2");
-          }
+      const res = await API.getAllBalancesEvm({
+        address,
+        network: MapChainIdToNetwork[chainInfo.chainId],
+      });
+      if (((res && res.result) || []).length <= 0) return;
+      const tokenAddresses = res.result
+        .map((item, index) => {
+          return `${MapChainIdToNetwork[chainInfo.chainId]}%2B${
+            item.tokenAddress
+          }`;
         })
-      );
+        .join(",");
+      const tokenInfos = await API.getMultipleTokenInfo({ tokenAddresses });
+      tokenInfos.forEach((tokeninfo, index) => {
+        const token = chainInfo.currencies.find(
+          (item, index) =>
+            item.coinDenom?.toUpperCase() === tokeninfo.abbr?.toUpperCase()
+        );
+        if (!token) {
+          const infoToken: any = [
+            {
+              coinImageUrl: tokeninfo.imgUrl,
+              coinDenom: tokeninfo.abbr,
+              coinGeckoId: tokeninfo.coingeckoId,
+              coinDecimals: tokeninfo.decimal,
+              coinMinimalDenom: `erc20:${tokeninfo.contractAddress}:${tokeninfo.name}`,
+              contractAddress: tokeninfo.contractAddress,
+            },
+          ];
+          chainInfo.addCurrencies(...infoToken);
+        }
+      });
     } catch (e) {
       console.log(e, "e1");
     }
   };
   const getBalancessTrc20 = async (address, chainInfo: ChainInfo) => {
     try {
-      const res = await API.getAllBalancesEvm({address:getBase58Address(address),network:MapChainIdToNetwork[chainInfo.chainId]});
-      console.log(res,"res result2");
+      const res = await API.getAllBalancesEvm({
+        address: getBase58Address(address),
+        network: MapChainIdToNetwork[chainInfo.chainId],
+      });
       if (!res?.trc20) return;
-      await Promise.all(
-        res.trc20.map(async (item, index) => {
-          try {
-            const url = `${urlTxHistory}v1/token-info/${
-              MapChainIdToNetwork[chainInfo.chainId]
-            }/${Object.keys(item)[0]}`;
-            const res = await fetchRetry(url);
-            if (!res?.data) return;
-            const { data } = res;
-            const token = chainInfo.currencies.find(
-              (item, index) => item.coinGeckoId === data.coingeckoId
-            );
-            if (!token) {
-              const infoToken: any = [
-                {
-                  coinImageUrl: data.imgUrl,
-                  coinDenom: data.abbr,
-                  coinGeckoId: data.coingeckoId,
-                  coinDecimals: data.decimal,
-                  coinMinimalDenom: `erc20:${getEvmAddress(
-                    data.contractAddress
-                  )}:${data.name}`,
-                  contractAddress: data.contractAddress,
-                },
-              ];
-              chainInfo.addCurrencies(...infoToken);
-            }
-          } catch (e) {
-            console.log(e, "E2");
-          }
+      const tokenAddresses = res?.trc20
+        .map((item, index) => {
+          return `${MapChainIdToNetwork[chainInfo.chainId]}%2B${
+            Object.keys(item)[0]
+          }`;
         })
-      );
+        .join(",");
+      const tokenInfos = await API.getMultipleTokenInfo({ tokenAddresses });
+      tokenInfos.forEach((tokeninfo, index) => {
+        const token = chainInfo.currencies.find(
+          (item, index) =>
+            item.coinDenom?.toUpperCase() === tokeninfo.abbr?.toUpperCase()
+        );
+        if (!token) {
+          const infoToken: any = [
+            {
+              coinImageUrl: tokeninfo.imgUrl,
+              coinDenom: tokeninfo.abbr,
+              coinGeckoId: tokeninfo.coingeckoId,
+              coinDecimals: tokeninfo.decimal,
+              coinMinimalDenom: `erc20:${getEvmAddress(
+                tokeninfo.contractAddress
+              )}:${tokeninfo.name}`,
+              contractAddress: tokeninfo.contractAddress,
+            },
+          ];
+          chainInfo.addCurrencies(...infoToken);
+        }
+      });
     } catch (e) {
       console.log(e, "e1");
     }
@@ -343,44 +354,53 @@ export const useMultipleAssets = (
   };
 
   const getBalanceNativeCosmos = async (address, chainInfo: ChainInfo) => {
-    const client = axios.create({ baseURL: chainInfo.rest });
-    const { data } = await client.get(
-      `/cosmos/bank/v1beta1/balances/${address}?pagination.limit=1000`
-    );
+    const res = await API.getAllBalancesNativeCosmos({
+      address: address,
+      baseUrl: chainInfo.rest,
+    });
+    console.log(res.balances, "res");
     const mergedMaps = chainInfo.currencyMap;
-    await Promise.all(
-      data.balances.map(async ({ denom, amount }) => {
-        const token = mergedMaps.get(denom);
-        if (token) {
-          pushTokenQueue(token, amount, chainInfo);
-        } else {
-          //Need handle more for case ibc/ denom
-          try {
-            if (!MapChainIdToNetwork[chainInfo.chainId]) return;
-            const url = `${urlTxHistory}v1/token-info/${
-              MapChainIdToNetwork[chainInfo.chainId]
-            }/${new URLSearchParams(denom).toString().replace("=", "")}`;
-            const res = await fetchRetry(url);
-            if (!res?.data) return;
+    const allTokensAddress = [];
+    const balanceObj = res.balances.reduce((obj, item) => {
+      obj[item.denom] = item.amount;
+      return obj;
+    }, {});
+    console.log(balanceObj);
+    res.balances.forEach(({ denom, amount }) => {
+      const token = mergedMaps.get(denom);
+      if (token) {
+        pushTokenQueue(token, amount, chainInfo);
+      } else {
+        if (!MapChainIdToNetwork[chainInfo.chainId]) return;
+        const str = `${
+          MapChainIdToNetwork[chainInfo.chainId]
+        }%2B${new URLSearchParams(denom).toString().replace("=", "")}`;
+        allTokensAddress.push(str);
+      }
+    });
 
-            const { data } = res;
-            const infoToken: any = [
-              {
-                coinImageUrl: data.imgUrl,
-                coinDenom: data.abbr,
-                coinGeckoId: data.coingeckoId,
-                coinDecimals: data.decimal,
-                coinMinimalDenom: data.denom,
-              },
-            ];
-            console.log(infoToken, "infoToken");
-            chainInfo.addCurrencies(...infoToken);
-          } catch (e) {
-            console.log(e, "E2");
-          }
-        }
-      })
-    );
+    const tokenInfos = await API.getMultipleTokenInfo({
+      tokenAddresses: allTokensAddress.join(","),
+    });
+    tokenInfos.forEach((tokeninfo, index) => {
+      const token = chainInfo.currencies.find(
+        (item, index) =>
+          item.coinDenom?.toUpperCase() === tokeninfo.abbr?.toUpperCase()
+      );
+      if (!token) {
+        const infoToken: any = [
+          {
+            coinImageUrl: tokeninfo.imgUrl,
+            coinDenom: tokeninfo.abbr,
+            coinGeckoId: tokeninfo.coingeckoId,
+            coinDecimals: tokeninfo.decimal,
+            coinMinimalDenom: tokeninfo.denom,
+          },
+        ];
+        pushTokenQueue(infoToken[0], balanceObj[tokeninfo.denom], chainInfo);
+        chainInfo.addCurrencies(...infoToken);
+      }
+    });
   };
 
   const getBalanceCW20Oraichain = async () => {

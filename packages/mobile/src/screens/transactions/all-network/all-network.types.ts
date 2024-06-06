@@ -57,17 +57,16 @@ export interface ResDetailAllTx {
 }
 
 export interface ResBalanceEvm {
-  result: ResultBalancesEvm[]
-  prevPage: string
-  nextPage: string
+  result: ResultBalancesEvm[];
+  prevPage: string;
+  nextPage: string;
 }
 
 export interface ResultBalancesEvm {
-  chain: string
-  address: string
-  balance: string
-  tokenAddress: string
-  lastUpdatedBlockNumber: number
-  type: string
+  chain: string;
+  address: string;
+  balance: string;
+  tokenAddress: string;
+  lastUpdatedBlockNumber: number;
+  type: string;
 }
-

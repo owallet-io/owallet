@@ -10,9 +10,10 @@ import {
 import {
   ResBalanceEvm,
   ResDetailAllTx,
-  TxsAllNetwork
-} from '@src/screens/transactions/all-network/all-network.types';
-import { fetchRetry, urlTxHistory } from '@src/common/constants';
+  TokenInfo,
+  TxsAllNetwork,
+} from "@src/screens/transactions/all-network/all-network.types";
+import { fetchRetry, urlTxHistory } from "@src/common/constants";
 
 export const API = {
   post: (path: string, params: any, config: AxiosRequestConfig) => {
@@ -481,6 +482,17 @@ export const API = {
   getAllBalancesEvm: ({ address, network }, config?: AxiosRequestConfig) => {
     const url = `${urlTxHistory}raw-tx-history/all/balances?network=${network}&address=${address}`;
     return fetchRetry(url, config) as Promise<ResBalanceEvm>;
+  },
+  getAllBalancesNativeCosmos: (
+    { address, baseUrl },
+    config?: AxiosRequestConfig
+  ) => {
+    const url = `${baseUrl}/cosmos/bank/v1beta1/balances/${address}?pagination.limit=1000`;
+    return fetchRetry(url, config);
+  },
+  getMultipleTokenInfo: ({ tokenAddresses }, config?: AxiosRequestConfig) => {
+    const url = `${urlTxHistory}v1/token-info/by-addresses?tokenAddresses=${tokenAddresses}`;
+    return fetchRetry(url, config) as Promise<TokenInfo[]>;
   },
   getDetailOasisTx: (
     { hash, network = OasisNetwork.MAINNET },
