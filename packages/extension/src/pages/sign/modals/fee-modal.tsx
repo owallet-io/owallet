@@ -17,7 +17,7 @@ import { useStore } from "../../../stores";
 import { CoinPretty, Dec } from "@owallet/unit";
 
 export const FeeModal: FunctionComponent<{
-  feeConfig: FeeConfig | FeeEvmConfig | FeeTronConfig;
+  feeConfig: FeeConfig | FeeEvmConfig;
   gasConfig: GasConfig | GasEvmConfig;
   onClose: () => void;
 }> = observer(({ feeConfig, gasConfig, onClose }) => {

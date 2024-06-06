@@ -15,7 +15,7 @@ import {
   IMemoConfig,
   SignDocHelper,
 } from "@owallet/hooks";
-import { useLanguage } from "@owallet/common";
+import { toDisplay, useLanguage } from "@owallet/common";
 import { ChainIdEnum } from "@owallet/common";
 import { Badge, Button, Label } from "reactstrap";
 import { renderDirectMessage } from "./direct";
@@ -25,8 +25,13 @@ import Web3 from "web3";
 import { Card } from "../../components/common/card";
 import colors from "../../theme/colors";
 import { Text } from "../../components/common/text";
+import { ethers } from "ethers";
+import ERC20_ABI from "./abi/erc20-abi.json";
+import GRAVITY_ABI from "./abi/gravity-abi.json";
+import { Address } from "../../components/address";
 export const DetailsTabEvm: FunctionComponent<{
   msgSign: any;
+  dataSign: any;
   memoConfig: IMemoConfig;
   feeConfig: IFeeConfig;
   gasConfig: IGasConfig;
@@ -35,11 +40,38 @@ export const DetailsTabEvm: FunctionComponent<{
 
   preferNoSetFee: boolean;
   preferNoSetMemo: boolean;
+
+  setOpenSetting: () => void;
 }> = observer(
-  ({ msgSign, feeConfig, gasConfig, isInternal, preferNoSetFee }) => {
-    const { chainStore, priceStore, accountStore } = useStore();
+  ({
+    msgSign,
+    dataSign,
+    feeConfig,
+    gasConfig,
+    isInternal,
+    preferNoSetFee,
+    setOpenSetting,
+  }) => {
+    const { chainStore, priceStore } = useStore();
     const intl = useIntl();
     const language = useLanguage();
+
+    const chain = chainStore.getChain(dataSign?.data?.chainId);
+    let decodedData;
+
+    if (msgSign?.data) {
+      const inputData = msgSign.data;
+      // The encoded data
+      try {
+        const iface = new ethers.utils.Interface(ERC20_ABI);
+        decodedData = iface.parseTransaction({ data: inputData });
+        console.log("decodedData 1", decodedData);
+      } catch (err) {
+        const iface = new ethers.utils.Interface(GRAVITY_ABI);
+        decodedData = iface.parseTransaction({ data: inputData });
+        console.log("decodedData 2", decodedData);
+      }
+    }
 
     const renderMsg = (content) => {
       return (
@@ -71,45 +103,9 @@ export const DetailsTabEvm: FunctionComponent<{
     //   ? signDocHelper.signDocWrapper.mode
     //   : "none";
     const msgs = msgSign ? msgSign : [];
+
     const amount = msgs?.value && Web3.utils.hexToNumberString(msgs?.value);
     const renderedMsgs = (() => {
-      //   if (mode === "amino") {
-      //     return (msgs as readonly Msg[]).map((msg, i) => {
-      //       const msgContent = renderAminoMessage(
-      //         accountStore.getAccount(chainStore.current.chainId).msgOpts,
-      //         msg,
-      //         chainStore.current.currencies,
-      //         intl
-      //       );
-      //       return (
-      //         <React.Fragment key={i.toString()}>
-      //           <MsgRender icon={msgContent.icon} title={msgContent.title}>
-      //             {msgContent.content}
-      //           </MsgRender>
-      //           <hr />
-      //         </React.Fragment>
-      //       );
-      //     });
-      //   } else if (mode === "direct") {
-      //     return (msgs as any[]).map((msg, i) => {
-      //       const msgContent = renderDirectMessage(
-      //         msg,
-      //         chainStore.current.currencies,
-      //         intl
-      //       );
-      //       return (
-      //         <React.Fragment key={i.toString()}>
-      //           <MsgRender icon={msgContent.icon} title={msgContent.title}>
-      //             {msgContent.content}
-      //           </MsgRender>
-      //           <hr />
-      //         </React.Fragment>
-      //       );
-      //     });
-      //   } else {
-      //     return null;
-      //   }
-
       if (msgs && amount && !msgs?.data) {
         return (
           <React.Fragment>
@@ -122,12 +118,6 @@ export const DetailsTabEvm: FunctionComponent<{
               >
                 Send{" "}
                 <b>
-                  {/* {formatBalance({
-                balance: Number(msgs?.amount),
-                cryptoUnit: "BTC",
-                coin: msgs?.selectedCrypto,
-              }) || "0 BTC"} */}
-
                   {`${
                     chainStore.current.chainId === ChainIdEnum.Oasis
                       ? Web3.utils.fromWei(amount, "gwei")
@@ -144,18 +134,50 @@ export const DetailsTabEvm: FunctionComponent<{
         );
       }
 
-      if (Object.keys(msgs).length > 0) {
+      if (Object.keys(msgs).length > 0 && decodedData) {
         return (
           <React.Fragment>
             {renderMsg(
-              <MsgRender
-                icon={"fas fa-paper-plane"}
-                title={intl.formatMessage({
-                  id: "sign.list.message.cosmos-sdk/MsgSend.title",
-                })}
-              >
-                {JSON.stringify(msgs, null, 4)}
-              </MsgRender>
+              <div>
+                <div style={{ display: "flex", flexDirection: "row" }}>
+                  <div
+                    style={{
+                      marginRight: 4,
+                      width: 44,
+                      height: 44,
+                      borderRadius: 44,
+                      backgroundColor: colors["neutral-surface-card"],
+                      alignItems: "center",
+                      justifyContent: "center",
+                      display: "flex",
+                    }}
+                  >
+                    <img
+                      style={{ width: 28, height: 28, borderRadius: 28 }}
+                      src={chain?.stakeCurrency.coinImageUrl}
+                    />
+                  </div>
+
+                  <div style={{ display: "flex", flexDirection: "column" }}>
+                    {/* <Text>{chain.chainName}</Text> */}
+                    <Text size={16} weight="600">
+                      {decodedData.name
+                        .replace(/([a-z])([A-Z])/g, "$1 $2")
+                        .toUpperCase()}
+                    </Text>
+                    <Text color={colors["neutral-text-body"]} weight="500">
+                      <Address maxCharacters={18} lineBreakBeforePrefix={false}>
+                        {msgs?.from ?? "..."}
+                      </Address>
+                    </Text>
+                    {/* <Text>To Contract: {decodedData.args?.[0]}</Text> */}
+                    {/* <Text>To: {msgs.to}</Text> */}
+                    {/* <Text>Method: {decodedData.name}</Text> */}
+                    {/* <Text>Amount: {Number(decodedData.args._value)}</Text> */}
+                    {/* <Text>Gas: {msgs.gas}</Text> */}
+                  </div>
+                </div>
+              </div>
             )}
           </React.Fragment>
         );
@@ -231,6 +253,97 @@ export const DetailsTabEvm: FunctionComponent<{
       );
     };
 
+    const renderInfo = (condition, label, leftContent) => {
+      if (condition && condition !== "" && condition !== null) {
+        return (
+          <div
+            style={{
+              marginTop: 14,
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                marginBottom: 14,
+              }}
+              onClick={() => {
+                setOpenSetting();
+              }}
+            >
+              <Text weight="600">{label}</Text>
+              <div
+                style={{
+                  alignItems: "flex-end",
+                }}
+              >
+                <div>{leftContent}</div>
+              </div>
+            </div>
+            <div
+              style={{
+                width: "100%",
+                height: 1,
+                backgroundColor: colors["neutral-border-default"],
+              }}
+            />
+          </div>
+        );
+      }
+    };
+
+    const renderTransactionFee = () => {
+      return (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            marginTop: 14,
+          }}
+          onClick={() => {
+            setOpenSetting();
+          }}
+        >
+          <Text weight="600">Transaction fee</Text>
+          <div
+            style={{
+              flexDirection: "column",
+              display: "flex",
+              alignItems: "flex-end",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                cursor: "pointer",
+              }}
+            >
+              <Text
+                size={16}
+                weight="600"
+                color={colors["primary-text-action"]}
+              >
+                {feeConfig?.fee?.maxDecimals(8).trim(true).toString() || 0}
+              </Text>
+              <img
+                src={require("../../public/assets/icon/tdesign_chevron-down.svg")}
+              />
+            </div>
+            <Text color={colors["neutral-text-body"]}>
+              ≈
+              {priceStore
+                .calculatePrice(feeConfig?.fee, language.fiatCurrency)
+                ?.toString() || 0}
+            </Text>
+          </div>
+        </div>
+      );
+    };
+
     return (
       <div className={styleDetailsTab.container}>
         <div
@@ -260,32 +373,77 @@ export const DetailsTabEvm: FunctionComponent<{
               weight="600"
               color={colors["neutral-text-action-on-dark-bg"]}
             >
-              {(msgSign && JSON.stringify(msgSign).length) ?? 0}
+              {(msgs && msgs.length) ?? 1}
             </Text>
           </div>
         </div>
         <div id="signing-messages" className={styleDetailsTab.msgContainer}>
           {renderedMsgs}
         </div>
-        {/* {renderFees()} */}
-      </div>
-    );
 
-    return (
-      <div className={styleDetailsTab.container}>
-        <Label
-          for="signing-messages"
-          className="form-control-label"
-          style={{ display: "flex" }}
+        <Card
+          containerStyle={{
+            borderRadius: 12,
+            border: "1px solid" + colors["neutral-border-default"],
+            padding: 8,
+          }}
         >
-          <FormattedMessage id="sign.list.messages.label" />
-          <Badge className={classnames("ml-2", styleDetailsTab.msgsBadge)}>
-            {msgSign && JSON.stringify(msgSign).length}
-          </Badge>
-        </Label>
-        <div id="signing-messages" className={styleDetailsTab.msgContainer}>
-          {renderedMsgs}
-        </div>
+          {renderInfo(
+            chain?.chainName,
+            "Network",
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
+              <img
+                style={{
+                  width: 14,
+                  height: 14,
+                  borderRadius: 28,
+                  marginRight: 4,
+                }}
+                src={chain?.stakeCurrency.coinImageUrl}
+              />
+              <Text weight="600">{chain?.chainName}</Text>
+            </div>
+          )}
+          {renderInfo(
+            msgs.to,
+            "To",
+            <Text color={colors["neutral-text-body"]}>
+              {" "}
+              <Address maxCharacters={18} lineBreakBeforePrefix={false}>
+                {msgs?.to}
+              </Address>
+            </Text>
+          )}
+          {decodedData ? (
+            <>
+              {renderInfo(
+                decodedData.name,
+                "Method",
+                <Text>{decodedData.name}</Text>
+              )}
+              {renderInfo(
+                decodedData.args?._value,
+                "Amount",
+                <Text>
+                  {toDisplay(
+                    Number(decodedData.args?._value).toString(),
+                    chain.stakeCurrency.coinDecimals
+                  )}
+                </Text>
+              )}
+            </>
+          ) : null}
+
+          {renderInfo(msgs?.gas, "Gas", <Text>{Number(msgs?.gas)}</Text>)}
+          {renderTransactionFee()}
+        </Card>
+        {/* {renderFees()} */}
       </div>
     );
   }
