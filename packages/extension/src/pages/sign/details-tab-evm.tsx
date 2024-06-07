@@ -200,9 +200,7 @@ export const DetailsTabEvm: FunctionComponent<{
             const key = findKeyBySimilarValue(
               LIST_ORAICHAIN_CONTRACT,
               token.match(addressPattern).join("")
-            ).split("_")?.[0];
-
-            console.log("key", key);
+            )?.split("_")?.[0];
 
             if (key)
               tokenInfo = {
@@ -605,7 +603,7 @@ export const DetailsTabEvm: FunctionComponent<{
                 <Text>
                   {decodedData.args?._value
                     ? toDisplay(
-                        Number(decodedData.args?._value).toString(),
+                        (decodedData.args?._value).toString(),
                         chain.stakeCurrency.coinDecimals
                       )
                     : null}
@@ -617,7 +615,7 @@ export const DetailsTabEvm: FunctionComponent<{
                 <Text>
                   {decodedData.args?._amount
                     ? toDisplay(
-                        Number(decodedData.args?._amount).toString(),
+                        (decodedData.args?._amount).toString(),
                         chain.stakeCurrency.coinDecimals
                       )
                     : null}
@@ -629,7 +627,7 @@ export const DetailsTabEvm: FunctionComponent<{
                 <Text>
                   {decodedData.args._amountIn
                     ? toDisplay(
-                        Number(decodedData.args._amountIn).toString(),
+                        decodedData.args._amountIn.toString(),
                         chain.stakeCurrency.coinDecimals
                       )
                     : null}
@@ -641,7 +639,7 @@ export const DetailsTabEvm: FunctionComponent<{
                 <Text>
                   {decodedData.args.amountIn
                     ? toDisplay(
-                        Number(decodedData.args.amountIn).toString(),
+                        decodedData.args.amountIn.toString(),
                         chain.stakeCurrency.coinDecimals
                       )
                     : null}
@@ -656,7 +654,7 @@ export const DetailsTabEvm: FunctionComponent<{
                 <Text>
                   {decodedData.args?._amountOutMin
                     ? toDisplay(
-                        Number(decodedData.args?._amountOutMin).toString(),
+                        (decodedData.args?._amountOutMin).toString(),
                         chain.stakeCurrency.coinDecimals
                       )
                     : null}
@@ -668,7 +666,7 @@ export const DetailsTabEvm: FunctionComponent<{
                 <Text>
                   {decodedData.args?.amountOutMin
                     ? toDisplay(
-                        Number(decodedData.args?.amountOutMin).toString(),
+                        (decodedData.args?.amountOutMin).toString(),
                         chain.stakeCurrency.coinDecimals
                       )
                     : null}
