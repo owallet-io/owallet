@@ -29,12 +29,14 @@ import { ethers } from "ethers";
 import ERC20_ABI from "./abi/erc20-abi.json";
 import EVM_PROXY_ABI from "./abi/evm-proxy-abi.json";
 import GRAVITY_ABI from "./abi/gravity-abi.json";
+import PANCAKE_ABI from "./abi/pancake-abi.json";
 import { Address } from "../../components/address";
 import {
   MapChainIdToNetwork,
   TX_HISTORY_ENDPOINT,
 } from "../../helpers/constant";
 import { decodeBase64 } from "../../helpers/helper";
+import { tryAllABI } from "./helpers/helpers";
 
 export const DetailsTabEvm: FunctionComponent<{
   msgSign: any;
@@ -64,33 +66,32 @@ export const DetailsTabEvm: FunctionComponent<{
     const language = useLanguage();
 
     const chain = chainStore.getChain(dataSign?.data?.chainId);
-    let decodedData;
+    const [decodedData, setDecodedData] = useState(null);
+    const [decodeWithABI, setDecodeWithABI] = useState(null);
 
-    if (msgSign?.data) {
-      const inputData = msgSign.data;
+    useEffect(() => {
+      if (msgSign?.data) {
+        const inputData = msgSign.data;
 
-      // The encoded data
-      try {
         try {
-          console.log("get here 1");
+          const res = tryAllABI(inputData, [
+            ERC20_ABI,
+            EVM_PROXY_ABI,
+            GRAVITY_ABI,
+            PANCAKE_ABI,
+          ]);
+          setDecodeWithABI(res);
 
-          const iface = new ethers.utils.Interface(ERC20_ABI);
-          decodedData = iface.parseTransaction({ data: inputData });
-          console.log("decodedData 1", decodedData);
+          if (!res.isRaw) {
+            setDecodedData(res.data);
+          }
         } catch (err) {
-          console.log("get here 2");
-          const iface = new ethers.utils.Interface(EVM_PROXY_ABI);
-          decodedData = iface.parseTransaction({ data: inputData });
-          console.log("decodedValues 2", decodedData);
+          console.log("err", err);
         }
-      } catch (error) {
-        console.log("get here 3", error);
-        const iface = new ethers.utils.Interface(GRAVITY_ABI);
-        decodedData = iface.parseTransaction({ data: inputData });
-        console.log("decodedData 3", decodedData, decodedData.args?._value);
       }
-    }
+    }, [msgSign]);
 
+    const [path, setPath] = useState<Array<any>>([]);
     const [tokenIn, setTokenIn] = useState<any>();
     const [tokenOut, setTokenOut] = useState<any>();
     const [toAddress, setToAddress] = useState<any>();
@@ -118,21 +119,33 @@ export const DetailsTabEvm: FunctionComponent<{
     useEffect(() => {
       const fetchTokenInfo = async () => {
         if (chain?.chainId && decodedData?.args?._tokenContract) {
-          const res = await getTokenInfo(decodedData?.args?._tokenContract);
-          setTokenIn(res);
+          const token = await getTokenInfo(decodedData?.args?._tokenContract);
+          setTokenIn(token);
         }
         if (chain?.chainId && decodedData?.args?._tokenIn) {
-          const res = await getTokenInfo(decodedData?.args?._tokenIn);
-          setTokenIn(res);
+          const tokenIn = await getTokenInfo(decodedData?.args?._tokenIn);
+          setTokenIn(tokenIn);
         }
         if (chain?.chainId && decodedData?.args?._tokenOut) {
-          const res = await getTokenInfo(decodedData?.args?._tokenOut);
-          setTokenOut(res);
+          const tokenOut = await getTokenInfo(decodedData?.args?._tokenOut);
+          setTokenOut(tokenOut);
+        }
+        if (chain?.chainId && decodedData?.args?.path?.length > 0) {
+          let tmpPath = [];
+
+          await Promise.all(
+            decodedData.args.path.map(async (p) => {
+              const token = await getTokenInfo(p);
+              tmpPath.push(token);
+            })
+          );
+
+          setPath(tmpPath);
         }
       };
 
       fetchTokenInfo();
-    }, [chain?.chainId, decodedData?.args?._tokenContract]);
+    }, [chain?.chainId, decodedData?.args]);
 
     useEffect(() => {
       if (decodedData?.args?._destination) {
@@ -175,8 +188,6 @@ export const DetailsTabEvm: FunctionComponent<{
         }
       }
     }, [decodedData?.args?._destination]);
-
-    console.log("toToken", toToken);
 
     const renderMsg = (content) => {
       return (
@@ -444,6 +455,29 @@ export const DetailsTabEvm: FunctionComponent<{
       );
     };
 
+    const renderToken = (token) => {
+      return (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
+          <img
+            style={{
+              width: 14,
+              height: 14,
+              borderRadius: 28,
+              marginRight: 4,
+            }}
+            src={token?.imgUrl}
+          />
+          <Text weight="600">{token?.abbr}</Text>
+        </div>
+      );
+    };
+
     return (
       <div className={styleDetailsTab.container}>
         <div
@@ -562,40 +596,31 @@ export const DetailsTabEvm: FunctionComponent<{
                 </Text>
               )}
               {renderInfo(
-                decodedData.args?._amountIn,
+                decodedData?.args?._amountIn,
                 "Amount In",
                 <Text>
-                  {decodedData.args?._amountIn
+                  {decodedData.args._amountIn
                     ? toDisplay(
-                        Number(decodedData.args?._amountIn).toString(),
+                        Number(decodedData.args._amountIn).toString(),
+                        chain.stakeCurrency.coinDecimals
+                      )
+                    : null}
+                </Text>
+              )}
+              {renderInfo(
+                decodedData?.args?.amountIn,
+                "Amount In",
+                <Text>
+                  {decodedData.args.amountIn
+                    ? toDisplay(
+                        Number(decodedData.args.amountIn).toString(),
                         chain.stakeCurrency.coinDecimals
                       )
                     : null}
                 </Text>
               )}
               {tokenIn
-                ? renderInfo(
-                    tokenIn?.abbr,
-                    "Token",
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        alignItems: "center",
-                      }}
-                    >
-                      <img
-                        style={{
-                          width: 14,
-                          height: 14,
-                          borderRadius: 28,
-                          marginRight: 4,
-                        }}
-                        src={tokenIn?.imgUrl}
-                      />
-                      <Text weight="600">{tokenIn?.abbr}</Text>
-                    </div>
-                  )
+                ? renderInfo(tokenIn?.abbr, "Token", renderToken(tokenIn))
                 : null}
               {renderInfo(
                 decodedData.args?._amountOutMin,
@@ -609,29 +634,20 @@ export const DetailsTabEvm: FunctionComponent<{
                     : null}
                 </Text>
               )}
+              {renderInfo(
+                decodedData.args?.amountOutMin,
+                "Amount Out Min",
+                <Text>
+                  {decodedData.args?.amountOutMin
+                    ? toDisplay(
+                        Number(decodedData.args?.amountOutMin).toString(),
+                        chain.stakeCurrency.coinDecimals
+                      )
+                    : null}
+                </Text>
+              )}
               {tokenOut
-                ? renderInfo(
-                    tokenOut?.abbr,
-                    "Token Out",
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        alignItems: "center",
-                      }}
-                    >
-                      <img
-                        style={{
-                          width: 14,
-                          height: 14,
-                          borderRadius: 28,
-                          marginRight: 4,
-                        }}
-                        src={tokenOut?.imgUrl}
-                      />
-                      <Text weight="600">{tokenOut?.abbr}</Text>
-                    </div>
-                  )
+                ? renderInfo(tokenOut?.abbr, "Token Out", renderToken(tokenOut))
                 : null}
               {renderInfo(
                 toAddress,
@@ -642,6 +658,13 @@ export const DetailsTabEvm: FunctionComponent<{
                 ? renderInfo(
                     toToken.coinDenom,
                     "To Token",
+                    renderToken(toToken)
+                  )
+                : null}
+              {path.length > 0
+                ? renderInfo(
+                    path.length,
+                    "Path",
                     <div
                       style={{
                         display: "flex",
@@ -649,17 +672,34 @@ export const DetailsTabEvm: FunctionComponent<{
                         alignItems: "center",
                       }}
                     >
-                      <img
-                        style={{
-                          width: 14,
-                          height: 14,
-                          borderRadius: 28,
-                          marginRight: 4,
-                          backgroundColor: colors["primary-surface-default"],
-                        }}
-                        src={toToken.coinImageUrl}
-                      />
-                      <Text weight="600">{toToken.coinDenom}</Text>
+                      {path
+                        .sort((a, b) => {
+                          const indexA = decodedData?.args?.path.indexOf(
+                            a.contractAddress.toLowerCase()
+                          );
+                          const indexB = decodedData?.args?.path.indexOf(
+                            b.contractAddress.toLowerCase()
+                          );
+                          return indexA - indexB;
+                        })
+                        .map((p, i) => {
+                          if (i > 0) {
+                            return (
+                              <div
+                                style={{
+                                  display: "flex",
+                                  flexDirection: "row",
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <span>-</span>
+                                {renderToken(p)}
+                              </div>
+                            );
+                          }
+                          return renderToken(p);
+                        })}
                     </div>
                   )
                 : null}
