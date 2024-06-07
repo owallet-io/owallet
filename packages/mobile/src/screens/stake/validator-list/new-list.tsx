@@ -23,6 +23,7 @@ import OWFlatList from "@src/components/page/ow-flat-list";
 import { ValidatorThumbnail } from "@src/components/thumbnail";
 import OWText from "@src/components/text/ow-text";
 import OWIcon from "@src/components/ow-icon/ow-icon";
+import { maskedNumber } from "@src/utils/helper";
 
 export const ValidatorList: FunctionComponent = observer(() => {
   const { chainStore, queriesStore, accountStore } = useStore();
@@ -418,13 +419,15 @@ const ValidatorItem: FunctionComponent<{
               alignSelf: "flex-end",
             }}
           >
-            {new CoinPretty(
-              chainStore.current.stakeCurrency,
-              new Dec(validator.tokens)
-            )
-              .shrink(true)
-              .maxDecimals(0)
-              .toString()}
+            {`${maskedNumber(
+              new CoinPretty(
+                chainStore.current.stakeCurrency,
+                new Dec(validator.tokens)
+              )
+                .hideDenom(true)
+                .maxDecimals(0)
+                .toString()
+            )} ${chainStore.current.stakeCurrency.coinDenom}`}
           </OWText>
           {uptime ? (
             <OWText
