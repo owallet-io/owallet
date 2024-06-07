@@ -88,14 +88,14 @@ export const HeaderLayout: FunctionComponent<Props> = (props) => {
   return (
     <MenuProvider value={menuContext}>
       <div className={style.container} style={props.style}>
-        <Header
-          {...props}
-          isMenuOpen={isMenuOpen}
-          toggle={toggle}
-          listTabs={listTabs}
-        />
         <div className={style.innerContainer}>{children}</div>
       </div>
+      <Header
+        {...props}
+        isMenuOpen={isMenuOpen}
+        toggle={toggle}
+        listTabs={listTabs}
+      />
     </MenuProvider>
   );
 };

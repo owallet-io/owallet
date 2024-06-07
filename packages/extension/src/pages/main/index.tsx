@@ -23,6 +23,7 @@ import { SendEvmPage } from "../send-evm/send-evm";
 import { SendTronEvmPage } from "../send-tron";
 import { BIP44SelectModal } from "./bip44-select-modal";
 import { SendBtcPage } from "../send-btc";
+import { FooterLayout } from "../../layouts/footer-layout/footer-layout";
 
 export const MainPage: FunctionComponent = observer(() => {
   const intl = useIntl();
@@ -106,7 +107,7 @@ export const MainPage: FunctionComponent = observer(() => {
     return <SendPage />;
   };
   return (
-    <HeaderLayout showChainName canChangeChainInfo>
+    <FooterLayout>
       <SelectChain showChainName canChangeChainInfo />
       <div style={{ height: 10 }} />
       <BIP44SelectModal />
@@ -158,6 +159,6 @@ export const MainPage: FunctionComponent = observer(() => {
           </Card>
         </>
       )}
-    </HeaderLayout>
+    </FooterLayout>
   );
 });

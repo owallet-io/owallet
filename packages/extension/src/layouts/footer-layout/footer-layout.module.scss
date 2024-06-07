@@ -1,0 +1,21 @@
+@import '../../styles/var';
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.inner-container {
+  padding: $layout-padding;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+//
+//.layout-hide-page {
+//  display: flex;
+//  justify-content: flex-end;
+//  cursor: pointer;
+//  color: $color-neutral-3;
+//  font-size: 11px;
+//}
