@@ -646,7 +646,7 @@ export const DetailsTabEvm: FunctionComponent<{
                 </Text>
               )}
               {tokenIn
-                ? renderInfo(tokenIn?.abbr, "Token", renderToken(tokenIn))
+                ? renderInfo(tokenIn?.abbr, "Token In", renderToken(tokenIn))
                 : null}
               {renderInfo(
                 decodedData.args?._amountOutMin,

@@ -5,31 +5,19 @@ import React, {
   useRef,
   useState,
 } from "react";
-
-import { HeaderLayout } from "../../layouts";
-
 import style from "./style.module.scss";
-
 import { useStore } from "../../stores";
-
 import classnames from "classnames";
-
 import { FormattedMessage, useIntl } from "react-intl";
-
 import { useHistory } from "react-router";
 import { observer } from "mobx-react-lite";
 import {
   useInteractionInfo,
-  // useSignDocHelper,
   useGasEvmConfig,
-  useFeeConfig,
   useMemoConfig,
-  useSignDocAmountConfig,
   useAmountConfig,
   useFeeEvmConfig,
-  useSendTxEvmConfig,
 } from "@owallet/hooks";
-import { ADR36SignDocDetailsTab } from "./adr-36";
 import { ChainIdHelper } from "@owallet/cosmos";
 import Web3 from "web3";
 import { DetailsTabEvm } from "./details-tab-evm";
@@ -38,10 +26,8 @@ import { Dec, Int } from "@owallet/unit";
 import { Text } from "../../components/common/text";
 import { Address } from "../../components/address";
 import colors from "../../theme/colors";
-import { Card } from "../../components/common/card";
 import { FeeModal } from "./modals/fee-modal";
 import { WalletStatus } from "@owallet/stores";
-import { EthereumEndpoint, useLanguage } from "@owallet/common";
 import { DataModal } from "./modals/data-modal";
 import useOnClickOutside from "../../hooks/use-click-outside";
 import cn from "classnames/bind";
@@ -102,8 +88,6 @@ export const SignEvmPage: FunctionComponent = observer(() => {
     queriesStore.get(current.chainId).queryBalances,
     null
   );
-
-  const language = useLanguage();
 
   const memoConfig = useMemoConfig(chainStore, current.chainId);
   const accountInfo = accountStore.getAccount(chainStore.current.chainId);
@@ -203,18 +187,6 @@ export const SignEvmPage: FunctionComponent = observer(() => {
   })();
 
   return (
-    // <HeaderLayout
-    //   showChainName={alternativeTitle == null}
-    //   alternativeTitle={alternativeTitle != null ? alternativeTitle : undefined}
-    //   canChangeChainInfo={false}
-    //   onBackButton={
-    //     interactionInfo.interactionInternal
-    //       ? () => {
-    //           history.goBack();
-    //         }
-    //       : undefined
-    //   }
-    // >
     <div
       style={{
         height: "100%",
@@ -251,17 +223,6 @@ export const SignEvmPage: FunctionComponent = observer(() => {
         isLoaded ? (
           <div className={style.container}>
             <div style={{ height: "75%", overflow: "scroll", padding: 16 }}>
-              {/* <div
-                style={{
-                  color: "#353945",
-                  fontSize: 24,
-                  fontWeight: 500,
-                  textAlign: "center",
-                  paddingBottom: 24,
-                }}
-              >
-                {chainStore?.current?.raw?.chainName || "Oraichain"}
-              </div> */}
               <div
                 className={classnames(style.tabs)}
                 style={{ display: "flex", paddingBottom: 12 }}
@@ -289,36 +250,6 @@ export const SignEvmPage: FunctionComponent = observer(() => {
                     src={require("../../public/assets/icon/tdesign_chevron-right.svg")}
                   />
                 </div>
-                {/* <ul>
-                  <li className={classnames({ activeTabs: tab === Tab.Details })}>
-                    <a
-                      className={classnames(style.tab, {
-                        activeText: tab === Tab.Details
-                      })}
-                      onClick={() => {
-                        setTab(Tab.Details);
-                      }}
-                    >
-                      {intl.formatMessage({
-                        id: "sign.tab.details"
-                      })}
-                    </a>
-                  </li>
-                  <li className={classnames({ activeTabs: tab === Tab.Data })}>
-                    <a
-                      className={classnames(style.tab, {
-                        activeText: tab === Tab.Data
-                      })}
-                      onClick={() => {
-                        setTab(Tab.Data);
-                      }}
-                    >
-                      {intl.formatMessage({
-                        id: "sign.tab.data"
-                      })}
-                    </a>
-                  </li>
-                </ul> */}
               </div>
               <div
                 className={classnames(style.tabContainer, {
@@ -449,7 +380,7 @@ export const SignEvmPage: FunctionComponent = observer(() => {
                     </Button>
                     <Button
                       className={classnames(style.button, style.approveBtn)}
-                      // disabled={approveIsDisabled}
+                      disabled={approveIsDisabled}
                       data-loading={signInteractionStore.isLoading}
                       loading={signInteractionStore.isLoading}
                       onClick={async (e) => {
@@ -496,176 +427,6 @@ export const SignEvmPage: FunctionComponent = observer(() => {
           </div>
         )
       }
-      {/* </HeaderLayout> */}
     </div>
   );
-
-  // return (
-  //   // <HeaderLayout
-  //   //   showChainName={alternativeTitle == null}
-  //   //   alternativeTitle={alternativeTitle != null ? alternativeTitle : undefined}
-  //   //   canChangeChainInfo={false}
-  //   //   onBackButton={
-  //   //     interactionInfo.interactionInternal
-  //   //       ? () => {
-  //   //           history.goBack();
-  //   //         }
-  //   //       : undefined
-  //   //   }
-  //   // >
-  //   <div
-  //     style={{
-  //       padding: 20,
-  //       backgroundColor: "#FFFFFF",
-  //       height: "100%",
-  //       overflowX: "auto"
-  //     }}
-  //   >
-  //     {
-  //       /*
-  //        Show the informations of tx when the sign data is delivered.
-  //        If sign data not delivered yet, show the spinner alternatively.
-  //        */
-  //       isLoaded ? (
-  //         <div className={style.container}>
-  //           <div
-  //             style={{
-  //               color: "#353945",
-  //               fontSize: 24,
-  //               fontWeight: 500,
-  //               textAlign: "center",
-  //               paddingBottom: 24
-  //             }}
-  //           >
-  //             {chainStore?.current?.raw?.chainName}
-  //           </div>
-  //           <div className={classnames(style.tabs)}>
-  //             <ul>
-  //               <li className={classnames({ activeTabs: tab === Tab.Details })}>
-  //                 <a
-  //                   className={classnames(style.tab, {
-  //                     activeText: tab === Tab.Details
-  //                   })}
-  //                   onClick={() => {
-  //                     setTab(Tab.Details);
-  //                   }}
-  //                 >
-  //                   {intl.formatMessage({
-  //                     id: "sign.tab.details"
-  //                   })}
-  //                 </a>
-  //               </li>
-  //               <li className={classnames({ activeTabs: tab === Tab.Data })}>
-  //                 <a
-  //                   className={classnames(style.tab, {
-  //                     activeText: tab === Tab.Data
-  //                   })}
-  //                   onClick={() => {
-  //                     setTab(Tab.Data);
-  //                   }}
-  //                 >
-  //                   {intl.formatMessage({
-  //                     id: "sign.tab.data"
-  //                   })}
-  //                 </a>
-  //               </li>
-  //             </ul>
-  //           </div>
-  //           <div
-  //             className={classnames(style.tabContainer, {
-  //               [style.dataTab]: tab === Tab.Data
-  //             })}
-  //           >
-  //             {tab === Tab.Data ? <DataTabEvm data={dataSign} /> : null}
-  //             {tab === Tab.Details ? (
-  //               <DetailsTabEvm
-  //                 msgSign={dataSign?.data?.data?.data}
-  //                 memoConfig={memoConfig}
-  //                 feeConfig={feeConfig}
-  //                 gasConfig={gasConfig}
-  //                 isInternal={interactionInfo.interaction && interactionInfo.interactionInternal}
-  //                 preferNoSetFee={preferNoSetFee}
-  //                 preferNoSetMemo={preferNoSetMemo}
-  //               />
-  //             ) : null}
-  //           </div>
-  //           <div style={{ flex: 1 }} />
-  //           <div className={style.buttons}>
-  //             {keyRingStore.keyRingType === "ledger" && signInteractionStore.isLoading ? (
-  //               <Button className={style.button} disabled={true} outline>
-  //                 <FormattedMessage id="sign.button.confirm-ledger" /> <i className="fa fa-spinner fa-spin fa-fw" />
-  //               </Button>
-  //             ) : (
-  //               <React.Fragment>
-  //                 <Button
-  //                   className={classnames(style.button, style.rejectBtn)}
-  //                   color=""
-  //                   // disabled={signDocHelper.signDocWrapper == null}
-  //                   // data-loading={signInteractionStore.isLoading}
-  //                   onClick={async e => {
-  //                     e.preventDefault();
-
-  //                     if (needSetIsProcessing) {
-  //                       setIsProcessing(true);
-  //                     }
-
-  //                     await signInteractionStore.reject();
-
-  //                     if (interactionInfo.interaction && !interactionInfo.interactionInternal) {
-  //                       window.close();
-  //                     } else {
-  //                       history.goBack();
-  //                     }
-  //                   }}
-  //                 >
-  //                   {intl.formatMessage({
-  //                     id: "sign.button.reject"
-  //                   })}
-  //                 </Button>
-  //                 <Button
-  //                   className={classnames(style.button, style.approveBtn)}
-  //                   color=""
-  //                   disabled={approveIsDisabled}
-  //                   data-loading={signInteractionStore.isLoading}
-  //                   onClick={async e => {
-  //                     e.preventDefault();
-  //                     if (needSetIsProcessing) {
-  //                       setIsProcessing(true);
-  //                     }
-  //                     if (!dataSign) return;
-  //                     await signInteractionStore.approveEthereumAndWaitEnd({
-  //                       gasPrice: Web3.utils.toHex(gasConfig.gasPrice),
-  //                       gasLimit: Web3.utils.toHex(gasConfig.gas)
-  //                     });
-  //                     history.goBack();
-  //                     if (interactionInfo.interaction && !interactionInfo.interactionInternal) {
-  //                       window.close();
-  //                     }
-  //                   }}
-  //                 >
-  //                   {intl.formatMessage({
-  //                     id: "sign.button.approve"
-  //                   })}
-  //                 </Button>
-  //               </React.Fragment>
-  //             )}
-  //           </div>
-  //         </div>
-  //       ) : (
-  //         <div
-  //           style={{
-  //             width: "100%",
-  //             height: "100%",
-  //             display: "flex",
-  //             justifyContent: "center",
-  //             alignItems: "center"
-  //           }}
-  //         >
-  //           <i className="fas fa-spinner fa-spin fa-2x text-gray" />
-  //         </div>
-  //       )
-  //     }
-  //     {/* </HeaderLayout> */}
-  //   </div>
-  // );
 });
