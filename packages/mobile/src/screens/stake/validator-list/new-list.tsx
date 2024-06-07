@@ -23,7 +23,7 @@ import OWFlatList from "@src/components/page/ow-flat-list";
 import { ValidatorThumbnail } from "@src/components/thumbnail";
 import OWText from "@src/components/text/ow-text";
 import OWIcon from "@src/components/ow-icon/ow-icon";
-import { maskedNumber } from "@src/utils/helper";
+import { groupAndShuffle, maskedNumber } from "@src/utils/helper";
 
 export const ValidatorList: FunctionComponent = observer(() => {
   const { chainStore, queriesStore, accountStore } = useStore();
@@ -38,7 +38,6 @@ export const ValidatorList: FunctionComponent = observer(() => {
   const [validators, setValidators] = useState([]);
   const [sort, setSort] = useState<string>("Voting Power");
   const [isSortModalOpen, setIsSortModalOpen] = useState(false);
-
   const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
     BondStatus.Bonded
   );
@@ -98,11 +97,12 @@ export const ValidatorList: FunctionComponent = observer(() => {
 
     data = data.map((v) => {
       const foundValidator = validators.find(
-        (v) => v?.operator_address === v?.operator_address
+        (t) => t?.operator_address === v?.operator_address
       );
       const uptime = foundValidator?.uptime;
       if (v) {
-        v["uptime"] = uptime;
+        v["uptime"] = uptime || v.uptime;
+        v["voting_power"] = foundValidator?.voting_power || 1;
         return v;
       }
     });
@@ -124,17 +124,6 @@ export const ValidatorList: FunctionComponent = observer(() => {
           )
             ? 1
             : -1;
-        });
-        break;
-      case "Name":
-        data.sort((val1, val2) => {
-          if (!val1?.description.moniker) {
-            return 1;
-          }
-          if (!val2?.description.moniker) {
-            return -1;
-          }
-          return val1?.description.moniker > val2?.description.moniker ? -1 : 1;
         });
         break;
       case "Voting Power":
@@ -185,9 +174,8 @@ export const ValidatorList: FunctionComponent = observer(() => {
       </View>
     );
   };
-  const separateComponentItem = () => (
-    <CardDivider backgroundColor={colors["border-input-login"]} />
-  );
+  const groupSize = 5;
+  const dataShuffle = groupAndShuffle(data, groupSize).flat();
   return (
     <View style={styles.container}>
       <SelectorModal
@@ -257,27 +245,6 @@ export const ValidatorList: FunctionComponent = observer(() => {
             onChangeText={(t) => setSearch(t)}
           />
         </View>
-        {/* <TouchableOpacity
-          style={{
-            flexDirection: "row",
-            backgroundColor: colors["neutral-surface-action"],
-            height: 40,
-            borderRadius: 999,
-            width: metrics.screenWidth / 3,
-            alignItems: "center",
-            paddingHorizontal: 12,
-            justifyContent: "space-between",
-          }}
-          onPress={() => setIsSortModalOpen(true)}
-        >
-          <OWText weight="600">{sort}</OWText>
-          <View>
-            <DownArrowIcon
-              height={15}
-              color={colors["neutral-icon-on-light"]}
-            />
-          </View>
-        </TouchableOpacity> */}
       </View>
       <TouchableOpacity
         style={{
@@ -307,12 +274,7 @@ export const ValidatorList: FunctionComponent = observer(() => {
           />
         </View>
       </TouchableOpacity>
-      {/*<Flat*/}
-      {/*  data={data}*/}
-      {/*  renderItem={renderItem}*/}
-      {/*  ItemSeparatorComponent={separateComponentItem}*/}
-      {/*/>*/}
-      {data.map((item, index) => renderItem({ item, index }))}
+      {dataShuffle.map((item, index) => renderItem({ item, index }))}
     </View>
   );
 });

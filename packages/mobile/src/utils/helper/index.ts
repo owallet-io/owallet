@@ -770,3 +770,25 @@ export function trimWordsStr(str: string): string {
     .filter((word) => word.trim().length > 0);
   return words.join(" ");
 }
+
+export function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+export function groupAndShuffle(array, groupSize) {
+  const sortedArray = array
+    .map((e) => {
+      return { ...e, votingPowerMixUpTime: e.voting_power * e.uptime };
+    })
+    .sort((a, b) => b.votingPowerMixUpTime - a.votingPowerMixUpTime);
+  const groups = [];
+  for (let i = 0; i < sortedArray.length; i += groupSize) {
+    groups.push(sortedArray.slice(i, i + groupSize));
+  }
+  const shuffledGroups = groups.map((group) => shuffleArray(group));
+  return shuffledGroups;
+}
