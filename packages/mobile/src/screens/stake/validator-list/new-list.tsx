@@ -167,8 +167,10 @@ export const ValidatorList: FunctionComponent = observer(() => {
       <View
         style={{
           marginHorizontal: spacing["16"],
-          marginBottom: spacing["8"],
+          paddingBottom: spacing["8"],
           borderRadius: spacing["8"],
+          borderBottomWidth: 0.5,
+          borderBottomColor: colors["neutral-border-default"],
         }}
       >
         <ValidatorItem
@@ -304,11 +306,12 @@ export const ValidatorList: FunctionComponent = observer(() => {
           />
         </View>
       </TouchableOpacity>
-      <OWFlatList
-        data={data}
-        renderItem={renderItem}
-        ItemSeparatorComponent={separateComponentItem}
-      />
+      {/*<Flat*/}
+      {/*  data={data}*/}
+      {/*  renderItem={renderItem}*/}
+      {/*  ItemSeparatorComponent={separateComponentItem}*/}
+      {/*/>*/}
+      {data.map((item, index) => renderItem({ item, index }))}
     </View>
   );
 });
@@ -435,7 +438,7 @@ const ValidatorItem: FunctionComponent<{
           ) : null}
         </View>
       </RectButton>
-      {uptime < 0.9 ? (
+      {uptime < 0.7 ? (
         <View
           style={{
             backgroundColor: colors["error-border-default"],
