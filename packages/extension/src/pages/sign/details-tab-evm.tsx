@@ -23,7 +23,12 @@ import {
   TX_HISTORY_ENDPOINT,
 } from "../../helpers/constant";
 import { decodeBase64 } from "../../helpers/helper";
-import { calculateJaccardIndex, tryAllABI } from "./helpers/helpers";
+import { LIST_ORAICHAIN_CONTRACT } from "./helpers/constant";
+import {
+  calculateJaccardIndex,
+  findKeyBySimilarValue,
+  tryAllABI,
+} from "./helpers/helpers";
 
 export const DetailsTabEvm: FunctionComponent<{
   msgSign: any;
@@ -158,8 +163,6 @@ export const DetailsTabEvm: FunctionComponent<{
           const des = array.shift();
           const token = array.pop();
 
-          console.log("token", token.match(addressPattern).join(""));
-
           let tokenInfo;
           if (token) {
             EmbedChainInfos.find((chain) => {
@@ -191,6 +194,21 @@ export const DetailsTabEvm: FunctionComponent<{
                 return;
               }
             });
+          }
+
+          if (!tokenInfo) {
+            const key = findKeyBySimilarValue(
+              LIST_ORAICHAIN_CONTRACT,
+              token.match(addressPattern).join("")
+            ).split("_")?.[0];
+
+            console.log("key", key);
+
+            if (key)
+              tokenInfo = {
+                coinDenom: key,
+                contractAddress: token.match(addressPattern).join(""),
+              };
           }
 
           setToAddress(des.match(addressPattern).join(""));
