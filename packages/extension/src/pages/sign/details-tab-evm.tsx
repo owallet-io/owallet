@@ -658,7 +658,25 @@ export const DetailsTabEvm: FunctionComponent<{
                 ? renderInfo(
                     toToken.coinDenom,
                     "To Token",
-                    renderToken(toToken)
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                      }}
+                    >
+                      <img
+                        style={{
+                          width: 14,
+                          height: 14,
+                          borderRadius: 28,
+                          marginRight: 4,
+                          backgroundColor: colors["neutral-surface-pressed"],
+                        }}
+                        src={toToken?.coinImageUrl}
+                      />
+                      <Text weight="600">{toToken?.coinDenom}</Text>
+                    </div>
                   )
                 : null}
               {path.length > 0
