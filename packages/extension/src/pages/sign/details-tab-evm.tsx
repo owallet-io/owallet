@@ -1,31 +1,18 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
-
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
-
 import styleDetailsTab from "./details-tab.module.scss";
-
-import { renderAminoMessage } from "./amino";
-import { Msg } from "@cosmjs/launchpad";
 import { FormattedMessage, useIntl } from "react-intl";
-import { FeeButtons, MemoInput } from "../../components/form";
-import {
-  IFeeConfig,
-  IGasConfig,
-  IMemoConfig,
-  SignDocHelper,
-} from "@owallet/hooks";
+import { FeeButtons } from "../../components/form";
+import { IFeeConfig, IGasConfig, IMemoConfig } from "@owallet/hooks";
 import { EmbedChainInfos, toDisplay, useLanguage } from "@owallet/common";
 import { ChainIdEnum } from "@owallet/common";
-import { Badge, Button, Label } from "reactstrap";
-import { renderDirectMessage } from "./direct";
-import classnames from "classnames";
+import { Button, Label } from "reactstrap";
 import { Bech32Address } from "@owallet/cosmos";
 import Web3 from "web3";
 import { Card } from "../../components/common/card";
 import colors from "../../theme/colors";
 import { Text } from "../../components/common/text";
-import { ethers } from "ethers";
 import ERC20_ABI from "./abi/erc20-abi.json";
 import EVM_PROXY_ABI from "./abi/evm-proxy-abi.json";
 import GRAVITY_ABI from "./abi/gravity-abi.json";
@@ -36,7 +23,7 @@ import {
   TX_HISTORY_ENDPOINT,
 } from "../../helpers/constant";
 import { decodeBase64 } from "../../helpers/helper";
-import { tryAllABI } from "./helpers/helpers";
+import { calculateJaccardIndex, tryAllABI } from "./helpers/helpers";
 
 export const DetailsTabEvm: FunctionComponent<{
   msgSign: any;
@@ -116,6 +103,8 @@ export const DetailsTabEvm: FunctionComponent<{
       }
     };
 
+    console.log("decodedData", decodedData);
+
     useEffect(() => {
       const fetchTokenInfo = async () => {
         if (chain?.chainId && decodedData?.args?._tokenContract) {
@@ -152,6 +141,9 @@ export const DetailsTabEvm: FunctionComponent<{
         const encodedData = decodedData?.args?._destination.split(":")?.[1];
         if (encodedData) {
           const decodedData = decodeBase64(encodedData);
+
+          console.log("decodedData", decodedData);
+
           // Regular expression pattern to split the input string
           const pattern = /[\x00-\x1F]+/;
 
@@ -159,29 +151,47 @@ export const DetailsTabEvm: FunctionComponent<{
 
           // Split the input string using the pattern
           const array = decodedData.split(pattern).filter(Boolean);
-
+          if (array.length < 1) {
+            array.push(decodedData);
+          }
+          console.log("array", array);
           const des = array.shift();
           const token = array.pop();
 
-          let tokenInfo;
-          EmbedChainInfos.find((chain) => {
-            if (
-              chain.stakeCurrency.coinMinimalDenom ===
-              token.match(addressPattern).join("")
-            ) {
-              tokenInfo = chain.stakeCurrency;
-              return;
-            }
-            const foundCurrency = chain.currencies.find(
-              (cr) =>
-                cr.coinMinimalDenom === token.match(addressPattern).join("")
-            );
+          console.log("token", token.match(addressPattern).join(""));
 
-            if (foundCurrency) {
-              tokenInfo = foundCurrency;
-              return;
-            }
-          });
+          let tokenInfo;
+          if (token) {
+            EmbedChainInfos.find((chain) => {
+              if (
+                chain.stakeCurrency.coinMinimalDenom ===
+                token.match(addressPattern).join("")
+              ) {
+                tokenInfo = chain.stakeCurrency;
+                return;
+              }
+              if (
+                chain.stakeCurrency.coinMinimalDenom ===
+                token.match(addressPattern).join("")
+              ) {
+                tokenInfo = chain.stakeCurrency;
+                return;
+              }
+              const foundCurrency = chain.currencies.find(
+                (cr) =>
+                  cr.coinMinimalDenom ===
+                    token.match(addressPattern).join("") ||
+                  //@ts-ignore
+                  cr.contractAddress === token.match(addressPattern).join("") ||
+                  calculateJaccardIndex(cr.coinMinimalDenom, token) > 0.85
+              );
+
+              if (foundCurrency) {
+                tokenInfo = foundCurrency;
+                return;
+              }
+            });
+          }
 
           setToAddress(des.match(addressPattern).join(""));
           setToToken(tokenInfo);
