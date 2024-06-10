@@ -196,6 +196,7 @@ export const useMultipleAssets = (
       );
 
       await Promise.allSettled(allBalancePromises);
+      setIsLoading(false);
       const currencies = FiatCurrencies.map(({ currency }) => currency);
       priceStore.updateURL(Array.from(coinIds.keys()), currencies, true);
       await delay(300);
