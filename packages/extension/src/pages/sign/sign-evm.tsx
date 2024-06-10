@@ -142,7 +142,16 @@ export const SignEvmPage: FunctionComponent = observer(() => {
   };
 
   useEffect(() => {
+    console.log(
+      "signInteractionStore.waitingEthereumData 2",
+      signInteractionStore.waitingEthereumData
+    );
+
     if (signInteractionStore.waitingEthereumData) {
+      console.log(
+        "signInteractionStore.waitingEthereumData 3",
+        signInteractionStore.waitingEthereumData
+      );
       const data = signInteractionStore.waitingEthereumData;
       //@ts-ignore
       const gasDataSign = data?.data?.data?.data?.gas;
@@ -151,7 +160,10 @@ export const SignEvmPage: FunctionComponent = observer(() => {
       chainStore.selectChain(data.data.chainId);
       gasConfig.setGas(Web3.utils.hexToNumber(gasDataSign));
       gasConfig.setGasPrice(Web3.utils.hexToNumberString(gasPriceDataSign));
-
+      console.log(
+        "signInteractionStore.waitingEthereumData 4",
+        signInteractionStore.waitingEthereumData
+      );
       const gas = new Dec(new Int(Web3.utils.hexToNumberString(gasDataSign)));
       const gasPrice = new Dec(
         new Int(Web3.utils.hexToNumberString(gasPriceDataSign))
@@ -165,6 +177,10 @@ export const SignEvmPage: FunctionComponent = observer(() => {
           denom: chainStore.current.feeCurrencies[0].coinMinimalDenom,
         });
       }
+      console.log(
+        "signInteractionStore.waitingEthereumData 5",
+        signInteractionStore.waitingEthereumData
+      );
       setDataSign(signInteractionStore.waitingEthereumData);
     }
   }, [signInteractionStore.waitingEthereumData]);

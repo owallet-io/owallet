@@ -109,7 +109,7 @@ export const TronDetailsTab: FunctionComponent<{
           </Text>
         </div>
       </div>
-      <div id="signing-messages" className={styleDetailsTab.msgContainer}>
+      {/* <div id="signing-messages" className={styleDetailsTab.msgContainer}>
         {renderMsg(
           <React.Fragment>
             {dataSign?.currency && (
@@ -226,7 +226,7 @@ export const TronDetailsTab: FunctionComponent<{
             )}
           </React.Fragment>
         )}
-      </div>
+      </div> */}
     </div>
   );
 });

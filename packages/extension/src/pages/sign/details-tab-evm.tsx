@@ -61,9 +61,12 @@ export const DetailsTabEvm: FunctionComponent<{
     const [decodedData, setDecodedData] = useState(null);
     const [decodeWithABI, setDecodeWithABI] = useState(null);
 
+    console.log("dataSign", dataSign);
+
     useEffect(() => {
       if (msgSign?.data) {
         const inputData = msgSign.data;
+        console.log("inputData", inputData);
 
         try {
           const res = tryAllABI(inputData, [
@@ -73,6 +76,8 @@ export const DetailsTabEvm: FunctionComponent<{
             PANCAKE_ABI,
           ]);
           setDecodeWithABI(res);
+
+          console.log("decodeWithABI", res);
 
           if (!res.isRaw) {
             setDecodedData(res.data);
@@ -275,7 +280,7 @@ export const DetailsTabEvm: FunctionComponent<{
         );
       }
 
-      if (Object.keys(msgs).length > 0 && decodedData) {
+      if (Object.keys(msgs).length > 0 && decodedData && !decodeWithABI.isRaw) {
         return (
           <React.Fragment>
             {renderMsg(
@@ -587,6 +592,18 @@ export const DetailsTabEvm: FunctionComponent<{
               <Address maxCharacters={18} lineBreakBeforePrefix={false}>
                 {msgs?.to}
               </Address>
+            </Text>
+          )}
+          {renderInfo(
+            msgs.value,
+            "Amount",
+            <Text>
+              {msgs.value
+                ? toDisplay(
+                    msgs.value.toString(),
+                    chain.stakeCurrency.coinDecimals
+                  )
+                : null}
             </Text>
           )}
           {decodedData ? (
