@@ -9,6 +9,7 @@ jobs:
   release-android-mobile:
     name: release-android-mobile
     runs-on: macos-latest #orai-self-hosted
+    timeout-minutes: 120 # Set the timeout to 120 minutes
     strategy:
       matrix:
         node-version: [ 18.17.0 ]
@@ -110,6 +111,7 @@ jobs:
   release-ios-mobile:
     name: release-ios-mobile
     runs-on: macos-latest #orai-self-hosted
+    timeout-minutes: 120 # Set the timeout to 120 minutes
     strategy:
       matrix:
         node-version: [ 18.17.0 ]
