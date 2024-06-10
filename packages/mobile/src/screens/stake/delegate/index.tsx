@@ -49,8 +49,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   >();
 
   const validatorAddress = route.params.validatorAddress;
-  const percentageVote = route.params.validatorAddress;
-  console.log(percentageVote, "percentageVote");
+  const percentageVote = route.params.percentageVote;
   const {
     chainStore,
     accountStore,

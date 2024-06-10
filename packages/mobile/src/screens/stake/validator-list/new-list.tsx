@@ -43,7 +43,6 @@ export const ValidatorList: FunctionComponent = observer(() => {
   const [active, setActive] = useState("all");
   const [validators, setValidators] = useState([]);
   const [sort, setSort] = useState<string>("Voting Power");
-  const [isSortModalOpen, setIsSortModalOpen] = useState(false);
   const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
     BondStatus.Bonded
   );

@@ -37,7 +37,7 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
     const validatorAddress = route?.params?.validatorAddress;
     const apr = route?.params?.apr;
     const percentageVote = route?.params?.percentageVote;
-
+    console.log(percentageVote, "percentageVote");
     const account = accountStore.getAccount(chainStore.current.chainId);
     const queries = queriesStore.get(chainStore.current.chainId);
 
