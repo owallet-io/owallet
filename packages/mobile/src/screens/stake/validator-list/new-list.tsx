@@ -67,7 +67,11 @@ export const ValidatorList: FunctionComponent = observer(() => {
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
-      if (chainStore.current.chainId !== ChainIdEnum.Oraichain) return;
+      if (
+        chainStore.current.chainId !== ChainIdEnum.Oraichain ||
+        validators?.length > 0
+      )
+        return;
       (async function get() {
         try {
           const res = await API.getValidatorList(
