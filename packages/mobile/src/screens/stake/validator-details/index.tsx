@@ -13,6 +13,7 @@ export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
         {
           validatorAddress: string;
           apr: number;
+          percentageVote: number;
         }
       >,
       string
@@ -21,6 +22,7 @@ export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
   const { colors } = useTheme();
   const validatorAddress = route.params.validatorAddress;
   const apr = route.params.apr;
+  const percentageVote = route.params.percentageVote;
 
   return (
     <View>
@@ -30,6 +32,7 @@ export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
         }}
         validatorAddress={validatorAddress}
         apr={apr}
+        percentageVote={percentageVote}
       />
     </View>
   );

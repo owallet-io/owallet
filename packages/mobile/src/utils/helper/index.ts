@@ -18,7 +18,9 @@ import {
 } from "@oraichain/oraidex-common";
 import { API } from "@src/common/api";
 import { ChainIdEnum, CosmosNetwork, OasisNetwork } from "@owallet/common";
-import { Network } from "@tatumio/tatum";
+import { Chain, Network } from "@tatumio/tatum";
+import { Dec } from "@owallet/unit";
+
 export const MapChainIdToNetwork = {
   [ChainIdEnum.BNBChain]: Network.BINANCE_SMART_CHAIN,
   [ChainIdEnum.Ethereum]: Network.ETHEREUM,
@@ -708,6 +710,7 @@ export const getCurrencyByMinimalDenom = (
 };
 
 export const isNegative = (number) => number <= 0;
+
 export function createTxsHelper() {
   return new TxsHelper();
 }
@@ -779,7 +782,23 @@ export function shuffleArray(array) {
   return array;
 }
 
-export function groupAndShuffle(array, groupSize) {
+const sortByVoting = (data, sortType) => {
+  switch (sortType) {
+    case "Voting Power":
+      return data.sort((val1, val2) => {
+        return new Dec(val1.tokens).gt(new Dec(val2.tokens)) ? -1 : 1;
+      });
+    case "Voting Power Increase":
+      return data.sort((val1, val2) => {
+        return new Dec(val1.tokens).gt(new Dec(val2.tokens)) ? 1 : -1;
+      });
+  }
+};
+
+export function groupAndShuffle(array, groupSize = 5, chainId, sortType) {
+  if (chainId !== ChainIdEnum.Oraichain) {
+    return sortByVoting(array, sortType);
+  }
   const sortedArray = array
     .map((e) => {
       return { ...e, votingPowerMixUpTime: e.voting_power * e.uptime };
@@ -790,5 +809,26 @@ export function groupAndShuffle(array, groupSize) {
     groups.push(sortedArray.slice(i, i + groupSize));
   }
   const shuffledGroups = groups.map((group) => shuffleArray(group));
-  return shuffledGroups;
+  return sortByVoting(sortedArray, sortType);
 }
+
+export const formatPercentage = (
+  value,
+  numberOfDigitsAfterDecimalPoint = 1
+) => {
+  return parseFloat(
+    (parseFloat(value) * 100).toFixed(numberOfDigitsAfterDecimalPoint)
+  );
+};
+
+export const computeTotalVotingPower = (data) => {
+  if (!data || !Array.isArray(data)) {
+    return 0;
+  }
+
+  let total = 0;
+  for (let item of data) {
+    total += parseFloat(item?.voting_power ?? 0) || 0;
+  }
+  return total;
+};
