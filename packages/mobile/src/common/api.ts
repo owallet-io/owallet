@@ -366,6 +366,13 @@ export const API = {
     let url = `v1/validators?limit=100`;
     return API.get(url, config);
   },
+  getValidatorOraichainDetail: (
+    { validatorAddress },
+    config: AxiosRequestConfig
+  ) => {
+    let url = `v1/validator/${validatorAddress}`;
+    return API.get(url, config);
+  },
   subcribeToTopic: ({ topic, subcriber }, config: AxiosRequestConfig) => {
     let url = `api/v1/topics`;
     return API.post(url, { topic, subcriber }, config);

@@ -263,7 +263,6 @@ export const ValidatorDetailsCard: FunctionComponent<{
               onPress={() => {
                 smartNavigation.navigateSmart("Redelegate", {
                   validatorAddress,
-                  percentageVote,
                 });
               }}
               style={styles.bottomBtn}

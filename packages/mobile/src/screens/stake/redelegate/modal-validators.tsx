@@ -22,8 +22,6 @@ const Validators = ({
     BondStatus.Bonded
   );
 
-  const dataAll = bondedValidators.validators;
-  const data = [...dataAll];
   const renderItem = ({ item }) => {
     let validatorsAddress = item.operator_address || item?.validator_address;
     // const amount = queryDelegations.getDelegationTo(validatorsAddress);
@@ -128,7 +126,7 @@ const Validators = ({
       }}
     >
       <BottomSheetFlatList
-        data={[...data]}
+        data={bondedValidators.validators || []}
         showsVerticalScrollIndicator={false}
         renderItem={renderItem}
         keyExtractor={_keyExtract}
