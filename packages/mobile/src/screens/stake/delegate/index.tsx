@@ -1,4 +1,4 @@
-import { EthereumEndpoint, toAmount } from "@owallet/common";
+import { ChainIdEnum, EthereumEndpoint, toAmount } from "@owallet/common";
 import { useDelegateTxConfig } from "@owallet/hooks";
 import { BondStatus } from "@owallet/stores";
 import { RouteProp, useRoute } from "@react-navigation/native";
@@ -11,12 +11,14 @@ import { ValidatorThumbnail } from "@src/components/thumbnail";
 import { useTheme } from "@src/themes/theme-provider";
 import {
   capitalizedText,
+  computeTotalVotingPower,
+  formatPercentage,
   handleSaveHistory,
   HISTORY_STATUS,
   showToast,
 } from "@src/utils/helper";
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
 import {
   StyleSheet,
   View,
@@ -33,6 +35,7 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { NewAmountInput } from "@src/components/input/amount-input";
 import { FeeModal } from "@src/modals/fee";
 import { CoinPretty, Int } from "@owallet/unit";
+import { API } from "@src/common/api";
 
 export const DelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -41,7 +44,6 @@ export const DelegateScreen: FunctionComponent = observer(() => {
         string,
         {
           validatorAddress: string;
-          percentageVote: number;
         }
       >,
       string
@@ -49,7 +51,6 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   >();
 
   const validatorAddress = route.params.validatorAddress;
-  const percentageVote = route.params.percentageVote;
   const {
     chainStore,
     accountStore,
@@ -67,7 +68,8 @@ export const DelegateScreen: FunctionComponent = observer(() => {
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
-
+  const [validatorDetail, setValidatorDetail] = useState();
+  const [validators, setValidators] = useState([]);
   const sendConfigs = useDelegateTxConfig(
     chainStore,
     chainStore.current.chainId,
@@ -76,7 +78,35 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     queries.queryBalances,
     EthereumEndpoint
   );
-
+  useEffect(() => {
+    InteractionManager.runAfterInteractions(() => {
+      if (chainStore.current.chainId !== ChainIdEnum.Oraichain) return;
+      (async () => {
+        try {
+          const res = await Promise.all([
+            API.getValidatorOraichainDetail(
+              {
+                validatorAddress: validatorAddress,
+              },
+              {
+                baseURL: "https://api.scan.orai.io",
+              }
+            ),
+            API.getValidatorList(
+              {},
+              {
+                baseURL: "https://api.scan.orai.io",
+              }
+            ),
+          ]);
+          if (res[0].status !== 200) return;
+          setValidatorDetail(res[0].data);
+          if (res[1].status !== 200) return;
+          setValidators(res[1].data.data);
+        } catch (error) {}
+      })();
+    });
+  }, [chainStore.current.chainId, validatorAddress]);
   useEffect(() => {
     if (sendConfigs.feeConfig.feeCurrency && !sendConfigs.feeConfig.fee) {
       sendConfigs.feeConfig.setFeeType("average");
@@ -157,7 +187,15 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   //     })
   //   );
   // };
-
+  const totalVotingPower = useMemo(
+    () => computeTotalVotingPower(validators),
+    [validators]
+  );
+  const currentVotingPower = parseFloat(validatorDetail?.voting_power || 0);
+  const percentage =
+    chainStore.current.chainId === ChainIdEnum.Oraichain
+      ? formatPercentage(currentVotingPower / totalVotingPower, 2)
+      : 0;
   const amount = new CoinPretty(
     sendConfigs.amountConfig.sendCurrency,
     new Int(toAmount(Number(sendConfigs.amountConfig.amount)))
@@ -411,36 +449,38 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                   {priceStore.calculatePrice(amount).toString()}
                 </OWText>
               </View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  borderRadius: 12,
-                  backgroundColor: colors["warning-surface-subtle"],
-                  padding: 12,
-                  marginTop: 8,
-                }}
-              >
-                <AlertIcon color={colors["warning-text-body"]} size={16} />
-                <OWText style={{ paddingLeft: 8 }} weight="600" size={14}>
-                  {Number(percentageVote) > 5 ? (
-                    <>
-                      <OWText
-                        style={{
-                          fontWeight: "bold",
-                        }}
-                      >
-                        You're about to stake with top 10 validators {"\n"}
-                      </OWText>
-                      <OWText weight="400">
-                        Consider staking with other validators to improve
-                        network decentralization
-                      </OWText>
-                    </>
-                  ) : (
-                    `When you unstake, a 14-day cooldown period is required before your stake returns to your wallet.`
-                  )}
-                </OWText>
-              </View>
+              {validatorDetail ? (
+                <View
+                  style={{
+                    flexDirection: "row",
+                    borderRadius: 12,
+                    backgroundColor: colors["warning-surface-subtle"],
+                    padding: 12,
+                    marginTop: 8,
+                  }}
+                >
+                  <AlertIcon color={colors["warning-text-body"]} size={16} />
+                  <OWText style={{ paddingLeft: 8 }} weight="600" size={14}>
+                    {Number(percentage) > 5 ? (
+                      <>
+                        <OWText
+                          style={{
+                            fontWeight: "bold",
+                          }}
+                        >
+                          You're about to stake with top 10 validators {"\n"}
+                        </OWText>
+                        <OWText weight="400">
+                          Consider staking with other validators to improve
+                          network decentralization
+                        </OWText>
+                      </>
+                    ) : (
+                      `When you unstake, a 14-day cooldown period is required before your stake returns to your wallet.`
+                    )}
+                  </OWText>
+                </View>
+              ) : null}
             </OWCard>
             <OWCard type="normal">
               <View

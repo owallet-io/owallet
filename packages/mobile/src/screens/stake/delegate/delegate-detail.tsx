@@ -25,7 +25,6 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
           {
             validatorAddress: string;
             apr: number;
-            percentageVote: number;
           }
         >,
         string
@@ -36,8 +35,6 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
     const styles = styling(colors);
     const validatorAddress = route?.params?.validatorAddress;
     const apr = route?.params?.apr;
-    const percentageVote = route?.params?.percentageVote;
-    console.log(percentageVote, "percentageVote");
     const account = accountStore.getAccount(chainStore.current.chainId);
     const queries = queriesStore.get(chainStore.current.chainId);
 
@@ -197,7 +194,6 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
                 smartNavigation.navigateSmart("Validator.Details", {
                   validatorAddress,
                   apr,
-                  percentageVote,
                 });
               }}
             >
@@ -218,7 +214,6 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
             onPress={() => {
               smartNavigation.navigateSmart("Delegate", {
                 validatorAddress,
-                percentageVote,
               });
             }}
           />
@@ -229,7 +224,6 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
             onPress={() => {
               smartNavigation.navigateSmart("Redelegate", {
                 validatorAddress,
-                percentageVote,
               });
             }}
           />
