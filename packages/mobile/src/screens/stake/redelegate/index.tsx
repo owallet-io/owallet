@@ -67,7 +67,6 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
   const smartNavigation = useSmartNavigation();
   const [validatorDetail, setValidatorDetail] = useState();
   const [validators, setValidators] = useState([]);
-  const [customFee, setCustomFee] = useState(false);
   const { colors } = useTheme();
   const {
     chainStore,

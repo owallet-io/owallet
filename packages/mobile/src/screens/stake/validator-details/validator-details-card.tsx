@@ -276,7 +276,6 @@ export const ValidatorDetailsCard: FunctionComponent<{
               onPress={() => {
                 smartNavigation.navigateSmart("Delegate", {
                   validatorAddress,
-                  percentageVote,
                 });
               }}
               style={styles.bottomBtn}
