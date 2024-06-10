@@ -31,6 +31,7 @@ import {
   convertArrToObject,
   handleSaveHistory,
   HISTORY_STATUS,
+  maskedNumber,
   showToast,
 } from "@src/utils/helper";
 
@@ -97,7 +98,8 @@ export const ValidatorDetailsCard: FunctionComponent<{
   containerStyle?: ViewStyle;
   validatorAddress: string;
   apr?: number;
-}> = observer(({ containerStyle, validatorAddress, apr }) => {
+  percentageVote?: number;
+}> = observer(({ containerStyle, validatorAddress, apr, percentageVote }) => {
   const { chainStore, queriesStore, accountStore } = useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
@@ -159,12 +161,16 @@ export const ValidatorDetailsCard: FunctionComponent<{
       case "Voting power":
         return (
           <OWText size={16} weight="500" color={colors["neutral-text-heading"]}>
-            {new CoinPretty(
-              chainStore.current.stakeCurrency,
-              new Dec(validator.tokens)
-            )
-              .maxDecimals(0)
-              .toString()}
+            {`${maskedNumber(
+              new CoinPretty(
+                chainStore.current.stakeCurrency,
+                new Dec(validator.tokens)
+              )
+                .maxDecimals(0)
+                .hideDenom(true)
+                .toString()
+            )} ${chainStore.current.stakeCurrency.coinDenom}`}
+            {percentageVote ? `  (${percentageVote}%)` : ""}
           </OWText>
         );
       default:
@@ -270,6 +276,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
               onPress={() => {
                 smartNavigation.navigateSmart("Delegate", {
                   validatorAddress,
+                  percentageVote,
                 });
               }}
               style={styles.bottomBtn}

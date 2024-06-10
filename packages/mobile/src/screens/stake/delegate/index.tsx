@@ -41,6 +41,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
         string,
         {
           validatorAddress: string;
+          percentageVote: number;
         }
       >,
       string
@@ -48,7 +49,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   >();
 
   const validatorAddress = route.params.validatorAddress;
-
+  const percentageVote = route.params.percentageVote;
   const {
     chainStore,
     accountStore,
@@ -421,7 +422,10 @@ export const DelegateScreen: FunctionComponent = observer(() => {
               >
                 <AlertIcon color={colors["warning-text-body"]} size={16} />
                 <OWText style={{ paddingLeft: 8 }} weight="600" size={14}>
-                  {`When you unstake, a 14-day cooldown period is required before your stake returns to your wallet.`}
+                  {Number(percentageVote) > 5
+                    ? `You're about to stake with top 10 validatos
+Consider staking with other validators to improve network decentralization`
+                    : `When you unstake, a 14-day cooldown period is required before your stake returns to your wallet.`}
                 </OWText>
               </View>
             </OWCard>

@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { useStore } from "../../../stores";
@@ -13,6 +13,7 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  InteractionManager,
 } from "react-native";
 import { Text } from "@src/components/text";
 import { ValidatorThumbnail } from "../../../components/thumbnail";
@@ -25,7 +26,7 @@ import {
 import { OWButton } from "../../../components/button";
 import { useSmartNavigation } from "../../../navigation.provider";
 import { metrics, spacing } from "../../../themes";
-import { toAmount, ValidatorThumbnails } from "@owallet/common";
+import { ChainIdEnum, toAmount, ValidatorThumbnails } from "@owallet/common";
 import ValidatorsList from "./validators-list";
 import { AlertIcon, DownArrowIcon } from "../../../components/icon";
 import { Toggle } from "../../../components/toggle";
@@ -33,6 +34,8 @@ import { useTheme } from "@src/themes/theme-provider";
 import { OWSubTitleHeader } from "@src/components/header";
 import {
   capitalizedText,
+  computeTotalVotingPower,
+  formatPercentage,
   handleSaveHistory,
   HISTORY_STATUS,
   showToast,
@@ -44,6 +47,7 @@ import { chainIcons } from "@oraichain/oraidex-common";
 import OWCard from "@src/components/card/ow-card";
 import { NewAmountInput } from "@src/components/input/amount-input";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
+import { API } from "@src/common/api";
 
 export const RedelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -61,6 +65,8 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
   const validatorAddress = route.params.validatorAddress;
 
   const smartNavigation = useSmartNavigation();
+  const [validatorDetail, setValidatorDetail] = useState();
+  const [validators, setValidators] = useState([]);
   const [customFee, setCustomFee] = useState(false);
   const { colors } = useTheme();
   const {
@@ -74,7 +80,6 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
   } = useStore();
 
   const styles = styling(colors);
-
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
 
@@ -121,6 +126,36 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
     avatar: "",
     moniker: "",
   });
+  useEffect(() => {
+    InteractionManager.runAfterInteractions(() => {
+      if (chainStore.current.chainId !== ChainIdEnum.Oraichain) return;
+      (async () => {
+        try {
+          const res = await Promise.all([
+            API.getValidatorOraichainDetail(
+              {
+                validatorAddress: dstValidatorAddress,
+              },
+              {
+                baseURL: "https://api.scan.orai.io",
+              }
+            ),
+            API.getValidatorList(
+              {},
+              {
+                baseURL: "https://api.scan.orai.io",
+              }
+            ),
+          ]);
+          if (res[0].status !== 200) return;
+          setValidatorDetail(res[0].data);
+          if (res[1].status !== 200) return;
+          setValidators(res[1].data.data);
+        } catch (error) {}
+      })();
+    });
+  }, [chainStore.current.chainId, dstValidatorAddress]);
+
   const dstValidator =
     queries.cosmos.queryValidators
       .getQueryStatus(BondStatus.Bonded)
@@ -281,7 +316,16 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
     });
     modalStore.close();
   };
-
+  console.log(validators, "validators");
+  const totalVotingPower = useMemo(
+    () => computeTotalVotingPower(validators),
+    [validators]
+  );
+  const currentVotingPower = parseFloat(validatorDetail?.voting_power || 0);
+  const percentage =
+    chainStore.current.chainId === ChainIdEnum.Oraichain
+      ? formatPercentage(currentVotingPower / totalVotingPower, 2)
+      : 0;
   return (
     <PageWithBottom
       bottomGroup={
@@ -558,7 +602,10 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                   >
                     <AlertIcon color={colors["warning-text-body"]} size={16} />
                     <OWText style={{ paddingLeft: 8 }} weight="600" size={14}>
-                      {`When you unstake, a 14-day cooldown period is required before your stake returns to your wallet.`}
+                      {Number(percentage) > 5
+                        ? `You're about to stake with top 10 validatos
+Consider staking with other validators to improve network decentralization`
+                        : `When you unstake, a 14-day cooldown period is required before your stake returns to your wallet.`}
                     </OWText>
                   </View>
                 </OWCard>

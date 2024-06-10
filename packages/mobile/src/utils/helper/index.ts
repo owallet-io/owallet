@@ -7,7 +7,7 @@ import get from "lodash/get";
 import { TxsHelper } from "@src/stores/txs/helpers/txs-helper";
 import { showMessage, MessageOptions } from "react-native-flash-message";
 import { InAppBrowser } from "react-native-inappbrowser-reborn";
-import { Linking, Platform } from "react-native";
+import { Linking } from "react-native";
 import {
   flattenTokens,
   getSubAmountDetails,
@@ -17,13 +17,8 @@ import {
   tokensIcon,
 } from "@oraichain/oraidex-common";
 import { API } from "@src/common/api";
-import {
-  ChainIdEnum,
-  CosmosNetwork,
-  OasisNetwork,
-  Network,
-} from "@owallet/common";
-// import { Network } from "@tatumio/tatum";
+import { ChainIdEnum, Network } from "@owallet/common";
+import { Dec } from "@owallet/unit";
 export const MapChainIdToNetwork = {
   [ChainIdEnum.BNBChain]: Network.BINANCE_SMART_CHAIN,
   [ChainIdEnum.Ethereum]: Network.ETHEREUM,
@@ -36,7 +31,6 @@ export const MapChainIdToNetwork = {
   [ChainIdEnum.Osmosis]: Network.OSMOSIS,
   [ChainIdEnum.CosmosHub]: Network.COSMOSHUB,
   [ChainIdEnum.Injective]: Network.INJECTIVE,
-  // [ChainIdEnum.Neutaro]: Network.NEUTARO,
 };
 export const MapNetworkToChainId = {
   [Network.BINANCE_SMART_CHAIN]: ChainIdEnum.BNBChain,
@@ -50,7 +44,6 @@ export const MapNetworkToChainId = {
   [Network.OSMOSIS]: ChainIdEnum.Osmosis,
   [Network.COSMOSHUB]: ChainIdEnum.CosmosHub,
   [Network.INJECTIVE]: ChainIdEnum.Injective,
-  // [ChainIdEnum.Neutaro]: Network.NEUTARO,
 };
 const SCHEME_IOS = "owallet://open_url?url=";
 const SCHEME_ANDROID = "app.owallet.oauth://google/open_url?url=";
@@ -95,46 +88,6 @@ export const TRC20_LIST = [
     coinImageUrl:
       "https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png",
   },
-  // {
-  //   contractAddress: 'TGjgvdTWWrybVLaVeFqSyVqJQWjxqRYbaK',
-  //   tokenName: 'USDD',
-  //   coinDenom: 'USDD',
-  //   coinDecimals: 6,
-  //   coinGeckoId: 'usdd',
-  //   coinImageUrl:
-  //     'https://s2.coinmarketcap.com/static/img/coins/64x64/19891.png',
-  //   type: 'trc20'
-  // },
-  // {
-  //   contractAddress: 'TLBaRhANQoJFTqre9Nf1mjuwNWjCJeYqUL',
-  //   tokenName: 'USDJ',
-  //   coinDenom: 'USDJ',
-  //   coinDecimals: 6,
-  //   coinGeckoId: 'usdj',
-  //   coinImageUrl:
-  //     'https://s2.coinmarketcap.com/static/img/coins/64x64/5446.png',
-  //   type: 'trc20'
-  // },
-  // {
-  //   contractAddress: 'TF17BgPaZYbz8oxbjhriubPDsA7ArKoLX3',
-  //   tokenName: 'JST',
-  //   coinDenom: 'JST',
-  //   coinDecimals: 6,
-  //   coinGeckoId: 'just',
-  //   coinImageUrl:
-  //     'https://s2.coinmarketcap.com/static/img/coins/64x64/5488.png',
-  //   type: 'trc20'
-  // },
-  // {
-  //   contractAddress: 'TWrZRHY9aKQZcyjpovdH6qeCEyYZrRQDZt',
-  //   tokenName: 'SUNOLD',
-  //   coinDenom: 'SUNOLD',
-  //   coinDecimals: 6,
-  //   coinGeckoId: 'sun',
-  //   coinImageUrl:
-  //     'https://s2.coinmarketcap.com/static/img/coins/64x64/6990.png',
-  //   type: 'trc20'
-  // }
 ];
 export const handleError = (error, url, method) => {
   if (__DEV__) {
@@ -835,4 +788,63 @@ export function trimWordsStr(str: string): string {
 
 export const delay = (delayInms) => {
   return new Promise((resolve) => setTimeout(resolve, delayInms));
+};
+
+export function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+const sortByVoting = (data, sortType) => {
+  switch (sortType) {
+    case "Voting Power":
+      return data.sort((val1, val2) => {
+        return new Dec(val1.tokens).gt(new Dec(val2.tokens)) ? -1 : 1;
+      });
+    case "Voting Power Increase":
+      return data.sort((val1, val2) => {
+        return new Dec(val1.tokens).gt(new Dec(val2.tokens)) ? 1 : -1;
+      });
+  }
+};
+
+export function groupAndShuffle(array, groupSize = 5, chainId, sortType) {
+  if (chainId !== ChainIdEnum.Oraichain) {
+    return sortByVoting(array, sortType);
+  }
+  const sortedArray = array
+    .map((e) => {
+      return { ...e, votingPowerMixUpTime: e.voting_power * e.uptime };
+    })
+    .sort((a, b) => b.votingPowerMixUpTime - a.votingPowerMixUpTime);
+  const groups = [];
+  for (let i = 0; i < sortedArray.length; i += groupSize) {
+    groups.push(sortedArray.slice(i, i + groupSize));
+  }
+  const shuffledGroups = groups.map((group) => shuffleArray(group));
+  return sortByVoting(sortedArray, sortType);
+}
+
+export const formatPercentage = (
+  value,
+  numberOfDigitsAfterDecimalPoint = 1
+) => {
+  return parseFloat(
+    (parseFloat(value) * 100).toFixed(numberOfDigitsAfterDecimalPoint)
+  );
+};
+
+export const computeTotalVotingPower = (data) => {
+  if (!data || !Array.isArray(data)) {
+    return 0;
+  }
+
+  let total = 0;
+  for (let item of data) {
+    total += parseFloat(item?.voting_power ?? 0) || 0;
+  }
+  return total;
 };
