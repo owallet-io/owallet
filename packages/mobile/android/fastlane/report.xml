@@ -5,42 +5,67 @@
     
     
       
-      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.000198">
+      <testcase classname="fastlane.lanes" name="00: default_platform" time="0.000219">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="1: firebase_app_distribution_get_latest_release" time="1.478306">
+      <testcase classname="fastlane.lanes" name="01: google_play_track_version_codes" time="2.242776">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="2: increment_version_code" time="0.003227">
+      <testcase classname="fastlane.lanes" name="02: android_get_version_code" time="0.001211">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="3: sentry_upload_dif" time="0.90943">
+      <testcase classname="fastlane.lanes" name="03: google_play_track_release_names" time="1.934357">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="4: assembleRelease" time="419.858344">
+      <testcase classname="fastlane.lanes" name="04: android_get_version_name" time="0.001111">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="5: firebase_app_distribution" time="47.122481">
+      <testcase classname="fastlane.lanes" name="05: android_set_version_code" time="0.004063">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="6: android_get_version_name" time="0.000775">
+      <testcase classname="fastlane.lanes" name="06: android_set_version_name" time="0.001815">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="7: discord_notifier" time="0.558751">
+      <testcase classname="fastlane.lanes" name="07: android_get_version_code" time="0.000395">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="08: android_get_version_name" time="0.000388">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="09: sentry_upload_dif" time="14.637622">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="10: clean bundleRelease" time="545.218177">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="11: upload_to_play_store" time="49.398829">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="12: discord_notifier" time="0.623192">
         
       </testcase>
     
