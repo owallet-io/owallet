@@ -74,13 +74,44 @@ export const TronDetailsTab: FunctionComponent<{
       setParams(txInfo?.parameters);
     }, [txInfo?.parameters]);
 
-    const [tokenIn, setTokenIn] = useState(null);
+    const [token, setToken] = useState(null);
+
+    const findToken = async (contractAddress) => {
+      if (chain?.chainId && contractAddress) {
+        try {
+          const token = await getTokenInfo(contractAddress, chain.chainId);
+          setToken(token.data);
+        } catch (err) {
+          EmbedChainInfos.map((c) => {
+            if (c.chainId === chain.chainId) {
+              //@ts-ignore
+              const token = c.currencies.find(
+                (cu) => cu.contractAddress === contractAddress
+              );
+              console.log("toennn 3", token);
+
+              setToken(token);
+            }
+          });
+        }
+      }
+    };
+
+    useEffect(() => {
+      params?.map((p) => {
+        if (p.type === "address") {
+          console.log("p", p.value);
+
+          findToken(getBase58Address(p.value));
+        }
+      });
+    }, [params]);
 
     useEffect(() => {
       const fetchToken = async () => {
         if (chain?.chainId && txInfo?.address) {
           const token = await getTokenInfo(txInfo?.address, chain.chainId);
-          setTokenIn(token);
+          setToken(token.data);
         }
       };
       fetchToken();
@@ -234,6 +265,8 @@ export const TronDetailsTab: FunctionComponent<{
             if (p.type === "string") {
               const { des, tokenInfo } = convertDestinationToken(p?.value);
               let desComponent, tokenComponent;
+
+              console.log("tokenInfo", tokenInfo);
 
               if (des) {
                 desComponent = renderInfo(
@@ -487,10 +520,10 @@ export const TronDetailsTab: FunctionComponent<{
             </Address>
           )}
           {renderParams(txInfo?.parameters)}
-          {tokenIn
+          {token
             ? renderInfo(
-                tokenIn,
-                "Token Out",
+                token,
+                "Token In",
                 <div
                   style={{
                     display: "flex",
@@ -506,11 +539,9 @@ export const TronDetailsTab: FunctionComponent<{
                       marginRight: 4,
                       backgroundColor: colors["neutral-surface-pressed"],
                     }}
-                    src={tokenIn?.imgUrl ?? tokenIn?.coinImageUrl}
+                    src={token?.imgUrl ?? token?.coinImageUrl}
                   />
-                  <Text weight="600">
-                    {tokenIn?.abbr ?? tokenIn?.coinDenom}
-                  </Text>
+                  <Text weight="600">{token?.abbr ?? token?.coinDenom}</Text>
                 </div>
               )
             : null}

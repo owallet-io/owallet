@@ -96,21 +96,21 @@ export const DetailsTabEvm: FunctionComponent<{
             decodedData?.args?._tokenContract,
             chain.chainId
           );
-          setTokenIn(token);
+          setTokenIn(token.data);
         }
         if (chain?.chainId && decodedData?.args?._tokenIn) {
           const tokenIn = await getTokenInfo(
             decodedData?.args?._tokenIn,
             chain.chainId
           );
-          setTokenIn(tokenIn);
+          setTokenIn(tokenIn.data);
         }
         if (chain?.chainId && decodedData?.args?._tokenOut) {
           const tokenOut = await getTokenInfo(
             decodedData?.args?._tokenOut,
             chain.chainId
           );
-          setTokenOut(tokenOut);
+          setTokenOut(tokenOut.data);
         }
         if (chain?.chainId && decodedData?.args?.path?.length > 0) {
           let tmpPath = [];
@@ -118,7 +118,7 @@ export const DetailsTabEvm: FunctionComponent<{
           await Promise.all(
             decodedData.args.path.map(async (p) => {
               const token = await getTokenInfo(p, chain.chainId);
-              tmpPath.push(token);
+              tmpPath.push(token.data);
             })
           );
 
