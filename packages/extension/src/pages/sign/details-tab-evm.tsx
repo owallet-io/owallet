@@ -159,7 +159,6 @@ export const DetailsTabEvm: FunctionComponent<{
           if (array.length < 1) {
             array.push(decodedData);
           }
-          console.log("array", array);
           const des = array.shift();
           const token = array.pop();
 
@@ -196,7 +195,7 @@ export const DetailsTabEvm: FunctionComponent<{
             });
           }
 
-          if (!tokenInfo) {
+          if (!tokenInfo && token) {
             const key = findKeyBySimilarValue(
               LIST_ORAICHAIN_CONTRACT,
               token.match(addressPattern).join("")
