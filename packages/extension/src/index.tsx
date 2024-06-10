@@ -8,7 +8,7 @@ import { HashRouter, Route } from "react-router-dom";
 import { AccessPage, Secret20ViewingKeyAccessPage } from "./pages/access";
 import { IBCTransferPage } from "./pages/ibc-transfer";
 import { LockPage } from "./pages/lock";
-import { MainPage } from "./pages/main";
+import { HomePage } from "./pages/home/home-page";
 import { RegisterPage } from "./pages/register";
 import { ConfirmLedgerPage } from "./pages/register/ledger/confirm";
 import { SendPage } from "./pages/send";
@@ -202,7 +202,7 @@ const StateRenderer: FunctionComponent = observer(() => {
     keyRingStore.persistent ||
     keyRingStore.status === KeyRingStatus.UNLOCKED
   ) {
-    return <MainPage />;
+    return <HomePage />;
   } else if (keyRingStore.status === KeyRingStatus.LOCKED) {
     return <LockPage />;
   } else if (keyRingStore.status === KeyRingStatus.EMPTY) {

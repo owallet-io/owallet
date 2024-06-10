@@ -1,0 +1,109 @@
+@import '../../../styles/var';
+
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.container-info-account-card {
+  background-color: $neutral-surface-card;
+  padding: 16px;
+  border-radius: 24px;
+
+  .top-header-info-acc {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    .select-account {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+
+      .img-wallet {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background-color: #fff;
+      }
+
+      .name-wallet {
+        color: $neutral-text-title;
+        font-size: 16px;
+        font-weight: 600;
+        line-height: 24px;
+      }
+
+      .arr-down {
+        width: 20px;
+        height: 20px;
+        color: $neutral-text-action-on-light-bg;
+        fill: $neutral-text-action-on-light-bg;
+      }
+    }
+
+    .block-copy-address {
+      background-color: $neutral-surface-action3;
+      border-radius: 999px;
+      padding: 4px 12px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+
+      .name-copy {
+        color: $neutral-text-action-on-light-bg;
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 20px;
+      }
+
+      .icon-copy {
+        width: 20px;
+        height: 20px;
+        color: $neutral-text-action-on-light-bg;
+      }
+    }
+  }
+
+  .body-balance {
+    padding: 8px 0;
+
+    .text-balance {
+      color: $neutral-text-heading;
+      font-weight: 500;
+      font-size: 28px;
+    }
+  }
+
+  .btns-send-received {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 12px;
+
+    .btn-wrap {
+      background-color: $primary-surface-default;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      border-radius: 999px;
+      padding: 4px 12px;
+
+      .txt {
+        color: $neutral-text-action-on-dark-bg;
+        font-weight: 600;
+        font-size: 14px;
+        line-height: 20px;
+        text-align: center;
+      }
+    }
+
+
+  }
+}
