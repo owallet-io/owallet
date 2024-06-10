@@ -405,7 +405,7 @@ export const TokensCardAll: FunctionComponent<{
               )}
             </TouchableOpacity>
           ) : null}
-          <OWButton
+          {/* <OWButton
             style={{
               marginTop: Platform.OS === "android" ? 28 : 22,
               marginHorizontal: 16,
@@ -428,7 +428,7 @@ export const TokensCardAll: FunctionComponent<{
               });
               return;
             }}
-          />
+          /> */}
         </>
       );
     } else {
