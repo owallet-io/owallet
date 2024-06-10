@@ -262,6 +262,7 @@ export const SignTronPage: FunctionComponent = observer(() => {
               {tab === Tab.Details && (
                 <TronDetailsTab
                   txInfo={txInfo}
+                  addressTronBase58={addressTronBase58}
                   dataInfo={{
                     estimateBandwidth,
                     estimateEnergy,

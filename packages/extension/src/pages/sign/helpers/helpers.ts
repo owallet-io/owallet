@@ -1,4 +1,8 @@
 import { ethers } from "ethers";
+import {
+  MapChainIdToNetwork,
+  TX_HISTORY_ENDPOINT,
+} from "../../../helpers/constant";
 
 export const tryAllABI = (
   signData,
@@ -69,4 +73,21 @@ export const findKeyBySimilarValue = (obj, value) => {
     }
   }
   return null; // Return null if the value is not found in the object
+};
+
+export const getTokenInfo = async (tokenContract, chainId) => {
+  try {
+    const response = await fetch(
+      `${TX_HISTORY_ENDPOINT}/v1/token-info/${MapChainIdToNetwork[chainId]}/${tokenContract}`
+    );
+    if (response.ok) {
+      const jsonData = await response.json();
+
+      return jsonData.data;
+    } else {
+      console.error("Error:", response.status);
+    }
+  } catch (error) {
+    console.error("Error throw:", error);
+  }
 };
