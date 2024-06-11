@@ -154,8 +154,6 @@ export const EVMRenderArg: FunctionComponent<{
     }
   }, [args?._destination]);
 
-  console.log("args EVMRenderArg", args);
-
   return (
     <div>
       {renderInfo(
@@ -218,10 +216,18 @@ export const EVMRenderArg: FunctionComponent<{
         ? renderInfo(tokenIn?.abbr, "Token In", renderToken(tokenIn))
         : null}
       {renderInfo(
-        args?._amountOutMin,
+        args?._amountOutMin &&
+          toDisplay(
+            (args?._amountOutMin).toString(),
+            chain.stakeCurrency.coinDecimals
+          ) > 0,
         "Amount Out Min",
         <Text>
-          {args?._amountOutMin
+          {args?._amountOutMin &&
+          toDisplay(
+            (args?._amountOutMin).toString(),
+            chain.stakeCurrency.coinDecimals
+          ) > 0
             ? toDisplay(
                 (args?._amountOutMin).toString(),
                 chain.stakeCurrency.coinDecimals
