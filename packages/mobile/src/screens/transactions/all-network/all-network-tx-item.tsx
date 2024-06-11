@@ -70,6 +70,8 @@ export const AllNetworkTxItem: FC<{
     item.fromAddress?.toLowerCase() === item.toAddress?.toLowerCase();
   const method = isSent ? "Sent" : "Received";
   const chainInfo = chainStore.getChain(MapNetworkToChainId[item.network]);
+  const { coinDenom } = chainInfo.stakeCurrency;
+  const { coinDenom: denom } = currency;
   return (
     <View
       style={{
@@ -103,10 +105,7 @@ export const AllNetworkTxItem: FC<{
               style={{
                 borderRadius: 999,
                 tintColor:
-                  (chainInfo.stakeCurrency.coinDenom === "ORAI" &&
-                    currency.coinDenom === "ORAI") ||
-                  (chainInfo.stakeCurrency.coinDenom === "ORAI" &&
-                    currency.coinDenom === "AIRI")
+                  coinDenom === "ORAI" && (denom === "ORAI" || denom === "AIRI")
                     ? colors["neutral-text-title"]
                     : null,
               }}
