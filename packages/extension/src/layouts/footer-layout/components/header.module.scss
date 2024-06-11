@@ -1,0 +1,86 @@
+@import '../../../styles/var';
+
+.container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 16px 16px 0 16px;
+
+  .left-block {
+    display: flex;
+    flex: 20%;
+  }
+
+  .center-block {
+    display: flex;
+    flex: 60%;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    .wrap-content {
+      align-items: center;
+      display: flex;
+      gap: 4px;
+      .chain-name {
+        font-size: 16px;
+        color: $neutral-text-title;
+        font-weight: 600;
+        line-height: 24px;
+      }
+      .img-icon{
+        width: 22px;
+        height: 22px;
+      }
+    }
+  }
+
+  .right-block {
+    display: flex;
+    flex: 20%;
+    justify-content: flex-end;
+    gap: 8px;
+    .wrap-icon-connect{
+      background-color: $neutral-surface-card;
+      border-radius: 999px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      .img-icon {
+        width: 20px;
+        height: 20px;
+      }
+      .dot{
+        position: absolute;
+        right: 5px;
+        bottom: 5px;
+        background-color: $highlight-surface-active;
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+      }
+    }
+
+  }
+
+  .wrap-icon {
+    background-color: $neutral-surface-card;
+    border-radius: 999px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+
+    .img-icon {
+      width: 18px;
+      height: 18px;
+    }
+
+  }
+}
+

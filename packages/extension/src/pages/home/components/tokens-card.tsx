@@ -17,7 +17,28 @@ export const TokensCard = () => {
         />
       </div>
       <div className={styles.listTokens}>
-        {["1", "2"].map((item, index) => (
+        {[
+          "1",
+          "2",
+          "1",
+          "2",
+          "1",
+          "2",
+          "1",
+          "2",
+          "1",
+          "2",
+          "1",
+          "2",
+          "1",
+          "2",
+          "1",
+          "2",
+          "1",
+          "2",
+          "1",
+          "2",
+        ].map((item, index) => (
           <TokenItem key={index} item={item} />
         ))}
       </div>
