@@ -3,11 +3,9 @@ import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
 import styleDetailsTab from "./details-tab.module.scss";
 import { FormattedMessage, useIntl } from "react-intl";
-import { FeeButtons } from "../../components/form";
 import { IFeeConfig, IGasConfig, IMemoConfig } from "@owallet/hooks";
-import { EmbedChainInfos, toDisplay, useLanguage } from "@owallet/common";
+import { toDisplay, useLanguage } from "@owallet/common";
 import { ChainIdEnum } from "@owallet/common";
-import { Button, Label } from "reactstrap";
 import { Bech32Address } from "@owallet/cosmos";
 import Web3 from "web3";
 import { Card } from "../../components/common/card";
@@ -18,14 +16,8 @@ import EVM_PROXY_ABI from "./abi/evm-proxy-abi.json";
 import GRAVITY_ABI from "./abi/gravity-abi.json";
 import PANCAKE_ABI from "./abi/pancake-abi.json";
 import { Address } from "../../components/address";
-import { decodeBase64 } from "../../helpers/helper";
-import { LIST_ORAICHAIN_CONTRACT } from "./helpers/constant";
-import {
-  calculateJaccardIndex,
-  findKeyBySimilarValue,
-  getTokenInfo,
-  tryAllABI,
-} from "./helpers/helpers";
+import { tryAllABI } from "./helpers/helpers";
+import { EVMRenderArg } from "./components/render-evm-arg";
 
 export const DetailsTabEvm: FunctionComponent<{
   msgSign: any;
@@ -72,8 +64,6 @@ export const DetailsTabEvm: FunctionComponent<{
           ]);
           setDecodeWithABI(res);
 
-          console.log("decodeWithABI", res);
-
           if (!res.isRaw) {
             setDecodedData(res.data);
           }
@@ -82,128 +72,6 @@ export const DetailsTabEvm: FunctionComponent<{
         }
       }
     }, [msgSign]);
-
-    const [path, setPath] = useState<Array<any>>([]);
-    const [tokenIn, setTokenIn] = useState<any>();
-    const [tokenOut, setTokenOut] = useState<any>();
-
-    console.log("decodedData", decodedData);
-
-    useEffect(() => {
-      const fetchTokenInfo = async () => {
-        if (chain?.chainId && decodedData?.args?._tokenContract) {
-          const token = await getTokenInfo(
-            decodedData?.args?._tokenContract,
-            chain.chainId
-          );
-          setTokenIn(token.data);
-        }
-        if (chain?.chainId && decodedData?.args?._tokenIn) {
-          const tokenIn = await getTokenInfo(
-            decodedData?.args?._tokenIn,
-            chain.chainId
-          );
-          setTokenIn(tokenIn.data);
-        }
-        if (chain?.chainId && decodedData?.args?._tokenOut) {
-          const tokenOut = await getTokenInfo(
-            decodedData?.args?._tokenOut,
-            chain.chainId
-          );
-          setTokenOut(tokenOut.data);
-        }
-        if (chain?.chainId && decodedData?.args?.path?.length > 0) {
-          let tmpPath = [];
-
-          await Promise.all(
-            decodedData.args.path.map(async (p) => {
-              const token = await getTokenInfo(p, chain.chainId);
-              tmpPath.push(token.data);
-            })
-          );
-
-          setPath(tmpPath);
-        }
-      };
-
-      fetchTokenInfo();
-    }, [chain?.chainId, decodedData?.args]);
-
-    const [toAddress, setToAddress] = useState<any>();
-    const [toToken, setToToken] = useState<any>();
-    useEffect(() => {
-      if (decodedData?.args?._destination) {
-        const encodedData = decodedData?.args?._destination.split(":")?.[1];
-        if (encodedData) {
-          const decodedData = decodeBase64(encodedData);
-
-          if (decodedData) {
-            // Regular expression pattern to split the input string
-            const pattern = /[\x00-\x1F]+/;
-
-            const addressPattern = /[a-zA-Z0-9]+/g;
-
-            // Split the input string using the pattern
-            const array = decodedData.split(pattern).filter(Boolean);
-            if (array.length < 1) {
-              array.push(decodedData);
-            }
-            const des = array.shift();
-            const token = array.pop();
-
-            let tokenInfo;
-            if (token) {
-              EmbedChainInfos.find((chain) => {
-                if (
-                  chain.stakeCurrency.coinMinimalDenom ===
-                  token.match(addressPattern).join("")
-                ) {
-                  tokenInfo = chain.stakeCurrency;
-                  return;
-                }
-                if (
-                  chain.stakeCurrency.coinMinimalDenom ===
-                  token.match(addressPattern).join("")
-                ) {
-                  tokenInfo = chain.stakeCurrency;
-                  return;
-                }
-                const foundCurrency = chain.currencies.find(
-                  (cr) =>
-                    cr.coinMinimalDenom ===
-                      token.match(addressPattern).join("") ||
-                    //@ts-ignore
-                    cr.contractAddress ===
-                      token.match(addressPattern).join("") ||
-                    calculateJaccardIndex(cr.coinMinimalDenom, token) > 0.85
-                );
-
-                if (foundCurrency) {
-                  tokenInfo = foundCurrency;
-                  return;
-                }
-              });
-            }
-
-            if (!tokenInfo && token) {
-              const key = findKeyBySimilarValue(
-                LIST_ORAICHAIN_CONTRACT,
-                token.match(addressPattern).join("")
-              )?.split("_")?.[0];
-
-              if (key)
-                tokenInfo = {
-                  coinDenom: key,
-                  contractAddress: token.match(addressPattern).join(""),
-                };
-            }
-
-            setToAddress(des.match(addressPattern).join(""));
-            setToToken(tokenInfo);
-          }
-        }
-      }
-    }, [decodedData?.args?._destination]);
 
     const renderMsg = (content) => {
       return (
@@ -312,73 +180,6 @@ export const DetailsTabEvm: FunctionComponent<{
       return null;
     })();
 
-    const renderFees = () => {
-      return (
-        <div>
-          {!preferNoSetFee || !feeConfig.isManual ? (
-            <FeeButtons
-              feeConfig={feeConfig}
-              gasConfig={gasConfig}
-              priceStore={priceStore}
-              label={intl.formatMessage({ id: "sign.info.fee" })}
-              gasLabel={intl.formatMessage({ id: "sign.info.gas" })}
-            />
-          ) : feeConfig.fee ? (
-            <React.Fragment>
-              <Label for="fee-price" className="form-control-label">
-                <FormattedMessage id="sign.info.fee" />
-              </Label>
-              <div id="fee-price">
-                <div className={styleDetailsTab.feePrice}>
-                  {feeConfig.fee.maxDecimals(9).trim(true).toString()}
-                  {priceStore.calculatePrice(
-                    feeConfig.fee,
-                    language.fiatCurrency
-                  ) ? (
-                    <div
-                      style={{
-                        display: "inline-block",
-                        fontSize: "12px",
-                        color: "#353945",
-                      }}
-                    >
-                      {priceStore
-                        .calculatePrice(feeConfig.fee, language.fiatCurrency)
-                        ?.toString()}
-                    </div>
-                  ) : null}
-                </div>
-              </div>
-              {
-                /*
-                Even if the "preferNoSetFee" option is turned on, it provides the way to edit the fee to users.
-                However, if the interaction is internal, you can be sure that the fee is set well inside OWallet.
-                Therefore, the button is not shown in this case.
-              */
-                !isInternal ? (
-                  <div style={{ fontSize: "12px" }}>
-                    <Button
-                      color="link"
-                      size="sm"
-                      style={{
-                        padding: 0,
-                      }}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        feeConfig.setFeeType("average");
-                      }}
-                    >
-                      <FormattedMessage id="sign.info.fee.override" />
-                    </Button>
-                  </div>
-                ) : null
-              }
-            </React.Fragment>
-          ) : null}
-        </div>
-      );
-    };
-
     const renderInfo = (condition, label, leftContent) => {
       if (condition && condition !== "") {
         return (
@@ -471,28 +272,12 @@ export const DetailsTabEvm: FunctionComponent<{
       );
     };
 
-    const renderToken = (token) => {
-      return (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
-          <img
-            style={{
-              width: 14,
-              height: 14,
-              borderRadius: 28,
-              marginRight: 4,
-            }}
-            src={token?.imgUrl}
-          />
-          <Text weight="600">{token?.abbr}</Text>
-        </div>
-      );
-    };
+    console.log(decodedData, "decodeedDAta");
+    console.log(
+      feeConfig.getError(),
+      gasConfig.getError(),
+      "feeConfig.getError()"
+    );
 
     return (
       <div className={styleDetailsTab.container}>
@@ -582,7 +367,7 @@ export const DetailsTabEvm: FunctionComponent<{
           )}
           {renderInfo(
             msgs.value,
-            "Amount",
+            "Amount In",
             <Text>
               {msgs.value
                 ? toDisplay(
@@ -599,172 +384,59 @@ export const DetailsTabEvm: FunctionComponent<{
                 "Method",
                 <Text>{decodedData.name}</Text>
               )}
-              {renderInfo(
-                decodedData.args?._value,
-                "Approve amount",
-                <Text>
-                  {decodedData.args?._value
-                    ? toDisplay(
-                        (decodedData.args?._value).toString(),
-                        chain.stakeCurrency.coinDecimals
-                      )
-                    : null}
-                </Text>
-              )}
-              {renderInfo(
-                decodedData.args?._amount,
-                "Amount",
-                <Text>
-                  {decodedData.args?._amount
-                    ? toDisplay(
-                        (decodedData.args?._amount).toString(),
-                        chain.stakeCurrency.coinDecimals
-                      )
-                    : null}
-                </Text>
-              )}
-              {renderInfo(
-                decodedData?.args?._amountIn,
-                "Amount In",
-                <Text>
-                  {decodedData.args._amountIn
-                    ? toDisplay(
-                        decodedData.args._amountIn.toString(),
-                        chain.stakeCurrency.coinDecimals
-                      )
-                    : null}
-                </Text>
-              )}
-              {renderInfo(
-                decodedData?.args?.amountIn,
-                "Amount In",
-                <Text>
-                  {decodedData.args.amountIn
-                    ? toDisplay(
-                        decodedData.args.amountIn.toString(),
-                        chain.stakeCurrency.coinDecimals
-                      )
-                    : null}
-                </Text>
-              )}
-              {tokenIn
-                ? renderInfo(tokenIn?.abbr, "Token In", renderToken(tokenIn))
-                : null}
-              {renderInfo(
-                decodedData.args?._amountOutMin,
-                "Amount Out Min",
-                <Text>
-                  {decodedData.args?._amountOutMin
-                    ? toDisplay(
-                        (decodedData.args?._amountOutMin).toString(),
-                        chain.stakeCurrency.coinDecimals
-                      )
-                    : null}
-                </Text>
-              )}
-              {renderInfo(
-                decodedData.args?.amountOutMin,
-                "Amount Out Min",
-                <Text>
-                  {decodedData.args?.amountOutMin
-                    ? toDisplay(
-                        (decodedData.args?.amountOutMin).toString(),
-                        chain.stakeCurrency.coinDecimals
-                      )
-                    : null}
-                </Text>
-              )}
-              {tokenOut
-                ? renderInfo(tokenOut?.abbr, "Token Out", renderToken(tokenOut))
-                : null}
-              {renderInfo(
-                toAddress,
-                "To Address",
-                <Text>{toAddress ? toAddress : null}</Text>
-              )}
-              {toToken
-                ? renderInfo(
-                    toToken.coinDenom,
-                    "To Token",
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        alignItems: "center",
-                      }}
-                    >
-                      <img
-                        style={{
-                          width: 14,
-                          height: 14,
-                          borderRadius: 28,
-                          marginRight: 4,
-                          backgroundColor: colors["neutral-surface-pressed"],
-                        }}
-                        src={toToken?.coinImageUrl}
-                      />
-                      <Text weight="600">{toToken?.coinDenom}</Text>
-                    </div>
-                  )
-                : null}
-              {path.length > 0
-                ? renderInfo(
-                    path.length,
-                    "Path",
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        alignItems: "center",
-                      }}
-                    >
-                      {path
-                        .sort((a, b) => {
-                          const indexA = decodedData?.args?.path.indexOf(
-                            a.contractAddress.toLowerCase()
-                          );
-                          const indexB = decodedData?.args?.path.indexOf(
-                            b.contractAddress.toLowerCase()
-                          );
-                          return indexA - indexB;
-                        })
-                        .map((p, i) => {
-                          if (i > 0) {
-                            return (
-                              <div
-                                style={{
-                                  display: "flex",
-                                  flexDirection: "row",
-                                  justifyContent: "center",
-                                  alignItems: "center",
-                                }}
-                              >
-                                <span>-</span>
-                                {renderToken(p)}
-                              </div>
-                            );
-                          }
-                          return renderToken(p);
-                        })}
-                    </div>
-                  )
-                : null}
-              {renderInfo(
-                decodedData.args?._destination,
-                "Destination",
-                <Text>
-                  {decodedData.args?._destination
-                    ? decodedData.args?._destination.split(":")?.[0]
-                    : null}
-                </Text>
-              )}
+              {decodedData?.args ? (
+                <EVMRenderArg
+                  args={decodedData.args}
+                  renderInfo={renderInfo}
+                  chain={chain}
+                />
+              ) : null}
             </>
           ) : null}
 
           {renderInfo(msgs?.gas, "Gas", <Text>{Number(msgs?.gas)}</Text>)}
           {renderTransactionFee()}
         </Card>
-        {/* {renderFees()} */}
+        {feeConfig.getError() != null && feeConfig.getError() != undefined ? (
+          <div
+            style={{
+              display: "flex",
+              backgroundColor: colors["warning-surface-subtle"],
+              borderRadius: 12,
+              flexDirection: "row",
+              marginTop: 12,
+              padding: "8px",
+            }}
+          >
+            <img
+              style={{ paddingRight: 4 }}
+              src={require("../../public/assets/icon/tdesign_error-circle.svg")}
+            />
+            <Text size={12} weight="600">
+              {feeConfig.getError().message}
+            </Text>
+          </div>
+        ) : null}
+        {gasConfig.getError() != null && gasConfig.getError() != undefined ? (
+          <div
+            style={{
+              display: "flex",
+              backgroundColor: colors["warning-surface-subtle"],
+              borderRadius: 12,
+              flexDirection: "row",
+              marginTop: 12,
+              padding: "8px",
+            }}
+          >
+            <img
+              style={{ paddingRight: 4 }}
+              src={require("../../public/assets/icon/tdesign_error-circle.svg")}
+            />
+            <Text size={12} weight="600">
+              {gasConfig.getError().message}
+            </Text>
+          </div>
+        ) : null}
       </div>
     );
   }
