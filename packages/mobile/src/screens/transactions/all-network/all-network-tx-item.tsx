@@ -103,9 +103,8 @@ export const AllNetworkTxItem: FC<{
               style={{
                 borderRadius: 999,
                 tintColor:
-                  (chainInfo.stakeCurrency.coinDenom === "ORAI" &&
-                    currency.coinDenom === "ORAI") ||
-                  (chainInfo.stakeCurrency.coinDenom === "ORAI" &&
+                  chainInfo.stakeCurrency.coinDenom === "ORAI" &&
+                  (currency.coinDenom === "ORAI" ||
                     currency.coinDenom === "AIRI")
                     ? colors["neutral-text-title"]
                     : null,
