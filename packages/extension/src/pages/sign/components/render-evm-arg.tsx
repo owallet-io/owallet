@@ -27,6 +27,9 @@ export const EVMRenderArg: FunctionComponent<{
   const [path, setPath] = useState<Array<any>>([]);
   const [tokenIn, setTokenIn] = useState<any>();
   const [tokenOut, setTokenOut] = useState<any>();
+  console.log("tokenIn", tokenIn);
+  console.log("tokenOut", tokenOut);
+
   const renderToken = (token) => {
     return (
       <div
@@ -195,7 +198,7 @@ export const EVMRenderArg: FunctionComponent<{
           {args._amountIn
             ? toDisplay(
                 args._amountIn.toString(),
-                chain.stakeCurrency.coinDecimals
+                tokenIn?.decimal ?? chain.stakeCurrency.coinDecimals
               )
             : null}
         </Text>
@@ -207,7 +210,7 @@ export const EVMRenderArg: FunctionComponent<{
           {args.amountIn
             ? toDisplay(
                 args.amountIn.toString(),
-                chain.stakeCurrency.coinDecimals
+                tokenIn?.decimal ?? chain.stakeCurrency.coinDecimals
               )
             : null}
         </Text>
@@ -216,21 +219,13 @@ export const EVMRenderArg: FunctionComponent<{
         ? renderInfo(tokenIn?.abbr, "Token In", renderToken(tokenIn))
         : null}
       {renderInfo(
-        args?._amountOutMin &&
-          toDisplay(
-            (args?._amountOutMin).toString(),
-            chain.stakeCurrency.coinDecimals
-          ) > 0,
+        args?._amountOutMin,
         "Amount Out Min",
         <Text>
-          {args?._amountOutMin &&
-          toDisplay(
-            (args?._amountOutMin).toString(),
-            chain.stakeCurrency.coinDecimals
-          ) > 0
+          {args?._amountOutMin
             ? toDisplay(
                 (args?._amountOutMin).toString(),
-                chain.stakeCurrency.coinDecimals
+                tokenOut?.decimal ?? chain.stakeCurrency.coinDecimals
               )
             : null}
         </Text>
@@ -242,7 +237,7 @@ export const EVMRenderArg: FunctionComponent<{
           {args?.amountOutMin
             ? toDisplay(
                 (args?.amountOutMin).toString(),
-                chain.stakeCurrency.coinDecimals
+                tokenOut?.decimal ?? chain.stakeCurrency.coinDecimals
               )
             : null}
         </Text>
@@ -289,6 +284,7 @@ export const EVMRenderArg: FunctionComponent<{
                 display: "flex",
                 flexDirection: "row",
                 alignItems: "center",
+                justifyContent: "center",
               }}
             >
               {path
@@ -312,7 +308,7 @@ export const EVMRenderArg: FunctionComponent<{
                           alignItems: "center",
                         }}
                       >
-                        <span>-</span>
+                        <Text>{" → "}</Text>
                         {renderToken(p)}
                       </div>
                     );

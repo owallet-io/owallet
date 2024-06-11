@@ -15,6 +15,7 @@ import ERC20_ABI from "./abi/erc20-abi.json";
 import EVM_PROXY_ABI from "./abi/evm-proxy-abi.json";
 import GRAVITY_ABI from "./abi/gravity-abi.json";
 import PANCAKE_ABI from "./abi/pancake-abi.json";
+import UNISWAP_ABI from "./abi/uniswap-abi.json";
 import { Address } from "../../components/address";
 import { tryAllABI } from "./helpers/helpers";
 import { EVMRenderArg } from "./components/render-evm-arg";
@@ -61,6 +62,7 @@ export const DetailsTabEvm: FunctionComponent<{
             EVM_PROXY_ABI,
             GRAVITY_ABI,
             PANCAKE_ABI,
+            UNISWAP_ABI,
           ]);
           setDecodeWithABI(res);
 
