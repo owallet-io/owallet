@@ -27,8 +27,6 @@ export const EVMRenderArg: FunctionComponent<{
   const [path, setPath] = useState<Array<any>>([]);
   const [tokenIn, setTokenIn] = useState<any>();
   const [tokenOut, setTokenOut] = useState<any>();
-  console.log("tokenIn", tokenIn);
-  console.log("tokenOut", tokenOut);
 
   const renderToken = (token) => {
     return (
@@ -46,9 +44,9 @@ export const EVMRenderArg: FunctionComponent<{
             borderRadius: 28,
             marginRight: 4,
           }}
-          src={token?.imgUrl}
+          src={token?.imgUrl ?? token?.coinImageUrl}
         />
-        <Text weight="600">{token?.abbr}</Text>
+        <Text weight="600">{token?.abbr ?? token?.coinDenom}</Text>
       </div>
     );
   };
@@ -89,6 +87,7 @@ export const EVMRenderArg: FunctionComponent<{
       const encodedData = args?._destination.split(":")?.[1];
       if (encodedData) {
         const decodedData = decodeBase64(encodedData);
+        console.log("decodedData", decodedData);
 
         if (decodedData) {
           // Regular expression pattern to split the input string
@@ -218,6 +217,13 @@ export const EVMRenderArg: FunctionComponent<{
       {tokenIn
         ? renderInfo(tokenIn?.abbr, "Token In", renderToken(tokenIn))
         : null}
+      {!tokenIn
+        ? renderInfo(
+            chain.stakeCurrency,
+            "Token In",
+            renderToken(chain.stakeCurrency)
+          )
+        : null}
       {renderInfo(
         args?._amountOutMin,
         "Amount Out Min",
@@ -250,30 +256,8 @@ export const EVMRenderArg: FunctionComponent<{
         "To Address",
         <Text>{toAddress ? toAddress : null}</Text>
       )}
-      {toToken
-        ? renderInfo(
-            toToken.coinDenom,
-            "To Token",
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-              }}
-            >
-              <img
-                style={{
-                  width: 14,
-                  height: 14,
-                  borderRadius: 28,
-                  marginRight: 4,
-                  backgroundColor: colors["neutral-surface-pressed"],
-                }}
-                src={toToken?.coinImageUrl}
-              />
-              <Text weight="600">{toToken?.coinDenom}</Text>
-            </div>
-          )
+      {toToken && toToken.coinDenom !== tokenOut?.abbr
+        ? renderInfo(toToken.coinDenom, "To Token", renderToken(toToken))
         : null}
       {path.length > 0
         ? renderInfo(
