@@ -189,6 +189,18 @@ export class ObservableQueryBalancesInner {
 
     return result;
   }
+  readonly getBalance = computedFn(
+    (currency: AppCurrency): ObservableQueryBalanceInner | undefined => {
+      const bal = this.balances.find(
+        (bal) => bal.currency.coinMinimalDenom === currency.coinMinimalDenom
+      );
+      if (bal) {
+        return bal;
+      }
+
+      return;
+    }
+  );
 
   readonly getBalanceFromCurrency = computedFn(
     (currency: AppCurrency): CoinPretty => {

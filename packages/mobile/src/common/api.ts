@@ -1,6 +1,19 @@
 import { handleError, parseObjectToQueryString } from "@src/utils/helper";
-import axios, { AxiosRequestConfig } from "axios";
+import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import moment from "moment";
+import { Network } from "@tatumio/tatum";
+import { ChainIdEnum, CosmosNetwork, OasisNetwork } from "@owallet/common";
+import {
+  CosmosItem,
+  ResTxsCosmos,
+} from "@src/screens/transactions/cosmos/types";
+import {
+  ResBalanceEvm,
+  ResDetailAllTx,
+  TokenInfo,
+  TxsAllNetwork,
+} from "@src/screens/transactions/all-network/all-network.types";
+import { fetchRetry, urlTxHistory } from "@src/common/constants";
 
 export const API = {
   post: (path: string, params: any, config: AxiosRequestConfig) => {
@@ -47,6 +60,7 @@ export const API = {
       retryWrapper(axios, { retry_time: 3 });
       let qs = params ? parseObjectToQueryString(params) : "";
       let url = `${prefix}${method}${qs}`;
+      console.log(url, "url lcd");
       const rs = await API.get(url, { baseURL: lcdUrl });
       return Promise.resolve(rs?.data);
     } catch (error) {
@@ -331,9 +345,23 @@ export const API = {
     let url = `/coins/${id}/market_chart/range?vs_currency=usd&from=${from}&to=${to}`;
     return API.get(url, config);
   },
+  getMarketChart: (
+    { id, unit, days }: { id: string; unit?: string; days?: string },
+    config: AxiosRequestConfig
+  ) => {
+    const url = `/coins/${id}/market_chart?vs_currency=${unit}&days=${days}`;
+    return API.get(url, config);
+  },
 
   getCoinInfo: ({ id }: { id: string }, config: AxiosRequestConfig) => {
     let url = `/coins/markets?vs_currency=usd&ids=${id}&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=24h`;
+    return API.get(url, config);
+  },
+  getCoinSimpleInfo: (
+    { id, time }: { id: string; time: string },
+    config: AxiosRequestConfig
+  ) => {
+    let url = `/coins/markets?vs_currency=usd&ids=${id}&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=${time}`;
     return API.get(url, config);
   },
 
@@ -348,6 +376,13 @@ export const API = {
   },
   getValidatorList: ({}, config: AxiosRequestConfig) => {
     let url = `v1/validators?limit=100`;
+    return API.get(url, config);
+  },
+  getValidatorOraichainDetail: (
+    { validatorAddress },
+    config: AxiosRequestConfig
+  ) => {
+    let url = `v1/validator/${validatorAddress}`;
     return API.get(url, config);
   },
   subcribeToTopic: ({ topic, subcriber }, config: AxiosRequestConfig) => {
@@ -374,18 +409,144 @@ export const API = {
     { address, offset, limit },
     config: AxiosRequestConfig
   ) => {
-    let url = `query-history/${address}?offset=${offset}&limit=${limit}`;
+    const url = `query-history/${address}?offset=${offset}&limit=${limit}`;
     return API.get(url, config);
   },
   getGroupHistory: (
     { address, offset, limit = 1 },
     config: AxiosRequestConfig
   ) => {
-    let url = `history/${address}?offset=${offset}&limit=${limit}`;
+    const url = `history/${address}?offset=${offset}&limit=${limit}`;
+    return API.get(url, config);
+  },
+  getEvmTxs: (
+    { address, offset, limit = 1, network = Network.ETHEREUM },
+    config: AxiosRequestConfig
+  ) => {
+    const url = `raw-tx-history/evm/${address}?network=${network}&limit=${limit}&offset=${offset}`;
+    return API.get(url, config);
+  },
+  getBtcTxs: (
+    { address, offset, limit = 1, network = Network.BITCOIN },
+    config: AxiosRequestConfig
+  ) => {
+    const url = `raw-tx-history/btc/${address}?network=${network}&limit=${limit}&offset=${offset}`;
+    return API.get(url, config);
+  },
+  getOasisTxs: (
+    { address, offset, limit = 1, network = OasisNetwork.MAINNET },
+    config: AxiosRequestConfig
+  ) => {
+    const url = `raw-tx-history/oasis/${address}?network=${network}&limit=${limit}&offset=${offset}`;
+    return API.get(url, config);
+  },
+  getCosmosTxs: (
+    { address, offset, limit = 1, network = ChainIdEnum.CosmosHub },
+    config: AxiosRequestConfig
+  ) => {
+    const url = `raw-tx-history/cosmos/${address}?network=${network}&limit=${limit}&offset=${offset}`;
+    return API.get(url, config) as Promise<AxiosResponse<ResTxsCosmos>>;
+  },
+  getTxsAllNetwork: (
+    { addrByNetworks, offset, limit = 1 },
+    config: AxiosRequestConfig
+  ) => {
+    const url = `v1/txs-history/?addrByNetworks=${addrByNetworks}&limit=${limit}&offset=${offset}`;
+    return API.get(url, config) as Promise<AxiosResponse<TxsAllNetwork>>;
+  },
+  getTxsByToken: (
+    { tokenAddr, userAddr, network, offset, limit = 1 },
+    config: AxiosRequestConfig
+  ) => {
+    const url = `v1/txs-history/by-token?userAddr=${userAddr}&network=${network}&tokenAddr=${tokenAddr}&limit=${limit}&offset=${offset}`;
+    return API.get(url, config) as Promise<AxiosResponse<TxsAllNetwork>>;
+  },
+  getOraichainTxs: async (
+    { address, offset, limit = 1, network = CosmosNetwork.ORAICHAIN },
+    config: AxiosRequestConfig
+  ) => {
+    const url = `raw-tx-history/oraichain/${address}?network=${network}&limit=${limit}&offset=${offset}`;
+    return API.get(url, config);
+  },
+  getTronTxs: (
+    { address, offset, limit = 1, network = Network.TRON },
+    config: AxiosRequestConfig
+  ) => {
+    const url = `raw-tx-history/tron/${address}?network=${network}&limit=${limit}&offset=${offset}`;
+    return API.get(url, config);
+  },
+  getDetailTx: (
+    { hash, network = Network.ETHEREUM },
+    config: AxiosRequestConfig
+  ) => {
+    const url = `raw-tx-history/all/tx-detail/${hash}?network=${network}`;
+    return API.get(url, config);
+  },
+  getDetailAllTx: ({ hash, network }, config: AxiosRequestConfig) => {
+    const url = `v1/txs-history/tx-detail/?network=${network}&txhash=${hash}`;
+    return API.get(url, config) as Promise<AxiosResponse<ResDetailAllTx>>;
+  },
+  getAllBalancesEvm: ({ address, network }, config?: AxiosRequestConfig) => {
+    const url = `${urlTxHistory}raw-tx-history/all/balances?network=${network}&address=${address}`;
+    return fetchRetry(url, config) as Promise<ResBalanceEvm>;
+  },
+  getAllBalancesNativeCosmos: (
+    { address, baseUrl },
+    config?: AxiosRequestConfig
+  ) => {
+    const url = `${baseUrl}/cosmos/bank/v1beta1/balances/${address}?pagination.limit=1000`;
+    return fetchRetry(url, config);
+  },
+  getMultipleTokenInfo: ({ tokenAddresses }, config?: AxiosRequestConfig) => {
+    const url = `${urlTxHistory}v1/token-info/by-addresses?tokenAddresses=${tokenAddresses}`;
+    return fetchRetry(url, config) as Promise<TokenInfo[]>;
+  },
+  getTokenInfo: ({ tokenAddress, network }, config?: AxiosRequestConfig) => {
+    const url = `${urlTxHistory}v1/token-info/${network}/${tokenAddress}`;
+    return fetchRetry(url, config) as Promise<TokenInfo>;
+  },
+  getDetailOasisTx: (
+    { hash, network = OasisNetwork.MAINNET },
+    config: AxiosRequestConfig
+  ) => {
+    let url = `raw-tx-history/oasis/tx-detail/${hash}?network=${network}`;
+    return API.get(url, config);
+  },
+  getDetailCosmosTx: (
+    { hash, network = ChainIdEnum.CosmosHub },
+    config: AxiosRequestConfig
+  ) => {
+    let url = `raw-tx-history/cosmos/tx-detail/${hash}?network=${network}`;
+    return API.get(url, config) as Promise<AxiosResponse<CosmosItem>>;
+  },
+  getDetailOraichainTx: async (
+    { hash, network = CosmosNetwork.ORAICHAIN },
+    config: AxiosRequestConfig
+  ) => {
+    let url = `raw-tx-history/oraichain/tx-detail/${hash}`;
+    return API.get(url, config);
+  },
+  getDetailTronTx: (
+    { hash, network = Network.TRON },
+    config: AxiosRequestConfig
+  ) => {
+    let url = `raw-tx-history/tron/tx-detail/${hash}`;
+    console.log(url, "url");
     return API.get(url, config);
   },
   getHistoryDetail: ({ id }, config: AxiosRequestConfig) => {
     let url = `history-detail/${id}?`;
+    return API.get(url, config);
+  },
+  getCoingeckoCoins: ({}, config: AxiosRequestConfig) => {
+    let url = `coins/list`;
+    return API.get(url, config);
+  },
+  getCoingeckoImageURL: (
+    { contractAddress, id },
+    config: AxiosRequestConfig
+  ) => {
+    let url = `coins/${id}/contract/${contractAddress}`;
     return API.get(url, config);
   },
 };
@@ -393,7 +554,7 @@ const retryWrapper = (axios, options) => {
   const max_time = 1;
   let counter = 0;
   axios.interceptors.response.use(null, (error) => {
-    /** @type {import("axios").AxiosRequestConfig} */
+    /** @type {import('axios').AxiosRequestConfig} */
     const config = error.config;
     // you could defined status you want to retry, such as 503
     // if (counter < max_time && error.response.status === retry_status_code) {

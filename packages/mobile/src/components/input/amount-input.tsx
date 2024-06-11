@@ -116,7 +116,10 @@ export const NewAmountInput: FunctionComponent<{
             label={""}
             labelStyle={labelStyle}
             containerStyle={containerStyle}
-            inputContainerStyle={inputContainerStyle}
+            inputContainerStyle={{
+              ...inputContainerStyle,
+              paddingHorizontal: 0,
+            }}
             textAlign="right"
             errorLabelStyle={errorLabelStyle}
             maxLength={20}
@@ -128,13 +131,16 @@ export const NewAmountInput: FunctionComponent<{
             placeholderTextColor={placeholderTextColor}
             error={errorText}
             keyboardType="numeric"
+            containerError={{
+              alignItems: "flex-end",
+            }}
             style={[
               Platform.select({
                 ios: {},
                 android: {
                   // On android, the text input's height does not equals to the line height by strange.
                   // To fix this problem, set the height explicitly.
-                  height: 42,
+                  // height: 42,
                 },
               }),
               {

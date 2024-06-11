@@ -37,6 +37,7 @@ import {
   DEFAULT_FEE_LIMIT_TRON,
   TRIGGER_TYPE,
   DenomHelper,
+  TronWebProvider,
 } from "@owallet/common";
 import { ChainsService } from "../chains";
 import { LedgerService } from "../ledger";
@@ -637,6 +638,7 @@ export class KeyRingService {
         rpcCustom,
         data
       );
+      console.log(newData, "newData");
       const rawTxHex = await this.keyRing.signAndBroadcastEthereum(
         env,
         chainId,
@@ -997,9 +999,8 @@ export class KeyRingService {
     }
   ) {
     try {
-      const tronWeb = new TronWeb({
-        fullHost: (await this.chainsService.getChainInfo(chainId)).rpc,
-      });
+      const chainInfo = await this.chainsService.getChainInfo(chainId);
+      const tronWeb = TronWebProvider(chainInfo.rpc);
       tronWeb.fullNode.instance.defaults.adapter = fetchAdapter;
       return await tronWeb.trx.sendRawTransaction(transaction);
     } catch (error) {
@@ -1028,26 +1029,28 @@ export class KeyRingService {
   }> {
     try {
       const chainInfo = await this.chainsService.getChainInfo(chainId);
-      const tronWeb = new TronWeb({
-        fullHost: chainInfo.rpc,
-      });
+      const tronWeb = TronWebProvider(chainInfo.rpc);
       tronWeb.fullNode.instance.defaults.adapter = fetchAdapter;
-      // TODO: Estimate before trigger changed signature, Resolve: Hardcode feeLimit for trigger smart contract from DApp
-      // const chainParameters = await tronWeb.trx.getChainParameters();
-      // const triggerConstantContract =
-      //   await tronWeb.transactionBuilder.triggerConstantContract(
-      //     data.address,
-      //     data.functionSelector,
-      //     data.options,
-      //     data.parameters,
-      //     data.issuerAddress
-      //   );
-      // const energyFee = chainParameters.find(
-      //   ({ key }) => key === 'getEnergyFee'
-      // );
-      // const feeLimit = new Int(energyFee.value)
-      //   .mul(new Int(triggerConstantContract.energy_used))
-      //   .add(new Int(EXTRA_FEE_LIMIT_TRON));
+
+      const chainParameters = await tronWeb.trx.getChainParameters();
+
+      const triggerConstantContract =
+        await tronWeb.transactionBuilder.triggerConstantContract(
+          data.address,
+          data.functionSelector,
+          {
+            ...data.options,
+            feeLimit: DEFAULT_FEE_LIMIT_TRON + Math.floor(Math.random() * 100),
+          },
+          data.parameters,
+          data.issuerAddress
+        );
+      const energyFee = chainParameters.find(
+        ({ key }) => key === "getEnergyFee"
+      );
+      const feeLimit = new Int(energyFee.value)
+        .mul(new Int(triggerConstantContract.energy_used))
+        .add(new Int(EXTRA_FEE_LIMIT_TRON));
 
       const triggerSmartContract =
         await tronWeb.transactionBuilder.triggerSmartContract(
@@ -1055,24 +1058,29 @@ export class KeyRingService {
           data.functionSelector,
           {
             ...data.options,
-            feeLimit: DEFAULT_FEE_LIMIT_TRON,
+            feeLimit: feeLimit?.toString(),
             callValue: 0,
           },
           data.parameters,
           data.issuerAddress
         );
+      const objStore = {
+        address: data.address,
+        functionSelector: data.functionSelector,
+        options: {
+          ...data.options,
+        },
+        parameters: data.parameters,
+        issuerAddress: data.issuerAddress,
+      };
+
       this.kvStore.set(
         `${TRIGGER_TYPE}:${triggerSmartContract.transaction.txID}`,
-        {
-          address: data.address,
-          functionSelector: data.functionSelector,
-          options: data.options,
-          parameters: data.parameters,
-          issuerAddress: data.issuerAddress,
-        }
+        objStore
       );
       return triggerSmartContract;
     } catch (error) {
+      console.log(error, "error");
       throw error;
     }
   }
@@ -1097,10 +1105,8 @@ export class KeyRingService {
         ];
         return newData;
       }
-
-      const tronWeb = new TronWeb({
-        fullHost: (await this.chainsService.getChainInfo(chainId)).rpc,
-      });
+      const chainInfo = await this.chainsService.getChainInfo(chainId);
+      const tronWeb = TronWebProvider(chainInfo.rpc);
 
       tronWeb.fullNode.instance.defaults.adapter = fetchAdapter;
       let transaction: any;
@@ -1137,7 +1143,8 @@ export class KeyRingService {
         ).toString("hex"),
       ];
       const receipt = await tronWeb.trx.sendRawTransaction(transaction);
-      return receipt.txid ?? receipt.transaction.raw_data_hex;
+      console.log(receipt, "receipt");
+      return receipt;
     } finally {
       this.interactionService.dispatchEvent(
         APP_PORT,

@@ -1,10 +1,13 @@
-import React from "react";
-import { PageWithView } from "@src/components/page";
+import React, { useState } from "react";
+import {
+  PageWithView,
+  PageWithViewInBottomTabView,
+} from "@src/components/page";
 import { PageHeader } from "@src/components/header/header-new";
 
 import { observer } from "mobx-react-lite";
 import { useTheme } from "@src/themes/theme-provider";
-import { TouchableOpacity, View } from "react-native";
+import { FlatList, Platform, TouchableOpacity, View } from "react-native";
 import DraggableFlatList from "react-native-draggable-flatlist";
 import { useStore } from "@src/stores";
 import OWIcon from "@src/components/ow-icon/ow-icon";
@@ -13,16 +16,26 @@ import {
   getNameBookmark,
 } from "@src/screens/web/helper/browser-helper";
 import OWText from "@src/components/text/ow-text";
-import { limitString } from "@src/utils/helper";
+import { limitString, showToast } from "@src/utils/helper";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
+import { metrics } from "@src/themes";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export const BookmarksScreen = observer(() => {
   const { colors } = useTheme();
   const { browserStore } = useStore();
-  console.log(browserStore.getBookmarks, "browserStore.getBookmarks");
+  const { inject } = browserStore;
+  const sourceCode = inject;
   const onDetailBrowser = (url) => {
+    if (!sourceCode) {
+      showToast({
+        type: "danger",
+        message: "Not connected! Please try again.",
+      });
+      return;
+    }
     if (!url) return;
     navigate(SCREENS.DetailsBrowser, {
       url: url,
@@ -34,8 +47,8 @@ export const BookmarksScreen = observer(() => {
     browserStore.removeBoorkmark(uri);
     return;
   };
+
   const renderItem = ({ item, drag, isActive }) => {
-    console.log(getFavicon(item?.uri), "getFavicon(item?.uri)");
     return (
       <TouchableOpacity
         onPress={() => onDetailBrowser(item?.uri)}
@@ -111,28 +124,39 @@ export const BookmarksScreen = observer(() => {
       </TouchableOpacity>
     );
   };
+  const { top } = useSafeAreaInsets();
   return (
-    <PageWithView>
+    <PageWithViewInBottomTabView
+      style={{
+        // backgroundColor: colors["neutral-surface-action"],
+        paddingTop: top,
+      }}
+    >
       <PageHeader
         title="BOOKMARKS"
         // subtitle={chainStore.current.chainName}
-        colors={colors}
+        // colors={colors}
       />
       <View
         style={{
           paddingHorizontal: 16,
+          flex: 1,
         }}
       >
         <DraggableFlatList
-          data={browserStore.getBookmarks}
+          data={[...(browserStore.getBookmarks || [])]}
           onDragEnd={({ data }) => {
             browserStore.updateBookmarks(data);
             // setData(data);
           }}
           keyExtractor={(item: any) => item?.uri}
           renderItem={renderItem}
+          containerStyle={{
+            paddingBottom:
+              Platform.OS === "android" ? metrics.screenHeight / 7 : 0,
+          }}
         />
       </View>
-    </PageWithView>
+    </PageWithViewInBottomTabView>
   );
 });

@@ -123,8 +123,9 @@ export class ObservableQueryBitcoinBalanceNative extends ObservableQueryBalanceI
 
     if (
       !this.nativeBalances.response?.data ||
-      !this.nativeBalances.response?.data?.balance ||
-      currency.coinDenom !== "BTC"
+      !this.nativeBalances.response?.data?.balance
+      // ||
+      // currency.coinDenom !== "BTC"
     ) {
       return new CoinPretty(currency, new Int(new MyBigInt(0)?.toString()));
     }

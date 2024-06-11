@@ -684,7 +684,8 @@ const handleRequestSignTronMsg: (
 ) => InternalHandler<RequestSignTronMsg> = (service) => {
   return async (env, msg) => {
     const response = await service.requestSignTron(env, msg.chainId, msg.data);
-    return { ...response };
+    console.log(response, "responseresponse");
+    return response;
   };
 };
 

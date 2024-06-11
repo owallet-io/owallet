@@ -1,27 +1,27 @@
-import { PageHeader } from "@src/components/header/header-new";
 import OWCard from "@src/components/card/ow-card";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import OWText from "@src/components/text/ow-text";
 import { EarningCardNew } from "@src/screens/home/earning-card-new";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, { FunctionComponent } from "react";
 import { Image, StyleSheet, View } from "react-native";
-import { API } from "../../../common/api";
 import { PageWithScrollViewInBottomTabView } from "../../../components/page";
-import { useSmartNavigation } from "../../../navigation.provider";
 import { useStore } from "../../../stores";
 import { ValidatorList } from "../validator-list/new-list";
-import { DelegationsCard } from "./delegations-card";
-import { MyRewardCard } from "./reward-card";
-import { OWEmpty } from "@src/components/empty";
 import { metrics } from "@src/themes";
 import { OWButton } from "@src/components/button";
 import { UndelegationsCard } from "./undelegations-card";
+import { NetworkModal } from "@src/screens/home/components";
 export const StakingDashboardScreen: FunctionComponent = observer(() => {
-  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
-  const [validators, setValidators] = useState([]);
-  const smartNavigation = useSmartNavigation();
+  const {
+    chainStore,
+    accountStore,
+    queriesStore,
+    priceStore,
+    modalStore,
+    appInitStore,
+  } = useStore();
 
   const { colors } = useTheme();
   const styles = styling(colors);
@@ -33,29 +33,25 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
   );
   const delegated = queryDelegated.total;
 
-  useEffect(() => {
-    (async function get() {
-      try {
-        const res = await API.getValidatorList(
-          {},
-          {
-            baseURL: "https://api.scan.orai.io",
-          }
-        );
-        setValidators(res.data.data);
-      } catch (error) {}
-    })();
-  }, []);
+  const _onPressNetworkModal = () => {
+    modalStore.setOptions({
+      bottomSheetModalConfig: {
+        enablePanDownToClose: false,
+        enableOverDrag: false,
+      },
+    });
+    modalStore.setChildren(<NetworkModal stakeable={true} />);
+  };
 
   return (
     <PageWithScrollViewInBottomTabView
       scrollEnabled={chainStore.current.networkType === "cosmos"}
-      contentContainerStyle={styles.container}
       backgroundColor={colors["neutral-surface-bg"]}
     >
-      {chainStore.current.networkType === "cosmos" ? (
+      {chainStore.current.networkType === "cosmos" &&
+      !appInitStore.getInitApp.isAllNetworks ? (
         <>
-          <OWCard>
+          <OWCard style={{ padding: 24 }}>
             <View
               style={{ flexDirection: "row", justifyContent: "space-between" }}
             >
@@ -63,7 +59,7 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
                 <View style={{ flexDirection: "row" }}>
                   <View style={styles["claim-title"]}>
                     <OWIcon
-                      name={"trending-outline"}
+                      name={"tdesignmoney"}
                       size={14}
                       color={colors["neutral-text-title"]}
                     />
@@ -79,15 +75,15 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
                     },
                   ]}
                 >
+                  {priceStore.calculatePrice(delegated)?.toString() ?? 0}
+                </OWText>
+                <OWText style={[styles["amount"]]}>
                   {delegated
                     .shrink(true)
                     .maxDecimals(6)
                     .trim(true)
                     .upperCase(true)
                     .toString()}
-                </OWText>
-                <OWText style={[styles["amount"]]}>
-                  {priceStore.calculatePrice(delegated)?.toString() ?? 0}
                 </OWText>
               </View>
               <Image
@@ -141,7 +137,11 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
             <View
               style={{ alignItems: "center", margin: 24, marginBottom: 32 }}
             >
-              <OWText size={22} weight={"700"}>{`NOT SUPPORTED YET`}</OWText>
+              <OWText size={22} weight={"700"}>
+                {appInitStore.getInitApp.isAllNetworks
+                  ? `Looking for Validators?`.toUpperCase()
+                  : `NOT SUPPORTED YET`}
+              </OWText>
               <OWText
                 size={14}
                 color={colors["neutral-text-body"]}
@@ -150,7 +150,11 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
                   textAlign: "center",
                   paddingTop: 4,
                 }}
-              >{`Please try switching networks or exploring other functions.`}</OWText>
+              >{`${
+                appInitStore.getInitApp.isAllNetworks
+                  ? "Please choose a network."
+                  : "Please try switching networks or exploring other functions."
+              }`}</OWText>
             </View>
 
             <OWButton
@@ -160,103 +164,24 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
                 fontWeight: "500",
               }}
               style={{
-                width: metrics.screenWidth / 3.3,
+                width: metrics.screenWidth / 2.5,
                 borderRadius: 999,
                 padding: 8,
               }}
-              label="Go back"
+              label="Choose network"
               onPress={() => {
-                smartNavigation.goBack();
+                _onPressNetworkModal();
               }}
             />
           </View>
         </View>
       )}
-
-      {/* <MyRewardCard /> */}
-      {/* <OWBox>
-          {chainStore.current.networkType === "cosmos" ? (
-            <MyRewardCard />
-          ) : (
-            <OWEmpty />
-          )}
-
-          {chainStore.current.networkType === "cosmos" ? (
-            <View
-              style={{
-                alignItems: "flex-start",
-                justifyContent: "center",
-                marginTop: spacing["12"],
-              }}
-            >
-              <OWButton
-                label="Stake now"
-                onPress={() => {
-                  smartNavigation.navigate("Validator.List", {});
-                }}
-                size="small"
-                fullWidth={false}
-              />
-            </View>
-          ) : null}
-
-          <View
-            style={{
-              position: "absolute",
-              right: -10,
-              bottom: 0,
-            }}
-          >
-            {chainStore.current.networkType === "cosmos" ? (
-              <Image
-                style={{
-                  width: 148,
-                  height: 148,
-                }}
-                source={require("../../../assets/image/stake_gift.png")}
-                resizeMode="contain"
-                fadeDuration={0}
-              />
-            ) : null}
-          </View>
-        </OWBox> */}
-      {/* <View>
-          {chainStore.current.networkType === "cosmos" ? (
-            <View
-              style={{
-                ...styles.containerTitle,
-              }}
-            >
-              <Text
-                style={{
-                  ...typography.h6,
-                  fontWeight: "600",
-                }}
-              >
-                <Text
-                  style={{
-                    fontWeight: "400",
-                  }}
-                >
-                  Total stake:{" "}
-                </Text>
-                {`${staked.maxDecimals(6).trim(true).shrink(true).toString()}`}
-              </Text>
-            </View>
-          ) : null}
-
-          {chainStore.current.networkType === "cosmos" ? (
-            <DelegationsCard validatorList={validators} />
-          ) : null}
-        </View> */}
     </PageWithScrollViewInBottomTabView>
   );
 });
 
 const styling = (colors) =>
   StyleSheet.create({
-    container: {},
-
     containerEarnStyle: {
       backgroundColor: colors["neutral-surface-bg2"],
       margin: 0,

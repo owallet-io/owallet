@@ -3,30 +3,13 @@ import { RouteProp, useRoute } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
 import _ from "lodash";
-import {
-  View,
-  Animated,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-  ScrollView,
-} from "react-native";
+import { View, Image, ScrollView, StyleSheet } from "react-native";
 import { Text } from "@src/components/text";
 import { useSmartNavigation } from "../../navigation.provider";
-import { RightArrowIcon } from "../../components/icon";
-import { Card, OWBox } from "../../components/card";
-import { metrics } from "../../themes";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { CommonActions } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
-import { PageWithView } from "@src/components/page";
-import imagesAssets from "@src/assets/images";
-import {
-  capitalizedText,
-  formatContractAddress,
-  openLink,
-} from "@src/utils/helper";
-import { OWButton } from "@src/components/button";
+import { capitalizedText, formatContractAddress } from "@src/utils/helper";
+
 import { PageHeader } from "@src/components/header/header-new";
 import image from "@src/assets/images";
 import OWCard from "@src/components/card/ow-card";
@@ -34,12 +17,12 @@ import ItemReceivedToken from "@src/screens/transactions/components/item-receive
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import OWText from "@src/components/text/ow-text";
 import OWButtonGroup from "@src/components/button/OWButtonGroup";
-import owIcon from "@src/components/ow-icon/ow-icon";
+
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { AppCurrency, StdFee } from "@owallet/types";
 import { CoinPrimitive } from "@owallet/stores";
 import { CoinPretty, Dec } from "@owallet/unit";
-import { Bech32Address } from "@owallet/cosmos";
+import { HeaderTx } from "@src/screens/tx-result/components/header-tx";
 
 export const TxFailedResultScreen: FunctionComponent = observer(() => {
   const { chainStore, priceStore } = useStore();
@@ -103,17 +86,11 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
         key !== "type"
       );
     });
-
+  const styles = styling(colors);
   return (
     <PageWithBottom
       bottomGroup={
-        <View
-          style={{
-            width: "100%",
-            paddingHorizontal: 16,
-            paddingTop: 16,
-          }}
-        >
+        <View style={styles.containerBottomButton}>
           <OWButtonGroup
             labelApprove={"Retry"}
             labelClose={"Contact Us"}
@@ -132,111 +109,29 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
         </View>
       }
     >
-      <View
-        style={{
-          flex: 1,
-        }}
-      >
-        <PageHeader
-          title={"Transaction details"}
-          colors={colors["neutral-text-title"]}
-        />
+      <View style={styles.containerBox}>
+        <PageHeader title={"Transaction details"} />
         <ScrollView showsVerticalScrollIndicator={false}>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "center",
-              marginBottom: 8,
-            }}
-          >
-            <Image
-              source={image.logo_owallet}
-              style={{
-                width: 20,
-                height: 20,
-              }}
-            />
-            <Text
-              color={colors["neutral-text-title"]}
-              size={18}
-              weight={"600"}
-              style={{
-                paddingLeft: 8,
-              }}
-            >
-              OWallet
-            </Text>
-          </View>
-          <OWCard
-            style={{
-              paddingVertical: 20,
-              borderRadius: 24,
-              alignItems: "center",
-              justifyContent: "center",
-              marginBottom: 2,
-            }}
-          >
-            <Text
-              style={{
-                textAlign: "center",
-                paddingBottom: 8,
-              }}
-              color={colors["neutral-text-title"]}
-              size={16}
-              weight={"500"}
-            >
-              {capitalizedText(params?.data?.type) || "Send"}
-            </Text>
-            <View
-              style={{
-                backgroundColor: colors["error-surface-subtle"],
-                width: "100%",
-                paddingHorizontal: 12,
-                paddingVertical: 2,
-                borderRadius: 99,
-                alignSelf: "center",
-              }}
-            >
-              <OWText
-                weight={"500"}
-                size={14}
-                color={colors["error-text-body"]}
-              >
-                Failed
-              </OWText>
-            </View>
-            <Text
-              color={colors["neutral-text-title"]}
-              style={{
-                textAlign: "center",
-                paddingTop: 16,
-              }}
-              size={28}
-              weight={"500"}
-            >
-              {`${params?.data?.type === "send" ? "-" : ""}${amount
-                ?.shrink(true)
-                ?.trim(true)
-                ?.toString()}`}
-            </Text>
-            <Text
-              color={colors["neutral-text-body"]}
-              style={{
-                textAlign: "center",
-              }}
-            >
-              {priceStore.calculatePrice(amount)?.toString()}
-            </Text>
-          </OWCard>
-          <View
-            style={{
-              padding: 16,
-              borderRadius: 24,
-              marginHorizontal: 16,
-              backgroundColor: colors["neutral-surface-card"],
-            }}
-          >
+          <HeaderTx
+            type={capitalizedText(params?.data?.type) || "Send"}
+            imageType={
+              <View style={styles.containerFailed}>
+                <OWText
+                  weight={"500"}
+                  size={14}
+                  color={colors["error-text-body"]}
+                >
+                  Failed
+                </OWText>
+              </View>
+            }
+            amount={`${params?.data?.type === "send" ? "-" : ""}${amount
+              ?.shrink(true)
+              ?.trim(true)
+              ?.toString()}`}
+            price={priceStore.calculatePrice(amount)?.toString()}
+          />
+          <View style={styles.cardBody}>
             {dataItem &&
               Object.keys(dataItem).map(function (key) {
                 return (
@@ -269,3 +164,54 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
     </PageWithBottom>
   );
 });
+const styling = (colors) => {
+  return StyleSheet.create({
+    containerFailed: {
+      backgroundColor: colors["error-surface-subtle"],
+      width: "100%",
+      paddingHorizontal: 12,
+      paddingVertical: 2,
+      borderRadius: 99,
+      alignSelf: "center",
+    },
+    containerBottomButton: {
+      width: "100%",
+      paddingHorizontal: 16,
+      paddingTop: 16,
+    },
+    btnApprove: {
+      borderRadius: 99,
+      backgroundColor: colors["primary-surface-default"],
+    },
+    cardBody: {
+      padding: 16,
+      borderRadius: 24,
+      marginHorizontal: 16,
+      backgroundColor: colors["neutral-surface-card"],
+    },
+    viewNetwork: {
+      flexDirection: "row",
+      paddingTop: 6,
+    },
+    imgNetwork: {
+      height: 20,
+      width: 20,
+      backgroundColor: colors["neutral-icon-on-dark"],
+    },
+    containerBox: {
+      flex: 1,
+    },
+    txtPending: {
+      textAlign: "center",
+      paddingVertical: 16,
+    },
+    txtViewOnExplorer: {
+      fontSize: 14,
+      fontWeight: "600",
+      color: colors["neutral-text-action-on-dark-bg"],
+    },
+    btnExplorer: {
+      borderRadius: 99,
+    },
+  });
+};

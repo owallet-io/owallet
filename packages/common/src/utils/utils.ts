@@ -15,6 +15,9 @@ import { Hash } from "@owallet/crypto";
 import bs58 from "bs58";
 import { ethers } from "ethers";
 import Web3 from "web3";
+import TronWeb from "tronweb";
+import "dotenv/config";
+
 export type LedgerAppType = "cosmos" | "eth" | "trx" | "btc";
 export const COINTYPE_NETWORK = {
   118: "Cosmos",
@@ -136,6 +139,19 @@ export const DEFAULT_BLOCK_TIME_IN_SECONDS = 2;
 export const DEFAULT_TX_BLOCK_INCLUSION_TIMEOUT_IN_MS =
   DEFAULT_BLOCK_TIMEOUT_HEIGHT * DEFAULT_BLOCK_TIME_IN_SECONDS * 1000;
 
+export const TronWebProvider = (rpc: string = "https://api.trongrid.io") => {
+  try {
+    if (!rpc) return;
+    const tronWeb = new TronWeb({
+      fullHost: rpc,
+      // TODO: This is key free for test tron
+      headers: { "TRON-PRO-API-KEY": "adb28290-fa79-4542-a6ee-910628cae6f1" },
+    });
+    return tronWeb;
+  } catch (e) {
+    console.log(e, "ee");
+  }
+};
 export const getCoinTypeByChainId = (chainId) => {
   const network = EmbedChainInfos.find((nw) => nw.chainId == chainId);
   return network?.bip44?.coinType ?? network?.coinType ?? 60;
@@ -209,6 +225,7 @@ export function splitPath(path: string): BIP44HDPath {
 
   return result;
 }
+
 export function splitPathStringToHDPath(path: string): HDPath {
   if (!path) throw Error("path is not empty");
   const bip44HDPathOrder = [
@@ -228,6 +245,7 @@ export function splitPathStringToHDPath(path: string): HDPath {
   });
   return result;
 }
+
 export const isWeb = typeof document !== "undefined";
 export const isReactNative = (): boolean => {
   if (typeof navigator !== "undefined" && navigator.product === "ReactNative") {
@@ -235,6 +253,7 @@ export const isReactNative = (): boolean => {
   }
   return false;
 };
+
 export function getNetworkTypeByBip44HDPath(path: BIP44HDPath): LedgerAppType {
   switch (path.coinType) {
     case 118:
@@ -250,6 +269,7 @@ export function getNetworkTypeByBip44HDPath(path: BIP44HDPath): LedgerAppType {
       return "cosmos";
   }
 }
+
 export const isBase58 = (value: string): boolean =>
   /^[A-HJ-NP-Za-km-z1-9]*$/.test(value);
 export const typeBtcLedgerByAddress = (
@@ -272,6 +292,7 @@ export const typeBtcLedgerByAddress = (
     }
   }
 };
+
 export function findLedgerAddress(
   AddressesLedger,
   chainInfo: ChainInfoWithoutEndpoints,
@@ -292,6 +313,7 @@ export function findLedgerAddress(
     }
   }
 }
+
 export const getKeyDerivationFromAddressType = (
   type: AddressBtcType
 ): "84" | "44" => {
@@ -330,3 +352,7 @@ export const formatAddress = (address: string, limitFirst = 10) => {
 };
 
 export const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+export const isMilliseconds = (timestamp: number | string): boolean => {
+  const timestampString = timestamp.toString();
+  return timestampString.length === 13;
+};

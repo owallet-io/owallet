@@ -1,18 +1,40 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
-import { useSendTxConfig } from "@owallet/hooks";
+import {
+  InvalidTronAddressError,
+  NotLoadedFeeError,
+  useGetFeeTron,
+  useSendTxConfig,
+  useSendTxTronConfig,
+} from "@owallet/hooks";
 import { useStore } from "../../stores";
 import { EthereumEndpoint, toAmount } from "@owallet/common";
-import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  InteractionManager,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
-import { CurrencySelector, MemoInput, TextInput } from "../../components/input";
+import {
+  AddressInput,
+  CurrencySelector,
+  getFeeErrorText,
+  MemoInput,
+  TextInput,
+} from "../../components/input";
 import { OWButton } from "../../components/button";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { useSmartNavigation } from "../../navigation.provider";
 import { Buffer } from "buffer";
 import { metrics, spacing } from "../../themes";
 import { useTheme } from "@src/themes/theme-provider";
-import { handleSaveHistory, HISTORY_STATUS } from "@src/utils/helper";
+import {
+  capitalizedText,
+  handleSaveHistory,
+  HISTORY_STATUS,
+} from "@src/utils/helper";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import { PageHeader } from "@src/components/header/header-new";
 import OWCard from "@src/components/card/ow-card";
@@ -22,6 +44,9 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { DownArrowIcon } from "@src/components/icon";
 import { FeeModal } from "@src/modals/fee";
 import { ChainIdEnum } from "@oraichain/oraidex-common";
+import { navigate } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
+import { Text } from "@src/components/text";
 
 export const SendTronScreen: FunctionComponent = observer(() => {
   const {
@@ -33,7 +58,6 @@ export const SendTronScreen: FunctionComponent = observer(() => {
     modalStore,
     universalSwapStore,
   } = useStore();
-  const [receiveAddress, setReceiveAddress] = useState("");
   const { colors } = useTheme();
   const styles = styling(colors);
   const route = useRoute<
@@ -63,65 +87,83 @@ export const SendTronScreen: FunctionComponent = observer(() => {
 
   const smartNavigation = useSmartNavigation();
 
-  const chainId = route?.params?.chainId
-    ? route?.params?.chainId
-    : chainStore?.current?.chainId;
+  const { chainId } = chainStore.current;
 
   const account = accountStore.getAccount(chainId);
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const queries = queriesStore.get(chainId);
-
-  const sendConfigs = useSendTxConfig(
+  const addressToFetch = account.getAddressDisplay(
+    keyRingStore.keyRingLedgerAddresses,
+    false
+  );
+  const address = account.getAddressDisplay(
+    keyRingStore.keyRingLedgerAddresses
+  );
+  const sendConfigs = useSendTxTronConfig(
     chainStore,
     chainId,
-    account.msgOpts["send"],
-    account.bech32Address,
-    queries.queryBalances,
+    //@ts-ignore
+    account.msgOpts.send,
+    account.evmosHexAddress,
+    queriesStore.get(chainId).queryBalances,
     EthereumEndpoint
-    // queriesStore.get(chainStore.current.chainId).evm.queryEvmBalance
   );
 
-  const [balance, setBalance] = useState("0");
-  const [fee, setFee] = useState({ type: "", value: "" });
+  const [balance, setBalance] = useState<CoinPretty>(null);
 
-  const fetchBalance = async () => {
-    const queryBalance = queries.queryBalances
-      .getQueryBech32Address(account.bech32Address)
-      .balances.find((bal) => {
-        return (
-          bal.currency.coinMinimalDenom ===
-          sendConfigs.amountConfig.sendCurrency.coinMinimalDenom //currency.coinMinimalDenom
-        );
-      });
-
-    if (queryBalance) {
-      // queryBalance.fetch();
-      setBalance(
-        queryBalance.balance
-          .shrink(true)
-          .maxDecimals(6)
-          .trim(true)
-          .upperCase(true)
-          .toString()
-      );
-    }
-  };
-
+  // useEffect(() => {
+  //   if (sendConfigs.feeConfig.feeCurrency && !sendConfigs.feeConfig.fee) {
+  //     sendConfigs.feeConfig.setFeeType("average");
+  //   }
+  //   return;
+  // }, [sendConfigs.feeConfig]);
+  const checkSendMySelft =
+    sendConfigs.recipientConfig.recipient?.trim() === address
+      ? new InvalidTronAddressError("Cannot transfer TRX to the same account")
+      : null;
+  const isReadyBalance = queries.queryBalances
+    .getQueryBech32Address(addressToFetch)
+    .getBalanceFromCurrency(sendConfigs.amountConfig.sendCurrency).isReady;
   useEffect(() => {
-    fetchBalance();
-    const averageFee = sendConfigs.feeConfig.getFeeTypePretty("average");
-    const averageFeePrice = priceStore.calculatePrice(averageFee);
-    setFee({ type: "Avarage", value: averageFeePrice.toString() });
-  }, [account.bech32Address, sendConfigs.amountConfig.sendCurrency]);
+    InteractionManager.runAfterInteractions(() => {
+      if (isReadyBalance) {
+        const balance = queries.queryBalances
+          .getQueryBech32Address(addressToFetch)
+          .getBalanceFromCurrency(sendConfigs.amountConfig.sendCurrency);
+        setBalance(balance);
+      }
+    });
+  }, [isReadyBalance, addressToFetch, sendConfigs.amountConfig.sendCurrency]);
 
   useEffect(() => {
     if (route?.params?.currency) {
       const currency = sendConfigs.amountConfig.sendableCurrencies.find(
         (cur) => {
-          if (cur.coinDenom === route.params.currency) {
-            return cur.coinDenom === route.params.currency;
+          if (
+            cur?.coinMinimalDenom
+              ?.toLowerCase()
+              //@ts-ignore
+              ?.includes(route?.params?.contractAddress?.toLowerCase())
+          )
+            return true;
+          if (
+            cur.coinDenom?.toLowerCase() ===
+            route.params.currency?.toLowerCase()
+          ) {
+            return true;
           }
-          return cur.coinMinimalDenom == route.params.currency;
+
+          if (
+            cur?.coinGeckoId
+              ?.toLowerCase()
+              //@ts-ignore
+              ?.includes(route?.params?.coinGeckoId?.toLowerCase())
+          )
+            return true;
+          return (
+            cur.coinMinimalDenom?.toLowerCase() ==
+            route.params.currency?.toLowerCase()
+          );
         }
       );
 
@@ -134,35 +176,44 @@ export const SendTronScreen: FunctionComponent = observer(() => {
   useEffect(() => {
     if (route?.params?.recipient) {
       sendConfigs.recipientConfig.setRawRecipient(route.params.recipient);
-      setReceiveAddress(route.params.recipient);
     }
   }, [route?.params?.recipient, sendConfigs.recipientConfig]);
-  const address = account.getAddressDisplay(
-    keyRingStore.keyRingLedgerAddresses
-  );
 
   const amount = new CoinPretty(
     sendConfigs.amountConfig.sendCurrency,
-    new Int(toAmount(Number(sendConfigs.amountConfig.amount)))
+    new Dec(sendConfigs.amountConfig.getAmountPrimitive().amount)
   );
+  const { feeTrx } = useGetFeeTron(
+    address,
+    sendConfigs.amountConfig,
+    sendConfigs.recipientConfig,
+    queries.tron,
+    chainStore.current,
+    keyRingStore,
+    null
+  );
+  useEffect(() => {
+    sendConfigs.feeConfig.setManualFee(feeTrx);
+    return () => {
+      sendConfigs.feeConfig.setManualFee(null);
+    };
+  }, [feeTrx]);
+  const sendConfigError =
+    checkSendMySelft ??
+    sendConfigs.recipientConfig.getError() ??
+    sendConfigs.amountConfig.getError() ??
+    sendConfigs.feeConfig.getError();
+  const txStateIsValid = sendConfigError == null;
+  const error = sendConfigs.feeConfig.getError();
+  const errorText: string | undefined = (() => {
+    if (error) {
+      if (error.constructor === NotLoadedFeeError) {
+        return;
+      }
 
-  const _onPressFee = () => {
-    modalStore.setOptions({
-      bottomSheetModalConfig: {
-        enablePanDownToClose: false,
-        enableOverDrag: false,
-      },
-    });
-    modalStore.setChildren(
-      <FeeModal
-        vertical={true}
-        sendConfigs={sendConfigs}
-        colors={colors}
-        setFee={setFee}
-      />
-    );
-  };
-
+      return getFeeErrorText(error);
+    }
+  })();
   return (
     <PageWithBottom
       bottomGroup={
@@ -170,40 +221,64 @@ export const SendTronScreen: FunctionComponent = observer(() => {
           label="Send"
           size="large"
           loading={account.isSendingMsg === "send"}
+          disabled={!account.isReadyToSendMsgs || !txStateIsValid}
           onPress={async () => {
-            let amount;
-            if (route?.params?.item?.type === "trc20") {
-              amount = Number(
-                (sendConfigs.amountConfig.amount ?? "0").replace(/,/g, ".")
-              );
-            } else {
-              amount = new Dec(
-                Number(
-                  (sendConfigs.amountConfig.amount ?? "0").replace(/,/g, ".")
-                )
-              ).mul(DecUtils.getTenExponentNInPrecisionRange(6));
-            }
             try {
               await account.sendTronToken(
                 sendConfigs.amountConfig.amount,
                 sendConfigs.amountConfig.sendCurrency!,
-                receiveAddress,
+                sendConfigs.recipientConfig.recipient,
                 address,
                 {
-                  onBroadcasted: async (txHash) => {
-                    smartNavigation.pushSmart("TxPendingResult", {
-                      txHash: Buffer.from(txHash).toString("hex"),
-                    });
-
+                  onFulfill: async (tx) => {
+                    console.log(tx, "txHashtxHash");
+                    if (tx?.code === 0) {
+                      navigate("Others", {
+                        screen: SCREENS.TxSuccessResult,
+                        params: {
+                          txHash: tx.txid,
+                          data: {
+                            memo: sendConfigs.memoConfig.memo,
+                            toAddress: sendConfigs.recipientConfig.recipient,
+                            amount:
+                              sendConfigs.amountConfig.getAmountPrimitive(),
+                            fromAddress: address,
+                            fee: sendConfigs.feeConfig.toStdFee(),
+                            currency: sendConfigs.amountConfig.sendCurrency,
+                          },
+                        },
+                      });
+                    } else {
+                      navigate("Others", {
+                        screen: SCREENS.TxFailedResult,
+                        params: {
+                          txHash: tx.txid,
+                          data: {
+                            memo: sendConfigs.memoConfig.memo,
+                            from: address,
+                            to: sendConfigs.recipientConfig.recipient,
+                            amount:
+                              sendConfigs.amountConfig.getAmountPrimitive(),
+                            fee: sendConfigs.feeConfig.toStdFee(),
+                            currency: sendConfigs.amountConfig.sendCurrency,
+                          },
+                        },
+                      });
+                    }
+                    const fee = sendConfigs.feeConfig.fee
+                      .trim(true)
+                      .hideDenom(true)
+                      .maxDecimals(4)
+                      .toString();
                     const historyInfos = {
                       fromAddress: address,
-                      toAddress: receiveAddress,
-                      hash: Buffer.from(txHash).toString("hex"),
+                      toAddress: sendConfigs.recipientConfig.recipient,
+                      hash: tx.txid,
                       memo: "",
                       fromAmount: sendConfigs.amountConfig.amount,
                       toAmount: sendConfigs.amountConfig.amount,
                       value: sendConfigs.amountConfig.amount,
-                      fee: sendConfigs.feeConfig.toStdFee(),
+                      fee: fee,
                       type: HISTORY_STATUS.SEND,
                       fromToken: {
                         asset: sendConfigs.amountConfig.sendCurrency.coinDenom,
@@ -227,15 +302,13 @@ export const SendTronScreen: FunctionComponent = observer(() => {
                       historyInfos
                     );
                   },
-                },
-                route?.params?.item
+                }
               );
             } catch (err) {
               console.log("send tron err", err);
-              smartNavigation.pushSmart("TxFailedResult", {
-                chainId: chainStore.current.chainId,
-                txHash: "",
-              });
+              if (err?.message === "Request rejected") {
+                return;
+              }
             }
           }}
           style={[
@@ -263,13 +336,14 @@ export const SendTronScreen: FunctionComponent = observer(() => {
       >
         <View>
           <OWCard type="normal">
-            <OWText color={colors["neutral-text-title"]} size={12}>
-              Recipient
-            </OWText>
+            <OWText color={colors["neutral-text-title"]}>Recipient</OWText>
 
-            <TextInput
-              placeholder="Enter receiving address"
+            <AddressInput
+              colors={colors}
+              placeholder="Enter address"
               label=""
+              recipientConfig={sendConfigs.recipientConfig}
+              memoConfig={sendConfigs.memoConfig}
               labelStyle={styles.sendlabelInput}
               containerStyle={{
                 marginBottom: 12,
@@ -279,11 +353,6 @@ export const SendTronScreen: FunctionComponent = observer(() => {
                 borderWidth: 0,
                 paddingHorizontal: 0,
               }}
-              value={receiveAddress}
-              onChange={({ nativeEvent: { text } }) => setReceiveAddress(text)}
-              autoCorrect={false}
-              autoCapitalize="none"
-              autoCompleteType="off"
             />
           </OWCard>
           <OWCard style={{ paddingTop: 22 }} type="normal">
@@ -294,11 +363,13 @@ export const SendTronScreen: FunctionComponent = observer(() => {
               }}
             >
               <View>
-                <OWText
-                  style={{ paddingTop: 8, maxWidth: metrics.screenWidth / 2.5 }}
-                  size={12}
-                >
-                  Balance : {balance}
+                <OWText style={{ paddingTop: 8 }}>
+                  Balance :{" "}
+                  {balance
+                    ?.trim(true)
+                    ?.maxDecimals(6)
+                    ?.hideDenom(true)
+                    ?.toString() || "0"}
                 </OWText>
                 <CurrencySelector
                   chainId={chainStore.current.chainId}
@@ -326,7 +397,6 @@ export const SendTronScreen: FunctionComponent = observer(() => {
                   }}
                   amountConfig={sendConfigs.amountConfig}
                   placeholder={"0.0"}
-                  maxBalance={balance.split(" ")[0]}
                 />
               </View>
             </View>
@@ -362,22 +432,26 @@ export const SendTronScreen: FunctionComponent = observer(() => {
                 Transaction fee
               </OWText>
               <TouchableOpacity
-                style={{ flexDirection: "row" }}
-                onPress={_onPressFee}
+                style={{ flexDirection: "row", alignItems: "center" }}
+                disabled={true}
               >
-                <OWText color={colors["primary-text-action"]} weight="600">
-                  {fee.type}: {fee.value}{" "}
-                </OWText>
-                <DownArrowIcon
-                  height={11}
+                <OWText
                   color={colors["primary-text-action"]}
-                />
+                  weight="600"
+                  size={16}
+                >
+                  {sendConfigs.feeConfig.fee?.trim(true)?.toString()}
+                </OWText>
+                <OWText color={colors["neutral-text-body"]}>
+                  {"~"}
+                  {priceStore
+                    .calculatePrice(sendConfigs.feeConfig.fee)
+                    ?.toString()}{" "}
+                </OWText>
               </TouchableOpacity>
             </View>
 
-            <OWText color={colors["neutral-text-title"]} size={12}>
-              Memo
-            </OWText>
+            <OWText color={colors["neutral-text-title"]}>Memo</OWText>
 
             <MemoInput
               label=""
@@ -387,9 +461,15 @@ export const SendTronScreen: FunctionComponent = observer(() => {
                 borderWidth: 0,
                 paddingHorizontal: 0,
               }}
+              editable={false}
               memoConfig={sendConfigs.memoConfig}
               labelStyle={styles.sendlabelInput}
             />
+            {errorText && (
+              <View>
+                <OWText color={colors["error-text-body"]}>{errorText}</OWText>
+              </View>
+            )}
           </OWCard>
         </View>
       </ScrollView>

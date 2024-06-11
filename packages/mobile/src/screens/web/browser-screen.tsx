@@ -1,4 +1,4 @@
-import { FlatList, useWindowDimensions, View } from "react-native";
+import { Clipboard, FlatList, useWindowDimensions, View } from "react-native";
 import React, { useState } from "react";
 import { TabBar, TabView } from "react-native-tab-view";
 import OWText from "@src/components/text/ow-text";
@@ -20,7 +20,7 @@ import {
 } from "@src/screens/web/helper/browser-helper";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
-import { checkValidDomain } from "@src/utils/helper";
+import { checkValidDomain, showToast } from "@src/utils/helper";
 import { useStore } from "@src/stores";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
 
@@ -28,6 +28,8 @@ export const BrowserScreen = observer(() => {
   const layout = useWindowDimensions();
   const { colors } = useTheme();
   const { browserStore } = useStore();
+  const { inject } = browserStore;
+  const sourceCode = inject;
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
     { key: "all", title: "All" },
@@ -53,6 +55,13 @@ export const BrowserScreen = observer(() => {
     />
   );
   const onDetailBrowser = (url) => {
+    if (!sourceCode) {
+      showToast({
+        type: "danger",
+        message: "Not connected! Please try again.",
+      });
+      return;
+    }
     if (!url) return;
     navigate(SCREENS.DetailsBrowser, {
       url: url,
@@ -69,6 +78,13 @@ export const BrowserScreen = observer(() => {
     } else {
       link = `https://www.google.com/search?q=${url}`;
     }
+    if (!sourceCode) {
+      showToast({
+        type: "danger",
+        message: "Not connected! Please try again.",
+      });
+      return;
+    }
     navigate(SCREENS.DetailsBrowser, {
       url: link,
     });
@@ -81,6 +97,23 @@ export const BrowserScreen = observer(() => {
   const [url, setUrl] = useState("");
   const onClear = () => {
     setUrl("");
+  };
+  const onPasteAndGo = async () => {
+    const text = await Clipboard.getString();
+    if (text) {
+      setUrl(text);
+      if (!sourceCode) {
+        showToast({
+          type: "danger",
+          message: "Not connected! Please try again.",
+        });
+        return;
+      }
+      navigate(SCREENS.DetailsBrowser, {
+        url: text,
+      });
+      return;
+    }
   };
   return (
     <PageWithViewInBottomTabView
@@ -111,6 +144,7 @@ export const BrowserScreen = observer(() => {
           backgroundColor: colors["neutral-surface-action"],
           borderWidth: 0,
           borderRadius: 999,
+          paddingVertical: 7,
         }}
         containerStyle={{
           paddingHorizontal: 16,
@@ -121,13 +155,35 @@ export const BrowserScreen = observer(() => {
         defaultValue={url}
         onChangeText={(txt) => setUrl(txt.toLowerCase())}
         inputRight={
-          <OWButtonIcon
-            fullWidth={false}
-            colorIcon={colors["neutral-text-action-on-light-bg"]}
-            name={"tdesignclose"}
-            sizeIcon={20}
-            onPress={onClear}
-          />
+          <>
+            <OWButton
+              onPress={onPasteAndGo}
+              size={"small"}
+              style={{
+                backgroundColor: colors["neutral-surface-action3"],
+                borderRadius: 99,
+                paddingHorizontal: 10,
+                paddingVertical: 5,
+                // height: 20
+              }}
+              textStyle={{
+                color: colors["neutral-text-action-on-light-bg"],
+                fontWeight: "600",
+                fontSize: 13,
+              }}
+              fullWidth={false}
+              label={"Paste & Go"}
+            />
+            {url?.length > 0 && (
+              <OWButtonIcon
+                fullWidth={false}
+                colorIcon={colors["neutral-text-action-on-light-bg"]}
+                name={"tdesignclose"}
+                sizeIcon={20}
+                onPress={onClear}
+              />
+            )}
+          </>
         }
       />
       <View
@@ -136,81 +192,84 @@ export const BrowserScreen = observer(() => {
           paddingBottom: 0,
         }}
       >
-        <View style={{}}>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-              marginBottom: 16,
-            }}
-          >
-            <OWText size={16} weight={"600"}>
-              Bookmarks
-            </OWText>
-            <OWButton
-              label={"View all"}
-              type={"link"}
-              onPress={onBookmarks}
-              fullWidth={false}
-              size={"medium"}
-              textStyle={{
-                fontWeight: "600",
-                fontSize: 14,
-                color: colors["primary-surface-default"],
+        {[...(browserStore.getBookmarks || [])].length > 0 ? (
+          <View style={{}}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginBottom: 16,
               }}
-              iconRight={
-                <View
-                  style={{
-                    paddingLeft: 10,
-                  }}
-                >
-                  <RightArrowIcon
-                    color={colors["primary-surface-default"]}
-                    height={14}
-                  />
-                </View>
-              }
+            >
+              <OWText size={16} weight={"600"}>
+                Bookmarks
+              </OWText>
+              <OWButton
+                label={"View all"}
+                type={"link"}
+                onPress={onBookmarks}
+                fullWidth={false}
+                size={"medium"}
+                textStyle={{
+                  fontWeight: "600",
+                  fontSize: 14,
+                  color: colors["primary-surface-default"],
+                }}
+                iconRight={
+                  <View
+                    style={{
+                      paddingLeft: 10,
+                    }}
+                  >
+                    <RightArrowIcon
+                      color={colors["primary-surface-default"]}
+                      height={14}
+                    />
+                  </View>
+                }
+              />
+            </View>
+            <FlatList
+              horizontal={true}
+              style={{
+                paddingBottom: 16,
+              }}
+              showsHorizontalScrollIndicator={false}
+              data={[...(browserStore.getBookmarks || [])]}
+              renderItem={({ item, index }) => {
+                return (
+                  <TouchableOpacity
+                    onPress={() => onDetailBrowser(item?.uri)}
+                    style={{
+                      alignItems: "center",
+                      marginHorizontal: 16,
+                    }}
+                  >
+                    <OWIcon
+                      size={30}
+                      type={"images"}
+                      source={{
+                        uri: getFavicon(item?.uri),
+                      }}
+                      style={{ borderRadius: 999 }}
+                    />
+                    <OWText
+                      style={{
+                        paddingTop: 3,
+                      }}
+                      color={colors["neutral-text-title"]}
+                      size={14}
+                      weight={"400"}
+                    >
+                      {getNameBookmark(item?.name ? item?.name : item?.uri)}
+                    </OWText>
+                  </TouchableOpacity>
+                );
+              }}
             />
           </View>
-          <FlatList
-            horizontal={true}
-            style={{
-              paddingBottom: 16,
-            }}
-            showsHorizontalScrollIndicator={false}
-            data={browserStore.getBookmarks}
-            renderItem={({ item, index }) => {
-              return (
-                <TouchableOpacity
-                  onPress={() => onDetailBrowser(item?.uri)}
-                  style={{
-                    alignItems: "center",
-                    marginHorizontal: 16,
-                  }}
-                >
-                  <OWIcon
-                    size={30}
-                    type={"images"}
-                    source={{
-                      uri: getFavicon(item?.uri),
-                    }}
-                  />
-                  <OWText
-                    style={{
-                      paddingTop: 3,
-                    }}
-                    color={colors["neutral-text-title"]}
-                    size={14}
-                    weight={"400"}
-                  >
-                    {getNameBookmark(item?.name ? item?.name : item?.uri)}
-                  </OWText>
-                </TouchableOpacity>
-              );
-            }}
-          />
-        </View>
+        ) : null}
       </View>
       <View
         style={{

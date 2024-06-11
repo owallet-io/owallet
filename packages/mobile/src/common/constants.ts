@@ -1,6 +1,23 @@
 import images from "@src/assets/images";
 import { Platform } from "react-native";
+import { ChainIdEnum, isMilliseconds } from "@owallet/common";
 
+const fetchWrap = require("fetch-retry")(global.fetch);
+
+export const fetchRetry = async (url, config?: any) => {
+  const response = await fetchWrap(url, {
+    retries: 3,
+    retryDelay: 1000,
+    ...config,
+  });
+  if (response.status !== 200) return;
+  const jsonRes = await response.json();
+  return jsonRes;
+};
+export const mapChainIdToChainEndpoint = {
+  [ChainIdEnum.Ethereum]: "ethereum",
+  [ChainIdEnum.BNBChain]: "bsc",
+};
 export const HEADER_KEY = {
   notShowHeader: "NOT_SHOW_HEADER",
   showNetworkHeader: "SHOW_NETWORK_HEADER",
@@ -27,7 +44,7 @@ export const SCREENS = {
   TokenDetail: "Tokens.Detail",
   NftsDetail: "Nfts.Detail",
   HistoryDetail: "History.Detail",
-  TransferTokensScreen: "TransferTokensScreen",
+  TokenDetails: "Token.Details",
   UniversalSwapScreen: "UniversalSwapScreen",
   RegisterIntro: "Register.Intro",
   RegisterNewUser: "Register.NewUser",
@@ -38,6 +55,7 @@ export const SCREENS = {
   RegisterRecoverMnemonic: "Register.RecoverMnemonic",
   RegisterRecoverPhrase: "Register.RecoverPhrase",
   RegisterNewLedger: "Register.NewLedger",
+  PincodeScreen: "PincodeScreen",
   Send: "Send",
   SendEvm: "SendEvm",
   SendOasis: "SendOasis",
@@ -123,6 +141,10 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: HEADER_KEY.showNetworkHeader,
     showTabBar: true,
   },
+  [SCREENS.Invest]: {
+    title: HEADER_KEY.showNetworkHeader,
+    showTabBar: true,
+  },
   [SCREENS.TransactionDetail]: {
     title: "Transaction Details",
   },
@@ -162,13 +184,9 @@ export const SCREENS_OPTIONS: IScreenOption = {
   [SCREENS.NftsDetail]: {
     title: HEADER_KEY.showNetworkHeader,
   },
-  [SCREENS.TransferTokensScreen]: {
-    title: HEADER_KEY.showNetworkHeader,
-    showTabBar: true,
-  },
   [SCREENS.UniversalSwapScreen]: {
-    title: HEADER_KEY.notShowHeader,
-    showTabBar: true,
+    // title: HEADER_KEY.notShowHeader,
+    title: "Universal Swap",
   },
   [SCREENS.RegisterIntro]: {
     title: HEADER_KEY.notShowHeader,
@@ -228,6 +246,9 @@ export const SCREENS_OPTIONS: IScreenOption = {
     // title: "Send",
     title: HEADER_KEY.notShowHeader,
   },
+  [SCREENS.PincodeScreen]: {
+    title: HEADER_KEY.notShowHeader,
+  },
   [SCREENS.SendOasis]: {
     // title: "Send",
     title: HEADER_KEY.notShowHeader,
@@ -239,7 +260,8 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: HEADER_KEY.showNetworkHeader,
   },
   [SCREENS.NetworkToken]: {
-    title: HEADER_KEY.showNetworkHeader,
+    // title: HEADER_KEY.showNetworkHeader,
+    title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.ValidatorDetails]: {
     title: HEADER_KEY.notShowHeader,
@@ -268,6 +290,9 @@ export const SCREENS_OPTIONS: IScreenOption = {
   },
   [SCREENS.BtcFaucet]: {
     title: "Bitcoin Faucet",
+  },
+  [SCREENS.HistoryDetail]: {
+    title: "Transaction details",
   },
   [SCREENS.BuyFiat]: {
     title: HEADER_KEY.notShowHeader,
@@ -300,10 +325,6 @@ export const SCREENS_OPTIONS: IScreenOption = {
   },
   [SCREENS.WebDApp]: {
     title: "",
-  },
-  [SCREENS.Invest]: {
-    title: HEADER_KEY.showNetworkHeader,
-    showTabBar: true,
   },
   [SCREENS.Delegate]: {
     // title: HEADER_KEY.showNetworkHeader,
@@ -371,4 +392,14 @@ export const TITLE_TYPE_ACTIONS_COSMOS_HISTORY = {
 };
 export const EVENTS = {
   hiddenTabBar: "hiddenTabBar",
+};
+export const urlTxHistory = "https://tx-history-backend-beta.oraidex.io/";
+// export const urlTxHistory = "http://10.10.20.115:8000/";
+// export const urlTxHistory = "https://tx-history-backend-staging.oraidex.io/";
+export const listSkeleton = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+export const getTimeMilliSeconds = (timeStamp) => {
+  if (isMilliseconds(timeStamp)) {
+    return timeStamp;
+  }
+  return timeStamp * 1000;
 };

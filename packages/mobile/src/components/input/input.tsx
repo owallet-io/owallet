@@ -19,6 +19,7 @@ export const TextInput = React.forwardRef<
     labelStyle?: TextStyle;
     containerStyle?: ViewStyle;
     inputContainerStyle?: ViewStyle;
+    containerError?: ViewStyle;
     errorLabelStyle?: TextStyle;
     inputStyle?: TextStyle;
     iconLabel?: React.ReactNode;
@@ -73,7 +74,7 @@ export const TextInput = React.forwardRef<
           style.flatten(
             [
               "background-color-white",
-              "padding-y-12",
+              // "padding-y-12",
               // "border-radius-4",
               "border-width-1",
               "border-color-border-white",
@@ -87,6 +88,7 @@ export const TextInput = React.forwardRef<
             backgroundColor: "transparent",
             borderColor: colors["border-input-login"],
             paddingHorizontal: 12,
+            paddingVertical: 12,
           },
           props.inputStyle,
           props.inputContainerStyle,
@@ -105,11 +107,15 @@ export const TextInput = React.forwardRef<
                   android: {
                     // On android, the text input's height does not equals to the line height by strange.
                     // To fix this problem, set the height explicitly.
-                    height: 38,
+                    // height: 38,
                   },
                 }),
               ]),
-              { color: colors["sub-primary-text"], flex: 1 },
+              {
+                color: colors["neutral-text-title"],
+                flex: 1,
+                paddingVertical: 0,
+              },
               propsStyle,
             ]}
             {...restProps}
@@ -147,7 +153,7 @@ export const TextInput = React.forwardRef<
         )
       ) : null}
       {props.error ? (
-        <View>
+        <View style={restProps.containerError}>
           <Text
             style={StyleSheet.flatten([
               style.flatten([

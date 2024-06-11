@@ -45,7 +45,7 @@ export const RecoverPhraseScreen: FunctionComponent = observer((props) => {
     >
   >();
 
-  const { analyticsStore } = useStore();
+  const { analyticsStore, universalSwapStore } = useStore();
 
   const smartNavigation = useSmartNavigation();
 
@@ -337,6 +337,7 @@ export const RecoverPhraseScreen: FunctionComponent = observer((props) => {
             loading={isCreating}
             disabled={isCreating}
             onPress={() => {
+              universalSwapStore.clearAmounts();
               if (!handleValidate()) {
                 return;
               }

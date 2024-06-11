@@ -1,27 +1,47 @@
-import React, { useCallback } from "react";
-import { StyleSheet, View } from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
+import { StyleSheet, TextInput, View } from "react-native";
 import { metrics, spacing, typography } from "../../../themes";
-import { _keyExtract, showToast, getTokenInfos } from "../../../utils/helper";
-import FastImage from "react-native-fast-image";
+import {
+  _keyExtract,
+  showToast,
+  getTokenInfos,
+  maskedNumber,
+  splitAndSortChains,
+} from "../../../utils/helper";
 import { VectorCharacter } from "../../../components/vector-character";
 import { Text } from "@src/components/text";
 import {
-  TRON_ID,
   COINTYPE_NETWORK,
   getKeyDerivationFromAddressType,
+  unknownToken,
 } from "@owallet/common";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { BottomSheetFlatList } from "@gorhom/bottom-sheet";
 import { useBIP44Option } from "@src/screens/register/bip44";
 import { useStore } from "@src/stores";
 import { useTheme } from "@src/themes/theme-provider";
-import { navigate } from "@src/router/root";
-import { SCREENS } from "@src/common/constants";
 import { Popup } from "react-native-popup-confirm-toast";
-import { getTotalUsd } from "@oraichain/oraidex-common";
+import {
+  chainIcons,
+  ChainIdEnum,
+  getTotalUsd,
+} from "@oraichain/oraidex-common";
+import OWIcon from "@src/components/ow-icon/ow-icon";
+import { OWButton } from "@src/components/button";
+import { RadioButton } from "react-native-radio-buttons-group";
+import { ChainInfoWithEmbed } from "@owallet/background";
+import { ChainInfoInner } from "@owallet/stores";
+import { initPrice } from "@src/screens/home/hooks/use-multiple-assets";
+import { ViewRawToken, ViewToken } from "@src/stores/huge-queries";
+import { PricePretty } from "@owallet/unit";
 
-export const NetworkModal = () => {
+interface ChainInfoItem extends ChainInfoInner<ChainInfoWithEmbed> {
+  balance: PricePretty;
+}
+export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
   const { colors } = useTheme();
+  const [keyword, setKeyword] = useState("");
+  const [activeTab, setActiveTab] = useState<"mainnet" | "testnet">("mainnet");
 
   const bip44Option = useBIP44Option();
   const {
@@ -31,25 +51,11 @@ export const NetworkModal = () => {
     accountStore,
     appInitStore,
     universalSwapStore,
+    priceStore,
   } = useStore();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const styles = styling(colors);
-  let totalUsd: number = 0;
-  let todayAssets;
-  if (
-    Object.keys(appInitStore.getInitApp.prices).length > 0 &&
-    Object.keys(universalSwapStore.getAmount).length > 0
-  ) {
-    totalUsd = getTotalUsd(
-      universalSwapStore.getAmount,
-      appInitStore.getInitApp.prices
-    );
-    todayAssets = getTokenInfos({
-      tokens: universalSwapStore.getAmount,
-      prices: appInitStore.getInitApp.prices,
-    });
-  }
 
   const onConfirm = async (item: any) => {
     const { networkType } = chainStore.getChain(item?.chainId);
@@ -75,19 +81,12 @@ export const NetworkModal = () => {
       item?.chainId
     );
   };
-  const groupedData = todayAssets?.reduce((result, element) => {
-    const key = element.chainId;
 
-    if (!result[key]) {
-      result[key] = {
-        sum: 0,
-      };
+  useEffect(() => {
+    if (chainStore.current.chainName.toLowerCase().includes("test")) {
+      setActiveTab("testnet");
     }
-
-    result[key].sum += element.value;
-
-    return result;
-  }, {});
+  }, [chainStore.current.chainName]);
 
   const handleSwitchNetwork = useCallback(async (item) => {
     try {
@@ -138,20 +137,31 @@ export const NetworkModal = () => {
       });
     }
   }, []);
-
-  const _renderItem = ({ item }) => {
-    let isSelectedColor =
+  const { totalPriceBalance, dataTokens, dataTokensByChain } =
+    appInitStore.getMultipleAssets;
+  const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
+  const _renderItem = ({ item }: { item }) => {
+    let selected =
       item?.chainId === chainStore.current.chainId &&
-      !appInitStore.getInitApp.isAllNetworks
-        ? colors["primary-surface-default"]
-        : colors["bg-circle-select-modal"];
+      !appInitStore.getInitApp.isAllNetworks;
+
     if (item.isAll && appInitStore.getInitApp.isAllNetworks) {
-      isSelectedColor = colors["primary-surface-default"];
+      selected = true;
     }
+    const oraiIcon =
+      "https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png";
     return (
       <TouchableOpacity
         style={{
-          ...styles.containerBtn,
+          paddingLeft: 12,
+          paddingRight: 8,
+          paddingVertical: 9.5,
+          borderRadius: 12,
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          backgroundColor: selected ? colors["neutral-surface-bg2"] : null,
         }}
         onPress={() => {
           handleSwitchNetwork(item);
@@ -159,96 +169,105 @@ export const NetworkModal = () => {
       >
         <View
           style={{
-            justifyContent: "flex-start",
             flexDirection: "row",
             alignItems: "center",
+            justifyContent: "center",
           }}
         >
           <View
             style={{
-              height: 38,
-              width: 38,
-              padding: spacing["2"],
-              borderRadius: spacing["12"],
-              justifyContent: "center",
               alignItems: "center",
-              backgroundColor: colors["primary-surface-default"],
+              justifyContent: "center",
+              width: 44,
+              height: 44,
+              borderRadius: 44,
+              backgroundColor: colors["neutral-icon-on-dark"],
+              marginRight: 16,
             }}
           >
-            {item?.raw?.chainSymbolImageUrl ? (
-              <FastImage
-                style={{
-                  width: 24,
-                  height: 24,
-                }}
-                resizeMode={FastImage.resizeMode.contain}
-                source={{
-                  uri: item.raw.chainSymbolImageUrl,
-                }}
-              />
-            ) : (
-              <VectorCharacter
-                char={item.chainName[0]}
-                height={15}
-                color={colors["white"]}
-              />
-            )}
+            <OWIcon
+              type="images"
+              source={{
+                uri: item?.stakeCurrency?.coinImageUrl || oraiIcon,
+              }}
+              size={28}
+            />
           </View>
-
-          <View
-            style={{
-              justifyContent: "space-between",
-              marginLeft: spacing["12"],
-            }}
-          >
+          <View>
             <Text
               style={{
-                ...typography.h6,
-                color: colors["sub-primary-text"],
-                fontWeight: "900",
+                fontSize: 14,
+                color: colors["neutral-text-title"],
+                fontWeight: "600",
               }}
-              numberOfLines={1}
             >
-              {item.chainName}
+              {item?.chainName || item?.chainName}
             </Text>
+
             <Text
               style={{
-                color: colors["neutral-text-body"],
+                fontSize: 14,
+                color: colors["sub-text"],
+                fontWeight: "400",
               }}
-              numberOfLines={1}
             >
-              $
               {!item.chainId
-                ? totalUsd?.toFixed(6)
-                : Number(groupedData?.[item.chainId]?.sum ?? 0).toFixed(6)}
+                ? new PricePretty(fiatCurrency, totalPriceBalance)?.toString()
+                : (
+                    new PricePretty(
+                      fiatCurrency,
+                      dataTokensByChain?.[item.chainId]?.totalBalance
+                    ) || initPrice
+                  ).toString()}
             </Text>
           </View>
         </View>
 
         <View>
-          <View
-            style={{
-              width: 24,
-              height: 24,
-              borderRadius: spacing["32"],
-              backgroundColor: isSelectedColor,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <View
-              style={{
-                width: 12,
-                height: 12,
-                borderRadius: spacing["32"],
-                backgroundColor: colors["background-item-list"],
-              }}
-            />
-          </View>
+          <RadioButton
+            color={
+              selected
+                ? colors["highlight-surface-active"]
+                : colors["neutral-text-body"]
+            }
+            id={item.chainId}
+            selected={selected}
+            onPress={() => handleSwitchNetwork(item)}
+          />
         </View>
       </TouchableOpacity>
     );
   };
+
+  const chainsInfoWithBalance = chainStore.chainInfosInUI.map((item, index) => {
+    return {
+      ...item._chainInfo,
+      balance: new PricePretty(
+        fiatCurrency,
+        appInitStore.getMultipleAssets.dataTokensByChain?.[
+          item.chainId
+        ]?.totalBalance
+      ),
+    };
+  });
+  const sortChainsByPrice = (chains) => {
+    return chains.sort(
+      (a, b) =>
+        Number(b.balance.toDec().toString()) -
+        Number(a.balance.toDec().toString())
+    );
+  };
+  const dataTestnet = sortChainsByPrice(chainsInfoWithBalance).filter(
+    (c) =>
+      c.chainName.toLowerCase().includes("test") &&
+      c.chainName.toLowerCase().includes(keyword.toLowerCase())
+  );
+  const dataMainnet = sortChainsByPrice(chainsInfoWithBalance).filter(
+    (c) =>
+      !c.chainName.toLowerCase().includes("test") &&
+      c.chainName.toLowerCase().includes(keyword.toLowerCase())
+  );
+  const dataChains = activeTab === "testnet" ? dataTestnet : dataMainnet;
 
   return (
     <View
@@ -256,45 +275,73 @@ export const NetworkModal = () => {
         alignItems: "center",
       }}
     >
-      <View
-        style={{
-          alignItems: "flex-end",
-          width: "100%",
-        }}
-      >
-        {chainStore.current.chainId === TRON_ID ? null : (
-          <TouchableOpacity
-            onPress={() => {
-              navigate(SCREENS.STACK.Others, {
-                screen: SCREENS.NetworkSelect,
-              });
-              modalStore.close();
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 12,
-                fontWeight: "700",
-                color: colors["primary-surface-default"],
-              }}
-            >
-              + Add network
-            </Text>
-          </TouchableOpacity>
-        )}
-      </View>
       <Text
         style={{
           ...typography.h6,
           fontWeight: "900",
-          color: colors["primary-text"],
+          color: colors["neutral-text-title"],
           width: "100%",
           textAlign: "center",
         }}
       >
-        {`Select networks`}
+        {`choose networks`.toUpperCase()}
       </Text>
-
+      <View style={styles.header}>
+        <View style={styles.searchInput}>
+          <View style={{ paddingRight: 4 }}>
+            <OWIcon
+              color={colors["neutral-icon-on-light"]}
+              name="tdesign_search"
+              size={16}
+            />
+          </View>
+          <TextInput
+            style={{
+              fontFamily: "SpaceGrotesk-Regular",
+              width: "100%",
+              color: colors["neutral-icon-on-light"],
+            }}
+            onChangeText={(t) => setKeyword(t)}
+            value={keyword}
+            placeholderTextColor={colors["neutral-text-body"]}
+            placeholder="Search by name"
+          />
+        </View>
+      </View>
+      <View style={styles.wrapHeaderTitle}>
+        <OWButton
+          type="link"
+          label={"Mainnet"}
+          textStyle={{
+            color: colors["primary-surface-default"],
+            fontWeight: "600",
+            fontSize: 16,
+          }}
+          onPress={() => setActiveTab("mainnet")}
+          style={[
+            {
+              width: "50%",
+            },
+            activeTab === "mainnet" ? styles.active : null,
+          ]}
+        />
+        <OWButton
+          type="link"
+          label={"Testnet"}
+          onPress={() => setActiveTab("testnet")}
+          textStyle={{
+            color: colors["primary-surface-default"],
+            fontWeight: "600",
+            fontSize: 16,
+          }}
+          style={[
+            {
+              width: "50%",
+            },
+            activeTab === "testnet" ? styles.active : null,
+          ]}
+        />
+      </View>
       <View
         style={{
           marginTop: spacing["12"],
@@ -303,12 +350,10 @@ export const NetworkModal = () => {
           height: metrics.screenHeight / 2,
         }}
       >
-        {/* {account.isNanoLedger
-          ? null
-          : _renderItem({ item: { chainName: "All networks", isAll: true } })} */}
         {_renderItem({ item: { chainName: "All networks", isAll: true } })}
         <BottomSheetFlatList
-          data={chainStore.chainInfosInUI}
+          showsVerticalScrollIndicator={false}
+          data={dataChains}
           renderItem={_renderItem}
           keyExtractor={_keyExtract}
         />
@@ -320,7 +365,7 @@ export const NetworkModal = () => {
 const styling = (colors) =>
   StyleSheet.create({
     containerBtn: {
-      backgroundColor: colors["background-item-list"],
+      backgroundColor: colors["neutral-surface-card"],
       paddingVertical: spacing["16"],
       borderRadius: spacing["8"],
       paddingHorizontal: spacing["16"],
@@ -328,5 +373,29 @@ const styling = (colors) =>
       marginTop: spacing["16"],
       alignItems: "center",
       justifyContent: "space-between",
+    },
+    header: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginBottom: 16,
+      alignSelf: "center",
+      marginTop: 16,
+    },
+    searchInput: {
+      flexDirection: "row",
+      backgroundColor: colors["neutral-surface-action"],
+      height: 40,
+      borderRadius: 999,
+      width: metrics.screenWidth - 32,
+      alignItems: "center",
+      paddingHorizontal: 12,
+    },
+    wrapHeaderTitle: {
+      flexDirection: "row",
+      paddingBottom: 12,
+    },
+    active: {
+      borderBottomColor: colors["primary-surface-default"],
+      borderBottomWidth: 2,
     },
   });

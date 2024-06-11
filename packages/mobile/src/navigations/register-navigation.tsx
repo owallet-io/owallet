@@ -7,8 +7,6 @@ import useHeaderOptions from "@src/hooks/use-header";
 import { SCREENS, SCREENS_OPTIONS } from "@src/common/constants";
 import { OnboardingIntroScreen } from "@src/screens/onboarding";
 import { RegisterIntroScreen } from "@src/screens/register";
-import { RegisterNewUserScreen } from "@src/screens/register/new-user";
-import { RegisterNotNewUserScreen } from "@src/screens/register/not-new-user";
 import {
   NewMnemonicScreen,
   RecoverMnemonicScreen,
@@ -49,15 +47,6 @@ export const RegisterNavigation: FC = () => {
             : RegisterIntroScreen
         }
       />
-
-      {/* <Stack.Screen
-        name={SCREENS.RegisterNewUser}
-        component={RegisterNewUserScreen}
-      /> */}
-      {/* <Stack.Screen
-        name={SCREENS.RegisterNotNewUser}
-        component={RegisterNotNewUserScreen}
-      /> */}
       <Stack.Screen
         name={SCREENS.RegisterNewMnemonic}
         component={NewMnemonicScreen}

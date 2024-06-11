@@ -25,7 +25,7 @@ export const DAppInfos = [
   },
   {
     id: 6,
-    name: "Oraiscan",
+    name: "Oraichain Scan",
     uri: "https://scan.orai.io/",
   },
   {

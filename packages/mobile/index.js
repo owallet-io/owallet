@@ -46,7 +46,7 @@ const { App } = require("./src/app");
 //   });
 // }
 if (__DEV__ && Platform.OS === "ios") {
-  NativeModules.DevSettings.setIsDebuggingRemotely(true);
+  NativeModules.DevSettings.setIsDebuggingRemotely(false);
 }
 // not using CodePush for development
 const CodePushApp = __DEV__

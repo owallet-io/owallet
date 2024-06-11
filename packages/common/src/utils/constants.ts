@@ -6,13 +6,31 @@ export const TRON_ID = "0x2b6653dc";
 export const TRON_BIP39_PATH_PREFIX = "m/44'/195'";
 export const BIP44_PATH_PREFIX = "m/44'";
 export const TRON_BIP39_PATH_INDEX_0 = TRON_BIP39_PATH_PREFIX + "/0'/0/0";
-
+import { Network as NetworkTatum } from "@tatumio/tatum";
 export enum NetworkEnum {
   Cosmos = "cosmos",
   Evm = "evm",
   Bitcoin = "bitcoin",
 }
 
+export enum OasisNetwork {
+  MAINNET = "oasis-mainnet",
+  SAPPHIRE = "oasis-sapphire-mainnet",
+  EMERALD = "oasis-emerald-mainnet",
+}
+
+export enum COSMOS_NETWORK {
+  COSMOSHUB = "cosmoshub-4",
+  OSMOSIS = "osmosis-1",
+  INJECTIVE = "injective-1",
+  ORAICHAIN = "Oraichain",
+}
+
+export type Network = NetworkTatum & OasisNetwork & COSMOS_NETWORK;
+export const Network = { ...NetworkTatum, ...OasisNetwork, ...COSMOS_NETWORK };
+export enum CosmosNetwork {
+  ORAICHAIN = "oraichain",
+}
 export enum ChainIdEnum {
   Oraichain = "Oraichain",
   OraichainTestnet = "Oraichain-testnet",
@@ -54,7 +72,6 @@ export enum KADOChainNameEnum {
 export enum ChainNameEnum {
   Oraichain = "Oraichain",
   OraichainTestnet = "Oraichain-testnet",
-  OraiBridge = "Orai Bride",
   KawaiiCosmos = "Kawaiiverse",
   KawaiiEvm = "Kawaiiverse EVM",
   Ethereum = "Ethereum",

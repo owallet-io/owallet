@@ -12,16 +12,22 @@ export type TokenInfo = {
 };
 export type TypeTextAndCustomizeComponent = NodeElement | string;
 export interface ISwapBox extends IInputSelectToken {
+  network: string;
   tokenFee?: number;
   currencyValue?: string;
   balanceValue: string | number;
   tokenActive: TokenItemType;
   editable?: boolean;
+  disabled?: boolean;
+  onOpenNetworkModal: Function;
+  onSelectAmount?: Function;
+  type?: string;
 }
 
 export interface IInputSelectToken {
   tokenActive: TokenItemType;
   amount?: string;
+  currencyValue?: string;
   editable?: boolean;
   onChangeAmount?: (txt: any) => void;
   onOpenTokenModal: (ev: any) => void;

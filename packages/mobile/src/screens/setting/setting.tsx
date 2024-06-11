@@ -4,7 +4,13 @@ import { BasicSettingItem, renderFlag } from "./components";
 import { useSmartNavigation } from "../../navigation.provider";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
-import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  Image,
+  Platform,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { useStore } from "../../stores";
 import { metrics } from "../../themes";
 import { CountryModal } from "./components/country-modal";
@@ -51,6 +57,7 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
         enableOverDrag: false,
       },
     });
+
     modalStore.setChildren(
       CountryModal({
         data: currencyItems,
@@ -67,8 +74,10 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
       AppleAppID: "id1626035069",
       GooglePackageName: "com.io.owallet",
       preferredAndroidMarket: AndroidMarket.Google,
-      preferInApp: true,
+      preferInApp: Platform.OS === "android" ? false : true,
       openAppStoreIfInAppFails: true,
+      fallbackPlatformURL:
+        "https://play.google.com/store/apps/details?id=com.io.owallet",
     };
     Rate.rate(options, (success, errorMessage) => {
       if (success) {
@@ -174,74 +183,79 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
       contentContainerStyle={{ paddingTop: safeAreaInsets.top }}
       backgroundColor={colors["neutral-surface-bg"]}
     >
-      <PageHeader title="Settings" colors={colors} />
+      <PageHeader title="Settings" />
       <View>
-        <BasicSettingItem
-          left={
-            <View style={{ paddingRight: 12 }}>
-              <Image
-                style={{ width: 44, height: 44, borderRadius: 44 }}
-                source={require("../../assets/images/default-avatar.png")}
-                fadeDuration={0}
-                resizeMode="contain"
-              />
-            </View>
-          }
-          icon="owallet"
-          paragraph={
-            selected ? selected.meta?.name || "OWallet Account" : "No Account"
-          }
-          subtitle={Bech32Address.shortenAddress(accountOrai.bech32Address, 24)}
-          onPress={() =>
-            smartNavigation.navigateSmart("SettingSelectAccount", {})
-          }
-        />
-        {keychainStore.isBiometrySupported || keychainStore.isBiometryOn ? (
-          <SettingBiometricLockItem />
-        ) : null}
-        {canShowPrivateData(keyRingStore.keyRingType) && (
-          <SettingViewPrivateDataItem />
-        )}
-        <SettingRemoveAccountItem />
+        <OWCard style={{ marginBottom: 16 }} type="normal">
+          <BasicSettingItem
+            left={
+              <View style={{ paddingRight: 12 }}>
+                <Image
+                  style={{ width: 44, height: 44, borderRadius: 44 }}
+                  source={require("../../assets/images/default-avatar.png")}
+                  fadeDuration={0}
+                  resizeMode="contain"
+                />
+              </View>
+            }
+            icon="owallet"
+            paragraph={
+              selected ? selected.meta?.name || "OWallet Account" : "No Account"
+            }
+            subtitle={Bech32Address.shortenAddress(
+              accountOrai.bech32Address,
+              24
+            )}
+            onPress={() =>
+              smartNavigation.navigateSmart("SettingSelectAccount", {})
+            }
+          />
+          <View style={styles.border} />
+          {keychainStore.isBiometrySupported || keychainStore.isBiometryOn ? (
+            <SettingBiometricLockItem />
+          ) : null}
+          {canShowPrivateData(keyRingStore.keyRingType) && (
+            <SettingViewPrivateDataItem />
+          )}
+          <SettingRemoveAccountItem />
+        </OWCard>
 
-        <View style={styles.border} />
-        {/* <BasicSettingItem
-          icon="tdesign_money"
-          paragraph="Currency"
-          onPress={_onPressCountryModal}
-          right={
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              {renderFlag(priceStore.defaultVsCurrency, 20)}
-              <OWText
-                style={{ paddingHorizontal: 8 }}
-                weight="600"
-                color={colors["neutral-text-body"]}
+        <OWCard style={{ marginBottom: 16 }} type="normal">
+          <SettingSwitchModeItem />
+
+          <BasicSettingItem
+            icon="tdesign_money"
+            paragraph="Currency"
+            onPress={_onPressCountryModal}
+            right={
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
               >
-                {priceStore.defaultVsCurrency.toUpperCase()}
-              </OWText>
-              <OWIcon name="chevron_right" size={16} />
-            </View>
-          }
-        /> */}
-        <SettingSwitchModeItem />
-        <View style={styles.border} />
-        <BasicSettingItem
-          icon="tdesign_book"
-          paragraph="Address book"
-          onPress={() => {
-            smartNavigation.navigateSmart("AddressBook", {});
-          }}
-        />
+                {renderFlag(priceStore.defaultVsCurrency, 20)}
+                <OWText
+                  style={{ paddingHorizontal: 8 }}
+                  weight="600"
+                  color={colors["neutral-text-body"]}
+                >
+                  {priceStore.defaultVsCurrency.toUpperCase()}
+                </OWText>
+                <OWIcon name="chevron_right" size={16} />
+              </View>
+            }
+          />
+          <BasicSettingItem
+            icon="tdesign_book"
+            paragraph="Address book"
+            onPress={() => {
+              smartNavigation.navigateSmart("AddressBook", {});
+            }}
+          />
+        </OWCard>
 
-        <View style={styles.border} />
         {renderRating()}
-        <View style={styles.border} />
         <BasicSettingItem
           left={
             <View style={{ padding: 12 }}>
@@ -253,6 +267,7 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
               />
             </View>
           }
+          containerStyle={{ marginHorizontal: 16 }}
           icon="owallet"
           paragraph="About OWallet"
           onPress={() => {
@@ -281,7 +296,6 @@ const styling = (colors: object) =>
       height: 1,
       backgroundColor: colors["neutral-border-default"],
       marginBottom: 16,
-      marginHorizontal: 16,
     },
     icon: {
       borderRadius: 99,

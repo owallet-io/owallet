@@ -24,6 +24,7 @@ export const CountryModal: FunctionComponent<CountryModalProps> = ({
   colors,
 }) => {
   const _renderItem = ({ item, index }) => {
+    console.log(item.key, "item.key");
     return (
       <KeyStoreItem
         colors={colors}

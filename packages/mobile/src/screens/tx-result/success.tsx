@@ -5,9 +5,9 @@ import { useStore } from "../../stores";
 import {
   View,
   Image,
-  TouchableOpacity,
   ScrollView,
   InteractionManager,
+  StyleSheet,
 } from "react-native";
 import { Text } from "@src/components/text";
 import { useSmartNavigation } from "../../navigation.provider";
@@ -26,12 +26,13 @@ import image from "@src/assets/images";
 import OWCard from "@src/components/card/ow-card";
 import OWText from "@src/components/text/ow-text";
 import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
-import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { CoinPretty, Dec } from "@owallet/unit";
 import { AppCurrency, StdFee } from "@owallet/types";
 import { CoinPrimitive } from "@owallet/stores";
-import { Bech32Address } from "@owallet/cosmos";
 import _ from "lodash";
+import { HeaderTx } from "@src/screens/tx-result/components/header-tx";
+import OWButtonIcon from "@src/components/button/ow-button-icon";
+
 export const TxSuccessResultScreen: FunctionComponent = observer(() => {
   const { chainStore, priceStore, txsStore, accountStore, keyRingStore } =
     useStore();
@@ -77,17 +78,23 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
   const smartNavigation = useSmartNavigation();
 
   const chainInfo = chainStore.getChain(chainId);
-
+  const handleUrl = (txHash) => {
+    return chainInfo.raw.txExplorer.txUrl.replace(
+      "{txHash}",
+      chainInfo.chainId === TRON_ID ||
+        chainInfo.networkType === "bitcoin" ||
+        chainInfo.chainId === ChainIdEnum.OasisSapphire ||
+        chainInfo.chainId === ChainIdEnum.OasisEmerald ||
+        chainInfo.chainId === ChainIdEnum.Oasis ||
+        chainInfo.chainId === ChainIdEnum.BNBChain
+        ? txHash.toLowerCase()
+        : txHash.toUpperCase()
+    );
+  };
   const handleOnExplorer = async () => {
     if (chainInfo.raw.txExplorer && txHash) {
-      await openLink(
-        chainInfo.raw.txExplorer.txUrl.replace(
-          "{txHash}",
-          chainInfo.chainId === TRON_ID || chainInfo.networkType === "bitcoin"
-            ? txHash
-            : txHash.toUpperCase()
-        )
-      );
+      const url = handleUrl(txHash);
+      await openLink(url);
     }
   };
 
@@ -95,7 +102,11 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
     smartNavigation.dispatch(
       CommonActions.reset({
         index: 1,
-        routes: [{ name: "MainTab" }],
+        routes: [
+          {
+            name: "MainTab",
+          },
+        ],
       })
     );
   };
@@ -146,23 +157,15 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
         key !== "type"
       );
     });
+  const styles = styling(colors);
   return (
     <PageWithBottom
       bottomGroup={
-        <View
-          style={{
-            width: "100%",
-            paddingHorizontal: 16,
-            paddingTop: 16,
-          }}
-        >
+        <View style={styles.containerBottomButton}>
           <OWButtonGroup
             labelApprove={"Done"}
             labelClose={"View on Explorer"}
-            styleApprove={{
-              borderRadius: 99,
-              backgroundColor: colors["primary-surface-default"],
-            }}
+            styleApprove={styles.btnApprove}
             onPressClose={handleOnExplorer}
             onPressApprove={onDone}
             styleClose={{
@@ -173,111 +176,29 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
         </View>
       }
     >
-      <View
-        style={{
-          flex: 1,
-        }}
-      >
-        <PageHeader
-          title={"Transaction details"}
-          colors={colors["neutral-text-title"]}
-        />
+      <View style={styles.containerBox}>
+        <PageHeader title={"Transaction details"} />
         <ScrollView showsVerticalScrollIndicator={false}>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "center",
-              marginBottom: 8,
-            }}
-          >
-            <Image
-              source={image.logo_owallet}
-              style={{
-                width: 20,
-                height: 20,
-              }}
-            />
-            <Text
-              color={colors["neutral-text-title"]}
-              size={18}
-              weight={"600"}
-              style={{
-                paddingLeft: 8,
-              }}
-            >
-              OWallet
-            </Text>
-          </View>
-          <OWCard
-            style={{
-              paddingVertical: 20,
-              borderRadius: 24,
-              alignItems: "center",
-              justifyContent: "center",
-              marginBottom: 2,
-            }}
-          >
-            <Text
-              style={{
-                textAlign: "center",
-                paddingBottom: 8,
-              }}
-              color={colors["neutral-text-title"]}
-              size={16}
-              weight={"500"}
-            >
-              {capitalizedText(params?.data?.type) || "Send"}
-            </Text>
-            <View
-              style={{
-                backgroundColor: colors["hightlight-surface-subtle"],
-                width: "100%",
-                paddingHorizontal: 12,
-                paddingVertical: 2,
-                borderRadius: 99,
-                alignSelf: "center",
-              }}
-            >
-              <OWText
-                weight={"500"}
-                size={14}
-                color={colors["hightlight-text-title"]}
-              >
-                Success
-              </OWText>
-            </View>
-            <Text
-              color={colors["neutral-text-title"]}
-              style={{
-                textAlign: "center",
-                paddingTop: 16,
-              }}
-              size={28}
-              weight={"500"}
-            >
-              {`${params?.data?.type === "send" ? "-" : ""}${amount
-                ?.shrink(true)
-                ?.trim(true)
-                ?.toString()}`}
-            </Text>
-            <Text
-              color={colors["neutral-text-body"]}
-              style={{
-                textAlign: "center",
-              }}
-            >
-              {priceStore.calculatePrice(amount)?.toString()}
-            </Text>
-          </OWCard>
-          <View
-            style={{
-              padding: 16,
-              borderRadius: 24,
-              marginHorizontal: 16,
-              backgroundColor: colors["neutral-surface-card"],
-            }}
-          >
+          <HeaderTx
+            type={capitalizedText(params?.data?.type) || "Send"}
+            imageType={
+              <View style={styles.containerSuccess}>
+                <OWText
+                  weight={"500"}
+                  size={14}
+                  color={colors["highlight-text-title"]}
+                >
+                  Success
+                </OWText>
+              </View>
+            }
+            amount={`${params?.data?.type === "send" ? "-" : ""}${amount
+              ?.shrink(true)
+              ?.trim(true)
+              ?.toString()}`}
+            price={priceStore.calculatePrice(amount)?.toString()}
+          />
+          <View style={styles.cardBody}>
             {dataItem &&
               Object.keys(dataItem).map(function (key) {
                 return (
@@ -294,18 +215,10 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
             <ItemReceivedToken
               label={"Network"}
               valueDisplay={
-                <View
-                  style={{
-                    flexDirection: "row",
-                    paddingTop: 6,
-                  }}
-                >
+                <View style={styles.viewNetwork}>
                   {chainInfo?.raw?.chainSymbolImageUrl && (
                     <Image
-                      style={{
-                        height: 20,
-                        width: 20,
-                      }}
+                      style={styles.imgNetwork}
                       source={{
                         uri: chainInfo?.raw?.chainSymbolImageUrl,
                       }}
@@ -347,18 +260,18 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
               label={"Hash"}
               valueDisplay={formatContractAddress(txHash)}
               value={txHash}
-              // btnCopy={false}
-              // IconRightComponent={
-              //   <View>
-              //     <OWButtonIcon
-              //       name="copy"
-              //       sizeIcon={20}
-              //       fullWidth={false}
-              //       onPress={onDone}
-              //       colorIcon={colors["neutral-text-action-on-light-bg"]}
-              //     />
-              //   </View>
-              // }
+              btnCopy={false}
+              IconRightComponent={
+                <View>
+                  <OWButtonIcon
+                    name="tdesignjump"
+                    sizeIcon={20}
+                    fullWidth={false}
+                    onPress={handleOnExplorer}
+                    colorIcon={colors["neutral-text-action-on-light-bg"]}
+                  />
+                </View>
+              }
             />
           </View>
         </ScrollView>
@@ -366,3 +279,43 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
     </PageWithBottom>
   );
 });
+
+const styling = (colors) => {
+  return StyleSheet.create({
+    containerSuccess: {
+      backgroundColor: colors["highlight-surface-subtle"],
+      width: "100%",
+      paddingHorizontal: 12,
+      paddingVertical: 2,
+      borderRadius: 99,
+      alignSelf: "center",
+    },
+    containerBottomButton: {
+      width: "100%",
+      paddingHorizontal: 16,
+      paddingTop: 16,
+    },
+    btnApprove: {
+      borderRadius: 99,
+      backgroundColor: colors["primary-surface-default"],
+    },
+    cardBody: {
+      padding: 16,
+      borderRadius: 24,
+      marginHorizontal: 16,
+      backgroundColor: colors["neutral-surface-card"],
+    },
+    viewNetwork: {
+      flexDirection: "row",
+      paddingTop: 6,
+    },
+    imgNetwork: {
+      height: 20,
+      width: 20,
+      backgroundColor: colors["neutral-icon-on-dark"],
+    },
+    containerBox: {
+      flex: 1,
+    },
+  });
+};
