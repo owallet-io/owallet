@@ -36,7 +36,7 @@ export const EVMRenderArgs: FunctionComponent<{
           alignItems: "center",
         }}
       >
-        {token?.imgUrl ?? token?.coinImageUrl ? (
+        {token?.imgUrl || token?.coinImageUrl ? (
           <img
             style={{
               width: 14,
