@@ -275,11 +275,6 @@ export const DetailsTabEvm: FunctionComponent<{
     };
 
     console.log(decodedData, "decodeedDAta");
-    console.log(
-      feeConfig.getError(),
-      gasConfig.getError(),
-      "feeConfig.getError()"
-    );
 
     return (
       <div className={styleDetailsTab.container}>
@@ -368,12 +363,12 @@ export const DetailsTabEvm: FunctionComponent<{
             </Text>
           )}
           {renderInfo(
-            msgs.value,
+            msgs?.value,
             "Amount In",
             <Text>
               {msgs.value
                 ? toDisplay(
-                    msgs.value.toString(),
+                    msgs?.value?.toString(),
                     chain.stakeCurrency.coinDecimals
                   )
                 : null}
