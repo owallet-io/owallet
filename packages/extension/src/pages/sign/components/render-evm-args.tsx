@@ -36,15 +36,17 @@ export const EVMRenderArgs: FunctionComponent<{
           alignItems: "center",
         }}
       >
-        <img
-          style={{
-            width: 14,
-            height: 14,
-            borderRadius: 28,
-            marginRight: 4,
-          }}
-          src={token?.imgUrl ?? token?.coinImageUrl}
-        />
+        {token?.imgUrl ?? token?.coinImageUrl ? (
+          <img
+            style={{
+              width: 14,
+              height: 14,
+              borderRadius: 28,
+              marginRight: 4,
+            }}
+            src={token?.imgUrl ?? token?.coinImageUrl}
+          />
+        ) : null}
         <Text weight="600">{token?.abbr ?? token?.coinDenom}</Text>
       </div>
     );
