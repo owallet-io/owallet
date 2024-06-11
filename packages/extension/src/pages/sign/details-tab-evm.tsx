@@ -18,7 +18,7 @@ import PANCAKE_ABI from "./abi/pancake-abi.json";
 import UNISWAP_ABI from "./abi/uniswap-abi.json";
 import { Address } from "../../components/address";
 import { tryAllABI } from "./helpers/helpers";
-import { EVMRenderArg } from "./components/render-evm-arg";
+import { EVMRenderArgs } from "./components/render-evm-args";
 
 export const DetailsTabEvm: FunctionComponent<{
   msgSign: any;
@@ -387,7 +387,7 @@ export const DetailsTabEvm: FunctionComponent<{
                 <Text>{decodedData.name}</Text>
               )}
               {decodedData?.args ? (
-                <EVMRenderArg
+                <EVMRenderArgs
                   args={decodedData.args}
                   renderInfo={renderInfo}
                   chain={chain}

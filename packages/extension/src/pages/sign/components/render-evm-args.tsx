@@ -15,9 +15,8 @@ import {
 } from "../helpers/helpers";
 import { EmbedChainInfos, toDisplay } from "@owallet/common";
 import { Text } from "../../../components/common/text";
-import colors from "../../../theme/colors";
 
-export const EVMRenderArg: FunctionComponent<{
+export const EVMRenderArgs: FunctionComponent<{
   args: any;
   chain: AppChainInfo;
   renderInfo: (condition, label, content) => ReactElement;
