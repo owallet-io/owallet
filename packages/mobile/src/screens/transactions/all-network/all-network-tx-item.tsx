@@ -106,9 +106,7 @@ export const AllNetworkTxItem: FC<{
                   (chainInfo.stakeCurrency.coinDenom === "ORAI" &&
                     currency.coinDenom === "ORAI") ||
                   (chainInfo.stakeCurrency.coinDenom === "ORAI" &&
-                    currency.coinDenom === "AIRI") ||
-                  (chainInfo.stakeCurrency.coinDenom === "ORAI" &&
-                    currency.coinDenom === "ORAIX")
+                    currency.coinDenom === "AIRI")
                     ? colors["neutral-text-title"]
                     : null,
               }}
