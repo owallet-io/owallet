@@ -5,7 +5,7 @@ import React, {
   useState,
 } from "react";
 import { observer } from "mobx-react-lite";
-import { decodeBase64 } from "../../../helpers/helper";
+import { decodeBase64, numberWithCommas } from "../../../helpers/helper";
 import { AppChainInfo } from "@owallet/types";
 import { LIST_ORAICHAIN_CONTRACT } from "../helpers/constant";
 import {
@@ -157,6 +157,16 @@ export const EVMRenderArgs: FunctionComponent<{
     }
   }, [args?._destination]);
 
+  console.log(
+    "pathh",
+    args?.path,
+    path.sort((a, b) => {
+      const indexA = args?.path.indexOf(a.contractAddress.toLowerCase());
+      const indexB = args?.path.indexOf(b.contractAddress.toLowerCase());
+      return indexA - indexB;
+    })
+  );
+
   return (
     <div>
       {renderInfo(
@@ -164,9 +174,11 @@ export const EVMRenderArgs: FunctionComponent<{
         "Approve amount",
         <Text>
           {args?._value
-            ? toDisplay(
-                (args?._value).toString(),
-                chain.stakeCurrency.coinDecimals
+            ? numberWithCommas(
+                toDisplay(
+                  (args?._value).toString(),
+                  chain.stakeCurrency.coinDecimals
+                )
               )
             : null}
         </Text>
@@ -176,9 +188,11 @@ export const EVMRenderArgs: FunctionComponent<{
         "Amount",
         <Text>
           {args?._amount
-            ? toDisplay(
-                (args?._amount).toString(),
-                chain.stakeCurrency.coinDecimals
+            ? numberWithCommas(
+                toDisplay(
+                  (args?._amount).toString(),
+                  chain.stakeCurrency.coinDecimals
+                )
               )
             : null}
         </Text>
@@ -186,7 +200,7 @@ export const EVMRenderArgs: FunctionComponent<{
 
       {renderInfo(
         args?._destination,
-        "Destination",
+        "Bridge Destination",
         <Text>
           {args?._destination ? args?._destination.split(":")?.[0] : null}
         </Text>
@@ -196,9 +210,11 @@ export const EVMRenderArgs: FunctionComponent<{
         "Amount In",
         <Text>
           {args._amountIn
-            ? toDisplay(
-                args._amountIn.toString(),
-                tokenIn?.decimal ?? chain.stakeCurrency.coinDecimals
+            ? numberWithCommas(
+                toDisplay(
+                  args._amountIn.toString(),
+                  tokenIn?.decimal ?? chain.stakeCurrency.coinDecimals
+                )
               )
             : null}
         </Text>
@@ -208,9 +224,11 @@ export const EVMRenderArgs: FunctionComponent<{
         "Amount In",
         <Text>
           {args.amountIn
-            ? toDisplay(
-                args.amountIn.toString(),
-                tokenIn?.decimal ?? chain.stakeCurrency.coinDecimals
+            ? numberWithCommas(
+                toDisplay(
+                  args.amountIn.toString(),
+                  tokenIn?.decimal ?? chain.stakeCurrency.coinDecimals
+                )
               )
             : null}
         </Text>
@@ -230,9 +248,11 @@ export const EVMRenderArgs: FunctionComponent<{
         "Amount Out Min",
         <Text>
           {args?._amountOutMin
-            ? toDisplay(
-                (args?._amountOutMin).toString(),
-                tokenOut?.decimal ?? chain.stakeCurrency.coinDecimals
+            ? numberWithCommas(
+                toDisplay(
+                  (args?._amountOutMin).toString(),
+                  tokenOut?.decimal ?? chain.stakeCurrency.coinDecimals
+                )
               )
             : null}
         </Text>
@@ -242,9 +262,11 @@ export const EVMRenderArgs: FunctionComponent<{
         "Amount Out Min",
         <Text>
           {args?.amountOutMin
-            ? toDisplay(
-                (args?.amountOutMin).toString(),
-                tokenOut?.decimal ?? chain.stakeCurrency.coinDecimals
+            ? numberWithCommas(
+                toDisplay(
+                  (args?.amountOutMin).toString(),
+                  tokenOut?.decimal ?? chain.stakeCurrency.coinDecimals
+                )
               )
             : null}
         </Text>
@@ -254,7 +276,7 @@ export const EVMRenderArgs: FunctionComponent<{
         : null}
       {renderInfo(
         toAddress,
-        "To Address",
+        "Bridge Address",
         <Text>{toAddress ? toAddress : null}</Text>
       )}
       {toToken && toToken.coinDenom !== tokenOut?.abbr
@@ -293,7 +315,7 @@ export const EVMRenderArgs: FunctionComponent<{
                           alignItems: "center",
                         }}
                       >
-                        <Text>{" → "}</Text>
+                        <Text>{"  →  "}</Text>
                         {renderToken(p)}
                       </div>
                     );

@@ -12,6 +12,7 @@ import { Card } from "../../components/common/card";
 import colors from "../../theme/colors";
 import { Text } from "../../components/common/text";
 import ERC20_ABI from "./abi/erc20-abi.json";
+import BEP20_ABI from "./abi/bep20-abi.json";
 import EVM_PROXY_ABI from "./abi/evm-proxy-abi.json";
 import GRAVITY_ABI from "./abi/gravity-abi.json";
 import PANCAKE_ABI from "./abi/pancake-abi.json";
@@ -63,6 +64,7 @@ export const DetailsTabEvm: FunctionComponent<{
             GRAVITY_ABI,
             PANCAKE_ABI,
             UNISWAP_ABI,
+            BEP20_ABI,
           ]);
           setDecodeWithABI(res);
 

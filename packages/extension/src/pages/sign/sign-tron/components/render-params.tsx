@@ -15,7 +15,7 @@ import {
   getTokenInfo,
 } from "../../helpers/helpers";
 import { LIST_ORAICHAIN_CONTRACT } from "../../helpers/constant";
-import { decodeBase64 } from "../../../../helpers/helper";
+import { decodeBase64, numberWithCommas } from "../../../../helpers/helper";
 
 export const TronRenderParams: FunctionComponent<{
   params: Array<any>;
@@ -147,9 +147,11 @@ export const TronRenderParams: FunctionComponent<{
               p?.value,
               "Amount In",
               <Text>
-                {toDisplay(
-                  (p?.value).toString(),
-                  chain.stakeCurrency.coinDecimals
+                {numberWithCommas(
+                  toDisplay(
+                    (p?.value).toString(),
+                    chain.stakeCurrency.coinDecimals
+                  )
                 )}
               </Text>
             );
