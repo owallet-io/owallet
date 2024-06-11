@@ -27,6 +27,7 @@ import {
 } from "../helpers/helpers";
 import { LIST_ORAICHAIN_CONTRACT } from "../helpers/constant";
 import { decodeBase64 } from "../../../helpers/helper";
+import { FormFeedback } from "reactstrap";
 
 export const TronDetailsTab: FunctionComponent<{
   dataSign;
@@ -84,11 +85,10 @@ export const TronDetailsTab: FunctionComponent<{
         } catch (err) {
           EmbedChainInfos.map((c) => {
             if (c.chainId === chain.chainId) {
-              //@ts-ignore
               const token = c.currencies.find(
+                //@ts-ignore
                 (cu) => cu.contractAddress === contractAddress
               );
-              console.log("toennn 3", token);
 
               setToken(token);
             }
@@ -100,8 +100,6 @@ export const TronDetailsTab: FunctionComponent<{
     useEffect(() => {
       params?.map((p) => {
         if (p.type === "address") {
-          console.log("p", p.value);
-
           findToken(getBase58Address(p.value));
         }
       });
@@ -163,6 +161,7 @@ export const TronDetailsTab: FunctionComponent<{
         const encodedData = value.split(":")?.[1];
         if (encodedData) {
           const decodedData = decodeBase64(encodedData);
+          console.log("decodedData", decodedData);
 
           if (decodedData) {
             // Regular expression pattern to split the input string
@@ -259,14 +258,11 @@ export const TronDetailsTab: FunctionComponent<{
               );
 
               return <>{toContractComponent}</>;
-              // return renderInfo(p?.value, "To Contract", <Text>{getBase58Address(p?.value)}</Text>);
             }
 
             if (p.type === "string") {
               const { des, tokenInfo } = convertDestinationToken(p?.value);
               let desComponent, tokenComponent;
-
-              console.log("tokenInfo", tokenInfo);
 
               if (des) {
                 desComponent = renderInfo(
@@ -570,124 +566,26 @@ export const TronDetailsTab: FunctionComponent<{
           )}
           {renderTransactionFee()}
         </Card>
-        {/* <div id="signing-messages" className={styleDetailsTab.msgContainer}>
-        {renderMsg(
-          <React.Fragment>
-            {dataSign?.currency && (
-              <MsgRender
-                icon={"fas fa-paper-plane"}
-                title={intl.formatMessage({
-                  id: "sign.list.message.cosmos-sdk/MsgSend.title",
-                })}
-              >
-                <FormattedMessage
-                  id="sign.list.message.cosmos-sdk/MsgSend.content"
-                  values={{
-                    b: (...chunks: any[]) => <b>{chunks}</b>,
-                    recipient: dataSign?.recipient,
-                    amount:
-                      dataSign?.amount + " " + dataSign?.currency?.coinDenom,
-                  }}
-                />
-              </MsgRender>
-            )}
-            {txInfo?.functionSelector && (
-              <MsgRender icon={null} title={"Trigger Smart Contract"}>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      flex: 1,
-                    }}
-                  >
-                    <span>Contract:</span>
-                    <span>Method:</span>
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      flex: 2,
-                      // justifyContent:"flex-end",
-                      alignItems: "flex-end",
-                    }}
-                  >
-                    <a
-                      rel="noreferrer"
-                      href={`https://tronscan.org/#/contract/${txInfo?.address}`}
-                      target="_blank"
-                    >
-                      {txInfo?.address}
-                    </a>
-                    <span>{txInfo?.functionSelector}</span>
-                  </div>
-                </div>
-              </MsgRender>
-            )}
-            {isFeeLoading ? (
-              <FormText>
-                <i className="fa fa-spinner fa-spin fa-fw" />
-              </FormText>
-            ) : (
-              <>
-                {dataInfo?.estimateBandwidth?.lte(new Int(0)) &&
-                dataInfo?.estimateEnergy?.lte(new Int(0)) ? null : (
-                  <div
-                    style={{
-                      justifyContent: "space-between",
-                      display: "flex",
-                    }}
-                  >
-                    <span>Resources:</span>
-                    <span>
-                      {dataInfo?.estimateBandwidth?.gt(new Int(0)) &&
-                        `${dataInfo?.estimateBandwidth?.toString()} Bandwidth`}
-                      {dataInfo?.estimateEnergy?.gt(new Int(0)) &&
-                        ` + ${new IntPretty(
-                          dataInfo?.estimateEnergy?.toDec()
-                        )?.toString()} Energy`}
-                    </span>
-                  </div>
-                )}
-
-                <div
-                  style={{
-                    justifyContent: "space-between",
-                    display: "flex",
-                  }}
-                >
-                  <span>Fee:</span>
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "flex-end",
-                    }}
-                  >
-                    <span>{feePretty?.trim(true)?.toString()}</span>
-                    <span>
-                      ~{priceStore.calculatePrice(feePretty)?.toString()}
-                    </span>
-                  </div>
-                </div>
-
-                <hr />
-                {errorText != null ? (
-                  <FormFeedback style={{ display: "block", marginTop: -15 }}>
-                    {errorText}
-                  </FormFeedback>
-                ) : null}
-              </>
-            )}
-          </React.Fragment>
-        )}
-      </div> */}
+        {errorText != null ? (
+          <div
+            style={{
+              display: "flex",
+              backgroundColor: colors["warning-surface-subtle"],
+              borderRadius: 12,
+              flexDirection: "row",
+              marginTop: 12,
+              padding: "8px",
+            }}
+          >
+            <img
+              style={{ paddingRight: 4 }}
+              src={require("../../../public/assets/icon/tdesign_error-circle.svg")}
+            />
+            <Text size={12} weight="600">
+              {errorText}
+            </Text>
+          </div>
+        ) : null}
       </div>
     );
   }
