@@ -48,7 +48,7 @@ export const TokensCardAll: FunctionComponent<{
     ? dataTokens.filter((item, index) => {
         const balance = new CoinPretty(item.token.currency, item.token.amount);
         const price = priceStore.calculatePrice(balance, "usd");
-        return price?.toDec().gte(new Dec("1")) ?? false;
+        return price?.toDec().gte(new Dec("0.01")) ?? false;
       })
     : dataTokens;
   const tokensAll =
@@ -234,7 +234,7 @@ export const TokensCardAll: FunctionComponent<{
                 justifyContent: "space-between",
               }}
             >
-              <OWText color={colors["neutral-text-body"]}>{`Hide <$1`}</OWText>
+              <OWText color={colors["neutral-text-body"]}>{`Hide dust`}</OWText>
               <Switch
                 onValueChange={(value) => {
                   setToggle(value);

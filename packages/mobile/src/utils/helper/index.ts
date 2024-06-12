@@ -825,7 +825,7 @@ export function groupAndShuffle(array, groupSize = 5, chainId, sortType) {
     groups.push(sortedArray.slice(i, i + groupSize));
   }
   const shuffledGroups = groups.map((group) => shuffleArray(group));
-  return sortByVoting(sortedArray, sortType);
+  return shuffledGroups;
 }
 
 export const formatPercentage = (
