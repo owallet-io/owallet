@@ -184,6 +184,97 @@ export const DetailsTabEvm: FunctionComponent<{
       return null;
     })();
 
+    const renderToken = (token) => {
+      return (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            margin: "4px 0",
+          }}
+        >
+          {token?.imgUrl || token?.coinImageUrl ? (
+            <img
+              style={{
+                width: 14,
+                height: 14,
+                borderRadius: 28,
+                marginRight: 4,
+              }}
+              src={token?.imgUrl ?? token?.coinImageUrl}
+            />
+          ) : null}
+          <Text weight="600">{token?.abbr ?? token?.coinDenom}</Text>
+        </div>
+      );
+    };
+
+    const renderPath = (fromToken?, toToken?) => {
+      return (
+        <div
+          style={{
+            marginTop: 14,
+            height: "auto",
+            alignItems: "center",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginBottom: 14,
+            }}
+          >
+            <div
+              style={{
+                maxWidth: "50%",
+              }}
+            >
+              <div>
+                <Text color={colors["neutral-text-body"]}>Pay token</Text>
+                {renderToken(chain.stakeCurrency)}
+                <Text
+                  containerStyle={{ textDecoration: "underline" }}
+                  color={colors["neutral-text-body"]}
+                >
+                  {"0x8c7...4E797"}
+                </Text>
+              </div>
+            </div>
+            <img
+              style={{ paddingRight: 4 }}
+              src={require("../../public/assets/icon/tdesign_arrow-right.svg")}
+            />
+            <div
+              style={{
+                maxWidth: "50%",
+              }}
+            >
+              <div>
+                <Text color={colors["neutral-text-body"]}>Receive token</Text>
+                {renderToken(chain.stakeCurrency)}
+                <Text
+                  containerStyle={{ textDecoration: "underline" }}
+                  color={colors["neutral-text-body"]}
+                >
+                  {"0x8c7...4E797"}
+                </Text>
+              </div>
+            </div>
+          </div>
+          <div
+            style={{
+              width: "100%",
+              height: 1,
+              backgroundColor: colors["neutral-border-default"],
+            }}
+          />
+        </div>
+      );
+    };
+
     const renderInfo = (condition, label, leftContent) => {
       if (condition && condition !== "") {
         return (
@@ -276,8 +367,6 @@ export const DetailsTabEvm: FunctionComponent<{
       );
     };
 
-    console.log(decodedData, "decodeedDAta");
-
     return (
       <div className={styleDetailsTab.container}>
         <div
@@ -344,11 +433,11 @@ export const DetailsTabEvm: FunctionComponent<{
               <Text weight="600">{chain?.chainName}</Text>
             </div>
           )}
+          {renderPath()}
           {renderInfo(
             msgs.from,
             "From",
             <Text color={colors["neutral-text-body"]}>
-              {" "}
               <Address maxCharacters={18} lineBreakBeforePrefix={false}>
                 {msgs?.from}
               </Address>
@@ -358,7 +447,6 @@ export const DetailsTabEvm: FunctionComponent<{
             msgs.to,
             "To",
             <Text color={colors["neutral-text-body"]}>
-              {" "}
               <Address maxCharacters={18} lineBreakBeforePrefix={false}>
                 {msgs?.to}
               </Address>
@@ -396,7 +484,7 @@ export const DetailsTabEvm: FunctionComponent<{
           {renderInfo(msgs?.gas, "Gas", <Text>{Number(msgs?.gas)}</Text>)}
           {renderTransactionFee()}
         </Card>
-        {feeConfig.getError() != null && feeConfig.getError() != undefined ? (
+        {feeConfig.getError() !== null && feeConfig.getError() !== undefined ? (
           <div
             style={{
               display: "flex",
@@ -416,7 +504,7 @@ export const DetailsTabEvm: FunctionComponent<{
             </Text>
           </div>
         ) : null}
-        {gasConfig.getError() != null && gasConfig.getError() != undefined ? (
+        {gasConfig.getError() !== null && gasConfig.getError() !== undefined ? (
           <div
             style={{
               display: "flex",
