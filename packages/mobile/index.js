@@ -29,22 +29,22 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
 
 const { App } = require("./src/app");
 
-// if (!__DEV__) {
-//   Sentry.init({
-//     dsn: "https://ab29c6e64d65418cb3b9f133dc601c23@o1323226.ingest.sentry.io/4504632450023424",
-//     tracesSampleRate: 0.7,
-//     environment: "production",
-//     ignoreErrors: [
-//       "Request rejected",
-//       "Failed to fetch",
-//       "Load failed",
-//       "User rejected the request",
-//       "SIGABRT",
-//       "ApplicationNotResponding",
-//       "Abort"
-//     ]
-//   });
-// }
+if (!__DEV__) {
+  Sentry.init({
+    dsn: "https://ab29c6e64d65418cb3b9f133dc601c23@o1323226.ingest.sentry.io/4504632450023424",
+    tracesSampleRate: 0.7,
+    environment: "production",
+    ignoreErrors: [
+      "Request rejected",
+      "Failed to fetch",
+      "Load failed",
+      "User rejected the request",
+      "SIGABRT",
+      "ApplicationNotResponding",
+      "Abort"
+    ]
+  });
+}
 if (__DEV__ && Platform.OS === "ios") {
   NativeModules.DevSettings.setIsDebuggingRemotely(false);
 }
