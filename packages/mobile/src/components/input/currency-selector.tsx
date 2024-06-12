@@ -107,7 +107,7 @@ export const CurrencySelector: FunctionComponent<{
 
       amountConfig.setSendCurrency(currency);
     };
-
+    console.log(displayTokens, "display tokens");
     return type !== "legacy" ? (
       <TokensSelector
         chainId={chainId}

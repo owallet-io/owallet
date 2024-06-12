@@ -30,9 +30,16 @@ import { metrics } from "@src/themes";
 import FastImage from "react-native-fast-image";
 import OWText from "@src/components/text/ow-text";
 import { HistoryCard } from "@src/screens/transactions";
-import { ViewRawToken, ViewToken } from "@src/stores/huge-queries";
+import {
+  RawChainInfo,
+  RawToken,
+  ViewRawToken,
+  ViewToken,
+} from "@src/stores/huge-queries";
 import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
 import { OWSearchInput } from "@src/components/ow-search-input";
+import { AppCurrency } from "@owallet/types";
+import { initPrice } from "@src/screens/home/hooks/use-multiple-assets";
 
 export const TokensCardAll: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -268,20 +275,21 @@ const TokenItem: FC<{
   if (!fiatCurrency) return;
   const styles = styling(colors);
   const onPressToken = async (item) => {
+    if (!item.token?.currency?.coinGeckoId) return;
     navigate(SCREENS.TokenDetails, {
       item,
     });
     return;
   };
-  const price24h = priceStore.getPrice24hChange(
-    item.token.currency.coinGeckoId
-  );
+  const price24h = item.token?.currency?.coinGeckoId
+    ? priceStore.getPrice24hChange(item.token.currency.coinGeckoId)
+    : 0;
   return (
     <TouchableOpacity
       onPress={() => {
         onPressToken(item);
       }}
-      key={`${item.chainInfo.chainId}-${item.token.toString()}`}
+      key={`${item.chainInfo?.chainId}-${item.token?.toString()}`}
       style={styles.btnItem}
     >
       <View style={[styles.wraperItem]}>
@@ -292,10 +300,10 @@ const TokenItem: FC<{
               type="images"
               source={{
                 uri:
-                  item.token.currency.coinImageUrl.includes("missing.png") ||
-                  !item.token.currency.coinImageUrl
+                  item.token?.currency?.coinImageUrl?.includes("missing.png") ||
+                  !item.token?.currency?.coinImageUrl
                     ? unknownToken.coinImageUrl
-                    : item.token.currency.coinImageUrl,
+                    : item.token?.currency?.coinImageUrl,
               }}
               size={32}
             />
@@ -304,7 +312,7 @@ const TokenItem: FC<{
             <OWIcon
               type="images"
               source={{
-                uri: item.chainInfo.chainImage || unknownToken.coinImageUrl,
+                uri: item?.chainInfo?.chainImage || unknownToken.coinImageUrl,
               }}
               size={16}
             />
@@ -312,7 +320,7 @@ const TokenItem: FC<{
 
           <View style={styles.pl12}>
             <Text size={16} color={colors["neutral-text-heading"]} weight="600">
-              {removeDataInParentheses(item.token.currency.coinDenom)}{" "}
+              {removeDataInParentheses(item.token?.currency?.coinDenom)}{" "}
               <Text
                 size={12}
                 color={
@@ -327,7 +335,7 @@ const TokenItem: FC<{
               </Text>
             </Text>
             <Text weight="400" color={colors["neutral-text-body"]}>
-              {item.chainInfo.chainName}
+              {item?.chainInfo?.chainName}
             </Text>
             {item.type && (
               <View style={styles.type}>
@@ -351,19 +359,27 @@ const TokenItem: FC<{
                 weight="500"
                 color={colors["neutral-text-heading"]}
               >
-                {maskedNumber(
-                  new CoinPretty(item.token.currency, item.token.amount)
-                    .trim(true)
-                    .hideDenom(true)
-                    .toString()
-                )}
+                {item?.token?.currency && item?.token?.amount
+                  ? maskedNumber(
+                      new CoinPretty(
+                        item?.token?.currency || unknownToken,
+                        item?.token?.amount || "0"
+                      )
+                        .trim(true)
+                        .hideDenom(true)
+                        ?.toString()
+                    )
+                  : "0"}
               </Text>
               <Text
                 size={14}
                 style={{ lineHeight: 24 }}
                 color={colors["neutral-text-body"]}
               >
-                {new PricePretty(fiatCurrency, item.price).toString()}
+                {(item.price
+                  ? new PricePretty(fiatCurrency, item.price)
+                  : initPrice
+                )?.toString()}
               </Text>
               {/*<Text*/}
               {/*  size={14}*/}
