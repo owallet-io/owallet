@@ -55,7 +55,7 @@ export const TokensCardAll: FunctionComponent<{
     ? dataTokens.filter((item, index) => {
         const balance = new CoinPretty(item.token.currency, item.token.amount);
         const price = priceStore.calculatePrice(balance, "usd");
-        return price?.toDec().gte(new Dec("0.01")) ?? false;
+        return price?.toDec().gte(new Dec("0.1")) ?? false;
       })
     : dataTokens;
   useEffect(() => {
