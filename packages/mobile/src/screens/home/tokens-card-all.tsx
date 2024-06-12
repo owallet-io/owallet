@@ -51,6 +51,10 @@ export const TokensCardAll: FunctionComponent<{
         return price?.toDec().gte(new Dec("0.01")) ?? false;
       })
     : dataTokens;
+  useEffect(() => {
+    if (!keyword) return;
+    setKeyword("");
+  }, [activeTab]);
   const tokensAll =
     tokens &&
     tokens.filter((item, index) =>
