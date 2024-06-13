@@ -68,10 +68,18 @@ const TokenItem: FC<{
           <div className={styles.tokenWrap}>
             <img
               className={styles.token}
-              src={item.token.currency.coinImageUrl}
+              src={
+                item.token?.currency?.coinImageUrl?.includes("missing.png") ||
+                !item.token?.currency?.coinImageUrl
+                  ? unknownToken.coinImageUrl
+                  : item.token?.currency?.coinImageUrl
+              }
             />
             <div className={styles.chainWrap}>
-              <img className={styles.chain} src={item.chainInfo.chainImage} />
+              <img
+                className={styles.chain}
+                src={item?.chainInfo?.chainImage || unknownToken.coinImageUrl}
+              />
             </div>
           </div>
         </div>
@@ -83,9 +91,13 @@ const TokenItem: FC<{
                 styles.priceChange,
                 price24h < 0 ? styles.errorColor : styles.successColor,
               ])}
-            >{` ${price24h > 0 ? "+" : ""}${price24h?.toLocaleString("en-US", {
-              maximumFractionDigits: 2,
-            })}%`}</span>
+            >{` ${price24h > 0 ? "+" : ""}${(price24h || 0)?.toLocaleString(
+              "en-US",
+              {
+                maximumFractionDigits: 2,
+                minimumFractionDigits: 2,
+              }
+            )}%`}</span>
           </span>
 
           <span className={styles.subTitle}>{`${item.chainInfo.chainName} ${

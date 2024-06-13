@@ -13,7 +13,7 @@ import {
   MapChainIdToNetwork,
   parseRpcBalance,
 } from "@owallet/common";
-import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
+import { CoinPretty, Dec, DecUtils, PricePretty } from "@owallet/unit";
 import Web3 from "web3";
 import { MulticallQueryClient } from "@oraichain/common-contracts-sdk";
 import { fromBinary, toBinary } from "@cosmjs/cosmwasm-stargate";
