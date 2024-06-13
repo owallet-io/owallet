@@ -48,6 +48,8 @@ export const DetailsTabEvm: FunctionComponent<{
     const intl = useIntl();
     const language = useLanguage();
 
+    const [isMore, setIsMore] = useState(true);
+
     const chain = chainStore.getChain(dataSign?.data?.chainId);
     const [decodedData, setDecodedData] = useState(null);
     const [decodeWithABI, setDecodeWithABI] = useState(null);
@@ -318,50 +320,105 @@ export const DetailsTabEvm: FunctionComponent<{
 
     const renderTransactionFee = () => {
       return (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            marginTop: 14,
-          }}
-          onClick={() => {
-            setOpenSetting();
-          }}
-        >
-          <Text weight="600">Transaction fee</Text>
+        <div>
+          {renderInfo(
+            chain?.chainName,
+            "Amount",
+            <div
+              style={{
+                flexDirection: "column",
+                display: "flex",
+                alignItems: "flex-end",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  cursor: "pointer",
+                }}
+              >
+                <Text size={16} weight="600">
+                  1,795.89147 ORAIX
+                </Text>
+              </div>
+              <Text
+                containerStyle={{
+                  alignSelf: "flex-end",
+                  display: "flex",
+                }}
+                color={colors["neutral-text-body"]}
+              >
+                ≈
+                {priceStore
+                  .calculatePrice(feeConfig?.fee, language.fiatCurrency)
+                  ?.toString() || 0}
+              </Text>
+            </div>
+          )}
           <div
             style={{
-              flexDirection: "column",
               display: "flex",
-              alignItems: "flex-end",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginTop: 14,
+            }}
+            onClick={() => {
+              setOpenSetting();
             }}
           >
             <div
               style={{
+                flexDirection: "column",
                 display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                cursor: "pointer",
               }}
             >
-              <Text
-                size={16}
-                weight="600"
-                color={colors["primary-text-action"]}
-              >
-                {feeConfig?.fee?.maxDecimals(8).trim(true).toString() || 0}
-              </Text>
-              <img
-                src={require("../../public/assets/icon/tdesign_chevron-down.svg")}
-              />
+              <div>
+                <Text weight="600">Fee</Text>
+              </div>
+              <div>
+                <Text color={colors["neutral-text-body"]}>Gas: 135588</Text>
+              </div>
             </div>
-            <Text color={colors["neutral-text-body"]}>
-              ≈
-              {priceStore
-                .calculatePrice(feeConfig?.fee, language.fiatCurrency)
-                ?.toString() || 0}
-            </Text>
+            <div
+              style={{
+                flexDirection: "column",
+                display: "flex",
+                alignItems: "flex-end",
+                width: "65%",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  cursor: "pointer",
+                }}
+              >
+                <Text
+                  size={16}
+                  weight="600"
+                  color={colors["primary-text-action"]}
+                >
+                  {feeConfig?.fee?.maxDecimals(8).trim(true).toString() || 0}
+                </Text>
+                <img
+                  src={require("../../public/assets/icon/tdesign_chevron-down.svg")}
+                />
+              </div>
+              <Text
+                containerStyle={{
+                  alignSelf: "flex-end",
+                  display: "flex",
+                }}
+                color={colors["neutral-text-body"]}
+              >
+                ≈
+                {priceStore
+                  .calculatePrice(feeConfig?.fee, language.fiatCurrency)
+                  ?.toString() || 0}
+              </Text>
+            </div>
           </div>
         </div>
       );
@@ -435,6 +492,29 @@ export const DetailsTabEvm: FunctionComponent<{
           )}
           {renderPath()}
           {renderInfo(
+            true,
+            "Method",
+            <Text color={colors["neutral-text-body"]}>{"SendToCosmos"}</Text>
+          )}
+          {isMore
+            ? null
+            : renderInfo(
+                true,
+                "Channel",
+                <Text color={colors["neutral-text-body"]}>
+                  {"channel-1/orai1hvr9d72r5um9lvtOrpkd4r75vrsgtw6yujhqs2"}
+                </Text>
+              )}
+          {renderInfo(
+            msgs.to,
+            "To",
+            <Text color={colors["neutral-text-body"]}>
+              <Address maxCharacters={18} lineBreakBeforePrefix={false}>
+                {msgs?.to}
+              </Address>
+            </Text>
+          )}
+          {renderInfo(
             msgs.from,
             "From",
             <Text color={colors["neutral-text-body"]}>
@@ -482,6 +562,51 @@ export const DetailsTabEvm: FunctionComponent<{
           ) : null}
 
           {renderInfo(msgs?.gas, "Gas", <Text>{Number(msgs?.gas)}</Text>)}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              cursor: "pointer",
+              justifyContent: "flex-end",
+              width: "100%",
+              marginTop: 8,
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                cursor: "pointer",
+              }}
+              onClick={() => {
+                setIsMore((prevState) => {
+                  return prevState ? false : true;
+                });
+              }}
+            >
+              <Text size={14} weight="500">
+                {`View ${isMore ? "more" : "less"}`}
+              </Text>
+              {isMore ? (
+                <img
+                  src={require("../../public/assets/icon/tdesign_chevron-down.svg")}
+                />
+              ) : (
+                <img
+                  src={require("../../public/assets/icon/tdesign_chevron-up.svg")}
+                />
+              )}
+            </div>
+          </div>
+        </Card>
+        <Card
+          containerStyle={{
+            borderRadius: 12,
+            border: "2px solid" + colors["neutral-text-title"],
+            padding: 8,
+            marginTop: 12,
+          }}
+        >
           {renderTransactionFee()}
         </Card>
         {feeConfig.getError() !== null && feeConfig.getError() !== undefined ? (
