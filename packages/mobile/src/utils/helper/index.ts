@@ -162,7 +162,7 @@ export const checkValidDomain = (url: string) => {
   // try with URL
   try {
     const { origin } = new URL(url);
-    return origin.length > 0;
+    return origin?.length > 0;
   } catch {
     return false;
   }
@@ -179,7 +179,7 @@ export const formatContractAddress = (address: string, limitFirst = 10) => {
 export const convertArrToObject = (arr, label = `Validator`) => {
   if (!arr?.length) return;
   var rv = {};
-  for (var i = 0; i < arr.length; ++i) rv[`${label}${i + 1}`] = arr[i];
+  for (var i = 0; i < arr?.length; ++i) rv[`${label}${i + 1}`] = arr[i];
   return rv;
 };
 export const removeDataInParentheses = (inputString: string): string => {
@@ -200,7 +200,7 @@ export const extractDataInParentheses = (
 };
 
 export function limitString(str, limit) {
-  if (str && str.length > limit) {
+  if (str && str?.length > limit) {
     return str.slice(0, limit) + "...";
   } else {
     return str;

@@ -83,7 +83,7 @@ export const TokenDetails: FunctionComponent = observer((props) => {
               }
             );
 
-            if (res.data?.data.length > 0) {
+            if (res.data?.data?.length > 0) {
               if (res.data?.data[0].trc20) {
                 const tokenArr = [];
                 TRC20_LIST.map((tk) => {

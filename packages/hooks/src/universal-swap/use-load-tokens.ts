@@ -445,7 +445,7 @@ async function loadEvmEntries(
         chain.chainId === t.chainId
     );
 
-    if (!tokens.length) return [];
+    if (!tokens?.length) return [];
     const multicall = new Multicall({
       nodeUrl: chain.rpc,
       multicallCustomContractAddress,

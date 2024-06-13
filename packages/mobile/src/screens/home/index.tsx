@@ -260,7 +260,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   const onFetchAmount = (customChainInfos) => {
     let timeoutId;
     if (accountOrai.isNanoLedger) {
-      if (Object.keys(keyRingStore.keyRingLedgerAddresses).length > 0) {
+      if (Object.keys(keyRingStore.keyRingLedgerAddresses)?.length > 0) {
         timeoutId = setTimeout(() => {
           handleFetchAmounts(
             {

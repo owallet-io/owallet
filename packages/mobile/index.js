@@ -41,7 +41,9 @@ if (!__DEV__) {
       "User rejected the request",
       "SIGABRT",
       "ApplicationNotResponding",
-      "Abort"
+      "Abort",
+      "Network request failed",
+
     ]
   });
 }
