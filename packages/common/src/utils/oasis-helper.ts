@@ -4,18 +4,23 @@ import * as oasisRT from "@oasisprotocol/client-rt";
 // eslint-disable-next-line no-restricted-imports
 import BigNumber from "bignumber.js";
 import { sha512_256 } from "js-sha512";
+
 /** Redux can't serialize bigint fields, so we stringify them, and mark them. */
 export type StringifiedBigInt = string & PreserveAliasName;
+
 // eslint-disable-next-line @typescript-eslint/ban-types
 interface PreserveAliasName extends String {}
+
 type ParaTimeNetwork = {
   address: string | undefined;
   runtimeId: string | undefined;
 };
+
 export enum RuntimeTypes {
   Evm = "evm",
   Oasis = "oasis",
 }
+
 export interface OasisBalance {
   available: StringifiedBigInt;
   validator: {
@@ -23,6 +28,7 @@ export interface OasisBalance {
     escrow_debonding: StringifiedBigInt;
   };
 }
+
 export type ParaTimeConfig = {
   mainnet: ParaTimeNetwork;
   testnet: ParaTimeNetwork;
@@ -180,6 +186,7 @@ export const isValidOasisAddress = (addr: string): boolean => {
 export const isValidEthAddress = (hexAddress: string): boolean => {
   return /^0x[0-9a-fA-F]{40}$/.test(hexAddress);
 };
+
 /** oasis.address.fromData(...) but without being needlessly asynchronous */
 function oasisAddressFromDataSync(
   contextIdentifier: string,
@@ -217,7 +224,7 @@ export const getOasisAddress = (address: string): string => {
     return address;
   } else if (isValidEthAddress(address)) {
     return getEvmBech32Address(address);
-  } else {
-    throw new Error("Invalid oasis address");
   }
+  console.error("Invalid oasis address");
+  return;
 };
