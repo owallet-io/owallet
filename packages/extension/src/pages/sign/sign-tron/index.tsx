@@ -85,14 +85,6 @@ export const SignTronPage: FunctionComponent = observer(() => {
     queries.queryBalances,
     queries
   );
-  useEffect(() => {
-    if (feeTrx) {
-      feeConfig.setManualFee(feeTrx);
-    }
-    return () => {
-      feeConfig.setManualFee(null);
-    };
-  }, [feeTrx]);
 
   useOnClickOutside(dataRef, () => {
     handleCloseDataModal();

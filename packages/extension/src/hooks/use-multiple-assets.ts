@@ -1,11 +1,11 @@
+// @ts-nocheck
 import { useEffect, useState } from "react";
-import { InteractionManager } from "react-native";
 import {
   addressToPublicKey,
+  API,
   ChainIdEnum,
   CWStargate,
   DenomHelper,
-  FiatCurrencies,
   getBase58Address,
   getEvmAddress,
   getOasisNic,
@@ -15,7 +15,6 @@ import {
 } from "@owallet/common";
 import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
 import Web3 from "web3";
-import axios from "axios";
 import { MulticallQueryClient } from "@oraichain/common-contracts-sdk";
 import { fromBinary, toBinary } from "@cosmjs/cosmwasm-stargate";
 import { OraiswapTokenTypes } from "@oraichain/oraidex-contracts-sdk";
@@ -26,19 +25,19 @@ import {
   oraichainNetwork,
 } from "@oraichain/oraidex-common";
 import {
-  HugeQueriesStore,
+  AddressBtcType,
+  AppCurrency,
+  ChainInfo,
+  IMultipleAsset,
   ViewRawToken,
   ViewTokenData,
-} from "@src/stores/huge-queries";
-import { AddressBtcType, AppCurrency, ChainInfo } from "@owallet/types";
+} from "@owallet/types";
 import {
   AccountStore,
   AccountWithAll,
   CoinGeckoPriceStore,
 } from "@owallet/stores";
-import { AppInit } from "@src/stores/app_init";
-import { delay } from "@src/utils/helper";
-import { API } from "@src/common/api";
+
 export const initPrice = new PricePretty(
   {
     currency: "usd",
@@ -49,41 +48,47 @@ export const initPrice = new PricePretty(
   new Dec("0")
 );
 
-export interface IMultipleAsset {
-  totalPriceBalance: string;
-  dataTokens: ViewRawToken[];
-  dataTokensByChain: Record<ChainIdEnum, ViewTokenData>;
-  isLoading?: boolean;
-}
+export const sortTokensByPrice = (tokens: ViewRawToken[]) => {
+  return tokens.sort((a, b) => Number(b.price) - Number(a.price));
+};
 
 export const useMultipleAssets = (
   accountStore: AccountStore<AccountWithAll>,
   priceStore: CoinGeckoPriceStore,
-  hugeQueriesStore: HugeQueriesStore,
+  allChainMap: any,
   chainId: string,
   isAllNetwork: boolean,
-  appInit: AppInit,
   isRefreshing: boolean,
-  bech32Address
+  bech32Address,
+  totalChain
 ): IMultipleAsset => {
   const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
   const [isLoading, setIsLoading] = useState(false);
+
+  const [multipleAssets, setMultipleAssets] = useState({
+    totalPriceBalance: "0",
+    dataTokens: [],
+    dataTokensByChain: null,
+  });
   const coinIds = new Map<string, boolean>();
   if (!fiatCurrency) return;
 
-  const tokensByChainId: Record<ChainIdEnum, ViewTokenData> = {};
-
+  const tokensByChainId:
+    | Record<ChainIdEnum | string, ViewTokenData>
+    | undefined = {};
+  const overallTotalBalance = "0";
+  const allTokens: ViewRawToken[] = [];
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
-    InteractionManager.runAfterInteractions(() => {
-      init();
-    });
-  }, [bech32Address, priceStore.defaultVsCurrency]);
+    if (allChainMap.size < totalChain) return;
+    init();
+  }, [bech32Address, priceStore.defaultVsCurrency, allChainMap.size]);
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
     if (!isRefreshing) return;
-    InteractionManager.runAfterInteractions(() => {
-      init();
-    });
-  }, [isRefreshing]);
+    if (allChainMap.size < totalChain) return;
+    init();
+  }, [isRefreshing, allChainMap.size]);
   const pushTokenQueue = async (
     token: AppCurrency,
     amount: string | number,
@@ -100,6 +105,22 @@ export const useMultipleAssets = (
       chainName: chainInfo.chainName,
       chainImage: chainInfo.stakeCurrency.coinImageUrl,
     };
+    if (!chainInfo.chainName?.toLowerCase().includes("test")) {
+      allTokens.push({
+        token: {
+          currency: balance.currency,
+          amount: amount,
+        },
+        chainInfo: rawChainInfo,
+        // price: price.toDec().toString(),
+        type: type
+          ? type === AddressBtcType.Bech32
+            ? "Segwit"
+            : "Legacy"
+          : null,
+      });
+    }
+
     tokensByChainId[chainInfo.chainId] = {
       tokens: [
         ...(tokensByChainId[chainInfo.chainId]?.tokens || []),
@@ -131,7 +152,7 @@ export const useMultipleAssets = (
   };
   const fetchAllBalancesEvm = async (chains) => {
     const allBalanceChains = chains.map((chain, index) => {
-      const { address, chainInfo } = hugeQueriesStore.getAllChainMap.get(chain);
+      const { address, chainInfo } = allChainMap.get(chain);
       switch (chain) {
         case ChainIdEnum.BNBChain:
         case ChainIdEnum.Ethereum:
@@ -145,15 +166,10 @@ export const useMultipleAssets = (
   const init = async () => {
     setIsLoading(true);
     try {
-      const allChain = Array.from(hugeQueriesStore.getAllChainMap.values());
-      const chainIdsEvm = [
-        ChainIdEnum.Ethereum,
-        ChainIdEnum.BNBChain,
-        ChainIdEnum.TRON,
-      ];
-      await fetchAllBalancesEvm(chainIdsEvm);
+      const allChain = Array.from(allChainMap.values());
       const allBalancePromises = allChain.map(
         async ({ address, chainInfo }) => {
+          if (!address) return;
           switch (chainInfo.networkType) {
             case "cosmos":
               return chainInfo.chainId === ChainIdEnum.Oraichain
@@ -168,6 +184,7 @@ export const useMultipleAssets = (
                 : Promise.all([
                     getBalanceNativeEvm(address, chainInfo),
                     getBalanceErc20(address, chainInfo),
+                    fetchAllBalancesEvm([chainInfo.chainId]),
                   ]);
             case "bitcoin":
               const btcAddress = accountStore.getAccount(
@@ -184,49 +201,7 @@ export const useMultipleAssets = (
 
       await Promise.allSettled(allBalancePromises);
       setIsLoading(false);
-      const currencies = FiatCurrencies.map(({ currency }) => currency);
-      priceStore.updateURL(Array.from(coinIds.keys()), currencies, true);
-      await delay(300);
-      let overallTotalBalance = "0";
-      let allTokens: ViewRawToken[] = [];
-      // Loop through each key in the data object
-      for (const chain in tokensByChainId) {
-        if (
-          tokensByChainId.hasOwnProperty(chain) &&
-          !tokensByChainId[chain]?.tokens?.[0].chainInfo?.chainName
-            ?.toLowerCase()
-            ?.includes("test")
-        ) {
-          let totalBalance = initPrice;
-          const tokensData = await Promise.all(
-            tokensByChainId[chain].tokens.map(async (infoToken) => {
-              const { token } = infoToken;
-              const balance = new CoinPretty(token.currency, token.amount);
-              const price = token?.currency?.coinGeckoId
-                ? await priceStore.waitCalculatePrice(balance)
-                : initPrice;
-              totalBalance = totalBalance.add(price);
-              return { ...infoToken, price: price.toDec().toString() };
-            })
-          );
-          tokensByChainId[chain].totalBalance = totalBalance.toDec().toString();
-          tokensByChainId[chain].tokens = tokensData;
-          // Add the total balance for each chain to the overall total balance
-          overallTotalBalance = new PricePretty(
-            fiatCurrency,
-            overallTotalBalance
-          )
-            .add(
-              new PricePretty(fiatCurrency, tokensByChainId[chain].totalBalance)
-            )
-            .toDec()
-            .toString();
-          // Concatenate the tokens for each chain to the allTokens array
-          allTokens = allTokens.concat(tokensData);
-        }
-      }
-
-      appInit.updateMultipleAssets({
+      setMultipleAssets({
         dataTokens: allTokens,
         totalPriceBalance: overallTotalBalance,
         dataTokensByChain: tokensByChainId,
@@ -245,6 +220,10 @@ export const useMultipleAssets = (
         network: MapChainIdToNetwork[chainInfo.chainId],
       });
       if (((res && res.result) || []).length <= 0) return;
+      const balanceObj = res.result.reduce((obj, item) => {
+        obj[item.tokenAddress] = item.balance;
+        return obj;
+      }, {});
       const tokenAddresses = res.result
         .map((item, index) => {
           return `${MapChainIdToNetwork[chainInfo.chainId]}%2B${
@@ -269,6 +248,10 @@ export const useMultipleAssets = (
               contractAddress: tokeninfo.contractAddress,
             },
           ];
+          const amount = new Dec(balanceObj[tokeninfo.contractAddress]).mul(
+            DecUtils.getTenExponentN(tokeninfo.decimal)
+          );
+          pushTokenQueue(infoToken[0], amount.roundUp().toString(), chainInfo);
           chainInfo.addCurrencies(...infoToken);
         }
       });
@@ -283,6 +266,12 @@ export const useMultipleAssets = (
         network: MapChainIdToNetwork[chainInfo.chainId],
       });
       if (!res?.trc20) return;
+      const result = res?.trc20.reduce((acc, curr) => {
+        const key = Object.keys(curr)[0];
+        acc[key] = curr[key];
+        return acc;
+      }, {});
+      console.log(result, "result");
       const tokenAddresses = res?.trc20
         .map((item, index) => {
           return `${MapChainIdToNetwork[chainInfo.chainId]}%2B${
@@ -309,15 +298,17 @@ export const useMultipleAssets = (
               contractAddress: tokeninfo.contractAddress,
             },
           ];
+          pushTokenQueue(
+            infoToken[0],
+            result[tokeninfo.contractAddress],
+            chainInfo
+          );
           chainInfo.addCurrencies(...infoToken);
         }
       });
     } catch (e) {
       console.log(e, "e1");
     }
-  };
-  const sortTokensByPrice = (tokens: ViewRawToken[]) => {
-    return tokens.sort((a, b) => Number(b.price) - Number(a.price));
   };
 
   const getBalanceNativeEvm = async (address, chainInfo: ChainInfo) => {
@@ -392,9 +383,7 @@ export const useMultipleAssets = (
   };
 
   const getBalanceCW20Oraichain = async () => {
-    const oraiNetwork = hugeQueriesStore.getAllChainMap.get(
-      ChainIdEnum.Oraichain
-    );
+    const oraiNetwork = allChainMap.get(ChainIdEnum.Oraichain);
     const chainInfo = oraiNetwork.chainInfo;
     const mergedMaps = chainInfo.currencyMap;
     const data = toBinary({
@@ -484,15 +473,15 @@ export const useMultipleAssets = (
       pushTokenQueue(token, Number(amount), chainInfo);
     });
   };
+
   return {
-    totalPriceBalance: appInit.getMultipleAssets.totalPriceBalance,
+    totalPriceBalance: multipleAssets.totalPriceBalance,
     dataTokens: isAllNetwork
-      ? sortTokensByPrice([...(appInit.getMultipleAssets.dataTokens || [])])
+      ? sortTokensByPrice([...(multipleAssets.dataTokens || [])])
       : sortTokensByPrice([
-          ...(appInit.getMultipleAssets.dataTokensByChain?.[chainId]?.tokens ||
-            []),
+          ...(multipleAssets.dataTokensByChain?.[chainId]?.tokens || []),
         ]),
-    dataTokensByChain: appInit.getMultipleAssets.dataTokensByChain,
+    dataTokensByChain: multipleAssets.dataTokensByChain,
     isLoading: isLoading,
   };
 };

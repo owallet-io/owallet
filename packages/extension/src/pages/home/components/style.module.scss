@@ -89,7 +89,6 @@
       justify-content: center;
       border-radius: 999px;
       padding: 4px 12px;
-      cursor: pointer;
 
       .txt {
         color: $neutral-text-action-on-dark-bg;
@@ -138,6 +137,7 @@
 
   .list-tokens {
     padding: 8px 0;
+
     .token-item {
       display: flex;
       flex-direction: row;
@@ -149,6 +149,7 @@
         display: flex;
         flex-direction: row;
         gap: 12px;
+
         .logo-token-and-chain {
 
           .token-wrap {
@@ -209,7 +210,13 @@
         font-weight: 500;
         font-size: 16px;
         line-height: 24px;
+        .price-change {
+          font-size: 12px;
+          font-weight: 400;
+        }
       }
+
+
 
       .sub-title {
         color: $neutral-text-body;
@@ -219,4 +226,12 @@
       }
     }
   }
+}
+
+.success-color {
+  color: $success-text-body;
+}
+
+.error-color {
+  color: $error-text-body;
 }

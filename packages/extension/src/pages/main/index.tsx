@@ -108,7 +108,7 @@ export const MainPage: FunctionComponent = observer(() => {
     return <SendPage />;
   };
   return (
-    <FooterLayout>
+    <HeaderLayout showChainName canChangeChainInfo>
       <SelectChain showChainName canChangeChainInfo />
       <div style={{ height: 10 }} />
       <BIP44SelectModal />
@@ -160,6 +160,6 @@ export const MainPage: FunctionComponent = observer(() => {
           </Card>
         </>
       )}
-    </FooterLayout>
+    </HeaderLayout>
   );
 });

@@ -8,8 +8,7 @@ import {
 } from "@owallet/types";
 import bech32, { fromWords } from "bech32";
 import { ETH } from "@hanchon/ethermint-address-converter";
-import { NetworkType } from "@owallet/types";
-import { ChainIdEnum, TRON_ID } from "./constants";
+import { ChainIdEnum, Network, TRON_ID } from "./constants";
 import { EmbedChainInfos } from "../config";
 import { Hash } from "@owallet/crypto";
 import bs58 from "bs58";
@@ -26,7 +25,32 @@ export const COINTYPE_NETWORK = {
   0: "Bitcoin",
   1: "Bitcoin Testnet",
 };
-
+export const MapChainIdToNetwork = {
+  [ChainIdEnum.BNBChain]: Network.BINANCE_SMART_CHAIN,
+  [ChainIdEnum.Ethereum]: Network.ETHEREUM,
+  [ChainIdEnum.Bitcoin]: Network.BITCOIN,
+  [ChainIdEnum.Oasis]: Network.MAINNET,
+  [ChainIdEnum.OasisEmerald]: Network.EMERALD,
+  [ChainIdEnum.OasisSapphire]: Network.SAPPHIRE,
+  [ChainIdEnum.TRON]: Network.TRON,
+  [ChainIdEnum.Oraichain]: Network.ORAICHAIN,
+  [ChainIdEnum.Osmosis]: Network.OSMOSIS,
+  [ChainIdEnum.CosmosHub]: Network.COSMOSHUB,
+  [ChainIdEnum.Injective]: Network.INJECTIVE,
+};
+export const MapNetworkToChainId = {
+  [Network.BINANCE_SMART_CHAIN]: ChainIdEnum.BNBChain,
+  [Network.ETHEREUM]: ChainIdEnum.Ethereum,
+  [Network.BITCOIN]: ChainIdEnum.Bitcoin,
+  [Network.MAINNET]: ChainIdEnum.Oasis,
+  [Network.EMERALD]: ChainIdEnum.OasisEmerald,
+  [Network.SAPPHIRE]: ChainIdEnum.OasisSapphire,
+  [Network.TRON]: ChainIdEnum.TRON,
+  [Network.ORAICHAIN]: ChainIdEnum.Oraichain,
+  [Network.OSMOSIS]: ChainIdEnum.Osmosis,
+  [Network.COSMOSHUB]: ChainIdEnum.CosmosHub,
+  [Network.INJECTIVE]: ChainIdEnum.Injective,
+};
 export const getRpcByChainId = (
   chainInfo: ChainInfo,
   chainId: string

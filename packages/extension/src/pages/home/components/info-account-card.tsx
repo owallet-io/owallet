@@ -1,7 +1,11 @@
-import React from "react";
+import React, { FC } from "react";
 import styles from "./style.module.scss";
+import { PricePretty } from "@owallet/unit";
+import { initPrice } from "../../../hooks/use-multiple-assets";
 
-export const InfoAccountCard = () => {
+export const InfoAccountCard: FC<{
+  totalPrice: PricePretty;
+}> = ({ totalPrice }) => {
   return (
     <div className={styles.containerInfoAccountCard}>
       <div className={styles.topHeaderInfoAcc}>
@@ -25,7 +29,9 @@ export const InfoAccountCard = () => {
         </div>
       </div>
       <div className={styles.bodyBalance}>
-        <span className={styles.textBalance}>$38,032.32</span>
+        <span className={styles.textBalance}>
+          {(totalPrice || initPrice).toString()}
+        </span>
       </div>
       <div className={styles.btnsSendReceived}>
         <div className={styles.btnWrap}>
