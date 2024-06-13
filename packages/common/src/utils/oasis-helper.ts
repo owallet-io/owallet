@@ -212,6 +212,7 @@ export function getEvmBech32Address(evmAddress: string) {
 }
 
 export const getOasisAddress = (address: string): string => {
+  if (!address) return;
   if (isValidOasisAddress(address)) {
     return address;
   } else if (isValidEthAddress(address)) {

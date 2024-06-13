@@ -55,7 +55,7 @@ export const TokensCardAll: FunctionComponent<{
     ? dataTokens.filter((item, index) => {
         const balance = new CoinPretty(item.token.currency, item.token.amount);
         const price = priceStore.calculatePrice(balance, "usd");
-        return price?.toDec().gte(new Dec("0.1")) ?? false;
+        return price?.toDec()?.gte(new Dec("0.1")) ?? false;
       })
     : dataTokens;
   useEffect(() => {
@@ -65,9 +65,9 @@ export const TokensCardAll: FunctionComponent<{
   const tokensAll =
     tokens &&
     tokens.filter((item, index) =>
-      item.token.currency.coinDenom
-        .toLowerCase()
-        .includes(keyword.toLowerCase())
+      item?.token?.currency?.coinDenom
+        ?.toLowerCase()
+        ?.includes(keyword.toLowerCase())
     );
   const renderContent = () => {
     if (activeTab === "tokens") {
@@ -275,7 +275,11 @@ const TokenItem: FC<{
   if (!fiatCurrency) return;
   const styles = styling(colors);
   const onPressToken = async (item) => {
-    if (!item.token?.currency?.coinGeckoId) return;
+    if (
+      !item.token?.currency?.coinGeckoId ||
+      !item.token?.currency?.coinImageUrl
+    )
+      return;
     navigate(SCREENS.TokenDetails, {
       item,
     });
@@ -381,18 +385,6 @@ const TokenItem: FC<{
                   : initPrice
                 )?.toString()}
               </Text>
-              {/*<Text*/}
-              {/*  size={14}*/}
-              {/*  style={styles.profit}*/}
-              {/*  color={*/}
-              {/*    colors[*/}
-              {/*       "success-text-body"*/}
-              {/*      ]*/}
-              {/*  }*/}
-              {/*>*/}
-
-              {/*  +1.2% (${2.2 ?? 0})*/}
-              {/*</Text>*/}
             </View>
           </View>
         </View>
