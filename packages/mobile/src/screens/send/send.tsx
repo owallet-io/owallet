@@ -92,21 +92,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
     queries.queryBalances,
     EthereumEndpoint
   );
-  useEffect(() => {
-    InteractionManager.runAfterInteractions(() => {
-      initBalance();
-    });
-  }, []);
-  const initBalance = async () => {
-    await Promise.all([
-      priceStore.waitFreshResponse(),
-      ...queries.queryBalances
-        .getQueryBech32Address(address)
-        .balances.map((bal) => {
-          return bal.waitFreshResponse();
-        }),
-    ]);
-  };
+
   useEffect(() => {
     if (route?.params?.currency) {
       const currency = sendConfigs.amountConfig.sendableCurrencies.find(
