@@ -36,6 +36,7 @@ import { NewAmountInput } from "@src/components/input/amount-input";
 import { FeeModal } from "@src/modals/fee";
 import { CoinPretty, Int } from "@owallet/unit";
 import { API } from "@src/common/api";
+import { initPrice } from "@src/screens/home/hooks/use-multiple-assets";
 
 export const DelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -446,7 +447,10 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                   color={colors["neutral-text-body"]}
                   size={14}
                 >
-                  {priceStore.calculatePrice(amount).toString()}
+                  {(amount
+                    ? priceStore.calculatePrice(amount)
+                    : initPrice
+                  )?.toString()}
                 </OWText>
               </View>
               {validatorDetail ? (
