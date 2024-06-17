@@ -566,7 +566,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
                     justifyContent: "center",
                   }}
                   onSubmitEditing={tryUnlock}
-                  placeholder="Enter your passcode2"
+                  placeholder="Enter your passcode"
                   inputRight={
                     <OWButtonIcon
                       style={styles.padIcon}
