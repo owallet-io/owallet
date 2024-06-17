@@ -37,6 +37,8 @@ import {
 import { useCoinGeckoPrices, useLoadTokens } from "@owallet/hooks";
 import { flatten } from "lodash";
 import { showToast } from "@src/utils/helper";
+import ByteBrew from "react-native-bytebrew-sdk";
+import { SCREENS } from "@src/common/constants";
 
 export const HomeScreen: FunctionComponent = observer((props) => {
   const [refreshing, setRefreshing] = React.useState(false);
@@ -90,6 +92,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   );
 
   useEffect(() => {
+    ByteBrew.NewCustomEvent("Home Screen");
     InteractionManager.runAfterInteractions(() => {
       fetch(InjectedProviderUrl)
         .then((res) => {

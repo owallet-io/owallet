@@ -15,7 +15,7 @@ import { name as appName } from './app.json';
 import firebase from '@react-native-firebase/app';
 import ByteBrew from 'react-native-bytebrew-sdk';
 
-
+console.log(process.env.BYTE_BREW_ID_ANDROID,"process.env.BYTE_BREW_ID_ANDROID");
 // Initialize the ByteBrew SDK
 if(Platform.OS == "android") {
   ByteBrew.Initialize(process.env.BYTE_BREW_ID_ANDROID, process.env.BYTE_BREW_SDK_KEY_ANDROID);
