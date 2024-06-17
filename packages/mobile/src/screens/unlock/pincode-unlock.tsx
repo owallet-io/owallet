@@ -106,6 +106,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
     appInitStore,
     hugeQueriesStore,
   } = useStore();
+  ByteBrew.NewCustomEvent(`Unlock Screen`);
   const navigation = useNavigation();
   const { colors } = useTheme();
   const styles = styling(colors);

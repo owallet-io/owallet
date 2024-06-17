@@ -32,6 +32,7 @@ import OWFlatList from "@src/components/page/ow-flat-list";
 import { Text } from "@src/components/text";
 import { useNavigation } from "@react-navigation/native";
 import { SCREENS } from "@src/common/constants";
+import ByteBrew from "react-native-bytebrew-sdk";
 
 export const TokenDetailScreen: FunctionComponent = observer((props) => {
   const {
@@ -56,7 +57,7 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
     balanceCoinFull,
     balanceCurrency,
   } = props?.route?.params ?? {};
-
+  ByteBrew.NewCustomEvent(`Token Detail Screen`);
   const txs = txsStore(chainStore.current);
   const account = accountStore.getAccount(chainStore.current.chainId);
   const addressDisplay = account.getAddressDisplay(

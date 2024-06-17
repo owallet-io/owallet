@@ -35,12 +35,13 @@ import { SCREENS } from "@src/common/constants";
 import LottieView from "lottie-react-native";
 import { LoadingBar } from "@src/screens/web/components/loadingBar";
 import get from "lodash/get";
+import ByteBrew from "react-native-bytebrew-sdk";
 
 export const DetailsBrowserScreen = observer((props) => {
   const { top } = useSafeAreaInsets();
   const { colors } = useTheme();
   const webviewRef = useRef<WebView | null>(null);
-
+  ByteBrew.NewCustomEvent(`Detail Browser Screen`);
   const [eventEmitter] = useState(() => new EventEmitter());
   const [canGoBack, setCanGoBack] = useState(false);
   const [canGoForward, setCanGoForward] = useState(false);

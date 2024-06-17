@@ -49,6 +49,7 @@ import { Text } from "@src/components/text";
 import { RadioButton } from "react-native-radio-buttons-group";
 import { AddressBtcType } from "@owallet/types";
 import { useBIP44Option } from "@src/screens/register/bip44";
+import ByteBrew from "react-native-bytebrew-sdk";
 
 const dataTypeBtc = [
   { id: AddressBtcType.Bech32, name: "Bitcoin Segwit" },
@@ -178,7 +179,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
   const address = account.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses
   );
-
+  ByteBrew.NewCustomEvent(`Send BTC Screen`);
   const sendConfigs = useSendTxConfig(
     chainStore,
     chainId,

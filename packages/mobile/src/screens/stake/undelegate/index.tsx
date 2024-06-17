@@ -25,6 +25,7 @@ import { useStore } from "../../../stores";
 import { metrics, spacing } from "../../../themes";
 import { chainIcons } from "@oraichain/oraidex-common";
 import { FeeModal } from "@src/modals/fee";
+import ByteBrew from "react-native-bytebrew-sdk";
 
 export const UndelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -38,7 +39,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
       string
     >
   >();
-
+  ByteBrew.NewCustomEvent(`Undelegate Screen`);
   const validatorAddress = route.params.validatorAddress;
 
   const {
@@ -168,6 +169,14 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
                         validatorName: validator?.description.moniker,
                         feeType: sendConfigs.feeConfig.feeType,
                       });
+                      ByteBrew.NewCustomEvent(
+                        `Undelegate`,
+                        `chainName=${
+                          chainStore.current.chainName
+                        };validatorName=${
+                          validator?.description.moniker ?? "..."
+                        };`
+                      );
                       smartNavigation.pushSmart("TxPendingResult", {
                         txHash: Buffer.from(txHash).toString("hex"),
                         data: {

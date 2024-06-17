@@ -5,17 +5,20 @@ import OWText from "@src/components/text/ow-text";
 import { useStore } from "@src/stores";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ScrollView, TouchableOpacity, View } from "react-native";
 import { NetworkModalCustom } from "../home/components/network-modal-custom";
 import { AddTokenCosmosScreen } from "./add-token-cosmos";
 import { AddTokenEVMScreen } from "./add-token-evm";
+import ByteBrew from "react-native-bytebrew-sdk";
 
 export const AddTokenScreen = observer(() => {
   const { modalStore } = useStore();
   const [selectedChain, setChain] = useState(null);
   const { colors } = useTheme();
-
+  useEffect(() => {
+    ByteBrew.NewCustomEvent(`Add Token Screen`);
+  }, []);
   const onSelectChain = (chain) => {
     setChain(chain);
     modalStore.close();

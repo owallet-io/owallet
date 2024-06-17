@@ -28,6 +28,7 @@ import OWText from "@src/components/text/ow-text";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import OWCard from "@src/components/card/ow-card";
 import { convertArrToObject, maskedNumber, showToast } from "@src/utils/helper";
+import ByteBrew from "react-native-bytebrew-sdk";
 
 const renderIconValidator = (
   label: string,
@@ -182,7 +183,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
         {
           onBroadcasted: (txHash) => {
             const validatorObject = convertArrToObject([validatorAddress]);
-
+            ByteBrew.NewCustomEvent(`Claim ${rewards.currency.coinDenom}`);
             smartNavigation.pushSmart("TxPendingResult", {
               txHash: Buffer.from(txHash).toString("hex"),
               data: {
