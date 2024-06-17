@@ -31,7 +31,7 @@ export const SettingScreen: FunctionComponent = observer(() => {
     return Object.keys(priceStore.supportedVsCurrencies).map((key) => {
       return {
         key,
-        label: key.toUpperCase(),
+        label: key?.toUpperCase(),
       };
     });
   }, [priceStore.supportedVsCurrencies]);
@@ -113,46 +113,6 @@ export const SettingScreen: FunctionComponent = observer(() => {
             </View>
             <DownArrowIcon color={colors["primary-text"]} height={12} />
           </TouchableOpacity>
-          {/* <TouchableOpacity
-            onPress={_onPressCountryModal}
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              paddingTop: spacing["20"],
-            }}
-          >
-            <View>
-              <Text
-                style={{
-                  ...typography["text-caption2"],
-                  color: colors["primary-text"],
-                }}
-              >
-                CURRENCY
-              </Text>
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                {renderFlag(priceStore.defaultVsCurrency)}
-                <Text
-                  style={{
-                    ...typography["h6"],
-                    color: colors["primary-text"],
-                    fontWeight: "bold",
-                    marginHorizontal: spacing["8"],
-                  }}
-                >
-                  {priceStore.defaultVsCurrency.toUpperCase()}
-                </Text>
-              </View>
-            </View>
-            <DownArrowIcon color={colors["primary-text"]} height={12} />
-          </TouchableOpacity> */}
         </OWBox>
       </ImageBackground>
 

@@ -31,7 +31,7 @@ const checkIsPairOfPool = ({
   toName: string;
 }) => {
   const check = PAIRS_CHART.find((p) => {
-    const symbols = p.symbols.map((symbol) => symbol.toUpperCase());
+    const symbols = p.symbols.map((symbol) => symbol?.toUpperCase());
     return symbols.includes(fromName) && symbols.includes(toName);
   });
 
@@ -62,8 +62,8 @@ export const useSwapFee = ({ fromToken, toToken }) => {
     if (fromChainId === "Oraichain" && toChainId === "Oraichain") {
       if (
         checkIsPairOfPool({
-          fromName: fromName.toUpperCase(),
-          toName: toName.toUpperCase(),
+          fromName: fromName?.toUpperCase(),
+          toName: toName?.toUpperCase(),
         })
       ) {
         setFee(SWAP_FEE_PER_ROUTE);
