@@ -77,28 +77,6 @@ export const EarningCardNew: FunctionComponent<{
                 type: "claim",
               },
             });
-            const historyInfos = {
-              fromAddress: account.bech32Address,
-              toAddress: account.bech32Address,
-              hash: Buffer.from(txHash).toString("hex"),
-              memo: "",
-              fromAmount: totalStakingReward,
-              toAmount: totalStakingReward,
-              value: totalStakingReward,
-              fee: "0",
-              type: HISTORY_STATUS.CLAIM,
-              fromToken: {
-                asset: stakingReward.toCoin().denom.toUpperCase(),
-                chainId: chainId,
-              },
-              toToken: {
-                asset: stakingReward.toCoin().denom.toUpperCase(),
-                chainId: chainId,
-              },
-              status: "SUCCESS",
-            };
-
-            handleSaveHistory(account.bech32Address, historyInfos);
           },
         },
         stakingReward.currency.coinMinimalDenom

@@ -184,38 +184,6 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
                           currency: sendConfigs.amountConfig.sendCurrency,
                         },
                       });
-                      const historyInfos = {
-                        toAddress: account.bech32Address,
-                        fromAddress: sendConfigs.recipientConfig.recipient,
-                        hash: Buffer.from(txHash).toString("hex"),
-                        memo: "",
-                        fromAmount: sendConfigs.amountConfig.amount,
-                        toAmount: sendConfigs.amountConfig.amount,
-                        value: sendConfigs.amountConfig.amount,
-                        fee: Number(
-                          sendConfigs.feeConfig.fee
-                            ?.maxDecimals(6)
-                            .trim(true)
-                            .hideDenom(true)
-                            .toString()
-                        ),
-                        type: HISTORY_STATUS.UNSTAKE,
-                        fromToken: {
-                          asset:
-                            sendConfigs.amountConfig.sendCurrency.coinDenom,
-                          chainId: chainStore.current.chainId,
-                        },
-                        toToken: {
-                          asset:
-                            sendConfigs.amountConfig.sendCurrency.coinDenom,
-                          chainId: chainStore.current.chainId,
-                        },
-                        status: "SUCCESS",
-                      };
-
-                      console.log("historyInfos", historyInfos);
-
-                      handleSaveHistory(account.bech32Address, historyInfos);
                     },
                   }
                 );

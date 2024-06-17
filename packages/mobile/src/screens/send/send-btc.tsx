@@ -321,28 +321,6 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
                 .hideDenom(true)
                 .maxDecimals(4)
                 .toString();
-              const historyInfos = {
-                fromAddress: address,
-                toAddress: sendConfigs.recipientConfig.recipient,
-                hash: Buffer.from(txHash).toString("hex"),
-                memo: "",
-                fromAmount: sendConfigs.amountConfig.amount,
-                toAmount: sendConfigs.amountConfig.amount,
-                value: sendConfigs.amountConfig.amount,
-                fee: fee,
-                type: HISTORY_STATUS.SEND,
-                fromToken: {
-                  asset: sendConfigs.amountConfig.sendCurrency.coinDenom,
-                  chainId: chainStore.current.chainId,
-                },
-                toToken: {
-                  asset: sendConfigs.amountConfig.sendCurrency.coinDenom,
-                  chainId: chainStore.current.chainId,
-                },
-                status: "SUCCESS",
-              };
-
-              await handleSaveHistory(accountOrai.bech32Address, historyInfos);
             } catch (error) {
               console.log(
                 "🚀 ~ file: send-btc.tsx:149 ~ onBroadcasted: ~ error:",
