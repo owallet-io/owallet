@@ -13,7 +13,15 @@ import messaging from '@react-native-firebase/messaging';
 import CodePush from 'react-native-code-push';
 import { name as appName } from './app.json';
 import firebase from '@react-native-firebase/app';
+import ByteBrew from 'react-native-bytebrew-sdk';
 
+
+// Initialize the ByteBrew SDK
+if(Platform.OS == "android") {
+  ByteBrew.Initialize(process.env.BYTE_BREW_ID_ANDROID, process.env.BYTE_BREW_SDK_KEY_ANDROID);
+} else if(Platform.OS == "ios") {
+  ByteBrew.Initialize(process.env.BYTE_BREW_ID_IOS, process.env.BYTE_BREW_SDK_KEY_IOS);
+}
 const config = {
   apiKey: process.env.API_KEY,
   projectId: 'owallet-829a1',
