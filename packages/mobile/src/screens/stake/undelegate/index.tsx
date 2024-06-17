@@ -12,12 +12,7 @@ import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import { Text } from "@src/components/text";
 import OWText from "@src/components/text/ow-text";
 import { useTheme } from "@src/themes/theme-provider";
-import {
-  capitalizedText,
-  handleSaveHistory,
-  HISTORY_STATUS,
-  showToast,
-} from "@src/utils/helper";
+import { capitalizedText, showToast } from "@src/utils/helper";
 import { Buffer } from "buffer";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useState } from "react";
@@ -184,38 +179,6 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
                           currency: sendConfigs.amountConfig.sendCurrency,
                         },
                       });
-                      const historyInfos = {
-                        toAddress: account.bech32Address,
-                        fromAddress: sendConfigs.recipientConfig.recipient,
-                        hash: Buffer.from(txHash).toString("hex"),
-                        memo: "",
-                        fromAmount: sendConfigs.amountConfig.amount,
-                        toAmount: sendConfigs.amountConfig.amount,
-                        value: sendConfigs.amountConfig.amount,
-                        fee: Number(
-                          sendConfigs.feeConfig.fee
-                            ?.maxDecimals(6)
-                            .trim(true)
-                            .hideDenom(true)
-                            .toString()
-                        ),
-                        type: HISTORY_STATUS.UNSTAKE,
-                        fromToken: {
-                          asset:
-                            sendConfigs.amountConfig.sendCurrency.coinDenom,
-                          chainId: chainStore.current.chainId,
-                        },
-                        toToken: {
-                          asset:
-                            sendConfigs.amountConfig.sendCurrency.coinDenom,
-                          chainId: chainStore.current.chainId,
-                        },
-                        status: "SUCCESS",
-                      };
-
-                      console.log("historyInfos", historyInfos);
-
-                      handleSaveHistory(account.bech32Address, historyInfos);
                     },
                   }
                 );

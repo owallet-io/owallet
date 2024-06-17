@@ -13,8 +13,6 @@ import {
   capitalizedText,
   computeTotalVotingPower,
   formatPercentage,
-  handleSaveHistory,
-  HISTORY_STATUS,
   showToast,
 } from "@src/utils/helper";
 import { observer } from "mobx-react-lite";
@@ -240,36 +238,6 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                           currency: sendConfigs.amountConfig.sendCurrency,
                         },
                       });
-                      const historyInfos = {
-                        fromAddress: account.bech32Address,
-                        toAddress: sendConfigs.recipientConfig.recipient,
-                        hash: Buffer.from(txHash).toString("hex"),
-                        memo: "",
-                        fromAmount: sendConfigs.amountConfig.amount,
-                        toAmount: sendConfigs.amountConfig.amount,
-                        value: sendConfigs.amountConfig.amount,
-                        fee: Number(
-                          sendConfigs.feeConfig.fee
-                            ?.maxDecimals(6)
-                            .trim(true)
-                            .hideDenom(true)
-                            .toString()
-                        ),
-                        type: HISTORY_STATUS.STAKE,
-                        fromToken: {
-                          asset:
-                            sendConfigs.amountConfig.sendCurrency.coinDenom,
-                          chainId: chainStore.current.chainId,
-                        },
-                        toToken: {
-                          asset:
-                            sendConfigs.amountConfig.sendCurrency.coinDenom,
-                          chainId: chainStore.current.chainId,
-                        },
-                        status: "SUCCESS",
-                      };
-
-                      handleSaveHistory(account.bech32Address, historyInfos);
                     },
                   }
                 );

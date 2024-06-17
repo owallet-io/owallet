@@ -35,11 +35,7 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { DownArrowIcon } from "@src/components/icon";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import { FeeModal } from "@src/modals/fee";
-import {
-  capitalizedText,
-  handleSaveHistory,
-  HISTORY_STATUS,
-} from "@src/utils/helper";
+import { capitalizedText } from "@src/utils/helper";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 
@@ -256,27 +252,6 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
                 .maxDecimals(4)
                 .toString();
 
-              const historyInfos = {
-                fromAddress: address,
-                toAddress: sendConfigs.recipientConfig.recipient,
-                hash: txHash,
-                memo: "",
-                fromAmount: sendConfigs.amountConfig.amount,
-                toAmount: sendConfigs.amountConfig.amount,
-                value: sendConfigs.amountConfig.amount,
-                fee: fee,
-                type: HISTORY_STATUS.SEND,
-                fromToken: {
-                  asset: sendConfigs.amountConfig.sendCurrency.coinDenom,
-                  chainId: chainStore.current.chainId,
-                },
-                toToken: {
-                  asset: sendConfigs.amountConfig.sendCurrency.coinDenom,
-                  chainId: chainStore.current.chainId,
-                },
-                status: "SUCCESS",
-              };
-
               universalSwapStore.updateTokenReload([
                 {
                   ...sendConfigs.amountConfig.sendCurrency,
@@ -284,7 +259,6 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
                   networkType: "evm",
                 },
               ]);
-              await handleSaveHistory(accountOrai.bech32Address, historyInfos);
             },
           },
           // In case send erc20 in evm network

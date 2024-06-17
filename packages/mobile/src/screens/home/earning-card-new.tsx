@@ -11,12 +11,7 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { Text } from "@src/components/text";
 import { checkRouter } from "@src/router/root";
 import { useTheme } from "@src/themes/theme-provider";
-import {
-  convertArrToObject,
-  handleSaveHistory,
-  HISTORY_STATUS,
-  showToast,
-} from "@src/utils/helper";
+import { convertArrToObject, showToast } from "@src/utils/helper";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useState } from "react";
 import { StyleSheet, TouchableOpacity, View, ViewStyle } from "react-native";
@@ -77,28 +72,6 @@ export const EarningCardNew: FunctionComponent<{
                 type: "claim",
               },
             });
-            const historyInfos = {
-              fromAddress: account.bech32Address,
-              toAddress: account.bech32Address,
-              hash: Buffer.from(txHash).toString("hex"),
-              memo: "",
-              fromAmount: totalStakingReward,
-              toAmount: totalStakingReward,
-              value: totalStakingReward,
-              fee: "0",
-              type: HISTORY_STATUS.CLAIM,
-              fromToken: {
-                asset: stakingReward.toCoin().denom.toUpperCase(),
-                chainId: chainId,
-              },
-              toToken: {
-                asset: stakingReward.toCoin().denom.toUpperCase(),
-                chainId: chainId,
-              },
-              status: "SUCCESS",
-            };
-
-            handleSaveHistory(account.bech32Address, historyInfos);
           },
         },
         stakingReward.currency.coinMinimalDenom

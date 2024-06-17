@@ -14,12 +14,9 @@ import { OWButton } from "@src/components/button";
 import { SelectNetworkModal, SelectTokenModal } from "./modals/";
 import {
   getTokenInfos,
-  handleSaveHistory,
-  HISTORY_STATUS,
   maskedNumber,
   shortenAddress,
   showToast,
-  _keyExtract,
 } from "@src/utils/helper";
 import {
   DEFAULT_SLIPPAGE,
@@ -528,32 +525,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
       if (result) {
         const { transactionHash } = result;
-        try {
-          const historyInfos = {
-            fromAddress: accountOrai.bech32Address,
-            toAddress: accountOrai.bech32Address,
-            hash: transactionHash,
-            memo: "",
-            fromAmount: fromAmountToken,
-            toAmount: toAmountToken,
-            value: toAmountToken,
-            fee: (toAmountToken - minimumReceive).toFixed(6),
-            type: HISTORY_STATUS.SWAP,
-            fromToken: {
-              asset: originalFromToken.name,
-              chainId: originalFromToken.chainId,
-            },
-            toToken: {
-              asset: originalToToken.name,
-              chainId: originalToToken.chainId,
-            },
-            status: "SUCCESS",
-          };
-
-          await handleSaveHistory(accountOrai.bech32Address, historyInfos);
-        } catch (err) {
-          console.log("err on handleSaveHistory", err);
-        }
 
         setSwapLoading(false);
         setCounter(0);
