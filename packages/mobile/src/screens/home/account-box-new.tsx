@@ -48,6 +48,7 @@ export const AccountBoxAll: FunctionComponent<{
   const styles = styling(colors);
 
   const account = accountStore.getAccount(chainStore.current.chainId);
+  const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
 
   const { isTimedOut, setTimer } = useSimpleTimer();
   const chainAddress = account.getAddressDisplay(
@@ -226,7 +227,7 @@ export const AccountBoxAll: FunctionComponent<{
               resizeMode="contain"
               fadeDuration={0}
             />
-            <Text style={styles.labelName}>{account?.name || ".."}</Text>
+            <Text style={styles.labelName}>{accountOrai?.name || ".."}</Text>
             <DownArrowIcon height={15} color={colors["primary-text"]} />
           </TouchableOpacity>
           {appInitStore.getInitApp.isAllNetworks ? (

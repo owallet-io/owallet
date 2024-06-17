@@ -43,7 +43,7 @@ if (!__DEV__) {
       'ApplicationNotResponding',
       'Abort',
       'Network request failed',
-      'Bad status on response: 502',
+      /Bad status on response/,
       "Operation was cancelled",
       "App hanging for at least 2000 ms."
     ]
