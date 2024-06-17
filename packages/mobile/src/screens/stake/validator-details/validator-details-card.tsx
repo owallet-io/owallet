@@ -240,7 +240,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
       );
     } catch (e) {
       console.error({ errorClaim: e });
-      if (!e?.message?.startWith("Transaction Rejected")) {
+      if (!e?.message?.startsWith("Transaction Rejected")) {
         showToast({
           message:
             e?.message ?? "Something went wrong! Please try again later.",

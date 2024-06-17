@@ -929,6 +929,7 @@ export class KeyRing {
     ) {
       throw new Error("Key ring is not unlocked");
     }
+    if (this.type === "privateKey" || this.type === "ledger") return;
     if (!this.mnemonic) {
       throw new Error(
         "Key store type is mnemonic and it is unlocked. But, mnemonic is not loaded unexpectedly"
