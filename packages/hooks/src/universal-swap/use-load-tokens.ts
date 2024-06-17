@@ -108,6 +108,7 @@ async function loadNativeBalance(
 }
 
 const timer = {};
+
 async function loadTokens(
   universalSwapStore: any,
   {
@@ -349,7 +350,7 @@ async function loadCw20Balance(
     console.log("error querying EVM balance: ", err);
     let retry = retryCount ? retryCount + 1 : 1;
     if (retry >= EVM_BALANCE_RETRY_COUNT)
-      throw `Cannot query EVM balance with error: ${err}`;
+      console.error(`Cannot query EVM balance with error: ${err}`);
     await new Promise((resolve) => setTimeout(resolve, 2500));
     return loadCw20Balance(universalSwapStore, address, cwStargate, retry);
   }
@@ -480,7 +481,7 @@ async function loadEvmEntries(
     console.log("error querying EVM balance: ", error);
     let retry = retryCount ? retryCount + 1 : 1;
     if (retry >= EVM_BALANCE_RETRY_COUNT)
-      throw `Cannot query EVM balance with error: ${error}`;
+      console.error(`Cannot query EVM balance with error: ${error}`);
     await new Promise((resolve) => setTimeout(resolve, 5000));
     return loadEvmEntries(
       address,
