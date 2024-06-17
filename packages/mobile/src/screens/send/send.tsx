@@ -213,30 +213,6 @@ export const NewSendScreen: FunctionComponent = observer(() => {
                 feeType: sendConfigs.feeConfig.feeType,
               });
 
-              const historyInfos = {
-                fromAddress: address,
-                toAddress: sendConfigs.recipientConfig.recipient,
-                hash: Buffer.from(txHash).toString("hex"),
-                memo: "",
-                fromAmount: sendConfigs.amountConfig.amount,
-                toAmount: sendConfigs.amountConfig.amount,
-                value: sendConfigs.amountConfig.amount,
-                fee: sendConfigs.feeConfig.fee
-                  .trim(true)
-                  .hideDenom(true)
-                  .maxDecimals(4)
-                  .toString(),
-                type: HISTORY_STATUS.SEND,
-                fromToken: {
-                  asset: sendConfigs.amountConfig.sendCurrency.coinDenom,
-                  chainId: chainStore.current.chainId,
-                },
-                toToken: {
-                  asset: sendConfigs.amountConfig.sendCurrency.coinDenom,
-                  chainId: chainStore.current.chainId,
-                },
-                status: "SUCCESS",
-              };
               universalSwapStore.updateTokenReload([
                 {
                   ...sendConfigs.amountConfig.sendCurrency,
@@ -244,7 +220,6 @@ export const NewSendScreen: FunctionComponent = observer(() => {
                   networkType: "cosmos",
                 },
               ]);
-              await handleSaveHistory(accountOrai.bech32Address, historyInfos);
               smartNavigation.pushSmart("TxPendingResult", {
                 txHash: Buffer.from(txHash).toString("hex"),
                 data: {

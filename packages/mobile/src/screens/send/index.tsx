@@ -287,31 +287,6 @@ export const SendScreen: FunctionComponent = observer(() => {
                             .hideDenom(true)
                             .toString()
                         );
-                        console.log(fee, "fee");
-                        const historyInfos = {
-                          fromAddress: address,
-                          toAddress: sendConfigs.recipientConfig.recipient,
-                          hash: Buffer.from(txHash).toString("hex"),
-                          memo: "",
-                          fromAmount: sendConfigs.amountConfig.amount,
-                          toAmount: sendConfigs.amountConfig.amount,
-                          value: sendConfigs.amountConfig.amount,
-                          fee: fee,
-                          type: HISTORY_STATUS.SEND,
-                          fromToken: {
-                            asset:
-                              sendConfigs.amountConfig.sendCurrency.coinDenom,
-                            chainId: chainStore.current.chainId,
-                          },
-                          toToken: {
-                            asset:
-                              sendConfigs.amountConfig.sendCurrency.coinDenom,
-                            chainId: chainStore.current.chainId,
-                          },
-                          status: "SUCCESS",
-                        };
-
-                        await handleSaveHistory(address, historyInfos);
                       },
                     }
                   );

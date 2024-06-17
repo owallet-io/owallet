@@ -256,27 +256,6 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
                 .maxDecimals(4)
                 .toString();
 
-              const historyInfos = {
-                fromAddress: address,
-                toAddress: sendConfigs.recipientConfig.recipient,
-                hash: txHash,
-                memo: "",
-                fromAmount: sendConfigs.amountConfig.amount,
-                toAmount: sendConfigs.amountConfig.amount,
-                value: sendConfigs.amountConfig.amount,
-                fee: fee,
-                type: HISTORY_STATUS.SEND,
-                fromToken: {
-                  asset: sendConfigs.amountConfig.sendCurrency.coinDenom,
-                  chainId: chainStore.current.chainId,
-                },
-                toToken: {
-                  asset: sendConfigs.amountConfig.sendCurrency.coinDenom,
-                  chainId: chainStore.current.chainId,
-                },
-                status: "SUCCESS",
-              };
-
               universalSwapStore.updateTokenReload([
                 {
                   ...sendConfigs.amountConfig.sendCurrency,
@@ -284,7 +263,6 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
                   networkType: "evm",
                 },
               ]);
-              await handleSaveHistory(accountOrai.bech32Address, historyInfos);
             },
           },
           // In case send erc20 in evm network
