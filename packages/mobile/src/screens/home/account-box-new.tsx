@@ -39,7 +39,6 @@ export const AccountBoxAll: FunctionComponent<{
   totalBalanceByChain: string;
   isLoading: boolean;
 }> = observer(({ totalPriceBalance, totalBalanceByChain, isLoading }) => {
-  console.log(totalPriceBalance, "totalPriceBalance2");
   const { colors } = useTheme();
   const {
     universalSwapStore,

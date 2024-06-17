@@ -741,15 +741,17 @@ export { get };
 
 export const handleSaveHistory = async (address, infos) => {
   try {
-    const res = await API.saveHistory(
-      { address: address, infos },
-      {
-        baseURL: "https://staging.owallet.dev/",
-      }
-    );
-    return res;
+    console.log("handleSaveHistory", address, infos);
+
+    // const res = await API.saveHistory(
+    //   { address: address, infos },
+    //   {
+    //     baseURL: "https://staging.owallet.dev/",
+    //   }
+    // );
+    // return res;
   } catch (err) {
-    console.log("err handleSaveHistory ", err);
+    // console.log("err handleSaveHistory ", err);
   }
 };
 
