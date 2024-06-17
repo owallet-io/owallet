@@ -338,11 +338,11 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         totalBalanceByChain={new PricePretty(
           fiatCurrency,
           dataTokensByChain?.[chainStore.current.chainId]?.totalBalance
-        ).toString()}
+        )?.toString()}
         totalPriceBalance={new PricePretty(
           fiatCurrency,
           totalPriceBalance
-        ).toString()}
+        )?.toString()}
       />
       {chainStore.current.networkType === "cosmos" &&
       !appInitStore.getInitApp.isAllNetworks ? (
