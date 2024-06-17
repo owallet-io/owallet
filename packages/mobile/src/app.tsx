@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StoreProvider, useStore } from "./stores";
 import SplashScreen from "react-native-splash-screen";
 import { StyleProvider } from "./styles";
@@ -21,7 +21,8 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import LottieView from "lottie-react-native";
 import { metrics } from "@src/themes";
-
+import ErrorBoundary from "react-native-error-boundary";
+import { ErrorBoundaryFallback } from "./screens/error-boundary/error-boundary";
 const queryClient = new QueryClient();
 
 if (Platform.OS === "android" || typeof HermesInternal !== "undefined") {
@@ -136,35 +137,37 @@ export const App = () => {
     );
   }
   return (
-    <GestureHandlerRootView
-      style={{
-        flex: 1,
-      }}
-    >
-      <StyleProvider>
-        <StoreProvider>
-          <ThemeProvider>
-            <AppIntlProviderWithStorage>
-              <SafeAreaProvider>
-                <ModalsProvider>
-                  <PopupRootProvider>
-                    <LoadingScreenProvider>
-                      <ConfirmModalProvider>
-                        <InteractionModalsProivder>
-                          <QueryClientProvider client={queryClient}>
-                            <AppNavigation />
-                          </QueryClientProvider>
-                        </InteractionModalsProivder>
-                      </ConfirmModalProvider>
-                    </LoadingScreenProvider>
-                  </PopupRootProvider>
-                </ModalsProvider>
-              </SafeAreaProvider>
-            </AppIntlProviderWithStorage>
-            <FlashMessage position="top" />
-          </ThemeProvider>
-        </StoreProvider>
-      </StyleProvider>
-    </GestureHandlerRootView>
+    <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
+      <GestureHandlerRootView
+        style={{
+          flex: 1,
+        }}
+      >
+        <StyleProvider>
+          <StoreProvider>
+            <ThemeProvider>
+              <AppIntlProviderWithStorage>
+                <SafeAreaProvider>
+                  <ModalsProvider>
+                    <PopupRootProvider>
+                      <LoadingScreenProvider>
+                        <ConfirmModalProvider>
+                          <InteractionModalsProivder>
+                            <QueryClientProvider client={queryClient}>
+                              <AppNavigation />
+                            </QueryClientProvider>
+                          </InteractionModalsProivder>
+                        </ConfirmModalProvider>
+                      </LoadingScreenProvider>
+                    </PopupRootProvider>
+                  </ModalsProvider>
+                </SafeAreaProvider>
+              </AppIntlProviderWithStorage>
+              <FlashMessage position="top" />
+            </ThemeProvider>
+          </StoreProvider>
+        </StyleProvider>
+      </GestureHandlerRootView>
+    </ErrorBoundary>
   );
 };
