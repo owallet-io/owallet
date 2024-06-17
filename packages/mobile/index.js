@@ -47,7 +47,8 @@ if (!__DEV__) {
       'Network request failed',
       /Bad status on response/,
       'Operation was cancelled',
-      'App hanging for at least 2000 ms.'
+      /App hanging/,
+      "TypeError: t.fetchNativePackageName"
     ]
   });
 }
