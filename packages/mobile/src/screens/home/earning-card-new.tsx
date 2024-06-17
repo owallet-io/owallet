@@ -13,13 +13,15 @@ import { checkRouter } from "@src/router/root";
 import { useTheme } from "@src/themes/theme-provider";
 import { convertArrToObject, showToast } from "@src/utils/helper";
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent, useState } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { StyleSheet, TouchableOpacity, View, ViewStyle } from "react-native";
 import { OWBox } from "../../components/card";
 import { useSmartNavigation } from "../../navigation.provider";
 import { useStore } from "../../stores";
 import { metrics } from "../../themes";
 import ByteBrew from "react-native-bytebrew-sdk";
+
+const texts = ["1", "2", undefined];
 
 export const EarningCardNew: FunctionComponent<{
   defaultChain?: string;
@@ -29,6 +31,12 @@ export const EarningCardNew: FunctionComponent<{
   const { chainStore, accountStore, queriesStore, priceStore, analyticsStore } =
     useStore();
   const navigation = useNavigation();
+
+  // const [isShow, setShow] = useState(false);
+
+  // useEffect(() => {
+  //   setTimeout(() => setShow(true), 3000);
+  // }, []);
 
   const { colors } = useTheme();
   const chainId = defaultChain ?? chainStore.current.chainId;
@@ -198,6 +206,17 @@ export const EarningCardNew: FunctionComponent<{
               .upperCase(true)
               .toString()}
           </Text>
+
+          {/* {texts.map((t) => {
+            return (
+              <Text
+                weight="500"
+                color={colors["neutral-text-action-on-light-bg"]}
+              >
+                {isShow ? t.toString() : null}
+              </Text>
+            );
+          })} */}
         </View>
       </View>
     </OWBox>

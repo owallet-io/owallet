@@ -13,6 +13,7 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
+  View,
 } from "react-native";
 import { useStore } from "../../stores";
 import { observer } from "mobx-react-lite";
@@ -158,6 +159,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   useEffect(() => {
     onRefresh();
   }, [address, chainStore.current.chainId]);
+
   const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
   const onRefresh = async () => {
     try {
@@ -350,7 +352,9 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       {chainStore.current.networkType === "cosmos" &&
       !appInitStore.getInitApp.isAllNetworks ? (
         <EarningCardNew />
-      ) : null}
+      ) : (
+        <EarningCardNew defaultChain={ChainIdEnum.Oraichain} />
+      )}
       <TokensCardAll dataTokens={dataTokens} />
     </PageWithScrollViewInBottomTabView>
   );
