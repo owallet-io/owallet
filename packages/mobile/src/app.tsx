@@ -16,7 +16,6 @@ import ThemeProvider from "./themes/theme-provider";
 import analytics from "@react-native-firebase/analytics";
 import FlashMessage from "react-native-flash-message";
 import { Root as PopupRootProvider } from "react-native-popup-confirm-toast";
-import { colorsCode } from "./themes/mode-colors";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import LottieView from "lottie-react-native";

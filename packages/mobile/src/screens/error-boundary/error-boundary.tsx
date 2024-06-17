@@ -35,7 +35,7 @@ export const ErrorBoundaryFallback = (props: {
           opacity: 1,
         }}
       >
-        Something went wrong!
+        {"Something went wrong!"}
       </Text>
       <TouchableOpacity
         style={{
