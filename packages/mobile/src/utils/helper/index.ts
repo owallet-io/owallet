@@ -739,22 +739,6 @@ export function shortenAddress(address, digits = 6): string {
 
 export { get };
 
-export const handleSaveHistory = async (address, infos) => {
-  try {
-    console.log("handleSaveHistory", address, infos);
-
-    // const res = await API.saveHistory(
-    //   { address: address, infos },
-    //   {
-    //     baseURL: "https://staging.owallet.dev/",
-    //   }
-    // );
-    // return res;
-  } catch (err) {
-    // console.log("err handleSaveHistory ", err);
-  }
-};
-
 export enum HISTORY_STATUS {
   SWAP = "SWAP",
   SEND = "SEND",

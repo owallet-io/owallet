@@ -27,13 +27,7 @@ import { PageHeader } from "@src/components/header/header-new";
 import OWText from "@src/components/text/ow-text";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import OWCard from "@src/components/card/ow-card";
-import {
-  convertArrToObject,
-  handleSaveHistory,
-  HISTORY_STATUS,
-  maskedNumber,
-  showToast,
-} from "@src/utils/helper";
+import { convertArrToObject, maskedNumber, showToast } from "@src/utils/helper";
 
 const renderIconValidator = (
   label: string,

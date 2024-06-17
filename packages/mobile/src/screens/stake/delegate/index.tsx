@@ -13,8 +13,6 @@ import {
   capitalizedText,
   computeTotalVotingPower,
   formatPercentage,
-  handleSaveHistory,
-  HISTORY_STATUS,
   showToast,
 } from "@src/utils/helper";
 import { observer } from "mobx-react-lite";

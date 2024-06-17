@@ -11,12 +11,7 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { Text } from "@src/components/text";
 import { checkRouter } from "@src/router/root";
 import { useTheme } from "@src/themes/theme-provider";
-import {
-  convertArrToObject,
-  handleSaveHistory,
-  HISTORY_STATUS,
-  showToast,
-} from "@src/utils/helper";
+import { convertArrToObject, showToast } from "@src/utils/helper";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useState } from "react";
 import { StyleSheet, TouchableOpacity, View, ViewStyle } from "react-native";

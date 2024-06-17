@@ -36,8 +36,6 @@ import {
   capitalizedText,
   computeTotalVotingPower,
   formatPercentage,
-  handleSaveHistory,
-  HISTORY_STATUS,
   showToast,
 } from "@src/utils/helper";
 import OWText from "@src/components/text/ow-text";

@@ -14,12 +14,9 @@ import { OWButton } from "@src/components/button";
 import { SelectNetworkModal, SelectTokenModal } from "./modals/";
 import {
   getTokenInfos,
-  handleSaveHistory,
-  HISTORY_STATUS,
   maskedNumber,
   shortenAddress,
   showToast,
-  _keyExtract,
 } from "@src/utils/helper";
 import {
   DEFAULT_SLIPPAGE,

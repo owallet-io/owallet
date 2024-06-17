@@ -26,13 +26,7 @@ import { metrics, spacing } from "@src/themes";
 import { observer } from "mobx-react-lite";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
-import {
-  capitalizedText,
-  handleSaveHistory,
-  HISTORY_STATUS,
-  shortenAddress,
-  showToast,
-} from "@src/utils/helper";
+import { capitalizedText, shortenAddress, showToast } from "@src/utils/helper";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import {
   EthereumEndpoint,

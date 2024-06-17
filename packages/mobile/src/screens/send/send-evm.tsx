@@ -35,11 +35,7 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { DownArrowIcon } from "@src/components/icon";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import { FeeModal } from "@src/modals/fee";
-import {
-  capitalizedText,
-  handleSaveHistory,
-  HISTORY_STATUS,
-} from "@src/utils/helper";
+import { capitalizedText } from "@src/utils/helper";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 

@@ -23,7 +23,6 @@ import { spacing } from "../../themes";
 import { Text } from "@src/components/text";
 import { Toggle } from "../../components/toggle";
 import { OWBox } from "@src/components/card";
-import { handleSaveHistory, HISTORY_STATUS } from "@src/utils/helper";
 
 const styling = (colors) =>
   StyleSheet.create({
