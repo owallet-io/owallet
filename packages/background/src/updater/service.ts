@@ -167,13 +167,17 @@ export class ChainUpdaterService {
     const result = await instance.get<{
       result: {
         node_info: {
-          network: "osmosis-1";
+          network: string;
         };
       };
     }>("/status");
 
-    const resultChainId = result.data.result.node_info.network;
-
+    const resultChainId = result?.data?.result?.node_info?.network;
+    if (!resultChainId)
+      return {
+        explicit: false,
+        slient: false,
+      };
     const version = ChainIdHelper.parse(chainId);
     const fetchedVersion = ChainIdHelper.parse(resultChainId);
 
