@@ -1,11 +1,27 @@
 import React, { FC } from "react";
 import SlidingPane from "react-sliding-pane";
 import styles from "./style.module.scss";
+import { observer } from "mobx-react-lite";
+import { useStore } from "../../../stores";
+import { useHistory } from "react-router";
 
 export const ModalMenuLeft: FC<{
   isOpen: boolean;
   onRequestClose: () => void;
-}> = ({ isOpen, onRequestClose }) => {
+}> = observer(({ isOpen, onRequestClose }) => {
+  const { keyRingStore } = useStore();
+  const history = useHistory();
+  const lock = async () => {
+    await keyRingStore.lock();
+    history.push("/");
+    onRequestClose();
+  };
+  const actionMenu = (item) => {
+    if (item.id === 6) {
+      lock();
+      return;
+    }
+  };
   return (
     <SlidingPane
       isOpen={isOpen}
@@ -35,6 +51,7 @@ export const ModalMenuLeft: FC<{
         </div>
         {dataItem.map((item, index) => (
           <div
+            onClick={() => actionMenu(item)}
             key={item.id}
             style={{
               borderBottom: item.isBorderBottom ? "1px solid #EBEDF2" : null,
@@ -50,7 +67,7 @@ export const ModalMenuLeft: FC<{
       </div>
     </SlidingPane>
   );
-};
+});
 
 const dataItem = [
   {

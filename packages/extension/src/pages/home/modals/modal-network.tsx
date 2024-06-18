@@ -29,16 +29,28 @@ export const ModalNetwork: FC<{
   const onChangeInput = (e) => {
     setKeyword(e.target.value);
   };
+  const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
   const [tab, setTab] = useState<(typeof typeNetwork)[0]>(typeNetwork[0]);
   const activeTab = (item: (typeof typeNetwork)[0]) => {
     setTab(item);
   };
-  const mainnet = chainStore.chainInfos.filter(
+  const sortChainsByPrice = (chains) => {
+    return chains.sort(
+      (a, b) =>
+        Number(b.balance?.toDec()?.toString()) -
+        Number(a.balance?.toDec()?.toString())
+    );
+  };
+  const chainsInfoWithBalance = chainStore.chainInfos.map((item, index) => {
+    item.balance = totalPriceByChainId.get(item.chainId) || initPrice;
+    return item;
+  });
+  const mainnet = chainsInfoWithBalance.filter(
     (item, index) =>
       !item?.chainName?.toLowerCase()?.includes("test") &&
       item?.chainName?.toLowerCase()?.includes(keyword)
   );
-  const testnet = chainStore.chainInfos.filter(
+  const testnet = chainsInfoWithBalance.filter(
     (item, index) =>
       item?.chainName?.toLowerCase()?.includes("test") &&
       item?.chainName?.toLowerCase()?.includes(keyword)
@@ -138,7 +150,7 @@ export const ModalNetwork: FC<{
                   coinImageUrl: require("../../../public/assets/svg/Tokens.svg"),
                 },
               },
-              ...chains,
+              ...sortChainsByPrice(chains),
             ].map((item, index) => {
               return (
                 <div

@@ -52,6 +52,7 @@ export const HomePage = observer(() => {
   const totalPriceByChainId:
     | Map<ChainIdEnum | string, PricePretty>
     | undefined = new Map();
+  const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
   console.log(dataTokensByChain, "dataTokensByChain");
   const dataTokensWithPrice = (dataTokens || []).map(
     (item: ViewRawToken, index) => {
@@ -63,6 +64,16 @@ export const HomePage = observer(() => {
 
       totalPrice = totalPrice.add(priceData || initPrice);
       totalPriceByChainId.set(item?.chainInfo?.chainId, totalBalanceByChain);
+      // dataTokensByChain[chainStore.current.chainId].totalBalance = new CoinPretty(fiatCurrency,dataTokensByChain[chainStore.current.chainId].totalBalance);
+      dataTokensByChain[chainStore.current.chainId].totalBalance = (
+        new PricePretty(
+          fiatCurrency,
+          dataTokensByChain[chainStore.current.chainId]?.totalBalance
+        ) || initPrice
+      )
+        .add(priceData || initPrice)
+        .toDec()
+        .toString();
       return {
         ...item,
         price: priceData?.toDec()?.toString() || initPrice?.toDec()?.toString(),
