@@ -13,8 +13,6 @@ import { metrics } from "@src/themes";
 import { OWButton } from "@src/components/button";
 import { UndelegationsCard } from "./undelegations-card";
 import { NetworkModal } from "@src/screens/home/components";
-import { Text } from "@src/components/text";
-const texts = ["1", "2", undefined];
 
 export const StakingDashboardScreen: FunctionComponent = observer(() => {
   const {
@@ -45,12 +43,6 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
     });
     modalStore.setChildren(<NetworkModal stakeable={true} />);
   };
-
-  const [isShow, setShow] = useState(false);
-
-  useEffect(() => {
-    setTimeout(() => setShow(true), 3000);
-  }, []);
 
   return (
     <PageWithScrollViewInBottomTabView
@@ -109,16 +101,6 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
           </OWCard>
 
           <EarningCardNew containerStyle={styles.containerEarnStyle} />
-          {texts.map((t) => {
-            return (
-              <Text
-                weight="500"
-                color={colors["neutral-text-action-on-light-bg"]}
-              >
-                {isShow ? t.toString() : null}
-              </Text>
-            );
-          })}
           <ValidatorList />
         </>
       ) : (
