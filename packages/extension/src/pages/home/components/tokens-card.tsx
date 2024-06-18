@@ -6,30 +6,22 @@ import { useStore } from "../../../stores";
 import { ViewRawToken } from "@owallet/types";
 import { unknownToken } from "@owallet/common";
 import classnames from "classnames";
+import { SearchInput } from "./search-input";
 
 export const TokensCard: FC<{
   dataTokens: ViewRawToken[];
 }> = observer(({ dataTokens }) => {
   const [keyword, setKeyword] = useState("");
   const { priceStore } = useStore();
+  const onChangeKeyword = (e) => {
+    setKeyword(e.target.value);
+  };
   return (
     <div className={styles.containerTokenCard}>
-      <div className={styles.searchInputContainer}>
-        <img
-          className={styles.iconSearch}
-          src={require("../../../public/assets/images/owallet_search.svg")}
-          alt="Search icon"
-        />
-        <input
-          onChange={(e) => {
-            setKeyword(e.target.value);
-            // console.log(e.target.value,"kkaa");
-          }}
-          className={styles.searchInput}
-          name={"search-token"}
-          placeholder="Search by name"
-        />
-      </div>
+      <SearchInput
+        onChange={onChangeKeyword}
+        placeholder={"Search by token name"}
+      />
       <div className={styles.listTokens}>
         {/*{dataTokens?.length <= 0 || !dataTokens?.length ?}*/}
         {(

@@ -1,9 +1,8 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { FooterLayout } from "../../layouts/footer-layout/footer-layout";
 import { observer } from "mobx-react-lite";
 import { InfoAccountCard } from "./components/info-account-card";
 import { TokensCard } from "./components/tokens-card";
-import { ClaimReward } from "./components/claim-reward";
 import { useStore } from "../../stores";
 import { ChainIdEnum } from "@owallet/common";
 import {
@@ -12,7 +11,7 @@ import {
   useMultipleAssets,
 } from "../../hooks/use-multiple-assets";
 
-import { CoinPretty } from "@owallet/unit";
+import { CoinPretty, PricePretty } from "@owallet/unit";
 import { ViewRawToken } from "@owallet/types";
 
 export const HomePage = observer(() => {
@@ -50,24 +49,53 @@ export const HomePage = observer(() => {
       totalSizeChain
     );
   let totalPrice = initPrice;
+  const totalPriceByChainId:
+    | Map<ChainIdEnum | string, PricePretty>
+    | undefined = new Map();
+  console.log(dataTokensByChain, "dataTokensByChain");
   const dataTokensWithPrice = (dataTokens || []).map(
     (item: ViewRawToken, index) => {
       const coinData = new CoinPretty(item.token.currency, item.token.amount);
       const priceData = priceStore.calculatePrice(coinData);
+      const totalBalanceByChain = (
+        totalPriceByChainId.get(item?.chainInfo?.chainId) || initPrice
+      ).add(priceData || initPrice);
+
       totalPrice = totalPrice.add(priceData || initPrice);
-      // item.price
+      totalPriceByChainId.set(item?.chainInfo?.chainId, totalBalanceByChain);
       return {
         ...item,
         price: priceData?.toDec()?.toString() || initPrice?.toDec()?.toString(),
       };
     }
   );
+
+  const dataTokensWithPriceByChain = (
+    dataTokensByChain?.[chainStore.current.chainId]?.tokens || []
+  ).map((item, index) => {
+    const coinData = new CoinPretty(item.token.currency, item.token.amount);
+    const priceData = priceStore.calculatePrice(coinData);
+    return {
+      ...item,
+      price: priceData?.toDec()?.toString() || initPrice?.toDec()?.toString(),
+    };
+  });
+
   return (
-    <FooterLayout>
+    <FooterLayout
+      totalPrice={totalPrice}
+      totalPriceByChainId={totalPriceByChainId}
+    >
       <InfoAccountCard totalPrice={totalPrice} />
       {/*TODO:// need check again Claim reward */}
       {/*<ClaimReward />*/}
-      <TokensCard dataTokens={sortTokensByPrice(dataTokensWithPrice)} />
+      <TokensCard
+        dataTokens={sortTokensByPrice(
+          chainStore.isAllNetwork
+            ? dataTokensWithPrice
+            : dataTokensWithPriceByChain
+        )}
+      />
     </FooterLayout>
   );
 });

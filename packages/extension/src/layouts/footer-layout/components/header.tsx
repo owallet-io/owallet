@@ -2,8 +2,11 @@ import React, { useState } from "react";
 import styles from "./header.module.scss";
 import { ModalNetwork } from "../../../pages/home/modals/modal-network";
 import { ModalMenuLeft } from "../../../pages/home/modals/modal-menu-left";
+import { observer } from "mobx-react-lite";
+import { useStore } from "../../../stores";
+import { unknownToken } from "@owallet/common";
 
-export const HeaderNew = () => {
+export const HeaderNew = observer(({ totalPriceByChainId, totalPrice }) => {
   const [isShow, setIsShow] = useState(false);
   const [isShowNetwork, setIsShowNetwork] = useState(false);
   const onRequestCloseNetwork = () => {
@@ -12,6 +15,7 @@ export const HeaderNew = () => {
   const onSelectNetwork = () => {
     setIsShowNetwork(true);
   };
+  const { chainStore } = useStore();
   return (
     <div className={styles.container}>
       <div className={styles.leftBlock}>
@@ -26,9 +30,18 @@ export const HeaderNew = () => {
         <div className={styles.wrapContent}>
           <img
             className={styles.imgIcon}
-            src={require("../../../public/assets/svg/Tokens.svg")}
+            src={
+              chainStore.isAllNetwork
+                ? require("../../../public/assets/svg/Tokens.svg")
+                : chainStore.current?.stakeCurrency?.coinImageUrl ||
+                  unknownToken.coinImageUrl
+            }
           />
-          <span className={styles.chainName}>All Networks</span>
+          <span className={styles.chainName}>
+            {chainStore.isAllNetwork
+              ? "All Networks"
+              : chainStore.current.chainName}
+          </span>
           <img
             className={styles.imgIcon}
             src={require("../../../public/assets/images/tdesign_chevron_down.svg")}
@@ -54,10 +67,12 @@ export const HeaderNew = () => {
         </div>
       </div>
       <ModalNetwork
+        totalPrice={totalPrice}
+        totalPriceByChainId={totalPriceByChainId}
         isOpen={isShowNetwork}
         onRequestClose={onRequestCloseNetwork}
       />
       <ModalMenuLeft isOpen={isShow} onRequestClose={() => setIsShow(false)} />
     </div>
   );
-};
+});

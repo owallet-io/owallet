@@ -111,29 +111,6 @@
   border-radius: 24px;
   padding: 16px;
 
-  .search-input-container {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    padding: 4px 12px;
-    background-color: $neutral-surface-action;
-    border-radius: 999px;
-    gap: 8px;
-    width: 100%;
-
-    .icon-search {
-      width: 20px;
-      height: 20px;
-      color: $neutral-text-action-on-light-bg;
-    }
-
-    .search-input {
-      border: 0px;
-      width: 100%;
-      background-color: $neutral-surface-action;
-      font-size: 14px;
-    }
-  }
 
   .list-tokens {
     padding: 8px 0;
@@ -234,4 +211,27 @@
 
 .error-color {
   color: $error-text-body;
+}
+.search-input-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 4px 12px;
+  background-color: $neutral-surface-action;
+  border-radius: 999px;
+  gap: 8px;
+  width: 100%;
+
+  .icon-search {
+    width: 20px;
+    height: 20px;
+    color: $neutral-text-action-on-light-bg;
+  }
+
+  .search-input {
+    border: 0px;
+    width: 100%;
+    background-color: $neutral-surface-action;
+    font-size: 14px;
+  }
 }

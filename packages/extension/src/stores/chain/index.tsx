@@ -19,6 +19,8 @@ import { toGenerator } from "@owallet/common";
 export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
   @observable
   protected _selectedChainId: string;
+  @observable
+  protected _isAllNetwork: boolean = true;
 
   @observable
   protected _isInitializing: boolean = false;
@@ -51,8 +53,17 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
     return this._isInitializing;
   }
 
+  get isAllNetwork(): boolean {
+    return this._isAllNetwork;
+  }
+
   get selectedChainId(): string {
     return this._selectedChainId;
+  }
+
+  @action
+  setIsAllNetwork(isAll: boolean) {
+    this._isAllNetwork = isAll;
   }
 
   @action

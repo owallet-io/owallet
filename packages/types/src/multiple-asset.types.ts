@@ -8,6 +8,7 @@ export interface IMultipleAsset {
   dataTokensByChain: Record<string, ViewTokenData>;
   isLoading?: boolean;
 }
+
 export interface ViewToken {
   //TODO: need check type for chain info
   chainInfo: ChainInfo;
@@ -32,6 +33,7 @@ export interface ViewRawToken {
   chainInfo: RawChainInfo;
   token: RawToken;
   price: string;
+  type?: string;
 }
 
 export interface ViewTokenData {
