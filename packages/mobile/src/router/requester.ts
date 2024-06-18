@@ -65,8 +65,9 @@ export class RNMessageRequesterBase implements MessageRequester {
 
     if (result.error) {
       if (typeof result.error === "string") {
-        throw new Error(result.error);
+        throw new Error(`${msg?.type()}: ${result.error}`);
       } else {
+        console.error(msg?.type());
         throw new OWalletError(
           result.error?.module,
           result.error?.code,
