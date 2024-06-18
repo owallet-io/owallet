@@ -324,8 +324,11 @@ export const useMultipleAssets = (
     chainInfo: ChainInfo,
     type: AddressBtcType
   ) => {
-    const client = axios.create({ baseURL: chainInfo.rest });
-    const { data } = await client.get(`/address/${address}/utxo`);
+    const data = await API.getBtcBalance({
+      address,
+      baseUrl: chainInfo.rest,
+    });
+    console.log(data, "data btc");
     if (data) {
       const totalBtc = data.reduce((acc, curr) => acc + curr.value, 0);
       pushTokenQueue(chainInfo.stakeCurrency, totalBtc, chainInfo, type);

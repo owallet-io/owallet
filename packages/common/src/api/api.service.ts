@@ -17,4 +17,8 @@ export class API {
     const url = `${urlTxHistory}raw-tx-history/all/balances?network=${network}&address=${address}`;
     return fetchRetry(url, config) as Promise<ResBalanceEvm>;
   }
+  static async getBtcBalance({ address, baseUrl }, config?: any) {
+    const url = `${baseUrl}/address/${address}/utxo`;
+    return fetchRetry(url, config);
+  }
 }

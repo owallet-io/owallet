@@ -9,8 +9,9 @@ import classnames from "classnames";
 
 export const TokensCard: FC<{
   dataTokens: ViewRawToken[];
-}> = ({ dataTokens }) => {
+}> = observer(({ dataTokens }) => {
   const [keyword, setKeyword] = useState("");
+  const { priceStore } = useStore();
   return (
     <div className={styles.containerTokenCard}>
       <div className={styles.searchInputContainer}>
@@ -32,18 +33,24 @@ export const TokensCard: FC<{
       <div className={styles.listTokens}>
         {/*{dataTokens?.length <= 0 || !dataTokens?.length ?}*/}
         {(
-          dataTokens.filter(
-            (item, index) =>
-              new Int(item.token.amount).gt(new Int(1000)) &&
-              item.token.currency.coinDenom?.toLowerCase().includes(keyword)
-          ) || []
+          dataTokens.filter((item, index) => {
+            const balance = new CoinPretty(
+              item.token.currency,
+              item.token.amount
+            );
+            const price = priceStore.calculatePrice(balance, "usd");
+            return (
+              price?.toDec().gte(new Dec("0.1")) &&
+              item?.token?.currency?.coinDenom?.toLowerCase()?.includes(keyword)
+            );
+          }) || []
         ).map((item, index) => (
           <TokenItem key={index} item={item} />
         ))}
       </div>
     </div>
   );
-};
+});
 
 const TokenItem: FC<{
   item: ViewRawToken;

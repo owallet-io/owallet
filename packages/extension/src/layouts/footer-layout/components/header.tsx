@@ -1,8 +1,16 @@
 import React, { useState } from "react";
 import styles from "./header.module.scss";
+import { ModalNetwork } from "../../../pages/home/modals/modal-network";
 
 export const HeaderNew = () => {
   const [isShow, setIsShow] = useState(false);
+  const [isShowNetwork, setIsShowNetwork] = useState(false);
+  const onRequestCloseNetwork = () => {
+    setIsShowNetwork(false);
+  };
+  const onSelectNetwork = () => {
+    setIsShowNetwork(true);
+  };
   return (
     <div className={styles.container}>
       <div className={styles.leftBlock}>
@@ -13,7 +21,7 @@ export const HeaderNew = () => {
           />
         </div>
       </div>
-      <div className={styles.centerBlock}>
+      <div onClick={onSelectNetwork} className={styles.centerBlock}>
         <div className={styles.wrapContent}>
           <img
             className={styles.imgIcon}
@@ -44,6 +52,10 @@ export const HeaderNew = () => {
           />
         </div>
       </div>
+      <ModalNetwork
+        isOpen={isShowNetwork}
+        onRequestClose={onRequestCloseNetwork}
+      />
       {isShow && <MenuLeft onBack={() => setIsShow(false)} />}
     </div>
   );
