@@ -12,9 +12,11 @@ import {
   ORAIX_CONTRACT,
   ATOM_ORAICHAIN_DENOM,
   OSMOSIS_ORAICHAIN_DENOM,
+  TokenItemType,
 } from "@oraichain/oraidex-common";
 import { showToast } from "@src/utils/helper";
 import { API } from "@src/common/api";
+import { AssetInfo } from "@oraichain/oraidex-contracts-sdk";
 
 export const checkFnComponent = (
   titleRight: TypeTextAndCustomizeComponent,
@@ -123,18 +125,31 @@ export enum PairAddress {
   OCH_ORAI = "orai1d3f3e3j400hxse5z8vxxnxdwmvljs7mh8xa3wp3spe8g4ngnc3cqx8scs3",
 }
 
-// smart route swap
-export const findKeyByValue = (obj, value: string) =>
-  Object.keys(obj).find((key) => obj[key] === value);
+interface Pair {
+  asset_infos: AssetInfo[];
+  assets: string[];
+  symbol: string;
+  symbols: string[];
+  info: string;
+  tokenIn?: string;
+  tokenOut?: string;
+}
 
-export const findTokenInfo = (token, flattenTokens) => {
-  return flattenTokens.find(
+// TODO: smart route swap in Oraichain
+const findKeyByValue = (
+  obj: { [key: string]: string },
+  value: string
+): string => Object.keys(obj).find((key) => obj[key] === value);
+
+const findTokenInfo = (
+  token: string,
+  flattenTokens: TokenItemType[]
+): TokenItemType =>
+  flattenTokens.find(
     (t) =>
       t.contractAddress?.toUpperCase() === token?.toUpperCase() ||
       t.denom.toUpperCase() === token?.toUpperCase()
   );
-};
-
 const DefaultIcon =
   "https://assets.coingecko.com/coins/images/12931/standard/orai.png?1696512718";
 
@@ -190,11 +205,11 @@ export const PAIRS_CHART = PAIRS.map((pair) => {
   };
 });
 
-export const findBaseToken = (
-  coinGeckoId,
-  flattenTokensWithIcon,
-  isLightMode
-) => {
+const findBaseToken = (
+  coinGeckoId: string,
+  flattenTokensWithIcon: TokenItemType[],
+  isLightMode: boolean
+): string => {
   const baseToken = flattenTokensWithIcon.find(
     (token) => token.coinGeckoId === coinGeckoId
   );
@@ -211,9 +226,22 @@ export const getPairInfo = (
   flattenTokensWithIcon,
   isLightMode
 ) => {
-  const pairKey = findKeyByValue(PairAddress, path.poolId);
-  const [tokenInKey, tokenOutKey] = pairKey.split("_");
-  let infoPair: any = PAIRS_CHART.find((pair) => {
+  const pairKey: string = findKeyByValue(PairAddress, path.poolId);
+  if (!pairKey)
+    return {
+      infoPair: undefined,
+      TokenInIcon: DefaultIcon,
+      TokenOutIcon: DefaultIcon,
+      pairKey: undefined,
+    };
+
+  let [tokenInKey, tokenOutKey] = pairKey.split("_");
+
+  // TODO: hardcode case token is TRX
+  if (tokenInKey === "TRX") tokenInKey = "WTRX";
+  if (tokenOutKey === "TRX") tokenOutKey = "WTRX";
+
+  let infoPair: Pair = PAIRS_CHART.find((pair) => {
     let convertedArraySymbols = pair.symbols.map((symbol) =>
       symbol.toUpperCase()
     );
@@ -222,6 +250,15 @@ export const getPairInfo = (
       convertedArraySymbols.includes(tokenOutKey)
     );
   });
+
+  if (!infoPair)
+    return {
+      infoPair: undefined,
+      TokenInIcon: DefaultIcon,
+      TokenOutIcon: DefaultIcon,
+      pairKey,
+    };
+
   const tokenIn = infoPair?.assets.find(
     (info) => info.toUpperCase() !== path.tokenOut.toUpperCase()
   );

@@ -182,9 +182,10 @@ export const useEstimateAmount = (
       if (fromAmountToken && data && fromTochainIdIsOraichain) {
         routersSwapData = {
           ...data,
-          //@ts-ignore
           routes: data?.routes ?? [],
         };
+
+        console.log("routersSwapData", routersSwapData);
       }
 
       const isImpactPrice = fromAmountToken && data?.amount && ratio?.amount;
