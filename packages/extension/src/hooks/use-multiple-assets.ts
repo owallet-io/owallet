@@ -201,6 +201,7 @@ export const useMultipleAssets = (
 
       await Promise.allSettled(allBalancePromises);
       setIsLoading(false);
+      localStorage.setItem("dataTokens", JSON.stringify(allTokens));
       setMultipleAssets({
         dataTokens: allTokens,
         totalPriceBalance: overallTotalBalance,

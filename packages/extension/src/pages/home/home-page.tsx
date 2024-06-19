@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FooterLayout } from "../../layouts/footer-layout/footer-layout";
 import { observer } from "mobx-react-lite";
 import { InfoAccountCard } from "./components/info-account-card";
@@ -17,6 +17,7 @@ import { ViewRawToken } from "@owallet/types";
 export const HomePage = observer(() => {
   const [refreshing, setRefreshing] = React.useState(false);
   const { chainStore, accountStore, priceStore, keyRingStore } = useStore();
+  const [dataTokensCache, setDataTokensCache] = useState([]);
   const totalSizeChain = chainStore.chainInfos.length;
   const allChainMap = new Map();
   if (allChainMap.size < totalSizeChain) {
@@ -33,9 +34,6 @@ export const HomePage = observer(() => {
       });
     });
   }
-
-  console.log(allChainMap.values(), "ka");
-
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const { totalPriceBalance, dataTokens, dataTokensByChain, isLoading } =
     useMultipleAssets(
@@ -52,19 +50,24 @@ export const HomePage = observer(() => {
   const totalPriceByChainId:
     | Map<ChainIdEnum | string, PricePretty>
     | undefined = new Map();
+  useEffect(() => {
+    const dataTokens = localStorage.getItem("dataTokens");
+    if (!dataTokens) return;
+    setDataTokensCache(JSON.parse(dataTokens));
+  }, []);
   const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
-  console.log(dataTokensByChain, "dataTokensByChain");
-  const dataTokensWithPrice = (dataTokens || []).map(
-    (item: ViewRawToken, index) => {
-      const coinData = new CoinPretty(item.token.currency, item.token.amount);
-      const priceData = priceStore.calculatePrice(coinData);
-      const totalBalanceByChain = (
-        totalPriceByChainId.get(item?.chainInfo?.chainId) || initPrice
-      ).add(priceData || initPrice);
+  const dataTokensWithPrice = (
+    (dataTokens?.length > 0 ? dataTokens : dataTokensCache) || []
+  ).map((item: ViewRawToken, index) => {
+    const coinData = new CoinPretty(item.token.currency, item.token.amount);
+    const priceData = priceStore.calculatePrice(coinData);
+    const totalBalanceByChain = (
+      totalPriceByChainId.get(item?.chainInfo?.chainId) || initPrice
+    ).add(priceData || initPrice);
 
-      totalPrice = totalPrice.add(priceData || initPrice);
-      totalPriceByChainId.set(item?.chainInfo?.chainId, totalBalanceByChain);
-      // dataTokensByChain[chainStore.current.chainId].totalBalance = new CoinPretty(fiatCurrency,dataTokensByChain[chainStore.current.chainId].totalBalance);
+    totalPrice = totalPrice.add(priceData || initPrice);
+    totalPriceByChainId.set(item?.chainInfo?.chainId, totalBalanceByChain);
+    if (dataTokensByChain?.[chainStore.current.chainId]) {
       dataTokensByChain[chainStore.current.chainId].totalBalance = (
         new PricePretty(
           fiatCurrency,
@@ -74,12 +77,13 @@ export const HomePage = observer(() => {
         .add(priceData || initPrice)
         .toDec()
         .toString();
-      return {
-        ...item,
-        price: priceData?.toDec()?.toString() || initPrice?.toDec()?.toString(),
-      };
     }
-  );
+
+    return {
+      ...item,
+      price: priceData?.toDec()?.toString() || initPrice?.toDec()?.toString(),
+    };
+  });
 
   const dataTokensWithPriceByChain = (
     dataTokensByChain?.[chainStore.current.chainId]?.tokens || []
