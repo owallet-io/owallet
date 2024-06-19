@@ -30,9 +30,11 @@ import {
   maskedNumber,
 } from "@src/utils/helper";
 import OwEmpty from "@src/components/empty/ow-empty";
+import ByteBrew from "react-native-bytebrew-sdk";
 
 export const ValidatorList: FunctionComponent = observer(() => {
   const { chainStore, queriesStore, accountStore } = useStore();
+  ByteBrew.NewCustomEvent(`Stake Screen`);
   const account = accountStore.getAccount(chainStore.current.chainId);
 
   const queries = queriesStore.get(chainStore.current.chainId);

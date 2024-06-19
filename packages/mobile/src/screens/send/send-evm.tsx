@@ -38,6 +38,7 @@ import { FeeModal } from "@src/modals/fee";
 import { capitalizedText } from "@src/utils/helper";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
+import ByteBrew from "react-native-bytebrew-sdk";
 
 export const SendEvmScreen: FunctionComponent = observer(() => {
   const {
@@ -73,7 +74,7 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
   const chainId = route?.params?.chainId
     ? route?.params?.chainId
     : chainStore?.current?.chainId;
-
+  ByteBrew.NewCustomEvent(`Send EVM Screen`);
   const account = accountStore.getAccount(chainId);
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const queries = queriesStore.get(chainId);

@@ -35,6 +35,7 @@ import { FeeModal } from "@src/modals/fee";
 import { CoinPretty, Int } from "@owallet/unit";
 import { API } from "@src/common/api";
 import { initPrice } from "@src/screens/home/hooks/use-multiple-assets";
+import ByteBrew from "react-native-bytebrew-sdk";
 
 export const DelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -48,7 +49,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
       string
     >
   >();
-
+  ByteBrew.NewCustomEvent(`Delegate Screen`);
   const validatorAddress = route.params.validatorAddress;
   const {
     chainStore,
@@ -227,6 +228,14 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                         validatorName: validator?.description.moniker ?? "...",
                         feeType: sendConfigs.feeConfig.feeType,
                       });
+                      ByteBrew.NewCustomEvent(
+                        `Delegate`,
+                        `chainName=${
+                          chainStore.current.chainName
+                        };validatorName=${
+                          validator?.description.moniker ?? "..."
+                        };`
+                      );
                       smartNavigation.pushSmart("TxPendingResult", {
                         txHash: Buffer.from(txHash).toString("hex"),
                         data: {

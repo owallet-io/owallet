@@ -19,6 +19,7 @@ import { OWBox } from "../../components/card";
 import { useSmartNavigation } from "../../navigation.provider";
 import { useStore } from "../../stores";
 import { metrics } from "../../themes";
+import ByteBrew from "react-native-bytebrew-sdk";
 
 export const EarningCardNew: FunctionComponent<{
   defaultChain?: string;
@@ -47,6 +48,7 @@ export const EarningCardNew: FunctionComponent<{
 
   const _onPressClaim = async () => {
     try {
+      ByteBrew.NewCustomEvent(`${chainStore.current.chainName} Claim`);
       await account.cosmos.sendWithdrawDelegationRewardMsgs(
         queryReward.getDescendingPendingRewardValidatorAddresses(8),
         "",

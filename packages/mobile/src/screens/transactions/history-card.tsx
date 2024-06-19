@@ -11,10 +11,12 @@ import {
   mappingChainIdToHistoryScreen,
   typeTxEnum,
 } from "@src/screens/transactions/tx-helper";
+import ByteBrew from "react-native-bytebrew-sdk";
 
 export const HistoryCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(() => {
+  ByteBrew.NewCustomEvent(`History Card`);
   const { chainStore, priceStore, appInitStore } = useStore();
   const fiat = priceStore.defaultVsCurrency;
   const { chainId } = chainStore.current;

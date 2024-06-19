@@ -23938,6 +23938,11 @@ react-native-ble-plx@2.0.3:
   resolved "https://registry.yarnpkg.com/react-native-ble-plx/-/react-native-ble-plx-2.0.3.tgz#b0a746f33389dbf7fd7b158513330d487d5d0fbb"
   integrity sha512-62LRDBPf/03K7sge+qq2ZuF8PWCGB782G+SBrpgNm5fA5Hs3FCY1ExTJZ1G0tB5ZhBPYEXcKRxPLuFegcDFrqA==
 
+react-native-bytebrew-sdk@^0.1.5:
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/react-native-bytebrew-sdk/-/react-native-bytebrew-sdk-0.1.5.tgz#34b1c07c082adf966253ff9ef1f452bdaab218da"
+  integrity sha512-QrfJ6JsNIIjGu+RTzAWxeihYEYwZWsJ8H8zvvTMwfnWExVqv1q4cmtvET67H4zOXDrCQBkRwcEnuch9y3BzsyQ==
+
 react-native-camera@4.2.1:
   version "4.2.1"
   resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-4.2.1.tgz#caf74081f055e89d7e9b0cd5108965d808c60e90"

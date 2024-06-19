@@ -570,6 +570,8 @@ PODS:
     - React-Core
   - react-native-blur (4.3.2):
     - React-Core
+  - react-native-bytebrew-sdk (0.1.5):
+    - React-Core
   - react-native-camera (4.2.1):
     - React-Core
     - react-native-camera/RCT (= 4.2.1)
@@ -840,6 +842,7 @@ DEPENDENCIES:
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - react-native-ble-plx (from `../node_modules/react-native-ble-plx`)
   - "react-native-blur (from `../node_modules/@react-native-community/blur`)"
+  - react-native-bytebrew-sdk (from `../node_modules/react-native-bytebrew-sdk`)
   - react-native-camera (from `../node_modules/react-native-camera`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-pager-view (from `../node_modules/react-native-pager-view`)
@@ -998,6 +1001,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-ble-plx"
   react-native-blur:
     :path: "../node_modules/@react-native-community/blur"
+  react-native-bytebrew-sdk:
+    :path: "../node_modules/react-native-bytebrew-sdk"
   react-native-camera:
     :path: "../node_modules/react-native-camera"
   react-native-netinfo:
@@ -1160,6 +1165,7 @@ SPEC CHECKSUMS:
   React-logger: b8103c9b04e707b50cdd2b1aeb382483900cbb37
   react-native-ble-plx: f10240444452dfb2d2a13a0e4f58d7783e92d76e
   react-native-blur: cfdad7b3c01d725ab62a8a729f42ea463998afa2
+  react-native-bytebrew-sdk: 961c57a9f26685d1cbc5e6df1f9ff686dc7c5160
   react-native-camera: 3eae183c1d111103963f3dd913b65d01aef8110f
   react-native-netinfo: fefd4e98d75cbdd6e85fc530f7111a8afdf2b0c5
   react-native-pager-view: 712081434052f3af89ef00e8a353a7d351e62eeb

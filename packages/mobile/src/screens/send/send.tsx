@@ -37,6 +37,7 @@ import { DownArrowIcon } from "@src/components/icon";
 import { capitalizedText } from "@src/utils/helper";
 import { Buffer } from "buffer";
 import { ChainIdEnum } from "@oraichain/oraidex-common";
+import ByteBrew from "react-native-bytebrew-sdk";
 
 export const NewSendScreen: FunctionComponent = observer(() => {
   const {
@@ -50,6 +51,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
     universalSwapStore,
     appInitStore,
   } = useStore();
+
   const { colors } = useTheme();
   const styles = styling(colors);
   const [balance, setBalance] = useState<CoinPretty>(null);
@@ -90,6 +92,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
   );
 
   useEffect(() => {
+    ByteBrew.NewCustomEvent(`Send ${chainStore.current.chainName} Screen`);
     if (route?.params?.currency) {
       const currency = sendConfigs.amountConfig.sendableCurrencies.find(
         (cur) => {
@@ -208,7 +211,9 @@ export const NewSendScreen: FunctionComponent = observer(() => {
                 chainName: chainStore.current.chainName,
                 feeType: sendConfigs.feeConfig.feeType,
               });
-
+              ByteBrew.NewCustomEvent(
+                `Send ${sendConfigs.amountConfig.sendCurrency} - ${chainStore.current.chainName}`
+              );
               universalSwapStore.updateTokenReload([
                 {
                   ...sendConfigs.amountConfig.sendCurrency,

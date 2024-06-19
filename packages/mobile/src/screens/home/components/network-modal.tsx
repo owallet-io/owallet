@@ -34,6 +34,7 @@ import { ChainInfoInner } from "@owallet/stores";
 import { initPrice } from "@src/screens/home/hooks/use-multiple-assets";
 import { ViewRawToken, ViewToken } from "@src/stores/huge-queries";
 import { PricePretty } from "@owallet/unit";
+import ByteBrew from "react-native-bytebrew-sdk";
 
 interface ChainInfoItem extends ChainInfoInner<ChainInfoWithEmbed> {
   balance: PricePretty;
@@ -42,7 +43,9 @@ export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
   const { colors } = useTheme();
   const [keyword, setKeyword] = useState("");
   const [activeTab, setActiveTab] = useState<"mainnet" | "testnet">("mainnet");
-
+  useEffect(() => {
+    ByteBrew.NewCustomEvent("Modal Select Network Screen");
+  }, []);
   const bip44Option = useBIP44Option();
   const {
     modalStore,
@@ -122,11 +125,13 @@ export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
       } else {
         modalStore.close();
         if (!item.isAll) {
+          ByteBrew.NewCustomEvent(`Select ${item?.chainName} Network`);
           chainStore.selectChain(item?.chainId);
           await chainStore.saveLastViewChainId();
           appInitStore.selectAllNetworks(false);
           modalStore.close();
         } else {
+          ByteBrew.NewCustomEvent("Select All Network");
           appInitStore.selectAllNetworks(true);
         }
       }
@@ -201,7 +206,7 @@ export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
                 fontWeight: "600",
               }}
             >
-              {item?.chainName || item?.chainName}
+              {item?.chainName}
             </Text>
 
             <Text
