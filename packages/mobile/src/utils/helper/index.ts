@@ -834,3 +834,14 @@ export const computeTotalVotingPower = (data) => {
   }
   return total;
 };
+
+export function numberWithCommas(number) {
+  // Convert the number to a string and split it into integer and decimal parts
+  const [intPart, decPart] = number.toString().split(".");
+
+  // Insert commas into the integer part
+  const formattedNumber = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+  // Combine the formatted integer part and the decimal part
+  return formattedNumber + "." + decPart;
+}
