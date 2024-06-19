@@ -1,34 +1,26 @@
-import React, { FunctionComponent } from "react";
-
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
-
 import styleDetailsTab from "./details-tab.module.scss";
-
-import { renderAminoMessage } from "./amino";
-import { Msg } from "@cosmjs/launchpad";
 import { FormattedMessage, useIntl } from "react-intl";
-import { FeeButtons, MemoInput } from "../../components/form";
-import {
-  IFeeConfig,
-  IGasConfig,
-  IMemoConfig,
-  SignDocHelper,
-} from "@owallet/hooks";
+import { IFeeConfig, IGasConfig, IMemoConfig } from "@owallet/hooks";
 import { toDisplay, useLanguage } from "@owallet/common";
 import { ChainIdEnum } from "@owallet/common";
-import { Badge, Button, Label } from "reactstrap";
-import { renderDirectMessage } from "./direct";
-import classnames from "classnames";
 import { Bech32Address } from "@owallet/cosmos";
 import Web3 from "web3";
 import { Card } from "../../components/common/card";
 import colors from "../../theme/colors";
 import { Text } from "../../components/common/text";
-import { ethers } from "ethers";
 import ERC20_ABI from "./abi/erc20-abi.json";
+import BEP20_ABI from "./abi/bep20-abi.json";
+import EVM_PROXY_ABI from "./abi/evm-proxy-abi.json";
 import GRAVITY_ABI from "./abi/gravity-abi.json";
+import PANCAKE_ABI from "./abi/pancake-abi.json";
+import UNISWAP_ABI from "./abi/uniswap-abi.json";
 import { Address } from "../../components/address";
+import { tryAllABI } from "./helpers/helpers";
+import { EVMRenderArgs } from "./components/render-evm-args";
+
 export const DetailsTabEvm: FunctionComponent<{
   msgSign: any;
   dataSign: any;
@@ -56,22 +48,36 @@ export const DetailsTabEvm: FunctionComponent<{
     const intl = useIntl();
     const language = useLanguage();
 
-    const chain = chainStore.getChain(dataSign?.data?.chainId);
-    let decodedData;
+    const [isMore, setIsMore] = useState(true);
 
-    if (msgSign?.data) {
-      const inputData = msgSign.data;
-      // The encoded data
-      try {
-        const iface = new ethers.utils.Interface(ERC20_ABI);
-        decodedData = iface.parseTransaction({ data: inputData });
-        console.log("decodedData 1", decodedData);
-      } catch (err) {
-        const iface = new ethers.utils.Interface(GRAVITY_ABI);
-        decodedData = iface.parseTransaction({ data: inputData });
-        console.log("decodedData 2", decodedData);
+    const chain = chainStore.getChain(dataSign?.data?.chainId);
+    const [decodedData, setDecodedData] = useState(null);
+    const [decodeWithABI, setDecodeWithABI] = useState(null);
+
+    useEffect(() => {
+      if (msgSign?.data) {
+        const inputData = msgSign.data;
+        console.log("inputData", inputData);
+
+        try {
+          const res = tryAllABI(inputData, [
+            ERC20_ABI,
+            EVM_PROXY_ABI,
+            GRAVITY_ABI,
+            PANCAKE_ABI,
+            UNISWAP_ABI,
+            BEP20_ABI,
+          ]);
+          setDecodeWithABI(res);
+
+          if (!res.isRaw) {
+            setDecodedData(res.data);
+          }
+        } catch (err) {
+          console.log("err", err);
+        }
       }
-    }
+    }, [msgSign]);
 
     const renderMsg = (content) => {
       return (
@@ -134,7 +140,7 @@ export const DetailsTabEvm: FunctionComponent<{
         );
       }
 
-      if (Object.keys(msgs).length > 0 && decodedData) {
+      if (Object.keys(msgs).length > 0 && decodedData && !decodeWithABI.isRaw) {
         return (
           <React.Fragment>
             {renderMsg(
@@ -159,7 +165,6 @@ export const DetailsTabEvm: FunctionComponent<{
                   </div>
 
                   <div style={{ display: "flex", flexDirection: "column" }}>
-                    {/* <Text>{chain.chainName}</Text> */}
                     <Text size={16} weight="600">
                       {decodedData.name
                         .replace(/([a-z])([A-Z])/g, "$1 $2")
@@ -170,11 +175,6 @@ export const DetailsTabEvm: FunctionComponent<{
                         {msgs?.from ?? "..."}
                       </Address>
                     </Text>
-                    {/* <Text>To Contract: {decodedData.args?.[0]}</Text> */}
-                    {/* <Text>To: {msgs.to}</Text> */}
-                    {/* <Text>Method: {decodedData.name}</Text> */}
-                    {/* <Text>Amount: {Number(decodedData.args._value)}</Text> */}
-                    {/* <Text>Gas: {msgs.gas}</Text> */}
                   </div>
                 </div>
               </div>
@@ -186,79 +186,105 @@ export const DetailsTabEvm: FunctionComponent<{
       return null;
     })();
 
-    const renderFees = () => {
+    const renderToken = (token) => {
       return (
-        <div>
-          {!preferNoSetFee || !feeConfig.isManual ? (
-            <FeeButtons
-              feeConfig={feeConfig}
-              gasConfig={gasConfig}
-              priceStore={priceStore}
-              label={intl.formatMessage({ id: "sign.info.fee" })}
-              gasLabel={intl.formatMessage({ id: "sign.info.gas" })}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            margin: "4px 0",
+          }}
+        >
+          {token?.imgUrl || token?.coinImageUrl ? (
+            <img
+              style={{
+                width: 14,
+                height: 14,
+                borderRadius: 28,
+                marginRight: 4,
+              }}
+              src={token?.imgUrl ?? token?.coinImageUrl}
             />
-          ) : feeConfig.fee ? (
-            <React.Fragment>
-              <Label for="fee-price" className="form-control-label">
-                <FormattedMessage id="sign.info.fee" />
-              </Label>
-              <div id="fee-price">
-                <div className={styleDetailsTab.feePrice}>
-                  {feeConfig.fee.maxDecimals(9).trim(true).toString()}
-                  {priceStore.calculatePrice(
-                    feeConfig.fee,
-                    language.fiatCurrency
-                  ) ? (
-                    <div
-                      style={{
-                        display: "inline-block",
-                        fontSize: "12px",
-                        color: "#353945",
-                      }}
-                    >
-                      {priceStore
-                        .calculatePrice(feeConfig.fee, language.fiatCurrency)
-                        ?.toString()}
-                    </div>
-                  ) : null}
-                </div>
-              </div>
-              {
-                /*
-                Even if the "preferNoSetFee" option is turned on, it provides the way to edit the fee to users.
-                However, if the interaction is internal, you can be sure that the fee is set well inside OWallet.
-                Therefore, the button is not shown in this case.
-              */
-                !isInternal ? (
-                  <div style={{ fontSize: "12px" }}>
-                    <Button
-                      color="link"
-                      size="sm"
-                      style={{
-                        padding: 0,
-                      }}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        feeConfig.setFeeType("average");
-                      }}
-                    >
-                      <FormattedMessage id="sign.info.fee.override" />
-                    </Button>
-                  </div>
-                ) : null
-              }
-            </React.Fragment>
           ) : null}
+          <Text weight="600">{token?.abbr ?? token?.coinDenom}</Text>
+        </div>
+      );
+    };
+
+    const renderPath = (fromToken?, toToken?) => {
+      return (
+        <div
+          style={{
+            marginTop: 14,
+            height: "auto",
+            alignItems: "center",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginBottom: 14,
+            }}
+          >
+            <div
+              style={{
+                maxWidth: "50%",
+              }}
+            >
+              <div>
+                <Text color={colors["neutral-text-body"]}>Pay token</Text>
+                {renderToken(chain.stakeCurrency)}
+                <Text
+                  containerStyle={{ textDecoration: "underline" }}
+                  color={colors["neutral-text-body"]}
+                >
+                  {"0x8c7...4E797"}
+                </Text>
+              </div>
+            </div>
+            <img
+              style={{ paddingRight: 4 }}
+              src={require("../../public/assets/icon/tdesign_arrow-right.svg")}
+            />
+            <div
+              style={{
+                maxWidth: "50%",
+              }}
+            >
+              <div>
+                <Text color={colors["neutral-text-body"]}>Receive token</Text>
+                {renderToken(chain.stakeCurrency)}
+                <Text
+                  containerStyle={{ textDecoration: "underline" }}
+                  color={colors["neutral-text-body"]}
+                >
+                  {"0x8c7...4E797"}
+                </Text>
+              </div>
+            </div>
+          </div>
+          <div
+            style={{
+              width: "100%",
+              height: 1,
+              backgroundColor: colors["neutral-border-default"],
+            }}
+          />
         </div>
       );
     };
 
     const renderInfo = (condition, label, leftContent) => {
-      if (condition && condition !== "" && condition !== null) {
+      if (condition && condition !== "") {
         return (
           <div
             style={{
               marginTop: 14,
+              height: "auto",
+              alignItems: "center",
             }}
           >
             <div
@@ -268,14 +294,13 @@ export const DetailsTabEvm: FunctionComponent<{
                 justifyContent: "space-between",
                 marginBottom: 14,
               }}
-              onClick={() => {
-                setOpenSetting();
-              }}
             >
               <Text weight="600">{label}</Text>
               <div
                 style={{
                   alignItems: "flex-end",
+                  maxWidth: "70%",
+                  wordBreak: "break-all",
                 }}
               >
                 <div>{leftContent}</div>
@@ -295,50 +320,105 @@ export const DetailsTabEvm: FunctionComponent<{
 
     const renderTransactionFee = () => {
       return (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            marginTop: 14,
-          }}
-          onClick={() => {
-            setOpenSetting();
-          }}
-        >
-          <Text weight="600">Transaction fee</Text>
+        <div>
+          {renderInfo(
+            chain?.chainName,
+            "Amount",
+            <div
+              style={{
+                flexDirection: "column",
+                display: "flex",
+                alignItems: "flex-end",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  cursor: "pointer",
+                }}
+              >
+                <Text size={16} weight="600">
+                  1,795.89147 ORAIX
+                </Text>
+              </div>
+              <Text
+                containerStyle={{
+                  alignSelf: "flex-end",
+                  display: "flex",
+                }}
+                color={colors["neutral-text-body"]}
+              >
+                ≈
+                {priceStore
+                  .calculatePrice(feeConfig?.fee, language.fiatCurrency)
+                  ?.toString() || 0}
+              </Text>
+            </div>
+          )}
           <div
             style={{
-              flexDirection: "column",
               display: "flex",
-              alignItems: "flex-end",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginTop: 14,
+            }}
+            onClick={() => {
+              setOpenSetting();
             }}
           >
             <div
               style={{
+                flexDirection: "column",
                 display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                cursor: "pointer",
               }}
             >
-              <Text
-                size={16}
-                weight="600"
-                color={colors["primary-text-action"]}
-              >
-                {feeConfig?.fee?.maxDecimals(8).trim(true).toString() || 0}
-              </Text>
-              <img
-                src={require("../../public/assets/icon/tdesign_chevron-down.svg")}
-              />
+              <div>
+                <Text weight="600">Fee</Text>
+              </div>
+              <div>
+                <Text color={colors["neutral-text-body"]}>Gas: 135588</Text>
+              </div>
             </div>
-            <Text color={colors["neutral-text-body"]}>
-              ≈
-              {priceStore
-                .calculatePrice(feeConfig?.fee, language.fiatCurrency)
-                ?.toString() || 0}
-            </Text>
+            <div
+              style={{
+                flexDirection: "column",
+                display: "flex",
+                alignItems: "flex-end",
+                width: "65%",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  cursor: "pointer",
+                }}
+              >
+                <Text
+                  size={16}
+                  weight="600"
+                  color={colors["primary-text-action"]}
+                >
+                  {feeConfig?.fee?.maxDecimals(8).trim(true).toString() || 0}
+                </Text>
+                <img
+                  src={require("../../public/assets/icon/tdesign_chevron-down.svg")}
+                />
+              </div>
+              <Text
+                containerStyle={{
+                  alignSelf: "flex-end",
+                  display: "flex",
+                }}
+                color={colors["neutral-text-body"]}
+              >
+                ≈
+                {priceStore
+                  .calculatePrice(feeConfig?.fee, language.fiatCurrency)
+                  ?.toString() || 0}
+              </Text>
+            </div>
           </div>
         </div>
       );
@@ -410,14 +490,58 @@ export const DetailsTabEvm: FunctionComponent<{
               <Text weight="600">{chain?.chainName}</Text>
             </div>
           )}
+          {renderPath()}
+          {renderInfo(
+            true,
+            "Method",
+            <Text color={colors["neutral-text-body"]}>{"SendToCosmos"}</Text>
+          )}
+          {isMore
+            ? null
+            : renderInfo(
+                true,
+                "Channel",
+                <Text color={colors["neutral-text-body"]}>
+                  {"channel-1/orai1hvr9d72r5um9lvtOrpkd4r75vrsgtw6yujhqs2"}
+                </Text>
+              )}
           {renderInfo(
             msgs.to,
             "To",
             <Text color={colors["neutral-text-body"]}>
-              {" "}
               <Address maxCharacters={18} lineBreakBeforePrefix={false}>
                 {msgs?.to}
               </Address>
+            </Text>
+          )}
+          {renderInfo(
+            msgs.from,
+            "From",
+            <Text color={colors["neutral-text-body"]}>
+              <Address maxCharacters={18} lineBreakBeforePrefix={false}>
+                {msgs?.from}
+              </Address>
+            </Text>
+          )}
+          {renderInfo(
+            msgs.to,
+            "To",
+            <Text color={colors["neutral-text-body"]}>
+              <Address maxCharacters={18} lineBreakBeforePrefix={false}>
+                {msgs?.to}
+              </Address>
+            </Text>
+          )}
+          {renderInfo(
+            msgs?.value,
+            "Amount In",
+            <Text>
+              {msgs.value
+                ? toDisplay(
+                    msgs?.value?.toString(),
+                    chain.stakeCurrency.coinDecimals
+                  )
+                : null}
             </Text>
           )}
           {decodedData ? (
@@ -427,23 +551,104 @@ export const DetailsTabEvm: FunctionComponent<{
                 "Method",
                 <Text>{decodedData.name}</Text>
               )}
-              {renderInfo(
-                decodedData.args?._value,
-                "Amount",
-                <Text>
-                  {toDisplay(
-                    Number(decodedData.args?._value).toString(),
-                    chain.stakeCurrency.coinDecimals
-                  )}
-                </Text>
-              )}
+              {decodedData?.args ? (
+                <EVMRenderArgs
+                  args={decodedData.args}
+                  renderInfo={renderInfo}
+                  chain={chain}
+                />
+              ) : null}
             </>
           ) : null}
 
           {renderInfo(msgs?.gas, "Gas", <Text>{Number(msgs?.gas)}</Text>)}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              cursor: "pointer",
+              justifyContent: "flex-end",
+              width: "100%",
+              marginTop: 8,
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                cursor: "pointer",
+              }}
+              onClick={() => {
+                setIsMore((prevState) => {
+                  return prevState ? false : true;
+                });
+              }}
+            >
+              <Text size={14} weight="500">
+                {`View ${isMore ? "more" : "less"}`}
+              </Text>
+              {isMore ? (
+                <img
+                  src={require("../../public/assets/icon/tdesign_chevron-down.svg")}
+                />
+              ) : (
+                <img
+                  src={require("../../public/assets/icon/tdesign_chevron-up.svg")}
+                />
+              )}
+            </div>
+          </div>
+        </Card>
+        <Card
+          containerStyle={{
+            borderRadius: 12,
+            border: "2px solid" + colors["neutral-text-title"],
+            padding: 8,
+            marginTop: 12,
+          }}
+        >
           {renderTransactionFee()}
         </Card>
-        {/* {renderFees()} */}
+        {feeConfig.getError() !== null && feeConfig.getError() !== undefined ? (
+          <div
+            style={{
+              display: "flex",
+              backgroundColor: colors["warning-surface-subtle"],
+              borderRadius: 12,
+              flexDirection: "row",
+              marginTop: 12,
+              padding: "8px",
+            }}
+          >
+            <img
+              style={{ paddingRight: 4 }}
+              src={require("../../public/assets/icon/tdesign_error-circle.svg")}
+            />
+            <Text size={12} weight="600">
+              {feeConfig.getError().message}
+            </Text>
+          </div>
+        ) : null}
+        {gasConfig.getError() !== null && gasConfig.getError() !== undefined ? (
+          <div
+            style={{
+              display: "flex",
+              backgroundColor: colors["warning-surface-subtle"],
+              borderRadius: 12,
+              flexDirection: "row",
+              marginTop: 12,
+              padding: "8px",
+            }}
+          >
+            <img
+              style={{ paddingRight: 4 }}
+              src={require("../../public/assets/icon/tdesign_error-circle.svg")}
+            />
+            <Text size={12} weight="600">
+              {gasConfig.getError().message}
+            </Text>
+          </div>
+        ) : null}
       </div>
     );
   }

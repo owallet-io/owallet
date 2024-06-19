@@ -62,11 +62,31 @@ export const getRpcByChainId = (
   return chainInfo.rpc;
 };
 export const getEvmAddress = (base58Address) => {
-  return base58Address
-    ? "0x" +
+  return isBase58Address(base58Address)
+    ? base58Address
+      ? "0x" +
         Buffer.from(bs58.decode(base58Address).slice(1, -4)).toString("hex")
-    : "-";
+      : "-"
+    : null;
 };
+
+function isBase58Address(address) {
+  try {
+    // Attempt to decode the address
+    const decoded = bs58.decode(address);
+
+    // Check for invalid characters in the decoded result
+    for (const byte of decoded) {
+      if (byte < 0 || byte > 255) {
+        return false;
+      }
+    }
+
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
 
 export const getBase58Address = (address) => {
   if (!address) return null;

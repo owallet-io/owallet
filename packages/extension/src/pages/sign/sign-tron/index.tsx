@@ -263,6 +263,7 @@ export const SignTronPage: FunctionComponent = observer(() => {
               {tab === Tab.Details && (
                 <TronDetailsTab
                   txInfo={txInfo}
+                  addressTronBase58={addressTronBase58}
                   dataInfo={{
                     estimateBandwidth,
                     estimateEnergy,
@@ -325,7 +326,6 @@ export const SignTronPage: FunctionComponent = observer(() => {
                         {accountInfo.name}
                       </Text>
                       <Text color={colors["neutral-text-body"]}>
-                        {" "}
                         <Address
                           maxCharacters={18}
                           lineBreakBeforePrefix={false}

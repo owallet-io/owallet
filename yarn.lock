@@ -6124,6 +6124,16 @@
     reflect-metadata "^0.1.13"
     typedi "^0.10.0"
 
+"@tatumio/tatum@^4.2.32":
+  version "4.2.34"
+  resolved "https://registry.yarnpkg.com/@tatumio/tatum/-/tatum-4.2.34.tgz#d75125c628616bc4aebc47daf0ebec85c4c00b37"
+  integrity sha512-kYyth57u0MKgL4hAPGN5yqL+ae0syuZoYf//9YtThaVXTIl/LvqAb+PK+lm83k/SfvVVosn2K+w7gkBoRSdNaA==
+  dependencies:
+    bignumber.js "^9.1.1"
+    chalk "^4.1.2"
+    reflect-metadata "^0.1.13"
+    typedi "^0.10.0"
+
 "@testing-library/react-hooks@^8.0.1":
   version "8.0.1"
   resolved "https://registry.yarnpkg.com/@testing-library/react-hooks/-/react-hooks-8.0.1.tgz#0924bbd5b55e0c0c0502d1754657ada66947ca12"
