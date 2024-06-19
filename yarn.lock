@@ -20241,6 +20241,11 @@ mkdirp@1.0.4, mkdirp@^1.0.3, mkdirp@^1.0.4:
   dependencies:
     minimist "^1.2.6"
 
+mobx-persist-store@^1.1.5:
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/mobx-persist-store/-/mobx-persist-store-1.1.5.tgz#be53a01375ac70b4bd6954c4a913dfdbc1e34d59"
+  integrity sha512-STVTfYErC4Vw58zbAiz/Em4bmwi2sa+zXudxHwRtJvwiEejrJ6W1FcFDRskZyjrGLNOcrT0dDK2VDplV2cgQig==
+
 mobx-persist@0.4.1:
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/mobx-persist/-/mobx-persist-0.4.1.tgz#fe5790eda04e0ee0b91c512d1347104e09363f9a"

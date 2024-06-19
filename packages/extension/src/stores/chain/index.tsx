@@ -15,12 +15,12 @@ import { BACKGROUND_PORT } from "@owallet/router";
 
 import { MessageRequester } from "@owallet/router";
 import { toGenerator } from "@owallet/common";
-
+import { makePersistable } from "mobx-persist-store";
 export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
   @observable
   protected _selectedChainId: string;
   @observable
-  protected _isAllNetwork: boolean = true;
+  protected _isAllNetwork: boolean = false;
 
   @observable
   protected _isInitializing: boolean = false;
@@ -45,7 +45,15 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
     this._selectedChainId = initChain ?? embedChainInfos[0].chainId;
 
     makeObservable(this);
-
+    makePersistable(this, {
+      name: "ChainStore",
+      properties: ["isAllNetwork"],
+      storage: window.localStorage,
+    }).then(
+      action((persistStore) => {
+        console.log(persistStore.isHydrated, "persistStore.isHydrated");
+      })
+    );
     this.init();
   }
 

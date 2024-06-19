@@ -21,6 +21,7 @@
     "react-sliding-pane": "^7.3.0",
     "@cosmjs/encoding": "^0.29.3",
     "@cosmjs/launchpad": "^0.27.1",
+    "mobx-persist-store": "^1.1.5",
     "@cosmjs/proto-signing": "^0.29.3",
     "@fortawesome/fontawesome-free": "^5.11.2",
     "@owallet/analytics": "^0.9.14",

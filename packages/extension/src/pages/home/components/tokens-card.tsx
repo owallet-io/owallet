@@ -33,7 +33,9 @@ export const TokensCard: FC<{
             const price = priceStore.calculatePrice(balance, "usd");
             return (
               price?.toDec().gte(new Dec("0.1")) &&
-              item?.token?.currency?.coinDenom?.toLowerCase()?.includes(keyword)
+              item?.token?.currency?.coinDenom
+                ?.toLowerCase()
+                ?.includes(keyword?.toLowerCase())
             );
           }) || []
         ).map((item, index) => (

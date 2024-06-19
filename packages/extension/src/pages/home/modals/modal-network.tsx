@@ -48,12 +48,12 @@ export const ModalNetwork: FC<{
   const mainnet = chainsInfoWithBalance.filter(
     (item, index) =>
       !item?.chainName?.toLowerCase()?.includes("test") &&
-      item?.chainName?.toLowerCase()?.includes(keyword)
+      item?.chainName?.toLowerCase()?.includes(keyword?.toLowerCase())
   );
   const testnet = chainsInfoWithBalance.filter(
     (item, index) =>
       item?.chainName?.toLowerCase()?.includes("test") &&
-      item?.chainName?.toLowerCase()?.includes(keyword)
+      item?.chainName?.toLowerCase()?.includes(keyword?.toLowerCase())
   );
   const chains = tab.id === typeNetwork[0].id ? mainnet : testnet;
 
