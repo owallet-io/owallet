@@ -246,3 +246,9 @@ export const getPairInfo = (
 
   return { infoPair, TokenInIcon, TokenOutIcon, pairKey };
 };
+
+export const getRemoteDenom = (originalToken) => {
+  return originalToken.contractAddress
+    ? originalToken.prefix + originalToken.contractAddress
+    : originalToken.denom;
+};
