@@ -17,6 +17,7 @@ import {
 } from "../../../hooks/use-multiple-assets";
 import { ViewRawToken, ViewTokenData } from "@owallet/types";
 import { CoinPretty, PricePretty } from "@owallet/unit";
+import { HeaderModal } from "../components/header-modal";
 
 export const ModalNetwork: FC<{
   isOpen: boolean;
@@ -85,10 +86,21 @@ export const ModalNetwork: FC<{
     }
   };
   // console.log(totalPriceByChainId?.[ChainIdEnum.Oraichain]?.toString(), 'totalPriceByChainId');
+  const allNetworkData =
+    tab.id === typeNetwork[0].id
+      ? [
+          {
+            chainId: "isAll",
+            chainName: "All Network",
+            stakeCurrency: {
+              coinImageUrl: require("../../../public/assets/svg/Tokens.svg"),
+            },
+          },
+        ]
+      : [];
   return (
     <SlidingPane
       isOpen={isOpen}
-      title={<span>CHOOSE NETWORK</span>}
       from="bottom"
       width="100vw"
       onRequestClose={onRequestClose}
@@ -96,20 +108,7 @@ export const ModalNetwork: FC<{
       className={styles.modalNetwork}
     >
       <div className={styles.contentWrap}>
-        <div className={styles.header}>
-          <div className={styles.headerLeft} />
-          <div className={styles.title}>
-            <span className={styles.titleText}>CHOOSE NETWORK</span>
-          </div>
-          <div className={styles.headerRight}>
-            <div onClick={onRequestClose} className={styles.closeBtn}>
-              <img
-                className={styles.imgIcon}
-                src={require("../../../public/assets/img/close.svg")}
-              />
-            </div>
-          </div>
-        </div>
+        <HeaderModal title={"CHOOSE NETWORK"} onRequestClose={onRequestClose} />
         <SearchInput
           containerClassNames={styles.containerSearchInput}
           onChange={onChangeInput}
@@ -142,68 +141,64 @@ export const ModalNetwork: FC<{
         </div>
         <div className={styles.containerListChain}>
           {chains?.length > 0 &&
-            [
-              {
-                chainId: "isAll",
-                chainName: "All Network",
-                stakeCurrency: {
-                  coinImageUrl: require("../../../public/assets/svg/Tokens.svg"),
-                },
-              },
-              ...sortChainsByPrice(chains),
-            ].map((item, index) => {
-              return (
-                <div
-                  onClick={() => switchChain(item)}
-                  key={item.chainId}
-                  className={classnames([
-                    styles.itemChain,
-                    item.chainId ===
-                    (chainStore.isAllNetwork
-                      ? "isAll"
-                      : chainStore.current.chainId)
-                      ? styles.activeItemChain
-                      : null,
-                  ])}
-                >
-                  <div className={styles.leftBlockHuge}>
-                    <div className={styles.wrapImgChain}>
-                      <img
-                        className={styles.imgChain}
-                        src={
-                          item?.stakeCurrency?.coinImageUrl ||
-                          unknownToken.coinImageUrl
+            [...allNetworkData, ...sortChainsByPrice(chains)].map(
+              (item, index) => {
+                return (
+                  <div
+                    onClick={() => switchChain(item)}
+                    key={item.chainId}
+                    className={classnames([
+                      styles.itemChain,
+                      item.chainId ===
+                      (chainStore.isAllNetwork
+                        ? "isAll"
+                        : chainStore.current.chainId)
+                        ? styles.activeItemChain
+                        : null,
+                    ])}
+                  >
+                    <div className={styles.leftBlockHuge}>
+                      <div className={styles.wrapImgChain}>
+                        <img
+                          className={styles.imgChain}
+                          src={
+                            item?.stakeCurrency?.coinImageUrl ||
+                            unknownToken.coinImageUrl
+                          }
+                        />
+                      </div>
+                      <div className={styles.rightBlock}>
+                        <span className={styles.titleName}>
+                          {item.chainName}
+                        </span>
+                        <span className={styles.subTitlePrice}>
+                          {item.chainId === "isAll"
+                            ? (totalPrice || initPrice)?.toString()
+                            : (
+                                totalPriceByChainId.get(item.chainId) ||
+                                initPrice
+                              )?.toString()}
+                        </span>
+                      </div>
+                    </div>
+                    <div className={styles.rightBlockHuge}>
+                      <input
+                        id={item.chainId}
+                        checked={
+                          item.chainId ===
+                          (chainStore.isAllNetwork
+                            ? "isAll"
+                            : chainStore.current.chainId)
                         }
+                        name={"chain"}
+                        className={styles.radioInput}
+                        type={"radio"}
                       />
                     </div>
-                    <div className={styles.rightBlock}>
-                      <span className={styles.titleName}>{item.chainName}</span>
-                      <span className={styles.subTitlePrice}>
-                        {item.chainId === "isAll"
-                          ? (totalPrice || initPrice)?.toString()
-                          : (
-                              totalPriceByChainId.get(item.chainId) || initPrice
-                            )?.toString()}
-                      </span>
-                    </div>
                   </div>
-                  <div className={styles.rightBlockHuge}>
-                    <input
-                      id={item.chainId}
-                      checked={
-                        item.chainId ===
-                        (chainStore.isAllNetwork
-                          ? "isAll"
-                          : chainStore.current.chainId)
-                      }
-                      name={"chain"}
-                      className={styles.radioInput}
-                      type={"radio"}
-                    />
-                  </div>
-                </div>
-              );
-            })}
+                );
+              }
+            )}
         </div>
       </div>
     </SlidingPane>

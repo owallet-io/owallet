@@ -235,3 +235,53 @@
     font-size: 14px;
   }
 }
+
+.header-modal {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 16px;
+
+  .header-left {
+    display: flex;
+    flex: 8%;
+  }
+
+  .title {
+    display: flex;
+    flex: 84%;
+    justify-content: center;
+
+    .title-text {
+      color: $neutral-text-title;
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 24px;
+      font-style: normal;
+    }
+  }
+
+  .header-right {
+    display: flex;
+    flex: 8%;
+    justify-content: flex-end;
+
+    .close-btn {
+      border-radius: 999px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: $neutral-surface-action;
+      cursor: pointer;
+
+      .img-icon {
+        width: 18px;
+        height: 18px;
+      }
+    }
+  }
+
+}
