@@ -235,8 +235,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     originalToToken
   );
 
-  console.log("fromAmountToken", fromAmountToken);
-
   const {
     minimumReceive,
     isWarningSlippage,
@@ -263,7 +261,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     }
   );
 
-  console.log("frommm", fromTokenFee, toTokenFee, isWarningSlippage);
+  console.log("routersSwapData", routersSwapData);
 
   const simulateDisplayAmount =
     simulateData && simulateData.displayAmount ? simulateData.displayAmount : 0;
@@ -696,7 +694,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   }, [sendToAddress, sendToModal]);
 
   const renderSmartRoutes = () => {
-    if (fromAmountToken > 0 && routersSwapData?.routes.length > 0) {
+    if (fromAmountToken > 0 && routersSwapData?.routes?.length > 0) {
       return (
         <>
           <View
