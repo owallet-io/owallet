@@ -94,7 +94,10 @@ export const ModalCopyAddress: FC<{
                   </div>
                   <div className={styles.rightBlockHuge}>
                     <img
-                      className={styles.imgIcon}
+                      style={{
+                        width: 24,
+                        height: 24,
+                      }}
                       src={require("../../../public/assets/svg/owallet-copy.svg")}
                     />
                   </div>

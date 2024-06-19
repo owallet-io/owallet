@@ -3,10 +3,14 @@ import styles from "./style.module.scss";
 import { PricePretty } from "@owallet/unit";
 import { initPrice } from "../../../hooks/use-multiple-assets";
 import { ModalCopyAddress } from "../modals/modal-copy-address";
+import { useHistory } from "react-router";
+import { observer } from "mobx-react-lite";
+import { useStore } from "../../../stores";
+import { ChainIdEnum } from "@owallet/common";
 
 export const InfoAccountCard: FC<{
   totalPrice: PricePretty;
-}> = ({ totalPrice }) => {
+}> = observer(({ totalPrice }) => {
   const [isShowCopyModal, setIsShowCopyModal] = useState(false);
   const onShowModalCopy = () => {
     setIsShowCopyModal(true);
@@ -14,6 +18,13 @@ export const InfoAccountCard: FC<{
   const onCLoseModalCopy = () => {
     setIsShowCopyModal(false);
   };
+  const history = useHistory();
+  const onReceive = () => {
+    history.push("/receive");
+    return;
+  };
+  const { accountStore } = useStore();
+  const account = accountStore.getAccount(ChainIdEnum.Oraichain);
   return (
     <div className={styles.containerInfoAccountCard}>
       <div className={styles.topHeaderInfoAcc}>
@@ -22,7 +33,7 @@ export const InfoAccountCard: FC<{
             className={styles.imgWallet}
             src={require("../../../public/assets/images/default-avatar.png")}
           />
-          <span className={styles.nameWallet}>Wallet 1</span>
+          <span className={styles.nameWallet}>{account.name || "..."}</span>
           <img
             className={styles.arrDown}
             src={require("../../../public/assets/images/tdesign_chevron_down.svg")}
@@ -42,7 +53,7 @@ export const InfoAccountCard: FC<{
         </span>
       </div>
       <div className={styles.btnsSendReceived}>
-        <div className={styles.btnWrap}>
+        <div onClick={onReceive} className={styles.btnWrap}>
           <span className={styles.txt}>Receive</span>
         </div>
         <div className={styles.btnWrap}>
@@ -55,4 +66,4 @@ export const InfoAccountCard: FC<{
       />
     </div>
   );
-};
+});

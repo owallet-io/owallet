@@ -9,6 +9,7 @@ import { AccessPage, Secret20ViewingKeyAccessPage } from "./pages/access";
 import { IBCTransferPage } from "./pages/ibc-transfer";
 import { LockPage } from "./pages/lock";
 import { HomePage } from "./pages/home/home-page";
+
 import { RegisterPage } from "./pages/register";
 import { ConfirmLedgerPage } from "./pages/register/ledger/confirm";
 import { SendPage } from "./pages/send";
@@ -123,7 +124,7 @@ const bitcoin = new Bitcoin(
 //   ],
 // });
 //@ts-ignore
-window.oasis = oasis;
+window.oasis = null;
 //@ts-ignore
 window.owallet = owallet;
 //@ts-ignore
@@ -178,6 +179,7 @@ Modal.defaultStyles = {
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { MainPage } from "./pages/main";
+import { ReceivePage } from "./pages/receive/receive-page";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -270,6 +272,7 @@ ReactDOM.render(
                   <Route exact path="/" component={StateRenderer} />
                   <Route exact path="/unlock" component={LockPage} />
                   <Route exact path="/access" component={AccessPage} />
+                  <Route exact path="/receive" component={ReceivePage} />
                   <Route exact path="/token" component={TokenPage} />
                   <Route
                     exact
