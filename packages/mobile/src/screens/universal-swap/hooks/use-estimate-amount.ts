@@ -70,6 +70,7 @@ export const useEstimateAmount = (
   });
 
   const getSimulateSwap = async (initAmount?) => {
+    setAmountLoading(true);
     if (client) {
       const routerClient = new OraiswapRouterQueryClient(
         client,
@@ -184,8 +185,6 @@ export const useEstimateAmount = (
           ...data,
           routes: data?.routes ?? [],
         };
-
-        console.log("routersSwapData", routersSwapData);
       }
 
       const isImpactPrice = fromAmountToken && data?.amount && ratio?.amount;

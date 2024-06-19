@@ -755,6 +755,13 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     }
   };
 
+  console.log(
+    "amountLoading || swapLoading",
+    amountLoading,
+    swapLoading,
+    amountLoading || swapLoading
+  );
+
   return (
     <PageWithBottom
       style={{ paddingTop: 16 }}
