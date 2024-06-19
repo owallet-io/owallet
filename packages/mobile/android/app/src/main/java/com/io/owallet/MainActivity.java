@@ -34,7 +34,8 @@ public class MainActivity extends ReactActivity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-    SplashScreen.show(this); // here
-    super.onCreate(savedInstanceState);
+    SplashScreen.show(this); 
+    // Set onCreate(null) to fix this https://github.com/software-mansion/react-native-screens/issues/17#issuecomment-425179033
+    super.onCreate(null);
   }
 }
