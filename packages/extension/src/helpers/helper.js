@@ -4,6 +4,7 @@ export const decodeBase64 = base64String => {
 };
 
 export function numberWithCommas(number) {
+  if (Number(number) <= 0) return 0.0;
   // Convert the number to a string and split it into integer and decimal parts
   const [intPart, decPart] = number.toString().split(".");
 
