@@ -250,7 +250,7 @@ export const SignBtcPage: FunctionComponent = observer(() => {
                 >
                   <Text weight="600">Raw Data</Text>
                   <img
-                    src={require("../../public/assets/icon/tdesign_chevron-right.svg")}
+                    src={require("../../../public/assets/icon/tdesign_chevron-right.svg")}
                   />
                 </div>
               </div>
@@ -311,7 +311,7 @@ export const SignBtcPage: FunctionComponent = observer(() => {
                           0}
                       </Text>
                       <img
-                        src={require("../../public/assets/icon/tdesign_chevron-down.svg")}
+                        src={require("../../../public/assets/icon/tdesign_chevron-down.svg")}
                       />
                     </div>
                     <Text color={colors["neutral-text-body"]}>
@@ -367,7 +367,7 @@ export const SignBtcPage: FunctionComponent = observer(() => {
                           borderRadius: 40,
                           marginRight: 8,
                         }}
-                        src={require("../../public/assets/images/default-avatar.png")}
+                        src={require("../../../public/assets/images/default-avatar.png")}
                       />
                       <div style={{ flexDirection: "column", display: "flex" }}>
                         <Text size={14} weight="600">
