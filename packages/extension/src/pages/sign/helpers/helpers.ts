@@ -97,3 +97,26 @@ export const getTokenInfo = async (tokenContract, chainId) => {
     return null;
   }
 };
+
+export const getTokenDetail = async (tokenContract, chainId) => {
+  try {
+    const response = await fetch(
+      `${TX_HISTORY_ENDPOINT}/v1/token-info/by-addresses/${MapChainIdToNetwork[chainId]}-${tokenContract}`
+    );
+    if (!response.ok) {
+      if (response.status === 500) {
+        // Handle 500 server error
+        console.error("Server encountered an error. Please try again later.");
+        // Return a rejected promise to skip the rest of the chain
+        return Promise.reject(new Error("Server error 500"));
+      } else {
+        // Handle other error statuses
+        throw new Error(`HTTP error ${response.status}`);
+      }
+    }
+    return response.json();
+  } catch (error) {
+    console.error("Error throw:", error);
+    return null;
+  }
+};

@@ -344,7 +344,7 @@ export const MsgRender: FunctionComponent<{
   title: string;
 }> = ({ icon = "fas fa-question", title, children }) => {
   return (
-    <div className={styleDetailsTab.msg}>
+    <div style={{ width: "85%" }} className={styleDetailsTab.msg}>
       {icon && (
         <div className={styleDetailsTab.icon}>
           <div style={{ height: "2px" }} />
