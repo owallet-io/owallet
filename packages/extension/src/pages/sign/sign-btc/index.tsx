@@ -9,7 +9,6 @@ import style from "../style.module.scss";
 import { observer } from "mobx-react-lite";
 import classnames from "classnames";
 import { FormattedMessage, useIntl } from "react-intl";
-import { Button } from "reactstrap";
 import { useStore } from "../../../stores";
 import { BtcDataTab } from "./btc-data-tab";
 import { BtcDetailsTab } from "./btc-details-tab";
@@ -33,6 +32,7 @@ import { useLanguage } from "@owallet/common";
 const { BitcoinUnit } = require("bitcoin-units");
 import cn from "classnames/bind";
 import { WalletStatus } from "@owallet/stores";
+import { Button } from "../../../components/common/button";
 
 const cx = cn.bind(style);
 
@@ -294,26 +294,6 @@ export const SignBtcPage: FunctionComponent = observer(() => {
                       alignItems: "flex-end",
                     }}
                   >
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        alignItems: "center",
-                        cursor: "pointer",
-                      }}
-                    >
-                      <Text
-                        size={16}
-                        weight="600"
-                        color={colors["primary-text-action"]}
-                      >
-                        {feeConfig.fee.maxDecimals(6).trim(true).toString() ||
-                          0}
-                      </Text>
-                      <img
-                        src={require("../../../public/assets/icon/tdesign_chevron-down.svg")}
-                      />
-                    </div>
                     <Text color={colors["neutral-text-body"]}>
                       ≈
                       {priceStore
