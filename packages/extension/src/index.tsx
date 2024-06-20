@@ -185,6 +185,7 @@ import { MainPage } from "./pages/main";
 import { ReceivePage } from "./pages/receive/receive-page";
 import { isProdMode } from "./helpers/helper";
 import { SelectAccountPage } from "./pages/account/select-account-page";
+import { EditAccountPage } from "./pages/account/edit-account";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -282,6 +283,11 @@ ReactDOM.render(
                     exact
                     path="/select-account"
                     component={SelectAccountPage}
+                  />
+                  <Route
+                    exact
+                    path="/edit-account"
+                    component={EditAccountPage}
                   />
                   <Route exact path="/token" component={TokenPage} />
                   <Route

@@ -1,20 +1,18 @@
-import React from "react";
+import React, { useCallback } from "react";
 import styles from "./select-account.module.scss";
-import { HeaderNew } from "../../layouts/footer-layout/components/header";
+import { LayoutWithButtonBottom } from "../../layouts/button-bottom-layout/layout-with-button-bottom";
+import { useHistory } from "react-router";
 
 export const SelectAccountPage = () => {
+  const history = useHistory();
+  const onEditAccount = () => {
+    history.push("/edit-account");
+  };
   return (
-    <div className={styles.container}>
-      <HeaderNew
-        isGoBack
-        isConnectDapp={false}
-        isExpand={false}
-        isDisableCenterBtn={true}
-        title="Select account"
-      />
+    <LayoutWithButtonBottom title="Select Account">
       <div className={styles.boxContainer}>
         <span className={styles.titleBox}>Imported by Ledger</span>
-        <div className={styles.itemBox}>
+        <div onClick={onEditAccount} className={styles.itemBox}>
           <div className={styles.mainItem}>
             <div className={styles.wrapAvatar}>
               <img
@@ -37,11 +35,6 @@ export const SelectAccountPage = () => {
           </div>
         </div>
       </div>
-      <div className={styles.containerBtnBottom}>
-        <div className={styles.buttonPrimary}>
-          <span className={styles.txtBtn}>Add Wallet</span>
-        </div>
-      </div>
-    </div>
+    </LayoutWithButtonBottom>
   );
 };
