@@ -493,7 +493,7 @@ export const DetailsTabEvm: FunctionComponent<{
           )}
 
           {renderDestination(msgs?.from, msgs?.to)}
-          {renderInfo(
+          {/* {renderInfo(
             msgs?.value,
             "Amount In",
             <Text>
@@ -504,7 +504,7 @@ export const DetailsTabEvm: FunctionComponent<{
                   )
                 : null}
             </Text>
-          )}
+          )} */}
           {decodedData ? (
             <>
               {renderInfo(
@@ -514,6 +514,7 @@ export const DetailsTabEvm: FunctionComponent<{
               )}
               {decodedData?.args ? (
                 <EVMRenderArgs
+                  msgs={msgs}
                   args={decodedData.args}
                   renderInfo={renderInfo}
                   chain={chain}
