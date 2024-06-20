@@ -85,7 +85,7 @@ export const EVMRenderArgs: FunctionComponent<{
                 <>
                   {renderToken(fromToken)}
                   <Address
-                    maxCharacters={8}
+                    maxCharacters={6}
                     lineBreakBeforePrefix={false}
                     textDecor={"underline"}
                     textColor={colors["neutral-text-body"]}
@@ -99,7 +99,7 @@ export const EVMRenderArgs: FunctionComponent<{
 
               {fromContract ? (
                 <Address
-                  maxCharacters={8}
+                  maxCharacters={6}
                   lineBreakBeforePrefix={false}
                   textDecor={"underline"}
                   textColor={colors["neutral-text-body"]}
@@ -158,6 +158,19 @@ export const EVMRenderArgs: FunctionComponent<{
         />
       </div>
     );
+  };
+
+  const renderArgPath = () => {
+    if (args?.path?.length >= 2 && path.length > 0) {
+      const fromToken = path.find((p) => {
+        return p.contractAddress.toUpperCase() === args.path[0].toUpperCase();
+      });
+      const toToken = path.find((p) => {
+        return p.contractAddress.toUpperCase() === args.path[1].toUpperCase();
+      });
+
+      return renderPath(fromToken, toToken);
+    }
   };
 
   useEffect(() => {
@@ -282,7 +295,8 @@ export const EVMRenderArgs: FunctionComponent<{
         </Text>
       )}
 
-      {renderPath()}
+      {/* {renderPath()} */}
+      {renderArgPath()}
       {renderInfo(
         args?._destination,
         "Bridge Destination",
@@ -318,16 +332,8 @@ export const EVMRenderArgs: FunctionComponent<{
             : null}
         </Text>
       )}
-      {tokenIn
-        ? renderInfo(tokenIn?.abbr, "Token In", renderToken(tokenIn))
-        : null}
-      {!tokenIn
-        ? renderInfo(
-            chain.stakeCurrency,
-            "Token In",
-            renderToken(chain.stakeCurrency)
-          )
-        : null}
+      {/* {tokenIn ? renderInfo(tokenIn?.abbr, "Token In", renderToken(tokenIn)) : null} */}
+      {/* {!tokenIn ? renderInfo(chain.stakeCurrency, "Token In", renderToken(chain.stakeCurrency)) : null} */}
       {renderInfo(
         args?._amountOutMin,
         "Amount Out Min",
@@ -367,49 +373,7 @@ export const EVMRenderArgs: FunctionComponent<{
       {toToken && toToken.coinDenom !== tokenOut?.abbr
         ? renderInfo(toToken.coinDenom, "To Token", renderToken(toToken))
         : null}
-      {path.length > 0
-        ? renderInfo(
-            path.length,
-            "Path",
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              {path
-                .sort((a, b) => {
-                  const indexA = args?.path.indexOf(
-                    a.contractAddress.toLowerCase()
-                  );
-                  const indexB = args?.path.indexOf(
-                    b.contractAddress.toLowerCase()
-                  );
-                  return indexA - indexB;
-                })
-                .map((p, i) => {
-                  if (i > 0) {
-                    return (
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
-                      >
-                        <Text>{"  →  "}</Text>
-                        {renderToken(p)}
-                      </div>
-                    );
-                  }
-                  return renderToken(p);
-                })}
-            </div>
-          )
-        : null}
+
       <div
         style={{
           display: "flex",

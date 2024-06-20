@@ -184,6 +184,85 @@ export const DetailsTabEvm: FunctionComponent<{
       return null;
     })();
 
+    const renderDestination = (from?, to?) => {
+      return (
+        <div
+          style={{
+            marginTop: 14,
+            height: "auto",
+            alignItems: "center",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginBottom: 14,
+            }}
+          >
+            <div
+              style={{
+                maxWidth: "50%",
+              }}
+            >
+              <div style={{ flexDirection: "column", display: "flex" }}>
+                <Text color={colors["neutral-text-body"]}>From</Text>
+                {from ? (
+                  <>
+                    <Address
+                      maxCharacters={6}
+                      lineBreakBeforePrefix={false}
+                      textDecor={"underline"}
+                      textColor={colors["neutral-text-body"]}
+                    >
+                      {from}
+                    </Address>
+                  </>
+                ) : (
+                  <Text color={colors["neutral-text-body"]}>-</Text>
+                )}
+              </div>
+            </div>
+            <img
+              style={{ paddingRight: 4 }}
+              src={require("../../public/assets/icon/tdesign_arrow-right.svg")}
+            />
+            <div
+              style={{
+                maxWidth: "50%",
+              }}
+            >
+              <div style={{ flexDirection: "column", display: "flex" }}>
+                <Text color={colors["neutral-text-body"]}>To</Text>
+                {to ? (
+                  <>
+                    <Address
+                      maxCharacters={6}
+                      lineBreakBeforePrefix={false}
+                      textDecor={"underline"}
+                      textColor={colors["neutral-text-body"]}
+                    >
+                      {to}
+                    </Address>
+                  </>
+                ) : (
+                  <Text color={colors["neutral-text-body"]}>-</Text>
+                )}
+              </div>
+            </div>
+          </div>
+          <div
+            style={{
+              width: "100%",
+              height: 1,
+              backgroundColor: colors["neutral-border-default"],
+            }}
+          />
+        </div>
+      );
+    };
+
     const renderInfo = (condition, label, leftContent) => {
       if (condition && condition !== "") {
         return (
@@ -413,24 +492,7 @@ export const DetailsTabEvm: FunctionComponent<{
             </div>
           )}
 
-          {renderInfo(
-            msgs.from,
-            "From",
-            <Text color={colors["neutral-text-body"]}>
-              <Address maxCharacters={18} lineBreakBeforePrefix={false}>
-                {msgs?.from}
-              </Address>
-            </Text>
-          )}
-          {renderInfo(
-            msgs.to,
-            "To",
-            <Text color={colors["neutral-text-body"]}>
-              <Address maxCharacters={18} lineBreakBeforePrefix={false}>
-                {msgs?.to}
-              </Address>
-            </Text>
-          )}
+          {renderDestination(msgs?.from, msgs?.to)}
           {renderInfo(
             msgs?.value,
             "Amount In",
