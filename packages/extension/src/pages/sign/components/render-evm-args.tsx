@@ -343,7 +343,14 @@ export const EVMRenderArgs: FunctionComponent<{
       {renderInfo(
         toAddress,
         "To Address",
-        <Text>{toAddress ? toAddress : null}</Text>
+        <Address
+          maxCharacters={6}
+          lineBreakBeforePrefix={false}
+          textDecor={"underline"}
+          textColor={colors["neutral-text-body"]}
+        >
+          {toAddress ? toAddress : null}
+        </Address>
       )}
 
       <div
