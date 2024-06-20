@@ -44,9 +44,15 @@ export const DetailsTabEvm: FunctionComponent<{
     preferNoSetFee,
     setOpenSetting,
   }) => {
-    const { chainStore, priceStore } = useStore();
+    const { chainStore, priceStore, accountStore, keyRingStore } = useStore();
     const intl = useIntl();
     const language = useLanguage();
+
+    const account = accountStore.getAccount(chainStore.current.chainId);
+    const signer = account.getAddressDisplay(
+      keyRingStore.keyRingLedgerAddresses,
+      false
+    );
 
     const chain = chainStore.getChain(dataSign?.data?.chainId);
     const [decodedData, setDecodedData] = useState(null);
@@ -220,7 +226,9 @@ export const DetailsTabEvm: FunctionComponent<{
                     </Address>
                   </>
                 ) : (
-                  <Text color={colors["neutral-text-body"]}>-</Text>
+                  <Text color={colors["neutral-text-body"]}>
+                    {signer ?? "-"}
+                  </Text>
                 )}
               </div>
             </div>
