@@ -65,6 +65,8 @@ export const EVMRenderArgs: FunctionComponent<{
     const inToken = fromToken || tokenIn || chain.stakeCurrency;
     const outToken = desToken || tokenOut || toToken;
 
+    console.log(inToken, "inToken");
+
     return (
       <div
         style={{
@@ -329,7 +331,18 @@ export const EVMRenderArgs: FunctionComponent<{
             : null}
         </Text>
       )}
-
+      {renderInfo(
+        msgs?.to,
+        "Interact contract",
+        <Address
+          maxCharacters={6}
+          lineBreakBeforePrefix={false}
+          textDecor={"underline"}
+          textColor={colors["neutral-text-body"]}
+        >
+          {msgs?.to ?? "-"}
+        </Address>
+      )}
       {isEmpty(path) ? renderPath() : null}
       {path?.length > 0 ? renderArgPath() : null}
       {renderInfo(
