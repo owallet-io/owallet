@@ -4,17 +4,16 @@ import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
 import moment from "moment";
 import React, { FunctionComponent, useEffect, useState } from "react";
-import { StyleSheet, TouchableOpacity, View, ViewStyle } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { BarChart, LineChart } from "react-native-chart-kit";
 import { API } from "../../common/api";
-import { OWBox } from "../../components/card";
 import { useSmartNavigation } from "../../navigation.provider";
 import { useStore } from "../../stores";
 import { metrics, spacing } from "../../themes";
 import { nFormatter } from "../../utils/helper";
 import { colorsCode } from "@src/themes/mode-colors";
 import { useQuery } from "@tanstack/react-query";
-import { CoinGeckoAPIEndPoint } from "@owallet/common";
+import { MarketAPIEndPoint } from "@owallet/common";
 
 const DATA_COUNT_DENOM = 4;
 const transformData = (data) => {
@@ -74,9 +73,10 @@ const formatData = (data) => {
 };
 
 export const DashboardCard: FunctionComponent<{
-  containerStyle?: ViewStyle;
   canView?: boolean;
-}> = observer(({ canView = true }) => {
+  coinGeckoId?: string;
+  label?: string;
+}> = observer(({ canView = true, coinGeckoId, label }) => {
   const { colors } = useTheme();
   const styles = styling(colors);
   const chartConfig = {
@@ -121,13 +121,16 @@ export const DashboardCard: FunctionComponent<{
   const smartNavigation = useSmartNavigation();
 
   const { data: res, refetch } = useQuery({
-    queryKey: ["chart-range", chainStore.current.stakeCurrency.coinGeckoId],
+    queryKey: [
+      "chart-range",
+      coinGeckoId ?? chainStore.current.stakeCurrency.coinGeckoId,
+    ],
     queryFn: () =>
       API.getMarketChartRange(
         {
-          id: chainStore.current.stakeCurrency.coinGeckoId,
+          id: coinGeckoId ?? chainStore.current.stakeCurrency.coinGeckoId,
         },
-        { baseURL: CoinGeckoAPIEndPoint }
+        { baseURL: MarketAPIEndPoint + "/api/v3" }
       ),
     ...{
       initialData: null,
@@ -136,7 +139,7 @@ export const DashboardCard: FunctionComponent<{
 
   useEffect(() => {
     refetch();
-  }, [chainStore.current.stakeCurrency.coinGeckoId]);
+  }, [chainStore.current.stakeCurrency.coinGeckoId, coinGeckoId]);
 
   useEffect(() => {
     if (res?.status === 200 && typeof res?.data === "object") {
@@ -163,11 +166,14 @@ export const DashboardCard: FunctionComponent<{
   }, [chainStore.current.chainId, data]);
 
   return (
-    <OWBox
+    <View
       style={{
         marginHorizontal: 16,
         width: metrics.screenWidth - 32,
         backgroundColor: colors["neutral-surface-card"],
+        borderRadius: 24,
+        marginVertical: 2,
+        padding: 16,
       }}
     >
       <Text
@@ -179,8 +185,8 @@ export const DashboardCard: FunctionComponent<{
           color: colors["primary-text"],
         }}
       >
-        {chainStore.current.chainName} (
-        {chainStore.current.stakeCurrency.coinDenom})
+        {label}
+        {/* {chainStore.current.chainName} ({chainStore.current.stakeCurrency.coinDenom}) */}
       </Text>
       <View style={styles.headerWrapper}>
         <View style={styles.headerLeftWrapper}>
@@ -256,7 +262,7 @@ export const DashboardCard: FunctionComponent<{
           chartConfig={chartConfig}
         />
       ) : null}
-    </OWBox>
+    </View>
   );
 });
 

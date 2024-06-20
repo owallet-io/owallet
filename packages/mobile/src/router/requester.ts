@@ -68,9 +68,9 @@ export class RNMessageRequesterBase implements MessageRequester {
         throw new Error(result.error);
       } else {
         throw new OWalletError(
-          result.error.module,
-          result.error.code,
-          result.error.message
+          result.error?.module,
+          result.error?.code,
+          result.error?.message
         );
       }
     }

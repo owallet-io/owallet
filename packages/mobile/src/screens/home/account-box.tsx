@@ -73,7 +73,7 @@ export const AccountBox: FunctionComponent<{
           enableOverDrag: false,
         },
       });
-      modalStore.setChildren(MyWalletModal());
+      modalStore.setChildren(<MyWalletModal />);
     };
 
     const waitToLoad = async () => {

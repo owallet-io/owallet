@@ -1,19 +1,10 @@
-import React, {
-  FunctionComponent,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { registerModal } from "../base";
-import { View, Platform } from "react-native";
+import { View } from "react-native";
 import { useStore } from "../../stores";
 import Web3 from "web3";
-
 import { observer } from "mobx-react-lite";
-
 import ERC20_ABI from "human-standard-token-abi";
-
 import {
   useAmountConfig,
   useGasEvmConfig,
@@ -26,15 +17,15 @@ import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
 import { FeeInSign } from "@src/modals/sign/fee";
 import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
 import OWButtonGroup from "@src/components/button/OWButtonGroup";
-import { CoinPretty, CoinUtils, Dec, Int } from "@owallet/unit";
+import { CoinPretty, Dec, Int } from "@owallet/unit";
 import { useTheme } from "@src/themes/theme-provider";
 import OWText from "@src/components/text/ow-text";
-import OWCard from "@src/components/card/ow-card";
 import FastImage from "react-native-fast-image";
-import { DenomHelper } from "@owallet/common";
+import { ChainIdEnum, DenomHelper } from "@owallet/common";
 import { Bech32Address } from "@owallet/cosmos";
 import { AmountCard, WasmExecutionMsgView } from "@src/modals/sign/components";
 import { ScrollView } from "react-native-gesture-handler";
+import { formatContractAddress, shortenAddress } from "@src/utils/helper";
 
 export const SignEthereumModal: FunctionComponent<{
   isOpen: boolean;
@@ -51,8 +42,6 @@ export const SignEthereumModal: FunctionComponent<{
       chainStore,
       signInteractionStore,
       accountStore,
-      sendStore,
-      appInitStore,
       queriesStore,
       keyRingStore,
       priceStore,
@@ -86,7 +75,6 @@ export const SignEthereumModal: FunctionComponent<{
       queriesStore.get(current.chainId).queryBalances,
       null
     );
-    console.log(gasPrice, "gasPrice");
     const memoConfig = useMemoConfig(chainStore, current.chainId);
     const feeConfig = useFeeEvmConfig(
       chainStore,
@@ -113,6 +101,9 @@ export const SignEthereumModal: FunctionComponent<{
         console.error(error);
       }
     };
+
+    console.log("dataSign", dataSign);
+
     useEffect(() => {
       if (signInteractionStore.waitingEthereumData) {
         const data = signInteractionStore.waitingEthereumData;
@@ -144,6 +135,7 @@ export const SignEthereumModal: FunctionComponent<{
         }
         setDataSign(signInteractionStore.waitingEthereumData);
         const dataSigning = data?.data?.data?.data;
+        console.log(dataSigning, "dataSigning");
         const hstInterface = new ethers.utils.Interface(ERC20_ABI);
         try {
           const { data, type } = dataSigning;
@@ -154,9 +146,10 @@ export const SignEthereumModal: FunctionComponent<{
             });
           } else if (data && type && type === "erc20") {
             const token = hstInterface.parseTransaction({ data });
+            console.log(token, "token");
             const to = token?.args?._to || token?.args?.[0];
             const value = token?.args?._value || token?.args?.[1];
-
+            console.log(to, value, "to and value");
             setInfoSign({
               ...dataSigning,
               value: Web3.utils.toHex(value?.toString()),
@@ -171,9 +164,11 @@ export const SignEthereumModal: FunctionComponent<{
         }
       }
     }, [signInteractionStore.waitingEthereumData]);
+
     const approveIsDisabled = (() => {
       return feeConfig.getError() != null || gasConfig.getError() != null;
     })();
+
     const _onPressApprove = async () => {
       if (!dataSign) return;
       await signInteractionStore.approveEthereumAndWaitEnd({
@@ -182,6 +177,7 @@ export const SignEthereumModal: FunctionComponent<{
       });
       return;
     };
+
     const { colors } = useTheme();
     const currencies = chainStore.current.currencies;
     const currency = useMemo(() => {
@@ -200,6 +196,7 @@ export const SignEthereumModal: FunctionComponent<{
       });
       return currency;
     }, [infoSign, currencies]);
+
     const checkPrice = () => {
       if (!currency || !infoSign?.value) return;
       const coin = new CoinPretty(
@@ -209,6 +206,7 @@ export const SignEthereumModal: FunctionComponent<{
       const totalPrice = priceStore.calculatePrice(coin);
       return totalPrice?.toString();
     };
+
     const checkImageCoin = () => {
       if (!currency) return;
       if (currency?.coinImageUrl)
@@ -217,6 +215,7 @@ export const SignEthereumModal: FunctionComponent<{
             style={{
               alignSelf: "center",
               paddingVertical: 8,
+              backgroundColor: colors["neutral-icon-on-dark"],
             }}
           >
             <FastImage
@@ -243,7 +242,7 @@ export const SignEthereumModal: FunctionComponent<{
         ?.trim(true)
         ?.toString();
     };
-
+    console.log(infoSign, "infoSign");
     return (
       <WrapViewModal
         style={{
@@ -251,7 +250,6 @@ export const SignEthereumModal: FunctionComponent<{
         }}
       >
         <View style={{ paddingTop: 16 }}>
-          {/*<View>{renderedMsgs}</View>*/}
           <OWText
             size={16}
             weight={"700"}
@@ -260,7 +258,7 @@ export const SignEthereumModal: FunctionComponent<{
               paddingBottom: 20,
             }}
           >
-            {`Send confirmation`.toUpperCase()}
+            {`Confirmation`.toUpperCase()}
           </OWText>
 
           {renderAmount() ? (
@@ -294,20 +292,32 @@ export const SignEthereumModal: FunctionComponent<{
               marginTop: 2,
             }}
           >
+            {chainStore.current.chainId === ChainIdEnum.Oasis && signer && (
+              <ItemReceivedToken
+                label={"From"}
+                valueDisplay={shortenAddress(signer)}
+                value={signer}
+              />
+            )}
             {infoSign?.from && (
               <ItemReceivedToken
                 label={"From"}
-                valueDisplay={Bech32Address.shortenAddress(infoSign?.from, 20)}
+                valueDisplay={shortenAddress(infoSign?.from)}
                 value={infoSign?.from}
               />
             )}
             {infoSign?.to && (
               <ItemReceivedToken
                 label={"To"}
-                valueDisplay={
-                  infoSign?.to && Bech32Address.shortenAddress(infoSign?.to, 20)
-                }
+                valueDisplay={shortenAddress(infoSign?.to)}
                 value={infoSign?.to}
+              />
+            )}
+            {infoSign?.contractAddress && (
+              <ItemReceivedToken
+                label={"Contract"}
+                valueDisplay={formatContractAddress(infoSign?.contractAddress)}
+                value={infoSign?.contractAddress}
               />
             )}
             <FeeInSign

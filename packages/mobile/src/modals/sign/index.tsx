@@ -34,11 +34,18 @@ export const SignModal: FunctionComponent<{
   bottomSheetModalConfig?: Omit<BottomSheetProps, "snapPoints" | "children">;
 }> = registerModal(
   observer(({}) => {
-    const { chainStore, accountStore, queriesStore, signInteractionStore } =
-      useStore();
+    const {
+      chainStore,
+      accountStore,
+      queriesStore,
+      signInteractionStore,
+      appInitStore,
+    } = useStore();
     useUnmount(() => {
       signInteractionStore.rejectAll();
     });
+
+    console.log("all in here");
 
     const style = useStyle();
 
@@ -101,6 +108,16 @@ export const SignModal: FunctionComponent<{
       signDocHelper,
       signInteractionStore.waitingData,
     ]);
+
+    useEffect(() => {
+      if (feeConfig.feeCurrency && !feeConfig.fee) {
+        feeConfig.setFeeType("average");
+      }
+      if (appInitStore.getInitApp.feeOption) {
+        feeConfig.setFeeType(appInitStore.getInitApp.feeOption);
+      }
+      return;
+    }, [feeConfig, appInitStore.getInitApp.feeOption]);
 
     const mode = signDocHelper.signDocWrapper
       ? signDocHelper.signDocWrapper.mode

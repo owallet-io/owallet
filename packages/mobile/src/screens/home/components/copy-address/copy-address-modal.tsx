@@ -1,4 +1,10 @@
-import { Image, StyleSheet, View, TextInput } from "react-native";
+import {
+  Image,
+  StyleSheet,
+  View,
+  TextInput,
+  InteractionManager,
+} from "react-native";
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import OWIcon from "@src/components/ow-icon/ow-icon";
@@ -29,6 +35,9 @@ export const CopyAddressModal: FunctionComponent<{
   const [keyword, setKeyword] = useState("");
   const [addresses, setAddresses] = useState({});
   const [refresh, setRefresh] = useState(Date.now());
+  const { colors } = useTheme();
+
+  const styles = styling(colors);
 
   const { accountStore, keyRingStore } = useStore();
 
@@ -40,71 +49,60 @@ export const CopyAddressModal: FunctionComponent<{
   useEffect(() => {
     setTimeout(() => {
       setRefresh(Date.now());
-    }, 1000);
+    }, 300);
   }, []);
 
   useEffect(() => {
-    let accounts = {};
+    InteractionManager.runAfterInteractions(() => {
+      let accounts = {};
 
-    let defaultEvmAddress;
-    if (accountEth.isNanoLedger && keyRingStore?.keyRingLedgerAddresses?.eth) {
-      defaultEvmAddress = keyRingStore.keyRingLedgerAddresses.eth;
-    } else {
-      defaultEvmAddress = accountEth.evmosHexAddress;
-    }
-    Object.keys(ChainIdEnum).map((key) => {
-      let defaultCosmosAddress = accountStore.getAccount(
-        ChainIdEnum[key]
-      ).bech32Address;
-
-      if (defaultCosmosAddress.startsWith("evmos")) {
-        accounts[ChainNameEnum[key]] = defaultEvmAddress;
-      } else if (key === KADOChainNameEnum[ChainIdEnum.TRON]) {
-        accounts[ChainNameEnum.TRON] = null;
+      let defaultEvmAddress;
+      if (
+        accountEth.isNanoLedger &&
+        keyRingStore?.keyRingLedgerAddresses?.eth
+      ) {
+        defaultEvmAddress = keyRingStore.keyRingLedgerAddresses.eth;
       } else {
-        accounts[ChainNameEnum[key]] = defaultCosmosAddress;
+        defaultEvmAddress = accountEth.evmosHexAddress;
       }
+      Object.keys(ChainIdEnum).map((key) => {
+        let defaultCosmosAddress = accountStore.getAccount(
+          ChainIdEnum[key]
+        ).bech32Address;
+
+        if (defaultCosmosAddress.startsWith("evmos")) {
+          accounts[ChainNameEnum[key]] = defaultEvmAddress;
+        } else if (key === KADOChainNameEnum[ChainIdEnum.TRON]) {
+          accounts[ChainNameEnum.TRON] = null;
+        } else {
+          accounts[ChainNameEnum[key]] = defaultCosmosAddress;
+        }
+      });
+
+      if (
+        accountTron.isNanoLedger &&
+        keyRingStore?.keyRingLedgerAddresses?.trx
+      ) {
+        accounts[ChainNameEnum.TRON] = keyRingStore.keyRingLedgerAddresses.trx;
+      } else {
+        if (accountTron) {
+          accounts[ChainNameEnum.TRON] = getBase58Address(
+            accountTron.evmosHexAddress
+          );
+        }
+      }
+
+      accounts[ChainNameEnum.BitcoinLegacy] = accountBtc.allBtcAddresses.legacy;
+      accounts[ChainNameEnum.BitcoinSegWit] = accountBtc.allBtcAddresses.bech32;
+
+      setAddresses(accounts);
     });
-
-    if (accountTron.isNanoLedger && keyRingStore?.keyRingLedgerAddresses?.trx) {
-      accounts[ChainNameEnum.TRON] = keyRingStore.keyRingLedgerAddresses.trx;
-    } else {
-      if (accountTron) {
-        accounts[ChainNameEnum.TRON] = getBase58Address(
-          accountTron.evmosHexAddress
-        );
-      }
-    }
-
-    accounts[ChainNameEnum.BitcoinLegacy] = accountBtc.allBtcAddresses.legacy;
-    accounts[ChainNameEnum.BitcoinSegWit] = accountBtc.allBtcAddresses.bech32;
-
-    setAddresses(accounts);
   }, [accountOrai.bech32Address, accountEth.evmosHexAddress, refresh]);
-
-  const { colors } = useTheme();
 
   return (
     <View>
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          marginBottom: 16,
-          alignSelf: "center",
-        }}
-      >
-        <View
-          style={{
-            flexDirection: "row",
-            backgroundColor: colors["neutral-surface-action"],
-            height: 40,
-            borderRadius: 999,
-            width: metrics.screenWidth - 32,
-            alignItems: "center",
-            paddingHorizontal: 12,
-          }}
-        >
+      <View style={styles.header}>
+        <View style={styles.searchInput}>
           <View style={{ paddingRight: 4 }}>
             <OWIcon
               color={colors["neutral-icon-on-light"]}
@@ -116,6 +114,7 @@ export const CopyAddressModal: FunctionComponent<{
             style={{
               fontFamily: "SpaceGrotesk-Regular",
               width: "100%",
+              color: colors["neutral-icon-on-light"],
             }}
             onChangeText={(t) => setKeyword(t)}
             value={keyword}
@@ -137,6 +136,9 @@ export const CopyAddressModal: FunctionComponent<{
         {addresses && Object.keys(addresses).length > 0 ? (
           Object.keys(addresses).map((key) => {
             const item = { name: key, address: addresses[key] };
+            if (item.name.toLowerCase().includes("testnet")) {
+              return;
+            }
             const chainNameKey = Object.keys(ChainNameEnum).find(
               (k) => ChainNameEnum[k] === key
             );
@@ -156,6 +158,14 @@ export const CopyAddressModal: FunctionComponent<{
               chainIcon = {
                 chainId: chainId,
                 Icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Bitcoin.svg/1200px-Bitcoin.svg.png",
+              };
+            }
+
+            // Hardcode for Neutaro because oraidex-common does not have icon yet
+            if (item.name.toLowerCase().includes("neutaro")) {
+              chainIcon = {
+                chainId: chainId,
+                Icon: "https://assets.coingecko.com/coins/images/36277/large/Neutaro_logo.jpg?1711371142",
               };
             }
 
@@ -240,21 +250,19 @@ export const CopyAddressModal: FunctionComponent<{
 
 const styling = (colors: TypeTheme["colors"]) =>
   StyleSheet.create({
-    iconSearch: {
-      position: "absolute",
-      left: 12,
-      top: 22,
+    header: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginBottom: 16,
+      alignSelf: "center",
     },
-    textInput: {
-      paddingVertical: 0,
+    searchInput: {
+      flexDirection: "row",
+      backgroundColor: colors["neutral-surface-action"],
       height: 40,
-      backgroundColor: colors["box-nft"],
       borderRadius: 999,
-      paddingLeft: 35,
-      fontSize: 14,
-      fontWeight: "500",
-      color: colors["neutral-text-body"],
-      marginVertical: 10,
-      paddingRight: 12,
+      width: metrics.screenWidth - 32,
+      alignItems: "center",
+      paddingHorizontal: 12,
     },
   });

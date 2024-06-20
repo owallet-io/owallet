@@ -18,6 +18,7 @@ export const InvestNavigation: FC = observer(() => {
   const { appInitStore } = useStore();
   const handleScreenOptions = ({ route, navigation }) => {
     appInitStore.updateVisibleTabBar(route?.name);
+
     const headerOptions = useHeaderOptions(
       { title: SCREENS_OPTIONS[route?.name].title },
       navigation
@@ -27,8 +28,7 @@ export const InvestNavigation: FC = observer(() => {
   return (
     <Stack.Navigator
       screenOptions={handleScreenOptions}
-      initialRouteName="Invest"
-      headerMode="screen"
+      initialRouteName={SCREENS.Invest}
     >
       <Stack.Screen
         options={{

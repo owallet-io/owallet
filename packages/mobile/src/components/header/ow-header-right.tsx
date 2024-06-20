@@ -3,29 +3,40 @@ import React from "react";
 import OWButtonIcon from "../button/ow-button-icon";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
-import { useStore } from "@src/stores";
 interface IOWHeaderRightProps {
-  onTransaction: () => void;
+  onAddWallet: () => void;
   onScan: () => void;
 }
 const OWHeaderRight = observer(
-  ({ onTransaction, onScan }: IOWHeaderRightProps) => {
+  ({ onAddWallet, onScan }: IOWHeaderRightProps) => {
     const { colors } = useTheme();
     return (
       <View style={styles.btnContainer}>
         <OWButtonIcon
-          style={styles.btnHistory}
-          colorIcon={colors["neutral-icon-on-light"]}
-          sizeIcon={24}
-          onPress={onTransaction}
-          name={"trade"}
+          style={[
+            styles.btnScan,
+            {
+              backgroundColor: colors["neutral-surface-card"],
+            },
+          ]}
+          colorIcon={colors["neutral-text-title"]}
+          sizeIcon={20}
+          fullWidth={false}
+          onPress={onScan}
+          name="tdesignscan"
         />
         <OWButtonIcon
-          style={styles.btnScan}
-          colorIcon={colors["neutral-icon-on-light"]}
-          sizeIcon={24}
-          onPress={onScan}
-          name="scan"
+          style={[
+            styles.btnHistory,
+            {
+              backgroundColor: colors["neutral-surface-card"],
+            },
+          ]}
+          colorIcon={colors["neutral-text-title"]}
+          sizeIcon={20}
+          onPress={onAddWallet}
+          name={"tdesigncreditcard-add"}
+          fullWidth={false}
         />
       </View>
     );
@@ -39,13 +50,18 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    flex: 1,
+    flexWrap: "wrap",
+    gap: 8,
+    marginRight: 16,
   },
   btnHistory: {
-    width: "50%",
+    height: 40,
+    width: 40,
+    borderRadius: 999,
   },
   btnScan: {
-    paddingRight: 20,
-    width: "50%",
+    height: 40,
+    width: 40,
+    borderRadius: 999,
   },
 });

@@ -1,25 +1,45 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, {
+  FunctionComponent,
+  useEffect,
+  useState,
+  useTransition,
+} from "react";
 import { observer } from "mobx-react-lite";
 import { OWBox } from "../../components/card";
-import { View, StyleSheet, TouchableOpacity, Image } from "react-native";
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  Clipboard,
+  ActivityIndicator,
+} from "react-native";
 import { Text } from "@src/components/text";
 import { useStore } from "../../stores";
 import { useTheme } from "@src/themes/theme-provider";
 import { getTotalUsd, chainIcons } from "@oraichain/oraidex-common";
-import { DownArrowIcon } from "@src/components/icon";
+import { CheckIcon, CopyFillIcon, DownArrowIcon } from "@src/components/icon";
 import { metrics, spacing } from "@src/themes";
 import MyWalletModal from "./components/my-wallet-modal/my-wallet-modal";
-import { ChainIdEnum } from "@owallet/common";
+import { ChainIdEnum, unknownToken } from "@owallet/common";
 import { OWButton } from "@src/components/button";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { CopyAddressModal } from "./components/copy-address/copy-address-modal";
-import { getTokenInfos } from "@src/utils/helper";
+import { getTokenInfos, maskedNumber, shortenAddress } from "@src/utils/helper";
 import { useSmartNavigation } from "@src/navigation.provider";
 import { SCREENS } from "@src/common/constants";
 import { navigate } from "@src/router/root";
 import { LoadingSpinner } from "@src/components/spinner";
+import OWText from "@src/components/text/ow-text";
+import { useSimpleTimer } from "@src/hooks";
+import LottieView from "lottie-react-native";
 
-export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
+export const AccountBoxAll: FunctionComponent<{
+  totalPriceBalance: string;
+  totalBalanceByChain: string;
+  isLoading: boolean;
+}> = observer(({ totalPriceBalance, totalBalanceByChain, isLoading }) => {
+  console.log(totalPriceBalance, "totalPriceBalance2");
   const { colors } = useTheme();
   const {
     universalSwapStore,
@@ -27,20 +47,23 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
     modalStore,
     chainStore,
     appInitStore,
+    queriesStore,
+    keyRingStore,
   } = useStore();
   const [profit, setProfit] = useState(0);
   const [isOpen, setModalOpen] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   const smartNavigation = useSmartNavigation();
 
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
 
-  const chainAssets = getTokenInfos({
-    tokens: universalSwapStore.getAmount,
-    prices: appInitStore.getInitApp.prices,
-    networkFilter: chainStore.current.chainId,
-  });
-
+  // const chainAssets = getTokenInfos({
+  //   tokens: universalSwapStore.getAmount,
+  //   prices: appInitStore.getInitApp.prices,
+  //   networkFilter: chainStore.current.chainId,
+  // });
+  const queries = queriesStore.get(chainStore.current.chainId);
   const styles = styling(colors);
   let totalUsd: number = 0;
   if (appInitStore.getInitApp.prices) {
@@ -52,6 +75,12 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
 
   const account = accountStore.getAccount(chainStore.current.chainId);
 
+  // const [chainAddress, setAddress] = useState("");
+  const { isTimedOut, setTimer } = useSimpleTimer();
+  const chainAddress = account.getAddressDisplay(
+    keyRingStore.keyRingLedgerAddresses
+  );
+
   const _onPressMyWallet = () => {
     modalStore.setOptions({
       bottomSheetModalConfig: {
@@ -59,7 +88,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
         enableOverDrag: false,
       },
     });
-    modalStore.setChildren(MyWalletModal());
+    modalStore.setChildren(<MyWalletModal />);
   };
 
   useEffect(() => {
@@ -71,84 +100,165 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
         yesterdayBalance += y.value ?? 0;
       });
 
-      setProfit(Number(Number(totalUsd - yesterdayBalance).toFixed(6)));
+      setProfit(Number(Number(totalUsd - yesterdayBalance).toFixed(2)));
     } else {
       setProfit(0);
     }
+    appInitStore.updateBalanceByAddress(accountOrai.bech32Address, totalUsd);
   }, [totalUsd, accountOrai.bech32Address, appInitStore]);
 
+  useEffect(() => {
+    setProfit(0);
+  }, [accountOrai.bech32Address]);
+
+  const address = account.getAddressDisplay(
+    keyRingStore.keyRingLedgerAddresses
+  );
+  const accountTronInfo =
+    chainStore.current.chainId === ChainIdEnum.TRON
+      ? queries.tron.queryAccount.getQueryWalletAddress(address)
+      : null;
   const renderTotalBalance = () => {
-    const chainIcon = chainIcons.find(
-      (c) => c.chainId === chainStore.current.chainId
-    );
-    let chainBalance = 0;
-
-    chainAssets?.map((a) => {
-      chainBalance += a.value;
-    });
-
     return (
       <>
-        <Text variant="bigText" style={styles.labelTotalAmount}>
-          ${totalUsd.toFixed(6)}
-        </Text>
-        <Text
-          style={styles.profit}
-          color={colors[profit < 0 ? "error-text-body" : "success-text-body"]}
+        <View
+          style={{
+            alignItems: "center",
+            flexDirection: "row",
+          }}
         >
-          {profit < 0 ? "" : "+"}
-          {profit && totalUsd && totalUsd > 0
-            ? Number((profit / totalUsd) * 100 ?? 0).toFixed(2)
-            : 0}
-          % ($
-          {profit ?? 0}) Today
-        </Text>
-
-        {appInitStore.getInitApp.isAllNetworks ? null : (
-          <View
-            style={{
-              borderTopWidth: 1,
-              borderColor: colors["neutral-border-default"],
-              marginVertical: 8,
-              paddingVertical: 8,
-              flexDirection: "row",
-              justifyContent: "space-between",
-            }}
-          >
+          <Text variant="bigText" style={styles.labelTotalAmount}>
+            {totalPriceBalance}
+          </Text>
+          {isLoading ? (
             <View
               style={{
+                maxHeight: 30,
+              }}
+            >
+              <LottieView
+                source={require("@src/assets/animations/loading.json")}
+                resizeMode={"contain"}
+                style={{
+                  width: 70,
+                  height: 70,
+                  marginLeft: -10,
+                  marginTop: -20,
+                }}
+                autoPlay
+                loop
+              />
+            </View>
+          ) : null}
+        </View>
+
+        {/*<Text*/}
+        {/*  style={styles.profit}*/}
+        {/*  color={colors[profit < 0 ? "error-text-body" : "success-text-body"]}*/}
+        {/*>*/}
+        {/*  {profit < 0 ? "" : "+"}*/}
+        {/*  {profit && totalUsd && totalUsd > 0*/}
+        {/*    ? Number((profit / totalUsd) * 100 ?? 0).toFixed(2)*/}
+        {/*    : 0}*/}
+        {/*  % ($*/}
+        {/*  {maskedNumber(profit ?? 0, 2)}) Today*/}
+        {/*</Text>*/}
+
+        {appInitStore.getInitApp.isAllNetworks ? null : (
+          <>
+            <View
+              style={{
+                borderTopWidth: 1,
+                borderColor: colors["neutral-border-default"],
+                marginVertical: 8,
+                paddingVertical: 8,
                 flexDirection: "row",
-                alignItems: "center",
+                justifyContent: "space-between",
               }}
             >
               <View
                 style={{
-                  backgroundColor: colors["neutral-text-action-on-dark-bg"],
-                  borderRadius: 16,
+                  flexDirection: "row",
+                  alignItems: "center",
                 }}
               >
-                <OWIcon
-                  type="images"
-                  source={{ uri: chainIcon?.Icon }}
+                <View
+                  style={{
+                    backgroundColor: colors["neutral-icon-on-dark"],
+                    borderRadius: 16,
+                  }}
+                >
+                  <OWIcon
+                    type="images"
+                    source={{
+                      uri:
+                        chainStore.current.stakeCurrency.coinImageUrl ||
+                        unknownToken.coinImageUrl,
+                    }}
+                    size={16}
+                  />
+                </View>
+                <Text
+                  style={{
+                    paddingLeft: 6,
+                  }}
                   size={16}
-                />
+                  weight="600"
+                  color={colors["neutral-text-title"]}
+                >
+                  {chainStore.current.chainName}
+                </Text>
               </View>
-              <Text
-                style={{
-                  paddingLeft: 6,
-                }}
-                size={16}
-                weight="600"
-                color={colors["neutral-text-title"]}
-              >
-                {chainStore.current.chainName}
+
+              <Text size={16} weight="600" color={colors["neutral-text-title"]}>
+                {totalBalanceByChain}
               </Text>
             </View>
-
-            <Text size={16} weight="600" color={colors["neutral-text-title"]}>
-              ${chainBalance.toFixed(6)}
-            </Text>
-          </View>
+            {chainStore.current.chainId === ChainIdEnum.TRON && (
+              <>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <OWText
+                    size={16}
+                    weight="600"
+                    color={colors["neutral-text-title"]}
+                  >
+                    My Energy:
+                  </OWText>
+                  <OWText
+                    size={16}
+                    weight="600"
+                    color={colors["neutral-text-body"]}
+                  >{`${accountTronInfo?.energyRemaining?.toString()}/${accountTronInfo?.energyLimit?.toString()}`}</OWText>
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <OWText
+                    size={16}
+                    weight="600"
+                    color={colors["neutral-text-title"]}
+                  >
+                    My Bandwidth:
+                  </OWText>
+                  <OWText
+                    size={16}
+                    weight="600"
+                    color={colors["neutral-text-body"]}
+                  >{`${accountTronInfo?.bandwidthRemaining?.toString()}/${accountTronInfo?.bandwidthLimit?.toString()}`}</OWText>
+                </View>
+              </>
+            )}
+          </>
         )}
       </>
     );
@@ -166,12 +276,11 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
       />
       <OWBox style={styles.containerOWBox}>
         <View style={styles.containerInfoAccount}>
-          {!universalSwapStore.getLoadStatus.isLoad && (
-            <View style={styles.containerLoading}>
-              <LoadingSpinner color={colors["gray-150"]} size={22} />
-            </View>
-          )}
-          <TouchableOpacity onPress={_onPressMyWallet} style={styles.btnAcc}>
+          <TouchableOpacity
+            // disabled={!universalSwapStore.getLoadStatus.isLoad}
+            onPress={_onPressMyWallet}
+            style={styles.btnAcc}
+          >
             <Image
               style={styles.infoIcon}
               source={require("../../assets/images/default-avatar.png")}
@@ -181,26 +290,52 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
             <Text style={styles.labelName}>{account?.name || ".."}</Text>
             <DownArrowIcon height={15} color={colors["primary-text"]} />
           </TouchableOpacity>
-          <OWButton
-            type="secondary"
-            textStyle={{
-              fontSize: 14,
-              fontWeight: "600",
-              color: colors["neutral-text-action-on-light-bg"],
-            }}
-            icon={
-              <OWIcon
-                size={14}
-                name="copy"
-                color={colors["neutral-text-action-on-light-bg"]}
-              />
-            }
-            style={styles.copy}
-            label="Copy address"
-            onPress={() => {
-              setModalOpen(true);
-            }}
-          />
+          {appInitStore.getInitApp.isAllNetworks ? (
+            <OWButton
+              type="secondary"
+              textStyle={{
+                fontSize: 14,
+                fontWeight: "600",
+                color: colors["neutral-text-action-on-light-bg"],
+              }}
+              icon={
+                <OWIcon
+                  size={14}
+                  name="copy"
+                  color={colors["neutral-text-action-on-light-bg"]}
+                />
+              }
+              style={styles.copy}
+              label="Copy address"
+              onPress={() => {
+                startTransition(() => {
+                  setModalOpen(true);
+                });
+              }}
+            />
+          ) : (
+            <OWButton
+              type="secondary"
+              textStyle={{
+                fontSize: 14,
+                fontWeight: "600",
+                color: colors["neutral-text-action-on-light-bg"],
+              }}
+              icon={
+                isTimedOut ? (
+                  <CheckIcon />
+                ) : (
+                  <CopyFillIcon color={colors["sub-text"]} />
+                )
+              }
+              style={styles.copy}
+              label={shortenAddress(chainAddress)}
+              onPress={() => {
+                Clipboard.setString(chainAddress);
+                setTimer(2000);
+              }}
+            />
+          )}
         </View>
         <View style={styles.overview}>{renderTotalBalance()}</View>
         <View style={styles.btnGroup}>
@@ -219,6 +354,7 @@ export const AccountBoxAll: FunctionComponent<{}> = observer(({}) => {
               return;
             }}
           />
+
           <OWButton
             textStyle={{
               fontSize: 14,
@@ -270,6 +406,7 @@ const styling = (colors) =>
   StyleSheet.create({
     containerOWBox: {
       marginHorizontal: 16,
+      marginTop: 0,
       width: metrics.screenWidth - 32,
       padding: spacing["16"],
       backgroundColor: colors["neutral-surface-card"],
@@ -315,7 +452,7 @@ const styling = (colors) =>
     },
     copy: {
       borderRadius: 999,
-      width: metrics.screenWidth / 3,
+      width: metrics.screenWidth / 2.5,
       height: 32,
     },
     btnGroup: {

@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { IAmountConfig } from "@owallet/hooks";
-import { DenomHelper } from "@owallet/common";
+import { ChainIdEnum, DenomHelper } from "@owallet/common";
 import { Bech32Address } from "@owallet/cosmos";
 import { InteractionManager, TextStyle, ViewStyle } from "react-native";
 import { Selector } from "./selector";
@@ -39,9 +39,12 @@ export const CurrencySelector: FunctionComponent<{
     const [displayTokens, setDisplayTokens] = useState<
       ObservableQueryBalanceInner[]
     >([]);
-    const addressToFetch = accountStore
-      .getAccount(chainId)
-      .getAddressDisplay(keyRingStore.keyRingLedgerAddresses, false);
+    const accountInfo = accountStore.getAccount(chainId);
+    const addressToFetch = accountInfo.getAddressDisplay(
+      keyRingStore.keyRingLedgerAddresses,
+      false
+    );
+
     const items = amountConfig.sendableCurrencies.map((currency) => {
       let label = currency.coinDenom;
 

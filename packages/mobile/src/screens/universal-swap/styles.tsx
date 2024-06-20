@@ -14,6 +14,16 @@ export const styling = (colors: TypeTheme["colors"]) =>
     textBtnBalanceAtive: {
       color: colors["primary-surface-default"],
     },
+    txtBtnSend: {
+      fontSize: 16,
+      fontWeight: "600",
+      color: colors["neutral-text-action-on-dark-bg"],
+    },
+    bottomBtn: {
+      marginTop: 20,
+      width: metrics.screenWidth / 2.3,
+      borderRadius: 999,
+    },
     textBtnBalanceInActive: {
       color: "#7C8397",
     },
@@ -109,7 +119,15 @@ export const styling = (colors: TypeTheme["colors"]) =>
       position: "absolute",
       top: "50%",
       alignSelf: "center",
-      marginTop: -16,
+      marginTop: -4,
+      backgroundColor: colors["neutral-surface-card"],
+      borderColor: colors["neutral-surface-action"],
+      borderWidth: 4,
+      width: 40,
+      height: 40,
+      borderRadius: 999,
+      alignItems: "center",
+      justifyContent: "center",
     },
     shadowBox: {
       shadowColor: colors["splash-background"],
@@ -144,6 +162,7 @@ export const styling = (colors: TypeTheme["colors"]) =>
     containerItemBottom: {
       flexDirection: "row",
       justifyContent: "space-between",
+      alignItems: "center",
     },
     flR: {
       flexDirection: "row",
@@ -155,8 +174,7 @@ export const styling = (colors: TypeTheme["colors"]) =>
       height: 30,
     },
     containerInfo: {
-      borderRadius: 8,
-      backgroundColor: colors["bg-swap-box"],
+      borderRadius: 24,
       marginTop: 4,
       width: "100%",
     },
@@ -187,5 +205,9 @@ export const styling = (colors: TypeTheme["colors"]) =>
     },
     jc: {
       alignItems: "center",
+    },
+    borderline: {
+      backgroundColor: colors["neutral-border-default"],
+      height: 1,
     },
   });

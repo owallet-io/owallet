@@ -59,6 +59,9 @@ export const SettingStackScreen: FC = () => {
                 analyticsStore.logEvent("Add additional account started");
                 navigation.navigate("Register", {
                   screen: "Register.Intro",
+                  params: {
+                    canBeBack: true,
+                  },
                 });
               }}
             >

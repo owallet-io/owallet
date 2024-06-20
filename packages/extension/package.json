@@ -9,6 +9,7 @@
     "build": "cross-env NODE_ENV=production webpack",
     "start:dev": "cross-env NODE_ENV=development webpack",
     "generate:icons": "for size in 16 48 128 ;do convert src/public/assets/orai_wallet_logo.png -thumbnail $sizex$size src/public/assets/icon/icon-$size.png;done",
+    "images": "node ./src/scripts/gen-images.js",
     "dev:analyzer": "cross-env NODE_ENV=development ANALYZER=true webpack",
     "test": "jest --passWithNoTests",
     "lint-test": "eslint \"src/**/*\" webpack.config.js && prettier --check \"src/**/*\" webpack.config.js",
@@ -17,8 +18,10 @@
   },
   "dependencies": {
     "@cosmjs/cosmwasm-stargate": "^0.31.0",
+    "react-sliding-pane": "^7.3.0",
     "@cosmjs/encoding": "^0.29.3",
     "@cosmjs/launchpad": "^0.27.1",
+    "mobx-persist-store": "^1.1.5",
     "@cosmjs/proto-signing": "^0.29.3",
     "@fortawesome/fontawesome-free": "^5.11.2",
     "@owallet/analytics": "^0.9.14",

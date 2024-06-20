@@ -4,15 +4,14 @@ import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
 import {
   View,
-  StyleSheet,
   Image,
   ScrollView,
   InteractionManager,
+  StyleSheet,
+  ImageSourcePropType,
 } from "react-native";
 import { Text } from "@src/components/text";
 import { useSmartNavigation } from "../../navigation.provider";
-import { Bech32Address, TendermintTxTracer } from "@owallet/cosmos";
-import { Buffer } from "buffer";
 import { metrics } from "../../themes";
 import { useTheme } from "@src/themes/theme-provider";
 import {
@@ -21,19 +20,18 @@ import {
   openLink,
   SUCCESS,
 } from "../../utils/helper";
-import { ChainIdEnum } from "@owallet/common";
+import { ChainIdEnum, TxRestTronClient } from "@owallet/common";
 import { API } from "@src/common/api";
 import { OwalletEvent, TxRestCosmosClient, TRON_ID } from "@owallet/common";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import { OWButton } from "@src/components/button";
 import { PageHeader } from "@src/components/header/header-new";
 import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
-import OWCard from "@src/components/card/ow-card";
-import image from "@src/assets/images";
 import { CoinPretty, Dec, Int } from "@owallet/unit";
 import { AppCurrency, StdFee } from "@owallet/types";
 import { CoinPrimitive } from "@owallet/stores";
 import _ from "lodash";
+import { HeaderTx } from "@src/screens/tx-result/components/header-tx";
 
 export const TxPendingResultScreen: FunctionComponent = observer(() => {
   const { chainStore, txsStore, accountStore, keyRingStore, priceStore } =
@@ -73,58 +71,15 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
     .getAccount(chainId)
     .getAddressDisplay(keyRingStore.keyRingLedgerAddresses, false);
   const txHash = params?.txHash;
+  console.log(txHash, "txHash");
   const chainInfo = chainStore.getChain(chainId);
 
   const smartNavigation = useSmartNavigation();
   const isFocused = useIsFocused();
-
-  const getTronTx = async (txHash) => {
-    const transaction = await route.params.tronWeb?.trx.getTransactionInfo(
-      txHash
-    );
-    setRetry(retry - 1);
-    return transaction;
-  };
-
   useEffect(() => {
     // let txTracer: TendermintTxTracer | undefined;
     if (isFocused && chainId && chainInfo) {
-      if (chainId === TRON_ID) {
-        // It may take a while to confirm transaction in TRON, show we make retry few times until it is done
-        if (retry >= 0) {
-          setTimeout(() => {
-            getTronTx(txHash).then((transaction) => {
-              if (
-                transaction &&
-                Object.keys(transaction).length > 0 &&
-                retry > 0
-              ) {
-                if (transaction.receipt.result === SUCCESS) {
-                  smartNavigation.pushSmart("TxSuccessResult", {
-                    txHash: transaction.id,
-                  });
-                } else {
-                  smartNavigation.pushSmart("TxFailedResult", {
-                    chainId: current.chainId,
-                    txHash: transaction.id,
-                  });
-                }
-              }
-              if (retry === 0) {
-                smartNavigation.pushSmart("TxFailedResult", {
-                  chainId: current.chainId,
-                  txHash: txHash,
-                });
-              }
-            });
-          }, 33000);
-        } else {
-          smartNavigation.pushSmart("TxFailedResult", {
-            chainId: current.chainId,
-            txHash: txHash,
-          });
-        }
-      } else if (chainId === ChainIdEnum.Bitcoin) {
+      if (chainId === ChainIdEnum.Bitcoin) {
         API.checkStatusTxBitcoinTestNet(chainInfo.rest, txHash)
           .then((res: any) => {
             if (res?.confirmed) {
@@ -134,64 +89,10 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
             }
           })
           .catch((err) => console.log(err, "err data"));
-      } else if (
-        chainId.startsWith("injective") ||
-        chainStore.current.networkType === "evm"
-      ) {
-        const data = {
-          ...params?.data,
-        };
-        OwalletEvent.txHashListener(txHash, (txInfo) => {
-          console.log(txHash, txInfo, "txInfo");
-          if (txInfo?.code === 0) {
-            smartNavigation.replaceSmart("TxSuccessResult", {
-              chainId,
-              txHash,
-              data,
-            });
-            return;
-          } else {
-            smartNavigation.replaceSmart("TxFailedResult", {
-              chainId,
-              txHash,
-              data,
-            });
-          }
-        });
       }
-      // else {
-      //   txTracer = new TendermintTxTracer(chainInfo.rpc, "/websocket");
-      //   txTracer
-      //     .traceTx(Buffer.from(txHash, "hex"))
-      //     .then((tx) => {
-      //       const data = {
-      //         ...params?.data,
-      //       };
-      //       if (tx.code == null || tx.code === 0) {
-      //         smartNavigation.replaceSmart("TxSuccessResult", {
-      //           chainId,
-      //           txHash,
-      //           data,
-      //         });
-      //       } else {
-      //         smartNavigation.replaceSmart("TxFailedResult", {
-      //           chainId,
-      //           txHash,
-      //           data,
-      //         });
-      //       }
-      //     })
-      //     .catch((e) => {
-      //       console.log(`Failed to trace the tx (${txHash})`, e);
-      //     });
-      // }
     }
 
-    return () => {
-      // if (txTracer) {
-      //   txTracer.close();
-      // }
-    };
+    return () => {};
   }, [
     chainId,
     chainStore,
@@ -200,16 +101,23 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
     smartNavigation,
     retry,
   ]);
+  const handleUrl = (txHash) => {
+    return chainInfo.raw.txExplorer.txUrl.replace(
+      "{txHash}",
+      chainInfo.chainId === TRON_ID ||
+        chainInfo.networkType === "bitcoin" ||
+        chainInfo.chainId === ChainIdEnum.OasisSapphire ||
+        chainInfo.chainId === ChainIdEnum.OasisEmerald ||
+        chainInfo.chainId === ChainIdEnum.Oasis ||
+        chainInfo.chainId === ChainIdEnum.BNBChain
+        ? txHash.toLowerCase()
+        : txHash.toUpperCase()
+    );
+  };
   const handleOnExplorer = async () => {
     if (chainInfo.raw.txExplorer && txHash) {
-      await openLink(
-        chainInfo.raw.txExplorer.txUrl.replace(
-          "{txHash}",
-          chainInfo.chainId === TRON_ID || chainInfo.networkType === "bitcoin"
-            ? txHash
-            : txHash.toUpperCase()
-        )
-      );
+      const url = handleUrl(txHash);
+      await openLink(url);
     }
   };
   const amount = new CoinPretty(
@@ -232,36 +140,31 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
   useEffect(() => {
     if (txHash) {
       InteractionManager.runAfterInteractions(() => {
-        if (chainInfo.networkType === "cosmos") {
-          const restApi = chainInfo?.rest;
-          const restConfig = chainInfo?.restConfig;
-          const txRestCosmos = new TxRestCosmosClient(restApi, restConfig);
-          txRestCosmos
-            .fetchTxPoll(txHash)
-            .then((tx) => {
-              const data = {
-                ...params?.data,
-              };
-              if (tx.code == null || tx.code === 0) {
-                smartNavigation.replaceSmart("TxSuccessResult", {
-                  chainId,
-                  txHash,
-                  data,
-                });
-              } else {
-                smartNavigation.replaceSmart("TxFailedResult", {
-                  chainId,
-                  txHash,
-                  data,
-                });
-              }
-            })
-            .catch((err) => console.log(err));
-        }
+        if (chainInfo?.chainId === ChainIdEnum.Bitcoin) return;
+        const data = {
+          ...params?.data,
+        };
+        OwalletEvent.txHashListener(txHash, (txInfo) => {
+          console.log(txHash, txInfo, "txInfo");
+          if (txInfo?.code === 0) {
+            smartNavigation.replaceSmart("TxSuccessResult", {
+              chainId,
+              txHash,
+              data,
+            });
+            return;
+          } else {
+            smartNavigation.replaceSmart("TxFailedResult", {
+              chainId,
+              txHash,
+              data,
+            });
+          }
+        });
         getDetailByHash(txHash);
       });
     }
-  }, [txHash]);
+  }, [txHash, chainId]);
   const fee = () => {
     if (params?.data?.fee) {
       return new CoinPretty(
@@ -289,138 +192,44 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
         key !== "type"
       );
     });
-
+  const styles = styling(colors);
   return (
     <PageWithBottom
       bottomGroup={
-        <View
-          style={{
-            width: "100%",
-            paddingHorizontal: 16,
-          }}
-        >
-          <Text
-            style={{
-              textAlign: "center",
-              paddingVertical: 16,
-            }}
-          >
+        <View style={styles.containerBottomButton}>
+          <Text style={styles.txtPending}>
             The transaction is still pending. {"\n"}
-            You can check the status on OraiScan
+            You can check the status on {chainInfo.raw.txExplorer.name}
           </Text>
           <OWButton
             label="View on Explorer"
             onPress={handleOnExplorer}
-            style={[
-              {
-                borderRadius: 99,
-              },
-            ]}
-            textStyle={{
-              fontSize: 14,
-              fontWeight: "600",
-              color: colors["neutral-text-action-on-dark-bg"],
-            }}
+            style={styles.btnExplorer}
+            textStyle={styles.txtViewOnExplorer}
           />
         </View>
       }
     >
-      <View
-        style={{
-          flex: 1,
-        }}
-      >
-        <PageHeader
-          title={"Transaction details"}
-          colors={colors["neutral-text-title"]}
-        />
+      <View style={styles.containerBox}>
+        <PageHeader title={"Transaction details"} />
         <ScrollView showsVerticalScrollIndicator={false}>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "center",
-              marginBottom: 8,
-            }}
-          >
-            <Image
-              source={image.logo_owallet}
-              style={{
-                width: 20,
-                height: 20,
-              }}
-            />
-            <Text
-              color={colors["neutral-text-title"]}
-              size={18}
-              weight={"600"}
-              style={{
-                paddingLeft: 8,
-              }}
-            >
-              OWallet
-            </Text>
-          </View>
-          <OWCard
-            style={{
-              paddingVertical: 20,
-              borderRadius: 24,
-              alignItems: "center",
-              justifyContent: "center",
-              marginBottom: 2,
-            }}
-          >
-            <Text
-              style={{
-                textAlign: "center",
-                paddingBottom: 8,
-              }}
-              color={colors["neutral-text-title"]}
-              size={16}
-              weight={"500"}
-            >
-              {capitalizedText(params?.data?.type) || "Send"}
-            </Text>
-            <Image
-              style={{
-                width: metrics.screenWidth - 104,
-                height: 12,
-              }}
-              fadeDuration={0}
-              resizeMode="stretch"
-              source={require("../../assets/image/transactions/process_pedding.gif")}
-            />
-            <Text
-              color={colors["neutral-text-title"]}
-              style={{
-                textAlign: "center",
-                paddingTop: 16,
-              }}
-              size={28}
-              weight={"500"}
-            >
-              {`${params?.data?.type === "send" ? "-" : ""}${amount
-                ?.shrink(true)
-                ?.trim(true)
-                ?.toString()}`}
-            </Text>
-            <Text
-              color={colors["neutral-text-body"]}
-              style={{
-                textAlign: "center",
-              }}
-            >
-              {priceStore.calculatePrice(amount)?.toString()}
-            </Text>
-          </OWCard>
-          <View
-            style={{
-              padding: 16,
-              borderRadius: 24,
-              marginHorizontal: 16,
-              backgroundColor: colors["neutral-surface-card"],
-            }}
-          >
+          <HeaderTx
+            type={capitalizedText(params?.data?.type) || "Send"}
+            imageType={
+              <Image
+                style={styles.imageType}
+                fadeDuration={0}
+                resizeMode="stretch"
+                source={require("../../assets/image/transactions/process_pedding.gif")}
+              />
+            }
+            amount={`${params?.data?.type === "send" ? "-" : ""}${amount
+              ?.shrink(true)
+              ?.trim(true)
+              ?.toString()}`}
+            price={priceStore.calculatePrice(amount)?.toString()}
+          />
+          <View style={styles.cardBody}>
             {dataItem &&
               Object.keys(dataItem).map(function (key) {
                 return (
@@ -454,3 +263,58 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
     </PageWithBottom>
   );
 });
+const styling = (colors) => {
+  return StyleSheet.create({
+    containerSuccess: {
+      backgroundColor: colors["highlight-surface-subtle"],
+      width: "100%",
+      paddingHorizontal: 12,
+      paddingVertical: 2,
+      borderRadius: 99,
+      alignSelf: "center",
+    },
+    containerBottomButton: {
+      width: "100%",
+      paddingHorizontal: 16,
+      paddingTop: 16,
+    },
+    btnApprove: {
+      borderRadius: 99,
+      backgroundColor: colors["primary-surface-default"],
+    },
+    cardBody: {
+      padding: 16,
+      borderRadius: 24,
+      marginHorizontal: 16,
+      backgroundColor: colors["neutral-surface-card"],
+    },
+    viewNetwork: {
+      flexDirection: "row",
+      paddingTop: 6,
+    },
+    imgNetwork: {
+      height: 20,
+      width: 20,
+      backgroundColor: colors["neutral-icon-on-dark"],
+    },
+    containerBox: {
+      flex: 1,
+    },
+    txtPending: {
+      textAlign: "center",
+      paddingVertical: 16,
+    },
+    txtViewOnExplorer: {
+      fontSize: 14,
+      fontWeight: "600",
+      color: colors["neutral-text-action-on-dark-bg"],
+    },
+    btnExplorer: {
+      borderRadius: 99,
+    },
+    imageType: {
+      width: metrics.screenWidth - 104,
+      height: 12,
+    },
+  });
+};

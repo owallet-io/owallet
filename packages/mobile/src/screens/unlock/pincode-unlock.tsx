@@ -24,8 +24,7 @@ import delay from "delay";
 import { useStore } from "../../stores";
 import { StackActions, useNavigation } from "@react-navigation/native";
 import { KeyRingStatus } from "@owallet/background";
-import { KeychainStore } from "../../stores/keychain";
-import { AccountStore } from "@owallet/stores";
+import { AccountStore, KeyRingStore, WalletStatus } from "@owallet/stores";
 import { autorun } from "mobx";
 import { metrics, spacing } from "../../themes";
 import { ProgressBar } from "../../components/progress-bar";
@@ -38,29 +37,43 @@ import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { Text } from "@src/components/text";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { showToast } from "@src/utils/helper";
+import { useAutoBiomtric } from "./index";
 import SmoothPinCodeInput from "react-native-smooth-pincode-input";
 import NumericPad from "react-native-numeric-pad";
 import OWText from "@src/components/text/ow-text";
+import { HugeQueriesStore } from "@src/stores/huge-queries";
+import { ChainStore } from "@src/stores/chain";
 
-async function waitAccountLoad(
-  accountStore: AccountStore<any, any, any, any>,
-  chainId: string
-): Promise<void> {
-  if (accountStore.getAccount(chainId).bech32Address) {
-    return;
-  }
-
-  return new Promise((resolve) => {
-    const disposer = autorun(() => {
-      if (accountStore.getAccount(chainId).bech32Address) {
-        resolve();
-        if (disposer) {
-          disposer();
-        }
+export const waitAccountInit = async (
+  chainStore: ChainStore,
+  accountStore: AccountStore<any>,
+  keyRingStore: KeyRingStore
+) => {
+  if (keyRingStore.status == KeyRingStatus.UNLOCKED) {
+    for (const chainInfo of chainStore.chainInfos) {
+      const account = accountStore.getAccount(chainInfo.chainId);
+      if (account.walletStatus === WalletStatus.NotInit) {
+        account.init();
       }
+    }
+
+    await new Promise<void>((resolve) => {
+      const disposal = autorun(() => {
+        // account init은 동시에 발생했을때 debounce가 되므로
+        // 첫번째꺼 하나만 확인해도 된다.
+        if (
+          accountStore.getAccount(chainStore.chainInfos[0].chainId)
+            .bech32Address
+        ) {
+          resolve();
+          if (disposal) {
+            disposal();
+          }
+        }
+      });
     });
-  });
-}
+  }
+};
 
 enum AutoBiomtricStatus {
   NO_NEED,
@@ -89,6 +102,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
     accountStore,
     chainStore,
     appInitStore,
+    hugeQueriesStore,
   } = useStore();
   const navigation = useNavigation();
   const { colors } = useTheme();
@@ -110,16 +124,19 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
       ) {
         navigation.dispatch(StackActions.replace("MainTab"));
       } else {
-        await waitAccountLoad(accountStore, chainId);
-        navigation.dispatch(StackActions.replace("MainTab"));
+        await waitAccountInit(chainStore, accountStore, keyRingStore);
+        setTimeout(() => {
+          navigation.dispatch(StackActions.replace("MainTab"));
+        }, 1500);
       }
     }
     navigateToHomeOnce.current = true;
   }, [accountStore, chainStore, navigation]);
 
-  // const autoBiometryStatus = useAutoBiomtric(keychainStore, keyRingStore.status === KeyRingStatus.LOCKED && loaded);
-
-  // console.log('autoBiometryStatus', autoBiometryStatus);
+  const autoBiometryStatus = useAutoBiomtric(
+    keychainStore,
+    keyRingStore.status === KeyRingStatus.LOCKED && loaded
+  );
 
   useEffect(() => {
     if (__DEV__) {
@@ -178,6 +195,10 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
     }
   }, [appInitStore.getInitApp.passcodeType]);
 
+  useEffect(() => {
+    appInitStore.selectAllNetworks(true);
+  }, []);
+
   const pinRef = useRef(null);
   const numpadRef = useRef(null);
 
@@ -196,6 +217,12 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
       setIsBiometricLoading(false);
     }
   }, [keychainStore]);
+
+  useEffect(() => {
+    if (autoBiometryStatus && keychainStore.isBiometryOn) {
+      tryBiometric();
+    }
+  }, [autoBiometryStatus]);
 
   const tryUnlock = async () => {
     try {
@@ -504,7 +531,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
                       height: 24,
                       borderRadius: 48,
                       opacity: 0.7,
-                      backgroundColor: colors["hightlight-surface-active"],
+                      backgroundColor: colors["highlight-surface-active"],
                     }}
                   />
                 }
@@ -539,7 +566,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
                     justifyContent: "center",
                   }}
                   onSubmitEditing={tryUnlock}
-                  placeholder="Enter your passcode"
+                  placeholder="Enter your passcode2"
                   inputRight={
                     <OWButtonIcon
                       style={styles.padIcon}
@@ -649,7 +676,7 @@ const styling = (colors) =>
   StyleSheet.create({
     useBiometric: {},
     container: {
-      paddingTop: metrics.screenHeight / 14,
+      paddingTop: metrics.screenHeight / 19,
       justifyContent: "space-between",
       height: "100%",
       backgroundColor: colors["neutral-surface-card"],

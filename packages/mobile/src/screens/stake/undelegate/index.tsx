@@ -23,12 +23,7 @@ import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { View, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 import { OWButton } from "../../../components/button";
-import {
-  AmountInput,
-  FeeButtons,
-  MemoInput,
-  TextInput,
-} from "../../../components/input";
+
 import { ValidatorThumbnail } from "../../../components/thumbnail";
 import { useSmartNavigation } from "../../../navigation.provider";
 import { useStore } from "../../../stores";
@@ -58,6 +53,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
     queriesStore,
     analyticsStore,
     priceStore,
+    appInitStore,
   } = useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
@@ -127,8 +123,10 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
     if (sendConfigs.feeConfig.feeCurrency && !sendConfigs.feeConfig.fee) {
       sendConfigs.feeConfig.setFeeType("average");
     }
-    return;
-  }, [sendConfigs.feeConfig]);
+    if (appInitStore.getInitApp.feeOption) {
+      sendConfigs.feeConfig.setFeeType(appInitStore.getInitApp.feeOption);
+    }
+  }, [sendConfigs.feeConfig, appInitStore.getInitApp.feeOption]);
   const isDisable = !account.isReadyToSendMsgs || !txStateIsValid;
   const _onPressFee = () => {
     modalStore.setOptions({
@@ -274,7 +272,15 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
                   flexDirection: "row",
                 }}
               >
-                <ValidatorThumbnail size={20} url={validatorThumbnail} />
+                <View
+                  style={{
+                    backgroundColor: colors["neutral-icon-on-dark"],
+                    borderRadius: 999,
+                  }}
+                >
+                  <ValidatorThumbnail size={20} url={validatorThumbnail} />
+                </View>
+
                 <OWText
                   style={{ paddingLeft: 8 }}
                   color={colors["neutral-text-title"]}
@@ -307,11 +313,18 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
                       marginTop: 12,
                     }}
                   >
-                    <OWIcon
-                      type="images"
-                      source={{ uri: chainIcon?.Icon }}
-                      size={16}
-                    />
+                    <View
+                      style={{
+                        backgroundColor: colors["neutral-icon-on-dark"],
+                        borderRadius: 999,
+                      }}
+                    >
+                      <OWIcon
+                        type="images"
+                        source={{ uri: chainIcon?.Icon }}
+                        size={16}
+                      />
+                    </View>
                     <OWText style={{ paddingLeft: 4 }} weight="600" size={14}>
                       ORAI
                     </OWText>
@@ -370,7 +383,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
               >
                 <AlertIcon color={colors["warning-text-body"]} size={16} />
                 <OWText style={{ paddingLeft: 8 }} weight="600" size={14}>
-                  {`When you unstake, a 14-day cooldown period is required before your stake returns \nto your wallet.`}
+                  {`When you unstake, a 14-day cooldown period is required before your stake returns to your wallet.`}
                 </OWText>
               </View>
             </OWCard>

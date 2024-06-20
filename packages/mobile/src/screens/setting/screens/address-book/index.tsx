@@ -14,7 +14,7 @@ import OWText from "@src/components/text/ow-text";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useCallback, useState } from "react";
-import { Image, StyleSheet, TextInput, View } from "react-native";
+import { Image, Platform, StyleSheet, TextInput, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { AsyncKVStore } from "../../../../common";
 import { PageWithScrollView } from "../../../../components/page";
@@ -227,10 +227,10 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
   return (
     <PageWithScrollView
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={{}}
+      contentContainerStyle={{ marginTop: Platform.OS === "android" ? 30 : 0 }}
       backgroundColor={colors["neutral-surface-bg"]}
     >
-      <PageHeader title="Address book" colors={colors} />
+      <PageHeader title="Address book" />
       <View
         style={{
           flexDirection: "row",
@@ -253,6 +253,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
           style={{
             fontFamily: "SpaceGrotesk-Regular",
             width: "100%",
+            color: colors["neutral-text-body"],
           }}
           value={nameSearch}
           onChangeText={(text) => {

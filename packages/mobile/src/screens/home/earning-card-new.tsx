@@ -26,8 +26,8 @@ import { useStore } from "../../stores";
 import { metrics } from "../../themes";
 
 export const EarningCardNew: FunctionComponent<{
-  containerStyle?: ViewStyle;
-}> = observer(({}) => {
+  defaultChain?: string;
+}> = observer(({ defaultChain }) => {
   const route = useRoute<RouteProp<Record<string, {}>, string>>();
   const smartNavigation = useSmartNavigation();
   const { chainStore, accountStore, queriesStore, priceStore, analyticsStore } =
@@ -35,7 +35,7 @@ export const EarningCardNew: FunctionComponent<{
   const navigation = useNavigation();
 
   const { colors } = useTheme();
-  const chainId = chainStore.current.chainId;
+  const chainId = defaultChain ?? chainStore.current.chainId;
   const styles = styling(colors);
   const queries = queriesStore.get(chainId);
   const account = accountStore.getAccount(chainId);
@@ -44,6 +44,11 @@ export const EarningCardNew: FunctionComponent<{
   );
   const stakingReward = queryReward.stakableReward;
   const totalStakingReward = priceStore.calculatePrice(stakingReward);
+  const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(
+    account.bech32Address
+  );
+  const delegated = queryDelegated.total;
+  const totalPrice = priceStore.calculatePrice(delegated);
 
   const _onPressClaim = async () => {
     try {
@@ -84,11 +89,11 @@ export const EarningCardNew: FunctionComponent<{
               type: HISTORY_STATUS.CLAIM,
               fromToken: {
                 asset: stakingReward.toCoin().denom.toUpperCase(),
-                chainId: chainStore.current.chainId,
+                chainId: chainId,
               },
               toToken: {
                 asset: stakingReward.toCoin().denom.toUpperCase(),
-                chainId: chainStore.current.chainId,
+                chainId: chainId,
               },
               status: "SUCCESS",
             };
@@ -100,12 +105,20 @@ export const EarningCardNew: FunctionComponent<{
       );
     } catch (e) {
       console.error({ errorClaim: e });
-      showToast({
-        message: e?.message ?? "Something went wrong! Please try again later.",
-        type: "danger",
-      });
+      if (!e?.message?.startWith("Transaction Rejected")) {
+        showToast({
+          message:
+            e?.message ?? "Something went wrong! Please try again later.",
+          type: "danger",
+        });
+        return;
+      }
     }
   };
+  const isDisableClaim =
+    !account.isReadyToSendMsgs ||
+    stakingReward.toDec().equals(new Dec(0)) ||
+    queryReward.pendingRewardValidatorAddresses.length === 0;
   return (
     <OWBox
       style={{
@@ -164,21 +177,52 @@ export const EarningCardNew: FunctionComponent<{
             </Text>
           </TouchableOpacity>
           <OWButton
-            style={styles["btn-claim"]}
+            style={[
+              styles["btn-claim"],
+              {
+                backgroundColor: isDisableClaim
+                  ? colors["neutral-surface-disable"]
+                  : colors["primary-surface-default"],
+              },
+            ]}
             textStyle={{
               fontSize: 14,
               fontWeight: "600",
-              color: colors["neutral-text-action-on-dark-bg"],
+              color: isDisableClaim
+                ? colors["neutral-text-disable"]
+                : colors["neutral-text-action-on-dark-bg"],
             }}
-            label="Claim All"
+            label="Claim"
             onPress={_onPressClaim}
             loading={account.isSendingMsg === "withdrawRewards"}
-            disabled={
-              !account.isReadyToSendMsgs ||
-              stakingReward.toDec().equals(new Dec(0)) ||
-              queryReward.pendingRewardValidatorAddresses.length === 0
-            }
+            disabled={isDisableClaim}
           />
+        </View>
+        <View
+          style={{
+            backgroundColor: colors["primary-surface-subtle"],
+            marginTop: 6,
+            borderRadius: 16,
+            paddingHorizontal: 12,
+            paddingVertical: 4,
+            flexDirection: "row",
+            justifyContent: "space-between",
+          }}
+        >
+          <Text weight="500" color={colors["neutral-text-action-on-light-bg"]}>
+            Staked:{" "}
+            {totalPrice
+              ? totalPrice.toString()
+              : delegated.shrink(true).maxDecimals(6).toString()}
+          </Text>
+          <Text weight="500" color={colors["neutral-text-action-on-light-bg"]}>
+            {delegated
+              .shrink(true)
+              .maxDecimals(6)
+              .trim(true)
+              .upperCase(true)
+              .toString()}
+          </Text>
         </View>
       </View>
     </OWBox>
@@ -215,7 +259,7 @@ const styling = (colors) =>
     },
     "btn-claim": {
       backgroundColor: colors["primary-surface-default"],
-      borderWidth: 0.5,
+      // borderWidth: 0.5,
       marginTop: 16,
       borderRadius: 999,
       width: metrics.screenWidth / 4.5,

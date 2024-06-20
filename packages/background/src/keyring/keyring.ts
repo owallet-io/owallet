@@ -984,9 +984,21 @@ export class KeyRing {
 
     await OasisTransaction.sign(chainContext, signer, tw);
 
-    const payload = await OasisTransaction.submit(nic, tw);
+    await OasisTransaction.submit(nic, tw);
+    const hash = await tw.hash();
 
-    return payload;
+    // const sendResult = {
+    //   hash: hash,
+    //   from: params.fromAddress,
+    //   to: params.toAddress,
+    //   fee: toNonExponential(amountDecimals(feeAmount, cointypes.decimals)),
+    //   method: params.method,
+    //   amount: showAmount,
+    //   nonce: params.nonce
+    // }
+    console.log(hash, "payload");
+
+    return hash;
   }
 
   private loadPrivKey(coinType: number): PrivKeySecp256k1 {

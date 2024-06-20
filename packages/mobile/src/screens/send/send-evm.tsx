@@ -6,7 +6,7 @@ import {
   useSendTxEvmConfig,
 } from "@owallet/hooks";
 import { useStore } from "../../stores";
-import { EthereumEndpoint, toAmount } from "@owallet/common";
+import { ChainIdEnum, EthereumEndpoint, toAmount } from "@owallet/common";
 import {
   InteractionManager,
   ScrollView,
@@ -41,7 +41,7 @@ import {
   HISTORY_STATUS,
 } from "@src/utils/helper";
 import { navigate } from "@src/router/root";
-import { ChainIdEnum } from "@oraichain/oraidex-common";
+import { SCREENS } from "@src/common/constants";
 
 export const SendEvmScreen: FunctionComponent = observer(() => {
   const {
@@ -53,6 +53,7 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
     keyRingStore,
     priceStore,
     modalStore,
+    appInitStore,
   } = useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
@@ -152,6 +153,7 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
   const { gasPrice } = queriesStore
     .get(chainId)
     .evm.queryGasPrice.getGasPrice();
+  console.log(gasPrice, chainId, "gasPrice");
   useEffect(() => {
     if (!gasPrice) return;
     sendConfigs.gasConfig.setGasPriceStep(gasPrice);
@@ -210,6 +212,22 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
           {
             onFulfill: (tx) => {
               console.log(tx, "tx evm");
+              if (chainStore.current.chainId === ChainIdEnum.Oasis) {
+                navigate("Others", {
+                  screen: SCREENS.TxSuccessResult,
+                  params: {
+                    txHash: tx,
+                    data: {
+                      memo: sendConfigs.memoConfig.memo,
+                      toAddress: sendConfigs.recipientConfig.recipient,
+                      amount: sendConfigs.amountConfig.getAmountPrimitive(),
+                      fromAddress: address,
+                      fee: sendConfigs.feeConfig.toStdFee(),
+                      currency: sendConfigs.amountConfig.sendCurrency,
+                    },
+                  },
+                });
+              }
             },
             onBroadcasted: async (txHash) => {
               analyticsStore.logEvent("Send token tx broadcasted", {
@@ -224,23 +242,29 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
                   txHash: txHash,
                   data: {
                     memo: sendConfigs.memoConfig.memo,
-                    toAddress: sendConfigs.recipientConfig.recipient,
+                    from: address,
+                    to: sendConfigs.recipientConfig.recipient,
                     amount: sendConfigs.amountConfig.getAmountPrimitive(),
-                    fromAddress: address,
                     fee: sendConfigs.feeConfig.toStdFee(),
                     currency: sendConfigs.amountConfig.sendCurrency,
                   },
                 },
               });
+              const fee = sendConfigs.feeConfig.fee
+                .trim(true)
+                .hideDenom(true)
+                .maxDecimals(4)
+                .toString();
+
               const historyInfos = {
                 fromAddress: address,
                 toAddress: sendConfigs.recipientConfig.recipient,
-                hash: Buffer.from(txHash).toString("hex"),
+                hash: txHash,
                 memo: "",
                 fromAmount: sendConfigs.amountConfig.amount,
                 toAmount: sendConfigs.amountConfig.amount,
                 value: sendConfigs.amountConfig.amount,
-                fee: 0,
+                fee: fee,
                 type: HISTORY_STATUS.SEND,
                 fromToken: {
                   asset: sendConfigs.amountConfig.sendCurrency.coinDenom,
@@ -252,8 +276,6 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
                 },
                 status: "SUCCESS",
               };
-
-              console.log("historyInfos", historyInfos);
 
               universalSwapStore.updateTokenReload([
                 {
@@ -293,23 +315,17 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
     sendConfigs.amountConfig.sendCurrency,
     new Dec(sendConfigs.amountConfig.getAmountPrimitive().amount)
   );
-  const _onPressFee = () => {
-    modalStore.setOptions({
-      bottomSheetModalConfig: {
-        enablePanDownToClose: false,
-        enableOverDrag: false,
-      },
-    });
-    modalStore.setChildren(
-      <FeeModal vertical={true} sendConfigs={sendConfigs} colors={colors} />
-    );
-  };
+
   useEffect(() => {
     if (sendConfigs.feeConfig.feeCurrency && !sendConfigs.feeConfig.fee) {
       sendConfigs.feeConfig.setFeeType("average");
     }
+    if (appInitStore.getInitApp.feeOption) {
+      sendConfigs.feeConfig.setFeeType(appInitStore.getInitApp.feeOption);
+    }
     return;
-  }, [sendConfigs.feeConfig]);
+  }, [sendConfigs.feeConfig, appInitStore.getInitApp.feeOption]);
+
   const isReadyBalance = queries.queryBalances
     .getQueryBech32Address(address)
     .getBalanceFromCurrency(sendConfigs.amountConfig.sendCurrency).isReady;
@@ -323,6 +339,18 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
       }
     });
   }, [isReadyBalance, address, sendConfigs.amountConfig.sendCurrency]);
+
+  const _onPressFee = () => {
+    modalStore.setOptions({
+      bottomSheetModalConfig: {
+        enablePanDownToClose: false,
+        enableOverDrag: false,
+      },
+    });
+    modalStore.setChildren(
+      <FeeModal vertical={true} sendConfigs={sendConfigs} colors={colors} />
+    );
+  };
   return (
     <PageWithBottom
       bottomGroup={

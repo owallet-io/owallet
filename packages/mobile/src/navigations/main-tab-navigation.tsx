@@ -61,7 +61,6 @@ export const MainTabNavigation: FC = observer(() => {
           },
           headerShown: false,
           tabBarLabel: `${SCREENS_OPTIONS[route.name].title}`,
-
           tabBarStyle: {
             backgroundColor: colors["neutral-surface-bg2"],
             borderTopWidth: 0.5,
@@ -104,9 +103,17 @@ export const MainTabNavigation: FC = observer(() => {
           ),
         };
       }}
-      tabBar={(props) =>
-        checkTabbarVisible && !loading ? <BottomTabBar {...props} /> : null
-      }
+      tabBar={(props) => {
+        if (
+          props.state.routeNames[props.state.index] ===
+          SCREENS.TABS.SendNavigation
+        )
+          return null;
+
+        return checkTabbarVisible && !loading ? (
+          <BottomTabBar {...props} />
+        ) : null;
+      }}
     >
       <Tab.Screen name={SCREENS.TABS.Main} component={MainNavigation} />
       <Tab.Screen name={SCREENS.TABS.Invest} component={InvestNavigation} />

@@ -26,15 +26,7 @@ export interface GasInputProps {
 
 // TODO: Handle the max block gas limit(?)
 export const FeeInput: FunctionComponent<GasInputProps> = observer(
-  ({
-    feeConfig,
-    label,
-    className,
-    defaultValue,
-    gasConfig,
-    classNameInputGroup,
-    classNameInput,
-  }) => {
+  ({ feeConfig, label, className, classNameInputGroup, classNameInput }) => {
     const [inputId] = useState(() => {
       const bytes = new Uint8Array(4);
       crypto.getRandomValues(bytes);

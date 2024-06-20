@@ -29,6 +29,7 @@ export class ObservableQueryErc20Balance extends ObservableChainQuery<Erc20Contr
   protected async fetchResponse(): Promise<
     QueryResponse<Erc20ContractBalance>
   > {
+    if (!Web3.utils.isAddress(this.walletAddress)) return;
     try {
       const web3 = new Web3(
         getRpcByChainId(this.chainGetter.getChain(this.chainId), this.chainId)

@@ -1,18 +1,26 @@
 import { quantity, staking, types, client } from "@oasisprotocol/client";
-
+import * as oasis from "@oasisprotocol/client";
+import * as oasisRT from "@oasisprotocol/client-rt";
+// eslint-disable-next-line no-restricted-imports
 import BigNumber from "bignumber.js";
+import { sha512_256 } from "js-sha512";
+
 /** Redux can't serialize bigint fields, so we stringify them, and mark them. */
 export type StringifiedBigInt = string & PreserveAliasName;
+
 // eslint-disable-next-line @typescript-eslint/ban-types
 interface PreserveAliasName extends String {}
+
 type ParaTimeNetwork = {
   address: string | undefined;
   runtimeId: string | undefined;
 };
+
 export enum RuntimeTypes {
   Evm = "evm",
   Oasis = "oasis",
 }
+
 export interface OasisBalance {
   available: StringifiedBigInt;
   validator: {
@@ -20,6 +28,7 @@ export interface OasisBalance {
     escrow_debonding: StringifiedBigInt;
   };
 }
+
 export type ParaTimeConfig = {
   mainnet: ParaTimeNetwork;
   testnet: ParaTimeNetwork;
@@ -162,4 +171,60 @@ export const getDefaultFeeAmount = (
 export const getOasisNic = (url) => {
   const nic = new client.NodeInternal(url);
   return nic;
+};
+
+export const isValidOasisAddress = (addr: string): boolean => {
+  try {
+    oasis.staking.addressFromBech32(addr);
+    return true;
+  } catch (e) {
+    return false;
+  }
+};
+
+// TODO: validate checksums with @ethereumjs/util isValidChecksumAddress
+export const isValidEthAddress = (hexAddress: string): boolean => {
+  return /^0x[0-9a-fA-F]{40}$/.test(hexAddress);
+};
+
+/** oasis.address.fromData(...) but without being needlessly asynchronous */
+function oasisAddressFromDataSync(
+  contextIdentifier: string,
+  contextVersion: number,
+  data: Uint8Array
+): Uint8Array {
+  const versionU8 = new Uint8Array([contextVersion]);
+  return oasis.misc.concat(
+    versionU8,
+    new Uint8Array(
+      sha512_256.arrayBuffer(
+        oasis.misc.concat(
+          oasis.misc.fromString(contextIdentifier),
+          versionU8,
+          data
+        )
+      )
+    ).slice(0, 20)
+  );
+}
+
+export function getEvmBech32Address(evmAddress: string) {
+  const ethAddrU8 = oasis.misc.fromHex(evmAddress.replace("0x", ""));
+  const addr = oasisAddressFromDataSync(
+    oasisRT.address.V0_SECP256K1ETH_CONTEXT_IDENTIFIER,
+    oasisRT.address.V0_SECP256K1ETH_CONTEXT_VERSION,
+    ethAddrU8
+  );
+  return oasis.staking.addressToBech32(addr);
+}
+
+export const getOasisAddress = (address: string): string => {
+  if (!address) return "";
+  if (isValidOasisAddress(address)) {
+    return address;
+  } else if (isValidEthAddress(address)) {
+    return getEvmBech32Address(address);
+  } else {
+    throw new Error("Invalid oasis address");
+  }
 };

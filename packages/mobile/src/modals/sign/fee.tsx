@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { IFeeConfig, IGasConfig, NotLoadedFeeError } from "@owallet/hooks";
 import { View, TouchableWithoutFeedback, Keyboard } from "react-native";
@@ -32,6 +32,7 @@ const FeeButtonsModal: FunctionComponent<{
   observer(({ close, feeConfig, gasConfig }) => {
     const [customGas, setCustomGas] = useState(false);
     const { colors } = useTheme();
+
     return (
       <WrapViewModal title="Set Fee" disabledScrollView={false}>
         <View
@@ -114,7 +115,7 @@ export const FeeInSign: FunctionComponent<{
 
   signOptions?: OWalletSignOptions;
 }> = observer(({ isInternal, signOptions, feeConfig, gasConfig }) => {
-  const { chainStore, priceStore } = useStore();
+  const { chainStore, priceStore, appInitStore } = useStore();
   const { colors } = useTheme();
   const style = useStyle();
 
@@ -147,6 +148,15 @@ export const FeeInSign: FunctionComponent<{
   })();
 
   const [isSetFeeModalOpen, setIsSetFeeModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (feeConfig.feeCurrency && !feeConfig.fee && feeConfig.setFeeType) {
+      feeConfig.setFeeType("average");
+    }
+    if (appInitStore.getInitApp.feeOption && feeConfig.setFeeType) {
+      feeConfig.setFeeType(appInitStore.getInitApp.feeOption);
+    }
+  }, [feeConfig, appInitStore.getInitApp.feeOption]);
 
   return (
     <React.Fragment>

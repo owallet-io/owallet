@@ -1,4 +1,4 @@
-import { Clipboard, StyleSheet, View } from "react-native";
+import { Clipboard, StyleSheet, View, ViewProps } from "react-native";
 import React, { FC, ReactNode, useCallback } from "react";
 import { useTheme } from "@src/themes/theme-provider";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
@@ -16,6 +16,8 @@ const ItemReceivedToken: FC<{
   IconRightComponent?: ReactNode;
   valueProps?: OWTextProps;
   valueDisplay?: string | ReactNode;
+  colorIconRight?: string;
+  containerStyle?: ViewProps["style"];
 }> = ({
   label = "--",
   value = "",
@@ -24,6 +26,8 @@ const ItemReceivedToken: FC<{
   btnCopy = true,
   valueProps,
   IconRightComponent,
+  colorIconRight,
+  containerStyle,
 }) => {
   const { colors } = useTheme();
   const styles = styling();
@@ -38,11 +42,13 @@ const ItemReceivedToken: FC<{
         backgroundColor: colors["neutral-surface-card"],
       }}
     >
-      <View style={styles.containerItemReceivedToken}>
+      <View style={[styles.containerItemReceivedToken, containerStyle]}>
         <View style={styles.flex_1}>
-          <Text weight={"600"} size={16} color={colors["neutral-text-title"]}>
-            {label}
-          </Text>
+          {label?.length > 0 && (
+            <Text weight={"600"} size={16} color={colors["neutral-text-title"]}>
+              {label}
+            </Text>
+          )}
           {typeof valueDisplay == "string" ? (
             <Text
               size={16}
@@ -66,12 +72,12 @@ const ItemReceivedToken: FC<{
               />
             ) : (
               <OWButtonIcon
-                name="copy"
+                name="tdesigncopy"
                 style={styles.iconCopy}
                 sizeIcon={20}
                 fullWidth={false}
                 onPress={onCopy}
-                colorIcon={colors["primary-surface-default"]}
+                colorIcon={colorIconRight ?? colors["primary-surface-default"]}
               />
             )}
           </View>

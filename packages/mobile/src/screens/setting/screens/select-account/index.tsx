@@ -136,7 +136,7 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
         <RadioButton
           color={
             keyStore.selected
-              ? colors["hightlight-surface-active"]
+              ? colors["highlight-surface-active"]
               : colors["neutral-text-body"]
           }
           id={i.toString()}
@@ -192,6 +192,9 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
           onPress={() => {
             navigation.navigate("Register", {
               screen: "Register.Intro",
+              params: {
+                canBeBack: true,
+              },
             });
           }}
           style={{

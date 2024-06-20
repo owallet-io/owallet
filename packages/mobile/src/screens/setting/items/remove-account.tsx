@@ -11,16 +11,24 @@ import { useNavigation } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { View } from "react-native";
+import { showToast } from "@src/utils/helper";
+import { SCREENS } from "@src/common/constants";
+import { navigate } from "@src/router/root";
+import { PincodeModal } from "@src/screens/pincode/pincode-modal";
 export const SettingRemoveAccountItem: FunctionComponent<{
   topBorder?: boolean;
 }> = observer(({ topBorder }) => {
-  const { keychainStore, keyRingStore, analyticsStore } = useStore();
+  const {
+    keychainStore,
+    keyRingStore,
+    analyticsStore,
+    modalStore,
+    universalSwapStore,
+  } = useStore();
 
   const { colors } = useTheme();
 
   const navigation = useNavigation();
-
-  const [isOpenModal, setIsOpenModal] = useState(false);
 
   // const checkCodepushUpdate = () => {
   //   CodePush.checkForUpdate().then(update => {
@@ -58,6 +66,60 @@ export const SettingRemoveAccountItem: FunctionComponent<{
   //   });
   // };
 
+  const onGoBack = () => {
+    modalStore.close();
+  };
+
+  const onVerifyPincode = async (passcode) => {
+    try {
+      const index = keyRingStore.multiKeyStoreInfo.findIndex(
+        (keyStore) => keyStore.selected
+      );
+
+      if (index >= 0) {
+        await keyRingStore.deleteKeyRing(index, passcode);
+        // await onUnSubscribeToTopic();
+        analyticsStore.logEvent("Account removed");
+
+        if (!keyRingStore.multiKeyStoreInfo.length) {
+          await keychainStore.reset();
+
+          navigation.reset({
+            index: 0,
+            routes: [
+              {
+                name: "Unlock",
+              },
+            ],
+          });
+        }
+      }
+      modalStore.close();
+    } catch (err) {
+      showToast({
+        message: "Invalid passcode",
+        type: "danger",
+      });
+    }
+  };
+
+  const _onPressPincodekModal = () => {
+    modalStore.setOptions({
+      bottomSheetModalConfig: {
+        enablePanDownToClose: false,
+        enableOverDrag: false,
+      },
+    });
+    modalStore.setChildren(
+      <PincodeModal
+        onVerifyPincode={onVerifyPincode}
+        onGoBack={onGoBack}
+        label={"Enter your passcode"}
+        subLabel={"Enter your passcode to remove current wallet"}
+      />
+    );
+  };
+
   return (
     <React.Fragment>
       {/* <SettingItem label="Check for Update" onPress={() => {checkCodepushUpdate()}} /> */}
@@ -82,10 +144,12 @@ export const SettingRemoveAccountItem: FunctionComponent<{
         paragraph="Remove current wallet"
         paragraphStyle={{ color: colors["error-text-action"] }}
         onPress={() => {
-          setIsOpenModal(true);
+          universalSwapStore.clearAmounts();
+          _onPressPincodekModal();
+          // setIsOpenModal(true);
         }}
       />
-      <PasswordInputModal
+      {/* <PasswordInputModal
         isOpen={isOpenModal}
         close={() => setIsOpenModal(false)}
         title="Remove wallet"
@@ -116,7 +180,7 @@ export const SettingRemoveAccountItem: FunctionComponent<{
             }
           }
         }}
-      />
+      /> */}
     </React.Fragment>
   );
 });

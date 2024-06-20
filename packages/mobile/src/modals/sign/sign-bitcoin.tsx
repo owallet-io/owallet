@@ -1,25 +1,14 @@
-import React, {
-  FunctionComponent,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { registerModal } from "../base";
-import { CardModal } from "../card";
+
 import { Text, View, KeyboardAvoidingView, Platform } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { useStyle } from "../../styles";
 import { useStore } from "../../stores";
-import { Button, OWButton } from "../../components/button";
-import { colors, typography } from "../../themes";
 
 import { observer } from "mobx-react-lite";
 import { useUnmount } from "../../hooks";
 import { BottomSheetProps } from "@gorhom/bottom-sheet";
-import { navigationRef } from "../../router/root";
-import { SCREENS } from "@src/common/constants";
-import { formatBalance } from "@owallet/bitcoin";
 import { FeeInSign, FeeInSignBtc } from "@src/modals/sign/fee";
 import {
   useAmountConfig,
@@ -27,12 +16,20 @@ import {
   useGasConfig,
   useMemoConfig,
 } from "@owallet/hooks";
-import { ChainIdHelper } from "@owallet/cosmos";
+import { Bech32Address, ChainIdHelper } from "@owallet/cosmos";
 import { CoinPretty } from "@owallet/unit/build/coin-pretty";
 import { Dec } from "@owallet/unit";
+import OWText from "@src/components/text/ow-text";
+import { AmountCard, WasmExecutionMsgView } from "@src/modals/sign/components";
+import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
+import OWButtonGroup from "@src/components/button/OWButtonGroup";
+import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
+import Web3 from "web3";
+import FastImage from "react-native-fast-image";
+import { useTheme } from "@src/themes/theme-provider";
+import { shortenAddress } from "@src/utils/helper";
 // eslint-disable-next-line @typescript-eslint/no-var-requires,import/no-extraneous-dependencies
 const { BitcoinUnit } = require("bitcoin-units");
-const keyboardVerticalOffset = Platform.OS === "ios" ? 130 : 0;
 
 export const SignBitcoinModal: FunctionComponent<{
   isOpen: boolean;
@@ -148,7 +145,7 @@ export const SignBitcoinModal: FunctionComponent<{
       }
     };
 
-    const isDisable = feeConfig.getError() != null;
+    const approveIsDisabled = feeConfig.getError() != null;
     const dataChanged = dataSign && {
       ...dataSign,
       data: {
@@ -177,123 +174,153 @@ export const SignBitcoinModal: FunctionComponent<{
       },
     };
     const lastestData = isNoSetFee ? dataSign : dataChanged;
-    return (
-      <CardModal>
-        <KeyboardAvoidingView
-          behavior="position"
-          keyboardVerticalOffset={keyboardVerticalOffset}
-        >
-          <View style={style.flatten(["margin-bottom-16"])}>
-            <Text style={style.flatten(["margin-bottom-3"])}>
-              <Text
-                style={style.flatten(["subtitle3", "color-primary"])}
-              >{`1 `}</Text>
-              <Text
-                style={style.flatten(["subtitle3", "color-text-black-medium"])}
-              >
-                Message
-              </Text>
-            </Text>
-            <View
-              style={style.flatten([
-                "border-radius-8",
-                "border-width-1",
-                "border-color-border-white",
-                "overflow-hidden",
-              ])}
-            >
-              <ScrollView
-                style={style.flatten(["max-height-214"])}
-                persistentScrollbar={true}
-              >
-                <Text
-                  style={{
-                    color: colors["sub-text"],
-                  }}
-                >
-                  {JSON.stringify(lastestData, null, 2)}
-                </Text>
-              </ScrollView>
-            </View>
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              paddingVertical: 8,
-              alignItems: "center",
-            }}
-          >
-            <Text
-              style={style.flatten(["subtitle3", "color-text-black-medium"])}
-            >
-              Amount
-            </Text>
-            <Text
-              style={{
-                ...style.flatten(["subtitle2"]),
-                color: colors["primary-surface-default"],
-              }}
-            >
-              {new CoinPretty(
-                chainStore.current.stakeCurrency,
-                new Dec(lastestData?.data?.data?.msgs?.amount)
-              )
-                ?.trim(true)
-                ?.toString()}
-            </Text>
-          </View>
 
-          <FeeInSignBtc
-            feeConfig={feeConfig}
-            gasConfig={gasConfig}
-            // signOptions={signInteractionStore.waitingData?.data.signOptions}
-            isInternal={!isNoSetFee}
-          />
+    const _onPressApprove = async () => {
+      try {
+        await signInteractionStore.approveBitcoinAndWaitEnd({
+          ...lastestData.data.data,
+        });
+      } catch (error) {
+        signInteractionStore.rejectAll();
+        console.log("error approveBitcoinAndWaitEnd", error);
+      }
+    };
+    const msgData = lastestData?.data?.data?.msgs;
+    const renderAmount = () => {
+      if (!chainStore.current.stakeCurrency || !msgData?.amount) return null;
+      return new CoinPretty(
+        chainStore.current.stakeCurrency,
+        new Dec(msgData?.amount)
+      )
+        ?.trim(true)
+        ?.toString();
+    };
+    const checkImageCoin = () => {
+      if (!chainStore.current.stakeCurrency) return;
+      if (chainStore.current.stakeCurrency?.coinImageUrl)
+        return (
           <View
             style={{
-              flexDirection: "row",
-              justifyContent: "space-evenly",
+              alignSelf: "center",
+              paddingVertical: 8,
+              backgroundColor: colors["neutral-icon-on-dark"],
             }}
           >
-            <OWButton
-              label="Reject"
-              size="large"
-              type="danger"
+            <FastImage
               style={{
-                width: "40%",
+                height: 30,
+                width: 30,
               }}
-              textStyle={{
-                color: colors["white"],
-              }}
-              disabled={signInteractionStore.isLoading}
-              onPress={_onPressReject}
-            />
-            <OWButton
-              label="Approve"
-              size="large"
-              style={{
-                width: "40%",
-                backgroundColor: signInteractionStore.isLoading
-                  ? colors["primary-surface-disable"]
-                  : colors["primary-surface-default"],
-              }}
-              disabled={isDisable || signInteractionStore.isLoading}
-              loading={signInteractionStore.isLoading}
-              onPress={async () => {
-                try {
-                  await signInteractionStore.approveBitcoinAndWaitEnd({
-                    ...lastestData.data.data,
-                  });
-                } catch (error) {
-                  signInteractionStore.rejectAll();
-                  console.log("error approveBitcoinAndWaitEnd", error);
-                }
+              source={{
+                uri: chainStore.current.stakeCurrency?.coinImageUrl,
               }}
             />
           </View>
-        </KeyboardAvoidingView>
-      </CardModal>
+        );
+      return null;
+    };
+    const checkPrice = () => {
+      if (!chainStore.current.stakeCurrency || !msgData?.amount) return;
+      const coin = new CoinPretty(
+        chainStore.current.stakeCurrency,
+        new Dec(msgData?.amount)
+      );
+      const totalPrice = priceStore.calculatePrice(coin);
+      return totalPrice?.toString();
+    };
+    const { colors } = useTheme();
+    return (
+      <WrapViewModal
+        style={{
+          backgroundColor: colors["neutral-surface-card"],
+        }}
+      >
+        <View style={{ paddingTop: 16 }}>
+          <OWText
+            size={16}
+            weight={"700"}
+            style={{
+              textAlign: "center",
+              paddingBottom: 20,
+            }}
+          >
+            {`Confirmation`.toUpperCase()}
+          </OWText>
+
+          {renderAmount() ? (
+            <AmountCard
+              imageCoin={checkImageCoin()}
+              amountStr={renderAmount()}
+              totalPrice={checkPrice()}
+            />
+          ) : (
+            lastestData && (
+              <ScrollView
+                style={{
+                  backgroundColor: colors["neutral-surface-bg"],
+                  padding: 16,
+                  borderRadius: 24,
+                  maxHeight: 300,
+                }}
+              >
+                <WasmExecutionMsgView msg={lastestData} />
+              </ScrollView>
+            )
+          )}
+
+          <View
+            style={{
+              backgroundColor: colors["neutral-surface-card"],
+              paddingHorizontal: 16,
+              paddingTop: 16,
+              borderRadius: 24,
+              marginBottom: 24,
+              marginTop: 2,
+            }}
+          >
+            {msgData?.changeAddress && (
+              <ItemReceivedToken
+                label={"From"}
+                valueDisplay={shortenAddress(msgData?.changeAddress)}
+                value={msgData?.changeAddress}
+              />
+            )}
+            {msgData?.address && (
+              <ItemReceivedToken
+                label={"To"}
+                valueDisplay={shortenAddress(msgData?.address)}
+                value={msgData?.address}
+              />
+            )}
+            <FeeInSign
+              feeConfig={feeConfig}
+              gasConfig={gasConfig}
+              signOptions={{ preferNoSetFee: isNoSetFee }}
+              isInternal={isNoSetFee}
+            />
+          </View>
+        </View>
+
+        <OWButtonGroup
+          labelApprove={"Confirm"}
+          labelClose={"Cancel"}
+          disabledApprove={approveIsDisabled}
+          disabledClose={signInteractionStore.isLoading}
+          loadingApprove={signInteractionStore.isLoading}
+          styleApprove={{
+            borderRadius: 99,
+            backgroundColor: approveIsDisabled
+              ? colors["primary-surface-disable"]
+              : colors["primary-surface-default"],
+          }}
+          onPressClose={_onPressReject}
+          onPressApprove={_onPressApprove}
+          styleClose={{
+            borderRadius: 99,
+            backgroundColor: colors["neutral-surface-action3"],
+          }}
+        />
+      </WrapViewModal>
     );
   }),
   {
