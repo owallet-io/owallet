@@ -32,8 +32,6 @@ export const EVMRenderArgs: FunctionComponent<{
   const [tokenOut, setTokenOut] = useState<any>();
   const [isMore, setIsMore] = useState(true);
 
-  console.log("args", args);
-
   const renderToken = (token) => {
     return (
       <div
@@ -59,11 +57,15 @@ export const EVMRenderArgs: FunctionComponent<{
     );
   };
 
-  const renderPath = (fromToken?, toToken?, fromContract?, toContract?) => {
-    const amountIn = args?._amountIn || args?.amountIn || msgs?.value || "-";
+  const renderPath = (fromToken?, desToken?, fromContract?, toContract?) => {
+    const amountIn =
+      args?._amount || args?._amountIn || args?.amountIn || msgs?.value || "-";
     const amountOut = args?.amountOutMin || args?._amountOutMin || "-";
     const inToken = fromToken || tokenIn;
-    const outToken = toToken || tokenOut || toToken;
+    const outToken = desToken || tokenOut || toToken;
+
+    console.log("outToken", outToken);
+
     return (
       <div
         style={{
@@ -104,7 +106,7 @@ export const EVMRenderArgs: FunctionComponent<{
                 <Text color={colors["neutral-text-body"]}>-</Text>
               )}
 
-              {amountIn ? (
+              {amountIn !== "-" ? (
                 <Text color={colors["neutral-text-body"]}>
                   {numberWithCommas(
                     toDisplay(
@@ -157,7 +159,7 @@ export const EVMRenderArgs: FunctionComponent<{
                 <Text color={colors["neutral-text-body"]}>-</Text>
               )}
 
-              {amountOut ? (
+              {amountOut !== "-" ? (
                 <Text color={colors["neutral-text-body"]}>
                   {numberWithCommas(
                     toDisplay(
