@@ -331,39 +331,44 @@ export const EVMRenderArgs: FunctionComponent<{
             : null}
         </Text>
       )}
-      {renderInfo(
-        msgs?.to,
-        "Interact contract",
-        <Address
-          maxCharacters={6}
-          lineBreakBeforePrefix={false}
-          textDecor={"underline"}
-          textColor={colors["neutral-text-body"]}
-        >
-          {msgs?.to ?? "-"}
-        </Address>
-      )}
+
       {isEmpty(path) ? renderPath() : null}
       {path?.length > 0 ? renderArgPath() : null}
-      {renderInfo(
-        args?._destination,
-        "Bridge channel",
-        <Text>
-          {args?._destination ? args?._destination.split(":")?.[0] : null}
-        </Text>
-      )}
+      {isMore ? null : (
+        <>
+          {renderInfo(
+            msgs?.to,
+            "Interact contract",
+            <Address
+              maxCharacters={6}
+              lineBreakBeforePrefix={false}
+              textDecor={"underline"}
+              textColor={colors["neutral-text-body"]}
+            >
+              {msgs?.to ?? "-"}
+            </Address>
+          )}
+          {renderInfo(
+            args?._destination,
+            "Bridge channel",
+            <Text>
+              {args?._destination ? args?._destination.split(":")?.[0] : null}
+            </Text>
+          )}
 
-      {renderInfo(
-        toAddress,
-        "To Address",
-        <Address
-          maxCharacters={6}
-          lineBreakBeforePrefix={false}
-          textDecor={"underline"}
-          textColor={colors["neutral-text-body"]}
-        >
-          {toAddress ? toAddress : null}
-        </Address>
+          {renderInfo(
+            toAddress,
+            "To Address",
+            <Address
+              maxCharacters={6}
+              lineBreakBeforePrefix={false}
+              textDecor={"underline"}
+              textColor={colors["neutral-text-body"]}
+            >
+              {toAddress ? toAddress : null}
+            </Address>
+          )}
+        </>
       )}
 
       <div
