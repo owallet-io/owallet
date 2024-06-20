@@ -48,8 +48,6 @@ export const DetailsTabEvm: FunctionComponent<{
     const intl = useIntl();
     const language = useLanguage();
 
-    const [isMore, setIsMore] = useState(true);
-
     const chain = chainStore.getChain(dataSign?.data?.chainId);
     const [decodedData, setDecodedData] = useState(null);
     const [decodeWithABI, setDecodeWithABI] = useState(null);
@@ -186,32 +184,6 @@ export const DetailsTabEvm: FunctionComponent<{
       return null;
     })();
 
-    const renderToken = (token) => {
-      return (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            margin: "4px 0",
-          }}
-        >
-          {token?.imgUrl || token?.coinImageUrl ? (
-            <img
-              style={{
-                width: 14,
-                height: 14,
-                borderRadius: 28,
-                marginRight: 4,
-              }}
-              src={token?.imgUrl ?? token?.coinImageUrl}
-            />
-          ) : null}
-          <Text weight="600">{token?.abbr ?? token?.coinDenom}</Text>
-        </div>
-      );
-    };
-
     const renderInfo = (condition, label, leftContent) => {
       if (condition && condition !== "") {
         return (
@@ -259,7 +231,7 @@ export const DetailsTabEvm: FunctionComponent<{
       return (
         <div>
           {renderInfo(
-            msgs?.value,
+            msgs?.value || decodedData?.args?._amount,
             "Amount",
             <div
               style={{
@@ -276,9 +248,15 @@ export const DetailsTabEvm: FunctionComponent<{
                 }}
               >
                 <Text size={16} weight="600">
-                  {msgs.value
+                  {msgs.value && !decodedData?.args?._amount
                     ? toDisplay(
                         msgs?.value?.toString(),
+                        chain.stakeCurrency.coinDecimals
+                      )
+                    : null}
+                  {!msgs.value && decodedData?.args?._amount
+                    ? toDisplay(
+                        decodedData?.args?._amount.toString(),
                         chain.stakeCurrency.coinDecimals
                       )
                     : null}
@@ -434,15 +412,7 @@ export const DetailsTabEvm: FunctionComponent<{
               <Text weight="600">{chain?.chainName}</Text>
             </div>
           )}
-          {/* {renderPath()}
-        {renderInfo(true, "Method", <Text color={colors["neutral-text-body"]}>{"SendToCosmos"}</Text>)}
-        {isMore
-          ? null
-          : renderInfo(
-              true,
-              "Channel",
-              <Text color={colors["neutral-text-body"]}>{"channel-1/orai1hvr9d72r5um9lvtOrpkd4r75vrsgtw6yujhqs2"}</Text>
-            )} */}
+
           {renderInfo(
             msgs.to,
             "To",
@@ -490,39 +460,6 @@ export const DetailsTabEvm: FunctionComponent<{
               ) : null}
             </>
           ) : null}
-
-          {/* <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            cursor: "pointer",
-            justifyContent: "flex-end",
-            width: "100%",
-            marginTop: 8
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              cursor: "pointer"
-            }}
-            onClick={() => {
-              setIsMore(prevState => {
-                return prevState ? false : true;
-              });
-            }}
-          >
-            <Text size={14} weight="500">
-              {`View ${isMore ? "more" : "less"}`}
-            </Text>
-            {isMore ? (
-              <img src={require("../../public/assets/icon/tdesign_chevron-down.svg")} />
-            ) : (
-              <img src={require("../../public/assets/icon/tdesign_chevron-up.svg")} />
-            )}
-          </div>
-        </div> */}
         </Card>
         <Card
           containerStyle={{
