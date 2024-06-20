@@ -1,4 +1,4 @@
-export const decodeBase64 = base64String => {
+export const decodeBase64 = (base64String) => {
   const decodedString = atob(base64String);
   return decodedString;
 };
@@ -13,3 +13,5 @@ export function numberWithCommas(number) {
   // Combine the formatted integer part and the decimal part
   return formattedNumber + "." + decPart;
 }
+
+export const isProdMode = "update_url" in chrome.runtime.getManifest();

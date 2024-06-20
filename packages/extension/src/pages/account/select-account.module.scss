@@ -1,0 +1,113 @@
+@import '../../styles/var';
+
+.container {
+  background-color: $neutral-surface-bg;
+  height: 100%;
+
+  .container-btn-bottom {
+    background-color: $neutral-surface-card;
+    padding: 16px;
+    border-top: 1px solid $neutral-border-default;
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+  }
+
+  .box-container {
+    background-color: $neutral-surface-card;
+    border-radius: 12px;
+    padding: 8px 16px;
+    margin: 16px;
+    .title-box {
+      color: $neutral-text-title;
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 24px; /* 150% */
+    }
+
+    .item-box {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px ;
+      border-radius: 8px;
+
+      .main-item {
+        display: flex;
+        flex-direction: row;
+        gap: 16px;
+        cursor: pointer;
+
+        .wrap-avatar {
+          .img-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 100%;
+          }
+        }
+
+        .item-center {
+          display: flex;
+          flex-direction: column;
+
+          .title {
+            color: $neutral-text-title;
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 24px; /* 150% */
+          }
+
+          .sub-title {
+            color: $success-text-body;
+            /* Body small/14px/regular */
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 20px; /* 142.857% */
+          }
+        }
+      }
+
+      .wrap-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        .img-icon {
+          width: 24px;
+          height: 24px;
+        }
+      }
+      .wrap-btn:hover{
+        background-color: $neutral-surface-pressed;
+      }
+    }
+    .item-box:hover{
+      background-color: $neutral-surface-bg2;
+    }
+  }
+}
+
+
+.button-primary {
+  background-color: $primary-surface-default;
+  border-radius: 999px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .txt-btn {
+    color: $neutral-text-action-on-dark-bg;
+    text-align: center;
+    /* Body small/14px/semibold */
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 20px; /* 142.857% */
+  }
+}

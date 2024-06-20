@@ -26,10 +26,14 @@ export const InfoAccountCard: FC<{
   const { accountStore, priceStore } = useStore();
   const account = accountStore.getAccount(ChainIdEnum.Oraichain);
   const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
+  const onSelectAccount = () => {
+    history.push("/select-account");
+    return;
+  };
   return (
     <div className={styles.containerInfoAccountCard}>
       <div className={styles.topHeaderInfoAcc}>
-        <div className={styles.selectAccount}>
+        <div onClick={onSelectAccount} className={styles.selectAccount}>
           <img
             className={styles.imgWallet}
             src={require("../../../public/assets/images/default-avatar.png")}

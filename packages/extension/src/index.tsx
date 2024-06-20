@@ -108,21 +108,24 @@ const bitcoin = new Bitcoin(
   new InExtensionMessageRequester()
 );
 
-// Sentry.init({
-//   dsn: "https://4ce54db1095b48ab8688e701d7cc8301@o1323226.ingest.sentry.io/4504615445725184",
-//   integrations: [new BrowserTracing()],
-//
-//   // We recommend adjusting this value in production, or using tracesSampler
-//   // for finer control
-//   tracesSampleRate: 1.0,
-//   environment: "production",
-//   ignoreErrors: [
-//     "Request rejected",
-//     "Failed to fetch",
-//     "Load failed",
-//     "User rejected the request",
-//   ],
-// });
+if (isProdMode) {
+  Sentry.init({
+    dsn: "https://4ce54db1095b48ab8688e701d7cc8301@o1323226.ingest.sentry.io/4504615445725184",
+    integrations: [new BrowserTracing()],
+
+    // We recommend adjusting this value in production, or using tracesSampler
+    // for finer control
+    tracesSampleRate: 1.0,
+    environment: "production",
+    ignoreErrors: [
+      "Request rejected",
+      "Failed to fetch",
+      "Load failed",
+      "User rejected the request",
+    ],
+  });
+}
+
 //@ts-ignore
 window.oasis = null;
 //@ts-ignore
@@ -180,6 +183,8 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { MainPage } from "./pages/main";
 import { ReceivePage } from "./pages/receive/receive-page";
+import { isProdMode } from "./helpers/helper";
+import { SelectAccountPage } from "./pages/account/select-account-page";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -273,6 +278,11 @@ ReactDOM.render(
                   <Route exact path="/unlock" component={LockPage} />
                   <Route exact path="/access" component={AccessPage} />
                   <Route exact path="/receive" component={ReceivePage} />
+                  <Route
+                    exact
+                    path="/select-account"
+                    component={SelectAccountPage}
+                  />
                   <Route exact path="/token" component={TokenPage} />
                   <Route
                     exact
