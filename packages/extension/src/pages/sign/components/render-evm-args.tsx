@@ -28,6 +28,7 @@ export const EVMRenderArgs: FunctionComponent<{
   const [path, setPath] = useState<Array<any>>([]);
   const [tokenIn, setTokenIn] = useState<any>();
   const [tokenOut, setTokenOut] = useState<any>();
+  const [isMore, setIsMore] = useState(true);
 
   console.log("args", args);
 
@@ -422,6 +423,42 @@ export const EVMRenderArgs: FunctionComponent<{
             </div>
           )
         : null}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          cursor: "pointer",
+          justifyContent: "flex-end",
+          width: "100%",
+          marginTop: 8,
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            cursor: "pointer",
+          }}
+          onClick={() => {
+            setIsMore((prevState) => {
+              return prevState ? false : true;
+            });
+          }}
+        >
+          <Text size={14} weight="500">
+            {`View ${isMore ? "more" : "less"}`}
+          </Text>
+          {isMore ? (
+            <img
+              src={require("../../../public/assets/icon/tdesign_chevron-down.svg")}
+            />
+          ) : (
+            <img
+              src={require("../../../public/assets/icon/tdesign_chevron-up.svg")}
+            />
+          )}
+        </div>
+      </div>
     </div>
   );
 });
