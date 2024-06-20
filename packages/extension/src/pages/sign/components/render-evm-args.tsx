@@ -20,10 +20,11 @@ import { Address } from "../../../components/address";
 import { isEmpty } from "lodash";
 
 export const EVMRenderArgs: FunctionComponent<{
+  msgs: any;
   args: any;
   chain: AppChainInfo;
   renderInfo: (condition, label, content) => ReactElement;
-}> = observer(({ args, chain, renderInfo }) => {
+}> = observer(({ args, msgs, chain, renderInfo }) => {
   const [toAddress, setToAddress] = useState<any>();
   const [toToken, setToToken] = useState<any>();
   const [path, setPath] = useState<Array<any>>([]);
@@ -59,7 +60,7 @@ export const EVMRenderArgs: FunctionComponent<{
   };
 
   const renderPath = (fromToken?, toToken?, fromContract?, toContract?) => {
-    const amountIn = args?._amountIn || args?.amountIn || "-";
+    const amountIn = args?._amountIn || args?.amountIn || msgs?.value || "-";
     const amountOut = args?.amountOutMin || args?._amountOutMin || "-";
     const inToken = fromToken || tokenIn;
     const outToken = toToken || tokenOut || toToken;
@@ -90,15 +91,6 @@ export const EVMRenderArgs: FunctionComponent<{
                 <>
                   {renderToken(inToken)}
 
-                  <Text color={colors["neutral-text-body"]}>
-                    {numberWithCommas(
-                      toDisplay(
-                        amountIn.toString(),
-                        inToken?.decimal ?? chain.stakeCurrency.coinDecimals
-                      )
-                    )}{" "}
-                  </Text>
-
                   <Address
                     maxCharacters={6}
                     lineBreakBeforePrefix={false}
@@ -108,6 +100,19 @@ export const EVMRenderArgs: FunctionComponent<{
                     {inToken.contractAddress}
                   </Address>
                 </>
+              ) : (
+                <Text color={colors["neutral-text-body"]}>-</Text>
+              )}
+
+              {amountIn ? (
+                <Text color={colors["neutral-text-body"]}>
+                  {numberWithCommas(
+                    toDisplay(
+                      amountIn.toString(),
+                      inToken?.decimal ?? chain.stakeCurrency.coinDecimals
+                    )
+                  )}{" "}
+                </Text>
               ) : (
                 <Text color={colors["neutral-text-body"]}>-</Text>
               )}
@@ -139,15 +144,6 @@ export const EVMRenderArgs: FunctionComponent<{
                 <>
                   {renderToken(outToken)}
 
-                  <Text color={colors["neutral-text-body"]}>
-                    {numberWithCommas(
-                      toDisplay(
-                        amountOut.toString(),
-                        outToken?.decimal ?? chain.stakeCurrency.coinDecimals
-                      )
-                    )}{" "}
-                  </Text>
-
                   <Address
                     maxCharacters={8}
                     lineBreakBeforePrefix={false}
@@ -157,6 +153,19 @@ export const EVMRenderArgs: FunctionComponent<{
                     {outToken.contractAddress}
                   </Address>
                 </>
+              ) : (
+                <Text color={colors["neutral-text-body"]}>-</Text>
+              )}
+
+              {amountOut ? (
+                <Text color={colors["neutral-text-body"]}>
+                  {numberWithCommas(
+                    toDisplay(
+                      amountOut.toString(),
+                      outToken?.decimal ?? chain.stakeCurrency.coinDecimals
+                    )
+                  )}{" "}
+                </Text>
               ) : (
                 <Text color={colors["neutral-text-body"]}>-</Text>
               )}
@@ -324,7 +333,7 @@ export const EVMRenderArgs: FunctionComponent<{
       {path?.length > 0 ? renderArgPath() : null}
       {renderInfo(
         args?._destination,
-        "Bridge Destination",
+        "Bridge",
         <Text>
           {args?._destination ? args?._destination.split(":")?.[0] : null}
         </Text>
@@ -377,7 +386,7 @@ export const EVMRenderArgs: FunctionComponent<{
       )} */}
       {renderInfo(
         toAddress,
-        "Bridge Address",
+        "To Address",
         <Text>{toAddress ? toAddress : null}</Text>
       )}
       {/* {tokenIn ? renderInfo(tokenIn?.abbr, "Token In", renderToken(tokenIn)) : null} */}
