@@ -37,6 +37,7 @@ import {
   AccountWithAll,
   CoinGeckoPriceStore,
 } from "@owallet/stores";
+import { ChainStore } from "../stores";
 
 export const initPrice = new PricePretty(
   {
@@ -56,20 +57,15 @@ export const useMultipleAssets = (
   accountStore: AccountStore<AccountWithAll>,
   priceStore: CoinGeckoPriceStore,
   allChainMap: any,
-  chainId: string,
-  isAllNetwork: boolean,
+  chainStore: ChainStore,
   isRefreshing: boolean,
   bech32Address,
   totalChain
 ): IMultipleAsset => {
+  const isAllNetwork = chainStore.isAllNetwork;
+  const { chainId } = chainStore.current;
   const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
   const [isLoading, setIsLoading] = useState(false);
-
-  const [multipleAssets, setMultipleAssets] = useState({
-    totalPriceBalance: "0",
-    dataTokens: [],
-    dataTokensByChain: null,
-  });
   const coinIds = new Map<string, boolean>();
   if (!fiatCurrency) return;
 
@@ -201,13 +197,11 @@ export const useMultipleAssets = (
 
       await Promise.allSettled(allBalancePromises);
       setIsLoading(false);
-      localStorage.setItem("dataTokens", JSON.stringify(allTokens));
-      setMultipleAssets({
+      chainStore.setMultipleAsset({
         dataTokens: allTokens,
         totalPriceBalance: overallTotalBalance,
         dataTokensByChain: tokensByChainId,
       });
-      console.log("done");
     } catch (error) {
       console.error("Initialization error:", error);
     } finally {
@@ -478,14 +472,30 @@ export const useMultipleAssets = (
     });
   };
 
+  const dataTokens = isAllNetwork
+    ? [...(chainStore.multipleAssets.dataTokens || [])]
+    : [
+        ...(chainStore.multipleAssets.dataTokensByChain?.[chainId]?.tokens ||
+          []),
+      ];
+
+  let totalPrice = initPrice;
+  const dataTokensWithPrice = (dataTokens || []).map(
+    (item: ViewRawToken, index) => {
+      const coinData = new CoinPretty(item.token.currency, item.token.amount);
+      const priceData = priceStore.calculatePrice(coinData);
+      totalPrice = totalPrice.add(priceData || initPrice);
+      return {
+        ...item,
+        price: priceData?.toDec()?.toString() || initPrice?.toDec()?.toString(),
+      };
+    }
+  );
+
   return {
-    totalPriceBalance: multipleAssets.totalPriceBalance,
-    dataTokens: isAllNetwork
-      ? sortTokensByPrice([...(multipleAssets.dataTokens || [])])
-      : sortTokensByPrice([
-          ...(multipleAssets.dataTokensByChain?.[chainId]?.tokens || []),
-        ]),
-    dataTokensByChain: multipleAssets.dataTokensByChain,
+    totalPriceBalance: totalPrice?.toDec()?.toString(),
+    dataTokens: dataTokensWithPrice,
+    dataTokensByChain: chainStore.multipleAssets.dataTokensByChain,
     isLoading: isLoading,
   };
 };

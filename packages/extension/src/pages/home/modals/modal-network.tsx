@@ -15,16 +15,14 @@ import {
   initPrice,
   useMultipleAssets,
 } from "../../../hooks/use-multiple-assets";
+import { HeaderModal } from "../components/header-modal";
 import { ViewRawToken, ViewTokenData } from "@owallet/types";
 import { CoinPretty, PricePretty } from "@owallet/unit";
-import { HeaderModal } from "../components/header-modal";
 
 export const ModalNetwork: FC<{
   isOpen: boolean;
   onRequestClose: () => void;
-  totalPriceByChainId: any;
-  totalPrice: PricePretty;
-}> = observer(({ isOpen, onRequestClose, totalPriceByChainId, totalPrice }) => {
+}> = observer(({ isOpen, onRequestClose }) => {
   const [keyword, setKeyword] = useState("");
   const { chainStore, accountStore, priceStore, keyRingStore } = useStore();
   const onChangeInput = (e) => {
@@ -42,8 +40,39 @@ export const ModalNetwork: FC<{
         Number(a.balance?.toDec()?.toString())
     );
   };
+  const dataTokens = [...(chainStore.multipleAssets.dataTokens || [])];
+  let totalPrice = initPrice;
+  const dataTokensByChainMap = new Map<ChainIdEnum | string, ViewTokenData>();
+  (dataTokens || []).map((item: ViewRawToken, index) => {
+    const coinData = new CoinPretty(item.token.currency, item.token.amount);
+    const priceData = priceStore.calculatePrice(coinData);
+    totalPrice = totalPrice.add(priceData || initPrice);
+
+    //caculator total price by chainID
+    dataTokensByChainMap.set(item.chainInfo.chainId, {
+      ...chainStore.multipleAssets.dataTokensByChain[item.chainInfo.chainId],
+      totalBalance: (
+        new PricePretty(
+          fiatCurrency,
+          dataTokensByChainMap.get(item.chainInfo.chainId)?.totalBalance
+        ) || initPrice
+      )
+        .add(priceData || initPrice)
+        .toDec()
+        .toString(),
+    });
+    return {
+      ...item,
+      price: priceData?.toDec()?.toString() || initPrice?.toDec()?.toString(),
+    };
+  });
+
   const chainsInfoWithBalance = chainStore.chainInfos.map((item, index) => {
-    item.balance = totalPriceByChainId.get(item.chainId) || initPrice;
+    item.balance =
+      new PricePretty(
+        fiatCurrency,
+        dataTokensByChainMap.get(item.chainId)?.totalBalance
+      ) || initPrice;
     return item;
   });
   const mainnet = chainsInfoWithBalance.filter(
@@ -85,7 +114,6 @@ export const ModalNetwork: FC<{
       onRequestClose();
     }
   };
-  // console.log(totalPriceByChainId?.[ChainIdEnum.Oraichain]?.toString(), 'totalPriceByChainId');
   const allNetworkData =
     tab.id === typeNetwork[0].id
       ? [
@@ -174,10 +202,7 @@ export const ModalNetwork: FC<{
                         <span className={styles.subTitlePrice}>
                           {item.chainId === "isAll"
                             ? (totalPrice || initPrice)?.toString()
-                            : (
-                                totalPriceByChainId.get(item.chainId) ||
-                                initPrice
-                              )?.toString()}
+                            : (item.balance || initPrice)?.toString()}
                         </span>
                       </div>
                     </div>

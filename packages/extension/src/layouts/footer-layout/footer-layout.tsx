@@ -3,13 +3,10 @@ import React, { FC } from "react";
 import { Footer } from "./components/footer";
 import { HeaderNew } from "./components/header";
 
-export const FooterLayout = ({ children, totalPriceByChainId, totalPrice }) => {
+export const FooterLayout = ({ children }) => {
   return (
     <div className={style.container}>
-      <HeaderNew
-        totalPrice={totalPrice}
-        totalPriceByChainId={totalPriceByChainId}
-      />
+      <HeaderNew />
       <div className={style.innerContainer}>{children}</div>
       <Footer />
     </div>

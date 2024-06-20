@@ -9,7 +9,7 @@ import { useStore } from "../../../stores";
 import { ChainIdEnum } from "@owallet/common";
 
 export const InfoAccountCard: FC<{
-  totalPrice: PricePretty;
+  totalPrice: string;
 }> = observer(({ totalPrice }) => {
   const [isShowCopyModal, setIsShowCopyModal] = useState(false);
   const onShowModalCopy = () => {
@@ -23,8 +23,9 @@ export const InfoAccountCard: FC<{
     history.push("/receive");
     return;
   };
-  const { accountStore } = useStore();
+  const { accountStore, priceStore } = useStore();
   const account = accountStore.getAccount(ChainIdEnum.Oraichain);
+  const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
   return (
     <div className={styles.containerInfoAccountCard}>
       <div className={styles.topHeaderInfoAcc}>
@@ -49,7 +50,7 @@ export const InfoAccountCard: FC<{
       </div>
       <div className={styles.bodyBalance}>
         <span className={styles.textBalance}>
-          {(totalPrice || initPrice).toString()}
+          {(new PricePretty(fiatCurrency, totalPrice) || initPrice)?.toString()}
         </span>
       </div>
       <div className={styles.btnsSendReceived}>
