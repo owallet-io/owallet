@@ -328,8 +328,8 @@ export const DetailsTab: FunctionComponent<{
             if (ask_asset) {
               EmbedChainInfos.find((c) => {
                 if (c.chainId === chain?.chainId) {
-                  //@ts-ignore
                   ask_asset_info = c.currencies.find(
+                    //@ts-ignore
                     (cur) => cur.contractAddress === ask_asset
                   );
                 }

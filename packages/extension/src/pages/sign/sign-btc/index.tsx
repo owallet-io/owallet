@@ -27,7 +27,7 @@ import { Card } from "../../../components/common/card";
 import colors from "../../../theme/colors";
 import { Text } from "../../../components/common/text";
 import { Address } from "../../../components/address";
-import { useLanguage } from "@owallet/common";
+import { ChainIdEnum, useLanguage } from "@owallet/common";
 // eslint-disable-next-line @typescript-eslint/no-var-requires,import/no-extraneous-dependencies
 const { BitcoinUnit } = require("bitcoin-units");
 import cn from "classnames/bind";
@@ -73,8 +73,8 @@ export const SignBtcPage: FunctionComponent = observer(() => {
   };
 
   //TODO: Hard code for chainID with bitcoin;
-  const chainId = "bitcoin";
-  const accountInfo = accountStore.getAccount(chainId);
+  const chainId = ChainIdEnum.Bitcoin;
+  const accountInfo = accountStore.getAccount(ChainIdEnum.Bitcoin);
   const signer = accountInfo.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses,
     false
@@ -447,154 +447,6 @@ export const SignBtcPage: FunctionComponent = observer(() => {
           </div>
         )
       }
-    </div>
-  );
-  return (
-    <div
-      style={{
-        padding: 20,
-        backgroundColor: "#FFFFFF",
-        height: "100%",
-        overflowX: "auto",
-      }}
-    >
-      {isLoaded ? (
-        <div className={style.container}>
-          <div
-            style={{
-              color: "#353945",
-              fontSize: 24,
-              fontWeight: 500,
-              textAlign: "center",
-              paddingBottom: 24,
-            }}
-          >
-            Bitcoin Network
-          </div>
-          <div className={classnames(style.tabs)}>
-            <ul>
-              <li className={classnames({ activeTabs: tab === Tab.Details })}>
-                <a
-                  className={classnames(style.tab, {
-                    activeText: tab === Tab.Details,
-                  })}
-                  onClick={() => {
-                    setTab(Tab.Details);
-                  }}
-                >
-                  {intl.formatMessage({
-                    id: "sign.tab.details",
-                  })}
-                </a>
-              </li>
-              <li className={classnames({ activeTabs: tab === Tab.Data })}>
-                <a
-                  className={classnames(style.tab, {
-                    activeText: tab === Tab.Data,
-                  })}
-                  onClick={() => {
-                    setTab(Tab.Data);
-                  }}
-                >
-                  {intl.formatMessage({
-                    id: "sign.tab.data",
-                  })}
-                </a>
-              </li>
-            </ul>
-          </div>
-          <div
-            className={classnames(style.tabContainer, {
-              [style.dataTab]: tab === Tab.Data,
-            })}
-          >
-            {tab === Tab.Data && <BtcDataTab data={lastestData} />}
-            {tab === Tab.Details && (
-              <BtcDetailsTab
-                priceStore={priceStore}
-                feeConfig={feeConfig}
-                gasConfig={gasConfig}
-                intl={intl}
-                dataSign={lastestData}
-                isNoSetFee={isNoSetFee}
-              />
-            )}
-          </div>
-          <div style={{ flex: 1 }} />
-          <div className={style.buttons}>
-            {keyRingStore.keyRingType === "ledger" &&
-            signInteractionStore.isLoading ? (
-              <Button className={style.button} disabled={true} outline>
-                <FormattedMessage id="sign.button.confirm-ledger" />{" "}
-                <i className="fa fa-spinner fa-spin fa-fw" />
-              </Button>
-            ) : (
-              <>
-                <Button
-                  className={classnames(style.button, style.rejectBtn)}
-                  color=""
-                  onClick={async (e) => {
-                    e.preventDefault();
-
-                    await signInteractionStore.reject();
-                    if (
-                      interactionInfo.interaction &&
-                      !interactionInfo.interactionInternal
-                    ) {
-                      window.close();
-                    }
-                    history.goBack();
-                  }}
-                  outline
-                >
-                  {intl.formatMessage({
-                    id: "sign.button.reject",
-                  })}
-                </Button>
-                <Button
-                  className={classnames(style.button, style.approveBtn)}
-                  color=""
-                  disabled={approveIsDisabled}
-                  data-loading={signInteractionStore.isLoading}
-                  onClick={async (e) => {
-                    e.preventDefault();
-
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                    //@ts-ignore
-                    await signInteractionStore.approveBitcoinAndWaitEnd({
-                      ...lastestData.data.data,
-                    });
-
-                    if (
-                      interactionInfo.interaction &&
-                      !interactionInfo.interactionInternal
-                    ) {
-                      window.close();
-                    }
-                    history.goBack();
-                  }}
-                >
-                  {intl.formatMessage({
-                    id: "sign.button.approve",
-                  })}
-                </Button>
-              </>
-            )}
-          </div>
-        </div>
-      ) : (
-        <div
-          style={{
-            width: "100%",
-            height: "100%",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <i className="fas fa-spinner fa-spin fa-2x text-gray" />
-        </div>
-      )}
     </div>
   );
 });

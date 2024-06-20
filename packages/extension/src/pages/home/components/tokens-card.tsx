@@ -79,7 +79,10 @@ const TokenItem: FC<{
             <div className={styles.chainWrap}>
               <img
                 className={styles.chain}
-                src={item?.chainInfo?.chainImage || unknownToken.coinImageUrl}
+                src={
+                  item?.chainInfo?.chainImage ||
+                  (unknownToken.coinImageUrl as string)
+                }
               />
             </div>
           </div>

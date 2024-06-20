@@ -175,7 +175,6 @@ export const IBCTransferPageChannel: FunctionComponent<{
         </Alert>
         <Button
           disabled={!isValid}
-          disabled={!isValid}
           onClick={(e) => {
             e.preventDefault();
 
