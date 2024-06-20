@@ -1,10 +1,8 @@
 import React, { FunctionComponent, useState } from "react";
 import { observer } from "mobx-react-lite";
-import { HeaderLayout, LayoutSpace } from "../../layouts";
 import { useHistory } from "react-router";
-
 import style from "./style.module.scss";
-import { Alert, Button } from "reactstrap";
+import { Alert } from "reactstrap";
 import {
   AddressInput,
   CoinInput,
@@ -25,6 +23,7 @@ import { useStore } from "../../stores";
 import { useNotification } from "../../components/notification";
 import { FormattedMessage, useIntl } from "react-intl";
 import { EthereumEndpoint } from "@owallet/common";
+import { Button } from "../../components/common/button";
 
 export const IBCTransferPage: FunctionComponent = observer(() => {
   const history = useHistory();
@@ -175,11 +174,22 @@ export const IBCTransferPageChannel: FunctionComponent<{
           </div>
         </Alert>
         <Button
+          disabled={!isValid}
+          disabled={!isValid}
+          onClick={(e) => {
+            e.preventDefault();
+
+            onNext();
+          }}
+        >
+          <FormattedMessage id="ibc.transfer.next" />
+        </Button>
+        {/* <Button
           type="submit"
           color=""
           block
           disabled={!isValid}
-          onClick={(e) => {
+          onClick={e => {
             e.preventDefault();
 
             onNext();
@@ -187,7 +197,7 @@ export const IBCTransferPageChannel: FunctionComponent<{
           className={style.nextBtn}
         >
           <FormattedMessage id="ibc.transfer.next" />
-        </Button>
+        </Button> */}
       </div>
     </form>
   );
@@ -228,9 +238,6 @@ export const IBCTransferPageAmount: FunctionComponent<{
           priceStore={priceStore}
         />
         <Button
-          type="submit"
-          color="primary"
-          block
           disabled={!isValid}
           data-loading={accountInfo.isSendingMsg === "ibcTransfer"}
           onClick={(e) => {
