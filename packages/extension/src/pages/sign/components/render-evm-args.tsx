@@ -17,6 +17,7 @@ import { EmbedChainInfos, toDisplay } from "@owallet/common";
 import { Text } from "../../../components/common/text";
 import colors from "../../../theme/colors";
 import { Address } from "../../../components/address";
+import { isEmpty } from "lodash";
 
 export const EVMRenderArgs: FunctionComponent<{
   args: any;
@@ -58,6 +59,10 @@ export const EVMRenderArgs: FunctionComponent<{
   };
 
   const renderPath = (fromToken?, toToken?, fromContract?, toContract?) => {
+    const amountIn = args?._amountIn || args?.amountIn || "-";
+    const amountOut = args?.amountOutMin || args?._amountOutMin || "-";
+    const inToken = fromToken || tokenIn;
+    const outToken = toToken || tokenOut || toToken;
     return (
       <div
         style={{
@@ -81,16 +86,26 @@ export const EVMRenderArgs: FunctionComponent<{
           >
             <div style={{ flexDirection: "column", display: "flex" }}>
               <Text color={colors["neutral-text-body"]}>Pay token</Text>
-              {fromToken ? (
+              {inToken ? (
                 <>
-                  {renderToken(fromToken)}
+                  {renderToken(inToken)}
+
+                  <Text color={colors["neutral-text-body"]}>
+                    {numberWithCommas(
+                      toDisplay(
+                        amountIn.toString(),
+                        inToken?.decimal ?? chain.stakeCurrency.coinDecimals
+                      )
+                    )}{" "}
+                  </Text>
+
                   <Address
                     maxCharacters={6}
                     lineBreakBeforePrefix={false}
                     textDecor={"underline"}
                     textColor={colors["neutral-text-body"]}
                   >
-                    {fromToken.contractAddress}
+                    {inToken.contractAddress}
                   </Address>
                 </>
               ) : (
@@ -120,16 +135,26 @@ export const EVMRenderArgs: FunctionComponent<{
           >
             <div style={{ flexDirection: "column", display: "flex" }}>
               <Text color={colors["neutral-text-body"]}>Receive token</Text>
-              {toToken ? (
+              {outToken ? (
                 <>
-                  {renderToken(toToken)}
+                  {renderToken(outToken)}
+
+                  <Text color={colors["neutral-text-body"]}>
+                    {numberWithCommas(
+                      toDisplay(
+                        amountOut.toString(),
+                        outToken?.decimal ?? chain.stakeCurrency.coinDecimals
+                      )
+                    )}{" "}
+                  </Text>
+
                   <Address
                     maxCharacters={8}
                     lineBreakBeforePrefix={false}
                     textDecor={"underline"}
                     textColor={colors["neutral-text-body"]}
                   >
-                    {toToken.contractAddress}
+                    {outToken.contractAddress}
                   </Address>
                 </>
               ) : (
@@ -295,8 +320,8 @@ export const EVMRenderArgs: FunctionComponent<{
         </Text>
       )}
 
-      {/* {renderPath()} */}
-      {renderArgPath()}
+      {isEmpty(path) ? renderPath() : null}
+      {path?.length > 0 ? renderArgPath() : null}
       {renderInfo(
         args?._destination,
         "Bridge Destination",
@@ -304,16 +329,13 @@ export const EVMRenderArgs: FunctionComponent<{
           {args?._destination ? args?._destination.split(":")?.[0] : null}
         </Text>
       )}
-      {renderInfo(
+      {/* {renderInfo(
         args?._amountIn,
         "Amount In",
         <Text>
           {args._amountIn
             ? numberWithCommas(
-                toDisplay(
-                  args._amountIn.toString(),
-                  tokenIn?.decimal ?? chain.stakeCurrency.coinDecimals
-                )
+                toDisplay(args._amountIn.toString(), tokenIn?.decimal ?? chain.stakeCurrency.coinDecimals)
               )
             : null}
         </Text>
@@ -324,26 +346,19 @@ export const EVMRenderArgs: FunctionComponent<{
         <Text>
           {args.amountIn
             ? numberWithCommas(
-                toDisplay(
-                  args.amountIn.toString(),
-                  tokenIn?.decimal ?? chain.stakeCurrency.coinDecimals
-                )
+                toDisplay(args.amountIn.toString(), tokenIn?.decimal ?? chain.stakeCurrency.coinDecimals)
               )
             : null}
         </Text>
-      )}
-      {/* {tokenIn ? renderInfo(tokenIn?.abbr, "Token In", renderToken(tokenIn)) : null} */}
-      {/* {!tokenIn ? renderInfo(chain.stakeCurrency, "Token In", renderToken(chain.stakeCurrency)) : null} */}
-      {renderInfo(
+      )} */}
+
+      {/* {renderInfo(
         args?._amountOutMin,
         "Amount Out Min",
         <Text>
           {args?._amountOutMin
             ? numberWithCommas(
-                toDisplay(
-                  (args?._amountOutMin).toString(),
-                  tokenOut?.decimal ?? chain.stakeCurrency.coinDecimals
-                )
+                toDisplay((args?._amountOutMin).toString(), tokenOut?.decimal ?? chain.stakeCurrency.coinDecimals)
               )
             : null}
         </Text>
@@ -354,25 +369,23 @@ export const EVMRenderArgs: FunctionComponent<{
         <Text>
           {args?.amountOutMin
             ? numberWithCommas(
-                toDisplay(
-                  (args?.amountOutMin).toString(),
-                  tokenOut?.decimal ?? chain.stakeCurrency.coinDecimals
-                )
+                toDisplay((args?.amountOutMin).toString(), tokenOut?.decimal ?? chain.stakeCurrency.coinDecimals)
               )
             : null}
         </Text>
-      )}
-      {tokenOut
-        ? renderInfo(tokenOut?.abbr, "Token Out", renderToken(tokenOut))
-        : null}
+        
+      )} */}
       {renderInfo(
         toAddress,
         "Bridge Address",
         <Text>{toAddress ? toAddress : null}</Text>
       )}
+      {/* {tokenIn ? renderInfo(tokenIn?.abbr, "Token In", renderToken(tokenIn)) : null} */}
+      {/* {!tokenIn ? renderInfo(chain.stakeCurrency, "Token In", renderToken(chain.stakeCurrency)) : null} */}
+      {/* {tokenOut ? renderInfo(tokenOut?.abbr, "Token Out", renderToken(tokenOut)) : null}
       {toToken && toToken.coinDenom !== tokenOut?.abbr
         ? renderInfo(toToken.coinDenom, "To Token", renderToken(toToken))
-        : null}
+        : null} */}
 
       <div
         style={{
