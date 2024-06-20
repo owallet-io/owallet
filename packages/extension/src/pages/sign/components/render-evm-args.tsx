@@ -48,6 +48,7 @@ export const EVMRenderArgs: FunctionComponent<{
               height: 14,
               borderRadius: 28,
               marginRight: 4,
+              backgroundColor: colors["neutral-surface-action2"],
             }}
             src={token?.imgUrl ?? token?.coinImageUrl}
           />
@@ -61,10 +62,8 @@ export const EVMRenderArgs: FunctionComponent<{
     const amountIn =
       args?._amount || args?._amountIn || args?.amountIn || msgs?.value || "-";
     const amountOut = args?.amountOutMin || args?._amountOutMin || "-";
-    const inToken = fromToken || tokenIn;
+    const inToken = fromToken || tokenIn || chain.stakeCurrency;
     const outToken = desToken || tokenOut || toToken;
-
-    console.log("outToken", outToken);
 
     return (
       <div
@@ -340,63 +339,12 @@ export const EVMRenderArgs: FunctionComponent<{
           {args?._destination ? args?._destination.split(":")?.[0] : null}
         </Text>
       )}
-      {/* {renderInfo(
-        args?._amountIn,
-        "Amount In",
-        <Text>
-          {args._amountIn
-            ? numberWithCommas(
-                toDisplay(args._amountIn.toString(), tokenIn?.decimal ?? chain.stakeCurrency.coinDecimals)
-              )
-            : null}
-        </Text>
-      )}
-      {renderInfo(
-        args?.amountIn,
-        "Amount In",
-        <Text>
-          {args.amountIn
-            ? numberWithCommas(
-                toDisplay(args.amountIn.toString(), tokenIn?.decimal ?? chain.stakeCurrency.coinDecimals)
-              )
-            : null}
-        </Text>
-      )} */}
 
-      {/* {renderInfo(
-        args?._amountOutMin,
-        "Amount Out Min",
-        <Text>
-          {args?._amountOutMin
-            ? numberWithCommas(
-                toDisplay((args?._amountOutMin).toString(), tokenOut?.decimal ?? chain.stakeCurrency.coinDecimals)
-              )
-            : null}
-        </Text>
-      )}
-      {renderInfo(
-        args?.amountOutMin,
-        "Amount Out Min",
-        <Text>
-          {args?.amountOutMin
-            ? numberWithCommas(
-                toDisplay((args?.amountOutMin).toString(), tokenOut?.decimal ?? chain.stakeCurrency.coinDecimals)
-              )
-            : null}
-        </Text>
-        
-      )} */}
       {renderInfo(
         toAddress,
         "To Address",
         <Text>{toAddress ? toAddress : null}</Text>
       )}
-      {/* {tokenIn ? renderInfo(tokenIn?.abbr, "Token In", renderToken(tokenIn)) : null} */}
-      {/* {!tokenIn ? renderInfo(chain.stakeCurrency, "Token In", renderToken(chain.stakeCurrency)) : null} */}
-      {/* {tokenOut ? renderInfo(tokenOut?.abbr, "Token Out", renderToken(tokenOut)) : null}
-      {toToken && toToken.coinDenom !== tokenOut?.abbr
-        ? renderInfo(toToken.coinDenom, "To Token", renderToken(toToken))
-        : null} */}
 
       <div
         style={{
