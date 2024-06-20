@@ -334,7 +334,7 @@ export const EVMRenderArgs: FunctionComponent<{
       {path?.length > 0 ? renderArgPath() : null}
       {renderInfo(
         args?._destination,
-        "Bridge",
+        "Bridge channel",
         <Text>
           {args?._destination ? args?._destination.split(":")?.[0] : null}
         </Text>

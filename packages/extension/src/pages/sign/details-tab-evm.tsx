@@ -152,7 +152,7 @@ export const DetailsTabEvm: FunctionComponent<{
                 <div style={{ display: "flex", flexDirection: "row" }}>
                   <div
                     style={{
-                      marginRight: 4,
+                      marginRight: 8,
                       width: 44,
                       height: 44,
                       borderRadius: 44,
@@ -295,7 +295,7 @@ export const DetailsTabEvm: FunctionComponent<{
               <div
                 style={{
                   alignItems: "flex-end",
-                  maxWidth: "65%",
+                  maxWidth: "60%",
                   wordBreak: "break-all",
                 }}
               >
