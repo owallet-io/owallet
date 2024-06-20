@@ -11,7 +11,7 @@ import { HeaderLayout } from "../../layouts";
 import style from "./style.module.scss";
 
 import { useStore } from "../../stores";
-
+import { Buffer } from "buffer/";
 import classnames from "classnames";
 import { DataTab } from "./data-tab";
 import { DetailsTab } from "./details-tab";
@@ -254,6 +254,25 @@ export const SignPage: FunctionComponent = observer(() => {
     return memoConfig.getError() != null || feeConfig.getError() != null;
   })();
 
+  const { signDocJson } = signDocHelper;
+
+  const messages =
+    signDocJson?.txBody?.messages &&
+    signDocJson.txBody.messages.map((mess) => {
+      return {
+        ...mess,
+        msg: mess?.msg ? Buffer.from(mess?.msg).toString("base64") : "",
+      };
+    });
+  const signDocJsonAll = messages
+    ? {
+        ...signDocJson,
+        txBody: {
+          messages,
+        },
+      }
+    : signDocJson;
+
   return (
     // <HeaderLayout
     //   showChainName={alternativeTitle == null}
@@ -292,7 +311,7 @@ export const SignPage: FunctionComponent = observer(() => {
           onClose={() => {
             handleCloseDataModal();
           }}
-          renderData={() => <DataTab signDocHelper={signDocHelper} />}
+          renderData={() => <DataTab signDocJsonAll={signDocJsonAll} />}
         />
       </div>
       {
@@ -388,6 +407,7 @@ export const SignPage: FunctionComponent = observer(() => {
                   ) : (
                     <DetailsTab
                       signDocHelper={signDocHelper}
+                      signDocJsonAll={signDocJsonAll}
                       memoConfig={memoConfig}
                       feeConfig={feeConfig}
                       gasConfig={gasConfig}

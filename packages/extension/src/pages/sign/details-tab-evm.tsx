@@ -295,11 +295,13 @@ export const DetailsTabEvm: FunctionComponent<{
                 marginBottom: 14,
               }}
             >
-              <Text weight="600">{label}</Text>
+              <div>
+                <Text weight="600">{label}</Text>
+              </div>
               <div
                 style={{
                   alignItems: "flex-end",
-                  maxWidth: "70%",
+                  maxWidth: "65%",
                   wordBreak: "break-all",
                 }}
               >
@@ -490,21 +492,15 @@ export const DetailsTabEvm: FunctionComponent<{
               <Text weight="600">{chain?.chainName}</Text>
             </div>
           )}
-          {renderPath()}
-          {renderInfo(
-            true,
-            "Method",
-            <Text color={colors["neutral-text-body"]}>{"SendToCosmos"}</Text>
-          )}
-          {isMore
-            ? null
-            : renderInfo(
-                true,
-                "Channel",
-                <Text color={colors["neutral-text-body"]}>
-                  {"channel-1/orai1hvr9d72r5um9lvtOrpkd4r75vrsgtw6yujhqs2"}
-                </Text>
-              )}
+          {/* {renderPath()}
+        {renderInfo(true, "Method", <Text color={colors["neutral-text-body"]}>{"SendToCosmos"}</Text>)}
+        {isMore
+          ? null
+          : renderInfo(
+              true,
+              "Channel",
+              <Text color={colors["neutral-text-body"]}>{"channel-1/orai1hvr9d72r5um9lvtOrpkd4r75vrsgtw6yujhqs2"}</Text>
+            )} */}
           {renderInfo(
             msgs.to,
             "To",
@@ -562,42 +558,38 @@ export const DetailsTabEvm: FunctionComponent<{
           ) : null}
 
           {renderInfo(msgs?.gas, "Gas", <Text>{Number(msgs?.gas)}</Text>)}
+          {/* <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            cursor: "pointer",
+            justifyContent: "flex-end",
+            width: "100%",
+            marginTop: 8
+          }}
+        >
           <div
             style={{
               display: "flex",
               flexDirection: "row",
-              cursor: "pointer",
-              justifyContent: "flex-end",
-              width: "100%",
-              marginTop: 8,
+              cursor: "pointer"
+            }}
+            onClick={() => {
+              setIsMore(prevState => {
+                return prevState ? false : true;
+              });
             }}
           >
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                cursor: "pointer",
-              }}
-              onClick={() => {
-                setIsMore((prevState) => {
-                  return prevState ? false : true;
-                });
-              }}
-            >
-              <Text size={14} weight="500">
-                {`View ${isMore ? "more" : "less"}`}
-              </Text>
-              {isMore ? (
-                <img
-                  src={require("../../public/assets/icon/tdesign_chevron-down.svg")}
-                />
-              ) : (
-                <img
-                  src={require("../../public/assets/icon/tdesign_chevron-up.svg")}
-                />
-              )}
-            </div>
+            <Text size={14} weight="500">
+              {`View ${isMore ? "more" : "less"}`}
+            </Text>
+            {isMore ? (
+              <img src={require("../../public/assets/icon/tdesign_chevron-down.svg")} />
+            ) : (
+              <img src={require("../../public/assets/icon/tdesign_chevron-up.svg")} />
+            )}
           </div>
+        </div> */}
         </Card>
         <Card
           containerStyle={{
@@ -659,7 +651,7 @@ export const MsgRender: FunctionComponent<{
   title: string;
 }> = ({ icon = "fas fa-question", title, children }) => {
   return (
-    <div className={styleDetailsTab.msg}>
+    <div style={{ width: "125%" }} className={styleDetailsTab.msg}>
       <div className={styleDetailsTab.icon}>
         <div style={{ height: "2px" }} />
         <i className={icon} />
