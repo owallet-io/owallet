@@ -25,7 +25,7 @@ export const EVMRenderArgs: FunctionComponent<{
   chain: AppChainInfo;
   renderInfo: (condition, label, content) => ReactElement;
 }> = observer(({ args, msgs, chain, renderInfo }) => {
-  const [toAddress, setToAddress] = useState<any>();
+  const [toAddress, setToAddress] = useState<string>();
   const [toToken, setToToken] = useState<any>();
   const [path, setPath] = useState<Array<any>>([]);
   const [tokenIn, setTokenIn] = useState<any>();
