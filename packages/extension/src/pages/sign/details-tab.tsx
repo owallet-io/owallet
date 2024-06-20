@@ -388,14 +388,6 @@ export const DetailsTab: FunctionComponent<{
             }
           }
 
-          console.log(
-            "txInfo",
-            i,
-            txInfo,
-            txInfo?.decode?.transfer_to_remote?.remote_address
-          );
-          console.log("contractInfo", i, contractInfo);
-
           return (
             <div key={i.toString()}>
               {renderMsg(

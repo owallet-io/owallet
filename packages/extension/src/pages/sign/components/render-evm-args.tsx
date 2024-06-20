@@ -15,6 +15,8 @@ import {
 } from "../helpers/helpers";
 import { EmbedChainInfos, toDisplay } from "@owallet/common";
 import { Text } from "../../../components/common/text";
+import colors from "../../../theme/colors";
+import { Address } from "../../../components/address";
 
 export const EVMRenderArgs: FunctionComponent<{
   args: any;
@@ -26,6 +28,8 @@ export const EVMRenderArgs: FunctionComponent<{
   const [path, setPath] = useState<Array<any>>([]);
   const [tokenIn, setTokenIn] = useState<any>();
   const [tokenOut, setTokenOut] = useState<any>();
+
+  console.log("args", args);
 
   const renderToken = (token) => {
     return (
@@ -48,6 +52,109 @@ export const EVMRenderArgs: FunctionComponent<{
           />
         ) : null}
         <Text weight="600">{token?.abbr ?? token?.coinDenom}</Text>
+      </div>
+    );
+  };
+
+  const renderPath = (fromToken?, toToken?, fromContract?, toContract?) => {
+    return (
+      <div
+        style={{
+          marginTop: 14,
+          height: "auto",
+          alignItems: "center",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            marginBottom: 14,
+          }}
+        >
+          <div
+            style={{
+              maxWidth: "50%",
+            }}
+          >
+            <div style={{ flexDirection: "column", display: "flex" }}>
+              <Text color={colors["neutral-text-body"]}>Pay token</Text>
+              {fromToken ? (
+                <>
+                  {renderToken(fromToken)}
+                  <Address
+                    maxCharacters={8}
+                    lineBreakBeforePrefix={false}
+                    textDecor={"underline"}
+                    textColor={colors["neutral-text-body"]}
+                  >
+                    {fromToken.contractAddress}
+                  </Address>
+                </>
+              ) : (
+                <Text color={colors["neutral-text-body"]}>-</Text>
+              )}
+
+              {fromContract ? (
+                <Address
+                  maxCharacters={8}
+                  lineBreakBeforePrefix={false}
+                  textDecor={"underline"}
+                  textColor={colors["neutral-text-body"]}
+                >
+                  {fromContract}
+                </Address>
+              ) : null}
+            </div>
+          </div>
+          <img
+            style={{ paddingRight: 4 }}
+            src={require("../../../public/assets/icon/tdesign_arrow-right.svg")}
+          />
+          <div
+            style={{
+              maxWidth: "50%",
+            }}
+          >
+            <div style={{ flexDirection: "column", display: "flex" }}>
+              <Text color={colors["neutral-text-body"]}>Receive token</Text>
+              {toToken ? (
+                <>
+                  {renderToken(toToken)}
+                  <Address
+                    maxCharacters={8}
+                    lineBreakBeforePrefix={false}
+                    textDecor={"underline"}
+                    textColor={colors["neutral-text-body"]}
+                  >
+                    {toToken.contractAddress}
+                  </Address>
+                </>
+              ) : (
+                <Text color={colors["neutral-text-body"]}>-</Text>
+              )}
+
+              {toContract ? (
+                <Address
+                  maxCharacters={8}
+                  lineBreakBeforePrefix={false}
+                  textDecor={"underline"}
+                  textColor={colors["neutral-text-body"]}
+                >
+                  {toContract}
+                </Address>
+              ) : null}
+            </div>
+          </div>
+        </div>
+        <div
+          style={{
+            width: "100%",
+            height: 1,
+            backgroundColor: colors["neutral-border-default"],
+          }}
+        />
       </div>
     );
   };
@@ -157,16 +264,6 @@ export const EVMRenderArgs: FunctionComponent<{
     }
   }, [args?._destination]);
 
-  console.log(
-    "pathh",
-    args?.path,
-    path.sort((a, b) => {
-      const indexA = args?.path.indexOf(a.contractAddress.toLowerCase());
-      const indexB = args?.path.indexOf(b.contractAddress.toLowerCase());
-      return indexA - indexB;
-    })
-  );
-
   return (
     <div>
       {renderInfo(
@@ -197,7 +294,7 @@ export const EVMRenderArgs: FunctionComponent<{
             : null}
         </Text>
       )}
-
+      {renderPath()}
       {renderInfo(
         args?._destination,
         "Bridge Destination",

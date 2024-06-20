@@ -96,7 +96,7 @@ export const DetailsTabEvm: FunctionComponent<{
               borderColor: colors["primary-surface-default"],
               padding: 12,
               marginTop: 12,
-              overflow: "scroll",
+              width: "100%",
             }}
           >
             {content}
@@ -212,71 +212,6 @@ export const DetailsTabEvm: FunctionComponent<{
       );
     };
 
-    const renderPath = (fromToken?, toToken?) => {
-      return (
-        <div
-          style={{
-            marginTop: 14,
-            height: "auto",
-            alignItems: "center",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-between",
-              marginBottom: 14,
-            }}
-          >
-            <div
-              style={{
-                maxWidth: "50%",
-              }}
-            >
-              <div>
-                <Text color={colors["neutral-text-body"]}>Pay token</Text>
-                {renderToken(chain.stakeCurrency)}
-                <Text
-                  containerStyle={{ textDecoration: "underline" }}
-                  color={colors["neutral-text-body"]}
-                >
-                  {"0x8c7...4E797"}
-                </Text>
-              </div>
-            </div>
-            <img
-              style={{ paddingRight: 4 }}
-              src={require("../../public/assets/icon/tdesign_arrow-right.svg")}
-            />
-            <div
-              style={{
-                maxWidth: "50%",
-              }}
-            >
-              <div>
-                <Text color={colors["neutral-text-body"]}>Receive token</Text>
-                {renderToken(chain.stakeCurrency)}
-                <Text
-                  containerStyle={{ textDecoration: "underline" }}
-                  color={colors["neutral-text-body"]}
-                >
-                  {"0x8c7...4E797"}
-                </Text>
-              </div>
-            </div>
-          </div>
-          <div
-            style={{
-              width: "100%",
-              height: 1,
-              backgroundColor: colors["neutral-border-default"],
-            }}
-          />
-        </div>
-      );
-    };
-
     const renderInfo = (condition, label, leftContent) => {
       if (condition && condition !== "") {
         return (
@@ -324,7 +259,7 @@ export const DetailsTabEvm: FunctionComponent<{
       return (
         <div>
           {renderInfo(
-            chain?.chainName,
+            msgs?.value,
             "Amount",
             <div
               style={{
@@ -341,7 +276,12 @@ export const DetailsTabEvm: FunctionComponent<{
                 }}
               >
                 <Text size={16} weight="600">
-                  1,795.89147 ORAIX
+                  {msgs.value
+                    ? toDisplay(
+                        msgs?.value?.toString(),
+                        chain.stakeCurrency.coinDecimals
+                      )
+                    : null}
                 </Text>
               </div>
               <Text
@@ -379,7 +319,9 @@ export const DetailsTabEvm: FunctionComponent<{
                 <Text weight="600">Fee</Text>
               </div>
               <div>
-                <Text color={colors["neutral-text-body"]}>Gas: 135588</Text>
+                <Text color={colors["neutral-text-body"]}>
+                  Gas: {Number(msgs?.gas)}
+                </Text>
               </div>
             </div>
             <div
@@ -519,15 +461,7 @@ export const DetailsTabEvm: FunctionComponent<{
               </Address>
             </Text>
           )}
-          {renderInfo(
-            msgs.to,
-            "To",
-            <Text color={colors["neutral-text-body"]}>
-              <Address maxCharacters={18} lineBreakBeforePrefix={false}>
-                {msgs?.to}
-              </Address>
-            </Text>
-          )}
+
           {renderInfo(
             msgs?.value,
             "Amount In",
@@ -557,7 +491,6 @@ export const DetailsTabEvm: FunctionComponent<{
             </>
           ) : null}
 
-          {renderInfo(msgs?.gas, "Gas", <Text>{Number(msgs?.gas)}</Text>)}
           {/* <div
           style={{
             display: "flex",
