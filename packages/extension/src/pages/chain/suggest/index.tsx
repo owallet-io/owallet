@@ -56,7 +56,6 @@ export const ChainSuggestedPage: FunctionComponent = observer(() => {
                 host: chainSuggestStore.waitingSuggestedChainInfo?.data.origin,
                 chainId:
                   chainSuggestStore.waitingSuggestedChainInfo?.data.chainId,
-                // eslint-disable-next-line react/display-name
                 b: (...chunks: any) => <b>{chunks}</b>,
               }}
             />
@@ -132,57 +131,6 @@ export const ChainSuggestedPage: FunctionComponent = observer(() => {
             <FormattedMessage id="chain.suggested.button.approve" />
           </Button>
         </div>
-        {/* <div className={style.buttons}>
-          <Button
-            className={style.button}
-            // color="danger"
-            outline
-            style={{
-              border: "1px solid red",
-              color: "red",
-            }}
-            disabled={!chainSuggestStore.waitingSuggestedChainInfo}
-            data-loading={chainSuggestStore.isLoading}
-            onClick={async (e) => {
-              e.preventDefault();
-
-              await chainSuggestStore.reject();
-
-              if (
-                interactionInfo.interaction &&
-                !interactionInfo.interactionInternal
-              ) {
-                window.close();
-              } else {
-                history.push("/");
-              }
-            }}
-          >
-            <FormattedMessage id="chain.suggested.button.reject" />
-          </Button>
-          <Button
-            className={style.button}
-            color="primary"
-            disabled={!chainSuggestStore.waitingSuggestedChainInfo}
-            data-loading={chainSuggestStore.isLoading}
-            onClick={async (e) => {
-              e.preventDefault();
-
-              await chainSuggestStore.approve();
-
-              if (
-                interactionInfo.interaction &&
-                !interactionInfo.interactionInternal
-              ) {
-                window.close();
-              } else {
-                history.push("/");
-              }
-            }}
-          >
-            <FormattedMessage id="chain.suggested.button.approve" />
-          </Button>
-        </div> */}
       </div>
     </EmptyLayout>
   );
