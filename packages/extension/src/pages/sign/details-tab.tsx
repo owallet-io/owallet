@@ -346,8 +346,8 @@ export const DetailsTab: FunctionComponent<{
           if (txInfo?.unpacked?.contract) {
             EmbedChainInfos.find((c) => {
               if (c.chainId === chain?.chainId) {
-                //@ts-ignore
                 contractInfo = c.currencies.find(
+                  //@ts-ignore
                   (cur) => cur.contractAddress === txInfo?.unpacked?.contract
                 );
               }
