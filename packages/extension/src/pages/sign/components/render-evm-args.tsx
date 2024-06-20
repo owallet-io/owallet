@@ -281,20 +281,7 @@ export const EVMRenderArgs: FunctionComponent<{
             : null}
         </Text>
       )}
-      {renderInfo(
-        args?._amount,
-        "Amount",
-        <Text>
-          {args?._amount
-            ? numberWithCommas(
-                toDisplay(
-                  (args?._amount).toString(),
-                  chain.stakeCurrency.coinDecimals
-                )
-              )
-            : null}
-        </Text>
-      )}
+
       {renderPath()}
       {renderInfo(
         args?._destination,

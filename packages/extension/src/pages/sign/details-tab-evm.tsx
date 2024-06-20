@@ -414,15 +414,6 @@ export const DetailsTabEvm: FunctionComponent<{
           )}
 
           {renderInfo(
-            msgs.to,
-            "To",
-            <Text color={colors["neutral-text-body"]}>
-              <Address maxCharacters={18} lineBreakBeforePrefix={false}>
-                {msgs?.to}
-              </Address>
-            </Text>
-          )}
-          {renderInfo(
             msgs.from,
             "From",
             <Text color={colors["neutral-text-body"]}>
@@ -431,7 +422,15 @@ export const DetailsTabEvm: FunctionComponent<{
               </Address>
             </Text>
           )}
-
+          {renderInfo(
+            msgs.to,
+            "To",
+            <Text color={colors["neutral-text-body"]}>
+              <Address maxCharacters={18} lineBreakBeforePrefix={false}>
+                {msgs?.to}
+              </Address>
+            </Text>
+          )}
           {renderInfo(
             msgs?.value,
             "Amount In",
