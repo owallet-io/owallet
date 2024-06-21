@@ -4,7 +4,8 @@ import { useIntl } from "react-intl";
 import styles from "./styles.module.scss";
 export const ButtonCopy: FC<{
   valueCopy: string;
-}> = ({ valueCopy }) => {
+  title: string;
+}> = ({ valueCopy, title }) => {
   const notification = useNotification();
   const intl = useIntl();
   const copy = async (value: string) => {
@@ -29,7 +30,7 @@ export const ButtonCopy: FC<{
         className={styles.icon}
         src={require("../../public/assets/svg/owallet-copy.svg")}
       />
-      <span className={styles.txtCopy}>Copy address</span>
+      <span className={styles.txtCopy}>{title}</span>
     </div>
   );
 };

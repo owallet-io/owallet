@@ -52,7 +52,7 @@ export const ReceivePage = observer(() => {
         </span>
         <canvas className={styles.qrcode} id="qrcode" ref={qrCodeRef} />
         <span className={styles.address}>{address}</span>
-        <ButtonCopy valueCopy={address} />
+        <ButtonCopy title={"Copy address"} valueCopy={address} />
       </div>
     </div>
   );
