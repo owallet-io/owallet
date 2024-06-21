@@ -144,6 +144,12 @@
     border-bottom-right-radius: 16px;
     padding: 16px;
 
+    .item-menu:not(:first-child):hover {
+      background-color: $neutral-surface-bg2;
+      padding-left: 8px;
+      border-radius: 12px;
+    }
+
     .item-menu {
       display: flex;
       flex-direction: row;

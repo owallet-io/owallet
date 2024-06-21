@@ -33,7 +33,12 @@ export const ModalMenuLeft: FC<{
       className={styles.modalMenuLeft}
     >
       <div className={styles.containerSliderLeft}>
-        <div className={styles.itemMenu}>
+        <div
+          style={{
+            cursor: "auto",
+          }}
+          className={styles.itemMenu}
+        >
           <div
             style={{
               width: 32,

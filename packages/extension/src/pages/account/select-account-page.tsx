@@ -9,10 +9,10 @@ export const SelectAccountPage = () => {
     history.push("/edit-account");
   };
   return (
-    <LayoutWithButtonBottom title="Select Account">
+    <LayoutWithButtonBottom titleButton={"Add Wallet"} title="Select Account">
       <div className={styles.boxContainer}>
         <span className={styles.titleBox}>Imported by Ledger</span>
-        <div onClick={onEditAccount} className={styles.itemBox}>
+        <div className={styles.itemBox}>
           <div className={styles.mainItem}>
             <div className={styles.wrapAvatar}>
               <img
@@ -26,7 +26,7 @@ export const SelectAccountPage = () => {
               <span className={styles.subTitle}>Current active</span>
             </div>
           </div>
-          <div className={styles.wrapBtn}>
+          <div onClick={onEditAccount} className={styles.wrapBtn}>
             <img
               className={styles.imgIcon}
               src={require("../../public/assets/svg/tdesign_more.svg")}

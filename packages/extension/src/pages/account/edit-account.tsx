@@ -1,10 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import { LayoutWithButtonBottom } from "../../layouts/button-bottom-layout/layout-with-button-bottom";
 import styles from "./edit-account.module.scss";
+import { ModalRecoveryPhrase } from "./modals/modal-recovery-phrase";
 
 export const EditAccountPage = () => {
+  const [isShowRecoveryPhrase, setIsShowRecoveryPhrase] = useState(false);
+  const onShowModalRecoveryPhrase = () => {
+    setIsShowRecoveryPhrase(true);
+  };
   return (
-    <LayoutWithButtonBottom title={"edit account"}>
+    <LayoutWithButtonBottom titleButton={"Add Wallet"} title={"edit account"}>
       <div className={styles.topBox}>
         <div className={styles.avatar}>
           <img
@@ -27,7 +32,7 @@ export const EditAccountPage = () => {
             />
           </div>
         </div>
-        <div className={styles.actionItem}>
+        <div onClick={onShowModalRecoveryPhrase} className={styles.actionItem}>
           <span className={styles.leftTitle}>Reveal Recovery Phrase</span>
           <div className={styles.blockRight}>
             <img
@@ -39,6 +44,10 @@ export const EditAccountPage = () => {
           <span className={styles.leftTitle}>Remove account</span>
         </div>
       </div>
+      <ModalRecoveryPhrase
+        isOpen={isShowRecoveryPhrase}
+        onRequestClose={() => setIsShowRecoveryPhrase(false)}
+      />
     </LayoutWithButtonBottom>
   );
 };

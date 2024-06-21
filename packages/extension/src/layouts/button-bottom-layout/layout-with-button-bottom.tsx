@@ -4,19 +4,29 @@ import { HeaderNew } from "../footer-layout/components/header";
 import { ButtonBottom } from "../../pages/account/components/button-bottom";
 
 export const LayoutWithButtonBottom: FC<{
-  title: string;
-}> = ({ title, children }) => {
+  title?: string;
+  isDisabledHeader?: boolean;
+  backgroundColor?: string;
+  titleButton?: string;
+}> = ({ title, backgroundColor, children, titleButton, isDisabledHeader }) => {
   return (
-    <div className={styles.container}>
-      <HeaderNew
-        isGoBack
-        isConnectDapp={false}
-        isExpand={false}
-        isDisableCenterBtn={true}
-        title={title}
-      />
+    <div
+      style={{
+        backgroundColor,
+      }}
+      className={styles.container}
+    >
+      {!isDisabledHeader && (
+        <HeaderNew
+          isGoBack
+          isConnectDapp={false}
+          isExpand={false}
+          isDisableCenterBtn={true}
+          title={title}
+        />
+      )}
       {children}
-      <ButtonBottom />
+      <ButtonBottom title={titleButton} />
     </div>
   );
 };
