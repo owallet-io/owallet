@@ -7,6 +7,7 @@ import { useNotification } from "../../../components/notification";
 import { useIntl } from "react-intl";
 import { HeaderModal } from "../../home/components/header-modal";
 import { LayoutWithButtonBottom } from "../../../layouts/button-bottom-layout/layout-with-button-bottom";
+import { useHistory } from "react-router";
 
 export const ModalRecoveryPhrase: FC<{
   isOpen: boolean;
@@ -16,7 +17,11 @@ export const ModalRecoveryPhrase: FC<{
 
   const intl = useIntl();
   const notification = useNotification();
-
+  const history = useHistory();
+  const onConfirm = () => {
+    history.push("/reveal-recovery-phrase");
+    return;
+  };
   return (
     <SlidingPane
       isOpen={isOpen}
@@ -30,6 +35,7 @@ export const ModalRecoveryPhrase: FC<{
         titleButton={"Confirm"}
         backgroundColor={"#ffffff"}
         isDisabledHeader={true}
+        onClickButtonBottom={onConfirm}
       >
         <HeaderModal title={""} onRequestClose={onRequestClose} />
         <div className={styles.contentWrap}>

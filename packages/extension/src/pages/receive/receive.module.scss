@@ -54,27 +54,6 @@
       padding: 12px;
     }
 
-    .wrap-btn-copy {
-      cursor: pointer;
-      display: flex;
-      gap: 8px;
-      padding: 24px;
 
-      .icon {
-        width: 20px;
-        height: 20px;
-        filter: $primary-text-action;
-      }
-
-      .txt-copy {
-        color: $primary-text-action;
-        text-align: center;
-        /* Body small/14px/semibold */
-        font-size: 14px;
-        font-style: normal;
-        font-weight: 600;
-        line-height: 20px; /* 142.857% */
-      }
-    }
   }
 }

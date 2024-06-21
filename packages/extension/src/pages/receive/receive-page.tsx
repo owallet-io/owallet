@@ -6,6 +6,7 @@ import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
 import { useNotification } from "../../components/notification";
 import { useIntl } from "react-intl";
+import { ButtonCopy } from "../../components/buttons/button-copy";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const QrCode = require("qrcode");
 export const ReceivePage = observer(() => {
@@ -51,16 +52,7 @@ export const ReceivePage = observer(() => {
         </span>
         <canvas className={styles.qrcode} id="qrcode" ref={qrCodeRef} />
         <span className={styles.address}>{address}</span>
-        <div
-          onClick={() => copyAddress(address)}
-          className={styles.wrapBtnCopy}
-        >
-          <img
-            className={styles.icon}
-            src={require("../../public/assets/svg/owallet-copy.svg")}
-          />
-          <span className={styles.txtCopy}>Copy address</span>
-        </div>
+        <ButtonCopy valueCopy={address} />
       </div>
     </div>
   );

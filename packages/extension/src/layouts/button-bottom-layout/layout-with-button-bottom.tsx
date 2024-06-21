@@ -8,7 +8,15 @@ export const LayoutWithButtonBottom: FC<{
   isDisabledHeader?: boolean;
   backgroundColor?: string;
   titleButton?: string;
-}> = ({ title, backgroundColor, children, titleButton, isDisabledHeader }) => {
+  onClickButtonBottom?: () => void;
+}> = ({
+  title,
+  backgroundColor,
+  onClickButtonBottom,
+  children,
+  titleButton,
+  isDisabledHeader,
+}) => {
   return (
     <div
       style={{
@@ -26,7 +34,10 @@ export const LayoutWithButtonBottom: FC<{
         />
       )}
       {children}
-      <ButtonBottom title={titleButton} />
+      <ButtonBottom
+        onClickButtonBottom={onClickButtonBottom}
+        title={titleButton}
+      />
     </div>
   );
 };

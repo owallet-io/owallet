@@ -186,6 +186,7 @@ import { ReceivePage } from "./pages/receive/receive-page";
 import { isProdMode } from "./helpers/helper";
 import { SelectAccountPage } from "./pages/account/select-account-page";
 import { EditAccountPage } from "./pages/account/edit-account";
+import { RevealRecoveryPhrasePage } from "./pages/account/reveal-recovery-phrase-page";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -279,6 +280,11 @@ ReactDOM.render(
                   <Route exact path="/unlock" component={LockPage} />
                   <Route exact path="/access" component={AccessPage} />
                   <Route exact path="/receive" component={ReceivePage} />
+                  <Route
+                    exact
+                    path="/reveal-recovery-phrase"
+                    component={RevealRecoveryPhrasePage}
+                  />
                   <Route
                     exact
                     path="/select-account"

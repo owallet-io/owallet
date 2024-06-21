@@ -3,9 +3,10 @@ import React, { FC } from "react";
 
 export const ButtonBottom: FC<{
   title: string;
-}> = ({ title }) => {
+  onClickButtonBottom?: () => void;
+}> = ({ title, onClickButtonBottom }) => {
   return (
-    <div className={styles.containerBtnBottom}>
+    <div onClick={onClickButtonBottom} className={styles.containerBtnBottom}>
       <div className={styles.buttonPrimary}>
         <span className={styles.txtBtn}>{title}</span>
       </div>
