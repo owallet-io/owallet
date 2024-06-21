@@ -1,5 +1,9 @@
 @import '../../../styles/var';
-
+.modal-container {
+  background-color: $neutral-surface-card;
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+}
 .container {
   display: flex;
   flex: 1;

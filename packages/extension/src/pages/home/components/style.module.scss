@@ -247,12 +247,11 @@
 
   .header-left {
     display: flex;
-    flex: 8%;
+    flex:1;
   }
 
   .title {
     display: flex;
-    flex: 84%;
     justify-content: center;
 
     .title-text {
@@ -261,12 +260,13 @@
       font-weight: 700;
       line-height: 24px;
       font-style: normal;
+      text-transform: uppercase;
     }
   }
 
   .header-right {
     display: flex;
-    flex: 8%;
+    flex:1;
     justify-content: flex-end;
 
     .close-btn {

@@ -53,7 +53,7 @@ export const HeaderNew: FC<{
         <div onClick={onSelectNetwork} className={styles.centerBlock}>
           <div className={styles.wrapContent}>
             {title ? (
-              <span className={styles.chainName}>{limitString(title, 14)}</span>
+              <span className={styles.chainName}>{title}</span>
             ) : (
               <>
                 <img
@@ -68,7 +68,7 @@ export const HeaderNew: FC<{
                 <span className={styles.chainName}>
                   {chainStore.isAllNetwork
                     ? "All Networks"
-                    : limitString(chainStore.current.chainName, 14)}
+                    : chainStore.current.chainName}
                 </span>
                 <img
                   className={styles.imgIcon}

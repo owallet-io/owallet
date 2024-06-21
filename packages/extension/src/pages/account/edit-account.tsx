@@ -2,11 +2,16 @@ import React, { useState } from "react";
 import { LayoutWithButtonBottom } from "../../layouts/button-bottom-layout/layout-with-button-bottom";
 import styles from "./styles/edit-account.module.scss";
 import { ModalRecoveryPhrase } from "./modals/modal-recovery-phrase";
+import { ModalEditAccountNamePage } from "./modals/modal-edit-account-name";
 
 export const EditAccountPage = () => {
   const [isShowRecoveryPhrase, setIsShowRecoveryPhrase] = useState(false);
+  const [isShowAccountName, setIsShowAccountName] = useState(false);
   const onShowModalRecoveryPhrase = () => {
     setIsShowRecoveryPhrase(true);
+  };
+  const onShowModalEditAccountName = () => {
+    setIsShowAccountName(true);
   };
   return (
     <LayoutWithButtonBottom titleButton={"Add Wallet"} title={"edit account"}>
@@ -23,7 +28,7 @@ export const EditAccountPage = () => {
         </div>
       </div>
       <div className={styles.accountActions}>
-        <div className={styles.actionItem}>
+        <div onClick={onShowModalEditAccountName} className={styles.actionItem}>
           <span className={styles.leftTitle}>Account name</span>
           <div className={styles.blockRight}>
             <span className={styles.rightTitle}>Wallet 1</span>
@@ -55,6 +60,10 @@ export const EditAccountPage = () => {
       <ModalRecoveryPhrase
         isOpen={isShowRecoveryPhrase}
         onRequestClose={() => setIsShowRecoveryPhrase(false)}
+      />
+      <ModalEditAccountNamePage
+        isOpen={isShowAccountName}
+        onRequestClose={() => setIsShowAccountName(false)}
       />
     </LayoutWithButtonBottom>
   );

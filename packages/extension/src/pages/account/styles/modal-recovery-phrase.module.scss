@@ -1,7 +1,9 @@
 @import '../../../styles/var';
 
-.modal-reveal-key {
+.modal-container {
   background-color: $neutral-surface-card;
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
 }
 
 .content-wrap {
@@ -39,13 +41,26 @@
   }
 
   .container-input {
+    margin-top: 16px;
+
+    .label {
+      color: $neutral-text-title;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 400;
+      //padding-left: 8px;
+      line-height: 20px; /* 142.857% */
+    }
 
     .input-pass {
       height: 48px;
-      margin-top: 16px;
+      color: $neutral-text-title;
       width: calc(100vw - 32px);
       border-radius: 8px;
       padding: 0 8px;
+      font-weight: 500;
+      line-height: 24px; /* 150% */
+      font-size: 16px;
       border: 1px solid $neutral-border-strong;
     }
   }

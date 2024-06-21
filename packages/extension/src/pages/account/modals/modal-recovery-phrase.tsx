@@ -8,6 +8,7 @@ import { useIntl } from "react-intl";
 import { HeaderModal } from "../../home/components/header-modal";
 import { LayoutWithButtonBottom } from "../../../layouts/button-bottom-layout/layout-with-button-bottom";
 import { useHistory } from "react-router";
+import Colors from "../../../theme/colors";
 
 export const ModalRecoveryPhrase: FC<{
   isOpen: boolean;
@@ -29,11 +30,11 @@ export const ModalRecoveryPhrase: FC<{
       width="100vw"
       onRequestClose={onRequestClose}
       hideHeader={true}
-      className={styles.modalRevealKey}
+      className={styles.modalContainer}
     >
       <LayoutWithButtonBottom
         titleButton={"Confirm"}
-        backgroundColor={"#ffffff"}
+        backgroundColor={Colors["neutral-surface-card"]}
         isDisabledHeader={true}
         onClickButtonBottom={onConfirm}
       >
