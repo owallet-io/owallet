@@ -21,7 +21,7 @@ export const ModalEditAccountNamePage: FC<{
       className={styles.modalContainer}
     >
       <LayoutWithButtonBottom
-        titleButton={"Confirm"}
+        titleButton={"Save"}
         backgroundColor={Colors["neutral-surface-card"]}
         isDisabledHeader={true}
         onClickButtonBottom={onConfirm}

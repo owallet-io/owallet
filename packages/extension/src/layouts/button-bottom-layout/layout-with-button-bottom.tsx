@@ -9,6 +9,7 @@ export const LayoutWithButtonBottom: FC<{
   backgroundColor?: string;
   titleButton?: string;
   onClickButtonBottom?: () => void;
+  btnBackgroundColor?: string;
 }> = ({
   title,
   backgroundColor,
@@ -16,6 +17,7 @@ export const LayoutWithButtonBottom: FC<{
   children,
   titleButton,
   isDisabledHeader,
+  btnBackgroundColor,
 }) => {
   return (
     <div
@@ -35,6 +37,7 @@ export const LayoutWithButtonBottom: FC<{
       )}
       {children}
       <ButtonBottom
+        btnBackgroundColor={btnBackgroundColor}
         onClickButtonBottom={onClickButtonBottom}
         title={titleButton}
       />

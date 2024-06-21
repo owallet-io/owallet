@@ -3,15 +3,20 @@ import { LayoutWithButtonBottom } from "../../layouts/button-bottom-layout/layou
 import styles from "./styles/edit-account.module.scss";
 import { ModalRecoveryPhrase } from "./modals/modal-recovery-phrase";
 import { ModalEditAccountNamePage } from "./modals/modal-edit-account-name";
+import { ModalRemoveAccount } from "./modals/modal-remove-account";
 
 export const EditAccountPage = () => {
   const [isShowRecoveryPhrase, setIsShowRecoveryPhrase] = useState(false);
   const [isShowAccountName, setIsShowAccountName] = useState(false);
+  const [isShowModalRemoveWallet, setIsShowModalRemoveWallet] = useState(false);
   const onShowModalRecoveryPhrase = () => {
     setIsShowRecoveryPhrase(true);
   };
   const onShowModalEditAccountName = () => {
     setIsShowAccountName(true);
+  };
+  const onShowModalRemoveAccount = () => {
+    setIsShowModalRemoveWallet(true);
   };
   return (
     <LayoutWithButtonBottom titleButton={"Add Wallet"} title={"edit account"}>
@@ -53,7 +58,10 @@ export const EditAccountPage = () => {
             />
           </div>
         </div>
-        <div className={`${styles.actionItem} ${styles.removeAccount}`}>
+        <div
+          onClick={onShowModalRemoveAccount}
+          className={`${styles.actionItem} ${styles.removeAccount}`}
+        >
           <span className={styles.leftTitle}>Remove account</span>
         </div>
       </div>
@@ -64,6 +72,10 @@ export const EditAccountPage = () => {
       <ModalEditAccountNamePage
         isOpen={isShowAccountName}
         onRequestClose={() => setIsShowAccountName(false)}
+      />
+      <ModalRemoveAccount
+        isOpen={isShowModalRemoveWallet}
+        onRequestClose={() => setIsShowModalRemoveWallet(false)}
       />
     </LayoutWithButtonBottom>
   );

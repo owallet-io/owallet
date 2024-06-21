@@ -4,10 +4,16 @@ import React, { FC } from "react";
 export const ButtonBottom: FC<{
   title: string;
   onClickButtonBottom?: () => void;
-}> = ({ title, onClickButtonBottom }) => {
+  btnBackgroundColor?: string;
+}> = ({ title, onClickButtonBottom, btnBackgroundColor }) => {
   return (
     <div onClick={onClickButtonBottom} className={styles.containerBtnBottom}>
-      <div className={styles.buttonPrimary}>
+      <div
+        style={{
+          backgroundColor: btnBackgroundColor,
+        }}
+        className={styles.buttonPrimary}
+      >
         <span className={styles.txtBtn}>{title}</span>
       </div>
     </div>
