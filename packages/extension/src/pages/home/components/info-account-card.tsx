@@ -61,6 +61,7 @@ export const InfoAccountCard: FC<{
         <div onClick={onReceive} className={styles.btnWrap}>
           <span className={styles.txt}>Receive</span>
         </div>
+        {/* do send function here */}
         <div className={styles.btnWrap}>
           <span className={styles.txt}>Send</span>
         </div>

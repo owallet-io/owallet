@@ -107,8 +107,8 @@ export const EVMRenderArgs: FunctionComponent<{
                 <Text color={colors["neutral-text-body"]}>-</Text>
               )}
 
-              {amountIn !== "-" ? (
-                <Text color={colors["neutral-text-body"]}>
+              {amountIn && amountIn !== "-" ? (
+                <Text weight="600" color={colors["neutral-text-title"]}>
                   {numberWithCommas(
                     toDisplay(
                       amountIn.toString(),
@@ -160,8 +160,8 @@ export const EVMRenderArgs: FunctionComponent<{
                 <Text color={colors["neutral-text-body"]}>-</Text>
               )}
 
-              {amountOut !== "-" ? (
-                <Text color={colors["neutral-text-body"]}>
+              {amountOut && amountOut !== "-" ? (
+                <Text weight="600" color={colors["neutral-text-title"]}>
                   {numberWithCommas(
                     toDisplay(
                       amountOut.toString(),

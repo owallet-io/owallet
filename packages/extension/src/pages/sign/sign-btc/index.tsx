@@ -52,7 +52,6 @@ export const SignBtcPage: FunctionComponent = observer(() => {
     queriesStore,
     priceStore,
   } = useStore();
-  const language = useLanguage();
 
   const history = useHistory();
   const interactionInfo = useInteractionInfo(() => {
@@ -268,41 +267,10 @@ export const SignBtcPage: FunctionComponent = observer(() => {
                     intl={intl}
                     dataSign={lastestData}
                     isNoSetFee={isNoSetFee}
+                    signer={signer}
                   />
                 )}
               </div>
-              <Card
-                containerStyle={{
-                  borderRadius: 12,
-                  border: "1px solid" + colors["neutral-border-default"],
-                  padding: 8,
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                  }}
-                  onClick={() => {}}
-                >
-                  <Text weight="600">Transaction fee</Text>
-                  <div
-                    style={{
-                      flexDirection: "column",
-                      display: "flex",
-                      alignItems: "flex-end",
-                    }}
-                  >
-                    <Text color={colors["neutral-text-body"]}>
-                      ≈
-                      {priceStore
-                        .calculatePrice(feeConfig.fee, language.fiatCurrency)
-                        ?.toString() || 0}
-                    </Text>
-                  </div>
-                </div>
-              </Card>
             </div>
             <div
               style={{
