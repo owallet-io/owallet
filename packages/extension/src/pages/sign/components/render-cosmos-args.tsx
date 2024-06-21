@@ -185,7 +185,9 @@ export const CosmosRenderArgs: FunctionComponent<{
                 >
                   {inContract}
                 </Address>
-              ) : null}
+              ) : (
+                <Text color={colors["neutral-text-body"]}>-</Text>
+              )}
             </div>
           </div>
           <img
@@ -214,7 +216,9 @@ export const CosmosRenderArgs: FunctionComponent<{
                 >
                   {outContract}
                 </Address>
-              ) : null}
+              ) : (
+                <Text color={colors["neutral-text-body"]}>-</Text>
+              )}
             </div>
           </div>
         </div>
