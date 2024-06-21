@@ -9,8 +9,13 @@ import { useLoadingIndicator } from "../../components/loading-indicator";
 
 export const SelectAccountPage = observer(() => {
   const history = useHistory();
-  const onEditAccount = () => {
-    history.push("/edit-account");
+  const onEditAccount = (keyStore) => {
+    if (!keyStore) return;
+    console.log(keyStore, "keyStore");
+    const index = keyRingStore.multiKeyStoreInfo.indexOf(keyStore);
+    if (index < 0) return;
+    history.push(`/edit-account/${index}`);
+    return;
   };
   const { keyRingStore } = useStore();
   const ledgerAccounts = keyRingStore.multiKeyStoreInfo.filter(
@@ -54,8 +59,18 @@ export const SelectAccountPage = observer(() => {
       loadingIndicator.setIsLoading("keyring", false);
     }
   };
+  const onAddAccount = () => {
+    browser.tabs.create({
+      url: "/popup.html#/register",
+    });
+    return;
+  };
   return (
-    <LayoutWithButtonBottom titleButton={"Add Wallet"} title="Select Account">
+    <LayoutWithButtonBottom
+      titleButton={"Add Wallet"}
+      onClickButtonBottom={onAddAccount}
+      title="Select Account"
+    >
       {wallets.map((wallet, index) => {
         if (!wallet.data?.length || wallet.data?.length <= 0) return;
         return (
@@ -63,12 +78,11 @@ export const SelectAccountPage = observer(() => {
             <span className={styles.titleBox}>Imported by {wallet.type}</span>
             {wallet.data.map((keyStore, index) => {
               return (
-                <div
-                  onClick={() => onSelectWallet(keyStore)}
-                  key={index}
-                  className={styles.itemBox}
-                >
-                  <div className={styles.mainItem}>
+                <div key={index} className={styles.itemBox}>
+                  <div
+                    onClick={() => onSelectWallet(keyStore)}
+                    className={styles.mainItem}
+                  >
                     <div className={styles.wrapAvatar}>
                       <img
                         className={styles.imgAvatar}
@@ -88,7 +102,10 @@ export const SelectAccountPage = observer(() => {
                       )}
                     </div>
                   </div>
-                  <div onClick={onEditAccount} className={styles.wrapBtn}>
+                  <div
+                    onClick={() => onEditAccount(keyStore)}
+                    className={styles.wrapBtn}
+                  >
                     <img
                       className={styles.imgIcon}
                       src={require("../../public/assets/svg/tdesign_more.svg")}

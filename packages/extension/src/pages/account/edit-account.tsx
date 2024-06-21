@@ -4,8 +4,14 @@ import styles from "./styles/edit-account.module.scss";
 import { ModalRecoveryPhrase } from "./modals/modal-recovery-phrase";
 import { ModalEditAccountNamePage } from "./modals/modal-edit-account-name";
 import { ModalRemoveAccount } from "./modals/modal-remove-account";
+import { observer } from "mobx-react-lite";
+import { useStore } from "../../stores";
+// import { useLocation } from 'react-router';
+import { useParams, useLocation } from "react-router-dom";
+import { KeyStore } from "@owallet/background/build/keyring/crypto";
+import { formatAddress } from "@owallet/common";
 
-export const EditAccountPage = () => {
+export const EditAccountPage = observer(() => {
   const [isShowRecoveryPhrase, setIsShowRecoveryPhrase] = useState(false);
   const [isShowAccountName, setIsShowAccountName] = useState(false);
   const [isShowModalRemoveWallet, setIsShowModalRemoveWallet] = useState(false);
@@ -18,8 +24,31 @@ export const EditAccountPage = () => {
   const onShowModalRemoveAccount = () => {
     setIsShowModalRemoveWallet(true);
   };
+  const params: {
+    keystoreIndex: string;
+  } = useParams();
+
+  const { keyRingStore, chainStore, accountStore } = useStore();
+  const accountInfo = accountStore.getAccount(chainStore.current.chainId);
+  const address = accountInfo.getAddressDisplay(
+    keyRingStore.keyRingLedgerAddresses
+  );
+  console.log(params, "params");
+  // const keyStore = location.state?.keyStore;
+  const wallet = keyRingStore.multiKeyStoreInfo[Number(params.keystoreIndex)];
+  console.log(wallet, "wallet");
+  const onAddAccount = () => {
+    browser.tabs.create({
+      url: "/popup.html#/register",
+    });
+    return;
+  };
   return (
-    <LayoutWithButtonBottom titleButton={"Add Wallet"} title={"edit account"}>
+    <LayoutWithButtonBottom
+      onClickButtonBottom={onAddAccount}
+      titleButton={"Add Wallet"}
+      title={"edit account"}
+    >
       <div className={styles.topBox}>
         <div className={styles.avatar}>
           <img
@@ -28,15 +57,22 @@ export const EditAccountPage = () => {
           />
         </div>
         <div className={styles.wrapText}>
-          <span className={styles.titleWallet}>Wallet 1</span>
-          <span className={styles.subTitleWallet}> orai1u453k...jsjamxnz</span>
+          <span className={styles.titleWallet}>
+            {wallet?.meta?.name || "..."}
+          </span>
+          <span className={styles.subTitleWallet}>
+            {" "}
+            {formatAddress(address)}
+          </span>
         </div>
       </div>
       <div className={styles.accountActions}>
         <div onClick={onShowModalEditAccountName} className={styles.actionItem}>
           <span className={styles.leftTitle}>Account name</span>
           <div className={styles.blockRight}>
-            <span className={styles.rightTitle}>Wallet 1</span>
+            <span className={styles.rightTitle}>
+              {wallet?.meta?.name || "..."}
+            </span>
             <img
               src={require("../../public/assets/svg/tdesign_chevron_right.svg")}
             />
@@ -70,6 +106,7 @@ export const EditAccountPage = () => {
         onRequestClose={() => setIsShowRecoveryPhrase(false)}
       />
       <ModalEditAccountNamePage
+        keyStoreIndex={Number(params.keystoreIndex)}
         isOpen={isShowAccountName}
         onRequestClose={() => setIsShowAccountName(false)}
       />
@@ -79,4 +116,4 @@ export const EditAccountPage = () => {
       />
     </LayoutWithButtonBottom>
   );
-};
+});

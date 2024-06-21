@@ -33,6 +33,7 @@ export const HomePage = observer(() => {
       });
     });
   }
+
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const { totalPriceBalance, dataTokens, dataTokensByChain, isLoading } =
     useMultipleAssets(

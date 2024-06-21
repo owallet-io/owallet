@@ -298,7 +298,7 @@ ReactDOM.render(
                   />
                   <Route
                     exact
-                    path="/edit-account"
+                    path="/edit-account/:keystoreIndex"
                     component={EditAccountPage}
                   />
                   <Route exact path="/token" component={TokenPage} />
