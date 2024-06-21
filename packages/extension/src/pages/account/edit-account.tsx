@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { LayoutWithButtonBottom } from "../../layouts/button-bottom-layout/layout-with-button-bottom";
-import styles from "./edit-account.module.scss";
+import styles from "./styles/edit-account.module.scss";
 import { ModalRecoveryPhrase } from "./modals/modal-recovery-phrase";
 
 export const EditAccountPage = () => {
@@ -34,6 +34,14 @@ export const EditAccountPage = () => {
         </div>
         <div onClick={onShowModalRecoveryPhrase} className={styles.actionItem}>
           <span className={styles.leftTitle}>Reveal Recovery Phrase</span>
+          <div className={styles.blockRight}>
+            <img
+              src={require("../../public/assets/svg/tdesign_chevron_right.svg")}
+            />
+          </div>
+        </div>
+        <div onClick={onShowModalRecoveryPhrase} className={styles.actionItem}>
+          <span className={styles.leftTitle}>Reveal Private Key</span>
           <div className={styles.blockRight}>
             <img
               src={require("../../public/assets/svg/tdesign_chevron_right.svg")}

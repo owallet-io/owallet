@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useRef, useState } from "react";
 import SlidingPane from "react-sliding-pane";
-import styles from "./styles.module.scss";
+import styles from "../styles/modal-recovery-phrase.module.scss";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../../stores";
 import { useNotification } from "../../../components/notification";
@@ -19,7 +19,7 @@ export const ModalRecoveryPhrase: FC<{
   const notification = useNotification();
   const history = useHistory();
   const onConfirm = () => {
-    history.push("/reveal-recovery-phrase");
+    history.push("/reveal-private-key");
     return;
   };
   return (

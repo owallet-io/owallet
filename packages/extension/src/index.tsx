@@ -187,6 +187,7 @@ import { isProdMode } from "./helpers/helper";
 import { SelectAccountPage } from "./pages/account/select-account-page";
 import { EditAccountPage } from "./pages/account/edit-account";
 import { RevealRecoveryPhrasePage } from "./pages/account/reveal-recovery-phrase-page";
+import { RevealPrivateKeyPage } from "./pages/account/reveal-private-key-page";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -284,6 +285,11 @@ ReactDOM.render(
                     exact
                     path="/reveal-recovery-phrase"
                     component={RevealRecoveryPhrasePage}
+                  />
+                  <Route
+                    exact
+                    path="/reveal-private-key"
+                    component={RevealPrivateKeyPage}
                   />
                   <Route
                     exact

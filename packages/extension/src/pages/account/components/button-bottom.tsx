@@ -1,4 +1,4 @@
-import styles from "./styles.module.scss";
+import styles from "../styles/cpm-button-bottom.module.scss";
 import React, { FC } from "react";
 
 export const ButtonBottom: FC<{

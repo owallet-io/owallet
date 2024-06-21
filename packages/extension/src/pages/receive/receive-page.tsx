@@ -17,8 +17,6 @@ export const ReceivePage = observer(() => {
     keyRingStore.keyRingLedgerAddresses,
     true
   );
-  const notification = useNotification();
-  const intl = useIntl();
   useEffect(() => {
     if (qrCodeRef.current && address) {
       QrCode.toCanvas(qrCodeRef.current, address, {
@@ -26,22 +24,6 @@ export const ReceivePage = observer(() => {
       });
     }
   }, [address]);
-  const copyAddress = async (address: string) => {
-    if (!address) return;
-    await navigator.clipboard.writeText(address);
-    notification.push({
-      placement: "top-center",
-      type: "success",
-      duration: 2,
-      content: intl.formatMessage({
-        id: "main.address.copied",
-      }),
-      canDelete: true,
-      transition: {
-        duration: 0.25,
-      },
-    });
-  };
   return (
     <div className={styles.containerReceivePage}>
       <HeaderNew isGoBack isConnectDapp={false} />

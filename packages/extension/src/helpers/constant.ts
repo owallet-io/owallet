@@ -1,12 +1,6 @@
 import { ChainIdEnum } from "@owallet/common";
 import { Network as NetworkTatum } from "@tatumio/tatum";
 
-export const Colors = {
-  ["neutral-surface-bg"]: "#f5f5f7",
-  ["neutral-surface-bg2"]: "#f5f5f7",
-  ["neutral-surface-card"]: "#ffffff",
-};
-
 export enum OasisNetwork {
   MAINNET = "oasis-mainnet",
   SAPPHIRE = "oasis-sapphire-mainnet",

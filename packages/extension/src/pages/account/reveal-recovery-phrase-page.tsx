@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { LayoutWithButtonBottom } from "../../layouts/button-bottom-layout/layout-with-button-bottom";
-import styles from "./reveal-recovery-phrase.module.scss";
+import styles from "./styles/reveal-recovery-phrase.module.scss";
 import { ButtonCopy } from "../../components/buttons/button-copy";
-import { Colors } from "../../helpers/constant";
+
 import classnames from "classnames";
+import Colors from "../../theme/colors";
 
 const dataFake = [
   "tomado",

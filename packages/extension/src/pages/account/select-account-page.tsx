@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import styles from "./select-account.module.scss";
+import styles from "./styles/select-account.module.scss";
 import { LayoutWithButtonBottom } from "../../layouts/button-bottom-layout/layout-with-button-bottom";
 import { useHistory } from "react-router";
 
