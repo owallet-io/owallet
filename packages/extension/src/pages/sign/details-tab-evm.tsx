@@ -349,18 +349,18 @@ export const DetailsTabEvm: FunctionComponent<{
                     : null}
                 </Text>
               </div>
-              <Text
-                containerStyle={{
-                  alignSelf: "flex-end",
-                  display: "flex",
-                }}
-                color={colors["neutral-text-body"]}
-              >
-                ≈
-                {priceStore
-                  .calculatePrice(feeConfig?.fee, language.fiatCurrency)
-                  ?.toString() || 0}
-              </Text>
+              {/* <Text
+              containerStyle={{
+                alignSelf: "flex-end",
+                display: "flex"
+              }}
+              color={colors["neutral-text-body"]}
+            >
+              ≈
+              {priceStore
+                .calculatePrice(msgs?.value ?? decodedData?.args?._amount, language.fiatCurrency)
+                ?.toString() || 0}
+            </Text> */}
             </div>
           )}
           <div

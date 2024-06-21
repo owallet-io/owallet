@@ -365,7 +365,7 @@ export const EVMRenderArgs: FunctionComponent<{
               textDecor={"underline"}
               textColor={colors["neutral-text-body"]}
             >
-              {toAddress ? toAddress : null}
+              {toAddress ?? null}
             </Address>
           )}
         </>
