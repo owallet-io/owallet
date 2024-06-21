@@ -5,13 +5,14 @@ import { Bech32Address } from "@owallet/cosmos";
 import { CoinUtils, Coin } from "@owallet/unit";
 import { IntlShape, FormattedMessage, useIntl } from "react-intl";
 import { Currency } from "@owallet/types";
-import { Button, Badge } from "reactstrap";
+import { Badge } from "reactstrap";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
 import yaml from "js-yaml";
 
 import { Buffer } from "buffer";
 import { CoinPrimitive } from "@owallet/stores";
+import { Button } from "../../components/common/button";
 
 export interface MessageObj {
   readonly type: string;
@@ -469,6 +470,8 @@ export function renderMsgExecuteContract(
     });
   }
 
+  console.log("sent", sent);
+
   const isSecretWasm = callbackCodeHash != null;
 
   return {
@@ -577,13 +580,14 @@ export const WasmExecutionMsgView: FunctionComponent<{
     <div>
       {isOpen ? (
         <React.Fragment>
-          <pre style={{ width: "280px" }}>{isOpen ? detailsMsg : ""}</pre>
+          <pre style={{ width: "85%" }}>{isOpen ? detailsMsg : ""}</pre>
           {warningMsg ? <div>{warningMsg}</div> : null}
         </React.Fragment>
       ) : null}
       <Button
-        size="sm"
-        style={{ float: "right", marginRight: isOpen ? "12px" : "6px" }}
+        size="small"
+        mode="outline"
+        style={{ alignSelf: "center" }}
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -591,13 +595,15 @@ export const WasmExecutionMsgView: FunctionComponent<{
           toggleOpen();
         }}
       >
-        {isOpen
-          ? intl.formatMessage({
-              id: "sign.list.message.wasm.button.close",
-            })
-          : intl.formatMessage({
-              id: "sign.list.message.wasm.button.details",
-            })}
+        {isOpen ? (
+          <img
+            src={require("../../public/assets/icon/tdesign_chevron-up.svg")}
+          />
+        ) : (
+          <img
+            src={require("../../public/assets/icon/tdesign_chevron-down.svg")}
+          />
+        )}
       </Button>
     </div>
   );

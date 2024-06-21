@@ -44,11 +44,15 @@ export const DetailsTabEvm: FunctionComponent<{
     preferNoSetFee,
     setOpenSetting,
   }) => {
-    const { chainStore, priceStore } = useStore();
+    const { chainStore, priceStore, accountStore, keyRingStore } = useStore();
     const intl = useIntl();
     const language = useLanguage();
 
-    const [isMore, setIsMore] = useState(true);
+    const account = accountStore.getAccount(chainStore.current.chainId);
+    const signer = account.getAddressDisplay(
+      keyRingStore.keyRingLedgerAddresses,
+      false
+    );
 
     const chain = chainStore.getChain(dataSign?.data?.chainId);
     const [decodedData, setDecodedData] = useState(null);
@@ -96,7 +100,7 @@ export const DetailsTabEvm: FunctionComponent<{
               borderColor: colors["primary-surface-default"],
               padding: 12,
               marginTop: 12,
-              overflow: "scroll",
+              width: "100%",
             }}
           >
             {content}
@@ -186,33 +190,7 @@ export const DetailsTabEvm: FunctionComponent<{
       return null;
     })();
 
-    const renderToken = (token) => {
-      return (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            margin: "4px 0",
-          }}
-        >
-          {token?.imgUrl || token?.coinImageUrl ? (
-            <img
-              style={{
-                width: 14,
-                height: 14,
-                borderRadius: 28,
-                marginRight: 4,
-              }}
-              src={token?.imgUrl ?? token?.coinImageUrl}
-            />
-          ) : null}
-          <Text weight="600">{token?.abbr ?? token?.coinDenom}</Text>
-        </div>
-      );
-    };
-
-    const renderPath = (fromToken?, toToken?) => {
+    const renderDestination = (from?, to?) => {
       return (
         <div
           style={{
@@ -234,15 +212,24 @@ export const DetailsTabEvm: FunctionComponent<{
                 maxWidth: "50%",
               }}
             >
-              <div>
-                <Text color={colors["neutral-text-body"]}>Pay token</Text>
-                {renderToken(chain.stakeCurrency)}
-                <Text
-                  containerStyle={{ textDecoration: "underline" }}
-                  color={colors["neutral-text-body"]}
-                >
-                  {"0x8c7...4E797"}
-                </Text>
+              <div style={{ flexDirection: "column", display: "flex" }}>
+                <Text color={colors["neutral-text-body"]}>From</Text>
+                {from ? (
+                  <>
+                    <Address
+                      maxCharacters={6}
+                      lineBreakBeforePrefix={false}
+                      textDecor={"underline"}
+                      textColor={colors["neutral-text-body"]}
+                    >
+                      {from}
+                    </Address>
+                  </>
+                ) : (
+                  <Text color={colors["neutral-text-body"]}>
+                    {signer ?? "-"}
+                  </Text>
+                )}
               </div>
             </div>
             <img
@@ -254,15 +241,22 @@ export const DetailsTabEvm: FunctionComponent<{
                 maxWidth: "50%",
               }}
             >
-              <div>
-                <Text color={colors["neutral-text-body"]}>Receive token</Text>
-                {renderToken(chain.stakeCurrency)}
-                <Text
-                  containerStyle={{ textDecoration: "underline" }}
-                  color={colors["neutral-text-body"]}
-                >
-                  {"0x8c7...4E797"}
-                </Text>
+              <div style={{ flexDirection: "column", display: "flex" }}>
+                <Text color={colors["neutral-text-body"]}>To</Text>
+                {to ? (
+                  <>
+                    <Address
+                      maxCharacters={6}
+                      lineBreakBeforePrefix={false}
+                      textDecor={"underline"}
+                      textColor={colors["neutral-text-body"]}
+                    >
+                      {to}
+                    </Address>
+                  </>
+                ) : (
+                  <Text color={colors["neutral-text-body"]}>-</Text>
+                )}
               </div>
             </div>
           </div>
@@ -295,11 +289,13 @@ export const DetailsTabEvm: FunctionComponent<{
                 marginBottom: 14,
               }}
             >
-              <Text weight="600">{label}</Text>
+              <div>
+                <Text weight="600">{label}</Text>
+              </div>
               <div
                 style={{
                   alignItems: "flex-end",
-                  maxWidth: "70%",
+                  maxWidth: "65%",
                   wordBreak: "break-all",
                 }}
               >
@@ -322,7 +318,7 @@ export const DetailsTabEvm: FunctionComponent<{
       return (
         <div>
           {renderInfo(
-            chain?.chainName,
+            msgs?.value || decodedData?.args?._amount,
             "Amount",
             <div
               style={{
@@ -339,7 +335,18 @@ export const DetailsTabEvm: FunctionComponent<{
                 }}
               >
                 <Text size={16} weight="600">
-                  1,795.89147 ORAIX
+                  {msgs.value && !decodedData?.args?._amount
+                    ? toDisplay(
+                        msgs?.value?.toString(),
+                        chain.stakeCurrency.coinDecimals
+                      )
+                    : null}
+                  {!msgs.value && decodedData?.args?._amount
+                    ? toDisplay(
+                        decodedData?.args?._amount.toString(),
+                        chain.stakeCurrency.coinDecimals
+                      )
+                    : null}
                 </Text>
               </div>
               <Text
@@ -377,7 +384,9 @@ export const DetailsTabEvm: FunctionComponent<{
                 <Text weight="600">Fee</Text>
               </div>
               <div>
-                <Text color={colors["neutral-text-body"]}>Gas: 135588</Text>
+                <Text color={colors["neutral-text-body"]}>
+                  Gas: {Number(msgs?.gas)}
+                </Text>
               </div>
             </div>
             <div
@@ -490,49 +499,9 @@ export const DetailsTabEvm: FunctionComponent<{
               <Text weight="600">{chain?.chainName}</Text>
             </div>
           )}
-          {renderPath()}
-          {renderInfo(
-            true,
-            "Method",
-            <Text color={colors["neutral-text-body"]}>{"SendToCosmos"}</Text>
-          )}
-          {isMore
-            ? null
-            : renderInfo(
-                true,
-                "Channel",
-                <Text color={colors["neutral-text-body"]}>
-                  {"channel-1/orai1hvr9d72r5um9lvtOrpkd4r75vrsgtw6yujhqs2"}
-                </Text>
-              )}
-          {renderInfo(
-            msgs.to,
-            "To",
-            <Text color={colors["neutral-text-body"]}>
-              <Address maxCharacters={18} lineBreakBeforePrefix={false}>
-                {msgs?.to}
-              </Address>
-            </Text>
-          )}
-          {renderInfo(
-            msgs.from,
-            "From",
-            <Text color={colors["neutral-text-body"]}>
-              <Address maxCharacters={18} lineBreakBeforePrefix={false}>
-                {msgs?.from}
-              </Address>
-            </Text>
-          )}
-          {renderInfo(
-            msgs.to,
-            "To",
-            <Text color={colors["neutral-text-body"]}>
-              <Address maxCharacters={18} lineBreakBeforePrefix={false}>
-                {msgs?.to}
-              </Address>
-            </Text>
-          )}
-          {renderInfo(
+
+          {renderDestination(msgs?.from, msgs?.to)}
+          {/* {renderInfo(
             msgs?.value,
             "Amount In",
             <Text>
@@ -543,7 +512,7 @@ export const DetailsTabEvm: FunctionComponent<{
                   )
                 : null}
             </Text>
-          )}
+          )} */}
           {decodedData ? (
             <>
               {renderInfo(
@@ -553,6 +522,7 @@ export const DetailsTabEvm: FunctionComponent<{
               )}
               {decodedData?.args ? (
                 <EVMRenderArgs
+                  msgs={msgs}
                   args={decodedData.args}
                   renderInfo={renderInfo}
                   chain={chain}
@@ -560,44 +530,6 @@ export const DetailsTabEvm: FunctionComponent<{
               ) : null}
             </>
           ) : null}
-
-          {renderInfo(msgs?.gas, "Gas", <Text>{Number(msgs?.gas)}</Text>)}
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              cursor: "pointer",
-              justifyContent: "flex-end",
-              width: "100%",
-              marginTop: 8,
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                cursor: "pointer",
-              }}
-              onClick={() => {
-                setIsMore((prevState) => {
-                  return prevState ? false : true;
-                });
-              }}
-            >
-              <Text size={14} weight="500">
-                {`View ${isMore ? "more" : "less"}`}
-              </Text>
-              {isMore ? (
-                <img
-                  src={require("../../public/assets/icon/tdesign_chevron-down.svg")}
-                />
-              ) : (
-                <img
-                  src={require("../../public/assets/icon/tdesign_chevron-up.svg")}
-                />
-              )}
-            </div>
-          </div>
         </Card>
         <Card
           containerStyle={{
@@ -659,7 +591,7 @@ export const MsgRender: FunctionComponent<{
   title: string;
 }> = ({ icon = "fas fa-question", title, children }) => {
   return (
-    <div className={styleDetailsTab.msg}>
+    <div style={{ width: "125%" }} className={styleDetailsTab.msg}>
       <div className={styleDetailsTab.icon}>
         <div style={{ height: "2px" }} />
         <i className={icon} />

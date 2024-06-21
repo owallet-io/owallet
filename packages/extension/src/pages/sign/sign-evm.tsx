@@ -65,7 +65,6 @@ export const SignEvmPage: FunctionComponent = observer(() => {
     signInteractionStore,
     accountStore,
     queriesStore,
-    priceStore,
   } = useStore();
 
   const current = chainStore.current;

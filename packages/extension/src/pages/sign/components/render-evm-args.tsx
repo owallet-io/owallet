@@ -15,17 +15,22 @@ import {
 } from "../helpers/helpers";
 import { EmbedChainInfos, toDisplay } from "@owallet/common";
 import { Text } from "../../../components/common/text";
+import colors from "../../../theme/colors";
+import { Address } from "../../../components/address";
+import { isEmpty } from "lodash";
 
 export const EVMRenderArgs: FunctionComponent<{
+  msgs: any;
   args: any;
   chain: AppChainInfo;
   renderInfo: (condition, label, content) => ReactElement;
-}> = observer(({ args, chain, renderInfo }) => {
-  const [toAddress, setToAddress] = useState<any>();
+}> = observer(({ args, msgs, chain, renderInfo }) => {
+  const [toAddress, setToAddress] = useState<string>();
   const [toToken, setToToken] = useState<any>();
   const [path, setPath] = useState<Array<any>>([]);
   const [tokenIn, setTokenIn] = useState<any>();
   const [tokenOut, setTokenOut] = useState<any>();
+  const [isMore, setIsMore] = useState(true);
 
   const renderToken = (token) => {
     return (
@@ -43,6 +48,7 @@ export const EVMRenderArgs: FunctionComponent<{
               height: 14,
               borderRadius: 28,
               marginRight: 4,
+              backgroundColor: colors["neutral-surface-action2"],
             }}
             src={token?.imgUrl ?? token?.coinImageUrl}
           />
@@ -50,6 +56,156 @@ export const EVMRenderArgs: FunctionComponent<{
         <Text weight="600">{token?.abbr ?? token?.coinDenom}</Text>
       </div>
     );
+  };
+
+  const renderPath = (fromToken?, desToken?, fromContract?, toContract?) => {
+    const amountIn =
+      args?._amount || args?._amountIn || args?.amountIn || msgs?.value || "-";
+    const amountOut = args?.amountOutMin || args?._amountOutMin || "-";
+    const inToken = fromToken || tokenIn || chain.stakeCurrency;
+    const outToken = desToken || tokenOut || toToken;
+
+    return (
+      <div
+        style={{
+          marginTop: 14,
+          height: "auto",
+          alignItems: "center",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            marginBottom: 14,
+          }}
+        >
+          <div
+            style={{
+              maxWidth: "50%",
+            }}
+          >
+            <div style={{ flexDirection: "column", display: "flex" }}>
+              <Text color={colors["neutral-text-body"]}>Pay token</Text>
+              {inToken ? (
+                <>
+                  {renderToken(inToken)}
+
+                  <Address
+                    maxCharacters={6}
+                    lineBreakBeforePrefix={false}
+                    textDecor={"underline"}
+                    textColor={colors["neutral-text-body"]}
+                  >
+                    {inToken.contractAddress}
+                  </Address>
+                </>
+              ) : (
+                <Text color={colors["neutral-text-body"]}>-</Text>
+              )}
+
+              {amountIn !== "-" ? (
+                <Text color={colors["neutral-text-body"]}>
+                  {numberWithCommas(
+                    toDisplay(
+                      amountIn.toString(),
+                      inToken?.decimal ?? chain.stakeCurrency.coinDecimals
+                    )
+                  )}{" "}
+                </Text>
+              ) : (
+                <Text color={colors["neutral-text-body"]}>-</Text>
+              )}
+
+              {fromContract ? (
+                <Address
+                  maxCharacters={6}
+                  lineBreakBeforePrefix={false}
+                  textDecor={"underline"}
+                  textColor={colors["neutral-text-body"]}
+                >
+                  {fromContract}
+                </Address>
+              ) : null}
+            </div>
+          </div>
+          <img
+            style={{ paddingRight: 4 }}
+            src={require("../../../public/assets/icon/tdesign_arrow-right.svg")}
+          />
+          <div
+            style={{
+              maxWidth: "50%",
+            }}
+          >
+            <div style={{ flexDirection: "column", display: "flex" }}>
+              <Text color={colors["neutral-text-body"]}>Receive token</Text>
+              {outToken ? (
+                <>
+                  {renderToken(outToken)}
+
+                  <Address
+                    maxCharacters={8}
+                    lineBreakBeforePrefix={false}
+                    textDecor={"underline"}
+                    textColor={colors["neutral-text-body"]}
+                  >
+                    {outToken.contractAddress}
+                  </Address>
+                </>
+              ) : (
+                <Text color={colors["neutral-text-body"]}>-</Text>
+              )}
+
+              {amountOut !== "-" ? (
+                <Text color={colors["neutral-text-body"]}>
+                  {numberWithCommas(
+                    toDisplay(
+                      amountOut.toString(),
+                      outToken?.decimal ?? chain.stakeCurrency.coinDecimals
+                    )
+                  )}{" "}
+                </Text>
+              ) : (
+                <Text color={colors["neutral-text-body"]}>-</Text>
+              )}
+
+              {toContract ? (
+                <Address
+                  maxCharacters={8}
+                  lineBreakBeforePrefix={false}
+                  textDecor={"underline"}
+                  textColor={colors["neutral-text-body"]}
+                >
+                  {toContract}
+                </Address>
+              ) : null}
+            </div>
+          </div>
+        </div>
+        <div
+          style={{
+            width: "100%",
+            height: 1,
+            backgroundColor: colors["neutral-border-default"],
+          }}
+        />
+      </div>
+    );
+  };
+
+  const renderArgPath = () => {
+    if (args?.path?.length >= 2 && path.length > 0) {
+      const fromToken = path.find((p) => {
+        return p.contractAddress.toUpperCase() === args.path[0].toUpperCase();
+      });
+      const toToken = path.find((p) => {
+        return p.contractAddress.toUpperCase() === args.path[1].toUpperCase();
+      });
+
+      return renderPath(fromToken, toToken);
+    }
   };
 
   useEffect(() => {
@@ -157,16 +313,6 @@ export const EVMRenderArgs: FunctionComponent<{
     }
   }, [args?._destination]);
 
-  console.log(
-    "pathh",
-    args?.path,
-    path.sort((a, b) => {
-      const indexA = args?.path.indexOf(a.contractAddress.toLowerCase());
-      const indexB = args?.path.indexOf(b.contractAddress.toLowerCase());
-      return indexA - indexB;
-    })
-  );
-
   return (
     <div>
       {renderInfo(
@@ -183,148 +329,66 @@ export const EVMRenderArgs: FunctionComponent<{
             : null}
         </Text>
       )}
-      {renderInfo(
-        args?._amount,
-        "Amount",
-        <Text>
-          {args?._amount
-            ? numberWithCommas(
-                toDisplay(
-                  (args?._amount).toString(),
-                  chain.stakeCurrency.coinDecimals
-                )
-              )
-            : null}
-        </Text>
-      )}
 
+      {isEmpty(path) ? renderPath() : null}
+      {path?.length > 0 ? renderArgPath() : null}
       {renderInfo(
         args?._destination,
-        "Bridge Destination",
+        "Bridge",
         <Text>
           {args?._destination ? args?._destination.split(":")?.[0] : null}
         </Text>
       )}
-      {renderInfo(
-        args?._amountIn,
-        "Amount In",
-        <Text>
-          {args._amountIn
-            ? numberWithCommas(
-                toDisplay(
-                  args._amountIn.toString(),
-                  tokenIn?.decimal ?? chain.stakeCurrency.coinDecimals
-                )
-              )
-            : null}
-        </Text>
-      )}
-      {renderInfo(
-        args?.amountIn,
-        "Amount In",
-        <Text>
-          {args.amountIn
-            ? numberWithCommas(
-                toDisplay(
-                  args.amountIn.toString(),
-                  tokenIn?.decimal ?? chain.stakeCurrency.coinDecimals
-                )
-              )
-            : null}
-        </Text>
-      )}
-      {tokenIn
-        ? renderInfo(tokenIn?.abbr, "Token In", renderToken(tokenIn))
-        : null}
-      {!tokenIn
-        ? renderInfo(
-            chain.stakeCurrency,
-            "Token In",
-            renderToken(chain.stakeCurrency)
-          )
-        : null}
-      {renderInfo(
-        args?._amountOutMin,
-        "Amount Out Min",
-        <Text>
-          {args?._amountOutMin
-            ? numberWithCommas(
-                toDisplay(
-                  (args?._amountOutMin).toString(),
-                  tokenOut?.decimal ?? chain.stakeCurrency.coinDecimals
-                )
-              )
-            : null}
-        </Text>
-      )}
-      {renderInfo(
-        args?.amountOutMin,
-        "Amount Out Min",
-        <Text>
-          {args?.amountOutMin
-            ? numberWithCommas(
-                toDisplay(
-                  (args?.amountOutMin).toString(),
-                  tokenOut?.decimal ?? chain.stakeCurrency.coinDecimals
-                )
-              )
-            : null}
-        </Text>
-      )}
-      {tokenOut
-        ? renderInfo(tokenOut?.abbr, "Token Out", renderToken(tokenOut))
-        : null}
+
       {renderInfo(
         toAddress,
-        "Bridge Address",
-        <Text>{toAddress ? toAddress : null}</Text>
+        "To Address",
+        <Address
+          maxCharacters={6}
+          lineBreakBeforePrefix={false}
+          textDecor={"underline"}
+          textColor={colors["neutral-text-body"]}
+        >
+          {toAddress ? toAddress : null}
+        </Address>
       )}
-      {toToken && toToken.coinDenom !== tokenOut?.abbr
-        ? renderInfo(toToken.coinDenom, "To Token", renderToken(toToken))
-        : null}
-      {path.length > 0
-        ? renderInfo(
-            path.length,
-            "Path",
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              {path
-                .sort((a, b) => {
-                  const indexA = args?.path.indexOf(
-                    a.contractAddress.toLowerCase()
-                  );
-                  const indexB = args?.path.indexOf(
-                    b.contractAddress.toLowerCase()
-                  );
-                  return indexA - indexB;
-                })
-                .map((p, i) => {
-                  if (i > 0) {
-                    return (
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
-                      >
-                        <Text>{"  →  "}</Text>
-                        {renderToken(p)}
-                      </div>
-                    );
-                  }
-                  return renderToken(p);
-                })}
-            </div>
-          )
-        : null}
+
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          cursor: "pointer",
+          justifyContent: "flex-end",
+          width: "100%",
+          marginTop: 8,
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            cursor: "pointer",
+          }}
+          onClick={() => {
+            setIsMore((prevState) => {
+              return prevState ? false : true;
+            });
+          }}
+        >
+          <Text size={14} weight="500">
+            {`View ${isMore ? "more" : "less"}`}
+          </Text>
+          {isMore ? (
+            <img
+              src={require("../../../public/assets/icon/tdesign_chevron-down.svg")}
+            />
+          ) : (
+            <img
+              src={require("../../../public/assets/icon/tdesign_chevron-up.svg")}
+            />
+          )}
+        </div>
+      </div>
     </div>
   );
 });

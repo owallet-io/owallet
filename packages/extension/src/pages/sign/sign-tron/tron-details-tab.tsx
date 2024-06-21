@@ -104,6 +104,10 @@ export const TronDetailsTab: FunctionComponent<{
         <div>
           <Card
             containerStyle={{
+              flexDirection: "row",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
               backgroundColor: colors["neutral-surface-action"],
               borderTopRightRadius: 12,
               borderBottomRightRadius: 12,
@@ -112,7 +116,7 @@ export const TronDetailsTab: FunctionComponent<{
               borderColor: colors["primary-surface-default"],
               padding: 12,
               marginTop: 12,
-              overflow: "scroll",
+              width: "100%",
             }}
           >
             {content}
@@ -344,7 +348,7 @@ export const MsgRender: FunctionComponent<{
   title: string;
 }> = ({ icon = "fas fa-question", title, children }) => {
   return (
-    <div className={styleDetailsTab.msg}>
+    <div style={{ width: "85%" }} className={styleDetailsTab.msg}>
       {icon && (
         <div className={styleDetailsTab.icon}>
           <div style={{ height: "2px" }} />
