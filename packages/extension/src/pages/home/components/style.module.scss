@@ -12,6 +12,12 @@
     justify-content: space-between;
     align-items: center;
 
+    .select-account:hover {
+      background-color: $neutral-surface-action;
+      border-radius: 999px;
+      padding: 4px;
+    }
+
     .select-account {
       display: flex;
       flex-direction: row;
@@ -247,7 +253,7 @@
 
   .header-left {
     display: flex;
-    flex:1;
+    flex: 1;
   }
 
   .title {
@@ -267,7 +273,7 @@
 
   .header-right {
     display: flex;
-    flex:1;
+    flex: 1;
     justify-content: flex-end;
 
     .close-btn {
