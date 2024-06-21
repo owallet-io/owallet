@@ -93,22 +93,6 @@ export const DetailsTab: FunctionComponent<{
         <div>
           <div
             style={{
-              marginTop: 14,
-              height: "auto",
-              alignItems: "center",
-            }}
-          >
-            <div
-              style={{
-                width: "100%",
-                height: 1,
-                backgroundColor: colors["neutral-border-default"],
-              }}
-            />
-          </div>
-
-          <div
-            style={{
               display: "flex",
               flexDirection: "row",
               justifyContent: "space-between",
@@ -126,11 +110,6 @@ export const DetailsTab: FunctionComponent<{
             >
               <div>
                 <Text weight="600">Fee</Text>
-              </div>
-              <div>
-                <Text color={colors["neutral-text-body"]}>
-                  Gas: {Number(msgs?.gas)}
-                </Text>
               </div>
             </div>
             <div
