@@ -34,11 +34,9 @@ import colors from "../../theme/colors";
 import { FeeModal } from "./modals/fee-modal";
 import { Button } from "../../components/common/button";
 import { Text } from "../../components/common/text";
-import { Card } from "../../components/common/card";
 import { DataModal } from "./modals/data-modal";
 import { WalletStatus } from "@owallet/stores";
 import { Address } from "../../components/address";
-import { useLanguage } from "@owallet/common";
 
 enum Tab {
   Details,
@@ -99,8 +97,6 @@ export const SignPage: FunctionComponent = observer(() => {
     gasConfig
   );
   const memoConfig = useMemoConfig(chainStore, current.chainId);
-
-  const language = useLanguage();
 
   const signDocHelper = useSignDocHelper(feeConfig, memoConfig);
   amountConfig.setSignDocHelper(signDocHelper);
@@ -417,64 +413,11 @@ export const SignPage: FunctionComponent = observer(() => {
                       }
                       preferNoSetFee={preferNoSetFee}
                       preferNoSetMemo={preferNoSetMemo}
+                      setOpenSetting={setOpenSetting}
                     />
                   )
                 ) : null}
               </div>
-              <Card
-                containerStyle={{
-                  borderRadius: 12,
-                  border: "1px solid" + colors["neutral-border-default"],
-                  padding: 8,
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                  }}
-                  onClick={() => {
-                    setOpenSetting(true);
-                  }}
-                >
-                  <Text weight="600">Transaction fee</Text>
-                  <div
-                    style={{
-                      flexDirection: "column",
-                      display: "flex",
-                      alignItems: "flex-end",
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        alignItems: "center",
-                        cursor: "pointer",
-                      }}
-                    >
-                      <Text
-                        size={16}
-                        weight="600"
-                        color={colors["primary-text-action"]}
-                      >
-                        {feeConfig.fee.maxDecimals(6).trim(true).toString() ||
-                          0}
-                      </Text>
-                      <img
-                        src={require("../../public/assets/icon/tdesign_chevron-down.svg")}
-                      />
-                    </div>
-                    <Text color={colors["neutral-text-body"]}>
-                      ≈
-                      {priceStore
-                        .calculatePrice(feeConfig.fee, language.fiatCurrency)
-                        ?.toString() || 0}
-                    </Text>
-                  </div>
-                </div>
-              </Card>
             </div>
             <div
               style={{

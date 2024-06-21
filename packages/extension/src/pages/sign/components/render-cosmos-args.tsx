@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { AppChainInfo } from "@owallet/types";
 import { EmbedChainInfos, toDisplay } from "@owallet/common";
@@ -65,6 +65,8 @@ export const CosmosRenderArgs: FunctionComponent<{
 
   let contractInfo;
   let receiveToken;
+  let tokenOut;
+  let tokensIn;
 
   // get info of token from this extra info
   if (txInfo?.unpacked?.contract) {
@@ -78,6 +80,7 @@ export const CosmosRenderArgs: FunctionComponent<{
     });
   }
 
+  useEffect(() => {});
   if (txInfo?.unpacked?.token) {
     const coin = new Coin(
       txInfo?.unpacked?.token.denom,
@@ -92,10 +95,17 @@ export const CosmosRenderArgs: FunctionComponent<{
       amount: clearDecimals(parsed.amount),
       denom: parsed.denom,
     };
+
+    if (parsed.currency) {
+      tokenOut = parsed.currency;
+    } else {
+      tokenOut = { amount: clearDecimals(parsed.amount), denom: parsed.denom };
+    }
   }
   const sent: { amount: string; denom: string }[] = [];
 
   if (txInfo?.unpacked?.funds) {
+    const tokens = [];
     for (const coinPrimitive of txInfo?.unpacked?.funds) {
       const coin = new Coin(coinPrimitive.denom, coinPrimitive.amount);
 
@@ -108,8 +118,16 @@ export const CosmosRenderArgs: FunctionComponent<{
         amount: clearDecimals(parsed.amount),
         denom: parsed.denom,
       });
-      console.log("receiveToken parsed", i, parsed);
+      if (parsed.currency) {
+        tokens.push(parsed.currency);
+      } else {
+        tokens.push({
+          amount: clearDecimals(parsed.amount),
+          denom: parsed.denom,
+        });
+      }
     }
+    tokensIn = tokens;
   }
 
   const renderToken = (token) => {
@@ -133,14 +151,16 @@ export const CosmosRenderArgs: FunctionComponent<{
             src={token?.imgUrl ?? token?.coinImageUrl}
           />
         ) : null}
-        <Text weight="600">{token?.abbr ?? token?.coinDenom}</Text>
+        <Text weight="600">
+          {token?.abbr ?? token?.coinDenom ?? token.denom}
+        </Text>
       </div>
     );
   };
 
   const renderPath = (fromToken?, toToken?, fromContract?, toContract?) => {
     const inToken = fromToken || contractInfo || null;
-    const outToken = toToken || ask_asset_info || null;
+    const outToken = toToken || tokenOut || ask_asset_info || null;
     const inContract =
       fromContract ||
       inToken?.contractAddress ||
@@ -319,7 +339,9 @@ export const CosmosRenderArgs: FunctionComponent<{
           {txInfo?.unpacked?.sender}
         </Text>
       )}
-      {renderPath()}
+      {tokensIn.length > 0
+        ? tokensIn.map((token, index) => renderPath(token))
+        : renderPath()}
       {/* {contractInfo && ask_asset_info ? renderPath(contractInfo, ask_asset_info) : null}
       {txInfo?.extraInfo?.remote_address && !txInfo?.decode?.send?.contract
         ? renderPath(null, null, txInfo?.unpacked?.contract, txInfo?.extraInfo?.remote_address)
@@ -330,26 +352,30 @@ export const CosmosRenderArgs: FunctionComponent<{
       {txInfo?.decode?.transfer_to_remote
         ? renderPath(null, null, txInfo?.unpacked?.contract, txInfo?.decode?.transfer_to_remote.remote_address)
         : null} */}
-      {sent.map((s) => {
-        return renderInfo(
-          s,
-          "Fund",
-          <Text color={colors["neutral-text-body"]}>
-            {s.amount} {s.denom}
-          </Text>
-        );
-      })}
-      {renderInfo(
-        contractInfo,
-        "Amount",
-        <Text color={colors["neutral-text-body"]}>
-          {toDisplay(txInfo?.decode?.send?.amount, contractInfo?.coinDecimals)}{" "}
-          {contractInfo?.coinDenom}
-        </Text>
-      )}
 
       {isMore ? null : (
         <>
+          {sent.map((s) => {
+            return renderInfo(
+              s,
+              "Fund",
+              <Text color={colors["neutral-text-body"]}>
+                {s.amount} {s.denom}
+              </Text>
+            );
+          })}
+          {renderInfo(
+            contractInfo,
+            "Amount",
+            <Text color={colors["neutral-text-body"]}>
+              {toDisplay(
+                txInfo?.decode?.send?.amount,
+                contractInfo?.coinDecimals
+              )}{" "}
+              {contractInfo?.coinDenom}
+            </Text>
+          )}
+
           {renderInfo(
             ask_asset_info && minimum_receive,
             "Min. Receive",

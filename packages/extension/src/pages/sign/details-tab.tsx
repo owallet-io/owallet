@@ -18,6 +18,7 @@ import { Text } from "../../components/common/text";
 import colors from "../../theme/colors";
 import { Card } from "../../components/common/card";
 import { CosmosRenderArgs } from "./components/render-cosmos-args";
+import { toDisplay, useLanguage } from "@owallet/common";
 
 export const DetailsTab: FunctionComponent<{
   signDocHelper: SignDocHelper;
@@ -27,7 +28,7 @@ export const DetailsTab: FunctionComponent<{
   signDocJsonAll: any;
 
   isInternal: boolean;
-
+  setOpenSetting: Function;
   preferNoSetFee: boolean;
   preferNoSetMemo: boolean;
 }> = observer(
@@ -40,9 +41,11 @@ export const DetailsTab: FunctionComponent<{
     preferNoSetFee,
     preferNoSetMemo,
     signDocJsonAll,
+    setOpenSetting,
   }) => {
-    const { chainStore, accountStore } = useStore();
+    const { chainStore, accountStore, priceStore } = useStore();
     const intl = useIntl();
+    const language = useLanguage();
 
     const mode = signDocHelper.signDocWrapper
       ? signDocHelper.signDocWrapper.mode
@@ -81,6 +84,95 @@ export const DetailsTab: FunctionComponent<{
           >
             {content}
           </Card>
+        </div>
+      );
+    };
+
+    const renderTransactionFee = () => {
+      return (
+        <div>
+          <div
+            style={{
+              marginTop: 14,
+              height: "auto",
+              alignItems: "center",
+            }}
+          >
+            <div
+              style={{
+                width: "100%",
+                height: 1,
+                backgroundColor: colors["neutral-border-default"],
+              }}
+            />
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginTop: 14,
+            }}
+            onClick={() => {
+              setOpenSetting();
+            }}
+          >
+            <div
+              style={{
+                flexDirection: "column",
+                display: "flex",
+              }}
+            >
+              <div>
+                <Text weight="600">Fee</Text>
+              </div>
+              <div>
+                <Text color={colors["neutral-text-body"]}>
+                  Gas: {Number(msgs?.gas)}
+                </Text>
+              </div>
+            </div>
+            <div
+              style={{
+                flexDirection: "column",
+                display: "flex",
+                alignItems: "flex-end",
+                width: "65%",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  cursor: "pointer",
+                }}
+              >
+                <Text
+                  size={16}
+                  weight="600"
+                  color={colors["primary-text-action"]}
+                >
+                  {feeConfig.fee.maxDecimals(6).trim(true).toString() || 0}
+                </Text>
+                <img
+                  src={require("../../public/assets/icon/tdesign_chevron-down.svg")}
+                />
+              </div>
+              <Text
+                containerStyle={{
+                  alignSelf: "flex-end",
+                  display: "flex",
+                }}
+                color={colors["neutral-text-body"]}
+              >
+                ≈
+                {priceStore
+                  .calculatePrice(feeConfig.fee, language.fiatCurrency)
+                  ?.toString() || 0}
+              </Text>
+            </div>
+          </div>
         </div>
       );
     };
@@ -203,6 +295,16 @@ export const DetailsTab: FunctionComponent<{
             </div>
           </React.Fragment>
         )}
+        <Card
+          containerStyle={{
+            borderRadius: 12,
+            border: "2px solid" + colors["neutral-text-title"],
+            padding: 8,
+            marginTop: 12,
+          }}
+        >
+          {renderTransactionFee()}
+        </Card>
       </div>
     );
   }
