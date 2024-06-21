@@ -1,14 +1,8 @@
 import React, { FunctionComponent } from "react";
-
 import { observer } from "mobx-react-lite";
-
 import styleDetailsTab from "../details-tab.module.scss";
 import { FormattedMessage } from "react-intl";
-import { Badge, Label } from "reactstrap";
-import classnames from "classnames";
-import { MsgRender } from "../details-tab";
 import { Bech32Address } from "@owallet/cosmos";
-import { formatBalance } from "@owallet/bitcoin";
 import { FeeButtons } from "../../../components/form";
 import { CoinGeckoPriceStore } from "@owallet/stores";
 import { FeeConfig, GasConfig } from "@owallet/hooks";
@@ -18,7 +12,7 @@ import { Card } from "../../../components/common/card";
 import colors from "../../../theme/colors";
 import { Text } from "../../../components/common/text";
 import { Address } from "../../../components/address";
-import { ChainIdEnum, useLanguage } from "@owallet/common";
+import { ChainIdEnum } from "@owallet/common";
 
 export const BtcDetailsTab: FunctionComponent<{
   dataSign;
@@ -39,7 +33,6 @@ export const BtcDetailsTab: FunctionComponent<{
     signer,
   }) => {
     const msgs = dataSign?.data?.data?.msgs;
-    const language = useLanguage();
     const fiatCurrency = priceStore.getFiatCurrency(
       priceStore.defaultVsCurrency
     );
@@ -390,7 +383,7 @@ export const BtcDetailsTab: FunctionComponent<{
             msgs?.address && Bech32Address.shortenAddress(msgs?.address, 20)
           )}
           {renderInfo(
-            msgs?.message,
+            true,
             "Message",
             <Text>
               {msgs?.message
