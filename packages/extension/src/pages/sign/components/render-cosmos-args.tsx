@@ -36,10 +36,17 @@ export const CosmosRenderArgs: FunctionComponent<{
   // infact we do have those infomation from config
   let minimum_receive;
   let ask_asset_info;
-  if (txInfo.extraInfo && txInfo.extraInfo.execute_swap_operations) {
-    const lastDes = txInfo.extraInfo.execute_swap_operations.operations.pop();
+  if (
+    (txInfo?.extraInfo && txInfo.extraInfo?.execute_swap_operations) ||
+    (txInfo?.decode && txInfo.decode?.execute_swap_operations)
+  ) {
+    const execute_swap_operations =
+      txInfo?.extraInfo?.execute_swap_operations ||
+      txInfo?.decode?.execute_swap_operations;
+    const lastDes = execute_swap_operations.operations.pop();
+
     const ask_asset = lastDes.orai_swap?.ask_asset_info?.token?.contract_addr;
-    minimum_receive = txInfo.extraInfo.execute_swap_operations.minimum_receive;
+    minimum_receive = execute_swap_operations.minimum_receive;
     if (ask_asset) {
       EmbedChainInfos.find((c) => {
         if (c.chainId === chain?.chainId) {
@@ -52,7 +59,7 @@ export const CosmosRenderArgs: FunctionComponent<{
     }
   }
 
-  console.log("txInfo", txInfo);
+  console.log("txInfo", i, txInfo);
 
   console.log("ask_asset_info", i, ask_asset_info);
 
@@ -144,7 +151,7 @@ export const CosmosRenderArgs: FunctionComponent<{
       outToken?.contractAddress ||
       txInfo?.extraInfo?.remote_address ||
       txInfo?.decode?.send?.contract ||
-      txInfo?.decode?.transfer_to_remote.remote_address ||
+      txInfo?.decode?.transfer_to_remote?.remote_address ||
       "-";
 
     return (
