@@ -19,6 +19,7 @@ import colors from "../../theme/colors";
 import { Card } from "../../components/common/card";
 import { CosmosRenderArgs } from "./components/render-cosmos-args";
 import { toDisplay, useLanguage } from "@owallet/common";
+import { Address } from "../../components/address";
 
 export const DetailsTab: FunctionComponent<{
   signDocHelper: SignDocHelper;
@@ -156,9 +157,83 @@ export const DetailsTab: FunctionComponent<{
       );
     };
 
+    const renderDestination = (from?, to?) => {
+      return (
+        <div
+          style={{
+            marginTop: 24,
+            height: "auto",
+            alignItems: "center",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginBottom: 14,
+            }}
+          >
+            <div
+              style={{
+                maxWidth: "50%",
+              }}
+            >
+              <div style={{ flexDirection: "column", display: "flex" }}>
+                <Text color={colors["neutral-text-body"]}>From</Text>
+                {from ? (
+                  <>
+                    <Address
+                      maxCharacters={6}
+                      lineBreakBeforePrefix={false}
+                      textDecor={"underline"}
+                      textColor={colors["neutral-text-body"]}
+                    >
+                      {from}
+                    </Address>
+                  </>
+                ) : (
+                  <Text color={colors["neutral-text-body"]}>-</Text>
+                )}
+              </div>
+            </div>
+            <img
+              style={{ paddingRight: 4 }}
+              src={require("../../public/assets/icon/tdesign_arrow-right.svg")}
+            />
+            <div
+              style={{
+                maxWidth: "50%",
+              }}
+            >
+              <div style={{ flexDirection: "column", display: "flex" }}>
+                <Text color={colors["neutral-text-body"]}>To</Text>
+                {to ? (
+                  <>
+                    <Address
+                      maxCharacters={6}
+                      lineBreakBeforePrefix={false}
+                      textDecor={"underline"}
+                      textColor={colors["neutral-text-body"]}
+                    >
+                      {to}
+                    </Address>
+                  </>
+                ) : (
+                  <Text color={colors["neutral-text-body"]}>-</Text>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
     const renderedMsgs = (() => {
       if (mode === "amino") {
         return (msgs as readonly Msg[]).map((msg, i) => {
+          console.log("sign send here", msg);
+
           const msgContent = renderAminoMessage(
             accountStore.getAccount(chainStore.current.chainId).msgOpts,
             msg,
@@ -173,7 +248,19 @@ export const DetailsTab: FunctionComponent<{
                 </MsgRender>
               )}
 
-              <hr />
+              <Card
+                containerStyle={{
+                  borderRadius: 12,
+                  border: "1px solid" + colors["neutral-border-default"],
+                  padding: 8,
+                  marginTop: 24,
+                }}
+              >
+                {renderDestination(
+                  msg?.value?.from_address,
+                  msg?.value?.to_address
+                )}
+              </Card>
             </React.Fragment>
           );
         });

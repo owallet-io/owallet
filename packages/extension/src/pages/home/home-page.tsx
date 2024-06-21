@@ -13,6 +13,9 @@ import {
 
 import { CoinPretty, PricePretty } from "@owallet/unit";
 import { IMultipleAsset, ViewRawToken, ViewTokenData } from "@owallet/types";
+import { SendPage } from "../send";
+import { SendEvmPage } from "../send-evm/send-evm";
+import { SendTronEvmPage } from "../send-tron";
 
 export const HomePage = observer(() => {
   const [refreshing, setRefreshing] = React.useState(false);
@@ -50,6 +53,9 @@ export const HomePage = observer(() => {
       <InfoAccountCard totalPrice={totalPriceBalance} />
       {/*TODO:// need check again Claim reward */}
       {/*<ClaimReward />*/}
+      <SendPage />
+      {/* <SendEvmPage />; */}
+      {/* <SendTronEvmPage />; */}
       <TokensCard dataTokens={sortTokensByPrice(dataTokens)} />
     </FooterLayout>
   );
