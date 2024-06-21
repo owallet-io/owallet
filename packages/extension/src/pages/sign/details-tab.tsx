@@ -12,15 +12,11 @@ import {
   IMemoConfig,
   SignDocHelper,
 } from "@owallet/hooks";
-import { EmbedChainInfos, toDisplay } from "@owallet/common";
 import { Label } from "reactstrap";
 import { renderDirectMessage } from "./direct";
 import { Text } from "../../components/common/text";
 import colors from "../../theme/colors";
 import { Card } from "../../components/common/card";
-import { Coin, CoinUtils } from "@owallet/unit";
-import { clearDecimals } from "./messages";
-import { Address } from "../../components/address";
 import { CosmosRenderArgs } from "./components/render-cosmos-args";
 
 export const DetailsTab: FunctionComponent<{
@@ -61,7 +57,6 @@ export const DetailsTab: FunctionComponent<{
 
     if (signDocJsonAll) {
       chain = chainStore.getChain(signDocJsonAll?.chainId);
-      console.log("chain,", chain);
     }
 
     const renderMsg = (content) => {

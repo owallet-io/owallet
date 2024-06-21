@@ -52,6 +52,8 @@ export const CosmosRenderArgs: FunctionComponent<{
     }
   }
 
+  console.log("txInfo", txInfo);
+
   console.log("ask_asset_info", i, ask_asset_info);
 
   let contractInfo;
@@ -130,6 +132,21 @@ export const CosmosRenderArgs: FunctionComponent<{
   };
 
   const renderPath = (fromToken?, toToken?, fromContract?, toContract?) => {
+    const inToken = fromToken || contractInfo || null;
+    const outToken = toToken || ask_asset_info || null;
+    const inContract =
+      fromContract ||
+      inToken?.contractAddress ||
+      txInfo?.unpacked?.contract ||
+      "-";
+    const outContract =
+      toContract ||
+      outToken?.contractAddress ||
+      txInfo?.extraInfo?.remote_address ||
+      txInfo?.decode?.send?.contract ||
+      txInfo?.decode?.transfer_to_remote.remote_address ||
+      "-";
+
     return (
       <div
         style={{
@@ -153,30 +170,20 @@ export const CosmosRenderArgs: FunctionComponent<{
           >
             <div style={{ flexDirection: "column", display: "flex" }}>
               <Text color={colors["neutral-text-body"]}>Pay token</Text>
-              {fromToken ? (
-                <>
-                  {renderToken(fromToken)}
-                  <Address
-                    maxCharacters={8}
-                    lineBreakBeforePrefix={false}
-                    textDecor={"underline"}
-                    textColor={colors["neutral-text-body"]}
-                  >
-                    {fromToken.contractAddress}
-                  </Address>
-                </>
+              {inToken ? (
+                <>{renderToken(inToken)}</>
               ) : (
                 <Text color={colors["neutral-text-body"]}>-</Text>
               )}
 
-              {fromContract ? (
+              {inContract && inContract !== "-" ? (
                 <Address
                   maxCharacters={8}
                   lineBreakBeforePrefix={false}
                   textDecor={"underline"}
                   textColor={colors["neutral-text-body"]}
                 >
-                  {fromContract}
+                  {inContract}
                 </Address>
               ) : null}
             </div>
@@ -192,30 +199,20 @@ export const CosmosRenderArgs: FunctionComponent<{
           >
             <div style={{ flexDirection: "column", display: "flex" }}>
               <Text color={colors["neutral-text-body"]}>Receive token</Text>
-              {toToken ? (
-                <>
-                  {renderToken(toToken)}
-                  <Address
-                    maxCharacters={8}
-                    lineBreakBeforePrefix={false}
-                    textDecor={"underline"}
-                    textColor={colors["neutral-text-body"]}
-                  >
-                    {toToken.contractAddress}
-                  </Address>
-                </>
+              {outToken ? (
+                <>{renderToken(outToken)}</>
               ) : (
                 <Text color={colors["neutral-text-body"]}>-</Text>
               )}
 
-              {toContract ? (
+              {outContract && outContract !== "-" ? (
                 <Address
                   maxCharacters={8}
                   lineBreakBeforePrefix={false}
                   textDecor={"underline"}
                   textColor={colors["neutral-text-body"]}
                 >
-                  {toContract}
+                  {outContract}
                 </Address>
               ) : null}
             </div>
@@ -311,28 +308,17 @@ export const CosmosRenderArgs: FunctionComponent<{
           {txInfo?.unpacked?.sender}
         </Text>
       )}
-      {contractInfo && ask_asset_info
-        ? renderPath(contractInfo, ask_asset_info)
-        : null}
+      {renderPath()}
+      {/* {contractInfo && ask_asset_info ? renderPath(contractInfo, ask_asset_info) : null}
       {txInfo?.extraInfo?.remote_address && !txInfo?.decode?.send?.contract
-        ? renderPath(
-            null,
-            null,
-            txInfo?.unpacked?.contract,
-            txInfo?.extraInfo?.remote_address
-          )
+        ? renderPath(null, null, txInfo?.unpacked?.contract, txInfo?.extraInfo?.remote_address)
         : null}
       {txInfo?.decode?.send?.contract && !ask_asset_info
         ? renderPath(contractInfo, null, null, txInfo?.decode?.send?.contract)
         : null}
       {txInfo?.decode?.transfer_to_remote
-        ? renderPath(
-            null,
-            null,
-            txInfo?.unpacked?.contract,
-            txInfo?.decode?.transfer_to_remote.remote_address
-          )
-        : null}
+        ? renderPath(null, null, txInfo?.unpacked?.contract, txInfo?.decode?.transfer_to_remote.remote_address)
+        : null} */}
       {sent.map((s) => {
         return renderInfo(
           s,
@@ -350,29 +336,33 @@ export const CosmosRenderArgs: FunctionComponent<{
           {contractInfo?.coinDenom}
         </Text>
       )}
-      {renderInfo(
-        ask_asset_info && minimum_receive,
-        "Min. Receive",
-        <Text color={colors["neutral-text-body"]}>
-          {toDisplay(minimum_receive, ask_asset_info?.coinDecimals)}{" "}
-          {ask_asset_info?.coinDenom}
-        </Text>
+
+      {isMore ? null : (
+        <>
+          {renderInfo(
+            ask_asset_info && minimum_receive,
+            "Min. Receive",
+            <Text color={colors["neutral-text-body"]}>
+              {toDisplay(minimum_receive, ask_asset_info?.coinDecimals)}{" "}
+              {ask_asset_info?.coinDenom}
+            </Text>
+          )}
+          {renderInfo(
+            txInfo?.unpacked?.receiver,
+            "Receiver",
+            <Text color={colors["neutral-text-body"]}>
+              {txInfo?.unpacked?.receiver}
+            </Text>
+          )}
+          {renderInfo(
+            receiveToken,
+            "Transfer",
+            <Text color={colors["neutral-text-body"]}>
+              {receiveToken?.amount} {receiveToken?.denom}
+            </Text>
+          )}
+        </>
       )}
-      {renderInfo(
-        txInfo?.unpacked?.receiver,
-        "Receiver",
-        <Text color={colors["neutral-text-body"]}>
-          {txInfo?.unpacked?.receiver}
-        </Text>
-      )}
-      {renderInfo(
-        receiveToken,
-        "Transfer",
-        <Text color={colors["neutral-text-body"]}>
-          {receiveToken?.amount} {receiveToken?.denom}
-        </Text>
-      )}
-      {isMore ? null : <></>}
 
       <div
         style={{
