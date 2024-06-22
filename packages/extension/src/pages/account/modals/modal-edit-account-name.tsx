@@ -25,7 +25,6 @@ export const ModalEditAccountNamePage: FC<{
 }> = observer(({ isOpen, onRequestClose, keyStoreIndex }) => {
   const { keyRingStore } = useStore();
   const keyStore = keyRingStore.multiKeyStoreInfo[keyStoreIndex];
-  console.log(keyStore?.meta?.name, "keyStore?.meta?.name");
   const { register, handleSubmit, getValues, setError, errors, setValue } =
     useForm<FormData>({});
   const intl = useIntl();

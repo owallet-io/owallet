@@ -9,20 +9,67 @@ import { HeaderModal } from "../../home/components/header-modal";
 import { LayoutWithButtonBottom } from "../../../layouts/button-bottom-layout/layout-with-button-bottom";
 import { useHistory } from "react-router";
 import Colors from "../../../theme/colors";
+import { PasswordInput } from "../../../components/form";
+import colors from "../../../theme/colors";
+import style from "../../lock/style.module.scss";
+import delay from "delay";
+import { Form } from "reactstrap";
+import useForm from "react-hook-form";
+import { flowResult } from "mobx";
+import { useLoadingIndicator } from "../../../components/loading-indicator";
+
+interface FormData {
+  password: string;
+}
 
 export const ModalRecoveryPhrase: FC<{
   isOpen: boolean;
   onRequestClose: () => void;
-}> = observer(({ isOpen, onRequestClose }) => {
+  keyStoreIndex?: number;
+  onKeyring: (value: string) => void;
+}> = observer(({ isOpen, onKeyring, onRequestClose, keyStoreIndex }) => {
   const { chainStore, accountStore, priceStore, keyRingStore } = useStore();
 
   const intl = useIntl();
   const notification = useNotification();
   const history = useHistory();
-  const onConfirm = () => {
-    history.push("/reveal-private-key");
-    return;
-  };
+  // const onConfirm = () => {
+  //   history.push('/reveal-private-key');
+  //   return;
+  // };
+
+  const passwordRef = useRef<HTMLInputElement | null>();
+
+  const { register, handleSubmit, setError, errors } = useForm<FormData>({
+    defaultValues: {
+      password: "",
+    },
+  });
+  const loading = useLoadingIndicator();
+  const keyStore = keyRingStore.multiKeyStoreInfo[keyStoreIndex];
+  const onSubmit = handleSubmit(async (data) => {
+    loading.setIsLoading("showkeyring", true);
+    try {
+      const keyring = await flowResult(
+        keyRingStore.showKeyRing(keyStoreIndex, data.password)
+      );
+      if (!keyring) return;
+      onKeyring(keyring);
+      console.log(keyring, "keyring");
+      return;
+    } catch (e) {
+      console.log("Fail to decrypt: " + e.message);
+      setError(
+        "password",
+        "invalid",
+        intl.formatMessage({
+          id: "setting.export.input.password.error.invalid",
+        })
+      );
+    } finally {
+      loading.setIsLoading("showkeyring", false);
+    }
+  });
   return (
     <SlidingPane
       isOpen={isOpen}
@@ -36,7 +83,7 @@ export const ModalRecoveryPhrase: FC<{
         titleButton={"Confirm"}
         backgroundColor={Colors["neutral-surface-card"]}
         isDisabledHeader={true}
-        onClickButtonBottom={onConfirm}
+        onClickButtonBottom={onSubmit}
       >
         <HeaderModal title={""} onRequestClose={onRequestClose} />
         <div className={styles.contentWrap}>
@@ -53,14 +100,25 @@ export const ModalRecoveryPhrase: FC<{
             <span className={styles.warning}>DO NOT SHARE </span> it with
             anyone.
           </span>
-          <div className={styles.containerInput}>
-            <input
-              className={styles.inputPass}
-              type="password"
-              placeholder={"Enter your password"}
-              name={"yourPassword"}
+          <Form className={style.formContainer} onSubmit={onSubmit}>
+            <PasswordInput
+              styleInputGroup={{
+                borderColor: colors["primary-surface-default"],
+                borderWidth: 2,
+              }}
+              name="password"
+              error={errors.password && errors.password.message}
+              ref={(ref) => {
+                passwordRef.current = ref;
+                register({
+                  required: intl.formatMessage({
+                    id: "lock.input.password.error.required",
+                  }),
+                })(ref);
+              }}
+              placeholder="Enter your account password"
             />
-          </div>
+          </Form>
         </div>
       </LayoutWithButtonBottom>
     </SlidingPane>

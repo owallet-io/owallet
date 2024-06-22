@@ -283,12 +283,12 @@ ReactDOM.render(
                   <Route exact path="/receive" component={ReceivePage} />
                   <Route
                     exact
-                    path="/reveal-recovery-phrase"
+                    path="/reveal-recovery-phrase/:keystoreIndex"
                     component={RevealRecoveryPhrasePage}
                   />
                   <Route
                     exact
-                    path="/reveal-private-key"
+                    path="/reveal-private-key/:keystoreIndex"
                     component={RevealPrivateKeyPage}
                   />
                   <Route

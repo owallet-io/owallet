@@ -10,14 +10,12 @@ import { useStore } from "../../stores";
 import { useParams, useLocation } from "react-router-dom";
 import { KeyStore } from "@owallet/background/build/keyring/crypto";
 import { formatAddress } from "@owallet/common";
+import { useHistory } from "react-router";
 
 export const EditAccountPage = observer(() => {
-  const [isShowRecoveryPhrase, setIsShowRecoveryPhrase] = useState(false);
   const [isShowAccountName, setIsShowAccountName] = useState(false);
   const [isShowModalRemoveWallet, setIsShowModalRemoveWallet] = useState(false);
-  const onShowModalRecoveryPhrase = () => {
-    setIsShowRecoveryPhrase(true);
-  };
+
   const onShowModalEditAccountName = () => {
     setIsShowAccountName(true);
   };
@@ -42,6 +40,17 @@ export const EditAccountPage = observer(() => {
       url: "/popup.html#/register",
     });
     return;
+  };
+  const history = useHistory();
+  const onShowPhrasePage = () => {
+    if (wallet.type === "mnemonic") {
+      history.push(`/reveal-recovery-phrase/${params.keystoreIndex}`);
+      return;
+    }
+    if (wallet.type === "privateKey") {
+      history.push(`/reveal-private-key/${params.keystoreIndex}`);
+      return;
+    }
   };
   return (
     <LayoutWithButtonBottom
@@ -78,22 +87,26 @@ export const EditAccountPage = observer(() => {
             />
           </div>
         </div>
-        <div onClick={onShowModalRecoveryPhrase} className={styles.actionItem}>
-          <span className={styles.leftTitle}>Reveal Recovery Phrase</span>
-          <div className={styles.blockRight}>
-            <img
-              src={require("../../public/assets/svg/tdesign_chevron_right.svg")}
-            />
+        {wallet?.type === "mnemonic" && (
+          <div onClick={onShowPhrasePage} className={styles.actionItem}>
+            <span className={styles.leftTitle}>Reveal Recovery Phrase</span>
+            <div className={styles.blockRight}>
+              <img
+                src={require("../../public/assets/svg/tdesign_chevron_right.svg")}
+              />
+            </div>
           </div>
-        </div>
-        <div onClick={onShowModalRecoveryPhrase} className={styles.actionItem}>
-          <span className={styles.leftTitle}>Reveal Private Key</span>
-          <div className={styles.blockRight}>
-            <img
-              src={require("../../public/assets/svg/tdesign_chevron_right.svg")}
-            />
+        )}
+        {wallet?.type === "privateKey" && (
+          <div onClick={onShowPhrasePage} className={styles.actionItem}>
+            <span className={styles.leftTitle}>Reveal Private Key</span>
+            <div className={styles.blockRight}>
+              <img
+                src={require("../../public/assets/svg/tdesign_chevron_right.svg")}
+              />
+            </div>
           </div>
-        </div>
+        )}
         <div
           onClick={onShowModalRemoveAccount}
           className={`${styles.actionItem} ${styles.removeAccount}`}
@@ -101,10 +114,7 @@ export const EditAccountPage = observer(() => {
           <span className={styles.leftTitle}>Remove account</span>
         </div>
       </div>
-      <ModalRecoveryPhrase
-        isOpen={isShowRecoveryPhrase}
-        onRequestClose={() => setIsShowRecoveryPhrase(false)}
-      />
+
       <ModalEditAccountNamePage
         keyStoreIndex={Number(params.keystoreIndex)}
         isOpen={isShowAccountName}
