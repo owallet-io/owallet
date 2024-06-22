@@ -28,16 +28,9 @@ export const ModalRecoveryPhrase: FC<{
   keyStoreIndex?: number;
   onKeyring: (value: string) => void;
 }> = observer(({ isOpen, onKeyring, onRequestClose, keyStoreIndex }) => {
-  const { chainStore, accountStore, priceStore, keyRingStore } = useStore();
+  const { keyRingStore } = useStore();
 
   const intl = useIntl();
-  const notification = useNotification();
-  const history = useHistory();
-  // const onConfirm = () => {
-  //   history.push('/reveal-private-key');
-  //   return;
-  // };
-
   const passwordRef = useRef<HTMLInputElement | null>();
 
   const { register, handleSubmit, setError, errors } = useForm<FormData>({
@@ -46,7 +39,6 @@ export const ModalRecoveryPhrase: FC<{
     },
   });
   const loading = useLoadingIndicator();
-  const keyStore = keyRingStore.multiKeyStoreInfo[keyStoreIndex];
   const onSubmit = handleSubmit(async (data) => {
     loading.setIsLoading("showkeyring", true);
     try {

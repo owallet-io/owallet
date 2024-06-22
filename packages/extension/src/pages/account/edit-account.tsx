@@ -121,6 +121,7 @@ export const EditAccountPage = observer(() => {
         onRequestClose={() => setIsShowAccountName(false)}
       />
       <ModalRemoveAccount
+        keyStoreIndex={Number(params.keystoreIndex)}
         isOpen={isShowModalRemoveWallet}
         onRequestClose={() => setIsShowModalRemoveWallet(false)}
       />
