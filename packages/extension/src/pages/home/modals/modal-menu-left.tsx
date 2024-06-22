@@ -63,28 +63,31 @@ export const ModalMenuLeft: FC<{
             }}
             className={styles.itemMenu}
           >
-            <div className={styles.btnIcon}>
-              <img className={styles.imgIcon} src={item.icon} />
+            <div className={styles.leftBlock}>
+              <div className={styles.btnIcon}>
+                <img className={styles.imgIcon} src={item.icon} />
+              </div>
+              <span className={styles.nameMenu}>{item.name}</span>
             </div>
-            <span className={styles.nameMenu}>{item.name}</span>
+            {item.value && <span className={styles.version}>{item.value}</span>}
           </div>
         ))}
       </div>
     </SlidingPane>
   );
 });
-
+const manifestData = chrome.runtime.getManifest();
 const dataItem = [
   {
     name: "Add Token",
     icon: require("../../../public/assets/svg/tdesign_add_circle.svg"),
     id: 1,
   },
-  {
-    name: "Manage Token list",
-    icon: require("../../../public/assets/svg/tdesign_list.svg"),
-    id: 2,
-  },
+  // {
+  //   name: "Manage Token list",
+  //   icon: require("../../../public/assets/svg/tdesign_list.svg"),
+  //   id: 2,
+  // },
   {
     name: "Address Book",
     icon: require("../../../public/assets/svg/tdesign_address_book.svg"),
@@ -111,6 +114,6 @@ const dataItem = [
     name: "About us",
     icon: require("../../../public/assets/svg/tdesign_info_circle.svg"),
     id: 7,
-    value: "v3.0.0",
+    value: `v${manifestData.version}`,
   },
 ];

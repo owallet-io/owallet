@@ -146,39 +146,53 @@
 
     .item-menu:not(:first-child):hover {
       background-color: $neutral-surface-bg2;
-      padding-left: 8px;
+      padding:8px;
       border-radius: 12px;
     }
 
     .item-menu {
       display: flex;
       flex-direction: row;
-      gap: 16px;
       padding: 8px 0;
       align-items: center;
       cursor: pointer;
+      justify-content: space-between;
 
-      .btn-icon {
-        background-color: $neutral-surface-action;
-        border-radius: 999px;
-        width: 44px;
-        height: 44px;
+      .left-block {
         display: flex;
+        flex-direction: row;
+        gap: 16px;
         align-items: center;
-        justify-content: center;
+        .btn-icon {
+          background-color: $neutral-surface-action;
+          border-radius: 999px;
+          width: 44px;
+          height: 44px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
 
 
-        .img-icon {
-          width: 20px;
-          height: 20px;
+          .img-icon {
+            width: 20px;
+            height: 20px;
+          }
+        }
+
+        .name-menu {
+          font-size: 16px;
+          font-weight: 600;
+          line-height: 24px;
+          color: $neutral-text-title;
         }
       }
 
-      .name-menu {
-        font-size: 16px;
-        font-weight: 600;
-        line-height: 24px;
+      .version {
         color: $neutral-text-title;
+        text-align: center;
+        font-size: 16px;
+        font-weight: 500;
+        line-height: 24px; /* 150% */
       }
     }
   }

@@ -34,6 +34,7 @@ export const RevealPrivateKeyPage = () => {
     <LayoutWithButtonBottom
       titleButton={"Already Backed Up"}
       title={"Reveal PRIVATE KEY"}
+      onClickButtonBottom={() => history.goBack()}
       backgroundColor={Colors["neutral-surface-card"]}
     >
       <div className={styles.container}>

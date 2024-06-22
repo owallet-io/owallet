@@ -38,6 +38,7 @@ export const RevealRecoveryPhrasePage = () => {
     <LayoutWithButtonBottom
       backgroundColor={Colors["neutral-surface-card"]}
       title={"Reveal Recovery Phrase"}
+      onClickButtonBottom={() => history.goBack()}
       titleButton={"Already Backed Up"}
     >
       <div className={styles.container}>
