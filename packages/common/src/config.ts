@@ -765,7 +765,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinImageUrl:
         "https://assets.coingecko.com/coins/images/16724/standard/osmo.png",
       gasPriceStep: {
-        low: 0,
+        low: 0.0025,
         average: 0.025,
         high: 0.04,
       },
