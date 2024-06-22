@@ -1,6 +1,7 @@
 import { ResBalanceEvm, TokenInfo } from "@owallet/types";
 import { urlTxHistory } from "../utils";
 import { fetchRetry } from "./api.utils";
+import { AxiosRequestConfig } from "axios";
 
 export class API {
   static async getMultipleTokenInfo({ tokenAddresses }, config?: any) {
@@ -19,6 +20,10 @@ export class API {
   }
   static async getBtcBalance({ address, baseUrl }, config?: any) {
     const url = `${baseUrl}/address/${address}/utxo`;
+    return fetchRetry(url, config);
+  }
+  static async getTokenInfo({ tokenAddress, network }, config?: any) {
+    const url = `${urlTxHistory}v1/token-info/${network}/${tokenAddress}`;
     return fetchRetry(url, config);
   }
 }

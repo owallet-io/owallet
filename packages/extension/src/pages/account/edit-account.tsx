@@ -31,10 +31,7 @@ export const EditAccountPage = observer(() => {
   const address = accountInfo.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses
   );
-  console.log(params, "params");
-  // const keyStore = location.state?.keyStore;
   const wallet = keyRingStore.multiKeyStoreInfo[Number(params.keystoreIndex)];
-  console.log(wallet, "wallet");
   const onAddAccount = () => {
     browser.tabs.create({
       url: "/popup.html#/register",

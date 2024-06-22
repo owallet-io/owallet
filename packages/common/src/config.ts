@@ -122,16 +122,16 @@ export const EmbedChainInfos: AppChainInfo[] = [
     get currencies() {
       return [
         this.stakeCurrency,
-        {
-          type: "cw20",
-          coinDenom: "AIRI",
-          coinMinimalDenom:
-            "cw20:orai10ldgzued6zjp0mkqwsv2mux3ml50l97c74x8sg:aiRight Token",
-          contractAddress: "orai10ldgzued6zjp0mkqwsv2mux3ml50l97c74x8sg",
-          coinDecimals: 6,
-          coinGeckoId: "airight",
-          coinImageUrl: "https://i.ibb.co/m8mCyMr/airi.png",
-        },
+        // {
+        //   type: "cw20",
+        //   coinDenom: "AIRI",
+        //   coinMinimalDenom:
+        //     "cw20:orai10ldgzued6zjp0mkqwsv2mux3ml50l97c74x8sg:aiRight Token",
+        //   contractAddress: "orai10ldgzued6zjp0mkqwsv2mux3ml50l97c74x8sg",
+        //   coinDecimals: 6,
+        //   coinGeckoId: "airight",
+        //   coinImageUrl: "https://i.ibb.co/m8mCyMr/airi.png",
+        // },
         {
           type: "cw20",
           coinDenom: "SCORAI",

@@ -18,12 +18,14 @@ export const ModalMenuLeft: FC<{
   };
   const actionMenu = (item) => {
     switch (item.id) {
-      case 6:
+      case MenuEnum.LOCK:
         lock();
         break;
-      case 4:
-        // code block
+      case MenuEnum.CONNECTED_DAPP:
         history.push("/connected-dapp");
+        break;
+      case MenuEnum.ADD_TOKEN:
+        history.push("/add-token");
         break;
       default:
       // code block
@@ -84,11 +86,21 @@ export const ModalMenuLeft: FC<{
   );
 });
 const manifestData = chrome.runtime.getManifest();
+
+enum MenuEnum {
+  ADD_TOKEN = 1,
+  ADDR_BOOK = 3,
+  CONNECTED_DAPP = 4,
+  PREFERENCES = 5,
+  LOCK = 6,
+  ABOUT_USER = 7,
+}
+
 const dataItem = [
   {
     name: "Add Token",
     icon: require("../../../public/assets/svg/tdesign_add_circle.svg"),
-    id: 1,
+    id: MenuEnum.ADD_TOKEN,
   },
   // {
   //   name: "Manage Token list",
@@ -98,29 +110,29 @@ const dataItem = [
   {
     name: "Address Book",
     icon: require("../../../public/assets/svg/tdesign_address_book.svg"),
-    id: 3,
+    id: MenuEnum.ADDR_BOOK,
   },
   {
     name: "Connected DApp",
     icon: require("../../../public/assets/svg/tdesign_internet.svg"),
-    id: 4,
+    id: MenuEnum.CONNECTED_DAPP,
   },
   {
     name: "Preferences",
     icon: require("../../../public/assets/svg/tdesign_adjustment.svg"),
     isBorderBottom: true,
-    id: 5,
+    id: MenuEnum.PREFERENCES,
   },
   {
     name: "Lock Wallet",
     icon: require("../../../public/assets/svg/tdesign_lock_on.svg"),
-    id: 6,
+    id: MenuEnum.LOCK,
     isBorderBottom: true,
   },
   {
     name: "About us",
     icon: require("../../../public/assets/svg/tdesign_info_circle.svg"),
-    id: 7,
+    id: MenuEnum.ABOUT_USER,
     value: `v${manifestData.version}`,
   },
 ];

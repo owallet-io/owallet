@@ -45,7 +45,7 @@ import { SettingFiatPage } from "./pages/setting/fiat";
 import { ChangeNamePage } from "./pages/setting/keyring/change";
 import { SettingLanguagePage } from "./pages/setting/language";
 import { AddEvmTokenPage } from "./pages/setting/token-evm/add";
-import { AddTokenPage } from "./pages/setting/token/add";
+// import { AddTokenPage } from "./pages/setting/token/add";
 import { ManageTokenPage } from "./pages/setting/token/manage";
 import { SignPage } from "./pages/sign";
 import { StoreProvider, useStore } from "./stores";
@@ -189,6 +189,7 @@ import { EditAccountPage } from "./pages/account/edit-account";
 import { RevealRecoveryPhrasePage } from "./pages/account/reveal-recovery-phrase-page";
 import { RevealPrivateKeyPage } from "./pages/account/reveal-private-key-page";
 import { ConnectedDappPage } from "./pages/connected-dapp/connected-dapp-page";
+import { AddTokenPage } from "./pages/add-token/add-token-page";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -297,6 +298,7 @@ ReactDOM.render(
                     path="/select-account"
                     component={SelectAccountPage}
                   />
+                  <Route exact path="/add-token" component={AddTokenPage} />
                   <Route
                     exact
                     path="/edit-account/:keystoreIndex"
@@ -392,11 +394,11 @@ ReactDOM.render(
                     path="/setting/keyring/change/name/:index"
                     component={ChangeNamePage}
                   />
-                  <Route
-                    exact
-                    path="/setting/token/add"
-                    component={AddTokenPage}
-                  />
+                  {/*<Route*/}
+                  {/*  exact*/}
+                  {/*  path="/setting/token/add"*/}
+                  {/*  component={AddTokenPage}*/}
+                  {/*/>*/}
                   <Route
                     exact
                     path="/setting/token-evm/add"

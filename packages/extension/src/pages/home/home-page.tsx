@@ -10,10 +10,6 @@ import {
   sortTokensByPrice,
   useMultipleAssets,
 } from "../../hooks/use-multiple-assets";
-
-import { CoinPretty, PricePretty } from "@owallet/unit";
-import { IMultipleAsset, ViewRawToken, ViewTokenData } from "@owallet/types";
-
 export const HomePage = observer(() => {
   const [refreshing, setRefreshing] = React.useState(false);
   const { chainStore, accountStore, priceStore, keyRingStore } = useStore();
