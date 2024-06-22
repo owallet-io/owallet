@@ -25,11 +25,7 @@ export const RevealRecoveryPhrasePage = () => {
   const onShowPhrase = () => {
     setIsShowPhrase(true);
   };
-  console.log(keyring, "keyring");
   const [isShowRecoveryPhrase, setIsShowRecoveryPhrase] = useState(false);
-  // const onShowModalRecoveryPhrase = () => {
-  //   setIsShowRecoveryPhrase(true);
-  // };
   useEffect(() => {
     if (keyring?.length > 0) return;
     setIsShowRecoveryPhrase(true);
@@ -88,7 +84,6 @@ export const RevealRecoveryPhrasePage = () => {
         keyStoreIndex={Number(params.keystoreIndex)}
         onRequestClose={() => {
           history.goBack();
-          // setIsShowRecoveryPhrase(false);
           return;
         }}
       />
