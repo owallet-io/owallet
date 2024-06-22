@@ -10,6 +10,7 @@ export const LayoutWithButtonBottom: FC<{
   titleButton?: string;
   onClickButtonBottom?: () => void;
   btnBackgroundColor?: string;
+  isHideButtonBottom?: boolean;
 }> = ({
   title,
   backgroundColor,
@@ -18,6 +19,7 @@ export const LayoutWithButtonBottom: FC<{
   titleButton,
   isDisabledHeader,
   btnBackgroundColor,
+  isHideButtonBottom,
 }) => {
   return (
     <div
@@ -36,11 +38,13 @@ export const LayoutWithButtonBottom: FC<{
         />
       )}
       {children}
-      <ButtonBottom
-        btnBackgroundColor={btnBackgroundColor}
-        onClickButtonBottom={onClickButtonBottom}
-        title={titleButton}
-      />
+      {!isHideButtonBottom && (
+        <ButtonBottom
+          btnBackgroundColor={btnBackgroundColor}
+          onClickButtonBottom={onClickButtonBottom}
+          title={titleButton}
+        />
+      )}
     </div>
   );
 };

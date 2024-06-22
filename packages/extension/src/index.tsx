@@ -188,6 +188,7 @@ import { SelectAccountPage } from "./pages/account/select-account-page";
 import { EditAccountPage } from "./pages/account/edit-account";
 import { RevealRecoveryPhrasePage } from "./pages/account/reveal-recovery-phrase-page";
 import { RevealPrivateKeyPage } from "./pages/account/reveal-private-key-page";
+import { ConnectedDappPage } from "./pages/connected-dapp/connected-dapp-page";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -301,6 +302,12 @@ ReactDOM.render(
                     path="/edit-account/:keystoreIndex"
                     component={EditAccountPage}
                   />
+                  <Route
+                    exact
+                    path="/connected-dapp"
+                    component={ConnectedDappPage}
+                  />
+
                   <Route exact path="/token" component={TokenPage} />
                   <Route
                     exact

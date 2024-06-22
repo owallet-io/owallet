@@ -17,9 +17,16 @@ export const ModalMenuLeft: FC<{
     onRequestClose();
   };
   const actionMenu = (item) => {
-    if (item.id === 6) {
-      lock();
-      return;
+    switch (item.id) {
+      case 6:
+        lock();
+        break;
+      case 4:
+        // code block
+        history.push("/connected-dapp");
+        break;
+      default:
+      // code block
     }
   };
   return (
