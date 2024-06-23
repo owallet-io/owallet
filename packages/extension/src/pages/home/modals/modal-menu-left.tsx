@@ -27,6 +27,9 @@ export const ModalMenuLeft: FC<{
       case MenuEnum.ADD_TOKEN:
         history.push("/add-token");
         break;
+      case MenuEnum.PREFERENCES:
+        history.push("/preferences");
+        break;
       default:
       // code block
     }

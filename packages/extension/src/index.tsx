@@ -190,6 +190,7 @@ import { RevealRecoveryPhrasePage } from "./pages/account/reveal-recovery-phrase
 import { RevealPrivateKeyPage } from "./pages/account/reveal-private-key-page";
 import { ConnectedDappPage } from "./pages/connected-dapp/connected-dapp-page";
 import { AddTokenPage } from "./pages/add-token/add-token-page";
+import { PreferencesPage } from "./pages/preferences/preferences-page";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -283,6 +284,11 @@ ReactDOM.render(
                   <Route exact path="/unlock" component={LockPage} />
                   <Route exact path="/access" component={AccessPage} />
                   <Route exact path="/receive" component={ReceivePage} />
+                  <Route
+                    exact
+                    path="/preferences"
+                    component={PreferencesPage}
+                  />
                   <Route
                     exact
                     path="/reveal-recovery-phrase/:keystoreIndex"

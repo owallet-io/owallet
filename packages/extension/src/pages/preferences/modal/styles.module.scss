@@ -1,6 +1,6 @@
 @import '../../../styles/var';
 
-.modal-network {
+.modal-currency {
   border-top-left-radius: 24px;
   border-top-right-radius: 24px;
 
@@ -55,6 +55,7 @@
       display: flex;
       flex-direction: column;
       gap: 3px;
+
       .item-chain {
         cursor: pointer;
         border-radius: 12px;
@@ -132,72 +133,4 @@
     }
   }
 }
-
-.modal-menu-left {
-  .container-slider-left {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100vh;
-    width: 80vw;
-    background-color: $neutral-surface-card;
-    z-index: 999;
-    border-top-right-radius: 16px;
-    border-bottom-right-radius: 16px;
-    padding: 16px;
-
-    .item-menu:not(:first-child):hover {
-      background-color: $neutral-surface-bg2;
-      padding:8px;
-      border-radius: 12px;
-    }
-
-    .item-menu {
-      display: flex;
-      flex-direction: row;
-      padding: 8px 0;
-      align-items: center;
-      cursor: pointer;
-      justify-content: space-between;
-
-      .left-block {
-        display: flex;
-        flex-direction: row;
-        gap: 16px;
-        align-items: center;
-        .btn-icon {
-          background-color: $neutral-surface-action;
-          border-radius: 999px;
-          width: 44px;
-          height: 44px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-
-
-          .img-icon {
-            width: 20px;
-            height: 20px;
-          }
-        }
-
-        .name-menu {
-          font-size: 16px;
-          font-weight: 600;
-          line-height: 24px;
-          color: $neutral-text-title;
-        }
-      }
-
-      .version {
-        color: $neutral-text-title;
-        text-align: center;
-        font-size: 16px;
-        font-weight: 500;
-        line-height: 24px; /* 150% */
-      }
-    }
-  }
-}
-
 

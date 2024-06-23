@@ -210,7 +210,7 @@ export const ModalNetwork: FC<{
                     <div className={styles.rightBlockHuge}>
                       <input
                         id={item.chainId}
-                        checked={
+                        defaultChecked={
                           item.chainId ===
                           (chainStore.isAllNetwork
                             ? "isAll"
