@@ -8,7 +8,7 @@ export const LayoutWithButtonBottom: FC<{
   isDisabledHeader?: boolean;
   backgroundColor?: string;
   titleButton?: string;
-  onClickButtonBottom?: () => void;
+  onClickButtonBottom?: (value) => void;
   btnBackgroundColor?: string;
   isHideButtonBottom?: boolean;
 }> = ({

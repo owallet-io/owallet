@@ -3,7 +3,7 @@ import React, { FC } from "react";
 
 export const ButtonBottom: FC<{
   title: string;
-  onClickButtonBottom?: () => void;
+  onClickButtonBottom?: (e) => void;
   btnBackgroundColor?: string;
 }> = ({ title, onClickButtonBottom, btnBackgroundColor }) => {
   return (
