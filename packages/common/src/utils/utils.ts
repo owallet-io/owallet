@@ -36,6 +36,15 @@ export const convertObjChainAddressToString = (txsAllNetwork) => {
     .join(",");
   return data;
 };
+export const getDomainFromUrl = (url) => {
+  if (!url) {
+    return "";
+  }
+  return `${url?.match?.(
+    // eslint-disable-next-line no-useless-escape
+    /^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/?\n]+)/gim
+  )}`;
+};
 export const formatContractAddress = (address: string, limitFirst = 10) => {
   if (!address) return "...";
   const fristLetter = address?.slice(0, limitFirst) ?? "";

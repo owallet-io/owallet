@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import styles from "./connected-dapp.module.scss";
 import { LayoutWithButtonBottom } from "../../layouts/button-bottom-layout/layout-with-button-bottom";
 import { SearchInput } from "../home/components/search-input";
 import { useStore } from "../../stores";
-import { getFavicon, limitString } from "@owallet/common";
+import { getFavicon, limitString, PrivilegedOrigins } from "@owallet/common";
 
 export const ConnectedDappPage = observer(() => {
   const [keyword, setKeyword] = useState<string>("");
@@ -15,11 +15,19 @@ export const ConnectedDappPage = observer(() => {
   const basicAccessInfo = permissionStore.getBasicAccessInfo(
     chainStore.current.chainId
   );
-  console.log(basicAccessInfo.origins, "basicAccessInfo.origins");
-  const data = basicAccessInfo.origins.filter((item, index) =>
-    item?.toLowerCase().includes(keyword?.toLowerCase())
-  );
-  // const dataFake = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  const data = permissionStore
+    .getBasicAccessInfo(chainStore.current.chainId)
+    .origins.filter((item, index) =>
+      item?.toLowerCase().includes(keyword?.toLowerCase())
+    );
+
+  useEffect(() => {
+    for (const privile of PrivilegedOrigins) {
+      permissionStore
+        .getBasicAccessInfo(chainStore.current.chainId)
+        .addOrigin(privile);
+    }
+  }, []);
   const removeDapps = (item) => {
     basicAccessInfo.removeOrigin(item);
     return;

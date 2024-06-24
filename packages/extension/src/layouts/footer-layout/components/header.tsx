@@ -1,11 +1,19 @@
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import styles from "./header.module.scss";
 import { ModalNetwork } from "../../../pages/home/modals/modal-network";
 import { ModalMenuLeft } from "../../../pages/home/modals/modal-menu-left";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../../stores";
-import { limitString, unknownToken } from "@owallet/common";
+import {
+  getDomainFromUrl,
+  getFavicon,
+  limitString,
+  PrivilegedOrigins,
+  unknownToken,
+} from "@owallet/common";
 import { useHistory } from "react-router";
+import { ModalSiteConnected } from "../../../pages/home/modals/modal-site-connected";
+import Colors from "../../../theme/colors";
 
 export const HeaderNew: FC<{
   isGoBack?: boolean;
@@ -24,7 +32,9 @@ export const HeaderNew: FC<{
     title,
   }) => {
     const [isShow, setIsShow] = useState(false);
+    const [isShowSiteConnected, setIsShowSiteConnected] = useState(false);
     const [isShowNetwork, setIsShowNetwork] = useState(false);
+
     const onRequestCloseNetwork = () => {
       setIsShowNetwork(false);
     };
@@ -32,12 +42,25 @@ export const HeaderNew: FC<{
       if (isDisableCenterBtn) return;
       setIsShowNetwork(true);
     };
-    const { chainStore } = useStore();
+    const { chainStore, permissionStore } = useStore();
     const history = useHistory();
     const onGoBack = () => {
       history.goBack();
       return;
     };
+    const [tabActive, setTabActive] = useState<string>("");
+    useEffect(() => {
+      // see the note below on how to choose currentWindow or lastFocusedWindow
+      chrome.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {
+        const url = tabs[0].url;
+        console.log(url, "url");
+        setTabActive(url);
+        // use `url` here inside the callback because it's asynchronous!
+      });
+    }, []);
+    const isActive = PrivilegedOrigins.concat(
+      permissionStore.getBasicAccessInfo(chainStore.current.chainId).origins
+    ).includes(getDomainFromUrl(tabActive));
     return (
       <div className={styles.container}>
         <div className={styles.leftBlock}>
@@ -88,15 +111,14 @@ export const HeaderNew: FC<{
         </div>
         <div className={styles.rightBlock}>
           {isConnectDapp && (
-            <div className={styles.wrapIconConnect}>
-              <img
-                className={styles.imgIcon}
-                style={{
-                  filter: `invert(100%)`,
-                }}
-                src={require("../../../public/assets/images/dApps_dex_logo.png")}
-              />
-              <div className={styles.dot}></div>
+            <div
+              onClick={() => {
+                setIsShowSiteConnected(true);
+              }}
+              className={styles.wrapIconConnect}
+            >
+              <img className={styles.imgIcon} src={getFavicon(tabActive)} />
+              {isActive && <div className={styles.dot}></div>}
             </div>
           )}
           {isExpand && (
@@ -116,6 +138,11 @@ export const HeaderNew: FC<{
         <ModalMenuLeft
           isOpen={isShow}
           onRequestClose={() => setIsShow(false)}
+        />
+        <ModalSiteConnected
+          url={getDomainFromUrl(tabActive)}
+          isOpen={isShowSiteConnected}
+          onRequestClose={() => setIsShowSiteConnected(false)}
         />
       </div>
     );

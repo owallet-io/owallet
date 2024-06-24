@@ -1497,6 +1497,13 @@ export const EmbedChainInfos: AppChainInfo[] = [
 export const PrivilegedOrigins: string[] = [
   "https://app.osmosis.zone",
   "https://oraidex.io",
+  "https://multisig.orai.io",
+  "https://hub.orai.io",
+  "https://orderbook.oraidex.io",
+  "https://futures.oraidex.io",
+  "https://scan.orai.io",
+  "https://app.orchai.io",
+  "https://airight.io",
 ];
 
 // tracking ads

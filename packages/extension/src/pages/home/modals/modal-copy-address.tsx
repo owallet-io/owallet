@@ -6,11 +6,8 @@ import classnames from "classnames";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../../stores";
 import { formatAddress, unknownToken } from "@owallet/common";
-import { initPrice } from "../../../hooks/use-multiple-assets";
-import { PricePretty } from "@owallet/unit";
 import { HeaderModal } from "../components/header-modal";
 import { useNotification } from "../../../components/notification";
-import { WalletStatus } from "@owallet/stores";
 import { useIntl } from "react-intl";
 
 export const ModalCopyAddress: FC<{
