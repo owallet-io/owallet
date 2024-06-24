@@ -7,6 +7,8 @@ import { useStore } from "../../stores";
 import { useNotification } from "../../components/notification";
 import { useIntl } from "react-intl";
 import { ButtonCopy } from "../../components/buttons/button-copy";
+import { LayoutWithButtonBottom } from "../../layouts/button-bottom-layout/layout-with-button-bottom";
+import { useHistory } from "react-router";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const QrCode = require("qrcode");
 export const ReceivePage = observer(() => {
@@ -24,18 +26,28 @@ export const ReceivePage = observer(() => {
       });
     }
   }, [address]);
+  const history = useHistory();
   return (
-    <div className={styles.containerReceivePage}>
-      <HeaderNew isGoBack isConnectDapp={false} />
-      <span className={styles.title}>RECEIVE</span>
-      <div className={styles.containerModal}>
-        <span className={styles.titleModal}>
-          Scan QR code or share address to sender
-        </span>
-        <canvas className={styles.qrcode} id="qrcode" ref={qrCodeRef} />
-        <span className={styles.address}>{address}</span>
-        <ButtonCopy title={"Copy address"} valueCopy={address} />
+    <LayoutWithButtonBottom
+      titleButton={"Close"}
+      onClickButtonBottom={() => {
+        history.goBack();
+        return;
+      }}
+      isDisabledHeader={true}
+    >
+      <div className={styles.containerReceivePage}>
+        <HeaderNew isGoBack isConnectDapp={false} isHideAllNetwork={true} />
+        <span className={styles.title}>RECEIVE</span>
+        <div className={styles.containerModal}>
+          <span className={styles.titleModal}>
+            Scan QR code or share address to sender
+          </span>
+          <canvas className={styles.qrcode} id="qrcode" ref={qrCodeRef} />
+          <span className={styles.address}>{address}</span>
+          <ButtonCopy title={"Copy address"} valueCopy={address} />
+        </div>
       </div>
-    </div>
+    </LayoutWithButtonBottom>
   );
 });

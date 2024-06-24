@@ -13,8 +13,16 @@ export const HeaderNew: FC<{
   isExpand?: boolean;
   title?: string;
   isDisableCenterBtn?: boolean;
+  isHideAllNetwork?: boolean;
 }> = observer(
-  ({ isConnectDapp = true, isGoBack, isExpand, isDisableCenterBtn, title }) => {
+  ({
+    isConnectDapp = true,
+    isGoBack,
+    isHideAllNetwork,
+    isExpand,
+    isDisableCenterBtn,
+    title,
+  }) => {
     const [isShow, setIsShow] = useState(false);
     const [isShowNetwork, setIsShowNetwork] = useState(false);
     const onRequestCloseNetwork = () => {
@@ -103,6 +111,7 @@ export const HeaderNew: FC<{
         <ModalNetwork
           isOpen={isShowNetwork}
           onRequestClose={onRequestCloseNetwork}
+          isHideAllNetwork={isHideAllNetwork}
         />
         <ModalMenuLeft
           isOpen={isShow}
