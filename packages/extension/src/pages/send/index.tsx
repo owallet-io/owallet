@@ -13,7 +13,6 @@ import style from "./style.module.scss";
 import { useNotification } from "../../components/notification";
 
 import { useIntl } from "react-intl";
-import { Button } from "reactstrap";
 
 import { useHistory, useLocation } from "react-router";
 import queryString from "querystring";
@@ -25,6 +24,8 @@ import { useMultipleAssets } from "../../hooks/use-multiple-assets";
 import { TokensCard } from "../home/components/tokens-card";
 import { ModalChooseTokens } from "../modals/modal-choose-tokens";
 import { Text } from "../../components/common/text";
+import { Button } from "../../components/common/button";
+import colors from "../../theme/colors";
 
 export const SendPage: FunctionComponent<{
   coinMinimalDenom?: string;
@@ -33,10 +34,10 @@ export const SendPage: FunctionComponent<{
   const {
     chainStore,
     accountStore,
-    priceStore,
     keyRingStore,
     queriesStore,
     analyticsStore,
+    priceStore,
   } = useStore();
   const [isShowSelectToken, setSelectToken] = useState(false);
   let search = useLocation().search || coinMinimalDenom || "";
@@ -132,6 +133,192 @@ export const SendPage: FunctionComponent<{
   };
 
   return (
+    <div
+      style={{
+        height: "100%",
+        width: "100vw",
+        overflowX: "auto",
+      }}
+    >
+      <ModalChooseTokens
+        onSelectToken={(item) => {
+          console.log("item", item?.token?.currency?.coinDenom);
+        }}
+        onRequestClose={() => {
+          setSelectToken(false);
+        }}
+        isOpen={isShowSelectToken}
+      />
+      <form
+        className={style.formContainer}
+        onSubmit={async (e: any) => {
+          e.preventDefault();
+          if (accountInfo.isReadyToSendMsgs && txStateIsValid) {
+            try {
+              const stdFee = sendConfigs.feeConfig.toStdFee();
+              // (window as any).accountInfo = accountInfo;
+              await accountInfo.sendToken(
+                sendConfigs.amountConfig.amount,
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                sendConfigs.amountConfig.sendCurrency!,
+                sendConfigs.recipientConfig.recipient,
+                sendConfigs.memoConfig.memo,
+                stdFee,
+                {
+                  preferNoSetFee: true,
+                  preferNoSetMemo: true,
+                  networkType: chainStore.current.networkType,
+                  chainId: chainStore.current.chainId,
+                },
+                {
+                  onBroadcasted: () => {
+                    analyticsStore.logEvent("Send token tx broadcasted", {
+                      chainId: chainStore.current.chainId,
+                      chainName: chainStore.current.chainName,
+                      feeType: sendConfigs.feeConfig.feeType,
+                    });
+                  },
+                  onFulfill: (tx) => {
+                    notification.push({
+                      placement: "top-center",
+                      type: tx?.data ? "success" : "danger",
+                      duration: 5,
+                      content: tx?.data
+                        ? `Transaction successful with tx: ${tx?.hash}`
+                        : `Transaction failed with tx: ${tx?.hash}`,
+                      canDelete: true,
+                      transition: {
+                        duration: 0.25,
+                      },
+                    });
+                  },
+                }
+              );
+              if (!isDetachedPage) {
+                history.replace("/");
+              }
+              notification.push({
+                placement: "top-center",
+                type: "success",
+                duration: 5,
+                content: "Transaction submitted!",
+                canDelete: true,
+                transition: {
+                  duration: 0.25,
+                },
+              });
+            } catch (e: any) {
+              if (!isDetachedPage) {
+                history.replace("/");
+              }
+              console.log(e.message, "Catch Error on send!!!");
+              notification.push({
+                type: "warning",
+                placement: "top-center",
+                duration: 5,
+                content: `Fail to send token: ${e.message}`,
+                canDelete: true,
+                transition: {
+                  duration: 0.25,
+                },
+              });
+            } finally {
+              // XXX: If the page is in detached state,
+              // close the window without waiting for tx to commit. analytics won't work.
+              if (isDetachedPage) {
+                window.close();
+              }
+            }
+          }
+        }}
+      >
+        <div className={style.container}>
+          <div style={{ height: "75%", overflow: "scroll", padding: 16 }}>
+            <div style={{ paddingBottom: 12 }}>
+              <div>
+                <div onClick={onShowModalSelectToken}>
+                  <Text>Select Token</Text>
+                </div>
+                <AddressInput
+                  inputRef={inputRef}
+                  recipientConfig={sendConfigs.recipientConfig}
+                  memoConfig={sendConfigs.memoConfig}
+                  label={intl.formatMessage({ id: "send.input.recipient" })}
+                  placeholder="Enter recipient address"
+                />
+                <CoinInput
+                  amountConfig={sendConfigs.amountConfig}
+                  label={intl.formatMessage({ id: "send.input.amount" })}
+                  balanceText={intl.formatMessage({
+                    id: "send.input-button.balance",
+                  })}
+                  placeholder="Enter your amount"
+                />
+                <MemoInput
+                  memoConfig={sendConfigs.memoConfig}
+                  label={intl.formatMessage({ id: "send.input.memo" })}
+                  placeholder="Enter your memo message"
+                />
+                <FeeButtons
+                  feeConfig={sendConfigs.feeConfig}
+                  gasConfig={sendConfigs.gasConfig}
+                  priceStore={priceStore}
+                  label={intl.formatMessage({ id: "send.input.fee" })}
+                  feeSelectLabels={{
+                    low: intl.formatMessage({ id: "fee-buttons.select.slow" }),
+                    average: intl.formatMessage({
+                      id: "fee-buttons.select.average",
+                    }),
+                    high: intl.formatMessage({ id: "fee-buttons.select.fast" }),
+                  }}
+                  gasLabel={intl.formatMessage({ id: "send.input.gas" })}
+                />
+              </div>
+            </div>
+          </div>
+          <div
+            style={{
+              position: "absolute",
+              bottom: 0,
+              width: "100%",
+              height: "25%",
+              backgroundColor: colors["neutral-surface-card"],
+              borderTop: "1px solid" + colors["neutral-border-default"],
+            }}
+          >
+            <div
+              style={{
+                flexDirection: "row",
+                display: "flex",
+                padding: 16,
+                paddingTop: 0,
+              }}
+            >
+              <Button
+                type="submit"
+                data-loading={accountInfo.isSendingMsg === "send"}
+                disabled={!accountInfo.isReadyToSendMsgs || !txStateIsValid}
+                className={style.sendBtn}
+                style={{
+                  cursor:
+                    accountInfo.isReadyToSendMsgs || !txStateIsValid
+                      ? ""
+                      : "pointer",
+                }}
+                onClick={async (e) => {}}
+              >
+                {intl.formatMessage({
+                  id: "send.button.send",
+                })}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  );
+
+  return (
     <>
       <form
         className={style.formContainer}
@@ -218,6 +405,9 @@ export const SendPage: FunctionComponent<{
       >
         <div className={style.formInnerContainer}>
           <ModalChooseTokens
+            onSelectToken={(item) => {
+              console.log("item", item?.token?.currency?.coinDenom);
+            }}
             onRequestClose={() => {
               setSelectToken(false);
             }}
@@ -247,7 +437,7 @@ export const SendPage: FunctionComponent<{
               label={intl.formatMessage({ id: "send.input.memo" })}
               placeholder="Enter your memo message"
             />
-            <FeeButtons
+            {/* <FeeButtons
               feeConfig={sendConfigs.feeConfig}
               gasConfig={sendConfigs.gasConfig}
               priceStore={priceStore}
@@ -255,14 +445,13 @@ export const SendPage: FunctionComponent<{
               feeSelectLabels={{
                 low: intl.formatMessage({ id: "fee-buttons.select.slow" }),
                 average: intl.formatMessage({
-                  id: "fee-buttons.select.average",
+                  id: "fee-buttons.select.average"
                 }),
-                high: intl.formatMessage({ id: "fee-buttons.select.fast" }),
+                high: intl.formatMessage({ id: "fee-buttons.select.fast" })
               }}
               gasLabel={intl.formatMessage({ id: "send.input.gas" })}
-            />
+            /> */}
           </div>
-          <div style={{ flex: 1 }} />
           <Button
             type="submit"
             block

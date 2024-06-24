@@ -10,7 +10,8 @@ import { SearchInput } from "./search-input";
 
 export const TokensCard: FC<{
   dataTokens: ViewRawToken[];
-}> = observer(({ dataTokens }) => {
+  onSelectToken?: (token) => void;
+}> = observer(({ dataTokens, onSelectToken }) => {
   const [keyword, setKeyword] = useState("");
   const { priceStore } = useStore();
   const onChangeKeyword = (e) => {
@@ -39,7 +40,7 @@ export const TokensCard: FC<{
             );
           }) || []
         ).map((item, index) => (
-          <TokenItem key={index} item={item} />
+          <TokenItem onSelectToken={onSelectToken} key={index} item={item} />
         ))}
       </div>
     </div>
@@ -48,7 +49,8 @@ export const TokensCard: FC<{
 
 const TokenItem: FC<{
   item: ViewRawToken;
-}> = observer(({ item }) => {
+  onSelectToken?: (token) => void;
+}> = observer(({ item, onSelectToken }) => {
   const { priceStore } = useStore();
   const balance = useMemo(
     () =>
@@ -63,7 +65,7 @@ const TokenItem: FC<{
     item?.token?.currency?.coinGeckoId
   );
   return (
-    <div className={styles.tokenItem}>
+    <div onClick={() => onSelectToken(item)} className={styles.tokenItem}>
       <div className={styles.wrapLeftBlock}>
         <div className={styles.logoTokenAndChain}>
           <div className={styles.tokenWrap}>

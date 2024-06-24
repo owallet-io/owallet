@@ -12,7 +12,8 @@ import { TokensCard } from "../home/components/tokens-card";
 export const ModalChooseTokens: FC<{
   isOpen: boolean;
   onRequestClose: () => void;
-}> = observer(({ isOpen, onRequestClose }) => {
+  onSelectToken?: (item) => void;
+}> = observer(({ isOpen, onRequestClose, onSelectToken }) => {
   const [refreshing, setRefreshing] = React.useState(false);
   const {
     chainStore,
@@ -66,7 +67,7 @@ export const ModalChooseTokens: FC<{
           title={"Selelect token".toUpperCase()}
           onRequestClose={onRequestClose}
         />
-        <TokensCard dataTokens={dataTokens} />
+        <TokensCard onSelectToken={onSelectToken} dataTokens={dataTokens} />
         <div className={styles.containerListChain}></div>
       </div>
     </SlidingPane>
