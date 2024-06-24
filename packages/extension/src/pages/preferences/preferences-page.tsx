@@ -5,6 +5,7 @@ import styles from "./preferences.module.scss";
 import { getFavicon, limitString } from "@owallet/common";
 import { useStore } from "../../stores";
 import { ModalCurrency } from "./modal/modal-currency";
+import { useHistory } from "react-router";
 
 enum MenuEnum {
   LANGUAGE = "LANGUAGE",
@@ -47,8 +48,16 @@ export const PreferencesPage = observer(() => {
         break;
     }
   };
+  const history = useHistory();
   return (
-    <LayoutWithButtonBottom titleButton={"Close"} title={"Preferences"}>
+    <LayoutWithButtonBottom
+      onClickButtonBottom={() => {
+        history.goBack();
+        return;
+      }}
+      titleButton={"Close"}
+      title={"Preferences"}
+    >
       <div className={styles.wrapContent}>
         <div className={styles.listDapps}>
           {dataPreferences.map((item, index) => {
