@@ -52,8 +52,10 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
     this._selectedChainId = initChain ?? embedChainInfos[0].chainId;
 
     makeObservable(this);
+
     makePersistable(this, {
       name: "ChainStore",
+      // @ts-ignore
       properties: ["_isAllNetwork", "_multipleAssets"],
       storage: window.localStorage,
     }).then(
