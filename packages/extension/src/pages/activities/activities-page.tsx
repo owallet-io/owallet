@@ -27,7 +27,7 @@ import { useLoadingIndicator } from "../../components/loading-indicator";
 export const ActivitiesPage = observer(() => {
   const {
     accountStore,
-    // hugeQueriesStore,
+    hugeQueriesStore,
     chainStore,
     priceStore,
     keyRingStore,
@@ -39,16 +39,20 @@ export const ActivitiesPage = observer(() => {
   const address = account.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses
   );
-  const allArr = {
-    [mapChainNetwork]:
-      chainId === ChainIdEnum.OasisSapphire ||
-      chainId === ChainIdEnum.OasisEmerald
-        ? getOasisAddress(address)
-        : address,
-  };
-  // chainStore.isAllNetwork
-  // ? hugeQueriesStore.getAllAddrByChain
-  // :
+  console.log(
+    hugeQueriesStore.getAllAddrByChain,
+    "hugeQueriesStore.getAllAddrByChain"
+  );
+  const allArr = chainStore.isAllNetwork
+    ? hugeQueriesStore.getAllAddrByChain
+    : {
+        [mapChainNetwork]:
+          chainId === ChainIdEnum.OasisSapphire ||
+          chainId === ChainIdEnum.OasisEmerald
+            ? getOasisAddress(address)
+            : address,
+      };
+
   const [histories, setHistories] = useState<AllNetworkItemTx[]>([]);
   // const [loading, setLoading] = useState(false);
   const loading = useLoadingIndicator();
@@ -58,7 +62,7 @@ export const ActivitiesPage = observer(() => {
       const data = await API.getTxsAllNetwork({
         addrByNetworks: addrByNetworks,
         offset: 0,
-        limit: 10,
+        limit: 30,
       });
       setHistories(data.data);
     } catch (err) {
