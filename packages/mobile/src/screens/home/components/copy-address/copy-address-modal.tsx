@@ -23,6 +23,7 @@ import { useStore } from "@src/stores";
 import { registerModal } from "@src/modals/base";
 import { BottomSheetProps } from "@gorhom/bottom-sheet";
 import { ScrollView } from "react-native-gesture-handler";
+import ByteBrew from "react-native-bytebrew-sdk";
 
 export const CopyAddressModal: FunctionComponent<{
   copyable?: boolean;
@@ -47,6 +48,7 @@ export const CopyAddressModal: FunctionComponent<{
   const accountBtc = accountStore.getAccount(ChainIdEnum.Bitcoin);
 
   useEffect(() => {
+    ByteBrew.NewCustomEvent(`Copy Address Modal`);
     setTimeout(() => {
       setRefresh(Date.now());
     }, 300);

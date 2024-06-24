@@ -32,15 +32,15 @@ export const TokenView: FunctionComponent<{
   const { priceStore, chainStore } = useStore();
   const { colors } = useTheme();
 
-  const name = balance.currency.coinDenom;
+  const name = balance?.currency?.coinDenom;
   const getName = () => {
     return removeDataInParentheses(name);
   };
   const image = balance.currency?.coinImageUrl;
   let contractAddress: string = "";
-  let amount = balance.balance
-    .trim(true)
-    .shrink(true)
+  let amount = balance?.balance
+    ?.trim(true)
+    ?.shrink(true)
     ?.maxDecimals(6)
     ?.hideDenom(true);
 
@@ -224,6 +224,7 @@ export const TokenSelectorModal: FunctionComponent<{
                   balance={token}
                   coinMinimalDenom={selectedKey}
                   onClick={() => {
+                    if (!token?.currency?.coinMinimalDenom) return;
                     setSelectedKey(token.currency.coinMinimalDenom);
                     close();
                   }}

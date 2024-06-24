@@ -1,6 +1,6 @@
 /* eslint-disable react/display-name */
 import React, { FunctionComponent, useEffect } from "react";
-import { Linking } from "react-native";
+import { Linking, View } from "react-native";
 import { KeyRingStatus } from "@owallet/background";
 import { NavigationContainer, DarkTheme } from "@react-navigation/native";
 import { useStore } from "./stores";
@@ -26,6 +26,8 @@ import {
 import { useTheme } from "./themes/theme-provider";
 import { PincodeUnlockScreen } from "./screens/unlock/pincode-unlock";
 import { RecoverPhraseScreen } from "./screens/register/mnemonic/recover-phrase";
+import { ErrorBoundary } from "react-error-boundary";
+import { Text } from "./components/text";
 
 const Stack = createStackNavigator();
 export const AppNavigation: FunctionComponent = observer(() => {

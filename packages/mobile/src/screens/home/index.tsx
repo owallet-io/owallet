@@ -13,6 +13,7 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
+  View,
 } from "react-native";
 import { useStore } from "../../stores";
 import { observer } from "mobx-react-lite";
@@ -37,6 +38,8 @@ import {
 import { useCoinGeckoPrices, useLoadTokens } from "@owallet/hooks";
 import { flatten } from "lodash";
 import { showToast } from "@src/utils/helper";
+import ByteBrew from "react-native-bytebrew-sdk";
+import { SCREENS } from "@src/common/constants";
 
 export const HomeScreen: FunctionComponent = observer((props) => {
   const [refreshing, setRefreshing] = React.useState(false);
@@ -90,6 +93,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   );
 
   useEffect(() => {
+    ByteBrew.NewCustomEvent("Home Screen");
     InteractionManager.runAfterInteractions(() => {
       fetch(InjectedProviderUrl)
         .then((res) => {
@@ -155,6 +159,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   useEffect(() => {
     onRefresh();
   }, [address, chainStore.current.chainId]);
+
   const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
   const onRefresh = async () => {
     try {
@@ -260,7 +265,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   const onFetchAmount = (customChainInfos) => {
     let timeoutId;
     if (accountOrai.isNanoLedger) {
-      if (Object.keys(keyRingStore.keyRingLedgerAddresses).length > 0) {
+      if (Object.keys(keyRingStore.keyRingLedgerAddresses)?.length > 0) {
         timeoutId = setTimeout(() => {
           handleFetchAmounts(
             {
@@ -338,16 +343,18 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         totalBalanceByChain={new PricePretty(
           fiatCurrency,
           dataTokensByChain?.[chainStore.current.chainId]?.totalBalance
-        ).toString()}
+        )?.toString()}
         totalPriceBalance={new PricePretty(
           fiatCurrency,
           totalPriceBalance
-        ).toString()}
+        )?.toString()}
       />
       {chainStore.current.networkType === "cosmos" &&
       !appInitStore.getInitApp.isAllNetworks ? (
         <EarningCardNew />
-      ) : null}
+      ) : (
+        <EarningCardNew defaultChain={ChainIdEnum.Oraichain} />
+      )}
       <TokensCardAll dataTokens={dataTokens} />
     </PageWithScrollViewInBottomTabView>
   );

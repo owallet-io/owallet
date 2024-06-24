@@ -30,23 +30,16 @@ import { useSmartNavigation } from "../../navigation.provider";
 import { Buffer } from "buffer";
 import { metrics, spacing } from "../../themes";
 import { useTheme } from "@src/themes/theme-provider";
-import {
-  capitalizedText,
-  handleSaveHistory,
-  HISTORY_STATUS,
-} from "@src/utils/helper";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import { PageHeader } from "@src/components/header/header-new";
 import OWCard from "@src/components/card/ow-card";
 import OWText from "@src/components/text/ow-text";
 import { NewAmountInput } from "@src/components/input/amount-input";
 import OWIcon from "@src/components/ow-icon/ow-icon";
-import { DownArrowIcon } from "@src/components/icon";
-import { FeeModal } from "@src/modals/fee";
 import { ChainIdEnum } from "@oraichain/oraidex-common";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
-import { Text } from "@src/components/text";
+import ByteBrew from "react-native-bytebrew-sdk";
 
 export const SendTronScreen: FunctionComponent = observer(() => {
   const {
@@ -108,7 +101,7 @@ export const SendTronScreen: FunctionComponent = observer(() => {
     queriesStore.get(chainId).queryBalances,
     EthereumEndpoint
   );
-
+  ByteBrew.NewCustomEvent(`Send Tron Screen`);
   const [balance, setBalance] = useState<CoinPretty>(null);
 
   // useEffect(() => {
@@ -265,31 +258,7 @@ export const SendTronScreen: FunctionComponent = observer(() => {
                         },
                       });
                     }
-                    const fee = sendConfigs.feeConfig.fee
-                      .trim(true)
-                      .hideDenom(true)
-                      .maxDecimals(4)
-                      .toString();
-                    const historyInfos = {
-                      fromAddress: address,
-                      toAddress: sendConfigs.recipientConfig.recipient,
-                      hash: tx.txid,
-                      memo: "",
-                      fromAmount: sendConfigs.amountConfig.amount,
-                      toAmount: sendConfigs.amountConfig.amount,
-                      value: sendConfigs.amountConfig.amount,
-                      fee: fee,
-                      type: HISTORY_STATUS.SEND,
-                      fromToken: {
-                        asset: sendConfigs.amountConfig.sendCurrency.coinDenom,
-                        chainId: chainStore.current.chainId,
-                      },
-                      toToken: {
-                        asset: sendConfigs.amountConfig.sendCurrency.coinDenom,
-                        chainId: chainStore.current.chainId,
-                      },
-                      status: "SUCCESS",
-                    };
+
                     universalSwapStore.updateTokenReload([
                       {
                         ...sendConfigs.amountConfig.sendCurrency,
@@ -297,10 +266,6 @@ export const SendTronScreen: FunctionComponent = observer(() => {
                         networkType: "evm",
                       },
                     ]);
-                    await handleSaveHistory(
-                      accountOrai.bech32Address,
-                      historyInfos
-                    );
                   },
                 }
               );

@@ -26,13 +26,7 @@ import { metrics, spacing } from "@src/themes";
 import { observer } from "mobx-react-lite";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
-import {
-  capitalizedText,
-  handleSaveHistory,
-  HISTORY_STATUS,
-  shortenAddress,
-  showToast,
-} from "@src/utils/helper";
+import { capitalizedText, shortenAddress, showToast } from "@src/utils/helper";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import {
   EthereumEndpoint,
@@ -55,6 +49,7 @@ import { Text } from "@src/components/text";
 import { RadioButton } from "react-native-radio-buttons-group";
 import { AddressBtcType } from "@owallet/types";
 import { useBIP44Option } from "@src/screens/register/bip44";
+import ByteBrew from "react-native-bytebrew-sdk";
 
 const dataTypeBtc = [
   { id: AddressBtcType.Bech32, name: "Bitcoin Segwit" },
@@ -184,7 +179,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
   const address = account.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses
   );
-
+  ByteBrew.NewCustomEvent(`Send BTC Screen`);
   const sendConfigs = useSendTxConfig(
     chainStore,
     chainId,
@@ -321,28 +316,6 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
                 .hideDenom(true)
                 .maxDecimals(4)
                 .toString();
-              const historyInfos = {
-                fromAddress: address,
-                toAddress: sendConfigs.recipientConfig.recipient,
-                hash: Buffer.from(txHash).toString("hex"),
-                memo: "",
-                fromAmount: sendConfigs.amountConfig.amount,
-                toAmount: sendConfigs.amountConfig.amount,
-                value: sendConfigs.amountConfig.amount,
-                fee: fee,
-                type: HISTORY_STATUS.SEND,
-                fromToken: {
-                  asset: sendConfigs.amountConfig.sendCurrency.coinDenom,
-                  chainId: chainStore.current.chainId,
-                },
-                toToken: {
-                  asset: sendConfigs.amountConfig.sendCurrency.coinDenom,
-                  chainId: chainStore.current.chainId,
-                },
-                status: "SUCCESS",
-              };
-
-              await handleSaveHistory(accountOrai.bech32Address, historyInfos);
             } catch (error) {
               console.log(
                 "🚀 ~ file: send-btc.tsx:149 ~ onBroadcasted: ~ error:",

@@ -87,8 +87,8 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
         chainInfo.chainId === ChainIdEnum.OasisEmerald ||
         chainInfo.chainId === ChainIdEnum.Oasis ||
         chainInfo.chainId === ChainIdEnum.BNBChain
-        ? txHash.toLowerCase()
-        : txHash.toUpperCase()
+        ? txHash?.toLowerCase()
+        : txHash?.toUpperCase()
     );
   };
   const handleOnExplorer = async () => {

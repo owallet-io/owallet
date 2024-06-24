@@ -16,7 +16,7 @@ export const Button: FunctionComponent<{
   loading?: boolean;
   disabled?: boolean;
 
-  onPress?: () => void;
+  onPress?: Function;
 
   containerStyle?: ViewStyle;
   style?: ViewStyle;

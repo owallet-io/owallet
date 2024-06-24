@@ -11,19 +11,15 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { Text } from "@src/components/text";
 import { checkRouter } from "@src/router/root";
 import { useTheme } from "@src/themes/theme-provider";
-import {
-  convertArrToObject,
-  handleSaveHistory,
-  HISTORY_STATUS,
-  showToast,
-} from "@src/utils/helper";
+import { convertArrToObject, showToast } from "@src/utils/helper";
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent, useState } from "react";
-import { StyleSheet, TouchableOpacity, View, ViewStyle } from "react-native";
+import React, { FunctionComponent } from "react";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { OWBox } from "../../components/card";
 import { useSmartNavigation } from "../../navigation.provider";
 import { useStore } from "../../stores";
 import { metrics } from "../../themes";
+import ByteBrew from "react-native-bytebrew-sdk";
 
 export const EarningCardNew: FunctionComponent<{
   defaultChain?: string;
@@ -52,6 +48,7 @@ export const EarningCardNew: FunctionComponent<{
 
   const _onPressClaim = async () => {
     try {
+      ByteBrew.NewCustomEvent(`${chainStore.current.chainName} Claim`);
       await account.cosmos.sendWithdrawDelegationRewardMsgs(
         queryReward.getDescendingPendingRewardValidatorAddresses(8),
         "",
@@ -77,35 +74,13 @@ export const EarningCardNew: FunctionComponent<{
                 type: "claim",
               },
             });
-            const historyInfos = {
-              fromAddress: account.bech32Address,
-              toAddress: account.bech32Address,
-              hash: Buffer.from(txHash).toString("hex"),
-              memo: "",
-              fromAmount: totalStakingReward,
-              toAmount: totalStakingReward,
-              value: totalStakingReward,
-              fee: "0",
-              type: HISTORY_STATUS.CLAIM,
-              fromToken: {
-                asset: stakingReward.toCoin().denom.toUpperCase(),
-                chainId: chainId,
-              },
-              toToken: {
-                asset: stakingReward.toCoin().denom.toUpperCase(),
-                chainId: chainId,
-              },
-              status: "SUCCESS",
-            };
-
-            handleSaveHistory(account.bech32Address, historyInfos);
           },
         },
         stakingReward.currency.coinMinimalDenom
       );
     } catch (e) {
       console.error({ errorClaim: e });
-      if (!e?.message?.startWith("Transaction Rejected")) {
+      if (!e?.message?.startsWith("Transaction Rejected")) {
         showToast({
           message:
             e?.message ?? "Something went wrong! Please try again later.",

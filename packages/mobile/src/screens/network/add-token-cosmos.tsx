@@ -21,6 +21,7 @@ import { useTheme } from "@src/themes/theme-provider";
 import { DownArrowIcon } from "@src/components/icon";
 import { SelectTokenTypeModal } from "./select-token-type";
 import { unknownToken } from "@owallet/common";
+import ByteBrew from "react-native-bytebrew-sdk";
 
 interface FormData {
   viewingKey?: string;
@@ -82,6 +83,7 @@ export const AddTokenCosmosScreen: FunctionComponent<{
   const contractAddress = watch("contractAddress");
 
   useEffect(() => {
+    ByteBrew.NewCustomEvent(`Add Token Cosmos Screen`);
     if (tokensStore.waitingSuggestedToken) {
       chainStore.selectChain(tokensStore.waitingSuggestedToken.data.chainId);
       if (

@@ -97,7 +97,7 @@ function createRequest(config: AxiosRequestConfig): Request {
     headers["Authorization"] = `Basic ${btoa(username + ":" + password)}`;
   }
 
-  const method = config.method.toUpperCase();
+  const method = config.method?.toUpperCase();
   const options: RequestInit = {
     headers: headers,
     method,

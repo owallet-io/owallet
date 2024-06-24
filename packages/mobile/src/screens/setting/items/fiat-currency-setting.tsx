@@ -17,7 +17,7 @@ export const SettingFiatCurrencyTopItem: FunctionComponent<{
     return Object.keys(priceStore.supportedVsCurrencies).map((key) => {
       return {
         key,
-        label: key.toUpperCase(),
+        label: key?.toUpperCase(),
       };
     });
   }, [priceStore.supportedVsCurrencies]);

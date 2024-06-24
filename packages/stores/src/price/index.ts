@@ -42,7 +42,7 @@ class Throttler {
       this.timeoutId = undefined;
     }
 
-    if (this.fns.length > 0) {
+    if (this.fns?.length > 0) {
       const fn = this.fns[this.fns.length - 1];
       fn();
 
@@ -97,7 +97,7 @@ class SortedSetStorage {
         unknowns.push(value);
       }
     }
-    if (unknowns.length === 0) {
+    if (unknowns?.length === 0) {
       if (this.isRestored && forceSave) {
         // No need to wait
         this.throttler.call(() => this.save());
@@ -284,7 +284,7 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
 
   protected override canFetch(): boolean {
     return (
-      this._coinIds.values.length > 0 && this._vsCurrencies.values.length > 0
+      this._coinIds.values?.length > 0 && this._vsCurrencies.values.length > 0
     );
   }
 

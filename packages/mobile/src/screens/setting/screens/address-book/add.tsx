@@ -11,6 +11,7 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import OWText from "@src/components/text/ow-text";
 import { useTheme } from "@src/themes/theme-provider";
+import { showToast } from "@src/utils/helper";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
@@ -114,12 +115,20 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
               recipientConfig.getError() == null &&
               memoConfig.getError() == null
             ) {
-              await addressBookConfig.addAddressBook({
-                name,
-                address: recipientConfig.rawRecipient,
-                memo: memoConfig.memo,
-              });
-              smartNavigation.goBack();
+              if (addressBookConfig) {
+                await addressBookConfig.addAddressBook({
+                  name,
+                  address: recipientConfig.rawRecipient,
+                  memo: memoConfig.memo,
+                });
+                smartNavigation.goBack();
+              } else {
+                showToast({
+                  message: "Something went wrong! Plase try again.",
+                  type: "danger",
+                });
+              }
+
               // smartNavigation.navigateSmart('AddressBook', {});
             }
           }}

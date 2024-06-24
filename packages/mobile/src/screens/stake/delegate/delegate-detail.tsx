@@ -14,6 +14,7 @@ import { ValidatorThumbnail } from "../../../components/thumbnail";
 import { useSmartNavigation } from "../../../navigation.provider";
 import { useStore } from "../../../stores";
 import { spacing, typography } from "../../../themes";
+import ByteBrew from "react-native-bytebrew-sdk";
 interface DelegateDetailProps {}
 
 export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
@@ -72,7 +73,7 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
       unbondedValidators.validators,
       validatorAddress,
     ]);
-
+    ByteBrew.NewCustomEvent(`Delegate Detail Screen`);
     return (
       <PageWithView>
         <OWSubTitleHeader title="Staking detail" />

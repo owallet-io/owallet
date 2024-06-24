@@ -81,7 +81,9 @@ export const MyRewardCard: FunctionComponent<{
                   .trim(true)
                   .upperCase(true)
                   .toString()
-              : `< 0.001 ${pendingStakableReward.toCoin().denom.toUpperCase()}`}
+              : `< 0.001 ${pendingStakableReward
+                  ?.toCoin()
+                  ?.denom?.toUpperCase()}`}
           </Text>
           <View
             style={{

@@ -14,12 +14,9 @@ import { OWButton } from "@src/components/button";
 import { SelectNetworkModal, SelectTokenModal } from "./modals/";
 import {
   getTokenInfos,
-  handleSaveHistory,
-  HISTORY_STATUS,
   maskedNumber,
   shortenAddress,
   showToast,
-  _keyExtract,
 } from "@src/utils/helper";
 import {
   DEFAULT_SLIPPAGE,
@@ -80,6 +77,7 @@ import { SendToModal } from "./modals/SendToModal";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { PriceSettingModal } from "./modals/PriceSettingModal";
 import { flatten } from "lodash";
+import ByteBrew from "react-native-bytebrew-sdk";
 
 const mixpanel = globalThis.mixpanel as Mixpanel;
 
@@ -97,7 +95,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const styles = styling(colors);
   const { data: prices } = useCoinGeckoPrices();
   const [refreshDate, setRefreshDate] = React.useState(Date.now());
-
+  ByteBrew.NewCustomEvent(`Universal Swap Screen`);
   useEffect(() => {
     appInitStore.updatePrices(prices);
   }, [prices]);
@@ -463,7 +461,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     const tokenToNetwork = chainStore.getChain(
       originalToToken.chainId
     ).chainName;
-
+    ByteBrew.NewCustomEvent(
+      `Universal Swap`,
+      `fromToken=${originalFromToken.name};toToken=${originalToToken.name};fromNetwork=${tokenFromNetwork};toNetwork=${tokenToNetwork};`
+    );
     const logEvent = {
       address: accountOrai.bech32Address,
       fromToken: originalFromToken.name,
@@ -528,32 +529,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
       if (result) {
         const { transactionHash } = result;
-        try {
-          const historyInfos = {
-            fromAddress: accountOrai.bech32Address,
-            toAddress: accountOrai.bech32Address,
-            hash: transactionHash,
-            memo: "",
-            fromAmount: fromAmountToken,
-            toAmount: toAmountToken,
-            value: toAmountToken,
-            fee: (toAmountToken - minimumReceive).toFixed(6),
-            type: HISTORY_STATUS.SWAP,
-            fromToken: {
-              asset: originalFromToken.name,
-              chainId: originalFromToken.chainId,
-            },
-            toToken: {
-              asset: originalToToken.name,
-              chainId: originalToToken.chainId,
-            },
-            status: "SUCCESS",
-          };
-
-          await handleSaveHistory(accountOrai.bech32Address, historyInfos);
-        } catch (err) {
-          console.log("err on handleSaveHistory", err);
-        }
 
         setSwapLoading(false);
         setCounter(0);
