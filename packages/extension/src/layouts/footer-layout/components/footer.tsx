@@ -13,7 +13,7 @@ const dataFooter = [
     title: "Activity",
     images: require("../../../public/assets/images/history-light-inactive.png"),
     imagesActive: require("../../../public/assets/images/history-light-active.png"),
-    path: "/history",
+    path: "/activities",
   },
   {
     title: "Explore",

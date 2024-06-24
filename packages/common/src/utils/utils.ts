@@ -30,6 +30,25 @@ export const COINTYPE_NETWORK = {
   0: "Bitcoin",
   1: "Bitcoin Testnet",
 };
+export const convertObjChainAddressToString = (txsAllNetwork) => {
+  const data = Object.entries(txsAllNetwork)
+    .map(([key, value]) => `${key}%2B${value}`)
+    .join(",");
+  return data;
+};
+export const formatContractAddress = (address: string, limitFirst = 10) => {
+  if (!address) return "...";
+  const fristLetter = address?.slice(0, limitFirst) ?? "";
+  const lastLetter = address?.slice(-5) ?? "";
+
+  return `${fristLetter}...${lastLetter}`;
+};
+export const getTimeMilliSeconds = (timeStamp) => {
+  if (isMilliseconds(timeStamp)) {
+    return timeStamp;
+  }
+  return timeStamp * 1000;
+};
 export const MapChainIdToNetwork = {
   [ChainIdEnum.BNBChain]: Network.BINANCE_SMART_CHAIN,
   [ChainIdEnum.Ethereum]: Network.ETHEREUM,

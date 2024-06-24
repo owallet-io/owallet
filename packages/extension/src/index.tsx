@@ -191,6 +191,8 @@ import { RevealPrivateKeyPage } from "./pages/account/reveal-private-key-page";
 import { ConnectedDappPage } from "./pages/connected-dapp/connected-dapp-page";
 import { AddTokenPage } from "./pages/add-token/add-token-page";
 import { PreferencesPage } from "./pages/preferences/preferences-page";
+import { ActivitiesPage } from "./pages/activities/activities-page";
+import { ExplorePage } from "./pages/explore/explore-page";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -284,6 +286,8 @@ ReactDOM.render(
                   <Route exact path="/unlock" component={LockPage} />
                   <Route exact path="/access" component={AccessPage} />
                   <Route exact path="/receive" component={ReceivePage} />
+                  <Route exact path="/activities" component={ActivitiesPage} />
+                  <Route exact path="/explore" component={ExplorePage} />
                   <Route
                     exact
                     path="/preferences"

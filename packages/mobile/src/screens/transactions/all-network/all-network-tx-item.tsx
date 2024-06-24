@@ -108,10 +108,10 @@ export const AllNetworkTxItem: FC<{
               type="images"
               source={{
                 uri:
-                  currency.coinImageUrl.includes("missing.png") ||
-                  !currency.coinImageUrl
+                  currency?.coinImageUrl?.includes("missing.png") ||
+                  !currency?.coinImageUrl
                     ? unknownToken.coinImageUrl
-                    : currency.coinImageUrl,
+                    : currency?.coinImageUrl,
               }}
               size={32}
               style={{
