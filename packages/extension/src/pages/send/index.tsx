@@ -20,12 +20,25 @@ import queryString from "querystring";
 
 import { useSendTxConfig } from "@owallet/hooks";
 import { fitPopupWindow } from "@owallet/popup";
-import { EthereumEndpoint } from "@owallet/common";
+import { ChainIdEnum, EthereumEndpoint } from "@owallet/common";
+import { useMultipleAssets } from "../../hooks/use-multiple-assets";
+import { TokensCard } from "../home/components/tokens-card";
+import { ModalChooseTokens } from "../modals/modal-choose-tokens";
+import { Text } from "../../components/common/text";
 
 export const SendPage: FunctionComponent<{
   coinMinimalDenom?: string;
 }> = observer(({ coinMinimalDenom }) => {
   const history = useHistory();
+  const {
+    chainStore,
+    accountStore,
+    priceStore,
+    keyRingStore,
+    queriesStore,
+    analyticsStore,
+  } = useStore();
+  const [isShowSelectToken, setSelectToken] = useState(false);
   let search = useLocation().search || coinMinimalDenom || "";
   if (search.startsWith("?")) {
     search = search.slice(1);
@@ -54,14 +67,6 @@ export const SendPage: FunctionComponent<{
 
   const notification = useNotification();
 
-  const {
-    chainStore,
-    accountStore,
-    priceStore,
-    queriesStore,
-    analyticsStore,
-    keyRingStore,
-  } = useStore();
   const current = chainStore.current;
   const accountInfo = accountStore.getAccount(current.chainId);
   const walletAddress = accountInfo.getAddressDisplay(
@@ -121,6 +126,10 @@ export const SendPage: FunctionComponent<{
     sendConfigs.gasConfig.getError() ??
     sendConfigs.feeConfig.getError();
   const txStateIsValid = sendConfigError == null;
+
+  const onShowModalSelectToken = () => {
+    setSelectToken(true);
+  };
 
   return (
     <>
@@ -208,7 +217,16 @@ export const SendPage: FunctionComponent<{
         }}
       >
         <div className={style.formInnerContainer}>
+          <ModalChooseTokens
+            onRequestClose={() => {
+              setSelectToken(false);
+            }}
+            isOpen={isShowSelectToken}
+          />
           <div>
+            <div onClick={onShowModalSelectToken}>
+              <Text>Select Token</Text>
+            </div>
             <AddressInput
               inputRef={inputRef}
               recipientConfig={sendConfigs.recipientConfig}

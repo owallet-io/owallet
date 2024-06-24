@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { FooterLayout } from "../../layouts/footer-layout/footer-layout";
 import { observer } from "mobx-react-lite";
 import { InfoAccountCard } from "./components/info-account-card";
@@ -10,12 +10,6 @@ import {
   sortTokensByPrice,
   useMultipleAssets,
 } from "../../hooks/use-multiple-assets";
-
-import { CoinPretty, PricePretty } from "@owallet/unit";
-import { IMultipleAsset, ViewRawToken, ViewTokenData } from "@owallet/types";
-import { SendPage } from "../send";
-import { SendEvmPage } from "../send-evm/send-evm";
-import { SendTronEvmPage } from "../send-tron";
 
 export const HomePage = observer(() => {
   const [refreshing, setRefreshing] = React.useState(false);
@@ -53,9 +47,6 @@ export const HomePage = observer(() => {
       <InfoAccountCard totalPrice={totalPriceBalance} />
       {/*TODO:// need check again Claim reward */}
       {/*<ClaimReward />*/}
-      <SendPage />
-      {/* <SendEvmPage />; */}
-      {/* <SendTronEvmPage />; */}
       <TokensCard dataTokens={sortTokensByPrice(dataTokens)} />
     </FooterLayout>
   );
