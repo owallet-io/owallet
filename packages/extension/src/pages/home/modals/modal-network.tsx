@@ -5,16 +5,8 @@ import { SearchInput } from "../components/search-input";
 import classnames from "classnames";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../../stores";
-import {
-  ChainIdEnum,
-  COINTYPE_NETWORK,
-  getKeyDerivationFromAddressType,
-  unknownToken,
-} from "@owallet/common";
-import {
-  initPrice,
-  useMultipleAssets,
-} from "../../../hooks/use-multiple-assets";
+import { ChainIdEnum, unknownToken } from "@owallet/common";
+import { initPrice } from "../../../hooks/use-multiple-assets";
 import { HeaderModal } from "../components/header-modal";
 import { ViewRawToken, ViewTokenData } from "@owallet/types";
 import { CoinPretty, PricePretty } from "@owallet/unit";
@@ -69,6 +61,7 @@ export const ModalNetwork: FC<{
   });
 
   const chainsInfoWithBalance = chainStore.chainInfos.map((item, index) => {
+    //@ts-ignore
     item.balance =
       new PricePretty(
         fiatCurrency,

@@ -133,7 +133,7 @@ export const TronDetailsTab: FunctionComponent<{
               <div style={{ display: "flex", flexDirection: "row" }}>
                 <div
                   style={{
-                    marginRight: 4,
+                    marginRight: 8,
                     width: 44,
                     height: 44,
                     borderRadius: 44,

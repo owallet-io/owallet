@@ -96,6 +96,7 @@ export const MainPage: FunctionComponent = observer(() => {
     );
   }, [networkType, chainId]);
 
+  // send page
   const handleCheckSendPage = () => {
     if (networkType === "evm") {
       if (chainId === TRON_ID) {

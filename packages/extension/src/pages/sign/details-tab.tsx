@@ -1,30 +1,24 @@
 import React, { FunctionComponent } from "react";
-
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
-
 import styleDetailsTab from "./details-tab.module.scss";
-
 import { renderAminoMessage } from "./amino";
 import { Msg } from "@cosmjs/launchpad";
 import { FormattedMessage, useIntl } from "react-intl";
-import { FeeButtons, MemoInput } from "../../components/form";
+import { MemoInput } from "../../components/form";
 import {
   IFeeConfig,
   IGasConfig,
   IMemoConfig,
   SignDocHelper,
 } from "@owallet/hooks";
-import { EmbedChainInfos, toDisplay, useLanguage } from "@owallet/common";
-import { Button, Label } from "reactstrap";
+import { Label } from "reactstrap";
 import { renderDirectMessage } from "./direct";
 import { Text } from "../../components/common/text";
 import colors from "../../theme/colors";
 import { Card } from "../../components/common/card";
-import { Coin, CoinUtils } from "@owallet/unit";
-import { clearDecimals } from "./messages";
-
-import { getBase58Address } from "@owallet/common";
+import { CosmosRenderArgs } from "./components/render-cosmos-args";
+import { toDisplay, useLanguage } from "@owallet/common";
 import { Address } from "../../components/address";
 
 export const DetailsTab: FunctionComponent<{
@@ -35,7 +29,7 @@ export const DetailsTab: FunctionComponent<{
   signDocJsonAll: any;
 
   isInternal: boolean;
-
+  setOpenSetting: Function;
   preferNoSetFee: boolean;
   preferNoSetMemo: boolean;
 }> = observer(
@@ -48,8 +42,9 @@ export const DetailsTab: FunctionComponent<{
     preferNoSetFee,
     preferNoSetMemo,
     signDocJsonAll,
+    setOpenSetting,
   }) => {
-    const { chainStore, priceStore, accountStore } = useStore();
+    const { chainStore, accountStore, priceStore } = useStore();
     const intl = useIntl();
     const language = useLanguage();
 
@@ -66,7 +61,6 @@ export const DetailsTab: FunctionComponent<{
 
     if (signDocJsonAll) {
       chain = chainStore.getChain(signDocJsonAll?.chainId);
-      console.log("chain,", chain);
     }
 
     const renderMsg = (content) => {
@@ -95,37 +89,79 @@ export const DetailsTab: FunctionComponent<{
       );
     };
 
-    const renderToken = (token) => {
+    const renderTransactionFee = () => {
       return (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            margin: "4px 0",
-          }}
-        >
-          {token?.imgUrl || token?.coinImageUrl ? (
-            <img
+        <div>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginTop: 14,
+            }}
+            onClick={() => {
+              setOpenSetting();
+            }}
+          >
+            <div
               style={{
-                width: 14,
-                height: 14,
-                borderRadius: 28,
-                marginRight: 4,
+                flexDirection: "column",
+                display: "flex",
               }}
-              src={token?.imgUrl ?? token?.coinImageUrl}
-            />
-          ) : null}
-          <Text weight="600">{token?.abbr ?? token?.coinDenom}</Text>
+            >
+              <div>
+                <Text weight="600">Fee</Text>
+              </div>
+            </div>
+            <div
+              style={{
+                flexDirection: "column",
+                display: "flex",
+                alignItems: "flex-end",
+                width: "65%",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  cursor: "pointer",
+                }}
+              >
+                <Text
+                  size={16}
+                  weight="600"
+                  color={colors["primary-text-action"]}
+                >
+                  {feeConfig.fee.maxDecimals(6).trim(true).toString() || 0}
+                </Text>
+                <img
+                  src={require("../../public/assets/icon/tdesign_chevron-down.svg")}
+                />
+              </div>
+              <Text
+                containerStyle={{
+                  alignSelf: "flex-end",
+                  display: "flex",
+                }}
+                color={colors["neutral-text-body"]}
+              >
+                ≈
+                {priceStore
+                  .calculatePrice(feeConfig.fee, language.fiatCurrency)
+                  ?.toString() || 0}
+              </Text>
+            </div>
+          </div>
         </div>
       );
     };
 
-    const renderPath = (fromToken?, toToken?, fromContract?, toContract?) => {
+    const renderDestination = (from?, to?) => {
       return (
         <div
           style={{
-            marginTop: 14,
+            marginTop: 24,
             height: "auto",
             alignItems: "center",
           }}
@@ -144,33 +180,21 @@ export const DetailsTab: FunctionComponent<{
               }}
             >
               <div style={{ flexDirection: "column", display: "flex" }}>
-                <Text color={colors["neutral-text-body"]}>Pay token</Text>
-                {fromToken ? (
+                <Text color={colors["neutral-text-body"]}>From</Text>
+                {from ? (
                   <>
-                    {renderToken(fromToken)}
                     <Address
-                      maxCharacters={8}
+                      maxCharacters={6}
                       lineBreakBeforePrefix={false}
                       textDecor={"underline"}
                       textColor={colors["neutral-text-body"]}
                     >
-                      {fromToken.contractAddress}
+                      {from}
                     </Address>
                   </>
                 ) : (
                   <Text color={colors["neutral-text-body"]}>-</Text>
                 )}
-
-                {fromContract ? (
-                  <Address
-                    maxCharacters={8}
-                    lineBreakBeforePrefix={false}
-                    textDecor={"underline"}
-                    textColor={colors["neutral-text-body"]}
-                  >
-                    {fromContract}
-                  </Address>
-                ) : null}
               </div>
             </div>
             <img
@@ -183,93 +207,33 @@ export const DetailsTab: FunctionComponent<{
               }}
             >
               <div style={{ flexDirection: "column", display: "flex" }}>
-                <Text color={colors["neutral-text-body"]}>Receive token</Text>
-                {toToken ? (
+                <Text color={colors["neutral-text-body"]}>To</Text>
+                {to ? (
                   <>
-                    {renderToken(toToken)}
                     <Address
-                      maxCharacters={8}
+                      maxCharacters={6}
                       lineBreakBeforePrefix={false}
                       textDecor={"underline"}
                       textColor={colors["neutral-text-body"]}
                     >
-                      {toToken.contractAddress}
+                      {to}
                     </Address>
                   </>
                 ) : (
                   <Text color={colors["neutral-text-body"]}>-</Text>
                 )}
-
-                {toContract ? (
-                  <Address
-                    maxCharacters={8}
-                    lineBreakBeforePrefix={false}
-                    textDecor={"underline"}
-                    textColor={colors["neutral-text-body"]}
-                  >
-                    {toContract}
-                  </Address>
-                ) : null}
               </div>
             </div>
           </div>
-          <div
-            style={{
-              width: "100%",
-              height: 1,
-              backgroundColor: colors["neutral-border-default"],
-            }}
-          />
         </div>
       );
-    };
-
-    const renderInfo = (condition, label, leftContent) => {
-      if (condition && condition !== "") {
-        return (
-          <div
-            style={{
-              marginTop: 14,
-              height: "auto",
-              alignItems: "center",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-between",
-                marginBottom: 14,
-              }}
-            >
-              <div>
-                <Text weight="600">{label}</Text>
-              </div>
-              <div
-                style={{
-                  alignItems: "flex-end",
-                  maxWidth: "65%",
-                  wordBreak: "break-all",
-                }}
-              >
-                <div>{leftContent}</div>
-              </div>
-            </div>
-            <div
-              style={{
-                width: "100%",
-                height: 1,
-                backgroundColor: colors["neutral-border-default"],
-              }}
-            />
-          </div>
-        );
-      }
     };
 
     const renderedMsgs = (() => {
       if (mode === "amino") {
         return (msgs as readonly Msg[]).map((msg, i) => {
+          console.log("sign send here", msg);
+
           const msgContent = renderAminoMessage(
             accountStore.getAccount(chainStore.current.chainId).msgOpts,
             msg,
@@ -284,109 +248,29 @@ export const DetailsTab: FunctionComponent<{
                 </MsgRender>
               )}
 
-              <hr />
+              <Card
+                containerStyle={{
+                  borderRadius: 12,
+                  border: "1px solid" + colors["neutral-border-default"],
+                  padding: 8,
+                  marginTop: 24,
+                }}
+              >
+                {renderDestination(
+                  msg?.value?.from_address,
+                  msg?.value?.to_address
+                )}
+              </Card>
             </React.Fragment>
           );
         });
       } else if (mode === "direct") {
         return (msgs as any[]).map((msg, i) => {
-          console.log("msg", i, msg);
-
           const msgContent = renderDirectMessage(
             msg,
             chainStore.current.currencies,
             intl
           );
-
-          const txInfo = { ...msg };
-          const decodeMsg = msg.unpacked?.msg
-            ? JSON.parse(Buffer.from(msg.unpacked.msg).toString())
-            : msg.unpacked;
-          txInfo.decode = decodeMsg;
-
-          // decode decodeMsg.send.msg
-          const extraInfo = decodeMsg?.send?.msg
-            ? atob(decodeMsg.send?.msg)
-            : null;
-          txInfo.extraInfo = extraInfo ? JSON.parse(extraInfo) : null;
-          // get contract address from it
-          // using default/get_v1_token_info_by_addresses to get token info by contract address
-          // Note: Tron Contract address(remote_denom) need to be converted to base58
-          // const evm = "0xa614f803B6FD780986A42c78Ec9c7f77e6DeD13C";
-          // const b58 = getBase58Address(evm);
-          // console.log("b58===", b58);
-          // infact we do have those infomation from config
-          let minimum_receive;
-          let ask_asset_info;
-          if (txInfo.extraInfo && txInfo.extraInfo.execute_swap_operations) {
-            const lastDes =
-              txInfo.extraInfo.execute_swap_operations.operations.pop();
-            const ask_asset =
-              lastDes.orai_swap?.ask_asset_info?.token?.contract_addr;
-            minimum_receive =
-              txInfo.extraInfo.execute_swap_operations.minimum_receive;
-            if (ask_asset) {
-              EmbedChainInfos.find((c) => {
-                if (c.chainId === chain?.chainId) {
-                  //@ts-ignore
-                  ask_asset_info = c.currencies.find(
-                    (cur) => cur.contractAddress === ask_asset
-                  );
-                }
-              });
-            }
-          }
-
-          console.log("ask_asset_info", i, ask_asset_info);
-
-          let contractInfo;
-          let receiveToken;
-
-          // get info of token from this extra info
-          if (txInfo?.unpacked?.contract) {
-            EmbedChainInfos.find((c) => {
-              if (c.chainId === chain?.chainId) {
-                contractInfo = c.currencies.find(
-                  //@ts-ignore
-                  (cur) => cur.contractAddress === txInfo?.unpacked?.contract
-                );
-              }
-            });
-          }
-
-          if (txInfo?.unpacked?.token) {
-            const coin = new Coin(
-              txInfo?.unpacked?.token.denom,
-              txInfo?.unpacked?.token.amount
-            );
-            const parsed = CoinUtils.parseDecAndDenomFromCoin(
-              chainStore.current.currencies,
-              coin
-            );
-
-            receiveToken = {
-              amount: clearDecimals(parsed.amount),
-              denom: parsed.denom,
-            };
-          }
-          const sent: { amount: string; denom: string }[] = [];
-
-          if (txInfo?.unpacked?.funds) {
-            for (const coinPrimitive of txInfo?.unpacked?.funds) {
-              const coin = new Coin(coinPrimitive.denom, coinPrimitive.amount);
-
-              const parsed = CoinUtils.parseDecAndDenomFromCoin(
-                chainStore.current.currencies,
-                coin
-              );
-
-              sent.push({
-                amount: clearDecimals(parsed.amount),
-                denom: parsed.denom,
-              });
-              console.log("receiveToken parsed", i, parsed);
-            }
-          }
 
           return (
             <div key={i.toString()}>
@@ -404,140 +288,7 @@ export const DetailsTab: FunctionComponent<{
                   padding: 8,
                 }}
               >
-                {i === 0
-                  ? renderInfo(
-                      chain?.chainName,
-                      "Network",
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          alignItems: "center",
-                        }}
-                      >
-                        <img
-                          style={{
-                            width: 14,
-                            height: 14,
-                            borderRadius: 28,
-                            marginRight: 4,
-                          }}
-                          src={
-                            chain?.chainSymbolImageUrl ??
-                            chain?.stakeCurrency.coinImageUrl
-                          }
-                        />
-                        <Text weight="600">{chain?.chainName}</Text>
-                      </div>
-                    )
-                  : null}
-                {renderInfo(
-                  txInfo?.unpacked?.sender,
-                  "Sender",
-                  <Text color={colors["neutral-text-body"]}>
-                    {txInfo?.unpacked?.sender}
-                  </Text>
-                )}
-                {contractInfo && ask_asset_info
-                  ? renderPath(contractInfo, ask_asset_info)
-                  : null}
-                {txInfo?.extraInfo?.remote_address &&
-                !txInfo?.decode?.send?.contract
-                  ? renderPath(
-                      null,
-                      null,
-                      txInfo?.unpacked?.contract,
-                      txInfo?.extraInfo?.remote_address
-                    )
-                  : null}
-                {txInfo?.decode?.send?.contract && !ask_asset_info
-                  ? renderPath(
-                      contractInfo,
-                      null,
-                      null,
-                      txInfo?.decode?.send?.contract
-                    )
-                  : null}
-                {txInfo?.decode?.transfer_to_remote
-                  ? renderPath(
-                      null,
-                      null,
-                      txInfo?.unpacked?.contract,
-                      txInfo?.decode?.transfer_to_remote.remote_address
-                    )
-                  : null}
-                {sent.map((s) => {
-                  return renderInfo(
-                    s,
-                    "Fund",
-                    <Text color={colors["neutral-text-body"]}>
-                      {s.amount} {s.denom}
-                    </Text>
-                  );
-                })}
-                {renderInfo(
-                  contractInfo,
-                  "Amount",
-                  <Text color={colors["neutral-text-body"]}>
-                    {toDisplay(
-                      txInfo?.decode?.send?.amount,
-                      contractInfo?.coinDecimals
-                    )}{" "}
-                    {contractInfo?.coinDenom}
-                  </Text>
-                )}
-                {renderInfo(
-                  ask_asset_info && minimum_receive,
-                  "Min. Receive",
-                  <Text color={colors["neutral-text-body"]}>
-                    {toDisplay(minimum_receive, ask_asset_info?.coinDecimals)}{" "}
-                    {ask_asset_info?.coinDenom}
-                  </Text>
-                )}
-                {renderInfo(
-                  txInfo?.unpacked?.receiver,
-                  "Receiver",
-                  <Text color={colors["neutral-text-body"]}>
-                    {txInfo?.unpacked?.receiver}
-                  </Text>
-                )}
-                {renderInfo(
-                  receiveToken,
-                  "Transfer",
-                  <Text color={colors["neutral-text-body"]}>
-                    {receiveToken?.amount} {receiveToken?.denom}
-                  </Text>
-                )}
-                {/* {renderInfo(
-                  txInfo?.unpacked?.contract,
-                  "Contract",
-                  <Text color={colors["neutral-text-body"]}>{txInfo?.unpacked?.contract}</Text>
-                )} */}
-
-                {/* <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    cursor: "pointer",
-                    justifyContent: "flex-end",
-                    width: "100%",
-                    marginTop: 8
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      cursor: "pointer"
-                    }}
-                    onClick={() => {}}
-                  >
-                    <Text size={14} weight="500">
-                      {`View more`}
-                    </Text>
-                    <img src={require("../../public/assets/icon/tdesign_chevron-down.svg")} />
-                  </div>
-                </div> */}
+                <CosmosRenderArgs msg={msg} chain={chain} i={i} />
               </Card>
             </div>
           );
@@ -610,6 +361,16 @@ export const DetailsTab: FunctionComponent<{
             </div>
           </React.Fragment>
         )}
+        <Card
+          containerStyle={{
+            borderRadius: 12,
+            border: "2px solid" + colors["neutral-text-title"],
+            padding: 8,
+            marginTop: 12,
+          }}
+        >
+          {renderTransactionFee()}
+        </Card>
       </div>
     );
   }
