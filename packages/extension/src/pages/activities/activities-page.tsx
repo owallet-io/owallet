@@ -119,8 +119,19 @@ export const ActivitiesPage = observer(() => {
                 const { coinDenom } = chainInfo.stakeCurrency;
                 const { coinDenom: denom } = currency;
                 return (
-                  <div key={index} className={styles.itemHistory}>
-                    <span className={styles.date}>Dec 8, 2023</span>
+                  <div
+                    style={{
+                      opacity: currency === unknownToken ? 0.5 : 1,
+                    }}
+                    key={index}
+                    onClick={() => {
+                      window.open(item?.explorer);
+                    }}
+                    className={styles.itemHistory}
+                  >
+                    {first != now || index === 0 ? (
+                      <span className={styles.date}>{now}</span>
+                    ) : null}
                     <div className={styles.tokenItem}>
                       <div className={styles.wrapLeftBlock}>
                         <div className={styles.logoTokenAndChain}>

@@ -19,13 +19,14 @@
   }
 
   .list-history {
-
     .item-history {
+      cursor: pointer;
       .date {
         color: $neutral-text-title;
         text-align: center;
         font-size: 14px;
         font-weight: 600;
+
         line-height: 20px; /* 142.857% */
       }
 
