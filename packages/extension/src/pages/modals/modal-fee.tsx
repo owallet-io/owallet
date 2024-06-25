@@ -143,8 +143,9 @@ export const ModalFee: FC<{
             borderTop: "1px solid" + colors["neutral-border-default"],
             position: "absolute",
             bottom: 0,
-            width: "100%",
+            width: "90%",
             paddingTop: 8,
+            paddingBottom: 8,
             backgroundColor: colors["neutral-surface-card"],
           }}
         >
