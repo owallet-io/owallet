@@ -4,7 +4,7 @@ import { observer } from "mobx-react-lite";
 import { CoinPretty, Dec, Int, PricePretty } from "@owallet/unit";
 import { useStore } from "../../../stores";
 import { ViewRawToken } from "@owallet/types";
-import { unknownToken } from "@owallet/common";
+import { ChainIdEnum, unknownToken } from "@owallet/common";
 import classnames from "classnames";
 import { SearchInput } from "./search-input";
 import { useHistory } from "react-router";
@@ -52,7 +52,7 @@ const TokenItem: FC<{
   item: ViewRawToken;
   onSelectToken?: (token) => void;
 }> = observer(({ item, onSelectToken }) => {
-  const { priceStore } = useStore();
+  const { priceStore, chainStore } = useStore();
   const history = useHistory();
 
   const balance = useMemo(
@@ -73,6 +73,30 @@ const TokenItem: FC<{
       onClick={() => {
         try {
           onSelectToken?.(item);
+          if (chainStore.current.chainId === ChainIdEnum.TRON) {
+            history.push({
+              pathname: "/send-tron",
+              state: {
+                token: item,
+              },
+            });
+          }
+          if (chainStore.current.chainId === ChainIdEnum.Bitcoin) {
+            history.push({
+              pathname: "/send-btc",
+              state: {
+                token: item,
+              },
+            });
+          }
+          if (chainStore.current.networkType === "evm") {
+            history.push({
+              pathname: "/send-evm",
+              state: {
+                token: item,
+              },
+            });
+          }
           history.push({
             pathname: "/send",
             state: {

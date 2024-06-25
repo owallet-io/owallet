@@ -23,7 +23,7 @@ export const InfoAccountCard: FC<{
     history.push("/receive");
     return;
   };
-  const { accountStore, priceStore } = useStore();
+  const { accountStore, priceStore, chainStore } = useStore();
   const account = accountStore.getAccount(ChainIdEnum.Oraichain);
   const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
   const onSelectAccount = () => {
@@ -62,7 +62,21 @@ export const InfoAccountCard: FC<{
           <span className={styles.txt}>Receive</span>
         </div>
         {/* do send function here */}
-        <div onClick={() => history.push("/send")} className={styles.btnWrap}>
+        <div
+          onClick={() => {
+            if (chainStore.current.chainId === ChainIdEnum.TRON) {
+              history.push("/send-tron");
+            }
+            if (chainStore.current.chainId === ChainIdEnum.Bitcoin) {
+              history.push("/send-btc");
+            }
+            if (chainStore.current.networkType === "evm") {
+              history.push("/send-evm");
+            }
+            history.push("/send");
+          }}
+          className={styles.btnWrap}
+        >
           <span className={styles.txt}>Send</span>
         </div>
       </div>
