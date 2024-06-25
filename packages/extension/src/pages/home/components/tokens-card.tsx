@@ -7,23 +7,43 @@ import { ViewRawToken } from "@owallet/types";
 import { unknownToken } from "@owallet/common";
 import classnames from "classnames";
 import { SearchInput } from "./search-input";
+import Switch from "react-switch";
+import colors from "../../../theme/colors";
+import Colors from "../../../theme/colors";
 
 export const TokensCard: FC<{
   dataTokens: ViewRawToken[];
 }> = observer(({ dataTokens }) => {
   const [keyword, setKeyword] = useState("");
-  const { priceStore } = useStore();
+  const { priceStore, chainStore } = useStore();
   const onChangeKeyword = (e) => {
     setKeyword(e.target.value);
   };
+  const onHideDust = () => {
+    chainStore.setIsHideDust(!chainStore.isHideDust);
+  };
   return (
     <div className={styles.containerTokenCard}>
-      <SearchInput
-        onChange={onChangeKeyword}
-        placeholder={"Search by token name"}
-      />
+      <div className={styles.wrapTopBlock}>
+        <SearchInput
+          onChange={onChangeKeyword}
+          placeholder={"Search by token name"}
+        />
+
+        <div className={styles.wrapHideToken}>
+          <span className={styles.label}>Hide dust</span>
+          <Switch
+            onColor={Colors["highlight-surface-active"]}
+            uncheckedIcon={false}
+            checkedIcon={false}
+            height={20}
+            width={35}
+            onChange={onHideDust}
+            checked={chainStore.isHideDust}
+          />
+        </div>
+      </div>
       <div className={styles.listTokens}>
-        {/*{dataTokens?.length <= 0 || !dataTokens?.length ?}*/}
         {(
           dataTokens.filter((item, index) => {
             const balance = new CoinPretty(
@@ -31,12 +51,13 @@ export const TokensCard: FC<{
               item.token.amount
             );
             const price = priceStore.calculatePrice(balance, "usd");
-            return (
-              price?.toDec().gte(new Dec("0.1")) &&
-              item?.token?.currency?.coinDenom
-                ?.toLowerCase()
-                ?.includes(keyword?.toLowerCase())
-            );
+            const searchKeyword = item?.token?.currency?.coinDenom
+              ?.toLowerCase()
+              ?.includes(keyword?.toLowerCase());
+            if (chainStore.isHideDust) {
+              return price?.toDec().gte(new Dec("0.1")) && searchKeyword;
+            }
+            return searchKeyword;
           }) || []
         ).map((item, index) => (
           <TokenItem key={index} item={item} />
