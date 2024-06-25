@@ -233,7 +233,6 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
               border={"none"}
               styleTextInput={{
                 textAlign: "right",
-                direction: "rtl",
                 fontSize: 28,
                 fontWeight: "500",
               }}

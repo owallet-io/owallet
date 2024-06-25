@@ -32,6 +32,7 @@ import { FeeModal } from "../sign/modals/fee-modal";
 import { ModalFee } from "../modals/modal-fee";
 import { Card } from "../../components/common/card";
 import { HeaderModal } from "../home/components/header-modal";
+import { HeaderNew } from "../../layouts/footer-layout/components/header";
 const cx = cn.bind(style);
 
 export const SendPage: FunctionComponent<{
@@ -95,11 +96,18 @@ export const SendPage: FunctionComponent<{
     walletAddress,
     queriesStore.get(current.chainId).queryBalances
   );
-  const { gas } = queriesStore.get(current.chainId).evm.queryGas.getGas({
-    to: sendConfigs.recipientConfig.recipient,
-    from: walletAddress,
-  });
-  console.log("🚀 ~ const{gas}=queriesStore.get ~ gas:", gas);
+
+  useEffect(() => {
+    const token = history.location.state?.token;
+    if (token) {
+      const selectedKey = token.token?.currency?.coinMinimalDenom;
+      const currency = sendConfigs.amountConfig.sendableCurrencies.find(
+        (cur) => cur.coinMinimalDenom === selectedKey
+      );
+      sendConfigs.amountConfig.setSendCurrency(currency);
+    }
+  }, [history.location.state?.token]);
+
   useEffect(() => {
     if (query.defaultDenom) {
       const currency = current.currencies.find(
@@ -228,41 +236,8 @@ export const SendPage: FunctionComponent<{
         }}
         isOpen={openSetting}
       />
-      <div
-        style={{
-          flexDirection: "row",
-          display: "flex",
-          justifyContent: "space-between",
-          padding: 16,
-        }}
-      >
-        <div
-          style={{
-            padding: "4px 7px",
-            backgroundColor: colors["neutral-surface-card"],
-            borderRadius: 999,
-          }}
-        >
-          <img
-            src={require("../../public/assets/icon/tdesign_arrow-left.svg")}
-          />
-        </div>
-        <div
-          style={{
-            alignItems: "center",
-            display: "flex",
-          }}
-        >
-          <img
-            style={{ width: 24, height: 24, borderRadius: 24, marginRight: 4 }}
-            src={chainStore.current.stakeCurrency.coinImageUrl}
-          />
-          <Text size={16} weight="600">
-            {chainStore.current.chainName}
-          </Text>
-        </div>
-        <div style={{ width: 24 }} />
-      </div>
+
+      <HeaderNew isGoBack isConnectDapp={false} />
       <HeaderModal title={"Send".toUpperCase()} />
       <form
         className={style.formContainer}

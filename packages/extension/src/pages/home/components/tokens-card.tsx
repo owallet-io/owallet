@@ -7,6 +7,7 @@ import { ViewRawToken } from "@owallet/types";
 import { unknownToken } from "@owallet/common";
 import classnames from "classnames";
 import { SearchInput } from "./search-input";
+import { useHistory } from "react-router";
 
 export const TokensCard: FC<{
   dataTokens: ViewRawToken[];
@@ -52,6 +53,8 @@ const TokenItem: FC<{
   onSelectToken?: (token) => void;
 }> = observer(({ item, onSelectToken }) => {
   const { priceStore } = useStore();
+  const history = useHistory();
+
   const balance = useMemo(
     () =>
       new CoinPretty(
@@ -65,7 +68,24 @@ const TokenItem: FC<{
     item?.token?.currency?.coinGeckoId
   );
   return (
-    <div onClick={() => onSelectToken(item)} className={styles.tokenItem}>
+    <div
+      style={{ cursor: "pointer" }}
+      onClick={() => {
+        try {
+          onSelectToken?.(item);
+          history.push({
+            pathname: "/send",
+            state: {
+              token: item,
+            },
+          });
+          return;
+        } catch (err) {
+          console.log("err", err);
+        }
+      }}
+      className={styles.tokenItem}
+    >
       <div className={styles.wrapLeftBlock}>
         <div className={styles.logoTokenAndChain}>
           <div className={styles.tokenWrap}>
