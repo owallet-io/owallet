@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, { FunctionComponent, useEffect, useRef, useState } from "react";
 import {
   AddressInput,
   FeeButtons,
@@ -20,10 +20,18 @@ import queryString from "querystring";
 
 import { useSendTxConfig } from "@owallet/hooks";
 import { fitPopupWindow, openPopupWindow, PopupSize } from "@owallet/popup";
-import { EthereumEndpoint } from "@owallet/common";
+import { EthereumEndpoint, useLanguage } from "@owallet/common";
 import { BtcToSats } from "@owallet/bitcoin";
 import { CoinInputBtc } from "../../components/form/coin-input-btc";
 import { Address } from "@owallet/crypto";
+import { HeaderNew } from "../../layouts/footer-layout/components/header";
+import { HeaderModal } from "../home/components/header-modal";
+import { ModalFee } from "../modals/modal-fee";
+import { ModalChooseTokens } from "../modals/modal-choose-tokens";
+import colors from "../../theme/colors";
+import useOnClickOutside from "../../hooks/use-click-outside";
+import { Text } from "../../components/common/text";
+import { Card } from "../../components/common/card";
 
 export const SendBtcPage: FunctionComponent<{
   coinMinimalDenom?: string;
@@ -36,9 +44,17 @@ export const SendBtcPage: FunctionComponent<{
     analyticsStore,
     keyRingStore,
   } = useStore();
-  const { chainId, networkType, currencies, stakeCurrency } =
-    chainStore.current;
+  const { chainId, currencies } = chainStore.current;
+
+  const language = useLanguage();
+  const [openSetting, setOpenSetting] = useState(false);
+  const settingRef = useRef();
   const history = useHistory();
+  useOnClickOutside(settingRef, () => {
+    setOpenSetting(false);
+  });
+  const [isShowSelectToken, setSelectToken] = useState(false);
+
   let search = useLocation().search || coinMinimalDenom || "";
   if (search.startsWith("?")) {
     search = search.slice(1);
@@ -149,172 +165,274 @@ export const SendBtcPage: FunctionComponent<{
     return () => {};
   }, [accountInfo.bech32Address]);
 
-  return (
-    <>
-      <form
-        className={style.formContainer}
-        onSubmit={async (e: any) => {
-          e.preventDefault();
-          if (accountInfo.isReadyToSendMsgs && txStateIsValid) {
-            try {
-              // (window as any).accountInfo = accountInfo;
-              await accountInfo.sendToken(
-                sendConfigs.amountConfig.amount,
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                sendConfigs.amountConfig.sendCurrency,
-                sendConfigs.recipientConfig.recipient,
-                sendConfigs.memoConfig.memo,
-                sendConfigs.feeConfig.toStdFee(),
-                {
-                  preferNoSetFee: true,
-                  preferNoSetMemo: true,
-                  networkType: chainStore.current.networkType,
-                  chainId: chainStore.current.chainId,
-                },
-                {
-                  onBroadcasted: () => {
-                    analyticsStore.logEvent("Send token tx broadcasted", {
-                      chainId: chainStore.current.chainId,
-                      chainName: chainStore.current.chainName,
-                      feeType: sendConfigs.feeConfig.feeType,
-                    });
-                  },
-                  onFulfill: (tx) => {
-                    const url =
-                      chainStore?.current?.raw?.txExplorer.txUrl.replace(
-                        "{txHash}",
-                        tx
-                      );
-                    notification.push({
-                      placement: "top-center",
-                      type: tx ? "success" : "danger",
-                      duration: 5,
-                      content: tx ? (
-                        <div className="alert-inner--text">
-                          Transaction successful with tx:{" "}
-                          <a target="_blank" href={url} rel="noreferrer">
-                            {Address.shortAddress(tx)}
-                          </a>
-                        </div>
-                      ) : (
-                        `Transaction failed`
-                      ),
-                      canDelete: true,
-                      transition: {
-                        duration: 0.25,
-                      },
-                    });
-                  },
-                },
-                {
-                  confirmedBalance: confirmedBalance,
-                  utxos: utxos,
-                  blacklistedUtxos: [],
-                  amount: BtcToSats(Number(sendConfigs.amountConfig.amount)),
-                  feeRate:
-                    sendConfigs.feeConfig.feeRate[
-                      sendConfigs.feeConfig.feeType
-                    ],
-                } as any
-              );
-              if (!isDetachedPage) {
-                history.replace("/");
-              }
-              // notification.push({
-              //   placement: 'top-center',
-              //   type: 'success',
-              //   duration: 5,
-              //   content: 'Transaction submitted!',
-              //   canDelete: true,
-              //   transition: {
-              //     duration: 0.25
-              //   }
-              // });
-            } catch (e: any) {
-              if (!isDetachedPage) {
-                history.replace("/");
-              }
-
-              notification.push({
-                type: "warning",
-                placement: "top-center",
-                duration: 5,
-                content: `Fail to send token: ${e.message}`,
-                canDelete: true,
-                transition: {
-                  duration: 0.25,
-                },
-              });
-            } finally {
-              // XXX: If the page is in detached state,
-              // close the window without waiting for tx to commit. analytics won't work.
-              if (isDetachedPage) {
-                window.close();
-              }
-            }
-          }
-        }}
-      >
-        <div className={style.formInnerContainer}>
-          <div>
-            <AddressInput
-              inputRef={inputRef}
-              recipientConfig={sendConfigs.recipientConfig}
-              memoConfig={sendConfigs.memoConfig}
-              label={intl.formatMessage({ id: "send.input.recipient" })}
-              placeholder="Enter recipient address"
-            />
-            <CoinInputBtc
-              amountConfig={sendConfigs.amountConfig}
-              label={intl.formatMessage({ id: "send.input.amount" })}
-              balanceText={intl.formatMessage({
-                id: "send.input-button.balance",
-              })}
-              placeholder="Enter your amount"
-            />
-            <MemoInput
-              memoConfig={sendConfigs.memoConfig}
-              label={"Message"}
-              placeholder="Enter your message"
-            />
-            <FeeButtons
-              feeConfig={sendConfigs.feeConfig}
-              gasConfig={sendConfigs.gasConfig}
-              priceStore={priceStore}
-              label={intl.formatMessage({ id: "send.input.fee" })}
-              feeSelectLabels={{
-                low: intl.formatMessage({ id: "fee-buttons.select.slow" }),
-                average: intl.formatMessage({
-                  id: "fee-buttons.select.average",
-                }),
-                high: intl.formatMessage({ id: "fee-buttons.select.fast" }),
-              }}
-              isGasInput={false}
-              gasLabel={intl.formatMessage({ id: "send.input.gas" })}
-            />
-          </div>
-          <div style={{ flex: 1 }} />
-          <Button
-            type="submit"
-            block
-            // data-loading={accountInfo.isSendingMsg === 'send'}
-            disabled={!accountInfo.isReadyToSendMsgs || !txStateIsValid}
-            className={style.sendBtn}
+  const renderTransactionFee = () => {
+    return (
+      <div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            borderBottom: "1px solid" + colors["neutral-border-default"],
+            paddingBottom: 14,
+          }}
+          onClick={() => {
+            setOpenSetting(true);
+          }}
+        >
+          <div
             style={{
-              cursor:
-                accountInfo.isReadyToSendMsgs || !txStateIsValid
-                  ? ""
-                  : "pointer",
+              flexDirection: "column",
+              display: "flex",
             }}
           >
-            <span className={style.sendBtnText}>
-              {intl.formatMessage({
-                id: "send.button.send",
-              })}
-            </span>
-          </Button>
+            <div>
+              <Text weight="600">Transaction fee</Text>
+            </div>
+          </div>
+          <div
+            style={{
+              flexDirection: "column",
+              display: "flex",
+              alignItems: "flex-end",
+              width: "50%",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                cursor: "pointer",
+              }}
+            >
+              <Text
+                size={16}
+                weight="600"
+                color={colors["primary-text-action"]}
+              >
+                ≈
+                {priceStore
+                  .calculatePrice(
+                    sendConfigs.feeConfig.fee,
+                    language.fiatCurrency
+                  )
+                  ?.toString() || 0}
+              </Text>
+              <img
+                src={require("../../public/assets/icon/tdesign_chevron-down.svg")}
+              />
+            </div>
+          </div>
         </div>
-      </form>
+      </div>
+    );
+  };
+
+  return (
+    <>
+      <div
+        style={{
+          height: "100%",
+          width: "100vw",
+          overflowX: "auto",
+          backgroundColor: colors["neutral-surface-bg"],
+        }}
+      >
+        <ModalChooseTokens
+          onRequestClose={() => {
+            setSelectToken(false);
+          }}
+          amountConfig={sendConfigs.amountConfig}
+          isOpen={isShowSelectToken}
+        />
+        <ModalFee
+          feeConfig={sendConfigs.feeConfig}
+          gasConfig={sendConfigs.gasConfig}
+          onRequestClose={() => {
+            setOpenSetting(false);
+          }}
+          isOpen={openSetting}
+        />
+
+        <HeaderNew isGoBack isConnectDapp={false} />
+        <HeaderModal title={"Send".toUpperCase()} />
+        <form
+          className={style.formContainer}
+          onSubmit={async (e: any) => {
+            e.preventDefault();
+            if (accountInfo.isReadyToSendMsgs && txStateIsValid) {
+              try {
+                // (window as any).accountInfo = accountInfo;
+                await accountInfo.sendToken(
+                  sendConfigs.amountConfig.amount,
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                  sendConfigs.amountConfig.sendCurrency,
+                  sendConfigs.recipientConfig.recipient,
+                  sendConfigs.memoConfig.memo,
+                  sendConfigs.feeConfig.toStdFee(),
+                  {
+                    preferNoSetFee: true,
+                    preferNoSetMemo: true,
+                    networkType: chainStore.current.networkType,
+                    chainId: chainStore.current.chainId,
+                  },
+                  {
+                    onBroadcasted: () => {
+                      analyticsStore.logEvent("Send token tx broadcasted", {
+                        chainId: chainStore.current.chainId,
+                        chainName: chainStore.current.chainName,
+                        feeType: sendConfigs.feeConfig.feeType,
+                      });
+                    },
+                    onFulfill: (tx) => {
+                      const url =
+                        chainStore?.current?.raw?.txExplorer.txUrl.replace(
+                          "{txHash}",
+                          tx
+                        );
+                      notification.push({
+                        placement: "top-center",
+                        type: tx ? "success" : "danger",
+                        duration: 5,
+                        content: tx ? (
+                          <div className="alert-inner--text">
+                            Transaction successful with tx:{" "}
+                            <a target="_blank" href={url} rel="noreferrer">
+                              {Address.shortAddress(tx)}
+                            </a>
+                          </div>
+                        ) : (
+                          `Transaction failed`
+                        ),
+                        canDelete: true,
+                        transition: {
+                          duration: 0.25,
+                        },
+                      });
+                    },
+                  },
+                  {
+                    confirmedBalance: confirmedBalance,
+                    utxos: utxos,
+                    blacklistedUtxos: [],
+                    amount: BtcToSats(Number(sendConfigs.amountConfig.amount)),
+                    feeRate:
+                      sendConfigs.feeConfig.feeRate[
+                        sendConfigs.feeConfig.feeType
+                      ],
+                  } as any
+                );
+                if (!isDetachedPage) {
+                  history.replace("/");
+                }
+                // notification.push({
+                //   placement: 'top-center',
+                //   type: 'success',
+                //   duration: 5,
+                //   content: 'Transaction submitted!',
+                //   canDelete: true,
+                //   transition: {
+                //     duration: 0.25
+                //   }
+                // });
+              } catch (e: any) {
+                if (!isDetachedPage) {
+                  history.replace("/");
+                }
+
+                notification.push({
+                  type: "warning",
+                  placement: "top-center",
+                  duration: 5,
+                  content: `Fail to send token: ${e.message}`,
+                  canDelete: true,
+                  transition: {
+                    duration: 0.25,
+                  },
+                });
+              } finally {
+                // XXX: If the page is in detached state,
+                // close the window without waiting for tx to commit. analytics won't work.
+                if (isDetachedPage) {
+                  window.close();
+                }
+              }
+            }
+          }}
+        >
+          <div className={style.formInnerContainer}>
+            <div>
+              <AddressInput
+                inputRef={inputRef}
+                recipientConfig={sendConfigs.recipientConfig}
+                memoConfig={sendConfigs.memoConfig}
+                label={intl.formatMessage({ id: "send.input.recipient" })}
+                placeholder="Enter recipient address"
+              />
+              <CoinInputBtc
+                amountConfig={sendConfigs.amountConfig}
+                label={intl.formatMessage({ id: "send.input.amount" })}
+                balanceText={intl.formatMessage({
+                  id: "send.input-button.balance",
+                })}
+                placeholder="Enter your amount"
+              />
+              <Card
+                containerStyle={{
+                  backgroundColor: colors["neutral-surface-card"],
+                  padding: 16,
+                  borderRadius: 24,
+                }}
+              >
+                {renderTransactionFee()}
+                <MemoInput
+                  memoConfig={sendConfigs.memoConfig}
+                  label={"Message"}
+                  placeholder="Enter your message"
+                />
+              </Card>
+
+              <div style={{ display: "none" }}>
+                <FeeButtons
+                  feeConfig={sendConfigs.feeConfig}
+                  gasConfig={sendConfigs.gasConfig}
+                  priceStore={priceStore}
+                  label={intl.formatMessage({ id: "send.input.fee" })}
+                  feeSelectLabels={{
+                    low: intl.formatMessage({ id: "fee-buttons.select.slow" }),
+                    average: intl.formatMessage({
+                      id: "fee-buttons.select.average",
+                    }),
+                    high: intl.formatMessage({ id: "fee-buttons.select.fast" }),
+                  }}
+                  isGasInput={false}
+                  gasLabel={intl.formatMessage({ id: "send.input.gas" })}
+                />
+              </div>
+            </div>
+            <div style={{ flex: 1 }} />
+            <Button
+              type="submit"
+              block
+              // data-loading={accountInfo.isSendingMsg === 'send'}
+              disabled={!accountInfo.isReadyToSendMsgs || !txStateIsValid}
+              className={style.sendBtn}
+              style={{
+                cursor:
+                  accountInfo.isReadyToSendMsgs || !txStateIsValid
+                    ? ""
+                    : "pointer",
+              }}
+            >
+              <span className={style.sendBtnText}>
+                {intl.formatMessage({
+                  id: "send.button.send",
+                })}
+              </span>
+            </Button>
+          </div>
+        </form>
+      </div>
     </>
   );
 });
