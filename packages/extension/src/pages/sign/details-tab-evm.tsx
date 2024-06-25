@@ -18,7 +18,7 @@ import GRAVITY_ABI from "./abi/gravity-abi.json";
 import PANCAKE_ABI from "./abi/pancake-abi.json";
 import UNISWAP_ABI from "./abi/uniswap-abi.json";
 import { Address } from "../../components/address";
-import { tryAllABI } from "./helpers/helpers";
+import { shortenAddress, tryAllABI } from "./helpers/helpers";
 import { EVMRenderArgs } from "./components/render-evm-args";
 
 export const DetailsTabEvm: FunctionComponent<{
@@ -226,8 +226,13 @@ export const DetailsTabEvm: FunctionComponent<{
                     </Address>
                   </>
                 ) : (
-                  <Text color={colors["neutral-text-body"]}>
-                    {signer ?? "-"}
+                  <Text
+                    containerStyle={{
+                      textDecoration: "underline",
+                    }}
+                    color={colors["neutral-text-body"]}
+                  >
+                    {shortenAddress(signer) ?? "-"}
                   </Text>
                 )}
               </div>

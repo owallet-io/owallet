@@ -226,6 +226,17 @@ export const SendEvmPage: FunctionComponent<{
   }, [isDetachedPage]);
 
   useEffect(() => {
+    const token = history.location.state?.token;
+    if (token) {
+      const selectedKey = token.token?.currency?.coinMinimalDenom;
+      const currency = sendConfigs.amountConfig.sendableCurrencies.find(
+        (cur) => cur.coinMinimalDenom === selectedKey
+      );
+      sendConfigs.amountConfig.setSendCurrency(currency);
+    }
+  }, [history.location.state?.token]);
+
+  useEffect(() => {
     if (query.defaultRecipient) {
       sendConfigs.recipientConfig.setRawRecipient(query.defaultRecipient);
     }
