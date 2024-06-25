@@ -62,7 +62,7 @@ export const InfoAccountCard: FC<{
           <span className={styles.txt}>Receive</span>
         </div>
         {/* do send function here */}
-        <div className={styles.btnWrap}>
+        <div onClick={() => history.push("/send")} className={styles.btnWrap}>
           <span className={styles.txt}>Send</span>
         </div>
       </div>
