@@ -4,20 +4,10 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import {
-  FormGroup,
-  Label,
-  FormFeedback,
-  Modal,
-  InputGroup,
-  Button,
-  FormText,
-  ModalBody,
-} from "reactstrap";
+import { Modal, InputGroup, Button, ModalBody } from "reactstrap";
 import { Input } from "./input";
 import { AddressBookPage } from "../../pages/setting/address-book";
 import styleAddressInput from "./address-input.module.scss";
-import classnames from "classnames";
 import {
   InvalidBech32Error,
   EmptyAddressError,
@@ -38,14 +28,11 @@ export interface AddressInputProps {
   recipientConfig: IRecipientConfig;
   memoConfig?: IMemoConfig;
   ibcChannelConfig?: IIBCChannelConfig;
-
   className?: string;
   label?: string;
   placeholder?: string;
   inputStyle?: CSSProperties;
-
   disableAddressBook?: boolean;
-
   disabled?: boolean;
   inputRef?: React.RefObject<HTMLInputElement>;
 }

@@ -21,6 +21,7 @@ export interface InputProps {
   label?: string;
   placeHolder?: string;
   text?: string | React.ReactElement;
+  border?: string;
   error?: string;
   errors?: Array<string>;
   leftIcon?: React.ReactElement;
@@ -28,6 +29,7 @@ export interface InputProps {
   onAction?: () => void;
   append?: React.ReactElement;
   styleInputGroup?: CSSProperties;
+  styleTextInput?: CSSProperties;
   typeInput?: string | any;
   classNameInputGroup?: string;
   innerRef?: any;
@@ -43,10 +45,12 @@ export const Input = forwardRef<
     type,
     label,
     text,
+    border,
     error,
     errors,
     append,
     styleInputGroup,
+    styleTextInput,
     typeInput,
     placeHolder,
     leftIcon,
@@ -55,8 +59,6 @@ export const Input = forwardRef<
     innerRef,
     loading,
   } = props;
-
-  console.log("loading", loading);
 
   const attributes = { ...props };
   delete attributes.className;
@@ -83,7 +85,7 @@ export const Input = forwardRef<
           paddingTop: 4,
           paddingBottom: 4,
           marginTop: 4,
-          border: "1px solid",
+          border: border ?? "1px solid",
           borderRadius: 8,
           borderColor: colors["neutral-border-bold"],
           ...styleInputGroup,
@@ -132,6 +134,7 @@ export const Input = forwardRef<
               placeholder={placeHolder ?? label}
               id={inputId}
               className={classnames(props.className, styleInput.input)}
+              style={styleTextInput}
               type={typeInput ?? type}
               innerRef={ref}
               {...attributes}

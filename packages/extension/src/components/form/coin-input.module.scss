@@ -26,6 +26,13 @@
   }
 }
 
+.row {
+  flex-direction: row;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .token-selector {
   width: 100%;
   min-height: 46px;
