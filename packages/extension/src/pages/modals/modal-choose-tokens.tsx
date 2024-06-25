@@ -50,8 +50,6 @@ export const ModalChooseTokens: FC<{
       totalSizeChain
     );
 
-  console.log("dataTokens", dataTokens);
-
   return (
     <SlidingPane
       isOpen={isOpen}

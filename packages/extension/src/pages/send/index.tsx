@@ -30,6 +30,7 @@ import colors from "../../theme/colors";
 import useOnClickOutside from "../../hooks/use-click-outside";
 import { FeeModal } from "../sign/modals/fee-modal";
 import { ModalFee } from "../modals/modal-fee";
+import { Card } from "../../components/common/card";
 const cx = cn.bind(style);
 
 export const SendPage: FunctionComponent<{
@@ -91,8 +92,7 @@ export const SendPage: FunctionComponent<{
     //@ts-ignore
     accountInfo.msgOpts.send,
     walletAddress,
-    queriesStore.get(current.chainId).queryBalances,
-    EthereumEndpoint
+    queriesStore.get(current.chainId).queryBalances
   );
   const { gas } = queriesStore.get(current.chainId).evm.queryGas.getGas({
     to: sendConfigs.recipientConfig.recipient,
@@ -148,7 +148,8 @@ export const SendPage: FunctionComponent<{
             display: "flex",
             flexDirection: "row",
             justifyContent: "space-between",
-            marginTop: 14,
+            borderBottom: "1px solid" + colors["neutral-border-default"],
+            paddingBottom: 14,
           }}
           onClick={() => {
             setOpenSetting(true);
@@ -161,7 +162,7 @@ export const SendPage: FunctionComponent<{
             }}
           >
             <div>
-              <Text weight="600">Fee</Text>
+              <Text weight="600">Transaction fee</Text>
             </div>
           </div>
           <div
@@ -169,7 +170,7 @@ export const SendPage: FunctionComponent<{
               flexDirection: "column",
               display: "flex",
               alignItems: "flex-end",
-              width: "65%",
+              width: "50%",
             }}
           >
             <div
@@ -184,30 +185,18 @@ export const SendPage: FunctionComponent<{
                 weight="600"
                 color={colors["primary-text-action"]}
               >
-                {sendConfigs.feeConfig.fee
-                  .maxDecimals(6)
-                  .trim(true)
-                  .toString() || 0}
+                ≈
+                {priceStore
+                  .calculatePrice(
+                    sendConfigs.feeConfig.fee,
+                    language.fiatCurrency
+                  )
+                  ?.toString() || 0}
               </Text>
               <img
                 src={require("../../public/assets/icon/tdesign_chevron-down.svg")}
               />
             </div>
-            <Text
-              containerStyle={{
-                alignSelf: "flex-end",
-                display: "flex",
-              }}
-              color={colors["neutral-text-body"]}
-            >
-              ≈
-              {priceStore
-                .calculatePrice(
-                  sendConfigs.feeConfig.fee,
-                  language.fiatCurrency
-                )
-                ?.toString() || 0}
-            </Text>
           </div>
         </div>
       </div>
@@ -220,6 +209,7 @@ export const SendPage: FunctionComponent<{
         height: "100%",
         width: "100vw",
         overflowX: "auto",
+        backgroundColor: colors["neutral-surface-bg"],
       }}
     >
       <ModalChooseTokens
@@ -329,9 +319,7 @@ export const SendPage: FunctionComponent<{
                 <div onClick={() => setSelectToken(true)}>
                   <Text>Select Token</Text>
                 </div>
-                <div onClick={() => setOpenSetting(true)}>
-                  <Text>Select fee</Text>
-                </div>
+
                 <AddressInput
                   inputRef={inputRef}
                   recipientConfig={sendConfigs.recipientConfig}
@@ -347,27 +335,46 @@ export const SendPage: FunctionComponent<{
                   })}
                   placeholder="Enter your amount"
                 />
-                {/* {renderTransactionFee()} */}
 
-                {/* <MemoInput
-                  memoConfig={sendConfigs.memoConfig}
-                  label={intl.formatMessage({ id: "send.input.memo" })}
-                  placeholder="Enter your memo message"
-                /> */}
-                {/* <FeeButtons
-                  feeConfig={sendConfigs.feeConfig}
-                  gasConfig={sendConfigs.gasConfig}
-                  priceStore={priceStore}
-                  label={intl.formatMessage({ id: "send.input.fee" })}
-                  feeSelectLabels={{
-                    low: intl.formatMessage({ id: "fee-buttons.select.slow" }),
-                    average: intl.formatMessage({
-                      id: "fee-buttons.select.average"
-                    }),
-                    high: intl.formatMessage({ id: "fee-buttons.select.fast" })
+                <Card
+                  containerStyle={{
+                    backgroundColor: colors["neutral-surface-card"],
+                    padding: 16,
+                    borderRadius: 24,
                   }}
-                  gasLabel={intl.formatMessage({ id: "send.input.gas" })}
-                /> */}
+                >
+                  {renderTransactionFee()}
+                  <MemoInput
+                    inputStyle={{
+                      borderWidth: 0,
+                      padding: 0,
+                    }}
+                    memoConfig={sendConfigs.memoConfig}
+                    label={intl.formatMessage({ id: "send.input.memo" })}
+                    placeholder="Required if send to CEX"
+                  />
+                </Card>
+
+                <div style={{ display: "none" }}>
+                  <FeeButtons
+                    feeConfig={sendConfigs.feeConfig}
+                    gasConfig={sendConfigs.gasConfig}
+                    priceStore={priceStore}
+                    label={intl.formatMessage({ id: "send.input.fee" })}
+                    feeSelectLabels={{
+                      low: intl.formatMessage({
+                        id: "fee-buttons.select.slow",
+                      }),
+                      average: intl.formatMessage({
+                        id: "fee-buttons.select.average",
+                      }),
+                      high: intl.formatMessage({
+                        id: "fee-buttons.select.fast",
+                      }),
+                    }}
+                    gasLabel={intl.formatMessage({ id: "send.input.gas" })}
+                  />
+                </div>
               </div>
             </div>
           </div>

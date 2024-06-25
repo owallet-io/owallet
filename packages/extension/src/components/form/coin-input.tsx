@@ -127,7 +127,7 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
 
     return (
       <React.Fragment>
-        <FormGroup className={className}>
+        <div className={className}>
           <Label
             for={`selector-${randomId}`}
             className="form-control-label"
@@ -173,8 +173,8 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
               })}
             </DropdownMenu>
           </ButtonDropdown>
-        </FormGroup>
-        <FormGroup className={className}>
+        </div>
+        <div className={className}>
           {label ? (
             <Label
               for={`input-${randomId}`}
@@ -265,7 +265,7 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
               {errorText}
             </FormFeedback>
           ) : null}
-        </FormGroup>
+        </div>
       </React.Fragment>
     );
   }

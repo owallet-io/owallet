@@ -144,7 +144,7 @@ export const AddressInput: FunctionComponent<AddressInputProps> = observer(
             />
           </ModalBody>
         </Modal>
-        <FormGroup className={className}>
+        <div className={className}>
           {label ? (
             <Label for={inputId} className="form-control-label">
               {label}
@@ -196,7 +196,7 @@ export const AddressInput: FunctionComponent<AddressInputProps> = observer(
               {errorText}
             </FormFeedback>
           ) : null}
-        </FormGroup>
+        </div>
       </React.Fragment>
     );
   }
