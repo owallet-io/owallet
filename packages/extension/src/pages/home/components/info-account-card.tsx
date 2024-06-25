@@ -66,12 +66,15 @@ export const InfoAccountCard: FC<{
           onClick={() => {
             if (chainStore.current.chainId === ChainIdEnum.TRON) {
               history.push("/send-tron");
+              return;
             }
             if (chainStore.current.chainId === ChainIdEnum.Bitcoin) {
               history.push("/send-btc");
+              return;
             }
             if (chainStore.current.networkType === "evm") {
               history.push("/send-evm");
+              return;
             }
             history.push("/send");
           }}

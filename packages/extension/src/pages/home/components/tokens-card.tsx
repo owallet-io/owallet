@@ -80,6 +80,7 @@ const TokenItem: FC<{
                 token: item,
               },
             });
+            return;
           }
           if (chainStore.current.chainId === ChainIdEnum.Bitcoin) {
             history.push({
@@ -88,6 +89,7 @@ const TokenItem: FC<{
                 token: item,
               },
             });
+            return;
           }
           if (chainStore.current.networkType === "evm") {
             history.push({
@@ -96,6 +98,7 @@ const TokenItem: FC<{
                 token: item,
               },
             });
+            return;
           }
           history.push({
             pathname: "/send",

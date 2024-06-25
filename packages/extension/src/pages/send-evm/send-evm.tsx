@@ -407,6 +407,11 @@ export const SendEvmPage: FunctionComponent<{
           <div className={style.formInnerContainer}>
             <div>
               <AddressInput
+                inputStyle={{
+                  borderWidth: 0,
+                  padding: 0,
+                  margin: 0,
+                }}
                 inputRef={inputRef}
                 recipientConfig={sendConfigs.recipientConfig}
                 memoConfig={sendConfigs.memoConfig}
