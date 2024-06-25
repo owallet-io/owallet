@@ -22,6 +22,7 @@ export interface InputProps {
   placeHolder?: string;
   text?: string | React.ReactElement;
   error?: string;
+  errors?: Array<string>;
   leftIcon?: React.ReactElement;
   rightIcon?: React.ReactElement;
   onAction?: () => void;
@@ -29,6 +30,8 @@ export interface InputProps {
   styleInputGroup?: CSSProperties;
   typeInput?: string | any;
   classNameInputGroup?: string;
+  innerRef?: any;
+  loading?: boolean;
 }
 
 // eslint-disable-next-line react/display-name
@@ -41,6 +44,7 @@ export const Input = forwardRef<
     label,
     text,
     error,
+    errors,
     append,
     styleInputGroup,
     typeInput,
@@ -48,7 +52,11 @@ export const Input = forwardRef<
     leftIcon,
     rightIcon,
     onAction,
+    innerRef,
+    loading,
   } = props;
+
+  console.log("loading", loading);
 
   const attributes = { ...props };
   delete attributes.className;
@@ -68,7 +76,7 @@ export const Input = forwardRef<
   });
 
   return (
-    <div>
+    <div ref={innerRef}>
       <div
         style={{
           padding: 8,
@@ -81,7 +89,25 @@ export const Input = forwardRef<
           ...styleInputGroup,
         }}
       >
-        {label ? <Text>{label}</Text> : null}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            width: "100%",
+            alignItems: "center",
+          }}
+        >
+          {label ? <Text>{label}</Text> : null}
+          {loading ? (
+            <div>
+              <FormText>
+                <i className="fa fa-spinner fa-spin fa-fw" />
+              </FormText>
+            </div>
+          ) : null}
+        </div>
+
         <div
           style={{
             flexDirection: "row",
@@ -121,6 +147,13 @@ export const Input = forwardRef<
 
         {append}
       </div>
+      {errors?.length > 0
+        ? errors.map((err) => {
+            return (
+              <FormFeedback style={{ display: "block" }}>{err}</FormFeedback>
+            );
+          })
+        : null}
       {error ? (
         <FormFeedback style={{ display: "block" }}>{error}</FormFeedback>
       ) : text ? (

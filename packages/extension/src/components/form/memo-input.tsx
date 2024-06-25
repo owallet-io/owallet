@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState } from "react";
+import React, { CSSProperties, FunctionComponent, useState } from "react";
 import { FormGroup, Label } from "reactstrap";
 import { IMemoConfig } from "@owallet/hooks";
 import { observer } from "mobx-react-lite";
@@ -16,7 +16,7 @@ export interface MemoInputProps {
   rows?: number;
 
   disabled?: boolean;
-  inputStyle?: any;
+  inputStyle?: CSSProperties;
 }
 
 // TODO: Handle the max memo bytes length for each chain.

@@ -7,7 +7,6 @@ import React, {
 import {
   FormGroup,
   Label,
-  Input,
   FormFeedback,
   Modal,
   InputGroup,
@@ -15,9 +14,8 @@ import {
   FormText,
   ModalBody,
 } from "reactstrap";
-// import Modal from 'react-modal';
+import { Input } from "./input";
 import { AddressBookPage } from "../../pages/setting/address-book";
-
 import styleAddressInput from "./address-input.module.scss";
 import classnames from "classnames";
 import {
@@ -145,18 +143,13 @@ export const AddressInput: FunctionComponent<AddressInputProps> = observer(
           </ModalBody>
         </Modal>
         <div className={className}>
-          {label ? (
-            <Label for={inputId} className="form-control-label">
-              {label}
-            </Label>
-          ) : null}
           <InputGroup className={styleAddressInput.inputGroup}>
             <Input
+              loading={isENSLoading}
+              styleInputGroup={inputStyle}
               id={inputId}
-              className={classnames(
-                "form-control-alternative",
-                styleAddressInput.input
-              )}
+              label={label ?? ""}
+              className={styleAddressInput.input}
               innerRef={inputRef}
               value={recipientConfig.rawRecipient}
               onChange={(e) => {
@@ -166,36 +159,37 @@ export const AddressInput: FunctionComponent<AddressInputProps> = observer(
               autoComplete="off"
               disabled={disabled}
               placeholder={placeholder}
+              text={
+                !isENSLoading && isENSAddress && !error
+                  ? recipientConfig.recipient
+                  : null
+              }
+              error={errorText != null ? errorText : null}
+              rightIcon={
+                !disableAddressBook && memoConfig ? (
+                  <Button
+                    className={styleAddressInput.addressBookButton}
+                    type="button"
+                    outline={true}
+                    onClick={() => setIsAddressBookOpen(true)}
+                    disabled={disabled}
+                  >
+                    <img
+                      src={require("../../public/assets/icon/tdesign_address-book.svg")}
+                      alt="logo"
+                    />
+                  </Button>
+                ) : null
+              }
             />
-            {!disableAddressBook && memoConfig ? (
-              <Button
-                className={styleAddressInput.addressBookButton}
-                type="button"
-                outline={true}
-                onClick={() => setIsAddressBookOpen(true)}
-                disabled={disabled}
-              >
-                {/* <i className="fas fa-address-book" /> */}
-                <img
-                  src={require("../../public/assets/svg/address-book.svg")}
-                  alt="logo"
-                />
-              </Button>
-            ) : null}
           </InputGroup>
-          {isENSLoading ? (
+          {/* {isENSLoading ? (
             <FormText>
               <i className="fa fa-spinner fa-spin fa-fw" />
             </FormText>
-          ) : null}
-          {!isENSLoading && isENSAddress && !error ? (
-            <FormText>{recipientConfig.recipient}</FormText>
-          ) : null}
-          {errorText != null ? (
-            <FormFeedback style={{ display: "block" }}>
-              {errorText}
-            </FormFeedback>
-          ) : null}
+          ) : null} */}
+          {/* {!isENSLoading && isENSAddress && !error ? <FormText>{recipientConfig.recipient}</FormText> : null} */}
+          {/* {errorText != null ? <FormFeedback style={{ display: "block" }}>{errorText}</FormFeedback> : null} */}
         </div>
       </React.Fragment>
     );
