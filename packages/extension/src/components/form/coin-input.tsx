@@ -29,15 +29,18 @@ import { Text } from "../common/text";
 import { Button } from "../common/button";
 import { Input } from "./input";
 
+export const removeDataInParentheses = (inputString: string): string => {
+  if (!inputString) return;
+  return inputString.replace(/\([^)]*\)/g, "");
+};
+
 export interface CoinInputProps {
   amountConfig: IAmountConfig;
-
   balanceText?: string;
-
   className?: string;
   label?: string;
   placeholder?: string;
-
+  openSelectToken: () => void;
   disableAllBalance?: boolean;
 }
 
@@ -46,7 +49,14 @@ const reduceStringAssets = (str) => {
 };
 
 export const CoinInput: FunctionComponent<CoinInputProps> = observer(
-  ({ amountConfig, className, label, disableAllBalance, placeholder }) => {
+  ({
+    amountConfig,
+    className,
+    label,
+    disableAllBalance,
+    placeholder,
+    openSelectToken,
+  }) => {
     const intl = useIntl();
 
     const [randomId] = useState(() => {
@@ -85,9 +95,8 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
     }, [intl, error]);
 
     const [isOpenTokenSelector, setIsOpenTokenSelector] = useState(false);
-    const { queriesStore, chainStore, accountStore } = useStore();
-    const accountInfo = accountStore.getAccount(chainStore.current.chainId);
-    const queries = queriesStore.get(chainStore.current.chainId);
+    const { queriesStore, chainStore, priceStore } = useStore();
+
     const queryBalances = queriesStore
       .get(amountConfig.chainId)
       .queryBalances.getQueryBech32Address(amountConfig.sender);
@@ -125,6 +134,17 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
       amountConfig.sendCurrency.coinMinimalDenom
     );
 
+    const getName = (name) => {
+      return removeDataInParentheses(name);
+    };
+
+    const amount = new CoinPretty(
+      amountConfig.sendCurrency,
+      new Dec(amountConfig.getAmountPrimitive().amount)
+    );
+
+    const estimatePrice = priceStore.calculatePrice(amount)?.toString();
+
     return (
       <Card
         containerStyle={{
@@ -135,40 +155,6 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
           marginBottom: 1,
         }}
       >
-        {/* <div className={className}>
-          <FormattedMessage id="component.form.coin-input.token.label" />
-          <ButtonDropdown
-            id={`selector-${randomId}`}
-            className={classnames(styleCoinInput.tokenSelector, {
-              disabled: amountConfig.fraction === 1
-            })}
-            isOpen={isOpenTokenSelector}
-            toggle={() => setIsOpenTokenSelector(value => !value)}
-            disabled={amountConfig.fraction === 1}
-          >
-            <DropdownToggle caret>
-              {amountConfig.sendCurrency.coinDenom} {denomHelper.contractAddress && ` (${denomHelper.contractAddress})`}
-            </DropdownToggle>
-            <DropdownMenu>
-              {selectableCurrencies.map(currency => {
-                const denomHelper = new DenomHelper(currency.coinMinimalDenom);
-                return (
-                  <DropdownItem
-                    key={currency.coinMinimalDenom}
-                    active={currency.coinMinimalDenom === amountConfig.sendCurrency.coinMinimalDenom}
-                    onClick={e => {
-                      e.preventDefault();
-
-                      amountConfig.setSendCurrency(currency);
-                    }}
-                  >
-                    {currency.coinDenom} {denomHelper.contractAddress && ` (${denomHelper.contractAddress})`}
-                  </DropdownItem>
-                );
-              })}
-            </DropdownMenu>
-          </ButtonDropdown>
-        </div> */}
         <div className={className}>
           {!disableAllBalance ? (
             <div className={styleCoinInput.row}>
@@ -211,25 +197,32 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
           ) : null}
           <div className={styleCoinInput.row}>
             <div
+              onClick={openSelectToken}
               style={{
                 backgroundColor: colors["neutral-surface-action3"],
                 borderRadius: 999,
                 padding: "16px 12px",
                 display: "flex",
                 flexDirection: "row",
+                cursor: "pointer",
+                alignItems: "center",
               }}
             >
-              <img
-                src={require("../../public/assets/icon/tdesign_address-book.svg")}
-                alt="logo"
-              />
+              {amountConfig.sendCurrency.coinImageUrl ? (
+                <img
+                  style={{ width: 20, height: 20, borderRadius: 20 }}
+                  src={amountConfig.sendCurrency.coinImageUrl}
+                  alt="logo"
+                />
+              ) : null}
+
               <Text
                 containerStyle={{ marginRight: 4, marginLeft: 4 }}
                 color={colors["neutral-text-action-on-light-bg"]}
                 size={16}
                 weight="600"
               >
-                ORAI
+                {getName(amountConfig?.sendCurrency?.coinDenom)}
               </Text>
               <img
                 src={require("../../public/assets/icon/tdesign_chevron-down.svg")}
@@ -280,7 +273,7 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
               containerStyle={{ marginLeft: 4 }}
               color={colors["neutral-text-body"]}
             >
-              $12312312
+              {estimatePrice}
             </Text>
           </div>
           {errorText != null ? (

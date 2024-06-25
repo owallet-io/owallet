@@ -213,12 +213,10 @@ export const SendPage: FunctionComponent<{
       }}
     >
       <ModalChooseTokens
-        onSelectToken={(item) => {
-          console.log("item", item?.token?.currency?.coinDenom);
-        }}
         onRequestClose={() => {
           setSelectToken(false);
         }}
+        amountConfig={sendConfigs.amountConfig}
         isOpen={isShowSelectToken}
       />
       <ModalFee
@@ -316,10 +314,6 @@ export const SendPage: FunctionComponent<{
           <div style={{ height: "85%", overflow: "scroll", padding: 16 }}>
             <div style={{ paddingBottom: 12 }}>
               <div>
-                <div onClick={() => setSelectToken(true)}>
-                  <Text>Select Token</Text>
-                </div>
-
                 <AddressInput
                   inputStyle={{
                     borderWidth: 0,
@@ -333,6 +327,7 @@ export const SendPage: FunctionComponent<{
                   placeholder="Enter recipient address"
                 />
                 <CoinInput
+                  openSelectToken={() => setSelectToken(true)}
                   amountConfig={sendConfigs.amountConfig}
                   label={intl.formatMessage({ id: "send.input.amount" })}
                   balanceText={intl.formatMessage({
