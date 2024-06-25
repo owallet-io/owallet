@@ -7,6 +7,7 @@ import { HeaderModal } from "../home/components/header-modal";
 import {
   FeeConfig,
   FeeEvmConfig,
+  FeeTronConfig,
   GasConfig,
   GasEvmConfig,
 } from "@owallet/hooks";
@@ -19,7 +20,7 @@ import ReactSwitch from "react-switch";
 
 export const ModalFee: FC<{
   isOpen: boolean;
-  feeConfig: FeeConfig | FeeEvmConfig;
+  feeConfig: FeeConfig | FeeEvmConfig | FeeTronConfig;
   gasConfig: GasConfig | GasEvmConfig;
   onRequestClose: () => void;
 }> = observer(({ isOpen, onRequestClose, feeConfig, gasConfig }) => {

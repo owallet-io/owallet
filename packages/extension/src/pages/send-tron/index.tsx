@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect } from "react";
+import React, { FunctionComponent, useEffect, useRef, useState } from "react";
 import { AddressInput, CoinInput } from "../../components/form";
 import { useStore } from "../../stores";
 import { observer } from "mobx-react-lite";
@@ -17,14 +17,23 @@ import {
   useSendTxTronConfig,
 } from "@owallet/hooks";
 import { fitPopupWindow } from "@owallet/popup";
-import { decodeParams, EthereumEndpoint } from "@owallet/common";
+import { decodeParams, EthereumEndpoint, useLanguage } from "@owallet/common";
 import { FeeInput } from "../../components/form/fee-input";
 import TronWeb from "tronweb";
+import { HeaderNew } from "../../layouts/footer-layout/components/header";
+import { HeaderModal } from "../home/components/header-modal";
+import { ModalFee } from "../modals/modal-fee";
+import { ModalChooseTokens } from "../modals/modal-choose-tokens";
+import useOnClickOutside from "../../hooks/use-click-outside";
+import colors from "../../theme/colors";
+import { Card } from "../../components/common/card";
+import { Text } from "../../components/common/text";
 export const SendTronEvmPage: FunctionComponent<{
   coinMinimalDenom?: string;
   tokensTrc20Tron?: Array<any>;
 }> = observer(({ coinMinimalDenom, tokensTrc20Tron }) => {
   const history = useHistory();
+  const language = useLanguage();
   let search = useLocation().search || coinMinimalDenom || "";
   if (search.startsWith("?")) {
     search = search.slice(1);
@@ -46,6 +55,14 @@ export const SendTronEvmPage: FunctionComponent<{
 
   const intl = useIntl();
   const inputRef = React.useRef(null);
+  const [openSetting, setOpenSetting] = useState(false);
+  const settingRef = useRef();
+
+  useOnClickOutside(settingRef, () => {
+    setOpenSetting(false);
+  });
+  const [isShowSelectToken, setSelectToken] = useState(false);
+
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
@@ -179,55 +196,84 @@ export const SendTronEvmPage: FunctionComponent<{
       sendConfigs.feeConfig.setManualFee(null);
     };
   }, [feeTrx]);
+
   return (
     <>
-      <form className={style.formContainer} onSubmit={onSend}>
-        <div className={style.formInnerContainer}>
-          <div>
-            <AddressInput
-              inputRef={inputRef}
-              recipientConfig={sendConfigs.recipientConfig}
-              memoConfig={sendConfigs.memoConfig}
-              label={intl.formatMessage({ id: "send.input.recipient" })}
-              placeholder="Enter recipient address"
-            />
-            <CoinInput
-              amountConfig={sendConfigs.amountConfig}
-              label={intl.formatMessage({ id: "send.input.amount" })}
-              balanceText={intl.formatMessage({
-                id: "send.input-button.balance",
-              })}
-              placeholder="Enter your amount"
-            />
+      <div
+        style={{
+          height: "100%",
+          width: "100vw",
+          overflowX: "auto",
+          backgroundColor: colors["neutral-surface-bg"],
+        }}
+      >
+        <ModalChooseTokens
+          onRequestClose={() => {
+            setSelectToken(false);
+          }}
+          amountConfig={sendConfigs.amountConfig}
+          isOpen={isShowSelectToken}
+        />
 
-            <FeeInput
-              label={"Fee"}
-              //@ts-ignore
-              feeConfig={sendConfigs.feeConfig}
-            />
+        <HeaderNew isGoBack isConnectDapp={false} />
+        <HeaderModal title={"Send".toUpperCase()} />
+        <form className={style.formContainer} onSubmit={onSend}>
+          <div className={style.formInnerContainer}>
+            <div>
+              <AddressInput
+                inputRef={inputRef}
+                recipientConfig={sendConfigs.recipientConfig}
+                memoConfig={sendConfigs.memoConfig}
+                label={intl.formatMessage({ id: "send.input.recipient" })}
+                placeholder="Enter recipient address"
+              />
+              <CoinInput
+                openSelectToken={() => setSelectToken(true)}
+                amountConfig={sendConfigs.amountConfig}
+                label={intl.formatMessage({ id: "send.input.amount" })}
+                balanceText={intl.formatMessage({
+                  id: "send.input-button.balance",
+                })}
+                placeholder="Enter your amount"
+              />
+
+              <Card
+                containerStyle={{
+                  backgroundColor: colors["neutral-surface-card"],
+                  padding: 16,
+                  borderRadius: 24,
+                }}
+              >
+                <FeeInput
+                  label={"Fee"}
+                  //@ts-ignore
+                  feeConfig={sendConfigs.feeConfig}
+                />
+              </Card>
+            </div>
+            <div style={{ flex: 1 }} />
+            <Button
+              type="submit"
+              block
+              data-loading={accountInfo.isSendingMsg === "send"}
+              disabled={!accountInfo.isReadyToSendMsgs || !txStateIsValid}
+              className={style.sendBtn}
+              style={{
+                cursor:
+                  accountInfo.isReadyToSendMsgs || !txStateIsValid
+                    ? ""
+                    : "pointer",
+              }}
+            >
+              <span className={style.sendBtnText}>
+                {intl.formatMessage({
+                  id: "send.button.send",
+                })}
+              </span>
+            </Button>
           </div>
-          <div style={{ flex: 1 }} />
-          <Button
-            type="submit"
-            block
-            data-loading={accountInfo.isSendingMsg === "send"}
-            disabled={!accountInfo.isReadyToSendMsgs || !txStateIsValid}
-            className={style.sendBtn}
-            style={{
-              cursor:
-                accountInfo.isReadyToSendMsgs || !txStateIsValid
-                  ? ""
-                  : "pointer",
-            }}
-          >
-            <span className={style.sendBtnText}>
-              {intl.formatMessage({
-                id: "send.button.send",
-              })}
-            </span>
-          </Button>
-        </div>
-      </form>
+        </form>
+      </div>
     </>
   );
 });
