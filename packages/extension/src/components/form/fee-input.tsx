@@ -8,9 +8,8 @@ import {
 } from "@owallet/hooks";
 import { observer } from "mobx-react-lite";
 
-import { Input } from "../../components/form";
-
 import { useIntl } from "react-intl";
+import { Input } from "./input";
 
 export interface GasInputProps {
   feeConfig: FeeConfig;
@@ -60,15 +59,12 @@ export const FeeInput: FunctionComponent<GasInputProps> = observer(
           </Label>
         ) : null}
         <Input
-          // type="number"
-          classNameInputGroup={classNameInputGroup}
-          // value={feeConfig.fee
-          //   ?.shrink(true)
-          //   ?.trim(true)
-          //   ?.hideDenom(true)
-          //   ?.toString()}
+          styleInputGroup={{
+            borderWidth: 0,
+            padding: 0,
+            margin: 0,
+          }}
           className={classNameInput}
-          disabled
           style={{
             backgroundColor: "rgba(230, 232, 236, 0.2)",
           }}
@@ -79,7 +75,7 @@ export const FeeInput: FunctionComponent<GasInputProps> = observer(
             ?.toString()}
           error={errorText}
           id={inputId}
-          append={
+          rightIcon={
             <span
               style={{
                 padding: 10,

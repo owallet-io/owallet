@@ -7,7 +7,6 @@ import style from "../send-evm/style.module.scss";
 import { useNotification } from "../../components/notification";
 
 import { useIntl } from "react-intl";
-import { Button } from "reactstrap";
 
 import { useHistory, useLocation } from "react-router";
 import queryString from "querystring";
@@ -28,6 +27,7 @@ import useOnClickOutside from "../../hooks/use-click-outside";
 import colors from "../../theme/colors";
 import { Card } from "../../components/common/card";
 import { Text } from "../../components/common/text";
+import { Button } from "../../components/common/button";
 export const SendTronEvmPage: FunctionComponent<{
   coinMinimalDenom?: string;
   tokensTrc20Tron?: Array<any>;
@@ -215,7 +215,7 @@ export const SendTronEvmPage: FunctionComponent<{
           isOpen={isShowSelectToken}
         />
 
-        <HeaderNew isGoBack isConnectDapp={false} />
+        <HeaderNew isDisableCenterBtn={true} isGoBack isConnectDapp={false} />
         <HeaderModal title={"Send".toUpperCase()} />
         <form className={style.formContainer} onSubmit={onSend}>
           <div className={style.formInnerContainer}>
@@ -259,7 +259,6 @@ export const SendTronEvmPage: FunctionComponent<{
             <div style={{ flex: 1 }} />
             <Button
               type="submit"
-              block
               data-loading={accountInfo.isSendingMsg === "send"}
               disabled={!accountInfo.isReadyToSendMsgs || !txStateIsValid}
               className={style.sendBtn}

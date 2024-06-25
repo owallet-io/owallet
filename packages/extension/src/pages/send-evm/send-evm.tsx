@@ -401,7 +401,7 @@ export const SendEvmPage: FunctionComponent<{
           isOpen={openSetting}
         />
 
-        <HeaderNew isGoBack isConnectDapp={false} />
+        <HeaderNew isDisableCenterBtn={true} isGoBack isConnectDapp={false} />
         <HeaderModal title={"Send".toUpperCase()} />
         <form className={style.formContainer} onSubmit={onSend}>
           <div className={style.formInnerContainer}>

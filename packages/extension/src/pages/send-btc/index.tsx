@@ -254,7 +254,7 @@ export const SendBtcPage: FunctionComponent<{
           isOpen={openSetting}
         />
 
-        <HeaderNew isGoBack isConnectDapp={false} />
+        <HeaderNew isDisableCenterBtn={true} isGoBack isConnectDapp={false} />
         <HeaderModal title={"Send".toUpperCase()} />
         <form
           className={style.formContainer}
