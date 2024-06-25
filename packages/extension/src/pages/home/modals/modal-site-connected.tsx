@@ -4,6 +4,7 @@ import styles from "./style.module.scss";
 import { HeaderModal } from "../components/header-modal";
 import SlidingPane from "react-sliding-pane";
 import { formatAddress, getFavicon } from "@owallet/common";
+import classnames from "classnames";
 
 export const ModalSiteConnected: FC<{
   isOpen: boolean;
@@ -17,7 +18,7 @@ export const ModalSiteConnected: FC<{
       width="100vw"
       onRequestClose={onRequestClose}
       hideHeader={true}
-      className={styles.modalNetwork}
+      className={classnames(styles.modalNetwork, styles.modalSiteConnect)}
     >
       <div className={styles.contentWrap}>
         <HeaderModal title={""} onRequestClose={onRequestClose} />

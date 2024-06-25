@@ -1,5 +1,7 @@
 @import '../../../styles/var';
-
+.modal-site-connect{
+  margin-top: 50vh;
+}
 .modal-network {
   border-top-left-radius: 24px;
   border-top-right-radius: 24px;
@@ -44,7 +46,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background-color: $neutral-surface-action3;
+        background-color: $neutral-surface-card;
         border-radius: 100%;
 
         .img-avatar {

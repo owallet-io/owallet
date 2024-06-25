@@ -120,8 +120,6 @@ export const ActivitiesPage = observer(() => {
                 const chainInfo = chainStore.getChain(
                   MapNetworkToChainId[item.network]
                 );
-                const { coinDenom } = chainInfo.stakeCurrency;
-                const { coinDenom: denom } = currency;
                 return (
                   <div
                     style={{
@@ -164,7 +162,7 @@ export const ActivitiesPage = observer(() => {
                         <div className={styles.bodyTokenItem}>
                           <span className={styles.title}>{method}</span>
                           <span className={styles.subTitle}>
-                            {formatContractAddress(item.txhash)}
+                            {formatAddress(item.txhash, 5)}
                           </span>
                         </div>
                       </div>

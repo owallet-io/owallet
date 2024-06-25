@@ -117,7 +117,14 @@ export const HeaderNew: FC<{
               }}
               className={styles.wrapIconConnect}
             >
-              <img className={styles.imgIcon} src={getFavicon(tabActive)} />
+              <img
+                className={styles.imgIcon}
+                src={
+                  !isActive
+                    ? getFavicon("brave://extensions/")
+                    : getFavicon(tabActive)
+                }
+              />
               {isActive && <div className={styles.dot}></div>}
             </div>
           )}

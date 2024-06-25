@@ -110,11 +110,11 @@ const dataItem = [
   //   icon: require("../../../public/assets/svg/tdesign_list.svg"),
   //   id: 2,
   // },
-  {
-    name: "Address Book",
-    icon: require("../../../public/assets/svg/tdesign_address_book.svg"),
-    id: MenuEnum.ADDR_BOOK,
-  },
+  // {
+  //   name: "Address Book",
+  //   icon: require("../../../public/assets/svg/tdesign_address_book.svg"),
+  //   id: MenuEnum.ADDR_BOOK,
+  // },
   {
     name: "Connected DApp",
     icon: require("../../../public/assets/svg/tdesign_internet.svg"),
