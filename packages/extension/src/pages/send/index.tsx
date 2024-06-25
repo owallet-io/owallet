@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, { FunctionComponent, useEffect, useRef, useState } from "react";
 import {
   AddressInput,
   FeeButtons,
@@ -13,19 +13,24 @@ import style from "./style.module.scss";
 import { useNotification } from "../../components/notification";
 
 import { useIntl } from "react-intl";
+import cn from "classnames/bind";
 
 import { useHistory, useLocation } from "react-router";
 import queryString from "querystring";
 
 import { useSendTxConfig } from "@owallet/hooks";
 import { fitPopupWindow } from "@owallet/popup";
-import { ChainIdEnum, EthereumEndpoint } from "@owallet/common";
+import { ChainIdEnum, EthereumEndpoint, useLanguage } from "@owallet/common";
 import { useMultipleAssets } from "../../hooks/use-multiple-assets";
 import { TokensCard } from "../home/components/tokens-card";
 import { ModalChooseTokens } from "../modals/modal-choose-tokens";
 import { Text } from "../../components/common/text";
 import { Button } from "../../components/common/button";
 import colors from "../../theme/colors";
+import useOnClickOutside from "../../hooks/use-click-outside";
+import { FeeModal } from "../sign/modals/fee-modal";
+import { ModalFee } from "../modals/modal-fee";
+const cx = cn.bind(style);
 
 export const SendPage: FunctionComponent<{
   coinMinimalDenom?: string;
@@ -39,6 +44,13 @@ export const SendPage: FunctionComponent<{
     analyticsStore,
     priceStore,
   } = useStore();
+  const language = useLanguage();
+  const [openSetting, setOpenSetting] = useState(false);
+  const settingRef = useRef();
+
+  useOnClickOutside(settingRef, () => {
+    setOpenSetting(false);
+  });
   const [isShowSelectToken, setSelectToken] = useState(false);
   let search = useLocation().search || coinMinimalDenom || "";
   if (search.startsWith("?")) {
@@ -128,8 +140,78 @@ export const SendPage: FunctionComponent<{
     sendConfigs.feeConfig.getError();
   const txStateIsValid = sendConfigError == null;
 
-  const onShowModalSelectToken = () => {
-    setSelectToken(true);
+  const renderTransactionFee = () => {
+    return (
+      <div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            marginTop: 14,
+          }}
+          onClick={() => {
+            setOpenSetting(true);
+          }}
+        >
+          <div
+            style={{
+              flexDirection: "column",
+              display: "flex",
+            }}
+          >
+            <div>
+              <Text weight="600">Fee</Text>
+            </div>
+          </div>
+          <div
+            style={{
+              flexDirection: "column",
+              display: "flex",
+              alignItems: "flex-end",
+              width: "65%",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                cursor: "pointer",
+              }}
+            >
+              <Text
+                size={16}
+                weight="600"
+                color={colors["primary-text-action"]}
+              >
+                {sendConfigs.feeConfig.fee
+                  .maxDecimals(6)
+                  .trim(true)
+                  .toString() || 0}
+              </Text>
+              <img
+                src={require("../../public/assets/icon/tdesign_chevron-down.svg")}
+              />
+            </div>
+            <Text
+              containerStyle={{
+                alignSelf: "flex-end",
+                display: "flex",
+              }}
+              color={colors["neutral-text-body"]}
+            >
+              ≈
+              {priceStore
+                .calculatePrice(
+                  sendConfigs.feeConfig.fee,
+                  language.fiatCurrency
+                )
+                ?.toString() || 0}
+            </Text>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -148,6 +230,14 @@ export const SendPage: FunctionComponent<{
           setSelectToken(false);
         }}
         isOpen={isShowSelectToken}
+      />
+      <ModalFee
+        feeConfig={sendConfigs.feeConfig}
+        gasConfig={sendConfigs.gasConfig}
+        onRequestClose={() => {
+          setOpenSetting(false);
+        }}
+        isOpen={openSetting}
       />
       <form
         className={style.formContainer}
@@ -233,11 +323,14 @@ export const SendPage: FunctionComponent<{
         }}
       >
         <div className={style.container}>
-          <div style={{ height: "75%", overflow: "scroll", padding: 16 }}>
+          <div style={{ height: "85%", overflow: "scroll", padding: 16 }}>
             <div style={{ paddingBottom: 12 }}>
               <div>
-                <div onClick={onShowModalSelectToken}>
+                <div onClick={() => setSelectToken(true)}>
                   <Text>Select Token</Text>
+                </div>
+                <div onClick={() => setOpenSetting(true)}>
+                  <Text>Select fee</Text>
                 </div>
                 <AddressInput
                   inputRef={inputRef}
@@ -254,12 +347,14 @@ export const SendPage: FunctionComponent<{
                   })}
                   placeholder="Enter your amount"
                 />
-                <MemoInput
+                {/* {renderTransactionFee()} */}
+
+                {/* <MemoInput
                   memoConfig={sendConfigs.memoConfig}
                   label={intl.formatMessage({ id: "send.input.memo" })}
                   placeholder="Enter your memo message"
-                />
-                <FeeButtons
+                /> */}
+                {/* <FeeButtons
                   feeConfig={sendConfigs.feeConfig}
                   gasConfig={sendConfigs.gasConfig}
                   priceStore={priceStore}
@@ -267,12 +362,12 @@ export const SendPage: FunctionComponent<{
                   feeSelectLabels={{
                     low: intl.formatMessage({ id: "fee-buttons.select.slow" }),
                     average: intl.formatMessage({
-                      id: "fee-buttons.select.average",
+                      id: "fee-buttons.select.average"
                     }),
-                    high: intl.formatMessage({ id: "fee-buttons.select.fast" }),
+                    high: intl.formatMessage({ id: "fee-buttons.select.fast" })
                   }}
                   gasLabel={intl.formatMessage({ id: "send.input.gas" })}
-                />
+                /> */}
               </div>
             </div>
           </div>
@@ -281,7 +376,7 @@ export const SendPage: FunctionComponent<{
               position: "absolute",
               bottom: 0,
               width: "100%",
-              height: "25%",
+              height: "15%",
               backgroundColor: colors["neutral-surface-card"],
               borderTop: "1px solid" + colors["neutral-border-default"],
             }}
@@ -316,163 +411,5 @@ export const SendPage: FunctionComponent<{
         </div>
       </form>
     </div>
-  );
-
-  return (
-    <>
-      <form
-        className={style.formContainer}
-        onSubmit={async (e: any) => {
-          e.preventDefault();
-          if (accountInfo.isReadyToSendMsgs && txStateIsValid) {
-            try {
-              const stdFee = sendConfigs.feeConfig.toStdFee();
-              // (window as any).accountInfo = accountInfo;
-              await accountInfo.sendToken(
-                sendConfigs.amountConfig.amount,
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                sendConfigs.amountConfig.sendCurrency!,
-                sendConfigs.recipientConfig.recipient,
-                sendConfigs.memoConfig.memo,
-                stdFee,
-                {
-                  preferNoSetFee: true,
-                  preferNoSetMemo: true,
-                  networkType: chainStore.current.networkType,
-                  chainId: chainStore.current.chainId,
-                },
-                {
-                  onBroadcasted: () => {
-                    analyticsStore.logEvent("Send token tx broadcasted", {
-                      chainId: chainStore.current.chainId,
-                      chainName: chainStore.current.chainName,
-                      feeType: sendConfigs.feeConfig.feeType,
-                    });
-                  },
-                  onFulfill: (tx) => {
-                    notification.push({
-                      placement: "top-center",
-                      type: tx?.data ? "success" : "danger",
-                      duration: 5,
-                      content: tx?.data
-                        ? `Transaction successful with tx: ${tx?.hash}`
-                        : `Transaction failed with tx: ${tx?.hash}`,
-                      canDelete: true,
-                      transition: {
-                        duration: 0.25,
-                      },
-                    });
-                  },
-                }
-              );
-              if (!isDetachedPage) {
-                history.replace("/");
-              }
-              notification.push({
-                placement: "top-center",
-                type: "success",
-                duration: 5,
-                content: "Transaction submitted!",
-                canDelete: true,
-                transition: {
-                  duration: 0.25,
-                },
-              });
-            } catch (e: any) {
-              if (!isDetachedPage) {
-                history.replace("/");
-              }
-              console.log(e.message, "Catch Error on send!!!");
-              notification.push({
-                type: "warning",
-                placement: "top-center",
-                duration: 5,
-                content: `Fail to send token: ${e.message}`,
-                canDelete: true,
-                transition: {
-                  duration: 0.25,
-                },
-              });
-            } finally {
-              // XXX: If the page is in detached state,
-              // close the window without waiting for tx to commit. analytics won't work.
-              if (isDetachedPage) {
-                window.close();
-              }
-            }
-          }
-        }}
-      >
-        <div className={style.formInnerContainer}>
-          <ModalChooseTokens
-            onSelectToken={(item) => {
-              console.log("item", item?.token?.currency?.coinDenom);
-            }}
-            onRequestClose={() => {
-              setSelectToken(false);
-            }}
-            isOpen={isShowSelectToken}
-          />
-          <div>
-            <div onClick={onShowModalSelectToken}>
-              <Text>Select Token</Text>
-            </div>
-            <AddressInput
-              inputRef={inputRef}
-              recipientConfig={sendConfigs.recipientConfig}
-              memoConfig={sendConfigs.memoConfig}
-              label={intl.formatMessage({ id: "send.input.recipient" })}
-              placeholder="Enter recipient address"
-            />
-            <CoinInput
-              amountConfig={sendConfigs.amountConfig}
-              label={intl.formatMessage({ id: "send.input.amount" })}
-              balanceText={intl.formatMessage({
-                id: "send.input-button.balance",
-              })}
-              placeholder="Enter your amount"
-            />
-            <MemoInput
-              memoConfig={sendConfigs.memoConfig}
-              label={intl.formatMessage({ id: "send.input.memo" })}
-              placeholder="Enter your memo message"
-            />
-            {/* <FeeButtons
-              feeConfig={sendConfigs.feeConfig}
-              gasConfig={sendConfigs.gasConfig}
-              priceStore={priceStore}
-              label={intl.formatMessage({ id: "send.input.fee" })}
-              feeSelectLabels={{
-                low: intl.formatMessage({ id: "fee-buttons.select.slow" }),
-                average: intl.formatMessage({
-                  id: "fee-buttons.select.average"
-                }),
-                high: intl.formatMessage({ id: "fee-buttons.select.fast" })
-              }}
-              gasLabel={intl.formatMessage({ id: "send.input.gas" })}
-            /> */}
-          </div>
-          <Button
-            type="submit"
-            block
-            data-loading={accountInfo.isSendingMsg === "send"}
-            disabled={!accountInfo.isReadyToSendMsgs || !txStateIsValid}
-            className={style.sendBtn}
-            style={{
-              cursor:
-                accountInfo.isReadyToSendMsgs || !txStateIsValid
-                  ? ""
-                  : "pointer",
-            }}
-          >
-            <span className={style.sendBtnText}>
-              {intl.formatMessage({
-                id: "send.button.send",
-              })}
-            </span>
-          </Button>
-        </div>
-      </form>
-    </>
   );
 });

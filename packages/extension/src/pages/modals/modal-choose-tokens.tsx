@@ -1,7 +1,6 @@
-import React, { FC, useRef, useState } from "react";
+import React, { FC } from "react";
 import SlidingPane from "react-sliding-pane";
 import styles from "./style.module.scss";
-import classnames from "classnames";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
 import { HeaderModal } from "../home/components/header-modal";
@@ -51,7 +50,7 @@ export const ModalChooseTokens: FC<{
       totalSizeChain
     );
 
-  console.log("dataTokensByChain 2", dataTokensByChain);
+  console.log("dataTokens", dataTokens);
 
   return (
     <SlidingPane
@@ -64,11 +63,10 @@ export const ModalChooseTokens: FC<{
     >
       <div className={styles.contentWrap}>
         <HeaderModal
-          title={"Selelect token".toUpperCase()}
+          title={"Select token".toUpperCase()}
           onRequestClose={onRequestClose}
         />
         <TokensCard onSelectToken={onSelectToken} dataTokens={dataTokens} />
-        <div className={styles.containerListChain}></div>
       </div>
     </SlidingPane>
   );
