@@ -86,7 +86,6 @@ export const AddTokenPage = observer(() => {
             tokenAddress: contractAddress,
           });
           const data = res.data;
-
           if (data && data.imgUrl) {
             setCoingeckoImg(data.imgUrl);
             setCoingeckoId(data.coingeckoId);
