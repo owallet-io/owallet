@@ -94,18 +94,18 @@ export const AddTokenPage = observer(() => {
             throw new Error("Image URL not found for the Coingecko ID.");
           }
         }
-      } else {
-        setCoingeckoImg("");
-        setCoingeckoId("");
       }
     } catch (err) {
       console.log("getTokenCoingeckoId err", err);
     }
   };
   useEffect(() => {
-    if (tokenInfo?.decimals != null && tokenInfo.name && tokenInfo.symbol) {
-      getTokenCoingeckoId();
+    if (!tokenInfo?.decimals || !tokenInfo.name || !tokenInfo.symbol) {
+      setCoingeckoImg("");
+      setCoingeckoId("");
+      return;
     }
+    getTokenCoingeckoId();
   }, [tokenInfo, contractAddress]);
   const onSubmit = handleSubmit(async (data) => {
     if (tokenInfo?.decimals != null && tokenInfo.name && tokenInfo.symbol) {
