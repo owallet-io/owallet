@@ -17,6 +17,7 @@ import { useLoadingIndicator } from "../../components/loading-indicator";
 import { API, MapChainIdToNetwork, unknownToken } from "@owallet/common";
 import { ModalNetwork } from "../home/modals/modal-network";
 import Colors from "../../theme/colors";
+import Web3 from "web3";
 
 interface FormData {
   contractAddress: string;
@@ -32,8 +33,8 @@ export const AddTokenPage = observer(() => {
   const { chainStore, queriesStore, accountStore, tokensStore } = useStore();
   const tokensOf = tokensStore.getTokensOf(chainStore.current.chainId);
   const accountInfo = accountStore.getAccount(chainStore.current.chainId);
-  const [coingeckoId, setCoingeckoId] = useState();
-  const [coingeckoImg, setCoingeckoImg] = useState();
+  const [coingeckoId, setCoingeckoId] = useState<string>("");
+  const [coingeckoImg, setCoingeckoImg] = useState<string>("");
   const interactionInfo = useInteractionInfo(() => {
     // When creating the secret20 viewing key, this page will be moved to "/sign" page to generate the signature.
     // So, if it is creating phase, don't reject the waiting datas.
@@ -93,6 +94,9 @@ export const AddTokenPage = observer(() => {
             throw new Error("Image URL not found for the Coingecko ID.");
           }
         }
+      } else {
+        setCoingeckoImg("");
+        setCoingeckoId("");
       }
     } catch (err) {
       console.log("getTokenCoingeckoId err", err);
@@ -189,14 +193,24 @@ export const AddTokenPage = observer(() => {
             ref={register({
               required: "Contract address is required",
               validate: (value: string): string | undefined => {
-                // try {
-                //   Bech32Address.validate(
-                //     value,
-                //     chainStore.current.bech32Config.bech32PrefixAccAddr
-                //   );
-                // } catch {
-                //   return "Invalid address";
-                // }
+                try {
+                  if (chainStore.current.networkType === "cosmos") {
+                    Bech32Address.validate(
+                      value,
+                      chainStore.current.bech32Config.bech32PrefixAccAddr
+                    );
+                  } else if (chainStore.current.networkType === "evm") {
+                    if (
+                      !Web3.utils.isAddress(
+                        value,
+                        Number(chainStore.current.chainId)
+                      )
+                    )
+                      throw new Error("Invalid address");
+                  }
+                } catch {
+                  return "Invalid address";
+                }
               },
             })}
             error={
