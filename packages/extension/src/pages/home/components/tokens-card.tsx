@@ -91,8 +91,6 @@ const TokenItem: FC<{
     <div
       style={{ cursor: "pointer" }}
       onClick={() => {
-        console.log("item", item);
-
         try {
           onSelectToken?.(item);
           if (item.chainInfo?.chainId === ChainIdEnum.TRON) {

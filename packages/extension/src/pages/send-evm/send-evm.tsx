@@ -44,6 +44,8 @@ export const SendEvmPage: FunctionComponent<{
   const history = useHistory();
   const language = useLanguage();
 
+  const [balance, setBalance] = useState(null);
+
   let search = useLocation().search || coinMinimalDenom || "";
   if (search.startsWith("?")) {
     search = search.slice(1);
@@ -155,6 +157,23 @@ export const SendEvmPage: FunctionComponent<{
   }, [current.currencies, query.defaultDenom, sendConfigs.amountConfig]);
 
   const isDetachedPage = query.detached === "true";
+  const isReadyBalance = queriesStore
+    .get(current.chainId)
+    .queryBalances.getQueryBech32Address(walletAddress)
+    .getBalanceFromCurrency(sendConfigs.amountConfig.sendCurrency).isReady;
+  useEffect(() => {
+    if (
+      isReadyBalance &&
+      sendConfigs.amountConfig.sendCurrency &&
+      walletAddress
+    ) {
+      const balance = queriesStore
+        .get(current.chainId)
+        .queryBalances.getQueryBech32Address(walletAddress)
+        .getBalanceFromCurrency(sendConfigs.amountConfig.sendCurrency);
+      setBalance(balance);
+    }
+  }, [isReadyBalance, walletAddress, sendConfigs.amountConfig.sendCurrency]);
 
   const renderTransactionFee = () => {
     return (
