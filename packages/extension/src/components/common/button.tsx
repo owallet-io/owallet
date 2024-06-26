@@ -4,6 +4,7 @@ import colors from "../../theme/colors";
 import style from "./style.module.scss";
 
 export const Button: FunctionComponent<{
+  type?: string;
   color?: "primary" | "secondary" | "danger";
   size?: "default" | "small" | "large";
   mode?: "fill" | "light" | "outline" | "text";

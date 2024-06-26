@@ -21,14 +21,19 @@ export interface InputProps {
   label?: string;
   placeHolder?: string;
   text?: string | React.ReactElement;
+  border?: string;
   error?: string;
+  errors?: Array<string>;
   leftIcon?: React.ReactElement;
   rightIcon?: React.ReactElement;
   onAction?: () => void;
   append?: React.ReactElement;
   styleInputGroup?: CSSProperties;
+  styleTextInput?: CSSProperties;
   typeInput?: string | any;
   classNameInputGroup?: string;
+  innerRef?: any;
+  loading?: boolean;
 }
 
 // eslint-disable-next-line react/display-name
@@ -40,14 +45,19 @@ export const Input = forwardRef<
     type,
     label,
     text,
+    border,
     error,
+    errors,
     append,
     styleInputGroup,
+    styleTextInput,
     typeInput,
     placeHolder,
     leftIcon,
     rightIcon,
     onAction,
+    innerRef,
+    loading,
   } = props;
 
   const attributes = { ...props };
@@ -68,20 +78,38 @@ export const Input = forwardRef<
   });
 
   return (
-    <div>
+    <div ref={innerRef}>
       <div
         style={{
           padding: 8,
           paddingTop: 4,
           paddingBottom: 4,
           marginTop: 4,
-          border: "1px solid",
+          border: border ?? "1px solid",
           borderRadius: 8,
           borderColor: colors["neutral-border-bold"],
           ...styleInputGroup,
         }}
       >
-        {label ? <Text>{label}</Text> : null}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            width: "100%",
+            alignItems: "center",
+          }}
+        >
+          {label ? <Text>{label}</Text> : null}
+          {loading ? (
+            <div>
+              <FormText>
+                <i className="fa fa-spinner fa-spin fa-fw" />
+              </FormText>
+            </div>
+          ) : null}
+        </div>
+
         <div
           style={{
             flexDirection: "row",
@@ -106,6 +134,7 @@ export const Input = forwardRef<
               placeholder={placeHolder ?? label}
               id={inputId}
               className={classnames(props.className, styleInput.input)}
+              style={styleTextInput}
               type={typeInput ?? type}
               innerRef={ref}
               {...attributes}
@@ -121,6 +150,13 @@ export const Input = forwardRef<
 
         {append}
       </div>
+      {errors?.length > 0
+        ? errors.map((err) => {
+            return (
+              <FormFeedback style={{ display: "block" }}>{err}</FormFeedback>
+            );
+          })
+        : null}
       {error ? (
         <FormFeedback style={{ display: "block" }}>{error}</FormFeedback>
       ) : text ? (

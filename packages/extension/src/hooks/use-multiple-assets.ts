@@ -184,7 +184,6 @@ export const useMultipleAssets = (
               const btcAddress = accountStore.getAccount(
                 ChainIdEnum.Bitcoin
               ).legacyAddress;
-              console.log(btcAddress, "btcAddress");
               return Promise.all([
                 getBalanceBtc(address, chainInfo, AddressBtcType.Bech32),
                 getBalanceBtc(btcAddress, chainInfo, AddressBtcType.Legacy),
@@ -264,7 +263,6 @@ export const useMultipleAssets = (
         acc[key] = curr[key];
         return acc;
       }, {});
-      console.log(result, "result");
       const tokenAddresses = res?.trc20
         .map((item, index) => {
           return `${MapChainIdToNetwork[chainInfo.chainId]}%2B${
@@ -321,7 +319,6 @@ export const useMultipleAssets = (
       address,
       baseUrl: chainInfo.rest,
     });
-    console.log(data, "data btc");
     if (data) {
       const totalBtc = data.reduce((acc, curr) => acc + curr.value, 0);
       pushTokenQueue(chainInfo.stakeCurrency, totalBtc, chainInfo, type);
@@ -333,14 +330,12 @@ export const useMultipleAssets = (
       address: address,
       baseUrl: chainInfo.rest,
     });
-    console.log(res.balances, "res");
     const mergedMaps = chainInfo.currencyMap;
     const allTokensAddress = [];
     const balanceObj = res.balances.reduce((obj, item) => {
       obj[item.denom] = item.amount;
       return obj;
     }, {});
-    console.log(balanceObj);
     res.balances.forEach(({ denom, amount }) => {
       const token = mergedMaps.get(denom);
       if (token) {

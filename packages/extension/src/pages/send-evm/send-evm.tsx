@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, { FunctionComponent, useEffect, useRef, useState } from "react";
 import {
   AddressInput,
   FeeButtons,
@@ -13,7 +13,6 @@ import style from "./style.module.scss";
 import { useNotification } from "../../components/notification";
 
 import { useIntl } from "react-intl";
-import { Button } from "reactstrap";
 
 import { useHistory, useLocation } from "react-router";
 import queryString from "querystring";
@@ -27,12 +26,24 @@ import {
   getOasisNic,
   parseRoseStringToBigNumber,
   signerFromPrivateKey,
+  useLanguage,
 } from "@owallet/common";
 import { Signer } from "@oasisprotocol/client/dist/signature";
+import { HeaderNew } from "../../layouts/footer-layout/components/header";
+import { HeaderModal } from "../home/components/header-modal";
+import { ModalFee } from "../modals/modal-fee";
+import { ModalChooseTokens } from "../modals/modal-choose-tokens";
+import colors from "../../theme/colors";
+import useOnClickOutside from "../../hooks/use-click-outside";
+import { Button } from "../../components/common/button";
+import { Card } from "../../components/common/card";
+import { Text } from "../../components/common/text";
 export const SendEvmPage: FunctionComponent<{
   coinMinimalDenom?: string;
 }> = observer(({ coinMinimalDenom }) => {
   const history = useHistory();
+  const language = useLanguage();
+
   let search = useLocation().search || coinMinimalDenom || "";
   if (search.startsWith("?")) {
     search = search.slice(1);
@@ -75,6 +86,14 @@ export const SendEvmPage: FunctionComponent<{
     keyRingStore.keyRingLedgerAddresses,
     false
   );
+
+  const [openSetting, setOpenSetting] = useState(false);
+  const settingRef = useRef();
+
+  useOnClickOutside(settingRef, () => {
+    setOpenSetting(false);
+  });
+  const [isShowSelectToken, setSelectToken] = useState(false);
 
   const sendConfigs = useSendTxEvmConfig(
     chainStore,
@@ -137,11 +156,85 @@ export const SendEvmPage: FunctionComponent<{
 
   const isDetachedPage = query.detached === "true";
 
+  const renderTransactionFee = () => {
+    return (
+      <div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            borderBottom: "1px solid" + colors["neutral-border-default"],
+            paddingBottom: 14,
+          }}
+          onClick={() => {
+            setOpenSetting(true);
+          }}
+        >
+          <div
+            style={{
+              flexDirection: "column",
+              display: "flex",
+            }}
+          >
+            <div>
+              <Text weight="600">Transaction fee</Text>
+            </div>
+          </div>
+          <div
+            style={{
+              flexDirection: "column",
+              display: "flex",
+              alignItems: "flex-end",
+              width: "50%",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                cursor: "pointer",
+              }}
+            >
+              <Text
+                size={16}
+                weight="600"
+                color={colors["primary-text-action"]}
+              >
+                ≈
+                {priceStore
+                  .calculatePrice(
+                    sendConfigs.feeConfig.fee,
+                    language.fiatCurrency
+                  )
+                  ?.toString() || 0}
+              </Text>
+              <img
+                src={require("../../public/assets/icon/tdesign_chevron-down.svg")}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   useEffect(() => {
     if (isDetachedPage) {
       fitPopupWindow();
     }
   }, [isDetachedPage]);
+
+  useEffect(() => {
+    const token = history.location.state?.token;
+    if (token) {
+      const selectedKey = token.token?.currency?.coinMinimalDenom;
+      const currency = sendConfigs.amountConfig.sendableCurrencies.find(
+        (cur) => cur.coinMinimalDenom === selectedKey
+      );
+      sendConfigs.amountConfig.setSendCurrency(currency);
+    }
+  }, [history.location.state?.token]);
 
   useEffect(() => {
     if (query.defaultRecipient) {
@@ -295,67 +388,115 @@ export const SendEvmPage: FunctionComponent<{
   };
   return (
     <>
-      <form className={style.formContainer} onSubmit={onSend}>
-        <div className={style.formInnerContainer}>
-          <div>
-            <AddressInput
-              inputRef={inputRef}
-              recipientConfig={sendConfigs.recipientConfig}
-              memoConfig={sendConfigs.memoConfig}
-              label={intl.formatMessage({ id: "send.input.recipient" })}
-              placeholder="Enter recipient address"
-            />
-            <CoinInput
-              amountConfig={sendConfigs.amountConfig}
-              label={intl.formatMessage({ id: "send.input.amount" })}
-              balanceText={intl.formatMessage({
-                id: "send.input-button.balance",
-              })}
-              placeholder="Enter your amount"
-            />
-            {/* <MemoInput
-              memoConfig={sendConfigs.memoConfig}
-              label={intl.formatMessage({ id: 'send.input.memo' })}
-              placeholder="Enter your memo message"
-            /> */}
-            <FeeButtons
-              feeConfig={sendConfigs.feeConfig}
-              gasConfig={sendConfigs.gasConfig}
-              //   customFee={true}
-              priceStore={priceStore}
-              label={intl.formatMessage({ id: "send.input.fee" })}
-              feeSelectLabels={{
-                low: intl.formatMessage({ id: "fee-buttons.select.slow" }),
-                average: intl.formatMessage({
-                  id: "fee-buttons.select.average",
-                }),
-                high: intl.formatMessage({ id: "fee-buttons.select.fast" }),
+      <div
+        style={{
+          height: "100%",
+          width: "100vw",
+          overflowX: "auto",
+          backgroundColor: colors["neutral-surface-bg"],
+        }}
+      >
+        <ModalChooseTokens
+          onRequestClose={() => {
+            setSelectToken(false);
+          }}
+          amountConfig={sendConfigs.amountConfig}
+          isOpen={isShowSelectToken}
+        />
+        <ModalFee
+          feeConfig={sendConfigs.feeConfig}
+          gasConfig={sendConfigs.gasConfig}
+          onRequestClose={() => {
+            setOpenSetting(false);
+          }}
+          isOpen={openSetting}
+        />
+
+        <HeaderNew isDisableCenterBtn={true} isGoBack isConnectDapp={false} />
+        <HeaderModal title={"Send".toUpperCase()} />
+        <form className={style.formContainer} onSubmit={onSend}>
+          <div className={style.formInnerContainer}>
+            <div>
+              <AddressInput
+                inputStyle={{
+                  borderWidth: 0,
+                  padding: 0,
+                  margin: 0,
+                }}
+                inputRef={inputRef}
+                recipientConfig={sendConfigs.recipientConfig}
+                memoConfig={sendConfigs.memoConfig}
+                label={intl.formatMessage({ id: "send.input.recipient" })}
+                placeholder="Enter recipient address"
+              />
+              <CoinInput
+                openSelectToken={() => setSelectToken(true)}
+                amountConfig={sendConfigs.amountConfig}
+                label={intl.formatMessage({ id: "send.input.amount" })}
+                balanceText={intl.formatMessage({
+                  id: "send.input-button.balance",
+                })}
+                placeholder="Enter your amount"
+              />
+
+              <Card
+                containerStyle={{
+                  backgroundColor: colors["neutral-surface-card"],
+                  padding: 16,
+                  borderRadius: 24,
+                }}
+              >
+                {renderTransactionFee()}
+                <MemoInput
+                  inputStyle={{
+                    borderWidth: 0,
+                    padding: 0,
+                  }}
+                  memoConfig={sendConfigs.memoConfig}
+                  label={intl.formatMessage({ id: "send.input.memo" })}
+                  placeholder="Required if send to CEX"
+                />
+              </Card>
+              <div style={{ display: "none" }}>
+                <FeeButtons
+                  feeConfig={sendConfigs.feeConfig}
+                  gasConfig={sendConfigs.gasConfig}
+                  //   customFee={true}
+                  priceStore={priceStore}
+                  label={intl.formatMessage({ id: "send.input.fee" })}
+                  feeSelectLabels={{
+                    low: intl.formatMessage({ id: "fee-buttons.select.slow" }),
+                    average: intl.formatMessage({
+                      id: "fee-buttons.select.average",
+                    }),
+                    high: intl.formatMessage({ id: "fee-buttons.select.fast" }),
+                  }}
+                  gasLabel={intl.formatMessage({ id: "send.input.gas" })}
+                />
+              </div>
+            </div>
+            <div style={{ flex: 1 }} />
+            <Button
+              type="submit"
+              data-loading={accountInfo.isSendingMsg === "send"}
+              disabled={!accountInfo.isReadyToSendMsgs || !txStateIsValid}
+              className={style.sendBtn}
+              style={{
+                cursor:
+                  accountInfo.isReadyToSendMsgs || !txStateIsValid
+                    ? ""
+                    : "pointer",
               }}
-              gasLabel={intl.formatMessage({ id: "send.input.gas" })}
-            />
+            >
+              <span className={style.sendBtnText}>
+                {intl.formatMessage({
+                  id: "send.button.send",
+                })}
+              </span>
+            </Button>
           </div>
-          <div style={{ flex: 1 }} />
-          <Button
-            type="submit"
-            block
-            data-loading={accountInfo.isSendingMsg === "send"}
-            disabled={!accountInfo.isReadyToSendMsgs || !txStateIsValid}
-            className={style.sendBtn}
-            style={{
-              cursor:
-                accountInfo.isReadyToSendMsgs || !txStateIsValid
-                  ? ""
-                  : "pointer",
-            }}
-          >
-            <span className={style.sendBtnText}>
-              {intl.formatMessage({
-                id: "send.button.send",
-              })}
-            </span>
-          </Button>
-        </div>
-      </form>
+        </form>
+      </div>
     </>
   );
 });

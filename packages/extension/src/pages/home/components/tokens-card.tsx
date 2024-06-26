@@ -4,16 +4,18 @@ import { observer } from "mobx-react-lite";
 import { CoinPretty, Dec, Int, PricePretty } from "@owallet/unit";
 import { useStore } from "../../../stores";
 import { ViewRawToken } from "@owallet/types";
-import { unknownToken } from "@owallet/common";
+import { ChainIdEnum, unknownToken } from "@owallet/common";
 import classnames from "classnames";
 import { SearchInput } from "./search-input";
+import { useHistory } from "react-router";
 import Switch from "react-switch";
 import colors from "../../../theme/colors";
 import Colors from "../../../theme/colors";
 
 export const TokensCard: FC<{
   dataTokens: ViewRawToken[];
-}> = observer(({ dataTokens }) => {
+  onSelectToken?: (token) => void;
+}> = observer(({ dataTokens, onSelectToken }) => {
   const [keyword, setKeyword] = useState("");
   const { priceStore, chainStore } = useStore();
   const onChangeKeyword = (e) => {
@@ -60,7 +62,7 @@ export const TokensCard: FC<{
             return searchKeyword;
           }) || []
         ).map((item, index) => (
-          <TokenItem key={index} item={item} />
+          <TokenItem onSelectToken={onSelectToken} key={index} item={item} />
         ))}
       </div>
     </div>
@@ -69,8 +71,11 @@ export const TokensCard: FC<{
 
 const TokenItem: FC<{
   item: ViewRawToken;
-}> = observer(({ item }) => {
-  const { priceStore } = useStore();
+  onSelectToken?: (token) => void;
+}> = observer(({ item, onSelectToken }) => {
+  const { priceStore, chainStore } = useStore();
+  const history = useHistory();
+
   const balance = useMemo(
     () =>
       new CoinPretty(
@@ -84,7 +89,51 @@ const TokenItem: FC<{
     item?.token?.currency?.coinGeckoId
   );
   return (
-    <div className={styles.tokenItem}>
+    <div
+      style={{ cursor: "pointer" }}
+      onClick={() => {
+        try {
+          onSelectToken?.(item);
+          if (chainStore.current.chainId === ChainIdEnum.TRON) {
+            history.push({
+              pathname: "/send-tron",
+              state: {
+                token: item,
+              },
+            });
+            return;
+          }
+          if (chainStore.current.chainId === ChainIdEnum.Bitcoin) {
+            history.push({
+              pathname: "/send-btc",
+              state: {
+                token: item,
+              },
+            });
+            return;
+          }
+          if (chainStore.current.networkType === "evm") {
+            history.push({
+              pathname: "/send-evm",
+              state: {
+                token: item,
+              },
+            });
+            return;
+          }
+          history.push({
+            pathname: "/send",
+            state: {
+              token: item,
+            },
+          });
+          return;
+        } catch (err) {
+          console.log("err", err);
+        }
+      }}
+      className={styles.tokenItem}
+    >
       <div className={styles.wrapLeftBlock}>
         <div className={styles.logoTokenAndChain}>
           <div className={styles.tokenWrap}>

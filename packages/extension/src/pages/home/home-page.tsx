@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { FooterLayout } from "../../layouts/footer-layout/footer-layout";
 import { observer } from "mobx-react-lite";
 import { InfoAccountCard } from "./components/info-account-card";
@@ -10,6 +10,7 @@ import {
   sortTokensByPrice,
   useMultipleAssets,
 } from "../../hooks/use-multiple-assets";
+
 export const HomePage = observer(() => {
   const [refreshing, setRefreshing] = React.useState(false);
   const {

@@ -1,0 +1,11 @@
+@import "../../styles/var";
+
+.modal-network {
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+
+  .content-wrap {
+    margin-left: -16px;
+    margin-right: -16px;
+  }
+}

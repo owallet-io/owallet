@@ -21,7 +21,6 @@
 
 .input {
   // box-shadow: $input-alternative-box-shadow !important;
-  border-radius: 4px;
   background-color: $neutral-surface-card;
   color: $color-neutral-2 !important;
 
@@ -37,7 +36,10 @@
 }
 
 .input-group {
-  box-shadow: 0 1px 3px rgb(50 50 93 / 15%), 0 1px 0 rgb(0 0 0 / 2%);
+  display: block;
+  border-radius: 24px;
+  padding: 12px 16px 8px 16px;
+  background-color: $neutral-surface-card;
   &:focus-within {
     box-shadow: $input-focus-alternative-box-shadow !important;
   }

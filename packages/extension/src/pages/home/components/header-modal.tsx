@@ -3,7 +3,7 @@ import React, { FC } from "react";
 
 export const HeaderModal: FC<{
   title: string;
-  onRequestClose: () => void;
+  onRequestClose?: () => void;
 }> = ({ onRequestClose, title }) => {
   return (
     <div className={styles.headerModal}>
@@ -12,12 +12,14 @@ export const HeaderModal: FC<{
         <span className={styles.titleText}>{title}</span>
       </div>
       <div className={styles.headerRight}>
-        <div onClick={onRequestClose} className={styles.closeBtn}>
-          <img
-            className={styles.imgIcon}
-            src={require("../../../public/assets/img/close.svg")}
-          />
-        </div>
+        {onRequestClose ? (
+          <div onClick={onRequestClose} className={styles.closeBtn}>
+            <img
+              className={styles.imgIcon}
+              src={require("../../../public/assets/img/close.svg")}
+            />
+          </div>
+        ) : null}
       </div>
     </div>
   );

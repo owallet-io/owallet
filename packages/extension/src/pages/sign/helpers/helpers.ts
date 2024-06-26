@@ -120,3 +120,13 @@ export const getTokenDetail = async (tokenContract, chainId) => {
     return null;
   }
 };
+
+export function shortenAddress(address, digits = 6): string {
+  if (address) {
+    const firstDigits = address.substring(0, digits);
+    const lastDigits = address.substring(address.length - digits);
+    return firstDigits + "..." + lastDigits;
+  }
+
+  return "";
+}

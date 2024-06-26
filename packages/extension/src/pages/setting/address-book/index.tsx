@@ -245,7 +245,7 @@ export const AddressBookPage: FunctionComponent<{
                 setSearch(e.target.value);
               }}
               placeholder={"Search Name/Address"}
-              append={
+              rightIcon={
                 <div
                   style={{
                     display: "flex",
@@ -262,34 +262,6 @@ export const AddressBookPage: FunctionComponent<{
                 </div>
               }
             />
-            {/* <Input
-              type={'text'}
-              styleInputGroup={{
-                display: 'flex',
-                flexDirection: 'row-reverse',
-                boxShadow: '0px 2px 4px 1px rgba(8, 4, 28, 0.12)'
-              }}
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-              }}
-              placeholder={'Search Name/Address'}
-              append={
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    width: 50
-                  }}
-                >
-                  <img
-                    src={require('../../../public/assets/img/light.svg')}
-                    alt=""
-                  />
-                </div>
-              }
-            /> */}
           </div>
           <div style={{ flex: "1 1 0", overflowY: "auto" }}>
             {addressBookList.map((data, i) => {

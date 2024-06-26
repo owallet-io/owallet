@@ -62,7 +62,7 @@ export const EVMRenderArgs: FunctionComponent<{
     const amountIn =
       args?._amount || args?._amountIn || args?.amountIn || msgs?.value || "-";
     const amountOut = args?.amountOutMin || args?._amountOutMin || "-";
-    const inToken = fromToken || tokenIn || chain.stakeCurrency;
+    const inToken = fromToken || tokenIn;
     const outToken = desToken || tokenOut || toToken;
 
     console.log(inToken, "inToken");
