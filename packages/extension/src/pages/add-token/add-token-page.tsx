@@ -94,6 +94,9 @@ export const AddTokenPage = observer(() => {
             throw new Error("Image URL not found for the Coingecko ID.");
           }
         }
+      } else {
+        setCoingeckoImg("");
+        setCoingeckoId("");
       }
     } catch (err) {
       console.log("getTokenCoingeckoId err", err);
