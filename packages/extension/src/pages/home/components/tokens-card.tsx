@@ -91,9 +91,11 @@ const TokenItem: FC<{
     <div
       style={{ cursor: "pointer" }}
       onClick={() => {
+        console.log("item", item);
+
         try {
           onSelectToken?.(item);
-          if (chainStore.current.chainId === ChainIdEnum.TRON) {
+          if (item.chainInfo?.chainId === ChainIdEnum.TRON) {
             history.push({
               pathname: "/send-tron",
               state: {
@@ -102,7 +104,7 @@ const TokenItem: FC<{
             });
             return;
           }
-          if (chainStore.current.chainId === ChainIdEnum.Bitcoin) {
+          if (item.chainInfo?.chainId === ChainIdEnum.Bitcoin) {
             history.push({
               pathname: "/send-btc",
               state: {
@@ -111,7 +113,7 @@ const TokenItem: FC<{
             });
             return;
           }
-          if (chainStore.current.networkType === "evm") {
+          if (item.chainInfo?.networkType === "evm") {
             history.push({
               pathname: "/send-evm",
               state: {
