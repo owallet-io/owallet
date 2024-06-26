@@ -7,6 +7,9 @@ import { FormFeedback, FormGroup, FormText, Label } from "reactstrap";
 import classnames from "classnames";
 import { observer } from "mobx-react-lite";
 import {
+  FeeConfig,
+  FeeEvmConfig,
+  FeeTronConfig,
   FeeType,
   IFeeConfig,
   IGasConfig,
@@ -24,7 +27,7 @@ import { Text } from "../../common/text";
 import { RadioButton } from "../../common/radio";
 
 export interface FeeButtonsProps {
-  feeConfig: IFeeConfig;
+  feeConfig: any;
   gasConfig: IGasConfig;
   priceStore: CoinGeckoPriceStore;
   // customFee: boolean;

@@ -38,6 +38,7 @@ import useOnClickOutside from "../../hooks/use-click-outside";
 import { Button } from "../../components/common/button";
 import { Card } from "../../components/common/card";
 import { Text } from "../../components/common/text";
+
 export const SendEvmPage: FunctionComponent<{
   coinMinimalDenom?: string;
 }> = observer(({ coinMinimalDenom }) => {
@@ -226,6 +227,7 @@ export const SendEvmPage: FunctionComponent<{
   }, [isDetachedPage]);
 
   useEffect(() => {
+    // @ts-ignore
     const token = history.location.state?.token;
     if (token) {
       const selectedKey = token.token?.currency?.coinMinimalDenom;
@@ -234,6 +236,7 @@ export const SendEvmPage: FunctionComponent<{
       );
       sendConfigs.amountConfig.setSendCurrency(currency);
     }
+    // @ts-ignore
   }, [history.location.state?.token]);
 
   useEffect(() => {

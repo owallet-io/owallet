@@ -98,6 +98,7 @@ export const SendPage: FunctionComponent<{
   );
 
   useEffect(() => {
+    // @ts-ignore
     const token = history.location.state?.token;
     if (token) {
       const selectedKey = token.token?.currency?.coinMinimalDenom;
@@ -106,6 +107,7 @@ export const SendPage: FunctionComponent<{
       );
       sendConfigs.amountConfig.setSendCurrency(currency);
     }
+    // @ts-ignore
   }, [history.location.state?.token]);
 
   useEffect(() => {
