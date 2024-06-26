@@ -299,7 +299,6 @@ export const FeeButtonsInner: FunctionComponent<
                 onClick={(e) => {
                   feeConfig.setFeeType(fee as FeeType);
                   chainStore.setSelectedFee(fee);
-                  console.log("setSelectedFee", fee);
 
                   e.preventDefault();
                 }}
