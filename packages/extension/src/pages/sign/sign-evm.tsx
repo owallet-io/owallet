@@ -141,11 +141,6 @@ export const SignEvmPage: FunctionComponent = observer(() => {
   };
 
   useEffect(() => {
-    console.log(
-      "signInteractionStore.waitingEthereumData 2",
-      signInteractionStore.waitingEthereumData
-    );
-
     if (signInteractionStore.waitingEthereumData) {
       const data = signInteractionStore.waitingEthereumData;
       //@ts-ignore
@@ -163,6 +158,7 @@ export const SignEvmPage: FunctionComponent = observer(() => {
       const feeAmount = gasPrice.mul(gas);
       if (feeAmount.lte(new Dec(0))) {
         feeConfig.setFeeType("average");
+        chainStore.setSelectedFee("average");
       } else {
         feeConfig.setManualFee({
           amount: feeAmount.roundUp().toString(),

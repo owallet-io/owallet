@@ -226,6 +226,7 @@ export const SendEvmPage: FunctionComponent<{
   }, [isDetachedPage]);
 
   useEffect(() => {
+    //@ts-ignore
     const token = history.location.state?.token;
     if (token) {
       const selectedKey = token.token?.currency?.coinMinimalDenom;
@@ -234,6 +235,7 @@ export const SendEvmPage: FunctionComponent<{
       );
       sendConfigs.amountConfig.setSendCurrency(currency);
     }
+    //@ts-ignore
   }, [history.location.state?.token]);
 
   useEffect(() => {

@@ -20,6 +20,10 @@ export const HomePage = observer(() => {
     priceStore,
     keyRingStore,
   } = useStore();
+
+  console.log("chain fee", chainStore.selectedFee);
+  console.log("hide dust", chainStore.isHideDust);
+
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const { totalPriceBalance, dataTokens, dataTokensByChain, isLoading } =
     useMultipleAssets(
