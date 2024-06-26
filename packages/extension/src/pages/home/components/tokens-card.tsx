@@ -10,7 +10,6 @@ import { SearchInput } from "./search-input";
 import { useHistory } from "react-router";
 import Switch from "react-switch";
 import colors from "../../../theme/colors";
-import Colors from "../../../theme/colors";
 
 export const TokensCard: FC<{
   dataTokens: ViewRawToken[];
@@ -35,7 +34,7 @@ export const TokensCard: FC<{
         <div className={styles.wrapHideToken}>
           <span className={styles.label}>Hide dust</span>
           <Switch
-            onColor={Colors["highlight-surface-active"]}
+            onColor={colors["highlight-surface-active"]}
             uncheckedIcon={false}
             checkedIcon={false}
             height={20}
