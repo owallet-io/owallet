@@ -467,6 +467,7 @@ export const DetailsBrowserScreen = observer((props) => {
                     : {}
                 }
                 cacheEnabled={true}
+                injectedJavaScriptBeforeContentLoadedForMainFrameOnly={false}
                 injectedJavaScriptForMainFrameOnly={false}
                 injectedJavaScriptBeforeContentLoaded={sourceCode}
                 // onLoad={handleWebViewLoaded}
