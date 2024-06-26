@@ -139,6 +139,8 @@ export const BrowserScreen = observer(() => {
             />
           </View>
         }
+        autoCapitalize="none"
+        autoCorrect={false}
         onSubmitEditing={(e) => onHandleUrl(e.nativeEvent.text)}
         placeholder={"Search URL"}
         placeholderTextColor={colors["neutral-text-body"]}
