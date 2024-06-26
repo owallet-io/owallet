@@ -14,7 +14,8 @@ import { CoinPretty, PricePretty } from "@owallet/unit";
 export const ModalNetwork: FC<{
   isOpen: boolean;
   onRequestClose: () => void;
-}> = observer(({ isOpen, onRequestClose }) => {
+  isHideAllNetwork?: boolean;
+}> = observer(({ isOpen, isHideAllNetwork, onRequestClose }) => {
   const [keyword, setKeyword] = useState("");
   const { chainStore, accountStore, priceStore, keyRingStore } = useStore();
   const onChangeInput = (e) => {
@@ -108,7 +109,7 @@ export const ModalNetwork: FC<{
     }
   };
   const allNetworkData =
-    tab.id === typeNetwork[0].id
+    tab.id === typeNetwork[0].id && !isHideAllNetwork
       ? [
           {
             chainId: "isAll",
@@ -202,7 +203,7 @@ export const ModalNetwork: FC<{
                     <div className={styles.rightBlockHuge}>
                       <input
                         id={item.chainId}
-                        checked={
+                        defaultChecked={
                           item.chainId ===
                           (chainStore.isAllNetwork
                             ? "isAll"

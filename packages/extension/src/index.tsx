@@ -45,7 +45,7 @@ import { SettingFiatPage } from "./pages/setting/fiat";
 import { ChangeNamePage } from "./pages/setting/keyring/change";
 import { SettingLanguagePage } from "./pages/setting/language";
 import { AddEvmTokenPage } from "./pages/setting/token-evm/add";
-import { AddTokenPage } from "./pages/setting/token/add";
+// import { AddTokenPage } from "./pages/setting/token/add";
 import { ManageTokenPage } from "./pages/setting/token/manage";
 import { SignPage } from "./pages/sign";
 import { StoreProvider, useStore } from "./stores";
@@ -186,6 +186,13 @@ import { ReceivePage } from "./pages/receive/receive-page";
 import { isProdMode } from "./helpers/helper";
 import { SelectAccountPage } from "./pages/account/select-account-page";
 import { EditAccountPage } from "./pages/account/edit-account";
+import { RevealRecoveryPhrasePage } from "./pages/account/reveal-recovery-phrase-page";
+import { RevealPrivateKeyPage } from "./pages/account/reveal-private-key-page";
+import { ConnectedDappPage } from "./pages/connected-dapp/connected-dapp-page";
+import { AddTokenPage } from "./pages/add-token/add-token-page";
+import { PreferencesPage } from "./pages/preferences/preferences-page";
+import { ActivitiesPage } from "./pages/activities/activities-page";
+import { ExplorePage } from "./pages/explore/explore-page";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -279,16 +286,40 @@ ReactDOM.render(
                   <Route exact path="/unlock" component={LockPage} />
                   <Route exact path="/access" component={AccessPage} />
                   <Route exact path="/receive" component={ReceivePage} />
+                  <Route exact path="/activities" component={ActivitiesPage} />
+                  <Route exact path="/explore" component={ExplorePage} />
+                  <Route
+                    exact
+                    path="/preferences"
+                    component={PreferencesPage}
+                  />
+                  <Route
+                    exact
+                    path="/reveal-recovery-phrase/:keystoreIndex"
+                    component={RevealRecoveryPhrasePage}
+                  />
+                  <Route
+                    exact
+                    path="/reveal-private-key/:keystoreIndex"
+                    component={RevealPrivateKeyPage}
+                  />
                   <Route
                     exact
                     path="/select-account"
                     component={SelectAccountPage}
                   />
+                  <Route exact path="/add-token" component={AddTokenPage} />
                   <Route
                     exact
-                    path="/edit-account"
+                    path="/edit-account/:keystoreIndex"
                     component={EditAccountPage}
                   />
+                  <Route
+                    exact
+                    path="/connected-dapp"
+                    component={ConnectedDappPage}
+                  />
+
                   <Route exact path="/token" component={TokenPage} />
                   <Route
                     exact
@@ -373,11 +404,11 @@ ReactDOM.render(
                     path="/setting/keyring/change/name/:index"
                     component={ChangeNamePage}
                   />
-                  <Route
-                    exact
-                    path="/setting/token/add"
-                    component={AddTokenPage}
-                  />
+                  {/*<Route*/}
+                  {/*  exact*/}
+                  {/*  path="/setting/token/add"*/}
+                  {/*  component={AddTokenPage}*/}
+                  {/*/>*/}
                   <Route
                     exact
                     path="/setting/token-evm/add"

@@ -21,6 +21,8 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
   protected _selectedChainId: string;
   @observable
   protected _isAllNetwork: boolean = false;
+  @observable
+  protected _hideDust: boolean = true;
 
   @observable
   protected _multipleAssets: IMultipleAsset = {
@@ -52,10 +54,11 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
     this._selectedChainId = initChain ?? embedChainInfos[0].chainId;
 
     makeObservable(this);
+
     makePersistable(this, {
       name: "ChainStore",
-      //@ts-ignore
-      properties: ["_isAllNetwork", "_multipleAssets"],
+      // @ts-ignore
+      properties: ["_isAllNetwork", "_multipleAssets", "_hideDust"],
       storage: window.localStorage,
     }).then(
       action((persistStore) => {
@@ -75,6 +78,9 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
   get multipleAssets(): IMultipleAsset {
     return this._multipleAssets;
   }
+  get isHideDust(): boolean {
+    return this._hideDust;
+  }
 
   get selectedChainId(): string {
     return this._selectedChainId;
@@ -83,6 +89,10 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
   @action
   setIsAllNetwork(isAll: boolean) {
     this._isAllNetwork = isAll;
+  }
+  @action
+  setIsHideDust(isHide: boolean) {
+    this._hideDust = isHide;
   }
   @action
   setMultipleAsset(data: IMultipleAsset) {

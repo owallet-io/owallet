@@ -1,4 +1,4 @@
-@import '../../styles/var';
+@import '../../../styles/var';
 
 
 .box-container {
@@ -39,6 +39,7 @@
       .item-center {
         display: flex;
         flex-direction: column;
+        justify-content: center;
 
         .title {
           color: $neutral-text-title;

@@ -32,4 +32,4 @@ export const MapChainIdToNetwork = {
   // [ChainIdEnum.Neutaro]: Network.NEUTARO,
 };
 
-export const TX_HISTORY_ENDPOINT = "https://tx-history-backend-beta.oraidex.io";
+export const TX_HISTORY_ENDPOINT = "https://tx-history-backend.oraidex.io";

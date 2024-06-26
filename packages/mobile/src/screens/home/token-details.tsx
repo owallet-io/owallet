@@ -41,6 +41,7 @@ import { HistoryCard } from "@src/screens/transactions";
 import OWCard from "@src/components/card/ow-card";
 import { HistoryByToken } from "@src/screens/transactions/history-by-token";
 import { PageWithScrollView } from "@src/components/page";
+import ByteBrew from "react-native-bytebrew-sdk";
 
 export const TokenDetails: FunctionComponent = observer((props) => {
   const { chainStore, priceStore, accountStore, keyRingStore } = useStore();
@@ -70,6 +71,7 @@ export const TokenDetails: FunctionComponent = observer((props) => {
   const [tronTokens, setTronTokens] = useState([]);
 
   useEffect(() => {
+    ByteBrew.NewCustomEvent("Token Detail Screen");
     InteractionManager.runAfterInteractions(() => {
       (async function get() {
         try {
@@ -83,7 +85,7 @@ export const TokenDetails: FunctionComponent = observer((props) => {
               }
             );
 
-            if (res.data?.data.length > 0) {
+            if (res.data?.data?.length > 0) {
               if (res.data?.data[0].trc20) {
                 const tokenArr = [];
                 TRC20_LIST.map((tk) => {

@@ -719,7 +719,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinImageUrl:
         "https://assets.coingecko.com/coins/images/1481/standard/cosmos_hub.png",
       gasPriceStep: {
-        low: 0,
+        low: 0.0025,
         average: 0.025,
         high: 0.04,
       },
@@ -765,7 +765,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinImageUrl:
         "https://assets.coingecko.com/coins/images/16724/standard/osmo.png",
       gasPriceStep: {
-        low: 0,
+        low: 0.0025,
         average: 0.025,
         high: 0.04,
       },
@@ -1497,6 +1497,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
 export const PrivilegedOrigins: string[] = [
   "https://app.osmosis.zone",
   "https://oraidex.io",
+  "https://orderbook.oraidex.io",
+  "https://futures.oraidex.io",
 ];
 
 // tracking ads

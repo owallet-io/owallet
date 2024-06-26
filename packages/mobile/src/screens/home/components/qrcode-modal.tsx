@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useMemo } from "react";
+import React, { FunctionComponent, useEffect, useMemo } from "react";
 import { Button, OWButton } from "../../../components/button";
 import { Share, StyleSheet, View } from "react-native";
 import { CardModal } from "../../../modals/card";
@@ -7,6 +7,7 @@ import QRCode from "react-native-qrcode-svg";
 import { colors, spacing, typography } from "../../../themes";
 import { AccountWithAll, KeyRingStore } from "@owallet/stores";
 import { Text } from "@src/components/text";
+import ByteBrew from "react-native-bytebrew-sdk";
 export const AddressQRCodeModal: FunctionComponent<{
   account?: AccountWithAll;
   address?: string;
@@ -16,7 +17,9 @@ export const AddressQRCodeModal: FunctionComponent<{
   const addressToShow = account.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses
   );
-
+  useEffect(() => {
+    ByteBrew.NewCustomEvent("QRCode Screen");
+  }, []);
   return (
     <View
       style={{

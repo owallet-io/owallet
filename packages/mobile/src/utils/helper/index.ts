@@ -137,7 +137,7 @@ export const checkValidDomain = (url: string) => {
   // try with URL
   try {
     const { origin } = new URL(url);
-    return origin.length > 0;
+    return origin?.length > 0;
   } catch {
     return false;
   }
@@ -154,7 +154,7 @@ export const formatContractAddress = (address: string, limitFirst = 10) => {
 export const convertArrToObject = (arr, label = `Validator`) => {
   if (!arr?.length) return;
   var rv = {};
-  for (var i = 0; i < arr.length; ++i) rv[`${label}${i + 1}`] = arr[i];
+  for (var i = 0; i < arr?.length; ++i) rv[`${label}${i + 1}`] = arr[i];
   return rv;
 };
 export const removeDataInParentheses = (inputString: string): string => {
@@ -175,7 +175,7 @@ export const extractDataInParentheses = (
 };
 
 export function limitString(str, limit) {
-  if (str && str.length > limit) {
+  if (str && str?.length > limit) {
     return str.slice(0, limit) + "...";
   } else {
     return str;
@@ -714,20 +714,6 @@ export function shortenAddress(address, digits = 6): string {
 
 export { get };
 
-export const handleSaveHistory = async (address, infos) => {
-  try {
-    const res = await API.saveHistory(
-      { address: address, infos },
-      {
-        baseURL: "https://staging.owallet.dev/",
-      }
-    );
-    return res;
-  } catch (err) {
-    console.log("err handleSaveHistory ", err);
-  }
-};
-
 export enum HISTORY_STATUS {
   SWAP = "SWAP",
   SEND = "SEND",
@@ -800,7 +786,7 @@ export function groupAndShuffle(array, groupSize = 5, chainId, sortType) {
     groups.push(sortedArray.slice(i, i + groupSize));
   }
   const shuffledGroups = groups.map((group) => shuffleArray(group));
-  return sortByVoting(sortedArray, sortType);
+  return shuffledGroups;
 }
 
 export const formatPercentage = (

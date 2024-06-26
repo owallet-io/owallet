@@ -43,6 +43,13 @@ export const AllNetworkTxItem: FC<{
     };
   }
   const onTransactionDetail = (item, currency) => {
+    if (
+      !item ||
+      !currency?.coinGeckoId ||
+      !currency?.coinImageUrl ||
+      currency?.coinGeckoId === unknownToken.coinGeckoId
+    )
+      return;
     navigate(SCREENS.STACK.Others, {
       screen: SCREENS.HistoryDetail,
       params: {
@@ -54,14 +61,19 @@ export const AllNetworkTxItem: FC<{
     return;
   };
 
-  const amount = new CoinPretty(currency, new Dec(item.amount[0]));
+  const amount =
+    item?.amount?.[0] && currency
+      ? new CoinPretty(currency, new Dec(item.amount[0]))
+      : new CoinPretty(unknownToken, new Dec("0"));
   const priceAmount = priceStore.calculatePrice(amount, fiat);
   const first =
     index > 0 &&
-    moment(getTimeMilliSeconds(data[index - 1].timestamp)).format(
+    moment(getTimeMilliSeconds(data[index - 1]?.timestamp)).format(
       "MMM D, YYYY"
     );
-  const now = moment(getTimeMilliSeconds(item.timestamp)).format("MMM D, YYYY");
+  const now = moment(getTimeMilliSeconds(item?.timestamp)).format(
+    "MMM D, YYYY"
+  );
   const { colors } = useTheme();
   const styles = styling(colors);
 
@@ -96,10 +108,10 @@ export const AllNetworkTxItem: FC<{
               type="images"
               source={{
                 uri:
-                  currency.coinImageUrl.includes("missing.png") ||
-                  !currency.coinImageUrl
+                  currency?.coinImageUrl?.includes("missing.png") ||
+                  !currency?.coinImageUrl
                     ? unknownToken.coinImageUrl
-                    : currency.coinImageUrl,
+                    : currency?.coinImageUrl,
               }}
               size={32}
               style={{
@@ -160,7 +172,7 @@ export const AllNetworkTxItem: FC<{
                   }
                 >
                   {`${!isSent ? "+" : "-"}${maskedNumber(
-                    amount.hideDenom(true).toString()
+                    amount.hideDenom(true)?.toString()
                   ).replace("-", "")} ${currency.coinDenom}`}
                 </Text>
                 <Text style={styles.profit} color={colors["neutral-text-body"]}>

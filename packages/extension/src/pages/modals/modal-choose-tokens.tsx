@@ -16,7 +16,13 @@ export const ModalChooseTokens: FC<{
   onSelectToken?: (item) => void;
 }> = observer(({ isOpen, onRequestClose, onSelectToken, amountConfig }) => {
   const [refreshing, setRefreshing] = React.useState(false);
-  const { chainStore, accountStore, priceStore, keyRingStore } = useStore();
+  const {
+    chainStore,
+    hugeQueriesStore,
+    accountStore,
+    priceStore,
+    keyRingStore,
+  } = useStore();
   const totalSizeChain = chainStore.chainInfos.length;
   const allChainMap = new Map();
   if (allChainMap.size < totalSizeChain) {
@@ -37,11 +43,10 @@ export const ModalChooseTokens: FC<{
   const { dataTokens } = useMultipleAssets(
     accountStore,
     priceStore,
-    allChainMap,
     chainStore,
     refreshing,
     accountOrai.bech32Address,
-    totalSizeChain
+    hugeQueriesStore
   );
 
   const onSelect = (item) => {

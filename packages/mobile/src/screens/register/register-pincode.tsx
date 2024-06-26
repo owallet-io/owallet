@@ -32,6 +32,7 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { LoadingWalletScreen } from "./loading-wallet";
 import { isPrivateKey, showToast, trimWordsStr } from "@src/utils/helper";
 import { useStore } from "@src/stores";
+import ByteBrew from "react-native-bytebrew-sdk";
 
 interface FormData {
   name: string;
@@ -292,7 +293,7 @@ export const NewPincodeScreen: FunctionComponent = observer((props) => {
   };
 
   const styles = useStyles();
-
+  ByteBrew.NewCustomEvent(`Login Wallet Screen`);
   return mode === "add" ? (
     // @ts-ignore
     <LoadingWalletScreen mode={mode} />

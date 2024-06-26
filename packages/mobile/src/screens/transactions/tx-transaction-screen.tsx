@@ -8,10 +8,12 @@ import {
   mappingChainIdToHistoryScreen,
   typeTxEnum,
 } from "@src/screens/transactions/tx-helper";
+import ByteBrew from "react-native-bytebrew-sdk";
 
 const TxTransactionsScreen = observer(() => {
   const { chainStore, appInitStore } = useStore();
   const { chainId } = chainStore.current;
+  ByteBrew.NewCustomEvent(`History Screen`);
   return (
     <>
       {mappingChainIdToHistoryScreen(

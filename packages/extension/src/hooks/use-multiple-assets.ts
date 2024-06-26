@@ -56,11 +56,10 @@ export const sortTokensByPrice = (tokens: ViewRawToken[]) => {
 export const useMultipleAssets = (
   accountStore: AccountStore<AccountWithAll>,
   priceStore: CoinGeckoPriceStore,
-  allChainMap: any,
   chainStore: ChainStore,
   isRefreshing: boolean,
   bech32Address,
-  totalChain
+  hugeQueriesStore
 ): IMultipleAsset => {
   const isAllNetwork = chainStore.isAllNetwork;
   const { chainId } = chainStore.current;
@@ -76,15 +75,13 @@ export const useMultipleAssets = (
   const allTokens: ViewRawToken[] = [];
   // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
-    if (allChainMap.size < totalChain) return;
-    init();
-  }, [bech32Address, priceStore.defaultVsCurrency, allChainMap.size]);
+    setTimeout(init, 1000);
+  }, [bech32Address, priceStore.defaultVsCurrency]);
   // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
     if (!isRefreshing) return;
-    if (allChainMap.size < totalChain) return;
-    init();
-  }, [isRefreshing, allChainMap.size]);
+    setTimeout(init, 1000);
+  }, [isRefreshing]);
   const pushTokenQueue = async (
     token: AppCurrency,
     amount: string | number,
@@ -148,7 +145,7 @@ export const useMultipleAssets = (
   };
   const fetchAllBalancesEvm = async (chains) => {
     const allBalanceChains = chains.map((chain, index) => {
-      const { address, chainInfo } = allChainMap.get(chain);
+      const { address, chainInfo } = hugeQueriesStore.getAllChainMap.get(chain);
       switch (chain) {
         case ChainIdEnum.BNBChain:
         case ChainIdEnum.Ethereum:
@@ -162,7 +159,8 @@ export const useMultipleAssets = (
   const init = async () => {
     setIsLoading(true);
     try {
-      const allChain = Array.from(allChainMap.values());
+      const allChain = Array.from(hugeQueriesStore.getAllChainMap.values());
+      console.log(allChain, "allChain1");
       const allBalancePromises = allChain.map(
         async ({ address, chainInfo }) => {
           if (!address) return;
@@ -376,7 +374,9 @@ export const useMultipleAssets = (
   };
 
   const getBalanceCW20Oraichain = async () => {
-    const oraiNetwork = allChainMap.get(ChainIdEnum.Oraichain);
+    const oraiNetwork = hugeQueriesStore.getAllChainMap.get(
+      ChainIdEnum.Oraichain
+    );
     const chainInfo = oraiNetwork.chainInfo;
     const mergedMaps = chainInfo.currencyMap;
     const data = toBinary({

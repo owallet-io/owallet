@@ -13,6 +13,7 @@ import { metrics } from "@src/themes";
 import { OWButton } from "@src/components/button";
 import { UndelegationsCard } from "./undelegations-card";
 import { NetworkModal } from "@src/screens/home/components";
+
 export const StakingDashboardScreen: FunctionComponent = observer(() => {
   const {
     chainStore,

@@ -17,9 +17,21 @@ export const ModalMenuLeft: FC<{
     onRequestClose();
   };
   const actionMenu = (item) => {
-    if (item.id === 6) {
-      lock();
-      return;
+    switch (item.id) {
+      case MenuEnum.LOCK:
+        lock();
+        break;
+      case MenuEnum.CONNECTED_DAPP:
+        history.push("/connected-dapp");
+        break;
+      case MenuEnum.ADD_TOKEN:
+        history.push("/add-token");
+        break;
+      case MenuEnum.PREFERENCES:
+        history.push("/preferences");
+        break;
+      default:
+      // code block
     }
   };
   return (
@@ -33,7 +45,12 @@ export const ModalMenuLeft: FC<{
       className={styles.modalMenuLeft}
     >
       <div className={styles.containerSliderLeft}>
-        <div className={styles.itemMenu}>
+        <div
+          style={{
+            cursor: "auto",
+          }}
+          className={styles.itemMenu}
+        >
           <div
             style={{
               width: 32,
@@ -58,54 +75,67 @@ export const ModalMenuLeft: FC<{
             }}
             className={styles.itemMenu}
           >
-            <div className={styles.btnIcon}>
-              <img className={styles.imgIcon} src={item.icon} />
+            <div className={styles.leftBlock}>
+              <div className={styles.btnIcon}>
+                <img className={styles.imgIcon} src={item.icon} />
+              </div>
+              <span className={styles.nameMenu}>{item.name}</span>
             </div>
-            <span className={styles.nameMenu}>{item.name}</span>
+            {item.value && <span className={styles.version}>{item.value}</span>}
           </div>
         ))}
       </div>
     </SlidingPane>
   );
 });
+const manifestData = chrome.runtime.getManifest();
+
+enum MenuEnum {
+  ADD_TOKEN = 1,
+  ADDR_BOOK = 3,
+  CONNECTED_DAPP = 4,
+  PREFERENCES = 5,
+  LOCK = 6,
+  ABOUT_USER = 7,
+}
 
 const dataItem = [
   {
     name: "Add Token",
     icon: require("../../../public/assets/svg/tdesign_add_circle.svg"),
-    id: 1,
+    id: MenuEnum.ADD_TOKEN,
   },
-  {
-    name: "Manage Token list",
-    icon: require("../../../public/assets/svg/tdesign_list.svg"),
-    id: 2,
-  },
-  {
-    name: "Address Book",
-    icon: require("../../../public/assets/svg/tdesign_address_book.svg"),
-    id: 3,
-  },
+  // {
+  //   name: "Manage Token list",
+  //   icon: require("../../../public/assets/svg/tdesign_list.svg"),
+  //   id: 2,
+  // },
+  // {
+  //   name: "Address Book",
+  //   icon: require("../../../public/assets/svg/tdesign_address_book.svg"),
+  //   id: MenuEnum.ADDR_BOOK,
+  // },
   {
     name: "Connected DApp",
     icon: require("../../../public/assets/svg/tdesign_internet.svg"),
-    id: 4,
+    id: MenuEnum.CONNECTED_DAPP,
   },
   {
     name: "Preferences",
     icon: require("../../../public/assets/svg/tdesign_adjustment.svg"),
     isBorderBottom: true,
-    id: 5,
+    id: MenuEnum.PREFERENCES,
   },
   {
     name: "Lock Wallet",
     icon: require("../../../public/assets/svg/tdesign_lock_on.svg"),
-    id: 6,
+    id: MenuEnum.LOCK,
     isBorderBottom: true,
   },
   {
     name: "About us",
     icon: require("../../../public/assets/svg/tdesign_info_circle.svg"),
-    id: 7,
-    value: "v3.0.0",
+    id: MenuEnum.ABOUT_USER,
+    value: `v${manifestData.version}`,
   },
 ];

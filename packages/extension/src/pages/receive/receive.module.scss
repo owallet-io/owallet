@@ -9,7 +9,6 @@
   .title {
     color: $neutral-text-title;
     font-size: 16px;
-    font-style: normal;
     font-weight: 700;
     line-height: 24px; /* 150% */
     text-transform: uppercase;
@@ -30,9 +29,7 @@
     .title-modal {
       color: $neutral-text-title;
       text-align: center;
-      /* Body small/14px/regular */
       font-size: 14px;
-      font-style: normal;
       font-weight: 400;
     }
 
@@ -46,35 +43,10 @@
     .address {
       color: $neutral-text-title;
       text-align: center;
-      /* Caption/13px/Regular */
       font-size: 13px;
-      font-style: normal;
       font-weight: 400;
       line-height: 18px; /* 138.462% */
-      padding: 12px;
-    }
-
-    .wrap-btn-copy {
-      cursor: pointer;
-      display: flex;
-      gap: 8px;
-      padding: 24px;
-
-      .icon {
-        width: 20px;
-        height: 20px;
-        filter: $primary-text-action;
-      }
-
-      .txt-copy {
-        color: $primary-text-action;
-        text-align: center;
-        /* Body small/14px/semibold */
-        font-size: 14px;
-        font-style: normal;
-        font-weight: 600;
-        line-height: 20px; /* 142.857% */
-      }
+      //padding: 12px;
     }
   }
 }

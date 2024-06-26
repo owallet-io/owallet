@@ -1,9 +1,4 @@
-import React, {
-  FunctionComponent,
-  useEffect,
-  useState,
-  useTransition,
-} from "react";
+import React, { FunctionComponent, useState, useTransition } from "react";
 import { observer } from "mobx-react-lite";
 import { OWBox } from "../../components/card";
 import {
@@ -12,12 +7,10 @@ import {
   TouchableOpacity,
   Image,
   Clipboard,
-  ActivityIndicator,
 } from "react-native";
 import { Text } from "@src/components/text";
 import { useStore } from "../../stores";
 import { useTheme } from "@src/themes/theme-provider";
-import { getTotalUsd, chainIcons } from "@oraichain/oraidex-common";
 import { CheckIcon, CopyFillIcon, DownArrowIcon } from "@src/components/icon";
 import { metrics, spacing } from "@src/themes";
 import MyWalletModal from "./components/my-wallet-modal/my-wallet-modal";
@@ -25,11 +18,10 @@ import { ChainIdEnum, unknownToken } from "@owallet/common";
 import { OWButton } from "@src/components/button";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { CopyAddressModal } from "./components/copy-address/copy-address-modal";
-import { getTokenInfos, maskedNumber, shortenAddress } from "@src/utils/helper";
+import { shortenAddress } from "@src/utils/helper";
 import { useSmartNavigation } from "@src/navigation.provider";
 import { SCREENS } from "@src/common/constants";
 import { navigate } from "@src/router/root";
-import { LoadingSpinner } from "@src/components/spinner";
 import OWText from "@src/components/text/ow-text";
 import { useSimpleTimer } from "@src/hooks";
 import LottieView from "lottie-react-native";
@@ -39,10 +31,8 @@ export const AccountBoxAll: FunctionComponent<{
   totalBalanceByChain: string;
   isLoading: boolean;
 }> = observer(({ totalPriceBalance, totalBalanceByChain, isLoading }) => {
-  console.log(totalPriceBalance, "totalPriceBalance2");
   const { colors } = useTheme();
   const {
-    universalSwapStore,
     accountStore,
     modalStore,
     chainStore,
@@ -50,32 +40,16 @@ export const AccountBoxAll: FunctionComponent<{
     queriesStore,
     keyRingStore,
   } = useStore();
-  const [profit, setProfit] = useState(0);
   const [isOpen, setModalOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
-
   const smartNavigation = useSmartNavigation();
 
-  const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
-
-  // const chainAssets = getTokenInfos({
-  //   tokens: universalSwapStore.getAmount,
-  //   prices: appInitStore.getInitApp.prices,
-  //   networkFilter: chainStore.current.chainId,
-  // });
   const queries = queriesStore.get(chainStore.current.chainId);
   const styles = styling(colors);
-  let totalUsd: number = 0;
-  if (appInitStore.getInitApp.prices) {
-    totalUsd = getTotalUsd(
-      universalSwapStore.getAmount,
-      appInitStore.getInitApp.prices
-    );
-  }
 
   const account = accountStore.getAccount(chainStore.current.chainId);
+  const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
 
-  // const [chainAddress, setAddress] = useState("");
   const { isTimedOut, setTimer } = useSimpleTimer();
   const chainAddress = account.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses
@@ -90,27 +64,6 @@ export const AccountBoxAll: FunctionComponent<{
     });
     modalStore.setChildren(<MyWalletModal />);
   };
-
-  useEffect(() => {
-    let yesterdayBalance = 0;
-    const yesterdayAssets = appInitStore.getInitApp.yesterdayPriceFeed;
-
-    if (yesterdayAssets?.length > 0) {
-      yesterdayAssets.map((y) => {
-        yesterdayBalance += y.value ?? 0;
-      });
-
-      setProfit(Number(Number(totalUsd - yesterdayBalance).toFixed(2)));
-    } else {
-      setProfit(0);
-    }
-    appInitStore.updateBalanceByAddress(accountOrai.bech32Address, totalUsd);
-  }, [totalUsd, accountOrai.bech32Address, appInitStore]);
-
-  useEffect(() => {
-    setProfit(0);
-  }, [accountOrai.bech32Address]);
-
   const address = account.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses
   );
@@ -151,19 +104,6 @@ export const AccountBoxAll: FunctionComponent<{
             </View>
           ) : null}
         </View>
-
-        {/*<Text*/}
-        {/*  style={styles.profit}*/}
-        {/*  color={colors[profit < 0 ? "error-text-body" : "success-text-body"]}*/}
-        {/*>*/}
-        {/*  {profit < 0 ? "" : "+"}*/}
-        {/*  {profit && totalUsd && totalUsd > 0*/}
-        {/*    ? Number((profit / totalUsd) * 100 ?? 0).toFixed(2)*/}
-        {/*    : 0}*/}
-        {/*  % ($*/}
-        {/*  {maskedNumber(profit ?? 0, 2)}) Today*/}
-        {/*</Text>*/}
-
         {appInitStore.getInitApp.isAllNetworks ? null : (
           <>
             <View
@@ -192,7 +132,7 @@ export const AccountBoxAll: FunctionComponent<{
                     type="images"
                     source={{
                       uri:
-                        chainStore.current.stakeCurrency.coinImageUrl ||
+                        chainStore.current?.stakeCurrency?.coinImageUrl ||
                         unknownToken.coinImageUrl,
                     }}
                     size={16}
@@ -206,7 +146,7 @@ export const AccountBoxAll: FunctionComponent<{
                   weight="600"
                   color={colors["neutral-text-title"]}
                 >
-                  {chainStore.current.chainName}
+                  {chainStore.current?.chainName || unknownToken.coinDenom}
                 </Text>
               </View>
 
@@ -287,7 +227,7 @@ export const AccountBoxAll: FunctionComponent<{
               resizeMode="contain"
               fadeDuration={0}
             />
-            <Text style={styles.labelName}>{account?.name || ".."}</Text>
+            <Text style={styles.labelName}>{accountOrai?.name || ".."}</Text>
             <DownArrowIcon height={15} color={colors["primary-text"]} />
           </TouchableOpacity>
           {appInitStore.getInitApp.isAllNetworks ? (
@@ -364,9 +304,6 @@ export const AccountBoxAll: FunctionComponent<{
             style={styles.getStarted}
             label={appInitStore.getInitApp.isAllNetworks ? "Buy" : "Send"}
             onPress={() => {
-              // smartNavigation.navigateSmart("NewSend", {
-              //   currency: chainStore.current.stakeCurrency.coinMinimalDenom,
-              // });
               if (appInitStore.getInitApp.isAllNetworks) {
                 navigate(SCREENS.STACK.Others, {
                   screen: SCREENS.BuyFiat,

@@ -13,33 +13,22 @@ import {
 
 export const HomePage = observer(() => {
   const [refreshing, setRefreshing] = React.useState(false);
-  const { chainStore, accountStore, priceStore, keyRingStore } = useStore();
-  const totalSizeChain = chainStore.chainInfos.length;
-  const allChainMap = new Map();
-  if (allChainMap.size < totalSizeChain) {
-    chainStore.chainInfos.map((item, index) => {
-      const acc = accountStore.getAccount(item.chainId);
-      const address = acc.getAddressDisplay(
-        keyRingStore.keyRingLedgerAddresses,
-        false
-      );
-      if (!address) return;
-      allChainMap.set(item.chainId, {
-        address: address,
-        chainInfo: item,
-      });
-    });
-  }
+  const {
+    chainStore,
+    hugeQueriesStore,
+    accountStore,
+    priceStore,
+    keyRingStore,
+  } = useStore();
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const { totalPriceBalance, dataTokens, dataTokensByChain, isLoading } =
     useMultipleAssets(
       accountStore,
       priceStore,
-      allChainMap,
       chainStore,
       refreshing,
       accountOrai.bech32Address,
-      totalSizeChain
+      hugeQueriesStore
     );
 
   return (

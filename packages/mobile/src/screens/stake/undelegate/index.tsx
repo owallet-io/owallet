@@ -12,12 +12,7 @@ import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import { Text } from "@src/components/text";
 import OWText from "@src/components/text/ow-text";
 import { useTheme } from "@src/themes/theme-provider";
-import {
-  capitalizedText,
-  handleSaveHistory,
-  HISTORY_STATUS,
-  showToast,
-} from "@src/utils/helper";
+import { capitalizedText, showToast } from "@src/utils/helper";
 import { Buffer } from "buffer";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useState } from "react";
@@ -30,6 +25,7 @@ import { useStore } from "../../../stores";
 import { metrics, spacing } from "../../../themes";
 import { chainIcons } from "@oraichain/oraidex-common";
 import { FeeModal } from "@src/modals/fee";
+import ByteBrew from "react-native-bytebrew-sdk";
 
 export const UndelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -43,7 +39,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
       string
     >
   >();
-
+  ByteBrew.NewCustomEvent(`Undelegate Screen`);
   const validatorAddress = route.params.validatorAddress;
 
   const {
@@ -173,6 +169,14 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
                         validatorName: validator?.description.moniker,
                         feeType: sendConfigs.feeConfig.feeType,
                       });
+                      ByteBrew.NewCustomEvent(
+                        `Undelegate`,
+                        `chainName=${
+                          chainStore.current.chainName
+                        };validatorName=${
+                          validator?.description.moniker ?? "..."
+                        };`
+                      );
                       smartNavigation.pushSmart("TxPendingResult", {
                         txHash: Buffer.from(txHash).toString("hex"),
                         data: {
@@ -184,38 +188,6 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
                           currency: sendConfigs.amountConfig.sendCurrency,
                         },
                       });
-                      const historyInfos = {
-                        toAddress: account.bech32Address,
-                        fromAddress: sendConfigs.recipientConfig.recipient,
-                        hash: Buffer.from(txHash).toString("hex"),
-                        memo: "",
-                        fromAmount: sendConfigs.amountConfig.amount,
-                        toAmount: sendConfigs.amountConfig.amount,
-                        value: sendConfigs.amountConfig.amount,
-                        fee: Number(
-                          sendConfigs.feeConfig.fee
-                            ?.maxDecimals(6)
-                            .trim(true)
-                            .hideDenom(true)
-                            .toString()
-                        ),
-                        type: HISTORY_STATUS.UNSTAKE,
-                        fromToken: {
-                          asset:
-                            sendConfigs.amountConfig.sendCurrency.coinDenom,
-                          chainId: chainStore.current.chainId,
-                        },
-                        toToken: {
-                          asset:
-                            sendConfigs.amountConfig.sendCurrency.coinDenom,
-                          chainId: chainStore.current.chainId,
-                        },
-                        status: "SUCCESS",
-                      };
-
-                      console.log("historyInfos", historyInfos);
-
-                      handleSaveHistory(account.bech32Address, historyInfos);
                     },
                   }
                 );

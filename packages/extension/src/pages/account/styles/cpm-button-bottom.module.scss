@@ -8,6 +8,11 @@
   width: 100%;
   bottom: 0;
   left: 0;
+  cursor: pointer;
+
+  .button-primary:hover {
+    background-color: $primary-surface-subtle;
+  }
 
   .button-primary {
     background-color: $primary-surface-default;

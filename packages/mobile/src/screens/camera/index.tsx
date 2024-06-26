@@ -22,6 +22,7 @@ import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { useTheme } from "@src/themes/theme-provider";
 import { metrics } from "@src/themes";
+import ByteBrew from "react-native-bytebrew-sdk";
 interface keyable {
   [key: string]: any;
 }
@@ -40,6 +41,7 @@ export const CameraScreen: FunctionComponent = observer((props) => {
 
   useFocusEffect(
     useCallback(() => {
+      ByteBrew.NewCustomEvent(`QRCode Modal`);
       // If the other screen is pushed according to the qr code data,
       // the `isCompleted` state would remain as true because the screen in the stack is not unmounted.
       // So, we should reset the `isComplete` state whenever getting focused.

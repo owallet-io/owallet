@@ -27,13 +27,8 @@ import { PageHeader } from "@src/components/header/header-new";
 import OWText from "@src/components/text/ow-text";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import OWCard from "@src/components/card/ow-card";
-import {
-  convertArrToObject,
-  handleSaveHistory,
-  HISTORY_STATUS,
-  maskedNumber,
-  showToast,
-} from "@src/utils/helper";
+import { convertArrToObject, maskedNumber, showToast } from "@src/utils/helper";
+import ByteBrew from "react-native-bytebrew-sdk";
 
 const renderIconValidator = (
   label: string,
@@ -188,43 +183,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
         {
           onBroadcasted: (txHash) => {
             const validatorObject = convertArrToObject([validatorAddress]);
-
-            const historyInfos = {
-              fromAddress: account.bech32Address,
-              toAddress: account.bech32Address,
-              hash: Buffer.from(txHash).toString("hex"),
-              memo: "",
-              fromAmount: rewards
-                ?.maxDecimals(2)
-                .trim(true)
-                .hideDenom(true)
-                .toString(),
-              toAmount: rewards
-                ?.maxDecimals(2)
-                .trim(true)
-                .hideDenom(true)
-                .toString(),
-              value: rewards
-                ?.maxDecimals(2)
-                .trim(true)
-                .hideDenom(true)
-                .toString(),
-              fee: "0",
-              type: HISTORY_STATUS.CLAIM,
-              fromToken: {
-                asset: rewards?.toCoin().denom.toUpperCase(),
-                chainId: chainStore.current.chainId,
-              },
-              toToken: {
-                asset: rewards?.toCoin().denom.toUpperCase(),
-                chainId: chainStore.current.chainId,
-              },
-              status: "SUCCESS",
-            };
-
-            console.log("historyInfos", historyInfos);
-
-            handleSaveHistory(account.bech32Address, historyInfos);
+            ByteBrew.NewCustomEvent(`Claim ${rewards.currency.coinDenom}`);
             smartNavigation.pushSmart("TxPendingResult", {
               txHash: Buffer.from(txHash).toString("hex"),
               data: {
@@ -240,7 +199,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
       );
     } catch (e) {
       console.error({ errorClaim: e });
-      if (!e?.message?.startWith("Transaction Rejected")) {
+      if (!e?.message?.startsWith("Transaction Rejected")) {
         showToast({
           message:
             e?.message ?? "Something went wrong! Please try again later.",

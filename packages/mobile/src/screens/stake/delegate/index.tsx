@@ -13,8 +13,6 @@ import {
   capitalizedText,
   computeTotalVotingPower,
   formatPercentage,
-  handleSaveHistory,
-  HISTORY_STATUS,
   showToast,
 } from "@src/utils/helper";
 import { observer } from "mobx-react-lite";
@@ -36,6 +34,8 @@ import { NewAmountInput } from "@src/components/input/amount-input";
 import { FeeModal } from "@src/modals/fee";
 import { CoinPretty, Int } from "@owallet/unit";
 import { API } from "@src/common/api";
+import { initPrice } from "@src/screens/home/hooks/use-multiple-assets";
+import ByteBrew from "react-native-bytebrew-sdk";
 
 export const DelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -49,7 +49,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
       string
     >
   >();
-
+  ByteBrew.NewCustomEvent(`Delegate Screen`);
   const validatorAddress = route.params.validatorAddress;
   const {
     chainStore,
@@ -228,6 +228,14 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                         validatorName: validator?.description.moniker ?? "...",
                         feeType: sendConfigs.feeConfig.feeType,
                       });
+                      ByteBrew.NewCustomEvent(
+                        `Delegate`,
+                        `chainName=${
+                          chainStore.current.chainName
+                        };validatorName=${
+                          validator?.description.moniker ?? "..."
+                        };`
+                      );
                       smartNavigation.pushSmart("TxPendingResult", {
                         txHash: Buffer.from(txHash).toString("hex"),
                         data: {
@@ -239,36 +247,6 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                           currency: sendConfigs.amountConfig.sendCurrency,
                         },
                       });
-                      const historyInfos = {
-                        fromAddress: account.bech32Address,
-                        toAddress: sendConfigs.recipientConfig.recipient,
-                        hash: Buffer.from(txHash).toString("hex"),
-                        memo: "",
-                        fromAmount: sendConfigs.amountConfig.amount,
-                        toAmount: sendConfigs.amountConfig.amount,
-                        value: sendConfigs.amountConfig.amount,
-                        fee: Number(
-                          sendConfigs.feeConfig.fee
-                            ?.maxDecimals(6)
-                            .trim(true)
-                            .hideDenom(true)
-                            .toString()
-                        ),
-                        type: HISTORY_STATUS.STAKE,
-                        fromToken: {
-                          asset:
-                            sendConfigs.amountConfig.sendCurrency.coinDenom,
-                          chainId: chainStore.current.chainId,
-                        },
-                        toToken: {
-                          asset:
-                            sendConfigs.amountConfig.sendCurrency.coinDenom,
-                          chainId: chainStore.current.chainId,
-                        },
-                        status: "SUCCESS",
-                      };
-
-                      handleSaveHistory(account.bech32Address, historyInfos);
                     },
                   }
                 );
@@ -446,7 +424,10 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                   color={colors["neutral-text-body"]}
                   size={14}
                 >
-                  {priceStore.calculatePrice(amount).toString()}
+                  {(amount
+                    ? priceStore.calculatePrice(amount)
+                    : initPrice
+                  )?.toString()}
                 </OWText>
               </View>
               {validatorDetail ? (

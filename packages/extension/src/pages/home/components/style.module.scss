@@ -12,6 +12,12 @@
     justify-content: space-between;
     align-items: center;
 
+    .select-account:hover {
+      background-color: $neutral-surface-action;
+      border-radius: 999px;
+      padding: 4px;
+    }
+
     .select-account {
       display: flex;
       flex-direction: row;
@@ -112,6 +118,26 @@
   border-radius: 24px;
   padding: 16px;
 
+  .wrap-top-block {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: center;
+    .wrap-hide-token {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 8px;
+      .label {
+        color: $neutral-text-title;
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 24px;
+      }
+    }
+
+  }
 
   .list-tokens {
     padding: 8px 0;
@@ -223,6 +249,7 @@
   border-radius: 999px;
   gap: 8px;
   width: 100%;
+  flex: 1;
 
   .icon-search {
     width: 20px;
@@ -247,12 +274,11 @@
 
   .header-left {
     display: flex;
-    flex: 8%;
+    flex: 1;
   }
 
   .title {
     display: flex;
-    flex: 84%;
     justify-content: center;
 
     .title-text {
@@ -261,12 +287,14 @@
       font-weight: 700;
       line-height: 24px;
       font-style: normal;
+      text-transform: uppercase;
+      text-align: center;
     }
   }
 
   .header-right {
     display: flex;
-    flex: 8%;
+    flex: 1;
     justify-content: flex-end;
 
     .close-btn {

@@ -5,6 +5,7 @@ import { StyleSheet, View } from "react-native";
 import { spacing } from "../../../themes";
 import { ValidatorDetailsCard } from "./validator-details-card";
 import { useTheme } from "@src/themes/theme-provider";
+import ByteBrew from "react-native-bytebrew-sdk";
 export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
   const route = useRoute<
     RouteProp<
@@ -23,7 +24,7 @@ export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
   const validatorAddress = route.params.validatorAddress;
   const apr = route.params.apr;
   const percentageVote = route.params.percentageVote;
-
+  ByteBrew.NewCustomEvent(`Validator Detail Screen`);
   return (
     <View>
       <ValidatorDetailsCard

@@ -16,7 +16,12 @@ import { ethers } from "ethers";
 import Web3 from "web3";
 import TronWeb from "tronweb";
 import "dotenv/config";
-
+export const getFavicon = (url) => {
+  const serviceGG =
+    "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&size=32&url=";
+  if (!url) return serviceGG + "https://orai.io";
+  return serviceGG + url;
+};
 export type LedgerAppType = "cosmos" | "eth" | "trx" | "btc";
 export const COINTYPE_NETWORK = {
   118: "Cosmos",
@@ -24,6 +29,34 @@ export const COINTYPE_NETWORK = {
   195: "Tron",
   0: "Bitcoin",
   1: "Bitcoin Testnet",
+};
+export const convertObjChainAddressToString = (txsAllNetwork) => {
+  const data = Object.entries(txsAllNetwork)
+    .map(([key, value]) => `${key}%2B${value}`)
+    .join(",");
+  return data;
+};
+export const getDomainFromUrl = (url) => {
+  if (!url) {
+    return "";
+  }
+  return `${url?.match?.(
+    // eslint-disable-next-line no-useless-escape
+    /^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/?\n]+)/gim
+  )}`;
+};
+export const formatContractAddress = (address: string, limitFirst = 10) => {
+  if (!address) return "...";
+  const fristLetter = address?.slice(0, limitFirst) ?? "";
+  const lastLetter = address?.slice(-5) ?? "";
+
+  return `${fristLetter}...${lastLetter}`;
+};
+export const getTimeMilliSeconds = (timeStamp) => {
+  if (isMilliseconds(timeStamp)) {
+    return timeStamp;
+  }
+  return timeStamp * 1000;
 };
 export const MapChainIdToNetwork = {
   [ChainIdEnum.BNBChain]: Network.BINANCE_SMART_CHAIN,
@@ -403,6 +436,7 @@ export const formatAddress = (address: string, limitFirst = 10) => {
 
 export const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 export const isMilliseconds = (timestamp: number | string): boolean => {
+  if (!timestamp) return;
   const timestampString = timestamp.toString();
   return timestampString.length === 13;
 };

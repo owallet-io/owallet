@@ -23,9 +23,11 @@ import { SCREENS } from "@src/common/constants";
 import { checkValidDomain, showToast } from "@src/utils/helper";
 import { useStore } from "@src/stores";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
+import ByteBrew from "react-native-bytebrew-sdk";
 
 export const BrowserScreen = observer(() => {
   const layout = useWindowDimensions();
+  ByteBrew.NewCustomEvent(`Browser Screen`);
   const { colors } = useTheme();
   const { browserStore } = useStore();
   const { inject } = browserStore;

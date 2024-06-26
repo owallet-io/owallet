@@ -32,7 +32,7 @@ export class ObservableQueryEvmBalanceInner extends ObservableChainQuery<
   }
 
   protected canFetch(): boolean {
-    return this.address.length !== 0;
+    return this.address?.length !== 0;
   }
   protected async getOasisBalance() {
     try {
