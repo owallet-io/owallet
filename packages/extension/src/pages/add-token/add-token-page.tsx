@@ -189,14 +189,14 @@ export const AddTokenPage = observer(() => {
             ref={register({
               required: "Contract address is required",
               validate: (value: string): string | undefined => {
-                try {
-                  Bech32Address.validate(
-                    value,
-                    chainStore.current.bech32Config.bech32PrefixAccAddr
-                  );
-                } catch {
-                  return "Invalid address";
-                }
+                // try {
+                //   Bech32Address.validate(
+                //     value,
+                //     chainStore.current.bech32Config.bech32PrefixAccAddr
+                //   );
+                // } catch {
+                //   return "Invalid address";
+                // }
               },
             })}
             error={
