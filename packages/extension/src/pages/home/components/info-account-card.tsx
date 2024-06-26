@@ -10,7 +10,8 @@ import { ChainIdEnum } from "@owallet/common";
 
 export const InfoAccountCard: FC<{
   totalPrice: string;
-}> = observer(({ totalPrice }) => {
+  isLoading?: boolean;
+}> = observer(({ totalPrice, isLoading }) => {
   const [isShowCopyModal, setIsShowCopyModal] = useState(false);
   const onShowModalCopy = () => {
     setIsShowCopyModal(true);
@@ -55,6 +56,12 @@ export const InfoAccountCard: FC<{
       <div className={styles.bodyBalance}>
         <span className={styles.textBalance}>
           {(new PricePretty(fiatCurrency, totalPrice) || initPrice)?.toString()}
+          {isLoading && (
+            <span>
+              {" "}
+              <i className="fas fa-spinner fa-spin" />
+            </span>
+          )}
         </span>
       </div>
       <div className={styles.btnsSendReceived}>

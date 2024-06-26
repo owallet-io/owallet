@@ -15,8 +15,8 @@ export const ConnectedDappPage = observer(() => {
   const basicAccessInfo = permissionStore.getBasicAccessInfo(
     chainStore.current.chainId
   );
-  const data = PrivilegedOrigins.concat(basicAccessInfo.origins).filter(
-    (item, index) => item?.toLowerCase().includes(keyword?.toLowerCase())
+  const data = basicAccessInfo.origins.filter((item, index) =>
+    item?.toLowerCase().includes(keyword?.toLowerCase())
   );
   const removeDapps = (item) => {
     basicAccessInfo.removeOrigin(item);
@@ -45,9 +45,6 @@ export const ConnectedDappPage = observer(() => {
                 </div>
                 <div className={styles.rightBlock}>
                   <div
-                    style={{
-                      opacity: PrivilegedOrigins.includes(item) ? 0.5 : 1,
-                    }}
                     onClick={() => removeDapps(item)}
                     className={styles.wrapLink}
                   >

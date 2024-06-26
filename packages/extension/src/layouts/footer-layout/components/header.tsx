@@ -58,9 +58,9 @@ export const HeaderNew: FC<{
         // use `url` here inside the callback because it's asynchronous!
       });
     }, []);
-    const isActive = PrivilegedOrigins.concat(
-      permissionStore.getBasicAccessInfo(chainStore.current.chainId).origins
-    ).includes(getDomainFromUrl(tabActive));
+    const isActive = permissionStore
+      .getBasicAccessInfo(chainStore.current.chainId)
+      .origins.includes(getDomainFromUrl(tabActive));
     return (
       <div className={styles.container}>
         <div className={styles.leftBlock}>
@@ -117,14 +117,7 @@ export const HeaderNew: FC<{
               }}
               className={styles.wrapIconConnect}
             >
-              <img
-                className={styles.imgIcon}
-                src={
-                  !isActive
-                    ? getFavicon("brave://extensions/")
-                    : getFavicon(tabActive)
-                }
-              />
+              <img className={styles.imgIcon} src={getFavicon(tabActive)} />
               {isActive && <div className={styles.dot}></div>}
             </div>
           )}

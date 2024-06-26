@@ -79,11 +79,6 @@ export const useMultipleAssets = (
       init();
     }, 1000);
   }, [bech32Address, priceStore.defaultVsCurrency]);
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  // useEffect(() => {
-  //   if (!isRefreshing) return;
-  //   setTimeout(init, 1000);
-  // }, [isRefreshing]);
   const pushTokenQueue = async (
     token: AppCurrency,
     amount: string | number,
