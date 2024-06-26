@@ -8,9 +8,10 @@ import classnames from "classnames";
 
 export const ModalSiteConnected: FC<{
   isOpen: boolean;
+  isActive: boolean;
   onRequestClose: () => void;
   url: string;
-}> = observer(({ isOpen, onRequestClose, url }) => {
+}> = observer(({ isOpen, isActive, onRequestClose, url }) => {
   return (
     <SlidingPane
       isOpen={isOpen}
@@ -36,9 +37,11 @@ export const ModalSiteConnected: FC<{
           {"View your wallet address"}
         </span>
         <br />
-        <span className={styles.subTitlePermision}>
-          {"Be able to request signatures for transactions"}
-        </span>
+        {isActive && (
+          <span className={styles.subTitlePermision}>
+            {"Be able to request signatures for transactions"}
+          </span>
+        )}
       </div>
     </SlidingPane>
   );

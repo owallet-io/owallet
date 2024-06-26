@@ -140,6 +140,7 @@ export const HeaderNew: FC<{
           onRequestClose={() => setIsShow(false)}
         />
         <ModalSiteConnected
+          isActive={isActive}
           url={getDomainFromUrl(tabActive)}
           isOpen={isShowSiteConnected}
           onRequestClose={() => setIsShowSiteConnected(false)}

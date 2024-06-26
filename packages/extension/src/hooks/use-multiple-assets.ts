@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   addressToPublicKey,
   API,
@@ -52,7 +52,7 @@ export const initPrice = new PricePretty(
 export const sortTokensByPrice = (tokens: ViewRawToken[]) => {
   return tokens.sort((a, b) => Number(b.price) - Number(a.price));
 };
-
+var bech32AddressCache = "";
 export const useMultipleAssets = (
   accountStore: AccountStore<AccountWithAll>,
   priceStore: CoinGeckoPriceStore,
@@ -75,9 +75,12 @@ export const useMultipleAssets = (
   const allTokens: ViewRawToken[] = [];
   // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
-    setTimeout(() => {
-      init();
-    }, 1000);
+    if (bech32AddressCache !== bech32Address) {
+      bech32AddressCache = bech32Address;
+      setTimeout(() => {
+        init();
+      }, 1000);
+    }
   }, [bech32Address, priceStore.defaultVsCurrency]);
   const pushTokenQueue = async (
     token: AppCurrency,
@@ -215,11 +218,7 @@ export const useMultipleAssets = (
         address,
         network: MapChainIdToNetwork[chainInfo.chainId],
       });
-      if (((res && res.result) || []).length <= 0) return;
-      const balanceObj = res.result.reduce((obj, item) => {
-        obj[item.tokenAddress] = item.balance;
-        return obj;
-      }, {});
+      if (((res && res.result) || [])?.length <= 0) return;
       const tokenAddresses = res.result
         .map((item, index) => {
           return `${MapChainIdToNetwork[chainInfo.chainId]}%2B${
@@ -244,10 +243,6 @@ export const useMultipleAssets = (
               contractAddress: tokeninfo.contractAddress,
             },
           ];
-          const amount = new Dec(balanceObj[tokeninfo.contractAddress]).mul(
-            DecUtils.getTenExponentN(tokeninfo.decimal)
-          );
-          // pushTokenQueue(infoToken[0], amount.roundUp().toString(), chainInfo);
           chainInfo.addCurrencies(...infoToken);
         }
       });
@@ -262,11 +257,6 @@ export const useMultipleAssets = (
         network: MapChainIdToNetwork[chainInfo.chainId],
       });
       if (!res?.trc20) return;
-      const result = res?.trc20.reduce((acc, curr) => {
-        const key = Object.keys(curr)[0];
-        acc[key] = curr[key];
-        return acc;
-      }, {});
       const tokenAddresses = res?.trc20
         .map((item, index) => {
           return `${MapChainIdToNetwork[chainInfo.chainId]}%2B${
@@ -293,11 +283,6 @@ export const useMultipleAssets = (
               contractAddress: tokeninfo.contractAddress,
             },
           ];
-          // pushTokenQueue(
-          //   infoToken[0],
-          //   result[tokeninfo.contractAddress],
-          //   chainInfo
-          // );
           chainInfo.addCurrencies(...infoToken);
         }
       });
@@ -352,7 +337,7 @@ export const useMultipleAssets = (
         allTokensAddress.push(str);
       }
     });
-    if (allTokensAddress.length === 0) return;
+    if (allTokensAddress?.length === 0) return;
     const tokenInfos = await API.getMultipleTokenInfo({
       tokenAddresses: allTokensAddress.join(","),
     });
