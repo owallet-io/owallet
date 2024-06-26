@@ -5,7 +5,7 @@ import { SearchInput } from "../components/search-input";
 import classnames from "classnames";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../../stores";
-import { formatAddress, unknownToken } from "@owallet/common";
+import { ChainIdEnum, formatAddress, unknownToken } from "@owallet/common";
 import { HeaderModal } from "../components/header-modal";
 import { useNotification } from "../../../components/notification";
 import { useIntl } from "react-intl";
@@ -16,7 +16,6 @@ export const ModalCopyAddress: FC<{
 }> = observer(({ isOpen, onRequestClose }) => {
   const [keyword, setKeyword] = useState("");
   const { chainStore, accountStore, priceStore, keyRingStore } = useStore();
-  const copyRef = useRef<HTMLDivElement>();
   const onChangeInput = (e) => {
     setKeyword(e.target.value);
   };
@@ -40,10 +39,15 @@ export const ModalCopyAddress: FC<{
       },
     });
   };
-  const chains = chainStore.chainInfos.filter((item, index) =>
-    item?.chainName?.toLowerCase()?.includes(keyword?.toLowerCase())
+  const btcLegacyChain = chainStore.chainInfos.find(
+    (chainInfo) => chainInfo.chainId === ChainIdEnum.Bitcoin
   );
-
+  const chains = chainStore.chainInfos.filter(
+    (item, index) =>
+      item?.chainName?.toLowerCase()?.includes(keyword?.toLowerCase()) &&
+      !item?.chainName?.toLowerCase()?.includes("test")
+  );
+  const chainsData = [...chains, btcLegacyChain];
   return (
     <SlidingPane
       isOpen={isOpen}
@@ -61,15 +65,22 @@ export const ModalCopyAddress: FC<{
           placeholder={"Search for a chain"}
         />
         <div className={styles.containerListChain}>
-          {chains?.length > 0 &&
-            chains.map((item, index) => {
-              const address = accountStore
-                .getAccount(item.chainId)
-                .getAddressDisplay(keyRingStore.keyRingLedgerAddresses, true);
+          {chainsData?.length > 0 &&
+            chainsData.map((item, index) => {
+              console.log(index === chainsData.length - 1, "data");
+              let address;
+              if (index === chainsData.length - 1) {
+                address = accountStore.getAccount(item.chainId).legacyAddress;
+              } else {
+                address = accountStore
+                  .getAccount(item.chainId)
+                  .getAddressDisplay(keyRingStore.keyRingLedgerAddresses, true);
+              }
+
               return (
                 <div
                   onClick={() => copyAddress(address)}
-                  key={item.chainId}
+                  key={index.toString()}
                   className={classnames([styles.itemChain])}
                 >
                   <div className={styles.leftBlockHuge}>
@@ -83,7 +94,11 @@ export const ModalCopyAddress: FC<{
                       />
                     </div>
                     <div className={styles.rightBlock}>
-                      <span className={styles.titleName}>{item.chainName}</span>
+                      <span className={styles.titleName}>{`${
+                        index === chainsData.length - 1
+                          ? item.chainName + " Legacy"
+                          : item.chainName
+                      }`}</span>
                       <span className={styles.subTitlePrice}>
                         {formatAddress(address)}
                       </span>
