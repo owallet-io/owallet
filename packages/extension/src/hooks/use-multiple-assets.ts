@@ -75,13 +75,15 @@ export const useMultipleAssets = (
   const allTokens: ViewRawToken[] = [];
   // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
-    setTimeout(init, 1000);
+    setTimeout(() => {
+      init();
+    }, 1000);
   }, [bech32Address, priceStore.defaultVsCurrency]);
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  useEffect(() => {
-    if (!isRefreshing) return;
-    setTimeout(init, 1000);
-  }, [isRefreshing]);
+  // useEffect(() => {
+  //   if (!isRefreshing) return;
+  //   setTimeout(init, 1000);
+  // }, [isRefreshing]);
   const pushTokenQueue = async (
     token: AppCurrency,
     amount: string | number,
@@ -161,6 +163,12 @@ export const useMultipleAssets = (
     try {
       const allChain = Array.from(hugeQueriesStore.getAllChainMap.values());
       console.log(allChain, "allChain1");
+      const chainIdsEvm = [
+        ChainIdEnum.Ethereum,
+        ChainIdEnum.BNBChain,
+        ChainIdEnum.TRON,
+      ];
+      await fetchAllBalancesEvm(chainIdsEvm);
       const allBalancePromises = allChain.map(
         async ({ address, chainInfo }) => {
           if (!address) return;
@@ -178,7 +186,7 @@ export const useMultipleAssets = (
                 : Promise.all([
                     getBalanceNativeEvm(address, chainInfo),
                     getBalanceErc20(address, chainInfo),
-                    fetchAllBalancesEvm([chainInfo.chainId]),
+                    // fetchAllBalancesEvm([chainInfo.chainId]),
                   ]);
             case "bitcoin":
               const btcAddress = accountStore.getAccount(
@@ -243,7 +251,7 @@ export const useMultipleAssets = (
           const amount = new Dec(balanceObj[tokeninfo.contractAddress]).mul(
             DecUtils.getTenExponentN(tokeninfo.decimal)
           );
-          pushTokenQueue(infoToken[0], amount.roundUp().toString(), chainInfo);
+          // pushTokenQueue(infoToken[0], amount.roundUp().toString(), chainInfo);
           chainInfo.addCurrencies(...infoToken);
         }
       });
@@ -289,11 +297,11 @@ export const useMultipleAssets = (
               contractAddress: tokeninfo.contractAddress,
             },
           ];
-          pushTokenQueue(
-            infoToken[0],
-            result[tokeninfo.contractAddress],
-            chainInfo
-          );
+          // pushTokenQueue(
+          //   infoToken[0],
+          //   result[tokeninfo.contractAddress],
+          //   chainInfo
+          // );
           chainInfo.addCurrencies(...infoToken);
         }
       });
