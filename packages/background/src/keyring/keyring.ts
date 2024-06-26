@@ -2,7 +2,7 @@ import {
   ChainIdEnum,
   EmbedChainInfos,
   MIN_FEE_RATE,
-  OasisTransaction,
+  // OasisTransaction,
   convertBip44ToHDPath,
   signerFromPrivateKey,
   splitPathStringToHDPath,
@@ -73,20 +73,20 @@ import {
   getAddressTypeByAddress,
 } from "@owallet/bitcoin";
 import { BIP44HDPath } from "@owallet/types";
-import { getOasisNic, handleAddressLedgerByChainId } from "../utils/helper";
+import { handleAddressLedgerByChainId } from "../utils/helper";
 import { AddressesLedger } from "@owallet/types";
 import { ChainsService } from "../chains";
-import * as oasis from "@oasisprotocol/client";
-import {
-  addressToPublicKey,
-  hex2uint,
-  parseRoseStringToBigNumber,
-  parseRpcBalance,
-  StringifiedBigInt,
-  uint2hex,
-} from "@owallet/common";
-import { CoinPretty, Int } from "@owallet/unit";
-import { ISimulateSignTron } from "@owallet/types";
+// import * as oasis from "@oasisprotocol/client";
+// import {
+//   addressToPublicKey,
+//   hex2uint,
+//   parseRoseStringToBigNumber,
+//   parseRpcBalance,
+//   StringifiedBigInt,
+//   uint2hex
+// } from "@owallet/common";
+// import { CoinPretty, Int } from "@owallet/unit";
+// import { ISimulateSignTron } from "@owallet/types";
 
 // inject TronWeb class
 (globalThis as any).TronWeb = require("tronweb");
@@ -871,18 +871,16 @@ export class KeyRing {
       return coinType === 60;
     })();
 
-    if (coinType === 474) {
-      const signerPublicKey = await this.loadPublicKeyOasis();
-      const addressUint8Array = await oasis.staking.addressFromPublicKey(
-        signerPublicKey
-      );
-      return {
-        algo: "ethsecp256k1",
-        pubKey: signerPublicKey,
-        address: addressUint8Array,
-        isNanoLedger: this.keyStore.type === "ledger",
-      };
-    }
+    // if (coinType === 474) {
+    //   const signerPublicKey = await this.loadPublicKeyOasis();
+    //   const addressUint8Array = await oasis.staking.addressFromPublicKey(signerPublicKey);
+    //   return {
+    //     algo: "ethsecp256k1",
+    //     pubKey: signerPublicKey,
+    //     address: addressUint8Array,
+    //     isNanoLedger: this.keyStore.type === "ledger"
+    //   };
+    // }
     const pubKey = this.getPubKey(coinType);
 
     const address = (() => {
@@ -921,86 +919,86 @@ export class KeyRing {
     };
   }
 
-  public async loadPublicKeyOasis(): Promise<Uint8Array> {
-    if (
-      this.status !== KeyRingStatus.UNLOCKED ||
-      this.type === "none" ||
-      !this.keyStore
-    ) {
-      throw new Error("Key ring is not unlocked");
-    }
-    if (this.type === "privateKey" || this.type === "ledger") return;
-    if (!this.mnemonic) {
-      throw new Error(
-        "Key store type is mnemonic and it is unlocked. But, mnemonic is not loaded unexpectedly"
-      );
-    }
-    const signer = await oasis.hdkey.HDKey.getAccountSigner(this.mnemonic, 0);
-    return signer.publicKey;
-  }
+  // public async loadPublicKeyOasis(): Promise<Uint8Array> {
+  //   if (
+  //     this.status !== KeyRingStatus.UNLOCKED ||
+  //     this.type === "none" ||
+  //     !this.keyStore
+  //   ) {
+  //     throw new Error("Key ring is not unlocked");
+  //   }
+  //   if (this.type === "privateKey" || this.type === "ledger") return;
+  //   if (!this.mnemonic) {
+  //     throw new Error(
+  //       "Key store type is mnemonic and it is unlocked. But, mnemonic is not loaded unexpectedly"
+  //     );
+  //   }
+  //   const signer = await oasis.hdkey.HDKey.getAccountSigner(this.mnemonic, 0);
+  //   return signer.publicKey;
+  // }
 
-  public async signOasis(chainId: string, data): Promise<any> {
-    if (
-      this.status !== KeyRingStatus.UNLOCKED ||
-      this.type === "none" ||
-      !this.keyStore
-    ) {
-      throw new Error("Key ring is not unlocked");
-    }
-    if (!this.mnemonic) {
-      throw new Error(
-        "Key store type is mnemonic and it is unlocked. But, mnemonic is not loaded unexpectedly"
-      );
-    }
+  // public async signOasis(chainId: string, data): Promise<any> {
+  //   if (
+  //     this.status !== KeyRingStatus.UNLOCKED ||
+  //     this.type === "none" ||
+  //     !this.keyStore
+  //   ) {
+  //     throw new Error("Key ring is not unlocked");
+  //   }
+  //   if (!this.mnemonic) {
+  //     throw new Error(
+  //       "Key store type is mnemonic and it is unlocked. But, mnemonic is not loaded unexpectedly"
+  //     );
+  //   }
 
-    const { amount, to } = data;
+  //   const { amount, to } = data;
 
-    const accountSigner = await oasis.hdkey.HDKey.getAccountSigner(
-      this.mnemonic,
-      0
-    );
-    const privateKey = uint2hex(accountSigner.secretKey);
+  //   const accountSigner = await oasis.hdkey.HDKey.getAccountSigner(
+  //     this.mnemonic,
+  //     0
+  //   );
+  //   const privateKey = uint2hex(accountSigner.secretKey);
 
-    const bytes = hex2uint(privateKey!);
+  //   const bytes = hex2uint(privateKey!);
 
-    if (this.kvStore.type() !== KVStoreType.mobile) {
-      return {
-        bytes,
-        amount,
-        to: to.replaceAll(" ", ""),
-      };
-    }
-    const chainInfo = await this.chainsService.getChainInfo(chainId as string);
-    const nic = await getOasisNic(chainInfo.grpc);
-    const signer = signerFromPrivateKey(bytes);
-    const bigIntAmount = BigInt(parseRoseStringToBigNumber(amount).toString());
-    const chainContext = await nic.consensusGetChainContext();
+  //   if (this.kvStore.type() !== KVStoreType.mobile) {
+  //     return {
+  //       bytes,
+  //       amount,
+  //       to: to.replaceAll(" ", ""),
+  //     };
+  //   }
+  //   const chainInfo = await this.chainsService.getChainInfo(chainId as string);
+  //   const nic = await getOasisNic(chainInfo.grpc);
+  //   const signer = signerFromPrivateKey(bytes);
+  //   const bigIntAmount = BigInt(parseRoseStringToBigNumber(amount).toString());
+  //   const chainContext = await nic.consensusGetChainContext();
 
-    const tw = await OasisTransaction.buildTransfer(
-      nic,
-      signer,
-      to.replaceAll(" ", ""),
-      bigIntAmount
-    );
+  //   const tw = await OasisTransaction.buildTransfer(
+  //     nic,
+  //     signer,
+  //     to.replaceAll(" ", ""),
+  //     bigIntAmount
+  //   );
 
-    await OasisTransaction.sign(chainContext, signer, tw);
+  //   await OasisTransaction.sign(chainContext, signer, tw);
 
-    await OasisTransaction.submit(nic, tw);
-    const hash = await tw.hash();
+  //   await OasisTransaction.submit(nic, tw);
+  //   const hash = await tw.hash();
 
-    // const sendResult = {
-    //   hash: hash,
-    //   from: params.fromAddress,
-    //   to: params.toAddress,
-    //   fee: toNonExponential(amountDecimals(feeAmount, cointypes.decimals)),
-    //   method: params.method,
-    //   amount: showAmount,
-    //   nonce: params.nonce
-    // }
-    console.log(hash, "payload");
+  //   // const sendResult = {
+  //   //   hash: hash,
+  //   //   from: params.fromAddress,
+  //   //   to: params.toAddress,
+  //   //   fee: toNonExponential(amountDecimals(feeAmount, cointypes.decimals)),
+  //   //   method: params.method,
+  //   //   amount: showAmount,
+  //   //   nonce: params.nonce
+  //   // }
+  //   console.log(hash, "payload");
 
-    return hash;
-  }
+  //   return hash;
+  // }
 
   private loadPrivKey(coinType: number): PrivKeySecp256k1 {
     if (
@@ -1236,27 +1234,20 @@ export class KeyRing {
     if (this.keyStore.type === "ledger") {
       return this.processSignLedgerEvm(env, chainId, rpc, message);
     } else {
-      if (chainId === ChainIdEnum.Oasis) {
-        const data = message as any;
+      // if (chainId === ChainIdEnum.Oasis) {
+      //   const data = message as any;
 
-        const chainInfo = await this.chainsService.getChainInfo(
-          chainId as string
-        );
+      //   const chainInfo = await this.chainsService.getChainInfo(chainId as string);
 
-        const amount = new CoinPretty(
-          chainInfo.feeCurrencies[0],
-          new Int(Number(data.value))
-        )
-          .toDec()
-          .toString();
+      //   const amount = new CoinPretty(chainInfo.feeCurrencies[0], new Int(Number(data.value))).toDec().toString();
 
-        const res = await this.signOasis(chainId, {
-          amount: amount,
-          to: (data as any).to,
-        });
+      //   const res = await this.signOasis(chainId, {
+      //     amount: amount,
+      //     to: (data as any).to
+      //   });
 
-        return res;
-      }
+      //   return res;
+      // }
 
       return this.processSignEvm(chainId, coinType, rpc, message);
     }
@@ -1516,10 +1507,10 @@ export class KeyRing {
       throw new Error("Key Store is empty");
     }
 
-    if (chainId === ChainIdEnum.Oasis) {
-      const pubKey = await this.loadPublicKeyOasis();
-      return pubKey;
-    }
+    // if (chainId === ChainIdEnum.Oasis) {
+    //   const pubKey = await this.loadPublicKeyOasis();
+    //   return pubKey;
+    // }
 
     const privKey = this.loadPrivKey(getCoinTypeByChainId(chainId));
 
