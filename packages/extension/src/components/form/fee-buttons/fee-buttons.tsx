@@ -126,6 +126,9 @@ export const FeeButtonsInner: FunctionComponent<
       if (feeConfig.feeCurrency && !feeConfig.fee) {
         feeConfig.setFeeType("average");
       }
+      if (chainStore.selectedFee && chainStore.selectedFee !== "") {
+        feeConfig.setFeeType(chainStore.selectedFee as FeeType);
+      }
     }, [feeConfig, feeConfig.feeCurrency, feeConfig.fee]);
 
     const intl = useIntl();
@@ -232,9 +235,14 @@ export const FeeButtonsInner: FunctionComponent<
                   cursor: "pointer",
                 }}
                 onClick={(e) => {
-                  feeConfig.setFeeType(
-                    fee == "low" ? "low" : fee == "average" ? "average" : "high"
-                  );
+                  const feeType =
+                    fee == "low"
+                      ? "low"
+                      : fee == "average"
+                      ? "average"
+                      : "high";
+                  feeConfig.setFeeType(feeType);
+                  chainStore.setSelectedFee(feeType);
                   e.preventDefault();
                 }}
               >
@@ -290,6 +298,9 @@ export const FeeButtonsInner: FunctionComponent<
                 }}
                 onClick={(e) => {
                   feeConfig.setFeeType(fee as FeeType);
+                  chainStore.setSelectedFee(fee);
+                  console.log("setSelectedFee", fee);
+
                   e.preventDefault();
                 }}
               >
@@ -338,6 +349,7 @@ export const FeeButtonsInner: FunctionComponent<
                     }
                     onChange={(e) => {
                       feeConfig.setFeeType(fee as FeeType);
+                      chainStore.setSelectedFee(fee);
                       e.preventDefault();
                     }}
                   />

@@ -111,6 +111,7 @@ const TokenItem: FC<{
             });
             return;
           }
+          //@ts-ignore
           if (item.chainInfo?.networkType === "evm") {
             history.push({
               pathname: "/send-evm",

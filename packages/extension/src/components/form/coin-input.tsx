@@ -41,7 +41,7 @@ export interface CoinInputProps {
   className?: string;
   label?: string;
   placeholder?: string;
-  openSelectToken: () => void;
+  openSelectToken?: () => void;
   disableAllBalance?: boolean;
 }
 
