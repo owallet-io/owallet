@@ -131,6 +131,19 @@ export const SendBtcPage: FunctionComponent<{
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query.defaultAmount, query.defaultMemo, query.defaultRecipient]);
 
+  useEffect(() => {
+    // @ts-ignore
+    const token = history.location.state?.token;
+    if (token) {
+      const selectedKey = token.token?.currency?.coinMinimalDenom;
+      const currency = sendConfigs.amountConfig.sendableCurrencies.find(
+        (cur) => cur.coinMinimalDenom === selectedKey
+      );
+      sendConfigs.amountConfig.setSendCurrency(currency);
+    }
+    // @ts-ignore
+  }, [history.location.state?.token]);
+
   const sendConfigError =
     sendConfigs.recipientConfig.getError() ??
     sendConfigs.amountConfig.getError() ??

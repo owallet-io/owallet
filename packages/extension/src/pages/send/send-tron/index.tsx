@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useRef, useState } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { AddressInput, CoinInput } from "components/form";
 import { useStore } from "src/stores";
 import { observer } from "mobx-react-lite";
@@ -13,7 +13,7 @@ import {
   useSendTxTronConfig,
 } from "@owallet/hooks";
 import { fitPopupWindow } from "@owallet/popup";
-import { EthereumEndpoint, useLanguage } from "@owallet/common";
+import { EthereumEndpoint } from "@owallet/common";
 import { FeeInput } from "components/form/fee-input";
 import { HeaderNew } from "layouts/footer-layout/components/header";
 import { HeaderModal } from "src/pages/home/components/header-modal";
@@ -25,9 +25,8 @@ import { Button } from "components/common/button";
 export const SendTronEvmPage: FunctionComponent<{
   coinMinimalDenom?: string;
   tokensTrc20Tron?: Array<any>;
-}> = observer(({ coinMinimalDenom, tokensTrc20Tron }) => {
+}> = observer(({ coinMinimalDenom }) => {
   const history = useHistory();
-  const language = useLanguage();
   let search = useLocation().search || coinMinimalDenom || "";
   if (search.startsWith("?")) {
     search = search.slice(1);
@@ -122,8 +121,6 @@ export const SendTronEvmPage: FunctionComponent<{
   const onSend = async (e: any) => {
     e.preventDefault();
     try {
-      console.log("get here");
-
       await accountInfo.sendTronToken(
         sendConfigs.amountConfig.amount,
         sendConfigs.amountConfig.sendCurrency!,
@@ -170,6 +167,20 @@ export const SendTronEvmPage: FunctionComponent<{
       }
     }
   };
+
+  useEffect(() => {
+    // @ts-ignore
+    const token = history.location.state?.token;
+    if (token) {
+      const selectedKey = token.token?.currency?.coinMinimalDenom;
+      const currency = sendConfigs.amountConfig.sendableCurrencies.find(
+        (cur) => cur.coinMinimalDenom === selectedKey
+      );
+      sendConfigs.amountConfig.setSendCurrency(currency);
+    }
+    // @ts-ignore
+  }, [history.location.state?.token]);
+
   const queries = queriesStore.get(current.chainId);
   const { feeTrx } = useGetFeeTron(
     addressTronBase58,
