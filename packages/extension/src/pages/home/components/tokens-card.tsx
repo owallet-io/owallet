@@ -120,8 +120,8 @@ const TokenItem: FC<{
             return;
           }
 
-          //@ts-ignore
           if (
+            //@ts-ignore
             item.chainInfo?.networkType === "evm" ||
             chainStore.current.networkType === "evm"
           ) {
