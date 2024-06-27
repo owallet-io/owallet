@@ -19,6 +19,7 @@ export const HeaderNew: FC<{
   isGoBack?: boolean;
   isConnectDapp?: boolean;
   isExpand?: boolean;
+  showNetwork?: boolean;
   title?: string;
   isDisableCenterBtn?: boolean;
   isHideAllNetwork?: boolean;
@@ -30,6 +31,7 @@ export const HeaderNew: FC<{
     isExpand,
     isDisableCenterBtn,
     title,
+    showNetwork,
   }) => {
     const [isShow, setIsShow] = useState(false);
     const [isShowSiteConnected, setIsShowSiteConnected] = useState(false);
@@ -53,7 +55,6 @@ export const HeaderNew: FC<{
       // see the note below on how to choose currentWindow or lastFocusedWindow
       chrome.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {
         const url = tabs[0].url;
-        console.log(url, "url");
         setTabActive(url);
         // use `url` here inside the callback because it's asynchronous!
       });
@@ -90,14 +91,14 @@ export const HeaderNew: FC<{
                 <img
                   className={styles.imgIcon}
                   src={
-                    chainStore.isAllNetwork
+                    chainStore.isAllNetwork && !showNetwork
                       ? require("assets/svg/Tokens.svg")
                       : chainStore.current?.stakeCurrency?.coinImageUrl ||
                         unknownToken.coinImageUrl
                   }
                 />
                 <span className={styles.chainName}>
-                  {chainStore.isAllNetwork
+                  {chainStore.isAllNetwork && !showNetwork
                     ? "All Networks"
                     : chainStore.current.chainName}
                 </span>

@@ -172,13 +172,6 @@ export const SendBtcPage: FunctionComponent<{
     return () => {};
   }, [accountInfo.bech32Address]);
 
-  console.log(
-    "!accountInfo.isReadyToSendMsgs || !txStateIsValid",
-    accountInfo.isReadyToSendMsgs,
-    txStateIsValid,
-    !accountInfo.isReadyToSendMsgs || !txStateIsValid
-  );
-
   const renderTransactionFee = () => {
     return (
       <div>
@@ -266,7 +259,12 @@ export const SendBtcPage: FunctionComponent<{
           isOpen={openSetting}
         />
 
-        <HeaderNew isDisableCenterBtn={true} isGoBack isConnectDapp={false} />
+        <HeaderNew
+          showNetwork={true}
+          isDisableCenterBtn={true}
+          isGoBack
+          isConnectDapp={false}
+        />
         <HeaderModal title={"Send".toUpperCase()} />
         <form
           className={style.formContainer}
