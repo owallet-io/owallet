@@ -6,6 +6,7 @@ import { SearchInput } from "../home/components/search-input";
 import { useStore } from "../../stores";
 import { getFavicon, limitString, PrivilegedOrigins } from "@owallet/common";
 import { OwEmpty } from "components/empty/ow-empty";
+import colors from "theme/colors";
 
 export const ConnectedDappPage = observer(() => {
   const [keyword, setKeyword] = useState<string>("");
@@ -60,7 +61,13 @@ export const ConnectedDappPage = observer(() => {
             })}
           </div>
         ) : (
-          <OwEmpty />
+          <div
+            style={{
+              height: "calc(100vh - 200px)",
+            }}
+          >
+            <OwEmpty />
+          </div>
         )}
       </div>
     </LayoutWithButtonBottom>
