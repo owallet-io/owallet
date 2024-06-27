@@ -428,8 +428,10 @@ export const VerifyMnemonicModePage: FunctionComponent<{
               setSuggestedWords(
                 suggestedWords.slice(0, i).concat(suggestedWords.slice(i + 1))
               );
+              if (word !== "") {
+                setRandomizedWords(randomizedWords.slice());
+              }
               randomizedWords.push(word);
-              setRandomizedWords(randomizedWords.slice());
             }}
           />
         </div>
