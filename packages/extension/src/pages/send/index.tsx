@@ -6,23 +6,16 @@ import {
   MemoInput,
 } from "../../components/form";
 import { useStore } from "../../stores";
-
 import { observer } from "mobx-react-lite";
-
 import style from "./style.module.scss";
 import { useNotification } from "../../components/notification";
-
 import { useIntl } from "react-intl";
 import cn from "classnames/bind";
-
 import { useHistory, useLocation } from "react-router";
 import queryString from "querystring";
-
 import { useSendTxConfig } from "@owallet/hooks";
 import { fitPopupWindow } from "@owallet/popup";
-import { ChainIdEnum, EthereumEndpoint, useLanguage } from "@owallet/common";
-import { useMultipleAssets } from "../../hooks/use-multiple-assets";
-import { TokensCard } from "../home/components/tokens-card";
+import { useLanguage } from "@owallet/common";
 import { ModalChooseTokens } from "../modals/modal-choose-tokens";
 import { Text } from "../../components/common/text";
 import { Button } from "../../components/common/button";
@@ -349,7 +342,6 @@ export const SendPage: FunctionComponent<{
                   })}
                   placeholder="Enter your amount"
                 />
-
                 <Card
                   containerStyle={{
                     backgroundColor: colors["neutral-surface-card"],
