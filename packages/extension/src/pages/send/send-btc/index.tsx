@@ -269,8 +269,6 @@ export const SendBtcPage: FunctionComponent<{
         <form
           className={style.formContainer}
           onSubmit={async (e: any) => {
-            console.log("on submit");
-
             e.preventDefault();
             if (accountInfo.isReadyToSendMsgs && txStateIsValid) {
               try {
