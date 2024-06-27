@@ -68,7 +68,10 @@ export const ModalCopyAddress: FC<{
                 .getAddressDisplay(keyRingStore.keyRingLedgerAddresses, true);
               return (
                 <div
-                  onClick={() => copyAddress(address)}
+                  onClick={() => {
+                    copyAddress(address);
+                    onRequestClose();
+                  }}
                   key={item.chainId}
                   className={classnames([styles.itemChain])}
                 >
