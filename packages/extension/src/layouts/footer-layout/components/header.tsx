@@ -58,9 +58,9 @@ export const HeaderNew: FC<{
         // use `url` here inside the callback because it's asynchronous!
       });
     }, []);
-    const isActive = PrivilegedOrigins.concat(
-      permissionStore.getBasicAccessInfo(chainStore.current.chainId).origins
-    ).includes(getDomainFromUrl(tabActive));
+    const isActive = permissionStore
+      .getBasicAccessInfo(chainStore.current.chainId)
+      .origins.includes(getDomainFromUrl(tabActive));
     return (
       <div className={styles.container}>
         <div className={styles.leftBlock}>
@@ -68,14 +68,14 @@ export const HeaderNew: FC<{
             <div onClick={onGoBack} className={styles.wrapIcon}>
               <img
                 className={styles.imgIcon}
-                src={require("../../../public/assets/svg/arrow-right.svg")}
+                src={require("assets/svg/arrow-right.svg")}
               />
             </div>
           ) : (
             <div onClick={() => setIsShow(true)} className={styles.wrapIcon}>
               <img
                 className={styles.imgIcon}
-                src={require("../../../public/assets/svg/tdesign_view-list.svg")}
+                src={require("assets/svg/tdesign_view-list.svg")}
               />
             </div>
           )}
@@ -91,7 +91,7 @@ export const HeaderNew: FC<{
                   className={styles.imgIcon}
                   src={
                     chainStore.isAllNetwork
-                      ? require("../../../public/assets/svg/Tokens.svg")
+                      ? require("assets/svg/Tokens.svg")
                       : chainStore.current?.stakeCurrency?.coinImageUrl ||
                         unknownToken.coinImageUrl
                   }
@@ -104,7 +104,7 @@ export const HeaderNew: FC<{
                 {isDisableCenterBtn ? null : (
                   <img
                     className={styles.imgIcon}
-                    src={require("../../../public/assets/images/tdesign_chevron_down.svg")}
+                    src={require("assets/images/tdesign_chevron_down.svg")}
                   />
                 )}
               </>
@@ -119,14 +119,7 @@ export const HeaderNew: FC<{
               }}
               className={styles.wrapIconConnect}
             >
-              <img
-                className={styles.imgIcon}
-                src={
-                  !isActive
-                    ? getFavicon("brave://extensions/")
-                    : getFavicon(tabActive)
-                }
-              />
+              <img className={styles.imgIcon} src={getFavicon(tabActive)} />
               {isActive && <div className={styles.dot}></div>}
             </div>
           )}
@@ -134,7 +127,7 @@ export const HeaderNew: FC<{
             <div className={styles.wrapIcon}>
               <img
                 className={styles.imgIcon}
-                src={require("../../../public/assets/svg/tdesign_fullscreen.svg")}
+                src={require("assets/svg/tdesign_fullscreen.svg")}
               />
             </div>
           )}
@@ -149,6 +142,7 @@ export const HeaderNew: FC<{
           onRequestClose={() => setIsShow(false)}
         />
         <ModalSiteConnected
+          isActive={isActive}
           url={getDomainFromUrl(tabActive)}
           isOpen={isShowSiteConnected}
           onRequestClose={() => setIsShowSiteConnected(false)}

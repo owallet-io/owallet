@@ -45,17 +45,17 @@ export const BackButton: FunctionComponent<{ onClick: () => void }> = ({
 
 const slides = [
   {
-    imageSrc: require("../../public/assets/images/img_owallet.png"),
+    imageSrc: require("assets/images/img_owallet.png"),
     title: "LEVERAGE EXPERIENCES\nWITH POWER OF AI",
     paragraph: "Simplify DeFi activities with AI via DeFi Lens",
   },
   {
-    imageSrc: require("../../public/assets/images/img_planet.png"),
+    imageSrc: require("assets/images/img_planet.png"),
     title: "SEAMLESSLY\nMANAGING ASSETS",
     paragraph: "Portfolio management with\nmulti-chain assets & multi-accounts",
   },
   {
-    imageSrc: require("../../public/assets/images/img_leverage.png"),
+    imageSrc: require("assets/images/img_leverage.png"),
     title: "UNIVERSAL\nWEB3 GATEWAY",
     paragraph: "Bitcoin x EVM x Oraichain x Cosmos-SDK\nblockchains",
   },
@@ -136,7 +136,7 @@ export const RegisterPage: FunctionComponent = observer(() => {
             <div>
               <img
                 style={{ width: "100%" }}
-                src={require("../../public/assets/images/img-all-done.png")}
+                src={require("assets/images/img-all-done.png")}
                 alt="logo"
               />
             </div>

@@ -247,9 +247,7 @@ export const SignEvmPage: FunctionComponent = observer(() => {
                   }}
                 >
                   <Text weight="600">Raw Data</Text>
-                  <img
-                    src={require("../../public/assets/icon/tdesign_chevron-right.svg")}
-                  />
+                  <img src={require("assets/icon/tdesign_chevron-right.svg")} />
                 </div>
               </div>
               <div
@@ -319,7 +317,7 @@ export const SignEvmPage: FunctionComponent = observer(() => {
                           borderRadius: 40,
                           marginRight: 8,
                         }}
-                        src={require("../../public/assets/images/default-avatar.png")}
+                        src={require("assets/images/default-avatar.png")}
                       />
                       <div style={{ flexDirection: "column", display: "flex" }}>
                         <Text size={14} weight="600">

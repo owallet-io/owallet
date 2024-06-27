@@ -16,12 +16,12 @@ const dataPreferences = [
   {
     id: MenuEnum.LANGUAGE,
     name: "Language",
-    icon: require("../../public/assets/svg/ow_translate-1.svg"),
+    icon: require("assets/svg/ow_translate-1.svg"),
   },
   {
     id: MenuEnum.CURRENCY,
     name: "Currency",
-    icon: require("../../public/assets/svg/ow_currency-exchange.svg"),
+    icon: require("assets/svg/ow_currency-exchange.svg"),
   },
 ];
 export const PreferencesPage = observer(() => {
@@ -80,7 +80,7 @@ export const PreferencesPage = observer(() => {
                     {valueDataPreferences[item.id] || "---"}
                   </span>
                   <img
-                    src={require("../../public/assets/svg/tdesign_chevron_right.svg")}
+                    src={require("assets/svg/tdesign_chevron_right.svg")}
                     className={styles.img}
                   />
                 </div>

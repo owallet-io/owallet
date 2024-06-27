@@ -86,7 +86,7 @@ export const SelectAccountPage = observer(() => {
                     <div className={styles.wrapAvatar}>
                       <img
                         className={styles.imgAvatar}
-                        src={require("../../public/assets/images/default-avatar.png")}
+                        src={require("assets/images/default-avatar.png")}
                         alt="avatar"
                       />
                     </div>
@@ -108,7 +108,7 @@ export const SelectAccountPage = observer(() => {
                   >
                     <img
                       className={styles.imgIcon}
-                      src={require("../../public/assets/svg/tdesign_more.svg")}
+                      src={require("assets/svg/tdesign_more.svg")}
                       alt="account"
                     />
                   </div>

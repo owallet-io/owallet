@@ -7,6 +7,9 @@ import { FormFeedback, FormGroup, FormText, Label } from "reactstrap";
 import classnames from "classnames";
 import { observer } from "mobx-react-lite";
 import {
+  FeeConfig,
+  FeeEvmConfig,
+  FeeTronConfig,
   FeeType,
   IFeeConfig,
   IGasConfig,
@@ -24,7 +27,7 @@ import { Text } from "../../common/text";
 import { RadioButton } from "../../common/radio";
 
 export interface FeeButtonsProps {
-  feeConfig: IFeeConfig;
+  feeConfig: any;
   gasConfig: IGasConfig;
   priceStore: CoinGeckoPriceStore;
   // customFee: boolean;
@@ -145,7 +148,7 @@ export const FeeButtonsInner: FunctionComponent<
           return (
             <img
               style={{ width: 44, height: 44, borderRadius: 44 }}
-              src={require("../../../public/assets/img/slow.svg")}
+              src={require("assets/img/slow.svg")}
               alt={label}
             />
           );
@@ -153,7 +156,7 @@ export const FeeButtonsInner: FunctionComponent<
           return (
             <img
               style={{ width: 44, height: 44, borderRadius: 44 }}
-              src={require("../../../public/assets/img/average.svg")}
+              src={require("assets/img/average.svg")}
               alt={label}
             />
           );
@@ -161,7 +164,7 @@ export const FeeButtonsInner: FunctionComponent<
           return (
             <img
               style={{ width: 44, height: 44, borderRadius: 44 }}
-              src={require("../../../public/assets/img/fast.svg")}
+              src={require("assets/img/fast.svg")}
               alt={label}
             />
           );

@@ -84,7 +84,7 @@ export const ModalFee: FC<{
             >
               <img
                 style={{ width: 16, height: 16 }}
-                src={require("../../public/assets/icon/wrench.svg")}
+                src={require("assets/icon/wrench.svg")}
                 alt=""
               />
             </div>

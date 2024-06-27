@@ -1,5 +1,5 @@
-@import '../../../styles/var';
-.modal-site-connect{
+@import "../../../styles/var";
+.modal-site-connect {
   margin-top: 50vh;
 }
 .modal-network {
@@ -15,7 +15,6 @@
       font-size: 14px;
       font-weight: 500;
       line-height: 20px;
-
     }
 
     .sub-title-permision {
@@ -38,7 +37,7 @@
       gap: 8px;
       padding: 8px;
       border-radius: 12px;
-      margin-bottom: 16px ;
+      margin-bottom: 16px;
 
       .avatar {
         width: 40px;
@@ -68,10 +67,7 @@
           font-weight: 600;
           line-height: 26px; /* 127.273% */
         }
-
       }
-
-
     }
 
     .container-search-input {
@@ -115,7 +111,6 @@
       }
     }
 
-
     .container-list-chain {
       padding-top: 8px;
       display: flex;
@@ -130,7 +125,6 @@
         flex-direction: row;
         align-items: center;
         justify-content: space-between;
-
 
         .left-block-huge {
           display: flex;
@@ -183,10 +177,9 @@
           }
 
           .radio-input:checked {
-            accent-color: $success-border-default
+            accent-color: $success-border-default;
           }
         }
-
       }
 
       .item-chain:hover {
@@ -242,7 +235,6 @@
           align-items: center;
           justify-content: center;
 
-
           .img-icon {
             width: 20px;
             height: 20px;
@@ -267,5 +259,3 @@
     }
   }
 }
-
-

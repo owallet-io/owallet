@@ -25,10 +25,7 @@ export const DataModal: FunctionComponent<{
           {"raw data".toUpperCase()}
         </Text>
         <div onClick={onClose}>
-          <img
-            src={require("../../../public/assets/icon/circle-del.svg")}
-            alt=""
-          />
+          <img src={require("assets/icon/circle-del.svg")} alt="" />
         </div>
       </div>
       <div

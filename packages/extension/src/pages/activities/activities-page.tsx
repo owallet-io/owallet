@@ -39,10 +39,6 @@ export const ActivitiesPage = observer(() => {
   const address = account.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses
   );
-  console.log(
-    hugeQueriesStore.getAllAddrByChain,
-    "hugeQueriesStore.getAllAddrByChain"
-  );
   const allArr = chainStore.isAllNetwork
     ? hugeQueriesStore.getAllAddrByChain
     : {
@@ -81,7 +77,7 @@ export const ActivitiesPage = observer(() => {
   return (
     <FooterLayout>
       <div className={styles.container}>
-        <span className={styles.title}>Recent Activity</span>
+        <span className={styles.title}>Last 30 transactions</span>
         <div className={styles.listHistory}>
           {histories?.length > 0
             ? histories.map((item, index) => {

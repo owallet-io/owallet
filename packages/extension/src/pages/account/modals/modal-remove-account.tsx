@@ -99,9 +99,7 @@ export const ModalRemoveAccount: FC<{
         />
         <div className={styles.contentWrap}>
           <div className={styles.alert}>
-            <img
-              src={require("../../../public/assets/svg/ow_error-circle.svg")}
-            />
+            <img src={require("assets/svg/ow_error-circle.svg")} />
             <span className={styles.textAlert}>
               Making a backup of your wallet with this phrase is important so
               you can still get to your assets if you delete account. <br />
@@ -111,7 +109,7 @@ export const ModalRemoveAccount: FC<{
           </div>
           {wallet?.type !== "ledger" && (
             <div onClick={onShowPhrasePage} className={styles.actionReveal}>
-              <img src={require("../../../public/assets/svg/ow_key.svg")} />
+              <img src={require("assets/svg/ow_key.svg")} />
               <span className={styles.title}>Reveal Recovery Phrase</span>
             </div>
           )}

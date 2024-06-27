@@ -4,7 +4,11 @@ import { observer } from "mobx-react-lite";
 import { CoinPretty, Dec, Int, PricePretty } from "@owallet/unit";
 import { useStore } from "../../../stores";
 import { ViewRawToken } from "@owallet/types";
-import { ChainIdEnum, unknownToken } from "@owallet/common";
+import {
+  ChainIdEnum,
+  removeDataInParentheses,
+  unknownToken,
+} from "@owallet/common";
 import classnames from "classnames";
 import { SearchInput } from "./search-input";
 import { useHistory } from "react-router";
@@ -159,7 +163,9 @@ const TokenItem: FC<{
         </div>
         <div className={styles.bodyTokenItem}>
           <span className={styles.title}>
-            {item?.token?.currency?.coinDenom || unknownToken.coinDenom}
+            {removeDataInParentheses(
+              item?.token?.currency?.coinDenom || unknownToken.coinDenom
+            )}
             <span
               className={classnames([
                 styles.priceChange,

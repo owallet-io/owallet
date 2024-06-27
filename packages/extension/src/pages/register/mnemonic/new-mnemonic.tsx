@@ -191,18 +191,8 @@ export const GenerateMnemonicModePage: FunctionComponent<{
           label={intl.formatMessage({
             id: "register.name",
           })}
-          leftIcon={
-            <img
-              src={require("../../../public/assets/icon/wallet.svg")}
-              alt=""
-            />
-          }
-          rightIcon={
-            <img
-              src={require("../../../public/assets/icon/circle-del.svg")}
-              alt=""
-            />
-          }
+          leftIcon={<img src={require("assets/icon/wallet.svg")} alt="" />}
+          rightIcon={<img src={require("assets/icon/circle-del.svg")} alt="" />}
           onAction={() => {
             setValue("name", "");
           }}
@@ -309,10 +299,7 @@ export const GenerateMnemonicModePage: FunctionComponent<{
             padding: 22,
           }}
         >
-          <img
-            src={require("../../../public/assets/icon/tdesign_copy.svg")}
-            alt=""
-          />
+          <img src={require("assets/icon/tdesign_copy.svg")} alt="" />
           <Text color={colors["primary-text-action"]} weight="600">
             Copy to clipboard
           </Text>

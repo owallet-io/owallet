@@ -3,8 +3,8 @@ import { Input, InputProps } from "./input";
 import stylePasswordInput from "./password-input.module.scss";
 import { Tooltip } from "reactstrap";
 import { FormattedMessage } from "react-intl";
-import EyeIconComponent from "../../public/assets/icon/iconoir_eye-off";
-import colors from "../../theme/colors";
+import EyeIconComponent from "assets/icon/iconoir_eye-off";
+import colors from "theme/colors";
 
 // eslint-disable-next-line react/display-name
 export const PasswordInput = forwardRef<

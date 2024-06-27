@@ -60,7 +60,7 @@ export const AccessPage: FunctionComponent = observer(() => {
     <EmptyLayout style={{ height: "100%", paddingTop: "80px" }}>
       <div className={style.container}>
         <img
-          src={require("../../public/assets/images/img_owallet.png")}
+          src={require("assets/images/img_owallet.png")}
           alt="logo"
           style={{ height: "92px", maxWidth: 92, margin: "0 auto" }}
         />

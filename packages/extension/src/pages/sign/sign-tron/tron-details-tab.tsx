@@ -225,7 +225,7 @@ export const TronDetailsTab: FunctionComponent<{
         >
           <img
             style={{ paddingRight: 4 }}
-            src={require("../../../public/assets/icon/tdesign_code-1.svg")}
+            src={require("assets/icon/tdesign_code-1.svg")}
           />
           <Text color={colors["neutral-text-body"]} weight="500">
             <FormattedMessage id="sign.list.messages.label" />:
@@ -331,7 +331,7 @@ export const TronDetailsTab: FunctionComponent<{
           >
             <img
               style={{ paddingRight: 4 }}
-              src={require("../../../public/assets/icon/tdesign_error-circle.svg")}
+              src={require("assets/icon/tdesign_error-circle.svg")}
             />
             <Text size={12} weight="600">
               {errorText}

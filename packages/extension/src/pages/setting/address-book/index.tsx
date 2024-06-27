@@ -1,6 +1,5 @@
 import React, { FunctionComponent, useState } from "react";
 import { observer } from "mobx-react-lite";
-import { HeaderLayout } from "../../../layouts";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useHistory } from "react-router";
 import style from "../style.module.scss";
@@ -17,7 +16,7 @@ import {
 } from "reactstrap";
 import styleAddressBook from "./style.module.scss";
 import { useStore } from "../../../stores";
-import { PageButton } from "../page-button";
+// import { PageButton } from "../page-button";
 import { AddAddressModal } from "./add-address-modal";
 import { ExtensionKVStore, EthereumEndpoint } from "@owallet/common";
 import { Bech32Address } from "@owallet/cosmos";
@@ -170,10 +169,7 @@ export const AddressBookPage: FunctionComponent<{
               textAlign: "right",
             }}
           >
-            <img
-              src={require("../../../public/assets/img/close.svg")}
-              alt="total-balance"
-            />
+            <img src={require("assets/img/close.svg")} alt="total-balance" />
           </div>
         )}
         <div className={styleAddressBook.container}>
@@ -225,7 +221,7 @@ export const AddressBookPage: FunctionComponent<{
                 }}
               >
                 <img
-                  src={require("../../../public/assets/svg/add-account.svg")}
+                  src={require("assets/svg/add-account.svg")}
                   alt=""
                   style={{ marginRight: 4 }}
                 />
@@ -255,10 +251,7 @@ export const AddressBookPage: FunctionComponent<{
                     backgroundColor: "rgba(230, 232, 236, 0.2)",
                   }}
                 >
-                  <img
-                    src={require("../../../public/assets/img/light.svg")}
-                    alt=""
-                  />
+                  <img src={require("assets/img/light.svg")} alt="" />
                 </div>
               }
             />
@@ -266,79 +259,80 @@ export const AddressBookPage: FunctionComponent<{
           <div style={{ flex: "1 1 0", overflowY: "auto" }}>
             {addressBookList.map((data, i) => {
               return (
-                <PageButton
-                  key={i.toString()}
-                  title={data.name}
-                  paragraph={
-                    data.address.indexOf(
-                      chainStore.getChain(selectedChainId).bech32Config
-                        .bech32PrefixAccAddr
-                    ) === 0
-                      ? Bech32Address.shortenAddress(data.address, 34)
-                      : data.address
-                  }
-                  subParagraph={data.memo}
-                  styleParagraph={{
-                    maxWidth: 220,
-                    fontWeight: 500,
-                    fontSize: 14,
-                    color: "#777E90",
-                  }}
-                  styleTitle={{
-                    fontWeight: 600,
-                    fontSize: 14,
-                    color: "#353945",
-                  }}
-                  // icons={addressBookIcons(i, data.name)}
-                  data-index={i}
-                  icons={[
-                    <AddressBookTools
-                      setTypeAddress={setTypeAddress}
-                      setAddAddressModalIndex={setAddAddressModalIndex}
-                      index={i}
-                      setAddAddressModalOpen={setAddAddressModalOpen}
-                      handleDelete={async (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        if (
-                          await confirm.confirm({
-                            styleYesBtn: {
-                              background: "#EF466F",
-                            },
-                            styleModalBody: {
-                              backgroundColor: "#353945",
-                            },
-                            styleNoBtn: {
-                              backgroundColor: "#F8F8F9",
-                              color: "#777E90",
-                            },
-                            yes: "Delete",
-                            no: "Cancel",
-                            // title: name,
-                            paragraph: intl.formatMessage({
-                              id: "setting.address-book.confirm.delete-address.paragraph",
-                            }),
-                          })
-                        ) {
-                          setAddAddressModalOpen(false);
-                          setAddAddressModalIndex(-1);
-                          await addressBookConfig.removeAddressBook(i);
-                        }
-                      }}
-                    />,
-                  ]}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
+                // <PageButton
+                //   key={i.toString()}
+                //   title={data.name}
+                //   paragraph={
+                //     data.address.indexOf(
+                //       chainStore.getChain(selectedChainId).bech32Config
+                //         .bech32PrefixAccAddr
+                //     ) === 0
+                //       ? Bech32Address.shortenAddress(data.address, 34)
+                //       : data.address
+                //   }
+                //   subParagraph={data.memo}
+                //   styleParagraph={{
+                //     maxWidth: 220,
+                //     fontWeight: 500,
+                //     fontSize: 14,
+                //     color: "#777E90",
+                //   }}
+                //   styleTitle={{
+                //     fontWeight: 600,
+                //     fontSize: 14,
+                //     color: "#353945",
+                //   }}
+                //   // icons={addressBookIcons(i, data.name)}
+                //   data-index={i}
+                //   icons={[
+                //     <AddressBookTools
+                //       setTypeAddress={setTypeAddress}
+                //       setAddAddressModalIndex={setAddAddressModalIndex}
+                //       index={i}
+                //       setAddAddressModalOpen={setAddAddressModalOpen}
+                //       handleDelete={async (e) => {
+                //         e.preventDefault();
+                //         e.stopPropagation();
+                //         if (
+                //           await confirm.confirm({
+                //             styleYesBtn: {
+                //               background: "#EF466F",
+                //             },
+                //             styleModalBody: {
+                //               backgroundColor: "#353945",
+                //             },
+                //             styleNoBtn: {
+                //               backgroundColor: "#F8F8F9",
+                //               color: "#777E90",
+                //             },
+                //             yes: "Delete",
+                //             no: "Cancel",
+                //             // title: name,
+                //             paragraph: intl.formatMessage({
+                //               id: "setting.address-book.confirm.delete-address.paragraph",
+                //             }),
+                //           })
+                //         ) {
+                //           setAddAddressModalOpen(false);
+                //           setAddAddressModalIndex(-1);
+                //           await addressBookConfig.removeAddressBook(i);
+                //         }
+                //       }}
+                //     />,
+                //   ]}
+                //   onClick={(e) => {
+                //     e.preventDefault();
+                //     e.stopPropagation();
 
-                    addressBookConfig.selectAddressAt(i);
+                //     addressBookConfig.selectAddressAt(i);
 
-                    if (onBackButton) {
-                      onBackButton();
-                    }
-                  }}
-                  style={{ cursor: selectHandler ? undefined : "auto" }}
-                />
+                //     if (onBackButton) {
+                //       onBackButton();
+                //     }
+                //   }}
+                //   style={{ cursor: selectHandler ? undefined : "auto" }}
+                // />
+                <></>
               );
             })}
           </div>

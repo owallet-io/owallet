@@ -23,13 +23,14 @@ const types = [
     id: 4,
   },
 ];
+const ref = "?ref=owallet-extension";
 export const explorerData = [
   {
     images: images.img_scan,
     logo: images.dapps_scan_logo,
     title: "Oraichain Scan",
     subTitle: "The Oraichain blockchain explorer",
-    url: "https://scan.orai.io/",
+    url: "https://scan.orai.io/" + ref,
   },
 ];
 export const aiData = [
@@ -38,21 +39,21 @@ export const aiData = [
     logo: images.dapps_airight_logo,
     title: "aiRight",
     subTitle: "Marketplace of Generative AI",
-    url: "https://airight.io/",
+    url: "https://airight.io/" + ref,
   },
   {
     images: images.img_defi_lens,
     logo: images.dapps_defi_logo,
     title: "DeFi Lens",
     subTitle: "Simplify your Token Research with AI",
-    url: "https://layer.orai.io/",
+    url: "https://layer.orai.io/" + ref,
   },
   {
     images: images.img_chatbot,
     logo: images.dapps_llm_logo,
     title: "LLM Chatbot",
     subTitle: "Natural language layer for Web3 Business",
-    url: "https://layer.orai.io/",
+    url: "https://layer.orai.io/" + ref,
   },
 ];
 export const defiData = [
@@ -61,35 +62,35 @@ export const defiData = [
     logo: images.dapps_dex_logo,
     title: "OraiDEX",
     subTitle: "Universal swap, Bridge and earn tokens",
-    url: "https://oraidex.io/",
+    url: "https://oraidex.io/" + ref,
   },
   {
     images: images.img_homebase,
     logo: images.dapps_gpu_logo,
     title: "GPU Staking",
     subTitle: "Compound staking to earn GPU demand and block rewards",
-    url: "https://hub.orai.io/gpu-staking",
+    url: "https://hub.orai.io/gpu-staking" + ref,
   },
   {
     images: images.img_orderbook,
     logo: images.dapps_orderbook_logo,
     title: "Orderbook",
     subTitle: "Decentralized spot trading",
-    url: "https://orderbook.oraidex.io/",
+    url: "https://orderbook.oraidex.io/" + ref,
   },
   {
     images: images.img_fu,
     logo: images.dapps_future_logo,
     title: "Futures",
     subTitle: "Derivatives Trading",
-    url: "https://futures.oraidex.io/",
+    url: "https://futures.oraidex.io/" + ref,
   },
   {
     images: images.img_orchai,
     logo: images.dapps_orchai_logo,
     title: "Orchai",
     subTitle: "Low-code DeFi Management",
-    url: "https://app.orchai.io/",
+    url: "https://app.orchai.io/" + ref,
   },
 ];
 export const dataAll = [
@@ -98,7 +99,7 @@ export const dataAll = [
     logo: images.dapps_oraichain_logo,
     title: "Homebase",
     subTitle: "Start your Oraichain journey now",
-    url: "https://hub.orai.io/",
+    url: "https://hub.orai.io/" + ref,
   },
   ...defiData,
   ...explorerData,

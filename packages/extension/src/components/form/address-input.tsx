@@ -162,7 +162,7 @@ export const AddressInput: FunctionComponent<AddressInputProps> = observer(
                     disabled={disabled}
                   >
                     <img
-                      src={require("../../public/assets/icon/tdesign_address-book.svg")}
+                      src={require("assets/icon/tdesign_address-book.svg")}
                       alt="logo"
                     />
                   </Button>

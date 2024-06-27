@@ -80,7 +80,7 @@ export const ModalRecoveryPhrase: FC<{
         <HeaderModal title={""} onRequestClose={onRequestClose} />
         <div className={styles.contentWrap}>
           <img
-            src={require("../../../public/assets/images/img_key.png")}
+            src={require("assets/images/img_key.png")}
             alt="logo"
             className={styles.logo}
           />

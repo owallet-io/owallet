@@ -62,7 +62,7 @@ export const ModalMenuLeft: FC<{
           >
             <img
               className={styles.imgIcon}
-              src={require("../../../public/assets/svg/tdesign_arrow_left.svg")}
+              src={require("assets/svg/tdesign_arrow_left.svg")}
             />
           </div>
         </div>
@@ -102,39 +102,39 @@ enum MenuEnum {
 const dataItem = [
   {
     name: "Add Token",
-    icon: require("../../../public/assets/svg/tdesign_add_circle.svg"),
+    icon: require("assets/svg/tdesign_add_circle.svg"),
     id: MenuEnum.ADD_TOKEN,
   },
   // {
   //   name: "Manage Token list",
-  //   icon: require("../../../public/assets/svg/tdesign_list.svg"),
+  //   icon: require("assets/svg/tdesign_list.svg"),
   //   id: 2,
   // },
   // {
   //   name: "Address Book",
-  //   icon: require("../../../public/assets/svg/tdesign_address_book.svg"),
+  //   icon: require("assets/svg/tdesign_address_book.svg"),
   //   id: MenuEnum.ADDR_BOOK,
   // },
   {
     name: "Connected DApp",
-    icon: require("../../../public/assets/svg/tdesign_internet.svg"),
+    icon: require("assets/svg/tdesign_internet.svg"),
     id: MenuEnum.CONNECTED_DAPP,
   },
   {
     name: "Preferences",
-    icon: require("../../../public/assets/svg/tdesign_adjustment.svg"),
+    icon: require("assets/svg/tdesign_adjustment.svg"),
     isBorderBottom: true,
     id: MenuEnum.PREFERENCES,
   },
   {
     name: "Lock Wallet",
-    icon: require("../../../public/assets/svg/tdesign_lock_on.svg"),
+    icon: require("assets/svg/tdesign_lock_on.svg"),
     id: MenuEnum.LOCK,
     isBorderBottom: true,
   },
   {
     name: "About us",
-    icon: require("../../../public/assets/svg/tdesign_info_circle.svg"),
+    icon: require("assets/svg/tdesign_info_circle.svg"),
     id: MenuEnum.ABOUT_USER,
     value: `v${manifestData.version}`,
   },

@@ -39,7 +39,7 @@ export const RevealPrivateKeyPage = () => {
     >
       <div className={styles.container}>
         <div className={styles.alert}>
-          <img src={require("../../public/assets/svg/ow_error-circle.svg")} />
+          <img src={require("assets/svg/ow_error-circle.svg")} />
           <span className={styles.textAlert}>
             DO NOT take a screenshot of this QR code
           </span>
@@ -49,7 +49,7 @@ export const RevealPrivateKeyPage = () => {
         </div>
         <div className={styles.contentPrivateKey}>
           <div className={styles.wrapTitle}>
-            <img src={require("../../public/assets/svg/ow_key-alt.svg")} />
+            <img src={require("assets/svg/ow_key-alt.svg")} />
             <span className={styles.title}>Private key:</span>
           </div>
           <span className={styles.content}>{privKey}</span>

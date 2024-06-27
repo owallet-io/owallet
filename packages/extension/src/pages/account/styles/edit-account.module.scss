@@ -1,4 +1,4 @@
-@import '../../../styles/var';
+@import "../../../styles/var";
 
 .top-box {
   background-color: $neutral-surface-card;
@@ -44,16 +44,13 @@
       line-height: 20px; /* 142.857% */
     }
   }
-
-
 }
 
 .account-actions {
-
   margin: 1px 16px 16px 16px;
-.action-item:hover{
-  background-color: $neutral-surface-pressed;
-}
+  .action-item:hover {
+    background-color: $neutral-surface-pressed;
+  }
   .action-item {
     cursor: pointer;
     display: flex;
@@ -88,8 +85,5 @@
         line-height: 20px; /* 142.857% */
       }
     }
-
-
-
   }
 }
