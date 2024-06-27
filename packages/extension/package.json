@@ -72,6 +72,7 @@
     "query-string": "^6.8.3",
     "react": "^18.2.0",
     "react-chartjs-2": "^2.10.0",
+    "react-error-boundary": "^4.0.13",
     "react-dom": "^16.14.0",
     "react-hook-form": "^3.29.3",
     "react-intl": "^5.20.4",

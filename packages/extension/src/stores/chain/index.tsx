@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { observable, action, computed, makeObservable, flow } from "mobx";
 
 import { ChainInfoInner, ChainStore as BaseChainStore } from "@owallet/stores";
@@ -59,7 +60,7 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
 
     makePersistable(this, {
       name: "ChainStore",
-      // @ts-ignore
+
       properties: [
         "_isAllNetwork",
         "_multipleAssets",

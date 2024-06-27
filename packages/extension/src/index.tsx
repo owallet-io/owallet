@@ -179,9 +179,10 @@ Modal.defaultStyles = {
 };
 
 // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import { MainPage } from "./pages/main";
+// import { initializeApp } from "firebase/app";
+// import { getAnalytics } from "firebase/analytics";
+// import { MainPage } from "./pages/main";
+import { ErrorBoundary } from "react-error-boundary";
 import { ReceivePage } from "./pages/receive/receive-page";
 import { isProdMode } from "./helpers/helper";
 import { SelectAccountPage } from "./pages/account/select-account-page";
@@ -211,6 +212,25 @@ import { ExplorePage } from "./pages/explore/explore-page";
 // Initialize Firebase
 // const app = initializeApp(firebaseConfig);
 // const analytics = getAnalytics(app);
+
+import { useErrorBoundary } from "react-error-boundary";
+import { Button } from "./components/common/button";
+import { Text } from "./components/common/text";
+import colors from "./theme/colors";
+
+function ErrorFallback({ error }) {
+  const { resetBoundary } = useErrorBoundary();
+
+  return (
+    <div role="alert">
+      <Text>Something went wrong:</Text>
+      <Text containerStyle={{ color: colors["error-text-action"] }}>
+        {error.message}
+      </Text>
+      <Button onClick={resetBoundary}>Try again</Button>
+    </div>
+  );
+}
 
 const StateRenderer: FunctionComponent = observer(() => {
   const { keyRingStore } = useStore();
@@ -273,169 +293,190 @@ const AppIntlProviderWithStorage = ({ children }) => {
   );
 };
 
+const logError = (error: Error, info: { componentStack: string }) => {
+  // Do something with the error, e.g. log to an external API
+};
+
 ReactDOM.render(
   <StoreProvider>
-    <AppIntlProviderWithStorage>
-      <LoadingIndicatorProvider>
-        <NotificationStoreProvider>
-          <NotificationProvider>
-            <ConfirmProvider>
-              <HashRouter>
-                <LogPageViewWrapper>
-                  <Route exact path="/" component={StateRenderer} />
-                  <Route exact path="/unlock" component={LockPage} />
-                  <Route exact path="/access" component={AccessPage} />
-                  <Route exact path="/receive" component={ReceivePage} />
-                  <Route exact path="/activities" component={ActivitiesPage} />
-                  <Route exact path="/explore" component={ExplorePage} />
-                  <Route
-                    exact
-                    path="/preferences"
-                    component={PreferencesPage}
-                  />
-                  <Route
-                    exact
-                    path="/reveal-recovery-phrase/:keystoreIndex"
-                    component={RevealRecoveryPhrasePage}
-                  />
-                  <Route
-                    exact
-                    path="/reveal-private-key/:keystoreIndex"
-                    component={RevealPrivateKeyPage}
-                  />
-                  <Route
-                    exact
-                    path="/select-account"
-                    component={SelectAccountPage}
-                  />
-                  <Route exact path="/add-token" component={AddTokenPage} />
-                  <Route
-                    exact
-                    path="/edit-account/:keystoreIndex"
-                    component={EditAccountPage}
-                  />
-                  <Route
-                    exact
-                    path="/connected-dapp"
-                    component={ConnectedDappPage}
-                  />
+    <ErrorBoundary FallbackComponent={ErrorFallback} onError={logError}>
+      <AppIntlProviderWithStorage>
+        <LoadingIndicatorProvider>
+          <NotificationStoreProvider>
+            <NotificationProvider>
+              <ConfirmProvider>
+                <HashRouter>
+                  <LogPageViewWrapper>
+                    <Route exact path="/" component={StateRenderer} />
+                    <Route exact path="/unlock" component={LockPage} />
+                    <Route exact path="/access" component={AccessPage} />
+                    <Route exact path="/receive" component={ReceivePage} />
+                    <Route
+                      exact
+                      path="/activities"
+                      component={ActivitiesPage}
+                    />
+                    <Route exact path="/explore" component={ExplorePage} />
+                    <Route
+                      exact
+                      path="/preferences"
+                      component={PreferencesPage}
+                    />
+                    <Route
+                      exact
+                      path="/reveal-recovery-phrase/:keystoreIndex"
+                      component={RevealRecoveryPhrasePage}
+                    />
+                    <Route
+                      exact
+                      path="/reveal-private-key/:keystoreIndex"
+                      component={RevealPrivateKeyPage}
+                    />
+                    <Route
+                      exact
+                      path="/select-account"
+                      component={SelectAccountPage}
+                    />
+                    <Route exact path="/add-token" component={AddTokenPage} />
+                    <Route
+                      exact
+                      path="/edit-account/:keystoreIndex"
+                      component={EditAccountPage}
+                    />
+                    <Route
+                      exact
+                      path="/connected-dapp"
+                      component={ConnectedDappPage}
+                    />
 
-                  <Route exact path="/token" component={TokenPage} />
-                  <Route
-                    exact
-                    path="/token/:nftId"
-                    component={NftDetailsPage}
-                  />
-                  <Route exact path="/menu" component={Menu} />
-                  <Route
-                    exact
-                    path="/access/viewing-key"
-                    component={Secret20ViewingKeyAccessPage}
-                  />
-                  <Route exact path="/register" component={RegisterPage} />
-                  <Route
-                    exact
-                    path="/confirm-ledger/:chain"
-                    component={ConfirmLedgerPage}
-                  />
-                  <Route exact path="/send" component={SendPage} />
-                  <Route exact path="/send-evm" component={SendEvmPage} />
-                  <Route exact path="/send-tron" component={SendTronEvmPage} />
-                  <Route exact path="/send-btc" component={SendBtcPage} />
-                  <Route
-                    exact
-                    path="/ibc-transfer"
-                    component={IBCTransferPage}
-                  />
-                  <Route exact path="/setting" component={SettingPage} />
-                  <Route
-                    exact
-                    path="/ledger-grant"
-                    component={LedgerGrantPage}
-                  />
-                  <Route
-                    exact
-                    path="/setting/language"
-                    component={SettingLanguagePage}
-                  />
-                  <Route
-                    exact
-                    path="/setting/fiat"
-                    component={SettingFiatPage}
-                  />
-                  <Route
-                    exact
-                    path="/setting/connections"
-                    component={SettingConnectionsPage}
-                  />
-                  <Route
-                    exact
-                    path="/setting/connections/viewing-key/:contractAddress"
-                    component={SettingSecret20ViewingKeyConnectionsPage}
-                  />
-                  <Route
-                    exact
-                    path="/setting/address-book"
-                    component={AddressBookPage}
-                  />
-                  <Route
-                    exact
-                    path="/setting/export-to-mobile"
-                    component={ExportToMobilePage}
-                  />
-                  <Route exact path="/setting/credit" component={CreditPage} />
-                  <Route
-                    exact
-                    path="/setting/set-keyring"
-                    component={SetKeyRingPage}
-                  />
-                  <Route
-                    exact
-                    path="/setting/export/:index"
-                    component={ExportPage}
-                  />
-                  <Route
-                    exact
-                    path="/setting/clear/:index"
-                    component={ClearPage}
-                  />
-                  <Route
-                    exact
-                    path="/setting/keyring/change/name/:index"
-                    component={ChangeNamePage}
-                  />
-                  {/*<Route*/}
-                  {/*  exact*/}
-                  {/*  path="/setting/token/add"*/}
-                  {/*  component={AddTokenPage}*/}
-                  {/*/>*/}
-                  <Route
-                    exact
-                    path="/setting/token-evm/add"
-                    component={AddEvmTokenPage}
-                  />
-                  <Route
-                    exact
-                    path="/setting/token/manage"
-                    component={ManageTokenPage}
-                  />
-                  <Route
-                    exact
-                    path="/stake/validator-list"
-                    component={ValidatorListPage}
-                  />
-                  <Route path="/sign" component={SignPage} />
-                  <Route path="/sign-bitcoin" component={SignBtcPage} />
-                  <Route path="/sign-ethereum" component={SignEvmPage} />
-                  <Route path="/sign-tron" component={SignTronPage} />
-                  <Route path="/suggest-chain" component={ChainSuggestedPage} />
-                </LogPageViewWrapper>
-              </HashRouter>
-            </ConfirmProvider>
-          </NotificationProvider>
-        </NotificationStoreProvider>
-      </LoadingIndicatorProvider>
-    </AppIntlProviderWithStorage>
+                    <Route exact path="/token" component={TokenPage} />
+                    <Route
+                      exact
+                      path="/token/:nftId"
+                      component={NftDetailsPage}
+                    />
+                    <Route exact path="/menu" component={Menu} />
+                    <Route
+                      exact
+                      path="/access/viewing-key"
+                      component={Secret20ViewingKeyAccessPage}
+                    />
+                    <Route exact path="/register" component={RegisterPage} />
+                    <Route
+                      exact
+                      path="/confirm-ledger/:chain"
+                      component={ConfirmLedgerPage}
+                    />
+                    <Route exact path="/send" component={SendPage} />
+                    <Route exact path="/send-evm" component={SendEvmPage} />
+                    <Route
+                      exact
+                      path="/send-tron"
+                      component={SendTronEvmPage}
+                    />
+                    <Route exact path="/send-btc" component={SendBtcPage} />
+                    <Route
+                      exact
+                      path="/ibc-transfer"
+                      component={IBCTransferPage}
+                    />
+                    <Route exact path="/setting" component={SettingPage} />
+                    <Route
+                      exact
+                      path="/ledger-grant"
+                      component={LedgerGrantPage}
+                    />
+                    <Route
+                      exact
+                      path="/setting/language"
+                      component={SettingLanguagePage}
+                    />
+                    <Route
+                      exact
+                      path="/setting/fiat"
+                      component={SettingFiatPage}
+                    />
+                    <Route
+                      exact
+                      path="/setting/connections"
+                      component={SettingConnectionsPage}
+                    />
+                    <Route
+                      exact
+                      path="/setting/connections/viewing-key/:contractAddress"
+                      component={SettingSecret20ViewingKeyConnectionsPage}
+                    />
+                    <Route
+                      exact
+                      path="/setting/address-book"
+                      component={AddressBookPage}
+                    />
+                    <Route
+                      exact
+                      path="/setting/export-to-mobile"
+                      component={ExportToMobilePage}
+                    />
+                    <Route
+                      exact
+                      path="/setting/credit"
+                      component={CreditPage}
+                    />
+                    <Route
+                      exact
+                      path="/setting/set-keyring"
+                      component={SetKeyRingPage}
+                    />
+                    <Route
+                      exact
+                      path="/setting/export/:index"
+                      component={ExportPage}
+                    />
+                    <Route
+                      exact
+                      path="/setting/clear/:index"
+                      component={ClearPage}
+                    />
+                    <Route
+                      exact
+                      path="/setting/keyring/change/name/:index"
+                      component={ChangeNamePage}
+                    />
+                    {/*<Route*/}
+                    {/*  exact*/}
+                    {/*  path="/setting/token/add"*/}
+                    {/*  component={AddTokenPage}*/}
+                    {/*/>*/}
+                    <Route
+                      exact
+                      path="/setting/token-evm/add"
+                      component={AddEvmTokenPage}
+                    />
+                    <Route
+                      exact
+                      path="/setting/token/manage"
+                      component={ManageTokenPage}
+                    />
+                    <Route
+                      exact
+                      path="/stake/validator-list"
+                      component={ValidatorListPage}
+                    />
+                    <Route path="/sign" component={SignPage} />
+                    <Route path="/sign-bitcoin" component={SignBtcPage} />
+                    <Route path="/sign-ethereum" component={SignEvmPage} />
+                    <Route path="/sign-tron" component={SignTronPage} />
+                    <Route
+                      path="/suggest-chain"
+                      component={ChainSuggestedPage}
+                    />
+                  </LogPageViewWrapper>
+                </HashRouter>
+              </ConfirmProvider>
+            </NotificationProvider>
+          </NotificationStoreProvider>
+        </LoadingIndicatorProvider>
+      </AppIntlProviderWithStorage>
+    </ErrorBoundary>
   </StoreProvider>,
   document.getElementById("app")
 );
