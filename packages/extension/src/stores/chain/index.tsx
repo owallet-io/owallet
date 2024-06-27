@@ -60,7 +60,6 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
 
     makePersistable(this, {
       name: "ChainStore",
-
       properties: [
         "_isAllNetwork",
         "_multipleAssets",
@@ -68,11 +67,7 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
         "_selectedFee",
       ],
       storage: window.localStorage,
-    }).then(
-      action((persistStore) => {
-        console.log(persistStore, "persistStore.isHydrated");
-      })
-    );
+    }).then(action((persistStore) => {}));
     this.init();
   }
 

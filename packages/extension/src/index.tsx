@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useEffect } from "react";
 import ReactDOM from "react-dom";
 
 import "./styles/global.scss";
@@ -222,12 +222,35 @@ function ErrorFallback({ error }) {
   const { resetBoundary } = useErrorBoundary();
 
   return (
-    <div role="alert">
-      <Text>Something went wrong:</Text>
-      <Text containerStyle={{ color: colors["error-text-action"] }}>
+    <div
+      style={{
+        alignItems: "center",
+        padding: 16,
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      <img
+        style={{ width: 200 }}
+        src={require("./public/assets/images/img_planet.png")}
+      />
+      <div style={{ padding: 16 }}>
+        <Text size={24} weight="600">
+          Something went wrong
+        </Text>
+      </div>
+      <Text
+        containerStyle={{ textAlign: "center" }}
+        color={colors["error-text-action"]}
+      >
         {error.message}
       </Text>
-      <Button onClick={resetBoundary}>Try again</Button>
+      <Button
+        containerStyle={{ width: 140, marginTop: 16 }}
+        onClick={resetBoundary}
+      >
+        Try again
+      </Button>
     </div>
   );
 }
@@ -295,11 +318,13 @@ const AppIntlProviderWithStorage = ({ children }) => {
 
 const logError = (error: Error, info: { componentStack: string }) => {
   // Do something with the error, e.g. log to an external API
+  console.log("error", error);
+  console.log("info", info);
 };
 
 ReactDOM.render(
-  <StoreProvider>
-    <ErrorBoundary FallbackComponent={ErrorFallback} onError={logError}>
+  <ErrorBoundary FallbackComponent={ErrorFallback} onError={logError}>
+    <StoreProvider>
       <AppIntlProviderWithStorage>
         <LoadingIndicatorProvider>
           <NotificationStoreProvider>
@@ -348,7 +373,6 @@ ReactDOM.render(
                       path="/connected-dapp"
                       component={ConnectedDappPage}
                     />
-
                     <Route exact path="/token" component={TokenPage} />
                     <Route
                       exact
@@ -476,7 +500,7 @@ ReactDOM.render(
           </NotificationStoreProvider>
         </LoadingIndicatorProvider>
       </AppIntlProviderWithStorage>
-    </ErrorBoundary>
-  </StoreProvider>,
+    </StoreProvider>
+  </ErrorBoundary>,
   document.getElementById("app")
 );
