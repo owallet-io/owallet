@@ -2,7 +2,6 @@ import { Bech32Address } from "@owallet/cosmos";
 import { AppChainInfo, Currency } from "@owallet/types";
 import { IntlMessages, TypeLanguageToFiatCurrency } from "./languages";
 import { FiatCurrency } from "@owallet/types";
-import "dotenv/config";
 
 export const AutoFetchingFiatValueInterval = 300 * 1000; // 5min
 
@@ -1107,51 +1106,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       accountUrl: "https://explorer.oasis.io/mainnet/emerald/address/{address}",
     },
   },
-  {
-    chainId: "Neutaro-1",
-    chainName: "Neutaro",
-    networkType: "cosmos",
-    rpc: "https://neutaro.rpc.orai.io",
-    rest: "https://neutaro.lcd.orai.io",
-    bip44: {
-      coinType: 118,
-    },
-    coinType: 118,
-    bech32Config: Bech32Address.defaultBech32Config("neutaro"),
-    currencies: [
-      {
-        coinDenom: "NTMPI",
-        coinMinimalDenom: "uneutaro",
-        coinDecimals: 6,
-        coinGeckoId: "neutaro",
-        coinImageUrl: "https://asset.brandfetch.io/idKrUw6EdO/ids9m0Bt_7.png",
-      },
-    ],
-    get feeCurrencies() {
-      return [this.stakeCurrency];
-    },
-    stakeCurrency: {
-      coinDenom: "NTMPI",
-      coinMinimalDenom: "uneutaro",
-      coinGeckoId: "neutaro",
-      coinImageUrl: "https://asset.brandfetch.io/idKrUw6EdO/ids9m0Bt_7.png",
-      coinDecimals: 6,
-      gasPriceStep: {
-        low: 0.01,
-        average: 0.025,
-        high: 0.03,
-      },
-    },
-    features: ["stargate", "ibc-transfer", "cosmwasm", "no-legacy-stdTx"],
-    chainSymbolImageUrl:
-      "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Neutaro/chain.png",
-    txExplorer: {
-      name: "Neutaro",
-      txUrl: "https://nms1.neutaro.tech/Neutaro/tx/{txHash}",
-      //TODO: Not found account explorer for neutaro
-      accountUrl: "https://nms1.neutaro.tech/account/{address}",
-    },
-  },
+
   {
     chainId: "oraibridge-subnet-2",
     chainName: "OraiBridge",
@@ -1382,7 +1337,51 @@ export const EmbedChainInfos: AppChainInfo[] = [
         "https://explorer.oasis.io/mainnet/sapphire/address/{address}",
     },
   },
-
+  {
+    chainId: "Neutaro-1",
+    chainName: "Neutaro",
+    networkType: "cosmos",
+    rpc: "https://neutaro.rpc.orai.io",
+    rest: "https://neutaro.lcd.orai.io",
+    bip44: {
+      coinType: 118,
+    },
+    coinType: 118,
+    bech32Config: Bech32Address.defaultBech32Config("neutaro"),
+    currencies: [
+      {
+        coinDenom: "NTMPI",
+        coinMinimalDenom: "uneutaro",
+        coinDecimals: 6,
+        coinGeckoId: "neutaro",
+        coinImageUrl: "https://asset.brandfetch.io/idKrUw6EdO/ids9m0Bt_7.png",
+      },
+    ],
+    get feeCurrencies() {
+      return [this.stakeCurrency];
+    },
+    stakeCurrency: {
+      coinDenom: "NTMPI",
+      coinMinimalDenom: "uneutaro",
+      coinGeckoId: "neutaro",
+      coinImageUrl: "https://asset.brandfetch.io/idKrUw6EdO/ids9m0Bt_7.png",
+      coinDecimals: 6,
+      gasPriceStep: {
+        low: 0.01,
+        average: 0.025,
+        high: 0.03,
+      },
+    },
+    features: ["stargate", "ibc-transfer", "cosmwasm", "no-legacy-stdTx"],
+    chainSymbolImageUrl:
+      "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Neutaro/chain.png",
+    txExplorer: {
+      name: "Neutaro",
+      txUrl: "https://nms1.neutaro.tech/Neutaro/tx/{txHash}",
+      //TODO: Not found account explorer for neutaro
+      accountUrl: "https://nms1.neutaro.tech/account/{address}",
+    },
+  },
   {
     rpc: "https://testnet-rpc.orai.io",
     rest: "https://testnet-lcd.orai.io",
@@ -1497,48 +1496,53 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
   },
   {
-    chainId: "Neutaro-1",
-    chainName: "Neutaro",
+    rpc: "https://rpc-juno.keplr.app",
+    rest: "https://lcd-juno.keplr.app",
+    chainId: "juno-1",
+    chainName: "Juno",
     networkType: "cosmos",
-    rpc: "https://neutaro.rpc.orai.io",
-    rest: "https://neutaro.lcd.orai.io",
+    stakeCurrency: {
+      coinDenom: "JUNO",
+      coinMinimalDenom: "ujuno",
+      coinDecimals: 6,
+      coinGeckoId: "juno-network",
+      coinImageUrl:
+        "https://assets.coingecko.com/coins/images/19249/standard/Juno_Logo_%28Salmon%29_%282%29.png",
+      gasPriceStep: {
+        low: 0.001,
+        average: 0.0025,
+        high: 0.004,
+      },
+    },
     bip44: {
       coinType: 118,
     },
-    coinType: 118,
-    bech32Config: Bech32Address.defaultBech32Config("neutaro"),
+    bech32Config: Bech32Address.defaultBech32Config("juno"),
     currencies: [
       {
-        coinDenom: "NTMPI",
-        coinMinimalDenom: "uneutaro",
+        coinDenom: "JUNO",
+        coinMinimalDenom: "ujuno",
         coinDecimals: 6,
-        coinGeckoId: "neutaro",
-        coinImageUrl: "https://asset.brandfetch.io/idKrUw6EdO/ids9m0Bt_7.png",
+        coinGeckoId: "juno-network",
+        coinImageUrl:
+          "https://assets.coingecko.com/coins/images/19249/standard/Juno_Logo_%28Salmon%29_%282%29.png",
       },
     ],
     get feeCurrencies() {
       return [this.stakeCurrency];
     },
-    stakeCurrency: {
-      coinDenom: "NTMPI",
-      coinMinimalDenom: "uneutaro",
-      coinGeckoId: "neutaro",
-      coinImageUrl: "https://asset.brandfetch.io/idKrUw6EdO/ids9m0Bt_7.png",
-      coinDecimals: 6,
-      gasPriceStep: {
-        low: 0.01,
-        average: 0.025,
-        high: 0.03,
-      },
-    },
-    features: ["stargate", "ibc-transfer", "cosmwasm", "no-legacy-stdTx"],
+    features: [
+      "stargate",
+      "no-legacy-stdTx",
+      "cosmwasm",
+      "ibc-transfer",
+      "ibc-go",
+    ],
     chainSymbolImageUrl:
-      "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Neutaro/chain.png",
+      "https://assets.coingecko.com/coins/images/19249/standard/Juno_Logo_%28Salmon%29_%282%29.png",
     txExplorer: {
-      name: "Neutaro",
-      txUrl: "https://nms1.neutaro.tech/Neutaro/tx/{txHash}",
-      //TODO: Not found account explorer for neutaro
-      accountUrl: "https://nms1.neutaro.tech/account/{address}",
+      name: "Mintscan",
+      txUrl: "https://www.mintscan.io/juno/txs/{txHash}",
     },
   },
 ];
