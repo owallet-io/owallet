@@ -169,10 +169,7 @@ export const AddressBookPage: FunctionComponent<{
               textAlign: "right",
             }}
           >
-            <img
-              src={require("../../../public/assets/img/close.svg")}
-              alt="total-balance"
-            />
+            <img src={require("assets/img/close.svg")} alt="total-balance" />
           </div>
         )}
         <div className={styleAddressBook.container}>
@@ -224,7 +221,7 @@ export const AddressBookPage: FunctionComponent<{
                 }}
               >
                 <img
-                  src={require("../../../public/assets/svg/add-account.svg")}
+                  src={require("assets/svg/add-account.svg")}
                   alt=""
                   style={{ marginRight: 4 }}
                 />
@@ -254,10 +251,7 @@ export const AddressBookPage: FunctionComponent<{
                     backgroundColor: "rgba(230, 232, 236, 0.2)",
                   }}
                 >
-                  <img
-                    src={require("../../../public/assets/img/light.svg")}
-                    alt=""
-                  />
+                  <img src={require("assets/img/light.svg")} alt="" />
                 </div>
               }
             />

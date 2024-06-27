@@ -49,7 +49,7 @@ export const ConnectedDappPage = observer(() => {
                     className={styles.wrapLink}
                   >
                     <img
-                      src={require("../../public/assets/svg/ow_link-unlink.svg")}
+                      src={require("assets/svg/ow_link-unlink.svg")}
                       className={styles.img}
                     />
                   </div>

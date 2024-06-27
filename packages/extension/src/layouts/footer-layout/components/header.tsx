@@ -68,14 +68,14 @@ export const HeaderNew: FC<{
             <div onClick={onGoBack} className={styles.wrapIcon}>
               <img
                 className={styles.imgIcon}
-                src={require("../../../public/assets/svg/arrow-right.svg")}
+                src={require("assets/svg/arrow-right.svg")}
               />
             </div>
           ) : (
             <div onClick={() => setIsShow(true)} className={styles.wrapIcon}>
               <img
                 className={styles.imgIcon}
-                src={require("../../../public/assets/svg/tdesign_view-list.svg")}
+                src={require("assets/svg/tdesign_view-list.svg")}
               />
             </div>
           )}
@@ -91,7 +91,7 @@ export const HeaderNew: FC<{
                   className={styles.imgIcon}
                   src={
                     chainStore.isAllNetwork
-                      ? require("../../../public/assets/svg/Tokens.svg")
+                      ? require("assets/svg/Tokens.svg")
                       : chainStore.current?.stakeCurrency?.coinImageUrl ||
                         unknownToken.coinImageUrl
                   }
@@ -103,7 +103,7 @@ export const HeaderNew: FC<{
                 </span>
                 <img
                   className={styles.imgIcon}
-                  src={require("../../../public/assets/images/tdesign_chevron_down.svg")}
+                  src={require("assets/images/tdesign_chevron_down.svg")}
                 />
               </>
             )}
@@ -125,7 +125,7 @@ export const HeaderNew: FC<{
             <div className={styles.wrapIcon}>
               <img
                 className={styles.imgIcon}
-                src={require("../../../public/assets/svg/tdesign_fullscreen.svg")}
+                src={require("assets/svg/tdesign_fullscreen.svg")}
               />
             </div>
           )}

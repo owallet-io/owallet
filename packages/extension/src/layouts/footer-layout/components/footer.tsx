@@ -5,20 +5,20 @@ import { useHistory } from "react-router";
 const dataFooter = [
   {
     title: "Assets",
-    images: require("../../../public/assets/images/assets-light-inactive.png"),
-    imagesActive: require("../../../public/assets/images/assets-light-active.png"),
+    images: require("assets/images/assets-light-inactive.png"),
+    imagesActive: require("assets/images/assets-light-active.png"),
     path: "/",
   },
   {
     title: "Activity",
-    images: require("../../../public/assets/images/history-light-inactive.png"),
-    imagesActive: require("../../../public/assets/images/history-light-active.png"),
+    images: require("assets/images/history-light-inactive.png"),
+    imagesActive: require("assets/images/history-light-active.png"),
     path: "/activities",
   },
   {
     title: "Explore",
-    images: require("../../../public/assets/images/explore-light-inactive.png"),
-    imagesActive: require("../../../public/assets/images/explore-light-active.png"),
+    images: require("assets/images/explore-light-inactive.png"),
+    imagesActive: require("assets/images/explore-light-active.png"),
     path: "/explore",
   },
 ];

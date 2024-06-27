@@ -90,18 +90,8 @@ export const ImportLedgerPage: FunctionComponent<{
           styleInputGroup={{
             marginBottom: 15,
           }}
-          leftIcon={
-            <img
-              src={require("../../../public/assets/icon/wallet.svg")}
-              alt=""
-            />
-          }
-          rightIcon={
-            <img
-              src={require("../../../public/assets/icon/circle-del.svg")}
-              alt=""
-            />
-          }
+          leftIcon={<img src={require("assets/icon/wallet.svg")} alt="" />}
+          rightIcon={<img src={require("assets/icon/circle-del.svg")} alt="" />}
           type="text"
           name="name"
           ref={register({

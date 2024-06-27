@@ -225,7 +225,7 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
                 {getName(amountConfig?.sendCurrency?.coinDenom)}
               </Text>
               <img
-                src={require("../../public/assets/icon/tdesign_chevron-down.svg")}
+                src={require("assets/icon/tdesign_chevron-down.svg")}
                 alt="logo"
               />
             </div>
@@ -264,10 +264,7 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
               display: "flex",
             }}
           >
-            <img
-              src={require("../../public/assets/icon/tdesign_swap.svg")}
-              alt="logo"
-            />
+            <img src={require("assets/icon/tdesign_swap.svg")} alt="logo" />
             <Text
               containerStyle={{ marginLeft: 4 }}
               color={colors["neutral-text-body"]}

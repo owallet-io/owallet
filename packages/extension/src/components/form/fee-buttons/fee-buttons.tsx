@@ -145,7 +145,7 @@ export const FeeButtonsInner: FunctionComponent<
           return (
             <img
               style={{ width: 44, height: 44, borderRadius: 44 }}
-              src={require("../../../public/assets/img/slow.svg")}
+              src={require("assets/img/slow.svg")}
               alt={label}
             />
           );
@@ -153,7 +153,7 @@ export const FeeButtonsInner: FunctionComponent<
           return (
             <img
               style={{ width: 44, height: 44, borderRadius: 44 }}
-              src={require("../../../public/assets/img/average.svg")}
+              src={require("assets/img/average.svg")}
               alt={label}
             />
           );
@@ -161,7 +161,7 @@ export const FeeButtonsInner: FunctionComponent<
           return (
             <img
               style={{ width: 44, height: 44, borderRadius: 44 }}
-              src={require("../../../public/assets/img/fast.svg")}
+              src={require("assets/img/fast.svg")}
               alt={label}
             />
           );

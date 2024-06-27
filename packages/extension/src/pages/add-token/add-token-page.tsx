@@ -150,7 +150,7 @@ export const AddTokenPage = observer(() => {
     >
       <div className={styles.container}>
         <div className={styles.alert}>
-          <img src={require("../../public/assets/svg/ow_error-circle.svg")} />
+          <img src={require("assets/svg/ow_error-circle.svg")} />
           <span className={styles.textAlert}>
             Before importing a token, ensure {"it's"} trustworthy to avoid scams
             and security risks.
@@ -176,7 +176,7 @@ export const AddTokenPage = observer(() => {
           </div>
           <img
             className={styles.arrDown}
-            src={require("../../public/assets/images/tdesign_chevron_down.svg")}
+            src={require("assets/images/tdesign_chevron_down.svg")}
           />
         </div>
         <Form onSubmit={onSubmit}>

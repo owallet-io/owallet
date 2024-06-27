@@ -8,9 +8,9 @@ export const RadioButton: FunctionComponent<{
   return (
     <div style={containerStyle}>
       {checked ? (
-        <img src={require("../../public/assets/icon/radio.svg")} />
+        <img src={require("assets/icon/radio.svg")} />
       ) : (
-        <img src={require("../../public/assets/icon/radio-uncheck.svg")} />
+        <img src={require("assets/icon/radio-uncheck.svg")} />
       )}
     </div>
   );

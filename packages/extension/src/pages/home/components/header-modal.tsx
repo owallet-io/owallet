@@ -16,7 +16,7 @@ export const HeaderModal: FC<{
           <div onClick={onRequestClose} className={styles.closeBtn}>
             <img
               className={styles.imgIcon}
-              src={require("../../../public/assets/img/close.svg")}
+              src={require("assets/img/close.svg")}
             />
           </div>
         ) : null}

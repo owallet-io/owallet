@@ -59,7 +59,7 @@ export const EditAccountPage = observer(() => {
         <div className={styles.avatar}>
           <img
             className={styles.imgAvatar}
-            src={require("../../public/assets/images/default-avatar.png")}
+            src={require("assets/images/default-avatar.png")}
           />
         </div>
         <div className={styles.wrapText}>
@@ -79,18 +79,14 @@ export const EditAccountPage = observer(() => {
             <span className={styles.rightTitle}>
               {wallet?.meta?.name || "..."}
             </span>
-            <img
-              src={require("../../public/assets/svg/tdesign_chevron_right.svg")}
-            />
+            <img src={require("assets/svg/tdesign_chevron_right.svg")} />
           </div>
         </div>
         {wallet?.type === "mnemonic" && (
           <div onClick={onShowPhrasePage} className={styles.actionItem}>
             <span className={styles.leftTitle}>Reveal Recovery Phrase</span>
             <div className={styles.blockRight}>
-              <img
-                src={require("../../public/assets/svg/tdesign_chevron_right.svg")}
-              />
+              <img src={require("assets/svg/tdesign_chevron_right.svg")} />
             </div>
           </div>
         )}
@@ -98,9 +94,7 @@ export const EditAccountPage = observer(() => {
           <div onClick={onShowPhrasePage} className={styles.actionItem}>
             <span className={styles.leftTitle}>Reveal Private Key</span>
             <div className={styles.blockRight}>
-              <img
-                src={require("../../public/assets/svg/tdesign_chevron_right.svg")}
-              />
+              <img src={require("assets/svg/tdesign_chevron_right.svg")} />
             </div>
           </div>
         )}

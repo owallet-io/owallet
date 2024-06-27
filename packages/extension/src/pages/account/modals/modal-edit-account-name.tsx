@@ -77,17 +77,9 @@ export const ModalEditAccountNamePage: FC<{
               label={intl.formatMessage({
                 id: "register.name",
               })}
-              leftIcon={
-                <img
-                  src={require("../../../public/assets/icon/wallet.svg")}
-                  alt=""
-                />
-              }
+              leftIcon={<img src={require("assets/icon/wallet.svg")} alt="" />}
               rightIcon={
-                <img
-                  src={require("../../../public/assets/icon/circle-del.svg")}
-                  alt=""
-                />
+                <img src={require("assets/icon/circle-del.svg")} alt="" />
               }
               onAction={() => {
                 setValue("name", "");

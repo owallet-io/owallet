@@ -35,7 +35,7 @@ export const ChainSuggestedPage: FunctionComponent = observer(() => {
     <EmptyLayout style={{ height: "100%", paddingTop: "80px" }}>
       <div className={style.container}>
         <img
-          src={require("../../../public/assets/images/img_owallet.png")}
+          src={require("assets/images/img_owallet.png")}
           alt="logo"
           style={{ height: "92px", maxWidth: 92, margin: "0 auto" }}
         />
@@ -65,7 +65,7 @@ export const ChainSuggestedPage: FunctionComponent = observer(() => {
         <Alert className={style.warning} color="warning">
           <div className={style.imgContainer}>
             <img
-              src={require("../../../public/assets/img/icons8-test-tube.svg")}
+              src={require("assets/img/icons8-test-tube.svg")}
               alt="experiment"
             />
           </div>

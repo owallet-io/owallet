@@ -37,18 +37,18 @@ export const InfoAccountCard: FC<{
         <div onClick={onSelectAccount} className={styles.selectAccount}>
           <img
             className={styles.imgWallet}
-            src={require("../../../public/assets/images/default-avatar.png")}
+            src={require("assets/images/default-avatar.png")}
           />
           <span className={styles.nameWallet}>{account.name || "..."}</span>
           <img
             className={styles.arrDown}
-            src={require("../../../public/assets/images/tdesign_chevron_down.svg")}
+            src={require("assets/images/tdesign_chevron_down.svg")}
           />
         </div>
         <div onClick={onShowModalCopy} className={styles.blockCopyAddress}>
           <img
             className={styles.iconCopy}
-            src={require("../../../public/assets/images/owallet_copy.svg")}
+            src={require("assets/images/owallet_copy.svg")}
           />
           <span className={styles.nameCopy}>Copy address</span>
         </div>

@@ -28,7 +28,7 @@ export const ButtonCopy: FC<{
     <div onClick={() => copy(valueCopy)} className={styles.wrapBtnCopy}>
       <img
         className={styles.icon}
-        src={require("../../public/assets/svg/owallet-copy.svg")}
+        src={require("assets/svg/owallet-copy.svg")}
       />
       <span className={styles.txtCopy}>{title}</span>
     </div>

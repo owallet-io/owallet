@@ -134,7 +134,7 @@ export const EVMRenderArgs: FunctionComponent<{
           </div>
           <img
             style={{ paddingRight: 4 }}
-            src={require("../../../public/assets/icon/tdesign_arrow-right.svg")}
+            src={require("assets/icon/tdesign_arrow-right.svg")}
           />
           <div
             style={{
@@ -397,13 +397,9 @@ export const EVMRenderArgs: FunctionComponent<{
             {`View ${isMore ? "more" : "less"}`}
           </Text>
           {isMore ? (
-            <img
-              src={require("../../../public/assets/icon/tdesign_chevron-down.svg")}
-            />
+            <img src={require("assets/icon/tdesign_chevron-down.svg")} />
           ) : (
-            <img
-              src={require("../../../public/assets/icon/tdesign_chevron-up.svg")}
-            />
+            <img src={require("assets/icon/tdesign_chevron-up.svg")} />
           )}
         </div>
       </div>

@@ -53,10 +53,7 @@ export const FeeModal: FunctionComponent<{
           {"set fee".toUpperCase()}
         </Text>
         <div onClick={onClose}>
-          <img
-            src={require("../../../public/assets/icon/circle-del.svg")}
-            alt=""
-          />
+          <img src={require("assets/icon/circle-del.svg")} alt="" />
         </div>
       </div>
       <div
@@ -86,7 +83,7 @@ export const FeeModal: FunctionComponent<{
           >
             <img
               style={{ width: 16, height: 16 }}
-              src={require("../../../public/assets/icon/wrench.svg")}
+              src={require("assets/icon/wrench.svg")}
               alt=""
             />
           </div>

@@ -596,13 +596,9 @@ export const WasmExecutionMsgView: FunctionComponent<{
         }}
       >
         {isOpen ? (
-          <img
-            src={require("../../public/assets/icon/tdesign_chevron-up.svg")}
-          />
+          <img src={require("assets/icon/tdesign_chevron-up.svg")} />
         ) : (
-          <img
-            src={require("../../public/assets/icon/tdesign_chevron-down.svg")}
-          />
+          <img src={require("assets/icon/tdesign_chevron-down.svg")} />
         )}
       </Button>
     </div>

@@ -110,7 +110,7 @@ export const ModalCopyAddress: FC<{
                         width: 24,
                         height: 24,
                       }}
-                      src={require("../../../public/assets/svg/owallet-copy.svg")}
+                      src={require("assets/svg/owallet-copy.svg")}
                     />
                   </div>
                 </div>

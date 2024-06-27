@@ -85,8 +85,8 @@ export const LockPage: FunctionComponent = observer(() => {
           })}
         >
           <Banner
-            icon={require("../../public/assets/images/img_owallet.png")}
-            logo={require("../../public/assets/orai_wallet_logo.png")}
+            icon={require("assets/images/img_owallet.png")}
+            logo={require("assets/orai_wallet_logo.png")}
             subtitle={`UNIVERSAL`}
             subtitle2={`WEB3 GATEWAY`}
           />

@@ -13,7 +13,7 @@ export const SearchInput: FC<{
     >
       <img
         className={styles.iconSearch}
-        src={require("../../../public/assets/images/owallet_search.svg")}
+        src={require("assets/images/owallet_search.svg")}
         alt="Search icon"
       />
       <input

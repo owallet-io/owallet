@@ -239,7 +239,7 @@ export const DetailsTabEvm: FunctionComponent<{
             </div>
             <img
               style={{ paddingRight: 4 }}
-              src={require("../../public/assets/icon/tdesign_arrow-right.svg")}
+              src={require("assets/icon/tdesign_arrow-right.svg")}
             />
             <div
               style={{
@@ -416,9 +416,7 @@ export const DetailsTabEvm: FunctionComponent<{
                 >
                   {feeConfig?.fee?.maxDecimals(8).trim(true).toString() || 0}
                 </Text>
-                <img
-                  src={require("../../public/assets/icon/tdesign_chevron-down.svg")}
-                />
+                <img src={require("assets/icon/tdesign_chevron-down.svg")} />
               </div>
               <Text
                 containerStyle={{
@@ -449,7 +447,7 @@ export const DetailsTabEvm: FunctionComponent<{
         >
           <img
             style={{ paddingRight: 4 }}
-            src={require("../../public/assets/icon/tdesign_code-1.svg")}
+            src={require("assets/icon/tdesign_code-1.svg")}
           />
           <Text color={colors["neutral-text-body"]} weight="500">
             <FormattedMessage id="sign.list.messages.label" />:
@@ -559,7 +557,7 @@ export const DetailsTabEvm: FunctionComponent<{
           >
             <img
               style={{ paddingRight: 4 }}
-              src={require("../../public/assets/icon/tdesign_error-circle.svg")}
+              src={require("assets/icon/tdesign_error-circle.svg")}
             />
             <Text size={12} weight="600">
               {feeConfig.getError().message}
@@ -579,7 +577,7 @@ export const DetailsTabEvm: FunctionComponent<{
           >
             <img
               style={{ paddingRight: 4 }}
-              src={require("../../public/assets/icon/tdesign_error-circle.svg")}
+              src={require("assets/icon/tdesign_error-circle.svg")}
             />
             <Text size={12} weight="600">
               {gasConfig.getError().message}
