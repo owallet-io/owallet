@@ -1,22 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { LayoutWithButtonBottom } from "../../layouts/button-bottom-layout/layout-with-button-bottom";
+import { LayoutWithButtonBottom } from "layouts/button-bottom-layout/layout-with-button-bottom";
 import styles from "./add-token.module.scss";
-import { Input } from "../../components/form";
-import style from "../setting/token/add/style.module.scss";
+import { Input } from "components/form";
 import { Bech32Address } from "@owallet/cosmos";
-import { CW20Currency, ERC20Currency, Secret20Currency } from "@owallet/types";
+import { CW20Currency, ERC20Currency } from "@owallet/types";
 import useForm from "react-hook-form";
 import { useIntl } from "react-intl";
 import { useHistory } from "react-router";
 import { observer } from "mobx-react-lite";
 import { Form } from "reactstrap";
-import { useStore } from "../../stores";
+import { useStore } from "src/stores";
 import { useInteractionInfo } from "@owallet/hooks";
-import { useNotification } from "../../components/notification";
-import { useLoadingIndicator } from "../../components/loading-indicator";
+import { useNotification } from "components/notification";
+import { useLoadingIndicator } from "components/loading-indicator";
 import { API, MapChainIdToNetwork, unknownToken } from "@owallet/common";
-import { ModalNetwork } from "../home/modals/modal-network";
-import Colors from "../../theme/colors";
+import { ModalNetwork } from "pages/home/modals/modal-network";
+import Colors from "theme/colors";
 import Web3 from "web3";
 
 interface FormData {
@@ -180,7 +179,7 @@ export const AddTokenPage = observer(() => {
             src={require("../../public/assets/images/tdesign_chevron_down.svg")}
           />
         </div>
-        <Form className={style.container} onSubmit={onSubmit}>
+        <Form onSubmit={onSubmit}>
           <Input
             type="text"
             label={intl.formatMessage({

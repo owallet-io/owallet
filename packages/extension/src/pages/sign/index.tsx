@@ -6,8 +6,6 @@ import React, {
   useState,
 } from "react";
 
-import { HeaderLayout } from "../../layouts";
-
 import style from "./style.module.scss";
 
 import { useStore } from "../../stores";
