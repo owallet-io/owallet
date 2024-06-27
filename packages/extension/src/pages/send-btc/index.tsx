@@ -13,10 +13,10 @@ import { useIntl } from "react-intl";
 import { useHistory, useLocation } from "react-router";
 import queryString from "querystring";
 import { useSendTxConfig } from "@owallet/hooks";
-import { fitPopupWindow, openPopupWindow, PopupSize } from "@owallet/popup";
+import { fitPopupWindow } from "@owallet/popup";
 import { EthereumEndpoint, useLanguage } from "@owallet/common";
 import { BtcToSats } from "@owallet/bitcoin";
-import { CoinInputBtc } from "../../components/form/coin-input-btc";
+// import { CoinInputBtc } from "../../components/form/coin-input-btc";
 import { Address } from "@owallet/crypto";
 import { HeaderNew } from "../../layouts/footer-layout/components/header";
 import { HeaderModal } from "../home/components/header-modal";
@@ -230,6 +230,7 @@ export const SendBtcPage: FunctionComponent<{
           height: "100%",
           width: "100vw",
           overflowX: "auto",
+          padding: 16,
           backgroundColor: colors["neutral-surface-bg"],
         }}
       >
@@ -369,7 +370,8 @@ export const SendBtcPage: FunctionComponent<{
                 label={intl.formatMessage({ id: "send.input.recipient" })}
                 placeholder="Enter recipient address"
               />
-              <CoinInputBtc
+              <CoinInput
+                openSelectToken={() => setSelectToken(true)}
                 amountConfig={sendConfigs.amountConfig}
                 label={intl.formatMessage({ id: "send.input.amount" })}
                 balanceText={intl.formatMessage({
