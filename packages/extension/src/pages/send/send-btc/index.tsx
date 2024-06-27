@@ -6,12 +6,9 @@ import {
   MemoInput,
 } from "components/form";
 import { useStore } from "src/stores";
-
 import { observer } from "mobx-react-lite";
-
 import style from "../send-cosmos/style.module.scss";
 import { useNotification } from "components/notification";
-
 import { useIntl } from "react-intl";
 import { useHistory, useLocation } from "react-router";
 import queryString from "querystring";
@@ -19,7 +16,6 @@ import { useSendTxConfig } from "@owallet/hooks";
 import { fitPopupWindow } from "@owallet/popup";
 import { EthereumEndpoint, useLanguage } from "@owallet/common";
 import { BtcToSats } from "@owallet/bitcoin";
-import { CoinInputBtc } from "components/form/coin-input-btc";
 import { Address } from "@owallet/crypto";
 import { HeaderNew } from "layouts/footer-layout/components/header";
 import { HeaderModal } from "pages/home/components/header-modal";

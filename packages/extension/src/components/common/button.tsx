@@ -35,8 +35,6 @@ export const Button: FunctionComponent<{
   className,
   ...props
 }) => {
-  console.log("disabled", disabled);
-
   const buttonType = (() => {
     switch (color) {
       case "primary":

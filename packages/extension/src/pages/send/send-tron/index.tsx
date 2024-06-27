@@ -2,12 +2,9 @@ import React, { FunctionComponent, useEffect, useRef, useState } from "react";
 import { AddressInput, CoinInput } from "components/form";
 import { useStore } from "src/stores";
 import { observer } from "mobx-react-lite";
-
 import style from "../send-evm/style.module.scss";
 import { useNotification } from "components/notification";
-
 import { useIntl } from "react-intl";
-
 import { useHistory, useLocation } from "react-router";
 import queryString from "querystring";
 import {
@@ -21,10 +18,10 @@ import { FeeInput } from "components/form/fee-input";
 import { HeaderNew } from "layouts/footer-layout/components/header";
 import { HeaderModal } from "src/pages/home/components/header-modal";
 import { ModalChooseTokens } from "src/pages/modals/modal-choose-tokens";
-import useOnClickOutside from "hooks/use-click-outside";
 import colors from "theme/colors";
 import { Card } from "components/common/card";
 import { Button } from "components/common/button";
+
 export const SendTronEvmPage: FunctionComponent<{
   coinMinimalDenom?: string;
   tokensTrc20Tron?: Array<any>;
@@ -52,12 +49,7 @@ export const SendTronEvmPage: FunctionComponent<{
 
   const intl = useIntl();
   const inputRef = React.useRef(null);
-  const [openSetting, setOpenSetting] = useState(false);
-  const settingRef = useRef();
 
-  useOnClickOutside(settingRef, () => {
-    setOpenSetting(false);
-  });
   const [isShowSelectToken, setSelectToken] = useState(false);
 
   useEffect(() => {
@@ -68,8 +60,7 @@ export const SendTronEvmPage: FunctionComponent<{
 
   const notification = useNotification();
 
-  const { chainStore, priceStore, accountStore, queriesStore, keyRingStore } =
-    useStore();
+  const { chainStore, accountStore, queriesStore, keyRingStore } = useStore();
   const current = chainStore.current;
 
   const accountInfo = accountStore.getAccount(current.chainId);

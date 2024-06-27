@@ -6,17 +6,12 @@ import {
   MemoInput,
 } from "components/form";
 import { useStore } from "src/stores";
-
 import { observer } from "mobx-react-lite";
-
 import style from "./style.module.scss";
 import { useNotification } from "components/notification";
-
 import { useIntl } from "react-intl";
-
 import { useHistory, useLocation } from "react-router";
 import queryString from "querystring";
-
 import { useSendTxEvmConfig } from "@owallet/hooks";
 import { fitPopupWindow } from "@owallet/popup";
 import {
