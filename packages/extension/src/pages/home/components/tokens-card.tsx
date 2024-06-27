@@ -14,6 +14,7 @@ import { SearchInput } from "./search-input";
 import { useHistory } from "react-router";
 import Switch from "react-switch";
 import colors from "../../../theme/colors";
+import { OwEmpty } from "components/empty/ow-empty";
 
 export const TokensCard: FC<{
   dataTokens: ViewRawToken[];
@@ -27,6 +28,18 @@ export const TokensCard: FC<{
   const onHideDust = () => {
     chainStore.setIsHideDust(!chainStore.isHideDust);
   };
+  const dataTokensHandled =
+    dataTokens.filter((item, index) => {
+      const balance = new CoinPretty(item.token.currency, item.token.amount);
+      const price = priceStore.calculatePrice(balance, "usd");
+      const searchKeyword = item?.token?.currency?.coinDenom
+        ?.toLowerCase()
+        ?.includes(keyword?.toLowerCase());
+      if (chainStore.isHideDust) {
+        return price?.toDec().gte(new Dec("0.1")) && searchKeyword;
+      }
+      return searchKeyword;
+    }) || [];
   return (
     <div className={styles.containerTokenCard}>
       <div className={styles.wrapTopBlock}>
@@ -49,24 +62,13 @@ export const TokensCard: FC<{
         </div>
       </div>
       <div className={styles.listTokens}>
-        {(
-          dataTokens.filter((item, index) => {
-            const balance = new CoinPretty(
-              item.token.currency,
-              item.token.amount
-            );
-            const price = priceStore.calculatePrice(balance, "usd");
-            const searchKeyword = item?.token?.currency?.coinDenom
-              ?.toLowerCase()
-              ?.includes(keyword?.toLowerCase());
-            if (chainStore.isHideDust) {
-              return price?.toDec().gte(new Dec("0.1")) && searchKeyword;
-            }
-            return searchKeyword;
-          }) || []
-        ).map((item, index) => (
-          <TokenItem onSelectToken={onSelectToken} key={index} item={item} />
-        ))}
+        {dataTokensHandled?.length > 0 ? (
+          dataTokensHandled.map((item, index) => (
+            <TokenItem onSelectToken={onSelectToken} key={index} item={item} />
+          ))
+        ) : (
+          <OwEmpty />
+        )}
       </div>
     </div>
   );

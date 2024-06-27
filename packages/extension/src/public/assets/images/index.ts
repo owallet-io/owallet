@@ -60,5 +60,6 @@ const images = {
   success: require("./success.png"),
   success_dark: require("./success_dark.png"),
   swap: require("./swap.png"),
+  planet: require("./img_planet.png"),
 };
 export default images;
