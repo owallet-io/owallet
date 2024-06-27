@@ -342,9 +342,13 @@ export const FeeButtonsInner: FunctionComponent<
                 <div className={styleFeeButtons.radio}>
                   <RadioButton
                     checked={
-                      feeConfig.feeType == fee ||
-                      feeConfig?.fee?.maxDecimals(8).trim(true).toString() ===
-                        [lowFee, averageFee, highFee][i].trim(true).toString()
+                      feeConfig.feeType
+                        ? feeConfig.feeType == fee
+                        : feeConfig?.fee
+                            ?.maxDecimals(8)
+                            .trim(true)
+                            .toString() ===
+                          [lowFee, averageFee, highFee][i].trim(true).toString()
                     }
                     onChange={(e) => {
                       feeConfig.setFeeType(fee as FeeType);

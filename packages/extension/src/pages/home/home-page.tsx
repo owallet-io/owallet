@@ -6,23 +6,13 @@ import { TokensCard } from "./components/tokens-card";
 import { useStore } from "../../stores";
 import { ChainIdEnum } from "@owallet/common";
 import {
-  initPrice,
   sortTokensByPrice,
   useMultipleAssets,
 } from "../../hooks/use-multiple-assets";
 
 export const HomePage = observer(() => {
   const [refreshing, setRefreshing] = React.useState(false);
-  const {
-    chainStore,
-    hugeQueriesStore,
-    accountStore,
-    priceStore,
-    keyRingStore,
-  } = useStore();
-
-  console.log("chain fee", chainStore.selectedFee);
-  console.log("hide dust", chainStore.isHideDust);
+  const { chainStore, hugeQueriesStore, accountStore, priceStore } = useStore();
 
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const { totalPriceBalance, dataTokens, dataTokensByChain, isLoading } =
