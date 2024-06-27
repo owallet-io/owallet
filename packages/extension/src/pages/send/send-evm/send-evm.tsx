@@ -292,7 +292,6 @@ export const SendEvmPage: FunctionComponent<{
     if (accountInfo.isReadyToSendMsgs && txStateIsValid) {
       try {
         const stdFee = sendConfigs.feeConfig.toStdEvmFee();
-        console.log("🚀 ~ onSubmit={ ~ stdFee:", stdFee);
         // (window as any).accountInfo = accountInfo;
         await accountInfo.sendToken(
           sendConfigs.amountConfig.amount,

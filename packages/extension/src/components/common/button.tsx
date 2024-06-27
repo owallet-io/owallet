@@ -35,6 +35,8 @@ export const Button: FunctionComponent<{
   className,
   ...props
 }) => {
+  console.log("disabled", disabled);
+
   const buttonType = (() => {
     switch (color) {
       case "primary":
@@ -72,6 +74,8 @@ export const Button: FunctionComponent<{
 
   const disabledBtn = (() => {
     if (disabled) {
+      console.log("disable");
+
       return {
         backgroundColor: colors["neutral-surface-action3"],
         color: colors["neutral-text-action-on-dark-bg"],
@@ -92,7 +96,6 @@ export const Button: FunctionComponent<{
         disabledBtn,
       ].join(" ")}
       style={{ ...containerStyle, ...disabledBtn }}
-      {...props}
     >
       {loading ? <i className="fa fa-spinner fa-spin"></i> : null}
       {leftIcon ? <div>{leftIcon}</div> : null}

@@ -131,6 +131,8 @@ export const SendTronEvmPage: FunctionComponent<{
   const onSend = async (e: any) => {
     e.preventDefault();
     try {
+      console.log("get here");
+
       await accountInfo.sendTronToken(
         sendConfigs.amountConfig.amount,
         sendConfigs.amountConfig.sendCurrency!,
@@ -253,43 +255,43 @@ export const SendTronEvmPage: FunctionComponent<{
                 />
               </Card>
             </div>
+          </div>
+          <div
+            style={{
+              position: "absolute",
+              bottom: 0,
+              width: "100%",
+              height: "15%",
+              backgroundColor: colors["neutral-surface-card"],
+              borderTop: "1px solid" + colors["neutral-border-default"],
+            }}
+          >
             <div
               style={{
-                position: "absolute",
-                bottom: 0,
-                width: "100%",
-                height: "15%",
-                backgroundColor: colors["neutral-surface-card"],
-                borderTop: "1px solid" + colors["neutral-border-default"],
+                flexDirection: "row",
+                display: "flex",
+                padding: 16,
+                paddingTop: 0,
               }}
             >
-              <div
+              <Button
+                type="submit"
+                data-loading={accountInfo.isSendingMsg === "send"}
+                disabled={!accountInfo.isReadyToSendMsgs || !txStateIsValid}
+                className={style.sendBtn}
                 style={{
-                  flexDirection: "row",
-                  display: "flex",
-                  padding: 16,
-                  paddingTop: 0,
+                  cursor:
+                    accountInfo.isReadyToSendMsgs || !txStateIsValid
+                      ? ""
+                      : "pointer",
                 }}
               >
-                <Button
-                  type="submit"
-                  data-loading={accountInfo.isSendingMsg === "send"}
-                  disabled={!accountInfo.isReadyToSendMsgs || !txStateIsValid}
-                  className={style.sendBtn}
-                  style={{
-                    cursor:
-                      accountInfo.isReadyToSendMsgs || !txStateIsValid
-                        ? ""
-                        : "pointer",
-                  }}
-                >
-                  <span className={style.sendBtnText}>
-                    {intl.formatMessage({
-                      id: "send.button.send",
-                    })}
-                  </span>
-                </Button>
-              </div>
+                <span className={style.sendBtnText}>
+                  {intl.formatMessage({
+                    id: "send.button.send",
+                  })}
+                </span>
+              </Button>
             </div>
           </div>
         </form>
