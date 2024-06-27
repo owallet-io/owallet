@@ -396,7 +396,6 @@ export const SendEvmPage: FunctionComponent<{
           width: "100vw",
           overflowX: "auto",
           backgroundColor: colors["neutral-surface-bg"],
-          padding: 16,
         }}
       >
         <ModalChooseTokens
@@ -419,7 +418,7 @@ export const SendEvmPage: FunctionComponent<{
         <HeaderModal title={"Send".toUpperCase()} />
         <form className={style.formContainer} onSubmit={onSend}>
           <div className={style.formInnerContainer}>
-            <div>
+            <div style={{ padding: 16 }}>
               <AddressInput
                 inputStyle={{
                   borderWidth: 0,
@@ -478,25 +477,44 @@ export const SendEvmPage: FunctionComponent<{
                 />
               </div>
             </div>
-            <div style={{ flex: 1 }} />
-            <Button
-              type="submit"
-              data-loading={accountInfo.isSendingMsg === "send"}
-              disabled={!accountInfo.isReadyToSendMsgs || !txStateIsValid}
-              className={style.sendBtn}
+            <div
               style={{
-                cursor:
-                  accountInfo.isReadyToSendMsgs || !txStateIsValid
-                    ? ""
-                    : "pointer",
+                position: "absolute",
+                bottom: 0,
+                width: "100%",
+                height: "15%",
+                backgroundColor: colors["neutral-surface-card"],
+                borderTop: "1px solid" + colors["neutral-border-default"],
               }}
             >
-              <span className={style.sendBtnText}>
-                {intl.formatMessage({
-                  id: "send.button.send",
-                })}
-              </span>
-            </Button>
+              <div
+                style={{
+                  flexDirection: "row",
+                  display: "flex",
+                  padding: 16,
+                  paddingTop: 0,
+                }}
+              >
+                <Button
+                  type="submit"
+                  data-loading={accountInfo.isSendingMsg === "send"}
+                  disabled={!accountInfo.isReadyToSendMsgs || !txStateIsValid}
+                  className={style.sendBtn}
+                  style={{
+                    cursor:
+                      accountInfo.isReadyToSendMsgs || !txStateIsValid
+                        ? ""
+                        : "pointer",
+                  }}
+                >
+                  <span className={style.sendBtnText}>
+                    {intl.formatMessage({
+                      id: "send.button.send",
+                    })}
+                  </span>
+                </Button>
+              </div>
+            </div>
           </div>
         </form>
       </div>
