@@ -4,7 +4,7 @@ import colors from "../../theme/colors";
 import style from "./style.module.scss";
 
 export const Button: FunctionComponent<{
-  type?: string;
+  buttonType?: string;
   color?: "primary" | "secondary" | "danger";
   size?: "default" | "small" | "large";
   mode?: "fill" | "light" | "outline" | "text";
@@ -20,6 +20,7 @@ export const Button: FunctionComponent<{
   rippleColor?: string;
   underlayColor?: string;
   className?: string;
+  type?: "button" | "reset" | "submit";
 }> = ({
   color = "primary",
   size = "default",
@@ -34,7 +35,7 @@ export const Button: FunctionComponent<{
   className,
   ...props
 }) => {
-  const type = (() => {
+  const buttonType = (() => {
     switch (color) {
       case "primary":
         return style.primaryBtn;
@@ -83,10 +84,15 @@ export const Button: FunctionComponent<{
     <button
       onClick={onClick}
       disabled={disabled || loading}
-      className={[style.button, type, buttonMode, buttonSize, disabledBtn].join(
-        " "
-      )}
+      className={[
+        style.button,
+        buttonType,
+        buttonMode,
+        buttonSize,
+        disabledBtn,
+      ].join(" ")}
       style={{ ...containerStyle, ...disabledBtn }}
+      {...props}
     >
       {loading ? <i className="fa fa-spinner fa-spin"></i> : null}
       {leftIcon ? <div>{leftIcon}</div> : null}

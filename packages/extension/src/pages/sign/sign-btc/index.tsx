@@ -348,7 +348,6 @@ export const SignBtcPage: FunctionComponent = observer(() => {
                     <Button
                       containerStyle={{ marginRight: 8 }}
                       className={classnames(style.button, style.rejectBtn)}
-                      // disabled={signDocHelper.signDocWrapper == null}
                       color={"danger"}
                       data-loading={signInteractionStore.isLoading}
                       disabled={signInteractionStore.isLoading}
