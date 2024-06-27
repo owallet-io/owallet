@@ -160,7 +160,6 @@ export const useMultipleAssets = (
     setIsLoading(true);
     try {
       const allChain = Array.from(hugeQueriesStore.getAllChainMap.values());
-      console.log(allChain, "allChain1");
       const chainIdsEvm = [
         ChainIdEnum.Ethereum,
         ChainIdEnum.BNBChain,

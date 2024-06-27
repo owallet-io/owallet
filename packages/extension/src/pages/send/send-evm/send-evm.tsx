@@ -395,6 +395,7 @@ export const SendEvmPage: FunctionComponent<{
           width: "100vw",
           overflowX: "auto",
           backgroundColor: colors["neutral-surface-bg"],
+          padding: 16,
         }}
       >
         <ModalChooseTokens

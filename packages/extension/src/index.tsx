@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useEffect } from "react";
 import ReactDOM from "react-dom";
 
 import "./styles/global.scss";
@@ -62,7 +62,12 @@ import manifest from "./manifest.json";
 import { SignTronPage } from "./pages/sign/sign-tron";
 import { SignEvmPage } from "./pages/sign/sign-evm";
 import { SignBtcPage } from "./pages/sign/sign-btc";
+import { ErrorBoundary } from "react-error-boundary";
 
+import { useErrorBoundary } from "react-error-boundary";
+import { Button } from "./components/common/button";
+import { Text } from "./components/common/text";
+import colors from "./theme/colors";
 const owallet = new OWallet(
   manifest.version,
   "core",
@@ -161,6 +166,43 @@ Modal.defaultStyles = {
   },
 };
 
+function ErrorFallback({ error }) {
+  const { resetBoundary } = useErrorBoundary();
+
+  return (
+    <div
+      style={{
+        alignItems: "center",
+        padding: 16,
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      <img
+        style={{ width: 200 }}
+        src={require("./public/assets/images/img_planet.png")}
+      />
+      <div style={{ padding: 16 }}>
+        <Text size={24} weight="600">
+          Something went wrong
+        </Text>
+      </div>
+      <Text
+        containerStyle={{ textAlign: "center" }}
+        color={colors["error-text-action"]}
+      >
+        {error.message}
+      </Text>
+      <Button
+        containerStyle={{ width: 140, marginTop: 16 }}
+        onClick={resetBoundary}
+      >
+        Try again
+      </Button>
+    </div>
+  );
+}
+
 const StateRenderer: FunctionComponent = observer(() => {
   const { keyRingStore } = useStore();
   if (
@@ -221,90 +263,108 @@ const AppIntlProviderWithStorage = ({ children }) => {
     </AppIntlProvider>
   );
 };
+const logError = (error: Error, info: { componentStack: string }) => {
+  // Do something with the error, e.g. log to an external API
+  console.log("error", error);
+  console.log("info", info);
+};
 
 ReactDOM.render(
-  <StoreProvider>
-    <AppIntlProviderWithStorage>
-      <LoadingIndicatorProvider>
-        <NotificationStoreProvider>
-          <NotificationProvider>
-            <ConfirmProvider>
-              <HashRouter>
-                <LogPageViewWrapper>
-                  <Route exact path="/" component={StateRenderer} />
-                  <Route exact path="/unlock" component={LockPage} />
-                  <Route exact path="/access" component={AccessPage} />
-                  <Route exact path="/receive" component={ReceivePage} />
-                  <Route exact path="/activities" component={ActivitiesPage} />
-                  <Route exact path="/explore" component={ExplorePage} />
-                  <Route
-                    exact
-                    path="/preferences"
-                    component={PreferencesPage}
-                  />
-                  <Route
-                    exact
-                    path="/reveal-recovery-phrase/:keystoreIndex"
-                    component={RevealRecoveryPhrasePage}
-                  />
-                  <Route
-                    exact
-                    path="/reveal-private-key/:keystoreIndex"
-                    component={RevealPrivateKeyPage}
-                  />
-                  <Route
-                    exact
-                    path="/select-account"
-                    component={SelectAccountPage}
-                  />
-                  <Route exact path="/add-token" component={AddTokenPage} />
-                  <Route
-                    exact
-                    path="/edit-account/:keystoreIndex"
-                    component={EditAccountPage}
-                  />
-                  <Route
-                    exact
-                    path="/connected-dapp"
-                    component={ConnectedDappPage}
-                  />
-                  <Route
-                    exact
-                    path="/access/viewing-key"
-                    component={Secret20ViewingKeyAccessPage}
-                  />
-                  <Route exact path="/register" component={RegisterPage} />
-                  <Route
-                    exact
-                    path="/confirm-ledger/:chain"
-                    component={ConfirmLedgerPage}
-                  />
-                  <Route exact path="/send" component={SendPage} />
-                  <Route exact path="/send-evm" component={SendEvmPage} />
-                  <Route exact path="/send-tron" component={SendTronEvmPage} />
-                  <Route exact path="/send-btc" component={SendBtcPage} />
-                  <Route
-                    exact
-                    path="/ledger-grant"
-                    component={LedgerGrantPage}
-                  />
-                  <Route
-                    exact
-                    path="/setting/address-book"
-                    component={AddressBookPage}
-                  />
-                  <Route path="/sign" component={SignPage} />
-                  <Route path="/sign-bitcoin" component={SignBtcPage} />
-                  <Route path="/sign-ethereum" component={SignEvmPage} />
-                  <Route path="/sign-tron" component={SignTronPage} />
-                  <Route path="/suggest-chain" component={ChainSuggestedPage} />
-                </LogPageViewWrapper>
-              </HashRouter>
-            </ConfirmProvider>
-          </NotificationProvider>
-        </NotificationStoreProvider>
-      </LoadingIndicatorProvider>
-    </AppIntlProviderWithStorage>
-  </StoreProvider>,
+  <ErrorBoundary FallbackComponent={ErrorFallback} onError={logError}>
+    <StoreProvider>
+      <AppIntlProviderWithStorage>
+        <LoadingIndicatorProvider>
+          <NotificationStoreProvider>
+            <NotificationProvider>
+              <ConfirmProvider>
+                <HashRouter>
+                  <LogPageViewWrapper>
+                    <Route exact path="/" component={StateRenderer} />
+                    <Route exact path="/unlock" component={LockPage} />
+                    <Route exact path="/access" component={AccessPage} />
+                    <Route exact path="/receive" component={ReceivePage} />
+                    <Route
+                      exact
+                      path="/activities"
+                      component={ActivitiesPage}
+                    />
+                    <Route exact path="/explore" component={ExplorePage} />
+                    <Route
+                      exact
+                      path="/preferences"
+                      component={PreferencesPage}
+                    />
+                    <Route
+                      exact
+                      path="/reveal-recovery-phrase/:keystoreIndex"
+                      component={RevealRecoveryPhrasePage}
+                    />
+                    <Route
+                      exact
+                      path="/reveal-private-key/:keystoreIndex"
+                      component={RevealPrivateKeyPage}
+                    />
+                    <Route
+                      exact
+                      path="/select-account"
+                      component={SelectAccountPage}
+                    />
+                    <Route exact path="/add-token" component={AddTokenPage} />
+                    <Route
+                      exact
+                      path="/edit-account/:keystoreIndex"
+                      component={EditAccountPage}
+                    />
+                    <Route
+                      exact
+                      path="/connected-dapp"
+                      component={ConnectedDappPage}
+                    />
+                    <Route
+                      exact
+                      path="/access/viewing-key"
+                      component={Secret20ViewingKeyAccessPage}
+                    />
+                    <Route exact path="/register" component={RegisterPage} />
+                    <Route
+                      exact
+                      path="/confirm-ledger/:chain"
+                      component={ConfirmLedgerPage}
+                    />
+                    <Route exact path="/send" component={SendPage} />
+                    <Route exact path="/send-evm" component={SendEvmPage} />
+                    <Route
+                      exact
+                      path="/send-tron"
+                      component={SendTronEvmPage}
+                    />
+                    <Route exact path="/send-btc" component={SendBtcPage} />
+                    <Route
+                      exact
+                      path="/ledger-grant"
+                      component={LedgerGrantPage}
+                    />
+                    <Route
+                      exact
+                      path="/setting/address-book"
+                      component={AddressBookPage}
+                    />
+                    <Route path="/sign" component={SignPage} />
+                    <Route path="/sign-bitcoin" component={SignBtcPage} />
+                    <Route path="/sign-ethereum" component={SignEvmPage} />
+                    <Route path="/sign-tron" component={SignTronPage} />
+                    <Route
+                      path="/suggest-chain"
+                      component={ChainSuggestedPage}
+                    />
+                  </LogPageViewWrapper>
+                </HashRouter>
+              </ConfirmProvider>
+            </NotificationProvider>
+          </NotificationStoreProvider>
+        </LoadingIndicatorProvider>
+      </AppIntlProviderWithStorage>
+    </StoreProvider>
+  </ErrorBoundary>,
   document.getElementById("app")
 );

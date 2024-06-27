@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { observable, action, computed, makeObservable, flow } from "mobx";
 
 import { ChainInfoInner, ChainStore as BaseChainStore } from "@owallet/stores";
@@ -19,6 +20,8 @@ import { makePersistable } from "mobx-persist-store";
 export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
   @observable
   protected _selectedChainId: string;
+  @observable
+  protected _selectedFee: string = "average";
   @observable
   protected _isAllNetwork: boolean = false;
   @observable
@@ -57,14 +60,14 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
 
     makePersistable(this, {
       name: "ChainStore",
-      // @ts-ignore
-      properties: ["_isAllNetwork", "_multipleAssets", "_hideDust"],
+      properties: [
+        "_isAllNetwork",
+        "_multipleAssets",
+        "_hideDust",
+        "_selectedFee",
+      ],
       storage: window.localStorage,
-    }).then(
-      action((persistStore) => {
-        console.log(persistStore.isHydrated, "persistStore.isHydrated");
-      })
-    );
+    }).then(action((persistStore) => {}));
     this.init();
   }
 
@@ -74,6 +77,9 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
 
   get isAllNetwork(): boolean {
     return this._isAllNetwork;
+  }
+  get selectedFee(): string {
+    return this._selectedFee;
   }
   get multipleAssets(): IMultipleAsset {
     return this._multipleAssets;
@@ -89,6 +95,10 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
   @action
   setIsAllNetwork(isAll: boolean) {
     this._isAllNetwork = isAll;
+  }
+  @action
+  setSelectedFee(fee: string) {
+    this._selectedFee = fee;
   }
   @action
   setIsHideDust(isHide: boolean) {

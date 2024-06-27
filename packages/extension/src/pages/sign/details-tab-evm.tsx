@@ -61,7 +61,6 @@ export const DetailsTabEvm: FunctionComponent<{
     useEffect(() => {
       if (msgSign?.data) {
         const inputData = msgSign.data;
-        console.log("inputData", inputData);
 
         try {
           const res = tryAllABI(inputData, [

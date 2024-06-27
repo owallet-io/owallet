@@ -37,6 +37,7 @@ export const removeDataInParentheses = (inputString: string): string => {
 export interface CoinInputProps {
   amountConfig: IAmountConfig;
   balanceText?: string;
+  balance?: string;
   className?: string;
   label?: string;
   placeholder?: string;
@@ -95,11 +96,19 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
     }, [intl, error]);
 
     const [isOpenTokenSelector, setIsOpenTokenSelector] = useState(false);
-    const { queriesStore, chainStore, priceStore } = useStore();
+    const { queriesStore, chainStore, priceStore, keyRingStore, accountStore } =
+      useStore();
+    const accountInfo = accountStore.getAccount(chainStore.current.chainId);
+
+    const walletAddress = accountInfo.getAddressDisplay(
+      keyRingStore.keyRingLedgerAddresses,
+      false
+    );
 
     const queryBalances = queriesStore
       .get(amountConfig.chainId)
       .queryBalances.getQueryBech32Address(amountConfig.sender);
+
     const [balance, setBalance] = useState(
       new CoinPretty(amountConfig.sendCurrency, new Int(0))
     );
@@ -120,6 +129,20 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
           : new CoinPretty(amountConfig.sendCurrency, new Int(0))
       );
     }, [tokenDenom, chainStore.current.chainId]);
+
+    const isReadyBalance = queriesStore
+      .get(chainStore.current.chainId)
+      .queryBalances.getQueryBech32Address(walletAddress)
+      .getBalanceFromCurrency(amountConfig.sendCurrency).isReady;
+    useEffect(() => {
+      if (isReadyBalance && amountConfig.sendCurrency && walletAddress) {
+        const balance = queriesStore
+          .get(chainStore.current.chainId)
+          .queryBalances.getQueryBech32Address(walletAddress)
+          .getBalanceFromCurrency(amountConfig.sendCurrency);
+        setBalance(balance);
+      }
+    }, [isReadyBalance, walletAddress, amountConfig.sendCurrency]);
 
     const selectableCurrencies = amountConfig.sendableCurrencies
       .filter((cur) => {

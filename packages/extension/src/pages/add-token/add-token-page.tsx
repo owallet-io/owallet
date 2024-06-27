@@ -190,6 +190,7 @@ export const AddTokenPage = observer(() => {
             readOnly={tokensStore.waitingSuggestedToken != null}
             ref={register({
               required: "Contract address is required",
+              //@ts-ignore
               validate: (value: string): string | undefined => {
                 try {
                   if (chainStore.current.networkType === "cosmos") {

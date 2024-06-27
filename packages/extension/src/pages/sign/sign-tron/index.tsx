@@ -352,7 +352,7 @@ export const SignTronPage: FunctionComponent = observer(() => {
                     // disabled={signDocHelper.signDocWrapper == null}
                     color={"danger"}
                     data-loading={signInteractionStore.isLoading}
-                    loading={signInteractionStore.isLoading}
+                    disabled={signInteractionStore.isLoading}
                     onClick={async (e) => {
                       e.preventDefault();
 

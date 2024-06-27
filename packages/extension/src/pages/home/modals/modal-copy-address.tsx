@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useRef, useState } from "react";
+import React, { FC, useRef, useState } from "react";
 import SlidingPane from "react-sliding-pane";
 import styles from "./style.module.scss";
 import { SearchInput } from "../components/search-input";
@@ -38,6 +38,7 @@ export const ModalCopyAddress: FC<{
         duration: 0.25,
       },
     });
+    onRequestClose();
   };
   const btcLegacyChain = chainStore.chainInfos.find(
     (chainInfo) => chainInfo.chainId === ChainIdEnum.Bitcoin

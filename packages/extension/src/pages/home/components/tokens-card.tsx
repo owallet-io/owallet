@@ -13,7 +13,7 @@ import classnames from "classnames";
 import { SearchInput } from "./search-input";
 import { useHistory } from "react-router";
 import Switch from "react-switch";
-import Colors from "../../../theme/colors";
+import colors from "../../../theme/colors";
 
 export const TokensCard: FC<{
   dataTokens: ViewRawToken[];
@@ -38,7 +38,7 @@ export const TokensCard: FC<{
         <div className={styles.wrapHideToken}>
           <span className={styles.label}>Hide dust</span>
           <Switch
-            onColor={Colors["highlight-surface-active"]}
+            onColor={colors["highlight-surface-active"]}
             uncheckedIcon={false}
             checkedIcon={false}
             height={20}
@@ -97,7 +97,7 @@ const TokenItem: FC<{
       onClick={() => {
         try {
           onSelectToken?.(item);
-          if (chainStore.current.chainId === ChainIdEnum.TRON) {
+          if (item.chainInfo?.chainId === ChainIdEnum.TRON) {
             history.push({
               pathname: "/send-tron",
               state: {
@@ -106,7 +106,7 @@ const TokenItem: FC<{
             });
             return;
           }
-          if (chainStore.current.chainId === ChainIdEnum.Bitcoin) {
+          if (item.chainInfo?.chainId === ChainIdEnum.Bitcoin) {
             history.push({
               pathname: "/send-btc",
               state: {
@@ -115,7 +115,8 @@ const TokenItem: FC<{
             });
             return;
           }
-          if (chainStore.current.networkType === "evm") {
+          //@ts-ignore
+          if (item.chainInfo?.networkType === "evm") {
             history.push({
               pathname: "/send-evm",
               state: {

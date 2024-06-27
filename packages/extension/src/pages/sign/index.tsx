@@ -5,9 +5,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-
 import style from "./style.module.scss";
-
 import { useStore } from "../../stores";
 import { Buffer } from "buffer/";
 import classnames from "classnames";
@@ -494,7 +492,7 @@ export const SignPage: FunctionComponent = observer(() => {
                       // disabled={signDocHelper.signDocWrapper == null}
                       color={"danger"}
                       data-loading={signInteractionStore.isLoading}
-                      loading={signInteractionStore.isLoading}
+                      disabled={signInteractionStore.isLoading}
                       onClick={async (e) => {
                         e.preventDefault();
 

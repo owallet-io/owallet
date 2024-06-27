@@ -13,13 +13,10 @@ import style from "../send-cosmos/style.module.scss";
 import { useNotification } from "components/notification";
 
 import { useIntl } from "react-intl";
-import { Button } from "reactstrap";
-
 import { useHistory, useLocation } from "react-router";
 import queryString from "querystring";
-
 import { useSendTxConfig } from "@owallet/hooks";
-import { fitPopupWindow, openPopupWindow, PopupSize } from "@owallet/popup";
+import { fitPopupWindow } from "@owallet/popup";
 import { EthereumEndpoint, useLanguage } from "@owallet/common";
 import { BtcToSats } from "@owallet/bitcoin";
 import { CoinInputBtc } from "components/form/coin-input-btc";
@@ -32,6 +29,7 @@ import colors from "theme/colors";
 import useOnClickOutside from "hooks/use-click-outside";
 import { Text } from "components/common/text";
 import { Card } from "components/common/card";
+import { Button } from "components/common/button";
 
 export const SendBtcPage: FunctionComponent<{
   coinMinimalDenom?: string;
@@ -233,6 +231,7 @@ export const SendBtcPage: FunctionComponent<{
           height: "100%",
           width: "100vw",
           overflowX: "auto",
+          padding: 16,
           backgroundColor: colors["neutral-surface-bg"],
         }}
       >
@@ -361,13 +360,19 @@ export const SendBtcPage: FunctionComponent<{
           <div className={style.formInnerContainer}>
             <div>
               <AddressInput
+                inputStyle={{
+                  borderWidth: 0,
+                  padding: 0,
+                  margin: 0,
+                }}
                 inputRef={inputRef}
                 recipientConfig={sendConfigs.recipientConfig}
                 memoConfig={sendConfigs.memoConfig}
                 label={intl.formatMessage({ id: "send.input.recipient" })}
                 placeholder="Enter recipient address"
               />
-              <CoinInputBtc
+              <CoinInput
+                openSelectToken={() => setSelectToken(true)}
                 amountConfig={sendConfigs.amountConfig}
                 label={intl.formatMessage({ id: "send.input.amount" })}
                 balanceText={intl.formatMessage({
@@ -384,6 +389,10 @@ export const SendBtcPage: FunctionComponent<{
               >
                 {renderTransactionFee()}
                 <MemoInput
+                  inputStyle={{
+                    borderWidth: 0,
+                    padding: 0,
+                  }}
                   memoConfig={sendConfigs.memoConfig}
                   label={"Message"}
                   placeholder="Enter your message"
@@ -408,28 +417,46 @@ export const SendBtcPage: FunctionComponent<{
                 />
               </div>
             </div>
-            <div style={{ flex: 1 }} />
-            <Button
-              type="submit"
-              block
-              // data-loading={accountInfo.isSendingMsg === 'send'}
-              disabled={!accountInfo.isReadyToSendMsgs || !txStateIsValid}
-              className={style.sendBtn}
-              style={{
-                cursor:
-                  accountInfo.isReadyToSendMsgs || !txStateIsValid
-                    ? ""
-                    : "pointer",
-              }}
-            >
-              <span className={style.sendBtnText}>
-                {intl.formatMessage({
-                  id: "send.button.send",
-                })}
-              </span>
-            </Button>
           </div>
         </form>
+      </div>
+      <div
+        style={{
+          position: "absolute",
+          bottom: 0,
+          width: "100%",
+          height: "15%",
+          backgroundColor: colors["neutral-surface-card"],
+          borderTop: "1px solid" + colors["neutral-border-default"],
+        }}
+      >
+        <div
+          style={{
+            flexDirection: "row",
+            display: "flex",
+            padding: 16,
+            paddingTop: 0,
+          }}
+        >
+          <Button
+            type="submit"
+            // data-loading={accountInfo.isSendingMsg === 'send'}
+            disabled={!accountInfo.isReadyToSendMsgs || !txStateIsValid}
+            className={style.sendBtn}
+            style={{
+              cursor:
+                accountInfo.isReadyToSendMsgs || !txStateIsValid
+                  ? ""
+                  : "pointer",
+            }}
+          >
+            <span className={style.sendBtnText}>
+              {intl.formatMessage({
+                id: "send.button.send",
+              })}
+            </span>
+          </Button>
+        </div>
       </div>
     </>
   );

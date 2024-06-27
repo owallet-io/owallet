@@ -101,10 +101,12 @@ export const HeaderNew: FC<{
                     ? "All Networks"
                     : chainStore.current.chainName}
                 </span>
-                <img
-                  className={styles.imgIcon}
-                  src={require("assets/images/tdesign_chevron_down.svg")}
-                />
+                {isDisableCenterBtn ? null : (
+                  <img
+                    className={styles.imgIcon}
+                    src={require("assets/images/tdesign_chevron_down.svg")}
+                  />
+                )}
               </>
             )}
           </div>

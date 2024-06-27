@@ -10,6 +10,8 @@ import {
   FeeTronConfig,
   GasConfig,
   GasEvmConfig,
+  IFeeConfig,
+  IGasConfig,
 } from "@owallet/hooks";
 import { CoinPretty, Dec } from "@owallet/unit";
 import { Button } from "../../components/common/button";
@@ -20,8 +22,8 @@ import ReactSwitch from "react-switch";
 
 export const ModalFee: FC<{
   isOpen: boolean;
-  feeConfig: FeeConfig | FeeEvmConfig | FeeTronConfig;
-  gasConfig: GasConfig | GasEvmConfig;
+  feeConfig: IFeeConfig | FeeConfig | FeeEvmConfig | FeeTronConfig;
+  gasConfig: GasConfig | GasEvmConfig | IGasConfig;
   onRequestClose: () => void;
 }> = observer(({ isOpen, onRequestClose, feeConfig, gasConfig }) => {
   const { priceStore, chainStore } = useStore();
@@ -129,6 +131,7 @@ export const ModalFee: FC<{
           ) : (
             <>
               <FeeButtons
+                //@ts-ignore
                 feeConfig={feeConfig}
                 gasConfig={gasConfig}
                 priceStore={priceStore}

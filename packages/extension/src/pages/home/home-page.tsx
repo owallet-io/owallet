@@ -6,7 +6,6 @@ import { TokensCard } from "./components/tokens-card";
 import { useStore } from "../../stores";
 import { ChainIdEnum } from "@owallet/common";
 import {
-  initPrice,
   sortTokensByPrice,
   useMultipleAssets,
 } from "../../hooks/use-multiple-assets";
