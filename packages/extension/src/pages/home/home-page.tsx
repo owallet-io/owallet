@@ -45,6 +45,7 @@ export const HomePage = observer(() => {
       await queries.bitcoin.queryBitcoinBalance
         .getQueryBalance(address)
         .waitFreshResponse();
+
       return;
     } else {
       await Promise.all([
