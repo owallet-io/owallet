@@ -163,6 +163,13 @@ export const SendBtcPage: FunctionComponent<{
     return () => {};
   }, [accountInfo.bech32Address]);
 
+  console.log(
+    "!accountInfo.isReadyToSendMsgs || !txStateIsValid",
+    accountInfo.isReadyToSendMsgs,
+    txStateIsValid,
+    !accountInfo.isReadyToSendMsgs || !txStateIsValid
+  );
+
   const renderTransactionFee = () => {
     return (
       <div>
@@ -231,7 +238,6 @@ export const SendBtcPage: FunctionComponent<{
           height: "100%",
           width: "100vw",
           overflowX: "auto",
-          padding: 16,
           backgroundColor: colors["neutral-surface-bg"],
         }}
       >
@@ -256,6 +262,8 @@ export const SendBtcPage: FunctionComponent<{
         <form
           className={style.formContainer}
           onSubmit={async (e: any) => {
+            console.log("on submit");
+
             e.preventDefault();
             if (accountInfo.isReadyToSendMsgs && txStateIsValid) {
               try {
@@ -357,7 +365,12 @@ export const SendBtcPage: FunctionComponent<{
             }
           }}
         >
-          <div className={style.formInnerContainer}>
+          <div
+            style={{
+              padding: 16,
+            }}
+            className={style.formInnerContainer}
+          >
             <div>
               <AddressInput
                 inputStyle={{
@@ -418,45 +431,45 @@ export const SendBtcPage: FunctionComponent<{
               </div>
             </div>
           </div>
-        </form>
-      </div>
-      <div
-        style={{
-          position: "absolute",
-          bottom: 0,
-          width: "100%",
-          height: "15%",
-          backgroundColor: colors["neutral-surface-card"],
-          borderTop: "1px solid" + colors["neutral-border-default"],
-        }}
-      >
-        <div
-          style={{
-            flexDirection: "row",
-            display: "flex",
-            padding: 16,
-            paddingTop: 0,
-          }}
-        >
-          <Button
-            type="submit"
-            // data-loading={accountInfo.isSendingMsg === 'send'}
-            disabled={!accountInfo.isReadyToSendMsgs || !txStateIsValid}
-            className={style.sendBtn}
+          <div
             style={{
-              cursor:
-                accountInfo.isReadyToSendMsgs || !txStateIsValid
-                  ? ""
-                  : "pointer",
+              position: "absolute",
+              bottom: 0,
+              width: "100%",
+              height: "15%",
+              backgroundColor: colors["neutral-surface-card"],
+              borderTop: "1px solid" + colors["neutral-border-default"],
             }}
           >
-            <span className={style.sendBtnText}>
-              {intl.formatMessage({
-                id: "send.button.send",
-              })}
-            </span>
-          </Button>
-        </div>
+            <div
+              style={{
+                flexDirection: "row",
+                display: "flex",
+                padding: 16,
+                paddingTop: 0,
+              }}
+            >
+              <Button
+                type="submit"
+                data-loading={accountInfo.isSendingMsg === "send"}
+                disabled={!accountInfo.isReadyToSendMsgs || !txStateIsValid}
+                className={style.sendBtn}
+                style={{
+                  cursor:
+                    accountInfo.isReadyToSendMsgs || !txStateIsValid
+                      ? ""
+                      : "pointer",
+                }}
+              >
+                <span className={style.sendBtnText}>
+                  {intl.formatMessage({
+                    id: "send.button.send",
+                  })}
+                </span>
+              </Button>
+            </div>
+          </div>
+        </form>
       </div>
     </>
   );
