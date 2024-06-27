@@ -160,7 +160,6 @@ export const useMultipleAssets = (
     setIsLoading(true);
     try {
       const allChain = Array.from(hugeQueriesStore.getAllChainMap.values());
-      console.log(allChain, "allChain1");
       const allBalancePromises = allChain.map(
         async ({ address, chainInfo }) => {
           if (!address) return;
