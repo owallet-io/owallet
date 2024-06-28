@@ -387,18 +387,6 @@ export const DetailsTabEvm: FunctionComponent<{
                     : null}
                 </Text>
               </div>
-              {/* <Text
-              containerStyle={{
-                alignSelf: "flex-end",
-                display: "flex"
-              }}
-              color={colors["neutral-text-body"]}
-            >
-              ≈
-              {priceStore
-                .calculatePrice(msgs?.value ?? decodedData?.args?._amount, language.fiatCurrency)
-                ?.toString() || 0}
-            </Text> */}
             </div>
           )}
           <div
@@ -452,7 +440,10 @@ export const DetailsTabEvm: FunctionComponent<{
                 >
                   {feeConfig?.fee?.maxDecimals(8).trim(true).toString() || 0}
                 </Text>
-                <img src={require("assets/icon/tdesign_chevron-down.svg")} />
+                {(msgs && !msgs?.data) ||
+                decodedData.name === "transfer" ? null : (
+                  <img src={require("assets/icon/tdesign_chevron-down.svg")} />
+                )}
               </div>
               <Text
                 containerStyle={{

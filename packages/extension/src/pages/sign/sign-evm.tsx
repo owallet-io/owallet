@@ -335,7 +335,7 @@ export const SignEvmPage: FunctionComponent = observer(() => {
                         </Text>
                       </div>
                     </div>
-                    {/* <Text color={colors["neutral-text-body"]}>123</Text> */}
+                    {/* <Text color={colors["neutral-text-body"]}>Demo text</Text> */}
                   </div>
                   <div
                     style={{
