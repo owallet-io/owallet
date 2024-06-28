@@ -287,7 +287,7 @@ export const SignTronPage: FunctionComponent = observer(() => {
             {keyRingStore.keyRingType === "ledger" &&
             signInteractionStore.isLoading ? (
               <Button className={style.button} disabled={true} mode="outline">
-                <FormattedMessage id="sign.button.confirm-ledger" />{" "}
+                <FormattedMessage id="sign.button.confirm-ledger" />
                 <i className="fa fa-spinner fa-spin fa-fw" />
               </Button>
             ) : (

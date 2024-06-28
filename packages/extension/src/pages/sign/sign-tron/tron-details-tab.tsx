@@ -243,7 +243,7 @@ export const TronDetailsTab: FunctionComponent<{
               weight="600"
               color={colors["neutral-text-action-on-dark-bg"]}
             >
-              {JSON.stringify(dataSign).length}
+              {1}
             </Text>
           </div>
         </div>

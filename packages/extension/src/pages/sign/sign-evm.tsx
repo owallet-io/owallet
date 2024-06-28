@@ -33,6 +33,7 @@ import useOnClickOutside from "../../hooks/use-click-outside";
 import cn from "classnames/bind";
 import { Button } from "../../components/common/button";
 import { ModalFee } from "pages/modals/modal-fee";
+import { DataTab } from "./data-tab";
 
 enum Tab {
   Details,
@@ -254,6 +255,7 @@ export const SignEvmPage: FunctionComponent = observer(() => {
                   [style.dataTab]: tab === Tab.Data,
                 })}
               >
+                {tab === Tab.Data ? null : null}
                 {tab === Tab.Details ? (
                   <DetailsTabEvm
                     msgSign={dataSign?.data?.data?.data}
