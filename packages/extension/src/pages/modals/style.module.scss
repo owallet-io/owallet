@@ -21,3 +21,87 @@ input[type="number"] {
     margin-right: -16px;
   }
 }
+
+.token-item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid $neutral-border-default;
+
+  .wrap-left-block {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+
+    .logo-token-and-chain {
+      .token-wrap {
+        width: 44px;
+        height: 44px;
+        border-radius: 999px;
+        background-color: $neutral-surface-action2;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+
+        .token {
+          width: 32px;
+          height: 32px;
+          border-radius: 999px;
+        }
+
+        .chain-wrap {
+          position: absolute;
+          right: -3px;
+          bottom: -1px;
+          border-radius: 999px;
+          width: 21px;
+          height: 21px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background-color: $neutral-surface-card;
+          border: 1px solid $neutral-border-bold;
+
+          .chain {
+            width: 18px;
+            height: 18px;
+            border-radius: 999px;
+          }
+        }
+      }
+    }
+
+    .body-token-item {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  .right-block {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-end;
+  }
+
+  .title {
+    color: $neutral-text-title;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+
+    .price-change {
+      font-size: 12px;
+      font-weight: 400;
+    }
+  }
+
+  .sub-title {
+    color: $neutral-text-body;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+  }
+}

@@ -62,6 +62,19 @@ export const removeDataInParentheses = (inputString: string): string => {
   if (!inputString) return;
   return inputString.replace(/\([^)]*\)/g, "");
 };
+export const extractDataInParentheses = (
+  inputString: string
+): string | null => {
+  if (!inputString) return;
+  const startIndex = inputString.indexOf("(");
+  const endIndex = inputString.indexOf(")");
+  if (startIndex !== -1 && endIndex !== -1) {
+    return inputString.substring(startIndex + 1, endIndex);
+  } else {
+    return null;
+  }
+};
+
 export const MapChainIdToNetwork = {
   [ChainIdEnum.BNBChain]: Network.BINANCE_SMART_CHAIN,
   [ChainIdEnum.Ethereum]: Network.ETHEREUM,

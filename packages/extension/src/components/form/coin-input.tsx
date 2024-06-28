@@ -1,15 +1,6 @@
 import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
-import classnames from "classnames";
 import styleCoinInput from "./coin-input.module.scss";
-import {
-  ButtonDropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
-  FormFeedback,
-  InputGroup,
-  Label,
-} from "reactstrap";
+import { FormFeedback } from "reactstrap";
 import { observer } from "mobx-react-lite";
 import {
   EmptyAmountError,
@@ -20,9 +11,8 @@ import {
   IAmountConfig,
 } from "@owallet/hooks";
 import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
-import { FormattedMessage, useIntl } from "react-intl";
+import { useIntl } from "react-intl";
 import { useStore } from "../../stores";
-import { DenomHelper } from "@owallet/common";
 import { Card } from "../common/card";
 import colors from "../../theme/colors";
 import { Text } from "../common/text";
@@ -95,7 +85,6 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
       }
     }, [intl, error]);
 
-    const [isOpenTokenSelector, setIsOpenTokenSelector] = useState(false);
     const { queriesStore, chainStore, priceStore, keyRingStore, accountStore } =
       useStore();
     const accountInfo = accountStore.getAccount(chainStore.current.chainId);
@@ -143,19 +132,6 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
         setBalance(balance);
       }
     }, [isReadyBalance, walletAddress, amountConfig.sendCurrency]);
-
-    const selectableCurrencies = amountConfig.sendableCurrencies
-      .filter((cur) => {
-        const bal = queryBalances.getBalanceFromCurrency(cur);
-        return !bal?.toDec()?.isZero();
-      })
-      .sort((a, b) => {
-        return a.coinDenom < b.coinDenom ? -1 : 1;
-      });
-
-    const denomHelper = new DenomHelper(
-      amountConfig.sendCurrency.coinMinimalDenom
-    );
 
     const getName = (name) => {
       return removeDataInParentheses(name);
@@ -301,150 +277,6 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
           ) : null}
         </div>
       </Card>
-    );
-
-    return (
-      <React.Fragment>
-        <div className={className}>
-          <Label
-            for={`selector-${randomId}`}
-            className="form-control-label"
-            style={{ width: "100%" }}
-          >
-            <FormattedMessage id="component.form.coin-input.token.label" />
-          </Label>
-          <ButtonDropdown
-            id={`selector-${randomId}`}
-            className={classnames(styleCoinInput.tokenSelector, {
-              disabled: amountConfig.fraction === 1,
-            })}
-            isOpen={isOpenTokenSelector}
-            toggle={() => setIsOpenTokenSelector((value) => !value)}
-            disabled={amountConfig.fraction === 1}
-          >
-            <DropdownToggle caret>
-              {amountConfig.sendCurrency.coinDenom}{" "}
-              {denomHelper.contractAddress &&
-                ` (${denomHelper.contractAddress})`}
-            </DropdownToggle>
-            <DropdownMenu>
-              {selectableCurrencies.map((currency) => {
-                const denomHelper = new DenomHelper(currency.coinMinimalDenom);
-                return (
-                  <DropdownItem
-                    key={currency.coinMinimalDenom}
-                    active={
-                      currency.coinMinimalDenom ===
-                      amountConfig.sendCurrency.coinMinimalDenom
-                    }
-                    onClick={(e) => {
-                      e.preventDefault();
-
-                      amountConfig.setSendCurrency(currency);
-                    }}
-                  >
-                    {currency.coinDenom}{" "}
-                    {denomHelper.contractAddress &&
-                      ` (${denomHelper.contractAddress})`}
-                  </DropdownItem>
-                );
-              })}
-            </DropdownMenu>
-          </ButtonDropdown>
-        </div>
-        <div className={className}>
-          {label ? (
-            <Label
-              for={`input-${randomId}`}
-              className={classnames(
-                "form-control-label",
-                styleCoinInput.labelBalance
-              )}
-            >
-              <div>{label}</div>
-              {!disableAllBalance ? (
-                <div
-                  className={classnames(
-                    styleCoinInput.balance,
-                    styleCoinInput.clickable,
-                    {
-                      [styleCoinInput.clicked]: amountConfig.isMax,
-                    }
-                  )}
-                  onClick={(e) => {
-                    e.preventDefault();
-
-                    amountConfig.toggleIsMax();
-                  }}
-                >
-                  <span>{`Total: ${
-                    reduceStringAssets(
-                      balance?.trim(true)?.maxDecimals(6)?.toString()
-                    ) || 0
-                  }`}</span>
-                </div>
-              ) : null}
-            </Label>
-          ) : null}
-          <InputGroup className={styleCoinInput.inputGroup}>
-            <Input
-              className={classnames(
-                "form-control-alternative",
-                styleCoinInput.input
-              )}
-              id={`input-${randomId}`}
-              type="number"
-              value={amountConfig.amount}
-              onChange={(e) => {
-                e.preventDefault();
-
-                amountConfig.setAmount(e.target.value);
-              }}
-              step={new Dec(1)
-                .quo(
-                  DecUtils.getTenExponentNInPrecisionRange(
-                    amountConfig.sendCurrency?.coinDecimals ?? 0
-                  )
-                )
-                .toString(amountConfig.sendCurrency?.coinDecimals ?? 0)}
-              min={0}
-              disabled={amountConfig.isMax}
-              autoComplete="off"
-              placeholder={placeholder}
-            />
-            <div
-              style={{ padding: 7.5, textAlign: "center", cursor: "pointer" }}
-              onClick={(e) => {
-                e.preventDefault();
-                amountConfig.toggleIsMax();
-              }}
-            >
-              <div
-                style={{
-                  width: 50,
-                  height: 28,
-                  backgroundColor: amountConfig.isMax ? "#7664E4" : "#f8fafc",
-                  borderRadius: 4,
-                }}
-              >
-                <span
-                  style={{
-                    color: amountConfig.isMax ? "white" : "#7664E4",
-                    fontSize: 14,
-                  }}
-                >
-                  MAX
-                </span>
-              </div>
-            </div>
-          </InputGroup>
-          {errorText != null ? (
-            <FormFeedback style={{ display: "block", position: "sticky" }}>
-              {errorText}
-            </FormFeedback>
-          ) : null}
-        </div>
-      </React.Fragment>
     );
   }
 );
