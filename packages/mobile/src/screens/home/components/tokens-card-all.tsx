@@ -17,9 +17,9 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import { OWBox } from "../../../components/card";
-import { useStore } from "../../../stores";
-import { maskedNumber, removeDataInParentheses } from "../../../utils/helper";
+import { OWBox } from "@components/card";
+import { useStore } from "@src/stores";
+import { maskedNumber, removeDataInParentheses } from "@utils/helper";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { Text } from "@src/components/text";
 import { SCREENS } from "@src/common/constants";
@@ -40,6 +40,7 @@ import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
 import { OWSearchInput } from "@src/components/ow-search-input";
 import { AppCurrency } from "@owallet/types";
 import { initPrice } from "@src/screens/home/hooks/use-multiple-assets";
+import images from "@src/assets/images";
 
 export const TokensCardAll: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -86,7 +87,7 @@ export const TokensCardAll: FunctionComponent<{
               }}
             >
               <FastImage
-                source={require("../../assets/images/img_money.png")}
+                source={images.img_money}
                 style={{
                   width: 150,
                   height: 150,

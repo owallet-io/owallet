@@ -22,10 +22,10 @@ import { useTheme } from "@src/themes/theme-provider";
 import { useFocusEffect } from "@react-navigation/native";
 import { ChainUpdaterService } from "@owallet/background";
 import { ChainIdEnum, getBase58Address } from "@owallet/common";
-import { TokensCardAll } from "./tokens-card-all";
-import { AccountBoxAll } from "./account-box-new";
+import { TokensCardAll } from "./components/tokens-card-all";
+import { AccountBoxAll } from "./components/account-box-new";
 
-import { EarningCardNew } from "./earning-card-new";
+import { EarningCardNew } from "./components/earning-card-new";
 import { InjectedProviderUrl } from "../web/config";
 import { useMultipleAssets } from "@src/screens/home/hooks/use-multiple-assets";
 import { PricePretty } from "@owallet/unit";
@@ -39,9 +39,7 @@ import { useCoinGeckoPrices, useLoadTokens } from "@owallet/hooks";
 import { flatten } from "lodash";
 import { showToast } from "@src/utils/helper";
 import ByteBrew from "react-native-bytebrew-sdk";
-import { SCREENS } from "@src/common/constants";
 import { gql, useQuery } from "@apollo/client";
-import { Text } from "@src/components/text";
 const GET_DATA = gql`
   query CollectionCounts(
     $filterForSale: SaleType

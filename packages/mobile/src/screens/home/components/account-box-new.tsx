@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useState, useTransition } from "react";
 import { observer } from "mobx-react-lite";
-import { OWBox } from "../../../components/card";
+import { OWBox } from "@components/card";
 import {
   View,
   StyleSheet,
@@ -9,7 +9,7 @@ import {
   Clipboard,
 } from "react-native";
 import { Text } from "@src/components/text";
-import { useStore } from "../../../stores";
+import { useStore } from "@src/stores";
 import { useTheme } from "@src/themes/theme-provider";
 import { CheckIcon, CopyFillIcon, DownArrowIcon } from "@src/components/icon";
 import { metrics, spacing } from "@src/themes";
@@ -25,6 +25,7 @@ import { navigate } from "@src/router/root";
 import OWText from "@src/components/text/ow-text";
 import { useSimpleTimer } from "@src/hooks";
 import LottieView from "lottie-react-native";
+import images from "@src/assets/images";
 
 export const AccountBoxAll: FunctionComponent<{
   totalPriceBalance: string;
@@ -223,7 +224,7 @@ export const AccountBoxAll: FunctionComponent<{
           >
             <Image
               style={styles.infoIcon}
-              source={require("../../assets/images/default-avatar.png")}
+              source={images.default_avatar}
               resizeMode="contain"
               fadeDuration={0}
             />

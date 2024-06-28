@@ -1,7 +1,7 @@
 import OWCard from "@src/components/card/ow-card";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import OWText from "@src/components/text/ow-text";
-import { EarningCardNew } from "@src/screens/home/earning-card-new";
+import { EarningCardNew } from "@src/screens/home/components/earning-card-new";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
