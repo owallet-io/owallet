@@ -96,8 +96,12 @@ const TokenItem: FC<{
   return (
     <div
       style={{ cursor: "pointer" }}
-      onClick={() => {
+      onClick={async () => {
         try {
+          if (item && item.chainInfo) {
+            chainStore.selectChain(item?.chainInfo?.chainId);
+            await chainStore.saveLastViewChainId();
+          }
           onSelectToken?.(item);
           if (item.chainInfo?.chainId === ChainIdEnum.TRON) {
             history.push({
@@ -117,8 +121,12 @@ const TokenItem: FC<{
             });
             return;
           }
-          //@ts-ignore
-          if (item.chainInfo?.networkType === "evm") {
+
+          if (
+            //@ts-ignore
+            item.chainInfo?.networkType === "evm" ||
+            chainStore.current.networkType === "evm"
+          ) {
             history.push({
               pathname: "/send-evm",
               state: {

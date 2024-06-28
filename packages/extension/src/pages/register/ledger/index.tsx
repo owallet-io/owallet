@@ -44,24 +44,20 @@ export const ImportLedgerPage: FunctionComponent<{
   registerConfig: RegisterConfig;
 }> = observer(({ registerConfig }) => {
   const intl = useIntl();
-  const { chainStore, analyticsStore } = useStore();
+  const { analyticsStore } = useStore();
   const bip44Option = useBIP44Option(118);
 
-  const { register, handleSubmit, getValues, errors } = useForm<FormData>({
-    defaultValues: {
-      name: "",
-      password: "",
-      confirmPassword: "",
-    },
-  });
+  const { register, handleSubmit, getValues, errors, setValue } =
+    useForm<FormData>({
+      defaultValues: {
+        name: "",
+        password: "",
+        confirmPassword: "",
+      },
+    });
 
   return (
     <div>
-      {/* <div className={style.title}>
-        {intl.formatMessage({
-          id: "register.name"
-        })}
-      </div> */}
       <Form
         className={style.formContainer}
         onSubmit={handleSubmit(async (data: FormData) => {
@@ -89,6 +85,9 @@ export const ImportLedgerPage: FunctionComponent<{
           })}
           styleInputGroup={{
             marginBottom: 15,
+          }}
+          onAction={() => {
+            setValue("name", "");
           }}
           leftIcon={<img src={require("assets/icon/wallet.svg")} alt="" />}
           rightIcon={<img src={require("assets/icon/circle-del.svg")} alt="" />}

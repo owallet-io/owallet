@@ -197,7 +197,6 @@ export const useMultipleAssets = (
       );
 
       await Promise.allSettled(allBalancePromises);
-      console.log("done,", allTokens);
       setIsLoading(false);
       chainStore.setMultipleAsset({
         dataTokens: allTokens,

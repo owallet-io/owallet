@@ -6,12 +6,9 @@ import {
   MemoInput,
 } from "components/form";
 import { useStore } from "src/stores";
-
 import { observer } from "mobx-react-lite";
-
 import style from "../send-cosmos/style.module.scss";
 import { useNotification } from "components/notification";
-
 import { useIntl } from "react-intl";
 import { useHistory, useLocation } from "react-router";
 import queryString from "querystring";
@@ -19,7 +16,6 @@ import { useSendTxConfig } from "@owallet/hooks";
 import { fitPopupWindow } from "@owallet/popup";
 import { EthereumEndpoint, useLanguage } from "@owallet/common";
 import { BtcToSats } from "@owallet/bitcoin";
-import { CoinInputBtc } from "components/form/coin-input-btc";
 import { Address } from "@owallet/crypto";
 import { HeaderNew } from "layouts/footer-layout/components/header";
 import { HeaderModal } from "pages/home/components/header-modal";
@@ -135,6 +131,19 @@ export const SendBtcPage: FunctionComponent<{
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query.defaultAmount, query.defaultMemo, query.defaultRecipient]);
 
+  useEffect(() => {
+    // @ts-ignore
+    const token = history.location.state?.token;
+    if (token) {
+      const selectedKey = token.token?.currency?.coinMinimalDenom;
+      const currency = sendConfigs.amountConfig.sendableCurrencies.find(
+        (cur) => cur.coinMinimalDenom === selectedKey
+      );
+      sendConfigs.amountConfig.setSendCurrency(currency);
+    }
+    // @ts-ignore
+  }, [history.location.state?.token]);
+
   const sendConfigError =
     sendConfigs.recipientConfig.getError() ??
     sendConfigs.amountConfig.getError() ??
@@ -162,13 +171,6 @@ export const SendBtcPage: FunctionComponent<{
 
     return () => {};
   }, [accountInfo.bech32Address]);
-
-  console.log(
-    "!accountInfo.isReadyToSendMsgs || !txStateIsValid",
-    accountInfo.isReadyToSendMsgs,
-    txStateIsValid,
-    !accountInfo.isReadyToSendMsgs || !txStateIsValid
-  );
 
   const renderTransactionFee = () => {
     return (
@@ -257,7 +259,12 @@ export const SendBtcPage: FunctionComponent<{
           isOpen={openSetting}
         />
 
-        <HeaderNew isDisableCenterBtn={true} isGoBack isConnectDapp={false} />
+        <HeaderNew
+          showNetwork={true}
+          isDisableCenterBtn={true}
+          isGoBack
+          isConnectDapp={false}
+        />
         <HeaderModal title={"Send".toUpperCase()} />
         <form
           className={style.formContainer}

@@ -250,6 +250,9 @@ export const RecoverMnemonicPage: FunctionComponent<{
               <img src={require("assets/icon/circle-del.svg")} alt="" />
             }
             type="text"
+            onAction={() => {
+              setValue("name", "");
+            }}
             name="name"
             ref={register({
               required: intl.formatMessage({

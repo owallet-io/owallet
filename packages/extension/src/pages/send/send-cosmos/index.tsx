@@ -6,7 +6,6 @@ import {
   MemoInput,
 } from "components/form";
 import { useStore } from "src/stores";
-
 import { observer } from "mobx-react-lite";
 import style from "./style.module.scss";
 import { useNotification } from "components/notification";
@@ -22,7 +21,6 @@ import { Text } from "components/common/text";
 import { Button } from "components/common/button";
 import colors from "theme/colors";
 import useOnClickOutside from "hooks/use-click-outside";
-import { FeeModal } from "pages/sign/modals/fee-modal";
 import { ModalFee } from "pages/modals/modal-fee";
 import { Card } from "components/common/card";
 import { HeaderModal } from "pages/home/components/header-modal";
@@ -231,7 +229,12 @@ export const SendPage: FunctionComponent<{
         isOpen={openSetting}
       />
 
-      <HeaderNew isDisableCenterBtn={true} isGoBack isConnectDapp={false} />
+      <HeaderNew
+        showNetwork={true}
+        isDisableCenterBtn={true}
+        isGoBack
+        isConnectDapp={false}
+      />
       <HeaderModal title={"Send".toUpperCase()} />
       <form
         className={style.formContainer}

@@ -1,13 +1,10 @@
-import React, { FunctionComponent, useEffect, useRef, useState } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { AddressInput, CoinInput } from "components/form";
 import { useStore } from "src/stores";
 import { observer } from "mobx-react-lite";
-
 import style from "../send-evm/style.module.scss";
 import { useNotification } from "components/notification";
-
 import { useIntl } from "react-intl";
-
 import { useHistory, useLocation } from "react-router";
 import queryString from "querystring";
 import {
@@ -16,21 +13,20 @@ import {
   useSendTxTronConfig,
 } from "@owallet/hooks";
 import { fitPopupWindow } from "@owallet/popup";
-import { EthereumEndpoint, useLanguage } from "@owallet/common";
+import { EthereumEndpoint } from "@owallet/common";
 import { FeeInput } from "components/form/fee-input";
 import { HeaderNew } from "layouts/footer-layout/components/header";
 import { HeaderModal } from "src/pages/home/components/header-modal";
 import { ModalChooseTokens } from "src/pages/modals/modal-choose-tokens";
-import useOnClickOutside from "hooks/use-click-outside";
 import colors from "theme/colors";
 import { Card } from "components/common/card";
 import { Button } from "components/common/button";
+
 export const SendTronEvmPage: FunctionComponent<{
   coinMinimalDenom?: string;
   tokensTrc20Tron?: Array<any>;
-}> = observer(({ coinMinimalDenom, tokensTrc20Tron }) => {
+}> = observer(({ coinMinimalDenom }) => {
   const history = useHistory();
-  const language = useLanguage();
   let search = useLocation().search || coinMinimalDenom || "";
   if (search.startsWith("?")) {
     search = search.slice(1);
@@ -52,12 +48,7 @@ export const SendTronEvmPage: FunctionComponent<{
 
   const intl = useIntl();
   const inputRef = React.useRef(null);
-  const [openSetting, setOpenSetting] = useState(false);
-  const settingRef = useRef();
 
-  useOnClickOutside(settingRef, () => {
-    setOpenSetting(false);
-  });
   const [isShowSelectToken, setSelectToken] = useState(false);
 
   useEffect(() => {
@@ -68,8 +59,7 @@ export const SendTronEvmPage: FunctionComponent<{
 
   const notification = useNotification();
 
-  const { chainStore, priceStore, accountStore, queriesStore, keyRingStore } =
-    useStore();
+  const { chainStore, accountStore, queriesStore, keyRingStore } = useStore();
   const current = chainStore.current;
 
   const accountInfo = accountStore.getAccount(current.chainId);
@@ -177,6 +167,20 @@ export const SendTronEvmPage: FunctionComponent<{
       }
     }
   };
+
+  useEffect(() => {
+    // @ts-ignore
+    const token = history.location.state?.token;
+    if (token) {
+      const selectedKey = token.token?.currency?.coinMinimalDenom;
+      const currency = sendConfigs.amountConfig.sendableCurrencies.find(
+        (cur) => cur.coinMinimalDenom === selectedKey
+      );
+      sendConfigs.amountConfig.setSendCurrency(currency);
+    }
+    // @ts-ignore
+  }, [history.location.state?.token]);
+
   const queries = queriesStore.get(current.chainId);
   const { feeTrx } = useGetFeeTron(
     addressTronBase58,
@@ -212,11 +216,16 @@ export const SendTronEvmPage: FunctionComponent<{
           isOpen={isShowSelectToken}
         />
 
-        <HeaderNew isDisableCenterBtn={true} isGoBack isConnectDapp={false} />
+        <HeaderNew
+          showNetwork={true}
+          isDisableCenterBtn={true}
+          isGoBack
+          isConnectDapp={false}
+        />
         <HeaderModal title={"Send".toUpperCase()} />
         <form className={style.formContainer} onSubmit={onSend}>
           <div className={style.formInnerContainer}>
-            <div>
+            <div style={{ padding: 16 }}>
               <AddressInput
                 inputStyle={{
                   borderWidth: 0,
@@ -253,25 +262,44 @@ export const SendTronEvmPage: FunctionComponent<{
                 />
               </Card>
             </div>
-            <div style={{ flex: 1 }} />
-            <Button
-              type="submit"
-              data-loading={accountInfo.isSendingMsg === "send"}
-              disabled={!accountInfo.isReadyToSendMsgs || !txStateIsValid}
-              className={style.sendBtn}
+          </div>
+          <div
+            style={{
+              position: "absolute",
+              bottom: 0,
+              width: "100%",
+              height: "15%",
+              backgroundColor: colors["neutral-surface-card"],
+              borderTop: "1px solid" + colors["neutral-border-default"],
+            }}
+          >
+            <div
               style={{
-                cursor:
-                  accountInfo.isReadyToSendMsgs || !txStateIsValid
-                    ? ""
-                    : "pointer",
+                flexDirection: "row",
+                display: "flex",
+                padding: 16,
+                paddingTop: 0,
               }}
             >
-              <span className={style.sendBtnText}>
-                {intl.formatMessage({
-                  id: "send.button.send",
-                })}
-              </span>
-            </Button>
+              <Button
+                type="submit"
+                data-loading={accountInfo.isSendingMsg === "send"}
+                disabled={!accountInfo.isReadyToSendMsgs || !txStateIsValid}
+                className={style.sendBtn}
+                style={{
+                  cursor:
+                    accountInfo.isReadyToSendMsgs || !txStateIsValid
+                      ? ""
+                      : "pointer",
+                }}
+              >
+                <span className={style.sendBtnText}>
+                  {intl.formatMessage({
+                    id: "send.button.send",
+                  })}
+                </span>
+              </Button>
+            </div>
           </div>
         </form>
       </div>
