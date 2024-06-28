@@ -12,13 +12,12 @@ import {
   IMemoConfig,
   SignDocHelper,
 } from "@owallet/hooks";
-import { Label } from "reactstrap";
 import { renderDirectMessage } from "./direct";
 import { Text } from "../../components/common/text";
 import colors from "../../theme/colors";
 import { Card } from "../../components/common/card";
 import { CosmosRenderArgs } from "./components/render-cosmos-args";
-import { toDisplay, useLanguage } from "@owallet/common";
+import { useLanguage } from "@owallet/common";
 import { Address } from "../../components/address";
 
 export const DetailsTab: FunctionComponent<{
@@ -100,7 +99,7 @@ export const DetailsTab: FunctionComponent<{
               marginTop: 14,
             }}
             onClick={() => {
-              setOpenSetting();
+              setOpenSetting(true);
             }}
           >
             <div
@@ -133,7 +132,7 @@ export const DetailsTab: FunctionComponent<{
                   weight="600"
                   color={colors["primary-text-action"]}
                 >
-                  {feeConfig.fee.maxDecimals(6).trim(true).toString() || 0}
+                  {feeConfig?.fee?.maxDecimals(6).trim(true).toString() || 0}
                 </Text>
                 <img src={require("assets/icon/tdesign_chevron-down.svg")} />
               </div>
@@ -226,12 +225,52 @@ export const DetailsTab: FunctionComponent<{
         </div>
       );
     };
+    const renderInfo = (condition, label, leftContent) => {
+      if (condition && condition !== "") {
+        return (
+          <div
+            style={{
+              marginTop: 14,
+              height: "auto",
+              alignItems: "center",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                marginBottom: 14,
+              }}
+            >
+              <div>
+                <Text weight="600">{label}</Text>
+              </div>
+              <div
+                style={{
+                  alignItems: "flex-end",
+                  maxWidth: "65%",
+                  wordBreak: "break-all",
+                }}
+              >
+                <div>{leftContent}</div>
+              </div>
+            </div>
+            <div
+              style={{
+                width: "100%",
+                height: 1,
+                backgroundColor: colors["neutral-border-default"],
+              }}
+            />
+          </div>
+        );
+      }
+    };
 
     const renderedMsgs = (() => {
       if (mode === "amino") {
         return (msgs as readonly Msg[]).map((msg, i) => {
-          console.log("sign send here", msg);
-
           const msgContent = renderAminoMessage(
             accountStore.getAccount(chainStore.current.chainId).msgOpts,
             msg,
@@ -254,9 +293,38 @@ export const DetailsTab: FunctionComponent<{
                   marginTop: 24,
                 }}
               >
-                {renderDestination(
-                  msg?.value?.from_address,
-                  msg?.value?.to_address
+                {msg?.value?.to_address
+                  ? renderDestination(
+                      msg?.value?.from_address,
+                      msg?.value?.to_address
+                    )
+                  : null}
+                {renderInfo(
+                  msg?.value?.contract,
+                  "Interaction contract",
+                  <Text color={colors["neutral-text-body"]}>
+                    {
+                      <Address
+                        maxCharacters={6}
+                        lineBreakBeforePrefix={false}
+                        textDecor={"underline"}
+                        textColor={colors["neutral-text-body"]}
+                      >
+                        {msg?.value?.contract}
+                      </Address>
+                    }
+                  </Text>
+                )}
+                {renderInfo(
+                  true,
+                  "Memo",
+                  <Text color={colors["neutral-text-body"]}>
+                    {memoConfig.memo
+                      ? memoConfig.memo
+                      : intl.formatMessage({
+                          id: "sign.info.warning.empty-memo",
+                        })}
+                  </Text>
                 )}
               </Card>
             </React.Fragment>
@@ -338,31 +406,11 @@ export const DetailsTab: FunctionComponent<{
             label={intl.formatMessage({ id: "sign.info.memo" })}
             rows={1}
           />
-        ) : (
-          <React.Fragment>
-            <Label for="memo" className="form-control-label">
-              <FormattedMessage id="sign.info.memo" />
-            </Label>
-            <div
-              id="memo"
-              style={{
-                marginBottom: "8px",
-                color: memoConfig.memo ? "#353945" : "#AAAAAA",
-                fontSize: 12,
-              }}
-            >
-              <div>
-                {memoConfig.memo
-                  ? memoConfig.memo
-                  : intl.formatMessage({ id: "sign.info.warning.empty-memo" })}
-              </div>
-            </div>
-          </React.Fragment>
-        )}
+        ) : null}
         <Card
           containerStyle={{
             borderRadius: 12,
-            border: "2px solid" + colors["neutral-text-title"],
+            border: "1px solid" + colors["neutral-border-default"],
             padding: 8,
             marginTop: 12,
           }}

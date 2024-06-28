@@ -342,16 +342,6 @@ export const CosmosRenderArgs: FunctionComponent<{
       {tokensIn?.length > 0
         ? tokensIn.map((token, index) => renderPath(token))
         : renderPath()}
-      {/* {contractInfo && ask_asset_info ? renderPath(contractInfo, ask_asset_info) : null}
-      {txInfo?.extraInfo?.remote_address && !txInfo?.decode?.send?.contract
-        ? renderPath(null, null, txInfo?.unpacked?.contract, txInfo?.extraInfo?.remote_address)
-        : null}
-      {txInfo?.decode?.send?.contract && !ask_asset_info
-        ? renderPath(contractInfo, null, null, txInfo?.decode?.send?.contract)
-        : null}
-      {txInfo?.decode?.transfer_to_remote
-        ? renderPath(null, null, txInfo?.unpacked?.contract, txInfo?.decode?.transfer_to_remote.remote_address)
-        : null} */}
 
       {isMore ? null : (
         <>
