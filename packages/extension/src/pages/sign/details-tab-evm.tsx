@@ -397,7 +397,7 @@ export const DetailsTabEvm: FunctionComponent<{
               marginTop: 14,
             }}
             onClick={() => {
-              if ((msgs && !msgs?.data) || decodedData.name === "transfer") {
+              if ((msgs && !msgs?.data) || decodedData?.name === "transfer") {
                 return;
               }
               setOpenSetting();
@@ -441,7 +441,7 @@ export const DetailsTabEvm: FunctionComponent<{
                   {feeConfig?.fee?.maxDecimals(8).trim(true).toString() || 0}
                 </Text>
                 {(msgs && !msgs?.data) ||
-                decodedData.name === "transfer" ? null : (
+                decodedData?.name === "transfer" ? null : (
                   <img src={require("assets/icon/tdesign_chevron-down.svg")} />
                 )}
               </div>
