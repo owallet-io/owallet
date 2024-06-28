@@ -39,103 +39,14 @@ import { useCoinGeckoPrices, useLoadTokens } from "@owallet/hooks";
 import { flatten } from "lodash";
 import { showToast } from "@src/utils/helper";
 import ByteBrew from "react-native-bytebrew-sdk";
-import { gql, useQuery } from "@apollo/client";
-const GET_DATA = gql`
-  query CollectionCounts(
-    $filterForSale: SaleType
-    $owner: String
-    $seller: String
-    $limit: Int
-    $offset: Int
-  ) {
-    collectionCounts(
-      filterForSale: $filterForSale
-      owner: $owner
-      seller: $seller
-      limit: $limit
-      offset: $offset
-    ) {
-      collectionCounts {
-        count
-        collection {
-          contractAddress
-          contractUri
-          name
-          media {
-            ...MediaFields
-            __typename
-          }
-          __typename
-        }
-        __typename
-      }
-      pageInfo {
-        total
-        offset
-        limit
-        __typename
-      }
-      __typename
-    }
-  }
-
-  fragment MediaFields on Media {
-    type
-    url
-    height
-    width
-    visualAssets {
-      xs {
-        type
-        url
-        height
-        width
-        staticUrl
-        __typename
-      }
-      sm {
-        type
-        url
-        height
-        width
-        staticUrl
-        __typename
-      }
-      md {
-        type
-        url
-        height
-        width
-        staticUrl
-        __typename
-      }
-      lg {
-        type
-        url
-        height
-        width
-        staticUrl
-        __typename
-      }
-      xl {
-        type
-        url
-        height
-        width
-        staticUrl
-        __typename
-      }
-      __typename
-    }
-    __typename
-  }
-`;
+import { useQuery } from "@apollo/client";
+import { CollectionCounts } from "@src/graphql/queries";
 
 export const HomeScreen: FunctionComponent = observer((props) => {
   const [refreshing, setRefreshing] = React.useState(false);
   const [refreshDate, setRefreshDate] = React.useState(Date.now());
 
-  const { loading, error, data } = useQuery(GET_DATA, {
+  const { loading, error, data } = useQuery(CollectionCounts, {
     variables: {
       filterForSale: null,
       owner: "stars1hvr9d72r5um9lvt0rpkd4r75vrsqtw6ymak76g",
@@ -450,12 +361,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
           totalPriceBalance
         )?.toString()}
       />
-      {chainStore.current.networkType === "cosmos" &&
-      !appInitStore.getInitApp.isAllNetworks ? (
-        <EarningCardNew />
-      ) : (
-        <EarningCardNew defaultChain={ChainIdEnum.Oraichain} />
-      )}
+      <EarningCardNew />
       <TokensCardAll dataTokens={dataTokens} />
     </PageWithScrollViewInBottomTabView>
   );

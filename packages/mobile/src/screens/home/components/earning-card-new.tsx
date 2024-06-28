@@ -20,18 +20,31 @@ import { useSmartNavigation } from "../../../navigation.provider";
 import { useStore } from "../../../stores";
 import { metrics } from "../../../themes";
 import ByteBrew from "react-native-bytebrew-sdk";
+import { ChainIdEnum } from "@oraichain/oraidex-common";
 
-export const EarningCardNew: FunctionComponent<{
-  defaultChain?: string;
-}> = observer(({ defaultChain }) => {
+export const EarningCardNew = observer(({}) => {
   const route = useRoute<RouteProp<Record<string, {}>, string>>();
   const smartNavigation = useSmartNavigation();
-  const { chainStore, accountStore, queriesStore, priceStore, analyticsStore } =
-    useStore();
+  const {
+    chainStore,
+    accountStore,
+    queriesStore,
+    priceStore,
+    analyticsStore,
+    appInitStore,
+  } = useStore();
+  if (
+    chainStore.current.networkType !== "cosmos" &&
+    !appInitStore.getInitApp.isAllNetworks
+  )
+    return;
   const navigation = useNavigation();
-
+  //This is default chain when network is all network
+  const defaultChain = ChainIdEnum.Oraichain;
   const { colors } = useTheme();
-  const chainId = defaultChain ?? chainStore.current.chainId;
+  const chainId = appInitStore.getInitApp.isAllNetworks
+    ? defaultChain
+    : chainStore.current.chainId;
   const styles = styling(colors);
   const queries = queriesStore.get(chainId);
   const account = accountStore.getAccount(chainId);
