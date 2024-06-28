@@ -7,22 +7,18 @@ import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
 import React, { useEffect, useState } from "react";
 import { ScrollView, TouchableOpacity, View } from "react-native";
-import { NetworkModalCustom } from "../home/components/network-modal-custom";
 import { AddTokenCosmosScreen } from "./add-token-cosmos";
 import { AddTokenEVMScreen } from "./add-token-evm";
 import ByteBrew from "react-native-bytebrew-sdk";
+import { NetworkModal } from "../home/components";
 
 export const AddTokenScreen = observer(() => {
-  const { modalStore } = useStore();
-  const [selectedChain, setChain] = useState(null);
+  const { modalStore, chainStore } = useStore();
+
   const { colors } = useTheme();
   useEffect(() => {
     ByteBrew.NewCustomEvent(`Add Token Screen`);
   }, []);
-  const onSelectChain = (chain) => {
-    setChain(chain);
-    modalStore.close();
-  };
 
   const _onPressNetworkModal = () => {
     modalStore.setOptions({
@@ -31,31 +27,13 @@ export const AddTokenScreen = observer(() => {
         enableOverDrag: false,
       },
     });
-    modalStore.setChildren(
-      <NetworkModalCustom
-        customAction={onSelectChain}
-        selectedChain={selectedChain?.chainId}
-      />
-    );
+    modalStore.setChildren(<NetworkModal hideAllNetwork={true} />);
   };
-
-  if (selectedChain) {
-    // if (selectedChain.features.includes("cosmwasm")) {
-    if (selectedChain.networkType === "cosmos") {
-      return (
-        <AddTokenCosmosScreen
-          _onPressNetworkModal={_onPressNetworkModal}
-          selectedChain={selectedChain}
-        />
-      );
-    } else {
-      return (
-        <AddTokenEVMScreen
-          _onPressNetworkModal={_onPressNetworkModal}
-          selectedChain={selectedChain}
-        />
-      );
-    }
+  const { networkType } = chainStore.current;
+  if (networkType === "cosmos") {
+    return <AddTokenCosmosScreen _onPressNetworkModal={_onPressNetworkModal} />;
+  } else if (networkType === "evm") {
+    return <AddTokenEVMScreen _onPressNetworkModal={_onPressNetworkModal} />;
   }
 
   return (

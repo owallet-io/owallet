@@ -13,14 +13,12 @@ import OWText from "@src/components/text/ow-text";
 import { useStore } from "@src/stores";
 import { OWButton } from "@src/components/button";
 import { metrics, spacing } from "@src/themes";
-import { ScrollView } from "react-native-gesture-handler";
 import { API } from "@src/common/api";
 import { useSimpleTimer } from "@src/hooks";
 import { PageHeader } from "@src/components/header/header-new";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
-import { DashboardCard } from "./dashboard";
 import {
   ChainIdEnum,
   DenomHelper,
@@ -33,12 +31,9 @@ import {
   shortenAddress,
 } from "@src/utils/helper";
 import { CheckIcon, CopyFillIcon } from "@src/components/icon";
-import { OWBox } from "@src/components/card";
 import { TokenChart } from "@src/screens/home/components/token-chart";
 import { ViewRawToken, ViewToken } from "@src/stores/huge-queries";
 import { CoinPretty, PricePretty } from "@owallet/unit";
-import { HistoryCard } from "@src/screens/transactions";
-import OWCard from "@src/components/card/ow-card";
 import { HistoryByToken } from "@src/screens/transactions/history-by-token";
 import { PageWithScrollView } from "@src/components/page";
 import ByteBrew from "react-native-bytebrew-sdk";

@@ -31,7 +31,6 @@ export const SCREENS = {
   BackupMnemonic: "BackupMnemonic",
   RecoveryPhrase: "RecoveryPhrase",
   RegisterMain: "RegisterMain",
-  BtcFaucet: "BtcFaucet",
   BuyFiat: "BuyFiat",
   RegisterVerifyMnemonicMain: "RegisterVerifyMnemonicMain",
   RegisterEnd: "Register.End",
@@ -287,9 +286,6 @@ export const SCREENS_OPTIONS: IScreenOption = {
   },
   [SCREENS.SettingViewPrivateData]: {
     title: "Mnemonic Seed",
-  },
-  [SCREENS.BtcFaucet]: {
-    title: "Bitcoin Faucet",
   },
   [SCREENS.HistoryDetail]: {
     title: "Transaction details",

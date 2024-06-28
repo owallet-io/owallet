@@ -40,11 +40,114 @@ import { flatten } from "lodash";
 import { showToast } from "@src/utils/helper";
 import ByteBrew from "react-native-bytebrew-sdk";
 import { SCREENS } from "@src/common/constants";
+import { gql, useQuery } from "@apollo/client";
+import { Text } from "@src/components/text";
+const GET_DATA = gql`
+  query CollectionCounts(
+    $filterForSale: SaleType
+    $owner: String
+    $seller: String
+    $limit: Int
+    $offset: Int
+  ) {
+    collectionCounts(
+      filterForSale: $filterForSale
+      owner: $owner
+      seller: $seller
+      limit: $limit
+      offset: $offset
+    ) {
+      collectionCounts {
+        count
+        collection {
+          contractAddress
+          contractUri
+          name
+          media {
+            ...MediaFields
+            __typename
+          }
+          __typename
+        }
+        __typename
+      }
+      pageInfo {
+        total
+        offset
+        limit
+        __typename
+      }
+      __typename
+    }
+  }
+
+  fragment MediaFields on Media {
+    type
+    url
+    height
+    width
+    visualAssets {
+      xs {
+        type
+        url
+        height
+        width
+        staticUrl
+        __typename
+      }
+      sm {
+        type
+        url
+        height
+        width
+        staticUrl
+        __typename
+      }
+      md {
+        type
+        url
+        height
+        width
+        staticUrl
+        __typename
+      }
+      lg {
+        type
+        url
+        height
+        width
+        staticUrl
+        __typename
+      }
+      xl {
+        type
+        url
+        height
+        width
+        staticUrl
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+`;
 
 export const HomeScreen: FunctionComponent = observer((props) => {
   const [refreshing, setRefreshing] = React.useState(false);
   const [refreshDate, setRefreshDate] = React.useState(Date.now());
 
+  const { loading, error, data } = useQuery(GET_DATA, {
+    variables: {
+      filterForSale: null,
+      owner: "stars1hvr9d72r5um9lvt0rpkd4r75vrsqtw6ymak76g",
+      limit: 100,
+    },
+  });
+  // if (loading) return <Text>Loading...</Text>;
+  // if (error) return <Text>{`Error! ${error}`}</Text>;
+  console.log(data, "data graphql");
+  // return;
   const { colors } = useTheme();
 
   const styles = styling(colors);

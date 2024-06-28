@@ -25,12 +25,12 @@ import { useTheme } from "@src/themes/theme-provider";
 import { Text } from "@src/components/text";
 import { OWBox } from "@src/components/card";
 import { OWSubTitleHeader } from "@src/components/header";
-import { SoulboundNftInfoResponse } from "../home/types";
+// import { SoulboundNftInfoResponse } from "../home/types";
 import { useStore } from "@src/stores";
 import images from "@src/assets/images";
 import { useSoulbound } from "./hooks/useSoulboundNft";
 import OWFlatList from "@src/components/page/ow-flat-list";
-import { SkeletonNft } from "../home/tokens-card";
+// import { SkeletonNft } from "../home/tokens-card";
 export const NftsScreen: FunctionComponent = observer((props) => {
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getAccount(chainStore.current.chainId);
@@ -52,7 +52,7 @@ export const NftsScreen: FunctionComponent = observer((props) => {
     item,
     index,
   }: {
-    item: SoulboundNftInfoResponse;
+    item: any;
     index: number;
   }) => {
     return (
@@ -104,7 +104,7 @@ export const NftsScreen: FunctionComponent = observer((props) => {
             data={soulboundNft}
             renderItem={_renderFlatlistOrchai}
             loading={isLoading}
-            SkeletonComponent={<SkeletonNft />}
+            // SkeletonComponent={<SkeletonNft />}
             keyExtractor={_keyExtract}
             containerSkeletonStyle={{
               flexWrap: "wrap",

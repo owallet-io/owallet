@@ -45,8 +45,7 @@ interface TokenType {
 
 export const AddTokenCosmosScreen: FunctionComponent<{
   _onPressNetworkModal: Function;
-  selectedChain: any;
-}> = observer(({ _onPressNetworkModal, selectedChain }) => {
+}> = observer(({ _onPressNetworkModal }) => {
   const {
     control,
     handleSubmit,
@@ -66,8 +65,9 @@ export const AddTokenCosmosScreen: FunctionComponent<{
     appInitStore,
     modalStore,
   } = useStore();
+  const selectedChain = chainStore.current;
   const tokensOf = tokensStore.getTokensOf(selectedChain.chainId);
-  const chainInfo = chainStore.getChain(selectedChain.chainId);
+
   const [loading, setLoading] = useState(false);
   const [coingeckoId, setCoingeckoID] = useState(null);
   const [selectedType, setSelectedType] = useState<"cw20">("cw20");

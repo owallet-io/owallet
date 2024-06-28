@@ -185,9 +185,30 @@ export const TokensCardAll: FunctionComponent<{
             }}
             style={[
               {
-                width: "50%",
+                width: "33%",
               },
               activeTab === "tokens" ? styles.active : styles.inactive,
+            ]}
+          />
+          <OWButton
+            type="link"
+            label={"NFT"}
+            onPress={() => {
+              setActiveTab("nft");
+            }}
+            textStyle={{
+              color:
+                activeTab === "nft"
+                  ? colors["primary-surface-default"]
+                  : colors["neutral-text-body"],
+              fontWeight: "600",
+              fontSize: 16,
+            }}
+            style={[
+              {
+                width: "33%",
+              },
+              activeTab === "nft" ? styles.active : styles.inactive,
             ]}
           />
           <OWButton
@@ -206,7 +227,7 @@ export const TokensCardAll: FunctionComponent<{
             }}
             style={[
               {
-                width: "50%",
+                width: "33%",
               },
               activeTab === "history" ? styles.active : styles.inactive,
             ]}
