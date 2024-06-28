@@ -339,7 +339,7 @@ export const CosmosRenderArgs: FunctionComponent<{
           {txInfo?.unpacked?.sender}
         </Text>
       )}
-      {tokensIn.length > 0
+      {tokensIn?.length > 0
         ? tokensIn.map((token, index) => renderPath(token))
         : renderPath()}
       {/* {contractInfo && ask_asset_info ? renderPath(contractInfo, ask_asset_info) : null}

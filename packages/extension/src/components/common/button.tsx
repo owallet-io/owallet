@@ -72,8 +72,6 @@ export const Button: FunctionComponent<{
 
   const disabledBtn = (() => {
     if (disabled) {
-      console.log("disable");
-
       return {
         backgroundColor: colors["neutral-surface-action3"],
         color: colors["neutral-text-action-on-dark-bg"],

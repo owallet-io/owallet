@@ -32,6 +32,7 @@ import { DataModal } from "./modals/data-modal";
 import useOnClickOutside from "../../hooks/use-click-outside";
 import cn from "classnames/bind";
 import { Button } from "../../components/common/button";
+import { ModalFee } from "pages/modals/modal-fee";
 
 enum Tab {
   Details,
@@ -195,16 +196,14 @@ export const SignEvmPage: FunctionComponent = observer(() => {
         overflowX: "auto",
       }}
     >
-      <div
-        className={cx("setting", openSetting ? "activeSetting" : "", "modal")}
-        ref={settingRef}
-      >
-        <FeeModal
-          onClose={() => setOpenSetting(false)}
-          feeConfig={feeConfig}
-          gasConfig={gasConfig}
-        />
-      </div>
+      <ModalFee
+        feeConfig={feeConfig}
+        gasConfig={gasConfig}
+        onRequestClose={() => {
+          setOpenSetting(false);
+        }}
+        isOpen={openSetting}
+      />
       <div
         className={cx("setting", dataSetting ? "activeSetting" : "", "modal")}
         ref={dataRef}
@@ -255,7 +254,6 @@ export const SignEvmPage: FunctionComponent = observer(() => {
                   [style.dataTab]: tab === Tab.Data,
                 })}
               >
-                {tab === Tab.Data ? <DataTabEvm data={dataSign} /> : null}
                 {tab === Tab.Details ? (
                   <DetailsTabEvm
                     msgSign={dataSign?.data?.data?.data}
