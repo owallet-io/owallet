@@ -1108,51 +1108,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
   },
   {
-    chainId: "Neutaro-1",
-    chainName: "Neutaro",
-    networkType: "cosmos",
-    rpc: "https://neutaro.rpc.orai.io",
-    rest: "https://neutaro.lcd.orai.io",
-    bip44: {
-      coinType: 118,
-    },
-    coinType: 118,
-    bech32Config: Bech32Address.defaultBech32Config("neutaro"),
-    currencies: [
-      {
-        coinDenom: "NTMPI",
-        coinMinimalDenom: "uneutaro",
-        coinDecimals: 6,
-        coinGeckoId: "neutaro",
-        coinImageUrl: "https://asset.brandfetch.io/idKrUw6EdO/ids9m0Bt_7.png",
-      },
-    ],
-    get feeCurrencies() {
-      return [this.stakeCurrency];
-    },
-    stakeCurrency: {
-      coinDenom: "NTMPI",
-      coinMinimalDenom: "uneutaro",
-      coinGeckoId: "neutaro",
-      coinImageUrl: "https://asset.brandfetch.io/idKrUw6EdO/ids9m0Bt_7.png",
-      coinDecimals: 6,
-      gasPriceStep: {
-        low: 0.01,
-        average: 0.025,
-        high: 0.03,
-      },
-    },
-    features: ["stargate", "ibc-transfer", "cosmwasm", "no-legacy-stdTx"],
-    chainSymbolImageUrl:
-      "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Neutaro/chain.png",
-    txExplorer: {
-      name: "Neutaro",
-      txUrl: "https://nms1.neutaro.tech/Neutaro/tx/{txHash}",
-      //TODO: Not found account explorer for neutaro
-      accountUrl: "https://nms1.neutaro.tech/account/{address}",
-    },
-  },
-  {
     chainId: "oraibridge-subnet-2",
     chainName: "OraiBridge",
     rpc: "https://bridge-v2.rpc.orai.io",

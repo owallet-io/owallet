@@ -349,7 +349,7 @@ export const SignEvmPage: FunctionComponent = observer(() => {
                       containerStyle={{ marginRight: 8 }}
                       className={classnames(style.button, style.rejectBtn)}
                       // disabled={signDocHelper.signDocWrapper == null}
-                      color={"danger"}
+                      color={"reject"}
                       data-loading={signInteractionStore.isLoading}
                       disabled={signInteractionStore.isLoading}
                       onClick={async (e) => {

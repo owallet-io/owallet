@@ -5,7 +5,7 @@ import style from "./style.module.scss";
 
 export const Button: FunctionComponent<{
   buttonType?: string;
-  color?: "primary" | "secondary" | "danger";
+  color?: "primary" | "secondary" | "danger" | "reject";
   size?: "default" | "small" | "large";
   mode?: "fill" | "light" | "outline" | "text";
   text?: string | ReactElement;
@@ -43,6 +43,8 @@ export const Button: FunctionComponent<{
         return style.secondaryBtn;
       case "danger":
         return style.dangerBtn;
+      case "reject":
+        return style.rejectBtn;
       default:
         return style.primaryBtn;
     }
