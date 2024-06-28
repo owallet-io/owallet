@@ -6,8 +6,8 @@ import { useStore } from "../../stores";
 import { HeaderModal } from "../home/components/header-modal";
 // import { ChainIdEnum, DenomHelper } from "@owallet/common";
 // import { useMultipleAssets } from "../../hooks/use-multiple-assets";
-import classnames from "classnames";
-import { TokensCard } from "../home/components/tokens-card";
+// import classnames from "classnames";
+// import { TokensCard } from "../home/components/tokens-card";
 import { IAmountConfig } from "@owallet/hooks";
 import { ObservableQueryBalanceInner } from "@owallet/stores";
 import {
@@ -185,28 +185,27 @@ export const ModalChooseTokens: FC<{
     keyRingStore.keyRingLedgerAddresses,
     false
   );
-  const { dataTokens } = useMultipleAssets(
-    accountStore,
-    priceStore,
-    chainStore,
-    refreshing,
-    accountOrai.bech32Address,
-    hugeQueriesStore
-  );
-
-  console.log("currencies", chainStore.current.currencies);
+  // const { dataTokens } = useMultipleAssets(
+  //   accountStore,
+  //   priceStore,
+  //   chainStore,
+  //   refreshing,
+  //   accountOrai.bech32Address,
+  //   hugeQueriesStore
+  // );
 
   const onSelect = (item) => {
-    const selectedKey = item?.token?.currency?.coinMinimalDenom;
+    const selectedKey = item?.currency?.coinMinimalDenom;
     const currency = amountConfig.sendableCurrencies.find(
       (cur) => cur.coinMinimalDenom === selectedKey
     );
     amountConfig.setSendCurrency(currency);
     onRequestClose();
-    onSelectToken(currency);
+    onSelectToken?.(currency);
   };
 
   useEffect(() => {
+    // NOTE: TokensStoreInner addToken have cache, but chainStore.addCurrencies does not. Need to take a look ?
     const queryBalances = queriesStore
       .get(chainStore.current.chainId)
       .queryBalances.getQueryBech32Address(addressToFetch);
@@ -244,10 +243,6 @@ export const ModalChooseTokens: FC<{
   //   amountConfig.setSendCurrency(currency);
   // };
 
-  // NOTE: TokensStoreInner addToken have cache, but chainStore.addCurrencies does not. Need to take a look ?
-  console.log("chainId", chainStore.current.chainId);
-  console.log("displayTokens", displayTokens);
-
   return (
     <SlidingPane
       isOpen={isOpen}
@@ -267,7 +262,13 @@ export const ModalChooseTokens: FC<{
           dataTokens={dataTokens.filter(token => token.chainInfo.chainId === chainStore.current.chainId)}
         /> */}
         {displayTokens.map((token, i) => {
-          return <TokenItem key={i.toString()} item={token} />;
+          return (
+            <TokenItem
+              onSelectToken={onSelect}
+              key={i.toString()}
+              item={token}
+            />
+          );
         })}
       </div>
     </SlidingPane>
