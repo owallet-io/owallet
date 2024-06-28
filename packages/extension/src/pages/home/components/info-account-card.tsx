@@ -7,14 +7,42 @@ import { useHistory } from "react-router";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../../stores";
 import { ChainIdEnum } from "@owallet/common";
+import { useNotification } from "components/notification";
+import { useIntl } from "react-intl";
+import { Address } from "components/address";
 
 export const InfoAccountCard: FC<{
   totalPrice: string;
   isLoading?: boolean;
 }> = observer(({ totalPrice, isLoading }) => {
+  const { accountStore, priceStore, chainStore, keyRingStore } = useStore();
+  const account = accountStore.getAccount(ChainIdEnum.Oraichain);
+  const accountInfo = accountStore.getAccount(chainStore.current.chainId);
+
+  const intl = useIntl();
+  const notification = useNotification();
+  const signer = accountInfo.getAddressDisplay(
+    keyRingStore.keyRingLedgerAddresses
+  );
   const [isShowCopyModal, setIsShowCopyModal] = useState(false);
-  const onShowModalCopy = () => {
-    setIsShowCopyModal(true);
+  const onShowModalCopy = async () => {
+    if (chainStore.isAllNetwork) {
+      setIsShowCopyModal(true);
+    } else {
+      await navigator.clipboard.writeText(signer);
+      notification.push({
+        placement: "top-center",
+        type: "success",
+        duration: 2,
+        content: intl.formatMessage({
+          id: "main.address.copied",
+        }),
+        canDelete: true,
+        transition: {
+          duration: 0.25,
+        },
+      });
+    }
   };
   const onCLoseModalCopy = () => {
     setIsShowCopyModal(false);
@@ -24,8 +52,7 @@ export const InfoAccountCard: FC<{
     history.push("/receive");
     return;
   };
-  const { accountStore, priceStore, chainStore } = useStore();
-  const account = accountStore.getAccount(ChainIdEnum.Oraichain);
+
   const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
   const onSelectAccount = () => {
     history.push("/select-account");
@@ -50,7 +77,15 @@ export const InfoAccountCard: FC<{
             className={styles.iconCopy}
             src={require("assets/images/owallet_copy.svg")}
           />
-          <span className={styles.nameCopy}>Copy address</span>
+          <span className={styles.nameCopy}>
+            {chainStore.isAllNetwork ? (
+              "Copy address"
+            ) : (
+              <Address maxCharacters={6} lineBreakBeforePrefix={false}>
+                {signer}
+              </Address>
+            )}
+          </span>
         </div>
       </div>
       <div className={styles.bodyBalance}>

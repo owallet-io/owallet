@@ -148,18 +148,6 @@ export const SignTronPage: FunctionComponent = observer(() => {
   const feeLimitData = feeLimit?.gt(new Int(0)) ? feeLimit?.toString() : null;
 
   return (
-    // <HeaderLayout
-    //   showChainName={alternativeTitle == null}
-    //   alternativeTitle={alternativeTitle != null ? alternativeTitle : undefined}
-    //   canChangeChainInfo={false}
-    //   onBackButton={
-    //     interactionInfo.interactionInternal
-    //       ? () => {
-    //           history.goBack();
-    //         }
-    //       : undefined
-    //   }
-    // >
     <div
       style={{
         height: "100%",
@@ -185,17 +173,6 @@ export const SignTronPage: FunctionComponent = observer(() => {
          */
         <div className={style.container}>
           <div style={{ height: "75%", overflow: "scroll", padding: 16 }}>
-            {/* <div
-                style={{
-                  color: "#353945",
-                  fontSize: 24,
-                  fontWeight: 500,
-                  textAlign: "center",
-                  paddingBottom: 24,
-                }}
-              >
-                {chainStore?.current?.raw?.chainName || "Oraichain"}
-              </div> */}
             <div
               className={classnames(style.tabs)}
               style={{ display: "flex", paddingBottom: 12 }}
@@ -221,36 +198,6 @@ export const SignTronPage: FunctionComponent = observer(() => {
                 <Text weight="600">Raw Data</Text>
                 <img src={require("assets/icon/tdesign_chevron-right.svg")} />
               </div>
-              {/* <ul>
-                  <li className={classnames({ activeTabs: tab === Tab.Details })}>
-                    <a
-                      className={classnames(style.tab, {
-                        activeText: tab === Tab.Details
-                      })}
-                      onClick={() => {
-                        setTab(Tab.Details);
-                      }}
-                    >
-                      {intl.formatMessage({
-                        id: "sign.tab.details"
-                      })}
-                    </a>
-                  </li>
-                  <li className={classnames({ activeTabs: tab === Tab.Data })}>
-                    <a
-                      className={classnames(style.tab, {
-                        activeText: tab === Tab.Data
-                      })}
-                      onClick={() => {
-                        setTab(Tab.Data);
-                      }}
-                    >
-                      {intl.formatMessage({
-                        id: "sign.tab.data"
-                      })}
-                    </a>
-                  </li>
-                </ul> */}
             </div>
             <div
               className={classnames(style.tabContainer, {
@@ -336,7 +283,7 @@ export const SignTronPage: FunctionComponent = observer(() => {
                       </Text>
                     </div>
                   </div>
-                  {/* <Text color={colors["neutral-text-body"]}>123</Text> */}
+                  {/* <Text color={colors["neutral-text-body"]}>Demo text</Text> */}
                 </div>
                 <div
                   style={{
