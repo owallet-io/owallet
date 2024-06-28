@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FooterLayout } from "../../layouts/footer-layout/footer-layout";
 import styles from "./explore.module.scss";
 import classnames from "classnames";
-import images from "mobile/src/assets/images";
+import images from "assets/images";
 import { limitString } from "@owallet/common";
 
 const types = [

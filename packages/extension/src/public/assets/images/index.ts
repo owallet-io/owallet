@@ -10,7 +10,9 @@ const images = {
   dapps_defi_logo: require("./dApps_defi_logo.png"),
   dapps_dex_logo: require("./dApps_dex_logo.png"),
   dapps_future_logo: require("./dApps_future_logo.png"),
+  dapps_gpu_logo: require("./dApps_gpu_logo.png"),
   dapps_llm_logo: require("./dApps_llm_logo.png"),
+  dapps_oraichain_logo: require("./dApps_oraichain_logo.png"),
   dapps_orchai_logo: require("./dApps_orchai_logo.png"),
   dapps_orderbook_logo: require("./dApps_orderbook_logo.png"),
   dapps_scan_logo: require("./dApps_scan_logo.png"),
@@ -25,6 +27,7 @@ const images = {
   img_chatbot: require("./img_chatbot.png"),
   img_defi_lens: require("./img_defi-lens.png"),
   img_fu: require("./img_fu.png"),
+  img_homebase: require("./img_homebase.png"),
   img_invest: require("./img_invest.png"),
   img_money: require("./img_money.png"),
   img_oraidex: require("./img_oraidex.png"),
@@ -57,5 +60,6 @@ const images = {
   success: require("./success.png"),
   success_dark: require("./success_dark.png"),
   swap: require("./swap.png"),
+  planet: require("./img_planet.png"),
 };
 export default images;

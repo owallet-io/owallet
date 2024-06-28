@@ -6,15 +6,12 @@ import {
   ChainIdEnum,
   convertObjChainAddressToString,
   formatAddress,
-  formatContractAddress,
   getOasisAddress,
   getTimeMilliSeconds,
   MapChainIdToNetwork,
   MapNetworkToChainId,
   unknownToken,
-  urlTxHistory,
 } from "@owallet/common";
-import classnames from "classnames";
 import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
@@ -23,6 +20,7 @@ import moment from "moment";
 // import { formatContractAddress, maskedNumber } from 'mobile/src/utils/helper';
 import Colors from "../../theme/colors";
 import { useLoadingIndicator } from "../../components/loading-indicator";
+import { OwEmpty } from "components/empty/ow-empty";
 
 export const ActivitiesPage = observer(() => {
   const {
@@ -79,113 +77,120 @@ export const ActivitiesPage = observer(() => {
       <div className={styles.container}>
         <span className={styles.title}>Last 30 transactions</span>
         <div className={styles.listHistory}>
-          {histories?.length > 0
-            ? histories.map((item, index) => {
-                const fiat = priceStore.defaultVsCurrency;
-                console.log(item, "item");
-                let currency = unknownToken;
+          {histories?.length > 0 ? (
+            histories.map((item, index) => {
+              const fiat = priceStore.defaultVsCurrency;
+              console.log(item, "item");
+              let currency = unknownToken;
 
-                if (item.tokenInfos?.length > 0 && item.tokenInfos[0]) {
-                  currency = {
-                    coinDenom: item.tokenInfos[0]?.abbr,
-                    coinImageUrl: item.tokenInfos[0]?.imgUrl,
-                    coinGeckoId: item.tokenInfos[0]?.coingeckoId,
-                    coinMinimalDenom: item.tokenInfos[0]?.denom,
-                    coinDecimals: item.tokenInfos[0]?.decimal,
-                  };
-                }
-                const amount =
-                  item?.amount?.[0] && currency
-                    ? new CoinPretty(currency, new Dec(item.amount[0]))
-                    : new CoinPretty(unknownToken, new Dec("0"));
-                const priceAmount = priceStore.calculatePrice(amount, fiat);
-                const first =
-                  index > 0 &&
-                  moment(
-                    getTimeMilliSeconds(histories[index - 1]?.timestamp)
-                  ).format("MMM D, YYYY");
-                const now = moment(getTimeMilliSeconds(item?.timestamp)).format(
-                  "MMM D, YYYY"
-                );
-                const isSent =
-                  item.userAddress?.toLowerCase() ===
-                    item.fromAddress?.toLowerCase() ||
-                  item.fromAddress?.toLowerCase() ===
-                    item.toAddress?.toLowerCase();
-                const method = isSent ? "Sent" : "Received";
-                const chainInfo = chainStore.getChain(
-                  MapNetworkToChainId[item.network]
-                );
-                return (
-                  <div
-                    style={{
-                      opacity: currency === unknownToken ? 0.5 : 1,
-                    }}
-                    key={index}
-                    onClick={() => {
-                      window.open(item?.explorer);
-                    }}
-                    className={styles.itemHistory}
-                  >
-                    {first != now || index === 0 ? (
-                      <span className={styles.date}>{now}</span>
-                    ) : null}
-                    <div className={styles.tokenItem}>
-                      <div className={styles.wrapLeftBlock}>
-                        <div className={styles.logoTokenAndChain}>
-                          <div className={styles.tokenWrap}>
+              if (item.tokenInfos?.length > 0 && item.tokenInfos[0]) {
+                currency = {
+                  coinDenom: item.tokenInfos[0]?.abbr,
+                  coinImageUrl: item.tokenInfos[0]?.imgUrl,
+                  coinGeckoId: item.tokenInfos[0]?.coingeckoId,
+                  coinMinimalDenom: item.tokenInfos[0]?.denom,
+                  coinDecimals: item.tokenInfos[0]?.decimal,
+                };
+              }
+              const amount =
+                item?.amount?.[0] && currency
+                  ? new CoinPretty(currency, new Dec(item.amount[0]))
+                  : new CoinPretty(unknownToken, new Dec("0"));
+              const priceAmount = priceStore.calculatePrice(amount, fiat);
+              const first =
+                index > 0 &&
+                moment(
+                  getTimeMilliSeconds(histories[index - 1]?.timestamp)
+                ).format("MMM D, YYYY");
+              const now = moment(getTimeMilliSeconds(item?.timestamp)).format(
+                "MMM D, YYYY"
+              );
+              const isSent =
+                item.userAddress?.toLowerCase() ===
+                  item.fromAddress?.toLowerCase() ||
+                item.fromAddress?.toLowerCase() ===
+                  item.toAddress?.toLowerCase();
+              const method = isSent ? "Sent" : "Received";
+              const chainInfo = chainStore.getChain(
+                MapNetworkToChainId[item.network]
+              );
+              return (
+                <div
+                  style={{
+                    opacity: currency === unknownToken ? 0.5 : 1,
+                  }}
+                  key={index}
+                  onClick={() => {
+                    window.open(item?.explorer);
+                  }}
+                  className={styles.itemHistory}
+                >
+                  {first != now || index === 0 ? (
+                    <span className={styles.date}>{now}</span>
+                  ) : null}
+                  <div className={styles.tokenItem}>
+                    <div className={styles.wrapLeftBlock}>
+                      <div className={styles.logoTokenAndChain}>
+                        <div className={styles.tokenWrap}>
+                          <img
+                            className={styles.token}
+                            src={
+                              currency?.coinImageUrl?.includes("missing.png") ||
+                              !currency?.coinImageUrl
+                                ? unknownToken.coinImageUrl
+                                : currency?.coinImageUrl
+                            }
+                          />
+                          <div className={styles.chainWrap}>
                             <img
-                              className={styles.token}
+                              className={styles.chain}
                               src={
-                                currency?.coinImageUrl?.includes(
-                                  "missing.png"
-                                ) || !currency?.coinImageUrl
-                                  ? unknownToken.coinImageUrl
-                                  : currency?.coinImageUrl
+                                chainInfo?.stakeCurrency?.coinImageUrl ||
+                                unknownToken.coinImageUrl
                               }
                             />
-                            <div className={styles.chainWrap}>
-                              <img
-                                className={styles.chain}
-                                src={
-                                  chainInfo?.stakeCurrency?.coinImageUrl ||
-                                  unknownToken.coinImageUrl
-                                }
-                              />
-                            </div>
                           </div>
                         </div>
-                        <div className={styles.bodyTokenItem}>
-                          <span className={styles.title}>{method}</span>
-                          <span className={styles.subTitle}>
-                            {formatAddress(item.txhash, 5)}
-                          </span>
-                        </div>
                       </div>
-                      <div className={styles.rightBlock}>
-                        <span
-                          style={{
-                            color: !isSent
-                              ? Colors["success-text-body"]
-                              : Colors["error-text-body"],
-                          }}
-                          className={styles.title}
-                        >
-                          {`${!isSent ? "+" : "-"}${amount
-                            .maxDecimals(4)
-                            .trim(true)
-                            ?.toString()
-                            .replace("-", "")}`}
-                        </span>
+                      <div className={styles.bodyTokenItem}>
+                        <span className={styles.title}>{method}</span>
                         <span className={styles.subTitle}>
-                          {priceAmount?.toString().replace("-", "")}
+                          {formatAddress(item.txhash, 5)}
                         </span>
                       </div>
                     </div>
+                    <div className={styles.rightBlock}>
+                      <span
+                        style={{
+                          color: !isSent
+                            ? Colors["success-text-body"]
+                            : Colors["error-text-body"],
+                        }}
+                        className={styles.title}
+                      >
+                        {`${!isSent ? "+" : "-"}${amount
+                          .maxDecimals(4)
+                          .trim(true)
+                          ?.toString()
+                          .replace("-", "")}`}
+                      </span>
+                      <span className={styles.subTitle}>
+                        {priceAmount?.toString().replace("-", "")}
+                      </span>
+                    </div>
                   </div>
-                );
-              })
-            : null}
+                </div>
+              );
+            })
+          ) : (
+            <div
+              style={{
+                height: "calc(100vh - 200px)",
+              }}
+            >
+              <OwEmpty />
+            </div>
+          )}
         </div>
       </div>
     </FooterLayout>

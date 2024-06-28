@@ -183,7 +183,6 @@ export const useMultipleAssets = (
                 : Promise.all([
                     getBalanceNativeEvm(address, chainInfo),
                     getBalanceErc20(address, chainInfo),
-                    // fetchAllBalancesEvm([chainInfo.chainId]),
                   ]);
             case "bitcoin":
               const btcAddress = accountStore.getAccount(

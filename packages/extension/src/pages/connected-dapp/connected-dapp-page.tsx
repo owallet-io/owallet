@@ -5,6 +5,8 @@ import { LayoutWithButtonBottom } from "../../layouts/button-bottom-layout/layou
 import { SearchInput } from "../home/components/search-input";
 import { useStore } from "../../stores";
 import { getFavicon, limitString, PrivilegedOrigins } from "@owallet/common";
+import { OwEmpty } from "components/empty/ow-empty";
+import colors from "theme/colors";
 
 export const ConnectedDappPage = observer(() => {
   const [keyword, setKeyword] = useState<string>("");
@@ -30,34 +32,43 @@ export const ConnectedDappPage = observer(() => {
           onChange={onChangeSearch}
           placeholder={"Search for a DApps"}
         />
-        <div className={styles.listDapps}>
-          {data.map((item, index) => {
-            console.log(getFavicon(item), "getFavicon(item)");
-            return (
-              <div key={index} className={styles.itemDapp}>
-                <div className={styles.leftBlock}>
-                  <div className={styles.wrapImg}>
-                    <img src={getFavicon(item)} className={styles.img} />
+        {data?.length > 0 ? (
+          <div className={styles.listDapps}>
+            {data.map((item, index) => {
+              return (
+                <div key={index} className={styles.itemDapp}>
+                  <div className={styles.leftBlock}>
+                    <div className={styles.wrapImg}>
+                      <img src={getFavicon(item)} className={styles.img} />
+                    </div>
+                    <span className={styles.urlText}>
+                      {limitString(item, 24)}
+                    </span>
                   </div>
-                  <span className={styles.urlText}>
-                    {limitString(item, 24)}
-                  </span>
-                </div>
-                <div className={styles.rightBlock}>
-                  <div
-                    onClick={() => removeDapps(item)}
-                    className={styles.wrapLink}
-                  >
-                    <img
-                      src={require("assets/svg/ow_link-unlink.svg")}
-                      className={styles.img}
-                    />
+                  <div className={styles.rightBlock}>
+                    <div
+                      onClick={() => removeDapps(item)}
+                      className={styles.wrapLink}
+                    >
+                      <img
+                        src={require("assets/svg/ow_link-unlink.svg")}
+                        className={styles.img}
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div
+            style={{
+              height: "calc(100vh - 200px)",
+            }}
+          >
+            <OwEmpty />
+          </div>
+        )}
       </div>
     </LayoutWithButtonBottom>
   );
