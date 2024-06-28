@@ -107,13 +107,15 @@ export const FeeModal: FunctionComponent<{
           <div>
             <Input
               label={"Gas"}
-              styleInputGroup={{}}
               onChange={(e) => {
                 e.preventDefault();
                 gasConfig.setGas(e.target.value);
               }}
-              type="text"
-              name="name"
+              type="number"
+              name="gas"
+              min={0}
+              autoComplete="off"
+              placeHolder="0"
             />
             <div
               style={{
