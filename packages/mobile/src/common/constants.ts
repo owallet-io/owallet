@@ -40,7 +40,6 @@ export const SCREENS = {
   RegisterNewLedgerMain: "RegisterNewLedgerMain",
   Tokens: "Tokens",
   Nfts: "Nfts",
-  TokenDetail: "Tokens.Detail",
   NftsDetail: "Nfts.Detail",
   HistoryDetail: "History.Detail",
   TokenDetails: "Token.Details",
@@ -176,9 +175,6 @@ export const SCREENS_OPTIONS: IScreenOption = {
   },
   [SCREENS.Nfts]: {
     title: HEADER_KEY.showNetworkHeader,
-  },
-  [SCREENS.TokenDetail]: {
-    title: "Token Detail",
   },
   [SCREENS.NftsDetail]: {
     title: HEADER_KEY.showNetworkHeader,

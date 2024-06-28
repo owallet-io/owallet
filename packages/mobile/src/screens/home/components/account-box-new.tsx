@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useState, useTransition } from "react";
 import { observer } from "mobx-react-lite";
-import { OWBox } from "../../components/card";
+import { OWBox } from "../../../components/card";
 import {
   View,
   StyleSheet,
@@ -9,15 +9,15 @@ import {
   Clipboard,
 } from "react-native";
 import { Text } from "@src/components/text";
-import { useStore } from "../../stores";
+import { useStore } from "../../../stores";
 import { useTheme } from "@src/themes/theme-provider";
 import { CheckIcon, CopyFillIcon, DownArrowIcon } from "@src/components/icon";
 import { metrics, spacing } from "@src/themes";
-import MyWalletModal from "./components/my-wallet-modal/my-wallet-modal";
+import MyWalletModal from "./my-wallet-modal/my-wallet-modal";
 import { ChainIdEnum, unknownToken } from "@owallet/common";
 import { OWButton } from "@src/components/button";
 import OWIcon from "@src/components/ow-icon/ow-icon";
-import { CopyAddressModal } from "./components/copy-address/copy-address-modal";
+import { CopyAddressModal } from "./copy-address/copy-address-modal";
 import { shortenAddress } from "@src/utils/helper";
 import { useSmartNavigation } from "@src/navigation.provider";
 import { SCREENS } from "@src/common/constants";

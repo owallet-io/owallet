@@ -15,10 +15,10 @@ import { convertArrToObject, showToast } from "@src/utils/helper";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
-import { OWBox } from "../../components/card";
-import { useSmartNavigation } from "../../navigation.provider";
-import { useStore } from "../../stores";
-import { metrics } from "../../themes";
+import { OWBox } from "../../../components/card";
+import { useSmartNavigation } from "../../../navigation.provider";
+import { useStore } from "../../../stores";
+import { metrics } from "../../../themes";
 import ByteBrew from "react-native-bytebrew-sdk";
 
 export const EarningCardNew: FunctionComponent<{

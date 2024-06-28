@@ -17,9 +17,9 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import { OWBox } from "../../components/card";
-import { useStore } from "../../stores";
-import { maskedNumber, removeDataInParentheses } from "../../utils/helper";
+import { OWBox } from "../../../components/card";
+import { useStore } from "../../../stores";
+import { maskedNumber, removeDataInParentheses } from "../../../utils/helper";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { Text } from "@src/components/text";
 import { SCREENS } from "@src/common/constants";
