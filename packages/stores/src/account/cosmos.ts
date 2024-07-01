@@ -574,6 +574,8 @@ export class CosmosAccount {
       },
     };
 
+    console.log("msg", msg);
+
     const simulateTx = await this.simulateTx(
       [
         {
@@ -871,11 +873,10 @@ export class CosmosAccount {
     );
   }
 
-  // Clone new function that do samething with this but will delegate after withdraw
   async sendWithdrawAndDelegationRewardMsgs(
     validatorAddresses: string[],
-    amount: string,
     destValidatorAddr: string,
+    amount: string,
     memo: string = "",
     stdFee: Partial<StdFee> = {},
     signOptions?: OWalletSignOptions,
@@ -918,15 +919,25 @@ export class CosmosAccount {
     };
 
     const simulateTx = await this.simulateTx(
-      msgs.map((msg) => {
-        return {
-          typeUrl: "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward",
-          value: MsgWithdrawDelegatorReward.encode({
-            delegatorAddress: msg.value.delegator_address,
-            validatorAddress: msg.value.validator_address,
+      [
+        ...msgs.map((msg) => {
+          return {
+            typeUrl: "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward",
+            value: MsgWithdrawDelegatorReward.encode({
+              delegatorAddress: msg.value.delegator_address,
+              validatorAddress: msg.value.validator_address,
+            }).finish(),
+          };
+        }),
+        {
+          typeUrl: "/cosmos.staking.v1beta1.MsgDelegate",
+          value: MsgDelegate.encode({
+            delegatorAddress: delegateMsg.value.delegator_address,
+            validatorAddress: delegateMsg.value.validator_address,
+            amount: delegateMsg.value.amount,
           }).finish(),
-        };
-      }),
+        },
+      ],
       {
         amount: stdFee.amount ?? [],
       },
@@ -934,7 +945,7 @@ export class CosmosAccount {
     );
 
     await this.base.sendMsgs(
-      "withdrawRewards",
+      "withdrawRewardsAndDelegation",
       {
         aminoMsgs: [...msgs, delegateMsg],
         protoMsgs: this.hasNoLegacyStdFeature()
@@ -973,7 +984,7 @@ export class CosmosAccount {
         amount: stdFee.amount ?? [],
         gas: simulateTx?.gasUsed
           ? (simulateTx.gasUsed * 1.3 * validatorAddresses.length).toString()
-          : stdFee.gas,
+          : (Number(stdFee.gas) * 1.1).toString(),
       },
       signOptions,
       this.txEventsWithPreOnFulfill(onTxEvents, (tx) => {
@@ -999,7 +1010,6 @@ export class CosmosAccount {
     );
   }
 
-  // Clone new function that do samething with this but will delegate after withdraw
   async sendWithdrawDelegationRewardMsgs(
     validatorAddresses: string[],
     memo: string = "",
