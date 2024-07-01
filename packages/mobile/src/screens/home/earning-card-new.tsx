@@ -51,7 +51,7 @@ export const EarningCardNew: FunctionComponent<{
       const firstValidator =
         queryReward.getDescendingPendingRewardValidatorAddresses(10)?.[0];
 
-      if (firstValidator) {
+      if (firstValidator && firstValidator !== "") {
         ByteBrew.NewCustomEvent(`${chainStore.current.chainName} Compound`);
         await account.cosmos.sendWithdrawAndDelegationRewardMsgs(
           queryReward.getDescendingPendingRewardValidatorAddresses(10),
