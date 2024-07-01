@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import SlidingPane from "react-sliding-pane";
 import styles from "./style.module.scss";
 import { observer } from "mobx-react-lite";
@@ -19,7 +19,6 @@ import {
   unknownToken,
 } from "@owallet/common";
 import { useHistory } from "react-router";
-import { useMultipleAssets } from "hooks/use-multiple-assets";
 
 const TokenItem: FC<{
   item: any;
@@ -33,6 +32,7 @@ const TokenItem: FC<{
     return removeDataInParentheses(name);
   };
   const image = item.currency?.coinImageUrl;
+
   let contractAddress: string = "";
   let amount = item?.balance
     ?.trim(true)
@@ -114,7 +114,11 @@ const TokenItem: FC<{
           <div className={styles.tokenWrap}>
             <img
               className={styles.token}
-              src={!image ? unknownToken.coinImageUrl : image}
+              src={
+                !image || image === "missing.png"
+                  ? unknownToken.coinImageUrl
+                  : image
+              }
             />
             <div className={styles.chainWrap}>
               <img
@@ -139,7 +143,10 @@ const TokenItem: FC<{
       </div>
       <div className={styles.rightBlock}>
         <span className={styles.title}> {amount?.toString()}</span>
-        <span className={styles.subTitle}> {tokenPrice?.toString()}</span>
+        <span className={styles.subTitle}>
+          {" "}
+          {tokenPrice ? tokenPrice.toString() : "-"}
+        </span>
       </div>
     </div>
   );
@@ -179,7 +186,6 @@ export const ModalChooseTokens: FC<{
   const [displayTokens, setDisplayTokens] = useState<
     ObservableQueryBalanceInner[]
   >([]);
-  const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const accountInfo = accountStore.getAccount(chainStore.current.chainId);
   const addressToFetch = accountInfo.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses,
@@ -261,15 +267,20 @@ export const ModalChooseTokens: FC<{
           onSelectToken={onSelect}
           dataTokens={dataTokens.filter(token => token.chainInfo.chainId === chainStore.current.chainId)}
         /> */}
-        {displayTokens.map((token, i) => {
-          return (
-            <TokenItem
-              onSelectToken={onSelect}
-              key={i.toString()}
-              item={token}
-            />
-          );
-        })}
+        {displayTokens
+          .filter((token) => {
+            const amount = token?.balance?.toDec().toString();
+            return Number(amount) > 0.1 ? token : null;
+          })
+          .map((token, i) => {
+            return (
+              <TokenItem
+                onSelectToken={onSelect}
+                key={i.toString()}
+                item={token}
+              />
+            );
+          })}
       </div>
     </SlidingPane>
   );
