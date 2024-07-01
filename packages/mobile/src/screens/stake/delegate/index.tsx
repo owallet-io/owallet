@@ -211,11 +211,6 @@ export const DelegateScreen: FunctionComponent = observer(() => {
           onPress={async () => {
             if (account.isReadyToSendMsgs && txStateIsValid) {
               try {
-                console.log(
-                  "   sendConfigs.amountConfig.amount",
-                  sendConfigs.amountConfig.amount
-                );
-
                 await account.cosmos.sendDelegateMsg(
                   sendConfigs.amountConfig.amount,
                   sendConfigs.recipientConfig.recipient,
