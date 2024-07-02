@@ -41,7 +41,7 @@ export class Address extends React.Component<
   }
 
   render() {
-    const { tooltipFontSize = 13, children, textDecor, textColor } = this.props;
+    const { tooltipFontSize = 12, children, textDecor, textColor } = this.props;
     const tooltipAddress = this.props.tooltipAddress
       ? this.props.tooltipAddress
       : children;

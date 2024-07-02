@@ -393,7 +393,7 @@ export const BtcDetailsTab: FunctionComponent<{
         <Card
           containerStyle={{
             borderRadius: 12,
-            border: "2px solid" + colors["neutral-text-title"],
+            border: "1px solid" + colors["neutral-text-title"],
             padding: 8,
             marginTop: 12,
           }}
