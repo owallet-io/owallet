@@ -34,9 +34,17 @@ export const ModalEditAccountNamePage: FC<{
   const submitForm = handleSubmit(async (data: FormData) => {
     loading.setIsLoading("changeName", true);
     try {
-      // Make sure that name is changed
+      if (data.name.trim() === "") {
+        setError(
+          "name",
+          "invalid",
+          intl.formatMessage({
+            id: "setting.keyring.change.input.name.error.invalid",
+          })
+        );
+        return;
+      }
       await keyRingStore.updateNameKeyRing(keyStoreIndex, data.name);
-      // history.push("/");
       onRequestClose();
     } catch (e) {
       console.log("Fail to decrypt: " + e.message);
@@ -84,7 +92,6 @@ export const ModalEditAccountNamePage: FC<{
               onAction={() => {
                 setValue("name", "");
               }}
-              styleInputGroup={{}}
               type="text"
               name="name"
               ref={register({
@@ -92,7 +99,7 @@ export const ModalEditAccountNamePage: FC<{
                   id: "register.name.error.required",
                 }),
               })}
-              defaultValue={keyStore?.meta?.name || ""}
+              defaultValue={keyStore?.meta?.name || "OWallet"}
               error={errors.name && errors.name.message}
               onSubmit={submitForm}
             />
