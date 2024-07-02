@@ -9,7 +9,6 @@ import { ChainIdEnum, unknownToken } from "@owallet/common";
 import { CoinPretty } from "@owallet/unit";
 
 export const NftItem = ({ item }) => {
-  console.log(item?.media?.url, "item nft");
   const { colors } = useTheme();
 
   const { chainStore } = useStore();
