@@ -13,10 +13,16 @@ import { useStore } from "src/stores";
 import { useInteractionInfo } from "@owallet/hooks";
 import { useNotification } from "components/notification";
 import { useLoadingIndicator } from "components/loading-indicator";
-import { API, MapChainIdToNetwork, unknownToken } from "@owallet/common";
+import {
+  API,
+  ChainIdEnum,
+  MapChainIdToNetwork,
+  unknownToken,
+} from "@owallet/common";
 import { ModalNetwork } from "pages/home/modals/modal-network";
 import Colors from "theme/colors";
 import Web3 from "web3";
+import { Text } from "components/common/text";
 
 interface FormData {
   contractAddress: string;
@@ -72,10 +78,9 @@ export const AddTokenPage = observer(() => {
   } else if (chainStore.current.networkType === "evm") {
     query = queries.evmContract.queryErc20ContractInfo;
   }
-  const queryContractInfo = query.getQueryContract(contractAddress);
-  const tokenInfo = queryContractInfo.tokenInfo;
+  const queryContractInfo = query?.getQueryContract(contractAddress);
+  const tokenInfo = queryContractInfo?.tokenInfo;
   const notification = useNotification();
-  const loadingIndicator = useLoadingIndicator();
   const getTokenCoingeckoId = async () => {
     try {
       if (tokenInfo && tokenInfo.symbol) {
@@ -182,96 +187,103 @@ export const AddTokenPage = observer(() => {
             src={require("assets/images/tdesign_chevron_down.svg")}
           />
         </div>
-        <Form onSubmit={onSubmit}>
-          <Input
-            type="text"
-            label={intl.formatMessage({
-              id: "setting.token.add.contract-address",
-            })}
-            name="contractAddress"
-            autoComplete="off"
-            readOnly={tokensStore.waitingSuggestedToken != null}
-            ref={register({
-              required: "Contract address is required",
-              //@ts-ignore
-              validate: (value: string): string | undefined => {
-                try {
-                  if (chainStore.current.networkType === "cosmos") {
-                    Bech32Address.validate(
-                      value,
-                      chainStore.current.bech32Config.bech32PrefixAccAddr
-                    );
-                  } else if (chainStore.current.networkType === "evm") {
-                    if (
-                      !Web3.utils.isAddress(
+        {chainStore.current.chainId !== ChainIdEnum.Bitcoin ? (
+          <Form onSubmit={onSubmit}>
+            <Input
+              type="text"
+              label={intl.formatMessage({
+                id: "setting.token.add.contract-address",
+              })}
+              name="contractAddress"
+              autoComplete="off"
+              readOnly={tokensStore.waitingSuggestedToken != null}
+              ref={register({
+                required: "Contract address is required",
+                //@ts-ignore
+                validate: (value: string): string | undefined => {
+                  try {
+                    if (chainStore.current.networkType === "cosmos") {
+                      Bech32Address.validate(
                         value,
-                        Number(chainStore.current.chainId)
+                        chainStore.current.bech32Config.bech32PrefixAccAddr
+                      );
+                    } else if (chainStore.current.networkType === "evm") {
+                      if (
+                        !Web3.utils.isAddress(
+                          value,
+                          Number(chainStore.current.chainId)
+                        )
                       )
-                    )
-                      throw new Error("Invalid address");
+                        throw new Error("Invalid address");
+                    }
+                  } catch {
+                    return "Invalid address";
                   }
-                } catch {
-                  return "Invalid address";
-                }
-              },
-            })}
-            error={
-              errors.contractAddress
-                ? errors.contractAddress.message
-                : tokenInfo == null
-                ? (queryContractInfo.error?.data as any)?.error ||
-                  queryContractInfo.error?.message
-                : undefined
-            }
-            text={
-              queryContractInfo.isFetching ? (
-                <i className="fas fa-spinner fa-spin" />
-              ) : undefined
-            }
-          />
-          <Input
-            type="text"
-            label={intl.formatMessage({
-              id: "setting.token.add.name",
-            })}
-            value={tokenInfo?.name ?? "-"}
-            readOnly={true}
-            style={{
-              color: Colors["neutral-text-body"],
-            }}
-          />
-          <Input
-            type="text"
-            style={{
-              color: Colors["neutral-text-body"],
-            }}
-            label={intl.formatMessage({
-              id: "setting.token.add.symbol",
-            })}
-            value={tokenInfo?.symbol ?? "-"}
-            readOnly={true}
-          />
-          <Input
-            type="text"
-            style={{
-              color: Colors["neutral-text-body"],
-            }}
-            label={intl.formatMessage({
-              id: "setting.token.add.decimals",
-            })}
-            value={tokenInfo?.decimals ?? "-"}
-            readOnly={true}
-          />
-          <Input
-            style={{
-              color: Colors["neutral-text-body"],
-            }}
-            type="text"
-            label={"Image"}
-            value={coingeckoImg ?? "-"}
-            readOnly={true}
-          />
-        </Form>
+                },
+              })}
+              error={
+                errors.contractAddress
+                  ? errors.contractAddress.message
+                  : tokenInfo == null
+                  ? (queryContractInfo?.error?.data as any)?.error ||
+                    queryContractInfo?.error?.message
+                  : undefined
+              }
+              text={
+                queryContractInfo?.isFetching ? (
+                  <i className="fas fa-spinner fa-spin" />
+                ) : undefined
+              }
+            />
+            <Input
+              type="text"
+              label={intl.formatMessage({
+                id: "setting.token.add.name",
+              })}
+              value={tokenInfo?.name ?? "-"}
+              readOnly={true}
+              style={{
+                color: Colors["neutral-text-body"],
+              }}
+            />
+            <Input
+              type="text"
+              style={{
+                color: Colors["neutral-text-body"],
+              }}
+              label={intl.formatMessage({
+                id: "setting.token.add.symbol",
+              })}
+              value={tokenInfo?.symbol ?? "-"}
+              readOnly={true}
+            />
+            <Input
+              type="text"
+              style={{
+                color: Colors["neutral-text-body"],
+              }}
+              label={intl.formatMessage({
+                id: "setting.token.add.decimals",
+              })}
+              value={tokenInfo?.decimals ?? "-"}
+              readOnly={true}
+            />
+            <Input
+              style={{
+                color: Colors["neutral-text-body"],
+              }}
+              type="text"
+              label={"Image"}
+              value={coingeckoImg ?? "-"}
+              readOnly={true}
+            />
+          </Form>
+        ) : (
+          <Text>
+            Add token <Text weight="600">{chainStore.current.chainName}</Text>{" "}
+            not supported yet! Please try another network.
+          </Text>
+        )}
       </div>
       <ModalNetwork
         isHideAllNetwork={true}

@@ -1,7 +1,6 @@
 import React from "react";
 
 import { ToolTip } from "../tooltip";
-import { Bech32Address } from "@owallet/cosmos";
 import { formatAddress } from "@owallet/common";
 import { Text } from "../common/text";
 import colors from "../../theme/colors";
