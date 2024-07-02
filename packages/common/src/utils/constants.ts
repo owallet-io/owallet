@@ -52,6 +52,7 @@ export enum ChainIdEnum {
   Injective = "injective-1",
   Neutaro = "Neutaro-1",
   Noble = "noble-1",
+  Stargaze = "stargaze-1",
 }
 
 export enum KADOChainNameEnum {
@@ -67,6 +68,7 @@ export enum KADOChainNameEnum {
   "0x2b6653dc" = "TRON",
   "0x38" = "BNB",
   "noble-1" = "NOBLE",
+  "stargaze-1" = "STARGAZE",
 }
 
 export enum ChainNameEnum {
@@ -88,6 +90,7 @@ export enum ChainNameEnum {
   OasisEmerald = "Oasis Emerald",
   Neutaro = "Neutaro",
   Noble = "Noble",
+  Stargaze = "Stargaze",
 }
 
 export const restBtc = {

@@ -4,18 +4,23 @@ import { StyleSheet, Text, View } from "react-native";
 import { useQuery } from "@apollo/client";
 import { observer } from "mobx-react-lite";
 import { OwnedTokens } from "@src/graphql/queries";
+import { useStore } from "@src/stores";
+import { ChainIdEnum } from "@owallet/common";
 export const NftCard = observer(() => {
+  const { chainStore, accountStore } = useStore();
+  const account = accountStore.getAccount(ChainIdEnum.Stargaze);
+  console.log(account.bech32Address, "account.bech32Address");
   const { loading, error, data } = useQuery(OwnedTokens, {
     variables: {
       filterForSale: null,
-      owner: "stars1hvr9d72r5um9lvt0rpkd4r75vrsqtw6ymak76g",
+      owner: account.bech32Address,
       limit: 50,
       filterByCollectionAddrs: null,
       sortBy: "ACQUIRED_DESC",
     },
   });
   const nfts = data?.tokens?.tokens;
-  console.log(nfts, "data graphql");
+  console.log(data, "data graphql");
   return (
     <View style={styles.container}>
       {nfts &&
