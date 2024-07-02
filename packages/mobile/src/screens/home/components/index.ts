@@ -6,3 +6,4 @@ export * from "./token-chart";
 export * from "./tokens-card-all";
 export * from "./account-box-new";
 export * from "./earning-card-new";
+export * from "./main-tab-home";

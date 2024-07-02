@@ -880,6 +880,45 @@ export const EmbedChainInfos: AppChainInfo[] = [
       accountUrl: "https://www.mintscan.io/noble/address/{address}",
     },
   },
+  {
+    rpc: "https://rpc-stargaze.keplr.app",
+    rest: "https://lcd-stargaze.keplr.app",
+    chainId: "stargaze-1",
+    chainName: "Stargaze",
+    stakeCurrency: {
+      coinDenom: "STARS",
+      coinMinimalDenom: "ustars",
+      coinDecimals: 6,
+      coinGeckoId: "stargaze",
+      coinImageUrl:
+        "https://assets.coingecko.com/coins/images/22363/standard/pink_star_200.png",
+    },
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("stars"),
+    currencies: [
+      {
+        coinDenom: "STARS",
+        coinMinimalDenom: "ustars",
+        coinDecimals: 6,
+        coinGeckoId: "stargaze",
+        coinImageUrl:
+          "https://assets.coingecko.com/coins/images/22363/standard/pink_star_200.png",
+      },
+    ],
+    feeCurrencies: [
+      {
+        coinDenom: "STARS",
+        coinMinimalDenom: "ustars",
+        coinDecimals: 6,
+        coinGeckoId: "stargaze",
+        coinImageUrl:
+          "https://assets.coingecko.com/coins/images/22363/standard/pink_star_200.png",
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+  },
   // {
   //   rest: "https://blockstream.info/testnet/api",
   //   chainId: "bitcoinTestnet",

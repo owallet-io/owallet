@@ -49,9 +49,6 @@ export const TokensCardAll: FunctionComponent<{
   const { priceStore, appInitStore } = useStore();
   const [keyword, setKeyword] = useState("");
   const { colors } = useTheme();
-  const [activeTab, setActiveTab] = useState("tokens");
-  const styles = styling(colors);
-
   const tokens = appInitStore.getInitApp.hideTokensWithoutBalance
     ? dataTokens.filter((item, index) => {
         const balance = new CoinPretty(item.token.currency, item.token.amount);
@@ -59,10 +56,7 @@ export const TokensCardAll: FunctionComponent<{
         return price?.toDec()?.gte(new Dec("0.1")) ?? false;
       })
     : dataTokens;
-  useEffect(() => {
-    if (!keyword) return;
-    setKeyword("");
-  }, [activeTab]);
+
   const tokensAll =
     tokens &&
     tokens.filter((item, index) =>
@@ -70,89 +64,6 @@ export const TokensCardAll: FunctionComponent<{
         ?.toLowerCase()
         ?.includes(keyword.toLowerCase())
     );
-  const renderContent = () => {
-    if (activeTab === "tokens") {
-      return (
-        <>
-          {tokensAll?.length > 0 ? (
-            tokensAll.map((item, index) => (
-              <TokenItem key={index.toString()} item={item} />
-            ))
-          ) : (
-            <View
-              style={{
-                justifyContent: "center",
-                alignItems: "center",
-                marginVertical: 42,
-              }}
-            >
-              <FastImage
-                source={images.img_money}
-                style={{
-                  width: 150,
-                  height: 150,
-                }}
-                resizeMode={"contain"}
-              />
-              <OWText
-                color={colors["neutral-text-title"]}
-                size={16}
-                weight="700"
-              >
-                {"no tokens yet".toUpperCase()}
-              </OWText>
-              <OWButton
-                style={{
-                  marginTop: 8,
-                  marginHorizontal: 16,
-                  width: metrics.screenWidth / 2,
-                  borderRadius: 999,
-                }}
-                label={"+ Buy ORAI with cash"}
-                size="large"
-                type="secondary"
-                onPress={() => {
-                  navigate(SCREENS.STACK.Others, {
-                    screen: SCREENS.BuyFiat,
-                  });
-                }}
-              />
-            </View>
-          )}
-          <OWButton
-            style={{
-              marginTop: Platform.OS === "android" ? 28 : 22,
-              marginHorizontal: 16,
-              width: metrics.screenWidth - 32,
-              borderRadius: 999,
-            }}
-            icon={
-              <OWIcon
-                name="tdesignplus"
-                color={colors["neutral-text-title"]}
-                size={20}
-              />
-            }
-            label={"Add token"}
-            size="large"
-            type="secondary"
-            onPress={() => {
-              navigate(SCREENS.STACK.Others, {
-                screen: SCREENS.NetworkToken,
-              });
-              return;
-            }}
-          />
-        </>
-      );
-    } else {
-      return (
-        <>
-          <HistoryCard />
-        </>
-      );
-    }
-  };
 
   const [toggle, setToggle] = useState(
     appInitStore.getInitApp.hideTokensWithoutBalance
@@ -161,129 +72,118 @@ export const TokensCardAll: FunctionComponent<{
     appInitStore.updateHideTokensWithoutBalance(toggle);
   }, [toggle]);
   return (
-    <View style={styles.container}>
-      <OWBox
+    <>
+      <View
         style={{
-          paddingTop: 12,
-          backgroundColor: colors["neutral-surface-card"],
-          paddingHorizontal: 0,
+          flexDirection: "row",
+          flexWrap: "wrap",
+          gap: 16,
+          paddingHorizontal: 16,
+          paddingBottom: 10,
+          paddingTop: 6,
+          alignItems: "center",
+          justifyContent: "space-between",
         }}
       >
-        <View style={styles.wrapHeaderTitle}>
-          <OWButton
-            type="link"
-            label={"Tokens"}
-            textStyle={{
-              color:
-                activeTab === "tokens"
-                  ? colors["primary-surface-default"]
-                  : colors["neutral-text-body"],
-              fontWeight: "600",
-              fontSize: 16,
+        <OWSearchInput
+          containerStyle={{
+            height: 35,
+          }}
+          onValueChange={(txt) => {
+            setKeyword(txt);
+          }}
+          style={{
+            height: 35,
+            paddingVertical: 8,
+          }}
+          placeHolder={"Search for a token"}
+        />
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <OWText color={colors["neutral-text-body"]}>{`Hide dust`}</OWText>
+          <Switch
+            onValueChange={(value) => {
+              setToggle(value);
             }}
-            onPress={() => {
-              setActiveTab("tokens");
+            style={{
+              transform: [{ scaleX: 0.7 }, { scaleY: 0.7 }],
+              marginRight: -5,
             }}
-            style={[
-              {
-                width: "33%",
-              },
-              activeTab === "tokens" ? styles.active : styles.inactive,
-            ]}
-          />
-          <OWButton
-            type="link"
-            label={"NFT"}
-            onPress={() => {
-              setActiveTab("nft");
-            }}
-            textStyle={{
-              color:
-                activeTab === "nft"
-                  ? colors["primary-surface-default"]
-                  : colors["neutral-text-body"],
-              fontWeight: "600",
-              fontSize: 16,
-            }}
-            style={[
-              {
-                width: "33%",
-              },
-              activeTab === "nft" ? styles.active : styles.inactive,
-            ]}
-          />
-          <OWButton
-            type="link"
-            label={"History"}
-            onPress={() => {
-              setActiveTab("history");
-            }}
-            textStyle={{
-              color:
-                activeTab === "history"
-                  ? colors["primary-surface-default"]
-                  : colors["neutral-text-body"],
-              fontWeight: "600",
-              fontSize: 16,
-            }}
-            style={[
-              {
-                width: "33%",
-              },
-              activeTab === "history" ? styles.active : styles.inactive,
-            ]}
+            value={toggle}
           />
         </View>
-        {activeTab === "tokens" ? (
-          <View
+      </View>
+      {tokensAll?.length > 0 ? (
+        tokensAll.map((item, index) => (
+          <TokenItem key={index.toString()} item={item} />
+        ))
+      ) : (
+        <View
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+            marginVertical: 42,
+          }}
+        >
+          <FastImage
+            source={images.img_money}
             style={{
-              flexDirection: "row",
-              flexWrap: "wrap",
-              gap: 16,
-              paddingHorizontal: 16,
-              paddingBottom: 10,
-              paddingTop: 6,
-              alignItems: "center",
-              justifyContent: "space-between",
+              width: 150,
+              height: 150,
             }}
-          >
-            <OWSearchInput
-              containerStyle={{
-                height: 35,
-              }}
-              onValueChange={(txt) => {
-                setKeyword(txt);
-              }}
-              style={{
-                height: 35,
-                paddingVertical: 8,
-              }}
-              placeHolder={"Search for a token"}
-            />
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              <OWText color={colors["neutral-text-body"]}>{`Hide dust`}</OWText>
-              <Switch
-                onValueChange={(value) => {
-                  setToggle(value);
-                }}
-                style={{
-                  transform: [{ scaleX: 0.7 }, { scaleY: 0.7 }],
-                  marginRight: -5,
-                }}
-                value={toggle}
-              />
-            </View>
-          </View>
-        ) : null}
-        {renderContent()}
-      </OWBox>
-    </View>
+            resizeMode={"contain"}
+          />
+          <OWText color={colors["neutral-text-title"]} size={16} weight="700">
+            {"no tokens yet".toUpperCase()}
+          </OWText>
+          <OWButton
+            style={{
+              marginTop: 8,
+              marginHorizontal: 16,
+              width: metrics.screenWidth / 2,
+              borderRadius: 999,
+            }}
+            label={"+ Buy ORAI with cash"}
+            size="large"
+            type="secondary"
+            onPress={() => {
+              navigate(SCREENS.STACK.Others, {
+                screen: SCREENS.BuyFiat,
+              });
+            }}
+          />
+        </View>
+      )}
+      <OWButton
+        style={{
+          marginTop: Platform.OS === "android" ? 28 : 22,
+          marginHorizontal: 16,
+          width: metrics.screenWidth - 32,
+          borderRadius: 999,
+        }}
+        icon={
+          <OWIcon
+            name="tdesignplus"
+            color={colors["neutral-text-title"]}
+            size={20}
+          />
+        }
+        label={"Add token"}
+        size="large"
+        type="secondary"
+        onPress={() => {
+          navigate(SCREENS.STACK.Others, {
+            screen: SCREENS.NetworkToken,
+          });
+          return;
+        }}
+      />
+    </>
   );
 });
 

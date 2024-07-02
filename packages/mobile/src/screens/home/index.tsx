@@ -39,24 +39,12 @@ import { useCoinGeckoPrices, useLoadTokens } from "@owallet/hooks";
 import { flatten } from "lodash";
 import { showToast } from "@src/utils/helper";
 import ByteBrew from "react-native-bytebrew-sdk";
-import { useQuery } from "@apollo/client";
-import { CollectionCounts } from "@src/graphql/queries";
+
+import { MainTabHome } from "./components";
 
 export const HomeScreen: FunctionComponent = observer((props) => {
   const [refreshing, setRefreshing] = React.useState(false);
   const [refreshDate, setRefreshDate] = React.useState(Date.now());
-
-  const { loading, error, data } = useQuery(CollectionCounts, {
-    variables: {
-      filterForSale: null,
-      owner: "stars1hvr9d72r5um9lvt0rpkd4r75vrsqtw6ymak76g",
-      limit: 100,
-    },
-  });
-  // if (loading) return <Text>Loading...</Text>;
-  // if (error) return <Text>{`Error! ${error}`}</Text>;
-  console.log(data, "data graphql");
-  // return;
   const { colors } = useTheme();
 
   const styles = styling(colors);
@@ -362,7 +350,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         )?.toString()}
       />
       <EarningCardNew />
-      <TokensCardAll dataTokens={dataTokens} />
+      <MainTabHome dataTokens={dataTokens} />
     </PageWithScrollViewInBottomTabView>
   );
 });
