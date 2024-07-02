@@ -21,7 +21,7 @@ export const NftCard = observer(() => {
     variables: {
       filterForSale: null,
       owner: address,
-      limit: 50,
+      limit: 6,
       filterByCollectionAddrs: null,
       sortBy: "ACQUIRED_DESC",
     },

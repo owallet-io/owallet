@@ -7,7 +7,13 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { useStore } from "@src/stores";
 import { ChainIdEnum, unknownToken } from "@owallet/common";
 import { CoinPretty } from "@owallet/unit";
-
+import { navigate } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
+import { useSmartNavigation } from "@src/navigation.provider";
+import { useNavigation } from "@react-navigation/native";
+import ProgressiveFastImage from "@freakycoder/react-native-progressive-fast-image";
+import images from "@src/assets/images";
+import LottieView from "lottie-react-native";
 export const NftItem = ({ item }) => {
   const { colors } = useTheme();
 
@@ -21,19 +27,36 @@ export const NftItem = ({ item }) => {
     tokenInfo,
     item?.collection?.floorPrice || "0"
   );
+  const smartNavigation = useSmartNavigation();
+
   return (
     <TouchableOpacity
       style={styles.flatListItem}
       onPress={() => {
-        // smartNavigation.navigateSmart('Nfts',{})
+        smartNavigation.pushSmart("Nfts.Detail", {
+          item,
+        });
       }}
     >
-      <Image
-        source={{
-          uri: item?.media?.url,
-        }}
+      <ProgressiveFastImage
         style={styles.itemPhoto}
-        resizeMode="cover"
+        source={{ uri: item?.media?.url }}
+        onLoad={() => console.log("loaded")}
+        onError={() => console.log("error")}
+        thumbnailSource={images.thumnail_nft}
+        thumbnailImageStyle={styles.itemPhoto}
+        loadingImageComponent={
+          <View style={styles.imgWrap}>
+            <LottieView
+              source={require("@src/assets/animations/loading_owallet.json")}
+              style={{ width: 120, height: 120 }}
+              autoPlay
+              loop
+              speed={0.5}
+            />
+          </View>
+        }
+        loadingSource={require("@assets/animations/loading.gif")}
       />
       <View
         style={{
@@ -65,6 +88,16 @@ export const NftItem = ({ item }) => {
 
 const styling = (colors) =>
   StyleSheet.create({
+    imgWrap: {
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      position: "absolute",
+      alignItems: "center",
+      alignSelf: "center",
+      justifyContent: "center",
+    },
     flatListItem: {
       backgroundColor: colors["neutral-surface-card"],
       borderRadius: 18,
