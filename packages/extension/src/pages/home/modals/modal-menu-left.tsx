@@ -26,6 +26,9 @@ export const ModalMenuLeft: FC<{
         lock();
         break;
       case MenuEnum.CONNECTED_DAPP:
+        history.push("/connected-dapp");
+        break;
+      case MenuEnum.ADD_TOKEN:
         if (chainStore.current.chainId === ChainIdEnum.Bitcoin) {
           notification.push({
             placement: "top-center",
@@ -40,9 +43,6 @@ export const ModalMenuLeft: FC<{
           });
           return;
         }
-        history.push("/connected-dapp");
-        break;
-      case MenuEnum.ADD_TOKEN:
         history.push("/add-token");
         break;
       case MenuEnum.PREFERENCES:
