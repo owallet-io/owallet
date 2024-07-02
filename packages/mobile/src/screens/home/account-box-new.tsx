@@ -108,8 +108,6 @@ export const AccountBoxAll: FunctionComponent<{
           <>
             <View
               style={{
-                borderTopWidth: 1,
-                borderColor: colors["neutral-border-default"],
                 marginVertical: 8,
                 paddingVertical: 8,
                 flexDirection: "row",
@@ -155,7 +153,7 @@ export const AccountBoxAll: FunctionComponent<{
               </Text>
             </View>
             {chainStore.current.chainId === ChainIdEnum.TRON && (
-              <>
+              <View style={{ paddingBottom: 8 }}>
                 <View
                   style={{
                     flexDirection: "row",
@@ -164,14 +162,14 @@ export const AccountBoxAll: FunctionComponent<{
                   }}
                 >
                   <OWText
-                    size={16}
+                    size={15}
                     weight="600"
                     color={colors["neutral-text-title"]}
                   >
                     My Energy:
                   </OWText>
                   <OWText
-                    size={16}
+                    size={14}
                     weight="600"
                     color={colors["neutral-text-body"]}
                   >{`${accountTronInfo?.energyRemaining?.toString()}/${accountTronInfo?.energyLimit?.toString()}`}</OWText>
@@ -184,19 +182,19 @@ export const AccountBoxAll: FunctionComponent<{
                   }}
                 >
                   <OWText
-                    size={16}
+                    size={15}
                     weight="600"
                     color={colors["neutral-text-title"]}
                   >
                     My Bandwidth:
                   </OWText>
                   <OWText
-                    size={16}
+                    size={14}
                     weight="600"
                     color={colors["neutral-text-body"]}
                   >{`${accountTronInfo?.bandwidthRemaining?.toString()}/${accountTronInfo?.bandwidthLimit?.toString()}`}</OWText>
                 </View>
-              </>
+              </View>
             )}
           </>
         )}
@@ -281,10 +279,18 @@ export const AccountBoxAll: FunctionComponent<{
         <View style={styles.btnGroup}>
           <OWButton
             style={styles.getStarted}
+            icon={
+              <OWIcon
+                color={colors["neutral-text-action-on-light-bg"]}
+                name={"tdesignqrcode"}
+                size={20}
+              />
+            }
+            type="link"
             textStyle={{
-              fontSize: 14,
+              fontSize: 15,
               fontWeight: "600",
-              color: colors["neutral-text-action-on-dark-bg"],
+              color: colors["neutral-text-action-on-light-bg"],
             }}
             label="Receive"
             onPress={() => {
@@ -294,13 +300,31 @@ export const AccountBoxAll: FunctionComponent<{
               return;
             }}
           />
-
+          <View
+            style={{
+              width: 1,
+              height: "100%",
+              backgroundColor: colors["neutral-border-default"],
+            }}
+          />
           <OWButton
             textStyle={{
-              fontSize: 14,
+              fontSize: 15,
               fontWeight: "600",
-              color: colors["neutral-text-action-on-dark-bg"],
+              color: colors["neutral-text-action-on-light-bg"],
             }}
+            icon={
+              <OWIcon
+                color={colors["neutral-text-action-on-light-bg"]}
+                name={
+                  appInitStore.getInitApp.isAllNetworks
+                    ? "tdesigncreditcard"
+                    : "tdesignsend"
+                }
+                size={20}
+              />
+            }
+            type="link"
             style={styles.getStarted}
             label={appInitStore.getInitApp.isAllNetworks ? "Buy" : "Send"}
             onPress={() => {
@@ -350,7 +374,6 @@ const styling = (colors) =>
     },
     overview: {
       marginTop: 12,
-      marginBottom: 16,
     },
     labelTotalAmount: {
       color: colors["neutral-text-heading"],
@@ -395,6 +418,9 @@ const styling = (colors) =>
     btnGroup: {
       flexDirection: "row",
       justifyContent: "space-between",
+      borderTopColor: colors["neutral-border-default"],
+      borderTopWidth: 1,
+      paddingTop: 8,
     },
     containerLoading: {
       position: "absolute",

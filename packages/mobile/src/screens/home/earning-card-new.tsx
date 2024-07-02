@@ -219,7 +219,7 @@ export const EarningCardNew: FunctionComponent<{
               },
             ]}
             textStyle={{
-              fontSize: 14,
+              fontSize: 15,
               fontWeight: "600",
               color: isDisableClaim
                 ? colors["neutral-text-disable"]
@@ -237,7 +237,7 @@ export const EarningCardNew: FunctionComponent<{
             marginTop: 6,
             borderRadius: 16,
             paddingHorizontal: 12,
-            paddingVertical: 4,
+            paddingVertical: 8,
             flexDirection: "row",
             justifyContent: "space-between",
           }}
@@ -341,7 +341,7 @@ const styling = (colors) =>
       // borderWidth: 0.5,
       marginTop: 16,
       borderRadius: 999,
-      width: metrics.screenWidth / 4.5,
+      width: metrics.screenWidth / 4,
       height: 32,
       position: "absolute",
       right: 0,
