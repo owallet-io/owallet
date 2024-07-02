@@ -25,6 +25,7 @@ const images = {
   fail_dark: require("./fail_dark.png"),
   img_airight: require("./img_airight.png"),
   img_chatbot: require("./img_chatbot.png"),
+  img_color: require("./img_color.png"),
   img_defi_lens: require("./img_defi-lens.png"),
   img_fu: require("./img_fu.png"),
   img_homebase: require("./img_homebase.png"),

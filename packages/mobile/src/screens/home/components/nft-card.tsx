@@ -9,9 +9,10 @@ import { ChainIdEnum, unknownToken } from "@owallet/common";
 import OWText from "@components/text/ow-text";
 import { useTheme } from "@src/themes/theme-provider";
 import { CoinPretty, PricePretty } from "@owallet/unit";
+import { OWEmpty } from "@src/components/empty";
 export const NftCard = observer(() => {
   const { chainStore, accountStore, priceStore } = useStore();
-  const account = accountStore.getAccount(ChainIdEnum.Stargaze);
+  const account = accountStore.getAccount(chainStore.current.chainId);
   const { loading, error, data } = useQuery(OwnedTokens, {
     variables: {
       filterForSale: null,
@@ -38,18 +39,25 @@ export const NftCard = observer(() => {
     );
     totalPrice = totalPrice.add(priceStore.calculatePrice(balance));
   }
+
   const styles = styling(colors);
   return (
     <View style={styles.container}>
-      <View style={styles.sectionHeader}>
-        <OWText style={styles.txtTitle}>Total value</OWText>
-        <OWText style={styles.price}>{totalPrice?.toString()}</OWText>
-      </View>
-      <View style={styles.containerList}>
-        {nftsFilter.map((item, index) => {
-          return <NftItem key={index} item={item} />;
-        })}
-      </View>
+      {nftsFilter?.length > 0 ? (
+        <>
+          <View style={styles.sectionHeader}>
+            <OWText style={styles.txtTitle}>Total value</OWText>
+            <OWText style={styles.price}>{totalPrice?.toString()}</OWText>
+          </View>
+          <View style={styles.containerList}>
+            {nftsFilter.map((item, index) => {
+              return <NftItem key={index} item={item} />;
+            })}
+          </View>
+        </>
+      ) : (
+        <OWEmpty type="nft" label="NO NFTs YET" />
+      )}
     </View>
   );
 });
