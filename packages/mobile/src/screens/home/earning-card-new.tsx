@@ -46,6 +46,15 @@ export const EarningCardNew: FunctionComponent<{
   const delegated = queryDelegated.total;
   const totalPrice = priceStore.calculatePrice(delegated);
 
+  const _onPressStake = () => {
+    if (checkRouter(route?.name, SCREENS.Invest)) {
+      return;
+    }
+    navigation.dispatch(
+      StackActions.replace("MainTab", { screen: SCREENS.TABS.Invest })
+    );
+  };
+
   const _onPressCompound = async () => {
     try {
       const firstValidator =
@@ -163,16 +172,7 @@ export const EarningCardNew: FunctionComponent<{
     >
       <View>
         <View style={styles.cardBody}>
-          <TouchableOpacity
-            onPress={() => {
-              if (checkRouter(route?.name, SCREENS.Invest)) {
-                return;
-              }
-              navigation.dispatch(
-                StackActions.replace("MainTab", { screen: SCREENS.TABS.Invest })
-              );
-            }}
-          >
+          <TouchableOpacity onPress={_onPressStake}>
             <View style={{ flexDirection: "row", paddingBottom: 6 }}>
               <View style={styles["claim-title"]}>
                 <OWIcon
@@ -209,23 +209,27 @@ export const EarningCardNew: FunctionComponent<{
                 : `< 0.001 ${stakingReward.toCoin().denom.toUpperCase()}`}
             </Text>
           </TouchableOpacity>
-          {/* <OWButton
+          <OWButton
             style={[
               styles["btn-claim"],
               {
-                backgroundColor: isDisableClaim ? colors["neutral-surface-disable"] : colors["primary-surface-default"]
-              }
+                backgroundColor: isDisableClaim
+                  ? colors["neutral-surface-disable"]
+                  : colors["primary-surface-default"],
+              },
             ]}
             textStyle={{
               fontSize: 14,
               fontWeight: "600",
-              color: isDisableClaim ? colors["neutral-text-disable"] : colors["neutral-text-action-on-dark-bg"]
+              color: isDisableClaim
+                ? colors["neutral-text-disable"]
+                : colors["neutral-text-action-on-dark-bg"],
             }}
-            label="Claim"
-            onPress={_onPressClaim}
+            label="Compound"
+            onPress={_onPressCompound}
             loading={account.isSendingMsg === "withdrawRewards"}
             disabled={isDisableClaim}
-          /> */}
+          />
         </View>
         <View
           style={{
@@ -256,26 +260,48 @@ export const EarningCardNew: FunctionComponent<{
       </View>
       <View style={styles.btnGroup}>
         <OWButton
-          style={styles.getStarted}
           textStyle={{
-            fontSize: 14,
+            fontSize: 15,
             fontWeight: "600",
-            color: colors["neutral-text-action-on-dark-bg"],
+            color: colors["neutral-text-action-on-light-bg"],
           }}
-          label="Compound"
-          onPress={_onPressCompound}
-        />
-
-        <OWButton
-          textStyle={{
-            fontSize: 14,
-            fontWeight: "600",
-            color: colors["neutral-text-action-on-dark-bg"],
-          }}
+          icon={
+            <OWIcon
+              color={colors["neutral-text-action-on-light-bg"]}
+              name={"tdesigngift"}
+              size={20}
+            />
+          }
+          type="link"
           style={styles.getStarted}
           label={"Claim"}
-          disable={isDisableClaim}
+          disabled={isDisableClaim}
           onPress={_onPressClaim}
+        />
+        <View
+          style={{
+            width: 1,
+            height: "100%",
+            backgroundColor: colors["neutral-border-default"],
+          }}
+        />
+        <OWButton
+          style={styles.getStarted}
+          type="link"
+          icon={
+            <OWIcon
+              color={colors["neutral-text-action-on-light-bg"]}
+              name={"tdesignwealth-1"}
+              size={20}
+            />
+          }
+          textStyle={{
+            fontSize: 15,
+            fontWeight: "600",
+            color: colors["neutral-text-action-on-light-bg"],
+          }}
+          label="Stake"
+          onPress={_onPressStake}
         />
       </View>
     </OWBox>
@@ -340,5 +366,8 @@ const styling = (colors) =>
       flexDirection: "row",
       justifyContent: "space-between",
       marginTop: 16,
+      borderTopColor: colors["neutral-border-default"],
+      borderTopWidth: 1,
+      paddingTop: 8,
     },
   });
