@@ -68,7 +68,6 @@ export const ModalCopyAddress: FC<{
         <div className={styles.containerListChain}>
           {chainsData?.length > 0 &&
             chainsData.map((item, index) => {
-              console.log(index === chainsData.length - 1, "data");
               let address;
               if (index === chainsData.length - 1) {
                 address = accountStore.getAccount(item.chainId).legacyAddress;

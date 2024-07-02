@@ -57,7 +57,7 @@ export const useMultipleAssets = (
   accountStore: AccountStore<AccountWithAll>,
   priceStore: CoinGeckoPriceStore,
   chainStore: ChainStore,
-  isRefreshing: boolean,
+  selected: any,
   bech32Address,
   hugeQueriesStore
 ): IMultipleAsset => {
@@ -75,13 +75,17 @@ export const useMultipleAssets = (
   const allTokens: ViewRawToken[] = [];
   // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
-    if (bech32AddressCache !== bech32Address) {
+    if (selected?.type === "ledger") {
+      setTimeout(() => {
+        init();
+      }, 1000);
+    } else if (bech32AddressCache !== bech32Address) {
       bech32AddressCache = bech32Address;
       setTimeout(() => {
         init();
       }, 1000);
     }
-  }, [bech32Address, priceStore.defaultVsCurrency]);
+  }, [bech32Address, selected, priceStore.defaultVsCurrency]);
   const pushTokenQueue = async (
     token: AppCurrency,
     amount: string | number,
