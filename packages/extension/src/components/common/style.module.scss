@@ -54,6 +54,11 @@
   color: $neutral-icon-on-dark;
 }
 
+.rejectBtn {
+  background-color: $neutral-surface-action3;
+  color: $error-text-action;
+}
+
 .buttonOutline {
   background-color: transparent;
   color: $primary-text-action;

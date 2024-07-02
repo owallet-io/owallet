@@ -1106,7 +1106,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
       accountUrl: "https://explorer.oasis.io/mainnet/emerald/address/{address}",
     },
   },
-
   {
     chainId: "oraibridge-subnet-2",
     chainName: "OraiBridge",

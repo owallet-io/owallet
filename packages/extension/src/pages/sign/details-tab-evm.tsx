@@ -55,6 +55,8 @@ export const DetailsTabEvm: FunctionComponent<{
     );
 
     const chain = chainStore.getChain(dataSign?.data?.chainId);
+    const [toAddress, setToAddress] = useState(null);
+    const [amount, setAmount] = useState(null);
     const [decodedData, setDecodedData] = useState(null);
     const [decodeWithABI, setDecodeWithABI] = useState(null);
 
@@ -113,9 +115,42 @@ export const DetailsTabEvm: FunctionComponent<{
     //   : "none";
     const msgs = msgSign ? msgSign : [];
 
-    const amount = msgs?.value && Web3.utils.hexToNumberString(msgs?.value);
+    console.log(
+      "decodedData",
+      decodedData,
+      decodedData?.args?._to,
+      decodedData?.args?.[1]
+    );
+
+    useEffect(() => {
+      if (decodedData?.args?._to) {
+        setToAddress(decodedData?.args?._to);
+      }
+      if (msgs && !msgs?.data) {
+        setToAddress(msgs.to);
+      }
+    }, [decodedData]);
+
+    useEffect(() => {
+      console.log("ecodedData?.args?._amount", decodedData?.args?._amount);
+      console.log("ecodedData?.args?._value", decodedData?.args?._value);
+
+      if (decodedData?.args?._amount) {
+        setAmount(decodedData?.args?._amount);
+        return;
+      } else if (decodedData?.args?._value) {
+        setAmount(decodedData?.args?._value);
+        return;
+      } else if (msgs?.value) {
+        setAmount(msgs?.value);
+      }
+    }, [decodedData, msgs]);
+
+    console.log("amount", amount);
+
     const renderedMsgs = (() => {
-      if (msgs && amount && !msgs?.data) {
+      const displayAmount = Web3.utils.hexToNumberString(msgs?.value);
+      if (msgs && displayAmount && !msgs?.data) {
         return (
           <React.Fragment>
             {renderMsg(
@@ -129,8 +164,8 @@ export const DetailsTabEvm: FunctionComponent<{
                 <b>
                   {`${
                     chainStore.current.chainId === ChainIdEnum.Oasis
-                      ? Web3.utils.fromWei(amount, "gwei")
-                      : Web3.utils.fromWei(amount, "ether")
+                      ? Web3.utils.fromWei(displayAmount, "gwei")
+                      : Web3.utils.fromWei(displayAmount, "ether")
                   } ${chainStore.current.feeCurrencies[0].coinDenom}`}
                 </b>{" "}
                 to{" "}
@@ -190,89 +225,91 @@ export const DetailsTabEvm: FunctionComponent<{
     })();
 
     const renderDestination = (from?, to?) => {
-      return (
-        <div
-          style={{
-            marginTop: 14,
-            height: "auto",
-            alignItems: "center",
-          }}
-        >
+      if ((msgs && !msgs?.data) || decodedData.name === "transfer") {
+        return (
           <div
             style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-between",
-              marginBottom: 14,
+              marginTop: 14,
+              height: "auto",
+              alignItems: "center",
             }}
           >
             <div
               style={{
-                maxWidth: "50%",
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                marginBottom: 14,
               }}
             >
-              <div style={{ flexDirection: "column", display: "flex" }}>
-                <Text color={colors["neutral-text-body"]}>From</Text>
-                {from ? (
-                  <>
-                    <Address
-                      maxCharacters={6}
-                      lineBreakBeforePrefix={false}
-                      textDecor={"underline"}
-                      textColor={colors["neutral-text-body"]}
+              <div
+                style={{
+                  maxWidth: "50%",
+                }}
+              >
+                <div style={{ flexDirection: "column", display: "flex" }}>
+                  <Text color={colors["neutral-text-body"]}>From</Text>
+                  {from ? (
+                    <>
+                      <Address
+                        maxCharacters={6}
+                        lineBreakBeforePrefix={false}
+                        textDecor={"underline"}
+                        textColor={colors["neutral-text-body"]}
+                      >
+                        {from}
+                      </Address>
+                    </>
+                  ) : (
+                    <Text
+                      containerStyle={{
+                        textDecoration: "underline",
+                      }}
+                      color={colors["neutral-text-body"]}
                     >
-                      {from}
-                    </Address>
-                  </>
-                ) : (
-                  <Text
-                    containerStyle={{
-                      textDecoration: "underline",
-                    }}
-                    color={colors["neutral-text-body"]}
-                  >
-                    {shortenAddress(signer) ?? "-"}
-                  </Text>
-                )}
+                      {shortenAddress(signer) ?? "-"}
+                    </Text>
+                  )}
+                </div>
+              </div>
+              <img
+                style={{ paddingRight: 4 }}
+                src={require("assets/icon/tdesign_arrow-right.svg")}
+              />
+              <div
+                style={{
+                  maxWidth: "50%",
+                }}
+              >
+                <div style={{ flexDirection: "column", display: "flex" }}>
+                  <Text color={colors["neutral-text-body"]}>To</Text>
+                  {to ? (
+                    <>
+                      <Address
+                        maxCharacters={6}
+                        lineBreakBeforePrefix={false}
+                        textDecor={"underline"}
+                        textColor={colors["neutral-text-body"]}
+                      >
+                        {to}
+                      </Address>
+                    </>
+                  ) : (
+                    <Text color={colors["neutral-text-body"]}>-</Text>
+                  )}
+                </div>
               </div>
             </div>
-            <img
-              style={{ paddingRight: 4 }}
-              src={require("assets/icon/tdesign_arrow-right.svg")}
-            />
             <div
               style={{
-                maxWidth: "50%",
+                width: "100%",
+                height: 1,
+                backgroundColor: colors["neutral-border-default"],
               }}
-            >
-              <div style={{ flexDirection: "column", display: "flex" }}>
-                <Text color={colors["neutral-text-body"]}>To</Text>
-                {to ? (
-                  <>
-                    <Address
-                      maxCharacters={6}
-                      lineBreakBeforePrefix={false}
-                      textDecor={"underline"}
-                      textColor={colors["neutral-text-body"]}
-                    >
-                      {to}
-                    </Address>
-                  </>
-                ) : (
-                  <Text color={colors["neutral-text-body"]}>-</Text>
-                )}
-              </div>
-            </div>
+            />
           </div>
-          <div
-            style={{
-              width: "100%",
-              height: 1,
-              backgroundColor: colors["neutral-border-default"],
-            }}
-          />
-        </div>
-      );
+        );
+      }
     };
 
     const renderInfo = (condition, label, leftContent) => {
@@ -322,7 +359,10 @@ export const DetailsTabEvm: FunctionComponent<{
       return (
         <div>
           {renderInfo(
-            msgs?.value || decodedData?.args?._amount,
+            amount &&
+              Number(
+                toDisplay(amount.toString(), chain.stakeCurrency.coinDecimals)
+              ) > 0,
             "Amount",
             <div
               style={{
@@ -339,15 +379,9 @@ export const DetailsTabEvm: FunctionComponent<{
                 }}
               >
                 <Text size={16} weight="600">
-                  {msgs.value && !decodedData?.args?._amount
+                  {amount
                     ? toDisplay(
-                        msgs?.value?.toString(),
-                        chain.stakeCurrency.coinDecimals
-                      )
-                    : null}
-                  {!msgs.value && decodedData?.args?._amount
-                    ? toDisplay(
-                        decodedData?.args?._amount.toString(),
+                        amount.toString(),
                         chain.stakeCurrency.coinDecimals
                       )
                     : null}
@@ -375,6 +409,9 @@ export const DetailsTabEvm: FunctionComponent<{
               marginTop: 14,
             }}
             onClick={() => {
+              if ((msgs && !msgs?.data) || decodedData.name === "transfer") {
+                return;
+              }
               setOpenSetting();
             }}
           >
@@ -502,20 +539,9 @@ export const DetailsTabEvm: FunctionComponent<{
             </div>
           )}
 
-          {renderDestination(msgs?.from, msgs?.to)}
-          {/* {renderInfo(
-            msgs?.value,
-            "Amount In",
-            <Text>
-              {msgs.value
-                ? toDisplay(
-                    msgs?.value?.toString(),
-                    chain.stakeCurrency.coinDecimals
-                  )
-                : null}
-            </Text>
-          )} */}
-          {decodedData ? (
+          {toAddress ? renderDestination(msgs?.from, toAddress) : null}
+
+          {decodedData && decodedData.name !== "transfer" ? (
             <>
               {renderInfo(
                 decodedData.name,
@@ -536,9 +562,9 @@ export const DetailsTabEvm: FunctionComponent<{
         <Card
           containerStyle={{
             borderRadius: 12,
-            border: "2px solid" + colors["neutral-text-title"],
             padding: 8,
             marginTop: 12,
+            border: "1px solid" + colors["neutral-border-default"],
           }}
         >
           {renderTransactionFee()}

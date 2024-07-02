@@ -131,7 +131,6 @@ export const ModalFee: FC<{
           ) : (
             <>
               <FeeButtons
-                //@ts-ignore
                 feeConfig={feeConfig}
                 gasConfig={gasConfig}
                 priceStore={priceStore}
