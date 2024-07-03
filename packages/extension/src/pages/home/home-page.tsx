@@ -11,7 +11,7 @@ import {
 } from "../../hooks/use-multiple-assets";
 
 export const HomePage = observer(() => {
-  const [refreshing, setRefreshing] = React.useState(false);
+  // const [refreshing, setRefreshing] = React.useState(false);
   const {
     chainStore,
     hugeQueriesStore,
@@ -20,7 +20,11 @@ export const HomePage = observer(() => {
     keyRingStore,
     queriesStore,
   } = useStore();
+  const selected = keyRingStore?.multiKeyStoreInfo?.find(
+    (keyStore) => keyStore?.selected
+  );
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
+
   const address = accountStore
     .getAccount(chainStore.current.chainId)
     .getAddressDisplay(keyRingStore.keyRingLedgerAddresses, false);
@@ -29,7 +33,7 @@ export const HomePage = observer(() => {
       accountStore,
       priceStore,
       chainStore,
-      refreshing,
+      selected,
       accountOrai.bech32Address,
       hugeQueriesStore
     );
