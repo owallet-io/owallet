@@ -224,7 +224,7 @@ export const AddTokenPage = observer(() => {
               error={
                 errors.contractAddress
                   ? errors.contractAddress.message
-                  : tokenInfo == null
+                  : tokenInfo == null && contractAddress !== ""
                   ? (queryContractInfo?.error?.data as any)?.error ||
                     queryContractInfo?.error?.message
                   : undefined
