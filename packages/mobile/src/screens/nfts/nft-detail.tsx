@@ -2,13 +2,15 @@ import React, { FunctionComponent, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { StyleSheet, View } from "react-native";
 import { useSmartNavigation } from "../../navigation.provider";
-import { _keyExtract, formatContractAddress } from "../../utils/helper";
+import {
+  _keyExtract,
+  formatContractAddress,
+  openLink,
+} from "../../utils/helper";
 import {
   PageWithScrollView,
   PageWithScrollViewInBottomTabView,
 } from "../../components/page";
-import { RouteProp, useRoute } from "@react-navigation/native";
-import { Text } from "@src/components/text";
 import { useTheme } from "@src/themes/theme-provider";
 // import FastImage from "react-native-fast-image";
 import { metrics } from "@src/themes";
@@ -22,7 +24,9 @@ import { useStore } from "@src/stores";
 import ProgressiveFastImage from "@freakycoder/react-native-progressive-fast-image";
 import images from "@src/assets/images";
 import LottieView from "lottie-react-native";
-import { OwLoading } from "@src/components/owallet-loading/ow-loading";
+
+import ItemReceivedToken from "../transactions/components/item-received-token";
+import OWButtonIcon from "@src/components/button/ow-button-icon";
 export const NftDetailScreen: FunctionComponent = observer((props) => {
   const { chainStore, accountStore, priceStore, queriesStore, modalStore } =
     useStore();
@@ -45,6 +49,13 @@ export const NftDetailScreen: FunctionComponent = observer((props) => {
     tokenInfo,
     token?.collection?.floorPrice || "0"
   );
+  const url = "https://www.stargaze.zone/m";
+  const onBrowser = async () => {
+    if (!item?.collection?.contractAddress || !item?.tokenId) return;
+    await openLink(
+      `${url}/${item?.collection?.contractAddress}/${item?.tokenId}`
+    );
+  };
   return (
     <PageWithScrollView showsVerticalScrollIndicator={false}>
       <View style={styles.container}>
@@ -117,58 +128,31 @@ export const NftDetailScreen: FunctionComponent = observer((props) => {
             </View>
             <View style={styles.rightItem}></View>
           </View> */}
-          <View style={styles.itemBox}>
-            <View style={styles.leftItem}>
-              <Text
-                style={{
-                  lineHeight: 24,
-                }}
-                weight="600"
-                color={colors["neutral-text-title"]}
-              >
-                Contract address
-              </Text>
-              <Text
-                style={{
-                  lineHeight: 24,
-                }}
-                weight="400"
-                size={16}
-                color={colors["neutral-text-body"]}
-              >
-                {formatContractAddress(token?.collection?.contractAddress)}
-              </Text>
-            </View>
-            <View style={styles.rightItem}>
-              <OWIcon name="tdesignjump" size={20} />
-            </View>
-          </View>
-          <View style={styles.itemBox}>
-            <View style={styles.leftItem}>
-              <Text
-                style={{
-                  lineHeight: 24,
-                }}
-                weight="600"
-                color={colors["neutral-text-title"]}
-              >
-                Token ID
-              </Text>
-              <Text
-                style={{
-                  lineHeight: 24,
-                }}
-                weight="400"
-                size={16}
-                color={colors["neutral-text-body"]}
-              >
-                {token?.tokenId}
-              </Text>
-            </View>
-            <View style={styles.rightItem}>
-              <OWIcon name="tdesigncopy" size={20} />
-            </View>
-          </View>
+
+          <ItemReceivedToken
+            btnCopy={false}
+            IconRightComponent={
+              <View>
+                <OWButtonIcon
+                  name="tdesignjump"
+                  sizeIcon={20}
+                  fullWidth={false}
+                  onPress={onBrowser}
+                  colorIcon={colors["neutral-text-action-on-light-bg"]}
+                />
+              </View>
+            }
+            label="Contract address"
+            valueDisplay={formatContractAddress(
+              token?.collection?.contractAddress
+            )}
+            value={token?.collection?.contractAddress}
+          />
+          <ItemReceivedToken
+            label="Token ID"
+            valueDisplay={token?.tokenId || "0"}
+            value={token?.tokenId || "0"}
+          />
         </View>
       </View>
       <View style={styles.containerBox}>
