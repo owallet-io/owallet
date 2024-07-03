@@ -39,17 +39,8 @@ import { Buffer } from "buffer";
 import { ChainIdEnum } from "@oraichain/oraidex-common";
 import ByteBrew from "react-native-bytebrew-sdk";
 import { GasPrice } from "@cosmjs/stargate";
-import {
-  DirectSecp256k1HdWallet,
-  isOfflineDirectSigner,
-} from "@cosmjs/proto-signing";
-import { Secp256k1HdWallet, makeCosmoshubPath } from "@cosmjs/amino";
-import {
-  SigningCosmWasmClient,
-  createWasmAminoConverters,
-} from "@cosmjs/cosmwasm-stargate";
-import { AminoTypes } from "@cosmjs/stargate";
-import { createDefaultAminoConverters } from "@cosmjs/stargate";
+
+import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { coin, StdFee } from "@cosmjs/amino";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import axios from "axios";
