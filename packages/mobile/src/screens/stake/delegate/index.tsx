@@ -36,7 +36,18 @@ import { CoinPretty, Int } from "@owallet/unit";
 import { API } from "@src/common/api";
 import { initPrice } from "@src/screens/home/hooks/use-multiple-assets";
 import ByteBrew from "react-native-bytebrew-sdk";
-
+import {
+  SigningCosmWasmClient,
+  createWasmAminoConverters,
+} from "@cosmjs/cosmwasm-stargate";
+import { AminoTypes, GasPrice } from "@cosmjs/stargate";
+import axios from "axios";
+import { coin, StdFee } from "@cosmjs/amino";
+import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
+import { createDefaultAminoConverters } from "@cosmjs/stargate";
+import { makeStdTx } from "@cosmjs/amino";
+import { Tendermint37Client } from "@cosmjs/tendermint-rpc";
+import { Type, Field, Root } from "protobufjs";
 export const DelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
     RouteProp<
@@ -144,8 +155,15 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     }
   }, [sendConfigs.feeConfig, appInitStore.getInitApp.feeOption]);
 
+  console.log(
+    sendConfigs.recipientConfig.getError(),
+    sendConfigs.recipientConfig.recipient,
+    "sendConfigs.recipientConfig.getError()"
+  );
   const sendConfigError =
-    sendConfigs.recipientConfig.getError() ??
+    (chainStore.current.chainId === "oraibtc-mainnet-1"
+      ? null
+      : sendConfigs.recipientConfig.getError()) ??
     sendConfigs.amountConfig.getError() ??
     sendConfigs.memoConfig.getError() ??
     sendConfigs.gasConfig.getError() ??
@@ -175,18 +193,6 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     );
   };
 
-  // const staked = queries.cosmos.queryDelegations
-  //   .getQueryBech32Address(account.bech32Address)
-  //   .getDelegationTo(validatorAddress);
-
-  // const _onOpenStakeModal = () => {
-  //   modalStore.setOpen();
-  //   modalStore.setChildren(
-  //     StakeAdvanceModal({
-  //       config: sendConfigs
-  //     })
-  //   );
-  // };
   const totalVotingPower = useMemo(
     () => computeTotalVotingPower(validators),
     [validators]
@@ -201,6 +207,48 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     new Int(toAmount(Number(sendConfigs.amountConfig.amount)))
   );
 
+  const stakeOraiBtc = async () => {
+    try {
+      const res = await axios.get(
+        `${chainStore.current.rest}/auth/accounts/${address}`
+      );
+      const sequence = res.data.result.value.sequence;
+      const signDoc = {
+        account_number: "0",
+        chain_id: chainStore.current.chainId,
+        fee: {
+          gas: "10000",
+          amount: [{ amount: "0", denom: "uoraibtc" }],
+        },
+        memo: "",
+        msgs: [
+          {
+            type: "cosmos-sdk/MsgDelegate",
+            value: {
+              amount: sendConfigs.amountConfig.getAmountPrimitive(),
+              delegator_address: address,
+              validator_address: sendConfigs.recipientConfig.recipient,
+            },
+          },
+        ],
+        sequence: sequence,
+      };
+      //@ts-ignore
+      const signature = await window.owallet.signAmino(
+        chainStore.current.chainId,
+        account.bech32Address,
+        signDoc
+      );
+      const tx = makeStdTx(signDoc, signature.signature);
+      const tmClient = await Tendermint37Client.connect(chainStore.current.rpc);
+      const result = await tmClient.broadcastTxSync({
+        tx: Uint8Array.from(Buffer.from(JSON.stringify(tx))),
+      });
+      console.log(result, "result");
+    } catch (error) {
+      console.log(error, "error");
+    }
+  };
   return (
     <PageWithBottom
       bottomGroup={
@@ -211,6 +259,10 @@ export const DelegateScreen: FunctionComponent = observer(() => {
           onPress={async () => {
             if (account.isReadyToSendMsgs && txStateIsValid) {
               try {
+                if (chainStore.current.chainId === "oraibtc-mainnet-1") {
+                  stakeOraiBtc();
+                  return;
+                }
                 await account.cosmos.sendDelegateMsg(
                   sendConfigs.amountConfig.amount,
                   sendConfigs.recipientConfig.recipient,
@@ -285,7 +337,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
       <ScrollView showsVerticalScrollIndicator={false}>
         <PageHeader
           title="Stake"
-          subtitle={"Oraichain"}
+          subtitle={chainStore.current.chainName}
           colors={colors}
           onPress={async () => {}}
         />
