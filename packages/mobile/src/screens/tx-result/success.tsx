@@ -240,10 +240,9 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
             />
             <ItemReceivedToken
               label={"Fee"}
-              valueDisplay={`${fee()
-                ?.shrink(true)
-                ?.trim(true)
-                ?.toString()} (${priceStore.calculatePrice(fee())})`}
+              valueDisplay={`${fee()?.shrink(true)?.trim(true)?.toString()} (${
+                priceStore.calculatePrice(fee()) || "$0"
+              })`}
               btnCopy={false}
             />
             <ItemReceivedToken

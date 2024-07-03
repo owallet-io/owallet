@@ -6,7 +6,7 @@ import {
   useSendTxConfig,
 } from "@owallet/hooks";
 import { useStore } from "../../stores";
-import { EthereumEndpoint, toAmount } from "@owallet/common";
+import { EthereumEndpoint, OwalletEvent, toAmount } from "@owallet/common";
 import {
   StyleSheet,
   View,
@@ -38,7 +38,22 @@ import { capitalizedText } from "@src/utils/helper";
 import { Buffer } from "buffer";
 import { ChainIdEnum } from "@oraichain/oraidex-common";
 import ByteBrew from "react-native-bytebrew-sdk";
-
+import { GasPrice } from "@cosmjs/stargate";
+import {
+  DirectSecp256k1HdWallet,
+  isOfflineDirectSigner,
+} from "@cosmjs/proto-signing";
+import { Secp256k1HdWallet, makeCosmoshubPath } from "@cosmjs/amino";
+import {
+  SigningCosmWasmClient,
+  createWasmAminoConverters,
+} from "@cosmjs/cosmwasm-stargate";
+import { AminoTypes } from "@cosmjs/stargate";
+import { createDefaultAminoConverters } from "@cosmjs/stargate";
+import { coin, StdFee } from "@cosmjs/amino";
+import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
+import axios from "axios";
+import "dotenv/config";
 export const NewSendScreen: FunctionComponent = observer(() => {
   const {
     chainStore,
@@ -55,6 +70,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
   const { colors } = useTheme();
   const styles = styling(colors);
   const [balance, setBalance] = useState<CoinPretty>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const route = useRoute<
     RouteProp<
       Record<
@@ -186,10 +202,91 @@ export const NewSendScreen: FunctionComponent = observer(() => {
       return true;
     }
   }, [amountError]);
+  const sendOraiBtc = async () => {
+    try {
+      setIsLoading(true);
+      //@ts-ignore
+      const signer = await window.owallet.getOfflineSignerAuto(
+        chainStore.current.chainId
+      );
+      const client = await SigningCosmWasmClient.connectWithSigner(
+        chainStore.current.rpc,
+        signer,
+        {
+          gasPrice: GasPrice.fromString("0uoraibtc"),
+        }
+      );
+      const res = await axios.get(
+        `${chainStore.current.rest}/auth/accounts/${address}`
+      );
+      const sequence = res.data.result.value.sequence;
+      const sendMsg1 = {
+        typeUrl: "/cosmos.bank.v1beta1.MsgSend",
+        value: {
+          fromAddress: address,
+          toAddress: sendConfigs.recipientConfig.recipient,
+          amount: [sendConfigs.amountConfig.getAmountPrimitive()],
+        },
+      };
 
+      const txRaw = await client.sign(
+        address,
+        [sendMsg1],
+        {
+          amount: [
+            coin("0", chainStore.current.stakeCurrency.coinMinimalDenom),
+          ],
+          gas: "20000000",
+        } as StdFee,
+        "",
+        {
+          accountNumber: 0,
+          chainId: chainStore.current.chainId,
+          sequence,
+        }
+      );
+      const txBytes = TxRaw.encode(txRaw).finish();
+      const txData = await client.broadcastTx(txBytes);
+      console.log(txData, "txData");
+      if (txData?.transactionHash) {
+        const bal = queries.queryBalances
+          .getQueryBech32Address(address)
+          .balances.find(
+            (bal) =>
+              bal.currency.coinMinimalDenom ===
+              sendConfigs.amountConfig.sendCurrency.coinMinimalDenom
+          );
+
+        if (bal) {
+          bal.fetch();
+          setIsLoading(false);
+          smartNavigation.pushSmart("TxPendingResult", {
+            txHash: txData?.transactionHash,
+            data: {
+              memo: sendConfigs.memoConfig.memo,
+              from: address,
+              type: "send",
+              to: sendConfigs.recipientConfig.recipient,
+              amount: sendConfigs.amountConfig.getAmountPrimitive(),
+              fee: sendConfigs.feeConfig.toStdFee(),
+              currency: sendConfigs.amountConfig.sendCurrency,
+            },
+          });
+        }
+      }
+    } catch (err) {
+      console.log("[ERR]", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   const submitSend = async () => {
     if (account.isReadyToSendMsgs && txStateIsValid) {
       try {
+        if (chainStore?.current?.chainId === "oraibtc-mainnet-1") {
+          sendOraiBtc();
+          return;
+        }
         await account.sendToken(
           sendConfigs.amountConfig.amount,
           sendConfigs.amountConfig.sendCurrency,
@@ -275,8 +372,8 @@ export const NewSendScreen: FunctionComponent = observer(() => {
       bottomGroup={
         <OWButton
           label="Send"
-          disabled={!account.isReadyToSendMsgs || !txStateIsValid}
-          loading={account.isSendingMsg === "send"}
+          disabled={!account.isReadyToSendMsgs || !txStateIsValid || isLoading}
+          loading={account.isSendingMsg === "send" || isLoading}
           onPress={submitSend}
           style={[
             styles.bottomBtn,
