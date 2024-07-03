@@ -11,8 +11,13 @@ import { useTheme } from "@src/themes/theme-provider";
 import { CoinPretty, PricePretty } from "@owallet/unit";
 import { OWEmpty } from "@src/components/empty";
 export const NftCard = observer(() => {
-  const { chainStore, accountStore, priceStore, keyRingStore } = useStore();
-  const account = accountStore.getAccount(chainStore.current.chainId);
+  const { chainStore, accountStore, priceStore, keyRingStore, appInitStore } =
+    useStore();
+  const account = accountStore.getAccount(
+    appInitStore.getInitApp.isAllNetworks
+      ? ChainIdEnum.Stargaze
+      : chainStore.current.chainId
+  );
   const address = account.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses,
     true
@@ -21,7 +26,7 @@ export const NftCard = observer(() => {
     variables: {
       filterForSale: null,
       owner: address,
-      limit: 6,
+      limit: 50,
       filterByCollectionAddrs: null,
       sortBy: "ACQUIRED_DESC",
     },

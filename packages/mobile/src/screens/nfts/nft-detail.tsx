@@ -39,8 +39,7 @@ export const NftDetailScreen: FunctionComponent = observer((props) => {
       tokenId: item?.tokenId,
     },
   });
-  console.log(data, "dataa");
-  console.log(item, "item");
+
   const styles = styling();
   const token = data?.token;
   const tokenInfo =
