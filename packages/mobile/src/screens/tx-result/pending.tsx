@@ -144,6 +144,14 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
         const data = {
           ...params?.data,
         };
+        if (chainInfo?.chainId === "oraibtc-mainnet-1") {
+          smartNavigation.replaceSmart("TxSuccessResult", {
+            chainId,
+            txHash,
+            data,
+          });
+          return;
+        }
         OwalletEvent.txHashListener(txHash, (txInfo) => {
           console.log(txHash, txInfo, "txInfo");
           if (txInfo?.code === 0) {
@@ -246,10 +254,9 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
 
             <ItemReceivedToken
               label={"Fee"}
-              valueDisplay={`${fee()
-                ?.shrink(true)
-                ?.trim(true)
-                ?.toString()} (${priceStore.calculatePrice(fee())})`}
+              valueDisplay={`${fee()?.shrink(true)?.trim(true)?.toString()} (${
+                priceStore.calculatePrice(fee()) || "$0"
+              })`}
               btnCopy={false}
             />
             <ItemReceivedToken
