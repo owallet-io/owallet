@@ -421,6 +421,7 @@ const styling = (colors) =>
       borderTopColor: colors["neutral-border-default"],
       borderTopWidth: 1,
       paddingTop: 8,
+      marginTop: 8,
     },
     containerLoading: {
       position: "absolute",
