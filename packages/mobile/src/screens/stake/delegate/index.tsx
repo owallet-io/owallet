@@ -127,7 +127,9 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   }, [sendConfigs.feeConfig, appInitStore.getInitApp.feeOption]);
 
   const sendConfigError =
-    (chainStore.current.chainId === "oraibtc-mainnet-1" ? null : sendConfigs.recipientConfig.getError()) ??
+    (chainStore.current.chainId === "oraibtc-mainnet-1"
+      ? null
+      : sendConfigs.recipientConfig.getError()) ??
     sendConfigs.amountConfig.getError() ??
     sendConfigs.memoConfig.getError() ??
     sendConfigs.gasConfig.getError() ??
@@ -150,7 +152,10 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     modalStore.setChildren(<FeeModal vertical={true} sendConfigs={sendConfigs} colors={colors} />);
   };
 
-  const totalVotingPower = useMemo(() => computeTotalVotingPower(validators), [validators]);
+  const totalVotingPower = useMemo(
+    () => computeTotalVotingPower(validators),
+    [validators]
+  );
   const currentVotingPower = parseFloat(validatorDetail?.voting_power || 0);
   const percentage =
     chainStore.current.chainId === ChainIdEnum.Oraichain
@@ -164,14 +169,16 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   const stakeOraiBtc = async () => {
     try {
       setIsLoading(true);
-      const res = await axios.get(`${chainStore.current.rest}/auth/accounts/${address}`);
+      const res = await axios.get(
+        `${chainStore.current.rest}/auth/accounts/${address}`
+      );
       const sequence = res.data.result.value.sequence;
       const signDoc = {
         account_number: "0",
         chain_id: chainStore.current.chainId,
         fee: {
           gas: "10000",
-          amount: [{ amount: "0", denom: "uoraibtc" }]
+          amount: [{ amount: "0", denom: "uoraibtc" }],
         },
         memo: "",
         msgs: [
@@ -180,22 +187,28 @@ export const DelegateScreen: FunctionComponent = observer(() => {
             value: {
               amount: sendConfigs.amountConfig.getAmountPrimitive(),
               delegator_address: address,
-              validator_address: sendConfigs.recipientConfig.recipient
-            }
-          }
+              validator_address: sendConfigs.recipientConfig.recipient,
+            },
+          },
         ],
-        sequence: sequence
+        sequence: sequence,
       };
       //@ts-ignore
-      const signature = await window.owallet.signAmino(chainStore.current.chainId, account.bech32Address, signDoc);
+      const signature = await window.owallet.signAmino(
+        chainStore.current.chainId,
+        account.bech32Address,
+        signDoc
+      );
       const tx = makeStdTx(signDoc, signature.signature);
       const tmClient = await Tendermint37Client.connect(chainStore.current.rpc);
       const result = await tmClient.broadcastTxSync({
-        tx: Uint8Array.from(Buffer.from(JSON.stringify(tx)))
+        tx: Uint8Array.from(Buffer.from(JSON.stringify(tx))),
       });
       console.log(result, "result");
       if (result?.code === 0 || result?.code == null) {
-        queries.cosmos.queryValidators.getQueryStatus(BondStatus.Bonded).fetch();
+        queries.cosmos.queryValidators
+          .getQueryStatus(BondStatus.Bonded)
+          .fetch();
         queries.cosmos.queryDelegations.getQueryBech32Address(address).fetch();
         queries.cosmos.queryRewards.getQueryBech32Address(address).fetch();
         setIsLoading(false);
@@ -207,8 +220,8 @@ export const DelegateScreen: FunctionComponent = observer(() => {
             validator: sendConfigs.recipientConfig.recipient,
             amount: sendConfigs.amountConfig.getAmountPrimitive(),
             fee: sendConfigs.feeConfig.toStdFee(),
-            currency: sendConfigs.amountConfig.sendCurrency
-          }
+            currency: sendConfigs.amountConfig.sendCurrency,
+          },
         });
       }
     } catch (error) {
@@ -299,7 +312,12 @@ export const DelegateScreen: FunctionComponent = observer(() => {
       }
     >
       <ScrollView showsVerticalScrollIndicator={false}>
-        <PageHeader title="Stake" subtitle={chainStore.current.chainName} colors={colors} onPress={async () => {}} />
+        <PageHeader
+          title="Stake"
+          subtitle={chainStore.current.chainName}
+          colors={colors}
+          onPress={async () => {}}
+        />
         {validator ? (
           <View>
             <OWCard>
@@ -351,13 +369,13 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                     <View
                       style={{
                         backgroundColor: colors["neutral-icon-on-dark"],
-                        borderRadius: 999
+                        borderRadius: 999,
                       }}
                     >
                       <OWIcon
                         type="images"
                         source={{
-                          uri: chainStore.current.stakeCurrency?.coinImageUrl
+                          uri: chainStore.current.stakeCurrency?.coinImageUrl,
                         }}
                         size={16}
                       />
