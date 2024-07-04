@@ -316,14 +316,12 @@ export const DetailsTab: FunctionComponent<{
                   </Text>
                 )}
                 {renderInfo(
-                  true,
+                  !memoConfig.memo,
                   "Memo",
                   <Text color={colors["neutral-text-body"]}>
-                    {memoConfig.memo
-                      ? memoConfig.memo
-                      : intl.formatMessage({
-                          id: "sign.info.warning.empty-memo",
-                        })}
+                    {intl.formatMessage({
+                      id: "sign.info.warning.empty-memo",
+                    })}
                   </Text>
                 )}
               </Card>
@@ -400,7 +398,7 @@ export const DetailsTab: FunctionComponent<{
         <div id="signing-messages" className={styleDetailsTab.msgContainer}>
           {renderedMsgs}
         </div>
-        {!preferNoSetMemo && !memoConfig.memo ? (
+        {!preferNoSetMemo ? (
           <MemoInput
             memoConfig={memoConfig}
             label={intl.formatMessage({ id: "sign.info.memo" })}

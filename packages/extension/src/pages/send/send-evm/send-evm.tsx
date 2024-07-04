@@ -416,7 +416,7 @@ export const SendEvmPage: FunctionComponent<{
         <HeaderModal title={"Send".toUpperCase()} />
         <form className={style.formContainer} onSubmit={onSend}>
           <div className={style.formInnerContainer}>
-            <div style={{ padding: 16 }}>
+            <div style={{ padding: 16, paddingTop: 0 }}>
               <AddressInput
                 inputStyle={{
                   borderWidth: 0,

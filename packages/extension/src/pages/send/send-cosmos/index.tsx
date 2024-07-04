@@ -320,7 +320,14 @@ export const SendPage: FunctionComponent<{
         }}
       >
         <div className={style.container}>
-          <div style={{ height: "85%", overflow: "scroll", padding: 16 }}>
+          <div
+            style={{
+              height: "85%",
+              overflow: "scroll",
+              padding: 16,
+              paddingTop: 0,
+            }}
+          >
             <div style={{ paddingBottom: 12 }}>
               <div>
                 <AddressInput

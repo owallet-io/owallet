@@ -373,6 +373,7 @@ export const SendBtcPage: FunctionComponent<{
           <div
             style={{
               padding: 16,
+              paddingTop: 0,
             }}
             className={style.formInnerContainer}
           >
