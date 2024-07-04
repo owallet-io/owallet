@@ -477,7 +477,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
   },
   {
     chainId: "oraibtc-mainnet-1",
-    chainName: "OraiBtc Bridge",
+    chainName: "OraiBTC Bridge",
     rpc: "https://btc.rpc.orai.io",
     rest: "https://btc.lcd.orai.io",
     networkType: "cosmos",
@@ -500,40 +500,16 @@ export const EmbedChainInfos: AppChainInfo[] = [
     bech32Config: Bech32Address.defaultBech32Config("oraibtc"),
     // List of all coin/tokens used in this chain.
     get currencies() {
-      return [
-        this.stakeCurrency,
-        {
-          coinDenom: "oBTC",
-          coinMinimalDenom: "usat",
-          coinDecimals: 14,
-          gasPriceStep: {
-            low: 0,
-            average: 0,
-            high: 0,
-          },
-          coinImageUrl:
-            "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
-        },
-      ];
+      return [this.stakeCurrency];
     },
     get feeCurrencies() {
-      return [
-        this.stakeCurrency,
-        {
-          coinDenom: "oBTC",
-          coinMinimalDenom: "usat",
-          coinDecimals: 14,
-          gasPriceStep: {
-            low: 0,
-            average: 0,
-            high: 0,
-          },
-          coinImageUrl:
-            "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
-        },
-      ];
+      return [this.stakeCurrency];
     },
     features: ["stargate", "ibc-transfer", "cosmwasm"],
+    txExplorer: {
+      name: "Oraiscan",
+      txUrl: "https://oraiscan.io/OraiBtcMainnet/tx/{txHash}",
+    },
   },
   // {
   //   chainId: "oraibtc-testnet-2",
