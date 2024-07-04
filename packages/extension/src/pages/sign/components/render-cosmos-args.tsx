@@ -80,7 +80,6 @@ export const CosmosRenderArgs: FunctionComponent<{
     });
   }
 
-  useEffect(() => {});
   if (txInfo?.unpacked?.token) {
     const coin = new Coin(
       txInfo?.unpacked?.token.denom,

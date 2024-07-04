@@ -106,58 +106,51 @@ export class HugeQueriesStore {
         currencies.push(chainInfo.stakeCurrency);
       }
 
-      for (const currency of currencies) {
-        const key = `${ChainIdHelper.parse(chainInfo.chainId).identifier}/${
+      this.setCurrencyIntoMap(currencies, map, queryBalance, chainInfo);
+    }
+
+    return map;
+  }
+
+  protected setCurrencyIntoMap(currencies, map, queryBalance, chainInfo) {
+    for (const currency of currencies) {
+      const key = `${ChainIdHelper.parse(chainInfo.chainId).identifier}/${
+        currency.coinMinimalDenom
+      }`;
+
+      if (!map.has(key)) {
+        if (
+          chainInfo.stakeCurrency?.coinMinimalDenom ===
           currency.coinMinimalDenom
-        }`;
+        ) {
+          const balance = queryBalance.stakable?.balance;
 
-        if (!map.has(key)) {
-          if (
-            chainInfo.stakeCurrency?.coinMinimalDenom ===
-            currency.coinMinimalDenom
-          ) {
-            const balance = queryBalance.stakable?.balance;
+          map.set(key, {
+            chainInfo,
+            token: balance,
+            price: currency.coinGeckoId
+              ? this.priceStore.calculatePrice(balance)
+              : undefined,
+            isFetching: queryBalance.stakable.isFetching,
+            error: queryBalance.stakable.error,
+          });
+        } else {
+          const balance = queryBalance.getBalance(currency);
 
-            if (!balance) {
-              continue;
-            }
-
+          if (balance) {
             map.set(key, {
               chainInfo,
-              token: balance,
+              token: balance.balance,
               price: currency.coinGeckoId
-                ? this.priceStore.calculatePrice(balance)
+                ? this.priceStore.calculatePrice(balance.balance)
                 : undefined,
-              isFetching: queryBalance.stakable.isFetching,
-              error: queryBalance.stakable.error,
+              isFetching: balance.isFetching,
+              error: balance.error,
             });
-          } else {
-            const balance = queryBalance.getBalance(currency);
-
-            if (balance) {
-              if (
-                balance.balance.toDec().equals(HugeQueriesStore.zeroDec) &&
-                new DenomHelper(currency.coinMinimalDenom).type === "native"
-              ) {
-                continue;
-              }
-
-              map.set(key, {
-                chainInfo,
-                token: balance.balance,
-                price: currency.coinGeckoId
-                  ? this.priceStore.calculatePrice(balance.balance)
-                  : undefined,
-                isFetching: balance.isFetching,
-                error: balance.error,
-              });
-            }
           }
         }
       }
     }
-
-    return map;
   }
 
   @computed
