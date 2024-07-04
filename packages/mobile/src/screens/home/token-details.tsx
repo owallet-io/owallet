@@ -70,43 +70,51 @@ export const TokenDetails: FunctionComponent = observer((props) => {
 
   const [tronTokens, setTronTokens] = useState([]);
 
+  async function getTronAccountInfo() {
+    try {
+      if (accountTron.evmosHexAddress) {
+        const response = await fetchTronAccountInfo(
+          accountTron.evmosHexAddress
+        );
+        handleTronAccountInfoResponse(response);
+      }
+    } catch (error) {
+      handleError(error);
+    }
+  }
+
+  async function fetchTronAccountInfo(evmosHexAddress) {
+    const address = getBase58Address(evmosHexAddress);
+    const options = {
+      baseURL: chainStore.current.rpc,
+    };
+    return API.getTronAccountInfo({ address }, options);
+  }
+
+  function handleTronAccountInfoResponse(response) {
+    if (response.data?.data?.length > 0 && response.data.data[0].trc20) {
+      const tokenArr = extractTronTokens(response.data.data[0].trc20);
+      setTronTokens(tokenArr);
+    }
+  }
+
+  function extractTronTokens(trc20Data) {
+    return TRC20_LIST.reduce((acc, tk) => {
+      const token = trc20Data.find((t) => tk.contractAddress in t);
+      if (token) {
+        acc.push({ ...tk, amount: token[tk.contractAddress] });
+      }
+      return acc;
+    }, []);
+  }
+
+  function handleError(error) {
+    // Handle error
+  }
+
   useEffect(() => {
     ByteBrew.NewCustomEvent("Token Detail Screen");
     InteractionManager.runAfterInteractions(() => {
-      async function getTronAccountInfo() {
-        try {
-          if (accountTron.evmosHexAddress) {
-            const response = await API.getTronAccountInfo(
-              {
-                address: getBase58Address(accountTron.evmosHexAddress),
-              },
-              {
-                baseURL: chainStore.current.rpc,
-              }
-            );
-
-            if (
-              response.data?.data?.length > 0 &&
-              response.data.data[0].trc20
-            ) {
-              const tokenArr = TRC20_LIST.reduce((acc, tk) => {
-                const token = response.data.data[0].trc20.find(
-                  (t) => tk.contractAddress in t
-                );
-                if (token) {
-                  acc.push({ ...tk, amount: token[tk.contractAddress] });
-                }
-                return acc;
-              }, []);
-
-              setTronTokens(tokenArr);
-            }
-          }
-        } catch (error) {
-          // Handle error
-        }
-      }
-
       getTronAccountInfo();
     });
   }, [accountTron.evmosHexAddress]);
