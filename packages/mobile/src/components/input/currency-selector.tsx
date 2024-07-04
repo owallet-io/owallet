@@ -65,36 +65,57 @@ export const CurrencySelector: FunctionComponent<{
         label,
       };
     });
+
+    function filterTokens(tokens) {
+      return tokens.filter(isUniqueToken);
+    }
+
+    function isUniqueToken(token, index, tokens) {
+      return (
+        token?.balance && tokens.findIndex(hasMatchingDenom(token)) === index
+      );
+    }
+
+    function hasMatchingDenom(token) {
+      return (token2) =>
+        token2.balance.currency?.coinDenom ===
+        token.balance.currency?.coinDenom;
+    }
+
+    function sortTokens(tokens) {
+      return tokens.sort(compareTokens);
+    }
+
+    function compareTokens(a, b) {
+      const aDecIsZero = isDecZero(a.balance);
+      const bDecIsZero = isDecZero(b.balance);
+
+      if (aDecIsZero && !bDecIsZero) {
+        return 1;
+      }
+      if (!aDecIsZero && bDecIsZero) {
+        return -1;
+      }
+
+      return compareByDenom(a, b);
+    }
+
+    function isDecZero(balance) {
+      return balance?.toDec()?.isZero();
+    }
+
+    function compareByDenom(a, b) {
+      return a.currency.coinDenom < b.currency.coinDenom ? -1 : 1;
+    }
+
     useEffect(() => {
       InteractionManager.runAfterInteractions(() => {
         const queryBalances = queriesStore
           .get(chainId)
           .queryBalances.getQueryBech32Address(addressToFetch);
         const tokens = queryBalances.balances;
-        const displayTokens = tokens
-          .filter((v, i, obj) => {
-            return (
-              v?.balance &&
-              obj.findIndex(
-                (v2) =>
-                  v2.balance.currency?.coinDenom ===
-                  v.balance.currency?.coinDenom
-              ) === i
-            );
-          })
-          .sort((a, b) => {
-            const aDecIsZero = a.balance?.toDec()?.isZero();
-            const bDecIsZero = b.balance?.toDec()?.isZero();
+        const displayTokens = sortTokens(filterTokens(tokens));
 
-            if (aDecIsZero && !bDecIsZero) {
-              return 1;
-            }
-            if (!aDecIsZero && bDecIsZero) {
-              return -1;
-            }
-
-            return a.currency.coinDenom < b.currency.coinDenom ? -1 : 1;
-          });
         setDisplayTokens(displayTokens);
       });
     }, [chainId, addressToFetch]);
