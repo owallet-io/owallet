@@ -18,7 +18,7 @@ import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { OWBox } from "../../components/card";
 import { useSmartNavigation } from "../../navigation.provider";
 import { useStore } from "../../stores";
-import { metrics } from "../../themes";
+import { metrics, spacing } from "../../themes";
 import ByteBrew from "react-native-bytebrew-sdk";
 
 export const EarningCardNew: FunctionComponent<{
@@ -46,11 +46,77 @@ export const EarningCardNew: FunctionComponent<{
   const delegated = queryDelegated.total;
   const totalPrice = priceStore.calculatePrice(delegated);
 
+  const _onPressStake = () => {
+    if (checkRouter(route?.name, SCREENS.Invest)) {
+      return;
+    }
+    navigation.dispatch(
+      StackActions.replace("MainTab", { screen: SCREENS.TABS.Invest })
+    );
+  };
+
+  const _onPressCompound = async () => {
+    try {
+      const firstValidator =
+        queryReward.getDescendingPendingRewardValidatorAddresses(10)?.[0];
+
+      if (firstValidator && firstValidator !== "") {
+        ByteBrew.NewCustomEvent(`${chainStore.current.chainName} Compound`);
+        await account.cosmos.sendWithdrawAndDelegationRewardMsgs(
+          queryReward.getDescendingPendingRewardValidatorAddresses(10),
+          firstValidator,
+          stakingReward?.shrink(true).maxDecimals(6).hideDenom(true).toString(),
+          "",
+          {},
+          {},
+          {
+            onBroadcasted: (txHash) => {
+              analyticsStore.logEvent("Compound reward tx broadcasted", {
+                chainId: chainId,
+                chainName: chainStore.current.chainName,
+              });
+
+              const validatorObject = convertArrToObject(
+                queryReward.pendingRewardValidatorAddresses
+              );
+              smartNavigation.pushSmart("TxPendingResult", {
+                txHash: Buffer.from(txHash).toString("hex"),
+                title: "Compound",
+                data: {
+                  ...validatorObject,
+                  amount: stakingReward?.toCoin(),
+                  currency: chainStore.current.stakeCurrency,
+                  type: "claim",
+                },
+              });
+            },
+          },
+          stakingReward.currency.coinMinimalDenom
+        );
+      } else {
+        showToast({
+          message: "There is no validator to stake!",
+          type: "danger",
+        });
+      }
+    } catch (e) {
+      console.error({ errorClaim: e });
+      if (!e?.message?.startsWith("Transaction Rejected")) {
+        showToast({
+          message:
+            e?.message ?? "Something went wrong! Please try again later.",
+          type: "danger",
+        });
+        return;
+      }
+    }
+  };
+
   const _onPressClaim = async () => {
     try {
       ByteBrew.NewCustomEvent(`${chainStore.current.chainName} Claim`);
       await account.cosmos.sendWithdrawDelegationRewardMsgs(
-        queryReward.getDescendingPendingRewardValidatorAddresses(8),
+        queryReward.getDescendingPendingRewardValidatorAddresses(10),
         "",
         {},
         {},
@@ -99,22 +165,14 @@ export const EarningCardNew: FunctionComponent<{
       style={{
         marginHorizontal: 16,
         width: metrics.screenWidth - 32,
-        marginTop: 2,
+        marginTop: 8,
         backgroundColor: colors["neutral-surface-card"],
+        padding: spacing["16"],
       }}
     >
       <View>
         <View style={styles.cardBody}>
-          <TouchableOpacity
-            onPress={() => {
-              if (checkRouter(route?.name, SCREENS.Invest)) {
-                return;
-              }
-              navigation.dispatch(
-                StackActions.replace("MainTab", { screen: SCREENS.TABS.Invest })
-              );
-            }}
-          >
+          <TouchableOpacity onPress={_onPressStake}>
             <View style={{ flexDirection: "row", paddingBottom: 6 }}>
               <View style={styles["claim-title"]}>
                 <OWIcon
@@ -161,14 +219,14 @@ export const EarningCardNew: FunctionComponent<{
               },
             ]}
             textStyle={{
-              fontSize: 14,
+              fontSize: 15,
               fontWeight: "600",
               color: isDisableClaim
                 ? colors["neutral-text-disable"]
                 : colors["neutral-text-action-on-dark-bg"],
             }}
-            label="Claim"
-            onPress={_onPressClaim}
+            label="Compound"
+            onPress={_onPressCompound}
             loading={account.isSendingMsg === "withdrawRewards"}
             disabled={isDisableClaim}
           />
@@ -179,7 +237,7 @@ export const EarningCardNew: FunctionComponent<{
             marginTop: 6,
             borderRadius: 16,
             paddingHorizontal: 12,
-            paddingVertical: 4,
+            paddingVertical: 8,
             flexDirection: "row",
             justifyContent: "space-between",
           }}
@@ -199,6 +257,52 @@ export const EarningCardNew: FunctionComponent<{
               .toString()}
           </Text>
         </View>
+      </View>
+      <View style={styles.btnGroup}>
+        <OWButton
+          textStyle={{
+            fontSize: 15,
+            fontWeight: "600",
+            color: colors["neutral-text-action-on-light-bg"],
+          }}
+          icon={
+            <OWIcon
+              color={colors["neutral-text-action-on-light-bg"]}
+              name={"tdesigngift"}
+              size={20}
+            />
+          }
+          type="link"
+          style={styles.getStarted}
+          label={"Claim"}
+          disabled={isDisableClaim}
+          onPress={_onPressClaim}
+        />
+        <View
+          style={{
+            width: 1,
+            height: "100%",
+            backgroundColor: colors["neutral-border-default"],
+          }}
+        />
+        <OWButton
+          style={styles.getStarted}
+          type="link"
+          icon={
+            <OWIcon
+              color={colors["neutral-text-action-on-light-bg"]}
+              name={"tdesignwealth-1"}
+              size={20}
+            />
+          }
+          textStyle={{
+            fontSize: 15,
+            fontWeight: "600",
+            color: colors["neutral-text-action-on-light-bg"],
+          }}
+          label="Stake"
+          onPress={_onPressStake}
+        />
       </View>
     </OWBox>
   );
@@ -237,7 +341,7 @@ const styling = (colors) =>
       // borderWidth: 0.5,
       marginTop: 16,
       borderRadius: 999,
-      width: metrics.screenWidth / 4.5,
+      width: metrics.screenWidth / 4,
       height: 32,
       position: "absolute",
       right: 0,
@@ -251,5 +355,19 @@ const styling = (colors) =>
       marginRight: 5,
       alignItems: "center",
       justifyContent: "center",
+    },
+    getStarted: {
+      borderRadius: 999,
+      width: metrics.screenWidth / 2.45,
+      height: 32,
+    },
+
+    btnGroup: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginTop: 16,
+      borderTopColor: colors["neutral-border-default"],
+      borderTopWidth: 1,
+      paddingTop: 8,
     },
   });

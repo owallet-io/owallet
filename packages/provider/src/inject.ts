@@ -15,7 +15,7 @@ import {
   TronWebMode,
   Bitcoin,
   Bitcoin as IBitcoin,
-  Oasis as IOasis,
+  // Oasis as IOasis,
   BitcoinMode,
 } from "@owallet/types";
 import { Result, JSONUint8Array } from "@owallet/router";
@@ -1262,176 +1262,157 @@ export class InjectedTronWebOWallet implements ITronWeb {
   }
 }
 
-export class InjectedOasisOWallet implements IOasis {
-  get defaultAddress() {
-    return JSON.parse(localStorage.getItem("oasis.defaultAddress"));
-  }
+// export class InjectedOasisOWallet implements IOasis {
+//   get defaultAddress() {
+//     return JSON.parse(localStorage.getItem("oasis.defaultAddress"));
+//   }
 
-  set defaultAddress(account: object) {
-    localStorage.setItem("oasis.defaultAddress", JSON.stringify(account));
-  }
+//   set defaultAddress(account: object) {
+//     localStorage.setItem("oasis.defaultAddress", JSON.stringify(account));
+//   }
 
-  static startProxy(
-    oasis: IOasis,
-    eventListener: {
-      addMessageListener: (fn: (e: any) => void) => void;
-      postMessage: (message: any) => void;
-    } = {
-      addMessageListener: (fn: (e: any) => void) =>
-        window.addEventListener("message", fn),
-      postMessage: (message) =>
-        window.postMessage(message, window.location.origin),
-    },
-    parseMessage?: (message: any) => any
-  ) {
-    eventListener.addMessageListener(async (e: MessageEvent) => {
-      const message: ProxyRequest = parseMessage
-        ? parseMessage(e.data)
-        : e.data;
+//   static startProxy(
+//     oasis: IOasis,
+//     eventListener: {
+//       addMessageListener: (fn: (e: any) => void) => void;
+//       postMessage: (message: any) => void;
+//     } = {
+//       addMessageListener: (fn: (e: any) => void) => window.addEventListener("message", fn),
+//       postMessage: message => window.postMessage(message, window.location.origin)
+//     },
+//     parseMessage?: (message: any) => any
+//   ) {
+//     eventListener.addMessageListener(async (e: MessageEvent) => {
+//       const message: ProxyRequest = parseMessage ? parseMessage(e.data) : e.data;
 
-      if (
-        !message ||
-        message.type !== NAMESPACE_OASIS + "proxy-request" ||
-        message.namespace !== NAMESPACE_OASIS
-      ) {
-        return;
-      }
+//       if (!message || message.type !== NAMESPACE_OASIS + "proxy-request" || message.namespace !== NAMESPACE_OASIS) {
+//         return;
+//       }
 
-      try {
-        if (!message.id) {
-          throw new Error("Empty id");
-        }
+//       try {
+//         if (!message.id) {
+//           throw new Error("Empty id");
+//         }
 
-        if (message.method === "version") {
-          throw new Error("Version is not function");
-        }
+//         if (message.method === "version") {
+//           throw new Error("Version is not function");
+//         }
 
-        if (message.method === "mode") {
-          throw new Error("Mode is not function");
-        }
-        var result: any;
-        switch (message.method) {
-          case "sign":
-            result = await oasis.signOasis(message.args[0], message.args[1]);
-            break;
+//         if (message.method === "mode") {
+//           throw new Error("Mode is not function");
+//         }
+//         var result: any;
+//         switch (message.method) {
+//           case "sign":
+//             result = await oasis.signOasis(message.args[0], message.args[1]);
+//             break;
 
-          default:
-            result = await oasis.signOasis(message.args[0], message.args[1]);
-            break;
-        }
+//           default:
+//             result = await oasis.signOasis(message.args[0], message.args[1]);
+//             break;
+//         }
 
-        const proxyResponse: ProxyRequestResponse = {
-          type: "proxy-request-response",
-          namespace: NAMESPACE_OASIS,
-          id: message.id,
-          result: {
-            return: JSONUint8Array.wrap(result),
-          },
-        };
+//         const proxyResponse: ProxyRequestResponse = {
+//           type: "proxy-request-response",
+//           namespace: NAMESPACE_OASIS,
+//           id: message.id,
+//           result: {
+//             return: JSONUint8Array.wrap(result)
+//           }
+//         };
 
-        eventListener.postMessage(proxyResponse);
-      } catch (e) {
-        const proxyResponse: ProxyRequestResponse = {
-          type: "proxy-request-response",
-          namespace: NAMESPACE_OASIS,
-          id: message.id,
-          result: {
-            error: e.message || e.toString(),
-          },
-        };
+//         eventListener.postMessage(proxyResponse);
+//       } catch (e) {
+//         const proxyResponse: ProxyRequestResponse = {
+//           type: "proxy-request-response",
+//           namespace: NAMESPACE_OASIS,
+//           id: message.id,
+//           result: {
+//             error: e.message || e.toString()
+//           }
+//         };
 
-        eventListener.postMessage(proxyResponse);
-      }
-    });
-  }
+//         eventListener.postMessage(proxyResponse);
+//       }
+//     });
+//   }
 
-  protected requestMethod(
-    method: keyof IOasis | string,
-    args: any[]
-  ): Promise<any> {
-    const bytes = new Uint8Array(8);
-    const id: string = Array.from(crypto.getRandomValues(bytes))
-      .map((value) => {
-        return value.toString(16);
-      })
-      .join("");
+//   protected requestMethod(method: keyof IOasis | string, args: any[]): Promise<any> {
+//     const bytes = new Uint8Array(8);
+//     const id: string = Array.from(crypto.getRandomValues(bytes))
+//       .map(value => {
+//         return value.toString(16);
+//       })
+//       .join("");
 
-    const proxyMessage: ProxyRequest = {
-      type: (NAMESPACE_OASIS + "proxy-request") as any,
-      namespace: NAMESPACE_OASIS,
-      id,
-      method,
-      args: JSONUint8Array.wrap(args),
-    };
+//     const proxyMessage: ProxyRequest = {
+//       type: (NAMESPACE_OASIS + "proxy-request") as any,
+//       namespace: NAMESPACE_OASIS,
+//       id,
+//       method,
+//       args: JSONUint8Array.wrap(args)
+//     };
 
-    return new Promise((resolve, reject) => {
-      const receiveResponse = (e: MessageEvent) => {
-        const proxyResponse: ProxyRequestResponse = this.parseMessage
-          ? this.parseMessage(e.data)
-          : e.data;
+//     return new Promise((resolve, reject) => {
+//       const receiveResponse = (e: MessageEvent) => {
+//         const proxyResponse: ProxyRequestResponse = this.parseMessage ? this.parseMessage(e.data) : e.data;
 
-        if (!proxyResponse || proxyResponse.type !== "proxy-request-response") {
-          return;
-        }
+//         if (!proxyResponse || proxyResponse.type !== "proxy-request-response") {
+//           return;
+//         }
 
-        if (proxyResponse.id !== id) {
-          return;
-        }
+//         if (proxyResponse.id !== id) {
+//           return;
+//         }
 
-        this.eventListener.removeMessageListener(receiveResponse);
-        const result = JSONUint8Array.unwrap(proxyResponse.result);
+//         this.eventListener.removeMessageListener(receiveResponse);
+//         const result = JSONUint8Array.unwrap(proxyResponse.result);
 
-        if (!result) {
-          reject(new Error("Result is null"));
-          return;
-        }
+//         if (!result) {
+//           reject(new Error("Result is null"));
+//           return;
+//         }
 
-        if (result.error) {
-          reject(new Error(result.error));
-          return;
-        }
+//         if (result.error) {
+//           reject(new Error(result.error));
+//           return;
+//         }
 
-        resolve(result.return);
-      };
+//         resolve(result.return);
+//       };
 
-      this.eventListener.addMessageListener(receiveResponse);
-      this.eventListener.postMessage(proxyMessage);
-    });
-  }
+//       this.eventListener.addMessageListener(receiveResponse);
+//       this.eventListener.postMessage(proxyMessage);
+//     });
+//   }
 
-  public initChainId: string;
-  public isOwallet: boolean = true;
+//   public initChainId: string;
+//   public isOwallet: boolean = true;
 
-  constructor(
-    public readonly version: string,
-    public readonly mode: TronWebMode,
-    protected readonly eventListener: {
-      addMessageListener: (fn: (e: any) => void) => void;
-      removeMessageListener: (fn: (e: any) => void) => void;
-      postMessage: (message: any) => void;
-    } = {
-      addMessageListener: (fn: (e: any) => void) =>
-        window.addEventListener("message", fn),
-      removeMessageListener: (fn: (e: any) => void) =>
-        window.removeEventListener("message", fn),
-      postMessage: (message) =>
-        window.postMessage(message, window.location.origin),
-    },
-    protected readonly parseMessage?: (message: any) => any
-  ) {}
+//   constructor(
+//     public readonly version: string,
+//     public readonly mode: TronWebMode,
+//     protected readonly eventListener: {
+//       addMessageListener: (fn: (e: any) => void) => void;
+//       removeMessageListener: (fn: (e: any) => void) => void;
+//       postMessage: (message: any) => void;
+//     } = {
+//       addMessageListener: (fn: (e: any) => void) => window.addEventListener("message", fn),
+//       removeMessageListener: (fn: (e: any) => void) => window.removeEventListener("message", fn),
+//       postMessage: message => window.postMessage(message, window.location.origin)
+//     },
+//     protected readonly parseMessage?: (message: any) => any
+//   ) {}
 
-  txBuilderOasis(amount: bigint, to: string): Promise<any> {
-    throw new Error("Method not implemented.");
-  }
+//   // txBuilderOasis(amount: bigint, to: string): Promise<any> {
+//   //   throw new Error("Method not implemented.");
+//   // }
 
-  signOasis(): Promise<object> {
-    throw new Error("Method not implemented.");
-  }
+//   // signOasis(): Promise<object> {
+//   //   throw new Error("Method not implemented.");
+//   // }
 
-  async request(args: RequestArguments): Promise<any> {
-    return await this.requestMethod(args.method as string, [
-      args.params,
-      args.chainId,
-    ]);
-  }
-}
+//   async request(args: RequestArguments): Promise<any> {
+//     return await this.requestMethod(args.method as string, [args.params, args.chainId]);
+//   }
+// }

@@ -124,61 +124,61 @@ export class RequestSignEthereumMsg extends Message<{
   }
 }
 
-export class RequestSignOasisMsg extends Message<object> {
-  public static type() {
-    return "request-sign-oasis";
-  }
+// export class RequestSignOasisMsg extends Message<object> {
+//   public static type() {
+//     return "request-sign-oasis";
+//   }
 
-  constructor(public readonly chainId: string, public readonly data: object) {
-    super();
-  }
+//   constructor(public readonly chainId: string, public readonly data: object) {
+//     super();
+//   }
 
-  validateBasic(): void {
-    if (!this.chainId) {
-      throw new Error("chain id not set");
-    }
+//   validateBasic(): void {
+//     if (!this.chainId) {
+//       throw new Error("chain id not set");
+//     }
 
-    if (!this.data) {
-      throw new Error("data not set");
-    }
-  }
+//     if (!this.data) {
+//       throw new Error("data not set");
+//     }
+//   }
 
-  approveExternal(): boolean {
-    return true;
-  }
+//   approveExternal(): boolean {
+//     return true;
+//   }
 
-  route(): string {
-    return "keyring";
-  }
+//   route(): string {
+//     return "keyring";
+//   }
 
-  type(): string {
-    return RequestSignOasisMsg.type();
-  }
-}
+//   type(): string {
+//     return RequestSignOasisMsg.type();
+//   }
+// }
 
-export class GetDefaultAddressOasisMsg extends Message<{}> {
-  public static type() {
-    return "get-default-address-oasis";
-  }
+// export class GetDefaultAddressOasisMsg extends Message<{}> {
+//   public static type() {
+//     return "get-default-address-oasis";
+//   }
 
-  constructor(public readonly chainId: string) {
-    super();
-  }
+//   constructor(public readonly chainId: string) {
+//     super();
+//   }
 
-  validateBasic(): void {
-    if (!this.chainId) {
-      throw new Error("chain id not set");
-    }
-  }
+//   validateBasic(): void {
+//     if (!this.chainId) {
+//       throw new Error("chain id not set");
+//     }
+//   }
 
-  route(): string {
-    return "keyring";
-  }
+//   route(): string {
+//     return "keyring";
+//   }
 
-  type(): string {
-    return GetDefaultAddressOasisMsg.type();
-  }
-}
+//   type(): string {
+//     return GetDefaultAddressOasisMsg.type();
+//   }
+// }
 
 // request sign tron
 export class RequestSignTronMsg extends Message<object> {

@@ -68,8 +68,8 @@ import { request } from "../tx";
 import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
 import { trimAminoSignDoc } from "./amino-sign-doc";
 import { KeyringHelper } from "./utils";
-import * as oasis from "@oasisprotocol/client";
-import { ISimulateSignTron } from "@owallet/types";
+// import * as oasis from "@oasisprotocol/client";
+// import { ISimulateSignTron } from "@owallet/types";
 
 @singleton()
 export class KeyRingService {
@@ -1154,20 +1154,20 @@ export class KeyRingService {
     }
   }
 
-  async requestSignOasis(
-    env: Env,
-    chainId: string,
-    data: object
-  ): Promise<object> {
-    try {
-      const tx = await this.keyRing.signOasis(chainId, data);
-      return tx;
-    } finally {
-      this.interactionService.dispatchEvent(
-        APP_PORT,
-        "request-sign-oasis-end",
-        {}
-      );
-    }
-  }
+  // async requestSignOasis(
+  //   env: Env,
+  //   chainId: string,
+  //   data: object
+  // ): Promise<object> {
+  //   try {
+  //     const tx = await this.keyRing.signOasis(chainId, data);
+  //     return tx;
+  //   } finally {
+  //     this.interactionService.dispatchEvent(
+  //       APP_PORT,
+  //       "request-sign-oasis-end",
+  //       {}
+  //     );
+  //   }
+  // }
 }

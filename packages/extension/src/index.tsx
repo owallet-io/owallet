@@ -58,7 +58,7 @@ import {
   LanguageToFiatCurrency,
 } from "@owallet/common";
 
-import { Ethereum, OWallet, TronWeb, Bitcoin, Oasis } from "@owallet/provider";
+import { Ethereum, OWallet, TronWeb, Bitcoin } from "@owallet/provider";
 import { InExtensionMessageRequester } from "@owallet/router-extension";
 import * as Sentry from "@sentry/react";
 import { BrowserTracing } from "@sentry/tracing";
@@ -81,12 +81,12 @@ const owallet = new OWallet(
   "core",
   new InExtensionMessageRequester()
 );
-const oasis = new Oasis(
-  manifest.version,
-  "core",
-  ChainIdEnum.Oasis,
-  new InExtensionMessageRequester()
-);
+// const oasis = new Oasis(
+//   manifest.version,
+//   "core",
+//   ChainIdEnum.Oasis,
+//   new InExtensionMessageRequester()
+// );
 const ethereum = new Ethereum(
   manifest.version,
   "core",
@@ -123,7 +123,7 @@ const bitcoin = new Bitcoin(
 //   ],
 // });
 //@ts-ignore
-window.oasis = oasis;
+// window.oasis = oasis;
 //@ts-ignore
 window.owallet = owallet;
 //@ts-ignore
