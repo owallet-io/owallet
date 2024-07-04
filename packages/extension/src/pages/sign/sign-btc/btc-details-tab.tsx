@@ -155,7 +155,7 @@ export const BtcDetailsTab: FunctionComponent<{
                     ?.trim(true)
                     ?.toString()}`}
                 </Text>
-                <img src={require("assets/icon/tdesign_chevron-down.svg")} />
+                {/* <img src={require("assets/icon/tdesign_chevron-down.svg")} /> */}
               </div>
               <Text
                 containerStyle={{
@@ -379,15 +379,6 @@ export const BtcDetailsTab: FunctionComponent<{
           {renderDestination(
             signer,
             msgs?.address && Bech32Address.shortenAddress(msgs?.address, 20)
-          )}
-          {renderInfo(
-            true,
-            "Message",
-            <Text>
-              {msgs?.message
-                ? msgs?.message
-                : intl.formatMessage({ id: "sign.info.warning.empty-memo" })}
-            </Text>
           )}
         </Card>
         <Card

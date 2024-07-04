@@ -134,6 +134,7 @@ export const DetailsTab: FunctionComponent<{
                 >
                   {feeConfig?.fee?.maxDecimals(6).trim(true).toString() || 0}
                 </Text>
+
                 <img src={require("assets/icon/tdesign_chevron-down.svg")} />
               </div>
               <Text
@@ -315,15 +316,6 @@ export const DetailsTab: FunctionComponent<{
                     }
                   </Text>
                 )}
-                {renderInfo(
-                  !memoConfig.memo,
-                  "Memo",
-                  <Text color={colors["neutral-text-body"]}>
-                    {intl.formatMessage({
-                      id: "sign.info.warning.empty-memo",
-                    })}
-                  </Text>
-                )}
               </Card>
             </React.Fragment>
           );
@@ -404,7 +396,17 @@ export const DetailsTab: FunctionComponent<{
             label={intl.formatMessage({ id: "sign.info.memo" })}
             rows={1}
           />
-        ) : null}
+        ) : (
+          renderInfo(
+            !memoConfig.memo,
+            "Memo",
+            <Text color={colors["neutral-text-body"]}>
+              {intl.formatMessage({
+                id: "sign.info.warning.empty-memo",
+              })}
+            </Text>
+          )
+        )}
         <Card
           containerStyle={{
             borderRadius: 12,
