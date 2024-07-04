@@ -1,6 +1,6 @@
 import { ChainInfo } from "@owallet/types";
 import { ChainIdHelper } from "@owallet/cosmos";
-import Axios from "axios";
+import Axios, { AxiosInstance } from "axios";
 
 export function hasChain(
   chainId: string,
@@ -13,6 +13,78 @@ export function hasChain(
   );
 }
 
+async function checkStargate(restInstance: AxiosInstance): Promise<boolean> {
+  try {
+    await restInstance.get("/cosmos/base/tendermint/v1beta1/node_info");
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function checkIBCGo(restInstance: AxiosInstance): Promise<boolean> {
+  try {
+    const result = await restInstance.get<{
+      params: {
+        receive_enabled: boolean;
+        send_enabled: boolean;
+      };
+    }>("/ibc/apps/transfer/v1/params");
+    return result.status === 200;
+  } catch {
+    return false;
+  }
+}
+
+async function checkIBCTransfer(
+  restInstance: AxiosInstance,
+  isIBCGo: boolean
+): Promise<boolean> {
+  try {
+    const result = await restInstance.get<{
+      params: {
+        receive_enabled: boolean;
+        send_enabled: boolean;
+      };
+    }>(
+      isIBCGo
+        ? "/ibc/apps/transfer/v1/params"
+        : "/ibc/applications/transfer/v1beta1/params"
+    );
+    return (
+      result.data.params.receive_enabled && result.data.params.send_enabled
+    );
+  } catch {
+    return false;
+  }
+}
+
+async function checkNoLegacyStdTx(
+  restInstance: AxiosInstance
+): Promise<boolean> {
+  try {
+    const result = await restInstance.post<
+      | {
+          code: 12;
+          message: "Not Implemented";
+          details: [];
+        }
+      | any
+    >("/txs", undefined, {
+      validateStatus: (status) => {
+        return (status >= 200 && status < 300) || status === 501;
+      },
+    });
+    return (
+      result.status === 501 &&
+      result.data.code === 12 &&
+      result.data.message === "Not Implemented"
+    );
+  } catch {
+    return false;
+  }
+}
+
 export async function getFeatures(
   chainInfo: Readonly<ChainInfo>
 ): Promise<any> {
@@ -20,66 +92,17 @@ export async function getFeatures(
     baseURL: chainInfo.rest,
   });
 
+  const staragteUpdate = await checkStargate(restInstance);
+  const ibcGoUpdates = await checkIBCGo(restInstance);
+  const ibcTransferUpdate = await checkIBCTransfer(restInstance, ibcGoUpdates);
+  const noLegacyStdTxUpdate = await checkNoLegacyStdTx(restInstance);
+
   const updates = {
-    stargate: false,
-    "ibc-go": false,
-    "ibc-transfer": false,
-    "no-legacy-stdTx": false,
+    stargate: staragteUpdate,
+    "ibc-go": ibcGoUpdates,
+    "ibc-transfer": ibcTransferUpdate,
+    "no-legacy-stdTx": noLegacyStdTxUpdate,
   };
-
-  if (!chainInfo.features || !chainInfo.features.includes("stargate")) {
-    await restInstance.get("/cosmos/base/tendermint/v1beta1/node_info");
-    updates.stargate = true;
-  }
-
-  if (
-    !chainInfo?.features?.includes("ibc-go") &&
-    (updates.stargate || chainInfo?.features?.includes("stargate"))
-  ) {
-    const result = await restInstance.get<{
-      params: { receive_enabled: boolean; send_enabled: boolean };
-    }>("/ibc/apps/transfer/v1/params");
-    if (result.status === 200) {
-      updates["ibc-go"] = true;
-    }
-  }
-
-  if (
-    !chainInfo?.features?.includes("ibc-transfer") &&
-    (updates.stargate || chainInfo?.features?.includes("stargate"))
-  ) {
-    const isIBCGo =
-      updates["ibc-go"] || chainInfo?.features?.includes("ibc-go");
-    const result = await restInstance.get<{
-      params: { receive_enabled: boolean; send_enabled: boolean };
-    }>(
-      isIBCGo
-        ? "/ibc/apps/transfer/v1/params"
-        : "/ibc/applications/transfer/v1beta1/params"
-    );
-    if (result.data.params.receive_enabled && result.data.params.send_enabled) {
-      updates["ibc-transfer"] = true;
-    }
-  }
-
-  if (
-    !chainInfo?.features?.includes("no-legacy-stdTx") &&
-    (updates.stargate || chainInfo?.features?.includes("stargate"))
-  ) {
-    const result = await restInstance.post<
-      { code: 12; message: "Not Implemented"; details: [] } | any
-    >("/txs", undefined, {
-      validateStatus: (status) =>
-        (status >= 200 && status < 300) || status === 501,
-    });
-    if (
-      result.status === 501 &&
-      result.data.code === 12 &&
-      result.data.message === "Not Implemented"
-    ) {
-      updates["no-legacy-stdTx"] = true;
-    }
-  }
 
   const features = Object.entries(updates)
     .filter(([_, value]) => value)
@@ -87,6 +110,10 @@ export async function getFeatures(
 
   return {
     features,
-    slient: Object.values(updates).some((value) => value),
+    slient:
+      staragteUpdate ||
+      ibcGoUpdates ||
+      ibcTransferUpdate ||
+      noLegacyStdTxUpdate,
   };
 }
