@@ -27,12 +27,12 @@ export class ObservableQueryErc20ContactInfoInner extends ObservableEvmContractC
   }
 
   @computed
-  get tokenInfo(): Erc20ContractTokenInfo | undefined {
+  get tokenInfo(): Erc20ContractTokenInfo | null {
     const fetchData = this.response?.data;
     const fetchInfo = this.response?.info;
     try {
       if (!fetchData) {
-        return undefined;
+        return null;
       }
 
       const chainInfo = this.chainGetter.getChain(this._chainId);
