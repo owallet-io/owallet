@@ -854,21 +854,19 @@ export class AccountSetBase<MsgOpts, Queries> {
         this._isSendingMsg = false;
       });
 
-      if (this.opts.preTxEvents?.onBroadcastFailed) {
-        this.opts.preTxEvents.onBroadcastFailed(e);
-      }
+      this.opts?.preTxEvents?.onBroadcastFailed(e);
 
-      if (
-        onTxEvents &&
+      onTxEvents &&
         "onBroadcastFailed" in onTxEvents &&
-        onTxEvents.onBroadcastFailed
-      ) {
         onTxEvents.onBroadcastFailed(e);
-      }
 
       throw e;
     }
 
+    this.onHandleEvents(onTxEvents, txHash);
+  }
+
+  async onHandleEvents(onTxEvents, txHash) {
     let onBroadcasted: ((txHash: Uint8Array) => void) | undefined;
     let onFulfill: ((tx: any) => void) | undefined;
 

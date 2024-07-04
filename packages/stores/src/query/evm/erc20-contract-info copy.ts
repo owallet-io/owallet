@@ -27,10 +27,14 @@ export class ObservableQueryErc20ContactInfoInner extends ObservableEvmContractC
   }
 
   @computed
-  get tokenInfo(): Erc20ContractTokenInfo {
+  get tokenInfo(): Erc20ContractTokenInfo | undefined {
     const fetchData = this.response?.data;
     const fetchInfo = this.response?.info;
     try {
+      if (!fetchData) {
+        return undefined;
+      }
+
       const chainInfo = this.chainGetter.getChain(this._chainId);
       const currency = chainInfo.currencies.find((curency) =>
         curency.coinMinimalDenom?.startsWith(`erc20:${this.contractAddress}`)
@@ -44,6 +48,7 @@ export class ObservableQueryErc20ContactInfoInner extends ObservableEvmContractC
       };
     } catch (error) {
       console.log("Error on getting token info: ", error);
+      return undefined;
     }
   }
 }
