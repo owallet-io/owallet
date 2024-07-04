@@ -90,7 +90,7 @@ export class CoinUtils {
   static parseDecAndDenomFromCoin(
     currencies: Currency[],
     coin: Coin
-  ): { amount: string; denom: string } {
+  ): { amount: string; denom: string; currency?: Currency } {
     let currency = currencies.find((currency) => {
       return currency.coinMinimalDenom === coin.denom;
     });
@@ -112,6 +112,7 @@ export class CoinUtils {
     return {
       amount: decAmount.toString(currency.coinDecimals),
       denom: currency.coinDenom,
+      currency,
     };
   }
 

@@ -1,20 +1,6 @@
 import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
-
-import classnames from "classnames";
 import styleCoinInput from "./coin-input.module.scss";
-
-import {
-  Button,
-  ButtonDropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
-  FormFeedback,
-  FormGroup,
-  Input,
-  InputGroup,
-  Label,
-} from "reactstrap";
+import { FormFeedback } from "reactstrap";
 import { observer } from "mobx-react-lite";
 import {
   EmptyAmountError,
@@ -25,19 +11,27 @@ import {
   IAmountConfig,
 } from "@owallet/hooks";
 import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
-import { FormattedMessage, useIntl } from "react-intl";
+import { useIntl } from "react-intl";
 import { useStore } from "../../stores";
-import { DenomHelper } from "@owallet/common";
+import { Card } from "../common/card";
+import colors from "../../theme/colors";
+import { Text } from "../common/text";
+import { Button } from "../common/button";
+import { Input } from "./input";
+
+export const removeDataInParentheses = (inputString: string): string => {
+  if (!inputString) return;
+  return inputString.replace(/\([^)]*\)/g, "");
+};
 
 export interface CoinInputProps {
   amountConfig: IAmountConfig;
-
   balanceText?: string;
-
+  balance?: string;
   className?: string;
   label?: string;
   placeholder?: string;
-
+  openSelectToken?: () => void;
   disableAllBalance?: boolean;
 }
 
@@ -46,7 +40,14 @@ const reduceStringAssets = (str) => {
 };
 
 export const CoinInput: FunctionComponent<CoinInputProps> = observer(
-  ({ amountConfig, className, label, disableAllBalance, placeholder }) => {
+  ({
+    amountConfig,
+    className,
+    label,
+    disableAllBalance,
+    placeholder,
+    openSelectToken,
+  }) => {
     const intl = useIntl();
 
     const [randomId] = useState(() => {
@@ -84,18 +85,23 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
       }
     }, [intl, error]);
 
-    const [isOpenTokenSelector, setIsOpenTokenSelector] = useState(false);
-    const { queriesStore, chainStore, accountStore } = useStore();
+    const { queriesStore, chainStore, priceStore, keyRingStore, accountStore } =
+      useStore();
     const accountInfo = accountStore.getAccount(chainStore.current.chainId);
-    const queries = queriesStore.get(chainStore.current.chainId);
+
+    const walletAddress = accountInfo.getAddressDisplay(
+      keyRingStore.keyRingLedgerAddresses,
+      false
+    );
+
     const queryBalances = queriesStore
       .get(amountConfig.chainId)
       .queryBalances.getQueryBech32Address(amountConfig.sender);
+
     const [balance, setBalance] = useState(
       new CoinPretty(amountConfig.sendCurrency, new Int(0))
     );
 
-    // let balance = new CoinPretty(amountConfig.sendCurrency, new Int(0));
     const tokenDenom = new CoinPretty(amountConfig.sendCurrency, new Int(0))
       .currency.coinDenom;
 
@@ -105,6 +111,7 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
           amountConfig.sendCurrency.coinMinimalDenom ===
           bal.currency.coinMinimalDenom
       );
+
       setBalance(
         queryBalance
           ? queryBalance.balance
@@ -112,114 +119,127 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
       );
     }, [tokenDenom, chainStore.current.chainId]);
 
-    const selectableCurrencies = amountConfig.sendableCurrencies
-      .filter((cur) => {
-        const bal = queryBalances.getBalanceFromCurrency(cur);
-        return !bal?.toDec()?.isZero();
-      })
-      .sort((a, b) => {
-        return a.coinDenom < b.coinDenom ? -1 : 1;
-      });
+    const isReadyBalance = queriesStore
+      .get(chainStore.current.chainId)
+      .queryBalances.getQueryBech32Address(walletAddress)
+      .getBalanceFromCurrency(amountConfig.sendCurrency).isReady;
+    useEffect(() => {
+      if (isReadyBalance && amountConfig.sendCurrency && walletAddress) {
+        const balance = queriesStore
+          .get(chainStore.current.chainId)
+          .queryBalances.getQueryBech32Address(walletAddress)
+          .getBalanceFromCurrency(amountConfig.sendCurrency);
+        setBalance(balance);
+      }
+    }, [isReadyBalance, walletAddress, amountConfig.sendCurrency]);
 
-    const denomHelper = new DenomHelper(
-      amountConfig.sendCurrency.coinMinimalDenom
+    const getName = (name) => {
+      return removeDataInParentheses(name);
+    };
+
+    const amount = new CoinPretty(
+      amountConfig.sendCurrency,
+      new Dec(amountConfig.getAmountPrimitive().amount)
     );
 
-    return (
-      <React.Fragment>
-        <FormGroup className={className}>
-          <Label
-            for={`selector-${randomId}`}
-            className="form-control-label"
-            style={{ width: "100%" }}
-          >
-            <FormattedMessage id="component.form.coin-input.token.label" />
-          </Label>
-          <ButtonDropdown
-            id={`selector-${randomId}`}
-            className={classnames(styleCoinInput.tokenSelector, {
-              disabled: amountConfig.fraction === 1,
-            })}
-            isOpen={isOpenTokenSelector}
-            toggle={() => setIsOpenTokenSelector((value) => !value)}
-            disabled={amountConfig.fraction === 1}
-          >
-            <DropdownToggle caret>
-              {amountConfig.sendCurrency.coinDenom}{" "}
-              {denomHelper.contractAddress &&
-                ` (${denomHelper.contractAddress})`}
-            </DropdownToggle>
-            <DropdownMenu>
-              {selectableCurrencies.map((currency) => {
-                const denomHelper = new DenomHelper(currency.coinMinimalDenom);
-                return (
-                  <DropdownItem
-                    key={currency.coinMinimalDenom}
-                    active={
-                      currency.coinMinimalDenom ===
-                      amountConfig.sendCurrency.coinMinimalDenom
-                    }
-                    onClick={(e) => {
-                      e.preventDefault();
+    const estimatePrice = priceStore.calculatePrice(amount)?.toString();
 
-                      amountConfig.setSendCurrency(currency);
-                    }}
-                  >
-                    {currency.coinDenom}{" "}
-                    {denomHelper.contractAddress &&
-                      ` (${denomHelper.contractAddress})`}
-                  </DropdownItem>
-                );
-              })}
-            </DropdownMenu>
-          </ButtonDropdown>
-        </FormGroup>
-        <FormGroup className={className}>
-          {label ? (
-            <Label
-              for={`input-${randomId}`}
-              className={classnames(
-                "form-control-label",
-                styleCoinInput.labelBalance
-              )}
-            >
-              <div>{label}</div>
-              {!disableAllBalance ? (
-                <div
-                  className={classnames(
-                    styleCoinInput.balance,
-                    styleCoinInput.clickable,
-                    {
-                      [styleCoinInput.clicked]: amountConfig.isMax,
-                    }
-                  )}
+    return (
+      <Card
+        containerStyle={{
+          backgroundColor: colors["neutral-surface-card"],
+          padding: 16,
+          borderRadius: 24,
+          marginTop: 1,
+          marginBottom: 1,
+        }}
+      >
+        <div className={className}>
+          {!disableAllBalance ? (
+            <div className={styleCoinInput.row}>
+              <div>
+                <Text>{`Balance: ${
+                  reduceStringAssets(
+                    balance?.trim(true)?.maxDecimals(6)?.toString()
+                  ) || 0
+                }`}</Text>
+              </div>
+              <div
+                style={{
+                  flexDirection: "row",
+                  display: "flex",
+                }}
+              >
+                <Button
                   onClick={(e) => {
                     e.preventDefault();
-
-                    amountConfig.toggleIsMax();
+                    amountConfig.setFraction(0.5);
+                  }}
+                  size={"small"}
+                  containerStyle={{
+                    marginRight: 4,
                   }}
                 >
-                  <span>{`Total: ${
-                    reduceStringAssets(
-                      balance?.trim(true)?.maxDecimals(6)?.toString()
-                    ) || 0
-                  }`}</span>
-                </div>
-              ) : null}
-            </Label>
+                  50%
+                </Button>
+                <Button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    amountConfig.toggleIsMax();
+                  }}
+                  size={"small"}
+                >
+                  100%
+                </Button>
+              </div>
+            </div>
           ) : null}
-          <InputGroup className={styleCoinInput.inputGroup}>
+          <div className={styleCoinInput.row}>
+            <div
+              onClick={openSelectToken}
+              style={{
+                backgroundColor: colors["neutral-surface-action3"],
+                borderRadius: 999,
+                padding: "16px 12px",
+                display: "flex",
+                flexDirection: "row",
+                cursor: "pointer",
+                alignItems: "center",
+              }}
+            >
+              {amountConfig.sendCurrency.coinImageUrl ? (
+                <img
+                  style={{ width: 20, height: 20, borderRadius: 20 }}
+                  src={amountConfig.sendCurrency.coinImageUrl}
+                  alt="logo"
+                />
+              ) : null}
+
+              <Text
+                containerStyle={{ marginRight: 4, marginLeft: 4 }}
+                color={colors["neutral-text-action-on-light-bg"]}
+                size={16}
+                weight="600"
+              >
+                {getName(amountConfig?.sendCurrency?.coinDenom)}
+              </Text>
+              <img
+                src={require("assets/icon/tdesign_chevron-down.svg")}
+                alt="logo"
+              />
+            </div>
             <Input
-              className={classnames(
-                "form-control-alternative",
-                styleCoinInput.input
-              )}
+              border={"none"}
+              styleTextInput={{
+                textAlign: "right",
+                fontSize: 28,
+                fontWeight: "500",
+              }}
               id={`input-${randomId}`}
               type="number"
-              value={amountConfig.amount}
+              value={Number(Number(amountConfig.amount).toFixed(6)).toString()}
               onChange={(e) => {
                 e.preventDefault();
-
                 amountConfig.setAmount(e.target.value);
               }}
               step={new Dec(1)
@@ -230,43 +250,33 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
                 )
                 .toString(amountConfig.sendCurrency?.coinDecimals ?? 0)}
               min={0}
-              disabled={amountConfig.isMax}
+              // disabled={amountConfig.isMax}
               autoComplete="off"
-              placeholder={placeholder}
+              placeHolder="0"
             />
-            <div
-              style={{ padding: 7.5, textAlign: "center", cursor: "pointer" }}
-              onClick={(e) => {
-                e.preventDefault();
-                amountConfig.toggleIsMax();
-              }}
+          </div>
+          <div
+            style={{
+              alignItems: "center",
+              justifyContent: "flex-end",
+              display: "flex",
+            }}
+          >
+            <img src={require("assets/icon/tdesign_swap.svg")} alt="logo" />
+            <Text
+              containerStyle={{ marginLeft: 4 }}
+              color={colors["neutral-text-body"]}
             >
-              <div
-                style={{
-                  width: 50,
-                  height: 28,
-                  backgroundColor: amountConfig.isMax ? "#7664E4" : "#f8fafc",
-                  borderRadius: 4,
-                }}
-              >
-                <span
-                  style={{
-                    color: amountConfig.isMax ? "white" : "#7664E4",
-                    fontSize: 14,
-                  }}
-                >
-                  MAX
-                </span>
-              </div>
-            </div>
-          </InputGroup>
+              {estimatePrice}
+            </Text>
+          </div>
           {errorText != null ? (
             <FormFeedback style={{ display: "block", position: "sticky" }}>
               {errorText}
             </FormFeedback>
           ) : null}
-        </FormGroup>
-      </React.Fragment>
+        </div>
+      </Card>
     );
   }
 );

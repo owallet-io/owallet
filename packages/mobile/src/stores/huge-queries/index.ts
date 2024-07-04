@@ -37,7 +37,7 @@ export interface RawToken {
 export interface RawChainInfo {
   chainId: ChainIdEnum & string;
   chainName: string;
-  chainImage: RawChainInfo;
+  chainImage: string;
 }
 
 export interface ViewRawToken {

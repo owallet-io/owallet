@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, { FunctionComponent, useState } from "react";
 import { FormGroup, Label } from "reactstrap";
 import {
   FeeConfig,
@@ -7,10 +7,8 @@ import {
   NotLoadedFeeError,
 } from "@owallet/hooks";
 import { observer } from "mobx-react-lite";
-
-import { Input } from "../../components/form";
-
 import { useIntl } from "react-intl";
+import { Input } from "./input";
 
 export interface GasInputProps {
   feeConfig: FeeConfig;
@@ -60,18 +58,13 @@ export const FeeInput: FunctionComponent<GasInputProps> = observer(
           </Label>
         ) : null}
         <Input
-          // type="number"
-          classNameInputGroup={classNameInputGroup}
-          // value={feeConfig.fee
-          //   ?.shrink(true)
-          //   ?.trim(true)
-          //   ?.hideDenom(true)
-          //   ?.toString()}
-          className={classNameInput}
-          disabled
-          style={{
-            backgroundColor: "rgba(230, 232, 236, 0.2)",
+          styleInputGroup={{
+            borderWidth: 0,
+            padding: 0,
+            margin: 0,
           }}
+          placeHolder={"Enter fee in TRX"}
+          className={classNameInput}
           defaultValue={feeConfig.fee
             ?.shrink(true)
             ?.trim(true)
@@ -79,7 +72,7 @@ export const FeeInput: FunctionComponent<GasInputProps> = observer(
             ?.toString()}
           error={errorText}
           id={inputId}
-          append={
+          rightIcon={
             <span
               style={{
                 padding: 10,

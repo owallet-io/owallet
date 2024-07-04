@@ -14,10 +14,6 @@ export const fetchRetry = async (url, config?: any) => {
   const jsonRes = await response.json();
   return jsonRes;
 };
-export const mapChainIdToChainEndpoint = {
-  [ChainIdEnum.Ethereum]: "ethereum",
-  [ChainIdEnum.BNBChain]: "bsc",
-};
 export const HEADER_KEY = {
   notShowHeader: "NOT_SHOW_HEADER",
   showNetworkHeader: "SHOW_NETWORK_HEADER",

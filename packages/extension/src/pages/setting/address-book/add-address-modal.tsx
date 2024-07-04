@@ -1,5 +1,4 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
-import { HeaderLayout } from "../../../layouts";
 import { AddressInput, Input, MemoInput } from "../../../components/form";
 import { Button } from "reactstrap";
 import { FormattedMessage, useIntl } from "react-intl";

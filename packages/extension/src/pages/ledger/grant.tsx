@@ -126,7 +126,7 @@ export const LedgerGrantPage: FunctionComponent = observer(() => {
           <Instruction
             icon={
               <img
-                src={require("../../public/assets/img/icons8-usb-2.svg")}
+                src={require("assets/img/icons8-usb-2.svg")}
                 style={{ height: "50px" }}
                 alt="usb"
               />
@@ -138,7 +138,7 @@ export const LedgerGrantPage: FunctionComponent = observer(() => {
           <Instruction
             icon={
               <img
-                src={require("../../public/assets/img/atom-o.svg")}
+                src={require("assets/img/atom-o.svg")}
                 style={{ height: "34px" }}
                 alt="atom"
               />
@@ -236,10 +236,7 @@ const ConfirmLedgerDialog: FunctionComponent = () => {
           justifyContent: "flex-end",
         }}
       >
-        <img
-          src={require("../../public/assets/img/icons8-pen.svg")}
-          alt="pen"
-        />
+        <img src={require("assets/img/icons8-pen.svg")} alt="pen" />
       </div>
       <p>
         <FormattedMessage id="ledger.confirm.waiting.paragraph" />
@@ -274,15 +271,9 @@ const SignCompleteDialog: FunctionComponent<{
         }}
       >
         {!rejected ? (
-          <img
-            src={require("../../public/assets/img/icons8-checked.svg")}
-            alt="success"
-          />
+          <img src={require("assets/img/icons8-checked.svg")} alt="success" />
         ) : (
-          <img
-            src={require("../../public/assets/img/icons8-cancel.svg")}
-            alt="rejected"
-          />
+          <img src={require("assets/img/icons8-cancel.svg")} alt="rejected" />
         )}
       </div>
       <p>

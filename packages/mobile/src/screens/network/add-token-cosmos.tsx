@@ -108,7 +108,6 @@ export const AddTokenCosmosScreen: FunctionComponent<{
   const queryContractInfo = query.getQueryContract(contractAddress);
 
   const tokenInfo = queryContractInfo.tokenInfo;
-  console.log(process.env.COINGECKO_API_KEY, "process.env.COINGECKO_API_KEY");
   const getTokenCoingeckoId = async () => {
     try {
       if (tokenInfo && tokenInfo.symbol) {
