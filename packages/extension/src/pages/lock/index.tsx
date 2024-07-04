@@ -27,8 +27,8 @@ export const LockPage: FunctionComponent = observer(() => {
 
   const { register, handleSubmit, setError, errors } = useForm<FormData>({
     defaultValues: {
-      password: ""
-    }
+      password: "",
+    },
   });
 
   const { keyRingStore } = useStore();
@@ -51,7 +51,7 @@ export const LockPage: FunctionComponent = observer(() => {
       <Card type="ink" containerStyle={{ height: "100%" }}>
         <Form
           className={style.formContainer}
-          onSubmit={handleSubmit(async data => {
+          onSubmit={handleSubmit(async (data) => {
             setLoading(true);
             try {
               await keyRingStore.unlock(data.password, true);
@@ -77,7 +77,7 @@ export const LockPage: FunctionComponent = observer(() => {
                 "password",
                 "invalid",
                 intl.formatMessage({
-                  id: "lock.input.password.error.invalid"
+                  id: "lock.input.password.error.invalid",
                 })
               );
               setLoading(false);
@@ -93,21 +93,26 @@ export const LockPage: FunctionComponent = observer(() => {
           <PasswordInput
             styleInputGroup={{
               borderColor: colors["primary-surface-default"],
-              borderWidth: 2
+              borderWidth: 2,
             }}
             name="password"
             error={errors.password && errors.password.message}
-            ref={ref => {
+            ref={(ref) => {
               passwordRef.current = ref;
               register({
                 required: intl.formatMessage({
-                  id: "lock.input.password.error.required"
-                })
+                  id: "lock.input.password.error.required",
+                }),
               })(ref);
             }}
             placeholder="Enter your account password"
           />
-          <Button containerStyle={{ marginTop: 50 }} color="primary" data-loading={loading} loading={loading}>
+          <Button
+            containerStyle={{ marginTop: 50 }}
+            color="primary"
+            data-loading={loading}
+            loading={loading}
+          >
             <FormattedMessage id="lock.button.unlock" />
           </Button>
         </Form>
