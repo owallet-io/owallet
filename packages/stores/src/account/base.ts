@@ -487,6 +487,15 @@ export class AccountSetBase<MsgOpts, Queries> {
       }
     }
 
+    await this.handleBroadcastedTx(txHash, fee, onBroadcasted, onFulfill);
+  }
+
+  async handleBroadcastedTx(
+    txHash: Uint8Array,
+    fee: StdFee,
+    onBroadcasted?: (txHash: Uint8Array) => void,
+    onFulfill?: (tx: any) => void
+  ) {
     if (this.opts.preTxEvents?.onBroadcasted) {
       this.opts.preTxEvents.onBroadcasted(txHash);
     }
@@ -535,47 +544,6 @@ export class AccountSetBase<MsgOpts, Queries> {
         this._isSendingMsg = false;
       });
     }
-
-    // const txTracer = new TendermintTxTracer(
-    //   this.chainGetter.getChain(this.chainId).rpc,
-    //   "/websocket",
-    //   {
-    //     wsObject: this.opts.wsObject,
-    //   }
-    // );
-    // txTracer.traceTx(txHash).then((tx) => {
-    //   txTracer.close();
-    //
-    //   runInAction(() => {
-    //     this._isSendingMsg = false;
-    //   });
-    //
-    //   // After sending tx, the balances is probably changed due to the fee.
-    //   for (const feeAmount of fee.amount) {
-    //     const bal = this.queries.queryBalances
-    //       .getQueryBech32Address(this.bech32Address)
-    //       .balances.find(
-    //         (bal) => bal.currency.coinMinimalDenom === feeAmount.denom
-    //       );
-    //
-    //     if (bal) {
-    //       bal.fetch();
-    //     }
-    //   }
-    //
-    //   // Always add the tx hash data.
-    //   if (tx && !tx.hash) {
-    //     tx.hash = Buffer.from(txHash).toString("hex");
-    //   }
-    //
-    //   if (this.opts.preTxEvents?.onFulfill) {
-    //     this.opts.preTxEvents.onFulfill(tx);
-    //   }
-    //
-    //   if (onFulfill) {
-    //     onFulfill(tx);
-    //   }
-    // });
   }
 
   async sendTronToken(
