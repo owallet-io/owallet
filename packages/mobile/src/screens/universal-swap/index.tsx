@@ -372,143 +372,227 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const handleSubmit = async () => {
     setSwapLoading(true);
-    try {
-      if (fromAmountToken <= 0) {
-        showToast({
-          message: "From amount should be higher than 0!",
-          type: "danger",
-        });
-        return;
+    if (fromAmountToken <= 0) {
+      showToast({
+        message: "From amount should be higher than 0!",
+        type: "danger",
+      });
+      setSwapLoading(false);
+      return;
+    }
+
+    let evmAddress, tronAddress, cosmosAddress;
+    if (
+      accountOrai.isNanoLedger &&
+      keyRingStore?.keyRingLedgerAddresses?.cosmos
+    ) {
+      cosmosAddress = keyRingStore.keyRingLedgerAddresses.cosmos;
+    } else {
+      if (originalFromToken.cosmosBased) {
+        cosmosAddress = accountStore.getAccount(
+          originalFromToken.chainId
+        ).bech32Address;
+      } else {
+        cosmosAddress = accountOrai.bech32Address;
       }
+    }
 
-      const addresses = await getAddresses();
-      const isCustomRecipient = sendToAddress && sendToAddress !== "";
-      const amountsBalance = await getAmountsBalance();
-      const simulateAmount = await getSimulateAmount();
-      const tokenNames = await getTokenNames();
-      const logEvent = await getLogEvent(addresses);
+    if (accountEth.isNanoLedger && keyRingStore?.keyRingLedgerAddresses?.eth) {
+      evmAddress = keyRingStore.keyRingLedgerAddresses.eth;
+    } else {
+      evmAddress = accountEth.evmosHexAddress;
+    }
 
-      const universalSwapData = await getUniversalSwapData(
-        addresses,
-        amountsBalance,
-        simulateAmount,
-        logEvent
+    if (accountTron.isNanoLedger && keyRingStore?.keyRingLedgerAddresses?.trx) {
+      tronAddress = keyRingStore.keyRingLedgerAddresses.trx;
+    } else {
+      if (accountTron) {
+        tronAddress = getBase58Address(accountTron.evmosHexAddress);
+      }
+    }
+
+    const isCustomRecipient = sendToAddress && sendToAddress !== "";
+
+    let amountsBalance = universalSwapStore.getAmount;
+    let simulateAmount = ratio.amount;
+
+    const { isSpecialFromCoingecko } = getSpecialCoingecko(
+      originalFromToken.coinGeckoId,
+      originalToToken.coinGeckoId
+    );
+
+    if (isSpecialFromCoingecko && originalFromToken.chainId === "Oraichain") {
+      const tokenInfo = getTokenOnOraichain(originalFromToken.coinGeckoId);
+      const IBC_DECIMALS = 18;
+      const fromTokenInOrai = getTokenOnOraichain(
+        tokenInfo.coinGeckoId,
+        IBC_DECIMALS
       );
+      const [nativeAmount, cw20Amount] = await Promise.all([
+        client.getBalance(accountOrai.bech32Address, fromTokenInOrai.denom),
+        client.queryContractSmart(tokenInfo.contractAddress, {
+          balance: {
+            address: accountOrai.bech32Address,
+          },
+        }),
+      ]);
+
+      amountsBalance = {
+        [fromTokenInOrai.denom]: nativeAmount?.amount,
+        [originalFromToken.denom]: cw20Amount.balance,
+      };
+    }
+
+    if (
+      (originalToToken.chainId === "injective-1" &&
+        originalToToken.coinGeckoId === "injective-protocol") ||
+      originalToToken.chainId === "kawaii_6886-1"
+    ) {
+      simulateAmount = toAmount(
+        ratio.displayAmount,
+        originalToToken.decimals
+      ).toString();
+    }
+
+    const tokenFromNetwork = chainStore.getChain(
+      originalFromToken.chainId
+    ).chainName;
+
+    const tokenToNetwork = chainStore.getChain(
+      originalToToken.chainId
+    ).chainName;
+    ByteBrew.NewCustomEvent(
+      `Universal Swap`,
+      `fromToken=${originalFromToken.name};toToken=${originalToToken.name};fromNetwork=${tokenFromNetwork};toNetwork=${tokenToNetwork};`
+    );
+    const logEvent = {
+      address: accountOrai.bech32Address,
+      fromToken: originalFromToken.name,
+      fromAmount: `${fromAmountToken}`,
+      toToken: originalToToken.name,
+      toAmount: `${toAmountToken}`,
+      tokenFromNetwork,
+      tokenToNetwork,
+    };
+
+    try {
+      const cosmosWallet = new SwapCosmosWallet(client);
+
+      const isTron = Number(originalFromToken.chainId) === Networks.tron;
+
+      const evmWallet = new SwapEvmWallet(isTron);
+
+      const relayerFee = relayerFeeToken && {
+        relayerAmount: relayerFeeToken.toString(),
+        relayerDecimals: RELAYER_DECIMAL,
+      };
+
+      const universalSwapData: UniversalSwapData = {
+        sender: {
+          cosmos: cosmosAddress,
+          evm: evmAddress,
+          tron: tronAddress,
+        },
+        originalFromToken: originalFromToken,
+        originalToToken: originalToToken,
+        simulateAmount,
+        amounts: amountsBalance,
+        simulatePrice:
+          ratio?.amount &&
+          // @ts-ignore
+          Math.trunc(new BigDecimal(ratio.amount) / INIT_AMOUNT).toString(),
+        userSlippage: userSlippage,
+        fromAmount: fromAmountToken,
+        relayerFee,
+        smartRoutes: routersSwapData?.routeSwapOps,
+      };
 
       const compileSwapData = isCustomRecipient
-        ? { ...universalSwapData, recipientAddress: sendToAddress }
+        ? {
+            ...universalSwapData,
+            recipientAddress: sendToAddress,
+          }
         : universalSwapData;
 
-      const universalSwapHandler = new UniversalSwapHandler(compileSwapData, {
-        cosmosWallet: new SwapCosmosWallet(client),
-        evmWallet: new SwapEvmWallet(
-          Number(originalFromToken.chainId) === Networks.tron
-        ),
-      });
+      const universalSwapHandler = new UniversalSwapHandler(
+        {
+          ...compileSwapData,
+        },
+        {
+          cosmosWallet,
+          //@ts-ignore
+          evmWallet,
+        }
+      );
 
       const result = await universalSwapHandler.processUniversalSwap();
+
       if (result) {
-        await handleSwapSuccess(result.transactionHash);
+        const { transactionHash } = result;
+
+        setSwapLoading(false);
+        setCounter(0);
+        showToast({
+          message: "Successful transaction. View on scan",
+          type: "success",
+          onPress: async () => {
+            const chainInfo = chainStore.getChain(originalFromToken.chainId);
+
+            if (chainInfo.raw.txExplorer && transactionHash) {
+              await openLink(
+                getTransactionUrl(originalFromToken.chainId, transactionHash)
+              );
+            }
+          },
+        });
+        await onFetchAmount([originalFromToken, originalToToken]);
+        const tokens = getTokenInfos({
+          tokens: universalSwapStore.getAmount,
+          prices: appInitStore.getInitApp.prices,
+          networkFilter: appInitStore.getInitApp.isAllNetworks
+            ? ""
+            : chainStore.current.chainId,
+        });
+        if (tokens.length > 0) {
+          handleSaveTokenInfos(accountOrai.bech32Address, tokens);
+        }
       }
     } catch (error) {
-      await handleSwapError(error);
+      console.log("error handleSubmit", error);
+      if (
+        error.message.includes("of undefined") ||
+        error.message.includes("Rejected")
+      ) {
+        handleErrorSwap(error?.message ?? error?.ex?.message);
+        setSwapLoading(false);
+        return;
+      }
+      //Somehow, when invoking the "handleSubmit" function with injective, it often returns a 403 status error along with other errors. Therefore, we need to implement a retry mechanism where we try invoking "handleSubmit" multiple times until it succeeds.
+      if (
+        error.message.includes("Bad status on response") ||
+        error.message.includes("403") ||
+        originalFromToken.chainId === ChainIdEnum.Injective
+      ) {
+        if (counter < 4) {
+          await handleSubmit();
+          setSwapLoading(false);
+        } else {
+          handleErrorSwap(error?.message ?? error?.ex?.message);
+          setCounter(0);
+          setSwapLoading(false);
+        }
+        return;
+      } else {
+        handleErrorSwap(error?.message ?? error?.ex?.message);
+        setSwapLoading(false);
+      }
+      // handleErrorSwap(error?.message ?? error?.ex?.message);
     } finally {
       if (mixpanel) {
-        mixpanel.track(
-          "Universal Swap Owallet",
-          await getLogEvent(await getAddresses())
-        );
+        mixpanel.track("Universal Swap Owallet", logEvent);
       }
       setSwapLoading(false);
       setSwapAmount([0, 0]);
-    }
-  };
-
-  const getAddresses = async () => {
-    // Get addresses logic
-  };
-
-  const getAmountsBalance = async () => {
-    // Get amounts balance logic
-  };
-
-  const getSimulateAmount = async () => {
-    // Get simulate amount logic
-  };
-
-  const getTokenNames = async () => {
-    // Get token names logic
-  };
-
-  const getLogEvent = async (addresses) => {
-    // Get log event logic
-  };
-
-  const getUniversalSwapData = async (
-    addresses,
-    amountsBalance,
-    simulateAmount,
-    logEvent
-  ) => {
-    // Get universal swap data logic
-  };
-
-  const handleSwapSuccess = async (transactionHash) => {
-    setSwapLoading(false);
-    setCounter(0);
-    showToast({
-      message: "Successful transaction. View on scan",
-      type: "success",
-      onPress: async () => {
-        const chainInfo = chainStore.getChain(originalFromToken.chainId);
-        if (chainInfo.raw.txExplorer && transactionHash) {
-          await openLink(
-            getTransactionUrl(originalFromToken.chainId, transactionHash)
-          );
-        }
-      },
-    });
-    onFetchAmount([originalFromToken, originalToToken]);
-    const tokens = getTokenInfos({
-      tokens: universalSwapStore.getAmount,
-      prices: appInitStore.getInitApp.prices,
-      networkFilter: appInitStore.getInitApp.isAllNetworks
-        ? ""
-        : chainStore.current.chainId,
-    });
-    if (tokens.length > 0) {
-      handleSaveTokenInfos(accountOrai.bech32Address, tokens);
-    }
-  };
-
-  const handleSwapError = async (error) => {
-    console.log("error handleSubmit", error);
-    if (
-      error.message.includes("of undefined") ||
-      error.message.includes("Rejected")
-    ) {
-      handleErrorSwap(error?.message ?? error?.ex?.message);
-      setSwapLoading(false);
-      return;
-    }
-
-    if (
-      error.message.includes("Bad status on response") ||
-      error.message.includes("403") ||
-      originalFromToken.chainId === ChainIdEnum.Injective
-    ) {
-      if (counter < 4) {
-        await handleSubmit();
-        setSwapLoading(false);
-      } else {
-        handleErrorSwap(error?.message ?? error?.ex?.message);
-        setCounter(0);
-        setSwapLoading(false);
-      }
-      return;
-    } else {
-      handleErrorSwap(error?.message ?? error?.ex?.message);
-      setSwapLoading(false);
     }
   };
 
