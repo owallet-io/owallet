@@ -468,7 +468,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         }
       },
     });
-    await onFetchAmount([originalFromToken, originalToToken]);
+    onFetchAmount([originalFromToken, originalToToken]);
     const tokens = getTokenInfos({
       tokens: universalSwapStore.getAmount,
       prices: appInitStore.getInitApp.prices,
