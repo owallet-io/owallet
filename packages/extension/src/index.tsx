@@ -19,19 +19,11 @@ import { ActivitiesPage } from "./pages/activities/activities-page";
 import { ExplorePage } from "./pages/explore/explore-page";
 import { RegisterPage } from "./pages/register";
 import { ConfirmLedgerPage } from "./pages/register/ledger/confirm";
-import {
-  SendEvmPage,
-  SendPage,
-  SendTronEvmPage,
-  SendBtcPage,
-} from "./pages/send";
+import { SendEvmPage, SendPage, SendTronEvmPage, SendBtcPage } from "./pages/send";
 import { Banner } from "./components/banner";
 import { ConfirmProvider } from "./components/confirm";
 import { LoadingIndicatorProvider } from "./components/loading-indicator";
-import {
-  NotificationProvider,
-  NotificationStoreProvider,
-} from "./components/notification";
+import { NotificationProvider, NotificationStoreProvider } from "./components/notification";
 import { configure } from "mobx";
 import { observer } from "mobx-react-lite";
 import { KeyRingStatus } from "@owallet/background";
@@ -41,11 +33,7 @@ import { LedgerGrantPage } from "./pages/ledger";
 import { AddressBookPage } from "./pages/setting/address-book";
 import { SignPage } from "./pages/sign";
 import { StoreProvider, useStore } from "./stores";
-import {
-  AdditonalIntlMessages,
-  AppIntlProvider,
-  LanguageToFiatCurrency,
-} from "@owallet/common";
+import { AdditonalIntlMessages, AppIntlProvider, LanguageToFiatCurrency } from "@owallet/common";
 import { Ethereum, OWallet, TronWeb, Bitcoin } from "@owallet/provider";
 import { InExtensionMessageRequester } from "@owallet/router-extension";
 import * as Sentry from "@sentry/react";
@@ -62,36 +50,18 @@ import { Text } from "components/common/text";
 import { Button } from "components/common/button";
 import colors from "theme/colors";
 
-const owallet = new OWallet(
-  manifest.version,
-  "core",
-  new InExtensionMessageRequester()
-);
+const owallet = new OWallet(manifest.version, "core", new InExtensionMessageRequester());
 // const oasis = new Oasis(
 //   manifest.version,
 //   "core",
 //   ChainIdEnum.Oasis,
 //   new InExtensionMessageRequester()
 // );
-const ethereum = new Ethereum(
-  manifest.version,
-  "core",
-  "",
-  new InExtensionMessageRequester()
-);
+const ethereum = new Ethereum(manifest.version, "core", "", new InExtensionMessageRequester());
 
-const tronWeb = new TronWeb(
-  manifest.version,
-  "core",
-  "0x2b6653dc",
-  new InExtensionMessageRequester()
-);
+const tronWeb = new TronWeb(manifest.version, "core", "0x2b6653dc", new InExtensionMessageRequester());
 
-const bitcoin = new Bitcoin(
-  manifest.version,
-  "core",
-  new InExtensionMessageRequester()
-);
+const bitcoin = new Bitcoin(manifest.version, "core", new InExtensionMessageRequester());
 
 if (isProdMode) {
   Sentry.init({
@@ -102,12 +72,7 @@ if (isProdMode) {
     // for finer control
     tracesSampleRate: 1.0,
     environment: "production",
-    ignoreErrors: [
-      "Request rejected",
-      "Failed to fetch",
-      "Load failed",
-      "User rejected the request",
-    ],
+    ignoreErrors: ["Request rejected", "Failed to fetch", "Load failed", "User rejected the request"]
   });
 }
 
@@ -137,7 +102,7 @@ require("./public/assets/icon/icon-48.png");
 require("./public/assets/icon/icon-128.png");
 
 configure({
-  enforceActions: "always", // Make mobx to strict mode.
+  enforceActions: "always" // Make mobx to strict mode.
 });
 
 Modal.setAppElement("#app");
@@ -152,12 +117,12 @@ Modal.defaultStyles = {
     right: "auto",
     top: "50%",
     bottom: "auto",
-    transform: "translate(-50%, -50%)",
+    transform: "translate(-50%, -50%)"
   },
   overlay: {
     zIndex: 1000,
-    ...Modal.defaultStyles.overlay,
-  },
+    ...Modal.defaultStyles.overlay
+  }
 };
 
 function ErrorFallback({ error }) {
@@ -169,28 +134,19 @@ function ErrorFallback({ error }) {
         alignItems: "center",
         padding: 16,
         display: "flex",
-        flexDirection: "column",
+        flexDirection: "column"
       }}
     >
-      <img
-        style={{ width: 200 }}
-        src={require("./public/assets/images/img_planet.png")}
-      />
+      <img style={{ width: 200 }} src={require("./public/assets/images/img_planet.png")} />
       <div style={{ padding: 16 }}>
         <Text size={24} weight="600">
           Something went wrong
         </Text>
       </div>
-      <Text
-        containerStyle={{ textAlign: "center" }}
-        color={colors["error-text-action"]}
-      >
+      <Text containerStyle={{ textAlign: "center" }} color={colors["error-text-action"]}>
         {error.message}
       </Text>
-      <Button
-        containerStyle={{ width: 140, marginTop: 16 }}
-        onClick={resetBoundary}
-      >
+      <Button containerStyle={{ width: 140, marginTop: 16 }} onClick={resetBoundary}>
         Try again
       </Button>
     </div>
@@ -199,24 +155,22 @@ function ErrorFallback({ error }) {
 
 const StateRenderer: FunctionComponent = observer(() => {
   const { keyRingStore } = useStore();
-  if (
-    keyRingStore.persistent ||
-    keyRingStore.status === KeyRingStatus.UNLOCKED
-  ) {
+  if (keyRingStore.persistent || keyRingStore.status === KeyRingStatus.UNLOCKED) {
     return <HomePage />;
   } else if (keyRingStore.status === KeyRingStatus.LOCKED) {
     return <LockPage />;
   } else if (keyRingStore.status === KeyRingStatus.EMPTY) {
     browser.tabs.create({
-      url: "/popup.html#/register",
+      url: "/popup.html#/register"
     });
     window.close();
     return (
       <div style={{ height: "100%" }}>
         <Banner
-          icon={require("./public/assets/orai_wallet_logo.png")}
-          logo={require("./public/assets/logo.svg")}
-          subtitle="Cosmos x EVM in one Wallet"
+          icon={require("assets/images/img_owallet.png")}
+          logo={require("assets/orai_wallet_logo.png")}
+          subtitle={`UNIVERSAL`}
+          subtitle2={`WEB3 GATEWAY`}
         />
       </div>
     );
@@ -224,9 +178,10 @@ const StateRenderer: FunctionComponent = observer(() => {
     return (
       <div style={{ height: "100%" }}>
         <Banner
-          icon={require("./public/assets/orai_wallet_logo.png")}
-          logo={require("./public/assets/logo.svg")}
-          subtitle="Cosmos x EVM in one Wallet"
+          icon={require("assets/images/img_owallet.png")}
+          logo={require("assets/orai_wallet_logo.png")}
+          subtitle={`UNIVERSAL`}
+          subtitle2={`WEB3 GATEWAY`}
         />
       </div>
     );
@@ -246,11 +201,7 @@ const AppIntlProviderWithStorage = ({ children }) => {
       storage={store.uiConfigStore.Storage}
     >
       {({ language, messages, automatic }) => (
-        <IntlProvider
-          locale={language}
-          messages={messages}
-          key={`${language}${automatic ? "-auto" : ""}`}
-        >
+        <IntlProvider locale={language} messages={messages} key={`${language}${automatic ? "-auto" : ""}`}>
           {children}
         </IntlProvider>
       )}
@@ -277,80 +228,29 @@ ReactDOM.render(
                     <Route exact path="/unlock" component={LockPage} />
                     <Route exact path="/access" component={AccessPage} />
                     <Route exact path="/receive" component={ReceivePage} />
-                    <Route
-                      exact
-                      path="/activities"
-                      component={ActivitiesPage}
-                    />
+                    <Route exact path="/activities" component={ActivitiesPage} />
                     <Route exact path="/explore" component={ExplorePage} />
-                    <Route
-                      exact
-                      path="/preferences"
-                      component={PreferencesPage}
-                    />
-                    <Route
-                      exact
-                      path="/reveal-recovery-phrase/:keystoreIndex"
-                      component={RevealRecoveryPhrasePage}
-                    />
-                    <Route
-                      exact
-                      path="/reveal-private-key/:keystoreIndex"
-                      component={RevealPrivateKeyPage}
-                    />
-                    <Route
-                      exact
-                      path="/select-account"
-                      component={SelectAccountPage}
-                    />
+                    <Route exact path="/preferences" component={PreferencesPage} />
+                    <Route exact path="/reveal-recovery-phrase/:keystoreIndex" component={RevealRecoveryPhrasePage} />
+                    <Route exact path="/reveal-private-key/:keystoreIndex" component={RevealPrivateKeyPage} />
+                    <Route exact path="/select-account" component={SelectAccountPage} />
                     <Route exact path="/add-token" component={AddTokenPage} />
-                    <Route
-                      exact
-                      path="/edit-account/:keystoreIndex"
-                      component={EditAccountPage}
-                    />
-                    <Route
-                      exact
-                      path="/connected-dapp"
-                      component={ConnectedDappPage}
-                    />
-                    <Route
-                      exact
-                      path="/access/viewing-key"
-                      component={Secret20ViewingKeyAccessPage}
-                    />
+                    <Route exact path="/edit-account/:keystoreIndex" component={EditAccountPage} />
+                    <Route exact path="/connected-dapp" component={ConnectedDappPage} />
+                    <Route exact path="/access/viewing-key" component={Secret20ViewingKeyAccessPage} />
                     <Route exact path="/register" component={RegisterPage} />
-                    <Route
-                      exact
-                      path="/confirm-ledger/:chain"
-                      component={ConfirmLedgerPage}
-                    />
+                    <Route exact path="/confirm-ledger/:chain" component={ConfirmLedgerPage} />
                     <Route exact path="/send" component={SendPage} />
                     <Route exact path="/send-evm" component={SendEvmPage} />
-                    <Route
-                      exact
-                      path="/send-tron"
-                      component={SendTronEvmPage}
-                    />
+                    <Route exact path="/send-tron" component={SendTronEvmPage} />
                     <Route exact path="/send-btc" component={SendBtcPage} />
-                    <Route
-                      exact
-                      path="/ledger-grant"
-                      component={LedgerGrantPage}
-                    />
-                    <Route
-                      exact
-                      path="/setting/address-book"
-                      component={AddressBookPage}
-                    />
+                    <Route exact path="/ledger-grant" component={LedgerGrantPage} />
+                    <Route exact path="/setting/address-book" component={AddressBookPage} />
                     <Route path="/sign" component={SignPage} />
                     <Route path="/sign-bitcoin" component={SignBtcPage} />
                     <Route path="/sign-ethereum" component={SignEvmPage} />
                     <Route path="/sign-tron" component={SignTronPage} />
-                    <Route
-                      path="/suggest-chain"
-                      component={ChainSuggestedPage}
-                    />
+                    <Route path="/suggest-chain" component={ChainSuggestedPage} />
                   </LogPageViewWrapper>
                 </HashRouter>
               </ConfirmProvider>
