@@ -9,10 +9,21 @@ import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import OWText from "@src/components/text/ow-text";
 import { ValidatorThumbnail } from "@src/components/thumbnail";
 import { useTheme } from "@src/themes/theme-provider";
-import { capitalizedText, computeTotalVotingPower, formatPercentage, showToast } from "@src/utils/helper";
+import {
+  capitalizedText,
+  computeTotalVotingPower,
+  formatPercentage,
+  showToast,
+} from "@src/utils/helper";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
-import { StyleSheet, View, ScrollView, TouchableOpacity, InteractionManager } from "react-native";
+import {
+  StyleSheet,
+  View,
+  ScrollView,
+  TouchableOpacity,
+  InteractionManager,
+} from "react-native";
 import { OWButton } from "../../../components/button";
 import { useSmartNavigation } from "../../../navigation.provider";
 import { useStore } from "../../../stores";
@@ -42,8 +53,16 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   >();
   ByteBrew.NewCustomEvent(`Delegate Screen`);
   const validatorAddress = route.params.validatorAddress;
-  const { chainStore, accountStore, queriesStore, analyticsStore, priceStore, modalStore, keyRingStore, appInitStore } =
-    useStore();
+  const {
+    chainStore,
+    accountStore,
+    queriesStore,
+    analyticsStore,
+    priceStore,
+    modalStore,
+    keyRingStore,
+    appInitStore,
+  } = useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
 
@@ -70,18 +89,18 @@ export const DelegateScreen: FunctionComponent = observer(() => {
           const res = await Promise.all([
             API.getValidatorOraichainDetail(
               {
-                validatorAddress: validatorAddress
+                validatorAddress: validatorAddress,
               },
               {
-                baseURL: "https://api.scan.orai.io"
+                baseURL: "https://api.scan.orai.io",
               }
             ),
             API.getValidatorList(
               {},
               {
-                baseURL: "https://api.scan.orai.io"
+                baseURL: "https://api.scan.orai.io",
               }
-            )
+            ),
           ]);
           if (res[0].status !== 200) return;
           setValidatorDetail(res[0].data);
@@ -98,7 +117,9 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     return;
   }, [sendConfigs.feeConfig]);
   const [balance, setBalance] = useState<CoinPretty>(null);
-  const address = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
+  const address = account.getAddressDisplay(
+    keyRingStore.keyRingLedgerAddresses
+  );
   const isReadyBalance = queries.queryBalances
     .getQueryBech32Address(address)
     .getBalanceFromCurrency(sendConfigs.amountConfig.sendCurrency).isReady;
@@ -136,7 +157,9 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     sendConfigs.feeConfig.getError();
   const txStateIsValid = sendConfigError == null;
 
-  const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(BondStatus.Bonded);
+  const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
+    BondStatus.Bonded
+  );
 
   const validator = bondedValidators.getValidator(validatorAddress);
 
@@ -146,10 +169,12 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     modalStore.setOptions({
       bottomSheetModalConfig: {
         enablePanDownToClose: false,
-        enableOverDrag: false
-      }
+        enableOverDrag: false,
+      },
     });
-    modalStore.setChildren(<FeeModal vertical={true} sendConfigs={sendConfigs} colors={colors} />);
+    modalStore.setChildren(
+      <FeeModal vertical={true} sendConfigs={sendConfigs} colors={colors} />
+    );
   };
 
   const totalVotingPower = useMemo(
@@ -251,19 +276,21 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                   sendConfigs.feeConfig.toStdFee(),
                   {
                     preferNoSetMemo: true,
-                    preferNoSetFee: true
+                    preferNoSetFee: true,
                   },
                   {
-                    onBroadcasted: txHash => {
+                    onBroadcasted: (txHash) => {
                       analyticsStore.logEvent("Delegate tx broadcasted", {
                         chainId: chainStore.current.chainId,
                         chainName: chainStore.current.chainName,
                         validatorName: validator?.description.moniker ?? "...",
-                        feeType: sendConfigs.feeConfig.feeType
+                        feeType: sendConfigs.feeConfig.feeType,
                       });
                       ByteBrew.NewCustomEvent(
                         `Delegate`,
-                        `chainName=${chainStore.current.chainName};validatorName=${
+                        `chainName=${
+                          chainStore.current.chainName
+                        };validatorName=${
                           validator?.description.moniker ?? "..."
                         };`
                       );
@@ -275,23 +302,25 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                           validator: sendConfigs.recipientConfig.recipient,
                           amount: sendConfigs.amountConfig.getAmountPrimitive(),
                           fee: sendConfigs.feeConfig.toStdFee(),
-                          currency: sendConfigs.amountConfig.sendCurrency
-                        }
+                          currency: sendConfigs.amountConfig.sendCurrency,
+                        },
                       });
-                    }
+                    },
                   }
                 );
               } catch (e) {
                 if (e?.message.toLowerCase().includes("rejected")) {
                   return;
-                } else if (e?.message.includes("Cannot read properties of undefined")) {
+                } else if (
+                  e?.message.includes("Cannot read properties of undefined")
+                ) {
                   return;
                 } else {
                   console.log(e);
                   // smartNavigation.navigate("Home", {});
                   showToast({
                     message: JSON.stringify(e),
-                    type: "danger"
+                    type: "danger",
                   });
                 }
               }
@@ -300,13 +329,13 @@ export const DelegateScreen: FunctionComponent = observer(() => {
           style={[
             styles.bottomBtn,
             {
-              width: metrics.screenWidth - 32
-            }
+              width: metrics.screenWidth - 32,
+            },
           ]}
           textStyle={{
             fontSize: 14,
             fontWeight: "600",
-            color: colors["neutral-text-action-on-dark-bg"]
+            color: colors["neutral-text-action-on-dark-bg"],
           }}
         />
       }
@@ -321,24 +350,31 @@ export const DelegateScreen: FunctionComponent = observer(() => {
         {validator ? (
           <View>
             <OWCard>
-              <OWText style={{ paddingBottom: 8 }} color={colors["neutral-text-title"]}>
+              <OWText
+                style={{ paddingBottom: 8 }}
+                color={colors["neutral-text-title"]}
+              >
                 Validator
               </OWText>
               <View
                 style={{
-                  flexDirection: "row"
+                  flexDirection: "row",
                 }}
               >
                 <View
                   style={{
                     backgroundColor: colors["neutral-icon-on-dark"],
-                    borderRadius: 999
+                    borderRadius: 999,
                   }}
                 >
                   <ValidatorThumbnail size={20} url={thumbnail} />
                 </View>
 
-                <OWText style={{ paddingLeft: 8 }} color={colors["neutral-text-title"]} weight="500">
+                <OWText
+                  style={{ paddingLeft: 8 }}
+                  color={colors["neutral-text-title"]}
+                  weight="500"
+                >
                   {validator?.description.moniker}
                 </OWText>
               </View>
@@ -347,12 +383,17 @@ export const DelegateScreen: FunctionComponent = observer(() => {
               <View
                 style={{
                   flexDirection: "row",
-                  justifyContent: "space-between"
+                  justifyContent: "space-between",
                 }}
               >
                 <View style={{}}>
                   <OWText style={{ paddingTop: 8 }}>
-                    Balance : {balance?.trim(true)?.maxDecimals(6)?.hideDenom(true)?.toString() || "0"}
+                    Balance :{" "}
+                    {balance
+                      ?.trim(true)
+                      ?.maxDecimals(6)
+                      ?.hideDenom(true)
+                      ?.toString() || "0"}
                   </OWText>
                   <View
                     style={{
@@ -363,7 +404,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                       paddingVertical: 12,
                       maxWidth: metrics.screenWidth / 4.5,
                       marginTop: 12,
-                      alignItems: "center"
+                      alignItems: "center",
                     }}
                   >
                     <View
@@ -387,7 +428,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                 </View>
                 <View
                   style={{
-                    alignItems: "flex-end"
+                    alignItems: "flex-end",
                   }}
                 >
                   <NewAmountInput
@@ -395,10 +436,16 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                     inputContainerStyle={{
                       borderWidth: 0,
                       width: metrics.screenWidth / 2.3,
-                      marginBottom: 8
+                      marginBottom: 8,
                     }}
                     amountConfig={sendConfigs.amountConfig}
-                    maxBalance={balance?.trim(true)?.maxDecimals(6)?.hideDenom(true)?.toString() || "0"}
+                    maxBalance={
+                      balance
+                        ?.trim(true)
+                        ?.maxDecimals(6)
+                        ?.hideDenom(true)
+                        ?.toString() || "0"
+                    }
                     placeholder={"0.0"}
                   />
                 </View>
@@ -407,12 +454,19 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                 style={{
                   alignSelf: "flex-end",
                   flexDirection: "row",
-                  alignItems: "center"
+                  alignItems: "center",
                 }}
               >
                 <OWIcon name="tdesign_swap" size={16} />
-                <OWText style={{ paddingLeft: 4 }} color={colors["neutral-text-body"]} size={14}>
-                  {(amount ? priceStore.calculatePrice(amount) : initPrice)?.toString()}
+                <OWText
+                  style={{ paddingLeft: 4 }}
+                  color={colors["neutral-text-body"]}
+                  size={14}
+                >
+                  {(amount
+                    ? priceStore.calculatePrice(amount)
+                    : initPrice
+                  )?.toString()}
                 </OWText>
               </View>
               {validatorDetail ? (
@@ -422,7 +476,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                     borderRadius: 12,
                     backgroundColor: colors["warning-surface-subtle"],
                     padding: 12,
-                    marginTop: 8
+                    marginTop: 8,
                   }}
                 >
                   <AlertIcon color={colors["warning-text-body"]} size={16} />
@@ -431,13 +485,14 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                       <>
                         <OWText
                           style={{
-                            fontWeight: "bold"
+                            fontWeight: "bold",
                           }}
                         >
                           You're about to stake with top 10 validators {"\n"}
                         </OWText>
                         <OWText weight="400">
-                          Consider staking with other validators to improve network decentralization
+                          Consider staking with other validators to improve
+                          network decentralization
                         </OWText>
                       </>
                     ) : (
@@ -455,18 +510,34 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                   borderBottomColor: colors["neutral-border-default"],
                   borderBottomWidth: 1,
                   paddingVertical: 16,
-                  marginBottom: 8
+                  marginBottom: 8,
                 }}
               >
-                <OWText color={colors["neutral-text-title"]} weight="600" size={16}>
+                <OWText
+                  color={colors["neutral-text-title"]}
+                  weight="600"
+                  size={16}
+                >
                   Transaction fee
                 </OWText>
-                <TouchableOpacity style={{ flexDirection: "row" }} onPress={_onPressFee}>
-                  <OWText color={colors["primary-text-action"]} weight="600" size={16}>
+                <TouchableOpacity
+                  style={{ flexDirection: "row" }}
+                  onPress={_onPressFee}
+                >
+                  <OWText
+                    color={colors["primary-text-action"]}
+                    weight="600"
+                    size={16}
+                  >
                     {capitalizedText(sendConfigs.feeConfig.feeType)}:{" "}
-                    {priceStore.calculatePrice(sendConfigs.feeConfig.fee)?.toString()}{" "}
+                    {priceStore
+                      .calculatePrice(sendConfigs.feeConfig.fee)
+                      ?.toString()}{" "}
                   </OWText>
-                  <DownArrowIcon height={11} color={colors["primary-text-action"]} />
+                  <DownArrowIcon
+                    height={11}
+                    color={colors["primary-text-action"]}
+                  />
                 </TouchableOpacity>
               </View>
             </OWCard>
@@ -477,15 +548,15 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   );
 });
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     page: {
-      padding: spacing["page"]
+      padding: spacing["page"],
     },
     containerStaking: {
       borderRadius: spacing["24"],
       backgroundColor: colors["primary"],
-      marginBottom: spacing["24"]
+      marginBottom: spacing["24"],
     },
     containerBtn: {
       backgroundColor: colors["primary-surface-default"],
@@ -493,31 +564,31 @@ const styling = colors =>
       marginRight: spacing["24"],
       borderRadius: spacing["8"],
       marginTop: spacing["20"],
-      paddingVertical: spacing["16"]
+      paddingVertical: spacing["16"],
     },
     textBtn: {
       ...typography.h6,
       color: colors["white"],
-      fontWeight: "700"
+      fontWeight: "700",
     },
     sendlabelInput: {
       fontSize: 16,
       fontWeight: "700",
       lineHeight: 22,
       color: colors["gray-900"],
-      marginBottom: spacing["8"]
+      marginBottom: spacing["8"],
     },
     textNormal: {
       ...typography.h7,
-      color: colors["gray-600"]
+      color: colors["gray-600"],
     },
     listLabel: {
       paddingVertical: 16,
       borderBottomColor: colors["neutral-border-default"],
-      borderBottomWidth: 1
+      borderBottomWidth: 1,
     },
     title: {
-      color: colors["neutral-text-body"]
+      color: colors["neutral-text-body"],
     },
     topSubInfo: {
       backgroundColor: colors["neutral-surface-bg2"],
@@ -526,19 +597,19 @@ const styling = colors =>
       paddingVertical: 4,
       marginTop: 4,
       marginRight: 8,
-      flexDirection: "row"
+      flexDirection: "row",
     },
     bottomBtn: {
       marginTop: 20,
       width: metrics.screenWidth / 2.3,
       borderRadius: 999,
-      marginLeft: 12
+      marginLeft: 12,
     },
     label: {
       fontWeight: "600",
       textAlign: "center",
       marginTop: spacing["6"],
-      color: colors["neutral-text-title"]
+      color: colors["neutral-text-title"],
     },
     percentBtn: {
       backgroundColor: colors["primary-surface-default"],
@@ -547,6 +618,6 @@ const styling = colors =>
       paddingVertical: 8,
       alignItems: "center",
       justifyContent: "center",
-      marginLeft: 4
-    }
+      marginLeft: 4,
+    },
   });
