@@ -664,10 +664,50 @@ export class AccountSetBase<MsgOpts, Queries> {
     }
   }
 
+  async sleep(milliseconds) {
+    return new Promise((resolve) => setTimeout(resolve, milliseconds));
+  }
+
+  async waitForPendingTransaction(rpc, txHash, onFulfill, count = 0) {
+    if (count > 10) {
+      OwalletEvent.txHashEmit(txHash, { code: 1 });
+      return;
+    }
+
+    try {
+      let expectedBlockTime = 3000;
+      let transactionReceipt = null;
+      let retryCount = 0;
+      while (!transactionReceipt) {
+        // Waiting expectedBlockTime until the transaction is mined
+        transactionReceipt = await request(rpc, "eth_getTransactionReceipt", [
+          txHash,
+        ]);
+        console.log(transactionReceipt, "tran receipt");
+
+        retryCount += 1;
+        if (retryCount === 10) break;
+        await this.sleep(expectedBlockTime);
+      }
+
+      OwalletEvent.txHashEmit(txHash, { code: 0 });
+
+      if (this.opts.preTxEvents?.onFulfill) {
+        this.opts.preTxEvents.onFulfill(transactionReceipt);
+      }
+
+      if (onFulfill) {
+        onFulfill(transactionReceipt);
+      }
+    } catch (error) {
+      await this.sleep(3000);
+      this.waitForPendingTransaction(rpc, txHash, onFulfill, count + 1);
+    }
+  }
+
   async sendEvmMsgs(
     type: string | "unknown",
     msgs: Msg,
-    memo: string = "",
     fee: StdFeeEthereum,
     signOptions?: OWalletSignOptions,
     onTxEvents?:
@@ -773,53 +813,8 @@ export class AccountSetBase<MsgOpts, Queries> {
       }
       return;
     }
-    const sleep = (milliseconds) => {
-      return new Promise((resolve) => setTimeout(resolve, milliseconds));
-    };
 
-    const waitForPendingTransaction = async (
-      rpc,
-      txHash,
-      onFulfill,
-      count = 0
-    ) => {
-      if (count > 10) {
-        OwalletEvent.txHashEmit(txHash, { code: 1 });
-        return;
-      }
-
-      try {
-        let expectedBlockTime = 3000;
-        let transactionReceipt = null;
-        let retryCount = 0;
-        while (!transactionReceipt) {
-          // Waiting expectedBlockTime until the transaction is mined
-          transactionReceipt = await request(rpc, "eth_getTransactionReceipt", [
-            txHash,
-          ]);
-          console.log(transactionReceipt, "tran receipt");
-
-          retryCount += 1;
-          if (retryCount === 10) break;
-          await sleep(expectedBlockTime);
-        }
-
-        OwalletEvent.txHashEmit(txHash, { code: 0 });
-
-        if (this.opts.preTxEvents?.onFulfill) {
-          this.opts.preTxEvents.onFulfill(transactionReceipt);
-        }
-
-        if (onFulfill) {
-          onFulfill(transactionReceipt);
-        }
-      } catch (error) {
-        await sleep(3000);
-        waitForPendingTransaction(rpc, txHash, onFulfill, count + 1);
-      }
-    };
-
-    waitForPendingTransaction(rpc, txHash, onFulfill);
+    this.waitForPendingTransaction(rpc, txHash, onFulfill);
   }
 
   async sendBtcMsgs(
