@@ -14,11 +14,15 @@ import {
 } from "@owallet/stores";
 import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
 import { computed, makeObservable } from "mobx";
-import { ChainIdEnum, DenomHelper, getOasisAddress } from "@owallet/common";
+import {
+  ChainIdEnum,
+  DenomHelper,
+  getOasisAddress,
+  MapChainIdToNetwork,
+} from "@owallet/common";
 import { computedFn } from "mobx-utils";
 import { ChainIdHelper } from "@owallet/cosmos";
 import { AppCurrency, ChainInfo } from "@owallet/types";
-import { MapChainIdToNetwork } from "@src/utils/helper";
 
 export interface ViewToken {
   //TODO: need check type for chain info
@@ -89,34 +93,34 @@ export class HugeQueriesStore {
         this.keyRingStore.keyRingLedgerAddresses,
         false
       );
+
       if (address === "") {
         continue;
       }
+
       const queries = this.queriesStore.get(chainInfo.chainId);
       const queryBalance = queries.queryBalances.getQueryBech32Address(address);
-
       const currencies = [...chainInfo.currencies];
+
       if (chainInfo.stakeCurrency) {
         currencies.push(chainInfo.stakeCurrency);
       }
+
       for (const currency of currencies) {
         const key = `${ChainIdHelper.parse(chainInfo.chainId).identifier}/${
           currency.coinMinimalDenom
         }`;
+
         if (!map.has(key)) {
           if (
             chainInfo.stakeCurrency?.coinMinimalDenom ===
             currency.coinMinimalDenom
           ) {
             const balance = queryBalance.stakable?.balance;
+
             if (!balance) {
               continue;
             }
-            // If the balance is zero, don't show it.
-            // 다시 제로 일때 보여주기 위해서 아래코드를 주석처리함
-            // if (balance.toDec().equals(HugeQueriesStore.zeroDec)) {
-            //   continue;
-            // }
 
             map.set(key, {
               chainInfo,
@@ -129,8 +133,8 @@ export class HugeQueriesStore {
             });
           } else {
             const balance = queryBalance.getBalance(currency);
+
             if (balance) {
-              // If the balance is zero and currency is "native", don't show it.
               if (
                 balance.balance.toDec().equals(HugeQueriesStore.zeroDec) &&
                 new DenomHelper(currency.coinMinimalDenom).type === "native"
