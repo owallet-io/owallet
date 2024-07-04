@@ -205,19 +205,13 @@ export class ChainUpdaterService {
         await restInstance.get("/cosmos/base/tendermint/v1beta1/node_info");
         staragteUpdate = true;
       }
-    } catch {
-      return {
-        explicit: false,
-        slient: false,
-      };
-    }
+    } catch {}
 
     let ibcGoUpdates = false;
     try {
       if (
-        (!chainInfo.features || !chainInfo.features.includes("ibc-go")) &&
-        (staragteUpdate ||
-          (chainInfo.features && chainInfo.features.includes("stargate")))
+        !chainInfo?.features?.includes("ibc-go") &&
+        (staragteUpdate || chainInfo?.features?.includes("stargate"))
       ) {
         // If the chain uses the ibc-go module separated from the cosmos-sdk,
         // we need to check it because the REST API is different.
@@ -228,27 +222,17 @@ export class ChainUpdaterService {
           };
         }>("/ibc/apps/transfer/v1/params");
 
-        if (result.status === 200) {
-          ibcGoUpdates = true;
-        }
+        ibcGoUpdates = result?.status === 200 ? true : false;
       }
-    } catch (err) {
-      return {
-        explicit: false,
-        slient: false,
-      };
-    }
+    } catch (err) {}
 
     let ibcTransferUpdate = false;
     try {
       if (
-        (!chainInfo.features || !chainInfo.features.includes("ibc-transfer")) &&
-        (staragteUpdate ||
-          (chainInfo.features && chainInfo.features.includes("stargate")))
+        !chainInfo?.features?.includes("ibc-transfer") &&
+        (staragteUpdate || chainInfo?.features?.includes("stargate"))
       ) {
-        const isIBCGo =
-          ibcGoUpdates ||
-          (chainInfo.features && chainInfo.features.includes("ibc-go"));
+        const isIBCGo = ibcGoUpdates || chainInfo?.features?.includes("ibc-go");
 
         // If the chain doesn't have the ibc transfer feature,
         // try to fetch the params of ibc transfer module.
@@ -263,27 +247,18 @@ export class ChainUpdaterService {
             ? "/ibc/apps/transfer/v1/params"
             : "/ibc/applications/transfer/v1beta1/params"
         );
-        if (
-          result.data.params.receive_enabled &&
-          result.data.params.send_enabled
-        ) {
-          ibcTransferUpdate = true;
-        }
+        ibcTransferUpdate =
+          result.data.params.receive_enabled && result.data.params.send_enabled
+            ? true
+            : false;
       }
-    } catch {
-      return {
-        explicit: false,
-        slient: false,
-      };
-    }
+    } catch {}
 
     let noLegacyStdTxUpdate = false;
     try {
       if (
-        (!chainInfo.features ||
-          !chainInfo.features.includes("no-legacy-stdTx")) &&
-        (staragteUpdate ||
-          (chainInfo.features && chainInfo.features.includes("stargate")))
+        !chainInfo?.features?.includes("no-legacy-stdTx") &&
+        (staragteUpdate || chainInfo?.features?.includes("stargate"))
       ) {
         // The chain with above cosmos-sdk@v0.44.0 can't send the legacy stdTx,
         // Assume that it can't send the legacy stdTx if the POST /txs responses "not implemented".
@@ -307,12 +282,7 @@ export class ChainUpdaterService {
           noLegacyStdTxUpdate = true;
         }
       }
-    } catch {
-      return {
-        explicit: false,
-        slient: false,
-      };
-    }
+    } catch {}
 
     const updates = {
       stargate: staragteUpdate,
@@ -331,9 +301,7 @@ export class ChainUpdaterService {
         staragteUpdate ||
         ibcGoUpdates ||
         ibcTransferUpdate ||
-        noLegacyStdTxUpdate ||
-        false,
-
+        noLegacyStdTxUpdate,
       chainId: resultChainId,
       features,
     };
