@@ -7,6 +7,7 @@ import Axios from "axios";
 import { KVStore } from "@owallet/common";
 import { ChainIdHelper } from "@owallet/cosmos";
 import { ChainsService } from "../chains";
+import { hasChain } from "./helper";
 
 @singleton()
 export class ChainUpdaterService {
@@ -147,11 +148,11 @@ export class ChainUpdaterService {
     chainId?: string;
     features?: string[];
   }> {
-    const chainId = chainInfo.chainId;
+    const chainId = chainInfo?.chainId;
 
     // If chain id is not fomatted as {chainID}-{version},
     // there is no way to deal with the updated chain id.
-    if (!ChainIdHelper.hasChainVersion(chainId)) {
+    if (hasChain(chainId, chainInfo)) {
       return {
         explicit: false,
         slient: false,
@@ -173,16 +174,18 @@ export class ChainUpdaterService {
     }>("/status");
 
     const resultChainId = result?.data?.result?.node_info?.network;
-    if (!resultChainId)
+    if (!resultChainId) {
       return {
         explicit: false,
         slient: false,
       };
+    }
+
     const version = ChainIdHelper.parse(chainId);
     const fetchedVersion = ChainIdHelper.parse(resultChainId);
 
     // TODO: Should throw an error?
-    if (version.identifier !== fetchedVersion.identifier) {
+    if (version && version.identifier !== fetchedVersion.identifier) {
       return {
         explicit: false,
         slient: false,
@@ -202,7 +205,12 @@ export class ChainUpdaterService {
         await restInstance.get("/cosmos/base/tendermint/v1beta1/node_info");
         staragteUpdate = true;
       }
-    } catch {}
+    } catch {
+      return {
+        explicit: false,
+        slient: false,
+      };
+    }
 
     let ibcGoUpdates = false;
     try {
@@ -224,7 +232,12 @@ export class ChainUpdaterService {
           ibcGoUpdates = true;
         }
       }
-    } catch {}
+    } catch (err) {
+      return {
+        explicit: false,
+        slient: false,
+      };
+    }
 
     let ibcTransferUpdate = false;
     try {
@@ -257,7 +270,12 @@ export class ChainUpdaterService {
           ibcTransferUpdate = true;
         }
       }
-    } catch {}
+    } catch {
+      return {
+        explicit: false,
+        slient: false,
+      };
+    }
 
     let noLegacyStdTxUpdate = false;
     try {
@@ -289,21 +307,23 @@ export class ChainUpdaterService {
           noLegacyStdTxUpdate = true;
         }
       }
-    } catch {}
+    } catch {
+      return {
+        explicit: false,
+        slient: false,
+      };
+    }
 
-    const features: string[] = [];
-    if (staragteUpdate) {
-      features.push("stargate");
-    }
-    if (ibcGoUpdates) {
-      features.push("ibc-go");
-    }
-    if (ibcTransferUpdate) {
-      features.push("ibc-transfer");
-    }
-    if (noLegacyStdTxUpdate) {
-      features.push("no-legacy-stdTx");
-    }
+    const updates = {
+      stargate: staragteUpdate,
+      "ibc-go": ibcGoUpdates,
+      "ibc-transfer": ibcTransferUpdate,
+      "no-legacy-stdTx": noLegacyStdTxUpdate,
+    };
+
+    const features = Object.entries(updates)
+      .filter(([_, value]) => value)
+      .map(([key]) => key);
 
     return {
       explicit: version.version < fetchedVersion.version,
@@ -311,7 +331,8 @@ export class ChainUpdaterService {
         staragteUpdate ||
         ibcGoUpdates ||
         ibcTransferUpdate ||
-        noLegacyStdTxUpdate,
+        noLegacyStdTxUpdate ||
+        false,
 
       chainId: resultChainId,
       features,
