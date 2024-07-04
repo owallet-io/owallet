@@ -48,7 +48,6 @@ export const CosmosTxCard: FunctionComponent<{
           baseURL: urlTxHistory,
         }
       );
-      console.log(data, "data");
       if (status !== 200) throw Error("Failed");
 
       setHistories(data.data);

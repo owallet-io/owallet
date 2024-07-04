@@ -194,7 +194,6 @@ export class OasisTransaction {
     try {
       await tw.submit(nic);
     } catch (e: any) {
-      console.log(e, "e submit oasis");
       const grpcError = e?.cause?.metadata?.["grpc-message"] || e.message;
 
       if (!grpcError) {

@@ -12,7 +12,7 @@ const nobleUsdcToOraiUsdc = async (chainId: "noble-1" | "Oraichain") => {
   const wallet = new CosmosWalletImpl(process.env.MNEMONIC);
   const sender = await wallet.getKeplrAddr(chainId);
   const fromAmount = 0.000001;
-  console.log("sender: ", sender);
+
   let originalFromToken = cosmosTokens.find(
     (t) => t.chainId === "noble-1" && t.denom === "uusdc"
   );
@@ -44,7 +44,6 @@ const nobleUsdcToOraiUsdc = async (chainId: "noble-1" | "Oraichain") => {
 
   try {
     const result = await universalHandler.processUniversalSwap();
-    console.log("result: ", result);
   } catch (error) {
     console.log("error: ", error);
   }

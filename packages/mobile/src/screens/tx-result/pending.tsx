@@ -71,7 +71,6 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
     .getAccount(chainId)
     .getAddressDisplay(keyRingStore.keyRingLedgerAddresses, false);
   const txHash = params?.txHash;
-  console.log(txHash, "txHash");
   const chainInfo = chainStore.getChain(chainId);
 
   const smartNavigation = useSmartNavigation();
@@ -153,7 +152,6 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
           return;
         }
         OwalletEvent.txHashListener(txHash, (txInfo) => {
-          console.log(txHash, txInfo, "txInfo");
           if (txInfo?.code === 0) {
             smartNavigation.replaceSmart("TxSuccessResult", {
               chainId,

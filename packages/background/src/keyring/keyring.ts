@@ -919,87 +919,6 @@ export class KeyRing {
     };
   }
 
-  // public async loadPublicKeyOasis(): Promise<Uint8Array> {
-  //   if (
-  //     this.status !== KeyRingStatus.UNLOCKED ||
-  //     this.type === "none" ||
-  //     !this.keyStore
-  //   ) {
-  //     throw new Error("Key ring is not unlocked");
-  //   }
-  //   if (this.type === "privateKey" || this.type === "ledger") return;
-  //   if (!this.mnemonic) {
-  //     throw new Error(
-  //       "Key store type is mnemonic and it is unlocked. But, mnemonic is not loaded unexpectedly"
-  //     );
-  //   }
-  //   const signer = await oasis.hdkey.HDKey.getAccountSigner(this.mnemonic, 0);
-  //   return signer.publicKey;
-  // }
-
-  // public async signOasis(chainId: string, data): Promise<any> {
-  //   if (
-  //     this.status !== KeyRingStatus.UNLOCKED ||
-  //     this.type === "none" ||
-  //     !this.keyStore
-  //   ) {
-  //     throw new Error("Key ring is not unlocked");
-  //   }
-  //   if (!this.mnemonic) {
-  //     throw new Error(
-  //       "Key store type is mnemonic and it is unlocked. But, mnemonic is not loaded unexpectedly"
-  //     );
-  //   }
-
-  //   const { amount, to } = data;
-
-  //   const accountSigner = await oasis.hdkey.HDKey.getAccountSigner(
-  //     this.mnemonic,
-  //     0
-  //   );
-  //   const privateKey = uint2hex(accountSigner.secretKey);
-
-  //   const bytes = hex2uint(privateKey!);
-
-  //   if (this.kvStore.type() !== KVStoreType.mobile) {
-  //     return {
-  //       bytes,
-  //       amount,
-  //       to: to.replaceAll(" ", ""),
-  //     };
-  //   }
-  //   const chainInfo = await this.chainsService.getChainInfo(chainId as string);
-  //   const nic = await getOasisNic(chainInfo.grpc);
-  //   const signer = signerFromPrivateKey(bytes);
-  //   const bigIntAmount = BigInt(parseRoseStringToBigNumber(amount).toString());
-  //   const chainContext = await nic.consensusGetChainContext();
-
-  //   const tw = await OasisTransaction.buildTransfer(
-  //     nic,
-  //     signer,
-  //     to.replaceAll(" ", ""),
-  //     bigIntAmount
-  //   );
-
-  //   await OasisTransaction.sign(chainContext, signer, tw);
-
-  //   await OasisTransaction.submit(nic, tw);
-  //   const hash = await tw.hash();
-
-  //   // const sendResult = {
-  //   //   hash: hash,
-  //   //   from: params.fromAddress,
-  //   //   to: params.toAddress,
-  //   //   fee: toNonExponential(amountDecimals(feeAmount, cointypes.decimals)),
-  //   //   method: params.method,
-  //   //   amount: showAmount,
-  //   //   nonce: params.nonce
-  //   // }
-  //   console.log(hash, "payload");
-
-  //   return hash;
-  // }
-
   private loadPrivKey(coinType: number): PrivKeySecp256k1 {
     if (
       this.status !== KeyRingStatus.UNLOCKED ||
@@ -1062,7 +981,6 @@ export class KeyRing {
   }
 
   async simulateSignTron(transaction: any) {
-    console.log(transaction, "transactiontransactiontransaction");
     const privKey = this.loadPrivKey(195);
     const signedTxn = TronWeb.utils.crypto.signTransaction(
       privKey.toBytes(),
@@ -1983,7 +1901,7 @@ export class KeyRing {
         multiKeyStoreInfo: await this.getMultiKeyStoreInfo(),
       };
     } catch (error) {
-      console.log("Error in add ledger key: ", error);
+      console.error(error);
       throw new Error(error);
     }
   }

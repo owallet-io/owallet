@@ -164,7 +164,6 @@ export const SignOasisModal: FunctionComponent<{
                       "Something went wrong! Please try again later.",
                     type: "danger",
                   });
-                  console.log("error tx builder Oasis", error);
                 }
               }}
             />

@@ -110,8 +110,6 @@ export const encodeParams = async (inputs) => {
     types.push(type);
     values.push(value);
   }
-
-  console.log(types, values);
   try {
     parameters = abiCoder.encode(types, values).replace(/^(0x)/, "");
   } catch (ex) {

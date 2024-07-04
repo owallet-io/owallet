@@ -247,7 +247,6 @@ const handleSimulateSignTron: (
   service: KeyRingService
 ) => InternalHandler<SimulateSignTronMsg> = (service) => {
   return async (_, msg) => {
-    console.log(msg, "msg");
     return await service.simulateSignTron(msg.msg);
   };
 };
@@ -684,7 +683,6 @@ const handleRequestSignTronMsg: (
 ) => InternalHandler<RequestSignTronMsg> = (service) => {
   return async (env, msg) => {
     const response = await service.requestSignTron(env, msg.chainId, msg.data);
-    console.log(response, "responseresponse");
     return response;
   };
 };

@@ -57,7 +57,6 @@ export const AllNetworkTxCard: FunctionComponent<{
         }
       );
       if (status !== 200) throw Error("Failed");
-      console.log(data, "res data");
       setHistories(data.data);
       setLoading(false);
     } catch (err) {

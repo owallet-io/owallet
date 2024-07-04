@@ -229,7 +229,6 @@ export const DelegateScreen: FunctionComponent = observer(() => {
       const result = await tmClient.broadcastTxSync({
         tx: Uint8Array.from(Buffer.from(JSON.stringify(tx))),
       });
-      console.log(result, "result");
       if (result?.code === 0 || result?.code == null) {
         queries.cosmos.queryValidators
           .getQueryStatus(BondStatus.Bonded)

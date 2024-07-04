@@ -39,7 +39,6 @@ export const NftCard = observer(() => {
   const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
   const tokenInfo =
     chainStore.getChain(ChainIdEnum.Stargaze).stakeCurrency || unknownToken;
-  console.log(data, "data graphql");
   let totalPrice = new PricePretty(fiatCurrency, "0");
   for (const nft of nftsFilter) {
     const balance = new CoinPretty(

@@ -67,7 +67,6 @@ export const BtcDetailTx: FunctionComponent = observer((props) => {
           baseURL: urlTxHistory,
         }
       );
-      console.log(res.data, "res data");
       if (res && res.status !== 200) throw Error("Failed");
       setDetail(res.data);
       setLoading(false);
@@ -96,7 +95,6 @@ export const BtcDetailTx: FunctionComponent = observer((props) => {
   const handleOnExplorer = async () => {
     if (chainInfo.raw.txExplorer && detail.hash) {
       const url = handleUrl(detail.hash);
-      console.log(url, "url");
       await openLink(url);
     }
   };

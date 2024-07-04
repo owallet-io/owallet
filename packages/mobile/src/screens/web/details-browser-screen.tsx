@@ -291,7 +291,7 @@ export const DetailsBrowserScreen = observer((props) => {
       clearTimeout(timer.current);
     };
   }, []);
-  console.log(visible, "visible");
+
   const styles = styling(colors);
   const onLoadStart = (syntheticEvent) => {
     syntheticEvent.persist();

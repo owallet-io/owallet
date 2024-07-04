@@ -57,10 +57,7 @@ export const AssetStakedChartView: FunctionComponent = observer(() => {
     if (!fiatCurrency) {
       return undefined;
     }
-    // console.log(totalStake, "totalStake");
-    // if (!totalStake.isReady) {
-    //   return undefined;
-    // }
+
     let res = priceStore.calculatePrice(totalStake, fiat);
     for (const token of tokens) {
       const price = priceStore.calculatePrice(token.balance, fiat);
@@ -353,7 +350,7 @@ export const AssetChartViewTron: FunctionComponent = observer(() => {
 
   const accountTronInfo =
     queries.tron.queryAccount.getQueryWalletAddress(tronAddress);
-  console.log(accountTronInfo, "tronAcc");
+
   return (
     <React.Fragment>
       <div className={styleAsset.containerChart}>

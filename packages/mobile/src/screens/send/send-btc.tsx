@@ -241,14 +241,9 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
       if (isReadyBalance) {
-        console.log(
-          sendConfigs.amountConfig.sendCurrency,
-          "sendConfigs.amountConfig.sendCurrency"
-        );
         const balance = queries.queryBalances
           .getQueryBech32Address(address)
           .getBalanceFromCurrency(sendConfigs.amountConfig.sendCurrency);
-        console.log(balance, "balance");
         setBalance(balance);
       }
     });
@@ -282,14 +277,6 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
 
         {
           onFulfill: async (tx) => {
-            console.log("🚀 ~ file: send-btc.tsx:109 ~ onSend ~ tx:", tx);
-            // universalSwapStore.updateTokenReload([
-            //   {
-            //     ...sendConfigs.amountConfig.sendCurrency,
-            //     chainId: chainStore.current.chainId,
-            //     networkType: "bitcoin"
-            //   }
-            // ]);
             if (tx) {
               navigate(SCREENS.STACK.Others, {
                 screen: SCREENS.TxSuccessResult,
@@ -309,20 +296,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
 
             return;
           },
-          onBroadcasted: async (txHash) => {
-            try {
-              const fee = sendConfigs.feeConfig.fee
-                .trim(true)
-                .hideDenom(true)
-                .maxDecimals(4)
-                .toString();
-            } catch (error) {
-              console.log(
-                "🚀 ~ file: send-btc.tsx:149 ~ onBroadcasted: ~ error:",
-                error
-              );
-            }
-          },
+          onBroadcasted: async (txHash) => {},
         },
         {
           confirmedBalance: confirmedBalance,
@@ -344,7 +318,6 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
         type: "danger",
         message: JSON.stringify(error),
       });
-      console.log("🚀 ~ file: send-btc.tsx:146 ~ onSend ~ error:", error);
     }
   }, [
     chainStore.current.networkType,

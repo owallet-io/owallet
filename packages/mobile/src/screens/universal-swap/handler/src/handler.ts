@@ -226,8 +226,6 @@ export class UniversalSwapHandler {
         return [...msgExecuteSwap, ...getEncodedExecuteMsgs, ...msgTransfer];
       }
 
-      console.log("msg cosmos", [...getEncodedExecuteMsgs, ...msgTransfer]);
-
       return [...getEncodedExecuteMsgs, ...msgTransfer];
     }
 
@@ -400,7 +398,6 @@ export class UniversalSwapHandler {
       this.swapData.sender.cosmos,
       msgTransfer
     );
-    console.log("msg evm [...msgExecuteSwap, ...msgExecuteTransfer]");
 
     return [...msgExecuteSwap, ...msgExecuteTransfer];
   }
@@ -531,7 +528,7 @@ export class UniversalSwapHandler {
     let from = this.swapData.sender.evm;
     const amountVal = toAmount(this.swapData.fromAmount, token.decimals);
     const gravityContractAddr = gravityContracts[token.chainId] as string;
-    console.log("gravity tron address: ", gravityContractAddr);
+
     const { evmWallet } = this.config;
 
     if (evmWallet.isTron(token.chainId)) {
@@ -1025,12 +1022,6 @@ export class UniversalSwapHandler {
         msgs = [msg];
       }
 
-      console.log("msgs General 1", msgs);
-
-      console.log(
-        "msg General",
-        buildMultipleExecuteMessages(msgs, ...msgConvertsFrom, ...msgConvertTo)
-      );
       return buildMultipleExecuteMessages(
         msgs,
         ...msgConvertsFrom,
@@ -1085,8 +1076,6 @@ export class UniversalSwapHandler {
         };
       }
     });
-
-    console.log("msg smart route", msgs);
 
     return msgs;
   }
@@ -1159,7 +1148,6 @@ export class UniversalSwapHandler {
         msg: executeMsgSend,
         funds: [],
       };
-      console.log("msg ibc", [instruction]);
       return [instruction];
     } catch (error) {
       console.log({ error });

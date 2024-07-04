@@ -58,7 +58,6 @@ export const OasisDetailTx: FunctionComponent = observer((props) => {
 
   const { item, currency } = route.params;
   const { txhash: hash, network: chain } = item;
-  console.log(item, detail, "item detail");
 
   const getHistoryDetail = async () => {
     try {
@@ -73,7 +72,6 @@ export const OasisDetailTx: FunctionComponent = observer((props) => {
         }
       );
       if (res && res.status !== 200) throw Error("Failed");
-      console.log(res.data, "res.data.data");
       if (MapNetworkToChainId[item?.network] === ChainIdEnum.Oasis) {
         setDetail(res.data.data);
       } else {
@@ -98,7 +96,6 @@ export const OasisDetailTx: FunctionComponent = observer((props) => {
 
   if (loading) return <OwLoading />;
   if (!detail) return <OWEmpty />;
-  console.log(detail, "detail");
   const chainInfo = chainStore.getChain(MapNetworkToChainId[item?.network]);
   const handleUrl = (txHash) => {
     return chainInfo.raw.txExplorer.txUrl.replace("{txHash}", txHash);
@@ -106,7 +103,7 @@ export const OasisDetailTx: FunctionComponent = observer((props) => {
   const handleOnExplorer = async () => {
     if (chainInfo.raw.txExplorer && hash) {
       const url = handleUrl(hash);
-      console.log(url, "url");
+
       await openLink(url);
     }
   };

@@ -63,7 +63,6 @@ export const AllNetworkDetailTxScreen: FunctionComponent = observer((props) => {
 
   const { item, currency } = route.params;
   const { txhash: hash, network: chain } = item;
-  console.log(item, detail, "item detail");
 
   const getHistoryDetail = async () => {
     try {
@@ -78,7 +77,6 @@ export const AllNetworkDetailTxScreen: FunctionComponent = observer((props) => {
         }
       );
       if (status !== 200) throw Error("Failed");
-      console.log(data, "res.data.data");
       setDetail(data);
 
       setLoading(false);
@@ -97,7 +95,6 @@ export const AllNetworkDetailTxScreen: FunctionComponent = observer((props) => {
 
   if (loading) return <OwLoading />;
   if (!detail) return <OWEmpty />;
-  console.log(detail, "detail");
   const chainInfo = chainStore.getChain(MapNetworkToChainId[item?.network]);
   const handleOnExplorer = async () => {
     await openLink(detail?.explorer);

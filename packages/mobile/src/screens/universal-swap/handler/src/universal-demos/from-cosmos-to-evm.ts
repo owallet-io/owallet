@@ -49,7 +49,6 @@ const oraichainToEvm = async (chainId: "Oraichain") => {
 
   try {
     const result = await universalHandler.processUniversalSwap();
-    console.log("result: ", result);
   } catch (error) {
     console.log("error: ", error);
   }

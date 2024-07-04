@@ -238,7 +238,6 @@ export const NewSendScreen: FunctionComponent = observer(() => {
       );
       const txBytes = TxRaw.encode(txRaw).finish();
       const txData = await client.broadcastTx(txBytes);
-      console.log(txData, "txData");
       if (txData?.code == 0) {
         const bal = queries.queryBalances
           .getQueryBech32Address(address)

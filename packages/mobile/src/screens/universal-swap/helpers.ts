@@ -146,7 +146,6 @@ export const findBaseTokenIcon = (
   const baseToken = flattenTokensWithIcon.find(
     (token) => token.coinGeckoId === coinGeckoId
   );
-  console.log("baseToken", coinGeckoId, baseToken);
 
   return baseToken
     ? isLightMode

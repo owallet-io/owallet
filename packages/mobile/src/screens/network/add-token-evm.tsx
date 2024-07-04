@@ -114,8 +114,6 @@ export const AddTokenEVMScreen: FunctionComponent<{
   const queryContractInfo = query.getQueryContract(contractAddress);
 
   const tokenInfo = queryContractInfo.tokenInfo;
-  console.log(tokenInfo, "tokenInfo");
-
   const getTokenCoingeckoId = async () => {
     try {
       if (tokenInfo && tokenInfo.symbol) {

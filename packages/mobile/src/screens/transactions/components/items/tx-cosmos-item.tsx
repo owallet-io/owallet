@@ -25,7 +25,6 @@ export const TxCosmosItem: FC<{
   const { priceStore, chainStore } = useStore();
   const fiat = priceStore.defaultVsCurrency;
   if (!item) return;
-  console.log(item, "item");
   let currency = unknownToken;
   if (get(item, "tokenInfos[0].contractAddress")) {
     currency = {

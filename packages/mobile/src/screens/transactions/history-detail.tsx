@@ -13,7 +13,6 @@ export const HistoryDetail: FunctionComponent = observer((props) => {
   const { chainStore, appInitStore } = useStore();
   // const { chainId } = chainStore.current;
   const params = useRoute().params;
-  console.log(params.item.network, "item");
   const chainId = MapNetworkToChainId[params?.item?.network];
   if (!chainId) return;
   return (

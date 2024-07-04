@@ -42,7 +42,6 @@ export class PermissionService {
     privilegedOrigins: string[]
   ) {
     for (const origin of privilegedOrigins) {
-      console.log(origin, "origin");
       this.privilegedOrigins.set(origin, true);
     }
 
