@@ -547,6 +547,10 @@ export const API = {
     let url = `coins/${id}/contract/${contractAddress}`;
     return API.get(url, config);
   },
+  getInfoAccOraiBtc: ({ address }, config: AxiosRequestConfig) => {
+    let url = `/auth/accounts/${address}`;
+    return API.get(url, config);
+  },
 };
 const retryWrapper = (axios, options) => {
   const max_time = 1;

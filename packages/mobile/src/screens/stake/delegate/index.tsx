@@ -28,7 +28,6 @@ import { OWButton } from "../../../components/button";
 import { useSmartNavigation } from "../../../navigation.provider";
 import { useStore } from "../../../stores";
 import { metrics, spacing, typography } from "../../../themes";
-import { chainIcons } from "@oraichain/oraidex-common";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { NewAmountInput } from "@src/components/input/amount-input";
 import { FeeModal } from "@src/modals/fee";
@@ -36,7 +35,6 @@ import { CoinPretty, Int } from "@owallet/unit";
 import { API } from "@src/common/api";
 import { initPrice } from "@src/screens/home/hooks/use-multiple-assets";
 import ByteBrew from "react-native-bytebrew-sdk";
-import axios from "axios";
 import { makeStdTx } from "@cosmjs/amino";
 import { Tendermint37Client } from "@cosmjs/tendermint-rpc";
 export const DelegateScreen: FunctionComponent = observer(() => {
@@ -194,8 +192,9 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   const stakeOraiBtc = async () => {
     try {
       setIsLoading(true);
-      const res = await axios.get(
-        `${chainStore.current.rest}/auth/accounts/${address}`
+      const res = await API.getInfoAccOraiBtc(
+        { address: account.bech32Address },
+        { baseURL: chainStore.current.rest }
       );
       const sequence = res.data.result.value.sequence;
       const signDoc = {
