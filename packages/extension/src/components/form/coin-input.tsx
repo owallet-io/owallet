@@ -237,7 +237,7 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
               }}
               id={`input-${randomId}`}
               type="number"
-              value={Number(Number(amountConfig.amount).toFixed(6)).toString()}
+              value={amountConfig.amount}
               onChange={(e) => {
                 e.preventDefault();
                 amountConfig.setAmount(e.target.value);
