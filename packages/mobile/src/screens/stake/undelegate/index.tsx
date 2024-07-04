@@ -26,6 +26,9 @@ import { metrics, spacing } from "../../../themes";
 import { chainIcons } from "@oraichain/oraidex-common";
 import { FeeModal } from "@src/modals/fee";
 import ByteBrew from "react-native-bytebrew-sdk";
+import axios from "axios";
+import { makeStdTx } from "@cosmjs/amino";
+import { Tendermint37Client } from "@cosmjs/tendermint-rpc";
 
 export const UndelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -54,7 +57,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
   const { colors } = useTheme();
   const styles = styling(colors);
   const smartNavigation = useSmartNavigation();
-  const [customFee, setCustomFee] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
@@ -83,10 +86,6 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
       ValidatorThumbnails[validatorAddress]
     : undefined;
 
-  const chainIcon = chainIcons.find(
-    (c) => c.chainId === chainStore.current.chainId
-  );
-
   const staked = queries.cosmos.queryDelegations
     .getQueryBech32Address(account.bech32Address)
     .getDelegationTo(validatorAddress);
@@ -109,7 +108,9 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
   }, [sendConfigs.recipientConfig, validatorAddress]);
 
   const sendConfigError =
-    sendConfigs.recipientConfig.getError() ??
+    (chainStore.current.chainId === "oraibtc-mainnet-1"
+      ? null
+      : sendConfigs.recipientConfig.getError()) ??
     sendConfigs.amountConfig.getError() ??
     sendConfigs.memoConfig.getError() ??
     sendConfigs.gasConfig.getError() ??
@@ -123,7 +124,78 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
       sendConfigs.feeConfig.setFeeType(appInitStore.getInitApp.feeOption);
     }
   }, [sendConfigs.feeConfig, appInitStore.getInitApp.feeOption]);
-  const isDisable = !account.isReadyToSendMsgs || !txStateIsValid;
+  const unstakeOraiBtc = async () => {
+    try {
+      setIsLoading(true);
+      const res = await axios.get(
+        `${chainStore.current.rest}/auth/accounts/${account.bech32Address}`
+      );
+      const sequence = res.data.result.value.sequence;
+      const signDoc = {
+        account_number: "0",
+        chain_id: chainStore.current.chainId,
+        fee: {
+          gas: "10000",
+          amount: [{ amount: "0", denom: "uoraibtc" }],
+        },
+        memo: "",
+        msgs: [
+          {
+            type: "cosmos-sdk/MsgUndelegate",
+            value: {
+              amount: sendConfigs.amountConfig.getAmountPrimitive(),
+              delegator_address: account.bech32Address,
+              validator_address: sendConfigs.recipientConfig.recipient,
+            },
+          },
+        ],
+        sequence: sequence,
+      };
+      //@ts-ignore
+      const signature = await window.owallet.signAmino(
+        chainStore.current.chainId,
+        account.bech32Address,
+        signDoc
+      );
+      const tx = makeStdTx(signDoc, signature.signature);
+      const tmClient = await Tendermint37Client.connect(chainStore.current.rpc);
+      const result = await tmClient.broadcastTxSync({
+        tx: Uint8Array.from(Buffer.from(JSON.stringify(tx))),
+      });
+
+      if (result?.code === 0 || result?.code == null) {
+        queries.cosmos.queryValidators
+          .getQueryStatus(BondStatus.Bonded)
+          .fetch();
+        queries.cosmos.queryDelegations
+          .getQueryBech32Address(account.bech32Address)
+          .fetch();
+        queries.cosmos.queryUnbondingDelegations
+          .getQueryBech32Address(account.bech32Address)
+          .fetch();
+        queries.cosmos.queryRewards
+          .getQueryBech32Address(account.bech32Address)
+          .fetch();
+        setIsLoading(false);
+        smartNavigation.pushSmart("TxPendingResult", {
+          txHash: Buffer.from(result?.hash).toString("hex"),
+          data: {
+            type: "unstake",
+            wallet: account.bech32Address,
+            validator: sendConfigs.recipientConfig.recipient,
+            amount: sendConfigs.amountConfig.getAmountPrimitive(),
+            fee: sendConfigs.feeConfig.toStdFee(),
+            currency: sendConfigs.amountConfig.sendCurrency,
+          },
+        });
+      }
+    } catch (error) {
+      console.log(error, "error");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const isDisable = !account.isReadyToSendMsgs || !txStateIsValid || isLoading;
   const _onPressFee = () => {
     modalStore.setOptions({
       bottomSheetModalConfig: {
@@ -142,10 +214,14 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
           type="danger"
           label="Unstake"
           disabled={isDisable}
-          loading={account.isSendingMsg === "undelegate"}
+          loading={account.isSendingMsg === "undelegate" || isLoading}
           onPress={async () => {
             if (account.isReadyToSendMsgs && txStateIsValid) {
               try {
+                if (chainStore.current.chainId === "oraibtc-mainnet-1") {
+                  unstakeOraiBtc();
+                  return;
+                }
                 await account.cosmos.sendUndelegateMsg(
                   sendConfigs.amountConfig.amount,
                   sendConfigs.recipientConfig.recipient,
@@ -226,7 +302,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
       <ScrollView showsVerticalScrollIndicator={false}>
         <PageHeader
           title="Unstake"
-          subtitle={"Oraichain"}
+          subtitle={chainStore.current.chainName}
           colors={colors}
           onPress={async () => {}}
         />
@@ -293,12 +369,15 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
                     >
                       <OWIcon
                         type="images"
-                        source={{ uri: chainIcon?.Icon }}
+                        source={{
+                          uri: sendConfigs.amountConfig.sendCurrency
+                            ?.coinImageUrl,
+                        }}
                         size={16}
                       />
                     </View>
                     <OWText style={{ paddingLeft: 4 }} weight="600" size={14}>
-                      ORAI
+                      {sendConfigs.amountConfig.sendCurrency?.coinDenom}
                     </OWText>
                   </View>
                 </View>
@@ -341,7 +420,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
                   color={colors["neutral-text-body"]}
                   size={14}
                 >
-                  {priceStore.calculatePrice(amount).toString()}
+                  {priceStore.calculatePrice(amount)?.toString()}
                 </OWText>
               </View>
               <View
