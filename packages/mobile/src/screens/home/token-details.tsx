@@ -73,10 +73,10 @@ export const TokenDetails: FunctionComponent = observer((props) => {
   useEffect(() => {
     ByteBrew.NewCustomEvent("Token Detail Screen");
     InteractionManager.runAfterInteractions(() => {
-      (async function get() {
+      async function getTronAccountInfo() {
         try {
           if (accountTron.evmosHexAddress) {
-            const res = await API.getTronAccountInfo(
+            const response = await API.getTronAccountInfo(
               {
                 address: getBase58Address(accountTron.evmosHexAddress),
               },
@@ -85,24 +85,29 @@ export const TokenDetails: FunctionComponent = observer((props) => {
               }
             );
 
-            if (res.data?.data?.length > 0) {
-              if (res.data?.data[0].trc20) {
-                const tokenArr = [];
-                TRC20_LIST.map((tk) => {
-                  let token = res.data?.data[0].trc20.find(
-                    (t) => tk.contractAddress in t
-                  );
-                  if (token) {
-                    tokenArr.push({ ...tk, amount: token[tk.contractAddress] });
-                  }
-                });
+            if (
+              response.data?.data?.length > 0 &&
+              response.data.data[0].trc20
+            ) {
+              const tokenArr = TRC20_LIST.reduce((acc, tk) => {
+                const token = response.data.data[0].trc20.find(
+                  (t) => tk.contractAddress in t
+                );
+                if (token) {
+                  acc.push({ ...tk, amount: token[tk.contractAddress] });
+                }
+                return acc;
+              }, []);
 
-                setTronTokens(tokenArr);
-              }
+              setTronTokens(tokenArr);
             }
           }
-        } catch (error) {}
-      })();
+        } catch (error) {
+          // Handle error
+        }
+      }
+
+      getTronAccountInfo();
     });
   }, [accountTron.evmosHexAddress]);
 
