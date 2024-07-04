@@ -89,7 +89,7 @@ export const ChainSuggestedPage: FunctionComponent = observer(() => {
           <Button
             containerStyle={{ marginRight: 8 }}
             className={classnames(style.button, style.rejectBtn)}
-            color={"danger"}
+            color={"reject"}
             disabled={!chainSuggestStore.waitingSuggestedChainInfo}
             data-loading={chainSuggestStore.isLoading}
             onClick={async (e) => {

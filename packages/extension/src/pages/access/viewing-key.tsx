@@ -95,7 +95,7 @@ export const Secret20ViewingKeyAccessPage: FunctionComponent = observer(() => {
           <Button
             containerStyle={{ marginRight: 8 }}
             className={classnames(style.button, style.rejectBtn)}
-            color={"danger"}
+            color={"reject"}
             onClick={async (e) => {
               e.preventDefault();
 
