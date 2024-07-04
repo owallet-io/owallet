@@ -174,18 +174,12 @@ export class ChainUpdaterService {
     }>("/status");
 
     const resultChainId = result?.data?.result?.node_info?.network;
-    if (!resultChainId) {
-      return {
-        explicit: false,
-        slient: false,
-      };
-    }
 
     const version = ChainIdHelper.parse(chainId);
     const fetchedVersion = ChainIdHelper.parse(resultChainId);
 
     // TODO: Should throw an error?
-    if (version && version.identifier !== fetchedVersion.identifier) {
+    if (version?.identifier !== fetchedVersion.identifier) {
       return {
         explicit: false,
         slient: false,
@@ -195,9 +189,8 @@ export class ChainUpdaterService {
     const restInstance = Axios.create({
       baseURL: chainInfo.rest,
     });
-
-    let staragteUpdate = false;
     try {
+      let staragteUpdate = false;
       if (!chainInfo.features || !chainInfo.features.includes("stargate")) {
         // If the chain doesn't have the stargate feature,
         // but it can use the GRPC HTTP Gateway,
@@ -205,10 +198,8 @@ export class ChainUpdaterService {
         await restInstance.get("/cosmos/base/tendermint/v1beta1/node_info");
         staragteUpdate = true;
       }
-    } catch {}
 
-    let ibcGoUpdates = false;
-    try {
+      let ibcGoUpdates = false;
       if (
         !chainInfo?.features?.includes("ibc-go") &&
         (staragteUpdate || chainInfo?.features?.includes("stargate"))
@@ -221,13 +212,12 @@ export class ChainUpdaterService {
             send_enabled: boolean;
           };
         }>("/ibc/apps/transfer/v1/params");
-
-        ibcGoUpdates = result?.status === 200 ? true : false;
+        if (result?.status === 200) {
+          ibcGoUpdates = true;
+        }
       }
-    } catch (err) {}
 
-    let ibcTransferUpdate = false;
-    try {
+      let ibcTransferUpdate = false;
       if (
         !chainInfo?.features?.includes("ibc-transfer") &&
         (staragteUpdate || chainInfo?.features?.includes("stargate"))
@@ -247,15 +237,15 @@ export class ChainUpdaterService {
             ? "/ibc/apps/transfer/v1/params"
             : "/ibc/applications/transfer/v1beta1/params"
         );
-        ibcTransferUpdate =
-          result.data.params.receive_enabled && result.data.params.send_enabled
-            ? true
-            : false;
+        if (
+          result.data.params.receive_enabled &&
+          result.data.params.send_enabled
+        ) {
+          ibcTransferUpdate = true;
+        }
       }
-    } catch {}
 
-    let noLegacyStdTxUpdate = false;
-    try {
+      let noLegacyStdTxUpdate = false;
       if (
         !chainInfo?.features?.includes("no-legacy-stdTx") &&
         (staragteUpdate || chainInfo?.features?.includes("stargate"))
@@ -282,28 +272,33 @@ export class ChainUpdaterService {
           noLegacyStdTxUpdate = true;
         }
       }
-    } catch {}
 
-    const updates = {
-      stargate: staragteUpdate,
-      "ibc-go": ibcGoUpdates,
-      "ibc-transfer": ibcTransferUpdate,
-      "no-legacy-stdTx": noLegacyStdTxUpdate,
-    };
+      const updates = {
+        stargate: staragteUpdate,
+        "ibc-go": ibcGoUpdates,
+        "ibc-transfer": ibcTransferUpdate,
+        "no-legacy-stdTx": noLegacyStdTxUpdate,
+      };
 
-    const features = Object.entries(updates)
-      .filter(([_, value]) => value)
-      .map(([key]) => key);
+      const features = Object.entries(updates)
+        .filter(([_, value]) => value)
+        .map(([key]) => key);
 
-    return {
-      explicit: version.version < fetchedVersion.version,
-      slient:
-        staragteUpdate ||
-        ibcGoUpdates ||
-        ibcTransferUpdate ||
-        noLegacyStdTxUpdate,
-      chainId: resultChainId,
-      features,
-    };
+      return {
+        explicit: version.version < fetchedVersion.version,
+        slient:
+          staragteUpdate ||
+          ibcGoUpdates ||
+          ibcTransferUpdate ||
+          noLegacyStdTxUpdate,
+        chainId: resultChainId,
+        features,
+      };
+    } catch (err) {
+      return {
+        explicit: false,
+        slient: false,
+      };
+    }
   }
 }
