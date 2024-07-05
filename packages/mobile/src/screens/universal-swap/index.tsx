@@ -119,69 +119,72 @@ const handleSimulate = (
   };
 };
 
-const SwapBoxRender = ({
-  amountLoading,
-  swapLoading,
-  fromTokenFee,
-  toTokenFee,
-  originalFromToken,
-  originalToToken,
-  toAmountToken,
-  handleReverseDirection,
-  setToNetworkOpen,
+const PriceSettingSection = ({
+  minimumReceive,
+  userSlippage,
+  impactWarning,
+  routersSwapData,
+  setPriceSettingModal,
   fromAmountToken,
-  fromTokenBalance,
-  onChangeFromAmount,
-  setSelectFromTokenModal,
-  setFromNetworkOpen,
-  handleActiveAmount,
-  toTokenBalance,
-  setSelectToTokenModal,
-  fromNetwork,
-  toNetwork,
+  estSwapFee,
+  isDependOnNetwork,
+  toToken,
+  bridgeTokenFee,
+  toTokenFee,
+  fromTokenFee,
+  taxRate,
+  relayerFeeToken,
+  relayerFeeAmount,
+  originalToToken,
+  originalFromToken,
+  ratio,
+  priceSettingModal,
+  setUserSlippage,
+  INIT_AMOUNT,
 }) => {
-  const { colors } = useTheme();
-  const styles = styling(colors);
-
   return (
-    <View>
-      <SwapBox
-        network={fromNetwork}
-        amount={fromAmountToken?.toString() ?? "0"}
-        balanceValue={toDisplay(fromTokenBalance, originalFromToken?.decimals)}
-        onChangeAmount={onChangeFromAmount}
-        tokenActive={originalFromToken}
-        onOpenTokenModal={() => setSelectFromTokenModal(true)}
-        onOpenNetworkModal={setFromNetworkOpen}
-        tokenFee={fromTokenFee}
-        onSelectAmount={handleActiveAmount}
-        type={"from"}
-        disabled={amountLoading || swapLoading}
-        editable={!amountLoading && !swapLoading}
-      />
-      <SwapBox
-        network={toNetwork}
-        amount={toAmountToken.toString() ?? "0"}
-        balanceValue={toDisplay(toTokenBalance, originalToToken?.decimals)}
-        tokenActive={originalToToken}
-        onOpenTokenModal={() => setSelectToTokenModal(true)}
-        editable={false}
-        tokenFee={toTokenFee}
-        onOpenNetworkModal={setToNetworkOpen}
-        type={"to"}
-      />
-
-      <TouchableOpacity
-        onPress={handleReverseDirection}
-        style={styles.containerBtnCenter}
-      >
-        <OWIcon
-          name="tdesignarrow-up-down-1"
-          size={16}
-          color={colors["neutral-text-title"]}
-        />
-      </TouchableOpacity>
-    </View>
+    <PriceSettingModal
+      close={() => {
+        setPriceSettingModal(false);
+      }}
+      currentSlippage={userSlippage}
+      impactWarning={impactWarning}
+      routersSwapData={routersSwapData}
+      fromAmountToken={fromAmountToken}
+      minimumReceive={
+        (maskedNumber(minimumReceive) || "0") + " " + toToken.name
+      }
+      swapFee={
+        !isDependOnNetwork
+          ? estSwapFee
+            ? `${maskedNumber(estSwapFee) + " " + toToken.name}`
+            : 0
+          : 0
+      }
+      bridgeFee={
+        bridgeTokenFee
+          ? `${maskedNumber(bridgeTokenFee) + " " + toToken.name}`
+          : 0
+      }
+      tokenFee={
+        (!fromTokenFee && !toTokenFee) ||
+        (fromTokenFee === 0 && toTokenFee === 0)
+          ? null
+          : `${Number(taxRate) * 100}%`
+      }
+      relayerFee={
+        !!relayerFeeToken &&
+        `${toDisplay(
+          relayerFeeToken.toString(),
+          RELAYER_DECIMAL
+        )} ORAI ≈ ${maskedNumber(relayerFeeAmount)} ${originalToToken.name}`
+      }
+      ratio={`1 ${originalFromToken.name} ≈ ${
+        ratio ? maskedNumber(Number(ratio.displayAmount / INIT_AMOUNT)) : "0"
+      } ${originalToToken.name}`}
+      isOpen={priceSettingModal}
+      setUserSlippage={setUserSlippage}
+    />
   );
 };
 
@@ -922,51 +925,31 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           <RefreshControl refreshing={loadingRefresh} onRefresh={onRefresh} />
         }
       >
-        <PriceSettingModal
-          close={() => {
-            setPriceSettingModal(false);
-          }}
-          //@ts-ignore
-          currentSlippage={userSlippage}
-          impactWarning={impactWarning}
-          routersSwapData={routersSwapData}
-          fromAmountToken={fromAmountToken}
-          minimumReceive={
-            (maskedNumber(minimumReceive) || "0") + " " + toToken.name
-          }
-          swapFee={
-            !isDependOnNetwork
-              ? estSwapFee
-                ? `${maskedNumber(estSwapFee) + " " + toToken.name}`
-                : 0
-              : 0
-          }
-          bridgeFee={
-            bridgeTokenFee
-              ? `${maskedNumber(bridgeTokenFee) + " " + toToken.name}`
-              : 0
-          }
-          tokenFee={
-            (!fromTokenFee && !toTokenFee) ||
-            (fromTokenFee === 0 && toTokenFee === 0)
-              ? null
-              : `${Number(taxRate) * 100}%`
-          }
-          relayerFee={
-            !!relayerFeeToken &&
-            `${toDisplay(
-              relayerFeeToken.toString(),
-              RELAYER_DECIMAL
-            )} ORAI ≈ ${maskedNumber(relayerFeeAmount)} ${originalToToken.name}`
-          }
-          ratio={`1 ${originalFromToken.name} ≈ ${
-            ratio
-              ? maskedNumber(Number(ratio.displayAmount / INIT_AMOUNT))
-              : "0"
-          } ${originalToToken.name}`}
-          isOpen={priceSettingModal}
-          setUserSlippage={setUserSlippage}
-        />
+        {
+          <PriceSettingSection
+            minimumReceive={minimumReceive}
+            userSlippage={userSlippage}
+            impactWarning={impactWarning}
+            routersSwapData={routersSwapData}
+            setPriceSettingModal={setPriceSettingModal}
+            fromAmountToken={fromAmountToken}
+            estSwapFee={estSwapFee}
+            isDependOnNetwork={isDependOnNetwork}
+            toToken={toToken}
+            bridgeTokenFee={bridgeTokenFee}
+            toTokenFee={toTokenFee}
+            fromTokenFee={fromTokenFee}
+            taxRate={taxRate}
+            relayerFeeToken={relayerFeeToken}
+            relayerFeeAmount={relayerFeeAmount}
+            originalToToken={originalToToken}
+            originalFromToken={originalFromToken}
+            ratio={ratio}
+            priceSettingModal={priceSettingModal}
+            setUserSlippage={setUserSlippage}
+            INIT_AMOUNT={INIT_AMOUNT}
+          />
+        }
         <SelectTokenModal
           bottomSheetModalConfig={{
             snapPoints: ["50%", "90%"],
@@ -1033,11 +1016,14 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           handleToggle={setToggle}
         />
         <View style={{ padding: 16, paddingTop: 0 }}>
-          {/* <View>
+          <View>
             <SwapBox
               network={fromNetwork}
               amount={fromAmountToken?.toString() ?? "0"}
-              balanceValue={toDisplay(fromTokenBalance, originalFromToken?.decimals)}
+              balanceValue={toDisplay(
+                fromTokenBalance,
+                originalFromToken?.decimals
+              )}
               onChangeAmount={onChangeFromAmount}
               tokenActive={originalFromToken}
               onOpenTokenModal={() => setSelectFromTokenModal(true)}
@@ -1051,7 +1037,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             <SwapBox
               network={toNetwork}
               amount={toAmountToken.toString() ?? "0"}
-              balanceValue={toDisplay(toTokenBalance, originalToToken?.decimals)}
+              balanceValue={toDisplay(
+                toTokenBalance,
+                originalToToken?.decimals
+              )}
               tokenActive={originalToToken}
               onOpenTokenModal={() => setSelectToTokenModal(true)}
               editable={false}
@@ -1060,32 +1049,18 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               type={"to"}
             />
 
-            <TouchableOpacity onPress={handleReverseDirection} style={styles.containerBtnCenter}>
-              <OWIcon name="tdesignarrow-up-down-1" size={16} color={colors["neutral-text-title"]} />
+            <TouchableOpacity
+              onPress={handleReverseDirection}
+              style={styles.containerBtnCenter}
+            >
+              <OWIcon
+                name="tdesignarrow-up-down-1"
+                size={16}
+                color={colors["neutral-text-title"]}
+              />
             </TouchableOpacity>
-          </View> */}
+          </View>
 
-          <SwapBoxRender
-            amountLoading={amountLoading}
-            swapLoading={swapLoading}
-            fromTokenFee={fromTokenFee}
-            toTokenFee={toTokenFee}
-            originalFromToken={originalFromToken}
-            originalToToken={originalToToken}
-            toAmountToken={toAmountToken}
-            handleReverseDirection={handleReverseDirection}
-            setToNetworkOpen={setToNetworkOpen}
-            fromAmountToken={fromAmountToken}
-            fromTokenBalance={fromTokenBalance}
-            onChangeFromAmount={onChangeFromAmount}
-            setSelectFromTokenModal={setSelectFromTokenModal}
-            setFromNetworkOpen={setFromNetworkOpen}
-            handleActiveAmount={handleActiveAmount}
-            toTokenBalance={toTokenBalance}
-            setSelectToTokenModal={setSelectToTokenModal}
-            fromNetwork={fromNetwork}
-            toNetwork={toNetwork}
-          />
           <OWCard
             type="normal"
             style={{
