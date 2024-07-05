@@ -188,6 +188,38 @@ const PriceSettingSection = ({
   );
 };
 
+function MinimumAmount({
+  fromAmountToken,
+  swapLoading,
+  fromToken,
+  toAmountToken,
+  colors,
+}) {
+  return (
+    <>
+      {!swapLoading &&
+      (!fromAmountToken || !toAmountToken) &&
+      fromToken.denom === TRON_DENOM ? (
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginVertical: 10,
+          }}
+        >
+          <Text>Minimum Amount</Text>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <Text weight="600" color={colors["primary-text-action"]}>
+              {(fromToken.minAmountSwap || "0") + " " + fromToken.name}
+            </Text>
+          </View>
+        </View>
+      ) : null}
+    </>
+  );
+}
+
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const {
     accountStore,
@@ -557,7 +589,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const getBalancesAndSimulateAmount = async () => {
     let amountsBalance = universalSwapStore.getAmount;
-    let simulateAmount = ratio.amount;
+    let simulateAmount = ratio?.amount;
 
     const { isSpecialFromCoingecko } = getSpecialCoingecko(
       originalFromToken.coinGeckoId,
@@ -571,7 +603,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
     if (isInjectiveOrKawaiiChain(originalToToken)) {
       simulateAmount = toAmount(
-        ratio.displayAmount,
+        ratio?.displayAmount,
         originalToToken.decimals
       ).toString();
     }
@@ -1109,25 +1141,13 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               </View>
 
               <View style={styles.borderline} />
-              {!swapLoading &&
-              (!fromAmountToken || !toAmountToken) &&
-              fromToken.denom === TRON_DENOM ? (
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginVertical: 10,
-                  }}
-                >
-                  <Text>Minimum Amount</Text>
-                  <View style={{ flexDirection: "row", alignItems: "center" }}>
-                    <Text weight="600" color={colors["primary-text-action"]}>
-                      {(fromToken.minAmountSwap || "0") + " " + fromToken.name}
-                    </Text>
-                  </View>
-                </View>
-              ) : null}
+              <MinimumAmount
+                fromAmountToken={fromAmountToken}
+                swapLoading={swapLoading}
+                fromToken={fromToken}
+                toAmountToken={toAmountToken}
+                colors={colors}
+              />
 
               <View style={styles.borderline} />
               <View style={{ marginVertical: 10 }}>
@@ -1186,7 +1206,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                   if (value) {
                     setSendToModal(true);
                   } else {
-                    setSendToAddress("");
+                    setSendToAddress(null);
                   }
                 }}
               />
