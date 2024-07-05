@@ -22,6 +22,19 @@ import { unknownToken } from "@owallet/common";
 import get from "lodash/get";
 import { AllNetworkItemTx } from "@src/screens/transactions/all-network/all-network.types";
 
+const getCurrencyImage = (currency) => {
+  return currency?.coinImageUrl?.includes("missing.png") ||
+    !currency?.coinImageUrl
+    ? unknownToken.coinImageUrl
+    : currency?.coinImageUrl;
+};
+
+const getTintColor = (coinDenom, denom, colors) => {
+  return coinDenom === "ORAI" && (denom === "ORAI" || denom === "AIRI")
+    ? colors["neutral-text-title"]
+    : null;
+};
+
 export const AllNetworkTxItem: FC<{
   item: AllNetworkItemTx;
   index: number;
@@ -106,19 +119,12 @@ export const AllNetworkTxItem: FC<{
             <OWIcon
               type="images"
               source={{
-                uri:
-                  currency?.coinImageUrl?.includes("missing.png") ||
-                  !currency?.coinImageUrl
-                    ? unknownToken.coinImageUrl
-                    : currency?.coinImageUrl,
+                uri: getCurrencyImage(currency),
               }}
               size={32}
               style={{
                 borderRadius: 999,
-                tintColor:
-                  coinDenom === "ORAI" && (denom === "ORAI" || denom === "AIRI")
-                    ? colors["neutral-text-title"]
-                    : null,
+                tintColor: getTintColor(coinDenom, denom, colors),
               }}
             />
           </View>
