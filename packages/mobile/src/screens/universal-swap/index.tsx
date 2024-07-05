@@ -119,6 +119,72 @@ const handleSimulate = (
   };
 };
 
+const SwapBoxRender = ({
+  amountLoading,
+  swapLoading,
+  fromTokenFee,
+  toTokenFee,
+  originalFromToken,
+  originalToToken,
+  toAmountToken,
+  handleReverseDirection,
+  setToNetworkOpen,
+  fromAmountToken,
+  fromTokenBalance,
+  onChangeFromAmount,
+  setSelectFromTokenModal,
+  setFromNetworkOpen,
+  handleActiveAmount,
+  toTokenBalance,
+  setSelectToTokenModal,
+  fromNetwork,
+  toNetwork,
+}) => {
+  const { colors } = useTheme();
+  const styles = styling(colors);
+
+  return (
+    <View>
+      <SwapBox
+        network={fromNetwork}
+        amount={fromAmountToken?.toString() ?? "0"}
+        balanceValue={toDisplay(fromTokenBalance, originalFromToken?.decimals)}
+        onChangeAmount={onChangeFromAmount}
+        tokenActive={originalFromToken}
+        onOpenTokenModal={() => setSelectFromTokenModal(true)}
+        onOpenNetworkModal={setFromNetworkOpen}
+        tokenFee={fromTokenFee}
+        onSelectAmount={handleActiveAmount}
+        type={"from"}
+        disabled={amountLoading || swapLoading}
+        editable={!amountLoading && !swapLoading}
+      />
+      <SwapBox
+        network={toNetwork}
+        amount={toAmountToken.toString() ?? "0"}
+        balanceValue={toDisplay(toTokenBalance, originalToToken?.decimals)}
+        tokenActive={originalToToken}
+        onOpenTokenModal={() => setSelectToTokenModal(true)}
+        editable={false}
+        tokenFee={toTokenFee}
+        onOpenNetworkModal={setToNetworkOpen}
+        type={"to"}
+      />
+
+      <TouchableOpacity
+        onPress={handleReverseDirection}
+        style={styles.containerBtnCenter}
+      >
+        <OWIcon
+          name="tdesignarrow-up-down-1"
+          size={16}
+          color={colors["neutral-text-title"]}
+        />
+      </TouchableOpacity>
+    </View>
+  );
+};
+
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const {
     accountStore,
@@ -322,7 +388,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       // other chains, oraichain
       const otherChainTokens = flatten(
         customChainInfos
-          .filter((chainInfo) => chainInfo.chainId !== "Oraichain")
+          ?.filter((chainInfo) => chainInfo.chainId !== "Oraichain")
           .map(getTokensFromNetwork)
       );
       const oraichainTokens: TokenItemType[] =
@@ -338,7 +404,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         kwtAddress: kwt ?? accountKawaiiCosmos.bech32Address,
         tronAddress: tron ?? null,
         cwStargate,
-        tokenReload: tokenReload?.length > 0 ? tokenReload : null,
+        tokenReload: Number(tokenReload?.length) > 0 ? tokenReload : null,
         customChainInfos: flattenTokens,
       };
 
@@ -364,10 +430,11 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           handleFetchAmounts(
             {
               orai: accountOrai.bech32Address,
-              eth: keyRingStore.keyRingLedgerAddresses.eth ?? null,
-              tron: keyRingStore.keyRingLedgerAddresses.trx ?? null,
+              eth: keyRingStore.keyRingLedgerAddresses.eth ?? undefined,
+              tron: keyRingStore.keyRingLedgerAddresses.trx ?? undefined,
               kwt: accountKawaiiCosmos.bech32Address,
-              tokenReload: tokenReload?.length > 0 ? tokenReload : null,
+              tokenReload:
+                Number(tokenReload?.length) > 0 ? tokenReload : undefined,
             },
             customChainInfos
           );
@@ -966,14 +1033,11 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           handleToggle={setToggle}
         />
         <View style={{ padding: 16, paddingTop: 0 }}>
-          <View>
+          {/* <View>
             <SwapBox
               network={fromNetwork}
               amount={fromAmountToken?.toString() ?? "0"}
-              balanceValue={toDisplay(
-                fromTokenBalance,
-                originalFromToken?.decimals
-              )}
+              balanceValue={toDisplay(fromTokenBalance, originalFromToken?.decimals)}
               onChangeAmount={onChangeFromAmount}
               tokenActive={originalFromToken}
               onOpenTokenModal={() => setSelectFromTokenModal(true)}
@@ -987,10 +1051,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             <SwapBox
               network={toNetwork}
               amount={toAmountToken.toString() ?? "0"}
-              balanceValue={toDisplay(
-                toTokenBalance,
-                originalToToken?.decimals
-              )}
+              balanceValue={toDisplay(toTokenBalance, originalToToken?.decimals)}
               tokenActive={originalToToken}
               onOpenTokenModal={() => setSelectToTokenModal(true)}
               editable={false}
@@ -999,18 +1060,32 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               type={"to"}
             />
 
-            <TouchableOpacity
-              onPress={handleReverseDirection}
-              style={styles.containerBtnCenter}
-            >
-              <OWIcon
-                name="tdesignarrow-up-down-1"
-                size={16}
-                color={colors["neutral-text-title"]}
-              />
+            <TouchableOpacity onPress={handleReverseDirection} style={styles.containerBtnCenter}>
+              <OWIcon name="tdesignarrow-up-down-1" size={16} color={colors["neutral-text-title"]} />
             </TouchableOpacity>
-          </View>
+          </View> */}
 
+          <SwapBoxRender
+            amountLoading={amountLoading}
+            swapLoading={swapLoading}
+            fromTokenFee={fromTokenFee}
+            toTokenFee={toTokenFee}
+            originalFromToken={originalFromToken}
+            originalToToken={originalToToken}
+            toAmountToken={toAmountToken}
+            handleReverseDirection={handleReverseDirection}
+            setToNetworkOpen={setToNetworkOpen}
+            fromAmountToken={fromAmountToken}
+            fromTokenBalance={fromTokenBalance}
+            onChangeFromAmount={onChangeFromAmount}
+            setSelectFromTokenModal={setSelectFromTokenModal}
+            setFromNetworkOpen={setFromNetworkOpen}
+            handleActiveAmount={handleActiveAmount}
+            toTokenBalance={toTokenBalance}
+            setSelectToTokenModal={setSelectToTokenModal}
+            fromNetwork={fromNetwork}
+            toNetwork={toNetwork}
+          />
           <OWCard
             type="normal"
             style={{
