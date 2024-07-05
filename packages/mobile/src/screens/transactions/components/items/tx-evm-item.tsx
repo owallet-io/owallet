@@ -25,6 +25,24 @@ import { Currency } from "@owallet/types";
 import Coingecko from "@src/assets/data/coingecko.json";
 import get from "lodash/get";
 
+const getCurrency = (item, itemCoingecko) => {
+  const currency = {
+    coinDecimals: item.tokenInfo.attributes.decimals,
+    coinImageUrl:
+      item.tokenInfo.attributes.image_url == "missing.png"
+        ? unknownToken.coinImageUrl
+        : item.tokenInfo.attributes.image_url,
+    coinGeckoId:
+      item.tokenInfo.attributes.coingecko_coin_id ||
+      get(itemCoingecko, "id") ||
+      "unknown",
+    coinMinimalDenom: `erc20:${item.tokenAddress}:${item.tokenInfo.attributes.name}`,
+    coinDenom: item.tokenInfo.attributes.symbol,
+  } as Currency;
+
+  return currency;
+};
+
 export const TxEvmItem: FC<{
   item: any;
   index: number;
@@ -52,19 +70,7 @@ export const TxEvmItem: FC<{
           it.symbol.toUpperCase() ==
           get(item, "tokenInfo.attributes.symbol").toUpperCase()
       );
-      currency = {
-        coinDecimals: item.tokenInfo.attributes.decimals,
-        coinImageUrl:
-          item.tokenInfo.attributes.image_url == "missing.png"
-            ? unknownToken.coinImageUrl
-            : item.tokenInfo.attributes.image_url,
-        coinGeckoId:
-          item.tokenInfo.attributes.coingecko_coin_id ||
-          get(itemCoingecko, "id") ||
-          "unknown",
-        coinMinimalDenom: `erc20:${item.tokenAddress}:${item.tokenInfo.attributes.name}`,
-        coinDenom: item.tokenInfo.attributes.symbol,
-      } as Currency;
+      currency = getCurrency(item, itemCoingecko);
     }
   } else if (item.transactionType === "native") {
     currency = chainStore.current.stakeCurrency;
