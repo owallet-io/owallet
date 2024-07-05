@@ -83,6 +83,42 @@ const mixpanel = globalThis.mixpanel as Mixpanel;
 
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
 
+const handleSimulate = (
+  simulateData,
+  fromTokenFee,
+  toTokenFee,
+  fee,
+  relayerFeeAmount
+) => {
+  const simulateDisplayAmount =
+    simulateData && simulateData.displayAmount ? simulateData.displayAmount : 0;
+
+  const bridgeTokenFee =
+    simulateDisplayAmount && (fromTokenFee || toTokenFee)
+      ? new BigDecimal(new BigDecimal(simulateDisplayAmount).mul(fromTokenFee))
+          .add(new BigDecimal(simulateDisplayAmount).mul(toTokenFee))
+          .div(100)
+          .toNumber()
+      : 0;
+
+  const estSwapFee = new BigDecimal(simulateDisplayAmount || 0)
+    .mul(fee || 0)
+    .toNumber();
+
+  const totalFeeEst =
+    new BigDecimal(bridgeTokenFee || 0)
+      .add(relayerFeeAmount || 0)
+      .add(estSwapFee)
+      .toNumber() || 0;
+
+  return {
+    simulateDisplayAmount,
+    bridgeTokenFee,
+    estSwapFee,
+    totalFeeEst,
+  };
+};
+
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const {
     accountStore,
@@ -250,26 +286,13 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     handleErrorSwap
   );
 
-  const simulateDisplayAmount =
-    simulateData && simulateData.displayAmount ? simulateData.displayAmount : 0;
-
-  const bridgeTokenFee =
-    simulateDisplayAmount && (fromTokenFee || toTokenFee)
-      ? new BigDecimal(new BigDecimal(simulateDisplayAmount).mul(fromTokenFee))
-          .add(new BigDecimal(simulateDisplayAmount).mul(toTokenFee))
-          .div(100)
-          .toNumber()
-      : 0;
-
-  const estSwapFee = new BigDecimal(simulateDisplayAmount || 0)
-    .mul(fee || 0)
-    .toNumber();
-
-  const totalFeeEst =
-    new BigDecimal(bridgeTokenFee || 0)
-      .add(relayerFeeAmount || 0)
-      .add(estSwapFee)
-      .toNumber() || 0;
+  const { bridgeTokenFee, estSwapFee, totalFeeEst } = handleSimulate(
+    simulateData,
+    fromTokenFee,
+    toTokenFee,
+    fee,
+    relayerFeeAmount
+  );
 
   const [selectFromTokenModal, setSelectFromTokenModal] = useState(false);
   const [selectToTokenModal, setSelectToTokenModal] = useState(false);
