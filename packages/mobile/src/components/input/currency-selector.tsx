@@ -109,15 +109,13 @@ export const CurrencySelector: FunctionComponent<{
     }
 
     useEffect(() => {
-      InteractionManager.runAfterInteractions(() => {
-        const queryBalances = queriesStore
-          .get(chainId)
-          .queryBalances.getQueryBech32Address(addressToFetch);
-        const tokens = queryBalances.balances;
-        const displayTokens = sortTokens(filterTokens(tokens));
+      const queryBalances = queriesStore
+        .get(chainId)
+        .queryBalances.getQueryBech32Address(addressToFetch);
+      const tokens = queryBalances.balances;
+      const displayTokens = sortTokens(filterTokens(tokens));
 
-        setDisplayTokens(displayTokens);
-      });
+      setDisplayTokens(displayTokens);
     }, [chainId, addressToFetch]);
 
     const selectedKey = amountConfig.sendCurrency.coinMinimalDenom;

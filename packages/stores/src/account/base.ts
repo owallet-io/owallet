@@ -673,57 +673,86 @@ export class AccountSetBase<MsgOpts, Queries> {
     }
   }
 
-  async sendEvmMsgs(
-    type: string | "unknown",
-    msgs: Msg,
-    fee: StdFeeEthereum,
-    signOptions?: OWalletSignOptions,
-    onTxEvents?:
-      | ((tx: any) => void)
-      | {
-          onBroadcastFailed?: (e?: Error) => void;
-          onBroadcasted?: (txHash: Uint8Array) => void;
-          onFulfill?: (tx: any) => void;
-        }
-  ) {
+  async handleErc20Transaction(msgs, fee) {
+    const { value } = msgs;
+    const provider = this.chainGetter.getChain(this.chainId).rpc;
+    const web3 = new Web3(provider);
+    const contract = new web3.eth.Contract(ERC20_ABI, value.contract_addr, {
+      from: value.from,
+    });
+    const data = contract.methods
+      .transfer(value.recipient, value.amount)
+      .encodeABI();
+
+    const txObj = {
+      gas: web3.utils.toHex(value.gas),
+      to: value.contract_addr,
+      value: "0x0",
+      from: value.from,
+      data,
+    };
+
+    return await this.broadcastErc20EvmMsgs(txObj, fee);
+  }
+
+  async handleEvmTransaction(msgs, fee, signOptions) {
+    if (msgs.type === "erc20") {
+      return await this.handleErc20Transaction(msgs, fee);
+    } else {
+      return await this.broadcastEvmMsgs(msgs, fee, signOptions);
+    }
+  }
+
+  handleTxEvents(txHash, onTxEvents) {
+    let onBroadcasted;
+    let onFulfill;
+
+    if (onTxEvents) {
+      if (typeof onTxEvents === "function") {
+        onFulfill = onTxEvents;
+      } else {
+        onBroadcasted = onTxEvents.onBroadcasted;
+        onFulfill = onTxEvents.onFulfill;
+      }
+    }
+
+    if (this.opts.preTxEvents?.onBroadcasted) {
+      this.opts.preTxEvents.onBroadcasted(txHash);
+    }
+
+    if (onBroadcasted) {
+      onBroadcasted(txHash);
+    }
+
+    if (this.chainId === ChainIdEnum.Oasis) {
+      console.log(txHash, "txHash");
+      if (this.opts.preTxEvents?.onFulfill) {
+        this.opts.preTxEvents.onFulfill(txHash);
+      }
+
+      if (onFulfill) {
+        onFulfill(txHash);
+      }
+      return;
+    }
+
+    const rpc = this.chainGetter.getChain(this.chainId).rest;
+    this.waitForPendingTransaction(rpc, txHash, onFulfill);
+  }
+
+  async sendEvmMsgs(type, msgs, fee, signOptions, onTxEvents) {
     runInAction(() => {
       this._isSendingMsg = type;
     });
 
-    let txHash: string;
+    let txHash;
 
     try {
-      if (msgs.type === "erc20") {
-        const { value } = msgs;
-        const provider = this.chainGetter.getChain(this.chainId).rpc;
-        const web3 = new Web3(provider);
-        const contract = new web3.eth.Contract(
-          // @ts-ignore
-          ERC20_ABI,
-          value.contract_addr,
-          { from: value.from }
-        );
-        const data = contract.methods
-          .transfer(value.recipient, value.amount)
-          .encodeABI();
+      const result = await this.handleEvmTransaction(msgs, fee, signOptions);
+      txHash = result.txHash;
 
-        const txObj = {
-          gas: web3.utils.toHex(value.gas),
-          to: value.contract_addr,
-          value: "0x0", // Must be 0x0, maybe this field is not in use while send erc20 tokens, but still need
-          from: value.from,
-          data,
-        };
-
-        const result = await this.broadcastErc20EvmMsgs(txObj, fee);
-
-        txHash = result.txHash;
-      } else {
-        const result = await this.broadcastEvmMsgs(msgs, fee, signOptions);
-        txHash = result.txHash;
-      }
       if (!txHash) throw Error("Transaction Rejected");
-    } catch (e: any) {
+    } catch (e) {
       runInAction(() => {
         this._isSendingMsg = false;
       });
@@ -743,46 +772,11 @@ export class AccountSetBase<MsgOpts, Queries> {
       throw e;
     }
 
-    let onBroadcasted: ((txHash: Uint8Array) => void) | undefined;
-
-    let onFulfill: ((tx: any) => void) | undefined;
-    console.log(txHash, "result result");
-    if (onTxEvents) {
-      if (typeof onTxEvents === "function") {
-        onFulfill = onTxEvents;
-      } else {
-        onBroadcasted = onTxEvents.onBroadcasted;
-        onFulfill = onTxEvents.onFulfill;
-      }
-    }
-
-    const rpc = this.chainGetter.getChain(this.chainId).rest;
-
     runInAction(() => {
       this._isSendingMsg = false;
     });
-    if (this.opts.preTxEvents?.onBroadcasted) {
-      //@ts-ignore
-      this.opts.preTxEvents.onBroadcasted(txHash);
-    }
-    if (onBroadcasted) {
-      //@ts-ignore
-      onBroadcasted(txHash);
-    }
 
-    if (this.chainId === ChainIdEnum.Oasis) {
-      console.log(txHash, "txHash");
-      if (this.opts.preTxEvents?.onFulfill) {
-        this.opts.preTxEvents.onFulfill(txHash);
-      }
-
-      if (onFulfill) {
-        onFulfill(txHash);
-      }
-      return;
-    }
-
-    this.waitForPendingTransaction(rpc, txHash, onFulfill);
+    this.handleTxEvents(txHash, onTxEvents);
   }
 
   async sendBtcMsgs(
