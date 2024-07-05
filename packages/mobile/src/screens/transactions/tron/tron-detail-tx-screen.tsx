@@ -38,6 +38,32 @@ import { urlTxHistory } from "@src/common/constants";
 import { OWEmpty } from "@src/components/empty";
 import get from "lodash/get";
 
+function EnegyAndFee({ item }) {
+  return (
+    <>
+      {item.energyUsageTotal ? (
+        <ItemReceivedToken
+          label={"Energy"}
+          valueDisplay={`${maskedNumber(item.energyUsageTotal)}`}
+          btnCopy={false}
+        />
+      ) : null}
+      {item.netFee || item.netUsage ? (
+        <ItemReceivedToken
+          label={"Bandwidth"}
+          valueDisplay={`${maskedNumber(
+            new Int(item.netFee || 0)
+              .add(new Int(item.netUsage || 0).mul(new Int(1e3)))
+              .div(new Int(1e3))
+              .toString()
+          )}`}
+          btnCopy={false}
+        />
+      ) : null}
+    </>
+  );
+}
+
 export const TronDetailTx: FunctionComponent = observer((props) => {
   const { chainStore, priceStore } = useStore();
 
@@ -57,8 +83,7 @@ export const TronDetailTx: FunctionComponent = observer((props) => {
   const [loading, setLoading] = useState(false);
 
   const { item, currency } = route.params;
-  const { txID: hash, chain, transactionType } = item;
-  console.log(item, detail, "item detail");
+  const { txID: hash } = item;
 
   const getHistoryDetail = async () => {
     try {
@@ -217,25 +242,7 @@ export const TronDetailTx: FunctionComponent = observer((props) => {
               }
               btnCopy={false}
             />
-            {item.energyUsageTotal ? (
-              <ItemReceivedToken
-                label={"Energy"}
-                valueDisplay={`${maskedNumber(item.energyUsageTotal)}`}
-                btnCopy={false}
-              />
-            ) : null}
-            {item.netFee || item.netUsage ? (
-              <ItemReceivedToken
-                label={"Bandwidth"}
-                valueDisplay={`${maskedNumber(
-                  new Int(item.netFee || 0)
-                    .add(new Int(item.netUsage || 0).mul(new Int(1e3)))
-                    .div(new Int(1e3))
-                    .toString()
-                )}`}
-                btnCopy={false}
-              />
-            ) : null}
+            <EnegyAndFee item={item} />
 
             <ItemReceivedToken
               label={"Fee"}
