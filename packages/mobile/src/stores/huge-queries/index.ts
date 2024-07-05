@@ -112,6 +112,44 @@ export class HugeQueriesStore {
     return map;
   }
 
+  mapStakeCurrencyBalance(currency, map, queryBalance, chainInfo) {
+    const key = `${ChainIdHelper.parse(chainInfo.chainId).identifier}/${
+      currency.coinMinimalDenom
+    }`;
+
+    const balance = queryBalance.stakable?.balance;
+
+    map.set(key, {
+      chainInfo,
+      token: balance,
+      price: currency.coinGeckoId
+        ? this.priceStore.calculatePrice(balance)
+        : undefined,
+      isFetching: queryBalance.stakable.isFetching,
+      error: queryBalance.stakable.error,
+    });
+  }
+
+  mapNonStakeCurrencyBalance(currency, map, queryBalance, chainInfo) {
+    const key = `${ChainIdHelper.parse(chainInfo.chainId).identifier}/${
+      currency.coinMinimalDenom
+    }`;
+
+    const balance = queryBalance.getBalance(currency);
+
+    if (balance) {
+      map.set(key, {
+        chainInfo,
+        token: balance.balance,
+        price: currency.coinGeckoId
+          ? this.priceStore.calculatePrice(balance.balance)
+          : undefined,
+        isFetching: balance.isFetching,
+        error: balance.error,
+      });
+    }
+  }
+
   protected setCurrencyIntoMap(currencies, map, queryBalance, chainInfo) {
     for (const currency of currencies) {
       const key = `${ChainIdHelper.parse(chainInfo.chainId).identifier}/${
@@ -123,31 +161,14 @@ export class HugeQueriesStore {
           chainInfo.stakeCurrency?.coinMinimalDenom ===
           currency.coinMinimalDenom
         ) {
-          const balance = queryBalance.stakable?.balance;
-
-          map.set(key, {
-            chainInfo,
-            token: balance,
-            price: currency.coinGeckoId
-              ? this.priceStore.calculatePrice(balance)
-              : undefined,
-            isFetching: queryBalance.stakable.isFetching,
-            error: queryBalance.stakable.error,
-          });
+          this.mapStakeCurrencyBalance(currency, map, queryBalance, chainInfo);
         } else {
-          const balance = queryBalance.getBalance(currency);
-
-          if (balance) {
-            map.set(key, {
-              chainInfo,
-              token: balance.balance,
-              price: currency.coinGeckoId
-                ? this.priceStore.calculatePrice(balance.balance)
-                : undefined,
-              isFetching: balance.isFetching,
-              error: balance.error,
-            });
-          }
+          this.mapNonStakeCurrencyBalance(
+            currency,
+            map,
+            queryBalance,
+            chainInfo
+          );
         }
       }
     }
