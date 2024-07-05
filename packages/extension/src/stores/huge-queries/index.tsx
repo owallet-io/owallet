@@ -88,76 +88,104 @@ export class HugeQueriesStore {
     const map = new Map<string, ViewToken>();
 
     for (const chainInfo of this.chainStore.chainInfos) {
-      const account = this.accountStore.getAccount(chainInfo.chainId);
-      const address = account.getAddressDisplay(
-        this.keyRingStore.keyRingLedgerAddresses,
-        false
-      );
+      const account = this.getAccount(chainInfo.chainId);
+      const address = this.getAddress(account);
       if (address === "") {
         continue;
       }
-      const queries = this.queriesStore.get(chainInfo.chainId);
-      const queryBalance = queries.queryBalances.getQueryBech32Address(address);
 
-      const currencies = [...chainInfo.currencies];
-      if (chainInfo.stakeCurrency) {
-        currencies.push(chainInfo.stakeCurrency);
-      }
-      for (const currency of currencies) {
-        const key = `${ChainIdHelper.parse(chainInfo.chainId).identifier}/${
-          currency.coinMinimalDenom
-        }`;
-        if (!map.has(key)) {
-          if (
-            chainInfo.stakeCurrency?.coinMinimalDenom ===
-            currency.coinMinimalDenom
-          ) {
-            const balance = queryBalance.stakable?.balance;
-            if (!balance) {
-              continue;
-            }
-            // If the balance is zero, don't show it.
-            // 다시 제로 일때 보여주기 위해서 아래코드를 주석처리함
-            // if (balance.toDec().equals(HugeQueriesStore.zeroDec)) {
-            //   continue;
-            // }
+      const queryBalance = this.getQueryBalance(chainInfo.chainId, address);
+      const currencies = this.getCurrencies(chainInfo);
 
-            map.set(key, {
-              chainInfo,
-              token: balance,
-              price: currency.coinGeckoId
-                ? this.priceStore.calculatePrice(balance)
-                : undefined,
-              isFetching: queryBalance.stakable.isFetching,
-              error: queryBalance.stakable.error,
-            });
-          } else {
-            const balance = queryBalance.getBalance(currency);
-            if (balance) {
-              // If the balance is zero and currency is "native", don't show it.
-              if (
-                balance.balance.toDec().equals(HugeQueriesStore.zeroDec) &&
-                new DenomHelper(currency.coinMinimalDenom).type === "native"
-              ) {
-                continue;
-              }
-
-              map.set(key, {
-                chainInfo,
-                token: balance.balance,
-                price: currency.coinGeckoId
-                  ? this.priceStore.calculatePrice(balance.balance)
-                  : undefined,
-                isFetching: balance.isFetching,
-                error: balance.error,
-              });
-            }
-          }
-        }
-      }
+      this.addBalancesToMap(map, chainInfo, queryBalance, currencies);
     }
 
     return map;
+  }
+
+  private getAccount(chainId: string): any {
+    return this.accountStore.getAccount(chainId);
+  }
+
+  private getAddress(account: any): string {
+    return account.getAddressDisplay(
+      this.keyRingStore.keyRingLedgerAddresses,
+      false
+    );
+  }
+
+  private getQueryBalance(chainId: string, address: string): any {
+    const queries = this.queriesStore.get(chainId);
+    return queries.queryBalances.getQueryBech32Address(address);
+  }
+
+  private getCurrencies(chainInfo: ChainInfo): any[] {
+    const currencies = [...chainInfo.currencies];
+    if (chainInfo.stakeCurrency) {
+      currencies.push(chainInfo.stakeCurrency);
+    }
+    return currencies;
+  }
+
+  private addBalancesToMap(
+    map: Map<string, ViewToken>,
+    chainInfo: ChainInfo,
+    queryBalance: any,
+    currencies: any[]
+  ): void {
+    for (const currency of currencies) {
+      const key = `${ChainIdHelper.parse(chainInfo.chainId).identifier}/${
+        currency.coinMinimalDenom
+      }`;
+      if (!map.has(key)) {
+        this.addCurrencyToMap(map, key, chainInfo, queryBalance, currency);
+      }
+    }
+  }
+
+  private addCurrencyToMap(
+    map: Map<string, ViewToken>,
+    key: string,
+    chainInfo: ChainInfo,
+    queryBalance: any,
+    currency: any
+  ): void {
+    if (
+      chainInfo.stakeCurrency?.coinMinimalDenom === currency.coinMinimalDenom
+    ) {
+      const balance = queryBalance.stakable?.balance;
+      if (balance) {
+        map.set(key, {
+          chainInfo,
+          token: balance,
+          price: currency.coinGeckoId
+            ? this.priceStore.calculatePrice(balance)
+            : undefined,
+          isFetching: queryBalance.stakable.isFetching,
+          error: queryBalance.stakable.error,
+        });
+      }
+    } else {
+      const balance = queryBalance.getBalance(currency);
+      if (balance && this.shouldIncludeBalance(balance.balance, currency)) {
+        map.set(key, {
+          chainInfo,
+          token: balance.balance,
+          price: currency.coinGeckoId
+            ? this.priceStore.calculatePrice(balance.balance)
+            : undefined,
+          isFetching: balance.isFetching,
+          error: balance.error,
+        });
+      }
+    }
+  }
+
+  private shouldIncludeBalance(balance: any, currency: any): boolean {
+    return !(
+      balance.toDec().equals(HugeQueriesStore.zeroDec) &&
+      new DenomHelper(currency.coinMinimalDenom).type === "native"
+    );
   }
 
   @computed
