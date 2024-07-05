@@ -14,17 +14,8 @@ import { getTimeMilliSeconds, SCREENS } from "@src/common/constants";
 import { RightArrowIcon } from "@src/components/icon";
 import { useStore } from "@src/stores";
 import { unknownToken } from "@owallet/common";
-import { has } from "lodash";
 
-export const TxOraichainItem: FC<{
-  item: any;
-  index: number;
-  data: any;
-}> = observer(({ item, index, data, ...props }) => {
-  const { priceStore, chainStore } = useStore();
-  const fiat = priceStore.defaultVsCurrency;
-  if (!item) return;
-  console.log(item, "item");
+const getCurrency = (item, chainStore) => {
   let currency = unknownToken;
   if (item.denom) {
     if (item.denom.startsWith("ibc/")) {
@@ -45,6 +36,20 @@ export const TxOraichainItem: FC<{
       currency = token;
     }
   }
+
+  return currency;
+};
+
+export const TxOraichainItem: FC<{
+  item: any;
+  index: number;
+  data: any;
+}> = observer(({ item, index, data, ...props }) => {
+  const { priceStore, chainStore } = useStore();
+  const fiat = priceStore.defaultVsCurrency;
+  if (!item) return;
+
+  const currency = getCurrency(item, chainStore);
   const onTransactionDetail = (item, currency) => {
     navigate(SCREENS.STACK.Others, {
       screen: SCREENS.HistoryDetail,
