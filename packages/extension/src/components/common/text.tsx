@@ -1,6 +1,4 @@
 import React, { CSSProperties, FunctionComponent } from "react";
-import colors from "../../theme/colors";
-
 import style from "./style.module.scss";
 
 export const Text: FunctionComponent<{
