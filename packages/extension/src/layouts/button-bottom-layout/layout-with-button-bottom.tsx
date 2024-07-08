@@ -25,6 +25,8 @@ export const LayoutWithButtonBottom: FC<{
     <div
       style={{
         backgroundColor,
+        paddingBottom: isHideButtonBottom ? 0 : 52,
+        overflow: "scroll",
       }}
       className={styles.container}
     >
