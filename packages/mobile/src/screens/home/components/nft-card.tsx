@@ -30,6 +30,7 @@ export const NftCard = observer(() => {
       filterByCollectionAddrs: null,
       sortBy: "ACQUIRED_DESC",
     },
+    fetchPolicy: "cache-and-network",
   });
   const nfts = data?.tokens?.tokens || [];
   const nftsFilter = nfts.filter(
