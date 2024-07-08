@@ -26,7 +26,11 @@ export const NftCard = observer(() => {
     variables: {
       filterForSale: null,
       owner: address,
-      limit: 50,
+      limit:
+        appInitStore.getInitApp.isAllNetworks ||
+        chainStore.current.chainId === ChainIdEnum.Stargaze
+          ? 50
+          : 0,
       filterByCollectionAddrs: null,
       sortBy: "ACQUIRED_DESC",
     },
