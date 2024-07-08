@@ -1,5 +1,6 @@
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useState } from "react";
+import { View } from "react-native";
 import { useStore } from "../../stores";
 import { EmptyTx } from "@src/screens/transactions/components/empty-tx";
 import {

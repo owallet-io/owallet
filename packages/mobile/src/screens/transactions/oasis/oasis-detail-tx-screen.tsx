@@ -27,7 +27,7 @@ import {
   OasisNetwork,
   unknownToken,
 } from "@owallet/common";
-import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
+import { CoinPretty, Dec } from "@owallet/unit";
 import { OwLoading } from "@src/components/owallet-loading/ow-loading";
 
 import { Currency } from "@owallet/types";
