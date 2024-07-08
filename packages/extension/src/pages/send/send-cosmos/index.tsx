@@ -323,8 +323,9 @@ export const SendPage: FunctionComponent<{
           <div
             style={{
               height: "80%",
-              overflow: "scroll",
+              overflowX: "auto",
               padding: 16,
+              paddingLeft: 20,
               paddingTop: 0,
             }}
           >
