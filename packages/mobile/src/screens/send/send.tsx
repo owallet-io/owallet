@@ -6,7 +6,12 @@ import {
   useSendTxConfig,
 } from "@owallet/hooks";
 import { useStore } from "../../stores";
-import { EthereumEndpoint, OwalletEvent, toAmount } from "@owallet/common";
+import {
+  EthereumEndpoint,
+  OwalletEvent,
+  toAmount,
+  TxRestCosmosClient,
+} from "@owallet/common";
 import {
   StyleSheet,
   View,
@@ -60,6 +65,7 @@ import {
 } from "@cosmjs/amino";
 import { TxBody } from "@owallet/proto-types/cosmos/tx/v1beta1/tx";
 import { Any } from "@owallet/proto-types/google/protobuf/any";
+import { TendermintTxTracer } from "@owallet/cosmos";
 export const NewSendScreen: FunctionComponent = observer(() => {
   const {
     chainStore,
@@ -270,30 +276,19 @@ export const NewSendScreen: FunctionComponent = observer(() => {
         tx: txBytes,
       });
       if (result?.code == 0) {
-        const bal = queries.queryBalances
-          .getQueryBech32Address(address)
-          .balances.find(
-            (bal) =>
-              bal.currency.coinMinimalDenom ===
-              sendConfigs.amountConfig.sendCurrency.coinMinimalDenom
-          );
-
-        if (bal) {
-          bal.fetch();
-          setIsLoading(false);
-          smartNavigation.pushSmart("TxPendingResult", {
-            txHash: Buffer.from(result?.hash).toString("hex"),
-            data: {
-              memo: sendConfigs.memoConfig.memo,
-              from: address,
-              type: "send",
-              to: sendConfigs.recipientConfig.recipient,
-              amount: sendConfigs.amountConfig.getAmountPrimitive(),
-              fee: sendConfigs.feeConfig.toStdFee(),
-              currency: sendConfigs.amountConfig.sendCurrency,
-            },
-          });
-        }
+        setIsLoading(false);
+        smartNavigation.pushSmart("TxPendingResult", {
+          txHash: Buffer.from(result?.hash).toString("hex"),
+          data: {
+            memo: sendConfigs.memoConfig.memo,
+            from: address,
+            type: "send",
+            to: sendConfigs.recipientConfig.recipient,
+            amount: sendConfigs.amountConfig.getAmountPrimitive(),
+            fee: sendConfigs.feeConfig.toStdFee(),
+            currency: sendConfigs.amountConfig.sendCurrency,
+          },
+        });
       }
     } catch (error) {
       if (error?.message?.includes("'signature' of undefined")) return;

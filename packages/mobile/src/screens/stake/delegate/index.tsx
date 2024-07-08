@@ -229,11 +229,6 @@ export const DelegateScreen: FunctionComponent = observer(() => {
         tx: Uint8Array.from(Buffer.from(JSON.stringify(tx))),
       });
       if (result?.code === 0 || result?.code == null) {
-        queries.cosmos.queryValidators
-          .getQueryStatus(BondStatus.Bonded)
-          .fetch();
-        queries.cosmos.queryDelegations.getQueryBech32Address(address).fetch();
-        queries.cosmos.queryRewards.getQueryBech32Address(address).fetch();
         setIsLoading(false);
         smartNavigation.pushSmart("TxPendingResult", {
           txHash: Buffer.from(result?.hash).toString("hex"),

@@ -164,18 +164,6 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
       });
 
       if (result?.code === 0 || result?.code == null) {
-        queries.cosmos.queryValidators
-          .getQueryStatus(BondStatus.Bonded)
-          .fetch();
-        queries.cosmos.queryDelegations
-          .getQueryBech32Address(account.bech32Address)
-          .fetch();
-        queries.cosmos.queryUnbondingDelegations
-          .getQueryBech32Address(account.bech32Address)
-          .fetch();
-        queries.cosmos.queryRewards
-          .getQueryBech32Address(account.bech32Address)
-          .fetch();
         setIsLoading(false);
         smartNavigation.pushSmart("TxPendingResult", {
           txHash: Buffer.from(result?.hash).toString("hex"),
