@@ -10,11 +10,14 @@ import OWText from "@components/text/ow-text";
 import { useTheme } from "@src/themes/theme-provider";
 import { CoinPretty, PricePretty } from "@owallet/unit";
 import { OWEmpty } from "@src/components/empty";
+import { AppCurrency } from "@owallet/types";
 export interface IItemNft {
-  priceFloor: string;
+  floorPrice: string;
   name: string;
   tokenId: string;
   url: string;
+  tokenInfo: AppCurrency;
+  contractAddress: string;
   // type: string;
 }
 export const NftCard = observer(() => {
@@ -72,7 +75,14 @@ export const NftCard = observer(() => {
           <View style={styles.containerList}>
             {nftsFilter.map((it, index) => {
               console.log(it, "it");
-              const item: IItemNft = {};
+              const item: IItemNft = {
+                floorPrice: it?.collection?.floorPrice || "0",
+                tokenId: it?.tokenId,
+                url: it?.media?.url,
+                name: it?.name,
+                tokenInfo,
+                contractAddress: it?.collection?.contractAddress,
+              };
               return <NftItem key={index} item={item} />;
             })}
           </View>

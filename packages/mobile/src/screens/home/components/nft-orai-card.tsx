@@ -13,6 +13,7 @@ import { OWEmpty } from "@src/components/empty";
 import { useQuery } from "@tanstack/react-query";
 import { API } from "@src/common/api";
 import { urlAiRight } from "@src/common/constants";
+import { IItemNft } from "./nft-card";
 export const NftOraiCard = observer(() => {
   const { chainStore, accountStore, priceStore, keyRingStore, appInitStore } =
     useStore();
@@ -32,56 +33,58 @@ export const NftOraiCard = observer(() => {
         {
           address,
         },
-        { baseURL: urlAiRight }
+        { baseURL: "https://developers.airight.io" }
       );
     },
     ...{
       initialData: null,
     },
   });
-  // const { loading, error, data } = useQuery(OwnedTokens, {
-  //   variables: {
-  //     filterForSale: null,
-  //     owner: address,
-  //     limit:
-  //       appInitStore.getInitApp.isAllNetworks ||
-  //       chainStore.current.chainId === ChainIdEnum.Stargaze
-  //         ? 50
-  //         : 0,
-  //     filterByCollectionAddrs: null,
-  //     sortBy: "ACQUIRED_DESC",
-  //   },
-  //   fetchPolicy: "cache-and-network",
-  // });
+
   console.log(data, "data");
-  const nfts = data?.tokens?.tokens || [];
-  const nftsFilter = nfts.filter(
-    (item, index) => item?.media?.type === "image"
-  );
+  const nfts = data?.data?.items || [];
+
   const { colors } = useTheme();
   const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
-  const tokenInfo =
-    chainStore.getChain(ChainIdEnum.Stargaze).stakeCurrency || unknownToken;
+
+  // const tokenInfo = chainStore.current.stakeCurrency || unknownToken;
   let totalPrice = new PricePretty(fiatCurrency, "0");
-  for (const nft of nftsFilter) {
-    const balance = new CoinPretty(
-      tokenInfo,
-      nft?.collection?.floorPrice || "0"
-    );
+  for (const nft of nfts) {
+    const tokenInfo = nft?.offer
+      ? chainStore.current.currencies.find(
+          (item, index) =>
+            item?.coinDenom?.toUpperCase() === nft?.offer?.denom?.toUpperCase()
+        )
+      : unknownToken;
+    const balance = new CoinPretty(tokenInfo, nft?.offer?.amount || "0");
     totalPrice = totalPrice.add(priceStore.calculatePrice(balance));
   }
 
   const styles = styling(colors);
   return (
     <View style={styles.container}>
-      {nftsFilter?.length > 0 ? (
+      {nfts?.length > 0 ? (
         <>
           <View style={styles.sectionHeader}>
             <OWText style={styles.txtTitle}>Total value</OWText>
             <OWText style={styles.price}>{totalPrice?.toString()}</OWText>
           </View>
           <View style={styles.containerList}>
-            {nftsFilter.map((item, index) => {
+            {nfts.map((it, index) => {
+              const tokenFound =
+                it?.offer &&
+                chainStore.current.currencies.find(
+                  (item, index) =>
+                    item?.coinDenom?.toUpperCase() ===
+                    it?.offer?.denom?.toUpperCase()
+                );
+              const item: IItemNft = {
+                floorPrice: it?.offer?.amount ? it?.offer?.amount : "0",
+                tokenId: it?.id,
+                url: it?.url,
+                name: `${it?.name || ""} #${it?.id}`,
+                tokenInfo: tokenFound || unknownToken,
+              };
               return <NftItem key={index} item={item} />;
             })}
           </View>

@@ -556,13 +556,19 @@ export const API = {
     config: AxiosRequestConfig
   ) => {
     //https://v1-api.airight.io
-    const filter = new URLSearchParams({
+    console.log(address, "address");
+    const filter = JSON.stringify({
       accountAddress: address,
       category: "image",
-    })
-      .toString()
-      .replace("=", "");
+      nftStatus: "2",
+    });
     let url = `/nft-market-backend-service/assets?size=${size}&offset=${offset}&filter=${filter}`;
+    return API.get(url, config);
+  },
+  getNftOraichain: ({ tokenId }, config: AxiosRequestConfig) => {
+    //https://v1-api.airight.io
+
+    let url = `/nft-market-backend-service/assets/${tokenId}`;
     return API.get(url, config);
   },
 };

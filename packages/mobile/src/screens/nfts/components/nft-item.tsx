@@ -1,12 +1,16 @@
 import React from "react";
 import { TouchableOpacity, Image, View, Text, StyleSheet } from "react-native";
 import { spacing, typography, metrics } from "../../../themes";
-import { formatContractAddress, limitString } from "../../../utils/helper";
+import {
+  formatContractAddress,
+  limitString,
+  maskedNumber,
+} from "../../../utils/helper";
 import { useTheme } from "@src/themes/theme-provider";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { useStore } from "@src/stores";
 import { ChainIdEnum, unknownToken } from "@owallet/common";
-import { CoinPretty } from "@owallet/unit";
+import { CoinPretty, Dec } from "@owallet/unit";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { useSmartNavigation } from "@src/navigation.provider";
@@ -14,19 +18,13 @@ import { useNavigation } from "@react-navigation/native";
 import ProgressiveFastImage from "@freakycoder/react-native-progressive-fast-image";
 import images from "@src/assets/images";
 import LottieView from "lottie-react-native";
-export const NftItem = ({ item }) => {
+import { IItemNft } from "@src/screens/home/components";
+export const NftItem = ({ item }: { item: IItemNft }) => {
   const { colors } = useTheme();
-
-  const { chainStore } = useStore();
 
   const styles = styling(colors);
 
-  const tokenInfo =
-    chainStore.getChain(ChainIdEnum.Stargaze).stakeCurrency || unknownToken;
-  const balance = new CoinPretty(
-    tokenInfo,
-    item?.collection?.floorPrice || "0"
-  );
+  const balance = new CoinPretty(item.tokenInfo, item?.floorPrice || "0");
   const smartNavigation = useSmartNavigation();
 
   return (
@@ -40,7 +38,7 @@ export const NftItem = ({ item }) => {
     >
       <ProgressiveFastImage
         style={styles.itemPhoto}
-        source={{ uri: item?.media?.url }}
+        source={{ uri: item?.url }}
         onLoad={() => console.log("loaded")}
         onError={() => console.log("error")}
         thumbnailSource={images.thumnail_nft}
@@ -75,11 +73,17 @@ export const NftItem = ({ item }) => {
           <OWIcon
             type="images"
             source={{
-              uri: tokenInfo?.coinImageUrl,
+              uri: item?.tokenInfo?.coinImageUrl,
             }}
             size={16}
           />
-          <Text style={styles.title}>{balance?.trim(true)?.toString()}</Text>
+          <Text style={styles.title}>
+            {balance.denom !== unknownToken.coinDenom
+              ? `${maskedNumber(
+                  balance?.trim(true)?.hideDenom(true)?.toString()
+                )} ${balance?.denom}`
+              : "Not for sale"}
+          </Text>
         </View>
       </View>
     </TouchableOpacity>
