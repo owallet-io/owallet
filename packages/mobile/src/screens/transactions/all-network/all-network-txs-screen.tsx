@@ -4,7 +4,6 @@ import { PageWithView } from "@src/components/page";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
 import { useStore } from "@src/stores";
-import { MapChainIdToNetwork } from "@src/utils/helper";
 import { OWBox } from "@src/components/card";
 import { spacing } from "@src/themes";
 
@@ -17,7 +16,11 @@ import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { OWSearchInput } from "@src/components/ow-search-input";
 import { EmptyTx } from "@src/screens/transactions/components/empty-tx";
 
-import { ChainIdEnum, getOasisAddress } from "@owallet/common";
+import {
+  ChainIdEnum,
+  getOasisAddress,
+  MapChainIdToNetwork,
+} from "@owallet/common";
 import { AllNetworkTxItem } from "@src/screens/transactions/all-network/all-network-tx-item";
 import { convertObjChainAddressToString } from "@src/screens/transactions/all-network/all-network.helper";
 import { useRoute } from "@react-navigation/native";
