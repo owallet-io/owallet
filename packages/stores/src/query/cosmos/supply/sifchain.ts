@@ -22,7 +22,7 @@ export class ObservableQuerySifchainLiquidityAPY extends ObservableQuery<Sifchai
   }
 
   protected canFetch(): boolean {
-    return this.chainId.startsWith("sifchain");
+    return this.chainId?.startsWith("sifchain");
   }
 
   @computed

@@ -284,7 +284,8 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
 
   protected override canFetch(): boolean {
     return (
-      this._coinIds.values?.length > 0 && this._vsCurrencies.values.length > 0
+      this._coinIds?.values?.length > 0 &&
+      this._vsCurrencies?.values?.length > 0
     );
   }
 
