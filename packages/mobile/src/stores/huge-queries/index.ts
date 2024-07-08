@@ -14,11 +14,15 @@ import {
 } from "@owallet/stores";
 import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
 import { computed, makeObservable } from "mobx";
-import { ChainIdEnum, DenomHelper, getOasisAddress } from "@owallet/common";
+import {
+  ChainIdEnum,
+  DenomHelper,
+  getOasisAddress,
+  MapChainIdToNetwork,
+} from "@owallet/common";
 import { computedFn } from "mobx-utils";
 import { ChainIdHelper } from "@owallet/cosmos";
 import { AppCurrency, ChainInfo } from "@owallet/types";
-import { MapChainIdToNetwork } from "@src/utils/helper";
 
 export interface ViewToken {
   //TODO: need check type for chain info
