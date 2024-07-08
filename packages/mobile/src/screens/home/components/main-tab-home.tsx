@@ -8,11 +8,15 @@ import { ViewRawToken } from "@src/stores/huge-queries";
 import { HistoryCard } from "@src/screens/transactions";
 import { TokensCardAll } from "./tokens-card-all";
 import { NftCard } from "./nft-card";
+import { useStore } from "@src/stores";
+import { ChainIdEnum } from "@owallet/common";
+import { NftOraiCard } from "./nft-orai-card";
 
 export const MainTabHome: FC<{
   dataTokens: ViewRawToken[];
 }> = observer(({ dataTokens }) => {
   const { colors } = useTheme();
+  const { chainStore } = useStore();
   const [activeTab, setActiveTab] = useState(tabs[0]);
   const styles = styling(colors);
   const renderContentTab = () => {
@@ -20,7 +24,11 @@ export const MainTabHome: FC<{
       case TabEnum.TOKEN:
         return <TokensCardAll dataTokens={dataTokens} />;
       case TabEnum.NFT:
-        return <NftCard />;
+        return chainStore.current.chainId === ChainIdEnum.Oraichain ? (
+          <NftOraiCard />
+        ) : (
+          <NftCard />
+        );
       case TabEnum.History:
         return <HistoryCard />;
     }

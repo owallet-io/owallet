@@ -551,6 +551,20 @@ export const API = {
     let url = `/auth/accounts/${address}`;
     return API.get(url, config);
   },
+  getNftsOraichain: (
+    { address, size = 50, offset = 0 },
+    config: AxiosRequestConfig
+  ) => {
+    //https://v1-api.airight.io
+    const filter = new URLSearchParams({
+      accountAddress: address,
+      category: "image",
+    })
+      .toString()
+      .replace("=", "");
+    let url = `/nft-market-backend-service/assets?size=${size}&offset=${offset}&filter=${filter}`;
+    return API.get(url, config);
+  },
 };
 const retryWrapper = (axios, options) => {
   const max_time = 1;

@@ -92,7 +92,7 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
     );
   };
   const handleOnExplorer = async () => {
-    if (chainInfo.raw.txExplorer && txHash) {
+    if (chainInfo.raw?.txExplorer && txHash) {
       const url = handleUrl(txHash);
       await openLink(url);
     }

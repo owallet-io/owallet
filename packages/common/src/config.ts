@@ -474,6 +474,11 @@ export const EmbedChainInfos: AppChainInfo[] = [
       return [this.stakeCurrency];
     },
     features: ["stargate", "ibc-transfer", "cosmwasm"],
+    txExplorer: {
+      name: "OraiBridgescan",
+      txUrl: "https://scan.bridge.orai.io/txs/{txHash}",
+      accountUrl: "https://scan.bridge.orai.io/account/{address}",
+    },
   },
   {
     chainId: "oraibtc-mainnet-1",

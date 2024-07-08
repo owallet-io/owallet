@@ -122,7 +122,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
     );
   };
   const handleOnExplorer = async () => {
-    if (chainInfo.raw.txExplorer && txHash) {
+    if (chainInfo?.raw?.txExplorer && txHash) {
       const url = handleUrl(txHash);
       await openLink(url);
     }
@@ -260,7 +260,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
         <View style={styles.containerBottomButton}>
           <Text style={styles.txtPending}>
             The transaction is still pending. {"\n"}
-            You can check the status on {chainInfo.raw.txExplorer.name}
+            You can check the status on {chainInfo?.raw?.txExplorer?.name}
           </Text>
           <OWButton
             label="View on Explorer"

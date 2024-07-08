@@ -1,7 +1,7 @@
 import { NftItem } from "@src/screens/nfts/components/nft-item";
 import React from "react";
 import { StyleSheet, View } from "react-native";
-import { useQuery } from "@apollo/client";
+
 import { observer } from "mobx-react-lite";
 import { OwnedTokens } from "@src/graphql/queries";
 import { useStore } from "@src/stores";
@@ -10,14 +10,10 @@ import OWText from "@components/text/ow-text";
 import { useTheme } from "@src/themes/theme-provider";
 import { CoinPretty, PricePretty } from "@owallet/unit";
 import { OWEmpty } from "@src/components/empty";
-export interface IItemNft {
-  priceFloor: string;
-  name: string;
-  tokenId: string;
-  url: string;
-  // type: string;
-}
-export const NftCard = observer(() => {
+import { useQuery } from "@tanstack/react-query";
+import { API } from "@src/common/api";
+import { urlAiRight } from "@src/common/constants";
+export const NftOraiCard = observer(() => {
   const { chainStore, accountStore, priceStore, keyRingStore, appInitStore } =
     useStore();
   const account = accountStore.getAccount(
@@ -29,20 +25,35 @@ export const NftCard = observer(() => {
     keyRingStore.keyRingLedgerAddresses,
     true
   );
-  const { loading, error, data } = useQuery(OwnedTokens, {
-    variables: {
-      filterForSale: null,
-      owner: address,
-      limit:
-        appInitStore.getInitApp.isAllNetworks ||
-        chainStore.current.chainId === ChainIdEnum.Stargaze
-          ? 50
-          : 0,
-      filterByCollectionAddrs: null,
-      sortBy: "ACQUIRED_DESC",
+  const { data, refetch } = useQuery({
+    queryKey: ["nft-orai", address, chainStore.current.chainId],
+    queryFn: () => {
+      return API.getNftsOraichain(
+        {
+          address,
+        },
+        { baseURL: urlAiRight }
+      );
     },
-    fetchPolicy: "cache-and-network",
+    ...{
+      initialData: null,
+    },
   });
+  // const { loading, error, data } = useQuery(OwnedTokens, {
+  //   variables: {
+  //     filterForSale: null,
+  //     owner: address,
+  //     limit:
+  //       appInitStore.getInitApp.isAllNetworks ||
+  //       chainStore.current.chainId === ChainIdEnum.Stargaze
+  //         ? 50
+  //         : 0,
+  //     filterByCollectionAddrs: null,
+  //     sortBy: "ACQUIRED_DESC",
+  //   },
+  //   fetchPolicy: "cache-and-network",
+  // });
+  console.log(data, "data");
   const nfts = data?.tokens?.tokens || [];
   const nftsFilter = nfts.filter(
     (item, index) => item?.media?.type === "image"
@@ -70,9 +81,7 @@ export const NftCard = observer(() => {
             <OWText style={styles.price}>{totalPrice?.toString()}</OWText>
           </View>
           <View style={styles.containerList}>
-            {nftsFilter.map((it, index) => {
-              console.log(it, "it");
-              const item: IItemNft = {};
+            {nftsFilter.map((item, index) => {
               return <NftItem key={index} item={item} />;
             })}
           </View>
