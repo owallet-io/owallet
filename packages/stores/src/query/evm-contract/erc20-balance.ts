@@ -24,7 +24,7 @@ export class ObservableQueryErc20Balance extends ObservableChainQuery<Erc20Contr
   }
 
   protected canFetch(): boolean {
-    return this.contractAddress.length !== 0 && this.walletAddress !== "";
+    return this.contractAddress?.length !== 0 && this.walletAddress !== "";
   }
   protected async fetchResponse(): Promise<
     QueryResponse<Erc20ContractBalance>

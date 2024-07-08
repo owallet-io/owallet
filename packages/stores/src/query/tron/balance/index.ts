@@ -88,7 +88,7 @@ export class ObservableQueryTronBalances extends ObservableChainQuery<Balances> 
 
   protected canFetch(): boolean {
     // If bech32 address is empty, it will always fail, so don't need to fetch it.
-    return this.walletAddress.length > 0;
+    return this.walletAddress?.length > 0;
   }
 
   @override
