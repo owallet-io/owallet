@@ -209,7 +209,7 @@ export const SendPage: FunctionComponent<{
       style={{
         height: "100%",
         width: "100vw",
-        overflowX: "auto",
+        overflow: "scroll",
         backgroundColor: colors["neutral-surface-bg"],
       }}
     >
@@ -322,7 +322,7 @@ export const SendPage: FunctionComponent<{
         <div className={style.container}>
           <div
             style={{
-              height: "85%",
+              height: "80%",
               overflow: "scroll",
               padding: 16,
               paddingTop: 0,
@@ -398,7 +398,7 @@ export const SendPage: FunctionComponent<{
               position: "absolute",
               bottom: 0,
               width: "100%",
-              height: "15%",
+              height: "12%",
               backgroundColor: colors["neutral-surface-card"],
               borderTop: "1px solid" + colors["neutral-border-default"],
             }}
