@@ -466,7 +466,7 @@ export const DetailsBrowserScreen = observer((props) => {
                     ? { flex: 0, height: 0, opacity: 0 }
                     : {}
                 }
-                cacheEnabled={true}
+                // cacheEnabled={true}
                 injectedJavaScriptBeforeContentLoadedForMainFrameOnly={false}
                 injectedJavaScriptForMainFrameOnly={false}
                 injectedJavaScriptBeforeContentLoaded={sourceCode}
