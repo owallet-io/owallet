@@ -12,7 +12,7 @@ import {
   MapNetworkToChainId,
   unknownToken,
 } from "@owallet/common";
-import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
+import { CoinPretty, Dec } from "@owallet/unit";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
 import { AllNetworkItemTx } from "@owallet/types";

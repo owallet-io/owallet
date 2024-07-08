@@ -12,10 +12,8 @@ import { API } from "@src/common/api";
 import {
   capitalizedText,
   formatContractAddress,
-  MapNetworkToChainId,
   maskedNumber,
   openLink,
-  shortenAddress,
 } from "@src/utils/helper";
 import moment from "moment";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
@@ -25,7 +23,7 @@ import { Text } from "@src/components/text";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
 import {
   ChainIdEnum,
-  isMilliseconds,
+  MapNetworkToChainId,
   OasisNetwork,
   unknownToken,
 } from "@owallet/common";
@@ -36,7 +34,7 @@ import { Currency } from "@owallet/types";
 
 import { getTimeMilliSeconds, urlTxHistory } from "@src/common/constants";
 import { OWEmpty } from "@src/components/empty";
-import { AllNetworkItemTx } from "@src/screens/transactions/all-network/all-network.types";
+import { AllNetworkItemTx } from "@owallet/types";
 
 export const OasisDetailTx: FunctionComponent = observer((props) => {
   const { chainStore, priceStore } = useStore();
