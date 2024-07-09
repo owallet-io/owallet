@@ -64,51 +64,6 @@ const TokenItem: FC<{
             await chainStore.saveLastViewChainId();
           }
           onSelectToken?.(item);
-          if (
-            item.chainInfo?.chainId === ChainIdEnum.TRON ||
-            chainStore.current.chainId === ChainIdEnum.TRON
-          ) {
-            history.push({
-              pathname: "/send-tron",
-              state: {
-                token: item,
-              },
-            });
-            return;
-          }
-          if (
-            item.chainInfo?.chainId === ChainIdEnum.Bitcoin ||
-            chainStore.current.chainId === ChainIdEnum.Bitcoin
-          ) {
-            history.push({
-              pathname: "/send-btc",
-              state: {
-                token: item,
-              },
-            });
-            return;
-          }
-
-          if (
-            //@ts-ignore
-            item.chainInfo?.networkType === "evm" ||
-            chainStore.current.networkType === "evm"
-          ) {
-            history.push({
-              pathname: "/send-evm",
-              state: {
-                token: item,
-              },
-            });
-            return;
-          }
-          history.push({
-            pathname: "/send",
-            state: {
-              token: item,
-            },
-          });
-          return;
         } catch (err) {
           console.log("err", err);
         }
