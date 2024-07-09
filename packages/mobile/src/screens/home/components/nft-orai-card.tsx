@@ -17,17 +17,14 @@ import { IItemNft } from "./nft-card";
 export const NftOraiCard = observer(() => {
   const { chainStore, accountStore, priceStore, keyRingStore, appInitStore } =
     useStore();
-  const account = accountStore.getAccount(
-    appInitStore.getInitApp.isAllNetworks
-      ? ChainIdEnum.Stargaze
-      : chainStore.current.chainId
-  );
+  const account = accountStore.getAccount(ChainIdEnum.Oraichain);
+  const chainInfo = chainStore.getChain(ChainIdEnum.Oraichain);
   const address = account.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses,
     true
   );
   const { data, refetch } = useQuery({
-    queryKey: ["nft-orai", address, chainStore.current.chainId],
+    queryKey: ["nft-orai", address],
     queryFn: () => {
       return API.getNftsOraichain(
         {
@@ -47,11 +44,10 @@ export const NftOraiCard = observer(() => {
   const { colors } = useTheme();
   const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
 
-  // const tokenInfo = chainStore.current.stakeCurrency || unknownToken;
   let totalPrice = new PricePretty(fiatCurrency, "0");
   for (const nft of nfts) {
     const tokenInfo = nft?.offer
-      ? chainStore.current.currencies.find(
+      ? chainInfo.currencies.find(
           (item, index) =>
             item?.coinDenom?.toUpperCase() === nft?.offer?.denom?.toUpperCase()
         )
@@ -73,7 +69,7 @@ export const NftOraiCard = observer(() => {
             {nfts.map((it, index) => {
               const tokenFound =
                 it?.offer &&
-                chainStore.current.currencies.find(
+                chainInfo.currencies.find(
                   (item, index) =>
                     item?.coinDenom?.toUpperCase() ===
                     it?.offer?.denom?.toUpperCase()

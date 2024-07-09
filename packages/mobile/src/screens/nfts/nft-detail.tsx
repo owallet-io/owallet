@@ -33,13 +33,20 @@ import { IItemNft } from "../home/components";
 import { API } from "@src/common/api";
 import { PageHeader } from "@src/components/header/header-new";
 export const NftDetailScreen: FunctionComponent = observer((props) => {
-  const { chainStore, accountStore, priceStore, queriesStore, modalStore } =
-    useStore();
+  const {
+    chainStore,
+    accountStore,
+    priceStore,
+    appInitStore,
+    queriesStore,
+    modalStore,
+  } = useStore();
   const { item } = props.route?.params;
   return (
     <PageWithView>
       <PageHeader title="NFT" subtitle={chainStore.current.chainName} />
-      {chainStore.current.chainId === ChainIdEnum.Oraichain ? (
+      {chainStore.current.chainId === ChainIdEnum.Oraichain ||
+      appInitStore.getInitApp.isAllNetworks ? (
         <NftOraichainDetail item={item} />
       ) : (
         <NftStargazeDetail item={item} />
@@ -53,8 +60,9 @@ const NftOraichainDetail: FC<{
 }> = observer(({ item }) => {
   const { chainStore, accountStore, priceStore, queriesStore, modalStore } =
     useStore();
+  const chainInfo = chainStore.getChain(ChainIdEnum.Oraichain);
   const { data, refetch } = useQueryFetch({
-    queryKey: ["nft-detail-orai", item?.tokenId, chainStore.current.chainId],
+    queryKey: ["nft-detail-orai", item?.tokenId],
     queryFn: () => {
       return API.getNftOraichain(
         {
@@ -71,7 +79,7 @@ const NftOraichainDetail: FC<{
   const token = data?.data;
   const tokenInfo =
     (token?.offer &&
-      chainStore.current.currencies.find(
+      chainInfo.currencies.find(
         (item, index) =>
           item?.coinDenom?.toUpperCase() === token?.offer?.denom?.toUpperCase()
       )) ||
@@ -159,7 +167,11 @@ const NftOraichainDetail: FC<{
           </View>
           <View style={styles.rightItem}></View>
         </View> */}
-
+          <ItemReceivedToken
+            btnCopy={false}
+            label="Standard"
+            valueDisplay={`CW-${token?.version === 2 ? "1155" : "721"}`}
+          />
           <ItemReceivedToken
             btnCopy={false}
             IconRightComponent={

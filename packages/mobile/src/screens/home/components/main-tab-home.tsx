@@ -16,7 +16,7 @@ export const MainTabHome: FC<{
   dataTokens: ViewRawToken[];
 }> = observer(({ dataTokens }) => {
   const { colors } = useTheme();
-  const { chainStore } = useStore();
+  const { chainStore, appInitStore } = useStore();
   const [activeTab, setActiveTab] = useState(tabs[0]);
   const styles = styling(colors);
   const renderContentTab = () => {
@@ -24,11 +24,13 @@ export const MainTabHome: FC<{
       case TabEnum.TOKEN:
         return <TokensCardAll dataTokens={dataTokens} />;
       case TabEnum.NFT:
-        return chainStore.current.chainId === ChainIdEnum.Oraichain ? (
-          <NftOraiCard />
-        ) : (
-          <NftCard />
-        );
+        if (
+          chainStore.current.chainId === ChainIdEnum.Oraichain ||
+          appInitStore.getInitApp.isAllNetworks
+        ) {
+          return <NftOraiCard />;
+        }
+        return <NftCard />;
       case TabEnum.History:
         return <HistoryCard />;
     }
