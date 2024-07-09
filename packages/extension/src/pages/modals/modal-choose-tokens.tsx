@@ -22,15 +22,14 @@ const TokenItem: FC<{
   const { priceStore, chainStore } = useStore();
 
   const name = item?.currency?.coinDenom;
-
   const image = item.currency?.coinImageUrl;
-
   let contractAddress: string = "";
   let amount = item?.balance
     ?.trim(true)
     ?.shrink(true)
     ?.maxDecimals(6)
     ?.hideDenom(true);
+
   // If the currency is the IBC Currency.
   // Show the amount as slightly different with other currencies.
   // Show the actual coin denom to the top and just show the coin denom without channel info to the bottom.
@@ -111,15 +110,7 @@ export const ModalChooseTokens: FC<{
   amountConfig: IAmountConfig;
   onSelectToken?: (item) => void;
 }> = observer(({ isOpen, onRequestClose, onSelectToken, amountConfig }) => {
-  const [refreshing, setRefreshing] = React.useState(false);
-  const {
-    chainStore,
-    accountStore,
-    keyRingStore,
-    queriesStore,
-    priceStore,
-    hugeQueriesStore,
-  } = useStore();
+  const { chainStore, accountStore, keyRingStore, queriesStore } = useStore();
   const totalSizeChain = chainStore.chainInfos.length;
   const allChainMap = new Map();
   if (allChainMap.size < totalSizeChain) {
@@ -201,10 +192,7 @@ export const ModalChooseTokens: FC<{
           title={"Select token".toUpperCase()}
           onRequestClose={onRequestClose}
         />
-        {/* <TokensCard
-          onSelectToken={onSelect}
-          dataTokens={dataTokens.filter(token => token.chainInfo.chainId === chainStore.current.chainId)}
-        /> */}
+
         {displayTokens
           .filter((token) => {
             if (
