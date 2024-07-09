@@ -4,10 +4,6 @@ import styles from "./style.module.scss";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
 import { HeaderModal } from "../home/components/header-modal";
-// import { ChainIdEnum, DenomHelper } from "@owallet/common";
-// import { useMultipleAssets } from "../../hooks/use-multiple-assets";
-// import classnames from "classnames";
-// import { TokensCard } from "../home/components/tokens-card";
 import { IAmountConfig } from "@owallet/hooks";
 import { ObservableQueryBalanceInner } from "@owallet/stores";
 import {
@@ -18,19 +14,15 @@ import {
   extractDataInParentheses,
   unknownToken,
 } from "@owallet/common";
-import { useHistory } from "react-router";
 
 const TokenItem: FC<{
   item: any;
   onSelectToken?: (token) => void;
 }> = observer(({ item, onSelectToken }) => {
   const { priceStore, chainStore } = useStore();
-  const history = useHistory();
 
   const name = item?.currency?.coinDenom;
-  const getName = () => {
-    return removeDataInParentheses(name);
-  };
+
   const image = item.currency?.coinImageUrl;
 
   let contractAddress: string = "";
@@ -152,14 +144,6 @@ export const ModalChooseTokens: FC<{
     keyRingStore.keyRingLedgerAddresses,
     false
   );
-  // const { dataTokens } = useMultipleAssets(
-  //   accountStore,
-  //   priceStore,
-  //   chainStore,
-  //   refreshing,
-  //   accountOrai.bech32Address,
-  //   hugeQueriesStore
-  // );
 
   const onSelect = (item) => {
     const selectedKey = item?.currency?.coinMinimalDenom;
@@ -202,13 +186,6 @@ export const ModalChooseTokens: FC<{
       });
     setDisplayTokens(displayTokens);
   }, [chainStore.current.chainId, addressToFetch]);
-
-  // const selectedKey = amountConfig.sendCurrency.coinMinimalDenom;
-  // const setSelectedKey = (key: string | undefined) => {
-  //   const currency = amountConfig.sendableCurrencies.find(cur => cur.coinMinimalDenom === key);
-
-  //   amountConfig.setSendCurrency(currency);
-  // };
 
   return (
     <SlidingPane
