@@ -1,6 +1,6 @@
 import React, { FC, FunctionComponent, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
-import { StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { useSmartNavigation } from "../../navigation.provider";
 import {
   _keyExtract,
@@ -11,6 +11,7 @@ import {
 import {
   PageWithScrollView,
   PageWithScrollViewInBottomTabView,
+  PageWithView,
 } from "../../components/page";
 import { useTheme } from "@src/themes/theme-provider";
 // import FastImage from "react-native-fast-image";
@@ -30,13 +31,21 @@ import ItemReceivedToken from "../transactions/components/item-received-token";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { IItemNft } from "../home/components";
 import { API } from "@src/common/api";
+import { PageHeader } from "@src/components/header/header-new";
 export const NftDetailScreen: FunctionComponent = observer((props) => {
   const { chainStore, accountStore, priceStore, queriesStore, modalStore } =
     useStore();
   const { item } = props.route?.params;
-  if (chainStore.current.chainId === ChainIdEnum.Oraichain)
-    return <NftOraichainDetail item={item} />;
-  return <NftStargazeDetail item={item} />;
+  return (
+    <PageWithView>
+      <PageHeader title="NFT" subtitle={chainStore.current.chainName} />
+      {chainStore.current.chainId === ChainIdEnum.Oraichain ? (
+        <NftOraichainDetail item={item} />
+      ) : (
+        <NftStargazeDetail item={item} />
+      )}
+    </PageWithView>
+  );
 });
 
 const NftOraichainDetail: FC<{
@@ -76,7 +85,7 @@ const NftOraichainDetail: FC<{
   const { colors } = useTheme();
   const styles = styling();
   return (
-    <PageWithScrollView showsVerticalScrollIndicator={false}>
+    <ScrollView showsVerticalScrollIndicator={false}>
       <View style={styles.container}>
         <ProgressiveFastImage
           style={styles.image}
@@ -187,7 +196,7 @@ const NftOraichainDetail: FC<{
           <OWText style={styles.txtDes}>{token?.description}</OWText>
         </View>
       </View>
-    </PageWithScrollView>
+    </ScrollView>
   );
 });
 const NftStargazeDetail: FC<{
@@ -220,7 +229,7 @@ const NftStargazeDetail: FC<{
     );
   };
   return (
-    <PageWithScrollView showsVerticalScrollIndicator={false}>
+    <ScrollView showsVerticalScrollIndicator={false}>
       <View style={styles.container}>
         <ProgressiveFastImage
           style={styles.image}
@@ -330,7 +339,7 @@ const NftStargazeDetail: FC<{
           <OWText style={styles.txtDes}>{token?.description}</OWText>
         </View>
       </View>
-    </PageWithScrollView>
+    </ScrollView>
   );
 });
 

@@ -177,7 +177,7 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: HEADER_KEY.showNetworkHeader,
   },
   [SCREENS.NftsDetail]: {
-    title: "NFT",
+    title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.UniversalSwapScreen]: {
     // title: HEADER_KEY.notShowHeader,
