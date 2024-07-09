@@ -9,8 +9,6 @@ import { HistoryCard } from "@src/screens/transactions";
 import { TokensCardAll } from "./tokens-card-all";
 import { NftCard } from "./nft-card";
 import { useStore } from "@src/stores";
-import { ChainIdEnum } from "@owallet/common";
-import { NftOraiCard } from "./nft-orai-card";
 
 export const MainTabHome: FC<{
   dataTokens: ViewRawToken[];
@@ -24,12 +22,6 @@ export const MainTabHome: FC<{
       case TabEnum.TOKEN:
         return <TokensCardAll dataTokens={dataTokens} />;
       case TabEnum.NFT:
-        if (
-          chainStore.current.chainId === ChainIdEnum.Oraichain ||
-          appInitStore.getInitApp.isAllNetworks
-        ) {
-          return <NftOraiCard />;
-        }
         return <NftCard />;
       case TabEnum.History:
         return <HistoryCard />;

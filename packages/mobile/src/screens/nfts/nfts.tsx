@@ -28,7 +28,7 @@ import { OWSubTitleHeader } from "@src/components/header";
 // import { SoulboundNftInfoResponse } from "../home/types";
 import { useStore } from "@src/stores";
 import images from "@src/assets/images";
-import { useSoulbound } from "./hooks/useSoulboundNft";
+// import { useSoulbound } from "./hooks/useSoulboundNft";
 import OWFlatList from "@src/components/page/ow-flat-list";
 // import { SkeletonNft } from "../home/tokens-card";
 export const NftsScreen: FunctionComponent = observer((props) => {
@@ -38,87 +38,88 @@ export const NftsScreen: FunctionComponent = observer((props) => {
   const smartNavigation = useSmartNavigation();
   const { colors } = useTheme();
   const styles = styling(colors);
-  const { tokenIds, soulboundNft, isLoading } = useSoulbound(
-    chainStore.current.chainId,
-    account,
-    chainStore.current.rpc
-  );
+  // const { tokenIds, soulboundNft, isLoading } = useSoulbound(
+  //   chainStore.current.chainId,
+  //   account,
+  //   chainStore.current.rpc
+  // );
 
-  const onDetail = (item) => {
-    smartNavigation.navigateSmart("Nfts.Detail", { item });
-  };
+  // const onDetail = (item) => {
+  //   smartNavigation.navigateSmart("Nfts.Detail", { item });
+  // };
 
-  const _renderFlatlistOrchai = ({
-    item,
-    index,
-  }: {
-    item: any;
-    index: number;
-  }) => {
-    return (
-      <TouchableOpacity
-        style={styles.ContainerBtnNft}
-        onPress={() =>
-          onDetail({
-            name: item.extension.name,
-            id: tokenIds[index],
-            picture: item.token_uri,
-          })
-        }
-      >
-        <View
-          style={[styles.wrapViewNft, { backgroundColor: colors["box-nft"] }]}
-        >
-          <ProgressiveImage
-            source={{
-              uri: item.token_uri,
-            }}
-            style={styles.containerImgNft}
-            resizeMode="cover"
-            styleContainer={styles.containerImgNft}
-          />
-          <Text
-            weight="700"
-            variant="body2"
-            numberOfLines={1}
-            style={styles.titleNft}
-          >
-            {item?.extension?.name}
-          </Text>
-          <Text variant="body2" numberOfLines={2} style={styles.subTextNft}>
-            {item?.extension?.description}
-          </Text>
-        </View>
-      </TouchableOpacity>
-    );
-  };
+  // const _renderFlatlistOrchai = ({
+  //   item,
+  //   index,
+  // }: {
+  //   item: any;
+  //   index: number;
+  // }) => {
+  //   return (
+  //     <TouchableOpacity
+  //       style={styles.ContainerBtnNft}
+  //       onPress={() =>
+  //         onDetail({
+  //           name: item.extension.name,
+  //           id: tokenIds[index],
+  //           picture: item.token_uri,
+  //         })
+  //       }
+  //     >
+  //       <View
+  //         style={[styles.wrapViewNft, { backgroundColor: colors["box-nft"] }]}
+  //       >
+  //         <ProgressiveImage
+  //           source={{
+  //             uri: item.token_uri,
+  //           }}
+  //           style={styles.containerImgNft}
+  //           resizeMode="cover"
+  //           styleContainer={styles.containerImgNft}
+  //         />
+  //         <Text
+  //           weight="700"
+  //           variant="body2"
+  //           numberOfLines={1}
+  //           style={styles.titleNft}
+  //         >
+  //           {item?.extension?.name}
+  //         </Text>
+  //         <Text variant="body2" numberOfLines={2} style={styles.subTextNft}>
+  //           {item?.extension?.description}
+  //         </Text>
+  //       </View>
+  //     </TouchableOpacity>
+  //   );
+  // };
 
   return (
-    <PageWithView>
-      <OWSubTitleHeader title="My NFTs" />
-      <OWBox style={styles.containerBox}>
-        <View style={styles.wrapFlatlist}>
-          <OWFlatList
-            numColumns={2}
-            columnWrapperStyle={{ justifyContent: "space-between" }}
-            data={soulboundNft}
-            renderItem={_renderFlatlistOrchai}
-            loading={isLoading}
-            // SkeletonComponent={<SkeletonNft />}
-            keyExtractor={_keyExtract}
-            containerSkeletonStyle={{
-              flexWrap: "wrap",
-              flexDirection: "row",
-              justifyContent: "space-between",
-            }}
-            skeletonStyle={{
-              flexBasis: "50%",
-            }}
-            showsVerticalScrollIndicator={false}
-          />
-        </View>
-      </OWBox>
-    </PageWithView>
+    // <PageWithView>
+    //   <OWSubTitleHeader title="My NFTs" />
+    //   <OWBox style={styles.containerBox}>
+    //     <View style={styles.wrapFlatlist}>
+    //       <OWFlatList
+    //         numColumns={2}
+    //         columnWrapperStyle={{ justifyContent: "space-between" }}
+    //         data={soulboundNft}
+    //         renderItem={_renderFlatlistOrchai}
+    //         loading={isLoading}
+    //         // SkeletonComponent={<SkeletonNft />}
+    //         keyExtractor={_keyExtract}
+    //         containerSkeletonStyle={{
+    //           flexWrap: "wrap",
+    //           flexDirection: "row",
+    //           justifyContent: "space-between",
+    //         }}
+    //         skeletonStyle={{
+    //           flexBasis: "50%",
+    //         }}
+    //         showsVerticalScrollIndicator={false}
+    //       />
+    //     </View>
+    //   </OWBox>
+    // </PageWithView>
+    <></>
   );
 });
 

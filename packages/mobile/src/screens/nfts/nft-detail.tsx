@@ -44,7 +44,15 @@ export const NftDetailScreen: FunctionComponent = observer((props) => {
   const { item } = props.route?.params;
   return (
     <PageWithView>
-      <PageHeader title="NFT" subtitle={chainStore.current.chainName} />
+      <PageHeader
+        title="NFT"
+        subtitle={
+          chainStore.current.chainId === ChainIdEnum.Oraichain ||
+          appInitStore.getInitApp.isAllNetworks
+            ? "Oraichain"
+            : chainStore.current.chainName
+        }
+      />
       {chainStore.current.chainId === ChainIdEnum.Oraichain ||
       appInitStore.getInitApp.isAllNetworks ? (
         <NftOraichainDetail item={item} />
