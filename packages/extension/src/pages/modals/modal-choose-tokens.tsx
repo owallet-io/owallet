@@ -273,15 +273,27 @@ export const ModalChooseTokens: FC<{
           onSelectToken={onSelect}
           dataTokens={dataTokens.filter(token => token.chainInfo.chainId === chainStore.current.chainId)}
         /> */}
-        {displayTokens.map((token, i) => {
-          return (
-            <TokenItem
-              onSelectToken={onSelect}
-              key={i.toString()}
-              item={token}
-            />
-          );
-        })}
+        {displayTokens
+          .filter((token) => {
+            if (
+              chainStore.current.chainId === ChainIdEnum.OraiBridge ||
+              chainStore.current.chainId === ChainIdEnum.OraiBTCBridge
+            ) {
+              return token;
+            } else {
+              const amount = token?.balance?.toDec().toString();
+              return Number(amount) > 0.1 ? token : null;
+            }
+          })
+          .map((token, i) => {
+            return (
+              <TokenItem
+                onSelectToken={onSelect}
+                key={i.toString()}
+                item={token}
+              />
+            );
+          })}
       </div>
     </SlidingPane>
   );
