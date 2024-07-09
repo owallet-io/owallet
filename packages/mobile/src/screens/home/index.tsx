@@ -28,7 +28,7 @@ import { AccountBoxAll } from "./components/account-box-new";
 import { EarningCardNew } from "./components/earning-card-new";
 import { InjectedProviderUrl } from "../web/config";
 import { useMultipleAssets } from "@src/screens/home/hooks/use-multiple-assets";
-import { PricePretty } from "@owallet/unit";
+import { IntPretty, PricePretty } from "@owallet/unit";
 import {
   chainInfos,
   getTokensFromNetwork,
@@ -41,7 +41,9 @@ import { showToast } from "@src/utils/helper";
 import ByteBrew from "react-native-bytebrew-sdk";
 
 import { MainTabHome } from "./components";
-
+import { sha256 } from "sha.js";
+import { Mixpanel } from "mixpanel-react-native";
+const mixpanel = globalThis.mixpanel as Mixpanel;
 export const HomeScreen: FunctionComponent = observer((props) => {
   const [refreshing, setRefreshing] = React.useState(false);
   const [refreshDate, setRefreshDate] = React.useState(Date.now());
@@ -320,6 +322,33 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   useEffect(() => {
     appInitStore.updatePrices(prices);
   }, [prices]);
+  useEffect(() => {
+    if (!totalPriceBalance || !accountOrai.bech32Address) return;
+    const hashedAddress = new sha256()
+      .update(accountOrai.bech32Address)
+      .digest("hex");
+
+    const amount = new IntPretty(totalPriceBalance || "0")
+      .maxDecimals(2)
+      .shrink(true)
+      .trim(true)
+      .locale(false)
+      .inequalitySymbol(true);
+
+    const logEvent = {
+      userId: hashedAddress,
+      totalPrice: amount?.toString() || "0",
+      currency: priceStore.defaultVsCurrency,
+    };
+    if (mixpanel) {
+      mixpanel.track("OWallet - Assets Managements", logEvent);
+    }
+    return () => {};
+  }, [
+    totalPriceBalance,
+    accountOrai.bech32Address,
+    priceStore.defaultVsCurrency,
+  ]);
   return (
     <PageWithScrollViewInBottomTabView
       refreshControl={

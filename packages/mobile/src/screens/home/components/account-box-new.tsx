@@ -1,4 +1,9 @@
-import React, { FunctionComponent, useState, useTransition } from "react";
+import React, {
+  FunctionComponent,
+  useEffect,
+  useState,
+  useTransition,
+} from "react";
 import { observer } from "mobx-react-lite";
 import { OWBox } from "@components/card";
 import {
@@ -40,6 +45,7 @@ export const AccountBoxAll: FunctionComponent<{
     appInitStore,
     queriesStore,
     keyRingStore,
+    priceStore,
   } = useStore();
   const [isOpen, setModalOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
