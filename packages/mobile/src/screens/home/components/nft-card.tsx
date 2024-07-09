@@ -13,6 +13,8 @@ import { OWEmpty } from "@src/components/empty";
 import { useNfts } from "@screens/nfts/hooks/useNfts";
 export const NftCard = observer(() => {
   const { chainStore, accountStore, keyRingStore, appInitStore } = useStore();
+  const { colors } = useTheme();
+  const styles = styling(colors);
   const account = accountStore.getAccount(chainStore.current.chainId);
   const address = account.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses,
@@ -23,8 +25,7 @@ export const NftCard = observer(() => {
     address,
     appInitStore.getInitApp.isAllNetworks
   );
-  const { colors } = useTheme();
-  const styles = styling(colors);
+
   return (
     <View style={styles.container}>
       {nfts?.length > 0 ? (

@@ -12,4 +12,5 @@ export interface IItemNft {
   creatorImage: string;
   version: "721" | "1155";
   description: string;
+  explorer: string;
 }

@@ -1,365 +1,164 @@
 import React, { FC, FunctionComponent, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { ScrollView, StyleSheet, View } from "react-native";
-import { useSmartNavigation } from "../../navigation.provider";
+
 import {
   _keyExtract,
   formatContractAddress,
   maskedNumber,
   openLink,
 } from "../../utils/helper";
-import {
-  PageWithScrollView,
-  PageWithScrollViewInBottomTabView,
-  PageWithView,
-} from "../../components/page";
+import { PageWithView } from "../../components/page";
 import { useTheme } from "@src/themes/theme-provider";
-// import FastImage from "react-native-fast-image";
+
 import { metrics } from "@src/themes";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import OWText from "@src/components/text/ow-text";
-import { useQuery } from "@apollo/client";
-import { Token } from "@src/graphql/queries";
+
 import { ChainIdEnum, unknownToken } from "@owallet/common";
-import { CoinPretty } from "@owallet/unit";
+
 import { useStore } from "@src/stores";
 import ProgressiveFastImage from "@freakycoder/react-native-progressive-fast-image";
 import images from "@src/assets/images";
 import LottieView from "lottie-react-native";
-import { useQuery as useQueryFetch } from "@tanstack/react-query";
 import ItemReceivedToken from "../transactions/components/item-received-token";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
-import { IItemNft } from "../home/components";
-import { API } from "@src/common/api";
+
 import { PageHeader } from "@src/components/header/header-new";
+import { useNft } from "./hooks/useNft";
+import { CoinPretty } from "@owallet/unit";
 export const NftDetailScreen: FunctionComponent = observer((props) => {
-  const {
-    chainStore,
-    accountStore,
-    priceStore,
-    appInitStore,
-    queriesStore,
-    modalStore,
-  } = useStore();
+  const { chainStore, priceStore, appInitStore } = useStore();
   const { item } = props.route?.params;
+  const nft = useNft(chainStore.current, item?.tokenId, item?.contractAddress);
+  // if (!nft) return;
+  const onBrowser = async () => {
+    if (!nft?.explorer) return;
+    await openLink(nft.explorer);
+  };
+  const { colors } = useTheme();
+  const styles = styling();
+
+  const balance = new CoinPretty(
+    nft?.tokenInfo || unknownToken,
+    nft?.floorPrice || "0"
+  );
+  const chainInfo = chainStore.getChain(nft?.network || ChainIdEnum.Oraichain);
   return (
     <PageWithView>
-      <PageHeader
-        title="NFT"
-        subtitle={
-          chainStore.current.chainId === ChainIdEnum.Oraichain ||
-          appInitStore.getInitApp.isAllNetworks
-            ? "Oraichain"
-            : chainStore.current.chainName
-        }
-      />
-      {chainStore.current.chainId === ChainIdEnum.Oraichain ||
-      appInitStore.getInitApp.isAllNetworks ? (
-        <NftOraichainDetail item={item} />
-      ) : (
-        <NftStargazeDetail item={item} />
-      )}
+      <PageHeader title="NFT" subtitle={chainInfo?.chainName || "Oraichain"} />
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={styles.container}>
+          <ProgressiveFastImage
+            style={styles.image}
+            source={{ uri: item?.url || nft?.url }}
+            onLoad={() => console.log("loaded")}
+            onError={() => console.log("error")}
+            thumbnailSource={images.thumnail_nft}
+            thumbnailImageStyle={styles.image}
+            loadingImageComponent={
+              <View style={styles.imgWrap}>
+                <LottieView
+                  source={require("@src/assets/animations/loading_owallet.json")}
+                  style={{ width: 200, height: 200 }}
+                  autoPlay
+                  loop
+                  speed={0.5}
+                />
+              </View>
+            }
+            loadingSource={require("@assets/animations/loading.gif")}
+          />
+          <View style={styles.containerBox}>
+            <View style={styles.topHeader}>
+              <View style={styles.headerLeft}>
+                <OWIcon
+                  type="images"
+                  source={{
+                    uri: nft?.creatorImage,
+                  }}
+                  resizeMode="cover"
+                  size={24}
+                  style={{
+                    borderRadius: 999,
+                  }}
+                />
+                <OWText style={styles.txtTitleTop}>{nft?.name}</OWText>
+              </View>
+              <View style={styles.headerRight}>
+                <OWText
+                  style={{
+                    backgroundColor: colors["neutral-surface-bg2"],
+                    paddingHorizontal: 4,
+                    paddingVertical: 2,
+                    borderRadius: 2,
+                  }}
+                  color={colors["neutral-text-title"]}
+                  size={16}
+                  weight="600"
+                >
+                  #{nft?.tokenId}
+                </OWText>
+              </View>
+            </View>
+            <OWText style={styles.txtFloorPrice}>Floor price</OWText>
+            <OWText style={styles.txtAmount}>
+              {balance.denom !== unknownToken.coinDenom
+                ? `${maskedNumber(
+                    balance?.trim(true)?.hideDenom(true)?.toString()
+                  )} ${balance?.denom}`
+                : "Not for sale"}
+            </OWText>
+            <OWText style={styles.txtPrice}>
+              {priceStore.calculatePrice(balance)?.toString()}
+            </OWText>
+          </View>
+          <View style={styles.containerBox}>
+            {nft?.version ? (
+              <ItemReceivedToken
+                btnCopy={false}
+                label="Standard"
+                valueDisplay={`CW-${nft?.version}`}
+              />
+            ) : null}
+            <ItemReceivedToken
+              btnCopy={false}
+              IconRightComponent={
+                <View>
+                  <OWButtonIcon
+                    name="tdesignjump"
+                    sizeIcon={20}
+                    fullWidth={false}
+                    onPress={onBrowser}
+                    colorIcon={colors["neutral-text-action-on-light-bg"]}
+                  />
+                </View>
+              }
+              label="Contract address"
+              valueDisplay={formatContractAddress(nft?.contractAddress)}
+              value={nft?.contractAddress}
+            />
+            <ItemReceivedToken
+              label="Token ID"
+              valueDisplay={`${nft?.tokenId}` || "0"}
+              value={`${nft?.tokenId}` || "0"}
+            />
+          </View>
+        </View>
+        <View style={styles.containerBox}>
+          <View style={styles.topDes}>
+            <OWText style={styles.txtTitleDes}>Description</OWText>
+          </View>
+          <View
+            style={{
+              paddingVertical: 16,
+            }}
+          >
+            <OWText style={styles.txtDes}>{nft?.description}</OWText>
+          </View>
+        </View>
+      </ScrollView>
     </PageWithView>
-  );
-});
-
-const NftOraichainDetail: FC<{
-  item: IItemNft;
-}> = observer(({ item }) => {
-  const { chainStore, accountStore, priceStore, queriesStore, modalStore } =
-    useStore();
-  const chainInfo = chainStore.getChain(ChainIdEnum.Oraichain);
-  const { data, refetch } = useQueryFetch({
-    queryKey: ["nft-detail-orai", item?.tokenId],
-    queryFn: () => {
-      return API.getNftOraichain(
-        {
-          tokenId: item?.tokenId,
-        },
-        { baseURL: "https://developers.airight.io" }
-      );
-    },
-    ...{
-      initialData: null,
-    },
-  });
-  console.log(data, "data");
-  const token = data?.data;
-  const tokenInfo =
-    (token?.offer &&
-      chainInfo.currencies.find(
-        (item, index) =>
-          item?.coinDenom?.toUpperCase() === token?.offer?.denom?.toUpperCase()
-      )) ||
-    unknownToken;
-  const balance = new CoinPretty(tokenInfo, token?.offer?.amount || "0");
-  const url = "https://airight.io/artwork";
-  const onBrowser = async () => {
-    if (!token?.id) return;
-    await openLink(`${url}/${token?.id}`);
-  };
-  const { colors } = useTheme();
-  const styles = styling();
-  return (
-    <ScrollView showsVerticalScrollIndicator={false}>
-      <View style={styles.container}>
-        <ProgressiveFastImage
-          style={styles.image}
-          source={{ uri: item?.url || token?.url }}
-          onLoad={() => console.log("loaded")}
-          onError={() => console.log("error")}
-          thumbnailSource={images.thumnail_nft}
-          thumbnailImageStyle={styles.image}
-          loadingImageComponent={
-            <View style={styles.imgWrap}>
-              <LottieView
-                source={require("@src/assets/animations/loading_owallet.json")}
-                style={{ width: 200, height: 200 }}
-                autoPlay
-                loop
-                speed={0.5}
-              />
-            </View>
-          }
-          loadingSource={require("@assets/animations/loading.gif")}
-        />
-        <View style={styles.containerBox}>
-          <View style={styles.topHeader}>
-            <View style={styles.headerLeft}>
-              <OWIcon
-                type="images"
-                source={{
-                  uri: token?.creatorProvider?.picture,
-                }}
-                resizeMode="cover"
-                size={24}
-                style={{
-                  borderRadius: 999,
-                }}
-              />
-              <OWText style={styles.txtTitleTop}>{token?.name}</OWText>
-            </View>
-            <View style={styles.headerRight}>
-              <OWText
-                style={{
-                  backgroundColor: colors["neutral-surface-bg2"],
-                  paddingHorizontal: 4,
-                  paddingVertical: 2,
-                  borderRadius: 2,
-                }}
-                color={colors["neutral-text-title"]}
-                size={16}
-                weight="600"
-              >
-                #{token?.id}
-              </OWText>
-            </View>
-          </View>
-          <OWText style={styles.txtFloorPrice}>Floor price</OWText>
-          <OWText style={styles.txtAmount}>
-            {balance.denom !== unknownToken.coinDenom
-              ? `${maskedNumber(
-                  balance?.trim(true)?.hideDenom(true)?.toString()
-                )} ${balance?.denom}`
-              : "Not for sale"}
-          </OWText>
-          <OWText style={styles.txtPrice}>
-            {priceStore.calculatePrice(balance)?.toString()}
-          </OWText>
-        </View>
-        <View style={styles.containerBox}>
-          {/* <View style={styles.itemBox}>
-          <View style={styles.leftItem}>
-            <Text>Standard</Text>
-            <Text>ERC-721</Text>
-          </View>
-          <View style={styles.rightItem}></View>
-        </View> */}
-          <ItemReceivedToken
-            btnCopy={false}
-            label="Standard"
-            valueDisplay={`CW-${token?.version === 2 ? "1155" : "721"}`}
-          />
-          <ItemReceivedToken
-            btnCopy={false}
-            IconRightComponent={
-              <View>
-                <OWButtonIcon
-                  name="tdesignjump"
-                  sizeIcon={20}
-                  fullWidth={false}
-                  onPress={onBrowser}
-                  colorIcon={colors["neutral-text-action-on-light-bg"]}
-                />
-              </View>
-            }
-            label="Contract address"
-            valueDisplay={formatContractAddress(token?.tokenContract)}
-            value={token?.tokenContract}
-          />
-          <ItemReceivedToken
-            label="Token ID"
-            valueDisplay={`${token?.id}` || "0"}
-            value={`${token?.id}` || "0"}
-          />
-        </View>
-      </View>
-      <View style={styles.containerBox}>
-        <View style={styles.topDes}>
-          <OWText style={styles.txtTitleDes}>Description</OWText>
-        </View>
-        <View
-          style={{
-            paddingVertical: 16,
-          }}
-        >
-          <OWText style={styles.txtDes}>{token?.description}</OWText>
-        </View>
-      </View>
-    </ScrollView>
-  );
-});
-const NftStargazeDetail: FC<{
-  item: any;
-}> = observer(({ item }) => {
-  const { chainStore, accountStore, priceStore, queriesStore, modalStore } =
-    useStore();
-  const { colors } = useTheme();
-
-  const { loading, error, data } = useQuery(Token, {
-    variables: {
-      collectionAddr: item?.contractAddress,
-      tokenId: item?.tokenId,
-    },
-  });
-
-  const styles = styling();
-  const token = data?.token;
-  const tokenInfo =
-    chainStore.getChain(ChainIdEnum.Stargaze).stakeCurrency || unknownToken;
-  const balance = new CoinPretty(
-    tokenInfo,
-    token?.collection?.floorPrice || "0"
-  );
-  const url = "https://www.stargaze.zone/m";
-  const onBrowser = async () => {
-    if (!token?.collection?.contractAddress || !token?.tokenId) return;
-    await openLink(
-      `${url}/${token?.collection?.contractAddress}/${token?.tokenId}`
-    );
-  };
-  return (
-    <ScrollView showsVerticalScrollIndicator={false}>
-      <View style={styles.container}>
-        <ProgressiveFastImage
-          style={styles.image}
-          source={{ uri: item?.url || token?.media?.url }}
-          onLoad={() => console.log("loaded")}
-          onError={() => console.log("error")}
-          thumbnailSource={images.thumnail_nft}
-          thumbnailImageStyle={styles.image}
-          loadingImageComponent={
-            <View style={styles.imgWrap}>
-              <LottieView
-                source={require("@src/assets/animations/loading_owallet.json")}
-                style={{ width: 200, height: 200 }}
-                autoPlay
-                loop
-                speed={0.5}
-              />
-            </View>
-          }
-          loadingSource={require("@assets/animations/loading.gif")}
-        />
-        <View style={styles.containerBox}>
-          <View style={styles.topHeader}>
-            <View style={styles.headerLeft}>
-              <OWIcon
-                type="images"
-                source={{
-                  uri: item?.url || token?.media?.url,
-                }}
-                size={24}
-                style={{
-                  borderRadius: 999,
-                }}
-              />
-              <OWText style={styles.txtTitleTop}>
-                {token?.collection?.name}
-              </OWText>
-            </View>
-            <View style={styles.headerRight}>
-              <OWText
-                style={{
-                  backgroundColor: colors["neutral-surface-bg2"],
-                  paddingHorizontal: 4,
-                  paddingVertical: 2,
-                  borderRadius: 2,
-                }}
-                color={colors["neutral-text-title"]}
-                size={16}
-                weight="600"
-              >
-                #{token?.tokenId}
-              </OWText>
-            </View>
-          </View>
-          <OWText style={styles.txtFloorPrice}>Floor price</OWText>
-          <OWText style={styles.txtAmount}>
-            {balance?.trim(true)?.toString()}
-          </OWText>
-          <OWText style={styles.txtPrice}>
-            {priceStore.calculatePrice(balance)?.toString()}
-          </OWText>
-        </View>
-        <View style={styles.containerBox}>
-          {/* <View style={styles.itemBox}>
-            <View style={styles.leftItem}>
-              <Text>Standard</Text>
-              <Text>ERC-721</Text>
-            </View>
-            <View style={styles.rightItem}></View>
-          </View> */}
-
-          <ItemReceivedToken
-            btnCopy={false}
-            IconRightComponent={
-              <View>
-                <OWButtonIcon
-                  name="tdesignjump"
-                  sizeIcon={20}
-                  fullWidth={false}
-                  onPress={onBrowser}
-                  colorIcon={colors["neutral-text-action-on-light-bg"]}
-                />
-              </View>
-            }
-            label="Contract address"
-            valueDisplay={formatContractAddress(
-              token?.collection?.contractAddress
-            )}
-            value={token?.collection?.contractAddress}
-          />
-          <ItemReceivedToken
-            label="Token ID"
-            valueDisplay={token?.tokenId || "0"}
-            value={token?.tokenId || "0"}
-          />
-        </View>
-      </View>
-      <View style={styles.containerBox}>
-        <View style={styles.topDes}>
-          <OWText style={styles.txtTitleDes}>Description</OWText>
-        </View>
-        <View
-          style={{
-            paddingVertical: 16,
-          }}
-        >
-          <OWText style={styles.txtDes}>{token?.description}</OWText>
-        </View>
-      </View>
-    </ScrollView>
   );
 });
 
