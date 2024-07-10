@@ -1,46 +1,57 @@
-import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
-import { Button } from "reactstrap";
-
-import { HeaderLayout } from "../../layouts";
-
+import React, {
+  FunctionComponent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import style from "./style.module.scss";
-
 import { useStore } from "../../stores";
-
 import classnames from "classnames";
-import { DataTab } from "./data-tab";
-import { DetailsTab } from "./details-tab";
 import { FormattedMessage, useIntl } from "react-intl";
-
 import { useHistory } from "react-router";
 import { observer } from "mobx-react-lite";
 import {
   useInteractionInfo,
-  // useSignDocHelper,
   useGasEvmConfig,
-  useFeeConfig,
   useMemoConfig,
-  useSignDocAmountConfig,
   useAmountConfig,
   useFeeEvmConfig,
 } from "@owallet/hooks";
-import { ADR36SignDocDetailsTab } from "./adr-36";
 import { ChainIdHelper } from "@owallet/cosmos";
 import Web3 from "web3";
 import { DetailsTabEvm } from "./details-tab-evm";
 import { DataTabEvm } from "./data-tab-evm";
 import { Dec, Int } from "@owallet/unit";
+import { Text } from "../../components/common/text";
+import { Address } from "../../components/address";
+import colors from "../../theme/colors";
+import { FeeModal } from "./modals/fee-modal";
+import { WalletStatus } from "@owallet/stores";
+import { DataModal } from "./modals/data-modal";
+import useOnClickOutside from "../../hooks/use-click-outside";
+import cn from "classnames/bind";
+import { Button } from "../../components/common/button";
+import { ModalFee } from "pages/modals/modal-fee";
+import { DataTab } from "./data-tab";
 
 enum Tab {
   Details,
   Data,
 }
 
+const cx = cn.bind(style);
+
 export const SignEvmPage: FunctionComponent = observer(() => {
   const history = useHistory();
 
   const [tab, setTab] = useState<Tab>(Tab.Details);
   const [dataSign, setDataSign] = useState(null);
+  const [openSetting, setOpenSetting] = useState(false);
+  const [dataSetting, setDataSetting] = useState(false);
+
+  const settingRef = useRef();
+  const dataRef = useRef();
 
   const intl = useIntl();
 
@@ -80,6 +91,11 @@ export const SignEvmPage: FunctionComponent = observer(() => {
   );
 
   const memoConfig = useMemoConfig(chainStore, current.chainId);
+  const accountInfo = accountStore.getAccount(chainStore.current.chainId);
+  const addressDisplay = accountInfo.getAddressDisplay(
+    keyRingStore.keyRingLedgerAddresses
+  );
+
   const feeConfig = useFeeEvmConfig(
     chainStore,
     current.chainId,
@@ -112,6 +128,20 @@ export const SignEvmPage: FunctionComponent = observer(() => {
 
     return () => {};
   }, [gasPrice, amountConfig?.sendCurrency]);
+
+  useOnClickOutside(settingRef, () => {
+    setOpenSetting(false);
+  });
+
+  useOnClickOutside(dataRef, () => {
+    handleCloseDataModal();
+  });
+
+  const handleCloseDataModal = () => {
+    setDataSetting(false);
+    setTab(Tab.Details);
+  };
+
   useEffect(() => {
     if (signInteractionStore.waitingEthereumData) {
       const data = signInteractionStore.waitingEthereumData;
@@ -130,12 +160,14 @@ export const SignEvmPage: FunctionComponent = observer(() => {
       const feeAmount = gasPrice.mul(gas);
       if (feeAmount.lte(new Dec(0))) {
         feeConfig.setFeeType("average");
+        chainStore.setSelectedFee("average");
       } else {
         feeConfig.setManualFee({
           amount: feeAmount.roundUp().toString(),
           denom: chainStore.current.feeCurrencies[0].coinMinimalDenom,
         });
       }
+
       setDataSign(signInteractionStore.waitingEthereumData);
     }
   }, [signInteractionStore.waitingEthereumData]);
@@ -158,26 +190,32 @@ export const SignEvmPage: FunctionComponent = observer(() => {
   })();
 
   return (
-    // <HeaderLayout
-    //   showChainName={alternativeTitle == null}
-    //   alternativeTitle={alternativeTitle != null ? alternativeTitle : undefined}
-    //   canChangeChainInfo={false}
-    //   onBackButton={
-    //     interactionInfo.interactionInternal
-    //       ? () => {
-    //           history.goBack();
-    //         }
-    //       : undefined
-    //   }
-    // >
     <div
       style={{
-        padding: 20,
-        backgroundColor: "#FFFFFF",
         height: "100%",
+        width: "100vw",
         overflowX: "auto",
       }}
     >
+      <ModalFee
+        feeConfig={feeConfig}
+        gasConfig={gasConfig}
+        onRequestClose={() => {
+          setOpenSetting(false);
+        }}
+        isOpen={openSetting}
+      />
+      <div
+        className={cx("setting", dataSetting ? "activeSetting" : "", "modal")}
+        ref={dataRef}
+      >
+        <DataModal
+          onClose={() => {
+            handleCloseDataModal();
+          }}
+          renderData={() => <DataTabEvm data={dataSign} />}
+        />
+      </div>
       {
         /*
          Show the informations of tx when the sign data is delivered.
@@ -185,137 +223,192 @@ export const SignEvmPage: FunctionComponent = observer(() => {
          */
         isLoaded ? (
           <div className={style.container}>
+            <div style={{ height: "75%", overflow: "scroll", padding: 16 }}>
+              <div
+                className={classnames(style.tabs)}
+                style={{ display: "flex", paddingBottom: 12 }}
+              >
+                <div>
+                  <Text size={16} weight="700">
+                    {"Approve transaction".toUpperCase()}
+                  </Text>
+                </div>
+                <div
+                  onClick={() => {
+                    setDataSetting(true);
+                    setTab(Tab.Data);
+                  }}
+                  style={{
+                    padding: "6px 12px",
+                    backgroundColor: colors["neutral-surface-action3"],
+                    borderRadius: 999,
+                    alignItems: "center",
+                    cursor: "pointer",
+                  }}
+                >
+                  <Text weight="600">Raw Data</Text>
+                  <img src={require("assets/icon/tdesign_chevron-right.svg")} />
+                </div>
+              </div>
+              <div
+                className={classnames(style.tabContainer, {
+                  [style.dataTab]: tab === Tab.Data,
+                })}
+              >
+                {tab === Tab.Data ? null : null}
+                {tab === Tab.Details ? (
+                  <DetailsTabEvm
+                    msgSign={dataSign?.data?.data?.data}
+                    dataSign={dataSign}
+                    memoConfig={memoConfig}
+                    feeConfig={feeConfig}
+                    gasConfig={gasConfig}
+                    isInternal={
+                      interactionInfo.interaction &&
+                      interactionInfo.interactionInternal
+                    }
+                    preferNoSetFee={preferNoSetFee}
+                    preferNoSetMemo={preferNoSetMemo}
+                    setOpenSetting={() => setOpenSetting(true)}
+                  />
+                ) : null}
+              </div>
+            </div>
             <div
               style={{
-                color: "#353945",
-                fontSize: 24,
-                fontWeight: 500,
-                textAlign: "center",
-                paddingBottom: 24,
+                position: "absolute",
+                bottom: 0,
+                width: "100%",
+                height: "25%",
+                backgroundColor: colors["neutral-surface-card"],
+                borderTop: "1px solid" + colors["neutral-border-default"],
               }}
             >
-              {chainStore?.current?.raw?.chainName}
-            </div>
-            <div className={classnames(style.tabs)}>
-              <ul>
-                <li className={classnames({ activeTabs: tab === Tab.Details })}>
-                  <a
-                    className={classnames(style.tab, {
-                      activeText: tab === Tab.Details,
-                    })}
-                    onClick={() => {
-                      setTab(Tab.Details);
-                    }}
-                  >
-                    {intl.formatMessage({
-                      id: "sign.tab.details",
-                    })}
-                  </a>
-                </li>
-                <li className={classnames({ activeTabs: tab === Tab.Data })}>
-                  <a
-                    className={classnames(style.tab, {
-                      activeText: tab === Tab.Data,
-                    })}
-                    onClick={() => {
-                      setTab(Tab.Data);
-                    }}
-                  >
-                    {intl.formatMessage({
-                      id: "sign.tab.data",
-                    })}
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div
-              className={classnames(style.tabContainer, {
-                [style.dataTab]: tab === Tab.Data,
-              })}
-            >
-              {tab === Tab.Data ? <DataTabEvm data={dataSign} /> : null}
-              {tab === Tab.Details ? (
-                <DetailsTabEvm
-                  msgSign={dataSign?.data?.data?.data}
-                  memoConfig={memoConfig}
-                  feeConfig={feeConfig}
-                  gasConfig={gasConfig}
-                  isInternal={
-                    interactionInfo.interaction &&
-                    interactionInfo.interactionInternal
-                  }
-                  preferNoSetFee={preferNoSetFee}
-                  preferNoSetMemo={preferNoSetMemo}
-                />
-              ) : null}
-            </div>
-            <div style={{ flex: 1 }} />
-            <div className={style.buttons}>
               {keyRingStore.keyRingType === "ledger" &&
               signInteractionStore.isLoading ? (
-                <Button className={style.button} disabled={true} outline>
+                <Button className={style.button} disabled={true} mode="outline">
                   <FormattedMessage id="sign.button.confirm-ledger" />{" "}
                   <i className="fa fa-spinner fa-spin fa-fw" />
                 </Button>
               ) : (
-                <React.Fragment>
-                  <Button
-                    className={classnames(style.button, style.rejectBtn)}
-                    color=""
-                    // disabled={signDocHelper.signDocWrapper == null}
-                    // data-loading={signInteractionStore.isLoading}
-                    onClick={async (e) => {
-                      e.preventDefault();
+                <div>
+                  <div
+                    style={{
+                      flexDirection: "row",
+                      display: "flex",
+                      padding: 8,
+                      justifyContent: "space-between",
+                      backgroundColor: colors["neutral-surface-bg"],
+                      margin: 16,
+                      marginBottom: 8,
+                      borderRadius: 12,
+                    }}
+                  >
+                    <div
+                      style={{
+                        flexDirection: "row",
+                        display: "flex",
+                      }}
+                    >
+                      <img
+                        style={{
+                          width: 40,
+                          height: 40,
+                          borderRadius: 40,
+                          marginRight: 8,
+                        }}
+                        src={require("assets/images/default-avatar.png")}
+                      />
+                      <div style={{ flexDirection: "column", display: "flex" }}>
+                        <Text size={14} weight="600">
+                          {accountInfo.name}
+                        </Text>
+                        <Text color={colors["neutral-text-body"]}>
+                          {" "}
+                          <Address
+                            maxCharacters={18}
+                            lineBreakBeforePrefix={false}
+                          >
+                            {accountInfo.walletStatus === WalletStatus.Loaded &&
+                            addressDisplay
+                              ? addressDisplay
+                              : "..."}
+                          </Address>
+                        </Text>
+                      </div>
+                    </div>
+                    {/* <Text color={colors["neutral-text-body"]}>Demo text</Text> */}
+                  </div>
+                  <div
+                    style={{
+                      flexDirection: "row",
+                      display: "flex",
+                      padding: 16,
+                      paddingTop: 0,
+                    }}
+                  >
+                    <Button
+                      containerStyle={{ marginRight: 8 }}
+                      className={classnames(style.button, style.rejectBtn)}
+                      // disabled={signDocHelper.signDocWrapper == null}
+                      color={"reject"}
+                      data-loading={signInteractionStore.isLoading}
+                      disabled={signInteractionStore.isLoading}
+                      onClick={async (e) => {
+                        e.preventDefault();
 
-                      if (needSetIsProcessing) {
-                        setIsProcessing(true);
-                      }
+                        if (needSetIsProcessing) {
+                          setIsProcessing(true);
+                        }
 
-                      await signInteractionStore.reject();
+                        await signInteractionStore.reject();
 
-                      if (
-                        interactionInfo.interaction &&
-                        !interactionInfo.interactionInternal
-                      ) {
-                        window.close();
-                      } else {
+                        if (
+                          interactionInfo.interaction &&
+                          !interactionInfo.interactionInternal
+                        ) {
+                          window.close();
+                        } else {
+                          history.goBack();
+                        }
+                      }}
+                    >
+                      {intl.formatMessage({
+                        id: "sign.button.reject",
+                      })}
+                    </Button>
+                    <Button
+                      className={classnames(style.button, style.approveBtn)}
+                      disabled={approveIsDisabled}
+                      data-loading={signInteractionStore.isLoading}
+                      loading={signInteractionStore.isLoading}
+                      onClick={async (e) => {
+                        e.preventDefault();
+                        if (needSetIsProcessing) {
+                          setIsProcessing(true);
+                        }
+                        if (!dataSign) return;
+                        await signInteractionStore.approveEthereumAndWaitEnd({
+                          gasPrice: Web3.utils.toHex(gasConfig.gasPrice),
+                          gasLimit: Web3.utils.toHex(
+                            Math.round(gasConfig.gas * 1.1)
+                          ),
+                        });
                         history.goBack();
-                      }
-                    }}
-                  >
-                    {intl.formatMessage({
-                      id: "sign.button.reject",
-                    })}
-                  </Button>
-                  <Button
-                    className={classnames(style.button, style.approveBtn)}
-                    color=""
-                    disabled={approveIsDisabled}
-                    data-loading={signInteractionStore.isLoading}
-                    onClick={async (e) => {
-                      e.preventDefault();
-                      if (needSetIsProcessing) {
-                        setIsProcessing(true);
-                      }
-                      if (!dataSign) return;
-                      await signInteractionStore.approveEthereumAndWaitEnd({
-                        gasPrice: Web3.utils.toHex(gasConfig.gasPrice),
-                        gasLimit: Web3.utils.toHex(gasConfig.gas),
-                      });
-                      history.goBack();
-                      if (
-                        interactionInfo.interaction &&
-                        !interactionInfo.interactionInternal
-                      ) {
-                        window.close();
-                      }
-                    }}
-                  >
-                    {intl.formatMessage({
-                      id: "sign.button.approve",
-                    })}
-                  </Button>
-                </React.Fragment>
+                        if (
+                          interactionInfo.interaction &&
+                          !interactionInfo.interactionInternal
+                        ) {
+                          window.close();
+                        }
+                      }}
+                    >
+                      {intl.formatMessage({
+                        id: "sign.button.approve",
+                      })}
+                    </Button>
+                  </div>
+                </div>
               )}
             </div>
           </div>
@@ -333,7 +426,6 @@ export const SignEvmPage: FunctionComponent = observer(() => {
           </div>
         )
       }
-      {/* </HeaderLayout> */}
     </div>
   );
 });

@@ -163,7 +163,7 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
         .trim(true)
         .locale(false)
         .hideDenom(true)
-        .maxDecimals(9)
+        .maxDecimals(6)
         .toString();
     }
 

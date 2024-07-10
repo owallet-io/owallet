@@ -67,7 +67,7 @@ export class ObservableQueryValidatorThumbnail extends ObservableQuery<KeybaseRe
   }
 
   protected canFetch(): boolean {
-    return this.validator.description.identity !== "";
+    return this.validator?.description?.identity !== "";
   }
 
   protected async fetchResponse(

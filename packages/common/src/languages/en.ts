@@ -135,9 +135,9 @@ export default {
     "Are you sure you’d like to disable this token? You will not be able to see your balance or transfer until you register a viewing key.",
   "setting.token.manage.notification.viewing-key.copy": "Viewing key copied!",
 
-  "register.name": "Account name",
+  "register.name": "Wallet name",
   "register.email": "Email name",
-  "register.name.error.required": "Account name is required",
+  "register.name.error.required": "Wallet name is required",
   "register.button.back": "Back",
   "register.button.trx-ledger": "Tron Ledger",
   "register.button.cosmos-ledger": "Cosmos Ledger",

@@ -42,7 +42,7 @@ export class ObservableQueryBitcoinBalanceInner extends ObservableChainQuery<Res
   }
 
   protected canFetch(): boolean {
-    return this.address.length !== 0;
+    return this.address?.length !== 0;
   }
   protected async fetchResponse(
     cancelToken: CancelToken

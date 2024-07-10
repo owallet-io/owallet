@@ -8,9 +8,19 @@
       "./node_modules/@types",
       "../../node_modules/@types",
       "./@types"
-    ]
+    ],
+    "baseUrl": "./",
+    "paths": {
+      "components/*": ["src/components/*"],
+      "assets/*": ["src/public/assets/*"],
+      "pages/*": ["src/pages/*"],
+      "layouts/*": ["src/layouts/*"],
+      "helpers/*": ["src/helpers/*"],
+      "stores/*": ["src/stores/*"],
+      "theme/*": ["src/theme/*"],
+      "hooks/*": ["src/hooks/*"],
+      "src/*": ["src/*"]
+    }
   },
-  "include": [
-    "src/**/*"
-  ]
+  "include": ["src"]
 }

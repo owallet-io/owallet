@@ -12,7 +12,6 @@ import { API } from "@src/common/api";
 import {
   capitalizedText,
   formatContractAddress,
-  MapNetworkToChainId,
   maskedNumber,
   openLink,
   shortenAddress,
@@ -23,7 +22,11 @@ import { HeaderTx } from "@src/screens/tx-result/components/header-tx";
 import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
 import { Text } from "@src/components/text";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
-import { ChainIdEnum, isMilliseconds, OasisNetwork } from "@owallet/common";
+import {
+  ChainIdEnum,
+  isMilliseconds,
+  MapNetworkToChainId,
+} from "@owallet/common";
 
 import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
 import { OwLoading } from "@src/components/owallet-loading/ow-loading";
@@ -33,7 +36,7 @@ import { Currency } from "@owallet/types";
 import { urlTxHistory } from "@src/common/constants";
 import { OWEmpty } from "@src/components/empty";
 import { CosmosItem } from "@src/screens/transactions/cosmos/types";
-import { AllNetworkItemTx } from "@src/screens/transactions/all-network/all-network.types";
+import { AllNetworkItemTx } from "@owallet/types";
 
 export const CosmosDetailTx: FunctionComponent = observer((props) => {
   const { chainStore, priceStore } = useStore();

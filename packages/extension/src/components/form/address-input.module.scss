@@ -1,7 +1,7 @@
-@import '../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/functions';
-@import '../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/mixins';
-@import '../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/variables';
-@import '../../styles/var';
+@import "../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/functions";
+@import "../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/mixins";
+@import "../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/variables";
+@import "../../styles/var";
 
 .full-modal {
   width: calc(100% - 48px);
@@ -12,7 +12,7 @@
   // margin: 24px;
   // padding: 0;
   // color: $color;
-  // background-color: $background-color;
+  // background-color: $neutral-surface-card;
 
   &:global(.modal-content) {
     box-shadow: none;
@@ -21,10 +21,9 @@
 
 .input {
   // box-shadow: $input-alternative-box-shadow !important;
-  border-radius: 4px;
-  background-color: $background-color;
+  background-color: $neutral-surface-card;
   color: $color-neutral-2 !important;
- 
+
   &::placeholder {
     /* Chrome, Firefox, Opera, Safari 10.1+ */
     color: $color-gray-70 !important;
@@ -34,11 +33,13 @@
   &:focus {
     border-radius: 4px;
   }
-  
 }
 
 .input-group {
-  box-shadow: 0 1px 3px rgb(50 50 93 / 15%), 0 1px 0 rgb(0 0 0 / 2%);
+  display: block;
+  border-radius: 24px;
+  padding: 12px 16px 8px 16px;
+  background-color: $neutral-surface-card;
   &:focus-within {
     box-shadow: $input-focus-alternative-box-shadow !important;
   }

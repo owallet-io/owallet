@@ -1,4 +1,4 @@
-@import '../../styles/var';
+@import "../../styles/var";
 
 .hr {
   background-color: gray;
@@ -56,6 +56,9 @@
       display: flex;
       flex: 1;
       flex-direction: column;
+      max-width: 70%;
+      overflow: hidden;
+
       .content-title {
         font-size: 16px;
         font-weight: bold;

@@ -1,13 +1,12 @@
 import React, { FunctionComponent } from "react";
 import { observer } from "mobx-react-lite";
 import { useStore } from "@src/stores";
-import { ChainIdEnum } from "@owallet/common";
+import { ChainIdEnum, MapNetworkToChainId } from "@owallet/common";
 import {
   mappingChainIdToHistoryScreen,
   typeTxEnum,
 } from "@src/screens/transactions/tx-helper";
 import { useRoute } from "@react-navigation/native";
-import { MapNetworkToChainId } from "@src/utils/helper";
 
 export const HistoryDetail: FunctionComponent = observer((props) => {
   const { chainStore, appInitStore } = useStore();

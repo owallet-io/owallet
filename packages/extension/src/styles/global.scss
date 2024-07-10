@@ -1,20 +1,20 @@
 @charset "utf-8";
 
-@import '../../../../node_modules/argon-dashboard-react/src/assets/plugins/nucleo/css/nucleo.css';
+@import "../../../../node_modules/argon-dashboard-react/src/assets/plugins/nucleo/css/nucleo.css";
 
-$fa-font-path: '~@fortawesome/fontawesome-free/webfonts';
-@import '../../../../node_modules/@fortawesome/fontawesome-free/scss/fontawesome';
-@import '../../../../node_modules/@fortawesome/fontawesome-free/scss/solid';
-@import '../../../../node_modules/@fortawesome/fontawesome-free/scss/brands';
+$fa-font-path: "~@fortawesome/fontawesome-free/webfonts";
+@import "../../../../node_modules/@fortawesome/fontawesome-free/scss/fontawesome";
+@import "../../../../node_modules/@fortawesome/fontawesome-free/scss/solid";
+@import "../../../../node_modules/@fortawesome/fontawesome-free/scss/brands";
 
-@import url('https://fonts.googleapis.com/css?family=Nunito+Sans:300,400,700,800&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=option');
+@import url("https://fonts.googleapis.com/css?family=Nunito+Sans:300,400,700,800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=option");
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap");
+@import "../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard-react";
 
-@import '../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard-react';
+@import url("https://fonts.googleapis.com/css?family=Courier+Prime&display=swap");
 
-@import url('https://fonts.googleapis.com/css?family=Courier+Prime&display=swap');
-
-@import 'var';
+@import "var";
 
 html {
   width: 100%;
@@ -23,17 +23,17 @@ html {
 }
 
 body {
-  font-family: 'IBM Plex Sans', sans-serif !important;
+  font-family: "Space Grotesk", sans-serif !important;
   color: $color;
-  background-color: $background-color;
+  background-color: $neutral-surface-card;
   width: $popup-size-width;
   height: $popup-size-height;
   overflow: hidden;
-  &[data-lang='ko'] {
+  &[data-lang="ko"] {
     word-break: keep-all;
     word-wrap: break-word;
 
-    font-family: 'IBM Plex Sans', sans-serif !important;
+    font-family: "Space Grotesk", sans-serif !important;
   }
 }
 h1,
@@ -133,7 +133,7 @@ textarea.form-control {
   opacity: 0.85;
 }
 
-button[data-loading='true'] {
+button[data-loading="true"] {
   color: transparent !important;
   pointer-events: none;
 
@@ -148,7 +148,7 @@ button[data-loading='true'] {
     border-radius: 290486px;
     border-right-color: transparent;
     border-top-color: transparent;
-    content: '';
+    content: "";
     display: block;
     height: 1em;
     width: 1em;
@@ -209,7 +209,7 @@ button[data-loading='true'] {
     &:hover,
     &:focus,
     &:active {
-      color: $background-color;
+      color: $neutral-surface-card;
     }
   }
 }

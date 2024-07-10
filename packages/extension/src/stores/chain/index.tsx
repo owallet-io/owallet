@@ -1,8 +1,9 @@
+// @ts-nocheck
 import { observable, action, computed, makeObservable, flow } from "mobx";
 
 import { ChainInfoInner, ChainStore as BaseChainStore } from "@owallet/stores";
 
-import { ChainInfo } from "@owallet/types";
+import { ChainInfo, IMultipleAsset } from "@owallet/types";
 import {
   ChainInfoWithEmbed,
   SetPersistentMemoryMsg,
@@ -15,10 +16,23 @@ import { BACKGROUND_PORT } from "@owallet/router";
 
 import { MessageRequester } from "@owallet/router";
 import { toGenerator } from "@owallet/common";
-
+import { makePersistable } from "mobx-persist-store";
 export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
   @observable
   protected _selectedChainId: string;
+  @observable
+  protected _selectedFee: string = "average";
+  @observable
+  protected _isAllNetwork: boolean = false;
+  @observable
+  protected _hideDust: boolean = true;
+
+  @observable
+  protected _multipleAssets: IMultipleAsset = {
+    totalPriceBalance: "0",
+    dataTokens: [],
+    dataTokensByChain: null,
+  };
 
   @observable
   protected _isInitializing: boolean = false;
@@ -44,6 +58,16 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
 
     makeObservable(this);
 
+    makePersistable(this, {
+      name: "ChainStore",
+      properties: [
+        "_isAllNetwork",
+        "_multipleAssets",
+        "_hideDust",
+        "_selectedFee",
+      ],
+      storage: window.localStorage,
+    }).then(action((persistStore) => {}));
     this.init();
   }
 
@@ -51,10 +75,39 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
     return this._isInitializing;
   }
 
+  get isAllNetwork(): boolean {
+    return this._isAllNetwork;
+  }
+  get selectedFee(): string {
+    return this._selectedFee;
+  }
+  get multipleAssets(): IMultipleAsset {
+    return this._multipleAssets;
+  }
+  get isHideDust(): boolean {
+    return this._hideDust;
+  }
+
   get selectedChainId(): string {
     return this._selectedChainId;
   }
 
+  @action
+  setIsAllNetwork(isAll: boolean) {
+    this._isAllNetwork = isAll;
+  }
+  @action
+  setSelectedFee(fee: string) {
+    this._selectedFee = fee;
+  }
+  @action
+  setIsHideDust(isHide: boolean) {
+    this._hideDust = isHide;
+  }
+  @action
+  setMultipleAsset(data: IMultipleAsset) {
+    this._multipleAssets = data;
+  }
   @action
   selectChain(chainId: string) {
     if (this._isInitializing) {

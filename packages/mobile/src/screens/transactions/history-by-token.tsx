@@ -1,17 +1,20 @@
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useState } from "react";
-import { View, ViewStyle } from "react-native";
+import { View } from "react-native";
 import { useStore } from "../../stores";
 import { EmptyTx } from "@src/screens/transactions/components/empty-tx";
-import { ChainIdEnum, getOasisAddress } from "@owallet/common";
+import {
+  ChainIdEnum,
+  getOasisAddress,
+  MapChainIdToNetwork,
+} from "@owallet/common";
+import { AllNetworkItemTx } from "@owallet/types";
 import { metrics } from "@src/themes";
 import { useGetHeightHeader } from "@src/hooks";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { AllNetworkTxItem } from "@src/screens/transactions/all-network/all-network-tx-item";
-import { AllNetworkItemTx } from "@src/screens/transactions/all-network/all-network.types";
 import { API } from "@src/common/api";
 import { SCREENS, urlTxHistory } from "@src/common/constants";
-import { MapChainIdToNetwork } from "@src/utils/helper";
 import { OWButton } from "@src/components/button";
 import { navigate } from "@src/router/root";
 
