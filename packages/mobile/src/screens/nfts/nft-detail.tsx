@@ -30,8 +30,11 @@ import { CoinPretty } from "@owallet/unit";
 export const NftDetailScreen: FunctionComponent = observer((props) => {
   const { chainStore, priceStore, appInitStore } = useStore();
   const { item } = props.route?.params;
-  const nft = useNft(chainStore.current, item?.tokenId, item?.contractAddress);
-  // if (!nft) return;
+  const nft = useNft(
+    chainStore.getChain(item?.network),
+    item?.tokenId,
+    item?.contractAddress
+  );
   const onBrowser = async () => {
     if (!nft?.explorer) return;
     await openLink(nft.explorer);

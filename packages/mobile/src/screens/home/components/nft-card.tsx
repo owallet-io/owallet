@@ -26,12 +26,14 @@ export const NftCard = observer(() => {
   );
   const emptyDataCount =
     nfts && nfts.filter((item) => item.data.length === 0).length;
+
   return (
     <View style={styles.container}>
       {emptyDataCount === nfts?.length && (
         <OWEmpty type="nft" label="NO NFTs YET" />
       )}
       {nfts.map((it, index) => {
+        const coinDenom = it?.chainInfo?.stakeCurrency?.coinDenom;
         if (it?.data?.length > 0) {
           return (
             <View
@@ -45,6 +47,13 @@ export const NftCard = observer(() => {
                     type="images"
                     resizeMode="cover"
                     size={18}
+                    style={{
+                      borderRadius: 999,
+                      tintColor:
+                        coinDenom === "ORAI" || coinDenom === "AIRI"
+                          ? colors["neutral-text-title"]
+                          : null,
+                    }}
                     source={{
                       uri:
                         it?.chainInfo?.stakeCurrency?.coinImageUrl ||
