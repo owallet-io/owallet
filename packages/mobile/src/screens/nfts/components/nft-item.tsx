@@ -18,7 +18,8 @@ import { useNavigation } from "@react-navigation/native";
 import ProgressiveFastImage from "@freakycoder/react-native-progressive-fast-image";
 import images from "@src/assets/images";
 import LottieView from "lottie-react-native";
-import { IItemNft } from "@src/screens/home/components";
+import { IItemNft } from "../types/nft.types";
+
 export const NftItem = ({ item }: { item: IItemNft }) => {
   const { colors } = useTheme();
 
@@ -26,7 +27,7 @@ export const NftItem = ({ item }: { item: IItemNft }) => {
 
   const balance = new CoinPretty(item.tokenInfo, item?.floorPrice || "0");
   const smartNavigation = useSmartNavigation();
-
+  const coinDenom = item?.tokenInfo?.coinDenom || "";
   return (
     <TouchableOpacity
       style={styles.flatListItem}
@@ -76,6 +77,13 @@ export const NftItem = ({ item }: { item: IItemNft }) => {
               uri: item?.tokenInfo?.coinImageUrl,
             }}
             size={16}
+            style={{
+              borderRadius: 999,
+              tintColor:
+                coinDenom === "ORAI" || coinDenom === "AIRI"
+                  ? colors["neutral-text-title"]
+                  : null,
+            }}
           />
           <Text style={styles.title}>
             {balance.denom !== unknownToken.coinDenom
