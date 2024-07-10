@@ -12,6 +12,9 @@ import { useTheme } from "@src/themes/theme-provider";
 import { OWEmpty } from "@src/components/empty";
 import { useNfts } from "@screens/nfts/hooks/useNfts";
 import { OWButton } from "@src/components/button";
+import OWIcon from "@src/components/ow-icon/ow-icon";
+import { unknownToken } from "@owallet/common";
+import { maskedNumber } from "@src/utils/helper";
 export const NftCard = observer(() => {
   const { chainStore, accountStore, keyRingStore, appInitStore } = useStore();
   const { colors } = useTheme();
@@ -25,18 +28,39 @@ export const NftCard = observer(() => {
     nfts && nfts.filter((item) => item.data.length === 0).length;
   return (
     <View style={styles.container}>
-      {emptyDataCount === nfts.length && (
+      {emptyDataCount === nfts?.length && (
         <OWEmpty type="nft" label="NO NFTs YET" />
       )}
       {nfts.map((it, index) => {
         if (it?.data?.length > 0) {
           return (
-            <>
+            <View
+              style={{
+                paddingBottom: 16,
+              }}
+            >
               <View style={styles.sectionHeader}>
-                <OWText style={styles.txtTitle}>
-                  {it?.chainInfo.chainName}
+                <View style={styles.leftHeader}>
+                  <OWIcon
+                    type="images"
+                    resizeMode="cover"
+                    size={18}
+                    source={{
+                      uri:
+                        it?.chainInfo?.stakeCurrency?.coinImageUrl ||
+                        unknownToken.coinImageUrl,
+                    }}
+                  />
+                  <OWText style={styles.txtTitle}>
+                    {it?.chainInfo?.chainName}
+                  </OWText>
+                </View>
+
+                <OWText style={styles.price}>
+                  {`${maskedNumber(it?.count)} NFT${
+                    Number(it?.count) > 0 ? "s" : ""
+                  }`}{" "}
                 </OWText>
-                {/* <OWText style={styles.price}>{"ok"}</OWText> */}
               </View>
               <View style={styles.containerList}>
                 {it?.data?.map((nft, indexNft) => (
@@ -60,7 +84,7 @@ export const NftCard = observer(() => {
                   }}
                 />
               )}
-            </>
+            </View>
           );
         }
       })}
@@ -73,21 +97,37 @@ const styling = (colors) =>
     container: {
       paddingHorizontal: 16,
     },
+    leftHeader: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+      backgroundColor: colors["neutral-surface-action3"],
+      height: 44,
+      paddingHorizontal: 12,
+      borderRadius: 999,
+    },
     txtTitle: {
-      fontSize: 15,
-      fontWeight: "400",
+      fontSize: 14,
+      fontWeight: "600",
       lineHeight: 20,
-      color: colors["neutral-text-body"],
+      color: colors["neutral-text-title"],
     },
     price: {
       fontWeight: "500",
-      fontSize: 28,
+      fontSize: 16,
       color: colors["neutral-text-heading"],
-      lineHeight: 34,
+      borderWidth: 0.5,
+      borderColor: colors["neutral-border-default"],
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      // lineHeight: 20
     },
     sectionHeader: {
       paddingVertical: 8,
       paddingHorizontal: 4,
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
     },
     containerList: {
       flexDirection: "row",
