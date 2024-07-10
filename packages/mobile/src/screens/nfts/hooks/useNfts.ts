@@ -11,7 +11,7 @@ import { ChainStore } from "@src/stores/chain";
 interface Nfts {
   chainInfo: ChainInfo;
   data: IItemNft[];
-  count: string;
+  count: number;
 }
 interface DataHandle {
   total: number;
