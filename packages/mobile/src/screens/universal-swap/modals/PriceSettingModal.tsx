@@ -1,4 +1,3 @@
-//@ts-nocheck
 import { ScrollView, StyleSheet, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import { registerModal } from "@src/modals/base";
@@ -10,14 +9,12 @@ import { metrics, typography } from "@src/themes";
 import { DEFAULT_SLIPPAGE } from "@owallet/common";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { TextInput } from "@src/components/input";
-import { getPairInfo } from "../helpers";
-import {
-  flattenTokens,
-  flattenTokensWithIcon,
-} from "@oraichain/oraidex-common";
+import { getPathInfo } from "../helpers";
 import FastImage from "react-native-fast-image";
 import { maskedNumber } from "@src/utils/helper";
 import { useStore } from "@src/stores";
+import { assets } from "chain-registry";
+import { chainIcons } from "@oraichain/oraidex-common";
 
 export const PriceSettingModal = registerModal(
   ({
@@ -200,11 +197,10 @@ export const PriceSettingModal = registerModal(
                       </Text>
                     </View>
                     {route?.paths?.map((path) => {
-                      const { TokenInIcon, TokenOutIcon } = getPairInfo(
+                      const { NetworkFromIcon, NetworkToIcon } = getPathInfo(
                         path,
-                        flattenTokens,
-                        flattenTokensWithIcon,
-                        theme === "light"
+                        chainIcons,
+                        assets
                       );
 
                       return (
@@ -241,7 +237,7 @@ export const PriceSettingModal = registerModal(
                                   borderRadius: 24,
                                 }}
                                 source={{
-                                  uri: TokenInIcon,
+                                  uri: NetworkFromIcon,
                                 }}
                                 resizeMode={FastImage.resizeMode.cover}
                               />
@@ -265,7 +261,7 @@ export const PriceSettingModal = registerModal(
                                   borderRadius: 24,
                                 }}
                                 source={{
-                                  uri: TokenOutIcon,
+                                  uri: NetworkToIcon,
                                 }}
                                 resizeMode={FastImage.resizeMode.cover}
                               />

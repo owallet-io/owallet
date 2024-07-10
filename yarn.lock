@@ -1701,6 +1701,11 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
+"@chain-registry/types@^0.45.20":
+  version "0.45.20"
+  resolved "https://registry.yarnpkg.com/@chain-registry/types/-/types-0.45.20.tgz#2ca59b13e2b943c03435137e8aa087f63a3e9e84"
+  integrity sha512-O/cvF68P0IiONdA+xgEZj3ofYpXrKwBMO3voVmlUsmf9i7HG++pqP3THGGDT5N5zxvTeD3vUAnl5dY8ReOr+lw==
+
 "@cnakazawa/watch@^1.0.3":
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/@cnakazawa/watch/-/watch-1.0.4.tgz#f864ae85004d0fcab6f50be9141c4da368d1656a"
@@ -10035,6 +10040,13 @@ cborg@^2.0.3:
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/cborg/-/cborg-2.0.5.tgz#b5393c8b1843d5c1a61f2b79b4c9f752052a4d44"
   integrity sha512-xVW1rSIw1ZXbkwl2XhJ7o/jAv0vnVoQv/QlfQxV8a7V5PlA4UU/AcIiXqmpyybwNWy/GPQU1m/aBVNIWr7/T0w==
+
+chain-registry@^1.63.24:
+  version "1.63.24"
+  resolved "https://registry.yarnpkg.com/chain-registry/-/chain-registry-1.63.24.tgz#502b0e0214f862270fc701ee41bc48197091b596"
+  integrity sha512-DnGv9Vfu0lx+IqXhProiZRYcSrJ0JDZ4TVfpbmM1ceojyibvCLz5JdkosgwUjmjJF0m9Rb3zk9N8KsG3PORnDw==
+  dependencies:
+    "@chain-registry/types" "^0.45.20"
 
 chainsaw@~0.1.0:
   version "0.1.0"

@@ -520,8 +520,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           }
         : universalSwapData;
 
-      console.log("compileSwapData", compileSwapData);
-
       const universalSwapHandler = new UniversalSwapHandler(
         {
           ...compileSwapData,

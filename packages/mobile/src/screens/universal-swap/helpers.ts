@@ -267,6 +267,39 @@ export const getPairInfo = (
   return { infoPair, TokenInIcon, TokenOutIcon, pairKey };
 };
 
+export const getPathInfo = (path, chainIcons, assets) => {
+  let [NetworkFromIcon, NetworkToIcon] = [DefaultIcon, DefaultIcon];
+
+  const pathChainId = path.chainId.split("-")[0].toLowerCase();
+  const pathTokenOut = path.tokenOutChainId.split("-")[0].toLowerCase();
+
+  if (path.chainId) {
+    const chainFrom = chainIcons.find(
+      (cosmos) => cosmos.chainId === path.chainId
+    );
+    NetworkFromIcon = chainFrom ? chainFrom.Icon : DefaultIcon;
+  }
+
+  if (path.tokenOutChainId) {
+    const chainTo = chainIcons.find(
+      (cosmos) => cosmos.chainId === path.tokenOutChainId
+    );
+    NetworkToIcon = chainTo ? chainTo.Icon : DefaultIcon;
+  }
+
+  const getAssetsByChainName = (chainName) =>
+    assets.find(({ chain_name }) => chain_name === chainName)?.assets || [];
+
+  const assetList = {
+    assets: [
+      ...getAssetsByChainName(pathChainId),
+      ...getAssetsByChainName(pathTokenOut),
+    ],
+  };
+
+  return { NetworkFromIcon, NetworkToIcon, assetList, pathChainId };
+};
+
 export const getRemoteDenom = (originalToken) => {
   return originalToken.contractAddress
     ? originalToken.prefix + originalToken.contractAddress
