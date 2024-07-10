@@ -68,7 +68,7 @@ export const useNfts = (
       variables: {
         filterForSale: null,
         owner: address,
-        limit: isAllNetworks || chainId === ChainIdEnum.Stargaze ? 4 : 0,
+        limit: 4,
         filterByCollectionAddrs: null,
         sortBy: "ACQUIRED_DESC",
         offset: 0,
@@ -149,7 +149,7 @@ export const processDataOraiNft = (nft, currencies) => {
     floorPrice: nft?.offer?.amount || "0",
     name: `${nft?.name || ""} #${nft?.id}`,
     tokenId: nft?.id,
-    url: nft?.url,
+    url: nft?.picture || nft?.url,
     tokenInfo,
     contractAddress: nft?.tokenContract,
     network: ChainIdEnum.Oraichain,
