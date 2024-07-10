@@ -175,6 +175,30 @@ export const ValidatorDetailsCard: FunctionComponent<{
 
   const _onPressClaim = async () => {
     try {
+      // await account.cosmos.sendWithdrawAndDelegationRewardMsgs(
+      //   [validatorAddress],
+      //   "oraivaloper1u2344d8jwtsx5as7u5jw7vel28puh34q7d3y64",
+      //   "0.1",
+      //   "",
+      //   {},
+      //   {},
+      //   {
+      //     onBroadcasted: (txHash) => {
+      //       const validatorObject = convertArrToObject([validatorAddress]);
+      //       ByteBrew.NewCustomEvent(`Claim ${rewards.currency.coinDenom}`);
+      //       smartNavigation.pushSmart("TxPendingResult", {
+      //         txHash: Buffer.from(txHash).toString("hex"),
+      //         data: {
+      //           ...validatorObject,
+      //           type: "claim",
+      //           amount: rewards?.toCoin(),
+      //           currency: rewards.currency,
+      //         },
+      //       });
+      //     },
+      //   },
+      //   rewards.currency.coinMinimalDenom
+      // );
       await account.cosmos.sendWithdrawDelegationRewardMsgs(
         [validatorAddress],
         "",

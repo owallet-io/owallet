@@ -18,7 +18,7 @@ export enum OasisNetwork {
   SAPPHIRE = "oasis-sapphire-mainnet",
   EMERALD = "oasis-emerald-mainnet",
 }
-
+export const urlTxHistory = "https://tx-history-backend.oraidex.io/";
 export enum COSMOS_NETWORK {
   COSMOSHUB = "cosmoshub-4",
   OSMOSIS = "osmosis-1",

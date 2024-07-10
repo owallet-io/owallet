@@ -574,6 +574,8 @@ export class CosmosAccount {
       },
     };
 
+    console.log("msg", msg);
+
     const simulateTx = await this.simulateTx(
       [
         {
@@ -871,6 +873,143 @@ export class CosmosAccount {
     );
   }
 
+  async sendWithdrawAndDelegationRewardMsgs(
+    validatorAddresses: string[],
+    destValidatorAddr: string,
+    amount: string,
+    memo: string = "",
+    stdFee: Partial<StdFee> = {},
+    signOptions?: OWalletSignOptions,
+    onTxEvents?:
+      | ((tx: any) => void)
+      | {
+          onBroadcasted?: (txHash: Uint8Array) => void;
+          onFulfill?: (tx: any) => void;
+        },
+    currency?: string
+  ) {
+    const msgs = validatorAddresses.map((validatorAddress) => {
+      return {
+        type: this.base.msgOpts.withdrawRewards.type,
+        value: {
+          delegator_address: this.base.bech32Address,
+          validator_address: validatorAddress,
+        },
+      };
+    });
+
+    // Delegate msg
+    const stakeCurrency = this.chainGetter.getChain(this.chainId).stakeCurrency;
+
+    let dec = new Dec(amount);
+    dec = dec.mulTruncate(
+      DecUtils.getTenExponentNInPrecisionRange(stakeCurrency.coinDecimals)
+    );
+
+    const delegateMsg = {
+      type: this.base.msgOpts.delegate.type,
+      value: {
+        delegator_address: this.base.bech32Address,
+        validator_address: destValidatorAddr,
+        amount: {
+          denom: stakeCurrency.coinMinimalDenom,
+          amount: dec.truncate().toString(),
+        },
+      },
+    };
+
+    const simulateTx = await this.simulateTx(
+      [
+        ...msgs.map((msg) => {
+          return {
+            typeUrl: "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward",
+            value: MsgWithdrawDelegatorReward.encode({
+              delegatorAddress: msg.value.delegator_address,
+              validatorAddress: msg.value.validator_address,
+            }).finish(),
+          };
+        }),
+        {
+          typeUrl: "/cosmos.staking.v1beta1.MsgDelegate",
+          value: MsgDelegate.encode({
+            delegatorAddress: delegateMsg.value.delegator_address,
+            validatorAddress: delegateMsg.value.validator_address,
+            amount: delegateMsg.value.amount,
+          }).finish(),
+        },
+      ],
+      {
+        amount: stdFee.amount ?? [],
+      },
+      memo
+    );
+
+    await this.base.sendMsgs(
+      "withdrawRewardsAndDelegation",
+      {
+        aminoMsgs: [...msgs, delegateMsg],
+        protoMsgs: this.hasNoLegacyStdFeature()
+          ? // Delegate after withdrawRewards goes here, just add one more delegate msg into this array
+            [
+              ...msgs.map((msg) => {
+                return {
+                  typeUrl:
+                    "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward",
+                  value: MsgWithdrawDelegatorReward.encode({
+                    delegatorAddress: msg.value.delegator_address,
+                    validatorAddress: msg.value.validator_address,
+                  }).finish(),
+                };
+              }),
+              {
+                typeUrl: "/cosmos.staking.v1beta1.MsgDelegate",
+                value: MsgDelegate.encode({
+                  delegatorAddress: delegateMsg.value.delegator_address,
+                  validatorAddress: delegateMsg.value.validator_address,
+                  amount: delegateMsg.value.amount,
+                }).finish(),
+              },
+            ]
+          : undefined,
+        // this is needed for ledger and ethermint, cosmos does not care about this, so we could pass anything in this rlpTypes
+        rlpTypes: {
+          MsgValue: [
+            { name: "delegator_address", type: "string" },
+            { name: "validator_address", type: "string" },
+          ],
+        },
+      },
+      memo,
+      {
+        amount: stdFee.amount ?? [],
+        gas: simulateTx?.gasUsed
+          ? (simulateTx.gasUsed * 1.3 * validatorAddresses.length).toString()
+          : (Number(stdFee.gas) * 1.1).toString(),
+      },
+      signOptions,
+      this.txEventsWithPreOnFulfill(onTxEvents, (tx) => {
+        if (tx.code == null || tx.code === 0) {
+          // After succeeding to send token, refresh the balance.
+          const queryBalance = this.queries.queryBalances
+            .getQueryBech32Address(this.base.bech32Address)
+            .balances.find((bal) => {
+              return (
+                bal.currency.coinMinimalDenom === currency //currency.coinMinimalDenom
+              );
+            });
+
+          if (queryBalance) {
+            queryBalance.fetch();
+          }
+          // After succeeding to withdraw rewards, refresh rewards.
+          this.queries.cosmos.queryRewards
+            .getQueryBech32Address(this.base.bech32Address)
+            .fetch();
+        }
+      })
+    );
+  }
+
   async sendWithdrawDelegationRewardMsgs(
     validatorAddresses: string[],
     memo: string = "",
@@ -1008,40 +1147,6 @@ export class CosmosAccount {
         voter: this.base.bech32Address,
       },
     };
-
-    // const simulateTx = await this.simulateTx(
-    //   [
-    //     {
-    //       typeUrl: '/cosmos.gov.v1beta1.MsgVote',
-    //       value: cosmos.gov.v1beta1.MsgVote.encode({
-    //         proposalId: Long.fromString(msg.value.proposal_id),
-    //         voter: msg.value.voter,
-    //         option: (() => {
-    //           switch (msg.value.option) {
-    //             case 'Yes':
-    //             case 1:
-    //               return cosmos.gov.v1beta1.VoteOption.VOTE_OPTION_YES;
-    //             case 'Abstain':
-    //             case 2:
-    //               return cosmos.gov.v1beta1.VoteOption.VOTE_OPTION_ABSTAIN;
-    //             case 'No':
-    //             case 3:
-    //               return cosmos.gov.v1beta1.VoteOption.VOTE_OPTION_NO;
-    //             case 'NoWithVeto':
-    //             case 4:
-    //               return cosmos.gov.v1beta1.VoteOption.VOTE_OPTION_NO_WITH_VETO;
-    //             default:
-    //               return cosmos.gov.v1beta1.VoteOption.VOTE_OPTION_UNSPECIFIED;
-    //           }
-    //         })()
-    //       }).finish()
-    //     }
-    //   ],
-    //   {
-    //     amount: stdFee.amount ?? []
-    //   },
-    //   memo
-    // );
 
     await this.base.sendMsgs(
       "govVote",

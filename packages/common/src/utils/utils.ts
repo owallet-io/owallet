@@ -8,8 +8,7 @@ import {
 } from "@owallet/types";
 import bech32, { fromWords } from "bech32";
 import { ETH } from "@hanchon/ethermint-address-converter";
-import { NetworkType } from "@owallet/types";
-import { ChainIdEnum, TRON_ID } from "./constants";
+import { ChainIdEnum, Network, TRON_ID } from "./constants";
 import { EmbedChainInfos } from "../config";
 import { Hash } from "@owallet/crypto";
 import bs58 from "bs58";
@@ -17,7 +16,12 @@ import { ethers } from "ethers";
 import Web3 from "web3";
 import TronWeb from "tronweb";
 import "dotenv/config";
-
+export const getFavicon = (url) => {
+  const serviceGG =
+    "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&size=32&url=";
+  if (!url) return serviceGG + "https://orai.io";
+  return serviceGG + url;
+};
 export type LedgerAppType = "cosmos" | "eth" | "trx" | "btc";
 export const COINTYPE_NETWORK = {
   118: "Cosmos",
@@ -26,7 +30,77 @@ export const COINTYPE_NETWORK = {
   0: "Bitcoin",
   1: "Bitcoin Testnet",
 };
+export const convertObjChainAddressToString = (txsAllNetwork) => {
+  const data = Object.entries(txsAllNetwork)
+    .map(([key, value]) => `${key}%2B${value}`)
+    .join(",");
+  return data;
+};
+export const getDomainFromUrl = (url) => {
+  if (!url) {
+    return "";
+  }
+  return `${url?.match?.(
+    // eslint-disable-next-line no-useless-escape
+    /^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/?\n]+)/gim
+  )}`;
+};
+export const formatContractAddress = (address: string, limitFirst = 10) => {
+  if (!address) return "...";
+  const fristLetter = address?.slice(0, limitFirst) ?? "";
+  const lastLetter = address?.slice(-5) ?? "";
 
+  return `${fristLetter}...${lastLetter}`;
+};
+export const getTimeMilliSeconds = (timeStamp) => {
+  if (isMilliseconds(timeStamp)) {
+    return timeStamp;
+  }
+  return timeStamp * 1000;
+};
+export const removeDataInParentheses = (inputString: string): string => {
+  if (!inputString) return;
+  return inputString.replace(/\([^)]*\)/g, "");
+};
+export const extractDataInParentheses = (
+  inputString: string
+): string | null => {
+  if (!inputString) return;
+  const startIndex = inputString.indexOf("(");
+  const endIndex = inputString.indexOf(")");
+  if (startIndex !== -1 && endIndex !== -1) {
+    return inputString.substring(startIndex + 1, endIndex);
+  } else {
+    return null;
+  }
+};
+
+export const MapChainIdToNetwork = {
+  [ChainIdEnum.BNBChain]: Network.BINANCE_SMART_CHAIN,
+  [ChainIdEnum.Ethereum]: Network.ETHEREUM,
+  [ChainIdEnum.Bitcoin]: Network.BITCOIN,
+  [ChainIdEnum.Oasis]: Network.MAINNET,
+  [ChainIdEnum.OasisEmerald]: Network.EMERALD,
+  [ChainIdEnum.OasisSapphire]: Network.SAPPHIRE,
+  [ChainIdEnum.TRON]: Network.TRON,
+  [ChainIdEnum.Oraichain]: Network.ORAICHAIN,
+  [ChainIdEnum.Osmosis]: Network.OSMOSIS,
+  [ChainIdEnum.CosmosHub]: Network.COSMOSHUB,
+  [ChainIdEnum.Injective]: Network.INJECTIVE,
+};
+export const MapNetworkToChainId = {
+  [Network.BINANCE_SMART_CHAIN]: ChainIdEnum.BNBChain,
+  [Network.ETHEREUM]: ChainIdEnum.Ethereum,
+  [Network.BITCOIN]: ChainIdEnum.Bitcoin,
+  [Network.MAINNET]: ChainIdEnum.Oasis,
+  [Network.EMERALD]: ChainIdEnum.OasisEmerald,
+  [Network.SAPPHIRE]: ChainIdEnum.OasisSapphire,
+  [Network.TRON]: ChainIdEnum.TRON,
+  [Network.ORAICHAIN]: ChainIdEnum.Oraichain,
+  [Network.OSMOSIS]: ChainIdEnum.Osmosis,
+  [Network.COSMOSHUB]: ChainIdEnum.CosmosHub,
+  [Network.INJECTIVE]: ChainIdEnum.Injective,
+};
 export const getRpcByChainId = (
   chainInfo: ChainInfo,
   chainId: string
@@ -38,11 +112,31 @@ export const getRpcByChainId = (
   return chainInfo.rpc;
 };
 export const getEvmAddress = (base58Address) => {
-  return base58Address
-    ? "0x" +
+  return isBase58Address(base58Address)
+    ? base58Address
+      ? "0x" +
         Buffer.from(bs58.decode(base58Address).slice(1, -4)).toString("hex")
-    : "-";
+      : "-"
+    : null;
 };
+
+function isBase58Address(address) {
+  try {
+    // Attempt to decode the address
+    const decoded = bs58.decode(address);
+
+    // Check for invalid characters in the decoded result
+    for (const byte of decoded) {
+      if (byte < 0 || byte > 255) {
+        return false;
+      }
+    }
+
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
 
 export const getBase58Address = (address) => {
   if (!address) return null;
@@ -292,7 +386,13 @@ export const typeBtcLedgerByAddress = (
     }
   }
 };
-
+export function limitString(str, limit) {
+  if (str && str.length > limit) {
+    return str.slice(0, limit) + "...";
+  } else {
+    return str;
+  }
+}
 export function findLedgerAddress(
   AddressesLedger,
   chainInfo: ChainInfoWithoutEndpoints,

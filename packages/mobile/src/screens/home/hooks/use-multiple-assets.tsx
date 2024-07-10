@@ -10,6 +10,7 @@ import {
   getEvmAddress,
   getOasisNic,
   getRpcByChainId,
+  MapChainIdToNetwork,
   parseRpcBalance,
 } from "@owallet/common";
 import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
@@ -27,31 +28,17 @@ import {
 import {
   HugeQueriesStore,
   ViewRawToken,
-  ViewToken,
   ViewTokenData,
 } from "@src/stores/huge-queries";
-import {
-  AddressBtcType,
-  AppCurrency,
-  ChainInfo,
-  Currency,
-} from "@owallet/types";
+import { AddressBtcType, AppCurrency, ChainInfo } from "@owallet/types";
 import {
   AccountStore,
   AccountWithAll,
   CoinGeckoPriceStore,
-  TokensStore,
 } from "@owallet/stores";
 import { AppInit } from "@src/stores/app_init";
-import {
-  fetchRetry,
-  mapChainIdToChainEndpoint,
-  urlTxHistory,
-} from "@src/common/constants";
-import { delay, MapChainIdToNetwork } from "@src/utils/helper";
+import { delay } from "@src/utils/helper";
 import { API } from "@src/common/api";
-import { convertObjChainAddressToString } from "@src/screens/transactions/all-network/all-network.helper";
-
 export const initPrice = new PricePretty(
   {
     currency: "usd",

@@ -1,13 +1,16 @@
 import React from "react";
 
 import { ToolTip } from "../tooltip";
-import { Bech32Address } from "@owallet/cosmos";
 import { formatAddress } from "@owallet/common";
+import { Text } from "../common/text";
+import colors from "../../theme/colors";
 
 export interface AddressProps {
   children: string;
   tooltipFontSize?: string;
   tooltipAddress?: string;
+  textDecor?: string;
+  textColor?: string;
 }
 
 export interface Bech32AddressProps {
@@ -38,7 +41,7 @@ export class Address extends React.Component<
   }
 
   render() {
-    const { tooltipFontSize = 13, children } = this.props;
+    const { tooltipFontSize = 12, children, textDecor, textColor } = this.props;
     const tooltipAddress = this.props.tooltipAddress
       ? this.props.tooltipAddress
       : children;
@@ -67,7 +70,14 @@ export class Address extends React.Component<
             </div>
           }
         >
-          {formatAddress(children, this.props.maxCharacters)}
+          <Text
+            containerStyle={{
+              textDecoration: textDecor ?? "none",
+            }}
+            color={textColor ?? colors["neutral-text-title"]}
+          >
+            {formatAddress(children, this.props.maxCharacters)}
+          </Text>
         </ToolTip>
       );
     } else {

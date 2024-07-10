@@ -33,7 +33,7 @@ export class ObservableQueryRewardsInner extends ObservableChainQuery<Rewards> {
 
   protected canFetch(): boolean {
     // If bech32 address is empty, it will always fail, so don't need to fetch it.
-    return this.bech32Address.length > 0;
+    return this.bech32Address?.length > 0;
   }
 
   @computed

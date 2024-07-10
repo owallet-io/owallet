@@ -1,17 +1,18 @@
-import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
-import { Button } from "reactstrap";
-
-import { HeaderLayout } from "../../layouts";
-
+import React, {
+  FunctionComponent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import style from "./style.module.scss";
-
 import { useStore } from "../../stores";
-
+import { Buffer } from "buffer/";
 import classnames from "classnames";
 import { DataTab } from "./data-tab";
 import { DetailsTab } from "./details-tab";
 import { FormattedMessage, useIntl } from "react-intl";
-
+import cn from "classnames/bind";
 import { useHistory } from "react-router";
 import { observer } from "mobx-react-lite";
 import {
@@ -24,11 +25,20 @@ import {
 } from "@owallet/hooks";
 import { ADR36SignDocDetailsTab } from "./adr-36";
 import { ChainIdHelper } from "@owallet/cosmos";
+import useOnClickOutside from "../../hooks/use-click-outside";
+import colors from "../../theme/colors";
+import { FeeModal } from "./modals/fee-modal";
+import { Button } from "../../components/common/button";
+import { Text } from "../../components/common/text";
+import { DataModal } from "./modals/data-modal";
+import { WalletStatus } from "@owallet/stores";
+import { Address } from "../../components/address";
 
 enum Tab {
   Details,
   Data,
 }
+const cx = cn.bind(style);
 
 export const SignPage: FunctionComponent = observer(() => {
   const history = useHistory();
@@ -49,6 +59,7 @@ export const SignPage: FunctionComponent = observer(() => {
     signInteractionStore,
     accountStore,
     queriesStore,
+    priceStore,
   } = useStore();
 
   const [signer, setSigner] = useState("");
@@ -56,6 +67,13 @@ export const SignPage: FunctionComponent = observer(() => {
   const [isADR36WithString, setIsADR36WithString] = useState<
     boolean | undefined
   >();
+  const [openSetting, setOpenSetting] = useState(false);
+  const [dataSetting, setDataSetting] = useState(false);
+
+  const accountInfo = accountStore.getAccount(chainStore.current.chainId);
+  const addressDisplay = accountInfo.getAddressDisplay(
+    keyRingStore.keyRingLedgerAddresses
+  );
 
   const current = chainStore.current;
   // Make the gas config with 1 gas initially to prevent the temporary 0 gas error at the beginning.
@@ -78,7 +96,8 @@ export const SignPage: FunctionComponent = observer(() => {
 
   const signDocHelper = useSignDocHelper(feeConfig, memoConfig);
   amountConfig.setSignDocHelper(signDocHelper);
-
+  const settingRef = useRef();
+  const dataRef = useRef();
   useEffect(() => {
     if (signInteractionStore.waitingData) {
       const data = signInteractionStore.waitingData;
@@ -196,6 +215,19 @@ export const SignPage: FunctionComponent = observer(() => {
     return undefined;
   })();
 
+  useOnClickOutside(settingRef, () => {
+    setOpenSetting(false);
+  });
+
+  useOnClickOutside(dataRef, () => {
+    handleCloseDataModal();
+  });
+
+  const handleCloseDataModal = () => {
+    setDataSetting(false);
+    setTab(Tab.Details);
+  };
+
   const approveIsDisabled = (() => {
     if (!isLoaded) {
       return true;
@@ -214,6 +246,25 @@ export const SignPage: FunctionComponent = observer(() => {
     return memoConfig.getError() != null || feeConfig.getError() != null;
   })();
 
+  const { signDocJson } = signDocHelper;
+
+  const messages =
+    signDocJson?.txBody?.messages &&
+    signDocJson.txBody.messages.map((mess) => {
+      return {
+        ...mess,
+        msg: mess?.msg ? Buffer.from(mess?.msg).toString("base64") : "",
+      };
+    });
+  const signDocJsonAll = messages
+    ? {
+        ...signDocJson,
+        txBody: {
+          messages,
+        },
+      }
+    : signDocJson;
+
   return (
     // <HeaderLayout
     //   showChainName={alternativeTitle == null}
@@ -229,12 +280,32 @@ export const SignPage: FunctionComponent = observer(() => {
     // >
     <div
       style={{
-        padding: 20,
-        backgroundColor: "#FFFFFF",
         height: "100%",
+        width: "100vw",
         overflowX: "auto",
       }}
     >
+      <div
+        className={cx("setting", openSetting ? "activeSetting" : "", "modal")}
+        ref={settingRef}
+      >
+        <FeeModal
+          onClose={() => setOpenSetting(false)}
+          feeConfig={feeConfig}
+          gasConfig={gasConfig}
+        />
+      </div>
+      <div
+        className={cx("setting", dataSetting ? "activeSetting" : "", "modal")}
+        ref={dataRef}
+      >
+        <DataModal
+          onClose={() => {
+            handleCloseDataModal();
+          }}
+          renderData={() => <DataTab signDocJsonAll={signDocJsonAll} />}
+        />
+      </div>
       {
         /*
          Show the informations of tx when the sign data is delivered.
@@ -242,151 +313,242 @@ export const SignPage: FunctionComponent = observer(() => {
          */
         isLoaded ? (
           <div className={style.container}>
+            <div style={{ height: "75%", overflow: "scroll", padding: 16 }}>
+              {/* <div
+                style={{
+                  color: "#353945",
+                  fontSize: 24,
+                  fontWeight: 500,
+                  textAlign: "center",
+                  paddingBottom: 24,
+                }}
+              >
+                {chainStore?.current?.raw?.chainName || "Oraichain"}
+              </div> */}
+              <div
+                className={classnames(style.tabs)}
+                style={{ display: "flex", paddingBottom: 12 }}
+              >
+                <div>
+                  <Text size={16} weight="700">
+                    {"Approve transaction".toUpperCase()}
+                  </Text>
+                </div>
+                <div
+                  onClick={() => {
+                    setDataSetting(true);
+                    setTab(Tab.Data);
+                  }}
+                  style={{
+                    padding: "6px 12px",
+                    backgroundColor: colors["neutral-surface-action3"],
+                    borderRadius: 999,
+                    alignItems: "center",
+                    cursor: "pointer",
+                  }}
+                >
+                  <Text weight="600">Raw Data</Text>
+                  <img src={require("assets/icon/tdesign_chevron-right.svg")} />
+                </div>
+                {/* <ul>
+                  <li className={classnames({ activeTabs: tab === Tab.Details })}>
+                    <a
+                      className={classnames(style.tab, {
+                        activeText: tab === Tab.Details
+                      })}
+                      onClick={() => {
+                        setTab(Tab.Details);
+                      }}
+                    >
+                      {intl.formatMessage({
+                        id: "sign.tab.details"
+                      })}
+                    </a>
+                  </li>
+                  <li className={classnames({ activeTabs: tab === Tab.Data })}>
+                    <a
+                      className={classnames(style.tab, {
+                        activeText: tab === Tab.Data
+                      })}
+                      onClick={() => {
+                        setTab(Tab.Data);
+                      }}
+                    >
+                      {intl.formatMessage({
+                        id: "sign.tab.data"
+                      })}
+                    </a>
+                  </li>
+                </ul> */}
+              </div>
+              <div
+                className={classnames(style.tabContainer, {
+                  [style.dataTab]: tab === Tab.Data,
+                })}
+              >
+                {/* {tab === Tab.Data ? <DataTab signDocHelper={signDocHelper} /> : null} */}
+                {tab === Tab.Details ? (
+                  signDocHelper.signDocWrapper?.isADR36SignDoc ? (
+                    <ADR36SignDocDetailsTab
+                      signDocWrapper={signDocHelper.signDocWrapper}
+                      isADR36WithString={isADR36WithString}
+                      origin={origin}
+                    />
+                  ) : (
+                    <DetailsTab
+                      signDocHelper={signDocHelper}
+                      signDocJsonAll={signDocJsonAll}
+                      memoConfig={memoConfig}
+                      feeConfig={feeConfig}
+                      gasConfig={gasConfig}
+                      isInternal={
+                        interactionInfo.interaction &&
+                        interactionInfo.interactionInternal
+                      }
+                      preferNoSetFee={preferNoSetFee}
+                      preferNoSetMemo={preferNoSetMemo}
+                      setOpenSetting={setOpenSetting}
+                    />
+                  )
+                ) : null}
+              </div>
+            </div>
             <div
               style={{
-                color: "#353945",
-                fontSize: 24,
-                fontWeight: 500,
-                textAlign: "center",
-                paddingBottom: 24,
+                position: "absolute",
+                bottom: 0,
+                width: "100%",
+                height: "25%",
+                backgroundColor: colors["neutral-surface-card"],
+                borderTop: "1px solid" + colors["neutral-border-default"],
               }}
             >
-              {chainStore?.current?.raw?.chainName || "Oraichain"}
-            </div>
-            <div className={classnames(style.tabs)}>
-              <ul>
-                <li className={classnames({ activeTabs: tab === Tab.Details })}>
-                  <a
-                    className={classnames(style.tab, {
-                      activeText: tab === Tab.Details,
-                    })}
-                    onClick={() => {
-                      setTab(Tab.Details);
-                    }}
-                  >
-                    {intl.formatMessage({
-                      id: "sign.tab.details",
-                    })}
-                  </a>
-                </li>
-                <li className={classnames({ activeTabs: tab === Tab.Data })}>
-                  <a
-                    className={classnames(style.tab, {
-                      activeText: tab === Tab.Data,
-                    })}
-                    onClick={() => {
-                      setTab(Tab.Data);
-                    }}
-                  >
-                    {intl.formatMessage({
-                      id: "sign.tab.data",
-                    })}
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div
-              className={classnames(style.tabContainer, {
-                [style.dataTab]: tab === Tab.Data,
-              })}
-            >
-              {tab === Tab.Data ? (
-                <DataTab signDocHelper={signDocHelper} />
-              ) : null}
-              {tab === Tab.Details ? (
-                signDocHelper.signDocWrapper?.isADR36SignDoc ? (
-                  <ADR36SignDocDetailsTab
-                    signDocWrapper={signDocHelper.signDocWrapper}
-                    isADR36WithString={isADR36WithString}
-                    origin={origin}
-                  />
-                ) : (
-                  <DetailsTab
-                    signDocHelper={signDocHelper}
-                    memoConfig={memoConfig}
-                    feeConfig={feeConfig}
-                    gasConfig={gasConfig}
-                    isInternal={
-                      interactionInfo.interaction &&
-                      interactionInfo.interactionInternal
-                    }
-                    preferNoSetFee={preferNoSetFee}
-                    preferNoSetMemo={preferNoSetMemo}
-                  />
-                )
-              ) : null}
-            </div>
-            <div style={{ flex: 1 }} />
-            <div className={style.buttons}>
               {keyRingStore.keyRingType === "ledger" &&
               signInteractionStore.isLoading ? (
-                <Button className={style.button} disabled={true} outline>
+                <Button className={style.button} disabled={true} mode="outline">
                   <FormattedMessage id="sign.button.confirm-ledger" />{" "}
                   <i className="fa fa-spinner fa-spin fa-fw" />
                 </Button>
               ) : (
-                <React.Fragment>
-                  <Button
-                    className={classnames(style.button, style.rejectBtn)}
-                    color=""
-                    disabled={signDocHelper.signDocWrapper == null}
-                    // data-loading={signInteractionStore.isLoading}
-                    onClick={async (e) => {
-                      e.preventDefault();
+                <div>
+                  <div
+                    style={{
+                      flexDirection: "row",
+                      display: "flex",
+                      padding: 8,
+                      justifyContent: "space-between",
+                      backgroundColor: colors["neutral-surface-bg"],
+                      margin: 16,
+                      marginBottom: 8,
+                      borderRadius: 12,
+                    }}
+                  >
+                    <div
+                      style={{
+                        flexDirection: "row",
+                        display: "flex",
+                      }}
+                    >
+                      <img
+                        style={{
+                          width: 40,
+                          height: 40,
+                          borderRadius: 40,
+                          marginRight: 8,
+                        }}
+                        src={require("assets/images/default-avatar.png")}
+                      />
+                      <div style={{ flexDirection: "column", display: "flex" }}>
+                        <Text size={14} weight="600">
+                          {accountInfo.name}
+                        </Text>
+                        <Text color={colors["neutral-text-body"]}>
+                          <Address
+                            maxCharacters={18}
+                            lineBreakBeforePrefix={false}
+                          >
+                            {accountInfo.walletStatus === WalletStatus.Loaded &&
+                            addressDisplay
+                              ? addressDisplay
+                              : "..."}
+                          </Address>
+                        </Text>
+                      </div>
+                    </div>
+                    {/* <Text color={colors["neutral-text-body"]}>Demo text</Text> */}
+                  </div>
+                  <div
+                    style={{
+                      flexDirection: "row",
+                      display: "flex",
+                      padding: 16,
+                      paddingTop: 0,
+                    }}
+                  >
+                    <Button
+                      containerStyle={{ marginRight: 8 }}
+                      className={classnames(style.button, style.rejectBtn)}
+                      // disabled={signDocHelper.signDocWrapper == null}
+                      color={"reject"}
+                      data-loading={signInteractionStore.isLoading}
+                      disabled={signInteractionStore.isLoading}
+                      onClick={async (e) => {
+                        e.preventDefault();
 
-                      if (needSetIsProcessing) {
-                        setIsProcessing(true);
-                      }
+                        if (needSetIsProcessing) {
+                          setIsProcessing(true);
+                        }
 
-                      await signInteractionStore.reject();
+                        await signInteractionStore.reject();
 
-                      if (
-                        interactionInfo.interaction &&
-                        !interactionInfo.interactionInternal
-                      ) {
-                        window.close();
-                      } else {
+                        if (
+                          interactionInfo.interaction &&
+                          !interactionInfo.interactionInternal
+                        ) {
+                          window.close();
+                        } else {
+                          history.goBack();
+                        }
+                      }}
+                    >
+                      {intl.formatMessage({
+                        id: "sign.button.reject",
+                      })}
+                    </Button>
+                    <Button
+                      className={classnames(style.button, style.approveBtn)}
+                      // disabled={approveIsDisabled}
+                      data-loading={signInteractionStore.isLoading}
+                      loading={signInteractionStore.isLoading}
+                      onClick={async (e) => {
+                        e.preventDefault();
+
+                        if (needSetIsProcessing) {
+                          setIsProcessing(true);
+                        }
+
+                        if (signDocHelper.signDocWrapper) {
+                          await signInteractionStore.approveAndWaitEnd(
+                            signDocHelper.signDocWrapper
+                          );
+                        }
+
                         history.goBack();
-                      }
-                    }}
-                  >
-                    {intl.formatMessage({
-                      id: "sign.button.reject",
-                    })}
-                  </Button>
-                  <Button
-                    className={classnames(style.button, style.approveBtn)}
-                    color=""
-                    disabled={approveIsDisabled}
-                    data-loading={signInteractionStore.isLoading}
-                    onClick={async (e) => {
-                      e.preventDefault();
 
-                      if (needSetIsProcessing) {
-                        setIsProcessing(true);
-                      }
-
-                      if (signDocHelper.signDocWrapper) {
-                        await signInteractionStore.approveAndWaitEnd(
-                          signDocHelper.signDocWrapper
-                        );
-                      }
-
-                      history.goBack();
-
-                      if (
-                        interactionInfo.interaction &&
-                        !interactionInfo.interactionInternal
-                      ) {
-                        window.close();
-                      }
-                    }}
-                  >
-                    {intl.formatMessage({
-                      id: "sign.button.approve",
-                    })}
-                  </Button>
-                </React.Fragment>
+                        if (
+                          interactionInfo.interaction &&
+                          !interactionInfo.interactionInternal
+                        ) {
+                          window.close();
+                        }
+                      }}
+                    >
+                      {intl.formatMessage({
+                        id: "sign.button.approve",
+                      })}
+                    </Button>
+                  </div>
+                </div>
               )}
             </div>
           </div>

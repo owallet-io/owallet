@@ -36,7 +36,9 @@ import { CoinPretty, Int } from "@owallet/unit";
 import { API } from "@src/common/api";
 import { initPrice } from "@src/screens/home/hooks/use-multiple-assets";
 import ByteBrew from "react-native-bytebrew-sdk";
-
+import axios from "axios";
+import { makeStdTx } from "@cosmjs/amino";
+import { Tendermint37Client } from "@cosmjs/tendermint-rpc";
 export const DelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
     RouteProp<
@@ -70,6 +72,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   const queries = queriesStore.get(chainStore.current.chainId);
   const [validatorDetail, setValidatorDetail] = useState();
   const [validators, setValidators] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const sendConfigs = useDelegateTxConfig(
     chainStore,
     chainStore.current.chainId,
@@ -145,7 +148,9 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   }, [sendConfigs.feeConfig, appInitStore.getInitApp.feeOption]);
 
   const sendConfigError =
-    sendConfigs.recipientConfig.getError() ??
+    (chainStore.current.chainId === "oraibtc-mainnet-1"
+      ? null
+      : sendConfigs.recipientConfig.getError()) ??
     sendConfigs.amountConfig.getError() ??
     sendConfigs.memoConfig.getError() ??
     sendConfigs.gasConfig.getError() ??
@@ -160,9 +165,6 @@ export const DelegateScreen: FunctionComponent = observer(() => {
 
   const thumbnail = bondedValidators.getValidatorThumbnail(validatorAddress);
 
-  const chainIcon = chainIcons.find(
-    (c) => c.chainId === chainStore.current.chainId
-  );
   const _onPressFee = () => {
     modalStore.setOptions({
       bottomSheetModalConfig: {
@@ -175,18 +177,6 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     );
   };
 
-  // const staked = queries.cosmos.queryDelegations
-  //   .getQueryBech32Address(account.bech32Address)
-  //   .getDelegationTo(validatorAddress);
-
-  // const _onOpenStakeModal = () => {
-  //   modalStore.setOpen();
-  //   modalStore.setChildren(
-  //     StakeAdvanceModal({
-  //       config: sendConfigs
-  //     })
-  //   );
-  // };
   const totalVotingPower = useMemo(
     () => computeTotalVotingPower(validators),
     [validators]
@@ -201,16 +191,84 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     new Int(toAmount(Number(sendConfigs.amountConfig.amount)))
   );
 
+  const stakeOraiBtc = async () => {
+    try {
+      setIsLoading(true);
+      const res = await axios.get(
+        `${chainStore.current.rest}/auth/accounts/${address}`
+      );
+      const sequence = res.data.result.value.sequence;
+      const signDoc = {
+        account_number: "0",
+        chain_id: chainStore.current.chainId,
+        fee: {
+          gas: "10000",
+          amount: [{ amount: "0", denom: "uoraibtc" }],
+        },
+        memo: "",
+        msgs: [
+          {
+            type: "cosmos-sdk/MsgDelegate",
+            value: {
+              amount: sendConfigs.amountConfig.getAmountPrimitive(),
+              delegator_address: address,
+              validator_address: sendConfigs.recipientConfig.recipient,
+            },
+          },
+        ],
+        sequence: sequence,
+      };
+      //@ts-ignore
+      const signature = await window.owallet.signAmino(
+        chainStore.current.chainId,
+        account.bech32Address,
+        signDoc
+      );
+      const tx = makeStdTx(signDoc, signature.signature);
+      const tmClient = await Tendermint37Client.connect(chainStore.current.rpc);
+      const result = await tmClient.broadcastTxSync({
+        tx: Uint8Array.from(Buffer.from(JSON.stringify(tx))),
+      });
+      console.log(result, "result");
+      if (result?.code === 0 || result?.code == null) {
+        queries.cosmos.queryValidators
+          .getQueryStatus(BondStatus.Bonded)
+          .fetch();
+        queries.cosmos.queryDelegations.getQueryBech32Address(address).fetch();
+        queries.cosmos.queryRewards.getQueryBech32Address(address).fetch();
+        setIsLoading(false);
+        smartNavigation.pushSmart("TxPendingResult", {
+          txHash: Buffer.from(result?.hash).toString("hex"),
+          data: {
+            type: "stake",
+            wallet: account.bech32Address,
+            validator: sendConfigs.recipientConfig.recipient,
+            amount: sendConfigs.amountConfig.getAmountPrimitive(),
+            fee: sendConfigs.feeConfig.toStdFee(),
+            currency: sendConfigs.amountConfig.sendCurrency,
+          },
+        });
+      }
+    } catch (error) {
+      console.log(error, "error");
+    } finally {
+      setIsLoading(false);
+    }
+  };
   return (
     <PageWithBottom
       bottomGroup={
         <OWButton
           label="Stake"
-          disabled={!account.isReadyToSendMsgs || !txStateIsValid}
-          loading={account.isSendingMsg === "delegate"}
+          disabled={!account.isReadyToSendMsgs || !txStateIsValid || isLoading}
+          loading={account.isSendingMsg === "delegate" || isLoading}
           onPress={async () => {
             if (account.isReadyToSendMsgs && txStateIsValid) {
               try {
+                if (chainStore.current.chainId === "oraibtc-mainnet-1") {
+                  stakeOraiBtc();
+                  return;
+                }
                 await account.cosmos.sendDelegateMsg(
                   sendConfigs.amountConfig.amount,
                   sendConfigs.recipientConfig.recipient,
@@ -285,7 +343,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
       <ScrollView showsVerticalScrollIndicator={false}>
         <PageHeader
           title="Stake"
-          subtitle={"Oraichain"}
+          subtitle={chainStore.current.chainName}
           colors={colors}
           onPress={async () => {}}
         />
@@ -349,39 +407,20 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                       alignItems: "center",
                     }}
                   >
-                    {chainIcon ? (
-                      <View
-                        style={{
-                          backgroundColor: colors["neutral-icon-on-dark"],
-                          borderRadius: 999,
+                    <View
+                      style={{
+                        backgroundColor: colors["neutral-icon-on-dark"],
+                        borderRadius: 999,
+                      }}
+                    >
+                      <OWIcon
+                        type="images"
+                        source={{
+                          uri: chainStore.current.stakeCurrency?.coinImageUrl,
                         }}
-                      >
-                        <OWIcon
-                          type="images"
-                          source={{ uri: chainIcon?.Icon }}
-                          size={16}
-                        />
-                      </View>
-                    ) : (
-                      <View
-                        style={{
-                          width: 22,
-                          height: 22,
-                          borderRadius: 33,
-                          alignItems: "center",
-                          backgroundColor: colors["neutral-icon-on-dark"],
-                          justifyContent: "center",
-                        }}
-                      >
-                        <OWText
-                          weight="400"
-                          color={colors["neutral-text-action-on-dark-bg"]}
-                        >
-                          {chainStore.current.stakeCurrency.coinDenom.charAt(0)}
-                        </OWText>
-                      </View>
-                    )}
-
+                        size={16}
+                      />
+                    </View>
                     <OWText style={{ paddingLeft: 4 }} weight="600" size={14}>
                       {chainStore.current.stakeCurrency.coinDenom}
                     </OWText>

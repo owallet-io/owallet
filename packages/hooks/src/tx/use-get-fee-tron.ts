@@ -169,74 +169,78 @@ export const useGetFeeTron = (
       return;
     }
     const tronWeb = TronWebProvider(chainInfo.rpc);
-    console.log(tronWeb, "tronWeb");
     const recipientInfo = await queriesTron.queryAccount
       .getQueryWalletAddress(recipientConfig.recipient)
       .waitFreshResponse();
-    const { data } = recipientInfo;
+    if (recipientInfo) {
+      const { data } = recipientInfo;
 
-    if (!data?.activated) {
-      setData((prevState) => ({
-        ...prevState,
-        feeTrx: {
-          denom: feeCurrency.coinMinimalDenom,
-          //TODO: With new account tron fee is 1 TRX
-          amount: "1000000",
-        },
-      }));
-    } else if (
-      amountConfig.sendCurrency.coinMinimalDenom ===
-      feeCurrency.coinMinimalDenom
-    ) {
-      const transaction = await tronWeb.transactionBuilder.sendTrx(
-        recipientConfig.recipient,
-        amountConfig.getAmountPrimitive().amount,
-        addressTronBase58,
-        1
-      );
-      console.log(tronWeb, "tronWeb");
-      const signedTx = await keyRingStore.simulateSignTron(transaction);
-      const amountBandwidthFee = caculatorAmountBandwidthFee(
-        signedTx,
-        bandwidthRemaining
-      );
-      setData((prevState) => ({
-        ...prevState,
-        feeTrx: {
-          denom: feeCurrency.coinMinimalDenom,
-          amount: amountBandwidthFee.toString(),
-        },
-      }));
-    } else if (amountConfig.sendCurrency.coinMinimalDenom?.includes("erc20")) {
-      try {
-        const dataReq = {
-          //@ts-ignore
-          address: amountConfig.sendCurrency?.contractAddress,
-          functionSelector: "transfer(address,uint256)",
-          options: {
-            feeLimit: DEFAULT_FEE_LIMIT_TRON + Math.floor(Math.random() * 100),
+      if (!data?.activated) {
+        setData((prevState) => ({
+          ...prevState,
+          feeTrx: {
+            denom: feeCurrency.coinMinimalDenom,
+            //TODO: With new account tron fee is 1 TRX
+            amount: "1000000",
           },
-          parameters: [
-            {
-              type: "address",
-              value: getEvmAddress(recipientConfig.recipient),
+        }));
+      } else if (
+        amountConfig.sendCurrency.coinMinimalDenom ===
+        feeCurrency.coinMinimalDenom
+      ) {
+        const transaction = await tronWeb.transactionBuilder.sendTrx(
+          recipientConfig.recipient,
+          amountConfig.getAmountPrimitive().amount,
+          addressTronBase58,
+          1
+        );
+        console.log(tronWeb, "tronWeb");
+        const signedTx = await keyRingStore.simulateSignTron(transaction);
+        const amountBandwidthFee = caculatorAmountBandwidthFee(
+          signedTx,
+          bandwidthRemaining
+        );
+        setData((prevState) => ({
+          ...prevState,
+          feeTrx: {
+            denom: feeCurrency.coinMinimalDenom,
+            amount: amountBandwidthFee.toString(),
+          },
+        }));
+      } else if (
+        amountConfig.sendCurrency.coinMinimalDenom?.includes("erc20")
+      ) {
+        try {
+          const dataReq = {
+            //@ts-ignore
+            address: amountConfig.sendCurrency?.contractAddress,
+            functionSelector: "transfer(address,uint256)",
+            options: {
+              feeLimit:
+                DEFAULT_FEE_LIMIT_TRON + Math.floor(Math.random() * 100),
             },
-            {
-              type: "uint256",
-              value: amountConfig.getAmountPrimitive().amount,
-            },
-          ],
-          issuerAddress: addressTronBase58,
-        };
-        console.log(dataReq, "dataReq");
-        estimateForTrigger(dataReq);
-        return;
-      } catch (e) {
+            parameters: [
+              {
+                type: "address",
+                value: getEvmAddress(recipientConfig.recipient),
+              },
+              {
+                type: "uint256",
+                value: amountConfig.getAmountPrimitive().amount,
+              },
+            ],
+            issuerAddress: addressTronBase58,
+          };
+          console.log(dataReq, "dataReq");
+          estimateForTrigger(dataReq);
+          return;
+        } catch (e) {
+          setData(initData);
+          console.log(e, "err");
+        }
+      } else {
         setData(initData);
-        console.log(e, "err");
       }
-    } else {
-      setData(initData);
     }
   };
   useEffect(() => {

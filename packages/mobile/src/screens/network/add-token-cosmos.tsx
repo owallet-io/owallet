@@ -9,7 +9,7 @@ import { useStore } from "../../stores";
 import CheckBox from "react-native-check-box";
 import { AppCurrency, CW20Currency, Secret20Currency } from "@owallet/types";
 import { observer } from "mobx-react-lite";
-import { MapChainIdToNetwork, showToast } from "@src/utils/helper";
+import { showToast } from "@src/utils/helper";
 import { API } from "@src/common/api";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import { OWButton } from "@src/components/button";
@@ -20,7 +20,7 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { useTheme } from "@src/themes/theme-provider";
 import { DownArrowIcon } from "@src/components/icon";
 import { SelectTokenTypeModal } from "./select-token-type";
-import { unknownToken } from "@owallet/common";
+import { unknownToken, MapChainIdToNetwork } from "@owallet/common";
 import ByteBrew from "react-native-bytebrew-sdk";
 
 interface FormData {
@@ -108,7 +108,6 @@ export const AddTokenCosmosScreen: FunctionComponent<{
   const queryContractInfo = query.getQueryContract(contractAddress);
 
   const tokenInfo = queryContractInfo.tokenInfo;
-  console.log(process.env.COINGECKO_API_KEY, "process.env.COINGECKO_API_KEY");
   const getTokenCoingeckoId = async () => {
     try {
       if (tokenInfo && tokenInfo.symbol) {
