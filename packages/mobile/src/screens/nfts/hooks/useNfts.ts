@@ -71,6 +71,7 @@ export const useNfts = (
         limit: isAllNetworks || chainId === ChainIdEnum.Stargaze ? 4 : 0,
         filterByCollectionAddrs: null,
         sortBy: "ACQUIRED_DESC",
+        offset: 0,
       },
       fetchPolicy: "cache-and-network",
     });

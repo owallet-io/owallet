@@ -1,4 +1,10 @@
-import React, { FunctionComponent, useEffect, useRef, useState } from "react";
+import React, {
+  FC,
+  FunctionComponent,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { observer } from "mobx-react-lite";
 import { StyleSheet } from "react-native";
 import { _keyExtract } from "../../utils/helper";
@@ -18,21 +24,12 @@ import { NftItem } from "./components/nft-item";
 import { API } from "@src/common/api";
 import { OWEmpty } from "@src/components/empty";
 import { urlAiRight } from "@src/common/constants";
-import { processDataOraiNft } from "./hooks/useNfts";
+import { processDataOraiNft, processDataStargazeNft } from "./hooks/useNfts";
 import { SkeletonNft } from "./components/nft-skeleton";
+import { ChainIdEnum } from "@owallet/common";
+import { useQuery } from "@apollo/client";
+import { OwnedTokens } from "@src/graphql/queries";
 export const NftsScreen: FunctionComponent = observer((props) => {
-  const { accountStore } = useStore();
-
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [loadMore, setLoadMore] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
-  const page = useRef(0);
-  const hasMore = useRef(true);
-  const perPage = 10;
-  const { colors } = useTheme();
-  const styles = styling(colors);
-
   const route = useRoute<
     RouteProp<
       Record<
@@ -44,8 +41,96 @@ export const NftsScreen: FunctionComponent = observer((props) => {
       string
     >
   >();
-
+  const { colors } = useTheme();
   const chainInfo = route.params?.chainInfo;
+  const styles = styling(colors);
+  return (
+    <PageWithView>
+      <PageHeader title="My NFTs" subtitle={chainInfo?.chainName} />
+      <OWBox style={[styles.container]}>
+        {chainInfo.chainId === ChainIdEnum.Oraichain ? (
+          <NftsOraiScreen chainInfo={chainInfo} />
+        ) : (
+          <NftsStargazeScreen chainInfo={chainInfo} />
+        )}
+      </OWBox>
+    </PageWithView>
+  );
+});
+
+const NftsStargazeScreen: FC<{
+  chainInfo: ChainInfo;
+}> = observer(({ chainInfo }) => {
+  const { accountStore } = useStore();
+  const perPage = 10;
+  const { colors } = useTheme();
+  const styles = styling(colors);
+  const renderItem = ({ item, index }) => {
+    return <NftItem key={`item-${index + 1}-${index}`} item={item} />;
+  };
+  const account = accountStore.getAccount(ChainIdEnum.Stargaze);
+  const address = account.bech32Address;
+  const { loading, error, data, refetch } = useQuery(OwnedTokens, {
+    variables: {
+      filterForSale: null,
+      owner: address,
+      limit: 100,
+      filterByCollectionAddrs: null,
+      sortBy: "ACQUIRED_DESC",
+      offset: 0,
+    },
+    fetchPolicy: "cache-and-network",
+  });
+  const [refreshing, setRefreshing] = useState(false);
+
+  const nfts = (data?.tokens?.tokens || [])
+    .filter((item, index) => item?.media?.type === "image")
+    .map((nft, index) => processDataStargazeNft(nft, chainInfo.stakeCurrency));
+
+  return (
+    <OWFlatList
+      containerSkeletonStyle={styles.containerSkeleton}
+      SkeletonComponent={<SkeletonNft />}
+      skeletonStyle={{}}
+      data={error ? [] : nfts}
+      // onEndReached={onEndReached}
+      renderItem={renderItem}
+      columnWrapperStyle={styles.row}
+      contentContainerStyle={{
+        gap: 16,
+      }}
+      numColumns={2}
+      // loadMore={loadMore}
+      loading={loading}
+      onRefresh={async () => {
+        try {
+          setRefreshing(true);
+          await refetch();
+        } catch (error) {
+          console.error("err nfts", error);
+        } finally {
+          setRefreshing(false);
+        }
+      }}
+      ListEmptyComponent={<OWEmpty type="nft" label="NO NFTs YET" />}
+      refreshing={refreshing}
+    />
+  );
+});
+const NftsOraiScreen: FC<{
+  chainInfo: ChainInfo;
+}> = observer(({ chainInfo }) => {
+  const { accountStore } = useStore();
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [loadMore, setLoadMore] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const page = useRef(0);
+  const hasMore = useRef(true);
+  const perPage = 10;
+  const { colors } = useTheme();
+  const styles = styling(colors);
+
   const account = accountStore.getAccount(chainInfo.chainId);
 
   const renderItem = ({ item, index }) => {
@@ -116,36 +201,25 @@ export const NftsScreen: FunctionComponent = observer((props) => {
     hasMore.current = true;
     fetchData(account.bech32Address, false);
   };
-
   return (
-    <PageWithView>
-      <PageHeader title="My NFTs" subtitle={chainInfo?.chainName} />
-      <OWBox style={[styles.container]}>
-        <OWFlatList
-          containerSkeletonStyle={{
-            flexDirection: "row",
-            flexWrap: "wrap",
-            gap: 16,
-            justifyContent: "space-between",
-          }}
-          SkeletonComponent={<SkeletonNft />}
-          skeletonStyle={{}}
-          data={data}
-          onEndReached={onEndReached}
-          renderItem={renderItem}
-          columnWrapperStyle={styles.row}
-          contentContainerStyle={{
-            gap: 16,
-          }}
-          numColumns={2}
-          loadMore={loadMore}
-          loading={loading}
-          onRefresh={onRefresh}
-          ListEmptyComponent={<OWEmpty type="nft" label="NO NFTs YET" />}
-          refreshing={refreshing}
-        />
-      </OWBox>
-    </PageWithView>
+    <OWFlatList
+      containerSkeletonStyle={styles.containerSkeleton}
+      SkeletonComponent={<SkeletonNft />}
+      skeletonStyle={{}}
+      data={data}
+      onEndReached={onEndReached}
+      renderItem={renderItem}
+      columnWrapperStyle={styles.row}
+      contentContainerStyle={{
+        gap: 16,
+      }}
+      numColumns={2}
+      loadMore={loadMore}
+      loading={loading}
+      onRefresh={onRefresh}
+      ListEmptyComponent={<OWEmpty type="nft" label="NO NFTs YET" />}
+      refreshing={refreshing}
+    />
   );
 });
 
@@ -159,6 +233,12 @@ const styling = (colors) =>
     },
     row: {
       flex: 1,
+      justifyContent: "space-between",
+    },
+    containerSkeleton: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      gap: 16,
       justifyContent: "space-between",
     },
   });
