@@ -1094,8 +1094,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               size={80}
               source={
                 theme === "dark"
-                  ? require("../../assets/image/OBridge-light.png")
-                  : require("../../assets/image/OBridge.png")
+                  ? require("../../assets/image/obridge-light.png")
+                  : require("../../assets/image/obridge.png")
               }
             />
           </View>
