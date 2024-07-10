@@ -755,13 +755,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     }
   };
 
-  console.log(
-    "amountLoading || swapLoading",
-    amountLoading,
-    swapLoading,
-    amountLoading || swapLoading
-  );
-
   return (
     <PageWithBottom
       style={{ paddingTop: 16 }}
@@ -1069,7 +1062,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                   if (value) {
                     setSendToModal(true);
                   } else {
-                    setSendToAddress("");
+                    setSendToAddress(null);
                   }
                 }}
               />
@@ -1099,8 +1092,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               size={80}
               source={
                 theme === "dark"
-                  ? require("../../assets/image/obridge-light.png")
-                  : require("../../assets/image/obridge.png")
+                  ? require("../../assets/image/OBridge-light.png")
+                  : require("../../assets/image/OBridge.png")
               }
             />
           </View>
