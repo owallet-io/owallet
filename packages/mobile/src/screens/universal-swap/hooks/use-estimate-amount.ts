@@ -46,7 +46,8 @@ export const useEstimateAmount = (
   simulateOption?: {
     useAlphaSmartRoute?: boolean;
     useSmartRoute?: boolean;
-  }
+  },
+  isAIRoute?: boolean
 ) => {
   const [amountLoading, setAmountLoading] = useState(false);
   const [isWarningSlippage, setIsWarningSlippage] = useState(false);
@@ -157,7 +158,7 @@ export const useEstimateAmount = (
 
   useEffect(() => {
     convertRelayerFee();
-  }, [relayerFeeToken, originalFromToken, originalToToken]);
+  }, [relayerFeeToken, originalFromToken, originalToToken, isAIRoute]);
 
   const estimateAverageRatio = async () => {
     const data = await getSimulateSwap(1);
@@ -274,6 +275,7 @@ export const useEstimateAmount = (
     fromTokenInfoData,
     originalToToken,
     fromAmountToken,
+    isAIRoute,
   ]);
 
   useEffect(() => {
@@ -284,6 +286,7 @@ export const useEstimateAmount = (
     fromTokenInfoData,
     originalToToken,
     client,
+    isAIRoute,
   ]);
 
   return {
