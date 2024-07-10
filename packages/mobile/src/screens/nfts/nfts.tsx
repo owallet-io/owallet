@@ -1,30 +1,15 @@
 import React, { FunctionComponent, useEffect, useRef, useState } from "react";
 import { observer } from "mobx-react-lite";
-import {
-  FlatList,
-  TouchableOpacity,
-  StyleSheet,
-  View,
-  SectionList,
-} from "react-native";
-import { metrics, spacing, typography } from "../../themes";
+import { StyleSheet } from "react-native";
 import { _keyExtract } from "../../utils/helper";
-import { DownArrowIcon } from "../../components/icon";
-import {
-  PageWithViewInBottomTabView,
-  PageWithView,
-} from "../../components/page";
-import Accordion from "react-native-collapsible/Accordion";
-import { useSmartNavigation } from "../../navigation.provider";
-import ProgressiveImage from "../../components/progessive-image";
+
+import { PageWithView } from "../../components/page";
 import { useTheme } from "@src/themes/theme-provider";
-import { Text } from "@src/components/text";
+
 import { OWBox } from "@src/components/card";
-import { OWSubTitleHeader } from "@src/components/header";
 
 import { useStore } from "@src/stores";
-import images from "@src/assets/images";
-// import { useSoulbound } from "./hooks/useSoulboundNft";
+
 import OWFlatList from "@src/components/page/ow-flat-list";
 import { PageHeader } from "@src/components/header/header-new";
 import { RouteProp, useRoute } from "@react-navigation/native";
@@ -34,7 +19,7 @@ import { API } from "@src/common/api";
 import { OWEmpty } from "@src/components/empty";
 import { urlAiRight } from "@src/common/constants";
 import { processDataOraiNft } from "./hooks/useNfts";
-// import { SkeletonNft } from "../home/tokens-card";
+import { SkeletonNft } from "./components/nft-skeleton";
 export const NftsScreen: FunctionComponent = observer((props) => {
   const { accountStore } = useStore();
 
@@ -137,10 +122,21 @@ export const NftsScreen: FunctionComponent = observer((props) => {
       <PageHeader title="My NFTs" subtitle={chainInfo?.chainName} />
       <OWBox style={[styles.container]}>
         <OWFlatList
+          containerSkeletonStyle={{
+            flexDirection: "row",
+            flexWrap: "wrap",
+            gap: 16,
+            justifyContent: "space-between",
+          }}
+          SkeletonComponent={<SkeletonNft />}
+          skeletonStyle={{}}
           data={data}
           onEndReached={onEndReached}
           renderItem={renderItem}
           columnWrapperStyle={styles.row}
+          contentContainerStyle={{
+            gap: 16,
+          }}
           numColumns={2}
           loadMore={loadMore}
           loading={loading}
