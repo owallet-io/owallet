@@ -11,38 +11,59 @@ import { useTheme } from "@src/themes/theme-provider";
 
 import { OWEmpty } from "@src/components/empty";
 import { useNfts } from "@screens/nfts/hooks/useNfts";
+import { OWButton } from "@src/components/button";
 export const NftCard = observer(() => {
   const { chainStore, accountStore, keyRingStore, appInitStore } = useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
-  const account = accountStore.getAccount(chainStore.current.chainId);
-  const address = account.getAddressDisplay(
-    keyRingStore.keyRingLedgerAddresses,
-    true
-  );
   const nfts = useNfts(
-    chainStore.current,
-    address,
+    chainStore,
+    accountStore,
     appInitStore.getInitApp.isAllNetworks
   );
-
+  const emptyDataCount =
+    nfts && nfts.filter((item) => item.data.length === 0).length;
   return (
     <View style={styles.container}>
-      {nfts?.length > 0 ? (
-        <>
-          {/* <View style={styles.sectionHeader}>
-            <OWText style={styles.txtTitle}>Total value</OWText>
-            <OWText style={styles.price}>{totalPrice?.toString()}</OWText>
-          </View> */}
-          <View style={styles.containerList}>
-            {nfts.map((it, index) => {
-              return <NftItem key={index} item={it} />;
-            })}
-          </View>
-        </>
-      ) : (
+      {emptyDataCount === nfts.length && (
         <OWEmpty type="nft" label="NO NFTs YET" />
       )}
+      {nfts.map((it, index) => {
+        if (it?.data?.length > 0) {
+          return (
+            <>
+              <View style={styles.sectionHeader}>
+                <OWText style={styles.txtTitle}>
+                  {it?.chainInfo.chainName}
+                </OWText>
+                {/* <OWText style={styles.price}>{"ok"}</OWText> */}
+              </View>
+              <View style={styles.containerList}>
+                {it?.data?.map((nft, indexNft) => (
+                  <NftItem key={indexNft} item={nft} />
+                ))}
+              </View>
+              {it?.data?.length > 3 && (
+                <OWButton
+                  style={{
+                    marginTop: 16,
+                  }}
+                  label={"View all"}
+                  size="medium"
+                  type="secondary"
+                  onPress={() => {
+                    // setMore(!more);
+                    // navigate(SCREENS.STACK.Others, {
+                    //   screen: SCREENS.Transactions,
+                    // });
+                    return;
+                  }}
+                />
+              )}
+            </>
+          );
+        }
+      })}
     </View>
   );
 });
