@@ -261,9 +261,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     isAIRoute
   );
 
-  console.log("routersSwapData", routersSwapData);
-  console.log("simulateData", simulateData);
-
   const simulateDisplayAmount =
     simulateData && simulateData.displayAmount ? simulateData.displayAmount : 0;
 
@@ -429,7 +426,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     const isCustomRecipient = sendToAddress && sendToAddress !== "";
     const alphaSmartRoutes =
       useAlphaSmartRouter && simulateData && simulateData?.routes;
-    console.log("alphaSmartRoutes", alphaSmartRoutes);
 
     let amountsBalance = universalSwapStore.getAmount;
 

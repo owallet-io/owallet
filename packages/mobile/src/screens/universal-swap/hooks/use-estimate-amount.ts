@@ -178,6 +178,14 @@ export const useEstimateAmount = (
       };
       let routersSwapData = defaultRouterSwap;
 
+      if (fromAmountToken && simulateData) {
+        routersSwapData = {
+          ...simulateData,
+          //@ts-ignore
+          routes: simulateData?.routes?.routes ?? [],
+        };
+      }
+
       const fromTochainIdIsOraichain =
         originalFromToken.chainId === "Oraichain" &&
         originalToToken.chainId === "Oraichain";

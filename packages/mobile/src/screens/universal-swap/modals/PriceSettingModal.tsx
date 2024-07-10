@@ -102,6 +102,8 @@ export const PriceSettingModal = registerModal(
       );
     };
 
+    console.log("routersSwapData", routersSwapData);
+
     const renderSmartRoutes = () => {
       if (fromAmountToken > 0 && routersSwapData?.routes?.length > 0) {
         return (
@@ -200,7 +202,6 @@ export const PriceSettingModal = registerModal(
                       </Text>
                     </View>
                     {route?.paths?.map((path) => {
-                      console.log("path", path);
                       const { TokenInIcon, TokenOutIcon } = getPairInfo(
                         path,
                         flattenTokens,
