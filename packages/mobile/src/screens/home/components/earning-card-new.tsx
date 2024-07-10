@@ -178,7 +178,7 @@ export const EarningCardNew = observer(({}) => {
       style={{
         marginHorizontal: 16,
         width: metrics.screenWidth - 32,
-        marginTop: 2,
+        marginTop: 8,
         backgroundColor: colors["neutral-surface-card"],
         padding: spacing["16"],
       }}

@@ -10,6 +10,7 @@ import {
 } from "reactstrap";
 
 import { Buffer } from "buffer";
+import styleInput from "./input.module.scss";
 
 export interface TextareaProps {
   label?: string;
@@ -45,7 +46,12 @@ export const TextArea = forwardRef<
       ) : null}
       <ReactStrapInput
         id={inputId}
-        className={classnames("form-control-alternative", props.className)}
+        className={classnames(
+          "form-control-alternative",
+          props.className,
+          styleInput.input,
+          styleInput.textArea
+        )}
         type={"textarea" as any}
         innerRef={ref}
         invalid={error != null}

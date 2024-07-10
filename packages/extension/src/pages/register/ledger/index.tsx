@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from "react";
 import { RegisterConfig } from "@owallet/hooks";
 import { FormattedMessage, useIntl } from "react-intl";
-import { Button, Form } from "reactstrap";
+import { Form } from "reactstrap";
 import useForm from "react-hook-form";
 import style from "../style.module.scss";
 import { Input, PasswordInput } from "../../../components/form";
@@ -9,6 +9,7 @@ import { AdvancedBIP44Option, useBIP44Option } from "../advanced-bip44";
 import { BackButton } from "../index";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../../stores";
+import { Button } from "../../../components/common/button";
 
 export const TypeImportLedger = "import-ledger";
 
@@ -22,10 +23,10 @@ export const ImportLedgerIntro: FunctionComponent<{
   registerConfig: RegisterConfig;
 }> = observer(({ registerConfig }) => {
   const { analyticsStore } = useStore();
+
   return (
     <Button
-      color=""
-      block
+      color="secondary"
       onClick={(e) => {
         e.preventDefault();
 
@@ -34,10 +35,8 @@ export const ImportLedgerIntro: FunctionComponent<{
           registerType: "ledger",
         });
       }}
-      className={style.importWalletBtn}
-    >
-      <FormattedMessage id="register.ledger.title" />
-    </Button>
+      text={<FormattedMessage id="register.ledger.title" />}
+    />
   );
 });
 
@@ -45,24 +44,20 @@ export const ImportLedgerPage: FunctionComponent<{
   registerConfig: RegisterConfig;
 }> = observer(({ registerConfig }) => {
   const intl = useIntl();
-  const { chainStore, analyticsStore } = useStore();
+  const { analyticsStore } = useStore();
   const bip44Option = useBIP44Option(118);
 
-  const { register, handleSubmit, getValues, errors } = useForm<FormData>({
-    defaultValues: {
-      name: "",
-      password: "",
-      confirmPassword: "",
-    },
-  });
+  const { register, handleSubmit, getValues, errors, setValue } =
+    useForm<FormData>({
+      defaultValues: {
+        name: "",
+        password: "",
+        confirmPassword: "",
+      },
+    });
 
   return (
     <div>
-      <div className={style.title}>
-        {intl.formatMessage({
-          id: "register.name",
-        })}
-      </div>
       <Form
         className={style.formContainer}
         onSubmit={handleSubmit(async (data: FormData) => {
@@ -89,8 +84,13 @@ export const ImportLedgerPage: FunctionComponent<{
             id: "register.name",
           })}
           styleInputGroup={{
-            border: "1px solid rgba(8, 4, 28, 0.12)",
+            marginBottom: 15,
           }}
+          onAction={() => {
+            setValue("name", "");
+          }}
+          leftIcon={<img src={require("assets/icon/wallet.svg")} alt="" />}
+          rightIcon={<img src={require("assets/icon/circle-del.svg")} alt="" />}
           type="text"
           name="name"
           ref={register({
@@ -103,11 +103,11 @@ export const ImportLedgerPage: FunctionComponent<{
         {registerConfig.mode === "create" ? (
           <React.Fragment>
             <PasswordInput
-              label={intl.formatMessage({
+              placeHolder={intl.formatMessage({
                 id: "register.create.input.password",
               })}
               styleInputGroup={{
-                border: "1px solid rgba(8, 4, 28, 0.12)",
+                marginBottom: 15,
               }}
               name="password"
               ref={register({
@@ -125,11 +125,11 @@ export const ImportLedgerPage: FunctionComponent<{
               error={errors.password && errors.password.message}
             />
             <PasswordInput
-              label={intl.formatMessage({
+              placeHolder={intl.formatMessage({
                 id: "register.create.input.confirm-password",
               })}
               styleInputGroup={{
-                border: "1px solid rgba(8, 4, 28, 0.12)",
+                marginBottom: 15,
               }}
               style={{ position: "relative" }}
               name="confirmPassword"
@@ -149,14 +149,8 @@ export const ImportLedgerPage: FunctionComponent<{
             />
           </React.Fragment>
         ) : null}
-        <AdvancedBIP44Option bip44Option={bip44Option} />
-        <Button
-          color=""
-          type="submit"
-          block
-          data-loading={registerConfig.isLoading}
-          className={style.nextBtn}
-        >
+        {/* <AdvancedBIP44Option bip44Option={bip44Option} /> */}
+        <Button data-loading={registerConfig.isLoading}>
           <FormattedMessage id="register.create.button.next" />
         </Button>
       </Form>

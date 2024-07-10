@@ -4,9 +4,7 @@ import classnames from "classnames";
 
 import {
   FormFeedback,
-  FormGroup,
   FormText,
-  InputGroup,
   Input as ReactStrapInput,
   Label,
 } from "reactstrap";
@@ -15,17 +13,27 @@ import { InputType } from "reactstrap/lib/Input";
 import styleInput from "./input.module.scss";
 
 import { Buffer } from "buffer";
+import colors from "../../theme/colors";
+import { Text } from "../common/text";
 
 export interface InputProps {
   type?: Exclude<InputType, "textarea">;
   label?: string;
+  placeHolder?: string;
   text?: string | React.ReactElement;
+  border?: string;
   error?: string;
-
+  errors?: Array<string>;
+  leftIcon?: React.ReactElement;
+  rightIcon?: React.ReactElement;
+  onAction?: () => void;
   append?: React.ReactElement;
   styleInputGroup?: CSSProperties;
+  styleTextInput?: CSSProperties;
   typeInput?: string | any;
   classNameInputGroup?: string;
+  innerRef?: any;
+  loading?: boolean;
 }
 
 // eslint-disable-next-line react/display-name
@@ -37,11 +45,19 @@ export const Input = forwardRef<
     type,
     label,
     text,
+    border,
     error,
+    errors,
     append,
     styleInputGroup,
+    styleTextInput,
     typeInput,
-    classNameInputGroup,
+    placeHolder,
+    leftIcon,
+    rightIcon,
+    onAction,
+    innerRef,
+    loading,
   } = props;
 
   const attributes = { ...props };
@@ -54,7 +70,6 @@ export const Input = forwardRef<
   delete attributes.children;
   delete attributes.append;
   delete attributes.styleInputGroup;
-  delete attributes.typeInput;
 
   const [inputId] = useState(() => {
     const bytes = new Uint8Array(4);
@@ -63,31 +78,90 @@ export const Input = forwardRef<
   });
 
   return (
-    <FormGroup>
-      {label ? (
-        <Label for={inputId} className="form-control-label">
-          {label}
-        </Label>
-      ) : null}
-      <InputGroup style={styleInputGroup} className={classNameInputGroup}>
-        <ReactStrapInput
-          id={inputId}
-          className={classnames(
-            "form-control-alternative",
-            props.className,
-            styleInput.input
-          )}
-          type={typeInput ?? type}
-          innerRef={ref}
-          {...attributes}
-        />
+    <div ref={innerRef}>
+      <div
+        style={{
+          padding: 8,
+          paddingTop: 4,
+          paddingBottom: 4,
+          marginTop: 4,
+          border: border ?? "1px solid",
+          borderRadius: 8,
+          borderColor: colors["neutral-border-bold"],
+          ...styleInputGroup,
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            width: "100%",
+            alignItems: "center",
+          }}
+        >
+          {label ? <Text>{label}</Text> : null}
+          {loading ? (
+            <div>
+              <FormText>
+                <i className="fa fa-spinner fa-spin fa-fw" />
+              </FormText>
+            </div>
+          ) : null}
+        </div>
+
+        <div
+          style={{
+            flexDirection: "row",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <div
+            style={{
+              flexDirection: "row",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "100%",
+            }}
+          >
+            {leftIcon ? (
+              <span style={{ paddingRight: 4 }}>{leftIcon}</span>
+            ) : null}
+            <ReactStrapInput
+              placeholder={placeHolder ?? label}
+              id={inputId}
+              className={classnames(props.className, styleInput.input)}
+              style={styleTextInput}
+              type={typeInput ?? type}
+              innerRef={ref}
+              {...attributes}
+            />
+          </div>
+
+          {rightIcon ? (
+            <div style={{ cursor: "pointer" }} onClick={onAction}>
+              {rightIcon}
+            </div>
+          ) : null}
+        </div>
+
         {append}
-      </InputGroup>
+      </div>
+      {errors?.length > 0
+        ? errors.map((err) => {
+            return (
+              <FormFeedback style={{ display: "block" }}>{err}</FormFeedback>
+            );
+          })
+        : null}
       {error ? (
         <FormFeedback style={{ display: "block" }}>{error}</FormFeedback>
       ) : text ? (
         <FormText>{text}</FormText>
       ) : null}
-    </FormGroup>
+    </div>
   );
 });

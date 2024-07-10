@@ -4,22 +4,10 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import {
-  FormGroup,
-  Label,
-  Input,
-  FormFeedback,
-  Modal,
-  InputGroup,
-  Button,
-  FormText,
-  ModalBody,
-} from "reactstrap";
-// import Modal from 'react-modal';
+import { Modal, InputGroup, Button, ModalBody } from "reactstrap";
+import { Input } from "./input";
 import { AddressBookPage } from "../../pages/setting/address-book";
-
 import styleAddressInput from "./address-input.module.scss";
-import classnames from "classnames";
 import {
   InvalidBech32Error,
   EmptyAddressError,
@@ -40,14 +28,11 @@ export interface AddressInputProps {
   recipientConfig: IRecipientConfig;
   memoConfig?: IMemoConfig;
   ibcChannelConfig?: IIBCChannelConfig;
-
   className?: string;
   label?: string;
   placeholder?: string;
   inputStyle?: CSSProperties;
-
   disableAddressBook?: boolean;
-
   disabled?: boolean;
   inputRef?: React.RefObject<HTMLInputElement>;
 }
@@ -144,19 +129,14 @@ export const AddressInput: FunctionComponent<AddressInputProps> = observer(
             />
           </ModalBody>
         </Modal>
-        <FormGroup className={className}>
-          {label ? (
-            <Label for={inputId} className="form-control-label">
-              {label}
-            </Label>
-          ) : null}
+        <div className={className}>
           <InputGroup className={styleAddressInput.inputGroup}>
             <Input
+              loading={isENSLoading}
+              styleInputGroup={inputStyle}
               id={inputId}
-              className={classnames(
-                "form-control-alternative",
-                styleAddressInput.input
-              )}
+              label={label ?? ""}
+              className={styleAddressInput.input}
               innerRef={inputRef}
               value={recipientConfig.rawRecipient}
               onChange={(e) => {
@@ -166,37 +146,38 @@ export const AddressInput: FunctionComponent<AddressInputProps> = observer(
               autoComplete="off"
               disabled={disabled}
               placeholder={placeholder}
+              text={
+                !isENSLoading && isENSAddress && !error
+                  ? recipientConfig.recipient
+                  : null
+              }
+              error={errorText != null ? errorText : null}
+              rightIcon={
+                !disableAddressBook && memoConfig ? (
+                  <Button
+                    className={styleAddressInput.addressBookButton}
+                    type="button"
+                    outline={true}
+                    onClick={() => setIsAddressBookOpen(true)}
+                    disabled={disabled}
+                  >
+                    <img
+                      src={require("assets/icon/tdesign_address-book.svg")}
+                      alt="logo"
+                    />
+                  </Button>
+                ) : null
+              }
             />
-            {!disableAddressBook && memoConfig ? (
-              <Button
-                className={styleAddressInput.addressBookButton}
-                type="button"
-                outline={true}
-                onClick={() => setIsAddressBookOpen(true)}
-                disabled={disabled}
-              >
-                {/* <i className="fas fa-address-book" /> */}
-                <img
-                  src={require("../../public/assets/svg/address-book.svg")}
-                  alt="logo"
-                />
-              </Button>
-            ) : null}
           </InputGroup>
-          {isENSLoading ? (
+          {/* {isENSLoading ? (
             <FormText>
               <i className="fa fa-spinner fa-spin fa-fw" />
             </FormText>
-          ) : null}
-          {!isENSLoading && isENSAddress && !error ? (
-            <FormText>{recipientConfig.recipient}</FormText>
-          ) : null}
-          {errorText != null ? (
-            <FormFeedback style={{ display: "block" }}>
-              {errorText}
-            </FormFeedback>
-          ) : null}
-        </FormGroup>
+          ) : null} */}
+          {/* {!isENSLoading && isENSAddress && !error ? <FormText>{recipientConfig.recipient}</FormText> : null} */}
+          {/* {errorText != null ? <FormFeedback style={{ display: "block" }}>{errorText}</FormFeedback> : null} */}
+        </div>
       </React.Fragment>
     );
   }

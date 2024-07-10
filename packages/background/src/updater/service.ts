@@ -7,6 +7,7 @@ import Axios from "axios";
 import { KVStore } from "@owallet/common";
 import { ChainIdHelper } from "@owallet/cosmos";
 import { ChainsService } from "../chains";
+import { hasChain } from "./helper";
 
 @singleton()
 export class ChainUpdaterService {
@@ -147,11 +148,11 @@ export class ChainUpdaterService {
     chainId?: string;
     features?: string[];
   }> {
-    const chainId = chainInfo.chainId;
+    const chainId = chainInfo?.chainId;
 
     // If chain id is not fomatted as {chainID}-{version},
     // there is no way to deal with the updated chain id.
-    if (!ChainIdHelper.hasChainVersion(chainId)) {
+    if (hasChain(chainId, chainInfo)) {
       return {
         explicit: false,
         slient: false,
@@ -173,16 +174,18 @@ export class ChainUpdaterService {
     }>("/status");
 
     const resultChainId = result?.data?.result?.node_info?.network;
-    if (!resultChainId)
+    if (!resultChainId) {
       return {
         explicit: false,
         slient: false,
       };
+    }
+
     const version = ChainIdHelper.parse(chainId);
     const fetchedVersion = ChainIdHelper.parse(resultChainId);
 
     // TODO: Should throw an error?
-    if (version.identifier !== fetchedVersion.identifier) {
+    if (version && version.identifier !== fetchedVersion.identifier) {
       return {
         explicit: false,
         slient: false,
@@ -207,9 +210,8 @@ export class ChainUpdaterService {
     let ibcGoUpdates = false;
     try {
       if (
-        (!chainInfo.features || !chainInfo.features.includes("ibc-go")) &&
-        (staragteUpdate ||
-          (chainInfo.features && chainInfo.features.includes("stargate")))
+        !chainInfo?.features?.includes("ibc-go") &&
+        (staragteUpdate || chainInfo?.features?.includes("stargate"))
       ) {
         // If the chain uses the ibc-go module separated from the cosmos-sdk,
         // we need to check it because the REST API is different.
@@ -220,22 +222,17 @@ export class ChainUpdaterService {
           };
         }>("/ibc/apps/transfer/v1/params");
 
-        if (result.status === 200) {
-          ibcGoUpdates = true;
-        }
+        ibcGoUpdates = result?.status === 200 ? true : false;
       }
-    } catch {}
+    } catch (err) {}
 
     let ibcTransferUpdate = false;
     try {
       if (
-        (!chainInfo.features || !chainInfo.features.includes("ibc-transfer")) &&
-        (staragteUpdate ||
-          (chainInfo.features && chainInfo.features.includes("stargate")))
+        !chainInfo?.features?.includes("ibc-transfer") &&
+        (staragteUpdate || chainInfo?.features?.includes("stargate"))
       ) {
-        const isIBCGo =
-          ibcGoUpdates ||
-          (chainInfo.features && chainInfo.features.includes("ibc-go"));
+        const isIBCGo = ibcGoUpdates || chainInfo?.features?.includes("ibc-go");
 
         // If the chain doesn't have the ibc transfer feature,
         // try to fetch the params of ibc transfer module.
@@ -250,22 +247,18 @@ export class ChainUpdaterService {
             ? "/ibc/apps/transfer/v1/params"
             : "/ibc/applications/transfer/v1beta1/params"
         );
-        if (
-          result.data.params.receive_enabled &&
-          result.data.params.send_enabled
-        ) {
-          ibcTransferUpdate = true;
-        }
+        ibcTransferUpdate =
+          result.data.params.receive_enabled && result.data.params.send_enabled
+            ? true
+            : false;
       }
     } catch {}
 
     let noLegacyStdTxUpdate = false;
     try {
       if (
-        (!chainInfo.features ||
-          !chainInfo.features.includes("no-legacy-stdTx")) &&
-        (staragteUpdate ||
-          (chainInfo.features && chainInfo.features.includes("stargate")))
+        !chainInfo?.features?.includes("no-legacy-stdTx") &&
+        (staragteUpdate || chainInfo?.features?.includes("stargate"))
       ) {
         // The chain with above cosmos-sdk@v0.44.0 can't send the legacy stdTx,
         // Assume that it can't send the legacy stdTx if the POST /txs responses "not implemented".
@@ -291,19 +284,16 @@ export class ChainUpdaterService {
       }
     } catch {}
 
-    const features: string[] = [];
-    if (staragteUpdate) {
-      features.push("stargate");
-    }
-    if (ibcGoUpdates) {
-      features.push("ibc-go");
-    }
-    if (ibcTransferUpdate) {
-      features.push("ibc-transfer");
-    }
-    if (noLegacyStdTxUpdate) {
-      features.push("no-legacy-stdTx");
-    }
+    const updates = {
+      stargate: staragteUpdate,
+      "ibc-go": ibcGoUpdates,
+      "ibc-transfer": ibcTransferUpdate,
+      "no-legacy-stdTx": noLegacyStdTxUpdate,
+    };
+
+    const features = Object.entries(updates)
+      .filter(([_, value]) => value)
+      .map(([key]) => key);
 
     return {
       explicit: version.version < fetchedVersion.version,
@@ -312,7 +302,6 @@ export class ChainUpdaterService {
         ibcGoUpdates ||
         ibcTransferUpdate ||
         noLegacyStdTxUpdate,
-
       chainId: resultChainId,
       features,
     };

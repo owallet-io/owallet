@@ -94,9 +94,7 @@ const NftsStargazeScreen: FC<{
           offset: data?.tokens?.tokens?.length || 0,
         },
         updateQuery: (prev, { fetchMoreResult }) => {
-          console.log(prev, "prev");
           if (!fetchMoreResult) return prev;
-          console.log(fetchMoreResult, "fetchMoreResult");
           return {
             ...prev,
             tokens: {

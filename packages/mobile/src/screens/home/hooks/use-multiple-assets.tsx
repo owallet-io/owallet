@@ -10,6 +10,7 @@ import {
   getEvmAddress,
   getOasisNic,
   getRpcByChainId,
+  MapChainIdToNetwork,
   parseRpcBalance,
 } from "@owallet/common";
 import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
@@ -36,9 +37,8 @@ import {
   CoinGeckoPriceStore,
 } from "@owallet/stores";
 import { AppInit } from "@src/stores/app_init";
-import { delay, MapChainIdToNetwork } from "@src/utils/helper";
+import { delay } from "@src/utils/helper";
 import { API } from "@src/common/api";
-
 export const initPrice = new PricePretty(
   {
     currency: "usd",
