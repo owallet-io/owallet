@@ -43,7 +43,7 @@ export const useNfts = (
         initialData: null,
       },
     });
-    console.log(data, "data");
+
     if (error) {
       console.error("Error fetching NFTs from Oraichain:", error);
       return {
