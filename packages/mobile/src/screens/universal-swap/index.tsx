@@ -61,9 +61,9 @@ import {
 import {
   getTransactionUrl,
   handleErrorSwap,
-  floatToPercent,
   handleSaveTokenInfos,
   getSpecialCoingecko,
+  isAllowAlphaSmartRouter,
 } from "./helpers";
 import { Mixpanel } from "mixpanel-react-native";
 import { metrics } from "@src/themes";
@@ -140,6 +140,11 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   // get token on oraichain to simulate swap amount.
   const originalFromToken = tokenMap[fromTokenDenom];
   const originalToToken = tokenMap[toTokenDenom];
+
+  const isFromBTC = originalFromToken.coinGeckoId === "bitcoin";
+  const INIT_SIMULATE_NOUGHT_POINT_OH_ONE_AMOUNT = 0.00001;
+  let INIT_AMOUNT = 1;
+  if (isFromBTC) INIT_AMOUNT = INIT_SIMULATE_NOUGHT_POINT_OH_ONE_AMOUNT;
 
   const subAmountFrom = toSubAmount(
     universalSwapStore.getAmount,
@@ -225,6 +230,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     fromTokenDenom,
     toTokenDenom
   );
+  const useAlphaSmartRouter = isAllowAlphaSmartRouter(
+    originalFromToken,
+    originalToToken
+  );
 
   const {
     minimumReceive,
@@ -234,7 +243,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     estimateAverageRatio,
     relayerFeeAmount,
     relayerFeeToken,
-    INIT_AMOUNT,
     impactWarning,
     routersSwapData,
     simulateData,
@@ -247,8 +255,13 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     userSlippage,
     client,
     setSwapAmount,
-    handleErrorSwap
+    handleErrorSwap,
+    {
+      useAlphaSmartRoute: useAlphaSmartRouter,
+    }
   );
+
+  console.log("routersSwapData", routersSwapData);
 
   const simulateDisplayAmount =
     simulateData && simulateData.displayAmount ? simulateData.displayAmount : 0;
@@ -414,7 +427,11 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     const isCustomRecipient = sendToAddress && sendToAddress !== "";
 
     let amountsBalance = universalSwapStore.getAmount;
-    let simulateAmount = ratio.amount;
+
+    let simulateAmount = toAmount(
+      toAmountToken,
+      originalToToken.decimals
+    ).toString();
 
     const { isSpecialFromCoingecko } = getSpecialCoingecko(
       originalFromToken.coinGeckoId,
@@ -441,17 +458,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         [fromTokenInOrai.denom]: nativeAmount?.amount,
         [originalFromToken.denom]: cw20Amount.balance,
       };
-    }
-
-    if (
-      (originalToToken.chainId === "injective-1" &&
-        originalToToken.coinGeckoId === "injective-protocol") ||
-      originalToToken.chainId === "kawaii_6886-1"
-    ) {
-      simulateAmount = toAmount(
-        ratio.displayAmount,
-        originalToToken.decimals
-      ).toString();
     }
 
     const tokenFromNetwork = chainStore.getChain(
@@ -486,7 +492,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         relayerAmount: relayerFeeToken.toString(),
         relayerDecimals: RELAYER_DECIMAL,
       };
-
       const universalSwapData: UniversalSwapData = {
         sender: {
           cosmos: cosmosAddress,
@@ -513,6 +518,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             recipientAddress: sendToAddress,
           }
         : universalSwapData;
+
+      console.log("compileSwapData", compileSwapData);
 
       const universalSwapHandler = new UniversalSwapHandler(
         {
@@ -687,7 +694,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   }, [sendToAddress, sendToModal]);
 
   const renderSmartRoutes = () => {
-    if (fromAmountToken > 0 && routersSwapData?.routes.length > 0) {
+    if (fromAmountToken > 0 && routersSwapData?.routes?.length > 0) {
       return (
         <>
           <View
@@ -747,6 +754,13 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       );
     }
   };
+
+  console.log(
+    "amountLoading || swapLoading",
+    amountLoading,
+    swapLoading,
+    amountLoading || swapLoading
+  );
 
   return (
     <PageWithBottom

@@ -103,7 +103,7 @@ export const PriceSettingModal = registerModal(
     };
 
     const renderSmartRoutes = () => {
-      if (fromAmountToken > 0 && routersSwapData?.routes.length > 0) {
+      if (fromAmountToken > 0 && routersSwapData?.routes?.length > 0) {
         return (
           <>
             <View
@@ -161,7 +161,7 @@ export const PriceSettingModal = registerModal(
               </View>
             </View>
             <View>
-              {routersSwapData?.routes.map((route, ind) => {
+              {routersSwapData?.routes?.map((route, ind) => {
                 const volumn = Number(
                   (+route.returnAmount / +routersSwapData?.amount) * 100
                 ).toFixed(0);
@@ -199,7 +199,8 @@ export const PriceSettingModal = registerModal(
                         {volumn}%
                       </Text>
                     </View>
-                    {route.paths.map((path, i, acc) => {
+                    {route?.paths?.map((path) => {
+                      console.log("path", path);
                       const { TokenInIcon, TokenOutIcon } = getPairInfo(
                         path,
                         flattenTokens,
