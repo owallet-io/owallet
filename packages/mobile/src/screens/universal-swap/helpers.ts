@@ -10,8 +10,6 @@ import {
   PAIRS,
   USDC_CONTRACT,
   ORAIX_CONTRACT,
-  ATOM_ORAICHAIN_DENOM,
-  OSMOSIS_ORAICHAIN_DENOM,
   TokenItemType,
 } from "@oraichain/oraidex-common";
 import { showToast } from "@src/utils/helper";
@@ -147,7 +145,6 @@ export const findBaseTokenIcon = (
   const baseToken = flattenTokensWithIcon.find(
     (token) => token.coinGeckoId === coinGeckoId
   );
-  console.log("baseToken", coinGeckoId, baseToken);
 
   return baseToken
     ? isLightMode

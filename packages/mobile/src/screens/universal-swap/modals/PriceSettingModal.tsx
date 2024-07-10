@@ -102,8 +102,6 @@ export const PriceSettingModal = registerModal(
       );
     };
 
-    console.log("routersSwapData", routersSwapData);
-
     const renderSmartRoutes = () => {
       if (fromAmountToken > 0 && routersSwapData?.routes?.length > 0) {
         return (
