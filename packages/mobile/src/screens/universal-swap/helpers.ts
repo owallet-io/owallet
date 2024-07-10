@@ -10,11 +10,11 @@ import {
   PAIRS,
   USDC_CONTRACT,
   ORAIX_CONTRACT,
-  ATOM_ORAICHAIN_DENOM,
-  OSMOSIS_ORAICHAIN_DENOM,
+  TokenItemType,
 } from "@oraichain/oraidex-common";
 import { showToast } from "@src/utils/helper";
 import { API } from "@src/common/api";
+import { AssetInfo } from "@oraichain/oraidex-contracts-sdk";
 
 export const checkFnComponent = (
   titleRight: TypeTextAndCustomizeComponent,
@@ -60,21 +60,7 @@ export const handleErrorSwap = (message: string) => {
 
 // smart router osmosis
 export const isAllowAlphaSmartRouter = (fromToken, toToken) => {
-  const isAllowChainId = ["osmosis-1", "cosmoshub-4", "noble-1"];
-  const isAllowTokenInOraichain = [
-    "orai",
-    ATOM_ORAICHAIN_DENOM,
-    OSMOSIS_ORAICHAIN_DENOM,
-    USDC_CONTRACT,
-  ];
-
-  if (
-    isAllowChainId.includes(fromToken.chainId) &&
-    (isAllowTokenInOraichain.includes(toToken.denom) ||
-      isAllowTokenInOraichain.includes(toToken.contractAddress))
-  )
-    return true;
-  if (fromToken.chainId === "injective-1" || toToken.chainId === "injective-1")
+  if (fromToken.chainId === "Noble-1" || toToken.chainId === "Noble-1")
     return false;
   if (fromToken.cosmosBased && toToken.cosmosBased) return true;
   return false;
@@ -123,18 +109,31 @@ export enum PairAddress {
   OCH_ORAI = "orai1d3f3e3j400hxse5z8vxxnxdwmvljs7mh8xa3wp3spe8g4ngnc3cqx8scs3",
 }
 
-// smart route swap
-export const findKeyByValue = (obj, value: string) =>
-  Object.keys(obj).find((key) => obj[key] === value);
+interface Pair {
+  asset_infos: AssetInfo[];
+  assets: string[];
+  symbol: string;
+  symbols: string[];
+  info: string;
+  tokenIn?: string;
+  tokenOut?: string;
+}
 
-export const findTokenInfo = (token, flattenTokens) => {
-  return flattenTokens.find(
+// TODO: smart route swap in Oraichain
+const findKeyByValue = (
+  obj: { [key: string]: string },
+  value: string
+): string => Object.keys(obj).find((key) => obj[key] === value);
+
+const findTokenInfo = (
+  token: string,
+  flattenTokens: TokenItemType[]
+): TokenItemType =>
+  flattenTokens.find(
     (t) =>
       t.contractAddress?.toUpperCase() === token?.toUpperCase() ||
       t.denom.toUpperCase() === token?.toUpperCase()
   );
-};
-
 const DefaultIcon =
   "https://assets.coingecko.com/coins/images/12931/standard/orai.png?1696512718";
 
@@ -189,11 +188,11 @@ export const PAIRS_CHART = PAIRS.map((pair) => {
   };
 });
 
-export const findBaseToken = (
-  coinGeckoId,
-  flattenTokensWithIcon,
-  isLightMode
-) => {
+const findBaseToken = (
+  coinGeckoId: string,
+  flattenTokensWithIcon: TokenItemType[],
+  isLightMode: boolean
+): string => {
   const baseToken = flattenTokensWithIcon.find(
     (token) => token.coinGeckoId === coinGeckoId
   );
@@ -210,9 +209,22 @@ export const getPairInfo = (
   flattenTokensWithIcon,
   isLightMode
 ) => {
-  const pairKey = findKeyByValue(PairAddress, path.poolId);
-  const [tokenInKey, tokenOutKey] = pairKey.split("_");
-  let infoPair: any = PAIRS_CHART.find((pair) => {
+  const pairKey: string = findKeyByValue(PairAddress, path.poolId);
+  if (!pairKey)
+    return {
+      infoPair: undefined,
+      TokenInIcon: DefaultIcon,
+      TokenOutIcon: DefaultIcon,
+      pairKey: undefined,
+    };
+
+  let [tokenInKey, tokenOutKey] = pairKey.split("_");
+
+  // TODO: hardcode case token is TRX
+  if (tokenInKey === "TRX") tokenInKey = "WTRX";
+  if (tokenOutKey === "TRX") tokenOutKey = "WTRX";
+
+  let infoPair: Pair = PAIRS_CHART.find((pair) => {
     let convertedArraySymbols = pair.symbols.map((symbol) =>
       symbol.toUpperCase()
     );
@@ -221,6 +233,15 @@ export const getPairInfo = (
       convertedArraySymbols.includes(tokenOutKey)
     );
   });
+
+  if (!infoPair)
+    return {
+      infoPair: undefined,
+      TokenInIcon: DefaultIcon,
+      TokenOutIcon: DefaultIcon,
+      pairKey,
+    };
+
   const tokenIn = infoPair?.assets.find(
     (info) => info.toUpperCase() !== path.tokenOut.toUpperCase()
   );
@@ -244,4 +265,43 @@ export const getPairInfo = (
   );
 
   return { infoPair, TokenInIcon, TokenOutIcon, pairKey };
+};
+
+export const getPathInfo = (path, chainIcons, assets) => {
+  let [NetworkFromIcon, NetworkToIcon] = [DefaultIcon, DefaultIcon];
+
+  const pathChainId = path.chainId.split("-")[0].toLowerCase();
+  const pathTokenOut = path.tokenOutChainId.split("-")[0].toLowerCase();
+
+  if (path.chainId) {
+    const chainFrom = chainIcons.find(
+      (cosmos) => cosmos.chainId === path.chainId
+    );
+    NetworkFromIcon = chainFrom ? chainFrom.Icon : DefaultIcon;
+  }
+
+  if (path.tokenOutChainId) {
+    const chainTo = chainIcons.find(
+      (cosmos) => cosmos.chainId === path.tokenOutChainId
+    );
+    NetworkToIcon = chainTo ? chainTo.Icon : DefaultIcon;
+  }
+
+  const getAssetsByChainName = (chainName) =>
+    assets.find(({ chain_name }) => chain_name === chainName)?.assets || [];
+
+  const assetList = {
+    assets: [
+      ...getAssetsByChainName(pathChainId),
+      ...getAssetsByChainName(pathTokenOut),
+    ],
+  };
+
+  return { NetworkFromIcon, NetworkToIcon, assetList, pathChainId };
+};
+
+export const getRemoteDenom = (originalToken) => {
+  return originalToken.contractAddress
+    ? originalToken.prefix + originalToken.contractAddress
+    : originalToken.denom;
 };

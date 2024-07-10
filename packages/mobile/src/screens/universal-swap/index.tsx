@@ -61,9 +61,9 @@ import {
 import {
   getTransactionUrl,
   handleErrorSwap,
-  floatToPercent,
   handleSaveTokenInfos,
   getSpecialCoingecko,
+  isAllowAlphaSmartRouter,
 } from "./helpers";
 import { Mixpanel } from "mixpanel-react-native";
 import { metrics } from "@src/themes";
@@ -112,6 +112,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const [priceSettingModal, setPriceSettingModal] = useState(false);
   const [userSlippage, setUserSlippage] = useState(DEFAULT_SLIPPAGE);
   const [swapLoading, setSwapLoading] = useState(false);
+  const [isAIRoute, setAIRoute] = useState(true);
 
   const [loadingRefresh, setLoadingRefresh] = useState(false);
   const [searchTokenName, setSearchTokenName] = useState("");
@@ -140,6 +141,11 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   // get token on oraichain to simulate swap amount.
   const originalFromToken = tokenMap[fromTokenDenom];
   const originalToToken = tokenMap[toTokenDenom];
+
+  const isFromBTC = originalFromToken.coinGeckoId === "bitcoin";
+  const INIT_SIMULATE_NOUGHT_POINT_OH_ONE_AMOUNT = 0.00001;
+  let INIT_AMOUNT = 1;
+  if (isFromBTC) INIT_AMOUNT = INIT_SIMULATE_NOUGHT_POINT_OH_ONE_AMOUNT;
 
   const subAmountFrom = toSubAmount(
     universalSwapStore.getAmount,
@@ -225,6 +231,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     fromTokenDenom,
     toTokenDenom
   );
+  const useAlphaSmartRouter =
+    isAllowAlphaSmartRouter(originalFromToken, originalToToken) && isAIRoute;
 
   const {
     minimumReceive,
@@ -234,7 +242,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     estimateAverageRatio,
     relayerFeeAmount,
     relayerFeeToken,
-    INIT_AMOUNT,
     impactWarning,
     routersSwapData,
     simulateData,
@@ -247,7 +254,11 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     userSlippage,
     client,
     setSwapAmount,
-    handleErrorSwap
+    handleErrorSwap,
+    {
+      useAlphaSmartRoute: useAlphaSmartRouter,
+    },
+    isAIRoute
   );
 
   const simulateDisplayAmount =
@@ -299,7 +310,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       // other chains, oraichain
       const otherChainTokens = flatten(
         customChainInfos
-          .filter((chainInfo) => chainInfo.chainId !== "Oraichain")
+          ?.filter((chainInfo) => chainInfo.chainId !== "Oraichain")
           .map(getTokensFromNetwork)
       );
       const oraichainTokens: TokenItemType[] =
@@ -315,7 +326,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         kwtAddress: kwt ?? accountKawaiiCosmos.bech32Address,
         tronAddress: tron ?? null,
         cwStargate,
-        tokenReload: tokenReload?.length > 0 ? tokenReload : null,
+        tokenReload: Number(tokenReload?.length) > 0 ? tokenReload : null,
         customChainInfos: flattenTokens,
       };
 
@@ -341,10 +352,11 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           handleFetchAmounts(
             {
               orai: accountOrai.bech32Address,
-              eth: keyRingStore.keyRingLedgerAddresses.eth ?? null,
-              tron: keyRingStore.keyRingLedgerAddresses.trx ?? null,
+              eth: keyRingStore.keyRingLedgerAddresses.eth ?? undefined,
+              tron: keyRingStore.keyRingLedgerAddresses.trx ?? undefined,
               kwt: accountKawaiiCosmos.bech32Address,
-              tokenReload: tokenReload?.length > 0 ? tokenReload : null,
+              tokenReload:
+                Number(tokenReload?.length) > 0 ? tokenReload : undefined,
             },
             customChainInfos
           );
@@ -412,9 +424,15 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     }
 
     const isCustomRecipient = sendToAddress && sendToAddress !== "";
+    const alphaSmartRoutes =
+      useAlphaSmartRouter && simulateData && simulateData?.routes;
 
     let amountsBalance = universalSwapStore.getAmount;
-    let simulateAmount = ratio.amount;
+
+    let simulateAmount = toAmount(
+      toAmountToken,
+      originalToToken.decimals
+    ).toString();
 
     const { isSpecialFromCoingecko } = getSpecialCoingecko(
       originalFromToken.coinGeckoId,
@@ -441,17 +459,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         [fromTokenInOrai.denom]: nativeAmount?.amount,
         [originalFromToken.denom]: cw20Amount.balance,
       };
-    }
-
-    if (
-      (originalToToken.chainId === "injective-1" &&
-        originalToToken.coinGeckoId === "injective-protocol") ||
-      originalToToken.chainId === "kawaii_6886-1"
-    ) {
-      simulateAmount = toAmount(
-        ratio.displayAmount,
-        originalToToken.decimals
-      ).toString();
     }
 
     const tokenFromNetwork = chainStore.getChain(
@@ -486,7 +493,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         relayerAmount: relayerFeeToken.toString(),
         relayerDecimals: RELAYER_DECIMAL,
       };
-
       const universalSwapData: UniversalSwapData = {
         sender: {
           cosmos: cosmosAddress,
@@ -504,7 +510,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         userSlippage: userSlippage,
         fromAmount: fromAmountToken,
         relayerFee,
-        smartRoutes: routersSwapData?.routeSwapOps,
+        alphaSmartRoutes,
       };
 
       const compileSwapData = isCustomRecipient
@@ -522,6 +528,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           cosmosWallet,
           //@ts-ignore
           evmWallet,
+          swapOptions: {
+            isAlphaSmartRouter: useAlphaSmartRouter,
+          },
         }
       );
 
@@ -687,7 +696,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   }, [sendToAddress, sendToModal]);
 
   const renderSmartRoutes = () => {
-    if (fromAmountToken > 0 && routersSwapData?.routes.length > 0) {
+    if (fromAmountToken > 0 && routersSwapData?.routes?.length > 0) {
       return (
         <>
           <View
@@ -1055,7 +1064,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                   if (value) {
                     setSendToModal(true);
                   } else {
-                    setSendToAddress("");
+                    setSendToAddress(null);
                   }
                 }}
               />
@@ -1085,8 +1094,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               size={80}
               source={
                 theme === "dark"
-                  ? require("../../assets/image/obridge-light.png")
-                  : require("../../assets/image/obridge.png")
+                  ? require("../../assets/image/OBridge-light.png")
+                  : require("../../assets/image/OBridge.png")
               }
             />
           </View>

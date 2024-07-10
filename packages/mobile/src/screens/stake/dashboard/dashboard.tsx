@@ -100,7 +100,7 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
             <UndelegationsCard />
           </OWCard>
 
-          <EarningCardNew containerStyle={styles.containerEarnStyle} />
+          <EarningCardNew />
           <ValidatorList />
         </>
       ) : (
