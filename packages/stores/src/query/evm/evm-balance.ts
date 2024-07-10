@@ -55,16 +55,16 @@ export class ObservableQueryEvmBalanceInner extends ObservableChainQuery<
   ): Promise<QueryResponse<Result | OasisBalance>> {
     const response = await super.fetchResponse(cancelToken);
 
-    // if (this._chainId === ChainIdEnum.Oasis) {
-    //   const oasisRs = await this.getOasisBalance();
+    if (this._chainId === ChainIdEnum.Oasis) {
+      const oasisRs = await this.getOasisBalance();
 
-    //   return {
-    //     data: oasisRs,
-    //     status: response.status,
-    //     staled: false,
-    //     timestamp: Date.now(),
-    //   };
-    // }
+      return {
+        data: oasisRs,
+        status: response.status,
+        staled: false,
+        timestamp: Date.now(),
+      };
+    }
     const evmResult = response.data;
 
     if (!evmResult) {

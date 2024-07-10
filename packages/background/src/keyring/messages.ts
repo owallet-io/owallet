@@ -1495,65 +1495,35 @@ export class ExportKeyRingDatasMsg extends Message<ExportKeyRingData[]> {
   }
 }
 
-// Oasis
-// // request sign Oasis goes here
-// export class RequestSignOasisMsg extends Message<{}> {
-//   public static type() {
-//     return "request-sign-oasis";
-//   }
+// request sign Oasis goes here
+export class RequestSignOasisMsg extends Message<{}> {
+  public static type() {
+    return "request-sign-oasis";
+  }
 
-//   constructor(public readonly chainId: string, public readonly data: object) {
-//     super();
-//   }
+  constructor(public readonly chainId: string, public readonly data: object) {
+    super();
+  }
 
-//   validateBasic(): void {
-//     if (!this.chainId) {
-//       throw new OWalletError("keyring", 270, "chain id not set");
-//     }
+  validateBasic(): void {
+    if (!this.chainId) {
+      throw new OWalletError("keyring", 270, "chain id not set");
+    }
 
-//     if (!this.data) {
-//       throw new OWalletError("keyring", 231, "data not set");
-//     }
-//   }
+    if (!this.data) {
+      throw new OWalletError("keyring", 231, "data not set");
+    }
+  }
 
-//   approveExternal(): boolean {
-//     return true;
-//   }
+  approveExternal(): boolean {
+    return true;
+  }
 
-//   route(): string {
-//     return ROUTE;
-//   }
+  route(): string {
+    return ROUTE;
+  }
 
-//   type(): string {
-//     return RequestSignOasisMsg.type();
-//   }
-// }
-
-// export class GetDefaultAddressOasisMsg extends Message<{
-//   hex?: string;
-//   address?: string;
-//   name?: string;
-//   type?: number;
-// }> {
-//   public static type() {
-//     return "get-default-address-oasis";
-//   }
-
-//   constructor(public readonly chainId: string) {
-//     super();
-//   }
-
-//   validateBasic(): void {
-//     if (!this.chainId) {
-//       throw new OWalletError("keyring", 270, "chain id not set");
-//     }
-//   }
-
-//   route(): string {
-//     return ROUTE;
-//   }
-
-//   type(): string {
-//     return GetDefaultAddressOasisMsg.type();
-//   }
-// }
+  type(): string {
+    return RequestSignOasisMsg.type();
+  }
+}
