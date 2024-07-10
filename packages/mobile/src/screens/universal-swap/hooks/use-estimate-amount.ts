@@ -7,7 +7,7 @@ import {
   oraichainTokens,
   toAmount,
   toDisplay,
-  TokenItemType,
+  TokenItemType
 } from "@oraichain/oraidex-common";
 import { OraiswapRouterQueryClient } from "@oraichain/oraidex-contracts-sdk";
 import { handleSimulateSwap } from "@oraichain/oraidex-universal-swap";
@@ -61,22 +61,19 @@ export const useEstimateAmount = (
   const [ratio, setRatio] = useState(null);
 
   const {
-    data: [fromTokenInfoData, toTokenInfoData],
+    data: [fromTokenInfoData, toTokenInfoData]
   } = useQuery({
     queryKey: ["token-infos", fromToken, toToken],
     queryFn: () => fetchTokenInfos([fromToken!, toToken!], client),
     ...{
-      initialData: [],
-    },
+      initialData: []
+    }
   });
 
   const getSimulateSwap = async (initAmount?) => {
     setAmountLoading(true);
     if (client) {
-      const routerClient = new OraiswapRouterQueryClient(
-        client,
-        network.router
-      );
+      const routerClient = new OraiswapRouterQueryClient(client, network.router);
 
       try {
         const data = await handleSimulateSwap({
@@ -85,13 +82,12 @@ export const useEstimateAmount = (
           originalAmount: initAmount ?? fromAmountToken,
           routerClient,
           routerOption: {
-            useAlphaSmartRoute: simulateOption?.useAlphaSmartRoute,
-            useSmartRoute: simulateOption?.useSmartRoute,
+            useAlphaSmartRoute: simulateOption?.useAlphaSmartRoute
           },
           urlRouter: {
             url: "https://router.oraidex.io",
-            path: "/smart-router/alpha-router",
-          },
+            path: "/smart-router/alpha-router"
+          }
         });
 
         setAmountLoading(false);
@@ -103,22 +99,15 @@ export const useEstimateAmount = (
     }
   };
 
-  const { relayerFee, relayerFeeInOraiToAmount: relayerFeeToken } =
-    useRelayerFeeToken(originalFromToken, originalToToken, client);
+  const { relayerFee, relayerFeeInOraiToAmount: relayerFeeToken } = useRelayerFeeToken(
+    originalFromToken,
+    originalToToken,
+    client
+  );
   const remoteTokenDenomFrom = getRemoteDenom(originalFromToken);
   const remoteTokenDenomTo = getRemoteDenom(originalToToken);
-  const fromTokenFee = useTokenFee(
-    remoteTokenDenomFrom,
-    client,
-    fromToken.chainId,
-    toToken.chainId
-  );
-  const toTokenFee = useTokenFee(
-    remoteTokenDenomTo,
-    client,
-    fromToken.chainId,
-    toToken.chainId
-  );
+  const fromTokenFee = useTokenFee(remoteTokenDenomFrom, client, fromToken.chainId, toToken.chainId);
+  const toTokenFee = useTokenFee(remoteTokenDenomTo, client, fromToken.chainId, toToken.chainId);
 
   const isFromBTC = originalFromToken.coinGeckoId === "bitcoin";
   const INIT_SIMULATE_NOUGHT_POINT_OH_ONE_AMOUNT = 0.00001;
@@ -127,13 +116,8 @@ export const useEstimateAmount = (
 
   const convertRelayerFee = async () => {
     if (client && relayerFeeToken) {
-      const routerClient = new OraiswapRouterQueryClient(
-        client,
-        network.router
-      );
-      const oraiToken = oraichainTokens.find(
-        (token) => token.coinGeckoId === "oraichain-token"
-      );
+      const routerClient = new OraiswapRouterQueryClient(client, network.router);
+      const oraiToken = oraichainTokens.find(token => token.coinGeckoId === "oraichain-token");
 
       const data = await handleSimulateSwap({
         originalFromInfo: oraiToken,
@@ -141,13 +125,12 @@ export const useEstimateAmount = (
         originalAmount: toDisplay(relayerFeeToken.toString()),
         routerClient,
         routerOption: {
-          useAlphaSmartRoute: simulateOption?.useAlphaSmartRoute,
-          useSmartRoute: simulateOption?.useSmartRoute,
+          useAlphaSmartRoute: simulateOption?.useAlphaSmartRoute
         },
         urlRouter: {
           url: "https://router.oraidex.io",
-          path: "/smart-router/alpha-router",
-        },
+          path: "/smart-router/alpha-router"
+        }
       });
 
       setRelayerFeeAmount(data?.displayAmount);
@@ -166,7 +149,7 @@ export const useEstimateAmount = (
     setRatio(data);
   };
 
-  const estimateSwapAmount = async (fromAmountBalance) => {
+  const estimateSwapAmount = async fromAmountBalance => {
     setAmountLoading(true);
     try {
       const data = await getSimulateSwap();
@@ -174,7 +157,7 @@ export const useEstimateAmount = (
       const defaultRouterSwap = {
         amount: "0",
         displayAmount: 0,
-        routes: [],
+        routes: []
       };
       let routersSwapData = defaultRouterSwap;
 
@@ -182,17 +165,16 @@ export const useEstimateAmount = (
         routersSwapData = {
           ...simulateData,
           //@ts-ignore
-          routes: simulateData?.routes?.routes ?? [],
+          routes: simulateData?.routes?.routes ?? []
         };
       }
 
       const fromTochainIdIsOraichain =
-        originalFromToken.chainId === "Oraichain" &&
-        originalToToken.chainId === "Oraichain";
+        originalFromToken.chainId === "Oraichain" && originalToToken.chainId === "Oraichain";
       if (fromAmountToken && data && fromTochainIdIsOraichain) {
         routersSwapData = {
           ...data,
-          routes: data?.routes ?? [],
+          routes: data?.routes ?? []
         };
       }
 
@@ -212,12 +194,7 @@ export const useEstimateAmount = (
 
       const fromAmountTokenBalance =
         fromTokenInfoData &&
-        toAmount(
-          fromAmountToken,
-          originalFromToken?.decimals ||
-            fromTokenInfoData?.decimals ||
-            CW20_DECIMALS
-        );
+        toAmount(fromAmountToken, originalFromToken?.decimals || fromTokenInfoData?.decimals || CW20_DECIMALS);
 
       const isAverageRatio = ratio && ratio.amount;
       const isSimulateDataDisplay = simulateData && simulateData.displayAmount;
@@ -232,13 +209,10 @@ export const useEstimateAmount = (
           : "0";
 
       const isWarningSlippage = +minimumReceive > +data?.amount;
-      const simulateDisplayAmount =
-        data && data.displayAmount ? data.displayAmount : 0;
+      const simulateDisplayAmount = data && data.displayAmount ? data.displayAmount : 0;
       const bridgeTokenFee =
         simulateDisplayAmount && (fromTokenFee || toTokenFee)
-          ? new BigDecimal(
-              new BigDecimal(simulateDisplayAmount).mul(fromTokenFee)
-            )
+          ? new BigDecimal(new BigDecimal(simulateDisplayAmount).mul(fromTokenFee))
               .add(new BigDecimal(simulateDisplayAmount).mul(toTokenFee))
               .div(100)
               .toNumber()
@@ -246,10 +220,7 @@ export const useEstimateAmount = (
 
       const minimumReceiveDisplay = isSimulateDataDisplay
         ? new BigDecimal(
-            simulateDisplayAmount -
-              (simulateDisplayAmount * userSlippage) / 100 -
-              relayerFee -
-              bridgeTokenFee
+            simulateDisplayAmount - (simulateDisplayAmount * userSlippage) / 100 - relayerFee - bridgeTokenFee
           ).toNumber()
         : 0;
 
@@ -277,25 +248,11 @@ export const useEstimateAmount = (
     } else {
       setSwapAmount([0, 0]);
     }
-  }, [
-    originalFromToken,
-    toTokenInfoData,
-    fromTokenInfoData,
-    originalToToken,
-    fromAmountToken,
-    isAIRoute,
-  ]);
+  }, [originalFromToken, toTokenInfoData, fromTokenInfoData, originalToToken, fromAmountToken, isAIRoute]);
 
   useEffect(() => {
     estimateAverageRatio();
-  }, [
-    originalFromToken,
-    toTokenInfoData,
-    fromTokenInfoData,
-    originalToToken,
-    client,
-    isAIRoute,
-  ]);
+  }, [originalFromToken, toTokenInfoData, fromTokenInfoData, originalToToken, client, isAIRoute]);
 
   return {
     minimumReceive,
@@ -308,6 +265,6 @@ export const useEstimateAmount = (
     relayerFeeToken,
     impactWarning,
     routersSwapData,
-    simulateData,
+    simulateData
   };
 };
