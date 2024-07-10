@@ -70,11 +70,12 @@ const NftsStargazeScreen: FC<{
   };
   const account = accountStore.getAccount(ChainIdEnum.Stargaze);
   const address = account.bech32Address;
-  const { loading, error, data, refetch } = useQuery(OwnedTokens, {
+  const [loadMore, setLoadMore] = useState(false);
+  const { loading, error, data, refetch, fetchMore } = useQuery(OwnedTokens, {
     variables: {
       filterForSale: null,
       owner: address,
-      limit: 100,
+      limit: perPage,
       filterByCollectionAddrs: null,
       sortBy: "ACQUIRED_DESC",
       offset: 0,
@@ -82,25 +83,49 @@ const NftsStargazeScreen: FC<{
     fetchPolicy: "cache-and-network",
   });
   const [refreshing, setRefreshing] = useState(false);
-
   const nfts = (data?.tokens?.tokens || [])
     .filter((item, index) => item?.media?.type === "image")
     .map((nft, index) => processDataStargazeNft(nft, chainInfo.stakeCurrency));
-
+  const onEndReached = async () => {
+    try {
+      setLoadMore(true);
+      await fetchMore({
+        variables: {
+          offset: data?.tokens?.tokens?.length || 0,
+        },
+        updateQuery: (prev, { fetchMoreResult }) => {
+          console.log(prev, "prev");
+          if (!fetchMoreResult) return prev;
+          console.log(fetchMoreResult, "fetchMoreResult");
+          return {
+            ...prev,
+            tokens: {
+              ...prev.tokens,
+              tokens: [...prev.tokens.tokens, ...fetchMoreResult.tokens.tokens],
+            },
+          };
+        },
+      });
+    } catch (error) {
+      console.error("err loadmore nfts", error);
+    } finally {
+      setLoadMore(false);
+    }
+  };
   return (
     <OWFlatList
       containerSkeletonStyle={styles.containerSkeleton}
       SkeletonComponent={<SkeletonNft />}
       skeletonStyle={{}}
       data={error ? [] : nfts}
-      // onEndReached={onEndReached}
+      onEndReached={onEndReached}
       renderItem={renderItem}
       columnWrapperStyle={styles.row}
       contentContainerStyle={{
         gap: 16,
       }}
       numColumns={2}
-      // loadMore={loadMore}
+      loadMore={loadMore}
       loading={loading}
       onRefresh={async () => {
         try {
