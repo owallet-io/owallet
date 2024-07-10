@@ -23,7 +23,8 @@
       "**/jetifier",
       "**/@bugsnag/**",
       "**/@gorhom/**",
-      "**/@shopify/**"
+      "**/@shopify/**",
+      "**/@freakycoder/**"
     ]
   },
   "scripts": {

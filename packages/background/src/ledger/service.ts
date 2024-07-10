@@ -151,8 +151,6 @@ export class LedgerService {
     let initArgs: any[] = [];
     while (true) {
       const mode = await this.getMode();
-      console.log("initLedger mode ", mode);
-
       try {
         const ledger = await Ledger.init(mode, initArgs, ledgerType);
         this.previousInitAborter = undefined;
@@ -198,8 +196,6 @@ export class LedgerService {
             })(),
           ];
 
-          console.log("initLedger promises", promises);
-
           promises.push(
             (async () => {
               let timeoutAborted = false;
@@ -234,12 +230,8 @@ export class LedgerService {
             promises.push(this.testLedgerGrantUIOpened());
           }
 
-          console.log("initLedger 3");
-
           await Promise.race(promises);
         } finally {
-          console.log("initLedger final");
-
           timeoutAbortController.abort();
         }
       }

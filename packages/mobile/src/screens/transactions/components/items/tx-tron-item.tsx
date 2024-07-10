@@ -24,7 +24,6 @@ export const TxTronItem: FC<{
   const { priceStore, chainStore } = useStore();
   const fiat = priceStore.defaultVsCurrency;
   if (!item) return;
-  console.log(item, "item");
   let currency = unknownToken;
 
   if (get(item, "tokenInfo.coinDenom") === "TRX") {

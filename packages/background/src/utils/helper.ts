@@ -16,7 +16,7 @@ import {
 } from "@owallet/types";
 import Joi from "joi";
 import { ChainInfoWithEmbed } from "src/chains";
-// import * as oasis from "@oasisprotocol/client";
+import * as oasis from "@oasisprotocol/client";
 
 export const EIP712DomainTypeValidator = Joi.array()
   .items(
@@ -195,7 +195,7 @@ export const handleAddressLedgerByChainId = (
  * or by default, for the currently selected network
  */
 //TODO: need handle duplicate from common
-// export const getOasisNic = (url) => {
-//   const nic = new oasis.client.NodeInternal(url);
-//   return nic;
-// };
+export const getOasisNic = (url) => {
+  const nic = new oasis.client.NodeInternal(url);
+  return nic;
+};

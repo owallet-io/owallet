@@ -31,8 +31,7 @@ import {
   RequestPublicKeyMsg,
   ChangeChainMsg,
   RequestSignTronMsg,
-  // RequestSignOasisMsg,
-  // GetDefaultAddressOasisMsg,
+  RequestSignOasisMsg,
   RequestSignBitcoinMsg,
   GetDefaultAddressTronMsg,
   TriggerSmartContractMsg,
@@ -72,8 +71,7 @@ export function init(router: Router, service: KeyRingService): void {
   router.registerMessage(RequestSignReEncryptDataMsg);
   router.registerMessage(GetMultiKeyStoreInfoMsg);
   router.registerMessage(GetDefaultAddressTronMsg);
-  // router.registerMessage(RequestSignOasisMsg);
-  // router.registerMessage(GetDefaultAddressOasisMsg);
+  router.registerMessage(RequestSignOasisMsg);
   router.registerMessage(RequestSendRawTransactionMsg);
   router.registerMessage(ChangeKeyRingMsg);
   router.registerMessage(GetIsKeyStoreCoinTypeSetMsg);

@@ -91,7 +91,7 @@ export const SignBitcoinModal: FunctionComponent<{
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         const msgs = data.data.data?.msgs;
-        console.log(msgs, "msgsmsgs");
+
         chainStore.selectChain(data.data.chainId);
         setDataSign(data);
         if (msgs?.amount) {

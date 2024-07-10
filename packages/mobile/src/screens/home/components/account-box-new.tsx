@@ -1,6 +1,11 @@
-import React, { FunctionComponent, useState, useTransition } from "react";
+import React, {
+  FunctionComponent,
+  useEffect,
+  useState,
+  useTransition,
+} from "react";
 import { observer } from "mobx-react-lite";
-import { OWBox } from "../../components/card";
+import { OWBox } from "@components/card";
 import {
   View,
   StyleSheet,
@@ -9,15 +14,15 @@ import {
   Clipboard,
 } from "react-native";
 import { Text } from "@src/components/text";
-import { useStore } from "../../stores";
+import { useStore } from "@src/stores";
 import { useTheme } from "@src/themes/theme-provider";
 import { CheckIcon, CopyFillIcon, DownArrowIcon } from "@src/components/icon";
 import { metrics, spacing } from "@src/themes";
-import MyWalletModal from "./components/my-wallet-modal/my-wallet-modal";
+import MyWalletModal from "./my-wallet-modal/my-wallet-modal";
 import { ChainIdEnum, unknownToken } from "@owallet/common";
 import { OWButton } from "@src/components/button";
 import OWIcon from "@src/components/ow-icon/ow-icon";
-import { CopyAddressModal } from "./components/copy-address/copy-address-modal";
+import { CopyAddressModal } from "./copy-address/copy-address-modal";
 import { shortenAddress } from "@src/utils/helper";
 import { useSmartNavigation } from "@src/navigation.provider";
 import { SCREENS } from "@src/common/constants";
@@ -25,6 +30,7 @@ import { navigate } from "@src/router/root";
 import OWText from "@src/components/text/ow-text";
 import { useSimpleTimer } from "@src/hooks";
 import LottieView from "lottie-react-native";
+import images from "@src/assets/images";
 
 export const AccountBoxAll: FunctionComponent<{
   totalPriceBalance: string;
@@ -39,6 +45,7 @@ export const AccountBoxAll: FunctionComponent<{
     appInitStore,
     queriesStore,
     keyRingStore,
+    priceStore,
   } = useStore();
   const [isOpen, setModalOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -221,7 +228,7 @@ export const AccountBoxAll: FunctionComponent<{
           >
             <Image
               style={styles.infoIcon}
-              source={require("../../assets/images/default-avatar.png")}
+              source={images.default_avatar}
               resizeMode="contain"
               fadeDuration={0}
             />

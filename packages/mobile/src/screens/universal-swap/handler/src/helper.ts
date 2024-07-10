@@ -690,7 +690,6 @@ export class UniversalSwapHelper {
       offerInfo,
       askInfo
     );
-    console.log("operations: ", operations);
     try {
       let finalAmount = amount;
       const data = await routerClient.simulateSwapOperations({
@@ -834,7 +833,7 @@ export class UniversalSwapHelper {
             query.originalFromInfo.decimals
           ).toString(),
         });
-      console.log("amount, display amount: ", { amount, displayAmount });
+
       return { amount, displayAmount };
     }
     const fromInfo = getTokenOnOraichain(query.originalFromInfo.coinGeckoId);

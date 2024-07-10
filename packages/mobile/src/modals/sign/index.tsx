@@ -45,8 +45,6 @@ export const SignModal: FunctionComponent<{
       signInteractionStore.rejectAll();
     });
 
-    console.log("all in here");
-
     const style = useStyle();
 
     const [signer, setSigner] = useState("");

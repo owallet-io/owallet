@@ -209,7 +209,6 @@ export const getValueFromDataEvents = (arr) => {
       result.push(item);
     }
   }
-  // console.log('result: ', result);
 
   // if the result array is empty, return null and typeId = 0
   if (result.length === 0) {
@@ -297,9 +296,6 @@ const configBrowser = {
 };
 export const openLink = async (url) => {
   try {
-    if (!url) {
-      console.log("url: ", url);
-    }
     if (await InAppBrowser.isAvailable()) {
       const result = await InAppBrowser.open(url, configBrowser);
     } else Linking.openURL(url);
