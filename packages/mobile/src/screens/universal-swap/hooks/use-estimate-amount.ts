@@ -188,12 +188,12 @@ export const useEstimateAmount = (
       let impactWarning = 0;
       if (
         isImpactPrice &&
-        simulateData?.displayAmount &&
+        data?.displayAmount &&
         ratio?.displayAmount &&
         simulateOption.useAlphaSmartRoute &&
         data
       ) {
-        const calculateImpactPrice = new BigDecimal(simulateData.displayAmount)
+        const calculateImpactPrice = new BigDecimal(data.displayAmount)
           .div(fromAmountToken)
           .div(ratio.displayAmount)
           .mul(100)
@@ -215,7 +215,7 @@ export const useEstimateAmount = (
         );
 
       const isAverageRatio = ratio && ratio.amount;
-      const isSimulateDataDisplay = simulateData && simulateData.displayAmount;
+      const isSimulateDataDisplay = data && data.displayAmount;
       const minimumReceive =
         isAverageRatio && fromAmountTokenBalance
           ? calculateMinReceive(
