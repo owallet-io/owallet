@@ -6,13 +6,28 @@ import { useQuery as useFetchQuery } from "@tanstack/react-query";
 import { API } from "@src/common/api";
 import { urlAiRight } from "@src/common/constants";
 import { ChainInfo } from "@owallet/types";
+import { AccountStore } from "@owallet/stores";
+import { ChainStore } from "@src/stores/chain";
+interface Nfts {
+  chainInfo: ChainInfo;
+  data: IItemNft[];
+  count: string;
+}
+interface DataHandle {
+  total: number;
+  data: IItemNft[];
+}
 export const useNfts = (
-  chainInfo: ChainInfo,
-  address,
+  chainStore: ChainStore,
+  accountStore: AccountStore<any>,
   isAllNetworks
-): IItemNft[] => {
-  const { chainId, stakeCurrency, currencies } = chainInfo;
-  const handleNftsForOraichain = () => {
+): Nfts[] => {
+  const chainInfoOrai = chainStore.getChain(ChainIdEnum.Oraichain);
+  const chainInfoStargaze = chainStore.getChain(ChainIdEnum.Stargaze);
+  const handleNftsForOraichain = (): DataHandle => {
+    const { currencies } = chainInfoOrai;
+    const account = accountStore.getAccount(ChainIdEnum.Oraichain);
+    const address = account.bech32Address;
     const { data, refetch, error } = useFetchQuery({
       queryKey: ["nft-orai", address],
       queryFn: () => {
@@ -28,16 +43,27 @@ export const useNfts = (
         initialData: null,
       },
     });
+    console.log(data, "data");
     if (error) {
       console.error("Error fetching NFTs from Oraichain:", error);
-      return [];
+      return {
+        total: 0,
+        data: [],
+      };
     }
     const nfts = (data?.data?.items || []).map((nft, index) =>
       processDataOraiNft(nft, currencies)
     );
-    return nfts;
+    return {
+      total: data?.data?.total || 0,
+      data: nfts,
+    };
   };
-  const handleNftsForStargaze = () => {
+
+  const handleNftsForStargaze = (): DataHandle => {
+    const { chainId, stakeCurrency } = chainInfoStargaze;
+    const account = accountStore.getAccount(ChainIdEnum.Stargaze);
+    const address = account.bech32Address;
     const { loading, error, data } = useQuery(OwnedTokens, {
       variables: {
         filterForSale: null,
@@ -50,18 +76,44 @@ export const useNfts = (
     });
     if (error) {
       console.error("Error fetching NFTs from Stargaze:", error);
-      return [];
+      return {
+        total: 0,
+        data: [],
+      };
     }
+
     const nfts = (data?.tokens?.tokens || [])
       .filter((item, index) => item?.media?.type === "image")
       .map((nft, index) => processDataStargazeNft(nft, stakeCurrency));
-    return nfts;
+    return {
+      total: data?.tokens?.pageInfo?.total || 0,
+      data: nfts || [],
+    };
   };
   const nfts = {
     [ChainIdEnum.Oraichain]: handleNftsForOraichain(),
     [ChainIdEnum.Stargaze]: handleNftsForStargaze(),
   };
-  return nfts[chainId] || [];
+  return isAllNetworks
+    ? [
+        {
+          chainInfo: chainInfoOrai,
+          data: nfts[ChainIdEnum.Oraichain]?.data || [],
+          count: nfts[ChainIdEnum.Oraichain]?.total,
+        },
+        {
+          chainInfo: chainInfoStargaze,
+          data: nfts[ChainIdEnum.Stargaze]?.data || [],
+          count: nfts[ChainIdEnum.Stargaze]?.total,
+        },
+      ]
+    : [
+        {
+          chainInfo: chainStore.current,
+          data: nfts[chainStore.current.chainId]?.data || [],
+          count: nfts[chainStore.current.chainId]?.total,
+        },
+      ];
 };
 
 export const processDataStargazeNft = (item, stakeCurrency) => {
