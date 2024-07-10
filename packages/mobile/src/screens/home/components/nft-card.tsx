@@ -15,6 +15,9 @@ import { OWButton } from "@src/components/button";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { unknownToken } from "@owallet/common";
 import { maskedNumber } from "@src/utils/helper";
+import { navigate } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
+import { useNavigation } from "@react-navigation/native";
 export const NftCard = observer(() => {
   const { chainStore, accountStore, keyRingStore, appInitStore } = useStore();
   const { colors } = useTheme();
@@ -26,7 +29,7 @@ export const NftCard = observer(() => {
   );
   const emptyDataCount =
     nfts && nfts.filter((item) => item.data.length === 0).length;
-
+  const navigation = useNavigation();
   return (
     <View style={styles.container}>
       {emptyDataCount === nfts?.length && (
@@ -76,7 +79,7 @@ export const NftCard = observer(() => {
                   <NftItem key={indexNft} item={nft} />
                 ))}
               </View>
-              {it?.data?.length > 3 && (
+              {Number(it?.count) > 4 && (
                 <OWButton
                   style={{
                     marginTop: 16,
@@ -85,10 +88,10 @@ export const NftCard = observer(() => {
                   size="medium"
                   type="secondary"
                   onPress={() => {
-                    // setMore(!more);
-                    // navigate(SCREENS.STACK.Others, {
-                    //   screen: SCREENS.Transactions,
-                    // });
+                    navigate(SCREENS.Nfts, {
+                      chainInfo: it?.chainInfo,
+                    });
+
                     return;
                   }}
                 />

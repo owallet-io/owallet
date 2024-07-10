@@ -174,7 +174,7 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: HEADER_KEY.showNetworkHeader,
   },
   [SCREENS.Nfts]: {
-    title: HEADER_KEY.showNetworkHeader,
+    title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.NftsDetail]: {
     title: HEADER_KEY.notShowHeader,

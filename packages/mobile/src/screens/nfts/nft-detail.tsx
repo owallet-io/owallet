@@ -143,8 +143,8 @@ export const NftDetailScreen: FunctionComponent = observer((props) => {
             />
             <ItemReceivedToken
               label="Token ID"
-              valueDisplay={`${nft?.tokenId}` || "0"}
-              value={`${nft?.tokenId}` || "0"}
+              valueDisplay={`${nft?.tokenId || 0}`}
+              value={`${nft?.tokenId || 0}`}
             />
           </View>
         </View>
