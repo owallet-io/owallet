@@ -38,6 +38,7 @@ import {
   chainInfos,
   TokenItemType,
   getTokensFromNetwork,
+  calcMaxAmount,
 } from "@oraichain/oraidex-common";
 import { openLink } from "../../utils/helper";
 import { feeEstimate } from "@owallet/common";
@@ -165,30 +166,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       subAmountTo
     : BigInt(0);
 
-  const onMaxFromAmount = (amount: bigint, type: string) => {
-    const displayAmount = toDisplay(amount, originalFromToken?.decimals);
-    let finalAmount = displayAmount;
-
-    // hardcode fee when swap token orai
-    if (fromTokenDenom === ORAI) {
-      const estimatedFee = feeEstimate(
-        originalFromToken,
-        GAS_ESTIMATION_SWAP_DEFAULT
-      );
-      const fromTokenBalanceDisplay = toDisplay(
-        fromTokenBalance,
-        originalFromToken?.decimals
-      );
-      if (type === MAX) {
-        finalAmount =
-          estimatedFee > displayAmount ? 0 : displayAmount - estimatedFee;
-      } else {
-        finalAmount =
-          estimatedFee > fromTokenBalanceDisplay - displayAmount
-            ? 0
-            : displayAmount;
-      }
-    }
+  const onMaxFromAmount = (finalAmount: number) => {
     setSwapAmount([finalAmount, toAmountToken]);
   };
 
@@ -261,14 +239,15 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     isAIRoute
   );
 
-  const simulateDisplayAmount =
-    simulateData && simulateData.displayAmount ? simulateData.displayAmount : 0;
   const usdPriceShowFrom = (
     prices?.[originalFromToken?.coinGeckoId] * fromAmountToken
   ).toFixed(6);
   const usdPriceShowTo = (
     prices?.[originalToToken?.coinGeckoId] * simulateData?.displayAmount
   ).toFixed(6);
+  const simulateDisplayAmount =
+    simulateData && simulateData.displayAmount ? simulateData.displayAmount : 0;
+
   const bridgeTokenFee =
     simulateDisplayAmount && (fromTokenFee || toTokenFee)
       ? new BigDecimal(new BigDecimal(simulateDisplayAmount).mul(fromTokenFee))
@@ -654,8 +633,16 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setSwapAmount([0, 0]);
   };
 
-  const handleActiveAmount = (value) => {
-    onMaxFromAmount((fromTokenBalance * BigInt(value)) / BigInt(MAX), value);
+  const handleActiveAmount = (percent) => {
+    const coeff = Number(percent) / 100;
+    const finalAmount = calcMaxAmount({
+      maxAmount: toDisplay(fromTokenBalance, originalFromToken?.decimals),
+      token: originalFromToken,
+      coeff: coeff,
+      gas: GAS_ESTIMATION_SWAP_DEFAULT,
+    });
+
+    onMaxFromAmount(finalAmount * coeff);
   };
 
   const handleSendToAddress = (address) => {
@@ -740,6 +727,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                 paddingHorizontal: 8,
                 paddingVertical: 4,
                 borderRadius: 4,
+                marginRight: 8,
                 justifyContent: "center",
               }}
             >
@@ -767,6 +755,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   return (
     <PageWithBottom
       style={{ paddingTop: 16 }}
+      backgroundColor={colors["neutral-surface-bg"]}
       bottomGroup={
         <OWButton
           label="Swap"

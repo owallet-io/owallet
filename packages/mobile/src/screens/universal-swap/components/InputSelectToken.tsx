@@ -139,10 +139,10 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
               }}
               keyboardType="numeric"
               style={[styles.textInput, styles.colorInput]}
-              placeholderTextColor={colors["text-place-holder"]}
+              placeholderTextColor={colors["neutral-text-title"]}
             />
             <View style={{ alignSelf: "flex-end" }}>
-              <BalanceText weight="500">
+              <BalanceText color={colors["neutral-text-body3"]} weight="500">
                 ≈ ${maskedNumber(currencyValue) || 0}
               </BalanceText>
             </View>

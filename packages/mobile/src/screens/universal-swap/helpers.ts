@@ -11,6 +11,7 @@ import {
   USDC_CONTRACT,
   ORAIX_CONTRACT,
   TokenItemType,
+  BigDecimal,
 } from "@oraichain/oraidex-common";
 import { showToast } from "@src/utils/helper";
 import { API } from "@src/common/api";
@@ -304,4 +305,63 @@ export const getRemoteDenom = (originalToken) => {
   return originalToken.contractAddress
     ? originalToken.prefix + originalToken.contractAddress
     : originalToken.denom;
+};
+
+export declare const MULTIPLIER = 1.6;
+export declare const GAS_ESTIMATION_BRIDGE_DEFAULT = 200000;
+
+//hardcode fee
+export const feeEstimate = (tokenInfo: TokenItemType, gasDefault: number) => {
+  if (!tokenInfo) return 0;
+  const MULTIPLIER_ESTIMATE_OSMOSIS = 3.8;
+  const MULTIPLIER_FIX =
+    tokenInfo.chainId === "osmosis-1"
+      ? MULTIPLIER_ESTIMATE_OSMOSIS
+      : MULTIPLIER;
+  return new BigDecimal(MULTIPLIER_FIX)
+    .mul(tokenInfo.feeCurrencies[0].gasPriceStep.high)
+    .mul(gasDefault)
+    .div(10 ** tokenInfo.decimals)
+    .toNumber();
+};
+
+export const calcMaxAmount = ({
+  maxAmount,
+  token,
+  coeff,
+  gas = GAS_ESTIMATION_BRIDGE_DEFAULT,
+}: {
+  maxAmount: number;
+  token: TokenItemType;
+  coeff: number;
+  gas?: number;
+}) => {
+  if (!token) return maxAmount;
+
+  let finalAmount = maxAmount;
+
+  const feeCurrencyOfToken = token.feeCurrencies?.find(
+    (e) => e.coinMinimalDenom === token.denom
+  );
+
+  if (feeCurrencyOfToken) {
+    const useFeeEstimate = feeEstimate(token, gas);
+
+    if (coeff === 1) {
+      finalAmount =
+        useFeeEstimate > finalAmount
+          ? 0
+          : new BigDecimal(finalAmount).sub(useFeeEstimate).toNumber();
+    } else {
+      finalAmount =
+        useFeeEstimate >
+        new BigDecimal(maxAmount)
+          .sub(new BigDecimal(finalAmount).mul(coeff))
+          .toNumber()
+          ? 0
+          : finalAmount;
+    }
+  }
+
+  return finalAmount;
 };
