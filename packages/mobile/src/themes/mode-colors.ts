@@ -116,7 +116,7 @@ export const colorsCode = {
   "blue-400": "#7C8397",
   "blue-600": "#5F5E77",
   "blue/Border-50": "#EDEDF8",
-  "bg-icon-coin": "#D3D3DA",
+  "bg-icon-coin": "#D3D3DA"
 };
 //item 1:Dark, item 2: Light
 const modeColors = {
@@ -145,10 +145,7 @@ const modeColors = {
   "btn-primary-background": ["#5C00A3", "#5C00A3"],
   "btn-disable-background": [colorsCode["blue-600"], colorsCode["gray-300"]],
   // border
-  "border-purple-100-gray-800": [
-    colorsCode["gray-800"],
-    colorsCode["purple-100"],
-  ],
+  "border-purple-100-gray-800": [colorsCode["gray-800"], colorsCode["purple-100"]],
   // item
   item: ["#2B2D3B", "#fff"],
   icon: ["#E2DEEB", "#5F5E77"],
@@ -159,10 +156,7 @@ const modeColors = {
   "sub-text": ["#8C93A7", "#5F5E77"],
   "text-title": [colorsCode["white"], colorsCode["gray-900"]],
   "text-btn-disable-color": [colorsCode["gray-500"], colorsCode["white"]],
-  "text-gray-900-primary-default": [
-    colorsCode["primary-default"],
-    colorsCode["gray-900"],
-  ],
+  "text-gray-900-primary-default": [colorsCode["primary-default"], colorsCode["gray-900"]],
 
   //onBoarding page
   "background-container": ["#01040D", "#FFFFFF"], //
@@ -222,6 +216,7 @@ const modeColors = {
   "neutral-surface-bg": ["#121511", "#F5F5F7"],
   "neutral-surface-bg2": ["#323133", "#F5F5F7"],
   "neutral-surface-card": ["#242325", "#FFFFFF"],
+  "neutral-surface-card-brutal": ["#242325", "#FCFCFC"],
   "neutral-surface-action": ["#323133", "#EBEDF2"],
   "neutral-surface-action2": ["#323133", "#EBEDF2"],
   "neutral-surface-action3": ["#323133", "#F5F5F7"],
@@ -229,6 +224,7 @@ const modeColors = {
   "neutral-surface-pressed": ["#6A6B71", "#D4D7E1"],
   "neutral-surface-disable": ["#323133", "#EBEDF2"],
   "neutral-border-default": ["#323133", "#EBEDF2"],
+  "neutral-border-brutal": ["#323133", "#FFF"],
   "neutral-border-strong": ["#6A6B71", "#242325"],
   "neutral-border-bold": ["#909298", "#242325"],
   "neutral-border-disable": ["#242325", "#F5F5F7"],
@@ -284,7 +280,7 @@ const modeColors = {
   "success-border-default": ["#00AD26", "#007018"],
   "success-border-pressed": ["#39DD47", "#00AD26"],
   "success-text-action": ["#00AD26", "#00AD26"],
-  "success-text-body": ["#00AD26", "#00AD26"],
+  "success-text-body": ["#00AD26", "#00AD26"]
 };
 const typeColorsTheme = () => modeColors;
 type TypeTheme = { [P in keyof ReturnType<typeof typeColorsTheme>]: string };
