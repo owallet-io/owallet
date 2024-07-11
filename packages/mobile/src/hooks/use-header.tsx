@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { Platform, StatusBar, StyleSheet, Text, View } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import React from "react";
+import { StyleSheet, useWindowDimensions, View } from "react-native";
+
 import OWHeaderTitle from "@src/components/header/ow-header-title";
 import OWHeaderRight from "@src/components/header/ow-header-right";
 import { useTheme } from "@src/themes/theme-provider";
@@ -12,8 +12,6 @@ import {
 import { HEADER_KEY, SCREENS } from "@src/common/constants";
 import { getDefaultHeaderHeight } from "@react-navigation/elements";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useGetHeightHeader } from "@src/hooks/use-height-header";
-import { metrics } from "@src/themes";
 
 interface IUseHeaderOptions extends StackNavigationOptions {}
 const useHeaderOptions = (
@@ -22,18 +20,11 @@ const useHeaderOptions = (
 ): IUseHeaderOptions => {
   const { colors } = useTheme();
 
-  const headerHeight = useGetHeightHeader();
-  const header = getDefaultHeaderHeight(
-    { width: metrics.screenWidth, height: metrics.screenHeight },
-    false,
-    StatusBar.currentHeight || 0
-  );
+  const dimensions = useWindowDimensions();
   const { top } = useSafeAreaInsets();
-  const headerHeightWrap =
-    headerHeight +
-    top +
-    (StatusBar.currentHeight || 0) +
-    Math.ceil(headerHeight * 0.5);
+
+  const defaultHeaderHeight = getDefaultHeaderHeight(dimensions, false, top);
+  const newHeaderHeight = defaultHeaderHeight + 15;
 
   const onGoBack = () => {
     navigation.goBack();
@@ -60,7 +51,7 @@ const useHeaderOptions = (
       shadowColor: colors["neutral-border-default"],
       borderBottomWidth: 0,
       elevation: 0,
-      height: headerHeightWrap,
+      height: newHeaderHeight,
     },
     headerTitle: () => <OWHeaderTitle title={data?.title} />,
     headerTitleAlign: "center",
