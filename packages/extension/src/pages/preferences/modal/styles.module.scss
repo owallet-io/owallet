@@ -1,13 +1,10 @@
-@import '../../../styles/var';
+@import "../../../styles/var";
 
 .modal-currency {
   border-top-left-radius: 24px;
   border-top-right-radius: 24px;
 
   .content-wrap {
-    margin-left: -16px;
-    margin-right: -16px;
-
     .container-search-input {
       height: 44px;
     }
@@ -49,7 +46,6 @@
       }
     }
 
-
     .container-list-chain {
       padding-top: 8px;
       display: flex;
@@ -64,7 +60,6 @@
         flex-direction: row;
         align-items: center;
         justify-content: space-between;
-
 
         .left-block-huge {
           display: flex;
@@ -117,10 +112,9 @@
           }
 
           .radio-input:checked {
-            accent-color: $success-border-default
+            accent-color: $success-border-default;
           }
         }
-
       }
 
       .item-chain:hover {
@@ -133,4 +127,3 @@
     }
   }
 }
-

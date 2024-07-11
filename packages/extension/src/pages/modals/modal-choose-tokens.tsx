@@ -4,10 +4,6 @@ import styles from "./style.module.scss";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
 import { HeaderModal } from "../home/components/header-modal";
-// import { ChainIdEnum, DenomHelper } from "@owallet/common";
-// import { useMultipleAssets } from "../../hooks/use-multiple-assets";
-// import classnames from "classnames";
-// import { TokensCard } from "../home/components/tokens-card";
 import { IAmountConfig } from "@owallet/hooks";
 import { ObservableQueryBalanceInner } from "@owallet/stores";
 import {
@@ -18,27 +14,22 @@ import {
   extractDataInParentheses,
   unknownToken,
 } from "@owallet/common";
-import { useHistory } from "react-router";
 
 const TokenItem: FC<{
   item: any;
   onSelectToken?: (token) => void;
 }> = observer(({ item, onSelectToken }) => {
   const { priceStore, chainStore } = useStore();
-  const history = useHistory();
 
   const name = item?.currency?.coinDenom;
-  const getName = () => {
-    return removeDataInParentheses(name);
-  };
   const image = item.currency?.coinImageUrl;
-
   let contractAddress: string = "";
   let amount = item?.balance
     ?.trim(true)
     ?.shrink(true)
     ?.maxDecimals(6)
     ?.hideDenom(true);
+
   // If the currency is the IBC Currency.
   // Show the amount as slightly different with other currencies.
   // Show the actual coin denom to the top and just show the coin denom without channel info to the bottom.
@@ -64,51 +55,6 @@ const TokenItem: FC<{
             await chainStore.saveLastViewChainId();
           }
           onSelectToken?.(item);
-          if (
-            item.chainInfo?.chainId === ChainIdEnum.TRON ||
-            chainStore.current.chainId === ChainIdEnum.TRON
-          ) {
-            history.push({
-              pathname: "/send-tron",
-              state: {
-                token: item,
-              },
-            });
-            return;
-          }
-          if (
-            item.chainInfo?.chainId === ChainIdEnum.Bitcoin ||
-            chainStore.current.chainId === ChainIdEnum.Bitcoin
-          ) {
-            history.push({
-              pathname: "/send-btc",
-              state: {
-                token: item,
-              },
-            });
-            return;
-          }
-
-          if (
-            //@ts-ignore
-            item.chainInfo?.networkType === "evm" ||
-            chainStore.current.networkType === "evm"
-          ) {
-            history.push({
-              pathname: "/send-evm",
-              state: {
-                token: item,
-              },
-            });
-            return;
-          }
-          history.push({
-            pathname: "/send",
-            state: {
-              token: item,
-            },
-          });
-          return;
         } catch (err) {
           console.log("err", err);
         }
@@ -164,15 +110,7 @@ export const ModalChooseTokens: FC<{
   amountConfig: IAmountConfig;
   onSelectToken?: (item) => void;
 }> = observer(({ isOpen, onRequestClose, onSelectToken, amountConfig }) => {
-  const [refreshing, setRefreshing] = React.useState(false);
-  const {
-    chainStore,
-    accountStore,
-    keyRingStore,
-    queriesStore,
-    priceStore,
-    hugeQueriesStore,
-  } = useStore();
+  const { chainStore, accountStore, keyRingStore, queriesStore } = useStore();
   const totalSizeChain = chainStore.chainInfos.length;
   const allChainMap = new Map();
   if (allChainMap.size < totalSizeChain) {
@@ -197,14 +135,6 @@ export const ModalChooseTokens: FC<{
     keyRingStore.keyRingLedgerAddresses,
     false
   );
-  // const { dataTokens } = useMultipleAssets(
-  //   accountStore,
-  //   priceStore,
-  //   chainStore,
-  //   refreshing,
-  //   accountOrai.bech32Address,
-  //   hugeQueriesStore
-  // );
 
   const onSelect = (item) => {
     const selectedKey = item?.currency?.coinMinimalDenom;
@@ -248,13 +178,6 @@ export const ModalChooseTokens: FC<{
     setDisplayTokens(displayTokens);
   }, [chainStore.current.chainId, addressToFetch]);
 
-  // const selectedKey = amountConfig.sendCurrency.coinMinimalDenom;
-  // const setSelectedKey = (key: string | undefined) => {
-  //   const currency = amountConfig.sendableCurrencies.find(cur => cur.coinMinimalDenom === key);
-
-  //   amountConfig.setSendCurrency(currency);
-  // };
-
   return (
     <SlidingPane
       isOpen={isOpen}
@@ -269,10 +192,7 @@ export const ModalChooseTokens: FC<{
           title={"Select token".toUpperCase()}
           onRequestClose={onRequestClose}
         />
-        {/* <TokensCard
-          onSelectToken={onSelect}
-          dataTokens={dataTokens.filter(token => token.chainInfo.chainId === chainStore.current.chainId)}
-        /> */}
+
         {displayTokens.map((token, i) => {
           return (
             <TokenItem
