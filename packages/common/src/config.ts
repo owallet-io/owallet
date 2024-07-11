@@ -388,7 +388,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     get feeCurrencies() {
       return [this.stakeCurrency];
     },
-    features: ["stargate", "ibc-transfer", "cosmwasm"],
+    features: ["stargate", "ibc-transfer", "cosmwasm", "no-legacy-stdTx"],
     txExplorer: {
       name: "OraiBridgescan",
       txUrl: "https://scan.bridge.orai.io/txs/{txHash}",

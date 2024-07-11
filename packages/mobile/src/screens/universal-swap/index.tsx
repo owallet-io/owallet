@@ -263,7 +263,12 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const simulateDisplayAmount =
     simulateData && simulateData.displayAmount ? simulateData.displayAmount : 0;
-
+  const usdPriceShowFrom = (
+    prices?.[originalFromToken?.coinGeckoId] * fromAmountToken
+  ).toFixed(6);
+  const usdPriceShowTo = (
+    prices?.[originalToToken?.coinGeckoId] * simulateData?.displayAmount
+  ).toFixed(6);
   const bridgeTokenFee =
     simulateDisplayAmount && (fromTokenFee || toTokenFee)
       ? new BigDecimal(new BigDecimal(simulateDisplayAmount).mul(fromTokenFee))
@@ -472,14 +477,18 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       `Universal Swap`,
       `fromToken=${originalFromToken.name};toToken=${originalToToken.name};fromNetwork=${tokenFromNetwork};toNetwork=${tokenToNetwork};`
     );
+
     const logEvent = {
       address: accountOrai.bech32Address,
-      fromToken: originalFromToken.name,
+      fromToken: `${originalFromToken.name} - ${originalFromToken.chainId}`,
       fromAmount: `${fromAmountToken}`,
-      toToken: originalToToken.name,
+      toToken: `${originalToToken.name} - ${originalToToken.chainId}`,
       toAmount: `${toAmountToken}`,
-      tokenFromNetwork,
-      tokenToNetwork,
+      fromNetwork: originalFromToken.chainId,
+      toNetwork: originalToToken.chainId,
+      useAlphaSmartRouter,
+      priceOfFromTokenInUsd: usdPriceShowFrom,
+      priceOfToTokenInUsd: usdPriceShowTo,
     };
 
     try {
