@@ -1,6 +1,13 @@
-@import '../../../styles/var';
+@import "../../../styles/var";
 
-
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
 .container-info-account-card {
   background-color: $neutral-surface-card;
   padding: 16px;
@@ -31,12 +38,20 @@
         border-radius: 50%;
         background-color: #fff;
       }
-
-      .name-wallet {
-        color: $neutral-text-title;
-        font-size: 16px;
-        font-weight: 600;
-        line-height: 24px;
+      .wrap-name {
+        width: 80px;
+        overflow: hidden;
+        white-space: nowrap;
+        padding: 10px;
+        .name-wallet {
+          color: $neutral-text-title;
+          font-size: 16px;
+          font-weight: 600;
+          line-height: 24px;
+          display: inline-block;
+          padding-left: 100%;
+          animation: marquee 5s linear infinite;
+        }
       }
 
       .arr-down {
@@ -105,8 +120,6 @@
         text-align: center;
       }
     }
-
-
   }
 }
 
@@ -136,7 +149,6 @@
         line-height: 24px;
       }
     }
-
   }
 
   .list-tokens {
@@ -155,7 +167,6 @@
         gap: 12px;
 
         .logo-token-and-chain {
-
           .token-wrap {
             width: 44px;
             height: 44px;
@@ -192,8 +203,6 @@
               }
             }
           }
-
-
         }
 
         .body-token-item {
@@ -220,7 +229,6 @@
           font-weight: 400;
         }
       }
-
 
       .sub-title {
         color: $neutral-text-body;
@@ -313,5 +321,4 @@
       }
     }
   }
-
 }
