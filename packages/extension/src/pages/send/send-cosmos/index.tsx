@@ -247,7 +247,7 @@ export const SendPage: FunctionComponent<{
               await accountInfo.sendToken(
                 sendConfigs.amountConfig.amount,
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                sendConfigs.amountConfig.sendCurrency!,
+                sendConfigs.amountConfig.sendCurrency,
                 sendConfigs.recipientConfig.recipient,
                 sendConfigs.memoConfig.memo,
                 stdFee,
