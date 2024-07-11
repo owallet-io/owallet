@@ -25,6 +25,7 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
     onChangeAmount,
     type = "from",
     disabled,
+    loading,
     ...props
   }) => {
     const { colors } = useTheme();
@@ -194,6 +195,7 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
           editable={editable}
           tokenActive={tokenActive}
           onChangeAmount={onChangeAmount}
+          loading={loading}
           {...props}
         />
       </OWCard>

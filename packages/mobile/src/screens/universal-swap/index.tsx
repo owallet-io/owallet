@@ -3,6 +3,7 @@ import { Text } from "@src/components/text";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
 import {
+  ActivityIndicator,
   RefreshControl,
   ScrollView,
   TouchableOpacity,
@@ -78,6 +79,7 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { PriceSettingModal } from "./modals/PriceSettingModal";
 import { flatten } from "lodash";
 import ByteBrew from "react-native-bytebrew-sdk";
+import { LoadingSpinner } from "@src/components/spinner";
 
 const mixpanel = globalThis.mixpanel as Mixpanel;
 
@@ -922,6 +924,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               tokenActive={originalToToken}
               onOpenTokenModal={() => setSelectToTokenModal(true)}
               editable={false}
+              loading={amountLoading}
               tokenFee={toTokenFee}
               onOpenNetworkModal={setToNetworkOpen}
               type={"to"}
@@ -948,6 +951,22 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               borderWidth: 2,
             }}
           >
+            {amountLoading ? (
+              <View
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  position: "absolute",
+                  backgroundColor: colors["neutral-surface-card"],
+                  zIndex: 999,
+                  alignContent: "center",
+                  justifyContent: "center",
+                  opacity: 0.8,
+                }}
+              >
+                <ActivityIndicator />
+              </View>
+            ) : null}
             <TouchableOpacity
               onPress={() => {
                 setPriceSettingModal(true);

@@ -22,6 +22,7 @@ export interface ISwapBox extends IInputSelectToken {
   onOpenNetworkModal: Function;
   onSelectAmount?: Function;
   type?: string;
+  loading?: boolean;
 }
 
 export interface IInputSelectToken {
@@ -29,6 +30,7 @@ export interface IInputSelectToken {
   amount?: string;
   currencyValue?: string;
   editable?: boolean;
+  loading?: boolean;
   onChangeAmount?: (txt: any) => void;
   onOpenTokenModal: (ev: any) => void;
 }
