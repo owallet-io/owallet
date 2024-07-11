@@ -45,8 +45,6 @@ export const SignModal: FunctionComponent<{
       signInteractionStore.rejectAll();
     });
 
-    const style = useStyle();
-
     const [signer, setSigner] = useState("");
 
     const [chainId, setChainId] = useState(chainStore.current.chainId);
@@ -125,6 +123,9 @@ export const SignModal: FunctionComponent<{
         ? signDocHelper.signDocWrapper.aminoSignDoc.msgs
         : signDocHelper.signDocWrapper.protoSignDoc.txMsgs
       : [];
+
+    console.log("msgs", msgs);
+
     const isDisable =
       signDocWapper == null ||
       signDocHelper.signDocWrapper == null ||

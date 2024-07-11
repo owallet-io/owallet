@@ -79,7 +79,6 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { PriceSettingModal } from "./modals/PriceSettingModal";
 import { flatten } from "lodash";
 import ByteBrew from "react-native-bytebrew-sdk";
-import { LoadingSpinner } from "@src/components/spinner";
 
 const mixpanel = globalThis.mixpanel as Mixpanel;
 
@@ -118,9 +117,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const [loadingRefresh, setLoadingRefresh] = useState(false);
   const [searchTokenName, setSearchTokenName] = useState("");
   const [fromNetworkOpen, setFromNetworkOpen] = useState(false);
-  const [fromNetwork, setFromNetwork] = useState("Oraichain");
+  const [fromNetwork, setFromNetwork] = useState(ChainIdEnum.Oraichain);
   const [toNetworkOpen, setToNetworkOpen] = useState(false);
-  const [toNetwork, setToNetwork] = useState("Oraichain");
+  const [toNetwork, setToNetwork] = useState(ChainIdEnum.Oraichain);
 
   const [[fromTokenDenom, toTokenDenom], setSwapTokens] = useState<
     [string, string]
@@ -694,65 +693,66 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   }, [sendToAddress, sendToModal]);
 
   const renderSmartRoutes = () => {
-    if (fromAmountToken > 0 && routersSwapData?.routes?.length > 0) {
-      return (
-        <>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <Text color={colors["neutral-text-title"]} weight="500" size={15}>
-              Smart Route
-            </Text>
-            <View style={{ flexDirection: "row" }}>
-              <View
-                style={{
-                  flexDirection: "row",
-                  backgroundColor: colors["highlight-surface-subtle"],
-                  paddingHorizontal: 8,
-                  paddingVertical: 4,
-                  borderRadius: 4,
-                  marginRight: 8,
-                }}
+    // if (fromAmountToken > 0 && routersSwapData?.routes?.length > 0) {
+    return (
+      <>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <Text color={colors["neutral-text-title"]} weight="500" size={15}>
+            AI Route
+          </Text>
+          <View style={{ flexDirection: "row" }}>
+            <View
+              style={{
+                backgroundColor: colors["highlight-surface-subtle"],
+                paddingHorizontal: 8,
+                paddingVertical: 4,
+                borderRadius: 4,
+                marginRight: 8,
+                justifyContent: "center",
+              }}
+            >
+              <Text
+                color={colors["highlight-text-title"]}
+                weight="600"
+                size={12}
               >
-                <OWIcon
-                  name="tdesignwindy"
-                  color={colors["highlight-text-title"]}
-                  size={14}
-                />
-                <Text
-                  color={colors["highlight-text-title"]}
-                  weight="600"
-                  size={12}
-                >
-                  {" "}
-                  FASTEST
-                </Text>
-              </View>
-              <View
-                style={{
-                  backgroundColor: colors["primary-surface-subtle"],
-                  paddingHorizontal: 8,
-                  paddingVertical: 4,
-                  borderRadius: 4,
-                }}
-              >
-                <Text
-                  color={colors["primary-text-action"]}
-                  weight="600"
-                  size={12}
-                >
-                  BEST RETURN
-                </Text>
-              </View>
+                FASTEST
+              </Text>
             </View>
+            <View
+              style={{
+                backgroundColor: colors["primary-surface-subtle"],
+                paddingHorizontal: 8,
+                paddingVertical: 4,
+                borderRadius: 4,
+                justifyContent: "center",
+              }}
+            >
+              <Text
+                color={colors["primary-text-action"]}
+                weight="600"
+                size={12}
+              >
+                BEST RETURN
+              </Text>
+            </View>
+            <Toggle
+              on={isAIRoute}
+              onChange={(value) => {
+                setAIRoute(value);
+              }}
+            />
           </View>
-        </>
-      );
-    }
+        </View>
+      </>
+    );
+    // }
   };
 
   return (
@@ -1023,6 +1023,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               ) : null}
 
               <View style={styles.borderline} />
+
               <View style={{ marginVertical: 10 }}>
                 <Text style={{ lineHeight: 24 }}>
                   Min. Received:{" "}

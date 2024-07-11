@@ -236,6 +236,7 @@ const modeColors = {
   "neutral-text-title": ["#F5F5F7", "#242325"],
   "neutral-text-body": ["#909298", "#6A6B71"],
   "neutral-text-body2": ["#909298", "#494949"],
+  "neutral-text-body3": ["#6A6B71", "#909298"],
   "neutral-text-action-on-dark-bg": ["#242325", "#FBFBFB"],
   "neutral-text-action-on-light-bg": ["#FBFBFB", "#242325"],
   "neutral-text-disable": ["#494949", "#C6C8CE"],
