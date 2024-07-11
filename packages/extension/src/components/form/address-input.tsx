@@ -44,7 +44,7 @@ export const AddressInput: FunctionComponent<AddressInputProps> = observer(
     ibcChannelConfig,
     className,
     label,
-    disableAddressBook,
+    disableAddressBook = true,
     disabled = false,
     placeholder,
     inputStyle,
