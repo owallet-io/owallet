@@ -45,7 +45,6 @@ export const useEstimateAmount = (
   handleErrorSwap: Function,
   simulateOption?: {
     useAlphaSmartRoute?: boolean;
-    useSmartRoute?: boolean;
   },
   isAIRoute?: boolean
 ) => {

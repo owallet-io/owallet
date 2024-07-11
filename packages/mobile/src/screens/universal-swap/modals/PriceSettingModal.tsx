@@ -37,7 +37,6 @@ export const PriceSettingModal = registerModal(
     const [slippage, setSlippage] = useState(DEFAULT_SLIPPAGE);
     const { colors } = useTheme();
     const styles = styling(colors);
-    const theme = appInitStore.getInitApp.theme;
 
     const handleChangeSlippage = (value: number) => {
       if (value <= 100) {

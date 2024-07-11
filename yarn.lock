@@ -58,27 +58,7 @@
     call-me-maybe "^1.0.1"
     js-yaml "^4.1.0"
 
-"@apollo/client@3.10.8":
-  version "3.10.8"
-  resolved "https://registry.yarnpkg.com/@apollo/client/-/client-3.10.8.tgz#96b1548818e45fac752ec2bd318e5466d9ca26b5"
-  integrity sha512-UaaFEitRrPRWV836wY2L7bd3HRCfbMie1jlYMcmazFAK23MVhz/Uq7VG1nwbotPb5xzFsw5RF4Wnp2G3dWPM3g==
-  dependencies:
-    "@graphql-typed-document-node/core" "^3.1.1"
-    "@wry/caches" "^1.0.0"
-    "@wry/equality" "^0.5.6"
-    "@wry/trie" "^0.5.0"
-    graphql-tag "^2.12.6"
-    hoist-non-react-statics "^3.3.2"
-    optimism "^0.18.0"
-    prop-types "^15.7.2"
-    rehackt "^0.1.0"
-    response-iterator "^0.2.6"
-    symbol-observable "^4.0.0"
-    ts-invariant "^0.10.3"
-    tslib "^2.3.0"
-    zen-observable-ts "^1.2.5"
-
-"@apollo/client@^3.5.8":
+"@apollo/client@3.10.8", "@apollo/client@^3.5.8":
   version "3.10.8"
   resolved "https://registry.yarnpkg.com/@apollo/client/-/client-3.10.8.tgz#96b1548818e45fac752ec2bd318e5466d9ca26b5"
   integrity sha512-UaaFEitRrPRWV836wY2L7bd3HRCfbMie1jlYMcmazFAK23MVhz/Uq7VG1nwbotPb5xzFsw5RF4Wnp2G3dWPM3g==
@@ -5414,10 +5394,10 @@
   resolved "https://registry.yarnpkg.com/@oraichain/immutable/-/immutable-4.3.9.tgz#ff8d5a7b39b5b01f3f72a902cffbfea32ccb20c3"
   integrity sha512-INpHnhL970OCkR7I71Kssb2aLl2l4Y/x8W6FlyRO0KmC8GHjxc/hlNB1t44BiI7lkOYmcWMRQoC8dwParsp1RQ==
 
-"@oraichain/oraidex-common@^1.0.89":
-  version "1.0.89"
-  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-common/-/oraidex-common-1.0.89.tgz#f6b51dc00bfc6bb5c8d37f710d84666e343ecd92"
-  integrity sha512-kqloc/PdeI8PXmN4NBAEpQY8zU9DlHe5uwjrnD4dBS9ybmAr3VdmpCsuyAo4icEZ+OYGrg7PISsWH/NleU8exg==
+"@oraichain/oraidex-common@^1.0.90":
+  version "1.0.90"
+  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-common/-/oraidex-common-1.0.90.tgz#13fbe6fb1d8902ff1e7b07a1bf49ace2bbe5b6da"
+  integrity sha512-Rc0XvRXeT6+l0fZ0CCgCzTYTCAyvwaRJLgGbSQOEZ8X8n0W6Msenm/2IzUe3+ZyObpnmD7oYZwbTvRXhtDXYKw==
   dependencies:
     "@cosmjs/amino" "0.31.3"
     "@cosmjs/cosmwasm-stargate" "0.31.3"
@@ -5471,10 +5451,10 @@
   resolved "https://registry.yarnpkg.com/@oraichain/oraidex-contracts-sdk/-/oraidex-contracts-sdk-1.0.45.tgz#42dae0fdd9e005f920ba305b987009f791acc365"
   integrity sha512-/nYztdxEX5LQM4DMJQmi9HvZrBVoY3nLAmYqSKZGZ0U1h1SxU7O/o22R3/pQwB+sAJdcibaI8ygC0ov7jC8paA==
 
-"@oraichain/oraidex-universal-swap@^1.0.89-beta.11":
-  version "1.0.89-beta.11"
-  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-universal-swap/-/oraidex-universal-swap-1.0.89-beta.11.tgz#968b6268a2dc0b0f5cb188cb5dc6bbe1aa7fa59a"
-  integrity sha512-5MXjtXrBXhcBe8w07bT0d2SbG2avDoeqMAG+GiZkDZ9W/ramOgLDehAiFDtb+M8b67HGfyVoz9mAJ6wzwtCyFw==
+"@oraichain/oraidex-universal-swap@^1.0.90":
+  version "1.0.90"
+  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-universal-swap/-/oraidex-universal-swap-1.0.90.tgz#87b3c1a49954ec0ebc3218a03e27d17dd8801024"
+  integrity sha512-JlbgotpdXnSqf+aj3d5DDc683apbMQT6SzhoN5emYbzLouQtELpmCP7kyS53FuZl+qrmF9c2IcUQYJbfWrocrw==
   dependencies:
     "@oraichain/oraidex-common" latest
     "@oraichain/oraidex-contracts-sdk" "^1.0.43"
@@ -15484,12 +15464,7 @@ graphql-tag@^2.12.6:
   dependencies:
     tslib "^2.1.0"
 
-graphql@^16.3.0:
-  version "16.9.0"
-  resolved "https://registry.yarnpkg.com/graphql/-/graphql-16.9.0.tgz#1c310e63f16a49ce1fbb230bd0a000e99f6f115f"
-  integrity sha512-GGTKBX4SD7Wdb8mqeDLni2oaRGYQWjWHGKPQ24ZMnUtKfcsVoiv4uX8+LJr1K6U5VW2Lu1BwJnj7uiori0YtRw==
-
-graphql@^16.9.0:
+graphql@^16.3.0, graphql@^16.9.0:
   version "16.9.0"
   resolved "https://registry.yarnpkg.com/graphql/-/graphql-16.9.0.tgz#1c310e63f16a49ce1fbb230bd0a000e99f6f115f"
   integrity sha512-GGTKBX4SD7Wdb8mqeDLni2oaRGYQWjWHGKPQ24ZMnUtKfcsVoiv4uX8+LJr1K6U5VW2Lu1BwJnj7uiori0YtRw==

@@ -3,6 +3,7 @@ import { Text } from "@src/components/text";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
 import {
+  ActivityIndicator,
   RefreshControl,
   ScrollView,
   TouchableOpacity,
@@ -100,7 +101,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     appInitStore.updatePrices(prices);
   }, [prices]);
 
-  const [counter, setCounter] = useState(0);
   const theme = appInitStore.getInitApp.theme;
 
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
@@ -117,9 +117,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const [loadingRefresh, setLoadingRefresh] = useState(false);
   const [searchTokenName, setSearchTokenName] = useState("");
   const [fromNetworkOpen, setFromNetworkOpen] = useState(false);
-  const [fromNetwork, setFromNetwork] = useState("Oraichain");
+  const [fromNetwork, setFromNetwork] = useState(ChainIdEnum.Oraichain);
   const [toNetworkOpen, setToNetworkOpen] = useState(false);
-  const [toNetwork, setToNetwork] = useState("Oraichain");
+  const [toNetwork, setToNetwork] = useState(ChainIdEnum.Oraichain);
 
   const [[fromTokenDenom, toTokenDenom], setSwapTokens] = useState<
     [string, string]
@@ -387,7 +387,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (retryCount?: number) => {
     setSwapLoading(true);
     if (fromAmountToken <= 0) {
       showToast({
@@ -549,7 +549,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         const { transactionHash } = result;
 
         setSwapLoading(false);
-        setCounter(0);
         showToast({
           message: "Successful transaction. View on scan",
           type: "success",
@@ -591,20 +590,18 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         error.message.includes("403") ||
         originalFromToken.chainId === ChainIdEnum.Injective
       ) {
-        if (counter < 4) {
-          await handleSubmit();
-          setSwapLoading(false);
+        let retry = retryCount ? retryCount + 1 : 1;
+        console.log("error.message", error.message, retry);
+        if (retry < 4) {
+          await handleSubmit(retry);
         } else {
           handleErrorSwap(error?.message ?? error?.ex?.message);
-          setCounter(0);
           setSwapLoading(false);
         }
-        return;
       } else {
         handleErrorSwap(error?.message ?? error?.ex?.message);
         setSwapLoading(false);
       }
-      // handleErrorSwap(error?.message ?? error?.ex?.message);
     } finally {
       if (mixpanel) {
         mixpanel.track("Universal Swap Owallet", logEvent);
@@ -705,65 +702,66 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   }, [sendToAddress, sendToModal]);
 
   const renderSmartRoutes = () => {
-    if (fromAmountToken > 0 && routersSwapData?.routes?.length > 0) {
-      return (
-        <>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <Text color={colors["neutral-text-title"]} weight="500" size={15}>
-              Smart Route
-            </Text>
-            <View style={{ flexDirection: "row" }}>
-              <View
-                style={{
-                  flexDirection: "row",
-                  backgroundColor: colors["highlight-surface-subtle"],
-                  paddingHorizontal: 8,
-                  paddingVertical: 4,
-                  borderRadius: 4,
-                  marginRight: 8,
-                }}
+    // if (fromAmountToken > 0 && routersSwapData?.routes?.length > 0) {
+    return (
+      <>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <Text color={colors["neutral-text-title"]} weight="500" size={15}>
+            AI Route
+          </Text>
+          <View style={{ flexDirection: "row" }}>
+            <View
+              style={{
+                backgroundColor: colors["highlight-surface-subtle"],
+                paddingHorizontal: 8,
+                paddingVertical: 4,
+                borderRadius: 4,
+                marginRight: 8,
+                justifyContent: "center",
+              }}
+            >
+              <Text
+                color={colors["highlight-text-title"]}
+                weight="600"
+                size={12}
               >
-                <OWIcon
-                  name="tdesignwindy"
-                  color={colors["highlight-text-title"]}
-                  size={14}
-                />
-                <Text
-                  color={colors["highlight-text-title"]}
-                  weight="600"
-                  size={12}
-                >
-                  {" "}
-                  FASTEST
-                </Text>
-              </View>
-              <View
-                style={{
-                  backgroundColor: colors["primary-surface-subtle"],
-                  paddingHorizontal: 8,
-                  paddingVertical: 4,
-                  borderRadius: 4,
-                }}
-              >
-                <Text
-                  color={colors["primary-text-action"]}
-                  weight="600"
-                  size={12}
-                >
-                  BEST RETURN
-                </Text>
-              </View>
+                FASTEST
+              </Text>
             </View>
+            <View
+              style={{
+                backgroundColor: colors["primary-surface-subtle"],
+                paddingHorizontal: 8,
+                paddingVertical: 4,
+                borderRadius: 4,
+                justifyContent: "center",
+              }}
+            >
+              <Text
+                color={colors["primary-text-action"]}
+                weight="600"
+                size={12}
+              >
+                BEST RETURN
+              </Text>
+            </View>
+            <Toggle
+              on={isAIRoute}
+              onChange={(value) => {
+                setAIRoute(value);
+              }}
+            />
           </View>
-        </>
-      );
-    }
+        </View>
+      </>
+    );
+    // }
   };
 
   return (
@@ -781,7 +779,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           textStyle={styles.txtBtnSend}
           disabled={amountLoading || swapLoading}
           loading={swapLoading}
-          onPress={handleSubmit}
+          onPress={() => handleSubmit()}
         />
       }
     >
@@ -931,6 +929,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               tokenActive={originalToToken}
               onOpenTokenModal={() => setSelectToTokenModal(true)}
               editable={false}
+              loading={amountLoading}
               tokenFee={toTokenFee}
               onOpenNetworkModal={setToNetworkOpen}
               type={"to"}
@@ -957,6 +956,22 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               borderWidth: 2,
             }}
           >
+            {amountLoading ? (
+              <View
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  position: "absolute",
+                  backgroundColor: colors["neutral-surface-card"],
+                  zIndex: 999,
+                  alignContent: "center",
+                  justifyContent: "center",
+                  opacity: 0.8,
+                }}
+              >
+                <ActivityIndicator />
+              </View>
+            ) : null}
             <TouchableOpacity
               onPress={() => {
                 setPriceSettingModal(true);
@@ -1017,6 +1032,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               ) : null}
 
               <View style={styles.borderline} />
+
               <View style={{ marginVertical: 10 }}>
                 <Text style={{ lineHeight: 24 }}>
                   Min. Received:{" "}
