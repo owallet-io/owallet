@@ -102,7 +102,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     appInitStore.updatePrices(prices);
   }, [prices]);
 
-  const [counter, setCounter] = useState(0);
   const theme = appInitStore.getInitApp.theme;
 
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
@@ -384,7 +383,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (retryCount?: number) => {
     setSwapLoading(true);
     if (fromAmountToken <= 0) {
       showToast({
@@ -542,7 +541,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         const { transactionHash } = result;
 
         setSwapLoading(false);
-        setCounter(0);
         showToast({
           message: "Successful transaction. View on scan",
           type: "success",
@@ -584,20 +582,18 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         error.message.includes("403") ||
         originalFromToken.chainId === ChainIdEnum.Injective
       ) {
-        if (counter < 4) {
-          await handleSubmit();
-          setSwapLoading(false);
+        let retry = retryCount ? retryCount + 1 : 1;
+        console.log("error.message", error.message, retry);
+        if (retry < 4) {
+          await handleSubmit(retry);
         } else {
           handleErrorSwap(error?.message ?? error?.ex?.message);
-          setCounter(0);
           setSwapLoading(false);
         }
-        return;
       } else {
         handleErrorSwap(error?.message ?? error?.ex?.message);
         setSwapLoading(false);
       }
-      // handleErrorSwap(error?.message ?? error?.ex?.message);
     } finally {
       if (mixpanel) {
         mixpanel.track("Universal Swap Owallet", logEvent);
@@ -774,7 +770,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           textStyle={styles.txtBtnSend}
           disabled={amountLoading || swapLoading}
           loading={swapLoading}
-          onPress={handleSubmit}
+          onPress={() => handleSubmit()}
         />
       }
     >
