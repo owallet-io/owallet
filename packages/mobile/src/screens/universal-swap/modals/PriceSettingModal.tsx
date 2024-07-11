@@ -111,7 +111,7 @@ export const PriceSettingModal = registerModal(
               }}
             >
               <Text color={colors["neutral-text-title"]} weight="500" size={15}>
-                Smart Route
+                AI Route
               </Text>
               <View style={{ flexDirection: "row" }}>
                 <View
@@ -124,17 +124,11 @@ export const PriceSettingModal = registerModal(
                     marginRight: 8,
                   }}
                 >
-                  <OWIcon
-                    name="tdesignwindy"
-                    color={colors["highlight-text-title"]}
-                    size={14}
-                  />
                   <Text
                     color={colors["highlight-text-title"]}
                     weight="600"
                     size={12}
                   >
-                    {" "}
                     FASTEST
                   </Text>
                 </View>
