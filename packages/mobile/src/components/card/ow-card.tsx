@@ -19,7 +19,7 @@ const useStyleType = ({ type }) => {
         padding: 16,
         overflow: "hidden",
         alignSelf: "center",
-        marginTop: 2
+        marginTop: 2,
       };
       break;
   }
@@ -28,7 +28,7 @@ const useStyleType = ({ type }) => {
 const OWCard = ({ children, style, type = "ink", ...props }: IOWBoxProps) => {
   const ContainerElement = View;
   const stylesType = useStyleType({
-    type
+    type,
   });
   return (
     <ContainerElement style={[stylesType, style]} {...props}>
@@ -37,7 +37,7 @@ const OWCard = ({ children, style, type = "ink", ...props }: IOWBoxProps) => {
           style={{
             width: metrics.screenWidth - 32,
             height: 260,
-            position: "absolute"
+            position: "absolute",
           }}
           source={require("../../assets/image/img-bg.png")}
           resizeMode="cover"

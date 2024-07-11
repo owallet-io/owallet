@@ -1,6 +1,12 @@
 import React, { FunctionComponent, ReactElement } from "react";
 import { useTheme } from "@src/themes/theme-provider";
-import { ViewProps, StyleSheet, View, KeyboardAvoidingView, StatusBar } from "react-native";
+import {
+  ViewProps,
+  StyleSheet,
+  View,
+  KeyboardAvoidingView,
+  StatusBar,
+} from "react-native";
 import { metrics } from "@src/themes";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
@@ -30,14 +36,16 @@ export const PageWithBottom: FunctionComponent<
         {
           ...styles.container,
           ...style,
-          backgroundColor: backgroundColor ?? colors["neutral-surface-bg2"]
-        }
+          backgroundColor: backgroundColor ?? colors["neutral-surface-bg2"],
+        },
       ]}
     >
       {children}
       {showBottom && bottomGroup ? (
         <View style={styles.aic}>
-          <View style={[styles.bottom, { paddingBottom: 20 + (bottom || 0) }]}>{bottomGroup}</View>
+          <View style={[styles.bottom, { paddingBottom: 20 + (bottom || 0) }]}>
+            {bottomGroup}
+          </View>
         </View>
       ) : (
         <View />
@@ -51,27 +59,27 @@ const useStyle = (safeAreaInsets, colors) => {
     container: {
       paddingTop: safeAreaInsets.top,
       justifyContent: "space-between",
-      height: "100%"
+      height: "100%",
     },
     bottom: {
       borderTopWidth: 1,
       borderTopColor: colors["neutral-border-default"],
       width: metrics.screenWidth,
-      alignItems: "center"
+      alignItems: "center",
     },
     aic: {
       // position: "absolute",
       // bottom: 0,
       backgroundColor: colors["neutral-surface-card"],
-      width: metrics.screenWidth
+      width: metrics.screenWidth,
     },
     rc: {
       flexDirection: "row",
-      alignItems: "center"
+      alignItems: "center",
     },
     title: {
       paddingHorizontal: 16,
-      paddingTop: 24
-    }
+      paddingTop: 24,
+    },
   });
 };

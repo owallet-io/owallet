@@ -5,17 +5,19 @@ import { useStyle } from "../../styles";
 import { HeaderBackButtonIcon } from "./icon";
 import { spacing } from "../../themes";
 
-export const HeaderLeftButton: FunctionComponent<StackHeaderLeftButtonProps> = ({ children, onPress }) => {
+export const HeaderLeftButton: FunctionComponent<
+  StackHeaderLeftButtonProps
+> = ({ children, onPress }) => {
   return (
     <View
       style={{
-        position: "absolute"
+        position: "absolute",
       }}
     >
       <TouchableOpacity
         onPress={onPress}
         style={{
-          padding: spacing["30"]
+          padding: spacing["30"],
         }}
       >
         {children}
@@ -34,13 +36,13 @@ export const HeaderRightButton: FunctionComponent<{
     <View
       style={{
         position: "absolute",
-        ...propStyle
+        ...propStyle,
       }}
     >
       <TouchableOpacity
         onPress={onPress}
         style={{
-          padding: spacing["10"]
+          padding: spacing["10"],
         }}
       >
         {children}
@@ -48,7 +50,9 @@ export const HeaderRightButton: FunctionComponent<{
     </View>
   );
 };
-export const HeaderLeftBackButton: FunctionComponent<StackHeaderLeftButtonProps> = props => {
+export const HeaderLeftBackButton: FunctionComponent<
+  StackHeaderLeftButtonProps
+> = (props) => {
   return (
     <React.Fragment>
       {props.canGoBack ? (
