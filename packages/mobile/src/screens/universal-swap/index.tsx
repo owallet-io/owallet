@@ -754,7 +754,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   return (
     <PageWithBottom
-      style={{ paddingTop: 16 }}
+      style={{ paddingTop: 0 }}
       backgroundColor={colors["neutral-surface-bg"]}
       bottomGroup={
         <OWButton
