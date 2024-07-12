@@ -1,5 +1,5 @@
 import { ScrollView, StyleSheet, View } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { registerModal } from "@src/modals/base";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Text } from "@src/components/text";
@@ -16,7 +16,21 @@ import { useStore } from "@src/stores";
 import { assets } from "chain-registry";
 import { chainIcons } from "@oraichain/oraidex-common";
 
-export const PriceSettingModal = registerModal(
+export const PriceSettingModal: FunctionComponent<{
+  close: () => void;
+  setUserSlippage: (slippage: number) => void;
+  currentSlippage: number;
+  impactWarning: number;
+  fromAmountToken: number;
+  routersSwapData: { routes: Array<any>; amount: number };
+  minimumReceive: string;
+  tokenFee: string;
+  swapFee: string | number;
+  bridgeFee: string | number;
+  relayerFee: string;
+  ratio: string;
+  isOpen?: boolean;
+}> = registerModal(
   ({
     close,
     setUserSlippage,
@@ -373,9 +387,7 @@ export const PriceSettingModal = registerModal(
                 )
               : null}
             {/* {renderInfo("Slippage", `${slippage}%`)} */}
-            {tokenFee && tokenFee > 0
-              ? renderInfo("Token Fee", tokenFee)
-              : null}
+            {tokenFee ? renderInfo("Token Fee", tokenFee) : null}
             {relayerFee ? renderInfo("Relayer Fee", relayerFee) : null}
             {swapFee ? renderInfo("Swap Fee", swapFee) : null}
             {bridgeFee ? renderInfo("Bridge Fee", bridgeFee) : null}
