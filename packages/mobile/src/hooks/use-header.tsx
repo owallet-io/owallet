@@ -1,6 +1,5 @@
 import React from "react";
-import { StyleSheet, useWindowDimensions, View } from "react-native";
-
+import { StyleSheet } from "react-native";
 import OWHeaderTitle from "@src/components/header/ow-header-title";
 import OWHeaderRight from "@src/components/header/ow-header-right";
 import { useTheme } from "@src/themes/theme-provider";
@@ -12,6 +11,7 @@ import {
 import { HEADER_KEY, SCREENS } from "@src/common/constants";
 import { getDefaultHeaderHeight } from "@react-navigation/elements";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { metrics } from "@src/themes";
 
 interface IUseHeaderOptions extends StackNavigationOptions {}
 const useHeaderOptions = (
@@ -19,13 +19,16 @@ const useHeaderOptions = (
   navigation?: any
 ): IUseHeaderOptions => {
   const { colors } = useTheme();
-
-  const dimensions = useWindowDimensions();
   const { top } = useSafeAreaInsets();
-
-  const defaultHeaderHeight = getDefaultHeaderHeight(dimensions, false, top);
-  const newHeaderHeight = defaultHeaderHeight + 15;
-
+  const defaultHeaderHeight = getDefaultHeaderHeight(
+    {
+      width: metrics.screenWidth,
+      height: metrics.screenHeight,
+    },
+    false,
+    top
+  );
+  const newHeaderHeight = defaultHeaderHeight + 10;
   const onGoBack = () => {
     navigation.goBack();
   };
