@@ -642,7 +642,15 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       gas: GAS_ESTIMATION_SWAP_DEFAULT,
     });
 
-    onMaxFromAmount(finalAmount * coeff);
+    if (finalAmount > 0) {
+      onMaxFromAmount(finalAmount * coeff);
+    } else {
+      const displayAmount = toDisplay(
+        (fromTokenBalance * BigInt(percent)) / BigInt(MAX),
+        originalFromToken?.decimals
+      );
+      onMaxFromAmount(displayAmount * coeff);
+    }
   };
 
   const handleSendToAddress = (address) => {
