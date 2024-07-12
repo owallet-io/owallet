@@ -26,7 +26,6 @@ export const LayoutWithButtonBottom: FC<{
       style={{
         backgroundColor,
         paddingBottom: isHideButtonBottom ? 16 : 72,
-        overflow: "scroll",
       }}
       className={styles.container}
     >
