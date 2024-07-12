@@ -256,9 +256,15 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           .toNumber()
       : 0;
 
+  console.log("bridgeTokenFee", bridgeTokenFee);
+
   const estSwapFee = new BigDecimal(simulateDisplayAmount || 0)
     .mul(fee || 0)
     .toNumber();
+
+  console.log("estSwapFee", estSwapFee);
+
+  console.log("relayerFeeAmount", relayerFeeAmount);
 
   const totalFeeEst =
     new BigDecimal(bridgeTokenFee || 0)
@@ -413,10 +419,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
     let amountsBalance = universalSwapStore.getAmount;
 
-    let simulateAmount = toAmount(
-      toAmountToken,
-      originalToToken.decimals
-    ).toString();
+    // something wrong here
+    let simulateAmount = simulateData.amount;
 
     const { isSpecialFromCoingecko } = getSpecialCoingecko(
       originalFromToken.coinGeckoId,
@@ -507,6 +511,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             recipientAddress: sendToAddress,
           }
         : universalSwapData;
+
+      console.log("compileSwapData", compileSwapData);
 
       const universalSwapHandler = new UniversalSwapHandler(
         {
@@ -642,7 +648,15 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       gas: GAS_ESTIMATION_SWAP_DEFAULT,
     });
 
-    onMaxFromAmount(finalAmount * coeff);
+    if (finalAmount > 0) {
+      onMaxFromAmount(finalAmount * coeff);
+    } else {
+      const displayAmount = toDisplay(
+        (fromTokenBalance * BigInt(percent)) / BigInt(MAX),
+        originalFromToken?.decimals
+      );
+      onMaxFromAmount(displayAmount * coeff);
+    }
   };
 
   const handleSendToAddress = (address) => {
@@ -811,10 +825,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           }
           relayerFee={
             !!relayerFeeToken &&
-            `${toDisplay(
-              relayerFeeToken.toString(),
-              RELAYER_DECIMAL
-            )} ORAI ≈ ${maskedNumber(relayerFeeAmount)} ${originalToToken.name}`
+            `${toDisplay(relayerFeeToken.toString(), RELAYER_DECIMAL)} ORAI`
           }
           ratio={`1 ${originalFromToken.name} ≈ ${
             ratio

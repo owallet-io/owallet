@@ -53,7 +53,6 @@ export const useEstimateAmount = (
   const [impactWarning, setImpactWarning] = useState(0);
   const [toAmountTokenString, setToAmountToken] = useState("0");
   const [minimumReceive, setMininumReceive] = useState(0);
-  const [relayerFeeAmount, setRelayerFeeAmount] = useState<number>(0);
   const [routersSwapData, setRoutersSwapData] = useState<any>(null);
   const [simulateData, setSimulateData] = useState<any>(null);
 
@@ -101,8 +100,11 @@ export const useEstimateAmount = (
     }
   };
 
-  const { relayerFee, relayerFeeInOraiToAmount: relayerFeeToken } =
-    useRelayerFeeToken(originalFromToken, originalToToken, client);
+  const {
+    relayerFee,
+    relayerFeeInOraiToAmount: relayerFeeToken,
+    relayerFeeInOraiToDisplay: relayerFeeDisplay,
+  } = useRelayerFeeToken(originalFromToken, originalToToken, client);
   const remoteTokenDenomFrom = getRemoteDenom(originalFromToken);
   const remoteTokenDenomTo = getRemoteDenom(originalToToken);
   const fromTokenFee = useTokenFee(
@@ -122,40 +124,6 @@ export const useEstimateAmount = (
   const INIT_SIMULATE_NOUGHT_POINT_OH_ONE_AMOUNT = 0.00001;
   let INIT_AMOUNT = 1;
   if (isFromBTC) INIT_AMOUNT = INIT_SIMULATE_NOUGHT_POINT_OH_ONE_AMOUNT;
-
-  const convertRelayerFee = async () => {
-    if (client && relayerFeeToken) {
-      const routerClient = new OraiswapRouterQueryClient(
-        client,
-        network.router
-      );
-      const oraiToken = oraichainTokens.find(
-        (token) => token.coinGeckoId === "oraichain-token"
-      );
-
-      const data = await handleSimulateSwap({
-        originalFromInfo: oraiToken,
-        originalToInfo: originalToToken,
-        originalAmount: toDisplay(relayerFeeToken.toString()),
-        routerClient,
-        routerOption: {
-          useAlphaSmartRoute: simulateOption?.useAlphaSmartRoute,
-        },
-        urlRouter: {
-          url: "https://router.oraidex.io",
-          path: "/smart-router/alpha-router",
-        },
-      });
-
-      setRelayerFeeAmount(data?.displayAmount);
-    } else {
-      setRelayerFeeAmount(0);
-    }
-  };
-
-  useEffect(() => {
-    convertRelayerFee();
-  }, [relayerFeeToken, originalFromToken, originalToToken, isAIRoute]);
 
   const estimateAverageRatio = async () => {
     const data = await getSimulateSwap(1);
@@ -298,8 +266,9 @@ export const useEstimateAmount = (
     amountLoading,
     estimateAverageRatio,
     toAmountTokenString,
-    relayerFeeAmount,
+    relayerFeeAmount: relayerFeeDisplay,
     relayerFeeToken,
+    relayerFeeDisplay,
     impactWarning,
     routersSwapData,
     simulateData,

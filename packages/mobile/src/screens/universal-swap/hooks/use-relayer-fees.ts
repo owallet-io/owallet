@@ -104,6 +104,8 @@ export const useRelayerFeeToken = (
           originalAmount: relayerFeeInOrai,
           routerClient,
         });
+        console.log("data", data);
+
         return data as any;
       } catch (err) {
         console.log("err getSimulateSwap", err);
@@ -153,6 +155,9 @@ export const useRelayerFeeToken = (
         if (isFromToPrefix) return +cur.amount + acc;
         return acc;
       }, 0);
+
+      console.log("relayerFeeInOrai", toDisplay(relayerFeeInOrai.toString()));
+
       if (!relayerFeeInOrai) {
         setRelayerFeeAmount(0);
         setRelayerFeeInOrai(0);
