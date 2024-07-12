@@ -413,10 +413,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
     let amountsBalance = universalSwapStore.getAmount;
 
-    let simulateAmount = toAmount(
-      toAmountToken,
-      originalToToken.decimals
-    ).toString();
+    // something wrong here
+    let simulateAmount = simulateData.amount;
 
     const { isSpecialFromCoingecko } = getSpecialCoingecko(
       originalFromToken.coinGeckoId,
@@ -507,6 +505,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             recipientAddress: sendToAddress,
           }
         : universalSwapData;
+
+      console.log("compileSwapData", compileSwapData);
 
       const universalSwapHandler = new UniversalSwapHandler(
         {

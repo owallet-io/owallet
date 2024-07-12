@@ -11,7 +11,7 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { TextInput } from "@src/components/input";
 import { getPathInfo } from "../helpers";
 import FastImage from "react-native-fast-image";
-import { maskedNumber } from "@src/utils/helper";
+import { isNegative, maskedNumber } from "@src/utils/helper";
 import { useStore } from "@src/stores";
 import { assets } from "chain-registry";
 import { chainIcons } from "@oraichain/oraidex-common";
@@ -366,7 +366,9 @@ export const PriceSettingModal = registerModal(
             {impactWarning
               ? renderInfo(
                   "Price Impact",
-                  `${maskedNumber(impactWarning)}%`,
+                  `${
+                    isNegative(impactWarning) ? 0 : maskedNumber(impactWarning)
+                  }%`,
                   impactWarning
                 )
               : null}
