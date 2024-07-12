@@ -12,7 +12,6 @@ import { TextInput } from "@src/components/input";
 import { getPathInfo } from "../helpers";
 import FastImage from "react-native-fast-image";
 import { isNegative, maskedNumber } from "@src/utils/helper";
-import { useStore } from "@src/stores";
 import { assets } from "chain-registry";
 import { chainIcons } from "@oraichain/oraidex-common";
 
@@ -46,7 +45,6 @@ export const PriceSettingModal: FunctionComponent<{
     ratio,
   }) => {
     const safeAreaInsets = useSafeAreaInsets();
-    const { appInitStore } = useStore();
 
     const [slippage, setSlippage] = useState(DEFAULT_SLIPPAGE);
     const { colors } = useTheme();
@@ -327,7 +325,7 @@ export const PriceSettingModal: FunctionComponent<{
             }}
           >
             <View style={styles.containerSlippagePercent}>
-              {[1, 3, 5].map((item, index) => {
+              {[1, 3, 5].map((item) => {
                 return (
                   <OWButton
                     key={item}
@@ -386,7 +384,6 @@ export const PriceSettingModal: FunctionComponent<{
                   impactWarning
                 )
               : null}
-            {/* {renderInfo("Slippage", `${slippage}%`)} */}
             {tokenFee ? renderInfo("Token Fee", tokenFee) : null}
             {relayerFee ? renderInfo("Relayer Fee", relayerFee) : null}
             {swapFee ? renderInfo("Swap Fee", swapFee) : null}

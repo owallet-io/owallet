@@ -4,9 +4,7 @@ import {
   calculateMinReceive,
   CW20_DECIMALS,
   network,
-  oraichainTokens,
   toAmount,
-  toDisplay,
   TokenItemType,
 } from "@oraichain/oraidex-common";
 import { OraiswapRouterQueryClient } from "@oraichain/oraidex-contracts-sdk";

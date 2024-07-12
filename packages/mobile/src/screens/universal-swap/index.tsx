@@ -716,6 +716,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           <Text color={colors["neutral-text-title"]} weight="500" size={15}>
             AI Route
           </Text>
+
           <View style={{ flexDirection: "row" }}>
             <View
               style={{
@@ -725,6 +726,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                 borderRadius: 4,
                 marginRight: 8,
                 justifyContent: "center",
+                height: 28,
               }}
             >
               <Text
@@ -743,6 +745,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                 borderRadius: 4,
                 marginRight: 8,
                 justifyContent: "center",
+                height: 28,
               }}
             >
               <Text
@@ -797,7 +800,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           close={() => {
             setPriceSettingModal(false);
           }}
-          //@ts-ignore
           currentSlippage={userSlippage}
           impactWarning={impactWarning}
           routersSwapData={routersSwapData}
