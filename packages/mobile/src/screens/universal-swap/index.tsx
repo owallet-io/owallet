@@ -331,7 +331,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     universalSwapStore.setLoaded(false);
     const customChainInfos = chainInfos;
     if (accountOrai.isNanoLedger) {
-      if (Object.keys(keyRingStore?.keyRingLedgerAddresses).length > 0) {
+      if (
+        keyRingStore.keyRingLedgerAddresses &&
+        Object.keys(keyRingStore.keyRingLedgerAddresses).length > 0
+      ) {
         setTimeout(() => {
           handleFetchAmounts(
             {
