@@ -81,18 +81,8 @@ yarn android
 | chainId      | string      |   Chain ID |
 | chainName      | string      |  Chain Name |
 | networkType      | `cosmos || evm`      |  `Network Type (cosmos || evm): To declare whether the network is Cosmos-based or Ethereum Virtual Machine (EVM)-based`  |
-| stakeCurrency      | `{
-coinDenom: string,
-coinMinimalDenom: string,
-coinDecimals: number,
-coinGeckoId: string,
-coinImageUrl: string,
-gasPriceStep: {
-        low: number,
-        average: number,
-        high: number,
-      }
-}`      |   LCD of a blockchain |
+| stakeCurrency      | `{coinDenom: string, coinMinimalDenom: string, coinDecimals: number, coinGeckoId: string, coinImageUrl: string, gasPriceStep: { low: number, average: number, high: number}}` | Native stake currency
+| bip44      | { coinType: number,}      |   Chain ID |
 
 ## How to add a chain into OWallet?
 
