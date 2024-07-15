@@ -651,33 +651,37 @@ export class TxsHelper {
     }
     return null;
   }
+  isAmountKey = (item) => item?.key === "amount" && /^\d+$/.test(item?.value);
+
+  parseAmount = (item) => Number(item?.value);
+
+  startsWithAmount = (amount, other) =>
+    other?.key !== "amount" &&
+    other?.value.startsWith(amount.toString()) &&
+    other?.value?.length > amount.toString()?.length;
+
+  findMatchingItem = (array, amount) => {
+    for (const other of array) {
+      if (this.startsWithAmount(amount, other)) {
+        return other;
+      }
+    }
+    return null;
+  };
+
   checkAmountHasDenom = (array) => {
-    // loop through the array
-    if (array) {
-      for (const item of array) {
-        // if the key is "amount" and the value is only a number
-        if (item?.key === "amount" && /^\d+$/.test(item?.value)) {
-          // store the value as a number
-          const amount = Number(item?.value);
-          // loop through the array again
-          for (const other of array) {
-            // if the key is not "amount" and the value starts with the same number followed by some text
-            if (
-              !!amount &&
-              other?.key !== "amount" &&
-              other?.value.startsWith(amount.toString()) &&
-              other?.value?.length > amount.toString()?.length
-            ) {
-              // return the item and the other item
-              return other;
-            }
-          }
+    if (!array) return null;
+
+    for (const item of array) {
+      if (this.isAmountKey(item)) {
+        const amount = this.parseAmount(item);
+        if (amount) {
+          const match = this.findMatchingItem(array, amount);
+          if (match) return match;
           return item;
         }
       }
-      return null;
     }
-    // if no match is found, return null
     return null;
   };
   sortTransferFirst(inputArray) {
