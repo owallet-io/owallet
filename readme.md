@@ -80,7 +80,7 @@ yarn android
 | rest      | `string`      |   LCD of a blockchain |
 | chainId      | `string`      |   Chain ID |
 | chainName      | `string`      |  Chain Name |
-| networkType      | `string`      |  `Network Type (cosmos || evm): To declare whether the network is Cosmos-based or Ethereum Virtual Machine (EVM)-based`  |
+| networkType      | `string`      |  Network Type `("cosmos" or "evm")`: To declare whether the network is Cosmos-based or Ethereum Virtual Machine (EVM)-based  |
 | stakeCurrency      | `{coinDenom: string, coinMinimalDenom: string, coinDecimals: number, coinGeckoId: string, coinImageUrl: string, gasPriceStep: { low: number, average: number, high: number}}` | Native stake currency
 | bip44      | `{ coinType: number}`      |  Bip44 config |
 | coinType      | `number`      |   The coin type is usually 118 for Cosmos, 60 for EVM |
