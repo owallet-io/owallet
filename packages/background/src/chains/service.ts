@@ -133,7 +133,7 @@ export class ChainsService {
     chainId: string,
     networkType?: string
   ): Promise<ChainInfoWithEmbed> {
-    var chainInfo: ChainInfoWithEmbed;
+    let chainInfo: ChainInfoWithEmbed;
     if (networkType) {
       chainInfo = (await this.getChainInfos()).find((chainInfo) => {
         if (networkType === "evm") {
