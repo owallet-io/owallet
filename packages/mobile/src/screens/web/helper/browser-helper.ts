@@ -107,7 +107,7 @@ function extractDomainName(url) {
   let domain = null;
   const withoutProtocol = url.replace(/^https?:\/\//, "");
   const withoutPath = withoutProtocol.split("/")[0];
-  let parts = withoutPath.split(".");
+  const parts = withoutPath.split(".");
   if (parts[0] === "www") {
     parts.shift();
   }

@@ -153,7 +153,7 @@ export const formatContractAddress = (address: string, limitFirst = 10) => {
 };
 export const convertArrToObject = (arr, label = `Validator`) => {
   if (!arr?.length) return;
-  let rv = {};
+  const rv = {};
   for (let i = 0; i < arr?.length; ++i) rv[`${label}${i + 1}`] = arr[i];
   return rv;
 };
@@ -202,8 +202,8 @@ export const getValueFromDataEvents = (arr) => {
   if (arr.length === 1) {
     return { value: [arr[0]], typeId: 1 };
   }
-  let result = [];
-  for (let item of arr) {
+  const result = [];
+  for (const item of arr) {
     // if any element has amountValue, push it to the result array
     if (item?.transferInfo.some((data) => data?.amount)) {
       result.push(item);
@@ -257,7 +257,7 @@ export const maskedNumber = (
 const countAmountValue = (array) => {
   let count = 0;
   if (array && array?.length > 0) {
-    for (let element of array) {
+    for (const element of array) {
       if (element?.amountValue) {
         count++;
       }
@@ -310,10 +310,10 @@ export const openLink = async (url) => {
 };
 
 export function parseObjectToQueryString(obj) {
-  let params = new URLSearchParams();
-  for (let key in obj) {
+  const params = new URLSearchParams();
+  for (const key in obj) {
     if (Array.isArray(obj[key])) {
-      for (let value of obj[key]) {
+      for (const value of obj[key]) {
         params.append(key, value);
       }
     } else {
@@ -509,12 +509,12 @@ export const getTxTypeNew = (type, rawLog = "[]", result = "") => {
     const typeArr = type.split(".");
     let typeMsg = typeArr?.[typeArr?.length - 1];
     if (typeMsg === "MsgExecuteContract" && result === "Success") {
-      let rawLogArr = JSON.parse(rawLog);
-      for (let event of rawLogArr?.[0].events) {
+      const rawLogArr = JSON.parse(rawLog);
+      for (const event of rawLogArr?.[0].events) {
         if (event?.["type"] === "wasm") {
-          for (let att of event?.["attributes"]) {
+          for (const att of event?.["attributes"]) {
             if (att?.["key"] === "action") {
-              let attValue = att?.["value"]
+              const attValue = att?.["value"]
                 .split("_")
                 .map((word) => word?.charAt(0).toUpperCase() + word?.slice(1))
                 .join("");
@@ -576,7 +576,7 @@ export function nFormatter(num, digits: 1) {
     { value: 1e18, symbol: "E" },
   ];
   const rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
-  var item = lookup
+  const item = lookup
     .slice()
     .reverse()
     .find(function (item) {
@@ -804,7 +804,7 @@ export const computeTotalVotingPower = (data) => {
   }
 
   let total = 0;
-  for (let item of data) {
+  for (const item of data) {
     total += parseFloat(item?.voting_power ?? 0) || 0;
   }
   return total;

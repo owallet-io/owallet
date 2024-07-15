@@ -289,7 +289,7 @@ const typeColorsTheme = () => modeColors;
 type TypeTheme = { [P in keyof ReturnType<typeof typeColorsTheme>]: string };
 
 const handleMode = (isDark): TypeTheme => {
-  let data: any = {};
+  const data: any = {};
   if (isDark) {
     for (const property in modeColors) {
       data[property] = modeColors[property][0];

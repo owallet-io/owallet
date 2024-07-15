@@ -57,11 +57,11 @@ export class TxsHelper {
   checkZeros(input) {
     if (!input) return false;
     // Find the position of the decimal point
-    let dotIndex = input.indexOf(".");
+    const dotIndex = input.indexOf(".");
     // Check if the input has a decimal point
     if (dotIndex !== -1) {
       // Get the part after the decimal point
-      let fraction = input.slice(dotIndex + 1);
+      const fraction = input.slice(dotIndex + 1);
       // Check if the fraction is all zeros
       if (fraction === "0".repeat(fraction.length)) {
         // Return true if the fraction is all zeros
@@ -139,13 +139,13 @@ export class TxsHelper {
   formatTime(timestamp): timeTxs {
     if (timestamp) {
       // Create a moment object from the timestamp
-      var myMoment = moment.unix(timestamp);
+      const myMoment = moment.unix(timestamp);
 
       // Format the moment object using tokens
-      var formatted = myMoment.format("YYYY-MM-DD HH:mm:ss");
+      const formatted = myMoment.format("YYYY-MM-DD HH:mm:ss");
 
       // Get the relative time from the moment object to now
-      var relative = this.capitalizeFirstLetter(myMoment.fromNow());
+      const relative = this.capitalizeFirstLetter(myMoment.fromNow());
 
       // Combine the formatted and relative strings
       return {
@@ -166,13 +166,13 @@ export class TxsHelper {
   formatTimeTron(timestamp): timeTxs {
     if (timestamp) {
       // Create a moment object from the timestamp
-      var myMoment = moment(timestamp);
+      const myMoment = moment(timestamp);
 
       // Format the moment object using tokens
-      var formatted = myMoment.format("YYYY-MM-DD HH:mm:ss");
+      const formatted = myMoment.format("YYYY-MM-DD HH:mm:ss");
 
       // Get the relative time from the moment object to now
-      var relative = this.capitalizeFirstLetter(myMoment.fromNow());
+      const relative = this.capitalizeFirstLetter(myMoment.fromNow());
 
       // Combine the formatted and relative strings
       return {
@@ -193,13 +193,13 @@ export class TxsHelper {
   formatTimeBitcoin(time): timeTxs {
     if (time) {
       // Create a moment object from the timestamp
-      var myMoment = moment(time);
+      const myMoment = moment(time);
 
       // Format the moment object using tokens
-      var formatted = myMoment.format("YYYY-MM-DD HH:mm:ss");
+      const formatted = myMoment.format("YYYY-MM-DD HH:mm:ss");
 
       // Get the relative time from the moment object to now
-      var relative = this.capitalizeFirstLetter(myMoment.fromNow());
+      const relative = this.capitalizeFirstLetter(myMoment.fromNow());
 
       // Combine the formatted and relative strings
       return {
@@ -222,7 +222,7 @@ export class TxsHelper {
   }
   getFunctionName(input: string): string {
     // Split the input string by "(" and get the first element of the array
-    let output = input && input.split("(")[0];
+    const output = input && input.split("(")[0];
     // Return the output string
     return output;
   }
@@ -232,9 +232,9 @@ export class TxsHelper {
       return input;
     }
     // Get the first character of the input and convert it to uppercase
-    let firstChar = input.charAt(0).toUpperCase();
+    const firstChar = input.charAt(0).toUpperCase();
     // Get the rest of the input and convert it to lowercase
-    let rest = input.slice(1).toLowerCase();
+    const rest = input.slice(1).toLowerCase();
     // Return the concatenated string
     return firstChar + rest;
   }
@@ -251,7 +251,7 @@ export class TxsHelper {
     if (str.indexOf("_") !== -1) {
       return this.capitalizedWords(str, "_");
     } else if (str.indexOf(".") !== -1) {
-      let splitCapitalize = str.split(".");
+      const splitCapitalize = str.split(".");
       return this.convertVarCapitalizeToWord(
         splitCapitalize[splitCapitalize?.length - 1]
       );
@@ -340,7 +340,7 @@ export class TxsHelper {
     currentChain: ChainInfoInner<ChainInfo>,
     addressAccount: string
   ): Partial<TransferDetail>[] {
-    let transferItem: Partial<TransferDetail> = {};
+    const transferItem: Partial<TransferDetail> = {};
     const isMinus = data?.from?.toLowerCase() == addressAccount?.toLowerCase();
     const isPlus = data?.to?.toLowerCase() == addressAccount?.toLowerCase();
     transferItem.typeEvent = data?.functionName
@@ -379,17 +379,17 @@ export class TxsHelper {
     currentChain: ChainInfoInner<ChainInfo>,
     addressAccount: string
   ): Partial<TransferDetail>[] {
-    let transferItem: Partial<TransferDetail> = {};
+    const transferItem: Partial<TransferDetail> = {};
     transferItem.transferInfo = [];
 
-    let transferItemIn: Partial<TransferDetail> = {};
+    const transferItemIn: Partial<TransferDetail> = {};
     transferItemIn.transferInfo = [];
     if (data?.vin?.length > 0 && data?.vout?.length > 0) {
       const found = data.vin.some(
         (item) => item.prevout.scriptpubkey_address === addressAccount
       );
       if (found) {
-        let arrVoutFilter = data.vout.filter(
+        const arrVoutFilter = data.vout.filter(
           (item) => item.scriptpubkey_address !== addressAccount
         );
         const totalBalance = arrVoutFilter.reduce((total, data) => {
@@ -404,7 +404,7 @@ export class TxsHelper {
           isMinus: true,
         });
       } else {
-        let arrVoutFilter = data.vout.filter(
+        const arrVoutFilter = data.vout.filter(
           (item) => item.scriptpubkey_address === addressAccount
         );
         const totalBalance = arrVoutFilter.reduce((total, data) => {
@@ -428,7 +428,7 @@ export class TxsHelper {
     currentChain: ChainInfoInner<ChainInfo>,
     addressAccount: string
   ): Partial<ResTxsInfo> {
-    let item: Partial<ResTxsInfo> = {};
+    const item: Partial<ResTxsInfo> = {};
     item.fee = this.removeZeroNumberLast(
       this.formatNumberSeparateThousand(
         this.calculateTransactionFee(
@@ -461,7 +461,7 @@ export class TxsHelper {
     currentChain: ChainInfoInner<ChainInfo>,
     addressAccount: string
   ): Partial<ResTxsInfo> {
-    let item: Partial<ResTxsInfo> = {};
+    const item: Partial<ResTxsInfo> = {};
     item.fee = formatBalance({
       balance: Number(data.fee),
       cryptoUnit: "BTC",
@@ -495,7 +495,7 @@ export class TxsHelper {
     currentChain: ChainInfoInner<ChainInfo>,
     addressAccount: string
   ): Partial<ResTxsInfo>[] {
-    let dataConverted: Partial<ResTxsInfo>[] = [];
+    const dataConverted: Partial<ResTxsInfo>[] = [];
     if (data && data?.length > 0) {
       for (let i = 0; i < data.length; i++) {
         let item: Partial<ResTxsInfo>;
@@ -527,7 +527,7 @@ export class TxsHelper {
     currentChain: ChainInfoInner<ChainInfo>,
     addressAccount: string
   ): Partial<ResTxsInfo>[] {
-    let dataConverted: Partial<ResTxsInfo>[] = [];
+    const dataConverted: Partial<ResTxsInfo>[] = [];
     if (data && data?.length > 0) {
       for (let i = 0; i < data.length; i++) {
         let item: Partial<ResTxsInfo>;
@@ -542,7 +542,7 @@ export class TxsHelper {
     data: ResultEthAndBscByToken,
     addressAccount: string
   ): Partial<TransferDetail>[] {
-    let transferItem: Partial<TransferDetail> = {};
+    const transferItem: Partial<TransferDetail> = {};
     const isMinus = data?.from?.toLowerCase() == addressAccount?.toLowerCase();
     const isPlus = data?.to?.toLowerCase() == addressAccount?.toLowerCase();
     transferItem.typeEvent =
@@ -577,7 +577,7 @@ export class TxsHelper {
     currentChain: ChainInfoInner<ChainInfo>,
     addressAccount: string
   ): Partial<ResTxsInfo> {
-    let item: Partial<ResTxsInfo> = {};
+    const item: Partial<ResTxsInfo> = {};
     item.fee = this.removeZeroNumberLast(
       this.formatNumberSeparateThousand(
         this.calculateTransactionFee(
@@ -608,7 +608,7 @@ export class TxsHelper {
     currentChain: ChainInfoInner<ChainInfo>,
     addressAccount: string
   ): Partial<ResTxsInfo>[] {
-    let dataConverted: Partial<ResTxsInfo>[] = [];
+    const dataConverted: Partial<ResTxsInfo>[] = [];
     if (data && data?.length > 0) {
       for (let i = 0; i < data.length; i++) {
         let item: Partial<ResTxsInfo>;
@@ -654,13 +654,13 @@ export class TxsHelper {
   checkAmountHasDenom = (array) => {
     // loop through the array
     if (array) {
-      for (let item of array) {
+      for (const item of array) {
         // if the key is "amount" and the value is only a number
         if (item?.key === "amount" && /^\d+$/.test(item?.value)) {
           // store the value as a number
-          let amount = Number(item?.value);
+          const amount = Number(item?.value);
           // loop through the array again
-          for (let other of array) {
+          for (const other of array) {
             // if the key is not "amount" and the value starts with the same number followed by some text
             if (
               !!amount &&
@@ -708,7 +708,7 @@ export class TxsHelper {
         const attributes = item?.events[0]?.attributes;
         const sortedAttributes = [];
         const keys = ["sender", "recipient", "amount"];
-        for (let key of keys) {
+        for (const key of keys) {
           const foundAttribute = attributes.find(
             (attr) => attr?.key && attr?.key?.toLowerCase()?.trim() == key
           );
@@ -724,7 +724,7 @@ export class TxsHelper {
   }
   convertStringToVar = (string) => {
     // split the string by uppercase letters
-    let words = string.split(/(?=[A-Z])/);
+    const words = string.split(/(?=[A-Z])/);
     // remove the first word "Msg"
     words.shift();
     // join the words with underscore and lowercase them
@@ -806,7 +806,7 @@ export class TxsHelper {
   checkDuplicateAmount = (array) => {
     let count = 0;
 
-    for (let element of array) {
+    for (const element of array) {
       if (element.key === "amount") {
         count++;
       }
@@ -935,7 +935,7 @@ export class TxsHelper {
     return timestamp;
   }
   convertFormatArrayTransfer = (array) => {
-    let newArray = [];
+    const newArray = [];
 
     let tempObject: {
       amountData?: string;
@@ -943,7 +943,7 @@ export class TxsHelper {
       to?: string;
     } = {};
 
-    for (let element of array) {
+    for (const element of array) {
       if (element.key === "amount") {
         tempObject["amountData"] = element.value;
       } else if (element.key === "sender") {
@@ -965,8 +965,8 @@ export class TxsHelper {
     currentChain: ChainInfoInner<ChainInfo>,
     addressAccount: string
   ): Partial<ResTxsInfo> {
-    let item: Partial<ResTxsInfo> = {};
-    let dataEvents = [];
+    const item: Partial<ResTxsInfo> = {};
+    const dataEvents = [];
     item.status = data?.code === 0 ? "success" : "fail";
     item.txHash = data?.txhash;
     item.fee = this.removeZeroNumberLast(
@@ -995,7 +995,7 @@ export class TxsHelper {
           this.sortTransferFirst(this.filterEventsNotUse(logs))
         );
         logs.forEach((itemLog) => {
-          let itemDataTransferDetail = this.handleItemRawLogCosmos(
+          const itemDataTransferDetail = this.handleItemRawLogCosmos(
             itemLog,
             addressAccount,
             currentChain
@@ -1037,7 +1037,7 @@ export class TxsHelper {
     currentChain: ChainInfoInner<ChainInfo>,
     addressAccount: string
   ): Partial<ResTxsInfo>[] {
-    let dataConverted: Partial<ResTxsInfo>[] = [];
+    const dataConverted: Partial<ResTxsInfo>[] = [];
     if (tx_responses?.length > 0) {
       for (let i = 0; i < tx_responses.length; i++) {
         let item: Partial<ResTxsInfo>;
@@ -1053,8 +1053,8 @@ export class TxsHelper {
     currentChain: ChainInfoInner<ChainInfo>,
     addressAccount: string
   ): Partial<ResTxsInfo> {
-    let item: Partial<ResTxsInfo> = {};
-    let dataEvents = [];
+    const item: Partial<ResTxsInfo> = {};
+    const dataEvents = [];
     item.status = data?.tx_result?.code === 0 ? "success" : "fail";
     item.txHash = data?.hash;
     item.fee = "0";
@@ -1080,7 +1080,7 @@ export class TxsHelper {
           this.filterEventsNotUse(logs)
         );
         logs.forEach((itemLog) => {
-          let itemDataTransferDetail = this.handleItemRawLogCosmos(
+          const itemDataTransferDetail = this.handleItemRawLogCosmos(
             itemLog,
             addressAccount,
             currentChain
@@ -1098,7 +1098,7 @@ export class TxsHelper {
     currentChain: ChainInfoInner<ChainInfo>,
     addressAccount: string
   ): Partial<ResTxsInfo>[] {
-    let dataConverted: Partial<ResTxsInfo>[] = [];
+    const dataConverted: Partial<ResTxsInfo>[] = [];
     if (txs?.length > 0) {
       for (let i = 0; i < txs.length; i++) {
         let item: Partial<ResTxsInfo>;
@@ -1118,7 +1118,7 @@ export class TxsHelper {
     addressAccount: string,
     currentChain: ChainInfoInner<ChainInfo>
   ): Partial<TransferDetail>[] {
-    let transferItem: Partial<TransferDetail> = {};
+    const transferItem: Partial<TransferDetail> = {};
     const isMinus =
       data?.ownerAddress?.toLowerCase() == addressAccount?.toLowerCase();
     const isPlus =
@@ -1161,7 +1161,7 @@ export class TxsHelper {
     currentChain: ChainInfoInner<ChainInfo>,
     addressAccount: string
   ): Partial<ResTxsInfo> {
-    let item: Partial<ResTxsInfo> = {};
+    const item: Partial<ResTxsInfo> = {};
     item.fee = `${data.cost.fee}`;
     item.height = `${this.formatNumberSeparateThousand(data.block)}`;
     item.denomFee = `${currentChain?.feeCurrencies[0]?.coinDenom?.toUpperCase()}`;
@@ -1190,7 +1190,7 @@ export class TxsHelper {
     currentChain: ChainInfoInner<ChainInfo>,
     addressAccount: string
   ): Partial<ResTxsInfo>[] {
-    let dataConverted: Partial<ResTxsInfo>[] = [];
+    const dataConverted: Partial<ResTxsInfo>[] = [];
     if (data && data?.length > 0) {
       for (let i = 0; i < data.length; i++) {
         let item: Partial<ResTxsInfo>;

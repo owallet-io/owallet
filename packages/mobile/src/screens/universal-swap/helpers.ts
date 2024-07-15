@@ -214,7 +214,7 @@ export const getPairInfo = (
   const pairKey = findKeyByValue(PairAddress, path.poolId);
   const [tokenInKey, tokenOutKey] = pairKey.split("_");
   let infoPair: any = PAIRS_CHART.find((pair) => {
-    let convertedArraySymbols = pair.symbols.map((symbol) =>
+    const convertedArraySymbols = pair.symbols.map((symbol) =>
       symbol.toUpperCase()
     );
     return (

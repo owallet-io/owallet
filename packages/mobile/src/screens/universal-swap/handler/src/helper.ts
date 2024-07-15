@@ -687,10 +687,10 @@ export class UniversalSwapHelper {
       );
 
     const routes = routesSwap.map((route) => {
-      let ops = [];
+      const ops = [];
       let currTokenIn = offerInfo;
-      for (let path of route.paths) {
-        let tokenOut = parseAssetInfoFromContractAddrOrDenom(path.tokenOut);
+      for (const path of route.paths) {
+        const tokenOut = parseAssetInfoFromContractAddrOrDenom(path.tokenOut);
         ops.push({
           orai_swap: {
             offer_asset_info: currTokenIn,
@@ -740,7 +740,7 @@ export class UniversalSwapHelper {
     );
     console.log("operations: ", operations);
     try {
-      let finalAmount = amount;
+      const finalAmount = amount;
       const data = await routerClient.simulateSwapOperations({
         offerAmount: finalAmount,
         operations,

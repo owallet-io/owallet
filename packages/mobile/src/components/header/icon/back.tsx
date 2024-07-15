@@ -40,18 +40,18 @@ export const HeaderBackDownButtonIcon: FunctionComponent<{
       <path
         d="M18.0703 14.43L12.0003 20.5L5.93031 14.43"
         stroke="#8C93A7"
-        stroke-width="1.5"
-        stroke-miterlimit="10"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeMiterlimit="10"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M12 3.50008L12 20.3301"
         stroke="#8C93A7"
-        stroke-width="1.5"
-        stroke-miterlimit="10"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeMiterlimit="10"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </Svg>
   );

@@ -15,7 +15,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useGetHeightHeader } from "@src/hooks/use-height-header";
 import { metrics } from "@src/themes";
 
-interface IUseHeaderOptions extends StackNavigationOptions {}
+type IUseHeaderOptions = StackNavigationOptions;
 const useHeaderOptions = (
   data?: IUseHeaderOptions,
   navigation?: any

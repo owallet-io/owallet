@@ -52,7 +52,7 @@ export const TronTokensCard: FunctionComponent<{
           if (res.data?.data[0].trc20) {
             const tokenArr = [];
             TRC20_LIST.map((tk) => {
-              let token = res.data?.data[0].trc20.find(
+              const token = res.data?.data[0].trc20.find(
                 (t) => tk.contractAddress in t
               );
               if (token) {

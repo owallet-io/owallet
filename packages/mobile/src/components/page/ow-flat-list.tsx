@@ -28,11 +28,7 @@ export const TxSkeleton = () => {
       backgroundColor={colors["neutral-surface-action"]}
       borderRadius={12}
     >
-      <SkeletonPlaceholder.Item
-        width={"100%"}
-        marginVertical={8}
-        height={65}
-      ></SkeletonPlaceholder.Item>
+      <SkeletonPlaceholder.Item width={"100%"} marginVertical={8} height={65} />
     </SkeletonPlaceholder>
   );
 };

@@ -509,7 +509,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     const { evmAddress, tronAddress, cosmosAddress } = getAddresses();
     const isCustomRecipient = sendToAddress && sendToAddress !== "";
 
-    let { amountsBalance, simulateAmount } =
+    const { amountsBalance, simulateAmount } =
       await getBalancesAndSimulateAmount();
     const { tokenFromNetwork, tokenToNetwork } = getTokenNetworks();
 

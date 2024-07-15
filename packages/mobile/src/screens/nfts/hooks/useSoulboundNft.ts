@@ -9,7 +9,7 @@ export const useSoulbound = (
   account,
   rpc
 ): {
-  tokenIds: String[];
+  tokenIds: string[];
   soulboundNft: SoulboundNftInfoResponse[];
   isLoading: boolean;
 } => {
@@ -73,7 +73,7 @@ export const getTokens = async (client, accountAddress) => {
 };
 export const getTokensInfoFromContract = async (client, accountAddress) => {
   const tokens = await getTokens(client, accountAddress);
-  let tokensInfoPromise: Promise<any>[] = [];
+  const tokensInfoPromise: Promise<any>[] = [];
   for (let i = 0; i < tokens.length; i++) {
     const qsContract = await client.queryContractSmart(contractAddress, {
       nft_info: {

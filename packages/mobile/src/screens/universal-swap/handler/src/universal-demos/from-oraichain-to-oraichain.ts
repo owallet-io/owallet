@@ -18,14 +18,14 @@ const oraichainToOraichain = async (chainId: "Oraichain") => {
 
   const sender = await wallet.getKeplrAddr(chainId);
   const fromAmount = 0.01;
-  let originalFromToken = cosmosTokens.find(
+  const originalFromToken = cosmosTokens.find(
     (t) =>
       t.chainId === chainId &&
       t.contractAddress &&
       t.contractAddress === USDT_CONTRACT
   );
 
-  let originalToToken = flattenTokens.find(
+  const originalToToken = flattenTokens.find(
     (t) =>
       t.chainId === chainId &&
       t.contractAddress &&

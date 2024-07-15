@@ -99,7 +99,7 @@ export const SelectNetworkModal: FunctionComponent<{
 
     useEffect(() => {
       if (activeTab === "mainnet") {
-        let tmpChainInfos = [];
+        const tmpChainInfos = [];
         chainStore.chainInfosInUI.map((c) => {
           if (
             !c.chainName.toLowerCase().includes("test") &&
@@ -111,7 +111,7 @@ export const SelectNetworkModal: FunctionComponent<{
 
         setChains(tmpChainInfos);
       } else {
-        let tmpChainInfos = [];
+        const tmpChainInfos = [];
         chainStore.chainInfosInUI.map((c) => {
           if (
             c.chainName.toLowerCase().includes("test") &&

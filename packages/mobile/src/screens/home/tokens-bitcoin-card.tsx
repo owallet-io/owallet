@@ -204,7 +204,7 @@ export const SkeletonNft = () => {
         height={200}
         margin={12}
         marginLeft={0}
-      ></SkeletonPlaceholder.Item>
+      />
     </SkeletonPlaceholder>
   );
 };

@@ -71,7 +71,7 @@ export const SendTronScreen: FunctionComponent = observer(() => {
             tokenName: string;
             type?: string;
           };
-          maxBalance?: Number;
+          maxBalance?: number;
         }
       >,
       string

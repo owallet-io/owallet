@@ -39,7 +39,7 @@ export const AccountCardEVM: FunctionComponent<{
     keyRingStore.keyRingLedgerAddresses,
     false
   );
-  let total: any =
+  const total: any =
     queries.queryBalances.getQueryBech32Address(addressCore)?.stakable;
 
   const queryBalances =

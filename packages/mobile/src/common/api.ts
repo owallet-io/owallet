@@ -36,7 +36,7 @@ export const API = {
     config: AxiosRequestConfig = null
   ) => {
     try {
-      let rpcConfig = {
+      const rpcConfig = {
         method,
         params,
         id: 1,
@@ -58,8 +58,8 @@ export const API = {
   getByLCD: async ({ lcdUrl, prefix, method, params = null }) => {
     try {
       retryWrapper(axios, { retry_time: 3 });
-      let qs = params ? parseObjectToQueryString(params) : "";
-      let url = `${prefix}${method}${qs}`;
+      const qs = params ? parseObjectToQueryString(params) : "";
+      const url = `${prefix}${method}${qs}`;
       console.log(url, "url lcd");
       const rs = await API.get(url, { baseURL: lcdUrl });
       return Promise.resolve(rs?.data);
@@ -318,8 +318,8 @@ export const API = {
   },
 
   getNews: ({ page = 1, limit = 10 }, config: AxiosRequestConfig) => {
-    let url = `api/v1/news/list`;
-    let params = {
+    const url = `api/v1/news/list`;
+    const params = {
       page,
       size: limit,
     };
@@ -327,7 +327,7 @@ export const API = {
   },
 
   getTronAccountInfo: ({ address }, config: AxiosRequestConfig) => {
-    let url = `v1/accounts/${address}`;
+    const url = `v1/accounts/${address}`;
     return API.get(url, config);
   },
 
@@ -342,7 +342,7 @@ export const API = {
       from = moment().subtract(1, "days").unix();
     }
 
-    let url = `/coins/${id}/market_chart/range?vs_currency=usd&from=${from}&to=${to}`;
+    const url = `/coins/${id}/market_chart/range?vs_currency=usd&from=${from}&to=${to}`;
     return API.get(url, config);
   },
   getMarketChart: (
@@ -354,55 +354,55 @@ export const API = {
   },
 
   getCoinInfo: ({ id }: { id: string }, config: AxiosRequestConfig) => {
-    let url = `/coins/markets?vs_currency=usd&ids=${id}&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=24h`;
+    const url = `/coins/markets?vs_currency=usd&ids=${id}&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=24h`;
     return API.get(url, config);
   },
   getCoinSimpleInfo: (
     { id, time }: { id: string; time: string },
     config: AxiosRequestConfig
   ) => {
-    let url = `/coins/markets?vs_currency=usd&ids=${id}&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=${time}`;
+    const url = `/coins/markets?vs_currency=usd&ids=${id}&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=${time}`;
     return API.get(url, config);
   },
 
   getNFTs: ({ address }, config: AxiosRequestConfig) => {
-    let url = `assets?size=12&offset=0&filter=%7B%22accountAddress%22:%22${address}%22,%22nftStatuses%22:[2]%7D&sort=%7B%22updatedAt%22:%22DESC%22%7D`;
+    const url = `assets?size=12&offset=0&filter=%7B%22accountAddress%22:%22${address}%22,%22nftStatuses%22:[2]%7D&sort=%7B%22updatedAt%22:%22DESC%22%7D`;
     return API.get(url, config);
   },
 
   getNFTOwners: ({ token_id }, config: AxiosRequestConfig) => {
-    let url = `assets/${token_id}/owners?size=10&offset=0`;
+    const url = `assets/${token_id}/owners?size=10&offset=0`;
     return API.get(url, config);
   },
   getValidatorList: ({}, config: AxiosRequestConfig) => {
-    let url = `v1/validators?limit=100`;
+    const url = `v1/validators?limit=100`;
     return API.get(url, config);
   },
   getValidatorOraichainDetail: (
     { validatorAddress },
     config: AxiosRequestConfig
   ) => {
-    let url = `v1/validator/${validatorAddress}`;
+    const url = `v1/validator/${validatorAddress}`;
     return API.get(url, config);
   },
   subcribeToTopic: ({ topic, subcriber }, config: AxiosRequestConfig) => {
-    let url = `api/v1/topics`;
+    const url = `api/v1/topics`;
     return API.post(url, { topic, subcriber }, config);
   },
   unsubcribeTopic: ({ topic, subcriber }, config: AxiosRequestConfig) => {
-    let url = `api/v1/topics`;
+    const url = `api/v1/topics`;
     return API.put(url, { topic, subcriber }, config);
   },
   saveTokenInfos: ({ tokesInfos, address }, config: AxiosRequestConfig) => {
-    let url = `account/${address}`;
+    const url = `account/${address}`;
     return API.post(url, { tokens: tokesInfos }, config);
   },
   saveHistory: ({ infos, address }, config: AxiosRequestConfig) => {
-    let url = `history/${address}`;
+    const url = `history/${address}`;
     return API.post(url, { ...infos }, config);
   },
   getYesterdayAssets: ({ address, time }, config: AxiosRequestConfig) => {
-    let url = `account/${address}?time=${time}`;
+    const url = `account/${address}?time=${time}`;
     return API.get(url, config);
   },
   getWalletHistory: (
@@ -509,44 +509,44 @@ export const API = {
     { hash, network = OasisNetwork.MAINNET },
     config: AxiosRequestConfig
   ) => {
-    let url = `raw-tx-history/oasis/tx-detail/${hash}?network=${network}`;
+    const url = `raw-tx-history/oasis/tx-detail/${hash}?network=${network}`;
     return API.get(url, config);
   },
   getDetailCosmosTx: (
     { hash, network = ChainIdEnum.CosmosHub },
     config: AxiosRequestConfig
   ) => {
-    let url = `raw-tx-history/cosmos/tx-detail/${hash}?network=${network}`;
+    const url = `raw-tx-history/cosmos/tx-detail/${hash}?network=${network}`;
     return API.get(url, config) as Promise<AxiosResponse<CosmosItem>>;
   },
   getDetailOraichainTx: async (
     { hash, network = CosmosNetwork.ORAICHAIN },
     config: AxiosRequestConfig
   ) => {
-    let url = `raw-tx-history/oraichain/tx-detail/${hash}`;
+    const url = `raw-tx-history/oraichain/tx-detail/${hash}`;
     return API.get(url, config);
   },
   getDetailTronTx: (
     { hash, network = Network.TRON },
     config: AxiosRequestConfig
   ) => {
-    let url = `raw-tx-history/tron/tx-detail/${hash}`;
+    const url = `raw-tx-history/tron/tx-detail/${hash}`;
     console.log(url, "url");
     return API.get(url, config);
   },
   getHistoryDetail: ({ id }, config: AxiosRequestConfig) => {
-    let url = `history-detail/${id}?`;
+    const url = `history-detail/${id}?`;
     return API.get(url, config);
   },
   getCoingeckoCoins: ({}, config: AxiosRequestConfig) => {
-    let url = `coins/list`;
+    const url = `coins/list`;
     return API.get(url, config);
   },
   getCoingeckoImageURL: (
     { contractAddress, id },
     config: AxiosRequestConfig
   ) => {
-    let url = `coins/${id}/contract/${contractAddress}`;
+    const url = `coins/${id}/contract/${contractAddress}`;
     return API.get(url, config);
   },
 };

@@ -132,8 +132,8 @@ export class UniversalSwapHandler {
     const ibcInfo: IBCInfo = this.getIbcInfo("Oraichain", toChainId);
     const ibcReceiveAddr = await this.getIbcReceiveAddr(toChainId);
 
-    let toTokenInOrai = this.getToTokenOnOraichain(toCoinGeckoId, toChainId);
-    let msgTransfer = this.generateIbcTransferMsgs(
+    const toTokenInOrai = this.getToTokenOnOraichain(toCoinGeckoId, toChainId);
+    const msgTransfer = this.generateIbcTransferMsgs(
       ibcInfo,
       sender,
       toTokenInOrai,
@@ -868,7 +868,7 @@ export class UniversalSwapHandler {
       oraiAddress
     );
 
-    let msgTransfer = MsgTransfer.fromPartial({
+    const msgTransfer = MsgTransfer.fromPartial({
       sourcePort: ibcInfo.source,
       receiver: this.getCwIcs20ContractAddr(),
       sourceChannel: ibcInfo.channel,

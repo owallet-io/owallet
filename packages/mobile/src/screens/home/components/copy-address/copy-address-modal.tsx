@@ -56,7 +56,7 @@ export const CopyAddressModal: FunctionComponent<{
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
-      let accounts = {};
+      const accounts = {};
 
       let defaultEvmAddress;
       if (
@@ -68,7 +68,7 @@ export const CopyAddressModal: FunctionComponent<{
         defaultEvmAddress = accountEth.evmosHexAddress;
       }
       Object.keys(ChainIdEnum).map((key) => {
-        let defaultCosmosAddress = accountStore.getAccount(
+        const defaultCosmosAddress = accountStore.getAccount(
           ChainIdEnum[key]
         ).bech32Address;
 
