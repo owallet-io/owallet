@@ -84,7 +84,7 @@ yarn android
 | stakeCurrency      | `{coinDenom: string, coinMinimalDenom: string, coinDecimals: number, coinGeckoId: string, coinImageUrl: string, gasPriceStep: { low: number, average: number, high: number}}` | Native stake currency
 | bip44      | `{ coinType: number}`      |  Bip44 config |
 | coinType      | `number`      |   The coin type is usually 118 for Cosmos, 60 for EVM |
-| bech32Config      | `Bech32Address.defaultBech32Config("orai")`      |   Config for bech32 address |
+| bech32Config      | `Bech32Address.defaultBech32Config(string)`      |   Config for bech32 address |
 | currencies      | `Array<Currency>`      |   Currencies of the chain |
 | feeCurrencies      | `Array<Currency>`      |   Fee currencies of the chain |
 | features      | `Array<Currency>`      |   To declare what features this chain have`(ex: ["ibc-transfer", "cosmwasm")])` |
@@ -113,10 +113,7 @@ git checkout -b feat/add-new-chain-config
 
 4. Create PR into main
 
-#### If your chain needs to use special packages, please consider taking a look at the 'Packages Usage' section to learn how to implement your chain into OWallet
-
-
-
+#### If your chain needs to use special packages, please consider taking a look at the [CONTRIBUTING.md](Packages Usage) section to learn how to implement your chain into OWallet
 
 ## Example
 ```shell
