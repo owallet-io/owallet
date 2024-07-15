@@ -9,14 +9,14 @@ OWallet is a secure, easy-to-use Web3 crypto wallet that empowers you to manage 
 OWallet is developed based on Keplr extension and currently maintained by Oraichain Labs.
 
 ## OWallet’s key features
- • Strategic Portfolio Management: Experience a seamless multi-chain and multi-account management interface. Conveniently manage multiple accounts from a single interface;
- • Multi-Chain Support: Seamlessly track and manage your crypto assets across multiple blockchains, including Oraichain, Bitcoin, Ethereum, BNB Chain, TRON, Injective, Oasis, Osmosis, Noble, and Stargaze;
- • IBC Transfers: Enable secure and efficient Inter-Blockchain Communication (IBC) transfers;
- • CW20 Tokens: Improved sending and receiving of CW20 standard fungible tokens based on CosmWasm;
- • CosmWasm Compatibility: Compatible with CosmWasm;
- • Ledger Support: Future support for Ledger hardware wallets;
- • Universal Wallet & Swap: Utilize a universal wallet for Bitcoin, EVM, Oraichain, and Cosmos-SDK blockchains. Swap assets seamlessly with the Universal Swap and Smart Routing powered by OBridge Technologies;
- • Mobile and Web Extension: Available on mobile apps and web extensions for greater accessibility.
+ - Strategic Portfolio Management: Experience a seamless multi-chain and multi-account management interface. Conveniently manage multiple accounts from a single interface;
+ - Multi-Chain Support: Seamlessly track and manage your crypto assets across multiple blockchains, including Oraichain, Bitcoin, Ethereum, BNB Chain, TRON, Injective, Oasis, Osmosis, Noble, and Stargaze;
+ - IBC Transfers: Enable secure and efficient Inter-Blockchain Communication (IBC) transfers;
+ - CW20 Tokens: Improved sending and receiving of CW20 standard fungible tokens based on CosmWasm;
+ - CosmWasm Compatibility: Compatible with CosmWasm;
+ - Ledger Support: Future support for Ledger hardware wallets;
+ - Universal Wallet & Swap: Utilize a universal wallet for Bitcoin, EVM, Oraichain, and Cosmos-SDK blockchains. Swap assets seamlessly with the Universal Swap and Smart Routing powered by OBridge Technologies;
+ - Mobile and Web Extension: Available on mobile apps and web extensions for greater accessibility.
 
 
 ## Technical inquiries
