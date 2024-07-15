@@ -88,11 +88,33 @@ yarn android
 | currencies      | `Array<Currency>`      |   Currencies of the chain |
 | feeCurrencies      | `Array<Currency>`      |   Fee currencies of the chain |
 | features      | `Array<Currency>`      |   To declare what features this chain have`(ex: ["ibc-transfer", "cosmwasm")])` |
-| chainSymbolImageUrl      | `string`      |   Chain Symbol Image Url |
+| chainSymbolImageUrl      | `string`      |   Chain symbol image URL |
 | txExplorer      | `{name: string, txUrl: string, accountUrl: string}` |   Transaction explorer config |
 
 
 ## How to add a chain into OWallet?
+1. Clone this repo to desired directory
+
+```shell
+git clone https://github.com/oraichain/owallet
+```
+
+2. Checkout to main
+
+```shell
+git checkout main
+```
+
+3. Checkout to new branch
+
+```shell
+git checkout -b feat/add-new-chain-config
+```
+
+4. Create PR into main
+
+- If your chain needs to use special packages, please consider taking a look at the 'Packages Usage' section to learn how to implement your chain into OWallet
+
 
 ## Example
 ```shell
