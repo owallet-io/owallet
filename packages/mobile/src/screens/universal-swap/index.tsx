@@ -256,15 +256,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           .toNumber()
       : 0;
 
-  console.log("bridgeTokenFee", bridgeTokenFee);
-
   const estSwapFee = new BigDecimal(simulateDisplayAmount || 0)
     .mul(fee || 0)
     .toNumber();
-
-  console.log("estSwapFee", estSwapFee);
-
-  console.log("relayerFeeAmount", relayerFeeAmount);
 
   const totalFeeEst =
     new BigDecimal(bridgeTokenFee || 0)
@@ -419,7 +413,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
     let amountsBalance = universalSwapStore.getAmount;
 
-    // something wrong here
     let simulateAmount = simulateData.amount;
 
     const { isSpecialFromCoingecko } = getSpecialCoingecko(
@@ -511,8 +504,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             recipientAddress: sendToAddress,
           }
         : universalSwapData;
-
-      console.log("compileSwapData", compileSwapData);
 
       const universalSwapHandler = new UniversalSwapHandler(
         {
