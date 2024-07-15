@@ -504,32 +504,41 @@ export function addTimeProperty(array1, array2) {
   return array2;
 }
 
-export const getTxTypeNew = (type, rawLog = "[]", result = "") => {
-  if (type) {
-    const typeArr = type.split(".");
-    let typeMsg = typeArr?.[typeArr?.length - 1];
-    if (typeMsg === "MsgExecuteContract" && result === "Success") {
-      const rawLogArr = JSON.parse(rawLog);
-      for (const event of rawLogArr?.[0].events) {
-        if (event?.["type"] === "wasm") {
-          for (const att of event?.["attributes"]) {
-            if (att?.["key"] === "action") {
-              const attValue = att?.["value"]
-                .split("_")
-                .map((word) => word?.charAt(0).toUpperCase() + word?.slice(1))
-                .join("");
-              typeMsg += "/" + attValue;
-              break;
-            }
-          }
+const parseType = (type) => {
+  const typeArr = type.split(".");
+  return typeArr[typeArr.length - 1];
+};
 
-          break;
+const extractActionValue = (rawLog) => {
+  const rawLogArr = JSON.parse(rawLog);
+  for (const event of rawLogArr?.[0].events) {
+    if (event?.type === "wasm") {
+      for (const att of event?.attributes) {
+        if (att?.key === "action") {
+          return att?.value
+            .split("_")
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join("");
         }
       }
     }
-    return typeMsg;
   }
-  return "Msg";
+  return null;
+};
+
+export const getTxTypeNew = (type, rawLog = "[]", result = "") => {
+  if (!type) return "Msg";
+
+  let typeMsg = parseType(type);
+
+  if (typeMsg === "MsgExecuteContract" && result === "Success") {
+    const actionValue = extractActionValue(rawLog);
+    if (actionValue) {
+      typeMsg += "/" + actionValue;
+    }
+  }
+
+  return typeMsg;
 };
 
 export const parseIbcMsgTransfer = (
