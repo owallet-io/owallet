@@ -4,20 +4,26 @@
 [![Twitter: OWallet](https://img.shields.io/twitter/follow/oraichain.svg?style=social)](https://twitter.com/oraichain)
 
 ## OWallet: Cosmos x EVM in one Wallet
-OWallet supports both Cosmos-based and EVM-based networks including Cosmos Hub, Oraichain, Osmosis, Juno, Ethereum, BSC, and more.
+OWallet is a secure, easy-to-use Web3 crypto wallet that empowers you to manage your digital assets with ease. OWallet supports both Cosmos-based and EVM-based networks, including Cosmos Hub, TRON, Oraichain, Osmosis, Ethereum, BNB Chain, and more.
+
 OWallet is developed based on Keplr extension and currently maintained by Oraichain Labs.
 
 ## OWallet’s key features
-- Support Cosmos-based and EVM-based networks
-- Enable IBC transfer
-- Improved sending and receiving of CW20 (standard fungible tokens based on Cosmwasm)
-- Compatible with Cosmwasm v1
+ • Strategic Portfolio Management: Experience a seamless multi-chain and multi-account management interface. Conveniently manage multiple accounts from a single interface;
+ • Multi-Chain Support: Seamlessly track and manage your crypto assets across multiple blockchains, including Oraichain, Bitcoin, Ethereum, BNB Chain, TRON, Injective, Oasis, Osmosis, Noble, and Stargaze;
+ • IBC Transfers: Enable secure and efficient Inter-Blockchain Communication (IBC) transfers;
+ • CW20 Tokens: Improved sending and receiving of CW20 standard fungible tokens based on CosmWasm;
+ • CosmWasm Compatibility: Compatible with CosmWasm;
+ • Ledger Support: Future support for Ledger hardware wallets;
+ • Universal Wallet & Swap: Utilize a universal wallet for Bitcoin, EVM, Oraichain, and Cosmos-SDK blockchains. Swap assets seamlessly with the Universal Swap and Smart Routing powered by OBridge Technologies;
+ • Mobile and Web Extension: Available on mobile apps and web extensions for greater accessibility.
+
 
 ## Technical inquiries
 - OWallet source code: https://github.com/oraichain/owallet
 - Support ticket: https://orai.io/support
 - OWallet website: https://owallet.dev
-- Discord https://discord.gg/JNyFnU789b
+- Discord https://discord.gg/XdTVgzKc
 - You can create a pull request to add your network
 
 ## Install
@@ -30,21 +36,23 @@ git clone https://github.com/oraichain/owallet
 2. Install required packages
 
 ```shell
-yarn bootstrap
+yarn
 ```
 
-3. Clone packages/background
-
-```shell
-git submodule add --force https://github.com/oraichain/owallet-background.git packages/background
-```
-
-4. Build it
+3. Build necessary packages
 
 ```shell
 yarn build 
 or
 yarn build:libs
+```
+
+4. Install Pod for iOS
+
+```shell
+cd packages/mobile/ios 
+then
+pod install
 ```
 
 ## Contributing
