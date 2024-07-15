@@ -57,13 +57,13 @@ pod install
 
 5. Run it
 
-Get into mobile and run
-## iOS
+Get into packages/mobile and run
+- iOS
 ```shell
 yarn ios
 ```
 
-## Android
+- Android
 ```shell
 yarn android
 ```
