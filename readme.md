@@ -55,6 +55,19 @@ then
 pod install
 ```
 
+5. Run it
+
+Get into mobile and run
+## iOS
+```shell
+yarn ios
+```
+
+## Android
+```shell
+yarn android
+```
+
 ## Contributing
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
 
