@@ -42,8 +42,6 @@ yarn
 3. Build necessary packages
 
 ```shell
-yarn build 
-or
 yarn build:libs
 ```
 
