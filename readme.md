@@ -76,13 +76,21 @@ yarn android
 
 | Property        | Type           | Function  |
 | ------------- |:-------------:| -----:|
-| rpc      | string | RPC of a blockchain |
-| rest      | string      |   LCD of a blockchain |
-| chainId      | string      |   Chain ID |
-| chainName      | string      |  Chain Name |
-| networkType      | `cosmos || evm`      |  `Network Type (cosmos || evm): To declare whether the network is Cosmos-based or Ethereum Virtual Machine (EVM)-based`  |
+| rpc      | `string` | RPC of a blockchain |
+| rest      | `string`      |   LCD of a blockchain |
+| chainId      | `string`      |   Chain ID |
+| chainName      | `string`      |  Chain Name |
+| networkType      | `string`      |  `Network Type (cosmos || evm): To declare whether the network is Cosmos-based or Ethereum Virtual Machine (EVM)-based`  |
 | stakeCurrency      | `{coinDenom: string, coinMinimalDenom: string, coinDecimals: number, coinGeckoId: string, coinImageUrl: string, gasPriceStep: { low: number, average: number, high: number}}` | Native stake currency
-| bip44      | { coinType: number,}      |   Chain ID |
+| bip44      | `{ coinType: number}`      |  Bip44 config |
+| coinType      | `number`      |   The coin type is usually 118 for Cosmos, 60 for EVM |
+| bech32Config      | `Bech32Address.defaultBech32Config("orai")`      |   Config for bech32 address |
+| currencies      | `Array<Currency>`      |   Currencies of the chain |
+| feeCurrencies      | `Array<Currency>`      |   Fee currencies of the chain |
+| features      | `Array<Currency>`      |   To declare what features this chain have`(ex: ["ibc-transfer", "cosmwasm")])` |
+| chainSymbolImageUrl      | `string`      |   Chain Symbol Image Url |
+| txExplorer      | `{name: string, txUrl: string, accountUrl: string}` |   Transaction explorer config |
+
 
 ## How to add a chain into OWallet?
 
