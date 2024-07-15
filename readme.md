@@ -113,7 +113,9 @@ git checkout -b feat/add-new-chain-config
 
 4. Create PR into main
 
-`If your chain needs to use special packages, please consider taking a look at the 'Packages Usage' section to learn how to implement your chain into OWallet`
+#### If your chain needs to use special packages, please consider taking a look at the 'Packages Usage' section to learn how to implement your chain into OWallet
+
+
 
 
 ## Example
