@@ -153,8 +153,8 @@ export const formatContractAddress = (address: string, limitFirst = 10) => {
 };
 export const convertArrToObject = (arr, label = `Validator`) => {
   if (!arr?.length) return;
-  var rv = {};
-  for (var i = 0; i < arr?.length; ++i) rv[`${label}${i + 1}`] = arr[i];
+  let rv = {};
+  for (let i = 0; i < arr?.length; ++i) rv[`${label}${i + 1}`] = arr[i];
   return rv;
 };
 export const removeDataInParentheses = (inputString: string): string => {
@@ -325,13 +325,6 @@ export function removeEmptyElements(array) {
 
 export function formarPriceWithDigits(amount, numOfDigits = 2) {
   return Number(amount).toFixed(numOfDigits);
-}
-
-function convertVarToWord(str) {
-  const words = str && str.split("_");
-  const capitalizedWords =
-    words && words.map((word) => word.charAt(0).toUpperCase() + word.slice(1));
-  return capitalizedWords && capitalizedWords.join(" ");
 }
 
 export function removeSpecialChars(str) {
@@ -572,7 +565,7 @@ export function nFormatter(num, digits: 1) {
     { value: 1e18, symbol: "E" },
   ];
   const rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
-  var item = lookup
+  const item = lookup
     .slice()
     .reverse()
     .find(function (item) {
