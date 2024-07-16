@@ -1,10 +1,6 @@
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import React, { FC } from "react";
-import {
-  formatContractAddress,
-  MapNetworkToChainId,
-  maskedNumber,
-} from "@src/utils/helper";
+import { formatContractAddress, maskedNumber } from "@src/utils/helper";
 import { useTheme } from "@src/themes/theme-provider";
 
 import { observer } from "mobx-react-lite";
@@ -17,23 +13,8 @@ import { navigate } from "@src/router/root";
 import { getTimeMilliSeconds, SCREENS } from "@src/common/constants";
 import { RightArrowIcon } from "@src/components/icon";
 import { useStore } from "@src/stores";
-import { CosmosItem } from "@src/screens/transactions/cosmos/types";
-import { unknownToken } from "@owallet/common";
-import get from "lodash/get";
-import { AllNetworkItemTx } from "@src/screens/transactions/all-network/all-network.types";
-
-const getCurrencyImage = (currency) => {
-  return currency?.coinImageUrl?.includes("missing.png") ||
-    !currency?.coinImageUrl
-    ? unknownToken.coinImageUrl
-    : currency?.coinImageUrl;
-};
-
-const getTintColor = (coinDenom, denom, colors) => {
-  return coinDenom === "ORAI" && (denom === "ORAI" || denom === "AIRI")
-    ? colors["neutral-text-title"]
-    : null;
-};
+import { unknownToken, MapNetworkToChainId } from "@owallet/common";
+import { AllNetworkItemTx } from "@owallet/types";
 
 export const AllNetworkTxItem: FC<{
   item: AllNetworkItemTx;
@@ -119,12 +100,19 @@ export const AllNetworkTxItem: FC<{
             <OWIcon
               type="images"
               source={{
-                uri: getCurrencyImage(currency),
+                uri:
+                  currency?.coinImageUrl?.includes("missing.png") ||
+                  !currency?.coinImageUrl
+                    ? unknownToken.coinImageUrl
+                    : currency?.coinImageUrl,
               }}
               size={32}
               style={{
                 borderRadius: 999,
-                tintColor: getTintColor(coinDenom, denom, colors),
+                tintColor:
+                  coinDenom === "ORAI" && (denom === "ORAI" || denom === "AIRI")
+                    ? colors["neutral-text-title"]
+                    : null,
               }}
             />
           </View>

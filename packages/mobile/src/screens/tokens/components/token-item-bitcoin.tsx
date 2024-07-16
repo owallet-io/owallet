@@ -37,7 +37,7 @@ export const TokenItemBitcoin: FunctionComponent<TokenItemBitcoinProps> = ({
   // The IBC currency could have long denom (with the origin chain/channel information).
   // Because it is shown in the title, there is no need to show such long denom twice in the actual balance.
 
-  const name = balance?.currency?.coinDenom;
+  let name = balance?.currency?.coinDenom;
 
   const amountBalance = useMemo(() => {
     const amount = formatBalance({

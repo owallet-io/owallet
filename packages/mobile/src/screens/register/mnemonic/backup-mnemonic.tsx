@@ -77,7 +77,7 @@ export const BackupMnemonicScreen: FunctionComponent = observer((props) => {
               paddingRight: 20,
               paddingTop: 32,
             }}
-          />
+          ></View>
           {privateDataType === "mnemonic" ? (
             <WordsCard words={words} />
           ) : (

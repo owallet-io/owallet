@@ -9,7 +9,7 @@ import { useStore } from "../../stores";
 import CheckBox from "react-native-check-box";
 import { AppCurrency, CW20Currency, Secret20Currency } from "@owallet/types";
 import { observer } from "mobx-react-lite";
-import { MapChainIdToNetwork, showToast } from "@src/utils/helper";
+import { showToast } from "@src/utils/helper";
 import { API } from "@src/common/api";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import { OWButton } from "@src/components/button";
@@ -20,7 +20,7 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { useTheme } from "@src/themes/theme-provider";
 import { DownArrowIcon } from "@src/components/icon";
 import { SelectTokenTypeModal } from "./select-token-type";
-import { unknownToken } from "@owallet/common";
+import { unknownToken, MapChainIdToNetwork } from "@owallet/common";
 import ByteBrew from "react-native-bytebrew-sdk";
 
 interface FormData {
@@ -45,8 +45,7 @@ interface TokenType {
 
 export const AddTokenCosmosScreen: FunctionComponent<{
   _onPressNetworkModal: Function;
-  selectedChain: any;
-}> = observer(({ _onPressNetworkModal, selectedChain }) => {
+}> = observer(({ _onPressNetworkModal }) => {
   const {
     control,
     handleSubmit,
@@ -66,8 +65,9 @@ export const AddTokenCosmosScreen: FunctionComponent<{
     appInitStore,
     modalStore,
   } = useStore();
+  const selectedChain = chainStore.current;
   const tokensOf = tokensStore.getTokensOf(selectedChain.chainId);
-  const chainInfo = chainStore.getChain(selectedChain.chainId);
+
   const [loading, setLoading] = useState(false);
   const [coingeckoId, setCoingeckoID] = useState(null);
   const [selectedType, setSelectedType] = useState<"cw20">("cw20");
@@ -222,7 +222,6 @@ export const AddTokenCosmosScreen: FunctionComponent<{
           coinImageUrl: coingeckoImg || unknownToken.coinImageUrl,
           coinGeckoId: coingeckoId,
         };
-        console.log(currency, "currency");
         await tokensOf.addToken(currency);
         addTokenSuccess(currency);
       }

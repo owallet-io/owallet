@@ -8,7 +8,7 @@ import React from "react";
 import { Text } from "@src/components/text";
 import { colors } from "@src/themes";
 import OWIcon from "@src/components/ow-icon/ow-icon";
-export type IItemBtnViewOnScan = TouchableOpacityProps;
+export interface IItemBtnViewOnScan extends TouchableOpacityProps {}
 const ItemBtnViewOnScan = (props: TouchableOpacityProps) => {
   return (
     <TouchableOpacity {...props}>

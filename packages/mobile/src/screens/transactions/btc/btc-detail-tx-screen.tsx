@@ -10,9 +10,7 @@ import { metrics } from "@src/themes";
 import { ScrollView } from "react-native-gesture-handler";
 import { API } from "@src/common/api";
 import {
-  capitalizedText,
   formatContractAddress,
-  MapNetworkToChainId,
   maskedNumber,
   openLink,
   shortenAddress,
@@ -23,7 +21,7 @@ import { HeaderTx } from "@src/screens/tx-result/components/header-tx";
 import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
 import { Text } from "@src/components/text";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
-import { ChainIdEnum, isMilliseconds, TRON_ID } from "@owallet/common";
+import { MapNetworkToChainId } from "@owallet/common";
 import { AddressTransaction, Network } from "@tatumio/tatum";
 import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
 import { OwLoading } from "@src/components/owallet-loading/ow-loading";
@@ -32,7 +30,7 @@ import { Currency } from "@owallet/types";
 
 import { getTimeMilliSeconds, urlTxHistory } from "@src/common/constants";
 import { OWEmpty } from "@src/components/empty";
-import { AllNetworkItemTx } from "@src/screens/transactions/all-network/all-network.types";
+import { AllNetworkItemTx } from "@owallet/types";
 
 export const BtcDetailTx: FunctionComponent = observer((props) => {
   const { chainStore, priceStore } = useStore();
@@ -67,7 +65,6 @@ export const BtcDetailTx: FunctionComponent = observer((props) => {
           baseURL: urlTxHistory,
         }
       );
-      console.log(res.data, "res data");
       if (res && res.status !== 200) throw Error("Failed");
       setDetail(res.data);
       setLoading(false);
@@ -96,7 +93,6 @@ export const BtcDetailTx: FunctionComponent = observer((props) => {
   const handleOnExplorer = async () => {
     if (chainInfo.raw.txExplorer && detail.hash) {
       const url = handleUrl(detail.hash);
-      console.log(url, "url");
       await openLink(url);
     }
   };

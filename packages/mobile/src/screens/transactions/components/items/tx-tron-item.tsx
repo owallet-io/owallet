@@ -24,7 +24,6 @@ export const TxTronItem: FC<{
   const { priceStore, chainStore } = useStore();
   const fiat = priceStore.defaultVsCurrency;
   if (!item) return;
-  console.log(item, "item");
   let currency = unknownToken;
 
   if (get(item, "tokenInfo.coinDenom") === "TRX") {
@@ -71,8 +70,7 @@ export const TxTronItem: FC<{
   const method = item.transactionType === "incoming" ? "Received" : "Sent";
   const amountStr = amount.hideDenom(true).trim(true).toString();
   const checkInOut =
-    amountStr !== "0" && item.transactionType === "incoming" ? "+" : "-" ?? "";
-
+    amountStr !== "0" ? (item.transactionType === "incoming" ? "+" : "-") : "";
   return (
     <View style={{ paddingVertical: 8 }}>
       {first != now || index === 0 ? (

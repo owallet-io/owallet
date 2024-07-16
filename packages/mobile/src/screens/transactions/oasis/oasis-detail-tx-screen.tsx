@@ -12,10 +12,8 @@ import { API } from "@src/common/api";
 import {
   capitalizedText,
   formatContractAddress,
-  MapNetworkToChainId,
   maskedNumber,
   openLink,
-  shortenAddress,
 } from "@src/utils/helper";
 import moment from "moment";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
@@ -25,18 +23,18 @@ import { Text } from "@src/components/text";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
 import {
   ChainIdEnum,
-  isMilliseconds,
+  MapNetworkToChainId,
   OasisNetwork,
   unknownToken,
 } from "@owallet/common";
-import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
+import { CoinPretty, Dec } from "@owallet/unit";
 import { OwLoading } from "@src/components/owallet-loading/ow-loading";
 
 import { Currency } from "@owallet/types";
 
 import { getTimeMilliSeconds, urlTxHistory } from "@src/common/constants";
 import { OWEmpty } from "@src/components/empty";
-import { AllNetworkItemTx } from "@src/screens/transactions/all-network/all-network.types";
+import { AllNetworkItemTx } from "@owallet/types";
 
 export const OasisDetailTx: FunctionComponent = observer((props) => {
   const { chainStore, priceStore } = useStore();
@@ -58,7 +56,6 @@ export const OasisDetailTx: FunctionComponent = observer((props) => {
 
   const { item, currency } = route.params;
   const { txhash: hash, network: chain } = item;
-  console.log(item, detail, "item detail");
 
   const getHistoryDetail = async () => {
     try {
@@ -73,7 +70,6 @@ export const OasisDetailTx: FunctionComponent = observer((props) => {
         }
       );
       if (res && res.status !== 200) throw Error("Failed");
-      console.log(res.data, "res.data.data");
       if (MapNetworkToChainId[item?.network] === ChainIdEnum.Oasis) {
         setDetail(res.data.data);
       } else {
@@ -98,7 +94,6 @@ export const OasisDetailTx: FunctionComponent = observer((props) => {
 
   if (loading) return <OwLoading />;
   if (!detail) return <OWEmpty />;
-  console.log(detail, "detail");
   const chainInfo = chainStore.getChain(MapNetworkToChainId[item?.network]);
   const handleUrl = (txHash) => {
     return chainInfo.raw.txExplorer.txUrl.replace("{txHash}", txHash);
@@ -106,7 +101,7 @@ export const OasisDetailTx: FunctionComponent = observer((props) => {
   const handleOnExplorer = async () => {
     if (chainInfo.raw.txExplorer && hash) {
       const url = handleUrl(hash);
-      console.log(url, "url");
+
       await openLink(url);
     }
   };

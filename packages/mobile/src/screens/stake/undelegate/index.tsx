@@ -9,7 +9,6 @@ import { AlertIcon, DownArrowIcon } from "@src/components/icon";
 import { NewAmountInput } from "@src/components/input/amount-input";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
-import { Text } from "@src/components/text";
 import OWText from "@src/components/text/ow-text";
 import { useTheme } from "@src/themes/theme-provider";
 import { capitalizedText, showToast } from "@src/utils/helper";
@@ -23,12 +22,11 @@ import { ValidatorThumbnail } from "../../../components/thumbnail";
 import { useSmartNavigation } from "../../../navigation.provider";
 import { useStore } from "../../../stores";
 import { metrics, spacing } from "../../../themes";
-import { chainIcons } from "@oraichain/oraidex-common";
 import { FeeModal } from "@src/modals/fee";
 import ByteBrew from "react-native-bytebrew-sdk";
-import axios from "axios";
 import { makeStdTx } from "@cosmjs/amino";
 import { Tendermint37Client } from "@cosmjs/tendermint-rpc";
+import { API } from "@src/common/api";
 
 export const UndelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -127,9 +125,11 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
   const unstakeOraiBtc = async () => {
     try {
       setIsLoading(true);
-      const res = await axios.get(
-        `${chainStore.current.rest}/auth/accounts/${account.bech32Address}`
+      const res = await API.getInfoAccOraiBtc(
+        { address: account.bech32Address },
+        { baseURL: chainStore.current.rest }
       );
+
       const sequence = res.data.result.value.sequence;
       const signDoc = {
         account_number: "0",
@@ -164,18 +164,6 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
       });
 
       if (result?.code === 0 || result?.code == null) {
-        queries.cosmos.queryValidators
-          .getQueryStatus(BondStatus.Bonded)
-          .fetch();
-        queries.cosmos.queryDelegations
-          .getQueryBech32Address(account.bech32Address)
-          .fetch();
-        queries.cosmos.queryUnbondingDelegations
-          .getQueryBech32Address(account.bech32Address)
-          .fetch();
-        queries.cosmos.queryRewards
-          .getQueryBech32Address(account.bech32Address)
-          .fetch();
         setIsLoading(false);
         smartNavigation.pushSmart("TxPendingResult", {
           txHash: Buffer.from(result?.hash).toString("hex"),
@@ -190,6 +178,11 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
         });
       }
     } catch (error) {
+      if (error?.message?.includes("'signature' of undefined")) return;
+      showToast({
+        type: "danger",
+        message: error?.message || JSON.stringify(error),
+      });
       console.log(error, "error");
     } finally {
       setIsLoading(false);

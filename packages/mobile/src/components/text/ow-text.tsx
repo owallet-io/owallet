@@ -65,7 +65,7 @@ const OWText = ({ ...props }: OWTextProps) => {
 };
 
 const useStyle = ({ variant, typo, color, size, weight }: OWTextProps) => {
-  const textStyle: TextStyle = {};
+  let textStyle: TextStyle = {};
   switch (variant) {
     case "h1":
       textStyle.fontSize = 34;

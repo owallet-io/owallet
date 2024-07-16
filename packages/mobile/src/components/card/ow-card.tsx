@@ -12,7 +12,7 @@ const useStyleType = ({ type }) => {
   switch (type) {
     default:
       styles = {
-        backgroundColor: colors["neutral-surface-card"],
+        backgroundColor: colors["neutral-surface-card-brutal"],
         width: metrics.screenWidth - 32,
         borderRadius: 24,
         position: "relative",

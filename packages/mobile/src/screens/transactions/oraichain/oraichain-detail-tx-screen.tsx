@@ -51,7 +51,6 @@ export const OraichainDetailTx: FunctionComponent = observer((props) => {
 
   const { item, currency } = route.params;
   const { txhash: hash, chain } = item;
-  console.log(item, detail, "item detail");
 
   const getHistoryDetail = async () => {
     try {
@@ -83,7 +82,7 @@ export const OraichainDetailTx: FunctionComponent = observer((props) => {
 
   if (loading) return <OwLoading />;
   if (!detail) return <OWEmpty />;
-  console.log(detail, "detail");
+
   const chainInfo = chainStore.getChain(chainStore.current.chainId);
   const handleUrl = (txHash) => {
     return chainInfo.raw.txExplorer.txUrl.replace("{txHash}", txHash);

@@ -28,4 +28,4 @@ type IScreenOption = {
   [key in string]: itemOptions;
 };
 
-declare const isCancel: boolean = false;
+declare var isCancel: boolean = false;

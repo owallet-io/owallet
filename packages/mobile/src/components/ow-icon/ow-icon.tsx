@@ -5,8 +5,14 @@ export interface IOWIconProps extends IconProps {
   type?: "images";
   source?: ImageSourcePropType;
   style?: any;
+  resizeMode?: "cover" | "contain";
 }
-const OWIcon = ({ type, style, ...props }: IOWIconProps) => {
+const OWIcon = ({
+  type,
+  style,
+  resizeMode = "contain",
+  ...props
+}: IOWIconProps) => {
   const [imageDefault, setImageDefault] = useState(
     "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://orai.io&size=32"
   );
@@ -38,7 +44,7 @@ const OWIcon = ({ type, style, ...props }: IOWIconProps) => {
               }
             : props.source
         }
-        resizeMode="contain"
+        resizeMode={resizeMode}
       />
     );
   return <Icon {...props} />;

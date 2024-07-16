@@ -12,7 +12,6 @@ import { API } from "@src/common/api";
 import {
   capitalizedText,
   formatContractAddress,
-  MapNetworkToChainId,
   maskedNumber,
   openLink,
   shortenAddress,
@@ -23,7 +22,7 @@ import { HeaderTx } from "@src/screens/tx-result/components/header-tx";
 import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
 import { Text } from "@src/components/text";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
-import { ChainIdEnum, unknownToken } from "@owallet/common";
+import { MapNetworkToChainId, unknownToken } from "@owallet/common";
 import { Network } from "@tatumio/tatum";
 import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
 import { OwLoading } from "@src/components/owallet-loading/ow-loading";
@@ -32,7 +31,7 @@ import { Currency } from "@owallet/types";
 
 import { getTimeMilliSeconds, urlTxHistory } from "@src/common/constants";
 import { OWEmpty } from "@src/components/empty";
-import { AllNetworkItemTx } from "@src/screens/transactions/all-network/all-network.types";
+import { AllNetworkItemTx } from "@owallet/types";
 
 export const EvmDetailTx: FunctionComponent = observer((props) => {
   const { chainStore, priceStore } = useStore();
@@ -54,7 +53,6 @@ export const EvmDetailTx: FunctionComponent = observer((props) => {
 
   const { item, currency } = route.params;
   const { txhash: hash, network: chain } = item;
-  console.log(item, detail, "item detail");
 
   const getHistoryDetail = async () => {
     try {
@@ -99,7 +97,6 @@ export const EvmDetailTx: FunctionComponent = observer((props) => {
   const handleOnExplorer = async () => {
     if (chainInfo.raw.txExplorer && detail.hash) {
       const url = handleUrl(detail.hash);
-      console.log(url, "url");
       await openLink(url);
     }
   };

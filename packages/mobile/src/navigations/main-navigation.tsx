@@ -12,15 +12,13 @@ import {
 } from "@src/screens/register/mnemonic";
 import { RegisterEndScreen } from "@src/screens/register/end";
 import { NewLedgerScreen } from "@src/screens/register/ledger";
-import { TokenDetailScreen, TokensScreen } from "@src/screens/tokens";
+import { TokenDetailsScreen, TokensScreen } from "@src/screens/tokens";
 import { NftDetailScreen, NftsScreen } from "@src/screens/nfts";
 import { observer } from "mobx-react-lite";
 import { useStore } from "@src/stores";
 import { BackupMnemonicScreen } from "@src/screens/register/mnemonic/backup-mnemonic";
 import { RecoverPhraseScreen } from "@src/screens/register/mnemonic/recover-phrase";
 import { RegisterDoneScreen } from "@src/screens/register/done";
-import { TokenDetails } from "@src/screens/home/token-details";
-import { TestScreen } from "@src/screens/home/test";
 
 const Stack = createStackNavigator();
 
@@ -86,9 +84,11 @@ export const MainNavigation: FC = observer(() => {
       />
       <Stack.Screen name={SCREENS.Tokens} component={TokensScreen} />
       <Stack.Screen name={SCREENS.Nfts} component={NftsScreen} />
-      <Stack.Screen name={SCREENS.TokenDetail} component={TokenDetailScreen} />
       <Stack.Screen name={SCREENS.NftsDetail} component={NftDetailScreen} />
-      <Stack.Screen name={SCREENS.TokenDetails} component={TokenDetails} />
+      <Stack.Screen
+        name={SCREENS.TokenDetails}
+        component={TokenDetailsScreen}
+      />
     </Stack.Navigator>
   );
 });

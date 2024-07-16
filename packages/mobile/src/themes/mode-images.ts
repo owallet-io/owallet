@@ -32,7 +32,7 @@ const typeImagesTheme = () => modeImages;
 type TypeTheme = { [P in keyof ReturnType<typeof typeImagesTheme>]: any };
 
 const handleMode = (isDark): TypeTheme => {
-  const data: any = {};
+  let data: any = {};
   if (isDark) {
     for (const property in modeImages) {
       data[property] = modeImages[property][0];

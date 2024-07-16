@@ -13,7 +13,7 @@ export const RightArrowIcon: FunctionComponent<
     onPress?: () => void;
   }
 > = ({ color, height, type, onPress }) => {
-  const transfromCss =
+  let transfromCss =
     type === "left" ? { transform: [{ rotate: "180deg" }] } : {};
   return (
     <Svg

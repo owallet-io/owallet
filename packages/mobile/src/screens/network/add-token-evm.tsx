@@ -7,9 +7,10 @@ import { TextInput } from "../../components/input";
 import { useSmartNavigation } from "../../navigation.provider";
 import { useStore } from "../../stores";
 import CheckBox from "react-native-check-box";
-import { AppCurrency, Secret20Currency } from "@owallet/types";
+import { AppCurrency } from "@owallet/types";
+import { MapChainIdToNetwork } from "@owallet/common";
 import { observer } from "mobx-react-lite";
-import { MapChainIdToNetwork, showToast } from "@src/utils/helper";
+import { showToast } from "@src/utils/helper";
 import { API } from "@src/common/api";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import { OWButton } from "@src/components/button";
@@ -56,8 +57,7 @@ interface FormData {
 
 export const AddTokenEVMScreen: FunctionComponent<{
   _onPressNetworkModal: Function;
-  selectedChain: any;
-}> = observer(({ _onPressNetworkModal, selectedChain }) => {
+}> = observer(({ _onPressNetworkModal }) => {
   const {
     control,
     handleSubmit,
@@ -77,14 +77,12 @@ export const AddTokenEVMScreen: FunctionComponent<{
     appInitStore,
     modalStore,
   } = useStore();
-  const tokensOf = tokensStore.getTokensOf(selectedChain?.chainId);
+  const selectedChain = chainStore.current;
+  const tokensOf = tokensStore.getTokensOf(selectedChain.chainId);
   const [loading, setLoading] = useState(false);
   const [coingeckoId, setCoingeckoID] = useState(null);
   const [coingeckoImg, setCoingeckoImg] = useState(null);
   const [selectedType, setSelectedType] = useState("erc20");
-
-  const accountInfo = accountStore.getAccount(chainStore.current.chainId);
-
   const form = useForm<FormData>({
     defaultValues: {
       contractAddress: "",
@@ -117,8 +115,6 @@ export const AddTokenEVMScreen: FunctionComponent<{
   const queryContractInfo = query.getQueryContract(contractAddress);
 
   const tokenInfo = queryContractInfo.tokenInfo;
-  console.log(tokenInfo, "tokenInfo");
-
   const getTokenCoingeckoId = async () => {
     try {
       if (tokenInfo && tokenInfo.symbol) {

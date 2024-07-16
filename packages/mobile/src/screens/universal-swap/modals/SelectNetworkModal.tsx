@@ -30,6 +30,8 @@ export const SelectNetworkModal: FunctionComponent<{
   isOpen?: boolean;
 }> = registerModal(
   ({ close, selectedChainFilter, setChainFilter, tokenList }) => {
+    console.log("tokenList", tokenList);
+
     const safeAreaInsets = useSafeAreaInsets();
 
     const { colors } = useTheme();
@@ -99,7 +101,7 @@ export const SelectNetworkModal: FunctionComponent<{
 
     useEffect(() => {
       if (activeTab === "mainnet") {
-        const tmpChainInfos = [];
+        let tmpChainInfos = [];
         chainStore.chainInfosInUI.map((c) => {
           if (
             !c.chainName.toLowerCase().includes("test") &&
@@ -111,7 +113,7 @@ export const SelectNetworkModal: FunctionComponent<{
 
         setChains(tmpChainInfos);
       } else {
-        const tmpChainInfos = [];
+        let tmpChainInfos = [];
         chainStore.chainInfosInUI.map((c) => {
           if (
             c.chainName.toLowerCase().includes("test") &&
@@ -153,13 +155,6 @@ export const SelectNetworkModal: FunctionComponent<{
         chainIcon = {
           chainId: item.chainId,
           Icon: "https://s2.coinmarketcap.com/static/img/coins/200x200/7653.png",
-        };
-      }
-      // Hardcode for BTC because oraidex-common does not have icon yet
-      if (item.chainName.includes("Bit")) {
-        chainIcon = {
-          chainId: item.chainId,
-          Icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Bitcoin.svg/1200px-Bitcoin.svg.png",
         };
       }
 

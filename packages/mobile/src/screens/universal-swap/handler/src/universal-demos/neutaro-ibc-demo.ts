@@ -46,7 +46,6 @@ const neutaroUsdcToOraiUsdc = async (chainId: "Neutaro-1" | "Oraichain") => {
 
   try {
     const result = await universalHandler.processUniversalSwap();
-    console.log("result: ", result);
   } catch (error) {
     console.log("error: ", error);
   }

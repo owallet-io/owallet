@@ -71,7 +71,7 @@ export const SendTronScreen: FunctionComponent = observer(() => {
             tokenName: string;
             type?: string;
           };
-          maxBalance?: number;
+          maxBalance?: Number;
         }
       >,
       string
@@ -224,7 +224,6 @@ export const SendTronScreen: FunctionComponent = observer(() => {
                 address,
                 {
                   onFulfill: async (tx) => {
-                    console.log(tx, "txHashtxHash");
                     if (tx?.code === 0) {
                       navigate("Others", {
                         screen: SCREENS.TxSuccessResult,
@@ -270,7 +269,6 @@ export const SendTronScreen: FunctionComponent = observer(() => {
                 }
               );
             } catch (err) {
-              console.log("send tron err", err);
               if (err?.message === "Request rejected") {
                 return;
               }

@@ -1,19 +1,11 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useState } from "react";
 import { StyleSheet, TextInput, View } from "react-native";
 import { metrics, spacing, typography } from "../../../themes";
-import {
-  _keyExtract,
-  showToast,
-  getTokenInfos,
-  maskedNumber,
-  splitAndSortChains,
-} from "../../../utils/helper";
-import { VectorCharacter } from "../../../components/vector-character";
+import { _keyExtract, showToast } from "../../../utils/helper";
 import { Text } from "@src/components/text";
 import {
   COINTYPE_NETWORK,
   getKeyDerivationFromAddressType,
-  unknownToken,
 } from "@owallet/common";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { BottomSheetFlatList } from "@gorhom/bottom-sheet";
@@ -21,25 +13,21 @@ import { useBIP44Option } from "@src/screens/register/bip44";
 import { useStore } from "@src/stores";
 import { useTheme } from "@src/themes/theme-provider";
 import { Popup } from "react-native-popup-confirm-toast";
-import {
-  chainIcons,
-  ChainIdEnum,
-  getTotalUsd,
-} from "@oraichain/oraidex-common";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { OWButton } from "@src/components/button";
 import { RadioButton } from "react-native-radio-buttons-group";
 import { ChainInfoWithEmbed } from "@owallet/background";
 import { ChainInfoInner } from "@owallet/stores";
 import { initPrice } from "@src/screens/home/hooks/use-multiple-assets";
-import { ViewRawToken, ViewToken } from "@src/stores/huge-queries";
 import { PricePretty } from "@owallet/unit";
 import ByteBrew from "react-native-bytebrew-sdk";
 
 interface ChainInfoItem extends ChainInfoInner<ChainInfoWithEmbed> {
   balance: PricePretty;
 }
-export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
+export const NetworkModal: FC<{
+  hideAllNetwork?: boolean;
+}> = ({ hideAllNetwork }) => {
   const { colors } = useTheme();
   const [keyword, setKeyword] = useState("");
   const [activeTab, setActiveTab] = useState<"mainnet" | "testnet">("mainnet");
@@ -355,7 +343,8 @@ export const NetworkModal = ({ stakeable }: { stakeable?: boolean }) => {
           height: metrics.screenHeight / 2,
         }}
       >
-        {_renderItem({ item: { chainName: "All networks", isAll: true } })}
+        {!hideAllNetwork &&
+          _renderItem({ item: { chainName: "All networks", isAll: true } })}
         <BottomSheetFlatList
           showsVerticalScrollIndicator={false}
           data={dataChains}

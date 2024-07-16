@@ -202,93 +202,84 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
   const _onPressSwitchValidator = async () => {
     if (account.isReadyToSendMsgs && txStateIsValid) {
       try {
-        await sendRedelegateMsg();
+        await account.cosmos.sendBeginRedelegateMsg(
+          sendConfigs.amountConfig.amount,
+          sendConfigs.srcValidatorAddress,
+          sendConfigs.dstValidatorAddress,
+          sendConfigs.memoConfig.memo,
+          sendConfigs.feeConfig.toStdFee(),
+          {
+            preferNoSetMemo: true,
+            preferNoSetFee: true,
+          },
+          {
+            onBroadcasted: (txHash) => {
+              analyticsStore.logEvent("Redelgate tx broadcasted", {
+                chainId: chainStore.current.chainId,
+                chainName: chainStore.current.chainName,
+                validatorName: srcValidator?.description.moniker,
+                toValidatorName: dstValidator?.description.moniker,
+                feeType: sendConfigs.feeConfig.feeType,
+              });
+              ByteBrew.NewCustomEvent(
+                `Switch Validator`,
+                `validatorFrom=${srcValidator?.description.moniker};validatorTo=${dstValidator?.description.moniker};`
+              );
+              smartNavigation.pushSmart("TxPendingResult", {
+                txHash: Buffer.from(txHash).toString("hex"),
+                data: {
+                  type: "redelegate",
+                  wallet: account.bech32Address,
+                  validator: sendConfigs.recipientConfig.recipient,
+                  amount: sendConfigs.amountConfig.getAmountPrimitive(),
+                  fee: sendConfigs.feeConfig.toStdFee(),
+                  currency: sendConfigs.amountConfig.sendCurrency,
+                },
+              });
+            },
+          }
+        );
       } catch (e) {
-        handleError(e);
+        if (e?.message.toLowerCase().includes("rejected")) {
+          return;
+        } else if (e?.message.includes("Cannot read properties of undefined")) {
+          return;
+        } else {
+          console.log(e);
+          // smartNavigation.navigate("Home", {});
+          showToast({
+            message: JSON.stringify(e),
+            type: "danger",
+          });
+        }
+        if (e?.response && e?.response?.data?.message) {
+          const inputString = e?.response?.data?.message;
+          // Replace single quotes with double quotes
+          const regex =
+            /redelegation to this validator already in progress; first redelegation to this validator must complete before next redelegation/g;
+          const match = inputString.match(regex);
+          // Check if a match was found and extract the reason
+          if (match && match?.length > 0) {
+            const reason = match[0];
+            showToast({
+              message:
+                (reason && capitalizedText(reason)) || "Transaction Failed",
+              type: "warning",
+            });
+            return;
+          }
+          showToast({
+            message: "Transaction Failed",
+            type: "warning",
+          });
+          return;
+
+          // Parse the JSON string into a TypeScript object
+          // const parsedObject = JSON.parse(`{${validJsonString}}`);
+        }
+        console.log(e);
       }
     }
-  };
-
-  const sendRedelegateMsg = async () => {
-    await account.cosmos.sendBeginRedelegateMsg(
-      sendConfigs.amountConfig.amount,
-      sendConfigs.srcValidatorAddress,
-      sendConfigs.dstValidatorAddress,
-      sendConfigs.memoConfig.memo,
-      sendConfigs.feeConfig.toStdFee(),
-      {
-        preferNoSetMemo: true,
-        preferNoSetFee: true,
-      },
-      {
-        onBroadcasted: handleBroadcasted,
-      }
-    );
-  };
-
-  const handleBroadcasted = (txHash) => {
-    analyticsStore.logEvent("Redelgate tx broadcasted", {
-      chainId: chainStore.current.chainId,
-      chainName: chainStore.current.chainName,
-      validatorName: srcValidator?.description.moniker,
-      toValidatorName: dstValidator?.description.moniker,
-      feeType: sendConfigs.feeConfig.feeType,
-    });
-    ByteBrew.NewCustomEvent(
-      `Switch Validator`,
-      `validatorFrom=${srcValidator?.description.moniker};validatorTo=${dstValidator?.description.moniker};`
-    );
-    smartNavigation.pushSmart("TxPendingResult", {
-      txHash: Buffer.from(txHash).toString("hex"),
-      data: {
-        type: "redelegate",
-        wallet: account.bech32Address,
-        validator: sendConfigs.recipientConfig.recipient,
-        amount: sendConfigs.amountConfig.getAmountPrimitive(),
-        fee: sendConfigs.feeConfig.toStdFee(),
-        currency: sendConfigs.amountConfig.sendCurrency,
-      },
-    });
-  };
-
-  const handleError = (e) => {
-    if (e?.message.toLowerCase().includes("rejected")) {
-      return;
-    } else if (e?.message.includes("Cannot read properties of undefined")) {
-      return;
-    } else {
-      console.log(e);
-      showToast({
-        message: JSON.stringify(e),
-        type: "danger",
-      });
-    }
-
-    if (e?.response && e?.response?.data?.message) {
-      const inputString = e?.response?.data?.message;
-      const regex =
-        /redelegation to this validator already in progress; first redelegation to this validator must complete before next redelegation/g;
-      const match = inputString.match(regex);
-      if (match && match?.length > 0) {
-        const reason = match[0];
-        showToast({
-          message: (reason && capitalizedText(reason)) || "Transaction Failed",
-          type: "warning",
-        });
-        return;
-      }
-      showToast({
-        message: "Transaction Failed",
-        type: "warning",
-      });
-      return;
-    }
-
-    console.log(e);
-  };
-
-  const capitalizedText = (text) => {
-    return text.charAt(0).toUpperCase() + text.slice(1);
   };
 
   const onPressSelectValidator = (address, avatar, moniker) => {
@@ -299,7 +290,6 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
     });
     modalStore.close();
   };
-  console.log(validators, "validators");
   const totalVotingPower = useMemo(
     () => computeTotalVotingPower(validators),
     [validators]

@@ -304,7 +304,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       })
       .catch((error) => {
         requestPermission();
-        const err = `check permission error${error}`;
+        let err = `check permission error${error}`;
         Alert.alert(err);
         // console.log("[FCMService] Permission rejected", error)
       });
@@ -468,7 +468,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
         style={{
           height: 100,
         }}
-      />
+      ></View>
     </PageWithScrollView>
   );
 });

@@ -18,7 +18,14 @@
     "experimentalDecorators": true,
     "paths": {
       // This needs to be mirrored in babel.config.js
-      "@src/*": ["./src/*"]
+      "@src/*": ["./src/*"],
+      "@assets/*": ["./src/assets/*"],
+      "@components/*": ["./src/components/*"],
+      "@screens/*": ["./src/screens/*"],
+      "@common/*": ["./src/common/*"],
+      "@stores/*": ["./src/stores/*"],
+      "@utils/*": ["./src/utils/*"],
+      "@hooks/*": ["./src/hooks/*"]
     }
   },
   "exclude": [

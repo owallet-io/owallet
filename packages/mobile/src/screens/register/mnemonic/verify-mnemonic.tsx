@@ -190,10 +190,6 @@ export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
             }}
             label={"Next"}
             onPress={() => {
-              console.log(
-                "wordSet",
-                wordSet.join(" ") === newMnemonicConfig.mnemonic
-              );
               onVerifyMnemonic();
             }}
           />

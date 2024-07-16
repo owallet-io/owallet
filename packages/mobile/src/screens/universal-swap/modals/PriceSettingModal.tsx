@@ -1,6 +1,5 @@
-//@ts-nocheck
 import { ScrollView, StyleSheet, View } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { registerModal } from "@src/modals/base";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Text } from "@src/components/text";
@@ -10,16 +9,27 @@ import { metrics, typography } from "@src/themes";
 import { DEFAULT_SLIPPAGE } from "@owallet/common";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { TextInput } from "@src/components/input";
-import { getPairInfo } from "../helpers";
-import {
-  flattenTokens,
-  flattenTokensWithIcon,
-} from "@oraichain/oraidex-common";
+import { getPathInfo } from "../helpers";
 import FastImage from "react-native-fast-image";
-import { maskedNumber } from "@src/utils/helper";
-import { useStore } from "@src/stores";
+import { isNegative, maskedNumber } from "@src/utils/helper";
+import { assets } from "chain-registry";
+import { chainIcons } from "@oraichain/oraidex-common";
 
-export const PriceSettingModal = registerModal(
+export const PriceSettingModal: FunctionComponent<{
+  close: () => void;
+  setUserSlippage: (slippage: number) => void;
+  currentSlippage: number;
+  impactWarning: number;
+  fromAmountToken: number;
+  routersSwapData: { routes: Array<any>; amount: number };
+  minimumReceive: string;
+  tokenFee: string;
+  swapFee: string | number;
+  bridgeFee: string | number;
+  relayerFee: string;
+  ratio: string;
+  isOpen?: boolean;
+}> = registerModal(
   ({
     close,
     setUserSlippage,
@@ -35,12 +45,10 @@ export const PriceSettingModal = registerModal(
     ratio,
   }) => {
     const safeAreaInsets = useSafeAreaInsets();
-    const { appInitStore } = useStore();
 
     const [slippage, setSlippage] = useState(DEFAULT_SLIPPAGE);
     const { colors } = useTheme();
     const styles = styling(colors);
-    const theme = appInitStore.getInitApp.theme;
 
     const handleChangeSlippage = (value: number) => {
       if (value <= 100) {
@@ -103,7 +111,7 @@ export const PriceSettingModal = registerModal(
     };
 
     const renderSmartRoutes = () => {
-      if (fromAmountToken > 0 && routersSwapData?.routes.length > 0) {
+      if (fromAmountToken > 0 && routersSwapData?.routes?.length > 0) {
         return (
           <>
             <View
@@ -115,7 +123,7 @@ export const PriceSettingModal = registerModal(
               }}
             >
               <Text color={colors["neutral-text-title"]} weight="500" size={15}>
-                Smart Route
+                AI Route
               </Text>
               <View style={{ flexDirection: "row" }}>
                 <View
@@ -128,17 +136,11 @@ export const PriceSettingModal = registerModal(
                     marginRight: 8,
                   }}
                 >
-                  <OWIcon
-                    name="tdesignwindy"
-                    color={colors["highlight-text-title"]}
-                    size={14}
-                  />
                   <Text
                     color={colors["highlight-text-title"]}
                     weight="600"
                     size={12}
                   >
-                    {" "}
                     FASTEST
                   </Text>
                 </View>
@@ -161,7 +163,7 @@ export const PriceSettingModal = registerModal(
               </View>
             </View>
             <View>
-              {routersSwapData?.routes.map((route, ind) => {
+              {routersSwapData?.routes?.map((route, ind) => {
                 const volumn = Number(
                   (+route.returnAmount / +routersSwapData?.amount) * 100
                 ).toFixed(0);
@@ -199,12 +201,11 @@ export const PriceSettingModal = registerModal(
                         {volumn}%
                       </Text>
                     </View>
-                    {route.paths.map((path, i, acc) => {
-                      const { TokenInIcon, TokenOutIcon } = getPairInfo(
+                    {route?.paths?.map((path) => {
+                      const { NetworkFromIcon, NetworkToIcon } = getPathInfo(
                         path,
-                        flattenTokens,
-                        flattenTokensWithIcon,
-                        theme === "light"
+                        chainIcons,
+                        assets
                       );
 
                       return (
@@ -241,7 +242,7 @@ export const PriceSettingModal = registerModal(
                                   borderRadius: 24,
                                 }}
                                 source={{
-                                  uri: TokenInIcon,
+                                  uri: NetworkFromIcon,
                                 }}
                                 resizeMode={FastImage.resizeMode.cover}
                               />
@@ -265,7 +266,7 @@ export const PriceSettingModal = registerModal(
                                   borderRadius: 24,
                                 }}
                                 source={{
-                                  uri: TokenOutIcon,
+                                  uri: NetworkToIcon,
                                 }}
                                 resizeMode={FastImage.resizeMode.cover}
                               />
@@ -324,7 +325,7 @@ export const PriceSettingModal = registerModal(
             }}
           >
             <View style={styles.containerSlippagePercent}>
-              {[1, 3, 5].map((item, index) => {
+              {[1, 3, 5].map((item) => {
                 return (
                   <OWButton
                     key={item}
@@ -377,14 +378,13 @@ export const PriceSettingModal = registerModal(
             {impactWarning
               ? renderInfo(
                   "Price Impact",
-                  `${maskedNumber(impactWarning)}%`,
+                  `${
+                    isNegative(impactWarning) ? 0 : maskedNumber(impactWarning)
+                  }%`,
                   impactWarning
                 )
               : null}
-            {/* {renderInfo("Slippage", `${slippage}%`)} */}
-            {tokenFee && tokenFee > 0
-              ? renderInfo("Token Fee", tokenFee)
-              : null}
+            {tokenFee ? renderInfo("Token Fee", tokenFee) : null}
             {relayerFee ? renderInfo("Relayer Fee", relayerFee) : null}
             {swapFee ? renderInfo("Swap Fee", swapFee) : null}
             {bridgeFee ? renderInfo("Bridge Fee", bridgeFee) : null}

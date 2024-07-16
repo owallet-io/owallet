@@ -222,6 +222,7 @@ const modeColors = {
   "neutral-surface-bg": ["#121511", "#F5F5F7"],
   "neutral-surface-bg2": ["#323133", "#F5F5F7"],
   "neutral-surface-card": ["#242325", "#FFFFFF"],
+  "neutral-surface-card-brutal": ["#242325", "#FCFCFC"],
   "neutral-surface-action": ["#323133", "#EBEDF2"],
   "neutral-surface-action2": ["#323133", "#EBEDF2"],
   "neutral-surface-action3": ["#323133", "#F5F5F7"],
@@ -229,6 +230,7 @@ const modeColors = {
   "neutral-surface-pressed": ["#6A6B71", "#D4D7E1"],
   "neutral-surface-disable": ["#323133", "#EBEDF2"],
   "neutral-border-default": ["#323133", "#EBEDF2"],
+  "neutral-border-brutal": ["#323133", "#FFF"],
   "neutral-border-strong": ["#6A6B71", "#242325"],
   "neutral-border-bold": ["#909298", "#242325"],
   "neutral-border-disable": ["#242325", "#F5F5F7"],
@@ -236,6 +238,7 @@ const modeColors = {
   "neutral-text-title": ["#F5F5F7", "#242325"],
   "neutral-text-body": ["#909298", "#6A6B71"],
   "neutral-text-body2": ["#909298", "#494949"],
+  "neutral-text-body3": ["#6A6B71", "#909298"],
   "neutral-text-action-on-dark-bg": ["#242325", "#FBFBFB"],
   "neutral-text-action-on-light-bg": ["#FBFBFB", "#242325"],
   "neutral-text-disable": ["#494949", "#C6C8CE"],
@@ -289,7 +292,7 @@ const typeColorsTheme = () => modeColors;
 type TypeTheme = { [P in keyof ReturnType<typeof typeColorsTheme>]: string };
 
 const handleMode = (isDark): TypeTheme => {
-  const data: any = {};
+  let data: any = {};
   if (isDark) {
     for (const property in modeColors) {
       data[property] = modeColors[property][0];

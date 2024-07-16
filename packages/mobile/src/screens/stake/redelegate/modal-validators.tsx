@@ -23,7 +23,7 @@ const Validators = ({
   );
 
   const renderItem = ({ item }) => {
-    const validatorsAddress = item.operator_address || item?.validator_address;
+    let validatorsAddress = item.operator_address || item?.validator_address;
     // const amount = queryDelegations.getDelegationTo(validatorsAddress);
     return (
       <RectButton

@@ -15,14 +15,14 @@ const oraichainToEvm = async (chainId: "Oraichain") => {
 
   const sender = await wallet.getKeplrAddr(chainId);
   const fromAmount = 90;
-  const originalFromToken = cosmosTokens.find(
+  let originalFromToken = cosmosTokens.find(
     (t) =>
       t.chainId === chainId &&
       t.contractAddress &&
       t.contractAddress === USDT_CONTRACT
   );
 
-  const originalToToken = flattenTokens.find(
+  let originalToToken = flattenTokens.find(
     (t) =>
       t.chainId === "0x01" &&
       t.contractAddress &&
@@ -49,7 +49,6 @@ const oraichainToEvm = async (chainId: "Oraichain") => {
 
   try {
     const result = await universalHandler.processUniversalSwap();
-    console.log("result: ", result);
   } catch (error) {
     console.log("error: ", error);
   }

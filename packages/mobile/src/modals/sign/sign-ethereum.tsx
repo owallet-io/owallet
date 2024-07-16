@@ -102,108 +102,61 @@ export const SignEthereumModal: FunctionComponent<{
       }
     };
 
-    console.log("dataSign", dataSign);
-
-    // Helper function to convert hex to number
-    const hexToNumber = (hex: string) => Web3.utils.hexToNumber(hex);
-    const hexToNumberString = (hex: string) =>
-      Web3.utils.hexToNumberString(hex);
-
-    // Function to extract gas and gas price data
-    const extractGasData = (data: any) => {
-      //@ts-ignore
-      const gasDataSign = data?.data?.data?.data?.gas;
-      //@ts-ignore
-      const gasPriceDataSign = data?.data?.data?.data?.gasPrice;
-      return { gasDataSign, gasPriceDataSign };
-    };
-
-    // Function to configure chain and gas settings
-    const configureChainAndGas = (
-      data: any,
-      gasDataSign: string,
-      gasPriceDataSign: string
-    ) => {
-      chainStore.selectChain(data.data.chainId);
-      if (gasDataSign) {
-        gasConfig.setGas(hexToNumber(gasDataSign));
-      }
-      if (gasPriceDataSign) {
-        gasConfig.setGasPrice(hexToNumberString(gasPriceDataSign));
-      }
-    };
-
-    // Function to calculate fee amount
-    const calculateFeeAmount = (
-      gasDataSign: string,
-      gasPriceDataSign: string
-    ) => {
-      const gas = new Dec(new Int(hexToNumberString(gasDataSign)));
-      const gasPrice = new Dec(new Int(hexToNumberString(gasPriceDataSign)));
-      const feeAmount = gasPrice.mul(gas);
-      return feeAmount;
-    };
-
-    // Function to set fee configuration
-    const setFeeConfiguration = (feeAmount: any) => {
-      if (feeAmount.lte(new Dec(0))) {
-        feeConfig.setFeeType("average");
-      } else {
-        feeConfig.setManualFee({
-          amount: feeAmount.roundUp().toString(),
-          denom: chainStore.current.feeCurrencies[0].coinMinimalDenom,
-        });
-      }
-    };
-
-    // Function to handle data signing
-    const handleDataSigning = (dataSigning: any, account: any) => {
-      const hstInterface = new ethers.utils.Interface(ERC20_ABI);
-      try {
-        const { data, type } = dataSigning;
-        if (!data || (type && type !== "erc20")) {
-          setInfoSign({
-            ...dataSigning,
-            from: account.evmosHexAddress,
-          });
-        } else if (data && type && type === "erc20") {
-          const token = hstInterface.parseTransaction({ data });
-          const to = token?.args?._to || token?.args?.[0];
-          const value = token?.args?._value || token?.args?.[1];
-          setInfoSign({
-            ...dataSigning,
-            value: Web3.utils.toHex(value?.toString()),
-            contractAddress: dataSigning.to,
-            to,
-            from: dataSigning?.from || account.evmosHexAddress,
-          });
-        }
-      } catch (error) {
-        console.log("error", error);
-      }
-    };
-
-    // Main function to process the data
-    const processData = (signInteractionStore: any, account: any) => {
-      const data = signInteractionStore.waitingEthereumData;
-      const { gasDataSign, gasPriceDataSign } = extractGasData(data);
-
-      configureChainAndGas(data, gasDataSign, gasPriceDataSign);
-
-      const feeAmount = calculateFeeAmount(gasDataSign, gasPriceDataSign);
-      setFeeConfiguration(feeAmount);
-
-      setDataSign(signInteractionStore.waitingEthereumData);
-      const dataSigning = data?.data?.data?.data;
-      console.log(dataSigning, "dataSigning");
-
-      handleDataSigning(dataSigning, account);
-    };
-
     useEffect(() => {
       if (signInteractionStore.waitingEthereumData) {
-        // Usage
-        processData(signInteractionStore, account);
+        const data = signInteractionStore.waitingEthereumData;
+
+        //@ts-ignore
+        const gasDataSign = data?.data?.data?.data?.gas;
+        //@ts-ignore
+        const gasPriceDataSign = data?.data?.data?.data?.gasPrice;
+
+        chainStore.selectChain(data.data.chainId);
+        if (gasDataSign) {
+          gasConfig.setGas(Web3.utils.hexToNumber(gasDataSign));
+        }
+        if (gasPriceDataSign) {
+          gasConfig.setGasPrice(Web3.utils.hexToNumberString(gasPriceDataSign));
+        }
+        const gas = new Dec(new Int(Web3.utils.hexToNumberString(gasDataSign)));
+        const gasPrice = new Dec(
+          new Int(Web3.utils.hexToNumberString(gasPriceDataSign))
+        );
+        const feeAmount = gasPrice.mul(gas);
+        if (feeAmount.lte(new Dec(0))) {
+          feeConfig.setFeeType("average");
+        } else {
+          feeConfig.setManualFee({
+            amount: feeAmount.roundUp().toString(),
+            denom: chainStore.current.feeCurrencies[0].coinMinimalDenom,
+          });
+        }
+        setDataSign(signInteractionStore.waitingEthereumData);
+        const dataSigning = data?.data?.data?.data;
+        const hstInterface = new ethers.utils.Interface(ERC20_ABI);
+        try {
+          const { data, type } = dataSigning;
+          if (!data || (type && type !== "erc20")) {
+            setInfoSign({
+              ...dataSigning,
+              from: account.evmosHexAddress,
+            });
+          } else if (data && type && type === "erc20") {
+            const token = hstInterface.parseTransaction({ data });
+            const to = token?.args?._to || token?.args?.[0];
+            const value = token?.args?._value || token?.args?.[1];
+            setInfoSign({
+              ...dataSigning,
+              value: Web3.utils.toHex(value?.toString()),
+              contractAddress: dataSigning.to,
+              to,
+              from: dataSigning?.from || account.evmosHexAddress,
+            });
+          }
+        } catch (error) {
+          console.log("error", error);
+          // return undefined;
+        }
       }
     }, [signInteractionStore.waitingEthereumData]);
 
@@ -284,7 +237,6 @@ export const SignEthereumModal: FunctionComponent<{
         ?.trim(true)
         ?.toString();
     };
-    console.log(infoSign, "infoSign");
     return (
       <WrapViewModal
         style={{

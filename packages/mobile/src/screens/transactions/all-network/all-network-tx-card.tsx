@@ -9,10 +9,13 @@ import { TxSkeleton } from "@src/components/page";
 import { useStore } from "@src/stores";
 import { EmptyTx } from "@src/screens/transactions/components/empty-tx";
 import { convertObjChainAddressToString } from "@src/screens/transactions/all-network/all-network.helper";
-import { AllNetworkItemTx } from "@src/screens/transactions/all-network/all-network.types";
+import { AllNetworkItemTx } from "@owallet/types";
 import { AllNetworkTxItem } from "@src/screens/transactions/all-network/all-network-tx-item";
-import { MapChainIdToNetwork } from "@src/utils/helper";
-import { ChainIdEnum, getOasisAddress } from "@owallet/common";
+import {
+  ChainIdEnum,
+  getOasisAddress,
+  MapChainIdToNetwork,
+} from "@owallet/common";
 
 export const AllNetworkTxCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -57,7 +60,6 @@ export const AllNetworkTxCard: FunctionComponent<{
         }
       );
       if (status !== 200) throw Error("Failed");
-      console.log(data, "res data");
       setHistories(data.data);
       setLoading(false);
     } catch (err) {

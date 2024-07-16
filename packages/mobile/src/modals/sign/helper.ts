@@ -18,7 +18,7 @@ export const getPrice = (
     amount.denom?.toLowerCase(),
     amount.amount
   );
-  console.log(coin, "coin");
+
   const totalPrice = priceStore.calculatePrice(coin);
   return totalPrice?.toString();
 };

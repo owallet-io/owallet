@@ -335,7 +335,7 @@ const ValidatorItem: FunctionComponent<{
                       color: colors["neutral-text-body2"],
                     }}
                   >
-                    APR: {apr?.toFixed(2).toString() + "%"}
+                    APR: {apr && apr > 0 ? apr.toFixed(2).toString() + "%" : ""}
                   </OWText>
                 </View>
               ) : null}

@@ -14,8 +14,8 @@ declare global {
   let __TEST__;
 }
 
-const localStorageMock = (function () {
-  let store = {};
+var localStorageMock = (function () {
+  var store = {};
   return {
     getItem: function (key) {
       return store[key];

@@ -19,7 +19,6 @@ const notAllowSwapFromChainIds = [
   "kawaii_6886-1",
   "oraibridge-subnet-2",
   "oraibtc-mainnet-1",
-  "Neutaro-1",
   "bitcoin",
 ];
 const notAllowDenom = Object.values(evmDenomsMap).flat();
@@ -38,7 +37,6 @@ const notAllowSwapToChainIds = [
   "kawaii_6886-1",
   "oraibridge-subnet-2",
   "oraibtc-mainnet-1",
-  "Neutaro-1",
   "bitcoin",
 ];
 export const swapToTokens = flattenTokens.filter((token) => {

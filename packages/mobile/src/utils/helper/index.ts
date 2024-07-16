@@ -153,8 +153,8 @@ export const formatContractAddress = (address: string, limitFirst = 10) => {
 };
 export const convertArrToObject = (arr, label = `Validator`) => {
   if (!arr?.length) return;
-  const rv = {};
-  for (let i = 0; i < arr?.length; ++i) rv[`${label}${i + 1}`] = arr[i];
+  var rv = {};
+  for (var i = 0; i < arr?.length; ++i) rv[`${label}${i + 1}`] = arr[i];
   return rv;
 };
 export const removeDataInParentheses = (inputString: string): string => {
@@ -202,14 +202,13 @@ export const getValueFromDataEvents = (arr) => {
   if (arr.length === 1) {
     return { value: [arr[0]], typeId: 1 };
   }
-  const result = [];
-  for (const item of arr) {
+  let result = [];
+  for (let item of arr) {
     // if any element has amountValue, push it to the result array
     if (item?.transferInfo.some((data) => data?.amount)) {
       result.push(item);
     }
   }
-  // console.log('result: ', result);
 
   // if the result array is empty, return null and typeId = 0
   if (result.length === 0) {
@@ -257,7 +256,7 @@ export const maskedNumber = (
 const countAmountValue = (array) => {
   let count = 0;
   if (array && array?.length > 0) {
-    for (const element of array) {
+    for (let element of array) {
       if (element?.amountValue) {
         count++;
       }
@@ -297,9 +296,6 @@ const configBrowser = {
 };
 export const openLink = async (url) => {
   try {
-    if (!url) {
-      console.log("url: ", url);
-    }
     if (await InAppBrowser.isAvailable()) {
       const result = await InAppBrowser.open(url, configBrowser);
     } else Linking.openURL(url);
@@ -310,10 +306,10 @@ export const openLink = async (url) => {
 };
 
 export function parseObjectToQueryString(obj) {
-  const params = new URLSearchParams();
-  for (const key in obj) {
+  let params = new URLSearchParams();
+  for (let key in obj) {
     if (Array.isArray(obj[key])) {
-      for (const value of obj[key]) {
+      for (let value of obj[key]) {
         params.append(key, value);
       }
     } else {
@@ -504,41 +500,32 @@ export function addTimeProperty(array1, array2) {
   return array2;
 }
 
-const parseType = (type) => {
-  const typeArr = type.split(".");
-  return typeArr[typeArr.length - 1];
-};
+export const getTxTypeNew = (type, rawLog = "[]", result = "") => {
+  if (type) {
+    const typeArr = type.split(".");
+    let typeMsg = typeArr?.[typeArr?.length - 1];
+    if (typeMsg === "MsgExecuteContract" && result === "Success") {
+      let rawLogArr = JSON.parse(rawLog);
+      for (let event of rawLogArr?.[0].events) {
+        if (event?.["type"] === "wasm") {
+          for (let att of event?.["attributes"]) {
+            if (att?.["key"] === "action") {
+              let attValue = att?.["value"]
+                .split("_")
+                .map((word) => word?.charAt(0).toUpperCase() + word?.slice(1))
+                .join("");
+              typeMsg += "/" + attValue;
+              break;
+            }
+          }
 
-const extractActionValue = (rawLog) => {
-  const rawLogArr = JSON.parse(rawLog);
-  for (const event of rawLogArr?.[0].events) {
-    if (event?.type === "wasm") {
-      for (const att of event?.attributes) {
-        if (att?.key === "action") {
-          return att?.value
-            .split("_")
-            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-            .join("");
+          break;
         }
       }
     }
+    return typeMsg;
   }
-  return null;
-};
-
-export const getTxTypeNew = (type, rawLog = "[]", result = "") => {
-  if (!type) return "Msg";
-
-  let typeMsg = parseType(type);
-
-  if (typeMsg === "MsgExecuteContract" && result === "Success") {
-    const actionValue = extractActionValue(rawLog);
-    if (actionValue) {
-      typeMsg += "/" + actionValue;
-    }
-  }
-
-  return typeMsg;
+  return "Msg";
 };
 
 export const parseIbcMsgTransfer = (
@@ -585,7 +572,7 @@ export function nFormatter(num, digits: 1) {
     { value: 1e18, symbol: "E" },
   ];
   const rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
-  const item = lookup
+  var item = lookup
     .slice()
     .reverse()
     .find(function (item) {
@@ -813,8 +800,19 @@ export const computeTotalVotingPower = (data) => {
   }
 
   let total = 0;
-  for (const item of data) {
+  for (let item of data) {
     total += parseFloat(item?.voting_power ?? 0) || 0;
   }
   return total;
 };
+
+export function numberWithCommas(number) {
+  // Convert the number to a string and split it into integer and decimal parts
+  const [intPart, decPart] = number.toString().split(".");
+
+  // Insert commas into the integer part
+  const formattedNumber = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+  // Combine the formatted integer part and the decimal part
+  return formattedNumber + "." + decPart;
+}

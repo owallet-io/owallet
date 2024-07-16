@@ -19,7 +19,7 @@ const cosmosToOraichain = async (
   const wallet = new CosmosWalletImpl(process.env.MNEMONIC);
   const sender = await wallet.getKeplrAddr(chainId);
   const fromAmount = 0.001;
-  console.log("sender: ", sender);
+
   const originalFromToken = cosmosTokens.find((t) => t.chainId === chainId);
 
   const originalToToken = getTokenOnOraichain(toTokenCoingeckoId);
@@ -27,10 +27,6 @@ const cosmosToOraichain = async (
   if (!originalFromToken)
     throw generateError("Could not find original from token");
   if (!originalToToken) throw generateError("Could not find original to token");
-  console.log({
-    originalToToken,
-    originalFromToken,
-  });
 
   const universalHandler = new UniversalSwapHandler(
     {
@@ -45,7 +41,6 @@ const cosmosToOraichain = async (
 
   try {
     const result = await universalHandler.processUniversalSwap();
-    console.log("result: ", result);
   } catch (error) {
     console.trace("error: ", error);
   }

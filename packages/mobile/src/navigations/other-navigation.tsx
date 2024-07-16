@@ -5,7 +5,6 @@ import useHeaderOptions from "@src/hooks/use-header";
 import { SCREENS, SCREENS_OPTIONS } from "@src/common/constants";
 import { SendScreen } from "@src/screens/send";
 import { SendEvmScreen } from "@src/screens/send/send-evm";
-import { DashBoardScreen } from "@src/screens/dashboard";
 import { CameraScreen } from "@src/screens/camera";
 import { SelectNetworkScreen } from "@src/screens/network";
 import {
@@ -20,7 +19,6 @@ import {
 import { SendTronScreen } from "@src/screens/send/send-tron";
 import { AddTokenScreen } from "@src/screens/network/add-token";
 import { SendBtcScreen } from "@src/screens/send/send-btc";
-import BtcFaucet from "@src/screens/home/btc-faucet";
 import BuyFiat from "@src/screens/home/buy-fiat";
 import { NewSendScreen } from "@src/screens/send/send";
 import { AddressQRScreen } from "@src/screens/qr";
@@ -50,7 +48,6 @@ export const OtherNavigation: FC = () => {
         name={SCREENS.Transactions}
         component={TxTransactionsScreen}
       />
-      <Stack.Screen name={SCREENS.Dashboard} component={DashBoardScreen} />
       <Stack.Screen name={SCREENS.HistoryDetail} component={HistoryDetail} />
       <Stack.Screen
         options={{
@@ -98,7 +95,6 @@ export const OtherNavigation: FC = () => {
         name={SCREENS.TxSuccessResult}
         component={TxSuccessResultScreen}
       />
-      <Stack.Screen name={SCREENS.BtcFaucet} component={BtcFaucet} />
       <Stack.Screen name={SCREENS.BuyFiat} component={BuyFiat} />
       <Stack.Screen name={SCREENS.SendTron} component={SendTronScreen} />
       <Stack.Screen name={SCREENS.SendBtc} component={SendBtcScreen} />

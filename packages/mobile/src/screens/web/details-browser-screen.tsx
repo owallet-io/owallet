@@ -291,7 +291,7 @@ export const DetailsBrowserScreen = observer((props) => {
       clearTimeout(timer.current);
     };
   }, []);
-  console.log(visible, "visible");
+
   const styles = styling(colors);
   const onLoadStart = (syntheticEvent) => {
     syntheticEvent.persist();
@@ -466,7 +466,7 @@ export const DetailsBrowserScreen = observer((props) => {
                     ? { flex: 0, height: 0, opacity: 0 }
                     : {}
                 }
-                cacheEnabled={true}
+                // cacheEnabled={true}
                 injectedJavaScriptBeforeContentLoadedForMainFrameOnly={false}
                 injectedJavaScriptForMainFrameOnly={false}
                 injectedJavaScriptBeforeContentLoaded={sourceCode}

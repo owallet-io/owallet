@@ -297,7 +297,6 @@ export function renderMsgWithdrawDelegatorReward(validatorAddress: string) {
 }
 
 export function renderMsgIBCMsgTransfer(msg: MsgTransfer["value"]) {
-  console.log(msg, "msggg");
   return {
     title: "IBC Transfer",
     content: <IBCMsgTransferView {...msg} />,
