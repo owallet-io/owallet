@@ -8,7 +8,6 @@ import {
   ScrollView,
   InteractionManager,
   StyleSheet,
-  ImageSourcePropType,
 } from "react-native";
 import { Text } from "@src/components/text";
 import { useSmartNavigation } from "../../navigation.provider";
@@ -18,35 +17,27 @@ import {
   capitalizedText,
   formatContractAddress,
   openLink,
-  SUCCESS,
 } from "../../utils/helper";
-import { ChainIdEnum, TxRestTronClient } from "@owallet/common";
+import { ChainIdEnum } from "@owallet/common";
 import { API } from "@src/common/api";
-import { OwalletEvent, TxRestCosmosClient, TRON_ID } from "@owallet/common";
+import { OwalletEvent, TRON_ID } from "@owallet/common";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import { OWButton } from "@src/components/button";
 import { PageHeader } from "@src/components/header/header-new";
 import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
-import { CoinPretty, Dec, Int } from "@owallet/unit";
+import { CoinPretty, Dec } from "@owallet/unit";
 import { AppCurrency, StdFee } from "@owallet/types";
-import { BondStatus, CoinPrimitive } from "@owallet/stores";
+import { CoinPrimitive } from "@owallet/stores";
 import _ from "lodash";
 import { HeaderTx } from "@src/screens/tx-result/components/header-tx";
-import { TendermintTxTracer } from "@owallet/cosmos";
 
 export const TxPendingResultScreen: FunctionComponent = observer(() => {
-  const {
-    chainStore,
-    txsStore,
-    accountStore,
-    keyRingStore,
-    priceStore,
-    queriesStore,
-  } = useStore();
+  const { chainStore, txsStore, accountStore, keyRingStore, priceStore } =
+    useStore();
 
-  const [retry, setRetry] = useState(3);
-  const { colors, images } = useTheme();
-  const [data, setData] = useState<Partial<ResTxsInfo>>();
+  const [retry] = useState(3);
+  const { colors } = useTheme();
+  const [data, setData] = useState<Partial<any>>();
   const route = useRoute<
     RouteProp<
       Record<
@@ -73,12 +64,12 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
 
   const { current } = chainStore;
   const chainId = current.chainId;
-  const queries = queriesStore.get(chainId);
   const { params } = route;
   const accountAddress = accountStore
     .getAccount(chainId)
     .getAddressDisplay(keyRingStore.keyRingLedgerAddresses, false);
   const txHash = params?.txHash;
+  console.log(txHash, "txHash");
   const chainInfo = chainStore.getChain(chainId);
 
   const smartNavigation = useSmartNavigation();
@@ -122,7 +113,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
     );
   };
   const handleOnExplorer = async () => {
-    if (chainInfo?.raw?.txExplorer && txHash) {
+    if (chainInfo.raw.txExplorer && txHash) {
       const url = handleUrl(txHash);
       await openLink(url);
     }
@@ -152,61 +143,15 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
           ...params?.data,
         };
         if (chainInfo?.chainId === "oraibtc-mainnet-1") {
-          // const txTracer = new TendermintTxTracer(chainInfo.rpc, "/websocket");
-          // console.log(chainInfo.rpc,"chainInfo.rpc");
-          // console.log(Buffer.from(txHash, "hex"),"txHash hex")
-          // txTracer.traceTx(Buffer.from(txHash, "hex")).then((tx) => {
-          //   console.log(tx, "tx");
-
-          //   txTracer.close();
-          // }).catch(err => console.log(err,"errr"));
-          setTimeout(() => {
-            if (params?.data?.type === "send") {
-              const bal = queries.queryBalances
-                .getQueryBech32Address(accountAddress)
-                .balances.find(
-                  (bal) =>
-                    bal.currency.coinMinimalDenom ===
-                    data?.currency?.coinMinimalDenom
-                );
-              if (bal) {
-                bal.fetch();
-              }
-            } else {
-              const bal = queries.queryBalances
-                .getQueryBech32Address(accountAddress)
-                .balances.find(
-                  (bal) =>
-                    bal.currency.coinMinimalDenom ===
-                    data?.currency?.coinMinimalDenom
-                );
-              if (bal) {
-                bal.fetch();
-              }
-              Promise.all([
-                queries.cosmos.queryValidators
-                  .getQueryStatus(BondStatus.Bonded)
-                  .fetch(),
-                queries.cosmos.queryDelegations
-                  .getQueryBech32Address(accountAddress)
-                  .fetch(),
-                queries.cosmos.queryRewards
-                  .getQueryBech32Address(accountAddress)
-                  .fetch(),
-                queries.cosmos.queryUnbondingDelegations
-                  .getQueryBech32Address(accountAddress)
-                  .fetch(),
-              ]);
-            }
-            smartNavigation.replaceSmart("TxSuccessResult", {
-              chainId,
-              txHash,
-              data,
-            });
-          }, 5000);
+          smartNavigation.replaceSmart("TxSuccessResult", {
+            chainId,
+            txHash,
+            data,
+          });
           return;
         }
         OwalletEvent.txHashListener(txHash, (txInfo) => {
+          console.log(txHash, txInfo, "txInfo");
           if (txInfo?.code === 0) {
             smartNavigation.replaceSmart("TxSuccessResult", {
               chainId,
@@ -260,7 +205,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
         <View style={styles.containerBottomButton}>
           <Text style={styles.txtPending}>
             The transaction is still pending. {"\n"}
-            You can check the status on {chainInfo?.raw?.txExplorer?.name}
+            You can check the status on {chainInfo.raw.txExplorer.name}
           </Text>
           <OWButton
             label="View on Explorer"
