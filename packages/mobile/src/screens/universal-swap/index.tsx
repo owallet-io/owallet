@@ -567,9 +567,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       originalToToken: originalToToken,
       simulateAmount,
       amounts: amountsBalance,
-      //@ts-ignore
+
       simulatePrice:
         ratio?.amount &&
+        //@ts-ignore
         Math.trunc(new BigDecimal(ratio.amount) / INIT_AMOUNT).toString(),
       userSlippage: userSlippage,
       fromAmount: fromAmountToken,
