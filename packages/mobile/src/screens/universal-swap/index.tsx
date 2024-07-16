@@ -567,6 +567,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       originalToToken: originalToToken,
       simulateAmount,
       amounts: amountsBalance,
+      //@ts-ignore
       simulatePrice:
         ratio?.amount &&
         Math.trunc(new BigDecimal(ratio.amount) / INIT_AMOUNT).toString(),
@@ -582,6 +583,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
     const universalSwapHandler = new UniversalSwapHandler(compileSwapData, {
       cosmosWallet,
+      //@ts-ignore
       evmWallet,
       swapOptions: { isAlphaSmartRouter: useAlphaSmartRouter },
     });
