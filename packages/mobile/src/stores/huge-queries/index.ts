@@ -3,13 +3,9 @@ import {
   AccountStore,
   AccountWithAll,
   CoinGeckoPriceStore,
-  CosmosQueries,
   KeyRingStore,
   QueriesStore,
   QueriesWrappedTron,
-  // IAccountStore,
-  // IChainInfoImpl,
-  // IQueriesStore,
   QueryError,
 } from "@owallet/stores";
 import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
