@@ -1,6 +1,27 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, {
+  FunctionComponent,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { observer } from "mobx-react-lite";
-import { RouteProp, useRoute } from "@react-navigation/native";
+import { StyleSheet, View } from "react-native";
+import {
+  BuyIcon,
+  DepositIcon,
+  SendDashboardIcon,
+} from "../../components/icon/button";
+import { TokenSymbol } from "../../components/token-symbol";
+import { useSmartNavigation } from "../../navigation.provider";
+import { useStore } from "../../stores";
+import { spacing, typography } from "../../themes";
+import { _keyExtract } from "../../utils/helper";
+import { PageWithView } from "../../components/page";
+import { navigate } from "../../router/root";
+import { AddressQRCodeModal } from "../home/components";
+import { TokenSymbolEVM } from "../../components/token-symbol/token-symbol-evm";
 import { useTheme } from "@src/themes/theme-provider";
 import {
   StyleSheet,

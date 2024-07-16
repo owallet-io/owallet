@@ -58,10 +58,30 @@
     call-me-maybe "^1.0.1"
     js-yaml "^4.1.0"
 
-"@apollo/client@3.10.8", "@apollo/client@^3.5.8":
+"@apollo/client@3.10.8":
   version "3.10.8"
   resolved "https://registry.yarnpkg.com/@apollo/client/-/client-3.10.8.tgz#96b1548818e45fac752ec2bd318e5466d9ca26b5"
   integrity sha512-UaaFEitRrPRWV836wY2L7bd3HRCfbMie1jlYMcmazFAK23MVhz/Uq7VG1nwbotPb5xzFsw5RF4Wnp2G3dWPM3g==
+  dependencies:
+    "@graphql-typed-document-node/core" "^3.1.1"
+    "@wry/caches" "^1.0.0"
+    "@wry/equality" "^0.5.6"
+    "@wry/trie" "^0.5.0"
+    graphql-tag "^2.12.6"
+    hoist-non-react-statics "^3.3.2"
+    optimism "^0.18.0"
+    prop-types "^15.7.2"
+    rehackt "^0.1.0"
+    response-iterator "^0.2.6"
+    symbol-observable "^4.0.0"
+    ts-invariant "^0.10.3"
+    tslib "^2.3.0"
+    zen-observable-ts "^1.2.5"
+
+"@apollo/client@^3.5.8":
+  version "3.10.2"
+  resolved "https://registry.yarnpkg.com/@apollo/client/-/client-3.10.2.tgz#3c27edb7762fa60dc4064d31aa2723d7006e7ff1"
+  integrity sha512-J4e2RQN4DgMthCqBtBOXOawYTWmdJprAWqv8rdYLmeW4/Pnrlrl4Hvb/zvENlitDAiRUU33Dc/3OJqIMEJAxNw==
   dependencies:
     "@graphql-typed-document-node/core" "^3.1.1"
     "@wry/caches" "^1.0.0"
@@ -1701,10 +1721,10 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@chain-registry/types@^0.45.20":
-  version "0.45.20"
-  resolved "https://registry.yarnpkg.com/@chain-registry/types/-/types-0.45.20.tgz#2ca59b13e2b943c03435137e8aa087f63a3e9e84"
-  integrity sha512-O/cvF68P0IiONdA+xgEZj3ofYpXrKwBMO3voVmlUsmf9i7HG++pqP3THGGDT5N5zxvTeD3vUAnl5dY8ReOr+lw==
+"@chain-registry/types@^0.45.25":
+  version "0.45.25"
+  resolved "https://registry.yarnpkg.com/@chain-registry/types/-/types-0.45.25.tgz#1988af40fe2201d82875a2ea1ef386e28a3022ca"
+  integrity sha512-nmuZSCUhuMWl0NxDEjZaYb/cuwUoGBHkp6JcEOyb6asoPn3oWOWrcZ/fJtynDVoVIvwoH57rWRlh0fEluFvAWQ==
 
 "@cnakazawa/watch@^1.0.3":
   version "1.0.4"
@@ -5394,31 +5414,10 @@
   resolved "https://registry.yarnpkg.com/@oraichain/immutable/-/immutable-4.3.9.tgz#ff8d5a7b39b5b01f3f72a902cffbfea32ccb20c3"
   integrity sha512-INpHnhL970OCkR7I71Kssb2aLl2l4Y/x8W6FlyRO0KmC8GHjxc/hlNB1t44BiI7lkOYmcWMRQoC8dwParsp1RQ==
 
-"@oraichain/oraidex-common@^1.0.90":
-  version "1.0.90"
-  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-common/-/oraidex-common-1.0.90.tgz#13fbe6fb1d8902ff1e7b07a1bf49ace2bbe5b6da"
-  integrity sha512-Rc0XvRXeT6+l0fZ0CCgCzTYTCAyvwaRJLgGbSQOEZ8X8n0W6Msenm/2IzUe3+ZyObpnmD7oYZwbTvRXhtDXYKw==
-  dependencies:
-    "@cosmjs/amino" "0.31.3"
-    "@cosmjs/cosmwasm-stargate" "0.31.3"
-    "@cosmjs/crypto" "0.31.3"
-    "@cosmjs/proto-signing" "0.31.3"
-    "@cosmjs/stargate" "0.31.3"
-    "@cosmjs/tendermint-rpc" "0.31.3"
-    "@ethersproject/providers" "^5.0.10"
-    "@injectivelabs/sdk-ts" "1.12.1"
-    "@keplr-wallet/types" "^0.11.38"
-    "@oraichain/oraidex-contracts-sdk" latest
-    axios "0.26.1"
-    axios-extensions "3.1.3"
-    bignumber.js "^9.1.2"
-    cosmjs-types "0.8.0"
-    ethers "^5.0.15"
-
-"@oraichain/oraidex-common@latest":
-  version "1.0.88-beta.1"
-  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-common/-/oraidex-common-1.0.88-beta.1.tgz#fe07c37a53c319500c9960815fc50adce39a38bb"
-  integrity sha512-Kl/pShde5yEP6OcPTaaBiIwJqX3/XxPByAmQQXw1D2n8CCyxVZcJOP8E0Iz4v4LkOVlWXh9c8WjhfhCyc4CxSQ==
+"@oraichain/oraidex-common@^1.0.90", "@oraichain/oraidex-common@latest":
+  version "1.0.91"
+  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-common/-/oraidex-common-1.0.91.tgz#b04cf2492658117f8b669719c9793551ade5214b"
+  integrity sha512-MbQbMDhbuElWQOvACDKtxmPJbDOHgUgWP/BhDsKOUNrVRohEFJHdxxB9sLhpQ8wkzfPudwPDU7zAPoSm/Dvikg==
   dependencies:
     "@cosmjs/amino" "0.31.3"
     "@cosmjs/cosmwasm-stargate" "0.31.3"
@@ -5446,15 +5445,10 @@
   resolved "https://registry.yarnpkg.com/@oraichain/oraidex-contracts-sdk/-/oraidex-contracts-sdk-1.0.35.tgz#d8231d3af62172bd488d364c7ced238393f26695"
   integrity sha512-c4qyt6CUEdI4+NgX4vWmVVctcQqEle0S6ExKp+d94C5UsRBELxvmJWkCZczvtTtLEvSsydv+7PKwrPoROgV2BA==
 
-"@oraichain/oraidex-contracts-sdk@^1.0.43", "@oraichain/oraidex-contracts-sdk@latest":
-  version "1.0.45"
-  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-contracts-sdk/-/oraidex-contracts-sdk-1.0.45.tgz#42dae0fdd9e005f920ba305b987009f791acc365"
-  integrity sha512-/nYztdxEX5LQM4DMJQmi9HvZrBVoY3nLAmYqSKZGZ0U1h1SxU7O/o22R3/pQwB+sAJdcibaI8ygC0ov7jC8paA==
-
 "@oraichain/oraidex-universal-swap@^1.0.90":
-  version "1.0.90"
-  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-universal-swap/-/oraidex-universal-swap-1.0.90.tgz#87b3c1a49954ec0ebc3218a03e27d17dd8801024"
-  integrity sha512-JlbgotpdXnSqf+aj3d5DDc683apbMQT6SzhoN5emYbzLouQtELpmCP7kyS53FuZl+qrmF9c2IcUQYJbfWrocrw==
+  version "1.0.92"
+  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-universal-swap/-/oraidex-universal-swap-1.0.92.tgz#ba567b18733dfd07029921c5ff95001cfa923b30"
+  integrity sha512-7umXCTmdXFwWzPDhWGMl5BPIlHn1+T8UqfTr8cUGiS1WfVMR0bPEoLrZUiCths0umjvdmobD2uPCBRH8uaEnBA==
   dependencies:
     "@oraichain/oraidex-common" latest
     "@oraichain/oraidex-contracts-sdk" "^1.0.43"
@@ -10049,11 +10043,11 @@ cborg@^2.0.3:
   integrity sha512-xVW1rSIw1ZXbkwl2XhJ7o/jAv0vnVoQv/QlfQxV8a7V5PlA4UU/AcIiXqmpyybwNWy/GPQU1m/aBVNIWr7/T0w==
 
 chain-registry@^1.63.24:
-  version "1.63.24"
-  resolved "https://registry.yarnpkg.com/chain-registry/-/chain-registry-1.63.24.tgz#502b0e0214f862270fc701ee41bc48197091b596"
-  integrity sha512-DnGv9Vfu0lx+IqXhProiZRYcSrJ0JDZ4TVfpbmM1ceojyibvCLz5JdkosgwUjmjJF0m9Rb3zk9N8KsG3PORnDw==
+  version "1.63.30"
+  resolved "https://registry.yarnpkg.com/chain-registry/-/chain-registry-1.63.30.tgz#a079dc15de3bd8bb532b12a3444e518b75e6d914"
+  integrity sha512-G1aq2zaAkcmgOSkUXQpWOKPyYdOapbbUFQ9ltyhEwAxA89ro2mxqH3grxd29rg8sKhEuFkITvbK05NFwkRvtBQ==
   dependencies:
-    "@chain-registry/types" "^0.45.20"
+    "@chain-registry/types" "^0.45.25"
 
 chainsaw@~0.1.0:
   version "0.1.0"
@@ -15465,6 +15459,11 @@ graphql-tag@^2.12.6:
     tslib "^2.1.0"
 
 graphql@^16.3.0, graphql@^16.9.0:
+  version "16.9.0"
+  resolved "https://registry.yarnpkg.com/graphql/-/graphql-16.9.0.tgz#1c310e63f16a49ce1fbb230bd0a000e99f6f115f"
+  integrity sha512-GGTKBX4SD7Wdb8mqeDLni2oaRGYQWjWHGKPQ24ZMnUtKfcsVoiv4uX8+LJr1K6U5VW2Lu1BwJnj7uiori0YtRw==
+
+graphql@^16.9.0:
   version "16.9.0"
   resolved "https://registry.yarnpkg.com/graphql/-/graphql-16.9.0.tgz#1c310e63f16a49ce1fbb230bd0a000e99f6f115f"
   integrity sha512-GGTKBX4SD7Wdb8mqeDLni2oaRGYQWjWHGKPQ24ZMnUtKfcsVoiv4uX8+LJr1K6U5VW2Lu1BwJnj7uiori0YtRw==

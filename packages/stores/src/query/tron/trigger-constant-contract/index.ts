@@ -38,10 +38,7 @@ export class ObservableQueryTriggerConstantContractInner extends ObservableChain
   }
   @computed
   get transaction(): Transaction {
-    if (!this.response?.data?.transaction) {
-      return;
-    }
-    return this.response.data.transaction;
+    return this.response?.data?.transaction;
   }
 }
 
