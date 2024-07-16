@@ -22,21 +22,40 @@ import { HeaderTx } from "@src/screens/tx-result/components/header-tx";
 import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
 import { Text } from "@src/components/text";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
-import {
-  ChainIdEnum,
-  isMilliseconds,
-  OasisNetwork,
-  TRON_ID,
-} from "@owallet/common";
-import { AddressTransaction, Network } from "@tatumio/tatum";
-import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
+import { isMilliseconds } from "@owallet/common";
+import { Network } from "@tatumio/tatum";
+import { CoinPretty, Dec, Int } from "@owallet/unit";
 import { OwLoading } from "@src/components/owallet-loading/ow-loading";
-
 import { Currency } from "@owallet/types";
-
 import { urlTxHistory } from "@src/common/constants";
 import { OWEmpty } from "@src/components/empty";
 import get from "lodash/get";
+
+function EnegyAndFee({ item }) {
+  return (
+    <>
+      {item.energyUsageTotal ? (
+        <ItemReceivedToken
+          label={"Energy"}
+          valueDisplay={`${maskedNumber(item.energyUsageTotal)}`}
+          btnCopy={false}
+        />
+      ) : null}
+      {item.netFee || item.netUsage ? (
+        <ItemReceivedToken
+          label={"Bandwidth"}
+          valueDisplay={`${maskedNumber(
+            new Int(item.netFee || 0)
+              .add(new Int(item.netUsage || 0).mul(new Int(1e3)))
+              .div(new Int(1e3))
+              .toString()
+          )}`}
+          btnCopy={false}
+        />
+      ) : null}
+    </>
+  );
+}
 
 export const TronDetailTx: FunctionComponent = observer((props) => {
   const { chainStore, priceStore } = useStore();
@@ -110,7 +129,7 @@ export const TronDetailTx: FunctionComponent = observer((props) => {
   const method = item.transactionType === "incoming" ? "Received" : "Sent";
   const amountStr = amount.hideDenom(true).trim(true).toString();
   const checkInOut =
-    amountStr !== "0" ? (item.transactionType === "incoming" ? "+" : "-") : "";
+    amountStr !== "0" && item.transactionType === "incoming" ? "+" : "-" ?? "";
   return (
     <PageWithBottom
       style={{
@@ -214,25 +233,7 @@ export const TronDetailTx: FunctionComponent = observer((props) => {
               }
               btnCopy={false}
             />
-            {item.energyUsageTotal ? (
-              <ItemReceivedToken
-                label={"Energy"}
-                valueDisplay={`${maskedNumber(item.energyUsageTotal)}`}
-                btnCopy={false}
-              />
-            ) : null}
-            {item.netFee || item.netUsage ? (
-              <ItemReceivedToken
-                label={"Bandwidth"}
-                valueDisplay={`${maskedNumber(
-                  new Int(item.netFee || 0)
-                    .add(new Int(item.netUsage || 0).mul(new Int(1e3)))
-                    .div(new Int(1e3))
-                    .toString()
-                )}`}
-                btnCopy={false}
-              />
-            ) : null}
+            <EnegyAndFee item={item} />
 
             <ItemReceivedToken
               label={"Fee"}

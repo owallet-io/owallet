@@ -37,7 +37,6 @@ import {
   IBC_WASM_CONTRACT,
   IBC_WASM_CONTRACT_TEST,
   tokenMap,
-  AmountDetails,
   buildMultipleExecuteMessages,
   ibcInfosOld,
   checkValidateAddressWithNetwork,
@@ -46,17 +45,12 @@ import {
 import { ethers } from "ethers";
 import { UniversalSwapHelper } from "./helper";
 import {
-  ConvertReverse,
-  ConvertType,
   SmartRouteSwapOperations,
-  Type,
   UniversalSwapConfig,
   UniversalSwapData,
   UniversalSwapType,
 } from "./types";
 import { GasPrice } from "@cosmjs/stargate";
-import { Height } from "cosmjs-types/ibc/core/client/v1/client";
-import { CwIcs20LatestQueryClient } from "@oraichain/common-contracts-sdk";
 import { OraiswapRouterQueryClient } from "@oraichain/oraidex-contracts-sdk";
 export class UniversalSwapHandler {
   constructor(
@@ -120,52 +114,94 @@ export class UniversalSwapHandler {
   async combineSwapMsgOraichain(
     timeoutTimestamp?: string
   ): Promise<EncodeObject[]> {
-    // if to token is on Oraichain then we wont need to transfer IBC to the other chain
     const { chainId: toChainId, coinGeckoId: toCoinGeckoId } =
       this.swapData.originalToToken;
     const { coinGeckoId: fromCoinGeckoId } = this.swapData.originalFromToken;
     const { cosmos: sender } = this.swapData.sender;
+
     if (toChainId === "Oraichain") {
-      const msgSwap = this.generateMsgsSwap();
-      return getEncodedExecuteContractMsgs(sender, msgSwap);
+      return this.handleSwapOnOraichain(sender);
     }
+
     const ibcInfo: IBCInfo = this.getIbcInfo("Oraichain", toChainId);
+    const ibcReceiveAddr = await this.getIbcReceiveAddr(toChainId);
 
-    let ibcReceiveAddr = "";
+    let toTokenInOrai = this.getToTokenOnOraichain(toCoinGeckoId, toChainId);
+    let msgTransfer = this.generateIbcTransferMsgs(
+      ibcInfo,
+      sender,
+      toTokenInOrai,
+      ibcReceiveAddr,
+      timeoutTimestamp
+    );
 
+    const isNotMatchCoingeckoId = fromCoinGeckoId !== toCoinGeckoId;
+    let getEncodedExecuteMsgs = [];
+
+    if (this.isSpecialChain(toChainId, toCoinGeckoId)) {
+      getEncodedExecuteMsgs = this.handleSpecialChainCase(
+        fromCoinGeckoId,
+        toCoinGeckoId,
+        toTokenInOrai,
+        sender
+      );
+      if (isNotMatchCoingeckoId) {
+        return this.combineSwapAndTransfer(
+          sender,
+          msgTransfer,
+          getEncodedExecuteMsgs
+        );
+      }
+      return [...getEncodedExecuteMsgs, ...msgTransfer];
+    }
+
+    if (isNotMatchCoingeckoId) {
+      return this.combineSwapAndTransfer(sender, msgTransfer);
+    }
+
+    return msgTransfer;
+  }
+
+  private handleSwapOnOraichain(sender: string): EncodeObject[] {
+    const msgSwap = this.generateMsgsSwap();
+    return getEncodedExecuteContractMsgs(sender, msgSwap);
+  }
+
+  private async getIbcReceiveAddr(toChainId: string): Promise<string> {
     if (this.swapData.recipientAddress) {
       const isValidRecipient = checkValidateAddressWithNetwork(
         this.swapData.recipientAddress,
         toChainId
       );
-
       if (!isValidRecipient.isValid)
         throw generateError("Recipient address invalid!");
-      ibcReceiveAddr = this.swapData.recipientAddress;
-    } else {
-      ibcReceiveAddr = await this.config.cosmosWallet.getKeplrAddr(
-        toChainId as CosmosChainId
-      );
+      return this.swapData.recipientAddress;
     }
-
+    const ibcReceiveAddr = await this.config.cosmosWallet.getKeplrAddr(
+      toChainId as CosmosChainId
+    );
     if (!ibcReceiveAddr) throw generateError("Please login cosmos wallet!");
+    return ibcReceiveAddr;
+  }
 
+  private getToTokenOnOraichain(toCoinGeckoId: string, toChainId: string) {
     let toTokenInOrai = getTokenOnOraichain(toCoinGeckoId);
-    const isSpecialChain = ["kawaii_6886-1", "injective-1"].includes(toChainId);
-    const isSpecialCoingecko = [
-      "kawaii-islands",
-      "milky-token",
-      "injective-protocol",
-    ].includes(toCoinGeckoId);
-    if (isSpecialChain && isSpecialCoingecko) {
+    if (this.isSpecialChain(toChainId, toCoinGeckoId)) {
       const IBC_DECIMALS = 18;
       toTokenInOrai = getTokenOnOraichain(toCoinGeckoId, IBC_DECIMALS);
     }
+    return toTokenInOrai;
+  }
 
-    let msgTransfer: EncodeObject[];
-    // if ibc info source has wasm in it, it means we need to transfer IBC using IBC wasm contract, not normal ibc transfer
+  private generateIbcTransferMsgs(
+    ibcInfo: IBCInfo,
+    sender: string,
+    toTokenInOrai: any,
+    ibcReceiveAddr: string,
+    timeoutTimestamp?: string
+  ): EncodeObject[] {
     if (ibcInfo.source.includes("wasm")) {
-      msgTransfer = getEncodedExecuteContractMsgs(
+      return getEncodedExecuteContractMsgs(
         sender,
         this.generateMsgsIbcWasm(
           ibcInfo,
@@ -175,7 +211,7 @@ export class UniversalSwapHandler {
         )
       );
     } else {
-      msgTransfer = [
+      return [
         {
           typeUrl: "/ibc.applications.transfer.v1.MsgTransfer",
           value: MsgTransfer.fromPartial({
@@ -191,51 +227,54 @@ export class UniversalSwapHandler {
         },
       ];
     }
-    const isNotMatchCoingeckoId = fromCoinGeckoId !== toCoinGeckoId;
-    let getEncodedExecuteMsgs = [];
-    if (isSpecialChain) {
-      // 1. = coingeckoId => convert + bridge
-      if (fromCoinGeckoId === toCoinGeckoId && isSpecialCoingecko) {
-        const evmToken = tokenMap[toTokenInOrai.denom];
-        const evmAmount = coin(
-          toAmount(this.swapData.fromAmount, evmToken.decimals).toString(),
-          evmToken.denom
-        );
-        const msgConvertReverses =
-          UniversalSwapHelper.generateConvertCw20Erc20Message(
-            this.swapData.amounts,
-            getTokenOnOraichain(toCoinGeckoId),
-            sender,
-            evmAmount
-          );
-        const executeContractMsgs = buildMultipleExecuteMessages(
-          undefined,
-          ...msgConvertReverses
-        );
-        getEncodedExecuteMsgs = getEncodedExecuteContractMsgs(
+  }
+
+  private isSpecialChain(toChainId: string, toCoinGeckoId: string): boolean {
+    const isSpecialChain = ["kawaii_6886-1", "injective-1"].includes(toChainId);
+    const isSpecialCoingecko = [
+      "kawaii-islands",
+      "milky-token",
+      "injective-protocol",
+    ].includes(toCoinGeckoId);
+    return isSpecialChain && isSpecialCoingecko;
+  }
+
+  private handleSpecialChainCase(
+    fromCoinGeckoId: string,
+    toCoinGeckoId: string,
+    toTokenInOrai: any,
+    sender: string
+  ): EncodeObject[] {
+    if (fromCoinGeckoId === toCoinGeckoId) {
+      const evmToken = tokenMap[toTokenInOrai.denom];
+      const evmAmount = coin(
+        toAmount(this.swapData.fromAmount, evmToken.decimals).toString(),
+        evmToken.denom
+      );
+      const msgConvertReverses =
+        UniversalSwapHelper.generateConvertCw20Erc20Message(
+          this.swapData.amounts,
+          getTokenOnOraichain(toCoinGeckoId),
           sender,
-          executeContractMsgs
+          evmAmount
         );
-      }
-
-      // 2. != coingeckoId => swap + convert + bridge
-      // if not same coingeckoId, swap first then transfer token that have same coingeckoid.
-      if (isNotMatchCoingeckoId) {
-        const msgSwap = this.generateMsgsSwap();
-        const msgExecuteSwap = getEncodedExecuteContractMsgs(sender, msgSwap);
-        return [...msgExecuteSwap, ...getEncodedExecuteMsgs, ...msgTransfer];
-      }
-
-      return [...getEncodedExecuteMsgs, ...msgTransfer];
+      const executeContractMsgs = buildMultipleExecuteMessages(
+        undefined,
+        ...msgConvertReverses
+      );
+      return getEncodedExecuteContractMsgs(sender, executeContractMsgs);
     }
+    return [];
+  }
 
-    // if not same coingeckoId, swap first then transfer token that have same coingeckoid.
-    if (isNotMatchCoingeckoId) {
-      const msgSwap = this.generateMsgsSwap();
-      const msgExecuteSwap = getEncodedExecuteContractMsgs(sender, msgSwap);
-      return [...msgExecuteSwap, ...msgTransfer];
-    }
-    return msgTransfer;
+  private combineSwapAndTransfer(
+    sender: string,
+    msgTransfer: EncodeObject[],
+    getEncodedExecuteMsgs: EncodeObject[] = []
+  ): EncodeObject[] {
+    const msgSwap = this.generateMsgsSwap();
+    const msgExecuteSwap = getEncodedExecuteContractMsgs(sender, msgSwap);
+    return [...msgExecuteSwap, ...getEncodedExecuteMsgs, ...msgTransfer];
   }
 
   getTranferAddress(

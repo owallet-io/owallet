@@ -1,3 +1,4 @@
+//@ts-nocheck
 import React, {
   FunctionComponent,
   useEffect,
@@ -39,6 +40,56 @@ enum Tab {
   Data,
 }
 const cx = cn.bind(style);
+
+const RenderTab: FunctionComponent = observer(
+  ({
+    signDocHelper,
+    tab,
+    isADR36WithString,
+    signDocJsonAll,
+    memoConfig,
+    feeConfig,
+    gasConfig,
+    interactionInfo,
+    preferNoSetFee,
+    preferNoSetMemo,
+    setOpenSetting,
+  }) => {
+    return (
+      <div
+        className={classnames(style.tabContainer, {
+          [style.dataTab]: tab === Tab.Data,
+        })}
+      >
+        {/* {tab === Tab.Data ? <DataTab signDocHelper={signDocHelper} /> : null} */}
+        {tab === Tab.Details ? (
+          signDocHelper.signDocWrapper?.isADR36SignDoc ? (
+            <ADR36SignDocDetailsTab
+              signDocWrapper={signDocHelper.signDocWrapper}
+              isADR36WithString={isADR36WithString}
+              origin={origin}
+            />
+          ) : (
+            <DetailsTab
+              signDocHelper={signDocHelper}
+              signDocJsonAll={signDocJsonAll}
+              memoConfig={memoConfig}
+              feeConfig={feeConfig}
+              gasConfig={gasConfig}
+              isInternal={
+                interactionInfo.interaction &&
+                interactionInfo.interactionInternal
+              }
+              preferNoSetFee={preferNoSetFee}
+              preferNoSetMemo={preferNoSetMemo}
+              setOpenSetting={setOpenSetting}
+            />
+          )
+        ) : null}
+      </div>
+    );
+  }
+);
 
 export const SignPage: FunctionComponent = observer(() => {
   const history = useHistory();
@@ -314,17 +365,6 @@ export const SignPage: FunctionComponent = observer(() => {
         isLoaded ? (
           <div className={style.container}>
             <div style={{ height: "75%", overflow: "scroll", padding: 16 }}>
-              {/* <div
-                style={{
-                  color: "#353945",
-                  fontSize: 24,
-                  fontWeight: 500,
-                  textAlign: "center",
-                  paddingBottom: 24,
-                }}
-              >
-                {chainStore?.current?.raw?.chainName || "Oraichain"}
-              </div> */}
               <div
                 className={classnames(style.tabs)}
                 style={{ display: "flex", paddingBottom: 12 }}
@@ -350,68 +390,20 @@ export const SignPage: FunctionComponent = observer(() => {
                   <Text weight="600">Raw Data</Text>
                   <img src={require("assets/icon/tdesign_chevron-right.svg")} />
                 </div>
-                {/* <ul>
-                  <li className={classnames({ activeTabs: tab === Tab.Details })}>
-                    <a
-                      className={classnames(style.tab, {
-                        activeText: tab === Tab.Details
-                      })}
-                      onClick={() => {
-                        setTab(Tab.Details);
-                      }}
-                    >
-                      {intl.formatMessage({
-                        id: "sign.tab.details"
-                      })}
-                    </a>
-                  </li>
-                  <li className={classnames({ activeTabs: tab === Tab.Data })}>
-                    <a
-                      className={classnames(style.tab, {
-                        activeText: tab === Tab.Data
-                      })}
-                      onClick={() => {
-                        setTab(Tab.Data);
-                      }}
-                    >
-                      {intl.formatMessage({
-                        id: "sign.tab.data"
-                      })}
-                    </a>
-                  </li>
-                </ul> */}
               </div>
-              <div
-                className={classnames(style.tabContainer, {
-                  [style.dataTab]: tab === Tab.Data,
-                })}
-              >
-                {/* {tab === Tab.Data ? <DataTab signDocHelper={signDocHelper} /> : null} */}
-                {tab === Tab.Details ? (
-                  signDocHelper.signDocWrapper?.isADR36SignDoc ? (
-                    <ADR36SignDocDetailsTab
-                      signDocWrapper={signDocHelper.signDocWrapper}
-                      isADR36WithString={isADR36WithString}
-                      origin={origin}
-                    />
-                  ) : (
-                    <DetailsTab
-                      signDocHelper={signDocHelper}
-                      signDocJsonAll={signDocJsonAll}
-                      memoConfig={memoConfig}
-                      feeConfig={feeConfig}
-                      gasConfig={gasConfig}
-                      isInternal={
-                        interactionInfo.interaction &&
-                        interactionInfo.interactionInternal
-                      }
-                      preferNoSetFee={preferNoSetFee}
-                      preferNoSetMemo={preferNoSetMemo}
-                      setOpenSetting={setOpenSetting}
-                    />
-                  )
-                ) : null}
-              </div>
+              <RenderTab
+                signDocHelper={signDocHelper}
+                tab={tab}
+                isADR36WithString={isADR36WithString}
+                signDocJsonAll={signDocJsonAll}
+                memoConfig={memoConfig}
+                feeConfig={feeConfig}
+                gasConfig={gasConfig}
+                interactionInfo={interactionInfo}
+                preferNoSetFee={preferNoSetFee}
+                preferNoSetMemo={preferNoSetMemo}
+                setOpenSetting
+              />
             </div>
             <div
               style={{
