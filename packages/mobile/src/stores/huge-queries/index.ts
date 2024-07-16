@@ -89,71 +89,85 @@ export class HugeQueriesStore {
         this.keyRingStore.keyRingLedgerAddresses,
         false
       );
+
       if (address === "") {
         continue;
       }
+
       const queries = this.queriesStore.get(chainInfo.chainId);
       const queryBalance = queries.queryBalances.getQueryBech32Address(address);
-
       const currencies = [...chainInfo.currencies];
+
       if (chainInfo.stakeCurrency) {
         currencies.push(chainInfo.stakeCurrency);
       }
-      for (const currency of currencies) {
-        const key = `${ChainIdHelper.parse(chainInfo.chainId).identifier}/${
-          currency.coinMinimalDenom
-        }`;
-        if (!map.has(key)) {
-          if (
-            chainInfo.stakeCurrency?.coinMinimalDenom ===
-            currency.coinMinimalDenom
-          ) {
-            const balance = queryBalance.stakable?.balance;
-            if (!balance) {
-              continue;
-            }
-            // If the balance is zero, don't show it.
-            // 다시 제로 일때 보여주기 위해서 아래코드를 주석처리함
-            // if (balance.toDec().equals(HugeQueriesStore.zeroDec)) {
-            //   continue;
-            // }
 
-            map.set(key, {
-              chainInfo,
-              token: balance,
-              price: currency.coinGeckoId
-                ? this.priceStore.calculatePrice(balance)
-                : undefined,
-              isFetching: queryBalance.stakable.isFetching,
-              error: queryBalance.stakable.error,
-            });
-          } else {
-            const balance = queryBalance.getBalance(currency);
-            if (balance) {
-              // If the balance is zero and currency is "native", don't show it.
-              if (
-                balance.balance.toDec().equals(HugeQueriesStore.zeroDec) &&
-                new DenomHelper(currency.coinMinimalDenom).type === "native"
-              ) {
-                continue;
-              }
-
-              map.set(key, {
-                chainInfo,
-                token: balance.balance,
-                price: currency.coinGeckoId
-                  ? this.priceStore.calculatePrice(balance.balance)
-                  : undefined,
-                isFetching: balance.isFetching,
-                error: balance.error,
-              });
-            }
-          }
-        }
-      }
+      this.setCurrencyIntoMap(currencies, map, queryBalance, chainInfo);
     }
 
     return map;
+  }
+
+  mapStakeCurrencyBalance(currency, map, queryBalance, chainInfo) {
+    const key = `${ChainIdHelper.parse(chainInfo.chainId).identifier}/${
+      currency.coinMinimalDenom
+    }`;
+
+    const balance = queryBalance.stakable?.balance;
+
+    map.set(key, {
+      chainInfo,
+      token: balance,
+      price: currency.coinGeckoId
+        ? this.priceStore.calculatePrice(balance)
+        : undefined,
+      isFetching: queryBalance.stakable.isFetching,
+      error: queryBalance.stakable.error,
+    });
+  }
+
+  mapNonStakeCurrencyBalance(currency, map, queryBalance, chainInfo) {
+    const key = `${ChainIdHelper.parse(chainInfo.chainId).identifier}/${
+      currency.coinMinimalDenom
+    }`;
+
+    const balance = queryBalance.getBalance(currency);
+
+    if (balance) {
+      map.set(key, {
+        chainInfo,
+        token: balance.balance,
+        price: currency.coinGeckoId
+          ? this.priceStore.calculatePrice(balance.balance)
+          : undefined,
+        isFetching: balance.isFetching,
+        error: balance.error,
+      });
+    }
+  }
+
+  protected setCurrencyIntoMap(currencies, map, queryBalance, chainInfo) {
+    for (const currency of currencies) {
+      const key = `${ChainIdHelper.parse(chainInfo.chainId).identifier}/${
+        currency.coinMinimalDenom
+      }`;
+
+      if (!map.has(key)) {
+        if (
+          chainInfo.stakeCurrency?.coinMinimalDenom ===
+          currency.coinMinimalDenom
+        ) {
+          this.mapStakeCurrencyBalance(currency, map, queryBalance, chainInfo);
+        } else {
+          this.mapNonStakeCurrencyBalance(
+            currency,
+            map,
+            queryBalance,
+            chainInfo
+          );
+        }
+      }
+    }
   }
 
   @computed
