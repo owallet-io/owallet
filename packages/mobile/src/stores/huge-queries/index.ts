@@ -58,11 +58,11 @@ interface ViewChainAddress {
 }
 
 /**
- * 거대한 쿼리를 만든다.
- * 거대하기 때문에 로직을 분리하기 위해서 따로 만들었다.
- * 근데 이름그대로 거대한 쿼리를 만들기 때문에 꼭 필요할때만 써야한다.
- * 특정 밸런스가 필요하다고 여기서 balance를 다 가져와서 그 중에 한개만 찾아서 쓰고 그러면 안된다.
- * 꼭 필요할때만 쓰자
+ * Create huge queries.
+ * Because it is huge, it was created separately to separate the logic.
+ * However, as the name suggests, it creates a huge query, so it should be used only when absolutely necessary.
+ * If you need a specific balance, you should not take all the balances and find and use only one of them.
+ * Use only when absolutely necessary
  */
 export class HugeQueriesStore {
   protected static zeroDec = new Dec(0);
