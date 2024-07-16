@@ -92,13 +92,13 @@ export async function getFeatures(
     baseURL: chainInfo.rest,
   });
 
-  const staragteUpdate = await checkStargate(restInstance);
+  const stargateUpdate = await checkStargate(restInstance);
   const ibcGoUpdates = await checkIBCGo(restInstance);
   const ibcTransferUpdate = await checkIBCTransfer(restInstance, ibcGoUpdates);
   const noLegacyStdTxUpdate = await checkNoLegacyStdTx(restInstance);
 
   const updates = {
-    stargate: staragteUpdate,
+    stargate: stargateUpdate,
     "ibc-go": ibcGoUpdates,
     "ibc-transfer": ibcTransferUpdate,
     "no-legacy-stdTx": noLegacyStdTxUpdate,
@@ -111,7 +111,7 @@ export async function getFeatures(
   return {
     features,
     slient:
-      staragteUpdate ||
+      stargateUpdate ||
       ibcGoUpdates ||
       ibcTransferUpdate ||
       noLegacyStdTxUpdate,
