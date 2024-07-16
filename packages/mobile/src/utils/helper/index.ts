@@ -16,8 +16,7 @@ import {
   toSumDisplay,
   tokensIcon,
 } from "@oraichain/oraidex-common";
-import { API } from "@src/common/api";
-import { ChainIdEnum, Network } from "@owallet/common";
+import { ChainIdEnum } from "@owallet/common";
 import { Dec } from "@owallet/unit";
 
 const SCHEME_IOS = "owallet://open_url?url=";
@@ -329,10 +328,6 @@ export function formarPriceWithDigits(amount, numOfDigits = 2) {
 
 export function removeSpecialChars(str) {
   return str.replace(/[^\w\s]/gi, "");
-}
-
-function addSpacesToString(str) {
-  return str.replace(/([a-z])([A-Z])/g, "$1 $2");
 }
 
 export const getTransactionValue = ({ data, address, logs }) => {
