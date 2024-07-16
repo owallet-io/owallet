@@ -783,33 +783,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     // }
   };
 
-  return (
-    <PageWithBottom
-      style={{ paddingTop: 0 }}
-      backgroundColor={colors["neutral-surface-bg"]}
-      bottomGroup={
-        <OWButton
-          label="Swap"
-          style={[
-            styles.bottomBtn,
-            {
-              width: metrics.screenWidth - 32,
-            },
-          ]}
-          textStyle={styles.txtBtnSend}
-          disabled={amountLoading || swapLoading}
-          loading={swapLoading}
-          onPress={() => handleSubmit()}
-        />
-      }
-    >
-      <ScrollView
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl refreshing={loadingRefresh} onRefresh={onRefresh} />
-        }
-      >
+  const renderModals = () => {
+    return (
+      <>
         <PriceSettingModal
           close={() => {
             setPriceSettingModal(false);
@@ -916,6 +892,164 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           handleSendToAddress={handleSendToAddress}
           handleToggle={setToggle}
         />
+      </>
+    );
+  };
+
+  const renderSwapInfo = () => {
+    return (
+      <OWCard
+        type="normal"
+        style={{
+          marginVertical: 16,
+          marginTop: 16,
+          borderColor: colors["neutral-border-bold"],
+          borderWidth: 2,
+        }}
+      >
+        {amountLoading ? (
+          <View
+            style={{
+              width: "100%",
+              height: "100%",
+              position: "absolute",
+              backgroundColor: colors["neutral-surface-card"],
+              zIndex: 999,
+              alignContent: "center",
+              justifyContent: "center",
+              opacity: 0.8,
+            }}
+          >
+            <ActivityIndicator />
+          </View>
+        ) : null}
+        <TouchableOpacity
+          onPress={() => {
+            setPriceSettingModal(true);
+          }}
+        >
+          {renderSmartRoutes()}
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginVertical: 10,
+            }}
+          >
+            <Text>Rate</Text>
+            <TouchableOpacity
+              onPress={() => {
+                setPriceSettingModal(true);
+              }}
+              style={{ flexDirection: "row", alignItems: "center" }}
+            >
+              <Text weight="600" color={colors["primary-text-action"]}>
+                {`1 ${originalFromToken.name} ≈ ${
+                  ratio
+                    ? maskedNumber(Number(ratio.displayAmount / INIT_AMOUNT))
+                    : "0"
+                } ${originalToToken.name}`}{" "}
+              </Text>
+              <OWIcon
+                name="setting-outline"
+                color={colors["primary-text-action"]}
+                size={20}
+              />
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.borderline} />
+          {!swapLoading &&
+          (!fromAmountToken || !toAmountToken) &&
+          fromToken.denom === TRON_DENOM ? (
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginVertical: 10,
+              }}
+            >
+              <Text>Minimum Amount</Text>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Text weight="600" color={colors["primary-text-action"]}>
+                  {(fromToken.minAmountSwap || "0") + " " + fromToken.name}
+                </Text>
+              </View>
+            </View>
+          ) : null}
+
+          <View style={styles.borderline} />
+
+          <View style={{ marginVertical: 10 }}>
+            <Text style={{ lineHeight: 24 }}>
+              Min. Received:{" "}
+              <Text weight="600">
+                {(maskedNumber(minimumReceive) || "0") + " " + toToken.name}
+              </Text>
+              {fromAmountToken > 0 ? (
+                <React.Fragment>
+                  <Text weight="600" size={18}>
+                    {"  •  "}
+                  </Text>
+                  Est. Fee:{" "}
+                  <Text weight="600">
+                    {maskedNumber(totalFeeEst)} {originalToToken.name}
+                  </Text>
+                </React.Fragment>
+              ) : null}
+            </Text>
+          </View>
+
+          {minimumReceive < 0 && (
+            <View style={{ marginTop: 10 }}>
+              <Text color={colors["danger"]}>
+                Current swap amount is too small
+              </Text>
+            </View>
+          )}
+
+          {!fromTokenFee && !toTokenFee && isWarningSlippage && (
+            <View style={{ marginTop: 10 }}>
+              <Text color={colors["danger"]}>
+                Current slippage exceed configuration!
+              </Text>
+            </View>
+          )}
+        </TouchableOpacity>
+      </OWCard>
+    );
+  };
+
+  return (
+    <PageWithBottom
+      style={{ paddingTop: 0 }}
+      backgroundColor={colors["neutral-surface-bg"]}
+      bottomGroup={
+        <OWButton
+          label="Swap"
+          style={[
+            styles.bottomBtn,
+            {
+              width: metrics.screenWidth - 32,
+            },
+          ]}
+          textStyle={styles.txtBtnSend}
+          disabled={amountLoading || swapLoading}
+          loading={swapLoading}
+          onPress={() => handleSubmit()}
+        />
+      }
+    >
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={loadingRefresh} onRefresh={onRefresh} />
+        }
+      >
+        {renderModals()}
         <View style={{ padding: 16, paddingTop: 0 }}>
           <View>
             <SwapBox
@@ -963,130 +1097,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             </TouchableOpacity>
           </View>
 
-          <OWCard
-            type="normal"
-            style={{
-              marginVertical: 16,
-              marginTop: 16,
-              borderColor: colors["neutral-border-bold"],
-              borderWidth: 2,
-            }}
-          >
-            {amountLoading ? (
-              <View
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  position: "absolute",
-                  backgroundColor: colors["neutral-surface-card"],
-                  zIndex: 999,
-                  alignContent: "center",
-                  justifyContent: "center",
-                  opacity: 0.8,
-                }}
-              >
-                <ActivityIndicator />
-              </View>
-            ) : null}
-            <TouchableOpacity
-              onPress={() => {
-                setPriceSettingModal(true);
-              }}
-            >
-              {renderSmartRoutes()}
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginVertical: 10,
-                }}
-              >
-                <Text>Rate</Text>
-                <TouchableOpacity
-                  onPress={() => {
-                    setPriceSettingModal(true);
-                  }}
-                  style={{ flexDirection: "row", alignItems: "center" }}
-                >
-                  <Text weight="600" color={colors["primary-text-action"]}>
-                    {`1 ${originalFromToken.name} ≈ ${
-                      ratio
-                        ? maskedNumber(
-                            Number(ratio.displayAmount / INIT_AMOUNT)
-                          )
-                        : "0"
-                    } ${originalToToken.name}`}{" "}
-                  </Text>
-                  <OWIcon
-                    name="setting-outline"
-                    color={colors["primary-text-action"]}
-                    size={20}
-                  />
-                </TouchableOpacity>
-              </View>
-
-              <View style={styles.borderline} />
-              {!swapLoading &&
-              (!fromAmountToken || !toAmountToken) &&
-              fromToken.denom === TRON_DENOM ? (
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginVertical: 10,
-                  }}
-                >
-                  <Text>Minimum Amount</Text>
-                  <View style={{ flexDirection: "row", alignItems: "center" }}>
-                    <Text weight="600" color={colors["primary-text-action"]}>
-                      {(fromToken.minAmountSwap || "0") + " " + fromToken.name}
-                    </Text>
-                  </View>
-                </View>
-              ) : null}
-
-              <View style={styles.borderline} />
-
-              <View style={{ marginVertical: 10 }}>
-                <Text style={{ lineHeight: 24 }}>
-                  Min. Received:{" "}
-                  <Text weight="600">
-                    {(maskedNumber(minimumReceive) || "0") + " " + toToken.name}
-                  </Text>
-                  {fromAmountToken > 0 ? (
-                    <React.Fragment>
-                      <Text weight="600" size={18}>
-                        {"  •  "}
-                      </Text>
-                      Est. Fee:{" "}
-                      <Text weight="600">
-                        {maskedNumber(totalFeeEst)} {originalToToken.name}
-                      </Text>
-                    </React.Fragment>
-                  ) : null}
-                </Text>
-              </View>
-
-              {minimumReceive < 0 && (
-                <View style={{ marginTop: 10 }}>
-                  <Text color={colors["danger"]}>
-                    Current swap amount is too small
-                  </Text>
-                </View>
-              )}
-
-              {!fromTokenFee && !toTokenFee && isWarningSlippage && (
-                <View style={{ marginTop: 10 }}>
-                  <Text color={colors["danger"]}>
-                    Current slippage exceed configuration!
-                  </Text>
-                </View>
-              )}
-            </TouchableOpacity>
-          </OWCard>
-
+          {renderSwapInfo()}
           <OWCard type="normal">
             <View
               style={{
