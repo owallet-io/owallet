@@ -326,7 +326,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     }
   };
 
-  const onFetchAmount = (tokenReload?: Array<any>) => {
+  const onFetchAmount = async (tokenReload?: Array<any>) => {
     universalSwapStore.clearAmounts();
     universalSwapStore.setLoaded(false);
     const customChainInfos = chainInfos;
@@ -608,7 +608,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
         if (differenceInSeconds > 10) {
           universalSwapStore.setLoaded(false);
-          onFetchAmount();
+          await onFetchAmount();
           setRefreshDate(Date.now());
         } else {
           console.log("The dates are 10 seconds or less apart.");
