@@ -3,6 +3,7 @@ import { Text } from "@src/components/text";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
 import {
+  ActivityIndicator,
   RefreshControl,
   ScrollView,
   TouchableOpacity,
@@ -37,6 +38,7 @@ import {
   chainInfos,
   TokenItemType,
   getTokensFromNetwork,
+  calcMaxAmount,
 } from "@oraichain/oraidex-common";
 import { openLink } from "../../utils/helper";
 import { feeEstimate } from "@owallet/common";
@@ -61,9 +63,9 @@ import {
 import {
   getTransactionUrl,
   handleErrorSwap,
-  floatToPercent,
   handleSaveTokenInfos,
   getSpecialCoingecko,
+  isAllowAlphaSmartRouter,
 } from "./helpers";
 import { Mixpanel } from "mixpanel-react-native";
 import { metrics } from "@src/themes";
@@ -100,7 +102,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     appInitStore.updatePrices(prices);
   }, [prices]);
 
-  const [counter, setCounter] = useState(0);
   const theme = appInitStore.getInitApp.theme;
 
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
@@ -112,13 +113,14 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const [priceSettingModal, setPriceSettingModal] = useState(false);
   const [userSlippage, setUserSlippage] = useState(DEFAULT_SLIPPAGE);
   const [swapLoading, setSwapLoading] = useState(false);
+  const [isAIRoute, setAIRoute] = useState(true);
 
   const [loadingRefresh, setLoadingRefresh] = useState(false);
   const [searchTokenName, setSearchTokenName] = useState("");
   const [fromNetworkOpen, setFromNetworkOpen] = useState(false);
-  const [fromNetwork, setFromNetwork] = useState("Oraichain");
+  const [fromNetwork, setFromNetwork] = useState(ChainIdEnum.Oraichain);
   const [toNetworkOpen, setToNetworkOpen] = useState(false);
-  const [toNetwork, setToNetwork] = useState("Oraichain");
+  const [toNetwork, setToNetwork] = useState(ChainIdEnum.Oraichain);
 
   const [[fromTokenDenom, toTokenDenom], setSwapTokens] = useState<
     [string, string]
@@ -141,6 +143,11 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const originalFromToken = tokenMap[fromTokenDenom];
   const originalToToken = tokenMap[toTokenDenom];
 
+  const isFromBTC = originalFromToken.coinGeckoId === "bitcoin";
+  const INIT_SIMULATE_NOUGHT_POINT_OH_ONE_AMOUNT = 0.00001;
+  let INIT_AMOUNT = 1;
+  if (isFromBTC) INIT_AMOUNT = INIT_SIMULATE_NOUGHT_POINT_OH_ONE_AMOUNT;
+
   const subAmountFrom = toSubAmount(
     universalSwapStore.getAmount,
     originalFromToken
@@ -159,30 +166,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       subAmountTo
     : BigInt(0);
 
-  const onMaxFromAmount = (amount: bigint, type: string) => {
-    const displayAmount = toDisplay(amount, originalFromToken?.decimals);
-    let finalAmount = displayAmount;
-
-    // hardcode fee when swap token orai
-    if (fromTokenDenom === ORAI) {
-      const estimatedFee = feeEstimate(
-        originalFromToken,
-        GAS_ESTIMATION_SWAP_DEFAULT
-      );
-      const fromTokenBalanceDisplay = toDisplay(
-        fromTokenBalance,
-        originalFromToken?.decimals
-      );
-      if (type === MAX) {
-        finalAmount =
-          estimatedFee > displayAmount ? 0 : displayAmount - estimatedFee;
-      } else {
-        finalAmount =
-          estimatedFee > fromTokenBalanceDisplay - displayAmount
-            ? 0
-            : displayAmount;
-      }
-    }
+  const onMaxFromAmount = (finalAmount: number) => {
     setSwapAmount([finalAmount, toAmountToken]);
   };
 
@@ -225,6 +209,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     fromTokenDenom,
     toTokenDenom
   );
+  const useAlphaSmartRouter =
+    isAllowAlphaSmartRouter(originalFromToken, originalToToken) && isAIRoute;
 
   const {
     minimumReceive,
@@ -234,7 +220,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     estimateAverageRatio,
     relayerFeeAmount,
     relayerFeeToken,
-    INIT_AMOUNT,
     impactWarning,
     routersSwapData,
     simulateData,
@@ -247,9 +232,19 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     userSlippage,
     client,
     setSwapAmount,
-    handleErrorSwap
+    handleErrorSwap,
+    {
+      useAlphaSmartRoute: useAlphaSmartRouter,
+    },
+    isAIRoute
   );
 
+  const usdPriceShowFrom = (
+    prices?.[originalFromToken?.coinGeckoId] * fromAmountToken
+  ).toFixed(6);
+  const usdPriceShowTo = (
+    prices?.[originalToToken?.coinGeckoId] * simulateData?.displayAmount
+  ).toFixed(6);
   const simulateDisplayAmount =
     simulateData && simulateData.displayAmount ? simulateData.displayAmount : 0;
 
@@ -299,7 +294,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       // other chains, oraichain
       const otherChainTokens = flatten(
         customChainInfos
-          .filter((chainInfo) => chainInfo.chainId !== "Oraichain")
+          ?.filter((chainInfo) => chainInfo.chainId !== "Oraichain")
           .map(getTokensFromNetwork)
       );
       const oraichainTokens: TokenItemType[] =
@@ -315,7 +310,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         kwtAddress: kwt ?? accountKawaiiCosmos.bech32Address,
         tronAddress: tron ?? null,
         cwStargate,
-        tokenReload: tokenReload?.length > 0 ? tokenReload : null,
+        tokenReload: Number(tokenReload?.length) > 0 ? tokenReload : null,
         customChainInfos: flattenTokens,
       };
 
@@ -336,15 +331,19 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     universalSwapStore.setLoaded(false);
     const customChainInfos = chainInfos;
     if (accountOrai.isNanoLedger) {
-      if (Object.keys(keyRingStore?.keyRingLedgerAddresses).length > 0) {
+      if (
+        keyRingStore.keyRingLedgerAddresses &&
+        Object.keys(keyRingStore.keyRingLedgerAddresses).length > 0
+      ) {
         setTimeout(() => {
           handleFetchAmounts(
             {
               orai: accountOrai.bech32Address,
-              eth: keyRingStore.keyRingLedgerAddresses.eth ?? null,
-              tron: keyRingStore.keyRingLedgerAddresses.trx ?? null,
+              eth: keyRingStore.keyRingLedgerAddresses.eth ?? undefined,
+              tron: keyRingStore.keyRingLedgerAddresses.trx ?? undefined,
               kwt: accountKawaiiCosmos.bech32Address,
-              tokenReload: tokenReload?.length > 0 ? tokenReload : null,
+              tokenReload:
+                Number(tokenReload?.length) > 0 ? tokenReload : undefined,
             },
             customChainInfos
           );
@@ -370,7 +369,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (retryCount?: number) => {
     setSwapLoading(true);
     if (fromAmountToken <= 0) {
       showToast({
@@ -412,9 +411,12 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     }
 
     const isCustomRecipient = sendToAddress && sendToAddress !== "";
+    const alphaSmartRoutes =
+      useAlphaSmartRouter && simulateData && simulateData?.routes;
 
     let amountsBalance = universalSwapStore.getAmount;
-    let simulateAmount = ratio.amount;
+
+    let simulateAmount = simulateData.amount;
 
     const { isSpecialFromCoingecko } = getSpecialCoingecko(
       originalFromToken.coinGeckoId,
@@ -443,17 +445,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       };
     }
 
-    if (
-      (originalToToken.chainId === "injective-1" &&
-        originalToToken.coinGeckoId === "injective-protocol") ||
-      originalToToken.chainId === "kawaii_6886-1"
-    ) {
-      simulateAmount = toAmount(
-        ratio.displayAmount,
-        originalToToken.decimals
-      ).toString();
-    }
-
     const tokenFromNetwork = chainStore.getChain(
       originalFromToken.chainId
     ).chainName;
@@ -465,14 +456,18 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       `Universal Swap`,
       `fromToken=${originalFromToken.name};toToken=${originalToToken.name};fromNetwork=${tokenFromNetwork};toNetwork=${tokenToNetwork};`
     );
+
     const logEvent = {
       address: accountOrai.bech32Address,
-      fromToken: originalFromToken.name,
+      fromToken: `${originalFromToken.name} - ${originalFromToken.chainId}`,
       fromAmount: `${fromAmountToken}`,
-      toToken: originalToToken.name,
+      toToken: `${originalToToken.name} - ${originalToToken.chainId}`,
       toAmount: `${toAmountToken}`,
-      tokenFromNetwork,
-      tokenToNetwork,
+      fromNetwork: originalFromToken.chainId,
+      toNetwork: originalToToken.chainId,
+      useAlphaSmartRouter,
+      priceOfFromTokenInUsd: usdPriceShowFrom,
+      priceOfToTokenInUsd: usdPriceShowTo,
     };
 
     try {
@@ -486,7 +481,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         relayerAmount: relayerFeeToken.toString(),
         relayerDecimals: RELAYER_DECIMAL,
       };
-
       const universalSwapData: UniversalSwapData = {
         sender: {
           cosmos: cosmosAddress,
@@ -504,7 +498,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         userSlippage: userSlippage,
         fromAmount: fromAmountToken,
         relayerFee,
-        smartRoutes: routersSwapData?.routeSwapOps,
+        alphaSmartRoutes,
       };
 
       const compileSwapData = isCustomRecipient
@@ -522,6 +516,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           cosmosWallet,
           //@ts-ignore
           evmWallet,
+          swapOptions: {
+            isAlphaSmartRouter: useAlphaSmartRouter,
+          },
         }
       );
 
@@ -531,7 +528,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         const { transactionHash } = result;
 
         setSwapLoading(false);
-        setCounter(0);
         showToast({
           message: "Successful transaction. View on scan",
           type: "success",
@@ -573,20 +569,18 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         error.message.includes("403") ||
         originalFromToken.chainId === ChainIdEnum.Injective
       ) {
-        if (counter < 4) {
-          await handleSubmit();
-          setSwapLoading(false);
+        let retry = retryCount ? retryCount + 1 : 1;
+        console.log("error.message", error.message, retry);
+        if (retry < 4) {
+          await handleSubmit(retry);
         } else {
           handleErrorSwap(error?.message ?? error?.ex?.message);
-          setCounter(0);
           setSwapLoading(false);
         }
-        return;
       } else {
         handleErrorSwap(error?.message ?? error?.ex?.message);
         setSwapLoading(false);
       }
-      // handleErrorSwap(error?.message ?? error?.ex?.message);
     } finally {
       if (mixpanel) {
         mixpanel.track("Universal Swap Owallet", logEvent);
@@ -639,8 +633,24 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setSwapAmount([0, 0]);
   };
 
-  const handleActiveAmount = (value) => {
-    onMaxFromAmount((fromTokenBalance * BigInt(value)) / BigInt(MAX), value);
+  const handleActiveAmount = (percent) => {
+    const coeff = Number(percent) / 100;
+    const finalAmount = calcMaxAmount({
+      maxAmount: toDisplay(fromTokenBalance, originalFromToken?.decimals),
+      token: originalFromToken,
+      coeff: coeff,
+      gas: GAS_ESTIMATION_SWAP_DEFAULT,
+    });
+
+    if (finalAmount > 0) {
+      onMaxFromAmount(finalAmount * coeff);
+    } else {
+      const displayAmount = toDisplay(
+        (fromTokenBalance * BigInt(percent)) / BigInt(MAX),
+        originalFromToken?.decimals
+      );
+      onMaxFromAmount(displayAmount * coeff);
+    }
   };
 
   const handleSendToAddress = (address) => {
@@ -687,70 +697,76 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   }, [sendToAddress, sendToModal]);
 
   const renderSmartRoutes = () => {
-    if (fromAmountToken > 0 && routersSwapData?.routes.length > 0) {
-      return (
-        <>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <Text color={colors["neutral-text-title"]} weight="500" size={15}>
-              Smart Route
-            </Text>
-            <View style={{ flexDirection: "row" }}>
-              <View
-                style={{
-                  flexDirection: "row",
-                  backgroundColor: colors["highlight-surface-subtle"],
-                  paddingHorizontal: 8,
-                  paddingVertical: 4,
-                  borderRadius: 4,
-                  marginRight: 8,
-                }}
+    // if (fromAmountToken > 0 && routersSwapData?.routes?.length > 0) {
+    return (
+      <>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <Text color={colors["neutral-text-title"]} weight="500" size={15}>
+            AI Route
+          </Text>
+
+          <View style={{ flexDirection: "row" }}>
+            <View
+              style={{
+                backgroundColor: colors["highlight-surface-subtle"],
+                paddingHorizontal: 8,
+                paddingVertical: 4,
+                borderRadius: 4,
+                marginRight: 8,
+                justifyContent: "center",
+                height: 28,
+              }}
+            >
+              <Text
+                color={colors["highlight-text-title"]}
+                weight="600"
+                size={12}
               >
-                <OWIcon
-                  name="tdesignwindy"
-                  color={colors["highlight-text-title"]}
-                  size={14}
-                />
-                <Text
-                  color={colors["highlight-text-title"]}
-                  weight="600"
-                  size={12}
-                >
-                  {" "}
-                  FASTEST
-                </Text>
-              </View>
-              <View
-                style={{
-                  backgroundColor: colors["primary-surface-subtle"],
-                  paddingHorizontal: 8,
-                  paddingVertical: 4,
-                  borderRadius: 4,
-                }}
-              >
-                <Text
-                  color={colors["primary-text-action"]}
-                  weight="600"
-                  size={12}
-                >
-                  BEST RETURN
-                </Text>
-              </View>
+                FASTEST
+              </Text>
             </View>
+            <View
+              style={{
+                backgroundColor: colors["primary-surface-subtle"],
+                paddingHorizontal: 8,
+                paddingVertical: 4,
+                borderRadius: 4,
+                marginRight: 8,
+                justifyContent: "center",
+                height: 28,
+              }}
+            >
+              <Text
+                color={colors["primary-text-action"]}
+                weight="600"
+                size={12}
+              >
+                BEST RETURN
+              </Text>
+            </View>
+            <Toggle
+              on={isAIRoute}
+              onChange={(value) => {
+                setAIRoute(value);
+              }}
+            />
           </View>
-        </>
-      );
-    }
+        </View>
+      </>
+    );
+    // }
   };
 
   return (
     <PageWithBottom
-      style={{ paddingTop: 16 }}
+      style={{ paddingTop: 0 }}
+      backgroundColor={colors["neutral-surface-bg"]}
       bottomGroup={
         <OWButton
           label="Swap"
@@ -763,7 +779,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           textStyle={styles.txtBtnSend}
           disabled={amountLoading || swapLoading}
           loading={swapLoading}
-          onPress={handleSubmit}
+          onPress={() => handleSubmit()}
         />
       }
     >
@@ -778,7 +794,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           close={() => {
             setPriceSettingModal(false);
           }}
-          //@ts-ignore
           currentSlippage={userSlippage}
           impactWarning={impactWarning}
           routersSwapData={routersSwapData}
@@ -806,10 +821,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           }
           relayerFee={
             !!relayerFeeToken &&
-            `${toDisplay(
-              relayerFeeToken.toString(),
-              RELAYER_DECIMAL
-            )} ORAI ≈ ${maskedNumber(relayerFeeAmount)} ${originalToToken.name}`
+            `${toDisplay(relayerFeeToken.toString(), RELAYER_DECIMAL)} ORAI`
           }
           ratio={`1 ${originalFromToken.name} ≈ ${
             ratio
@@ -913,6 +925,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               tokenActive={originalToToken}
               onOpenTokenModal={() => setSelectToTokenModal(true)}
               editable={false}
+              loading={amountLoading}
               tokenFee={toTokenFee}
               onOpenNetworkModal={setToNetworkOpen}
               type={"to"}
@@ -939,6 +952,22 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               borderWidth: 2,
             }}
           >
+            {amountLoading ? (
+              <View
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  position: "absolute",
+                  backgroundColor: colors["neutral-surface-card"],
+                  zIndex: 999,
+                  alignContent: "center",
+                  justifyContent: "center",
+                  opacity: 0.8,
+                }}
+              >
+                <ActivityIndicator />
+              </View>
+            ) : null}
             <TouchableOpacity
               onPress={() => {
                 setPriceSettingModal(true);
@@ -999,6 +1028,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               ) : null}
 
               <View style={styles.borderline} />
+
               <View style={{ marginVertical: 10 }}>
                 <Text style={{ lineHeight: 24 }}>
                   Min. Received:{" "}
@@ -1055,7 +1085,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                   if (value) {
                     setSendToModal(true);
                   } else {
-                    setSendToAddress("");
+                    setSendToAddress(null);
                   }
                 }}
               />

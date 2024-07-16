@@ -22,6 +22,8 @@ import LottieView from "lottie-react-native";
 import { metrics } from "@src/themes";
 import ErrorBoundary from "react-native-error-boundary";
 import { ErrorBoundaryFallback } from "./screens/error-boundary/error-boundary";
+import { ApolloProvider } from "@apollo/client";
+import client from "./graphql/apollo-client";
 const queryClient = new QueryClient();
 
 if (Platform.OS === "android" || typeof HermesInternal !== "undefined") {
@@ -114,11 +116,9 @@ export const App = () => {
   const enableAnalytics = async () => {
     await analytics().setAnalyticsCollectionEnabled(true);
   };
-
   useEffect(() => {
     SplashScreen.hide();
     enableAnalytics();
-
     return () => {};
   }, []);
   if (isInit) {
@@ -142,30 +142,32 @@ export const App = () => {
           flex: 1,
         }}
       >
-        <StyleProvider>
-          <StoreProvider>
-            <ThemeProvider>
-              <AppIntlProviderWithStorage>
-                <SafeAreaProvider>
-                  <ModalsProvider>
-                    <PopupRootProvider>
-                      <LoadingScreenProvider>
-                        <ConfirmModalProvider>
-                          <InteractionModalsProivder>
-                            <QueryClientProvider client={queryClient}>
-                              <AppNavigation />
-                            </QueryClientProvider>
-                          </InteractionModalsProivder>
-                        </ConfirmModalProvider>
-                      </LoadingScreenProvider>
-                    </PopupRootProvider>
-                  </ModalsProvider>
-                </SafeAreaProvider>
-              </AppIntlProviderWithStorage>
-              <FlashMessage position="top" />
-            </ThemeProvider>
-          </StoreProvider>
-        </StyleProvider>
+        <ApolloProvider client={client}>
+          <StyleProvider>
+            <StoreProvider>
+              <ThemeProvider>
+                <AppIntlProviderWithStorage>
+                  <SafeAreaProvider>
+                    <ModalsProvider>
+                      <PopupRootProvider>
+                        <LoadingScreenProvider>
+                          <ConfirmModalProvider>
+                            <InteractionModalsProivder>
+                              <QueryClientProvider client={queryClient}>
+                                <AppNavigation />
+                              </QueryClientProvider>
+                            </InteractionModalsProivder>
+                          </ConfirmModalProvider>
+                        </LoadingScreenProvider>
+                      </PopupRootProvider>
+                    </ModalsProvider>
+                  </SafeAreaProvider>
+                </AppIntlProviderWithStorage>
+                <FlashMessage position="top" />
+              </ThemeProvider>
+            </StoreProvider>
+          </StyleProvider>
+        </ApolloProvider>
       </GestureHandlerRootView>
     </ErrorBoundary>
   );

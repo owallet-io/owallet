@@ -6,7 +6,12 @@ import {
   useSendTxConfig,
 } from "@owallet/hooks";
 import { useStore } from "../../stores";
-import { EthereumEndpoint, OwalletEvent, toAmount } from "@owallet/common";
+import {
+  EthereumEndpoint,
+  OwalletEvent,
+  toAmount,
+  TxRestCosmosClient,
+} from "@owallet/common";
 import {
   StyleSheet,
   View,
@@ -29,22 +34,38 @@ import { PageHeader } from "@src/components/header/header-new";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { NewAmountInput } from "@src/components/input/amount-input";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
-
+import { fromBase64 } from "@cosmjs/encoding";
 import { useSmartNavigation } from "@src/navigation.provider";
 import { FeeModal } from "@src/modals/fee";
 import { CoinPretty, Dec, Int } from "@owallet/unit";
 import { DownArrowIcon } from "@src/components/icon";
-import { capitalizedText } from "@src/utils/helper";
+import { capitalizedText, showToast } from "@src/utils/helper";
 import { Buffer } from "buffer";
 import { ChainIdEnum } from "@oraichain/oraidex-common";
 import ByteBrew from "react-native-bytebrew-sdk";
 import { GasPrice } from "@cosmjs/stargate";
-
+import { Tendermint37Client } from "@cosmjs/tendermint-rpc";
 import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { coin, StdFee } from "@cosmjs/amino";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import axios from "axios";
-import "dotenv/config";
+import { MsgSend } from "@owallet/proto-types/cosmos/bank/v1beta1/tx";
+import { makeStdTx } from "@cosmjs/amino";
+import { API } from "@src/common/api";
+const { coins } = require("@cosmjs/amino");
+import {
+  encodePubkey,
+  makeAuthInfoBytes,
+  makeSignDoc,
+  TxBodyEncodeObject,
+} from "@cosmjs/proto-signing";
+import {
+  encodeSecp256k1Pubkey,
+  makeSignDoc as makeSignDocAmino,
+} from "@cosmjs/amino";
+import { TxBody } from "@owallet/proto-types/cosmos/tx/v1beta1/tx";
+import { Any } from "@owallet/proto-types/google/protobuf/any";
+import { TendermintTxTracer } from "@owallet/cosmos";
 export const NewSendScreen: FunctionComponent = observer(() => {
   const {
     chainStore,
@@ -84,7 +105,6 @@ export const NewSendScreen: FunctionComponent = observer(() => {
   const smartNavigation = useSmartNavigation();
 
   const account = accountStore.getAccount(chainId);
-  const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const queries = queriesStore.get(chainId);
   const address = account.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses
@@ -196,77 +216,87 @@ export const NewSendScreen: FunctionComponent = observer(() => {
   const sendOraiBtc = async () => {
     try {
       setIsLoading(true);
-      //@ts-ignore
+      // @ts-ignore
       const signer = await window.owallet.getOfflineSignerAuto(
         chainStore.current.chainId
       );
-      const client = await SigningCosmWasmClient.connectWithSigner(
-        chainStore.current.rpc,
-        signer,
-        {
-          gasPrice: GasPrice.fromString("0uoraibtc"),
-        }
-      );
-      const res = await axios.get(
-        `${chainStore.current.rest}/auth/accounts/${address}`
+      const [{ address, pubkey }] = await signer.getAccounts();
+      const res = await API.getInfoAccOraiBtc(
+        { address: account.bech32Address },
+        { baseURL: chainStore.current.rest }
       );
       const sequence = res.data.result.value.sequence;
-      const sendMsg1 = {
+
+      const msgSend = MsgSend.fromPartial({
+        fromAddress: address,
+        toAddress: sendConfigs.recipientConfig.recipient,
+        amount: [sendConfigs.amountConfig.getAmountPrimitive()],
+      });
+      const msgAny = Any.fromPartial({
         typeUrl: "/cosmos.bank.v1beta1.MsgSend",
-        value: {
-          fromAddress: address,
-          toAddress: sendConfigs.recipientConfig.recipient,
-          amount: [sendConfigs.amountConfig.getAmountPrimitive()],
-        },
+        value: MsgSend.encode(msgSend).finish(),
+      });
+      const fee: StdFee = {
+        amount: coins(0, "uoraibtc"),
+        gas: "200000",
       };
-
-      const txRaw = await client.sign(
-        address,
-        [sendMsg1],
-        {
-          amount: [
-            coin("0", chainStore.current.stakeCurrency.coinMinimalDenom),
-          ],
-          gas: "20000000",
-        } as StdFee,
-        "",
-        {
-          accountNumber: 0,
-          chainId: chainStore.current.chainId,
-          sequence,
-        }
+      const authInfoBytes = makeAuthInfoBytes(
+        [{ pubkey: encodePubkey(encodeSecp256k1Pubkey(pubkey)), sequence }],
+        fee.amount,
+        Number(fee.gas),
+        undefined,
+        undefined
       );
-      const txBytes = TxRaw.encode(txRaw).finish();
-      const txData = await client.broadcastTx(txBytes);
-      console.log(txData, "txData");
-      if (txData?.code == 0) {
-        const bal = queries.queryBalances
-          .getQueryBech32Address(address)
-          .balances.find(
-            (bal) =>
-              bal.currency.coinMinimalDenom ===
-              sendConfigs.amountConfig.sendCurrency.coinMinimalDenom
-          );
+      const txBody = TxBody.fromPartial({
+        messages: [msgAny],
+        memo: "",
+      });
 
-        if (bal) {
-          bal.fetch();
-          setIsLoading(false);
-          smartNavigation.pushSmart("TxPendingResult", {
-            txHash: txData?.transactionHash,
-            data: {
-              memo: sendConfigs.memoConfig.memo,
-              from: address,
-              type: "send",
-              to: sendConfigs.recipientConfig.recipient,
-              amount: sendConfigs.amountConfig.getAmountPrimitive(),
-              fee: sendConfigs.feeConfig.toStdFee(),
-              currency: sendConfigs.amountConfig.sendCurrency,
-            },
-          });
-        }
+      const txBodyBytes = TxBody.encode(txBody).finish();
+      const accountNumber = 0;
+      const signDoc = makeSignDoc(
+        txBodyBytes,
+        authInfoBytes,
+        chainId,
+        accountNumber
+      );
+
+      const { signature, signed } = await (
+        await account.getOWallet()
+      ).signDirect(chainId, address, signDoc);
+
+      const txRaw = TxRaw.fromPartial({
+        bodyBytes: signed.bodyBytes,
+        authInfoBytes: signed.authInfoBytes,
+        signatures: [fromBase64(signature.signature)],
+      });
+      const txBytes = TxRaw.encode(txRaw).finish();
+      const tmClient = await Tendermint37Client.connect(chainStore.current.rpc);
+      const result = await tmClient.broadcastTxSync({
+        tx: txBytes,
+      });
+      if (result?.code == 0) {
+        setIsLoading(false);
+        smartNavigation.pushSmart("TxPendingResult", {
+          txHash: Buffer.from(result?.hash).toString("hex"),
+          data: {
+            memo: sendConfigs.memoConfig.memo,
+            from: address,
+            type: "send",
+            to: sendConfigs.recipientConfig.recipient,
+            amount: sendConfigs.amountConfig.getAmountPrimitive(),
+            fee: sendConfigs.feeConfig.toStdFee(),
+            currency: sendConfigs.amountConfig.sendCurrency,
+          },
+        });
       }
-    } catch (err) {
-      console.log("[ERR]", err);
+    } catch (error) {
+      if (error?.message?.includes("'signature' of undefined")) return;
+      showToast({
+        type: "danger",
+        message: error?.message || JSON.stringify(error),
+      });
+      console.log("[ERR]", error);
     } finally {
       setIsLoading(false);
     }

@@ -388,7 +388,12 @@ export const EmbedChainInfos: AppChainInfo[] = [
     get feeCurrencies() {
       return [this.stakeCurrency];
     },
-    features: ["stargate", "ibc-transfer", "cosmwasm"],
+    features: ["stargate", "ibc-transfer", "cosmwasm", "no-legacy-stdTx"],
+    txExplorer: {
+      name: "OraiBridgescan",
+      txUrl: "https://scan.bridge.orai.io/txs/{txHash}",
+      accountUrl: "https://scan.bridge.orai.io/account/{address}",
+    },
   },
   {
     chainId: "oraibtc-mainnet-1",
@@ -440,7 +445,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinImageUrl:
         "https://assets.coingecko.com/coins/images/1481/standard/cosmos_hub.png",
       gasPriceStep: {
-        low: 0.0025,
+        low: 0.02,
         average: 0.025,
         high: 0.04,
       },
@@ -526,6 +531,45 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
   },
 
+  {
+    rpc: "https://rpc-stargaze.keplr.app",
+    rest: "https://lcd-stargaze.keplr.app",
+    chainId: "stargaze-1",
+    chainName: "Stargaze",
+    stakeCurrency: {
+      coinDenom: "STARS",
+      coinMinimalDenom: "ustars",
+      coinDecimals: 6,
+      coinGeckoId: "stargaze",
+      coinImageUrl:
+        "https://assets.coingecko.com/coins/images/22363/standard/pink_star_200.png",
+    },
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("stars"),
+    currencies: [
+      {
+        coinDenom: "STARS",
+        coinMinimalDenom: "ustars",
+        coinDecimals: 6,
+        coinGeckoId: "stargaze",
+        coinImageUrl:
+          "https://assets.coingecko.com/coins/images/22363/standard/pink_star_200.png",
+      },
+    ],
+    feeCurrencies: [
+      {
+        coinDenom: "STARS",
+        coinMinimalDenom: "ustars",
+        coinDecimals: 6,
+        coinGeckoId: "stargaze",
+        coinImageUrl:
+          "https://assets.coingecko.com/coins/images/22363/standard/pink_star_200.png",
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+  },
   // {
   //   rest: "https://blockstream.info/testnet/api",
   //   chainId: "bitcoinTestnet",

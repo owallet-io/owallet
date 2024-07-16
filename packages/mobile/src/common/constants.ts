@@ -27,7 +27,6 @@ export const SCREENS = {
   BackupMnemonic: "BackupMnemonic",
   RecoveryPhrase: "RecoveryPhrase",
   RegisterMain: "RegisterMain",
-  BtcFaucet: "BtcFaucet",
   BuyFiat: "BuyFiat",
   RegisterVerifyMnemonicMain: "RegisterVerifyMnemonicMain",
   RegisterEnd: "Register.End",
@@ -37,7 +36,6 @@ export const SCREENS = {
   RegisterNewLedgerMain: "RegisterNewLedgerMain",
   Tokens: "Tokens",
   Nfts: "Nfts",
-  TokenDetail: "Tokens.Detail",
   NftsDetail: "Nfts.Detail",
   HistoryDetail: "History.Detail",
   TokenDetails: "Token.Details",
@@ -172,13 +170,10 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: HEADER_KEY.showNetworkHeader,
   },
   [SCREENS.Nfts]: {
-    title: HEADER_KEY.showNetworkHeader,
-  },
-  [SCREENS.TokenDetail]: {
-    title: "Token Detail",
+    title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.NftsDetail]: {
-    title: HEADER_KEY.showNetworkHeader,
+    title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.UniversalSwapScreen]: {
     // title: HEADER_KEY.notShowHeader,
@@ -284,9 +279,6 @@ export const SCREENS_OPTIONS: IScreenOption = {
   [SCREENS.SettingViewPrivateData]: {
     title: "Mnemonic Seed",
   },
-  [SCREENS.BtcFaucet]: {
-    title: "Bitcoin Faucet",
-  },
   [SCREENS.HistoryDetail]: {
     title: "Transaction details",
   },
@@ -390,6 +382,7 @@ export const EVENTS = {
   hiddenTabBar: "hiddenTabBar",
 };
 export const urlTxHistory = "https://tx-history-backend.oraidex.io/";
+export const urlAiRight = "https://developers.airight.io";
 // export const urlTxHistory = "http://10.10.20.115:8000/";
 // export const urlTxHistory = "https://tx-history-backend-staging.oraidex.io/";
 export const listSkeleton = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];

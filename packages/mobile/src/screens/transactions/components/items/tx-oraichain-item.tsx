@@ -24,7 +24,6 @@ export const TxOraichainItem: FC<{
   const { priceStore, chainStore } = useStore();
   const fiat = priceStore.defaultVsCurrency;
   if (!item) return;
-  console.log(item, "item");
   let currency = unknownToken;
   if (item.denom) {
     if (item.denom.startsWith("ibc/")) {

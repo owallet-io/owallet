@@ -209,7 +209,6 @@ export const getValueFromDataEvents = (arr) => {
       result.push(item);
     }
   }
-  // console.log('result: ', result);
 
   // if the result array is empty, return null and typeId = 0
   if (result.length === 0) {
@@ -297,9 +296,6 @@ const configBrowser = {
 };
 export const openLink = async (url) => {
   try {
-    if (!url) {
-      console.log("url: ", url);
-    }
     if (await InAppBrowser.isAvailable()) {
       const result = await InAppBrowser.open(url, configBrowser);
     } else Linking.openURL(url);
@@ -809,3 +805,14 @@ export const computeTotalVotingPower = (data) => {
   }
   return total;
 };
+
+export function numberWithCommas(number) {
+  // Convert the number to a string and split it into integer and decimal parts
+  const [intPart, decPart] = number.toString().split(".");
+
+  // Insert commas into the integer part
+  const formattedNumber = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+  // Combine the formatted integer part and the decimal part
+  return formattedNumber + "." + decPart;
+}

@@ -42,7 +42,6 @@ const oraichainToOraichain = async (chainId: "Oraichain") => {
     amount: toAmount(fromAmount, originalToToken.decimals).toString(),
   });
 
-  console.log("expected amount: ", smartRoutes.returnAmount);
   const universalHandler = new UniversalSwapHandler(
     {
       originalFromToken,
@@ -63,7 +62,6 @@ const oraichainToOraichain = async (chainId: "Oraichain") => {
 
   try {
     const result = await universalHandler.processUniversalSwap();
-    console.log("result: ", result);
   } catch (error) {
     console.log("error: ", error);
   }

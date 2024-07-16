@@ -70,7 +70,6 @@ export class Ledger {
     type: LedgerAppType
   ): Promise<Ledger> {
     const resultInit = await callProxy("init", [mode, initArgs, type]);
-    console.log("resultInit", resultInit);
 
     if (resultInit) return new Ledger();
     else throw new Error("Device state invalid!");

@@ -34,7 +34,6 @@ const AllNetworkTxsScreen = observer(() => {
     appInitStore,
   } = useStore();
   const params = useRoute().params;
-  console.log(params, "params");
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadMore, setLoadMore] = useState(false);

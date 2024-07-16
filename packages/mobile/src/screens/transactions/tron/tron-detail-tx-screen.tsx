@@ -58,7 +58,6 @@ export const TronDetailTx: FunctionComponent = observer((props) => {
 
   const { item, currency } = route.params;
   const { txID: hash, chain, transactionType } = item;
-  console.log(item, detail, "item detail");
 
   const getHistoryDetail = async () => {
     try {
@@ -72,7 +71,7 @@ export const TronDetailTx: FunctionComponent = observer((props) => {
           baseURL: urlTxHistory,
         }
       );
-      console.log(res, "kakak");
+
       if (res && res.status !== 200) throw Error("Failed");
       setDetail(res.data);
       setLoading(false);
@@ -91,7 +90,6 @@ export const TronDetailTx: FunctionComponent = observer((props) => {
 
   if (loading) return <OwLoading />;
   if (!detail) return <OWEmpty />;
-  console.log(detail, "detail");
   const chainInfo = chainStore.getChain(chainStore.current.chainId);
   const handleUrl = (txHash) => {
     return chainInfo.raw.txExplorer.txUrl.replace("{txHash}", txHash);
@@ -99,7 +97,6 @@ export const TronDetailTx: FunctionComponent = observer((props) => {
   const handleOnExplorer = async () => {
     if (chainInfo.raw.txExplorer && hash) {
       const url = handleUrl(hash);
-      console.log(url, "url");
       await openLink(url);
     }
   };

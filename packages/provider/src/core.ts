@@ -4,7 +4,7 @@ import {
   Ethereum as IEthereum,
   TronWeb as ITronWeb,
   Bitcoin as IBitcoin,
-  // Oasis as IOasis,
+  Oasis as IOasis,
   OWalletIntereactionOptions,
   OWalletMode,
   OWalletSignOptions,
@@ -65,11 +65,10 @@ import {
   RequestSignTronMsg,
   RequestSendRawTransactionMsg,
   TriggerSmartContractMsg,
-  // RequestSignOasisMsg,
-  // GetDefaultAddressOasisMsg,
+  RequestSignOasisMsg,
 } from "./msgs";
 import { ChainIdEnum } from "@owallet/common";
-// import { Signer } from "@oasisprotocol/client/dist/signature";
+import { Signer } from "@oasisprotocol/client/dist/signature";
 
 export class OWallet implements IOWallet {
   protected enigmaUtils: Map<string, SecretUtils> = new Map();
@@ -523,18 +522,18 @@ export class Bitcoin implements IBitcoin {
   }
 }
 
-// export class Oasis implements IOasis {
-//   constructor(
-//     public readonly version: string,
-//     public readonly mode: DefaultMode,
-//     public initChainId: string,
-//     protected readonly requester: MessageRequester
-//   ) {
-//     this.initChainId = initChainId;
-//   }
+export class Oasis implements IOasis {
+  constructor(
+    public readonly version: string,
+    public readonly mode: DefaultMode,
+    public initChainId: string,
+    protected readonly requester: MessageRequester
+  ) {
+    this.initChainId = initChainId;
+  }
 
-//   async signOasis(amount: bigint, to: string): Promise<any> {
-//     const msg = new RequestSignOasisMsg(ChainIdEnum.Oasis, { amount, to });
-//     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
-//   }
-// }
+  async signOasis(amount: bigint, to: string): Promise<any> {
+    const msg = new RequestSignOasisMsg(ChainIdEnum.Oasis, { amount, to });
+    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  }
+}

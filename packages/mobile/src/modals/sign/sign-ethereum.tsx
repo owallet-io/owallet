@@ -102,8 +102,6 @@ export const SignEthereumModal: FunctionComponent<{
       }
     };
 
-    console.log("dataSign", dataSign);
-
     useEffect(() => {
       if (signInteractionStore.waitingEthereumData) {
         const data = signInteractionStore.waitingEthereumData;
@@ -135,7 +133,6 @@ export const SignEthereumModal: FunctionComponent<{
         }
         setDataSign(signInteractionStore.waitingEthereumData);
         const dataSigning = data?.data?.data?.data;
-        console.log(dataSigning, "dataSigning");
         const hstInterface = new ethers.utils.Interface(ERC20_ABI);
         try {
           const { data, type } = dataSigning;
@@ -146,10 +143,8 @@ export const SignEthereumModal: FunctionComponent<{
             });
           } else if (data && type && type === "erc20") {
             const token = hstInterface.parseTransaction({ data });
-            console.log(token, "token");
             const to = token?.args?._to || token?.args?.[0];
             const value = token?.args?._value || token?.args?.[1];
-            console.log(to, value, "to and value");
             setInfoSign({
               ...dataSigning,
               value: Web3.utils.toHex(value?.toString()),
@@ -242,7 +237,6 @@ export const SignEthereumModal: FunctionComponent<{
         ?.trim(true)
         ?.toString();
     };
-    console.log(infoSign, "infoSign");
     return (
       <WrapViewModal
         style={{

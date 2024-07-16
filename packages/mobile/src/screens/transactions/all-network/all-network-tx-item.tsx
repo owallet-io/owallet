@@ -24,7 +24,6 @@ export const AllNetworkTxItem: FC<{
   const { priceStore, chainStore } = useStore();
   const fiat = priceStore.defaultVsCurrency;
   if (!item) return;
-  console.log(item, "item");
   let currency = unknownToken;
 
   if (item.tokenInfos?.length > 0 && item.tokenInfos[0]) {

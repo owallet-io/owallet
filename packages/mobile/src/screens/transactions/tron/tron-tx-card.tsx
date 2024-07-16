@@ -35,7 +35,6 @@ export const TronTxCard: FunctionComponent<{
     try {
       setLoading(true);
 
-      console.log(address, "address");
       const res = await API.getTronTxs(
         {
           address: address,
@@ -47,7 +46,6 @@ export const TronTxCard: FunctionComponent<{
           baseURL: urlTxHistory,
         }
       );
-      console.log(res, "resres");
       if (res && res.status !== 200) throw Error("Failed");
 
       setHistories(res.data.data.txHistory);

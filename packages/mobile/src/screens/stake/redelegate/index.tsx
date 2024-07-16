@@ -290,7 +290,6 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
     });
     modalStore.close();
   };
-  console.log(validators, "validators");
   const totalVotingPower = useMemo(
     () => computeTotalVotingPower(validators),
     [validators]
