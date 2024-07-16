@@ -1,29 +1,39 @@
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import React, { FC } from "react";
-import {
-  formatContractAddress,
-  getDataFromDataEvent,
-  getValueFromDataEvents,
-  limitString,
-  maskedNumber,
-} from "@src/utils/helper";
+import { formatContractAddress, maskedNumber } from "@src/utils/helper";
 import { useTheme } from "@src/themes/theme-provider";
-import { spacing } from "@src/themes";
 import { observer } from "mobx-react-lite";
 import { Text } from "@src/components/text";
 import OWIcon from "@src/components/ow-icon/ow-icon";
-import OWText from "@src/components/text/ow-text";
 import { CoinPretty, Dec, DecUtils } from "@owallet/unit";
 import moment from "moment/moment";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
-import { formatAddress, unknownToken } from "@owallet/common";
+import { unknownToken } from "@owallet/common";
 import { RightArrowIcon } from "@src/components/icon";
 import { useStore } from "@src/stores";
 import { has } from "lodash";
 import { Currency } from "@owallet/types";
 import Coingecko from "@src/assets/data/coingecko.json";
 import get from "lodash/get";
+
+const getCurrency = (item, itemCoingecko) => {
+  const currency = {
+    coinDecimals: item.tokenInfo.attributes.decimals,
+    coinImageUrl:
+      item.tokenInfo.attributes.image_url == "missing.png"
+        ? unknownToken.coinImageUrl
+        : item.tokenInfo.attributes.image_url,
+    coinGeckoId:
+      item.tokenInfo.attributes.coingecko_coin_id ||
+      get(itemCoingecko, "id") ||
+      "unknown",
+    coinMinimalDenom: `erc20:${item.tokenAddress}:${item.tokenInfo.attributes.name}`,
+    coinDenom: item.tokenInfo.attributes.symbol,
+  } as Currency;
+
+  return currency;
+};
 
 export const TxEvmItem: FC<{
   item: any;
@@ -52,19 +62,7 @@ export const TxEvmItem: FC<{
           it.symbol.toUpperCase() ==
           get(item, "tokenInfo.attributes.symbol").toUpperCase()
       );
-      currency = {
-        coinDecimals: item.tokenInfo.attributes.decimals,
-        coinImageUrl:
-          item.tokenInfo.attributes.image_url == "missing.png"
-            ? unknownToken.coinImageUrl
-            : item.tokenInfo.attributes.image_url,
-        coinGeckoId:
-          item.tokenInfo.attributes.coingecko_coin_id ||
-          get(itemCoingecko, "id") ||
-          "unknown",
-        coinMinimalDenom: `erc20:${item.tokenAddress}:${item.tokenInfo.attributes.name}`,
-        coinDenom: item.tokenInfo.attributes.symbol,
-      } as Currency;
+      currency = getCurrency(item, itemCoingecko);
     }
   } else if (item.transactionType === "native") {
     currency = chainStore.current.stakeCurrency;
