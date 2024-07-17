@@ -5445,6 +5445,11 @@
   resolved "https://registry.yarnpkg.com/@oraichain/oraidex-contracts-sdk/-/oraidex-contracts-sdk-1.0.35.tgz#d8231d3af62172bd488d364c7ced238393f26695"
   integrity sha512-c4qyt6CUEdI4+NgX4vWmVVctcQqEle0S6ExKp+d94C5UsRBELxvmJWkCZczvtTtLEvSsydv+7PKwrPoROgV2BA==
 
+"@oraichain/oraidex-contracts-sdk@^1.0.43", "@oraichain/oraidex-contracts-sdk@latest":
+  version "1.0.45"
+  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-contracts-sdk/-/oraidex-contracts-sdk-1.0.45.tgz#42dae0fdd9e005f920ba305b987009f791acc365"
+  integrity sha512-/nYztdxEX5LQM4DMJQmi9HvZrBVoY3nLAmYqSKZGZ0U1h1SxU7O/o22R3/pQwB+sAJdcibaI8ygC0ov7jC8paA==
+
 "@oraichain/oraidex-universal-swap@^1.0.90":
   version "1.0.92"
   resolved "https://registry.yarnpkg.com/@oraichain/oraidex-universal-swap/-/oraidex-universal-swap-1.0.92.tgz#ba567b18733dfd07029921c5ff95001cfa923b30"
@@ -15459,11 +15464,6 @@ graphql-tag@^2.12.6:
     tslib "^2.1.0"
 
 graphql@^16.3.0, graphql@^16.9.0:
-  version "16.9.0"
-  resolved "https://registry.yarnpkg.com/graphql/-/graphql-16.9.0.tgz#1c310e63f16a49ce1fbb230bd0a000e99f6f115f"
-  integrity sha512-GGTKBX4SD7Wdb8mqeDLni2oaRGYQWjWHGKPQ24ZMnUtKfcsVoiv4uX8+LJr1K6U5VW2Lu1BwJnj7uiori0YtRw==
-
-graphql@^16.9.0:
   version "16.9.0"
   resolved "https://registry.yarnpkg.com/graphql/-/graphql-16.9.0.tgz#1c310e63f16a49ce1fbb230bd0a000e99f6f115f"
   integrity sha512-GGTKBX4SD7Wdb8mqeDLni2oaRGYQWjWHGKPQ24ZMnUtKfcsVoiv4uX8+LJr1K6U5VW2Lu1BwJnj7uiori0YtRw==

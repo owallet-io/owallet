@@ -740,7 +740,7 @@ export class AccountSetBase<MsgOpts, Queries> {
     this.waitForPendingTransaction(rpc, txHash, onFulfill);
   }
 
-  async sendEvmMsgs(type, msgs, fee, signOptions, onTxEvents) {
+  async sendEvmMsgs(type, msgs, memo = "", fee, signOptions, onTxEvents) {
     runInAction(() => {
       this._isSendingMsg = type;
     });
