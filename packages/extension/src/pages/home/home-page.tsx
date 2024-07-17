@@ -9,6 +9,8 @@ import {
   sortTokensByPrice,
   useMultipleAssets,
 } from "../../hooks/use-multiple-assets";
+import { ClaimReward } from "./components/claim-reward";
+import { LinkStakeView, StakeView } from "./stake";
 
 export const HomePage = observer(() => {
   // const [refreshing, setRefreshing] = React.useState(false);
@@ -65,7 +67,9 @@ export const HomePage = observer(() => {
     <FooterLayout>
       <InfoAccountCard isLoading={isLoading} totalPrice={totalPriceBalance} />
       {/*TODO:// need check again Claim reward */}
-      {/*<ClaimReward />*/}
+      <ClaimReward />
+      <StakeView />
+      <LinkStakeView />
       <TokensCard dataTokens={sortTokensByPrice(dataTokens)} />
     </FooterLayout>
   );

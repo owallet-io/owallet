@@ -1,0 +1,41 @@
+@import "../../styles/var";
+
+.container-inner {
+  display: flex;
+  flex-direction: row;
+
+  height: 48px;
+  justify-content: center;
+  align-items: center;
+
+  .paragraph-main {
+    line-height: 1.35;
+    color: $color-black;
+    font-size: 20px;
+  }
+
+  .paragraph-sub {
+    line-height: 1.35;
+    font-size: 14px;
+    color: #8898aa;
+  }
+
+  .vertical {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .button {
+    min-width: 76px;
+    border-radius: 4px !important;
+    color: $color-white;
+    font-weight: 500;
+    font-size: 14px;
+    background-color: $color !important;
+    padding: 6px 16px;
+  }
+}
+
+.hr {
+  margin: $main-card-padding 0;
+}
