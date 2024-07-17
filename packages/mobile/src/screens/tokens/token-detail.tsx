@@ -1,27 +1,8 @@
-import React, {
-  FunctionComponent,
-  ReactElement,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
-import { StyleSheet, View } from "react-native";
-import {
-  BuyIcon,
-  DepositIcon,
-  SendDashboardIcon,
-} from "../../components/icon/button";
-import { TokenSymbol } from "../../components/token-symbol";
-import { useSmartNavigation } from "../../navigation.provider";
-import { useStore } from "../../stores";
-import { spacing, typography } from "../../themes";
+import { spacing } from "../../themes";
 import { _keyExtract } from "../../utils/helper";
-import { PageWithView } from "../../components/page";
 import { navigate } from "../../router/root";
-import { AddressQRCodeModal } from "../home/components";
-import { TokenSymbolEVM } from "../../components/token-symbol/token-symbol-evm";
 import { useTheme } from "@src/themes/theme-provider";
 import {
   StyleSheet,
@@ -33,12 +14,11 @@ import {
 import OWText from "@src/components/text/ow-text";
 import { useStore } from "@src/stores";
 import { OWButton } from "@src/components/button";
-import { metrics, spacing } from "@src/themes";
+import { metrics } from "@src/themes";
 import { API } from "@src/common/api";
 import { useSimpleTimer } from "@src/hooks";
 import { PageHeader } from "@src/components/header/header-new";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import {
   ChainIdEnum,
@@ -58,6 +38,7 @@ import { CoinPretty, PricePretty } from "@owallet/unit";
 import { HistoryByToken } from "@src/screens/transactions/history-by-token";
 import { PageWithScrollView } from "@src/components/page";
 import ByteBrew from "react-native-bytebrew-sdk";
+import { RouteProp, useRoute } from "@react-navigation/native";
 
 export const TokenDetailsScreen: FunctionComponent = observer((props) => {
   const { chainStore, priceStore, accountStore, keyRingStore } = useStore();

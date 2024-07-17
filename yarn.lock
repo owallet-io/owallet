@@ -5414,10 +5414,10 @@
   resolved "https://registry.yarnpkg.com/@oraichain/immutable/-/immutable-4.3.9.tgz#ff8d5a7b39b5b01f3f72a902cffbfea32ccb20c3"
   integrity sha512-INpHnhL970OCkR7I71Kssb2aLl2l4Y/x8W6FlyRO0KmC8GHjxc/hlNB1t44BiI7lkOYmcWMRQoC8dwParsp1RQ==
 
-"@oraichain/oraidex-common@^1.0.90", "@oraichain/oraidex-common@latest":
-  version "1.0.91"
-  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-common/-/oraidex-common-1.0.91.tgz#b04cf2492658117f8b669719c9793551ade5214b"
-  integrity sha512-MbQbMDhbuElWQOvACDKtxmPJbDOHgUgWP/BhDsKOUNrVRohEFJHdxxB9sLhpQ8wkzfPudwPDU7zAPoSm/Dvikg==
+"@oraichain/oraidex-common@^1.0.91", "@oraichain/oraidex-common@^1.0.92":
+  version "1.0.92"
+  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-common/-/oraidex-common-1.0.92.tgz#5d0d3958d81cac5b7404ef5a61aa4980371853ce"
+  integrity sha512-/Y5XplB6ddJysKCB6dZQifwCw1GwK7dyrsp8qM1ZWn/k4qDeyJRnANKQ1bRNzCfyvQXqRgi43NgqDDa4pHufag==
   dependencies:
     "@cosmjs/amino" "0.31.3"
     "@cosmjs/cosmwasm-stargate" "0.31.3"
@@ -5450,12 +5450,12 @@
   resolved "https://registry.yarnpkg.com/@oraichain/oraidex-contracts-sdk/-/oraidex-contracts-sdk-1.0.45.tgz#42dae0fdd9e005f920ba305b987009f791acc365"
   integrity sha512-/nYztdxEX5LQM4DMJQmi9HvZrBVoY3nLAmYqSKZGZ0U1h1SxU7O/o22R3/pQwB+sAJdcibaI8ygC0ov7jC8paA==
 
-"@oraichain/oraidex-universal-swap@^1.0.90":
-  version "1.0.92"
-  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-universal-swap/-/oraidex-universal-swap-1.0.92.tgz#ba567b18733dfd07029921c5ff95001cfa923b30"
-  integrity sha512-7umXCTmdXFwWzPDhWGMl5BPIlHn1+T8UqfTr8cUGiS1WfVMR0bPEoLrZUiCths0umjvdmobD2uPCBRH8uaEnBA==
+"@oraichain/oraidex-universal-swap@^1.0.93":
+  version "1.0.93"
+  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-universal-swap/-/oraidex-universal-swap-1.0.93.tgz#943f26f3971d7aa2d1a7d726c2361faf1476d9c0"
+  integrity sha512-BUWBi9uVceWRmJY/kvgbsggLThKMG8eCMKDDrP4EAmJ/IhKSRJd5MWYtny/OeFN6w0dHgBv78DPJuMALDE+xpA==
   dependencies:
-    "@oraichain/oraidex-common" latest
+    "@oraichain/oraidex-common" "^1.0.91"
     "@oraichain/oraidex-contracts-sdk" "^1.0.43"
     bech32 "1.1.4"
     ethers "^5.0.15"
