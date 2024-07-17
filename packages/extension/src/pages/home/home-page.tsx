@@ -67,9 +67,11 @@ export const HomePage = observer(() => {
     <FooterLayout>
       <InfoAccountCard isLoading={isLoading} totalPrice={totalPriceBalance} />
       {/*TODO:// need check again Claim reward */}
-      <ClaimReward />
-      <StakeView />
-      <LinkStakeView />
+      {/* <ClaimReward /> */}
+      {chainStore.isAllNetwork ||
+      chainStore.current.networkType !== "cosmos" ? null : (
+        <StakeView />
+      )}
       <TokensCard dataTokens={sortTokensByPrice(dataTokens)} />
     </FooterLayout>
   );

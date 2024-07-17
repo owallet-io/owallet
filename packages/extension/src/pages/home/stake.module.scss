@@ -1,10 +1,16 @@
 @import "../../styles/var";
 
+.container-stake-card {
+  background-color: $neutral-surface-card;
+  padding: 16px;
+  border-radius: 24px;
+  margin-top: 16px;
+}
+
 .container-inner {
   display: flex;
   flex-direction: row;
 
-  height: 48px;
   justify-content: center;
   align-items: center;
 
@@ -26,13 +32,7 @@
   }
 
   .button {
-    min-width: 76px;
-    border-radius: 4px !important;
-    color: $color-white;
     font-weight: 500;
-    font-size: 14px;
-    background-color: $color !important;
-    padding: 6px 16px;
   }
 }
 
