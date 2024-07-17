@@ -70,6 +70,131 @@ yarn ios
 yarn android
 ```
 
+# Chain integration
+
+## Chain config
+
+| Property        | Type           | Function  |
+| ------------- |:-------------:| -----:|
+| rpc      | `string` | RPC of a blockchain |
+| rest      | `string`      |   LCD of a blockchain |
+| chainId      | `string`      |   Chain ID |
+| chainName      | `string`      |  Chain Name |
+| networkType      | `string`      |  Network Type `("cosmos" or "evm")`: To declare whether the network is Cosmos-based or Ethereum Virtual Machine (EVM)-based  |
+| stakeCurrency      | `{coinDenom: string, coinMinimalDenom: string, coinDecimals: number, coinGeckoId: string, coinImageUrl: string, gasPriceStep: { low: number, average: number, high: number}}` | Native stake currency
+| bip44      | `{ coinType: number}`      |  Bip44 config |
+| coinType      | `number`      |   The coin type is usually 118 for Cosmos, 60 for EVM |
+| bech32Config      | `Bech32Address.defaultBech32Config(string)`      |   Config for bech32 address |
+| currencies      | `Array<Currency>`      |   Currencies of the chain |
+| feeCurrencies      | `Array<Currency>`      |   Fee currencies of the chain |
+| features      | `Array<Currency>`      |   To declare what features this chain have`(ex: ["ibc-transfer", "cosmwasm")])` |
+| chainSymbolImageUrl      | `string`      |   Chain symbol image URL |
+| txExplorer      | `{name: string, txUrl: string, accountUrl: string}` |   Transaction explorer config |
+
+
+## How to add a chain into OWallet?
+1. Clone this repo to desired directory
+
+```shell
+git clone https://github.com/oraichain/owallet
+```
+
+2. Checkout to main
+
+```shell
+git checkout main
+```
+
+3. Checkout to new branch
+
+```shell
+git checkout -b feat/add-new-chain-config
+```
+
+4. Create PR into main
+
+#### If your chain needs to use special packages, please consider taking a look at the [CONTRIBUTING.md](Packages Usage) section to learn how to implement your chain into OWallet
+
+## Example
+```shell
+{
+    rpc: "https://rpc.ankr.com/eth",
+    rest: "https://rpc.ankr.com/eth",
+    chainId: "0x01",
+    chainName: "Ethereum",
+    bip44: {
+      coinType: 60,
+    },
+    coinType: 60,
+    stakeCurrency: {
+      coinDenom: "ETH",
+      coinMinimalDenom: "eth",
+      coinDecimals: 18,
+      coinGeckoId: "ethereum",
+      coinImageUrl:
+        "https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png",
+      gasPriceStep: {
+        low: 1,
+        average: 1.25,
+        high: 1.5,
+      },
+    },
+    chainSymbolImageUrl:
+      "https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png",
+    bech32Config: Bech32Address.defaultBech32Config("evmos"),
+    networkType: "evm",
+    currencies: [
+      {
+        coinDenom: "ETH",
+        coinMinimalDenom: "eth",
+        coinDecimals: 18,
+        coinGeckoId: "ethereum",
+        coinImageUrl:
+          "https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png",
+      },
+      {
+        coinDenom: "OCH",
+        coinMinimalDenom:
+          "erc20:0x19373EcBB4B8cC2253D70F2a246fa299303227Ba:OCH Token",
+        contractAddress: "0x19373EcBB4B8cC2253D70F2a246fa299303227Ba",
+        coinDecimals: 18,
+        coinGeckoId: "och",
+        coinImageUrl:
+          "https://assets.coingecko.com/coins/images/34236/standard/orchai_logo_white_copy_4x-8_%281%29.png",
+      },
+      {
+        coinDenom: "ORAI",
+        coinMinimalDenom:
+          "erc20:0x4c11249814f11b9346808179cf06e71ac328c1b5:Oraichain Token",
+        contractAddress: "0x4c11249814f11b9346808179cf06e71ac328c1b5",
+        coinDecimals: 18,
+        coinGeckoId: "oraichain-token",
+        coinImageUrl:
+          "https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png",
+      },
+      {
+        coinDenom: "ORAIX",
+        coinMinimalDenom:
+          "erc20:0x2d869aE129e308F94Cc47E66eaefb448CEe0d03e:ORAIX Token",
+        contractAddress: "0x2d869aE129e308F94Cc47E66eaefb448CEe0d03e",
+        coinDecimals: 18,
+        coinGeckoId: "oraidex",
+        coinImageUrl: "https://i.ibb.co/VmMJtf7/oraix.png",
+      },
+    ],
+    get feeCurrencies() {
+      return [this.stakeCurrency];
+    },
+
+    features: ["ibc-go", "stargate", "isEvm"],
+    txExplorer: {
+      name: "Etherscan",
+      txUrl: "https://etherscan.io/tx/{txHash}",
+      accountUrl: "https://etherscan.io/address/{address}",
+    },
+  }
+```
+
 ## Contributing
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
 
