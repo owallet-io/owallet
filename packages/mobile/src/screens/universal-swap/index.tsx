@@ -22,13 +22,11 @@ import {
 import {
   DEFAULT_SLIPPAGE,
   GAS_ESTIMATION_SWAP_DEFAULT,
-  ORAI,
   toDisplay,
   getBase58Address,
 } from "@owallet/common";
 import {
   oraichainNetwork,
-  toAmount,
   Networks,
   TRON_DENOM,
   BigDecimal,
@@ -41,13 +39,11 @@ import {
   calcMaxAmount,
 } from "@oraichain/oraidex-common";
 import { openLink } from "../../utils/helper";
-import { feeEstimate } from "@owallet/common";
 import { ChainIdEnum } from "@owallet/common";
 import {
   isEvmNetworkNativeSwapSupported,
   isEvmSwappable,
   isSupportedNoPoolSwapEvm,
-  UniversalSwapData,
   UniversalSwapHandler,
 } from "@oraichain/oraidex-universal-swap";
 import { SwapCosmosWallet, SwapEvmWallet } from "./wallet";

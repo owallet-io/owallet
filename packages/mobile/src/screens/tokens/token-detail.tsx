@@ -45,7 +45,6 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
   const { isTimedOut, setTimer } = useSimpleTimer();
   const { colors } = useTheme();
   const styles = useStyles(colors);
-  const safeAreaInsets = useSafeAreaInsets();
 
   const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
 

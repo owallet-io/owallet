@@ -37,7 +37,6 @@ import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { Text } from "@src/components/text";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import images from "@src/assets/images";
-import { showToast } from "@src/utils/helper";
 
 async function waitAccountLoad(
   accountStore: AccountStore<any, any, any, any>,

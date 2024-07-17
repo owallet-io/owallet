@@ -41,10 +41,8 @@ import { useAutoBiomtric } from "./index";
 import SmoothPinCodeInput from "react-native-smooth-pincode-input";
 import NumericPad from "react-native-numeric-pad";
 import OWText from "@src/components/text/ow-text";
-import { HugeQueriesStore } from "@src/stores/huge-queries";
 import { ChainStore } from "@src/stores/chain";
 import ByteBrew from "react-native-bytebrew-sdk";
-import { SCREENS } from "@src/common/constants";
 
 export const waitAccountInit = async (
   chainStore: ChainStore,
