@@ -15,7 +15,8 @@ import colors from "theme/colors";
 
 export const StakeView: FunctionComponent = observer(() => {
   const history = useHistory();
-  const { chainStore, accountStore, queriesStore, analyticsStore } = useStore();
+  const { chainStore, accountStore, queriesStore, analyticsStore, priceStore } =
+    useStore();
   const chainId = chainStore.isAllNetwork
     ? ChainIdEnum.Oraichain
     : chainStore.current.chainId;
@@ -28,7 +29,12 @@ export const StakeView: FunctionComponent = observer(() => {
     accountInfo.bech32Address
   );
   const stakableReward = rewards.stakableReward;
-
+  const totalStakingReward = priceStore.calculatePrice(stakableReward);
+  const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(
+    accountInfo.bech32Address
+  );
+  const delegated = queryDelegated.total;
+  const totalPrice = priceStore.calculatePrice(delegated);
   const isRewardExist = rewards.rewards.length > 0;
 
   const withdrawAllRewards = async () => {
@@ -98,21 +104,27 @@ export const StakeView: FunctionComponent = observer(() => {
               <FormattedMessage id="main.stake.message.pending-staking-reward" />
             </Text>
           </p>
-          <p
-            className={classnames(
-              "h2",
-              "my-0",
-              "font-weight-normal",
-              styleStake.paragraphMain
-            )}
-          >
-            {stakableReward?.shrink(true).maxDecimals(6).toString()}
+          <Text color={colors["success-text-body"]} weight="500" size={28}>
+            +
+            {totalStakingReward
+              ? totalStakingReward.toString()
+              : stakableReward.shrink(true).maxDecimals(6).toString()}
+          </Text>
+          <Text>
+            {stakableReward.toDec().gt(new Dec(0.001))
+              ? stakableReward
+                  .shrink(true)
+                  .maxDecimals(6)
+                  .trim(true)
+                  .upperCase(true)
+                  .toString()
+              : `< 0.001 ${stakableReward.toCoin().denom.toUpperCase()}`}
             {rewards.isFetching ? (
               <span>
                 <i className="fas fa-spinner fa-spin" />
               </span>
             ) : null}
-          </p>
+          </Text>
         </div>
         <div style={{ flex: 1 }} />
         <Button
@@ -132,6 +144,35 @@ export const StakeView: FunctionComponent = observer(() => {
             </Text>
           </div>
         </Button>
+      </div>
+      <div
+        style={{
+          backgroundColor: colors["primary-surface-subtle"],
+          marginTop: 6,
+          borderRadius: 16,
+          paddingLeft: 12,
+          paddingRight: 12,
+          paddingTop: 8,
+          paddingBottom: 8,
+          flexDirection: "row",
+          justifyContent: "space-between",
+          display: "flex",
+        }}
+      >
+        <Text weight="500" color={colors["neutral-text-action-on-light-bg"]}>
+          Staked:{" "}
+          {totalPrice
+            ? totalPrice.toString()
+            : delegated.shrink(true).maxDecimals(6).toString()}
+        </Text>
+        <Text weight="500" color={colors["neutral-text-action-on-light-bg"]}>
+          {delegated
+            .shrink(true)
+            .maxDecimals(6)
+            .trim(true)
+            .upperCase(true)
+            .toString()}
+        </Text>
       </div>
       <LinkStakeView />
     </div>
