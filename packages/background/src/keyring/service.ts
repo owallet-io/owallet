@@ -248,8 +248,18 @@ export class KeyRingService {
     };
   }
 
-  async showKeyRing(index: number, password: string): Promise<string> {
-    return await this.keyRing.showKeyRing(index, password);
+  async showKeyRing(
+    index: number,
+    password: string,
+    chainId: string | number,
+    isShowPrivKey: boolean
+  ): Promise<string> {
+    return await this.keyRing.showKeyRing(
+      index,
+      password,
+      chainId,
+      isShowPrivKey
+    );
   }
 
   async simulateSignTron(transaction: any): Promise<any> {

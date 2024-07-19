@@ -954,6 +954,7 @@ export class KeyRing {
         );
       }
       const privKey = Mnemonic.generateWalletFromMnemonic(this.mnemonic, path);
+
       this.cached.set(path, privKey);
       return new PrivKeySecp256k1(privKey);
     } else if (this.type === "privateKey") {
@@ -1832,7 +1833,12 @@ export class KeyRing {
   }
 
   // Show private key or mnemonic key if password is valid.
-  public async showKeyRing(index: number, password: string): Promise<string> {
+  public async showKeyRing(
+    index: number,
+    password: string,
+    chainId: string | number,
+    isShowPrivKey: boolean
+  ): Promise<string> {
     if (this.status !== KeyRingStatus.UNLOCKED) {
       throw new Error("Key ring is not unlocked");
     }
@@ -1846,10 +1852,21 @@ export class KeyRing {
     if (!keyStore) {
       throw new Error("Empty key store");
     }
+    const coinType = await this.chainsService.getChainCoinType(
+      chainId as string
+    );
+    console.log(coinType, "coinType");
     // If password is invalid, error will be thrown.
-    return Buffer.from(
+    const keyring = Buffer.from(
       await Crypto.decrypt(this.crypto, keyStore, password)
     ).toString();
+
+    if (keyStore.type === "mnemonic" && isShowPrivKey) {
+      const privKeyBytes = this.loadPrivKey(coinType).toBytes();
+      const privKey = Buffer.from(privKeyBytes).toString("hex");
+      return privKey;
+    }
+    return keyring;
   }
 
   public get canSetPath(): boolean {

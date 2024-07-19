@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { LayoutWithButtonBottom } from "../../layouts/button-bottom-layout/layout-with-button-bottom";
 import styles from "./styles/edit-account.module.scss";
-import { ModalRecoveryPhrase } from "./modals/modal-recovery-phrase";
 import { ModalEditAccountNamePage } from "./modals/modal-edit-account-name";
 import { ModalRemoveAccount } from "./modals/modal-remove-account";
 import { observer } from "mobx-react-lite";
@@ -44,10 +43,10 @@ export const EditAccountPage = observer(() => {
       history.push(`/reveal-recovery-phrase/${params.keystoreIndex}`);
       return;
     }
-    if (wallet.type === "privateKey") {
-      history.push(`/reveal-private-key/${params.keystoreIndex}`);
-      return;
-    }
+  };
+  const onShowPrivKey = () => {
+    history.push(`/reveal-private-key/${params.keystoreIndex}`);
+    return;
   };
   return (
     <LayoutWithButtonBottom
@@ -90,8 +89,8 @@ export const EditAccountPage = observer(() => {
             </div>
           </div>
         )}
-        {wallet?.type === "privateKey" && (
-          <div onClick={onShowPhrasePage} className={styles.actionItem}>
+        {wallet?.type !== "ledger" && (
+          <div onClick={onShowPrivKey} className={styles.actionItem}>
             <span className={styles.leftTitle}>Reveal Private Key</span>
             <div className={styles.blockRight}>
               <img src={require("assets/svg/tdesign_chevron_right.svg")} />

@@ -68,6 +68,7 @@ export const RevealPrivateKeyPage = () => {
           history.goBack();
           return;
         }}
+        isShowPrivKey={true}
       />
     </LayoutWithButtonBottom>
   );

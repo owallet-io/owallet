@@ -238,7 +238,12 @@ const handleShowKeyRingMsg: (
   service: KeyRingService
 ) => InternalHandler<ShowKeyRingMsg> = (service) => {
   return async (_, msg) => {
-    return await service.showKeyRing(msg.index, msg.password);
+    return await service.showKeyRing(
+      msg.index,
+      msg.password,
+      msg.chainId,
+      msg.isShowPrivKey
+    );
   };
 };
 const handleSimulateSignTron: (
