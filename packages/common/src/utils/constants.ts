@@ -35,6 +35,7 @@ export enum ChainIdEnum {
   Oraichain = "Oraichain",
   OraichainTestnet = "Oraichain-testnet",
   OraiBridge = "oraibridge-subnet-2",
+  OraiBTCBridge = "oraibtc-mainnet-1",
   KawaiiCosmos = "kawaii_6886-1",
   KawaiiEvm = "0x1ae6",
   Ethereum = "0x01",

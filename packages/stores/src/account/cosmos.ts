@@ -248,6 +248,7 @@ export class CosmosAccount {
               ],
             },
           };
+
           const simulateTx = await this.simulateTx(
             this.checkNoLegacyStdFeature([
               {
@@ -264,7 +265,6 @@ export class CosmosAccount {
             },
             memo
           );
-          console.log(simulateTx, "simulateTx");
           await this.base.sendMsgs(
             "send",
             {

@@ -71,53 +71,57 @@ export const SelectAccountPage = observer(() => {
       onClickButtonBottom={onAddAccount}
       title="Select Account"
     >
-      {wallets.map((wallet, index) => {
-        if (!wallet.data?.length || wallet.data?.length <= 0) return;
-        return (
-          <div key={`wallet+${index}`} className={styles.boxContainer}>
-            <span className={styles.titleBox}>Imported by {wallet.type}</span>
-            {wallet.data.map((keyStore, index) => {
-              return (
-                <div key={index} className={styles.itemBox}>
-                  <div
-                    onClick={() => onSelectWallet(keyStore)}
-                    className={styles.mainItem}
-                  >
-                    <div className={styles.wrapAvatar}>
+      <div className={styles.wrapContainer}>
+        {wallets.map((wallet, index) => {
+          if (!wallet.data?.length || wallet.data?.length <= 0) return;
+          return (
+            <div key={`wallet+${index}`} className={styles.boxContainer}>
+              <span className={styles.titleBox}>Imported by {wallet.type}</span>
+              {wallet.data.map((keyStore, index) => {
+                return (
+                  <div key={index} className={styles.itemBox}>
+                    <div
+                      onClick={() => onSelectWallet(keyStore)}
+                      className={styles.mainItem}
+                    >
+                      <div className={styles.wrapAvatar}>
+                        <img
+                          className={styles.imgAvatar}
+                          src={require("assets/images/default-avatar.png")}
+                          alt="avatar"
+                        />
+                      </div>
+                      <div className={styles.itemCenter}>
+                        <span className={styles.title}>
+                          {keyStore.meta?.name ||
+                            intl.formatMessage({
+                              id: "setting.keyring.unnamed-account",
+                            })}
+                        </span>
+                        {keyStore.selected && (
+                          <span className={styles.subTitle}>
+                            Current active
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div
+                      onClick={() => onEditAccount(keyStore)}
+                      className={styles.wrapBtn}
+                    >
                       <img
-                        className={styles.imgAvatar}
-                        src={require("assets/images/default-avatar.png")}
-                        alt="avatar"
+                        className={styles.imgIcon}
+                        src={require("assets/svg/tdesign_more.svg")}
+                        alt="account"
                       />
                     </div>
-                    <div className={styles.itemCenter}>
-                      <span className={styles.title}>
-                        {keyStore.meta?.name ||
-                          intl.formatMessage({
-                            id: "setting.keyring.unnamed-account",
-                          })}
-                      </span>
-                      {keyStore.selected && (
-                        <span className={styles.subTitle}>Current active</span>
-                      )}
-                    </div>
                   </div>
-                  <div
-                    onClick={() => onEditAccount(keyStore)}
-                    className={styles.wrapBtn}
-                  >
-                    <img
-                      className={styles.imgIcon}
-                      src={require("assets/svg/tdesign_more.svg")}
-                      alt="account"
-                    />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        );
-      })}
+                );
+              })}
+            </div>
+          );
+        })}
+      </div>
     </LayoutWithButtonBottom>
   );
 });

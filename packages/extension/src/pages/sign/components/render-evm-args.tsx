@@ -88,7 +88,13 @@ export const EVMRenderArgs: FunctionComponent<{
               maxWidth: "50%",
             }}
           >
-            <div style={{ flexDirection: "column", display: "flex" }}>
+            <div
+              style={{
+                flexDirection: "column",
+                display: "flex",
+                wordBreak: "break-word",
+              }}
+            >
               <Text color={colors["neutral-text-body"]}>Pay token</Text>
               {inToken ? (
                 <>
@@ -141,7 +147,13 @@ export const EVMRenderArgs: FunctionComponent<{
               maxWidth: "50%",
             }}
           >
-            <div style={{ flexDirection: "column", display: "flex" }}>
+            <div
+              style={{
+                flexDirection: "column",
+                display: "flex",
+                wordBreak: "break-word",
+              }}
+            >
               <Text color={colors["neutral-text-body"]}>Receive token</Text>
               {outToken ? (
                 <>
