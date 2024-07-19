@@ -77,3 +77,5 @@ injected-provider.bundle.js
 .env
 
 .firebase/
+/ios/fastlane/report.xml
+/android/fastlane/report.xml
