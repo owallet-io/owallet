@@ -6,6 +6,9 @@ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
 import com.facebook.react.defaults.DefaultReactActivityDelegate;
 import org.devio.rn.splashscreen.SplashScreen; // here
 import android.os.Bundle;
+import io.branch.rnbranch.*;
+import android.content.Intent;
+
 public class MainActivity extends ReactActivity {
 
   /**
@@ -30,6 +33,17 @@ public class MainActivity extends ReactActivity {
       // If you opted-in for the New Architecture, we enable the Fabric Renderer.
       DefaultNewArchitectureEntryPoint.getFabricEnabled()
     );
+  }
+  @Override
+  protected void onStart() {
+    super.onStart();
+    RNBranchModule.initSession(getIntent().getData(), this);
+  }  
+  
+  @Override
+  public void onNewIntent(Intent intent) {
+    super.onNewIntent(intent);
+    RNBranchModule.onNewIntent(intent);
   }
 
   @Override

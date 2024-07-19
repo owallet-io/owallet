@@ -23359,6 +23359,11 @@ react-native-ble-plx@2.0.3:
   resolved "https://registry.yarnpkg.com/react-native-ble-plx/-/react-native-ble-plx-2.0.3.tgz#b0a746f33389dbf7fd7b158513330d487d5d0fbb"
   integrity sha512-62LRDBPf/03K7sge+qq2ZuF8PWCGB782G+SBrpgNm5fA5Hs3FCY1ExTJZ1G0tB5ZhBPYEXcKRxPLuFegcDFrqA==
 
+react-native-branch@^6.2.2:
+  version "6.2.2"
+  resolved "https://registry.yarnpkg.com/react-native-branch/-/react-native-branch-6.2.2.tgz#08dd83232251d382c59ce15dd380b27a4422b3f4"
+  integrity sha512-zXc90/IoZKR0RBEhpjLKHnm2rSrZdAuEdMnmGg0tC63n11MUhkHEB78KKnC1ooQV9DBjdyhkhg25D1tA7xdprw==
+
 react-native-bytebrew-sdk@^0.1.5:
   version "0.1.5"
   resolved "https://registry.yarnpkg.com/react-native-bytebrew-sdk/-/react-native-bytebrew-sdk-0.1.5.tgz#34b1c07c082adf966253ff9ef1f452bdaab218da"

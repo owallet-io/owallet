@@ -24,6 +24,14 @@ import ErrorBoundary from "react-native-error-boundary";
 import { ErrorBoundaryFallback } from "./screens/error-boundary/error-boundary";
 import { ApolloProvider } from "@apollo/client";
 import client from "./graphql/apollo-client";
+import branch from "react-native-branch";
+
+// Call `setRequestMetadata` before `subscribe`
+branch.setRequestMetadata("$analytics_visitor_id", "000001");
+
+branch.subscribe((error) => {
+  console.log(error, "error");
+});
 const queryClient = new QueryClient();
 
 if (Platform.OS === "android" || typeof HermesInternal !== "undefined") {

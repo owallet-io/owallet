@@ -21,6 +21,7 @@
 		177E368B2A56CE2D003072B1 /* AppCenter-Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = 177E368A2A56CE2C003072B1 /* AppCenter-Config.plist */; };
 		17FC937C7DD19E8C218F61ED /* libPods-mobile-mobileTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4531CE77F5B7A735D9ACDB73 /* libPods-mobile-mobileTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		84D7A2A82C4A4DBF00CFD3A7 /* branch.json in Resources */ = {isa = PBXBuildFile; fileRef = 84D7A2A72C4A4DBF00CFD3A7 /* branch.json */; };
 		CE3280C32B2ABE5300172006 /* SpaceGrotesk-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CE3280C02B2ABD9100172006 /* SpaceGrotesk-Bold.ttf */; };
 		CE3280C42B2ABE5300172006 /* SpaceGrotesk-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CE3280C12B2ABD9100172006 /* SpaceGrotesk-Light.ttf */; };
 		CE3280C52B2ABE5300172006 /* SpaceGrotesk-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CE3280C22B2ABD9100172006 /* SpaceGrotesk-Medium.ttf */; };
@@ -62,6 +63,7 @@
 		17EE1FA32A5E5C6000C81E0F /* mobile.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = mobile.entitlements; path = mobile/mobile.entitlements; sourceTree = "<group>"; };
 		4531CE77F5B7A735D9ACDB73 /* libPods-mobile-mobileTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-mobile-mobileTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = mobile/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		84D7A2A72C4A4DBF00CFD3A7 /* branch.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = branch.json; path = mobile/branch.json; sourceTree = "<group>"; };
 		8EAB3454B0E84D19176D5A02 /* Pods-mobile.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mobile.release.xcconfig"; path = "Target Support Files/Pods-mobile/Pods-mobile.release.xcconfig"; sourceTree = "<group>"; };
 		A3F0DD332B63CCD3DE5F9BAE /* Pods-mobile-mobileTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mobile-mobileTests.release.xcconfig"; path = "Target Support Files/Pods-mobile-mobileTests/Pods-mobile-mobileTests.release.xcconfig"; sourceTree = "<group>"; };
 		A80FFC3DE0AA4298AB47092C /* Pods-mobile.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mobile.debug.xcconfig"; path = "Target Support Files/Pods-mobile/Pods-mobile.debug.xcconfig"; sourceTree = "<group>"; };
@@ -164,6 +166,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				84D7A2A72C4A4DBF00CFD3A7 /* branch.json */,
 				CE365EB82BE39F20006C7E8C /* assets */,
 				177E368A2A56CE2C003072B1 /* AppCenter-Config.plist */,
 				17021CB12A555542006892B2 /* GoogleService-Info.plist */,
@@ -299,6 +302,7 @@
 			files = (
 				CE365EB92BE39F20006C7E8C /* assets in Resources */,
 				CE3280C32B2ABE5300172006 /* SpaceGrotesk-Bold.ttf in Resources */,
+				84D7A2A82C4A4DBF00CFD3A7 /* branch.json in Resources */,
 				CE3280C42B2ABE5300172006 /* SpaceGrotesk-Light.ttf in Resources */,
 				CE3280C52B2ABE5300172006 /* SpaceGrotesk-Medium.ttf in Resources */,
 				CE3280C62B2ABE5300172006 /* SpaceGrotesk-Regular.ttf in Resources */,
