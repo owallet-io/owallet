@@ -222,7 +222,6 @@ export const CosmosRenderArgs: FunctionComponent<{
           amount: clearDecimals(parsed.amount),
           denom: parsed.denom,
         }
-
       );
     });
   }
@@ -242,7 +241,6 @@ export const CosmosRenderArgs: FunctionComponent<{
               }}
             >
               <img
-                style={styles.image}
                 src={
                   chain?.chainSymbolImageUrl ??
                   chain?.stakeCurrency.coinImageUrl
