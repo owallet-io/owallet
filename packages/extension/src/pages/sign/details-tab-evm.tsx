@@ -132,9 +132,6 @@ export const DetailsTabEvm: FunctionComponent<{
     }, [decodedData]);
 
     useEffect(() => {
-      console.log("ecodedData?.args?._amount", decodedData?.args?._amount);
-      console.log("ecodedData?.args?._value", decodedData?.args?._value);
-
       if (decodedData?.args?._amount) {
         setAmount(decodedData?.args?._amount);
         return;
@@ -145,8 +142,6 @@ export const DetailsTabEvm: FunctionComponent<{
         setAmount(msgs?.value);
       }
     }, [decodedData, msgs]);
-
-    console.log("amount", amount);
 
     const renderedMsgs = (() => {
       const displayAmount = Web3.utils.hexToNumberString(msgs?.value);

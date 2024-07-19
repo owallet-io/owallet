@@ -442,7 +442,7 @@ export const SendBtcPage: FunctionComponent<{
               position: "absolute",
               bottom: 0,
               width: "100%",
-              height: "15%",
+              height: "12%",
               backgroundColor: colors["neutral-surface-card"],
               borderTop: "1px solid" + colors["neutral-border-default"],
             }}

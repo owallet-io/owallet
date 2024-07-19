@@ -224,7 +224,14 @@ export const SignBtcPage: FunctionComponent = observer(() => {
          */
         isLoaded ? (
           <div className={style.container}>
-            <div style={{ height: "75%", overflow: "scroll", padding: 16 }}>
+            <div
+              style={{
+                height: "75%",
+                overflowY: "scroll",
+                overflowX: "hidden",
+                padding: 16,
+              }}
+            >
               <div
                 className={classnames(style.tabs)}
                 style={{ display: "flex", paddingBottom: 12 }}

@@ -313,7 +313,14 @@ export const SignPage: FunctionComponent = observer(() => {
          */
         isLoaded ? (
           <div className={style.container}>
-            <div style={{ height: "75%", overflow: "scroll", padding: 16 }}>
+            <div
+              style={{
+                height: "75%",
+                overflowY: "scroll",
+                overflowX: "hidden",
+                padding: 16,
+              }}
+            >
               {/* <div
                 style={{
                   color: "#353945",
