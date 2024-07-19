@@ -42,6 +42,7 @@ export const SignTronPage: FunctionComponent = observer(() => {
     queriesStore,
   } = useStore();
   const accountInfo = accountStore.getAccount(chainStore.selectedChainId);
+  const chainInfo = chainStore.getChain(ChainIdEnum.TRON);
   const addressTronBase58 = accountInfo.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses
   );
@@ -128,15 +129,17 @@ export const SignTronPage: FunctionComponent = observer(() => {
   const error = feeConfig.getError();
   const txStateIsValid = error == null;
   if (chainStore?.selectedChainId !== ChainIdEnum.TRON) return;
+
   const { feeTrx, estimateEnergy, estimateBandwidth, feeLimit } = useGetFeeTron(
     addressTronBase58,
     amountConfig,
     recipientConfig,
     queries.tron,
-    chainStore.current,
+    chainInfo,
     keyRingStore,
     txInfo
   );
+
   useEffect(() => {
     if (feeTrx) {
       feeConfig.setManualFee(feeTrx);
