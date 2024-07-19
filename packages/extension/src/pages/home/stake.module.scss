@@ -1,0 +1,41 @@
+@import "../../styles/var";
+
+.container-stake-card {
+  background-color: $neutral-surface-card;
+  padding: 16px;
+  border-radius: 24px;
+  margin-top: 16px;
+}
+
+.container-inner {
+  display: flex;
+  flex-direction: row;
+
+  justify-content: center;
+  align-items: center;
+
+  .paragraph-main {
+    line-height: 1.35;
+    color: $color-black;
+    font-size: 20px;
+  }
+
+  .paragraph-sub {
+    line-height: 1.35;
+    font-size: 14px;
+    color: #8898aa;
+  }
+
+  .vertical {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .button {
+    font-weight: 500;
+  }
+}
+
+.hr {
+  margin: $main-card-padding 0;
+}

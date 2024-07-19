@@ -75,7 +75,7 @@ export const Button: FunctionComponent<{
   const disabledBtn = (() => {
     if (disabled) {
       return {
-        backgroundColor: colors["primary-surface-disable"],
+        backgroundColor: colors["neutral-icon-disable"],
         color: colors["neutral-text-action-on-dark-bg"],
         cursor: "not-allowed",
       };

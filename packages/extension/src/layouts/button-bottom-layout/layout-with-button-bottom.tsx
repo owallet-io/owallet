@@ -25,6 +25,7 @@ export const LayoutWithButtonBottom: FC<{
     <div
       style={{
         backgroundColor,
+        paddingBottom: isHideButtonBottom ? 16 : 72,
       }}
       className={styles.container}
     >

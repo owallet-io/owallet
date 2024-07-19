@@ -14,7 +14,7 @@ export default {
   "main.modal.select-account.label.balance": "Balance",
   "main.modal.select-account.label.sequence": "Previous Txs",
 
-  "main.stake.message.pending-staking-reward": "Pending Staking Reward",
+  "main.stake.message.pending-staking-reward": "Claimable Reward",
   "main.stake.message.stake": "Stake",
   "main.stake.message.earning": "Earn up to {apr}% per year",
   "main.stake.button.claim-rewards": "Claim",

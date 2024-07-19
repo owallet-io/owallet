@@ -10,7 +10,9 @@ export function numberWithCommas(number) {
 
   // Insert commas into the integer part
   const formattedNumber = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-
+  if (!decPart) {
+    return formattedNumber;
+  }
   // Combine the formatted integer part and the decimal part
   return formattedNumber + "." + decPart;
 }

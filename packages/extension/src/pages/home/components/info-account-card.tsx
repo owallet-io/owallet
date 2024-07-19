@@ -66,7 +66,30 @@ export const InfoAccountCard: FC<{
             className={styles.imgWallet}
             src={require("assets/images/default-avatar.png")}
           />
-          <span className={styles.nameWallet}>{account.name || "..."}</span>
+          <div
+            style={
+              account.name?.length < 10
+                ? {
+                    width: "auto",
+                  }
+                : null
+            }
+            className={styles.wrapName}
+          >
+            <span
+              style={
+                account.name?.length < 10
+                  ? {
+                      animation: "auto",
+                      paddingLeft: 0,
+                    }
+                  : null
+              }
+              className={styles.nameWallet}
+            >
+              {account.name || "..."}
+            </span>
+          </div>
           <img
             className={styles.arrDown}
             src={require("assets/images/tdesign_chevron_down.svg")}
