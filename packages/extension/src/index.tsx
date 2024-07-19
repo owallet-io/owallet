@@ -196,7 +196,6 @@ function ErrorFallback({ error }) {
     </div>
   );
 }
-//console.log('test sign")
 const StateRenderer: FunctionComponent = observer(() => {
   const { keyRingStore } = useStore();
   if (

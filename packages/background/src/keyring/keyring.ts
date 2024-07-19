@@ -1855,7 +1855,6 @@ export class KeyRing {
     const coinType = await this.chainsService.getChainCoinType(
       chainId as string
     );
-    console.log(coinType, "coinType");
     // If password is invalid, error will be thrown.
     const keyring = Buffer.from(
       await Crypto.decrypt(this.crypto, keyStore, password)
