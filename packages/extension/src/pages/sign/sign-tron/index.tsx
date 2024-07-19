@@ -31,7 +31,7 @@ enum Tab {
 }
 const cx = cn.bind(style);
 
-export const SignTronPage: FunctionComponent = observer(() => {
+const SignTronContent: FunctionComponent = () => {
   const intl = useIntl();
   const [tab, setTab] = useState<Tab>(Tab.Details);
   const {
@@ -368,4 +368,25 @@ export const SignTronPage: FunctionComponent = observer(() => {
       }
     </div>
   );
+};
+
+export const SignTronPage: FunctionComponent = observer(() => {
+  const { chainStore } = useStore();
+
+  const selectTronNetwork = async () => {
+    if (chainStore.current.chainId !== ChainIdEnum.TRON) {
+      chainStore.selectChain(ChainIdEnum.TRON);
+      await chainStore.saveLastViewChainId();
+    }
+  };
+
+  useEffect(() => {
+    selectTronNetwork();
+  }, [chainStore.current]);
+
+  console.log("chainStore.current.chainId", chainStore.current.chainId);
+
+  return chainStore.current.chainId === ChainIdEnum.TRON ? (
+    <SignTronContent />
+  ) : null;
 });
