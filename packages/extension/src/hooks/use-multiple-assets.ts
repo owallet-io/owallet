@@ -52,7 +52,7 @@ export const initPrice = new PricePretty(
 export const sortTokensByPrice = (tokens: ViewRawToken[]) => {
   return tokens.sort((a, b) => Number(b.price) - Number(a.price));
 };
-var bech32AddressCache = "";
+let bech32AddressCache = "";
 export const useMultipleAssets = (
   accountStore: AccountStore<AccountWithAll>,
   priceStore: CoinGeckoPriceStore,

@@ -8,7 +8,6 @@ import {
   ScrollView,
   InteractionManager,
   StyleSheet,
-  ImageSourcePropType,
 } from "react-native";
 import { Text } from "@src/components/text";
 import { useSmartNavigation } from "../../navigation.provider";
@@ -18,16 +17,15 @@ import {
   capitalizedText,
   formatContractAddress,
   openLink,
-  SUCCESS,
 } from "../../utils/helper";
-import { ChainIdEnum, TxRestTronClient } from "@owallet/common";
+import { ChainIdEnum } from "@owallet/common";
 import { API } from "@src/common/api";
-import { OwalletEvent, TxRestCosmosClient, TRON_ID } from "@owallet/common";
+import { OwalletEvent, TRON_ID } from "@owallet/common";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import { OWButton } from "@src/components/button";
 import { PageHeader } from "@src/components/header/header-new";
 import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
-import { CoinPretty, Dec, Int } from "@owallet/unit";
+import { CoinPretty, Dec } from "@owallet/unit";
 import { AppCurrency, StdFee } from "@owallet/types";
 import { BondStatus, CoinPrimitive } from "@owallet/stores";
 import _ from "lodash";
@@ -44,9 +42,9 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
     queriesStore,
   } = useStore();
 
-  const [retry, setRetry] = useState(3);
-  const { colors, images } = useTheme();
-  const [data, setData] = useState<Partial<ResTxsInfo>>();
+  const [retry] = useState(3);
+  const { colors } = useTheme();
+  const [data, setData] = useState<Partial<any>>();
   const route = useRoute<
     RouteProp<
       Record<

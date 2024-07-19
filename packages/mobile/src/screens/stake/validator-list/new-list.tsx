@@ -13,13 +13,10 @@ import { BondStatus, Validator } from "@owallet/stores";
 import { CoinPretty, Dec } from "@owallet/unit";
 import { useTheme } from "@src/themes/theme-provider";
 import { API } from "../../../common/api";
-import { CardDivider } from "../../../components/card";
 import { AlertIcon } from "../../../components/icon";
-import { SelectorModal } from "../../../components/input";
 import { RectButton } from "../../../components/rect-button";
 import { useSmartNavigation } from "../../../navigation.provider";
 import { metrics, spacing } from "../../../themes";
-import OWFlatList from "@src/components/page/ow-flat-list";
 import { ValidatorThumbnail } from "@src/components/thumbnail";
 import OWText from "@src/components/text/ow-text";
 import OWIcon from "@src/components/ow-icon/ow-icon";
@@ -335,7 +332,7 @@ const ValidatorItem: FunctionComponent<{
                       color: colors["neutral-text-body2"],
                     }}
                   >
-                    APR: {apr && apr > 0 ? apr.toFixed(2).toString() + "%" : ""}
+                    APR: {apr?.toFixed(2).toString() + "%"}
                   </OWText>
                 </View>
               ) : null}
