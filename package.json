@@ -31,7 +31,7 @@
     "git:update": "git submodule update --recursive && git pull",
     "bootstrap": "lerna bootstrap",
     "setup:mobile": "yarn && yarn build:libs && cd packages/mobile && yarn build:provider && yarn pod:install",
-    "dev": "lerna run dev --parallel --ignore @owallet/extension --ignore @owallet/mobile --ignore @owallet/wc-client --ignore @owallet/wc-qrcode-modal",
+    "dev": "lerna run dev --parallel --ignore @owallet/extension --ignore @owallet/mobile --ignore @owallet/wc-client",
     "clean:setup": "yarn clean:all && yarn setup:mobile",
     "clean": "lerna run clean --parallel && rimraf node_modules && yarn clean:watchman",
     "clean:all": "rimraf yarn.lock && yarn clean",
