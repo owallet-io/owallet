@@ -4,7 +4,7 @@ import {
 } from "../utils/utils";
 import Axios, { AxiosResponse } from "axios";
 import { TxResponse, TxResTron, TxResultResponse } from "./type";
-import { fetchAdapter } from "../axios";
+
 import TronWebProvider from "tronweb";
 export class TxRestCosmosClient {
   constructor(
@@ -18,7 +18,7 @@ export class TxRestCosmosClient {
           baseURL: this.restApi,
         },
         ...this.restConfig,
-        adapter: fetchAdapter,
+        adapter: "fetch",
       });
       const response = await restInstance.get<TxResultResponse>(
         `/cosmos/tx/v1beta1/txs/${txHash}`,
