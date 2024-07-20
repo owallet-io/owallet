@@ -127,7 +127,8 @@
     "tronweb": "5.3.2",
     "axios": "1.7.2",
     "axios-extensions":"3.1.7",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "web3": "1.7.4"
   },
   "browser": {
     "assert": false
