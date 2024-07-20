@@ -728,7 +728,7 @@ PODS:
     - React-jsi (= 0.72.15)
     - React-logger (= 0.72.15)
     - React-perflogger (= 0.72.15)
-  - RNCAsyncStorage (1.19.0):
+  - RNCAsyncStorage (1.24.0):
     - React-Core
   - RNCMaskedView (0.2.9):
     - React-Core
@@ -755,7 +755,7 @@ PODS:
     - FirebaseCoreExtension
     - React-Core
     - RNFBApp
-  - RNGestureHandler (2.14.0):
+  - RNGestureHandler (2.17.1):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
   - RNInAppBrowser (3.7.0):
@@ -768,7 +768,7 @@ PODS:
     - React-Core
   - RNReactNativeHapticFeedback (2.2.0):
     - React-Core
-  - RNReanimated (3.6.2):
+  - RNReanimated (3.14.0):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - ReactCommon/turbomodule/core
@@ -1216,7 +1216,7 @@ SPEC CHECKSUMS:
   React-runtimescheduler: ae08ede2e0267be2a4d8ba82a54d5908949d5a34
   React-utils: 8eb3c12fd4a4da6df3824f7d9a961d73a6ed6e5d
   ReactCommon: d2de36ed3eebe700d7169b9e80f7d1a4b98e178d
-  RNCAsyncStorage: 4b98ac3c64efa4e35c1197cb0c5ca5e9f5d4c666
+  RNCAsyncStorage: ec53e44dc3e75b44aa2a9f37618a49c3bc080a7a
   RNCMaskedView: 949696f25ec596bfc697fc88e6f95cf0c79669b6
   RNDeviceInfo: 25d818c85db769cc0e7083d39efaa01a6f450df3
   RNFastImage: 5c9c9fed9c076e521b3f509fe79e790418a544e8
@@ -1224,13 +1224,13 @@ SPEC CHECKSUMS:
   RNFBApp: 9acbe359ef3559d6f8ca5c350db471f2b352f98a
   RNFBCrashlytics: a4a66785997e629313ec8005a0811765738239fd
   RNFBMessaging: b82ef70d252500d3ad104284c0c7f8e1cd22b51e
-  RNGestureHandler: c29ba5367d3eb162aabbbe46ece33bcc65617a76
+  RNGestureHandler: 53f1b8fcdf62b349da820ef4616abeed04cde85c
   RNInAppBrowser: e36d6935517101ccba0e875bac8ad7b0cb655364
   RNKeychain: ff836453cba46938e0e9e4c22e43d43fa2c90333
   RNLocalize: d4b8af4e442d4bcca54e68fc687a2129b4d71a81
   RNRate: ef3bcff84f39bb1d1e41c5593d3eea4aab2bd73a
   RNReactNativeHapticFeedback: ec56a5f81c3941206fd85625fa669ffc7b4545f9
-  RNReanimated: 03616b34e2f95047c0fb6070bf3efaea6a33032d
+  RNReanimated: e71a1d6bb6427f45ea57c5e23f99030129b6db62
   RNScreens: bea7b9767050d69e4b9da14639cdd5c8f5a37881
   RNScrypt: 95fdef077b482e9fdf8a761120cb69d129ef4016
   RNSentry: 85fe1023bf60ead12d059d9c845de19de0ed6f0d
