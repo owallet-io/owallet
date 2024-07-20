@@ -24,16 +24,18 @@ import ErrorBoundary from "react-native-error-boundary";
 import { ErrorBoundaryFallback } from "./screens/error-boundary/error-boundary";
 import { ApolloProvider } from "@apollo/client";
 import client from "./graphql/apollo-client";
-import branch from "react-native-branch";
+import branch, { BranchEvent, BranchEventParams } from "react-native-branch";
 
-// Call `setRequestMetadata` before `subscribe`
-branch.setRequestMetadata("$analytics_visitor_id", "000001");
-
-branch.subscribe((error) => {
-  console.log(error, "error");
-});
 const queryClient = new QueryClient();
-
+// Call `setRequestMetadata` before `subscribe`
+branch.subscribe({
+  onOpenStart: (params) => {
+    console.log("Subscribed to branch successfully!!" + params);
+  },
+  onOpenComplete: (params2) => {
+    console.log("Subscribed to branch successfully!!", params2);
+  },
+});
 if (Platform.OS === "android" || typeof HermesInternal !== "undefined") {
   // https://github.com/web-ridge/react-native-paper-dates/releases/tag/v0.2.15
 
@@ -123,6 +125,19 @@ export const App = () => {
 
   const enableAnalytics = async () => {
     await analytics().setAnalyticsCollectionEnabled(true);
+    // Define event data
+
+    let params: BranchEventParams = {
+      customData: {
+        test: "test",
+      },
+    };
+
+    // Create event and pass null if no BranchUniversalObject is used
+    let event = new BranchEvent(`OWallet Test ${Platform.OS}`, null, params);
+
+    // Log event
+    event.logEvent();
   };
   useEffect(() => {
     SplashScreen.hide();
