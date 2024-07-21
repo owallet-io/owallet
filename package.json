@@ -130,7 +130,8 @@
     "axios-extensions":"3.1.7",
     "react-dom": "18.2.0",
     "web3": "1.7.5",
-    "web3-utils":"1.10.4"
+    "web3-utils":"4.2.1",
+    "ws":"8.17.1"
   },
   "browser": {
     "assert": false
