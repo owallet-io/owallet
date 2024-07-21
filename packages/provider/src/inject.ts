@@ -27,7 +27,7 @@ import {
   OfflineSigner,
   StdSignature,
 } from "@cosmjs/launchpad";
-import { SecretUtils } from "secretjs/types/enigmautils";
+import { SecretUtils } from "@owallet/types";
 import { OWalletEnigmaUtils } from "./enigma";
 import { DirectSignResponse, OfflineDirectSigner } from "@cosmjs/proto-signing";
 import { CosmJSOfflineSigner, CosmJSOfflineSignerOnlyAmino } from "./cosmjs";

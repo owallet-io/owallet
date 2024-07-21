@@ -73,7 +73,7 @@
     "react-router-dom": "^5.1.2",
     "reactstrap": "^8.4.1",
     "react-switch": "^7.0.0",
-    "secretjs": "^0.17.0",
+    "secretjs": "^1.12.5",
     "sha.js": "^2.4.11",
     "tronweb": "^5.3.2",
     "utility-types": "^3.10.0",

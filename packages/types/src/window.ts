@@ -1,6 +1,6 @@
 import { OWallet, Ethereum, TronWeb, Bitcoin } from "./wallet";
 import { OfflineSigner } from "@cosmjs/launchpad";
-import { SecretUtils } from "secretjs/types/enigmautils";
+import { SecretUtils } from "./secretjs";
 import { OfflineDirectSigner } from "@cosmjs/proto-signing";
 export interface Window {
   owallet?: OWallet;
