@@ -1,13 +1,15 @@
 @charset "utf-8";
 
 $fa-font-path: "~@fortawesome/fontawesome-free/webfonts";
-@import "../../../../node_modules/@fortawesome/fontawesome-free/scss/fontawesome";
-@import "../../../../node_modules/@fortawesome/fontawesome-free/scss/solid";
-@import "../../../../node_modules/@fortawesome/fontawesome-free/scss/brands";
+@import "~@fortawesome/fontawesome-free/scss/fontawesome";
+@import "~@fortawesome/fontawesome-free/scss/solid";
+@import "~@fortawesome/fontawesome-free/scss/brands";
 
 @import url("https://fonts.googleapis.com/css?family=Nunito+Sans:300,400,700,800&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=option");
 @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap");
+// @import "../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard-react";
+@import "~bootstrap/scss/bootstrap";
 
 @import url("https://fonts.googleapis.com/css?family=Courier+Prime&display=swap");
 
@@ -25,7 +27,6 @@ body {
   background-color: $neutral-surface-card;
   width: $popup-size-width;
   height: $popup-size-height;
-  margin: 0px !important;
   overflow: hidden;
   &[data-lang="ko"] {
     word-break: keep-all;
