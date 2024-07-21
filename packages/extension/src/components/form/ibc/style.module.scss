@@ -1,6 +1,4 @@
-@import '../../../styles/var';
-@import "../../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/functions";
-@import "../../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/variables";
+@import "../../../styles/var";
 
 .chain-selector {
   width: 100%;
@@ -26,7 +24,7 @@
     box-shadow: 0 1px 3px rgba(50, 50, 93, 0.15), 0 1px 0 rgba(0, 0, 0, 0.02) !important;
     &::after {
       border-radius: 2px;
-      content: ' ';
+      content: " ";
       display: block;
       height: 0.625em;
       margin-top: -0.4375em;
@@ -97,10 +95,6 @@
   color: $color-accent-1;
 }
 
-
 .input-group {
   box-shadow: 0 1px 3px rgb(50 50 93 / 15%), 0 1px 0 rgb(0 0 0 / 2%);
-  &:focus-within {
-    box-shadow: $input-focus-alternative-box-shadow !important;
-  }
 }

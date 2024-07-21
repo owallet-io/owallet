@@ -46,7 +46,6 @@
     "firebase": "^10.7.0",
     "aes-js": "^3.1.2",
     "amplitude-js": "^8.16.0",
-    "argon-dashboard-react": "^1.2.0",
     "assert": "^2.0.0",
     "axios": "^1.7.2",
     "bip39": "^3.0.2",
