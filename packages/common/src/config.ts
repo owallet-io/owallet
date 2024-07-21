@@ -1513,7 +1513,7 @@ export const PrivilegedOrigins: string[] = [
 ];
 
 // tracking ads
-export const AmplitudeApiKey = "879f08e23ff5926be676c19157bc4fd4";
+export const AmplitudeApiKey = "";
 
 // default thumbnails for fix address
 export const ValidatorThumbnails: { [key: string]: string } = {
