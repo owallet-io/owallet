@@ -34,13 +34,13 @@ platform :android do
       groups: "internal-test",
       release_notes: "Test on fastlane"
     )
-    discord_notifier(
-      webhook_url: "https://discord.com/api/webhooks/#{ENV["DISCORD_HOOK_ID"]}/#{ENV["DISCORD_HOOK_TOKEN"]}",
-      title: "ANDROID DISTRIBUTION FASTLANE - #{android_get_version_name} (#{latest_release[:buildVersion].to_i + 1})",
-      description: "
-      Congratulations. You have successfully deployed OWallet app to Distribution :thumbsup::skin-tone-4: :thumbsup::skin-tone-4: :thumbsup::skin-tone-4:",
-      success: true
-    )
+    # discord_notifier(
+    #   webhook_url: "https://discord.com/api/webhooks/#{ENV["DISCORD_HOOK_ID"]}/#{ENV["DISCORD_HOOK_TOKEN"]}",
+    #   title: "ANDROID DISTRIBUTION FASTLANE - #{android_get_version_name} (#{latest_release[:buildVersion].to_i + 1})",
+    #   description: "
+    #   Congratulations. You have successfully deployed OWallet app to Distribution :thumbsup::skin-tone-4: :thumbsup::skin-tone-4: :thumbsup::skin-tone-4:",
+    #   success: true
+    # )
   end
 
   desc "Runs all the tests"
@@ -80,12 +80,12 @@ platform :android do
     version_name_local = android_get_version_name(
       gradle_file: "app/build.gradle" # optional
     ).gsub("'", "")
-    discord_notifier(
-      webhook_url: "https://discord.com/api/webhooks/1111240493888720898/P5NGMukdguh3nuXf9Cqrs7YKoYz_fjUnhQlvdi1MFjnOKXf2FmMN5ms5L5_5a67KR5I_",
-      title: "ANDROID FASTLANE - #{version_name_local} (#{version_code_local})",
-      description: 'test',
-      success: true
-    )
+    # discord_notifier(
+    #   webhook_url: "https://discord.com/api/webhooks/1111240493888720898/P5NGMukdguh3nuXf9Cqrs7YKoYz_fjUnhQlvdi1MFjnOKXf2FmMN5ms5L5_5a67KR5I_",
+    #   title: "ANDROID FASTLANE - #{version_name_local} (#{version_code_local})",
+    #   description: 'test',
+    #   success: true
+    # )
   end
 
   desc "Submit a new Beta Build"
@@ -138,13 +138,13 @@ platform :android do
       "android.injected.signing.key.password" => ENV["PASS_ALIAS_KEY_STORE"],
     })
     upload_to_play_store(track: 'internal',skip_upload_apk:true, json_key_data: ENV["JSON_KEY_DATA"],package_name:"com.io.owallet",skip_upload_metadata:true,skip_upload_images:true,skip_upload_screenshots:true)
-    discord_notifier(
-      webhook_url: "https://discord.com/api/webhooks/#{ENV["DISCORD_HOOK_ID"]}/#{ENV["DISCORD_HOOK_TOKEN"]}",
-      title: "ANDROID BETA FASTLANE - #{version_name_local} (#{version_code_local})",
-      description: "
-      Congratulations. You have successfully deployed OWallet app to Google Play :thumbsup::skin-tone-4: :thumbsup::skin-tone-4: :thumbsup::skin-tone-4:",
-      success: true
-    )
+    # discord_notifier(
+    #   webhook_url: "https://discord.com/api/webhooks/#{ENV["DISCORD_HOOK_ID"]}/#{ENV["DISCORD_HOOK_TOKEN"]}",
+    #   title: "ANDROID BETA FASTLANE - #{version_name_local} (#{version_code_local})",
+    #   description: "
+    #   Congratulations. You have successfully deployed OWallet app to Google Play :thumbsup::skin-tone-4: :thumbsup::skin-tone-4: :thumbsup::skin-tone-4:",
+    #   success: true
+    # )
     # sh "your_script.sh"
     # You can also use other beta testing services here
   end
