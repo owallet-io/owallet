@@ -128,7 +128,8 @@
     "axios": "1.7.2",
     "axios-extensions":"3.1.7",
     "react-dom": "18.2.0",
-    "web3": "1.7.4"
+    "web3": "1.7.5",
+    "web3-utils":"1.10.4"
   },
   "browser": {
     "assert": false
