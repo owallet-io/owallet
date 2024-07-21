@@ -109,6 +109,7 @@
     "@ethersproject/random": "=5.6.0",
     "@ethersproject/signing-key": "=5.6.0",
     "@ethersproject/transactions": "=5.6.0",
+    "@ethersproject/abi":"=5.6.0",
     "@ethersproject/wordlists": "=5.6.0",
     "@ethersproject/networks": "=5.6.0",
     "@ethersproject/sha2": "=5.6.0",

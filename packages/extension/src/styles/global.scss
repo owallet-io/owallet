@@ -25,6 +25,7 @@ body {
   background-color: $neutral-surface-card;
   width: $popup-size-width;
   height: $popup-size-height;
+  margin: 0px !important;
   overflow: hidden;
   &[data-lang="ko"] {
     word-break: keep-all;

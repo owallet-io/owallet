@@ -39,6 +39,7 @@
     "react": "18.2.0",
     "react-router": "^5.1.2",
     "utility-types": "^3.10.0",
-    "web3": "1.10.0"
+    "web3": "1.10.0",
+    "querystring":"0.2.1"
   }
 }
