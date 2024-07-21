@@ -48,7 +48,7 @@ import { LedgerService } from "../ledger";
 import { request } from "../tx";
 import { TYPED_MESSAGE_SCHEMA } from "./constants";
 import { Crypto, KeyStore } from "./crypto";
-import PRE from "proxy-recrypt-js";
+// import PRE from "proxy-recrypt-js";
 import {
   CommonCrypto,
   ECDSASignature,
@@ -1354,10 +1354,12 @@ export class KeyRing {
 
     const privKey = this.loadPrivKey(getCoinTypeByChainId(chainId));
     const privKeyHex = Buffer.from(privKey.toBytes()).toString("hex");
-    const decryptedData = PRE.decryptData(privKeyHex, message[0]);
-    return {
-      decryptedData,
-    };
+    //TODO: This is comment for security proxy-recrypt-js lib
+    // const decryptedData = PRE.decryptData(privKeyHex, message[0]);
+    // return {
+    //   decryptedData
+    // };
+    return;
   }
 
   public async signProxyReEncryptionData(
@@ -1374,11 +1376,13 @@ export class KeyRing {
 
     const privKey = this.loadPrivKey(getCoinTypeByChainId(chainId));
     const privKeyHex = Buffer.from(privKey.toBytes()).toString("hex");
-    const rk = PRE.generateReEncrytionKey(privKeyHex, message[0]);
+    //TODO: This is comment for security proxy-recrypt-js lib
+    // const rk = PRE.generateReEncrytionKey(privKeyHex, message[0]);
 
-    return {
-      rk,
-    };
+    // return {
+    //   rk
+    // };
+    return;
   }
 
   public async signDecryptData(
