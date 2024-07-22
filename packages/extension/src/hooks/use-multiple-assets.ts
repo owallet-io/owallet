@@ -12,6 +12,8 @@ import {
   getRpcByChainId,
   MapChainIdToNetwork,
   parseRpcBalance,
+  timeoutBtc,
+  withTimeout,
 } from "@owallet/common";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@owallet/unit";
 import Web3 from "web3";
@@ -38,7 +40,7 @@ import {
   CoinGeckoPriceStore,
 } from "@owallet/stores";
 import { ChainStore } from "../stores";
-const timeoutLimit = 3900;
+
 export const initPrice = new PricePretty(
   {
     currency: "usd",
@@ -148,16 +150,6 @@ export const useMultipleAssets = (
     };
   };
 
-  const withTimeout = (promise, ms = timeoutLimit) => {
-    const timeout = new Promise((_, reject) => {
-      const id = setTimeout(() => {
-        clearTimeout(id);
-        reject(new Error("Promise timed out"));
-      }, ms);
-    });
-
-    return Promise.race([promise, timeout]);
-  };
   const fetchAllBalancesEvm = async (chains) => {
     const allBalanceChains = chains.map((chain, index) => {
       const { address, chainInfo } = hugeQueriesStore.getAllChainMap.get(chain);
@@ -219,11 +211,11 @@ export const useMultipleAssets = (
       const btcsPromise = await Promise.allSettled([
         withTimeout(
           getBalanceBtc(address, chainInfo, AddressBtcType.Bech32),
-          20000
+          timeoutBtc
         ),
         withTimeout(
           getBalanceBtc(btcAddress, chainInfo, AddressBtcType.Legacy),
-          20000
+          timeoutBtc
         ),
       ]);
       chainStore.setMultipleAsset({
