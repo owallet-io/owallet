@@ -38,7 +38,7 @@ import {
   CoinGeckoPriceStore,
 } from "@owallet/stores";
 import { ChainStore } from "../stores";
-
+const timeoutLimit = 6000;
 export const initPrice = new PricePretty(
   {
     currency: "usd",
@@ -147,19 +147,31 @@ export const useMultipleAssets = (
         .toString(),
     };
   };
+
+  const withTimeout = (promise, ms = timeoutLimit) => {
+    const timeout = new Promise((_, reject) => {
+      const id = setTimeout(() => {
+        clearTimeout(id);
+        reject(new Error("Promise timed out"));
+      }, ms);
+    });
+
+    return Promise.race([promise, timeout]);
+  };
   const fetchAllBalancesEvm = async (chains) => {
     const allBalanceChains = chains.map((chain, index) => {
       const { address, chainInfo } = hugeQueriesStore.getAllChainMap.get(chain);
       switch (chain) {
         case ChainIdEnum.BNBChain:
         case ChainIdEnum.Ethereum:
-          return getBalancessErc20(address, chainInfo);
+          return withTimeout(getBalancessErc20(address, chainInfo));
         case ChainIdEnum.TRON:
-          return getBalancessTrc20(address, chainInfo);
+          return withTimeout(getBalancessTrc20(address, chainInfo));
       }
     });
-    return Promise.all(allBalanceChains);
+    return Promise.allSettled(allBalanceChains);
   };
+
   const init = async () => {
     setIsLoading(true);
     try {
@@ -176,25 +188,29 @@ export const useMultipleAssets = (
           switch (chainInfo.networkType) {
             case "cosmos":
               return chainInfo.chainId === ChainIdEnum.Oraichain
-                ? Promise.all([
-                    getBalanceCW20Oraichain(),
-                    getBalanceNativeCosmos(address, chainInfo),
+                ? Promise.allSettled([
+                    withTimeout(getBalanceCW20Oraichain()),
+                    withTimeout(getBalanceNativeCosmos(address, chainInfo)),
                   ])
-                : getBalanceNativeCosmos(address, chainInfo);
+                : withTimeout(getBalanceNativeCosmos(address, chainInfo));
             case "evm":
               return chainInfo.chainId === ChainIdEnum.Oasis
-                ? getBalanceOasis(address, chainInfo)
-                : Promise.all([
-                    getBalanceNativeEvm(address, chainInfo),
-                    getBalanceErc20(address, chainInfo),
+                ? withTimeout(getBalanceOasis(address, chainInfo))
+                : Promise.allSettled([
+                    withTimeout(getBalanceNativeEvm(address, chainInfo)),
+                    withTimeout(getBalanceErc20(address, chainInfo)),
                   ]);
             case "bitcoin":
               const btcAddress = accountStore.getAccount(
                 ChainIdEnum.Bitcoin
               ).legacyAddress;
-              return Promise.all([
-                getBalanceBtc(address, chainInfo, AddressBtcType.Bech32),
-                getBalanceBtc(btcAddress, chainInfo, AddressBtcType.Legacy),
+              return Promise.allSettled([
+                withTimeout(
+                  getBalanceBtc(address, chainInfo, AddressBtcType.Bech32)
+                ),
+                withTimeout(
+                  getBalanceBtc(btcAddress, chainInfo, AddressBtcType.Legacy)
+                ),
               ]);
           }
         }
