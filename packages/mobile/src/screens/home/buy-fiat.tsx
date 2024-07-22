@@ -8,7 +8,7 @@ import { ChainIdEnum } from "@owallet/common";
 import { PageHeader } from "@src/components/header/header-new";
 import { useTheme } from "@src/themes/theme-provider";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import ByteBrew from "react-native-bytebrew-sdk";
+import { tracking } from "@src/utils/tracking";
 const BuyFiat = observer(() => {
   const { accountStore, appInitStore, chainStore } = useStore();
   const { colors } = useTheme();
@@ -18,7 +18,6 @@ const BuyFiat = observer(() => {
 
   const [accountList, setAccounts] = useState("");
 
-  ByteBrew.NewCustomEvent("Buy ORAI KADO Screen");
   const networkList = "ORAICHAIN".split(", ").join(",");
 
   const cryptoList = "ORAI, USDT, USDC".split(", ").join(",");
@@ -29,7 +28,9 @@ const BuyFiat = observer(() => {
   useEffect(() => {
     setAccounts(`${"ORAICHAIN"}:${accountOrai.bech32Address}`);
   }, [accountEth.evmosHexAddress]);
-
+  useEffect(() => {
+    tracking("Buy ORAI KADO Screen");
+  }, []);
   return (
     <View style={[styles.container, { paddingTop: safeAreaInsets.top }]}>
       <PageHeader title="Buy" />

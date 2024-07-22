@@ -37,7 +37,7 @@ import { ViewRawToken } from "@src/stores/huge-queries";
 import { CoinPretty, PricePretty } from "@owallet/unit";
 import { HistoryByToken } from "@src/screens/transactions/history-by-token";
 import { PageWithScrollView } from "@src/components/page";
-import ByteBrew from "react-native-bytebrew-sdk";
+import { tracking } from "@src/utils/tracking";
 import { RouteProp, useRoute } from "@react-navigation/native";
 
 export const TokenDetailsScreen: FunctionComponent = observer((props) => {
@@ -67,7 +67,7 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
   const [tronTokens, setTronTokens] = useState([]);
 
   useEffect(() => {
-    ByteBrew.NewCustomEvent("Token Detail Screen");
+    tracking("Token Detail Screen");
     InteractionManager.runAfterInteractions(() => {
       (async function get() {
         try {

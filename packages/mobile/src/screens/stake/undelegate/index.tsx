@@ -23,7 +23,7 @@ import { useSmartNavigation } from "../../../navigation.provider";
 import { useStore } from "../../../stores";
 import { metrics, spacing } from "../../../themes";
 import { FeeModal } from "@src/modals/fee";
-import ByteBrew from "react-native-bytebrew-sdk";
+import { tracking } from "@src/utils/tracking";
 import { makeStdTx } from "@cosmjs/amino";
 import { Tendermint37Client } from "@cosmjs/tendermint-rpc";
 import { API } from "@src/common/api";
@@ -40,7 +40,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
       string
     >
   >();
-  ByteBrew.NewCustomEvent(`Undelegate Screen`);
+  tracking(`Undelegate Screen`);
   const validatorAddress = route.params.validatorAddress;
 
   const {
@@ -238,7 +238,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
                         validatorName: validator?.description.moniker,
                         feeType: sendConfigs.feeConfig.feeType,
                       });
-                      ByteBrew.NewCustomEvent(
+                      tracking(
                         `Undelegate`,
                         `chainName=${
                           chainStore.current.chainName

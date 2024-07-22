@@ -39,7 +39,7 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { ChainIdEnum } from "@oraichain/oraidex-common";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
-import ByteBrew from "react-native-bytebrew-sdk";
+import { tracking } from "@src/utils/tracking";
 
 export const SendTronScreen: FunctionComponent = observer(() => {
   const {
@@ -101,7 +101,7 @@ export const SendTronScreen: FunctionComponent = observer(() => {
     queriesStore.get(chainId).queryBalances,
     EthereumEndpoint
   );
-  ByteBrew.NewCustomEvent(`Send Tron Screen`);
+  tracking(`Send Tron Screen`);
   const [balance, setBalance] = useState<CoinPretty>(null);
 
   // useEffect(() => {

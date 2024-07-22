@@ -46,7 +46,7 @@ import OWCard from "@src/components/card/ow-card";
 import { NewAmountInput } from "@src/components/input/amount-input";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import { API } from "@src/common/api";
-import ByteBrew from "react-native-bytebrew-sdk";
+import { tracking } from "@src/utils/tracking";
 
 export const RedelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -60,7 +60,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
       string
     >
   >();
-  ByteBrew.NewCustomEvent(`Switch Validator Screen`);
+  tracking(`Switch Validator Screen`);
   const validatorAddress = route.params.validatorAddress;
 
   const smartNavigation = useSmartNavigation();
@@ -257,7 +257,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                 toValidatorName: dstValidator?.description.moniker,
                 feeType: sendConfigs.feeConfig.feeType,
               });
-              ByteBrew.NewCustomEvent(
+              tracking(
                 `Switch Validator`,
                 `validatorFrom=${srcValidator?.description.moniker};validatorTo=${dstValidator?.description.moniker};`
               );

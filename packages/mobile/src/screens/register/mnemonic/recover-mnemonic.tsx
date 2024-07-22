@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { PageWithScrollView } from "../../../components/page";
 import { observer } from "mobx-react-lite";
 import { RouteProp, useRoute } from "@react-navigation/native";
@@ -31,7 +31,7 @@ import { LoadingSpinner } from "../../../components/spinner";
 import OWButton from "../../../components/button/OWButton";
 import OWIcon from "../../../components/ow-icon/ow-icon";
 import { SCREENS } from "@src/common/constants";
-import ByteBrew from "react-native-bytebrew-sdk";
+import { tracking } from "@src/utils/tracking";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require("bip39");
 
@@ -79,7 +79,11 @@ export const RecoverMnemonicScreen: FunctionComponent = observer((props) => {
       string
     >
   >();
-  ByteBrew.NewCustomEvent(`Import Wallet Screen`);
+  useEffect(() => {
+    tracking(`Import Wallet Screen`);
+    return () => {};
+  }, []);
+
   const { analyticsStore } = useStore();
 
   const smartNavigation = useSmartNavigation();

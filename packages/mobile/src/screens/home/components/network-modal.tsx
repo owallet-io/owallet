@@ -20,7 +20,8 @@ import { ChainInfoWithEmbed } from "@owallet/background";
 import { ChainInfoInner } from "@owallet/stores";
 import { initPrice } from "@src/screens/home/hooks/use-multiple-assets";
 import { PricePretty } from "@owallet/unit";
-import ByteBrew from "react-native-bytebrew-sdk";
+
+import { tracking } from "@src/utils/tracking";
 
 interface ChainInfoItem extends ChainInfoInner<ChainInfoWithEmbed> {
   balance: PricePretty;
@@ -32,7 +33,7 @@ export const NetworkModal: FC<{
   const [keyword, setKeyword] = useState("");
   const [activeTab, setActiveTab] = useState<"mainnet" | "testnet">("mainnet");
   useEffect(() => {
-    ByteBrew.NewCustomEvent("Modal Select Network Screen");
+    tracking("Modal Select Network Screen");
   }, []);
   const bip44Option = useBIP44Option();
   const {
@@ -113,13 +114,13 @@ export const NetworkModal: FC<{
       } else {
         modalStore.close();
         if (!item.isAll) {
-          ByteBrew.NewCustomEvent(`Select ${item?.chainName} Network`);
+          tracking(`Select ${item?.chainName} Network`);
           chainStore.selectChain(item?.chainId);
           await chainStore.saveLastViewChainId();
           appInitStore.selectAllNetworks(false);
           modalStore.close();
         } else {
-          ByteBrew.NewCustomEvent("Select All Network");
+          tracking("Select All Network");
           appInitStore.selectAllNetworks(true);
         }
       }

@@ -42,7 +42,7 @@ import SmoothPinCodeInput from "react-native-smooth-pincode-input";
 import NumericPad from "react-native-numeric-pad";
 import OWText from "@src/components/text/ow-text";
 import { ChainStore } from "@src/stores/chain";
-import ByteBrew from "react-native-bytebrew-sdk";
+import { tracking } from "@src/utils/tracking";
 
 export const waitAccountInit = async (
   chainStore: ChainStore,
@@ -280,7 +280,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
     appInitStore,
     hugeQueriesStore,
   } = useStore();
-  ByteBrew.NewCustomEvent(`Unlock Screen`);
+  tracking(`Unlock Screen`);
   const navigation = useNavigation();
   const { colors } = useTheme();
   const styles = styling(colors);
@@ -316,7 +316,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
   );
 
   useEffect(() => {
-    ByteBrew.NewCustomEvent("Unlock Screen");
+    tracking("Unlock Screen");
     if (__DEV__) {
       return;
     }
@@ -404,7 +404,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
 
   const tryUnlock = async () => {
     try {
-      ByteBrew.NewCustomEvent("Unlock Wallet");
+      tracking("Unlock Wallet");
       const passcode = isNumericPad ? code : password;
       setIsLoading(true);
       await delay(10);
