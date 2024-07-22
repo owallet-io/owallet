@@ -12,11 +12,6 @@
   resolved "https://registry.yarnpkg.com/@amplitude/analytics-connector/-/analytics-connector-1.5.0.tgz#89a78b8c6463abe4de1d621db4af6c62f0d62b0a"
   integrity sha512-T8mOYzB9RRxckzhL0NTHwdge9xuFxXEOplC8B1Y3UX3NHa3BLh7DlBUZlCOwQgMc2nxDfnSweDL5S3bhC+W90g==
 
-"@amplitude/react-native@2.17.2":
-  version "2.17.2"
-  resolved "https://registry.yarnpkg.com/@amplitude/react-native/-/react-native-2.17.2.tgz#4b70c9106a9eae2896064bc53cec1e38c7c74551"
-  integrity sha512-slyVE0SgKGT++lwGiVZ3hNlvr/WAmnL84PR3zvGv2v231Cw4iNZjBoUghGRNtyXKQW/O9ngYPAS0jhNR2uPYUQ==
-
 "@amplitude/types@^1.10.2":
   version "1.10.2"
   resolved "https://registry.yarnpkg.com/@amplitude/types/-/types-1.10.2.tgz#8f3c6c3c9ee24f401ee037b351c3c67eb945eefc"
