@@ -1402,10 +1402,10 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@chain-registry/types@^0.45.29":
-  version "0.45.29"
-  resolved "https://registry.yarnpkg.com/@chain-registry/types/-/types-0.45.29.tgz#d44fd4a501f71b1b8c61fb0d52e57750c0448bcd"
-  integrity sha512-McnyKqm7IpxQTaErwe52CWb0LT3pADBoKdlbN50yEX4eIRdp/oY7wK2Zuqc0Sv4PzpEUp9PAhZ4y78dLeZ2xdw==
+"@chain-registry/types@^0.45.25":
+  version "0.45.25"
+  resolved "https://registry.yarnpkg.com/@chain-registry/types/-/types-0.45.25.tgz#1988af40fe2201d82875a2ea1ef386e28a3022ca"
+  integrity sha512-nmuZSCUhuMWl0NxDEjZaYb/cuwUoGBHkp6JcEOyb6asoPn3oWOWrcZ/fJtynDVoVIvwoH57rWRlh0fEluFvAWQ==
 
 "@colors/colors@1.5.0":
   version "1.5.0"
@@ -8180,11 +8180,11 @@ cborg@^2.0.3:
   integrity sha512-xVW1rSIw1ZXbkwl2XhJ7o/jAv0vnVoQv/QlfQxV8a7V5PlA4UU/AcIiXqmpyybwNWy/GPQU1m/aBVNIWr7/T0w==
 
 chain-registry@^1.63.24:
-  version "1.63.34"
-  resolved "https://registry.yarnpkg.com/chain-registry/-/chain-registry-1.63.34.tgz#edde431aad2e8035efc144dedf525c7f1e75fef6"
-  integrity sha512-gCkk+AQYQ6H8Dho1R73F7GlRyJRcTHwqCIitvhQcpLpRZLx4oTUzlvGOlq7gTekE6mPiMnx+1kTKrs5cb4V1cA==
+  version "1.63.30"
+  resolved "https://registry.yarnpkg.com/chain-registry/-/chain-registry-1.63.30.tgz#a079dc15de3bd8bb532b12a3444e518b75e6d914"
+  integrity sha512-G1aq2zaAkcmgOSkUXQpWOKPyYdOapbbUFQ9ltyhEwAxA89ro2mxqH3grxd29rg8sKhEuFkITvbK05NFwkRvtBQ==
   dependencies:
-    "@chain-registry/types" "^0.45.29"
+    "@chain-registry/types" "^0.45.25"
 
 chainsaw@~0.1.0:
   version "0.1.0"
@@ -11279,7 +11279,7 @@ express@^4.14.0, express@^4.16.3, express@^4.16.4:
     utils-merge "1.0.1"
     vary "~1.1.2"
 
-ext@^1.7.0:
+ext@^1.1.2:
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/ext/-/ext-1.7.0.tgz#0ea4383c0103d60e70be99e9a7f11027a33c4f5f"
   integrity sha512-6hxeJYaL110a9b5TEJSj0gojyHQAmA2ch5Os+ySCiA1QGdS697XWY1pzsrSjqA9LDEEgdB/KypIlR59RcLuHYw==

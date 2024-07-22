@@ -1087,7 +1087,7 @@ export class KeyRing {
       address,
       "latest",
     ]);
-    let finalMessage: any = {
+    const finalMessage: any = {
       gasLimit: (message as any)?.gasLimit,
       gasPrice: (message as any)?.gasPrice,
       value: (message as any)?.value,

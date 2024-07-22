@@ -3,13 +3,9 @@ import {
   AccountStore,
   AccountWithAll,
   CoinGeckoPriceStore,
-  CosmosQueries,
   KeyRingStore,
   QueriesStore,
   QueriesWrappedTron,
-  // IAccountStore,
-  // IChainInfoImpl,
-  // IQueriesStore,
   QueryError,
 } from "@owallet/stores";
 import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
@@ -62,11 +58,11 @@ interface ViewChainAddress {
 }
 
 /**
- * 거대한 쿼리를 만든다.
- * 거대하기 때문에 로직을 분리하기 위해서 따로 만들었다.
- * 근데 이름그대로 거대한 쿼리를 만들기 때문에 꼭 필요할때만 써야한다.
- * 특정 밸런스가 필요하다고 여기서 balance를 다 가져와서 그 중에 한개만 찾아서 쓰고 그러면 안된다.
- * 꼭 필요할때만 쓰자
+ * Create huge queries.
+ * Because it is huge, it was created separately to separate the logic.
+ * However, as the name suggests, it creates a huge query, so it should be used only when absolutely necessary.
+ * If you need a specific balance, you should not take all the balances and find and use only one of them.
+ * Use only when absolutely necessary
  */
 export class HugeQueriesStore {
   protected static zeroDec = new Dec(0);
@@ -93,71 +89,85 @@ export class HugeQueriesStore {
         this.keyRingStore.keyRingLedgerAddresses,
         false
       );
+
       if (address === "") {
         continue;
       }
+
       const queries = this.queriesStore.get(chainInfo.chainId);
       const queryBalance = queries.queryBalances.getQueryBech32Address(address);
-
       const currencies = [...chainInfo.currencies];
+
       if (chainInfo.stakeCurrency) {
         currencies.push(chainInfo.stakeCurrency);
       }
-      for (const currency of currencies) {
-        const key = `${ChainIdHelper.parse(chainInfo.chainId).identifier}/${
-          currency.coinMinimalDenom
-        }`;
-        if (!map.has(key)) {
-          if (
-            chainInfo.stakeCurrency?.coinMinimalDenom ===
-            currency.coinMinimalDenom
-          ) {
-            const balance = queryBalance.stakable?.balance;
-            if (!balance) {
-              continue;
-            }
-            // If the balance is zero, don't show it.
-            // 다시 제로 일때 보여주기 위해서 아래코드를 주석처리함
-            // if (balance.toDec().equals(HugeQueriesStore.zeroDec)) {
-            //   continue;
-            // }
 
-            map.set(key, {
-              chainInfo,
-              token: balance,
-              price: currency.coinGeckoId
-                ? this.priceStore.calculatePrice(balance)
-                : undefined,
-              isFetching: queryBalance.stakable.isFetching,
-              error: queryBalance.stakable.error,
-            });
-          } else {
-            const balance = queryBalance.getBalance(currency);
-            if (balance) {
-              // If the balance is zero and currency is "native", don't show it.
-              if (
-                balance.balance.toDec().equals(HugeQueriesStore.zeroDec) &&
-                new DenomHelper(currency.coinMinimalDenom).type === "native"
-              ) {
-                continue;
-              }
-
-              map.set(key, {
-                chainInfo,
-                token: balance.balance,
-                price: currency.coinGeckoId
-                  ? this.priceStore.calculatePrice(balance.balance)
-                  : undefined,
-                isFetching: balance.isFetching,
-                error: balance.error,
-              });
-            }
-          }
-        }
-      }
+      this.setCurrencyIntoMap(currencies, map, queryBalance, chainInfo);
     }
 
     return map;
+  }
+
+  mapStakeCurrencyBalance(currency, map, queryBalance, chainInfo) {
+    const key = `${ChainIdHelper.parse(chainInfo.chainId).identifier}/${
+      currency.coinMinimalDenom
+    }`;
+
+    const balance = queryBalance.stakable?.balance;
+
+    map.set(key, {
+      chainInfo,
+      token: balance,
+      price: currency.coinGeckoId
+        ? this.priceStore.calculatePrice(balance)
+        : undefined,
+      isFetching: queryBalance.stakable.isFetching,
+      error: queryBalance.stakable.error,
+    });
+  }
+
+  mapNonStakeCurrencyBalance(currency, map, queryBalance, chainInfo) {
+    const key = `${ChainIdHelper.parse(chainInfo.chainId).identifier}/${
+      currency.coinMinimalDenom
+    }`;
+
+    const balance = queryBalance.getBalance(currency);
+
+    if (balance) {
+      map.set(key, {
+        chainInfo,
+        token: balance.balance,
+        price: currency.coinGeckoId
+          ? this.priceStore.calculatePrice(balance.balance)
+          : undefined,
+        isFetching: balance.isFetching,
+        error: balance.error,
+      });
+    }
+  }
+
+  protected setCurrencyIntoMap(currencies, map, queryBalance, chainInfo) {
+    for (const currency of currencies) {
+      const key = `${ChainIdHelper.parse(chainInfo.chainId).identifier}/${
+        currency.coinMinimalDenom
+      }`;
+
+      if (!map.has(key)) {
+        if (
+          chainInfo.stakeCurrency?.coinMinimalDenom ===
+          currency.coinMinimalDenom
+        ) {
+          this.mapStakeCurrencyBalance(currency, map, queryBalance, chainInfo);
+        } else {
+          this.mapNonStakeCurrencyBalance(
+            currency,
+            map,
+            queryBalance,
+            chainInfo
+          );
+        }
+      }
+    }
   }
 
   @computed

@@ -199,6 +199,42 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
     (c) => c.chainId === chainStore.current.chainId
   );
 
+  const handleError = (e) => {
+    if (e?.message.toLowerCase().includes("rejected")) {
+      return;
+    } else if (e?.message.includes("Cannot read properties of undefined")) {
+      return;
+    } else {
+      console.log(e);
+      showToast({
+        message: JSON.stringify(e),
+        type: "danger",
+      });
+    }
+
+    if (e?.response && e?.response?.data?.message) {
+      const inputString = e?.response?.data?.message;
+      const regex =
+        /redelegation to this validator already in progress; first redelegation to this validator must complete before next redelegation/g;
+      const match = inputString.match(regex);
+      if (match && match?.length > 0) {
+        const reason = match[0];
+        showToast({
+          message: (reason && capitalizedText(reason)) || "Transaction Failed",
+          type: "warning",
+        });
+        return;
+      }
+      showToast({
+        message: "Transaction Failed",
+        type: "warning",
+      });
+      return;
+    }
+
+    console.log(e);
+  };
+
   const _onPressSwitchValidator = async () => {
     if (account.isReadyToSendMsgs && txStateIsValid) {
       try {
@@ -240,44 +276,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
           }
         );
       } catch (e) {
-        if (e?.message.toLowerCase().includes("rejected")) {
-          return;
-        } else if (e?.message.includes("Cannot read properties of undefined")) {
-          return;
-        } else {
-          console.log(e);
-          // smartNavigation.navigate("Home", {});
-          showToast({
-            message: JSON.stringify(e),
-            type: "danger",
-          });
-        }
-        if (e?.response && e?.response?.data?.message) {
-          const inputString = e?.response?.data?.message;
-          // Replace single quotes with double quotes
-          const regex =
-            /redelegation to this validator already in progress; first redelegation to this validator must complete before next redelegation/g;
-          const match = inputString.match(regex);
-          // Check if a match was found and extract the reason
-          if (match && match?.length > 0) {
-            const reason = match[0];
-            showToast({
-              message:
-                (reason && capitalizedText(reason)) || "Transaction Failed",
-              type: "warning",
-            });
-            return;
-          }
-          showToast({
-            message: "Transaction Failed",
-            type: "warning",
-          });
-          return;
-
-          // Parse the JSON string into a TypeScript object
-          // const parsedObject = JSON.parse(`{${validJsonString}}`);
-        }
-        console.log(e);
+        handleError(e);
       }
     }
   };

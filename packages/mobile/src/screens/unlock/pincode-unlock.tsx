@@ -41,10 +41,8 @@ import { useAutoBiomtric } from "./index";
 import SmoothPinCodeInput from "react-native-smooth-pincode-input";
 import NumericPad from "react-native-numeric-pad";
 import OWText from "@src/components/text/ow-text";
-import { HugeQueriesStore } from "@src/stores/huge-queries";
 import { ChainStore } from "@src/stores/chain";
 import ByteBrew from "react-native-bytebrew-sdk";
-import { SCREENS } from "@src/common/constants";
 
 export const waitAccountInit = async (
   chainStore: ChainStore,
@@ -96,6 +94,182 @@ enum AutoBiomtricStatus {
 
 //   return status;
 // };
+
+function DownloadCodepush({
+  isLoading,
+  installing,
+  progress,
+  setDownloading,
+  setInstalling,
+}) {
+  const { colors } = useTheme();
+  return (
+    <View
+      style={{
+        width: "100%",
+        height: "100%",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: colors["neutral-surface-card"],
+      }}
+    >
+      <View
+        style={{
+          marginBottom: spacing["24"],
+        }}
+      >
+        <Image
+          style={{
+            height: metrics.screenWidth / 1.4,
+            width: metrics.screenWidth / 1.4,
+          }}
+          fadeDuration={0}
+          resizeMode="contain"
+          source={require("../../assets/image/img_planet.png")}
+        />
+      </View>
+      <Text
+        style={{
+          color: colors["primary-surface-default"],
+          textAlign: "center",
+          fontWeight: "600",
+          fontSize: 18,
+          lineHeight: 22,
+          opacity: isLoading ? 0.5 : 1,
+        }}
+      >
+        {installing ? `Installing` : `Checking for`} update
+      </Text>
+      <View style={{ marginVertical: 12 }}>
+        <Text
+          style={{
+            color: colors["primary-surface-default"],
+            textAlign: "center",
+            fontSize: 13,
+            lineHeight: 22,
+          }}
+        >
+          {progress}%
+        </Text>
+        <ProgressBar progress={progress} styles={{ width: 260 }} />
+      </View>
+      <TouchableOpacity
+        onPress={() => {
+          setDownloading(false);
+          setInstalling(false);
+        }}
+      >
+        <Text
+          style={{
+            color: colors["primary-surface-default"],
+            textAlign: "center",
+            fontWeight: "600",
+            fontSize: 16,
+            lineHeight: 22,
+            opacity: isLoading ? 0.5 : 1,
+          }}
+        >
+          Cancel
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+function PadComponent({
+  isNumericPad,
+  pinRef,
+  code,
+  showPass,
+  statusPass,
+  password,
+  isFailed,
+  setPassword,
+  tryUnlock,
+}) {
+  const { colors } = useTheme();
+  const styles = styling(colors);
+  return (
+    <>
+      {isNumericPad ? (
+        <SmoothPinCodeInput
+          ref={pinRef}
+          value={code}
+          codeLength={6}
+          cellStyle={{
+            borderWidth: 0,
+          }}
+          cellStyleFocused={{
+            borderColor: colors["neutral-surface-action"],
+          }}
+          placeholder={
+            <View
+              style={{
+                width: 24,
+                height: 24,
+                borderRadius: 48,
+                backgroundColor: colors["neutral-surface-action"],
+              }}
+            />
+          }
+          mask={
+            <View
+              style={{
+                width: 24,
+                height: 24,
+                borderRadius: 48,
+                opacity: 0.7,
+                backgroundColor: colors["highlight-surface-active"],
+              }}
+            />
+          }
+          maskDelay={1000}
+          password={true}
+          //   onFulfill={}
+          onBackspace={(code) => console.log(code)}
+        />
+      ) : (
+        <View
+          style={{
+            width: metrics.screenWidth,
+            paddingHorizontal: 16,
+          }}
+        >
+          <TextInput
+            accessibilityLabel="password"
+            returnKeyType="done"
+            secureTextEntry={statusPass}
+            value={password}
+            error={isFailed ? "Invalid password" : undefined}
+            onChangeText={(txt) => {
+              setPassword(txt);
+            }}
+            inputContainerStyle={{
+              width: metrics.screenWidth - 32,
+              borderWidth: 2,
+              borderColor: colors["primary-surface-default"],
+              borderRadius: 8,
+              minHeight: 56,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            onSubmitEditing={tryUnlock}
+            placeholder="Enter your passcode"
+            inputRight={
+              <OWButtonIcon
+                style={styles.padIcon}
+                onPress={showPass}
+                name={statusPass ? "eye" : "eye-slash"}
+                colorIcon={colors["neutral-text-title"]}
+                sizeIcon={22}
+              />
+            }
+          />
+        </View>
+      )}
+    </>
+  );
+}
 
 export const PincodeUnlockScreen: FunctionComponent = observer(() => {
   const {
@@ -401,80 +575,23 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
 
   // return <MaintainScreen />;
   const showPass = () => setStatusPass(!statusPass);
-  return !routeToRegisterOnce.current &&
-    keyRingStore.status === KeyRingStatus.EMPTY ? (
-    <View />
-  ) : downloading || installing ? (
-    <View
-      style={{
-        width: "100%",
-        height: "100%",
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: colors["neutral-surface-card"],
-      }}
-    >
-      <View
-        style={{
-          marginBottom: spacing["24"],
-        }}
-      >
-        <Image
-          style={{
-            height: metrics.screenWidth / 1.4,
-            width: metrics.screenWidth / 1.4,
-          }}
-          fadeDuration={0}
-          resizeMode="contain"
-          source={require("../../assets/image/img_planet.png")}
-        />
-      </View>
-      <Text
-        style={{
-          color: colors["primary-surface-default"],
-          textAlign: "center",
-          fontWeight: "600",
-          fontSize: 18,
-          lineHeight: 22,
-          opacity: isLoading ? 0.5 : 1,
-        }}
-      >
-        {installing ? `Installing` : `Checking for`} update
-      </Text>
-      <View style={{ marginVertical: 12 }}>
-        <Text
-          style={{
-            color: colors["primary-surface-default"],
-            textAlign: "center",
-            fontSize: 13,
-            lineHeight: 22,
-          }}
-        >
-          {progress}%
-        </Text>
-        <ProgressBar progress={progress} styles={{ width: 260 }} />
-      </View>
-      <TouchableOpacity
-        onPress={() => {
-          setDownloading(false);
-          setInstalling(false);
-        }}
-      >
-        <Text
-          style={{
-            color: colors["primary-surface-default"],
-            textAlign: "center",
-            fontWeight: "600",
-            fontSize: 16,
-            lineHeight: 22,
-            opacity: isLoading ? 0.5 : 1,
-          }}
-        >
-          Cancel
-        </Text>
-      </TouchableOpacity>
-    </View>
-  ) : (
+  if (
+    !routeToRegisterOnce.current &&
+    keyRingStore.status === KeyRingStatus.EMPTY
+  )
+    return <View />;
+  if (downloading || installing)
+    return (
+      <DownloadCodepush
+        isLoading={isLoading}
+        installing={installing}
+        progress={progress}
+        setDownloading={setDownloading}
+        setInstalling={setInstalling}
+      />
+    );
+
+  return (
     <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
       {isLoading || isBiometricLoading ? (
         <View
@@ -653,7 +770,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
                 />
               }
               onRightBottomButtonPress={() => {
-                numpadRef.current.clear();
+                numpadRef?.current?.clear();
               }}
             />
           ) : (

@@ -80,133 +80,78 @@ export const useMapStyles = ({
 }): IMapStyle => {
   const { colors } = useTheme();
   const formatSize = useSize({ size });
-  let typeStyleBtn: IMapStyle;
-  switch (type) {
-    case "danger":
-      typeStyleBtn = {
-        btn: {
-          borderRadius: formatSize.btn.borderRadius,
-          height: formatSize.btn.height,
-          backgroundColor: disabled
-            ? colors["background-btn-disable-danger"]
-            : colors["error-surface-default"],
-        },
-        text: {
-          color: disabled
-            ? colors["text-btn-disable-danger"]
-            : colors["neutral-icon-on-dark"],
-          fontSize: formatSize.text.fontSize,
-          fontWeight: formatSize.text.fontWeight,
-        },
-      };
-      break;
-    case "primary":
-      typeStyleBtn = {
-        btn: {
-          borderRadius: formatSize.btn.borderRadius,
-          height: formatSize.btn.height,
-          backgroundColor: disabled
-            ? colors["neutral-surface-disable"]
-            : colors["primary-surface-default"],
-        },
-        text: {
-          color: disabled
-            ? colors["neutral-text-action-on-dark-bg"]
-            : colors["white"],
-          fontSize: formatSize.text.fontSize,
-          fontWeight: formatSize.text.fontWeight,
-        },
-      };
-      break;
-    case "secondary":
-      typeStyleBtn = {
-        btn: {
-          borderRadius: formatSize.btn.borderRadius,
-          height: formatSize.btn.height,
-          backgroundColor: disabled
-            ? colors["neutral-surface-disable"]
-            : colors["neutral-surface-action3"],
-        },
-        text: {
-          color: disabled
-            ? colors["text-btn-disable-color"]
-            : colors["neutral-text-action-on-light-bg"],
-          fontSize: formatSize.text.fontSize,
-          fontWeight: formatSize.text.fontWeight,
-        },
-      };
-      break;
-    case "link":
-      typeStyleBtn = {
-        btn: {
-          borderRadius: formatSize.btn.borderRadius,
-          height: formatSize.btn.height,
-          backgroundColor: "transparent",
-        },
-        text: {
-          color: disabled
-            ? colors["text-btn-disable-color"]
-            : colors["primary-surface-default"],
-          fontSize: formatSize.text.fontSize,
-          fontWeight: formatSize.text.fontWeight,
-        },
-      };
-      break;
 
-    default:
-      typeStyleBtn = {
-        btn: {
-          borderRadius: formatSize.btn.borderRadius,
-          height: formatSize.btn.height,
-          backgroundColor: disabled
-            ? colors["primary-surface-disable"]
-            : colors["primary-surface-default"],
-        },
-        text: {
-          color: disabled ? colors["neutral-text-disable"] : colors["white"],
-          fontSize: formatSize.text.fontSize,
-          fontWeight: formatSize.text.fontWeight,
-        },
-      };
-      break;
-  }
-  switch (contentAlign) {
-    case "left":
-      typeStyleBtn = {
-        ...typeStyleBtn,
-        btn: {
-          ...typeStyleBtn.btn,
-          justifyContent: "flex-start",
-        },
-      };
-      break;
-    case "center":
-      typeStyleBtn = {
-        ...typeStyleBtn,
-        btn: {
-          ...typeStyleBtn.btn,
-          justifyContent: "center",
-        },
-      };
-      break;
-    case "right":
-      typeStyleBtn = {
-        ...typeStyleBtn,
-        btn: {
-          ...typeStyleBtn.btn,
-          justifyContent: "flex-end",
-        },
-      };
-      break;
-    default:
-      typeStyleBtn = {
-        ...typeStyleBtn,
-        btn: {
-          ...typeStyleBtn.btn,
-          justifyContent: "center",
-        },
-      };
-      break;
-  }
+  const getBackgroundColor = (type: string, disabled: boolean) => {
+    switch (type) {
+      case "danger":
+        return disabled
+          ? colors["background-btn-disable-danger"]
+          : colors["error-surface-default"];
+      case "primary":
+        return disabled
+          ? colors["neutral-surface-disable"]
+          : colors["primary-surface-default"];
+      case "secondary":
+        return disabled
+          ? colors["neutral-surface-disable"]
+          : colors["neutral-surface-action3"];
+      case "link":
+        return "transparent";
+      default:
+        return disabled
+          ? colors["primary-surface-disable"]
+          : colors["primary-surface-default"];
+    }
+  };
+
+  const getTextColor = (type: string, disabled: boolean) => {
+    switch (type) {
+      case "danger":
+        return disabled
+          ? colors["text-btn-disable-danger"]
+          : colors["neutral-icon-on-dark"];
+      case "primary":
+        return disabled
+          ? colors["neutral-text-action-on-dark-bg"]
+          : colors["white"];
+      case "secondary":
+        return disabled
+          ? colors["text-btn-disable-color"]
+          : colors["neutral-text-action-on-light-bg"];
+      case "link":
+        return disabled
+          ? colors["text-btn-disable-color"]
+          : colors["primary-surface-default"];
+      default:
+        return disabled ? colors["neutral-text-disable"] : colors["white"];
+    }
+  };
+
+  const getJustifyContent = (contentAlign: string) => {
+    switch (contentAlign) {
+      case "left":
+        return "flex-start";
+      case "right":
+        return "flex-end";
+      case "center":
+      default:
+        return "center";
+    }
+  };
+
+  const typeStyleBtn: IMapStyle = {
+    btn: {
+      borderRadius: formatSize.btn.borderRadius,
+      height: formatSize.btn.height,
+      backgroundColor: getBackgroundColor(type, disabled),
+      justifyContent: getJustifyContent(contentAlign),
+    },
+    text: {
+      color: getTextColor(type, disabled),
+      fontSize: formatSize.text.fontSize,
+      fontWeight: formatSize.text.fontWeight,
+    },
+  };
+
   return typeStyleBtn;
 };

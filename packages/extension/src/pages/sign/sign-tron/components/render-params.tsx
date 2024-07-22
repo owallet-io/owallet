@@ -63,77 +63,79 @@ export const TronRenderParams: FunctionComponent<{
     fetchToken();
   }, [chain?.chainId, contractAddress]);
 
+  const getInfoFromDecodedData = (decodedData) => {
+    if (decodedData) {
+      // Regular expression pattern to split the input string
+      const pattern = /[\x00-\x1F]+/;
+
+      const addressPattern = /[a-zA-Z0-9]+/g;
+
+      // Split the input string using the pattern
+      const array = decodedData.split(pattern).filter(Boolean);
+      if (array.length < 1) {
+        array.push(decodedData);
+      }
+      const des = array.shift();
+      const token = array.pop();
+
+      let tokenInfo;
+      if (token) {
+        EmbedChainInfos.find((chain) => {
+          if (
+            chain.stakeCurrency.coinMinimalDenom ===
+            token.match(addressPattern).join("")
+          ) {
+            tokenInfo = chain.stakeCurrency;
+            return;
+          }
+          if (
+            chain.stakeCurrency.coinMinimalDenom ===
+            token.match(addressPattern).join("")
+          ) {
+            tokenInfo = chain.stakeCurrency;
+            return;
+          }
+          const foundCurrency = chain.currencies.find(
+            (cr) =>
+              cr.coinMinimalDenom === token.match(addressPattern).join("") ||
+              //@ts-ignore
+              cr.contractAddress === token.match(addressPattern).join("") ||
+              calculateJaccardIndex(cr.coinMinimalDenom, token) > 0.85
+          );
+
+          if (foundCurrency) {
+            tokenInfo = foundCurrency;
+            return;
+          }
+        });
+      }
+
+      if (!tokenInfo && token) {
+        const key = findKeyBySimilarValue(
+          LIST_ORAICHAIN_CONTRACT,
+          token.match(addressPattern).join("")
+        )?.split("_")?.[0];
+
+        if (key)
+          tokenInfo = {
+            coinDenom: key,
+            contractAddress: token.match(addressPattern).join(""),
+          };
+      }
+
+      return {
+        des: des.match(addressPattern).join(""),
+        tokenInfo: tokenInfo,
+      };
+    }
+  };
+
   const convertDestinationToken = (value) => {
     if (value) {
       const encodedData = value.split(":")?.[1];
       if (encodedData) {
         const decodedData = decodeBase64(encodedData);
-
-        if (decodedData) {
-          // Regular expression pattern to split the input string
-          const pattern = /[\x00-\x1F]+/;
-
-          const addressPattern = /[a-zA-Z0-9]+/g;
-
-          // Split the input string using the pattern
-          const array = decodedData.split(pattern).filter(Boolean);
-          if (array.length < 1) {
-            array.push(decodedData);
-          }
-          const des = array.shift();
-          const token = array.pop();
-
-          let tokenInfo;
-          if (token) {
-            EmbedChainInfos.find((chain) => {
-              if (
-                chain.stakeCurrency.coinMinimalDenom ===
-                token.match(addressPattern).join("")
-              ) {
-                tokenInfo = chain.stakeCurrency;
-                return;
-              }
-              if (
-                chain.stakeCurrency.coinMinimalDenom ===
-                token.match(addressPattern).join("")
-              ) {
-                tokenInfo = chain.stakeCurrency;
-                return;
-              }
-              const foundCurrency = chain.currencies.find(
-                (cr) =>
-                  cr.coinMinimalDenom ===
-                    token.match(addressPattern).join("") ||
-                  //@ts-ignore
-                  cr.contractAddress === token.match(addressPattern).join("") ||
-                  calculateJaccardIndex(cr.coinMinimalDenom, token) > 0.85
-              );
-
-              if (foundCurrency) {
-                tokenInfo = foundCurrency;
-                return;
-              }
-            });
-          }
-
-          if (!tokenInfo && token) {
-            const key = findKeyBySimilarValue(
-              LIST_ORAICHAIN_CONTRACT,
-              token.match(addressPattern).join("")
-            )?.split("_")?.[0];
-
-            if (key)
-              tokenInfo = {
-                coinDenom: key,
-                contractAddress: token.match(addressPattern).join(""),
-              };
-          }
-
-          return {
-            des: des.match(addressPattern).join(""),
-            tokenInfo: tokenInfo,
-          };
-        }
+        return getInfoFromDecodedData(decodedData);
       }
     }
   };

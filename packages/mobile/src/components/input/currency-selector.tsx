@@ -1,16 +1,13 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { IAmountConfig } from "@owallet/hooks";
-import { ChainIdEnum, DenomHelper } from "@owallet/common";
+import { DenomHelper } from "@owallet/common";
 import { Bech32Address } from "@owallet/cosmos";
-import { InteractionManager, TextStyle, ViewStyle } from "react-native";
+import { TextStyle, ViewStyle } from "react-native";
 import { Selector } from "./selector";
 import { TokensSelector } from "./tokens-selector";
 import { useStore } from "@src/stores";
-import {
-  ObservableQueryBalanceInner,
-  ObservableQueryBalancesInner,
-} from "@owallet/stores";
+import { ObservableQueryBalanceInner } from "@owallet/stores";
 
 export const CurrencySelector: FunctionComponent<{
   labelStyle?: TextStyle;
@@ -65,38 +62,57 @@ export const CurrencySelector: FunctionComponent<{
         label,
       };
     });
+
+    function filterTokens(tokens) {
+      return tokens.filter(isUniqueToken);
+    }
+
+    function isUniqueToken(token, index, tokens) {
+      return (
+        token?.balance && tokens.findIndex(hasMatchingDenom(token)) === index
+      );
+    }
+
+    function hasMatchingDenom(token) {
+      return (token2) =>
+        token2.balance.currency?.coinDenom ===
+        token.balance.currency?.coinDenom;
+    }
+
+    function sortTokens(tokens) {
+      return tokens.sort(compareTokens);
+    }
+
+    function compareTokens(a, b) {
+      const aDecIsZero = isDecZero(a.balance);
+      const bDecIsZero = isDecZero(b.balance);
+
+      if (aDecIsZero && !bDecIsZero) {
+        return 1;
+      }
+      if (!aDecIsZero && bDecIsZero) {
+        return -1;
+      }
+
+      return compareByDenom(a, b);
+    }
+
+    function isDecZero(balance) {
+      return balance?.toDec()?.isZero();
+    }
+
+    function compareByDenom(a, b) {
+      return a.currency.coinDenom < b.currency.coinDenom ? -1 : 1;
+    }
+
     useEffect(() => {
-      InteractionManager.runAfterInteractions(() => {
-        const queryBalances = queriesStore
-          .get(chainId)
-          .queryBalances.getQueryBech32Address(addressToFetch);
-        const tokens = queryBalances.balances;
-        const displayTokens = tokens
-          .filter((v, i, obj) => {
-            return (
-              v?.balance &&
-              obj.findIndex(
-                (v2) =>
-                  v2.balance.currency?.coinDenom ===
-                  v.balance.currency?.coinDenom
-              ) === i
-            );
-          })
-          .sort((a, b) => {
-            const aDecIsZero = a.balance?.toDec()?.isZero();
-            const bDecIsZero = b.balance?.toDec()?.isZero();
+      const queryBalances = queriesStore
+        .get(chainId)
+        .queryBalances.getQueryBech32Address(addressToFetch);
+      const tokens = queryBalances.balances;
+      const displayTokens = sortTokens(filterTokens(tokens));
 
-            if (aDecIsZero && !bDecIsZero) {
-              return 1;
-            }
-            if (!aDecIsZero && bDecIsZero) {
-              return -1;
-            }
-
-            return a.currency.coinDenom < b.currency.coinDenom ? -1 : 1;
-          });
-        setDisplayTokens(displayTokens);
-      });
+      setDisplayTokens(displayTokens);
     }, [chainId, addressToFetch]);
 
     const selectedKey = amountConfig.sendCurrency.coinMinimalDenom;
@@ -107,7 +123,6 @@ export const CurrencySelector: FunctionComponent<{
 
       amountConfig.setSendCurrency(currency);
     };
-    console.log(displayTokens, "display tokens");
     return type !== "legacy" ? (
       <TokensSelector
         chainId={chainId}
