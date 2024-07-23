@@ -83,19 +83,6 @@ export const App = () => {
 
   const enableAnalytics = async () => {
     await analytics().setAnalyticsCollectionEnabled(true);
-    // Define event data
-
-    let params: BranchEventParams = {
-      customData: {
-        test: "test",
-      },
-    };
-
-    // Create event and pass null if no BranchUniversalObject is used
-    let event = new BranchEvent(`OWallet Test ${Platform.OS}`, null, params);
-
-    // Log event
-    event.logEvent();
   };
   useEffect(() => {
     SplashScreen.hide();

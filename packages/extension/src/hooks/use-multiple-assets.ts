@@ -208,7 +208,7 @@ export const useMultipleAssets = (
       const { address, chainInfo } = hugeQueriesStore.getAllChainMap.get(
         ChainIdEnum.Bitcoin
       );
-      const btcsPromise = await Promise.allSettled([
+      await Promise.allSettled([
         withTimeout(
           getBalanceBtc(address, chainInfo, AddressBtcType.Bech32),
           timeoutBtc

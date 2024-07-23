@@ -137,9 +137,9 @@ export const useMultipleAssets = (
       switch (chain) {
         case ChainIdEnum.BNBChain:
         case ChainIdEnum.Ethereum:
-          return withTimeout(getBalancessErc20(address, chainInfo));
+          return getBalancessErc20(address, chainInfo);
         case ChainIdEnum.TRON:
-          return withTimeout(getBalancessTrc20(address, chainInfo));
+          return getBalancessTrc20(address, chainInfo);
       }
     });
     return Promise.allSettled(allBalanceChains);
@@ -163,28 +163,14 @@ export const useMultipleAssets = (
                     withTimeout(getBalanceCW20Oraichain()),
                     withTimeout(getBalanceNativeCosmos(address, chainInfo)),
                   ])
-                : withTimeout(getBalanceNativeCosmos(address, chainInfo));
+                : getBalanceNativeCosmos(address, chainInfo);
             case "evm":
               return chainInfo.chainId === ChainIdEnum.Oasis
-                ? withTimeout(getBalanceOasis(address, chainInfo))
+                ? getBalanceOasis(address, chainInfo)
                 : Promise.allSettled([
                     withTimeout(getBalanceNativeEvm(address, chainInfo)),
                     withTimeout(getBalanceErc20(address, chainInfo)),
                   ]);
-            case "bitcoin":
-              const btcAddress = accountStore.getAccount(
-                ChainIdEnum.Bitcoin
-              ).legacyAddress;
-              return Promise.allSettled([
-                withTimeout(
-                  getBalanceBtc(address, chainInfo, AddressBtcType.Bech32),
-                  15000
-                ),
-                withTimeout(
-                  getBalanceBtc(btcAddress, chainInfo, AddressBtcType.Legacy),
-                  15000
-                ),
-              ]);
           }
         }
       );
@@ -205,7 +191,7 @@ export const useMultipleAssets = (
             ?.includes("test")
         ) {
           let totalBalance = initPrice;
-          const tokensData = await Promise.allSettled(
+          const tokensData = await Promise.all(
             tokensByChainId[chain].tokens.map(async (infoToken) => {
               const { token } = infoToken;
               const balance = new CoinPretty(token.currency, token.amount);
@@ -233,6 +219,63 @@ export const useMultipleAssets = (
         }
       }
 
+      appInit.updateMultipleAssets({
+        dataTokens: allTokens,
+        totalPriceBalance: overallTotalBalance,
+        dataTokensByChain: tokensByChainId,
+      });
+      const btcAddress = accountStore.getAccount(
+        ChainIdEnum.Bitcoin
+      ).legacyAddress;
+      const { address, chainInfo } = hugeQueriesStore.getAllChainMap.get(
+        ChainIdEnum.Bitcoin
+      );
+      await Promise.allSettled([
+        withTimeout(
+          getBalanceBtc(address, chainInfo, AddressBtcType.Bech32),
+          timeoutBtc
+        ),
+        withTimeout(
+          getBalanceBtc(btcAddress, chainInfo, AddressBtcType.Legacy),
+          timeoutBtc
+        ),
+      ]);
+
+      if (
+        tokensByChainId.hasOwnProperty(ChainIdEnum.Bitcoin) &&
+        !tokensByChainId[ChainIdEnum.Bitcoin]?.tokens?.[0].chainInfo?.chainName
+          ?.toLowerCase()
+          ?.includes("test")
+      ) {
+        let totalBalance = initPrice;
+        const tokensData = await Promise.all(
+          tokensByChainId[ChainIdEnum.Bitcoin].tokens.map(async (infoToken) => {
+            const { token } = infoToken;
+            const balance = new CoinPretty(token.currency, token.amount);
+            const price = token?.currency?.coinGeckoId
+              ? await priceStore.waitCalculatePrice(balance)
+              : initPrice;
+            totalBalance = totalBalance.add(price);
+            return { ...infoToken, price: price.toDec().toString() };
+          })
+        );
+        tokensByChainId[ChainIdEnum.Bitcoin].totalBalance = totalBalance
+          .toDec()
+          .toString();
+        tokensByChainId[ChainIdEnum.Bitcoin].tokens = tokensData;
+        // Add the total balance for each chain to the overall total balance
+        overallTotalBalance = new PricePretty(fiatCurrency, overallTotalBalance)
+          .add(
+            new PricePretty(
+              fiatCurrency,
+              tokensByChainId[ChainIdEnum.Bitcoin].totalBalance
+            )
+          )
+          .toDec()
+          .toString();
+        // Concatenate the tokens for each chain to the allTokens array
+        allTokens = allTokens.concat(tokensData);
+      }
       appInit.updateMultipleAssets({
         dataTokens: allTokens,
         totalPriceBalance: overallTotalBalance,
