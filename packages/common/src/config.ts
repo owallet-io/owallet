@@ -1506,12 +1506,12 @@ export const EmbedChainInfos: AppChainInfo[] = [
 
 // The origins that are able to pass any permission that external webpages can have.
 export const PrivilegedOrigins: string[] = [
-  "https://app.osmosis.zone",
-  "https://oraidex.io",
-  "https://orderbook.oraidex.io",
-  "https://futures.oraidex.io",
-  "http://10.10.20.75:3000/",
-  "https://pancakeswap.finance/",
+  // "https://app.osmosis.zone",
+  // "https://oraidex.io",
+  // "https://orderbook.oraidex.io",
+  // "https://futures.oraidex.io",
+  // "http://10.10.20.75:3000/",
+  // "https://pancakeswap.finance/",
 ];
 
 // tracking ads
