@@ -682,8 +682,6 @@ export class InjectedEthereum implements Ethereum {
       args: JSONUint8Array.wrap(args),
     };
 
-    console.log("arg 222222s", args);
-
     return new Promise((resolve, reject) => {
       const receiveResponse = (e: MessageEvent) => {
         const proxyResponse: ProxyRequestResponse = this.parseMessage
@@ -755,8 +753,6 @@ export class InjectedEthereum implements Ethereum {
   // await window.ethereum.request({ "method": "eth_requestAccounts"})
   // TODO: support multi request!
   request = async (args) => {
-    console.log("args 123123", args);
-
     return await this.requestMethod(
       args.method as string,
       args.params ? [args.params, args.chainId] : [[]]
