@@ -7,9 +7,10 @@ import { useHistory } from "react-router";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../../stores";
 import { ChainIdEnum } from "@owallet/common";
-import { useNotification } from "components/notification";
+
 import { useIntl } from "react-intl";
 import { Address } from "components/address";
+import { toast } from "react-toastify";
 
 export const InfoAccountCard: FC<{
   totalPrice: string;
@@ -20,7 +21,7 @@ export const InfoAccountCard: FC<{
   const accountInfo = accountStore.getAccount(chainStore.current.chainId);
 
   const intl = useIntl();
-  const notification = useNotification();
+
   const signer = accountInfo.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses
   );
@@ -30,18 +31,14 @@ export const InfoAccountCard: FC<{
       setIsShowCopyModal(true);
     } else {
       await navigator.clipboard.writeText(signer);
-      notification.push({
-        placement: "top-center",
-        type: "success",
-        duration: 2,
-        content: intl.formatMessage({
+      toast(
+        intl.formatMessage({
           id: "main.address.copied",
         }),
-        canDelete: true,
-        transition: {
-          duration: 0.25,
-        },
-      });
+        {
+          type: "success",
+        }
+      );
     }
   };
   const onCLoseModalCopy = () => {

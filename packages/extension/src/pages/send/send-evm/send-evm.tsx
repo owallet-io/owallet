@@ -8,7 +8,7 @@ import {
 import { useStore } from "src/stores";
 import { observer } from "mobx-react-lite";
 import style from "./style.module.scss";
-import { useNotification } from "components/notification";
+
 import { useIntl } from "react-intl";
 import { useHistory, useLocation } from "react-router";
 import queryString from "querystring";
@@ -33,6 +33,7 @@ import useOnClickOutside from "hooks/use-click-outside";
 import { Button } from "components/common/button";
 import { Card } from "components/common/card";
 import { Text } from "components/common/text";
+import { toast } from "react-toastify";
 
 export const SendEvmPage: FunctionComponent<{
   coinMinimalDenom?: string;
@@ -65,8 +66,6 @@ export const SendEvmPage: FunctionComponent<{
     }
   }, [coinMinimalDenom]);
   const intl = useIntl();
-
-  const notification = useNotification();
 
   const {
     chainStore,
@@ -270,16 +269,8 @@ export const SendEvmPage: FunctionComponent<{
     await OasisTransaction.sign(chainContext, signer as Signer, tw);
 
     await OasisTransaction.submit(nic, tw);
-
-    notification.push({
-      placement: "top-center",
+    toast("Transaction successful", {
       type: "success",
-      duration: 5,
-      content: "Transaction successful",
-      canDelete: true,
-      transition: {
-        duration: 0.25,
-      },
     });
   };
   const onSend = async (e: any) => {
@@ -315,18 +306,14 @@ export const SendEvmPage: FunctionComponent<{
                 return;
               }
               if (!tx?.status) return;
-              notification.push({
-                placement: "top-center",
-                type: tx?.data ? "success" : "danger",
-                duration: 5,
-                content: tx?.data
+              toast(
+                tx?.data
                   ? `Transaction successful with tx: ${tx?.hash}`
                   : `Transaction failed with tx: ${tx?.hash}`,
-                canDelete: true,
-                transition: {
-                  duration: 0.25,
-                },
-              });
+                {
+                  type: tx?.data ? "success" : "error",
+                }
+              );
             },
           },
           sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.startsWith(
@@ -347,30 +334,16 @@ export const SendEvmPage: FunctionComponent<{
         if (!isDetachedPage) {
           history.replace("/");
         }
-        notification.push({
-          placement: "top-center",
+        toast("Transaction submitted", {
           type: "success",
-          duration: 5,
-          content: "Transaction submitted!",
-          canDelete: true,
-          transition: {
-            duration: 0.25,
-          },
         });
       } catch (e: any) {
         if (!isDetachedPage) {
           history.replace("/");
         }
         console.log(e.message, "Catch Error on send!!!");
-        notification.push({
-          type: "warning",
-          placement: "top-center",
-          duration: 5,
-          content: `Fail to send token: ${e.message}`,
-          canDelete: true,
-          transition: {
-            duration: 0.25,
-          },
+        toast(`Fail to send token: ${e.message}`, {
+          type: "error",
         });
       } finally {
         // XXX: If the page is in detached state,

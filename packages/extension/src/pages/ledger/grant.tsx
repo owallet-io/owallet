@@ -17,12 +17,13 @@ import { EmptyLayout } from "../../layouts/empty-layout";
 
 import classnames from "classnames";
 import { FormattedMessage, useIntl } from "react-intl";
-import { useNotification } from "../../components/notification";
+
 import delay from "delay";
 import { useInteractionInfo } from "@owallet/hooks";
 import { getLedgerAppNameByNetwork } from "@owallet/common";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
+import { toast } from "react-toastify";
 
 export const LedgerGrantPage: FunctionComponent = observer(() => {
   // Force to fit the screen size.
@@ -31,8 +32,6 @@ export const LedgerGrantPage: FunctionComponent = observer(() => {
   const { ledgerInitStore, chainStore } = useStore();
 
   const intl = useIntl();
-
-  const notification = useNotification();
 
   const [showWebHIDWarning, setShowWebHIDWarning] = useState(false);
 
@@ -186,18 +185,14 @@ export const LedgerGrantPage: FunctionComponent = observer(() => {
                             "chrome://flags/#enable-experimental-web-platform-features"
                           )
                           .then(() => {
-                            notification.push({
-                              placement: "top-center",
-                              type: "success",
-                              duration: 2,
-                              content: intl.formatMessage({
+                            toast(
+                              intl.formatMessage({
                                 id: "ledger.option.webhid.link.copied",
                               }),
-                              canDelete: true,
-                              transition: {
-                                duration: 0.25,
-                              },
-                            });
+                              {
+                                type: "success",
+                              }
+                            );
                           });
                       }}
                     >

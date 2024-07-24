@@ -8,7 +8,7 @@ import {
 import { useStore } from "src/stores";
 import { observer } from "mobx-react-lite";
 import style from "../send-cosmos/style.module.scss";
-import { useNotification } from "components/notification";
+
 import { useIntl } from "react-intl";
 import { useHistory, useLocation } from "react-router";
 import queryString from "querystring";
@@ -26,6 +26,7 @@ import useOnClickOutside from "hooks/use-click-outside";
 import { Text } from "components/common/text";
 import { Card } from "components/common/card";
 import { Button } from "components/common/button";
+import { toast } from "react-toastify";
 
 export const SendBtcPage: FunctionComponent<{
   coinMinimalDenom?: string;
@@ -74,8 +75,6 @@ export const SendBtcPage: FunctionComponent<{
     }
   }, [coinMinimalDenom]);
   const intl = useIntl();
-
-  const notification = useNotification();
 
   const accountInfo = accountStore.getAccount(chainId);
   const queries = queriesStore.get(chainId);
@@ -300,11 +299,8 @@ export const SendBtcPage: FunctionComponent<{
                           "{txHash}",
                           tx
                         );
-                      notification.push({
-                        placement: "top-center",
-                        type: tx ? "success" : "danger",
-                        duration: 5,
-                        content: tx ? (
+                      toast(
+                        tx ? (
                           <div className="alert-inner--text">
                             Transaction successful with tx:{" "}
                             <a target="_blank" href={url} rel="noreferrer">
@@ -314,11 +310,10 @@ export const SendBtcPage: FunctionComponent<{
                         ) : (
                           `Transaction failed`
                         ),
-                        canDelete: true,
-                        transition: {
-                          duration: 0.25,
-                        },
-                      });
+                        {
+                          type: tx ? "success" : "error",
+                        }
+                      );
                     },
                   },
                   {
@@ -349,16 +344,8 @@ export const SendBtcPage: FunctionComponent<{
                 if (!isDetachedPage) {
                   history.replace("/");
                 }
-
-                notification.push({
-                  type: "warning",
-                  placement: "top-center",
-                  duration: 5,
-                  content: `Fail to send token: ${e.message}`,
-                  canDelete: true,
-                  transition: {
-                    duration: 0.25,
-                  },
+                toast(`Fail to send token: ${e.message}`, {
+                  type: "error",
                 });
               } finally {
                 // XXX: If the page is in detached state,
