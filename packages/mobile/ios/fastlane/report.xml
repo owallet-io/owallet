@@ -5,72 +5,59 @@
     
     
       
-      <testcase classname="fastlane.lanes" name="00: default_platform" time="0.00019">
+      <testcase classname="fastlane.lanes" name="00: default_platform" time="0.000317">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="01: app_store_connect_api_key" time="0.001842">
+      <testcase classname="fastlane.lanes" name="01: app_store_connect_api_key" time="0.002029">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="02: create_keychain" time="0.093171">
+      <testcase classname="fastlane.lanes" name="02: app_store_connect_api_key" time="0.000823">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="03: match" time="2.410271">
+      <testcase classname="fastlane.lanes" name="03: prompt" time="6.524453">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="04: latest_testflight_build_number" time="2.324447">
+      <testcase classname="fastlane.lanes" name="04: create_keychain" time="0.145895">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="05: get_build_number_from_xcodeproj" time="0.053547">
+      <testcase classname="fastlane.lanes" name="05: match" time="5.24747">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="06: get_version_number_from_xcodeproj" time="7.119846">
+      <testcase classname="fastlane.lanes" name="06: increment_version_number" time="2.421279">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="07: increment_build_number_in_xcodeproj" time="0.025087">
+      <testcase classname="fastlane.lanes" name="07: latest_testflight_build_number" time="1.884541">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="08: get_build_number_from_xcodeproj" time="0.02212">
+      <testcase classname="fastlane.lanes" name="08: increment_build_number" time="0.696759">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="09: get_version_number_from_xcodeproj" time="1.370053">
+      <testcase classname="fastlane.lanes" name="09: update_code_signing_settings" time="0.060313">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="10: update_code_signing_settings" time="0.01884">
+      <testcase classname="fastlane.lanes" name="10: build_app" time="24.313239">
         
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="11: sentry_upload_dif" time="17.558619">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="12: build_app" time="382.232298">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="13: pilot" time="188.301073">
+          <failure message="/Users/admin/.rvm/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/fastlane-2.221.1/fastlane/lib/fastlane/actions/actions_helper.rb:67:in `execute_action'&#10;/Users/admin/.rvm/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/fastlane-2.221.1/fastlane/lib/fastlane/runner.rb:255:in `block in execute_action'&#10;/Users/admin/.rvm/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/fastlane-2.221.1/fastlane/lib/fastlane/runner.rb:229:in `chdir'&#10;/Users/admin/.rvm/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/fastlane-2.221.1/fastlane/lib/fastlane/runner.rb:229:in `execute_action'&#10;/Users/admin/.rvm/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/fastlane-2.221.1/fastlane/lib/fastlane/runner.rb:157:in `trigger_action_by_name'&#10;/Users/admin/.rvm/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/fastlane-2.221.1/fastlane/lib/fastlane/fast_file.rb:159:in `method_missing'&#10;Fastfile:158:in `block (2 levels) in parsing_binding'&#10;/Users/admin/.rvm/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/fastlane-2.221.1/fastlane/lib/fastlane/lane.rb:41:in `call'&#10;/Users/admin/.rvm/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/fastlane-2.221.1/fastlane/lib/fastlane/runner.rb:49:in `block in execute'&#10;/Users/admin/.rvm/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/fastlane-2.221.1/fastlane/lib/fastlane/runner.rb:45:in `chdir'&#10;/Users/admin/.rvm/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/fastlane-2.221.1/fastlane/lib/fastlane/runner.rb:45:in `execute'&#10;/Users/admin/.rvm/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/fastlane-2.221.1/fastlane/lib/fastlane/lane_manager.rb:46:in `cruise_lane'&#10;/Users/admin/.rvm/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/fastlane-2.221.1/fastlane/lib/fastlane/command_line_handler.rb:34:in `handle'&#10;/Users/admin/.rvm/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/fastlane-2.221.1/fastlane/lib/fastlane/commands_generator.rb:110:in `block (2 levels) in run'&#10;/Users/admin/.rvm/gems/ruby-2.7.6/gems/commander-4.6.0/lib/commander/command.rb:187:in `call'&#10;/Users/admin/.rvm/gems/ruby-2.7.6/gems/commander-4.6.0/lib/commander/command.rb:157:in `run'&#10;/Users/admin/.rvm/gems/ruby-2.7.6/gems/commander-4.6.0/lib/commander/runner.rb:444:in `run_active_command'&#10;/Users/admin/.rvm/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/fastlane-2.221.1/fastlane_core/lib/fastlane_core/ui/fastlane_runner.rb:124:in `run!'&#10;/Users/admin/.rvm/gems/ruby-2.7.6/gems/commander-4.6.0/lib/commander/delegates.rb:18:in `run!'&#10;/Users/admin/.rvm/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/fastlane-2.221.1/fastlane/lib/fastlane/commands_generator.rb:363:in `run'&#10;/Users/admin/.rvm/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/fastlane-2.221.1/fastlane/lib/fastlane/commands_generator.rb:43:in `start'&#10;/Users/admin/.rvm/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/fastlane-2.221.1/fastlane/lib/fastlane/cli_tools_distributor.rb:123:in `take_off'&#10;/Users/admin/.rvm/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/fastlane-2.221.1/bin/fastlane:23:in `&lt;top (required)&gt;'&#10;/Users/admin/.rvm/gems/ruby-2.7.6/bin/fastlane:23:in `load'&#10;/Users/admin/.rvm/gems/ruby-2.7.6/bin/fastlane:23:in `&lt;top (required)&gt;'&#10;/Users/admin/.rvm/rubies/ruby-2.7.6/lib/ruby/2.7.0/bundler/cli/exec.rb:63:in `load'&#10;/Users/admin/.rvm/rubies/ruby-2.7.6/lib/ruby/2.7.0/bundler/cli/exec.rb:63:in `kernel_load'&#10;/Users/admin/.rvm/rubies/ruby-2.7.6/lib/ruby/2.7.0/bundler/cli/exec.rb:28:in `run'&#10;/Users/admin/.rvm/rubies/ruby-2.7.6/lib/ruby/2.7.0/bundler/cli.rb:476:in `exec'&#10;/Users/admin/.rvm/rubies/ruby-2.7.6/lib/ruby/2.7.0/bundler/vendor/thor/lib/thor/command.rb:27:in `run'&#10;/Users/admin/.rvm/rubies/ruby-2.7.6/lib/ruby/2.7.0/bundler/vendor/thor/lib/thor/invocation.rb:127:in `invoke_command'&#10;/Users/admin/.rvm/rubies/ruby-2.7.6/lib/ruby/2.7.0/bundler/vendor/thor/lib/thor.rb:399:in `dispatch'&#10;/Users/admin/.rvm/rubies/ruby-2.7.6/lib/ruby/2.7.0/bundler/cli.rb:30:in `dispatch'&#10;/Users/admin/.rvm/rubies/ruby-2.7.6/lib/ruby/2.7.0/bundler/vendor/thor/lib/thor/base.rb:476:in `start'&#10;/Users/admin/.rvm/rubies/ruby-2.7.6/lib/ruby/2.7.0/bundler/cli.rb:24:in `start'&#10;/Users/admin/.rvm/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/bundler-2.1.4/libexec/bundle:46:in `block in &lt;top (required)&gt;'&#10;/Users/admin/.rvm/rubies/ruby-2.7.6/lib/ruby/2.7.0/bundler/friendly_errors.rb:123:in `with_friendly_errors'&#10;/Users/admin/.rvm/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/bundler-2.1.4/libexec/bundle:34:in `&lt;top (required)&gt;'&#10;/Users/admin/.rvm/rubies/ruby-2.7.6/bin/bundle:23:in `load'&#10;/Users/admin/.rvm/rubies/ruby-2.7.6/bin/bundle:23:in `&lt;main&gt;'&#10;&#10;Error building the application - see the log above" />
         
       </testcase>
     
