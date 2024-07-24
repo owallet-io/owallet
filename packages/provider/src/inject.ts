@@ -221,6 +221,8 @@ export class InjectedOWallet implements IOWallet {
       this.mode === "extension"
         ? `${NAMESPACE}-proxy-request`
         : "proxy-request";
+    console.log("args", args);
+
     const proxyMessage: ProxyRequest = {
       type: typeProxy,
       namespace: NAMESPACE,
@@ -680,6 +682,8 @@ export class InjectedEthereum implements Ethereum {
       args: JSONUint8Array.wrap(args),
     };
 
+    console.log("arg 222222s", args);
+
     return new Promise((resolve, reject) => {
       const receiveResponse = (e: MessageEvent) => {
         const proxyResponse: ProxyRequestResponse = this.parseMessage
@@ -717,6 +721,8 @@ export class InjectedEthereum implements Ethereum {
 
   public initChainId: string;
   public isOwallet: boolean = true;
+  public isMetaMask: boolean = true;
+  public isRabby: boolean = true;
 
   constructor(
     public readonly version: string,
@@ -740,13 +746,84 @@ export class InjectedEthereum implements Ethereum {
     return await this.requestMethod("eth_requestAccounts", [[]]);
   }
 
-  // THIS IS THE ENTRYPOINT OF THE INJECTED ETHEREUM WHEN USER CALLS window.ethereum.request
-  async request(args: RequestArguments): Promise<any> {
-    return await this.requestMethod(args.method as string, [
-      args.params,
-      args.chainId,
-    ]);
-  }
+  // // THIS IS THE ENTRYPOINT OF THE INJECTED ETHEREUM WHEN USER CALLS window.ethereum.request
+  // async request(args: RequestArguments): Promise<any> {
+  //   return await this.requestMethod(args.method as string, [args.params, args.chainId]);
+  // }
+
+  // Need something like this to work with EVM dApps
+  // await window.ethereum.request({ "method": "eth_requestAccounts"})
+  // TODO: support multi request!
+  request = async (args) => {
+    console.log("args 123123", args);
+
+    return await this.requestMethod(
+      args.method as string,
+      args.params ? [args.params, args.chainId] : [[]]
+    );
+  };
+
+  shimLegacy = () => {
+    const legacyMethods = [
+      ["enable", "eth_requestAccounts"],
+      ["net_version", "net_version"],
+    ];
+
+    for (const [_method, method] of legacyMethods) {
+      this[_method] = () => this.request({ method });
+    }
+  };
+
+  isConnected = () => {
+    return true;
+  };
+
+  // shim to matamask legacy api
+  sendAsync = (payload, callback) => {
+    if (Array.isArray(payload)) {
+      return Promise.all(
+        payload.map(
+          (item) =>
+            new Promise((resolve) => {
+              this.sendAsync(item, (err, res) => {
+                // ignore error
+                resolve(res);
+              });
+            })
+        )
+      ).then((result) => callback(null, result));
+    }
+    const { method, params, ...rest } = payload;
+    this.request({ method, params })
+      .then((result) => callback(null, { ...rest, method, result }))
+      .catch((error) => callback(error, { ...rest, method, error }));
+  };
+
+  send = (payload, callback?) => {
+    if (typeof payload === "string" && (!callback || Array.isArray(callback))) {
+      // send(method, params? = [])
+      return this.request({
+        method: payload,
+        params: callback,
+      }).then((result) => ({
+        id: undefined,
+        jsonrpc: "2.0",
+        result,
+      }));
+    }
+
+    if (typeof payload === "object" && typeof callback === "function") {
+      return this.sendAsync(payload, callback);
+    }
+
+    let result;
+
+    return {
+      id: payload.id,
+      jsonrpc: payload.jsonrpc,
+      result,
+    };
+  };
 
   async signAndBroadcastEthereum(
     chainId: string,
@@ -1255,10 +1332,10 @@ export class InjectedTronWebOWallet implements ITronWeb {
   }
 
   async request(args: RequestArguments): Promise<any> {
-    return await this.requestMethod(args.method as string, [
-      args.params,
-      args.chainId,
-    ]);
+    return await this.requestMethod(
+      args.method as string,
+      args.params ? [args.params, args.chainId] : [[]]
+    );
   }
 }
 
@@ -1404,13 +1481,13 @@ export class InjectedTronWebOWallet implements ITronWeb {
 //     protected readonly parseMessage?: (message: any) => any
 //   ) {}
 
-//   // txBuilderOasis(amount: bigint, to: string): Promise<any> {
-//   //   throw new Error("Method not implemented.");
-//   // }
+//   txBuilderOasis(amount: bigint, to: string): Promise<any> {
+//     throw new Error("Method not implemented.");
+//   }
 
-//   // signOasis(): Promise<object> {
-//   //   throw new Error("Method not implemented.");
-//   // }
+//   signOasis(): Promise<object> {
+//     throw new Error("Method not implemented.");
+//   }
 
 //   async request(args: RequestArguments): Promise<any> {
 //     return await this.requestMethod(args.method as string, [args.params, args.chainId]);
