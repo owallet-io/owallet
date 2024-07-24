@@ -1510,6 +1510,8 @@ export const PrivilegedOrigins: string[] = [
   // "https://oraidex.io",
   // "https://orderbook.oraidex.io",
   // "https://futures.oraidex.io",
+  // "http://10.10.20.75:3000/",
+  // "https://pancakeswap.finance/",
 ];
 
 // tracking ads

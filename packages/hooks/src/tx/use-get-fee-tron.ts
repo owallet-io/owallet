@@ -194,7 +194,6 @@ export const useGetFeeTron = (
           addressTronBase58,
           1
         );
-        console.log(tronWeb, "tronWeb");
         const signedTx = await keyRingStore.simulateSignTron(transaction);
         const amountBandwidthFee = caculatorAmountBandwidthFee(
           signedTx,
