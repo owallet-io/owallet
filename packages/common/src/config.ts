@@ -427,8 +427,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
     features: ["stargate", "ibc-transfer", "cosmwasm"],
     txExplorer: {
-      name: "Oraiscan",
-      txUrl: "https://oraiscan.io/OraiBtcMainnet/tx/{txHash}",
+      name: "Scanium",
+      txUrl: "https://scanium.io/OraiBtcMainnet/tx/{txHash}",
     },
   },
   {
@@ -472,8 +472,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     chainSymbolImageUrl:
       "https://assets.coingecko.com/coins/images/1481/standard/cosmos_hub.png",
     txExplorer: {
-      name: "Mintscan",
-      txUrl: "https://www.mintscan.io/cosmos/txs/{txHash}",
+      name: "Scanium",
+      txUrl: "https://scanium.io/cosmos/tx/{txHash}",
     },
   },
 
@@ -526,8 +526,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     chainSymbolImageUrl:
       "https://assets.coingecko.com/coins/images/16724/standard/osmo.png",
     txExplorer: {
-      name: "Mintscan",
-      txUrl: "https://www.mintscan.io/osmosis/txs/{txHash}",
+      name: "Scanium",
+      txUrl: "https://scanium.io/osmosis/tx/{txHash}",
     },
   },
 
@@ -569,6 +569,10 @@ export const EmbedChainInfos: AppChainInfo[] = [
       },
     ],
     features: ["ibc-transfer", "ibc-go"],
+    txExplorer: {
+      name: "Scanium",
+      txUrl: "https://scanium.io/stargaze/tx/{txHash}",
+    },
   },
   // {
   //   rest: "https://blockstream.info/testnet/api",
@@ -728,9 +732,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
 
     features: ["stargate", "ibc-transfer", "cosmwasm", "no-legacy-stdTx"],
     txExplorer: {
-      name: "Mintscan",
-      txUrl: "https://www.mintscan.io/noble/txs/{txHash}",
-      accountUrl: "https://www.mintscan.io/noble/address/{address}",
+      name: "Scanium",
+      txUrl: "https://scanium.io/noble/tx/{txHash}",
     },
   },
   {
@@ -1498,8 +1501,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     chainSymbolImageUrl:
       "https://assets.coingecko.com/coins/images/19249/standard/Juno_Logo_%28Salmon%29_%282%29.png",
     txExplorer: {
-      name: "Mintscan",
-      txUrl: "https://www.mintscan.io/juno/txs/{txHash}",
+      name: "Scanium",
+      txUrl: "https://scanium.io/juno/tx/{txHash}",
     },
   },
 ];
