@@ -740,17 +740,15 @@ export class InjectedEthereum implements Ethereum {
     protected readonly parseMessage?: (message: any) => any
   ) {}
 
-  async enable() {
+  enable = async () => {
     return await this.requestMethod("eth_requestAccounts", [[]]);
-  }
+  };
 
   // // THIS IS THE ENTRYPOINT OF THE INJECTED ETHEREUM WHEN USER CALLS window.ethereum.request
   // async request(args: RequestArguments): Promise<any> {
   //   return await this.requestMethod(args.method as string, [args.params, args.chainId]);
   // }
 
-  // Need something like this to work with EVM dApps
-  // await window.ethereum.request({ "method": "eth_requestAccounts"})
   // TODO: support multi request!
   request = async (args) => {
     return await this.requestMethod(
