@@ -838,6 +838,7 @@ export class InjectedEthereum implements Ethereum {
   }
 
   on = async (args) => {
+    if (!args.method) return;
     return await this.requestMethod(
       args.method as string,
       args.params ? [args.params, args.chainId] : [[]]
