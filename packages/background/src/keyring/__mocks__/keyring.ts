@@ -78,11 +78,9 @@ export const mockMultiKeyStoreInfo = [
 ];
 //key cosmos example
 const mockAddressCosmos = "cosmos1eu2ecyzedvkvsfcd5vfht4whgx3uf22fjj9a4n";
-const mnemonicCosmos =
-  "sure tragic expand guess girl boy settle pull monster bleak daughter butter";
+const mnemonicCosmos = "";
 //add "0x" before privateKeyCosmos
-const privateKeyCosmos =
-  "ae0e3814fad957fb1fdca450a9795f5e64b46061a8618cc4029fcbbfdf215221";
+const privateKeyCosmos = "";
 const publicKeyTest =
   "0407e5b99e7849b4c2f6af0ee7e7f094b8859f1109962ad6e94fa3672fc8003a301c28c6ba894f7a08c3ca761abf39285c46614d7d8727b1ecd67b2c33d1ee81c1";
 export const mockKeyCosmos = {

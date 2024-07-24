@@ -8,8 +8,6 @@ import { spacing } from "../../themes";
 export const HeaderLeftButton: FunctionComponent<
   StackHeaderLeftButtonProps
 > = ({ children, onPress }) => {
-  const style = useStyle();
-
   return (
     <View
       style={{

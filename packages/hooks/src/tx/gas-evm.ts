@@ -75,7 +75,7 @@ export class GasEvmConfig extends TxChainSetter implements IGasConfig {
     // In this case, it should be handled as gas is 0.
     // But, it can be overridden on the child class if it is needed.
     if (this._gasPriceStep == null) {
-      return;
+      return null;
     }
 
     return this._gasPriceStep;

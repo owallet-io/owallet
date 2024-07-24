@@ -27,7 +27,6 @@ import TronWeb from "tronweb";
 
 import {
   KVStore,
-  fetchAdapter,
   EVMOS_NETWORKS,
   MyBigInt,
   escapeHTML,
@@ -68,8 +67,8 @@ import { request } from "../tx";
 import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
 import { trimAminoSignDoc } from "./amino-sign-doc";
 import { KeyringHelper } from "./utils";
-// import * as oasis from "@oasisprotocol/client";
-// import { ISimulateSignTron } from "@owallet/types";
+import * as oasis from "@oasisprotocol/client";
+import { ISimulateSignTron } from "@owallet/types";
 
 @singleton()
 export class KeyRingService {
@@ -248,15 +247,23 @@ export class KeyRingService {
     };
   }
 
-  async showKeyRing(index: number, password: string): Promise<string> {
-    return await this.keyRing.showKeyRing(index, password);
+  async showKeyRing(
+    index: number,
+    password: string,
+    chainId: string | number,
+    isShowPrivKey: boolean
+  ): Promise<string> {
+    return await this.keyRing.showKeyRing(
+      index,
+      password,
+      chainId,
+      isShowPrivKey
+    );
   }
 
   async simulateSignTron(transaction: any): Promise<any> {
     const signedTx = await this.keyRing.simulateSignTron(transaction);
-    console.log(signedTx, "signedTxsignedTx");
     return signedTx;
-    // return await this.keyRing.signTron(msg);
   }
 
   async createMnemonicKey(
@@ -624,7 +631,6 @@ export class KeyRingService {
     chainId: string,
     data: object
   ): Promise<string> {
-    console.log("🚀 ~ KeyRingService ~ data:", data);
     const coinType = await this.chainsService.getChainCoinType(chainId);
     const rpc = await this.chainsService.getChainInfo(chainId);
     const rpcCustom = EVMOS_NETWORKS.includes(chainId) ? rpc.evmRpc : rpc.rest;
@@ -638,7 +644,6 @@ export class KeyRingService {
         rpcCustom,
         data
       );
-      console.log(newData, "newData");
       const rawTxHex = await this.keyRing.signAndBroadcastEthereum(
         env,
         chainId,
@@ -1001,7 +1006,6 @@ export class KeyRingService {
     try {
       const chainInfo = await this.chainsService.getChainInfo(chainId);
       const tronWeb = TronWebProvider(chainInfo.rpc);
-      tronWeb.fullNode.instance.defaults.adapter = fetchAdapter;
       return await tronWeb.trx.sendRawTransaction(transaction);
     } catch (error) {
       throw error;
@@ -1030,7 +1034,6 @@ export class KeyRingService {
     try {
       const chainInfo = await this.chainsService.getChainInfo(chainId);
       const tronWeb = TronWebProvider(chainInfo.rpc);
-      tronWeb.fullNode.instance.defaults.adapter = fetchAdapter;
 
       const chainParameters = await tronWeb.trx.getChainParameters();
 
@@ -1108,7 +1111,6 @@ export class KeyRingService {
       const chainInfo = await this.chainsService.getChainInfo(chainId);
       const tronWeb = TronWebProvider(chainInfo.rpc);
 
-      tronWeb.fullNode.instance.defaults.adapter = fetchAdapter;
       let transaction: any;
 
       if (newData?.currency?.contractAddress) {
@@ -1143,7 +1145,6 @@ export class KeyRingService {
         ).toString("hex"),
       ];
       const receipt = await tronWeb.trx.sendRawTransaction(transaction);
-      console.log(receipt, "receipt");
       return receipt;
     } finally {
       this.interactionService.dispatchEvent(
@@ -1154,20 +1155,20 @@ export class KeyRingService {
     }
   }
 
-  // async requestSignOasis(
-  //   env: Env,
-  //   chainId: string,
-  //   data: object
-  // ): Promise<object> {
-  //   try {
-  //     const tx = await this.keyRing.signOasis(chainId, data);
-  //     return tx;
-  //   } finally {
-  //     this.interactionService.dispatchEvent(
-  //       APP_PORT,
-  //       "request-sign-oasis-end",
-  //       {}
-  //     );
-  //   }
-  // }
+  async requestSignOasis(
+    env: Env,
+    chainId: string,
+    data: object
+  ): Promise<object> {
+    try {
+      const tx = await this.keyRing.signOasis(chainId, data);
+      return tx;
+    } finally {
+      this.interactionService.dispatchEvent(
+        APP_PORT,
+        "request-sign-oasis-end",
+        {}
+      );
+    }
+  }
 }

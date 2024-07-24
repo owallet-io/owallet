@@ -31,7 +31,6 @@ export const TxBtcItem: FC<{
   const { priceStore, chainStore } = useStore();
   const fiat = priceStore.defaultVsCurrency;
   if (!item) return;
-  console.log(item, "item");
   const currency = chainStore.current.stakeCurrency;
   const onTransactionDetail = (item, currency) => {
     navigate(SCREENS.STACK.Others, {

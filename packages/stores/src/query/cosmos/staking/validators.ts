@@ -3,7 +3,7 @@ import {
   ObservableChainQueryMap,
 } from "../../chain-query";
 import { BondStatus, Validators, Validator } from "./types";
-import { KVStore, fetchAdapter } from "@owallet/common";
+import { KVStore } from "@owallet/common";
 import { ChainGetter } from "../../../common";
 import {
   autorun,
@@ -53,7 +53,7 @@ export class ObservableQueryValidatorThumbnail extends ObservableQuery<KeybaseRe
   constructor(kvStore: KVStore, validator: Validator) {
     const instance = Axios.create({
       baseURL: "https://keybase.io/",
-      adapter: fetchAdapter,
+      adapter: "fetch",
     });
 
     super(

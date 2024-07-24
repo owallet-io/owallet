@@ -11,7 +11,6 @@ export const SelectAccountPage = observer(() => {
   const history = useHistory();
   const onEditAccount = (keyStore) => {
     if (!keyStore) return;
-    console.log(keyStore, "keyStore");
     const index = keyRingStore.multiKeyStoreInfo.indexOf(keyStore);
     if (index < 0) return;
     history.push(`/edit-account/${index}`);

@@ -2,10 +2,10 @@
 
 buildscript {
     ext {
-        buildToolsVersion = '33.0.0'
-        minSdkVersion = 23
-        compileSdkVersion = 33
-        targetSdkVersion = 33
+        buildToolsVersion = '34.0.0'
+        minSdkVersion = 24
+        compileSdkVersion = 34
+        targetSdkVersion = 34
 
         // We use NDK 23 which has both M1 support and is the side-by-side NDK version from AGP.
         ndkVersion = '23.1.7779620'
@@ -24,16 +24,14 @@ buildscript {
         classpath('com.facebook.react:react-native-gradle-plugin')
     }
 }
-subprojects { subproject ->
-        if (project['name'] == 'react-native-reanimated') {
-        project.configurations { compile { } }
-        }
-}
+// subprojects { subproject ->
+//         if (project['name'] == 'react-native-reanimated') {
+//         project.configurations { compile { } }
+//         }
+// }
 allprojects {
     repositories {
         maven { url 'https://www.jitpack.io' }
         maven { url 'https://maven.google.com' }
-        // Leave any existing entries in place, add the below entry as a new repository.
-        maven { url "https://storage.googleapis.com/logrocket-maven/" }
     }
 }

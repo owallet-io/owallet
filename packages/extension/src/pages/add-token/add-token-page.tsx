@@ -11,8 +11,7 @@ import { observer } from "mobx-react-lite";
 import { Form } from "reactstrap";
 import { useStore } from "src/stores";
 import { useInteractionInfo } from "@owallet/hooks";
-import { useNotification } from "components/notification";
-import { useLoadingIndicator } from "components/loading-indicator";
+
 import {
   API,
   ChainIdEnum,
@@ -23,6 +22,7 @@ import { ModalNetwork } from "pages/home/modals/modal-network";
 import Colors from "theme/colors";
 import Web3 from "web3";
 import { Text } from "components/common/text";
+import { toast } from "react-toastify";
 
 interface FormData {
   contractAddress: string;
@@ -80,7 +80,7 @@ export const AddTokenPage = observer(() => {
   }
   const queryContractInfo = query?.getQueryContract(contractAddress);
   const tokenInfo = queryContractInfo?.tokenInfo;
-  const notification = useNotification();
+
   const getTokenCoingeckoId = async () => {
     try {
       if (tokenInfo && tokenInfo.symbol) {
@@ -130,15 +130,9 @@ export const AddTokenPage = observer(() => {
       } else {
         await tokensOf.addToken(currency);
       }
-      notification.push({
-        placement: "top-center",
+
+      toast("Add Token Success", {
         type: "success",
-        duration: 2,
-        content: "Add Token Success",
-        canDelete: true,
-        transition: {
-          duration: 0.25,
-        },
       });
 
       if (interactionInfo.interaction && !interactionInfo.interactionInternal) {

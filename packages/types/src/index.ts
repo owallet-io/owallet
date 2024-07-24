@@ -9,3 +9,4 @@ export * from "./cosmjs";
 export * from "./address";
 export * from "./multiple-asset.types";
 export * from "./all-network.types";
+export * from "./secretjs";

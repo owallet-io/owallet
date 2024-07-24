@@ -14,7 +14,7 @@ import { Text } from "../../../components/common/text";
 import { Card } from "../../../components/common/card";
 import useForm from "react-hook-form";
 import colors from "../../../theme/colors";
-import { useNotification } from "../../../components/notification";
+import { toast } from "react-toastify";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require("bip39");
@@ -143,7 +143,6 @@ export const GenerateMnemonicModePage: FunctionComponent<{
   bip44Option: BIP44Option;
 }> = observer(({ registerConfig, newMnemonicConfig, bip44Option }) => {
   const intl = useIntl();
-  const notification = useNotification();
 
   const { register, handleSubmit, getValues, errors, setValue } =
     useForm<FormData>({
@@ -278,15 +277,8 @@ export const GenerateMnemonicModePage: FunctionComponent<{
           onClick={async (e) => {
             e.preventDefault();
             await navigator.clipboard.writeText(newMnemonicConfig.mnemonic);
-            notification.push({
-              placement: "top-center",
+            toast("Copied!", {
               type: "success",
-              duration: 2,
-              content: "Copied!",
-              canDelete: true,
-              transition: {
-                duration: 0.25,
-              },
             });
           }}
           style={{

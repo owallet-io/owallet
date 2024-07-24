@@ -38,7 +38,7 @@ import { FeeModal } from "@src/modals/fee";
 import { capitalizedText } from "@src/utils/helper";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
-import ByteBrew from "react-native-bytebrew-sdk";
+import { tracking } from "@src/utils/tracking";
 
 export const SendEvmScreen: FunctionComponent = observer(() => {
   const {
@@ -74,7 +74,7 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
   const chainId = route?.params?.chainId
     ? route?.params?.chainId
     : chainStore?.current?.chainId;
-  ByteBrew.NewCustomEvent(`Send EVM Screen`);
+  tracking(`Send EVM Screen`);
   const account = accountStore.getAccount(chainId);
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const queries = queriesStore.get(chainId);
@@ -150,7 +150,6 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
   const { gasPrice } = queriesStore
     .get(chainId)
     .evm.queryGasPrice.getGasPrice();
-  console.log(gasPrice, chainId, "gasPrice");
   useEffect(() => {
     if (!gasPrice) return;
     sendConfigs.gasConfig.setGasPriceStep(gasPrice);
@@ -208,7 +207,6 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
           },
           {
             onFulfill: (tx) => {
-              console.log(tx, "tx evm");
               if (chainStore.current.chainId === ChainIdEnum.Oasis) {
                 navigate("Others", {
                   screen: SCREENS.TxSuccessResult,
@@ -232,7 +230,6 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
                 chainName: chainStore.current.chainName,
                 feeType: sendConfigs.feeConfig.feeType,
               });
-              console.log(txHash, "txHash evm");
               navigate("Others", {
                 screen: "TxPendingResult",
                 params: {

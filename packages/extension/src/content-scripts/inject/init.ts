@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { OWallet, Ethereum, TronWeb, Bitcoin } from "@owallet/types";
 import { OfflineSigner } from "@cosmjs/launchpad";
-import { SecretUtils } from "secretjs/types/enigmautils";
+import { SecretUtils } from "@owallet/types";
 import { OfflineDirectSigner } from "@cosmjs/proto-signing";
 
 export function init(

@@ -41,7 +41,6 @@ async function fetchTokenInfos(
   }));
   const multicall = new MulticallQueryClient(client, network.multicall);
   let tokenInfos = tokens.map((t) => toTokenInfo(t));
-  console.log("tokenInfos", tokenInfos);
 
   try {
     const res = await multicall.tryAggregate({

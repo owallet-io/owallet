@@ -3,9 +3,10 @@ import React from "react";
 import FastImage from "react-native-fast-image";
 import { Text } from "../text";
 import { useTheme } from "@src/themes/theme-provider";
+import globalImages from "@assets/images";
 interface IOWEmpty extends ViewProps {
   style?: ViewProps["style"];
-  type?: "list" | "crash" | "cash";
+  type?: "list" | "crash" | "cash" | "nft";
   label?: string;
   sizeImage?: number;
 }
@@ -23,6 +24,7 @@ const OWEmpty = ({
     list: require("../../assets/image/img_planet.png"),
     crash: images.crash_empty,
     cash: images.money_empty,
+    nft: globalImages.img_color,
   };
 
   return (

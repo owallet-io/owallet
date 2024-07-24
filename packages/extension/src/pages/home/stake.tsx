@@ -5,13 +5,14 @@ import { observer } from "mobx-react-lite";
 import styleStake from "./stake.module.scss";
 import classnames from "classnames";
 import { Dec } from "@owallet/unit";
-import { useNotification } from "../../components/notification";
+
 import { useHistory } from "react-router";
 import { FormattedMessage } from "react-intl";
 import { ChainIdEnum } from "@owallet/common";
 import { Button } from "components/common/button";
 import { Text } from "components/common/text";
 import colors from "theme/colors";
+import { toast } from "react-toastify";
 
 export const StakeView: FunctionComponent = observer(() => {
   const history = useHistory();
@@ -22,8 +23,6 @@ export const StakeView: FunctionComponent = observer(() => {
     : chainStore.current.chainId;
   const accountInfo = accountStore.getAccount(chainId);
   const queries = queriesStore.get(chainId);
-
-  const notification = useNotification();
 
   const rewards = queries.cosmos.queryRewards.getQueryBech32Address(
     accountInfo.bech32Address
@@ -62,27 +61,14 @@ export const StakeView: FunctionComponent = observer(() => {
           stakableReward.currency.coinMinimalDenom
         );
         history.push("/");
-        notification.push({
+
+        toast(`Success`, {
           type: "success",
-          placement: "top-center",
-          duration: 5,
-          content: `Success`,
-          canDelete: true,
-          transition: {
-            duration: 0.25,
-          },
         });
       } catch (e) {
         history.push("/");
-        notification.push({
-          type: "warning",
-          placement: "top-center",
-          duration: 5,
-          content: `Fail to withdraw rewards: ${e.message}`,
-          canDelete: true,
-          transition: {
-            duration: 0.25,
-          },
+        toast(`Fail to withdraw rewards: ${e.message}`, {
+          type: "error",
         });
       }
     }

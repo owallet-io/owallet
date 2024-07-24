@@ -1,6 +1,3 @@
-@import "../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/functions";
-@import "../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/mixins";
-@import "../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/variables";
 @import "../../styles/var";
 
 /* Chrome, Safari, Edge, Opera */
@@ -25,7 +22,6 @@ input[type="number"] {
   }
 
   &:focus {
-    box-shadow: $input-focus-alternative-box-shadow !important;
     // border: 1px solid $color-gray-70 !important;
     border-radius: 4px;
   }
@@ -34,7 +30,6 @@ input[type="number"] {
 .input-group {
   box-shadow: 0 1px 3px rgb(50 50 93 / 15%), 0 1px 0 rgb(0 0 0 / 2%);
   &:focus-within {
-    box-shadow: $input-focus-alternative-box-shadow !important;
   }
 }
 

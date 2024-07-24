@@ -87,6 +87,7 @@ export const RevealRecoveryPhrasePage = () => {
           history.goBack();
           return;
         }}
+        isShowPrivKey={false}
       />
     </LayoutWithButtonBottom>
   );

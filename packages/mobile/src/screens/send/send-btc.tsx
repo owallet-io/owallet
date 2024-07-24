@@ -49,7 +49,7 @@ import { Text } from "@src/components/text";
 import { RadioButton } from "react-native-radio-buttons-group";
 import { AddressBtcType } from "@owallet/types";
 import { useBIP44Option } from "@src/screens/register/bip44";
-import ByteBrew from "react-native-bytebrew-sdk";
+import { tracking } from "@src/utils/tracking";
 
 const dataTypeBtc = [
   { id: AddressBtcType.Bech32, name: "Bitcoin Segwit" },
@@ -179,7 +179,11 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
   const address = account.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses
   );
-  ByteBrew.NewCustomEvent(`Send BTC Screen`);
+  useEffect(() => {
+    tracking(`Send BTC Screen`);
+    return () => {};
+  }, []);
+
   const sendConfigs = useSendTxConfig(
     chainStore,
     chainId,
@@ -241,14 +245,9 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
       if (isReadyBalance) {
-        console.log(
-          sendConfigs.amountConfig.sendCurrency,
-          "sendConfigs.amountConfig.sendCurrency"
-        );
         const balance = queries.queryBalances
           .getQueryBech32Address(address)
           .getBalanceFromCurrency(sendConfigs.amountConfig.sendCurrency);
-        console.log(balance, "balance");
         setBalance(balance);
       }
     });
@@ -282,14 +281,6 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
 
         {
           onFulfill: async (tx) => {
-            console.log("🚀 ~ file: send-btc.tsx:109 ~ onSend ~ tx:", tx);
-            // universalSwapStore.updateTokenReload([
-            //   {
-            //     ...sendConfigs.amountConfig.sendCurrency,
-            //     chainId: chainStore.current.chainId,
-            //     networkType: "bitcoin"
-            //   }
-            // ]);
             if (tx) {
               navigate(SCREENS.STACK.Others, {
                 screen: SCREENS.TxSuccessResult,
@@ -309,20 +300,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
 
             return;
           },
-          onBroadcasted: async (txHash) => {
-            try {
-              const fee = sendConfigs.feeConfig.fee
-                .trim(true)
-                .hideDenom(true)
-                .maxDecimals(4)
-                .toString();
-            } catch (error) {
-              console.log(
-                "🚀 ~ file: send-btc.tsx:149 ~ onBroadcasted: ~ error:",
-                error
-              );
-            }
-          },
+          onBroadcasted: async (txHash) => {},
         },
         {
           confirmedBalance: confirmedBalance,
@@ -344,7 +322,6 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
         type: "danger",
         message: JSON.stringify(error),
       });
-      console.log("🚀 ~ file: send-btc.tsx:146 ~ onSend ~ error:", error);
     }
   }, [
     chainStore.current.networkType,

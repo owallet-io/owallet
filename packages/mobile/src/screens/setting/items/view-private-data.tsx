@@ -15,25 +15,29 @@ import { PincodeModal } from "@src/screens/pincode/pincode-modal";
 export const SettingViewPrivateDataItem: FunctionComponent<{
   topBorder?: boolean;
 }> = observer(({ topBorder }) => {
-  const { keyRingStore, modalStore } = useStore();
+  const { keyRingStore, modalStore, chainStore } = useStore();
 
   const smartNavigation = useSmartNavigation();
 
   const onGoBack = () => {
     modalStore.close();
   };
-
-  const onVerifyPincode = async (passcode) => {
+  const index = keyRingStore.multiKeyStoreInfo.findIndex(
+    (keyStore) => keyStore.selected
+  );
+  const keyStore = keyRingStore.multiKeyStoreInfo[index];
+  const onVerifyPincode = async (passcode, isPrivateKey) => {
     try {
-      const index = keyRingStore.multiKeyStoreInfo.findIndex(
-        (keyStore) => keyStore.selected
-      );
-
       if (index >= 0) {
-        const privateData = await keyRingStore.showKeyRing(index, passcode);
+        const privateData = await keyRingStore.showKeyRing(
+          index,
+          passcode,
+          chainStore.current.chainId,
+          isPrivateKey
+        );
         smartNavigation.navigateSmart("Setting.BackupMnemonic", {
           privateData,
-          privateDataType: keyRingStore.keyRingType,
+          privateDataType: isPrivateKey ? "privateKey" : "mnemonic",
         });
       }
       modalStore.close();
@@ -45,7 +49,7 @@ export const SettingViewPrivateDataItem: FunctionComponent<{
     }
   };
 
-  const _onPressPincodekModal = () => {
+  const _onPressPincodekModal = (isPrivateKey) => {
     modalStore.setOptions({
       bottomSheetModalConfig: {
         enablePanDownToClose: false,
@@ -54,7 +58,7 @@ export const SettingViewPrivateDataItem: FunctionComponent<{
     });
     modalStore.setChildren(
       <PincodeModal
-        onVerifyPincode={onVerifyPincode}
+        onVerifyPincode={(pass) => onVerifyPincode(pass, isPrivateKey)}
         onGoBack={onGoBack}
         label={"Enter your passcode"}
         subLabel={"Enter your passcode to reveal secret phrase"}
@@ -66,32 +70,24 @@ export const SettingViewPrivateDataItem: FunctionComponent<{
 
   return (
     <React.Fragment>
-      <BasicSettingItem
-        icon="md_key"
-        paragraph={"Reveal secret phrase"}
-        onPress={() => {
-          _onPressPincodekModal();
-        }}
-      />
-      {/* <PasswordInputModal
-        isOpen={isOpenModal}
-        paragraph={"Do not reveal your mnemonic to anyone"}
-        close={() => {
-          setIsOpenModal(false);
-        }}
-        title={getPrivateDataTitle(keyRingStore.keyRingType, true)}
-        onEnterPassword={async password => {
-          const index = keyRingStore.multiKeyStoreInfo.findIndex(keyStore => keyStore.selected);
-
-          if (index >= 0) {
-            const privateData = await keyRingStore.showKeyRing(index, password);
-            smartNavigation.navigateSmart("Setting.BackupMnemonic", {
-              privateData,
-              privateDataType: keyRingStore.keyRingType
-            });
-          }
-        }}
-      /> */}
+      {keyStore?.type === "mnemonic" && (
+        <BasicSettingItem
+          icon="md_key"
+          paragraph={"Reveal secret phrase"}
+          onPress={() => {
+            _onPressPincodekModal(false);
+          }}
+        />
+      )}
+      {keyStore?.type !== "ledger" && (
+        <BasicSettingItem
+          icon="md_key"
+          paragraph={"Reveal Private Key"}
+          onPress={() => {
+            _onPressPincodekModal(true);
+          }}
+        />
+      )}
     </React.Fragment>
   );
 });

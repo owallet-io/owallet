@@ -2,19 +2,30 @@ import { StyleSheet, TouchableOpacity, View } from "react-native";
 import React, { FC } from "react";
 import { formatContractAddress, maskedNumber } from "@src/utils/helper";
 import { useTheme } from "@src/themes/theme-provider";
-
 import { observer } from "mobx-react-lite";
 import { Text } from "@src/components/text";
 import OWIcon from "@src/components/ow-icon/ow-icon";
-
-import { CoinPretty, Dec, DecUtils } from "@owallet/unit";
+import { CoinPretty, Dec } from "@owallet/unit";
 import moment from "moment/moment";
 import { navigate } from "@src/router/root";
 import { getTimeMilliSeconds, SCREENS } from "@src/common/constants";
 import { RightArrowIcon } from "@src/components/icon";
 import { useStore } from "@src/stores";
-import { unknownToken, MapNetworkToChainId } from "@owallet/common";
+import { MapNetworkToChainId, unknownToken } from "@owallet/common";
 import { AllNetworkItemTx } from "@owallet/types";
+
+const getCurrencyImage = (currency) => {
+  return currency?.coinImageUrl?.includes("missing.png") ||
+    !currency?.coinImageUrl
+    ? unknownToken.coinImageUrl
+    : currency?.coinImageUrl;
+};
+
+const getTintColor = (coinDenom, denom, colors) => {
+  return coinDenom === "ORAI" && (denom === "ORAI" || denom === "AIRI")
+    ? colors["neutral-text-title"]
+    : null;
+};
 
 export const AllNetworkTxItem: FC<{
   item: AllNetworkItemTx;
@@ -24,7 +35,6 @@ export const AllNetworkTxItem: FC<{
   const { priceStore, chainStore } = useStore();
   const fiat = priceStore.defaultVsCurrency;
   if (!item) return;
-  console.log(item, "item");
   let currency = unknownToken;
 
   if (item.tokenInfos?.length > 0 && item.tokenInfos[0]) {
@@ -101,19 +111,12 @@ export const AllNetworkTxItem: FC<{
             <OWIcon
               type="images"
               source={{
-                uri:
-                  currency?.coinImageUrl?.includes("missing.png") ||
-                  !currency?.coinImageUrl
-                    ? unknownToken.coinImageUrl
-                    : currency?.coinImageUrl,
+                uri: getCurrencyImage(currency),
               }}
               size={32}
               style={{
                 borderRadius: 999,
-                tintColor:
-                  coinDenom === "ORAI" && (denom === "ORAI" || denom === "AIRI")
-                    ? colors["neutral-text-title"]
-                    : null,
+                tintColor: getTintColor(coinDenom, denom, colors),
               }}
             />
           </View>

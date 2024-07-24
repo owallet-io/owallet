@@ -53,7 +53,6 @@ export const EvmDetailTx: FunctionComponent = observer((props) => {
 
   const { item, currency } = route.params;
   const { txhash: hash, network: chain } = item;
-  console.log(item, detail, "item detail");
 
   const getHistoryDetail = async () => {
     try {
@@ -98,7 +97,6 @@ export const EvmDetailTx: FunctionComponent = observer((props) => {
   const handleOnExplorer = async () => {
     if (chainInfo.raw.txExplorer && detail.hash) {
       const url = handleUrl(detail.hash);
-      console.log(url, "url");
       await openLink(url);
     }
   };

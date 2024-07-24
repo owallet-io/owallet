@@ -22,13 +22,13 @@ import { useTheme } from "@src/themes/theme-provider";
 import { useFocusEffect } from "@react-navigation/native";
 import { ChainUpdaterService } from "@owallet/background";
 import { ChainIdEnum, getBase58Address } from "@owallet/common";
-import { TokensCardAll } from "./tokens-card-all";
-import { AccountBoxAll } from "./account-box-new";
+import { TokensCardAll } from "./components/tokens-card-all";
+import { AccountBoxAll } from "./components/account-box-new";
 
-import { EarningCardNew } from "./earning-card-new";
+import { EarningCardNew } from "./components/earning-card-new";
 import { InjectedProviderUrl } from "../web/config";
 import { useMultipleAssets } from "@src/screens/home/hooks/use-multiple-assets";
-import { PricePretty } from "@owallet/unit";
+import { IntPretty, PricePretty } from "@owallet/unit";
 import {
   chainInfos,
   getTokensFromNetwork,
@@ -38,13 +38,15 @@ import {
 import { useCoinGeckoPrices, useLoadTokens } from "@owallet/hooks";
 import { flatten } from "lodash";
 import { showToast } from "@src/utils/helper";
-import ByteBrew from "react-native-bytebrew-sdk";
-import { SCREENS } from "@src/common/constants";
 
+import { MainTabHome } from "./components";
+import { sha256 } from "sha.js";
+import { Mixpanel } from "mixpanel-react-native";
+import { tracking } from "@src/utils/tracking";
+const mixpanel = globalThis.mixpanel as Mixpanel;
 export const HomeScreen: FunctionComponent = observer((props) => {
   const [refreshing, setRefreshing] = React.useState(false);
   const [refreshDate, setRefreshDate] = React.useState(Date.now());
-
   const { colors } = useTheme();
 
   const styles = styling(colors);
@@ -93,7 +95,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   );
 
   useEffect(() => {
-    ByteBrew.NewCustomEvent("Home Screen");
+    tracking("Home Screen");
     InteractionManager.runAfterInteractions(() => {
       fetch(InjectedProviderUrl)
         .then((res) => {
@@ -320,6 +322,33 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   useEffect(() => {
     appInitStore.updatePrices(prices);
   }, [prices]);
+  useEffect(() => {
+    if (!totalPriceBalance || !accountOrai.bech32Address) return;
+    const hashedAddress = new sha256()
+      .update(accountOrai.bech32Address)
+      .digest("hex");
+
+    const amount = new IntPretty(totalPriceBalance || "0")
+      .maxDecimals(2)
+      .shrink(true)
+      .trim(true)
+      .locale(false)
+      .inequalitySymbol(true);
+
+    const logEvent = {
+      userId: hashedAddress,
+      totalPrice: amount?.toString() || "0",
+      currency: priceStore.defaultVsCurrency,
+    };
+    if (mixpanel) {
+      mixpanel.track("OWallet - Assets Managements", logEvent);
+    }
+    return () => {};
+  }, [
+    totalPriceBalance,
+    accountOrai.bech32Address,
+    priceStore.defaultVsCurrency,
+  ]);
   return (
     <PageWithScrollViewInBottomTabView
       refreshControl={
@@ -349,13 +378,8 @@ export const HomeScreen: FunctionComponent = observer((props) => {
           totalPriceBalance
         )?.toString()}
       />
-      {chainStore.current.networkType === "cosmos" &&
-      !appInitStore.getInitApp.isAllNetworks ? (
-        <EarningCardNew />
-      ) : (
-        <EarningCardNew defaultChain={ChainIdEnum.Oraichain} />
-      )}
-      <TokensCardAll dataTokens={dataTokens} />
+      <EarningCardNew />
+      <MainTabHome dataTokens={dataTokens} />
     </PageWithScrollViewInBottomTabView>
   );
 });

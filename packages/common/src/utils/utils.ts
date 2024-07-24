@@ -30,6 +30,18 @@ export const COINTYPE_NETWORK = {
   0: "Bitcoin",
   1: "Bitcoin Testnet",
 };
+const timeoutLimit = 5000;
+export const timeoutBtc = 60000;
+export const withTimeout = (promise, ms = timeoutLimit) => {
+  const timeout = new Promise((_, reject) => {
+    const id = setTimeout(() => {
+      clearTimeout(id);
+      reject(new Error("Promise timed out"));
+    }, ms);
+  });
+
+  return Promise.race([promise, timeout]);
+};
 export const convertObjChainAddressToString = (txsAllNetwork) => {
   const data = Object.entries(txsAllNetwork)
     .map(([key, value]) => `${key}%2B${value}`)
@@ -186,12 +198,12 @@ export const decodeParams = async (types, output, ignoreMethodHash) => {
 };
 
 export const encodeParams = async (inputs) => {
-  let typesValues = inputs;
+  const typesValues = inputs;
   let parameters = "";
 
   if (typesValues.length == 0) return parameters;
   const abiCoder = new AbiCoder();
-  let types = [];
+  const types = [];
   const values = [];
 
   for (let i = 0; i < typesValues.length; i++) {
@@ -204,8 +216,6 @@ export const encodeParams = async (inputs) => {
     types.push(type);
     values.push(value);
   }
-
-  console.log(types, values);
   try {
     parameters = abiCoder.encode(types, values).replace(/^(0x)/, "");
   } catch (ex) {

@@ -22,7 +22,7 @@ import { useTheme } from "@src/themes/theme-provider";
 import { DownArrowIcon } from "@src/components/icon";
 import { SelectTokenTypeModal } from "./select-token-type";
 import { unknownToken } from "@owallet/common";
-import ByteBrew from "react-native-bytebrew-sdk";
+import { tracking } from "@src/utils/tracking";
 
 const mockToken = {
   coinDenom: "USDC",
@@ -57,8 +57,7 @@ interface FormData {
 
 export const AddTokenEVMScreen: FunctionComponent<{
   _onPressNetworkModal: Function;
-  selectedChain: any;
-}> = observer(({ _onPressNetworkModal, selectedChain }) => {
+}> = observer(({ _onPressNetworkModal }) => {
   const {
     control,
     handleSubmit,
@@ -78,14 +77,12 @@ export const AddTokenEVMScreen: FunctionComponent<{
     appInitStore,
     modalStore,
   } = useStore();
-  const tokensOf = tokensStore.getTokensOf(selectedChain?.chainId);
+  const selectedChain = chainStore.current;
+  const tokensOf = tokensStore.getTokensOf(selectedChain.chainId);
   const [loading, setLoading] = useState(false);
   const [coingeckoId, setCoingeckoID] = useState(null);
   const [coingeckoImg, setCoingeckoImg] = useState(null);
   const [selectedType, setSelectedType] = useState("erc20");
-
-  const accountInfo = accountStore.getAccount(chainStore.current.chainId);
-
   const form = useForm<FormData>({
     defaultValues: {
       contractAddress: "",
@@ -96,7 +93,7 @@ export const AddTokenEVMScreen: FunctionComponent<{
   const contractAddress = watch("contractAddress");
 
   useEffect(() => {
-    ByteBrew.NewCustomEvent(`Add Token Evm Screen`);
+    tracking(`Add Token Evm Screen`);
     if (tokensStore.waitingSuggestedToken) {
       chainStore.selectChain(tokensStore.waitingSuggestedToken.data.chainId);
       if (
@@ -118,8 +115,6 @@ export const AddTokenEVMScreen: FunctionComponent<{
   const queryContractInfo = query.getQueryContract(contractAddress);
 
   const tokenInfo = queryContractInfo.tokenInfo;
-  console.log(tokenInfo, "tokenInfo");
-
   const getTokenCoingeckoId = async () => {
     try {
       if (tokenInfo && tokenInfo.symbol) {

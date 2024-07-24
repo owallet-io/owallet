@@ -250,18 +250,16 @@ export class CosmosAccount {
           };
 
           const simulateTx = await this.simulateTx(
-            this.hasNoLegacyStdFeature()
-              ? [
-                  {
-                    typeUrl: "/cosmos.bank.v1beta1.MsgSend",
-                    value: MsgSend.encode({
-                      fromAddress: msg.value.from_address,
-                      toAddress: msg.value.to_address,
-                      amount: msg.value.amount,
-                    }).finish(),
-                  },
-                ]
-              : undefined,
+            this.checkNoLegacyStdFeature([
+              {
+                typeUrl: "/cosmos.bank.v1beta1.MsgSend",
+                value: MsgSend.encode({
+                  fromAddress: msg.value.from_address,
+                  toAddress: msg.value.to_address,
+                  amount: msg.value.amount,
+                }).finish(),
+              },
+            ]),
             {
               amount: stdFee.amount ?? [],
             },
@@ -271,18 +269,16 @@ export class CosmosAccount {
             "send",
             {
               aminoMsgs: [msg],
-              protoMsgs: this.hasNoLegacyStdFeature()
-                ? [
-                    {
-                      typeUrl: "/cosmos.bank.v1beta1.MsgSend",
-                      value: MsgSend.encode({
-                        fromAddress: msg.value.from_address,
-                        toAddress: msg.value.to_address,
-                        amount: msg.value.amount,
-                      }).finish(),
-                    },
-                  ]
-                : undefined,
+              protoMsgs: this.checkNoLegacyStdFeature([
+                {
+                  typeUrl: "/cosmos.bank.v1beta1.MsgSend",
+                  value: MsgSend.encode({
+                    fromAddress: msg.value.from_address,
+                    toAddress: msg.value.to_address,
+                    amount: msg.value.amount,
+                  }).finish(),
+                },
+              ]),
               rlpTypes: {
                 MsgValue: [
                   { name: "from_address", type: "string" },
@@ -1053,18 +1049,18 @@ export class CosmosAccount {
       "withdrawRewards",
       {
         aminoMsgs: msgs,
-        protoMsgs: this.hasNoLegacyStdFeature()
-          ? msgs.map((msg) => {
-              return {
-                typeUrl:
-                  "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward",
-                value: MsgWithdrawDelegatorReward.encode({
-                  delegatorAddress: msg.value.delegator_address,
-                  validatorAddress: msg.value.validator_address,
-                }).finish(),
-              };
-            })
-          : undefined,
+        protoMsgs: this.checkNoLegacyStdFeature(
+          msgs.map((msg) => {
+            return {
+              typeUrl:
+                "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward",
+              value: MsgWithdrawDelegatorReward.encode({
+                delegatorAddress: msg.value.delegator_address,
+                validatorAddress: msg.value.validator_address,
+              }).finish(),
+            };
+          })
+        ),
         rlpTypes: {
           MsgValue: [
             { name: "delegator_address", type: "string" },
@@ -1266,5 +1262,9 @@ export class CosmosAccount {
       chainInfo.features != null &&
       chainInfo.features.includes("no-legacy-stdTx")
     );
+  }
+
+  protected checkNoLegacyStdFeature(msgs): Array<any> {
+    return this.hasNoLegacyStdFeature() ? msgs : undefined;
   }
 }

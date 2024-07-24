@@ -1,4 +1,10 @@
-import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React, {
   FunctionComponent,
   useCallback,
@@ -23,6 +29,7 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
   onChangeAmount,
   onOpenTokenModal,
   editable,
+  loading,
 }) => {
   const { colors } = useTheme();
   const { appInitStore } = useStore();
@@ -46,8 +53,6 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
   }, [amount]);
 
   const handleChangeAmount = (amount) => {
-    console.log("onChangeAmount", Number(Number(amount).toFixed(6)).toString());
-
     onChangeAmount(Number(Number(amount).toFixed(6)).toString());
   };
 
@@ -100,34 +105,49 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
       </TouchableOpacity>
 
       <View style={styles.containerInput}>
-        <TextInput
-          editable={editable}
-          placeholder="0"
-          textAlign="right"
-          value={txt}
-          onFocus={() => {
-            if (!txt || Number(txt) === 0) {
-              setText("");
-            }
-          }}
-          onChangeText={(t) => {
-            const newAmount = t.replace(/,/g, ".");
-            setText(newAmount.toString());
-            debounceFn(newAmount);
-          }}
-          defaultValue={amount ?? "0"}
-          onBlur={() => {
-            handleChangeAmount(txt);
-          }}
-          keyboardType="numeric"
-          style={[styles.textInput, styles.colorInput]}
-          placeholderTextColor={colors["text-place-holder"]}
-        />
-        <View style={{ alignSelf: "flex-end" }}>
-          <BalanceText weight="500">
-            ≈ ${maskedNumber(currencyValue) || 0}
-          </BalanceText>
-        </View>
+        {loading ? (
+          <View
+            style={{
+              backgroundColor: colors["neutral-surface-card"],
+              zIndex: 999,
+              alignContent: "center",
+              justifyContent: "center",
+            }}
+          >
+            <ActivityIndicator />
+          </View>
+        ) : (
+          <>
+            <TextInput
+              editable={editable}
+              placeholder="0"
+              textAlign="right"
+              value={txt}
+              onFocus={() => {
+                if (!txt || Number(txt) === 0) {
+                  setText("");
+                }
+              }}
+              onChangeText={(t) => {
+                const newAmount = t.replace(/,/g, ".");
+                setText(newAmount.toString());
+                debounceFn(newAmount);
+              }}
+              defaultValue={amount ?? "0"}
+              onBlur={() => {
+                handleChangeAmount(txt);
+              }}
+              keyboardType="numeric"
+              style={[styles.textInput, styles.colorInput]}
+              placeholderTextColor={colors["neutral-text-title"]}
+            />
+            <View style={{ alignSelf: "flex-end" }}>
+              <BalanceText color={colors["neutral-text-body3"]} weight="500">
+                ≈ ${maskedNumber(currencyValue) || 0}
+              </BalanceText>
+            </View>
+          </>
+        )}
       </View>
     </View>
   );

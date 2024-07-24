@@ -12,7 +12,7 @@ import {
   StdSignature,
 } from "@cosmjs/launchpad";
 import { DirectSignResponse, OfflineDirectSigner } from "@cosmjs/proto-signing";
-import { SecretUtils } from "secretjs/types/enigmautils";
+import { SecretUtils } from "../secretjs";
 import Long from "long";
 import { SignEthereumTypedDataObject } from "../typedMessage";
 import { Signer } from "@oasisprotocol/client/dist/signature";
@@ -255,14 +255,14 @@ export interface Bitcoin {
   getKey(chainId: string): Promise<Key>;
 }
 
-// export interface Oasis {
-//   readonly version: string;
-//   /**
-//    * mode means that how Oasis is connected.
-//    * If the connected Oasis is browser's extension, the mode should be "extension".
-//    * If the connected Oasis is on the mobile app with the embeded web browser, the mode should be "mobile-web".
-//    */
-//   readonly mode: DefaultMode;
+export interface Oasis {
+  readonly version: string;
+  /**
+   * mode means that how Oasis is connected.
+   * If the connected Oasis is browser's extension, the mode should be "extension".
+   * If the connected Oasis is on the mobile app with the embeded web browser, the mode should be "mobile-web".
+   */
+  readonly mode: DefaultMode;
 
-//   signOasis(amount: bigint, to: string): Promise<any>;
-// }
+  signOasis(amount: bigint, to: string): Promise<any>;
+}

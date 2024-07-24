@@ -148,7 +148,7 @@ export const TokenChart: FC<{
   ]);
   const handlePriceData = (prices: DataPrices) => {
     const dataConvered = convertDataPrices(prices);
-    // console.log(dataConvered, 'dataConvered');
+
     return dataConvered;
   };
   useEffect(() => {

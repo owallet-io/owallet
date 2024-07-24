@@ -22,10 +22,10 @@ import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { metrics } from "@src/themes";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import ByteBrew from "react-native-bytebrew-sdk";
+import { tracking } from "@src/utils/tracking";
 
 export const BookmarksScreen = observer(() => {
-  ByteBrew.NewCustomEvent(`Bookmarks Screen`);
+  tracking(`Bookmarks Screen`);
   const { colors } = useTheme();
   const { browserStore } = useStore();
   const { inject } = browserStore;

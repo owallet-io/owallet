@@ -16,8 +16,7 @@ import {
   toSumDisplay,
   tokensIcon,
 } from "@oraichain/oraidex-common";
-import { API } from "@src/common/api";
-import { ChainIdEnum, Network } from "@owallet/common";
+import { ChainIdEnum } from "@owallet/common";
 import { Dec } from "@owallet/unit";
 
 const SCHEME_IOS = "owallet://open_url?url=";
@@ -153,8 +152,8 @@ export const formatContractAddress = (address: string, limitFirst = 10) => {
 };
 export const convertArrToObject = (arr, label = `Validator`) => {
   if (!arr?.length) return;
-  var rv = {};
-  for (var i = 0; i < arr?.length; ++i) rv[`${label}${i + 1}`] = arr[i];
+  let rv = {};
+  for (let i = 0; i < arr?.length; ++i) rv[`${label}${i + 1}`] = arr[i];
   return rv;
 };
 export const removeDataInParentheses = (inputString: string): string => {
@@ -209,7 +208,6 @@ export const getValueFromDataEvents = (arr) => {
       result.push(item);
     }
   }
-  // console.log('result: ', result);
 
   // if the result array is empty, return null and typeId = 0
   if (result.length === 0) {
@@ -297,9 +295,6 @@ const configBrowser = {
 };
 export const openLink = async (url) => {
   try {
-    if (!url) {
-      console.log("url: ", url);
-    }
     if (await InAppBrowser.isAvailable()) {
       const result = await InAppBrowser.open(url, configBrowser);
     } else Linking.openURL(url);
@@ -331,19 +326,8 @@ export function formarPriceWithDigits(amount, numOfDigits = 2) {
   return Number(amount).toFixed(numOfDigits);
 }
 
-function convertVarToWord(str) {
-  const words = str && str.split("_");
-  const capitalizedWords =
-    words && words.map((word) => word.charAt(0).toUpperCase() + word.slice(1));
-  return capitalizedWords && capitalizedWords.join(" ");
-}
-
 export function removeSpecialChars(str) {
   return str.replace(/[^\w\s]/gi, "");
-}
-
-function addSpacesToString(str) {
-  return str.replace(/([a-z])([A-Z])/g, "$1 $2");
 }
 
 export const getTransactionValue = ({ data, address, logs }) => {
@@ -576,7 +560,7 @@ export function nFormatter(num, digits: 1) {
     { value: 1e18, symbol: "E" },
   ];
   const rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
-  var item = lookup
+  const item = lookup
     .slice()
     .reverse()
     .find(function (item) {
@@ -809,3 +793,14 @@ export const computeTotalVotingPower = (data) => {
   }
   return total;
 };
+
+export function numberWithCommas(number) {
+  // Convert the number to a string and split it into integer and decimal parts
+  const [intPart, decPart] = number.toString().split(".");
+
+  // Insert commas into the integer part
+  const formattedNumber = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+  // Combine the formatted integer part and the decimal part
+  return formattedNumber + "." + decPart;
+}

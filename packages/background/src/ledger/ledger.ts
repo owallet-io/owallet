@@ -52,7 +52,7 @@ if (isReactNative) {
 
   callProxy = async (method: string, args: any[] = []): Promise<any> =>
     new Promise((resolve) => {
-      let requestId = Date.now();
+      const requestId = Date.now();
       const handler = ({ data }) => {
         if (data.requestId !== requestId) return;
         resolve(data.response);
@@ -70,7 +70,6 @@ export class Ledger {
     type: LedgerAppType
   ): Promise<Ledger> {
     const resultInit = await callProxy("init", [mode, initArgs, type]);
-    console.log("resultInit", resultInit);
 
     if (resultInit) return new Ledger();
     else throw new Error("Device state invalid!");

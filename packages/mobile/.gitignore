@@ -73,7 +73,10 @@ injected-provider.bundle.js
 *.cer
 *.certSigningRequest
 *.zip
+/vendor/bundle
 *.mobileprovision
 .env
 
 .firebase/
+/ios/fastlane/report.xml
+/android/fastlane/report.xml

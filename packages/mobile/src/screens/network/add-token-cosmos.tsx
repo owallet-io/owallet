@@ -21,7 +21,7 @@ import { useTheme } from "@src/themes/theme-provider";
 import { DownArrowIcon } from "@src/components/icon";
 import { SelectTokenTypeModal } from "./select-token-type";
 import { unknownToken, MapChainIdToNetwork } from "@owallet/common";
-import ByteBrew from "react-native-bytebrew-sdk";
+import { tracking } from "@src/utils/tracking";
 
 interface FormData {
   viewingKey?: string;
@@ -45,8 +45,7 @@ interface TokenType {
 
 export const AddTokenCosmosScreen: FunctionComponent<{
   _onPressNetworkModal: Function;
-  selectedChain: any;
-}> = observer(({ _onPressNetworkModal, selectedChain }) => {
+}> = observer(({ _onPressNetworkModal }) => {
   const {
     control,
     handleSubmit,
@@ -66,8 +65,9 @@ export const AddTokenCosmosScreen: FunctionComponent<{
     appInitStore,
     modalStore,
   } = useStore();
+  const selectedChain = chainStore.current;
   const tokensOf = tokensStore.getTokensOf(selectedChain.chainId);
-  const chainInfo = chainStore.getChain(selectedChain.chainId);
+
   const [loading, setLoading] = useState(false);
   const [coingeckoId, setCoingeckoID] = useState(null);
   const [selectedType, setSelectedType] = useState<"cw20">("cw20");
@@ -83,7 +83,7 @@ export const AddTokenCosmosScreen: FunctionComponent<{
   const contractAddress = watch("contractAddress");
 
   useEffect(() => {
-    ByteBrew.NewCustomEvent(`Add Token Cosmos Screen`);
+    tracking(`Add Token Cosmos Screen`);
     if (tokensStore.waitingSuggestedToken) {
       chainStore.selectChain(tokensStore.waitingSuggestedToken.data.chainId);
       if (
@@ -222,7 +222,6 @@ export const AddTokenCosmosScreen: FunctionComponent<{
           coinImageUrl: coingeckoImg || unknownToken.coinImageUrl,
           coinGeckoId: coingeckoId,
         };
-        console.log(currency, "currency");
         await tokensOf.addToken(currency);
         addTokenSuccess(currency);
       }

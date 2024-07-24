@@ -12,6 +12,8 @@ import {
   getRpcByChainId,
   MapChainIdToNetwork,
   parseRpcBalance,
+  timeoutBtc,
+  withTimeout,
 } from "@owallet/common";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@owallet/unit";
 import Web3 from "web3";
@@ -52,7 +54,7 @@ export const initPrice = new PricePretty(
 export const sortTokensByPrice = (tokens: ViewRawToken[]) => {
   return tokens.sort((a, b) => Number(b.price) - Number(a.price));
 };
-var bech32AddressCache = "";
+let bech32AddressCache = "";
 export const useMultipleAssets = (
   accountStore: AccountStore<AccountWithAll>,
   priceStore: CoinGeckoPriceStore,
@@ -147,19 +149,21 @@ export const useMultipleAssets = (
         .toString(),
     };
   };
+
   const fetchAllBalancesEvm = async (chains) => {
     const allBalanceChains = chains.map((chain, index) => {
       const { address, chainInfo } = hugeQueriesStore.getAllChainMap.get(chain);
       switch (chain) {
         case ChainIdEnum.BNBChain:
         case ChainIdEnum.Ethereum:
-          return getBalancessErc20(address, chainInfo);
+          return withTimeout(getBalancessErc20(address, chainInfo));
         case ChainIdEnum.TRON:
-          return getBalancessTrc20(address, chainInfo);
+          return withTimeout(getBalancessTrc20(address, chainInfo));
       }
     });
-    return Promise.all(allBalanceChains);
+    return Promise.allSettled(allBalanceChains);
   };
+
   const init = async () => {
     setIsLoading(true);
     try {
@@ -170,38 +174,50 @@ export const useMultipleAssets = (
         ChainIdEnum.TRON,
       ];
       await fetchAllBalancesEvm(chainIdsEvm);
-      const allBalancePromises = allChain.map(
+      const allBalanceWithoutBtcPromises = allChain.map(
         async ({ address, chainInfo }) => {
           if (!address) return;
           switch (chainInfo.networkType) {
             case "cosmos":
               return chainInfo.chainId === ChainIdEnum.Oraichain
-                ? Promise.all([
-                    getBalanceCW20Oraichain(),
-                    getBalanceNativeCosmos(address, chainInfo),
+                ? Promise.allSettled([
+                    withTimeout(getBalanceCW20Oraichain()),
+                    withTimeout(getBalanceNativeCosmos(address, chainInfo)),
                   ])
-                : getBalanceNativeCosmos(address, chainInfo);
+                : withTimeout(getBalanceNativeCosmos(address, chainInfo));
             case "evm":
               return chainInfo.chainId === ChainIdEnum.Oasis
-                ? getBalanceOasis(address, chainInfo)
-                : Promise.all([
-                    getBalanceNativeEvm(address, chainInfo),
-                    getBalanceErc20(address, chainInfo),
+                ? withTimeout(getBalanceOasis(address, chainInfo))
+                : Promise.allSettled([
+                    withTimeout(getBalanceNativeEvm(address, chainInfo)),
+                    withTimeout(getBalanceErc20(address, chainInfo)),
                   ]);
-            case "bitcoin":
-              const btcAddress = accountStore.getAccount(
-                ChainIdEnum.Bitcoin
-              ).legacyAddress;
-              return Promise.all([
-                getBalanceBtc(address, chainInfo, AddressBtcType.Bech32),
-                getBalanceBtc(btcAddress, chainInfo, AddressBtcType.Legacy),
-              ]);
           }
         }
       );
-
-      await Promise.allSettled(allBalancePromises);
+      await Promise.allSettled(allBalanceWithoutBtcPromises);
       setIsLoading(false);
+      chainStore.setMultipleAsset({
+        dataTokens: allTokens,
+        totalPriceBalance: overallTotalBalance,
+        dataTokensByChain: tokensByChainId,
+      });
+      const btcAddress = accountStore.getAccount(
+        ChainIdEnum.Bitcoin
+      ).legacyAddress;
+      const { address, chainInfo } = hugeQueriesStore.getAllChainMap.get(
+        ChainIdEnum.Bitcoin
+      );
+      await Promise.allSettled([
+        withTimeout(
+          getBalanceBtc(address, chainInfo, AddressBtcType.Bech32),
+          timeoutBtc
+        ),
+        withTimeout(
+          getBalanceBtc(btcAddress, chainInfo, AddressBtcType.Legacy),
+          timeoutBtc
+        ),
+      ]);
       chainStore.setMultipleAsset({
         dataTokens: allTokens,
         totalPriceBalance: overallTotalBalance,

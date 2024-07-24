@@ -28,15 +28,13 @@ import { OWButton } from "../../../components/button";
 import { useSmartNavigation } from "../../../navigation.provider";
 import { useStore } from "../../../stores";
 import { metrics, spacing, typography } from "../../../themes";
-import { chainIcons } from "@oraichain/oraidex-common";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { NewAmountInput } from "@src/components/input/amount-input";
 import { FeeModal } from "@src/modals/fee";
 import { CoinPretty, Int } from "@owallet/unit";
 import { API } from "@src/common/api";
 import { initPrice } from "@src/screens/home/hooks/use-multiple-assets";
-import ByteBrew from "react-native-bytebrew-sdk";
-import axios from "axios";
+import { tracking } from "@src/utils/tracking";
 import { makeStdTx } from "@cosmjs/amino";
 import { Tendermint37Client } from "@cosmjs/tendermint-rpc";
 export const DelegateScreen: FunctionComponent = observer(() => {
@@ -51,7 +49,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
       string
     >
   >();
-  ByteBrew.NewCustomEvent(`Delegate Screen`);
+  tracking(`Delegate Screen`);
   const validatorAddress = route.params.validatorAddress;
   const {
     chainStore,
@@ -194,8 +192,9 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   const stakeOraiBtc = async () => {
     try {
       setIsLoading(true);
-      const res = await axios.get(
-        `${chainStore.current.rest}/auth/accounts/${address}`
+      const res = await API.getInfoAccOraiBtc(
+        { address: account.bech32Address },
+        { baseURL: chainStore.current.rest }
       );
       const sequence = res.data.result.value.sequence;
       const signDoc = {
@@ -229,13 +228,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
       const result = await tmClient.broadcastTxSync({
         tx: Uint8Array.from(Buffer.from(JSON.stringify(tx))),
       });
-      console.log(result, "result");
       if (result?.code === 0 || result?.code == null) {
-        queries.cosmos.queryValidators
-          .getQueryStatus(BondStatus.Bonded)
-          .fetch();
-        queries.cosmos.queryDelegations.getQueryBech32Address(address).fetch();
-        queries.cosmos.queryRewards.getQueryBech32Address(address).fetch();
         setIsLoading(false);
         smartNavigation.pushSmart("TxPendingResult", {
           txHash: Buffer.from(result?.hash).toString("hex"),
@@ -250,6 +243,11 @@ export const DelegateScreen: FunctionComponent = observer(() => {
         });
       }
     } catch (error) {
+      if (error?.message?.includes("'signature' of undefined")) return;
+      showToast({
+        type: "danger",
+        message: error?.message || JSON.stringify(error),
+      });
       console.log(error, "error");
     } finally {
       setIsLoading(false);
@@ -286,7 +284,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                         validatorName: validator?.description.moniker ?? "...",
                         feeType: sendConfigs.feeConfig.feeType,
                       });
-                      ByteBrew.NewCustomEvent(
+                      tracking(
                         `Delegate`,
                         `chainName=${
                           chainStore.current.chainName

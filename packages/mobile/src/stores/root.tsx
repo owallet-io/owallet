@@ -25,13 +25,11 @@ import { OWallet, Ethereum, Bitcoin, TronWeb } from "@owallet/provider";
 import { KeychainStore } from "./keychain";
 import { FeeType } from "@owallet/hooks";
 import {
-  AmplitudeApiKey,
   EmbedChainInfos,
   UIConfigStore,
   FiatCurrencies,
 } from "@owallet/common";
 import { AnalyticsStore, NoopAnalyticsClient } from "@owallet/analytics";
-import { Amplitude } from "@amplitude/react-native";
 import { ChainIdHelper } from "@owallet/cosmos";
 import { FiatCurrency } from "@owallet/types";
 import { ModalStore } from "./modal";
@@ -277,14 +275,7 @@ export class RootStore {
 
     this.analyticsStore = new AnalyticsStore(
       (() => {
-        if (!AmplitudeApiKey) {
-          return new NoopAnalyticsClient();
-        } else {
-          const amplitudeClient = Amplitude.getInstance();
-          amplitudeClient.init(AmplitudeApiKey);
-
-          return amplitudeClient;
-        }
+        return new NoopAnalyticsClient();
       })(),
       {
         logEvent: (eventName, eventProperties) => {

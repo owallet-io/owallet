@@ -17,7 +17,7 @@ import { useSimpleTimer } from "@src/hooks";
 import { CopyAddressModal } from "../home/components/copy-address/copy-address-modal";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
-import ByteBrew from "react-native-bytebrew-sdk";
+import { tracking } from "@src/utils/tracking";
 
 const styling = (colors) =>
   StyleSheet.create({
@@ -45,7 +45,7 @@ const styling = (colors) =>
 
 export const AddressQRScreen: FunctionComponent<{}> = observer(({}) => {
   const { chainStore, keyRingStore, accountStore, modalStore } = useStore();
-  ByteBrew.NewCustomEvent(`Address QR Code Screen`);
+
   const route = useRoute<
     RouteProp<
       Record<
@@ -78,6 +78,10 @@ export const AddressQRScreen: FunctionComponent<{}> = observer(({}) => {
   const { isTimedOut, setTimer } = useSimpleTimer();
 
   const chainIcon = chainIcons.find((c) => c.chainId === chainInfo.chainId);
+  useEffect(() => {
+    tracking(`Address QR Code Screen`);
+    return () => {};
+  }, []);
 
   useEffect(() => {
     setAddress(addressToShow);

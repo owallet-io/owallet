@@ -1,24 +1,21 @@
 import {
-  ActivityIndicator,
-  Animated,
   FlatList,
   RefreshControl,
   StyleSheet,
-  Text,
   View,
   ViewStyle,
 } from "react-native";
-import React, { FC, ReactNode, useEffect, useRef, useState } from "react";
+import React, { FC, useRef } from "react";
 import { FlatListProps } from "react-native";
 import { OWEmpty } from "../empty";
 import { _keyExtract } from "@src/utils/helper";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder";
-import { metrics } from "@src/themes";
+
 import { useTheme } from "@src/themes/theme-provider";
-import OWButtonIcon from "../button/ow-button-icon";
-import delay from "delay";
+
 import { BottomSheetFlatList } from "@gorhom/bottom-sheet";
 import { OwLoading } from "@src/components/owallet-loading/ow-loading";
+import { listSkeleton } from "@src/common/constants";
 
 export const TxSkeleton = () => {
   const { colors, images } = useTheme();
@@ -64,51 +61,16 @@ const OWFlatList: FC<IOWFlatListProps> = (props) => {
     ListEmptyComponent = <OWEmpty />,
     ...rest
   } = props;
-  // const onScrollToTop = () => {
-  //   listRef.current.scrollToOffset({ offset: 0, animated: true });
-  // };
-  // const [offset, setOffset] = useState(0);
-  // const handleScroll = (event) => {
-  //   const scrollOffset = event.nativeEvent.contentOffset.y;
-  //   handleSetOffset(scrollOffset);
-  // };
-  // const handleSetOffset = async (scrollOffset) => {
-  //   try {
-  //     await delay(200);
-  //     setOffset(scrollOffset);
-  //   } catch (error) {}
-  // };
-  // const [opacity] = useState(new Animated.Value(0));
-  // useEffect(() => {
-  //   if (offset > 350) {
-  //     Animated.timing(opacity, {
-  //       toValue: 1,
-  //       duration: 200,
-  //       useNativeDriver: true,
-  //     }).start();
-  //   } else {
-  //     Animated.timing(opacity, {
-  //       toValue: 0,
-  //       duration: 200,
-  //       useNativeDriver: true,
-  //     }).start();
-  //   }
-  //   return () => {};
-  // }, [offset]);
-  //   useEffect(() => {
-  //     onScrollToTop();
-  //     return () => {};
-  //   }, [loading, refreshing]);
+
   const ElementFlatlist = isBottomSheet ? BottomSheetFlatList : FlatList;
   return (
     <>
       <ElementFlatlist
         ref={listRef}
-        // onScroll={handleScroll}
         ListEmptyComponent={
           loading ? (
             <View style={containerSkeletonStyle}>
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((it, inde) => {
+              {listSkeleton.map((it, inde) => {
                 return (
                   <View style={skeletonStyle} key={`SkeletonComponent-${inde}`}>
                     {SkeletonComponent}
