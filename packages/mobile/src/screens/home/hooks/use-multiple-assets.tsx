@@ -36,6 +36,7 @@ import { AddressBtcType, AppCurrency, ChainInfo } from "@owallet/types";
 import {
   AccountStore,
   AccountWithAll,
+  ChainInfoInner,
   CoinGeckoPriceStore,
 } from "@owallet/stores";
 import { AppInit } from "@src/stores/app_init";
@@ -137,9 +138,9 @@ export const useMultipleAssets = (
       switch (chain) {
         case ChainIdEnum.BNBChain:
         case ChainIdEnum.Ethereum:
-          return getBalancessErc20(address, chainInfo);
+          return withTimeout(getBalancessErc20(address, chainInfo));
         case ChainIdEnum.TRON:
-          return getBalancessTrc20(address, chainInfo);
+          return withTimeout(getBalancessTrc20(address, chainInfo));
       }
     });
     return Promise.allSettled(allBalanceChains);
@@ -163,10 +164,10 @@ export const useMultipleAssets = (
                     withTimeout(getBalanceCW20Oraichain()),
                     withTimeout(getBalanceNativeCosmos(address, chainInfo)),
                   ])
-                : getBalanceNativeCosmos(address, chainInfo);
+                : withTimeout(getBalanceNativeCosmos(address, chainInfo));
             case "evm":
               return chainInfo.chainId === ChainIdEnum.Oasis
-                ? getBalanceOasis(address, chainInfo)
+                ? withTimeout(getBalanceOasis(address, chainInfo))
                 : Promise.allSettled([
                     withTimeout(getBalanceNativeEvm(address, chainInfo)),
                     withTimeout(getBalanceErc20(address, chainInfo)),
@@ -287,7 +288,7 @@ export const useMultipleAssets = (
       setIsLoading(false);
     }
   };
-  const getBalancessErc20 = async (address, chainInfo: ChainInfo) => {
+  const getBalancessErc20 = async (address, chainInfo: ChainInfoInner) => {
     try {
       const res = await API.getAllBalancesEvm({
         address,
@@ -325,7 +326,7 @@ export const useMultipleAssets = (
       console.error(e);
     }
   };
-  const getBalancessTrc20 = async (address, chainInfo: ChainInfo) => {
+  const getBalancessTrc20 = async (address, chainInfo: ChainInfoInner) => {
     try {
       const res = await API.getAllBalancesEvm({
         address: getBase58Address(address),
@@ -379,7 +380,7 @@ export const useMultipleAssets = (
 
   const getBalanceBtc = async (
     address,
-    chainInfo: ChainInfo,
+    chainInfo: ChainInfoInner,
     type: AddressBtcType
   ) => {
     const client = axios.create({ baseURL: chainInfo.rest });
@@ -390,7 +391,7 @@ export const useMultipleAssets = (
     }
   };
 
-  const getBalanceNativeCosmos = async (address, chainInfo: ChainInfo) => {
+  const getBalanceNativeCosmos = async (address, chainInfo: ChainInfoInner) => {
     const res = await API.getAllBalancesNativeCosmos({
       address: address,
       baseUrl: chainInfo.rest,
@@ -489,7 +490,7 @@ export const useMultipleAssets = (
     }
   };
 
-  const getBalanceOasis = async (address, chainInfo: ChainInfo) => {
+  const getBalanceOasis = async (address, chainInfo: ChainInfoInner) => {
     const nic = getOasisNic(chainInfo.raw.grpc);
     const publicKey = await addressToPublicKey(address);
     const account = await nic.stakingAccount({ owner: publicKey, height: 0 });
