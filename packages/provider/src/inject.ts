@@ -663,7 +663,7 @@ export class InjectedEthereum implements Ethereum {
     });
   }
 
-  protected requestMethod(
+  protected async requestMethod(
     method: keyof IEthereum | string,
     args: any[]
   ): Promise<any> {
@@ -837,11 +837,12 @@ export class InjectedEthereum implements Ethereum {
     console.log("WILL NOT USE");
   }
 
-  // async on(method: string, cb: any): Promise<void> {
-  //   // await this.requestMethod('evmSuggestChain', [chainInfo]);
-  //   console.log("WILL NOT USE")
-  //   window.addEventListener(method, cb)
-  // }
+  on = async (args) => {
+    return await this.requestMethod(
+      args.method as string,
+      args.params ? [args.params, args.chainId] : [[]]
+    );
+  };
 
   async signEthereumTypeData(
     chainId: string,
