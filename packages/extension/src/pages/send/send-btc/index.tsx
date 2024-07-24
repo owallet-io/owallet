@@ -330,16 +330,6 @@ export const SendBtcPage: FunctionComponent<{
                 if (!isDetachedPage) {
                   history.replace("/");
                 }
-                // notification.push({
-                //   placement: 'top-center',
-                //   type: 'success',
-                //   duration: 5,
-                //   content: 'Transaction submitted!',
-                //   canDelete: true,
-                //   transition: {
-                //     duration: 0.25
-                //   }
-                // });
               } catch (e: any) {
                 if (!isDetachedPage) {
                   history.replace("/");
