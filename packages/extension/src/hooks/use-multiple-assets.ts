@@ -38,7 +38,8 @@ import {
   CoinGeckoPriceStore,
 } from "@owallet/stores";
 import { ChainStore } from "../stores";
-const timeoutLimit = 3900;
+const timeoutLimit = 5000;
+const timeoutBtc = 60000;
 export const initPrice = new PricePretty(
   {
     currency: "usd",
@@ -219,11 +220,11 @@ export const useMultipleAssets = (
       const btcsPromise = await Promise.allSettled([
         withTimeout(
           getBalanceBtc(address, chainInfo, AddressBtcType.Bech32),
-          20000
+          timeoutBtc
         ),
         withTimeout(
           getBalanceBtc(btcAddress, chainInfo, AddressBtcType.Legacy),
-          20000
+          timeoutBtc
         ),
       ]);
       chainStore.setMultipleAsset({
