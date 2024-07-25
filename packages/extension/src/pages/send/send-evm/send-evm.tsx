@@ -102,6 +102,7 @@ export const SendEvmPage: FunctionComponent<{
     EthereumEndpoint
   );
 
+  // May need to get default gas and gas price here
   const { gas: gasErc20 } = queriesStore
     .get(current.chainId)
     .evmContract.queryGas.getGas({

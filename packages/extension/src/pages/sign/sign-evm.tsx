@@ -146,7 +146,10 @@ export const SignEvmPage: FunctionComponent = observer(() => {
     if (signInteractionStore.waitingEthereumData) {
       const data = signInteractionStore.waitingEthereumData;
       //@ts-ignore
-      const gasDataSign = data?.data?.data?.data?.gas;
+      const gasDataSign = data?.data?.data?.data?.gas ?? "0x2a55a";
+      console.log("data", data);
+      console.log("gasDataSign", gasDataSign);
+
       //@ts-ignore
       const gasPriceDataSign = data?.data?.data?.data?.gasPrice;
       chainStore.selectChain(data.data.chainId);
