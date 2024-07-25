@@ -1,4 +1,10 @@
-import React, { FunctionComponent, useEffect, useRef, useState } from "react";
+import React, {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   View,
   StyleSheet,
@@ -82,22 +88,25 @@ export const Pincode: FunctionComponent<{
     setPrevPad("alphabet");
     appInitStore.updateKeyboardType("alphabet");
 
-    if (password.length >= 6) {
-      if (needConfirmation) {
-        if (!confirmCode) {
-          setConfirmCode(password);
-          setPassword("");
-        } else {
-          handleCheckConfirm(password);
-        }
-      } else {
-        onVerifyPincode(password);
-      }
-    } else {
+    const isPasswordValid = password.length >= 6;
+    const shouldSetConfirmCode = needConfirmation && !confirmCode;
+    const shouldCheckConfirm = needConfirmation && confirmCode;
+    const shouldVerifyPincode = !needConfirmation;
+
+    if (!isPasswordValid) {
       showToast({
         message: "*The password must be at least 6 characters",
         type: "danger",
       });
+      return;
+    }
+    if (shouldSetConfirmCode) {
+      setConfirmCode(password);
+      setPassword("");
+    } else if (shouldCheckConfirm) {
+      handleCheckConfirm(password);
+    } else if (shouldVerifyPincode) {
+      onVerifyPincode(password);
     }
   };
 
@@ -153,22 +162,21 @@ export const Pincode: FunctionComponent<{
     }
   };
 
-  useEffect(() => {
-    if (needConfirmation) {
-      if (code.length >= 6) {
-        if (confirmCode) {
-          handleConfirm();
-        } else {
-          handleSetPassword();
-        }
-      }
-    } else {
-      if (code.length >= 6) {
-        numpadRef?.current?.clearAll();
-        onVerifyPincode(code);
-      }
+  const handleLogicAfterCodeChange = useCallback(() => {
+    if (code.length <= 6) return;
+    const needHandleConfirm = needConfirmation && confirmCode;
+    const needResetPassword = needConfirmation && !confirmCode;
+    needHandleConfirm && handleConfirm();
+    needResetPassword && handleSetPassword();
+    if (!needConfirmation) {
+      numpadRef?.current?.clearAll();
+      onVerifyPincode(code);
     }
   }, [code]);
+
+  useEffect(() => {
+    handleLogicAfterCodeChange();
+  }, [handleLogicAfterCodeChange]);
 
   const renderPassword = ({ field: {} }) => {
     return (
