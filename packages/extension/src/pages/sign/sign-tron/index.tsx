@@ -404,13 +404,44 @@ export const SignTronPage: FunctionComponent = observer(() => {
          Show the informations of tx when the sign data is delivered.
          If sign data not delivered yet, show the spinner alternatively.
          */
-        <div className={style.container}>
+        <div>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              marginTop: 24,
+            }}
+          >
+            <div>
+              <img
+                src={require("assets/images/img_owallet.png")}
+                alt="logo"
+                style={{ height: "92px", maxWidth: 92 }}
+              />
+            </div>
+            <div style={{ padding: 16 }}>
+              <Text
+                size={22}
+                weight={"600"}
+                color={colors["neutral-text-title"]}
+              >
+                Switch to TRON
+              </Text>
+            </div>
+            <div>
+              <Text color={colors["neutral-text-body"]}>
+                Switch to TRON network to sign transaction
+              </Text>
+            </div>
+          </div>
           <div
             style={{
               position: "absolute",
               bottom: 0,
               width: "100%",
-              height: "25%",
+              height: "15%",
               backgroundColor: colors["neutral-surface-card"],
               borderTop: "1px solid" + colors["neutral-border-default"],
             }}
@@ -423,17 +454,6 @@ export const SignTronPage: FunctionComponent = observer(() => {
               </Button>
             ) : (
               <div>
-                <div
-                  style={{
-                    padding: 8,
-                    backgroundColor: colors["neutral-surface-bg"],
-                    margin: 16,
-                    marginBottom: 8,
-                    borderRadius: 12,
-                  }}
-                >
-                  <Text>Switch to TRON</Text>
-                </div>
                 <div
                   style={{
                     flexDirection: "row",
