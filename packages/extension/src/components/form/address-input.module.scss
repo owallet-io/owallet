@@ -14,11 +14,11 @@
 .input {
   // box-shadow: $input-alternative-box-shadow !important;
   background-color: $neutral-surface-card;
-  color: $color-neutral-2 !important;
+  color: $color-gray-70 !important;
 
   &::placeholder {
     /* Chrome, Firefox, Opera, Safari 10.1+ */
-    color: $neutral-text-disable !important;
+    color: $color-gray-70 !important;
     opacity: 1 !important; /* Firefox */
   }
 
