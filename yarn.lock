@@ -3376,7 +3376,6 @@
     graphql "^16.3.0"
     http-status-codes "^2.2.0"
     js-sha3 "^0.8.0"
-    jscrypto "^1.0.3"
     keccak256 "^1.0.6"
     link-module-alias "^1.2.0"
     rxjs "^7.8.0"
@@ -14967,11 +14966,6 @@ jscodeshift@^0.14.0:
     recast "^0.21.0"
     temp "^0.8.4"
     write-file-atomic "^2.3.0"
-
-jscrypto@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/jscrypto/-/jscrypto-1.0.3.tgz#598febca2a939d6f679c54f56e1fe364cef30cc9"
-  integrity sha512-lryZl0flhodv4SZHOqyb1bx5sKcJxj0VBo0Kzb4QMAg3L021IC9uGpl0RCZa+9KJwlRGSK2C80ITcwbe19OKLQ==
 
 jsesc@^2.5.1:
   version "2.5.2"
