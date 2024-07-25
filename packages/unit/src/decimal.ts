@@ -1,5 +1,5 @@
 import bigInteger from "big-integer";
-import { Int } from "./int";
+import { Int } from "./index";
 import { CoinUtils } from "./coin-utils";
 import {
   exponentDecStringToDecString,

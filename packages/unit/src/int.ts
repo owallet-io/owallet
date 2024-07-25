@@ -1,5 +1,5 @@
 import bigInteger from "big-integer";
-import { Dec } from "./decimal";
+import { Dec } from "./index";
 import {
   exponentDecStringToDecString,
   isExponentDecString,
