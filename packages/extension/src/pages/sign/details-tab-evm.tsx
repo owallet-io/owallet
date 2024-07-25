@@ -411,11 +411,13 @@ export const DetailsTabEvm: FunctionComponent<{
               <div>
                 <Text weight="600">Fee</Text>
               </div>
-              <div>
-                <Text color={colors["neutral-text-body"]}>
-                  Gas: {Number(msgs?.gas)}
-                </Text>
-              </div>
+              {msgs?.gas ? (
+                <div>
+                  <Text color={colors["neutral-text-body"]}>
+                    Gas: {Number(msgs?.gas)}
+                  </Text>
+                </div>
+              ) : null}
             </div>
             <div
               style={{
