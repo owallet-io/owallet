@@ -13,7 +13,10 @@ export const ButtonCopy: FC<{
     toast(
       intl.formatMessage({
         id: "main.address.copied",
-      })
+      }),
+      {
+        type: "success",
+      }
     );
   };
   return (
