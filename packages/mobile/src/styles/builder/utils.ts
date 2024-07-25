@@ -1,4 +1,5 @@
-import { Platform } from "react-native";
+import { Dimensions, Platform, StyleSheet } from "react-native";
+const { height, width } = Dimensions.get("window");
 
 type FontWeightNumbers =
   | "100"
@@ -32,6 +33,57 @@ const FontWeightTypesMap: { [key in FontWeightTypes]: FontWeightNumbers } = {
   bold: "700",
   extrabold: "800",
   black: "900",
+};
+
+//iphone 13
+const baseWidth = 390;
+const baseHeight = 844;
+
+export const isTablet = height / width < 1.6;
+
+/**
+ *
+ * @param {number} size
+ * @returns {number}
+ * ex: paddingTop: scale(16), fontSize: scale(16), marginLeft: scale(8)
+ */
+export const scale = (size: number): number => {
+  if (isTablet) {
+    return (height / baseHeight) * size;
+  } else {
+    return (width / baseWidth) * size;
+  }
+};
+
+/**
+ * Apply scale to numeric values ​​in style
+ * @param {Record<string, unknown>} style - The style object needs to have scale applied
+ * @param {boolean} [isScale=true] - Flag to determine whether scaling is applied or not (optional), default is true
+ * @returns {Record<string, unknown> | undefined} - The style object has scale applied or undefined if the style is undefined
+ * ex: 
+ * <OWButton
+    style={styleWithScale(styles.btnOW)}
+    size="default"
+    label="Create a new wallet"
+    onPress={handleCreateANewWallet}
+  />
+ */
+export const styleWithScale = (
+  style: Record<string, unknown>,
+  isScale = true
+) => {
+  if (style === undefined) {
+    return undefined;
+  }
+  const flattenedStyle = StyleSheet.flatten(style);
+  const scaledEntries = Object.entries(flattenedStyle).map(([key, value]) => {
+    if (typeof value === "number" && !["flex", "opacity"].includes(key)) {
+      return [key, isScale ? scale(value) : value];
+    }
+    return [key, value];
+  });
+
+  return Object.fromEntries(scaledEntries);
 };
 
 export function getPlatformFontWeight(
