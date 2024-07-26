@@ -420,7 +420,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       simulateData.displayAmount == 0
     ) {
       showToast({
-        message: "To amount should be higher than 0!",
+        message: "AI Smart route does not support this pair!",
         type: "danger",
       });
       setSwapLoading(false);
@@ -914,7 +914,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           setSearchTokenName={setSearchTokenName}
           isOpen={selectToTokenModal}
         />
-
         <SelectNetworkModal
           tokenList={filteredFromTokens}
           close={() => {
