@@ -34,17 +34,16 @@ export const EarningCardNew = observer(({}) => {
     appInitStore,
   } = useStore();
   if (
-    chainStore.current.networkType !== "cosmos" &&
-    !appInitStore.getInitApp.isAllNetworks
+    (chainStore.current.networkType !== "cosmos" &&
+      !appInitStore.getInitApp.isAllNetworks) ||
+    appInitStore.getInitApp.isAllNetworks
   )
     return;
   const navigation = useNavigation();
   //This is default chain when network is all network
   const defaultChain = ChainIdEnum.Oraichain;
   const { colors } = useTheme();
-  const chainId = appInitStore.getInitApp.isAllNetworks
-    ? defaultChain
-    : chainStore.current.chainId;
+  const chainId = chainStore.current.chainId;
   const styles = styling(colors);
   const queries = queriesStore.get(chainId);
   const account = accountStore.getAccount(chainId);

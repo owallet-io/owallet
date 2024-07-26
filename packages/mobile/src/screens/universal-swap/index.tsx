@@ -413,7 +413,19 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       setSwapLoading(false);
       return;
     }
-
+    if (
+      !simulateData ||
+      !simulateData.amount ||
+      !simulateData.displayAmount ||
+      simulateData.displayAmount == 0
+    ) {
+      showToast({
+        message: "To amount should be higher than 0!",
+        type: "danger",
+      });
+      setSwapLoading(false);
+      return;
+    }
     const { cosmosAddress, evmAddress, tronAddress } = getAddresses();
     const amountsBalance = await fetchBalances();
 
@@ -902,6 +914,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           setSearchTokenName={setSearchTokenName}
           isOpen={selectToTokenModal}
         />
+
         <SelectNetworkModal
           tokenList={filteredFromTokens}
           close={() => {
