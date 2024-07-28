@@ -157,12 +157,5 @@ platform :ios do
     )
     build_app(workspace: "mobile.xcworkspace", scheme: "mobile")
     pilot(api_key: api_key)
-    # discord_notifier(
-    #   webhook_url: "https://discord.com/api/webhooks/#{ENV["DISCORD_HOOK_ID"]}/#{ENV["DISCORD_HOOK_TOKEN"]}",
-    #   title: "IOS FASTLANE - #{version_xcodeproj} (#{build_number_xcodeproj})",
-    #   description: "
-    #   Congratulations. You have successfully deployed OWallet app to TestFlight :thumbsup::skin-tone-4: :thumbsup::skin-tone-4: :thumbsup::skin-tone-4:",
-    #   success: true
-    # )
   end
 end
