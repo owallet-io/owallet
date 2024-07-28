@@ -8,6 +8,7 @@ export function initEvents(router: Router) {
     console.log("interaction-foreground event");
     switch (msg.constructor) {
       case PushEventDataMsg:
+        console.log((msg as PushEventDataMsg).data.type, "data type");
         if ((msg as PushEventDataMsg).data.type === "keystore-changed") {
           window.dispatchEvent(
             new CustomEvent("keplr_keystorechange", {

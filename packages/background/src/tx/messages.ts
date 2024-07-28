@@ -45,42 +45,42 @@ export class SendTxMsg extends Message<Uint8Array> {
   }
 }
 
-export class RequestEthereumMsg extends Message<string> {
-  public static type() {
-    return "send-tx-ethereum-to-background";
-  }
+// export class RequestEthereumMsg extends Message<string> {
+//   public static type() {
+//     return "send-tx-ethereum-to-background";
+//   }
 
-  constructor(
-    public readonly chainId: string,
-    public readonly method: string,
-    public readonly params: any[]
-  ) {
-    super();
-  }
+//   constructor(
+//     public readonly chainId: string,
+//     public readonly method: string,
+//     public readonly params: any[]
+//   ) {
+//     super();
+//   }
 
-  validateBasic(): void {
-    if (!this.chainId) {
-      throw new Error("chain id is empty");
-    }
+//   validateBasic(): void {
+//     if (!this.chainId) {
+//       throw new Error("chain id is empty");
+//     }
 
-    if (!this.method) {
-      throw new Error("method is empty");
-    }
+//     if (!this.method) {
+//       throw new Error("method is empty");
+//     }
 
-    if (!this.params) {
-      throw new Error("params is empty");
-    }
-  }
+//     if (!this.params) {
+//       throw new Error("params is empty");
+//     }
+//   }
 
-  approveExternal(): boolean {
-    return true;
-  }
+//   approveExternal(): boolean {
+//     return true;
+//   }
 
-  route(): string {
-    return ROUTE;
-  }
+//   route(): string {
+//     return ROUTE;
+//   }
 
-  type(): string {
-    return RequestEthereumMsg.type();
-  }
-}
+//   type(): string {
+//     return RequestEthereumMsg.type();
+//   }
+// }

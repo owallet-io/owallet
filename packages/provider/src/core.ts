@@ -353,7 +353,10 @@ export class Ethereum implements IEthereum {
   ) {
     this.initChainId = initChainId;
   }
-
+  on = async (args) => {
+    if (!args.method) return;
+    return await this.request(args);
+  };
   async request(args: RequestArguments): Promise<any> {
     if (args.method === "wallet_switchEthereumChain") {
       let tmpChainId = this.initChainId;

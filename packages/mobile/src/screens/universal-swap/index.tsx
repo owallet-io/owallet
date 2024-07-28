@@ -174,6 +174,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const [toggle, setToggle] = useState(false);
 
   const client = useClient(accountOrai);
+  console.log(client, "client");
 
   const taxRate = useTaxRate(accountOrai);
 
@@ -489,6 +490,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   };
 
   const fetchBalances = async () => {
+    if (!client || !client?.queryContractSmart) {
+      console.log("not  client?.queryContractSmart");
+      return;
+    }
     let amountsBalance = universalSwapStore.getAmount;
 
     const { isSpecialFromCoingecko } = getSpecialCoingecko(
@@ -503,6 +508,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         tokenInfo.coinGeckoId,
         IBC_DECIMALS
       );
+
       const [nativeAmount, cw20Amount] = await Promise.all([
         client.getBalance(accountOrai.bech32Address, fromTokenInOrai.denom),
         client.queryContractSmart(tokenInfo.contractAddress, {

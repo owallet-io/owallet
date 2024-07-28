@@ -17,6 +17,7 @@ import {
   Bitcoin as IBitcoin,
   // Oasis as IOasis,
   BitcoinMode,
+  EIP1193Provider,
 } from "@owallet/types";
 import { Result, JSONUint8Array } from "@owallet/router";
 import {
@@ -41,6 +42,9 @@ import {
   NAMESPACE_TRONWEB,
 } from "./constants";
 import { SignEthereumTypedDataObject } from "@owallet/types/build/typedMessage";
+import { v4 as uuidv4 } from "uuid";
+import { ICON_OWALLET } from "@owallet/common";
+import { EIP6963ProviderDetail } from "@owallet/types";
 
 export const localStore = new Map<string, any>();
 
@@ -720,7 +724,7 @@ export class InjectedEthereum implements Ethereum {
   public initChainId: string;
   public isOwallet: boolean = true;
   public isMetaMask: boolean = true;
-  public isRabby: boolean = true;
+  // public isRabby: boolean = true;
 
   constructor(
     public readonly version: string,
@@ -743,11 +747,6 @@ export class InjectedEthereum implements Ethereum {
   enable = async () => {
     return await this.requestMethod("eth_requestAccounts", [[]]);
   };
-
-  // // THIS IS THE ENTRYPOINT OF THE INJECTED ETHEREUM WHEN USER CALLS window.ethereum.request
-  // async request(args: RequestArguments): Promise<any> {
-  //   return await this.requestMethod(args.method as string, [args.params, args.chainId]);
-  // }
 
   // TODO: support multi request!
   request = async (args) => {
@@ -869,15 +868,6 @@ export class InjectedEthereum implements Ethereum {
     console.log("WILL NOT USE");
     return;
   }
-
-  // async asyncRequest(): Promise<void> {
-  //   console.log('console.log asyncRequest');
-  //   alert('console.log asyncRequest');
-  // }
-
-  // async getKey(chainId: string): Promise<Key> {
-  //   return await this.requestMethod('getKey', [chainId]);
-  // }
 }
 export class InjectedBitcoin implements Bitcoin {
   static startProxy(

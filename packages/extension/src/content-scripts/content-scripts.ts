@@ -16,8 +16,10 @@ import {
   Bitcoin,
 } from "@owallet/provider";
 import { initEvents } from "./events";
-
+import { v4 } from "uuid";
 import manifest from "../manifest.json";
+import { ICON_OWALLET } from "@owallet/common";
+import { EIP6963ProviderDetail } from "@owallet/types";
 
 InjectedOWallet.startProxy(
   new OWallet(manifest.version, "core", new InExtensionMessageRequester())

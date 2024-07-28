@@ -1171,4 +1171,14 @@ export class KeyRingService {
       );
     }
   }
+  async request_eth(
+    env: Env,
+    chainId: string,
+    method: string,
+    params: any[]
+  ): Promise<object> {
+    this.enable(env);
+    const rs = await this.keyRing.request_eth(chainId, method, params);
+    return rs;
+  }
 }

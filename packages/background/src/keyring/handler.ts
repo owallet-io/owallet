@@ -45,6 +45,7 @@ import {
   RequestSignBitcoinMsg,
   TriggerSmartContractMsg,
   RequestSignOasisMsg,
+  RequestEthereumMsg,
 } from "./messages";
 import { KeyRingService } from "./service";
 import { Bech32Address } from "@owallet/cosmos";
@@ -204,6 +205,11 @@ export const getHandler: (service: KeyRingService) => Handler = (
         );
       case ChangeChainMsg:
         return handleChangeChainMsg(service)(env, msg as ChangeChainMsg);
+      case RequestEthereumMsg:
+        return handleRequestEthereumMsg(service)(
+          env,
+          msg as RequestEthereumMsg
+        );
       default:
         throw new Error("Unknown msg type");
     }
@@ -722,5 +728,23 @@ const handleRequestSignOasisMsg: (
   return async (env, msg) => {
     const response = await service.requestSignOasis(env, msg.chainId, msg.data);
     return { ...response };
+  };
+};
+const handleRequestEthereumMsg: (
+  service: KeyRingService
+) => InternalHandler<RequestEthereumMsg> = (service) => {
+  return async (env, msg) => {
+    // await service.permissionService.checkOrGrantBasicAccessPermission(
+    //   env,
+    //   msg.chainId,
+    //   msg.origin
+    // );
+
+    return (await service.request_eth(
+      env,
+      msg.chainId,
+      msg.method,
+      msg.params
+    )) as any;
   };
 };

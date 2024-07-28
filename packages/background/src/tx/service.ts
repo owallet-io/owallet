@@ -144,49 +144,45 @@ export class BackgroundTxService {
     }
   }
 
-  private parseChainId({ chainId }: { chainId: string }): {
-    chainId: string;
-    isEvm: boolean;
-  } {
-    if (!chainId)
-      throw new Error("Invalid empty chain id when switching Ethereum chain");
-    if (chainId.substring(0, 2) === "0x")
-      return { chainId: chainId, isEvm: true };
-    return { chainId, isEvm: false };
-  }
+  // private parseChainId({ chainId }: { chainId: string }): {
+  //   chainId: string;
+  //   isEvm: boolean;
+  // } {
+  //   if (!chainId) throw new Error("Invalid empty chain id when switching Ethereum chain");
+  //   if (chainId.substring(0, 2) === "0x") return { chainId: chainId, isEvm: true };
+  //   return { chainId, isEvm: false };
+  // }
 
-  async request(chainId: string, method: string, params: any[]): Promise<any> {
-    let chainInfo: ChainInfoWithEmbed;
-    switch (method) {
-      case "eth_accounts":
-      case "eth_requestAccounts":
-        chainInfo = await this.chainsService.getChainInfo(chainId);
-        if (chainInfo.coinType !== 60) return undefined;
-        const chainIdOrCoinType = params.length ? parseInt(params[0]) : chainId; // default is cointype 60 for ethereum based
-        const key = await this.keyRingService.getKey(chainIdOrCoinType);
-        const ledgerCheck = await this.keyRingService.getKeyRingType();
-        if (ledgerCheck === "ledger") {
-          const addresses =
-            await this.keyRingService.getKeyRingLedgerAddresses();
-          return [`${addresses?.eth}`];
-        }
-        return [`0x${Buffer.from(key.address).toString("hex")}`];
-      case "wallet_switchEthereumChain" as any:
-        const { chainId: inputChainId, isEvm } = this.parseChainId(params[0]);
-        chainInfo = isEvm
-          ? await this.chainsService.getChainInfo(inputChainId, "evm")
-          : await this.chainsService.getChainInfo(inputChainId);
+  // async request(chainId: string, method: string, params: any[]): Promise<any> {
+  //   let chainInfo: ChainInfoWithEmbed;
+  //   switch (method) {
+  //     case "eth_accounts":
+  //     case "eth_requestAccounts":
+  //       console.log("check zo day");
+  //       chainInfo = await this.chainsService.getChainInfo(chainId);
+  //       if (chainInfo.coinType !== 60) return undefined;
+  //       const chainIdOrCoinType = params.length ? parseInt(params[0]) : chainId; // default is cointype 60 for ethereum based
+  //       const key = await this.keyRingService.getKey(chainIdOrCoinType);
+  //       const ledgerCheck = await this.keyRingService.getKeyRingType();
+  //       if (ledgerCheck === "ledger") {
+  //         const addresses = await this.keyRingService.getKeyRingLedgerAddresses();
+  //         return [`${addresses?.eth}`];
+  //       }
+  //       return [`0x${Buffer.from(key.address).toString("hex")}`];
+  //     case "wallet_switchEthereumChain" as any:
+  //       const { chainId: inputChainId, isEvm } = this.parseChainId(params[0]);
+  //       chainInfo = isEvm
+  //         ? await this.chainsService.getChainInfo(inputChainId, "evm")
+  //         : await this.chainsService.getChainInfo(inputChainId);
 
-        return chainInfo.chainId;
-      default:
-        chainInfo = await this.chainsService.getChainInfo(chainId);
-        if (!chainInfo.rest)
-          throw new Error(
-            `The given chain ID: ${chainId} does not have a RPC endpoint to connect to`
-          );
-        return await request(chainInfo.rest, method, params);
-    }
-  }
+  //       return chainInfo.chainId;
+  //     default:
+  //       chainInfo = await this.chainsService.getChainInfo(chainId);
+  //       if (!chainInfo.rest)
+  //         throw new Error(`The given chain ID: ${chainId} does not have a RPC endpoint to connect to`);
+  //       return await request(chainInfo.rest, method, params);
+  //   }
+  // }
 
   private static processTxResultNotification(
     notification: Notification,

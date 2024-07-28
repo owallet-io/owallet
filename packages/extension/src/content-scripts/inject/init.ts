@@ -1,5 +1,11 @@
 // @ts-nocheck
-import { OWallet, Ethereum, TronWeb, Bitcoin } from "@owallet/types";
+import {
+  OWallet,
+  Ethereum,
+  TronWeb,
+  Bitcoin,
+  EIP6963ProviderDetail,
+} from "@owallet/types";
 import { OfflineSigner } from "@cosmjs/launchpad";
 import { SecretUtils } from "@owallet/types";
 import { OfflineDirectSigner } from "@cosmjs/proto-signing";
@@ -25,15 +31,20 @@ export function init(
     window.bitcoin = bitcoin;
   }
 
-  if (!window.ethereum) {
-    window.ethereum = ethereum;
+  if (!window.ethereum.isOwallet) {
+    Object.defineProperty(window, "ethereum", {
+      value: ethereum, // Thay thế bằng giá trị bạn muốn gán
+      writable: false, // Không cho phép ghi đè giá trị mới
+      configurable: false, // Không cho phép thay đổi thuộc tính này
+    });
   }
-  // if (!window.oasis) {
-  //   window.oasis = oasis;
-  // }
 
   if (ethereum) {
-    window.eth_owallet = ethereum;
+    Object.defineProperty(window, "eth_owallet", {
+      value: ethereum, // Thay thế bằng giá trị bạn muốn gán
+      writable: false, // Không cho phép ghi đè giá trị mới
+      configurable: false, // Không cho phép thay đổi thuộc tính này
+    });
   }
 
   if (tronWeb) {

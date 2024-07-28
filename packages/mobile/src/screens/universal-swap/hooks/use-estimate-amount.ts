@@ -71,6 +71,14 @@ const useEstimateAmount = (
     if (client) {
       const routerClient = getRouterClient();
       try {
+        console.log(
+          originalFromToken,
+          originalToToken,
+          initAmount,
+          routerClient,
+          simulateOption?.useAlphaSmartRoute,
+          "test param"
+        );
         const data = await handleSimulateSwap({
           originalFromInfo: originalFromToken,
           originalToInfo: originalToToken,
@@ -84,6 +92,7 @@ const useEstimateAmount = (
             path: "/smart-router/alpha-router",
           },
         });
+        console.log(data, "data");
         setAmountLoading(false);
         return data;
       } catch (err) {

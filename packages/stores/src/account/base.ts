@@ -18,6 +18,7 @@ import {
   Bitcoin,
   AminoSignResponse,
   AddressBtcType,
+  EIP6963ProviderDetail,
 } from "@owallet/types";
 import { DeepReadonly, Mutable } from "utility-types";
 import bech32, { fromWords } from "bech32";
@@ -76,6 +77,8 @@ import { AddressesLedger } from "@owallet/types";
 import { wallet } from "@owallet/bitcoin";
 import TronWebProvider from "tronweb";
 import { getEip712TypedDataBasedOnChainId } from "./utils";
+import { v4 as uuidv4 } from "uuid";
+import { ICON_OWALLET } from "@owallet/common/src/utils/constants";
 
 export interface Coin {
   readonly denom: string;
