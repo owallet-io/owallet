@@ -31,7 +31,12 @@ import {
   Hash,
 } from "@owallet/crypto";
 import { Env, OWalletError } from "@owallet/router";
-import { AddressBtcType, AppCurrency, ChainInfo } from "@owallet/types";
+import {
+  AddressBtcType,
+  AppCurrency,
+  ChainInfo,
+  DAPP_CONNECT_STATUS,
+} from "@owallet/types";
 import AES from "aes-js";
 import { Buffer } from "buffer";
 import eccrypto from "eccrypto-js";
@@ -144,6 +149,8 @@ export class KeyRing {
   private multiKeyStore: KeyStore[];
 
   private password: string = "";
+  private DAPP_CONNECT_STATUS: DAPP_CONNECT_STATUS =
+    DAPP_CONNECT_STATUS.ASK_CONNECT;
   private _iv: string;
 
   constructor(
@@ -185,6 +192,9 @@ export class KeyRing {
     } else {
       return KeyRing.getTypeOfKeyStore(this.keyStore);
     }
+  }
+  public get DappConnectStatus(): DAPP_CONNECT_STATUS {
+    return this.DAPP_CONNECT_STATUS;
   }
 
   public static getLedgerAddressOfKeyStore(

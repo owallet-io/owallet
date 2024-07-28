@@ -47,6 +47,7 @@ import {
   StdSignDoc,
   BIP44HDPath,
   AddressesLedger,
+  DAPP_CONNECT_STATUS,
 } from "@owallet/types";
 import { APP_PORT, Env, OWalletError, WEBPAGE_PORT } from "@owallet/router";
 import { InteractionService } from "../interaction";
@@ -1178,6 +1179,19 @@ export class KeyRingService {
     params: any[]
   ): Promise<object> {
     await this.enable(env);
+    console.log(
+      this.keyRing.DappConnectStatus,
+      "this.keyRing.DappConnectStatus"
+    );
+    if (this.keyRing.DappConnectStatus == DAPP_CONNECT_STATUS.ASK_CONNECT) {
+      await this.interactionService.waitApprove(
+        env,
+        "/ask-connect-dapp",
+        "ask-connect-dapp",
+        {}
+      );
+      return;
+    }
     const rs = await this.keyRing.request_eth(chainId, method, params);
     return rs;
   }

@@ -1,0 +1,49 @@
+@import "../../styles/var";
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+.capslock-tooltip-arrow {
+  left: 10px !important;
+}
+
+.list-explore {
+  padding: 16px;
+  display: flex;
+  //flex-direction: column;
+  gap: 8px;
+  flex-wrap: wrap;
+  .item-explore {
+    height: 122px;
+    display: flex;
+    cursor: pointer;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex: calc(50% - 16px);
+    border-radius: 8px;
+    padding: 16px;
+    background-color: $neutral-surface-action;
+    .img-icon {
+      width: 44px;
+      height: 44px;
+    }
+    .title-item {
+      color: $neutral-text-title;
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 24px;
+    }
+
+    .sub-title-item {
+      color: $neutral-text-body;
+      font-size: 13px;
+      font-weight: 400;
+      line-height: 18px;
+    }
+  }
+}

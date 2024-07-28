@@ -17,6 +17,11 @@ import Long from "long";
 import { SignEthereumTypedDataObject } from "../typedMessage";
 import { Signer } from "@oasisprotocol/client/dist/signature";
 
+export enum DAPP_CONNECT_STATUS {
+  ALWAY_CONNECT,
+  NOT_CONNECT,
+  ASK_CONNECT,
+}
 export type AddressesLedger = {
   cosmos?: string;
   eth?: string;

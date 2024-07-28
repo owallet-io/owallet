@@ -60,6 +60,7 @@ import { Button } from "components/common/button";
 import colors from "theme/colors";
 import { ToastContainer, Zoom } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { SelectWalletDappConnectPage } from "./pages/select-wallet-dapp-connect/select-wallet-dapp-connect-page";
 const owallet = new OWallet(
   manifest.version,
   "core",
@@ -272,6 +273,11 @@ ReactDOM.render(
               <LogPageViewWrapper>
                 <Route exact path="/" component={StateRenderer} />
                 <Route exact path="/unlock" component={LockPage} />
+                <Route
+                  exact
+                  path="/ask-connect-dapp"
+                  component={SelectWalletDappConnectPage}
+                />
                 <Route exact path="/access" component={AccessPage} />
                 <Route exact path="/receive" component={ReceivePage} />
                 <Route exact path="/activities" component={ActivitiesPage} />
