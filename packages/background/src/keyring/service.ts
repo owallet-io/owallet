@@ -1177,7 +1177,7 @@ export class KeyRingService {
     method: string,
     params: any[]
   ): Promise<object> {
-    this.enable(env);
+    await this.enable(env);
     const rs = await this.keyRing.request_eth(chainId, method, params);
     return rs;
   }
