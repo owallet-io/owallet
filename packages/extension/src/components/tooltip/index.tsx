@@ -11,6 +11,7 @@ export interface ToolTipProps {
   options?: PopperOptions;
   trigger: "hover" | "click" | "static"; // If trigger is staic, visibilitiy is handled by show props.
   show?: boolean;
+  children?: React.ReactNode;
 }
 
 interface ToolTipState {

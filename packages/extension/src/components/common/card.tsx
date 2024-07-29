@@ -5,6 +5,7 @@ import style from "./style.module.scss";
 export const Card: FunctionComponent<{
   type?: string;
   containerStyle?: CSSProperties;
+  children;
 }> = ({ type = "normal", containerStyle, ...props }) => {
   return (
     <div

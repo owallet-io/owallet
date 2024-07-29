@@ -299,6 +299,7 @@ const Instruction: FunctionComponent<{
   title: string;
   paragraph: string;
   pass: boolean;
+  children?: React.ReactNode;
 }> = ({ icon, title, paragraph, children, pass }) => {
   return (
     <div className={classnames(style.instruction, { [style.pass]: pass })}>

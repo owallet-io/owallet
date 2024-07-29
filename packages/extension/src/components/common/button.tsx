@@ -20,6 +20,7 @@ export const Button: FunctionComponent<{
   rippleColor?: string;
   underlayColor?: string;
   className?: string;
+  children?: React.ReactNode;
   type?: "button" | "reset" | "submit";
 }> = ({
   color = "primary",

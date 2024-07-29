@@ -11,6 +11,7 @@ export const LayoutWithButtonBottom: FC<{
   onClickButtonBottom?: (value) => void;
   btnBackgroundColor?: string;
   isHideButtonBottom?: boolean;
+  children?: React.ReactNode;
 }> = ({
   title,
   backgroundColor,

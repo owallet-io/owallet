@@ -120,20 +120,6 @@ export const SelectWalletDappConnectPage: FunctionComponent = observer(() => {
             You are connecting to a new DApp that offers multiple installed
             wallets.
           </Text>
-          {/* <div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center"
-              }}
-            >
-              <img src={ICON_OWALLET)} width={50} height={50} />
-              <Text size={16} weight="600" color={colors["neutral-text-title"]}>
-                OWallet
-              </Text>
-            </div>
-          </div> */}
           <div className={styles.listExplore}>
             {dapps.map((item, index) => {
               return (
@@ -148,9 +134,6 @@ export const SelectWalletDappConnectPage: FunctionComponent = observer(() => {
               );
             })}
           </div>
-          {/* <Button containerStyle={{ marginTop: 50 }} color="primary" data-loading={loading} loading={loading}>
-            <FormattedMessage id="lock.button.unlock" />
-          </Button> */}
         </Form>
       </Card>
     </EmptyLayout>

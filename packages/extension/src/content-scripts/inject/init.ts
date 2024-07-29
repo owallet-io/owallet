@@ -5,11 +5,15 @@ import {
   TronWeb,
   Bitcoin,
   EIP6963ProviderDetail,
+  EIP6963RequestProviderEvent,
+  EIP6963AnnounceProviderEvent,
 } from "@owallet/types";
 import { OfflineSigner } from "@cosmjs/launchpad";
 import { SecretUtils } from "@owallet/types";
 import { OfflineDirectSigner } from "@cosmjs/proto-signing";
-
+import { ICON_OWALLET } from "@owallet/common";
+import { v4 } from "uuid";
+const uuid = v4();
 export function init(
   owallet: OWallet,
   ethereum: Ethereum,
@@ -40,6 +44,24 @@ export function init(
   }
 
   if (ethereum) {
+    function onRequestProvider(event: EIP6963RequestProviderEvent) {
+      window.dispatchEvent(
+        new CustomEvent("eip6963:announceProvider", {
+          type: EIP6963AnnounceProviderEvent.type,
+          detail: {
+            info: {
+              name: "OWallet",
+              icon: ICON_OWALLET,
+              rdns: "com.io.owallet",
+              uuid,
+            },
+            provider: ethereum,
+          },
+        } as EIP6963AnnounceProviderEvent)
+      );
+    }
+    window.addEventListener("eip6963:requestProvider", onRequestProvider);
+
     Object.defineProperty(window, "eth_owallet", {
       value: ethereum, // Thay thế bằng giá trị bạn muốn gán
       writable: false, // Không cho phép ghi đè giá trị mới

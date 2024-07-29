@@ -6,6 +6,7 @@ export const Text: FunctionComponent<{
   size?: number;
   weight?: string;
   containerStyle?: CSSProperties;
+  children?: React.ReactNode;
 }> = ({ color, size, weight, containerStyle, ...props }) => {
   const textStyle = {
     fontSize: size ?? 14,

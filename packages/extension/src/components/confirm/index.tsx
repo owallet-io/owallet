@@ -34,7 +34,7 @@ const ConfirmContext = createContext<
   | undefined
 >(undefined);
 
-export const ConfirmProvider: FunctionComponent = ({ children }) => {
+export const ConfirmProvider = ({ children }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const [currentConfirm, setCurrentConfirm] = useState<

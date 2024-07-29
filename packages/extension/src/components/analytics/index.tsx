@@ -14,7 +14,7 @@ const pathnameToPageName: PathnameToPageName = {
   "/setting/set-keyring": "Select account",
 };
 
-export const LogPageViewWrapper: FunctionComponent = ({ children }) => {
+export const LogPageViewWrapper = ({ children }) => {
   const location = useLocation();
   const loggingPageName = pathnameToPageName[location.pathname];
 

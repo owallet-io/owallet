@@ -425,6 +425,7 @@ export const DetailsTab: FunctionComponent<{
 export const MsgRender: FunctionComponent<{
   icon?: string;
   title: string;
+  children?: React.ReactNode;
 }> = ({ icon = "fas fa-question", title, children }) => {
   return (
     <div style={{ width: "125%" }} className={styleDetailsTab.msg}>
