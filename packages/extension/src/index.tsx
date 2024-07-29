@@ -28,7 +28,7 @@ import {
 import { Banner } from "./components/banner";
 import { ConfirmProvider } from "./components/confirm";
 import { LoadingIndicatorProvider } from "./components/loading-indicator";
-
+import { createRoot } from "react-dom/client";
 import { configure } from "mobx";
 import { observer } from "mobx-react-lite";
 import { KeyRingStatus } from "@owallet/background";
@@ -262,8 +262,9 @@ const logError = (error: Error, info: { componentStack: string }) => {
   console.log("error", error);
   console.log("info", info);
 };
-
-ReactDOM.render(
+const container = document.getElementById("app");
+const root = createRoot(container);
+root.render(
   <ErrorBoundary FallbackComponent={ErrorFallback} onError={logError}>
     <StoreProvider>
       <AppIntlProviderWithStorage>
@@ -364,6 +365,5 @@ ReactDOM.render(
         </LoadingIndicatorProvider>
       </AppIntlProviderWithStorage>
     </StoreProvider>
-  </ErrorBoundary>,
-  document.getElementById("app")
+  </ErrorBoundary>
 );

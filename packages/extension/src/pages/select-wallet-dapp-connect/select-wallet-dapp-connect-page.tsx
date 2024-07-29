@@ -16,6 +16,7 @@ import { Button } from "../../components/common/button";
 import colors from "../../theme/colors";
 import { Text } from "components/common/text";
 import { ICON_OWALLET } from "@owallet/common";
+import { useSyncProviders } from "./hooks/useSyncProviders";
 
 interface FormData {
   password: string;
@@ -61,6 +62,8 @@ export const SelectWalletDappConnectPage: FunctionComponent = observer(() => {
       icon: ICON_OWALLET,
     },
   ];
+  const providers = useSyncProviders();
+  console.log(providers, "providers");
   return (
     <EmptyLayout style={{ height: "100%" }}>
       <Card type="ink" containerStyle={{ height: "100%" }}>
