@@ -302,13 +302,13 @@ export class KeyRing {
       throw new Error("Key Store is empty");
     }
 
-    // Need to check network type by chain id instead of coin type
-    const networkType = getNetworkTypeByChainId(chainId);
-    console.log("networkType", chainId, networkType);
+    // // Need to check network type by chain id instead of coin type
+    // const networkType = getNetworkTypeByChainId(chainId);
+    // console.log("networkType", chainId, networkType);
 
-    if (networkType === "evm" && chainId !== ChainIdEnum.Oasis) {
-      return Number(ChainIdHelper.parse(chainId).identifier) ?? defaultCoinType;
-    }
+    // if (networkType === "evm" && chainId !== ChainIdEnum.Oasis) {
+    //   return Number(ChainIdHelper.parse(chainId).identifier) ?? defaultCoinType;
+    // }
 
     return this.keyStore.coinTypeForChain
       ? this.keyStore.coinTypeForChain[
@@ -1552,7 +1552,7 @@ export class KeyRing {
         throw new Error("Missing data parameter");
       }
 
-      const coinType = this.computeKeyStoreCoinType(chainId, defaultCoinType);
+      // const coinType = this.computeKeyStoreCoinType(chainId, defaultCoinType);
 
       // Need to check network type by chain id instead of coin type
       const networkType = getNetworkTypeByChainId(chainId);
@@ -1563,7 +1563,7 @@ export class KeyRing {
         );
       }
 
-      const privateKey = this.loadPrivKey(coinType).toBytes();
+      const privateKey = this.loadPrivKey(defaultCoinType).toBytes();
 
       const typedMessageParsed = JSON.parse(typedMessage);
 
