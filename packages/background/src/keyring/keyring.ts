@@ -314,7 +314,7 @@ export class KeyRing {
 
     // Need to check network type by chain id instead of coin type
     const networkType = getNetworkTypeByChainId(chainId);
-    if (networkType === "evm") {
+    if (networkType === "evm" && chainId !== ChainIdEnum.Oasis) {
       return Number(ChainIdHelper.parse(chainId).identifier) ?? defaultCoinType;
     }
 
