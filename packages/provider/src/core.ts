@@ -377,6 +377,16 @@ export class Ethereum implements IEthereum {
         msg
       );
       return rawTxHex;
+    } else if (args.method === "eth_signTypedData_v4") {
+      // const msg = new RequestSignEthereumMsg(args.chainId ?? this.initChainId, args.params?.[0]);
+      const msg = new RequestSignEthereumTypedDataMsg(
+        args.chainId,
+        args.params
+      );
+      const { result } = await this.requester.sendMessage(BACKGROUND_PORT, msg);
+      console.log("result eth_signTypedData_v4", result);
+
+      return result;
     } else {
       const msg = new RequestEthereumMsg(
         args.chainId ?? this.initChainId,
@@ -407,8 +417,10 @@ export class Ethereum implements IEthereum {
   ): Promise<any> {
     try {
       const msg = new RequestSignEthereumTypedDataMsg(chainId, data);
+      console.log("before send OWALETT", Date.now(), data);
       const result = await this.requester.sendMessage(BACKGROUND_PORT, msg);
 
+      console.log("result OWALETT", Date.now(), result);
       return result;
     } catch (error) {
       console.log(error, "error on send message!!!!!!!!!!!!!!!");

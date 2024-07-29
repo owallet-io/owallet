@@ -380,8 +380,6 @@ export const SignTronPage: FunctionComponent = observer(() => {
   });
 
   const selectTronNetwork = async () => {
-    console.log("currentChainId", currentChainId);
-
     if (currentChainId !== ChainIdEnum.TRON) {
       chainStore.selectChain(ChainIdEnum.TRON);
       await chainStore.saveLastViewChainId();

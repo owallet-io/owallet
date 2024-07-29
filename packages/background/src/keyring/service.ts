@@ -624,7 +624,6 @@ export class KeyRingService {
     chainId: string,
     data: object
   ): Promise<string> {
-    console.log("🚀 ~ KeyRingService ~ data:", data);
     const coinType = await this.chainsService.getChainCoinType(chainId);
     const rpc = await this.chainsService.getChainInfo(chainId);
     const rpcCustom = EVMOS_NETWORKS.includes(chainId) ? rpc.evmRpc : rpc.rest;
@@ -638,7 +637,6 @@ export class KeyRingService {
         rpcCustom,
         data
       );
-      console.log(newData, "newData");
       const rawTxHex = await this.keyRing.signAndBroadcastEthereum(
         env,
         chainId,
@@ -653,6 +651,31 @@ export class KeyRingService {
         "request-sign-ethereum-end",
         {}
       );
+    }
+  }
+
+  async requestSignEthereumTypedData(
+    env: Env,
+    chainId: string,
+    data: SignEthereumTypedDataObject
+    // ): Promise<ECDSASignature> {
+  ): Promise<string> {
+    try {
+      const rawTxHex = await this.keyRing.signEthereumTypedData({
+        typedMessage: data[1],
+        //@ts-ignore
+        version: "V4",
+        chainId,
+        defaultCoinType: data.defaultCoinType,
+      });
+
+      console.log("rawTxHex", Date.now(), rawTxHex);
+
+      return rawTxHex;
+    } catch (e) {
+      console.log("e", e.message);
+    } finally {
+      // this.interactionService.dispatchEvent(APP_PORT, "request-sign-end", {});
     }
   }
 
@@ -688,27 +711,6 @@ export class KeyRingService {
         "request-sign-bitcoin-end",
         {}
       );
-    }
-  }
-
-  async requestSignEthereumTypedData(
-    env: Env,
-    chainId: string,
-    data: SignEthereumTypedDataObject
-  ): Promise<ECDSASignature> {
-    try {
-      const rawTxHex = await this.keyRing.signEthereumTypedData({
-        typedMessage: data.typedMessage,
-        version: data.version,
-        chainId,
-        defaultCoinType: data.defaultCoinType,
-      });
-
-      return rawTxHex;
-    } catch (e) {
-      console.log("e", e.message);
-    } finally {
-      this.interactionService.dispatchEvent(APP_PORT, "request-sign-end", {});
     }
   }
 
