@@ -302,11 +302,11 @@ export class KeyRing {
       throw new Error("Key Store is empty");
     }
 
-    return this.keyStore.coinTypeForChain
-      ? this.keyStore.coinTypeForChain[
-          ChainIdHelper.parse(chainId).identifier
-        ] ?? defaultCoinType
-      : defaultCoinType;
+    // return this.keyStore.coinTypeForChain
+    //   ? this.keyStore.coinTypeForChain[ChainIdHelper.parse(chainId).identifier] ?? defaultCoinType
+    //   : defaultCoinType;
+
+    return Number(ChainIdHelper.parse(chainId).identifier) ?? defaultCoinType;
   }
 
   public async getKeyFromCoinType(coinType: number): Promise<Key> {
@@ -1544,9 +1544,7 @@ export class KeyRing {
         throw new Error("Missing data parameter");
       }
 
-      // something wrong with the cointype here
       const coinType = this.computeKeyStoreCoinType(chainId, defaultCoinType);
-      console.log("coinType", coinType);
 
       // Need to check network type by chain id instead of coin type
       const networkType = getNetworkTypeByChainId(chainId);
@@ -1557,8 +1555,7 @@ export class KeyRing {
         );
       }
 
-      // const privateKey = this.loadPrivKey(coinType).toBytes();
-      const privateKey = this.loadPrivKey(60).toBytes();
+      const privateKey = this.loadPrivKey(coinType).toBytes();
 
       const typedMessageParsed = JSON.parse(typedMessage);
 

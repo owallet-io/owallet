@@ -666,10 +666,8 @@ export class KeyRingService {
         //@ts-ignore
         version: "V4",
         chainId,
-        defaultCoinType: data.defaultCoinType,
+        defaultCoinType: 60,
       });
-
-      console.log("rawTxHex", Date.now(), rawTxHex);
 
       return rawTxHex;
     } catch (e) {

@@ -485,13 +485,11 @@ const handleRequestSignEthereumTypedData: (
   service: KeyRingService
 ) => InternalHandler<RequestSignEthereumTypedDataMsg> = (service) => {
   return async (env, msg) => {
-    console.log("before send OWALETT back", Date.now(), msg.data);
     const response = await service.requestSignEthereumTypedData(
       env,
       msg.chainId,
       msg.data
     );
-    console.log("before send OWALETT back", Date.now(), response);
     return { result: response };
   };
 };
