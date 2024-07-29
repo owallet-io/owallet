@@ -146,9 +146,20 @@ export const SignEvmPage: FunctionComponent = observer(() => {
     if (signInteractionStore.waitingEthereumData) {
       const data = signInteractionStore.waitingEthereumData;
       //@ts-ignore
-      const gasDataSign = data?.data?.data?.data?.gas;
-      //@ts-ignore
-      const gasPriceDataSign = data?.data?.data?.data?.gasPrice;
+      const msgData = data?.data?.data?.data;
+      const { gas: defaultGas } = queriesStore
+        .get(current.chainId)
+        .evm.queryGas.getGas({
+          to: msgData?.to,
+          from: msgData?.from,
+        });
+      const { gasPrice: defaultGasPrice } = queriesStore
+        .get(current.chainId)
+        .evm.queryGasPrice.getGasPrice();
+
+      const gasDataSign = msgData.gas ?? defaultGas;
+
+      const gasPriceDataSign = msgData?.gasPrice ?? defaultGasPrice;
       chainStore.selectChain(data.data.chainId);
       gasConfig.setGas(Web3.utils.hexToNumber(gasDataSign));
       gasConfig.setGasPrice(Web3.utils.hexToNumberString(gasPriceDataSign));

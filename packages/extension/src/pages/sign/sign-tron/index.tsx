@@ -371,22 +371,138 @@ const SignTronContent: FunctionComponent = () => {
 };
 
 export const SignTronPage: FunctionComponent = observer(() => {
-  const { chainStore } = useStore();
+  const { chainStore, signInteractionStore, keyRingStore } = useStore();
+  const intl = useIntl();
+  const [currentChainId, setChainId] = useState(chainStore.current.chainId);
+
+  const interactionInfo = useInteractionInfo(() => {
+    signInteractionStore.rejectAll();
+  });
 
   const selectTronNetwork = async () => {
-    if (chainStore.current.chainId !== ChainIdEnum.TRON) {
+    if (currentChainId !== ChainIdEnum.TRON) {
       chainStore.selectChain(ChainIdEnum.TRON);
       await chainStore.saveLastViewChainId();
+      setChainId(ChainIdEnum.TRON);
     }
   };
 
-  useEffect(() => {
-    selectTronNetwork();
-  }, [chainStore.current]);
-
-  console.log("chainStore.current.chainId", chainStore.current.chainId);
-
-  return chainStore.current.chainId === ChainIdEnum.TRON ? (
+  return currentChainId === ChainIdEnum.TRON ? (
     <SignTronContent />
-  ) : null;
+  ) : (
+    <div
+      style={{
+        height: "100%",
+        width: "100vw",
+        overflowX: "auto",
+      }}
+    >
+      {
+        /*
+         Show the informations of tx when the sign data is delivered.
+         If sign data not delivered yet, show the spinner alternatively.
+         */
+        <div>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              marginTop: 24,
+            }}
+          >
+            <div>
+              <img
+                src={require("assets/images/img_owallet.png")}
+                alt="logo"
+                style={{ height: "92px", maxWidth: 92 }}
+              />
+            </div>
+            <div style={{ padding: 16 }}>
+              <Text
+                size={22}
+                weight={"600"}
+                color={colors["neutral-text-title"]}
+              >
+                Switch to TRON
+              </Text>
+            </div>
+            <div>
+              <Text color={colors["neutral-text-body"]}>
+                Switch to TRON network to sign transaction
+              </Text>
+            </div>
+          </div>
+          <div
+            style={{
+              position: "absolute",
+              bottom: 0,
+              width: "100%",
+              height: "15%",
+              backgroundColor: colors["neutral-surface-card"],
+              borderTop: "1px solid" + colors["neutral-border-default"],
+            }}
+          >
+            {keyRingStore.keyRingType === "ledger" &&
+            signInteractionStore.isLoading ? (
+              <Button className={style.button} disabled={true} mode="outline">
+                <FormattedMessage id="sign.button.confirm-ledger" />
+                <i className="fa fa-spinner fa-spin fa-fw" />
+              </Button>
+            ) : (
+              <div>
+                <div
+                  style={{
+                    flexDirection: "row",
+                    display: "flex",
+                    padding: 16,
+                    paddingTop: 0,
+                  }}
+                >
+                  <Button
+                    containerStyle={{ marginRight: 8 }}
+                    className={classnames(style.button, style.rejectBtn)}
+                    // disabled={signDocHelper.signDocWrapper == null}
+                    color={"reject"}
+                    data-loading={signInteractionStore.isLoading}
+                    disabled={signInteractionStore.isLoading}
+                    onClick={async (e) => {
+                      e.preventDefault();
+
+                      await signInteractionStore.reject();
+                      if (
+                        interactionInfo.interaction &&
+                        !interactionInfo.interactionInternal
+                      ) {
+                        window.close();
+                      }
+                    }}
+                  >
+                    {intl.formatMessage({
+                      id: "sign.button.reject",
+                    })}
+                  </Button>
+                  <Button
+                    className={classnames(style.button, style.approveBtn)}
+                    // disabled={approveIsDisabled}
+                    data-loading={signInteractionStore.isLoading}
+                    loading={signInteractionStore.isLoading}
+                    onClick={async (e) => {
+                      e.preventDefault();
+                      await selectTronNetwork();
+                    }}
+                  >
+                    {intl.formatMessage({
+                      id: "sign.button.approve",
+                    })}
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      }
+    </div>
+  );
 });

@@ -662,12 +662,33 @@ export class KeyRingService {
     }
   }
 
+  async requestSignEthereumTypedData(
+    env: Env,
+    chainId: string,
+    data: SignEthereumTypedDataObject
+    // ): Promise<ECDSASignature> {
+  ): Promise<string> {
+    try {
+      const rawTxHex = await this.keyRing.signEthereumTypedData({
+        typedMessage: data[1],
+        version: SignTypedDataVersion.V4,
+        chainId,
+        defaultCoinType: 60,
+      });
+
+      return rawTxHex;
+    } catch (e) {
+      console.log("e", e.message);
+    } finally {
+      // this.interactionService.dispatchEvent(APP_PORT, "request-sign-end", {});
+    }
+  }
+
   async requestSignBitcoin(
     env: Env,
     chainId: string,
     data: object
   ): Promise<string> {
-    // here
     const newData = (await this.interactionService.waitApprove(
       env,
       "/sign-bitcoin",
@@ -694,27 +715,6 @@ export class KeyRingService {
         "request-sign-bitcoin-end",
         {}
       );
-    }
-  }
-
-  async requestSignEthereumTypedData(
-    env: Env,
-    chainId: string,
-    data: SignEthereumTypedDataObject
-  ): Promise<ECDSASignature> {
-    try {
-      const rawTxHex = await this.keyRing.signEthereumTypedData({
-        typedMessage: data.typedMessage,
-        version: data.version,
-        chainId,
-        defaultCoinType: data.defaultCoinType,
-      });
-
-      return rawTxHex;
-    } catch (e) {
-      console.log("e", e.message);
-    } finally {
-      this.interactionService.dispatchEvent(APP_PORT, "request-sign-end", {});
     }
   }
 

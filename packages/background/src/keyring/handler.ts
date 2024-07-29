@@ -496,9 +496,9 @@ const handleRequestSignEthereumTypedData: (
     const response = await service.requestSignEthereumTypedData(
       env,
       msg.chainId,
-      msg.data?.[0]
+      msg.data
     );
-    return { result: JSON.stringify(response) };
+    return { result: response };
   };
 };
 

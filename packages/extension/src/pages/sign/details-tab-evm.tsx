@@ -20,6 +20,7 @@ import UNISWAP_ABI from "./abi/uniswap-abi.json";
 import { Address } from "../../components/address";
 import { shortenAddress, tryAllABI } from "./helpers/helpers";
 import { EVMRenderArgs } from "./components/render-evm-args";
+import { DataTabEvm } from "./data-tab-evm";
 
 export const DetailsTabEvm: FunctionComponent<{
   msgSign: any;
@@ -56,6 +57,7 @@ export const DetailsTabEvm: FunctionComponent<{
 
     const chain = chainStore.getChain(dataSign?.data?.chainId);
     const [toAddress, setToAddress] = useState(null);
+    const [isRaw, setIsRaw] = useState(null);
     const [amount, setAmount] = useState(null);
     const [decodedData, setDecodedData] = useState(null);
     const [decodeWithABI, setDecodeWithABI] = useState(null);
@@ -77,6 +79,8 @@ export const DetailsTabEvm: FunctionComponent<{
 
           if (!res.isRaw) {
             setDecodedData(res.data);
+          } else {
+            setIsRaw(true);
           }
         } catch (err) {
           console.log("err", err);
@@ -407,11 +411,13 @@ export const DetailsTabEvm: FunctionComponent<{
               <div>
                 <Text weight="600">Fee</Text>
               </div>
-              <div>
-                <Text color={colors["neutral-text-body"]}>
-                  Gas: {Number(msgs?.gas)}
-                </Text>
-              </div>
+              {msgs?.gas ? (
+                <div>
+                  <Text color={colors["neutral-text-body"]}>
+                    Gas: {Number(msgs?.gas)}
+                  </Text>
+                </div>
+              ) : null}
             </div>
             <div
               style={{
@@ -524,6 +530,32 @@ export const DetailsTabEvm: FunctionComponent<{
               <Text weight="600">{chain?.chainName}</Text>
             </div>
           )}
+          {/* Render raw data */}
+          {isRaw ? (
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                borderBottom: "1px solid" + colors["neutral-border-default"],
+                alignItems: "center",
+                marginTop: 4,
+              }}
+            >
+              <div
+                style={{
+                  height: "60%",
+                  overflow: "scroll",
+                  backgroundColor: colors["neutral-surface-bg"],
+                  borderRadius: 12,
+                  padding: 8,
+                  width: "100vw",
+                }}
+              >
+                <DataTabEvm data={dataSign} />
+              </div>
+            </div>
+          ) : null}
 
           {toAddress ? renderDestination(msgs?.from, toAddress) : null}
 

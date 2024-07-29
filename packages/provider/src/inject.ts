@@ -574,12 +574,9 @@ export class InjectedEthereum implements Ethereum {
         // console.log("🚀 ~ file: inject.ts ~ line 524 ~ InjectedEthereum ~ eventListener.addMessageListener ~ message.method", message.method)
         // console.log("🚀 ~ file: inject.ts ~ line 524 ~ InjectedEthereum ~ eventListener.addMessageListener ~ message & chain id", message, chainId)
         switch (message.method) {
-          case "eth_signTypedData_v4":
-            result = await ethereum.signEthereumTypeData(
-              chainId,
-              message.args[0]
-            );
-            break;
+          // case "eth_signTypedData_v4":
+          //   result = await ethereum.signEthereumTypeData(chainId, message.args[0]);
+          //   break;
           case "public_key":
             result = await ethereum.getPublicKey(chainId);
             break;
