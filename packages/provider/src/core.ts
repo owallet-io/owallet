@@ -417,10 +417,8 @@ export class Ethereum implements IEthereum {
   ): Promise<any> {
     try {
       const msg = new RequestSignEthereumTypedDataMsg(chainId, data);
-      console.log("before send OWALETT", Date.now(), data);
       const result = await this.requester.sendMessage(BACKGROUND_PORT, msg);
 
-      console.log("result OWALETT", Date.now(), result);
       return result;
     } catch (error) {
       console.log(error, "error on send message!!!!!!!!!!!!!!!");

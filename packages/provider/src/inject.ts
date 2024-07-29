@@ -567,21 +567,11 @@ export class InjectedEthereum implements Ethereum {
           localStore.get("ethereum.chainId") ??
           ethereum.initChainId;
 
-        console.log("message", message);
-        console.log("args", message.args);
-
         // console.log("🚀 ~ file: inject.ts ~ line 524 ~ InjectedEthereum ~ eventListener.addMessageListener ~ message.method", message.method)
         // console.log("🚀 ~ file: inject.ts ~ line 524 ~ InjectedEthereum ~ eventListener.addMessageListener ~ message & chain id", message, chainId)
         switch (message.method) {
           // case "eth_signTypedData_v4":
-          //   // result = await ethereum.signEthereumTypeData(chainId, message.args[0]);
-          //   // console.log("result v4", result);
-
-          //   result = await (async () => {
-          //     const result = await ethereum.signEthereumTypeData(chainId, message.args[0]);
-          //     return result;
-          //   })();
-
+          //   result = await ethereum.signEthereumTypeData(chainId, message.args[0]);
           //   break;
           case "public_key":
             result = await ethereum.getPublicKey(chainId);
@@ -640,8 +630,6 @@ export class InjectedEthereum implements Ethereum {
               params: message.args[0],
               chainId,
             });
-
-            console.log("result provider", Date.now(), result);
 
             break;
         }
