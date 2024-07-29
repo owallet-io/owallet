@@ -47,7 +47,7 @@ export function init(
     function onRequestProvider(event: EIP6963RequestProviderEvent) {
       window.dispatchEvent(
         new CustomEvent("eip6963:announceProvider", {
-          type: EIP6963AnnounceProviderEvent.type,
+          type: "eip6963:announceProvider",
           detail: {
             info: {
               name: "OWallet",

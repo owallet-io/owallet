@@ -17,7 +17,7 @@ export const eip6963 = {
     window.addEventListener("eip6963:announceProvider", onAnnouncement);
     window.dispatchEvent(new Event("eip6963:requestProvider"));
 
-    return () =>
-      window.removeEventListener("eip6963:announceProvider", onAnnouncement);
+    // return () =>
+    //   window.removeEventListener("eip6963:announceProvider", onAnnouncement);
   },
 };
