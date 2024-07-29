@@ -1183,15 +1183,15 @@ export class KeyRingService {
       this.keyRing.DappConnectStatus,
       "this.keyRing.DappConnectStatus"
     );
-    if (this.keyRing.DappConnectStatus == DAPP_CONNECT_STATUS.ASK_CONNECT) {
-      await this.interactionService.waitApprove(
-        env,
-        "/ask-connect-dapp",
-        "ask-connect-dapp",
-        {}
-      );
-      return;
-    }
+    // if (this.keyRing.DappConnectStatus == DAPP_CONNECT_STATUS.ASK_CONNECT) {
+    //   await this.interactionService.waitApprove(
+    //     env,
+    //     "/ask-connect-dapp",
+    //     "ask-connect-dapp",
+    //     {}
+    //   );
+    //   return;
+    // }
     const rs = await this.keyRing.request_eth(chainId, method, params);
     return rs;
   }
