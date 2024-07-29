@@ -663,8 +663,7 @@ export class KeyRingService {
     try {
       const rawTxHex = await this.keyRing.signEthereumTypedData({
         typedMessage: data[1],
-        //@ts-ignore
-        version: "V4",
+        version: SignTypedDataVersion.V4,
         chainId,
         defaultCoinType: 60,
       });
@@ -682,7 +681,6 @@ export class KeyRingService {
     chainId: string,
     data: object
   ): Promise<string> {
-    // here
     const newData = (await this.interactionService.waitApprove(
       env,
       "/sign-bitcoin",

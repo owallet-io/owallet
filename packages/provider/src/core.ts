@@ -384,7 +384,6 @@ export class Ethereum implements IEthereum {
         args.params
       );
       const { result } = await this.requester.sendMessage(BACKGROUND_PORT, msg);
-      console.log("result eth_signTypedData_v4", result);
 
       return result;
     } else {
