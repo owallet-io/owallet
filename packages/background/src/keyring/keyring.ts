@@ -312,11 +312,17 @@ export class KeyRing {
       throw new Error("Key Store is empty");
     }
 
-    // return this.keyStore.coinTypeForChain
-    //   ? this.keyStore.coinTypeForChain[ChainIdHelper.parse(chainId).identifier] ?? defaultCoinType
-    //   : defaultCoinType;
+    // Need to check network type by chain id instead of coin type
+    const networkType = getNetworkTypeByChainId(chainId);
+    if (networkType !== "evm") {
+      return Number(ChainIdHelper.parse(chainId).identifier) ?? defaultCoinType;
+    }
 
-    return Number(ChainIdHelper.parse(chainId).identifier) ?? defaultCoinType;
+    return this.keyStore.coinTypeForChain
+      ? this.keyStore.coinTypeForChain[
+          ChainIdHelper.parse(chainId).identifier
+        ] ?? defaultCoinType
+      : defaultCoinType;
   }
 
   public async getKeyFromCoinType(coinType: number): Promise<Key> {
