@@ -630,6 +630,7 @@ export class InjectedEthereum implements Ethereum {
               params: message.args[0],
               chainId,
             });
+            console.log("result provider", result);
 
             break;
         }
