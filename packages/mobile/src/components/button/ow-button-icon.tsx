@@ -1,4 +1,10 @@
-import { StyleSheet, Text, View, TouchableOpacityProps } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacityProps,
+  ViewProps,
+} from "react-native";
 import React from "react";
 import OWButton, { IOWButtonProps } from "./OWButton";
 import OWIcon, { IOWIconProps } from "../ow-icon/ow-icon";
@@ -9,6 +15,7 @@ interface IOWButtonIcon extends IOWButtonProps {
   name?: IconProps["name"];
   sizeIcon?: IconProps["size"];
   colorIcon?: IconProps["color"];
+  style?: ViewProps["style"];
 }
 const OWButtonIcon = ({ ...props }: IOWButtonIcon) => {
   return (

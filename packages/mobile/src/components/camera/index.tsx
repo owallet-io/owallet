@@ -1,13 +1,13 @@
 import React, { FunctionComponent } from "react";
 import { RNCamera } from "react-native-camera";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
-import { StyleSheet, View, TouchableOpacity } from "react-native";
+import { StyleSheet, View, TouchableOpacity, Image } from "react-native";
 import { Text } from "@src/components/text";
 import { CloseIcon } from "../icon";
-import Svg, { Path } from "react-native-svg";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LoadingSpinner } from "../spinner";
-import { colors, typography } from "../../themes";
+import { metrics, typography } from "../../themes";
+import { useTheme } from "@src/themes/theme-provider";
 
 export const FullScreenCameraView: FunctionComponent<
   React.ComponentProps<typeof RNCamera> & {
@@ -16,6 +16,7 @@ export const FullScreenCameraView: FunctionComponent<
   }
 > = (props) => {
   const navigation = useNavigation();
+  const { colors } = useTheme();
 
   const isFocused = useIsFocused();
 
@@ -76,7 +77,7 @@ export const FullScreenCameraView: FunctionComponent<
                   height: 38,
                   width: 38,
                   borderRadius: 64,
-                  backgroundColor: colors["gray-50"],
+                  backgroundColor: colors["neutral-surface-card"],
                   opacity: 0.9,
                   marginTop: 8,
                   marginRight: 16,
@@ -84,10 +85,7 @@ export const FullScreenCameraView: FunctionComponent<
                   justifyContent: "center",
                 }}
               >
-                <CloseIcon
-                  size={28}
-                  color={colors["primary-surface-default"]}
-                />
+                <CloseIcon size={16} color={colors["neutral-icon-on-light"]} />
               </View>
             </TouchableOpacity>
           ) : null}
@@ -98,15 +96,21 @@ export const FullScreenCameraView: FunctionComponent<
           }}
         />
         <View>
-          <Svg width="217" height="217" fill="none" viewBox="0 0 217 217">
-            <Path
-              stroke={colors["primary-surface-default"]}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="6"
-              d="M34 3H3v31M3 183v31h31M183 3h31v31M214 183v31h-31"
+          <View
+            style={{
+              alignSelf: "center",
+            }}
+          >
+            <Image
+              style={{
+                width: metrics.screenWidth / 1.7,
+                height: metrics.screenWidth / 1.7,
+              }}
+              source={require("../../assets/image/img_scan.png")}
+              resizeMode="contain"
+              fadeDuration={0}
             />
-          </Svg>
+          </View>
           {isLoading ? (
             <View
               style={{

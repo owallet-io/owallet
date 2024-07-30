@@ -19,7 +19,7 @@ export const ValidatorThumbnail: FunctionComponent<{
         justifyContent: "center",
         width: size,
         height: size,
-        borderRadius: spacing["6"],
+        borderRadius: size,
         ...propStyle,
       }}
     >
@@ -32,7 +32,7 @@ export const ValidatorThumbnail: FunctionComponent<{
           source={{
             uri: url,
           }}
-          resizeMode={FastImage.resizeMode.contain}
+          resizeMode={FastImage.resizeMode.cover}
         />
       ) : (
         <PersonIcon size={size} color={colors["primary-text"]} />

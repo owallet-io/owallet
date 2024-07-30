@@ -1,3 +1,5 @@
+import { StdFee } from "@owallet/types";
+
 interface CurrencyInfo {
   prefix?: "cw20" | "trc20" | "erc20" | "bep20" | "ibc" | "";
   coinDenom?: string;
@@ -193,6 +195,7 @@ interface ResTxsInfo {
   gasUsed: string;
   gasWanted: string;
   fee: string;
+  stdFee?: StdFee;
   countTypeEvent: number;
   transfers: Partial<TransferDetail>[];
   isRefreshData?: boolean;

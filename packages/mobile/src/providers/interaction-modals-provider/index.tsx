@@ -31,10 +31,7 @@ export const InteractionModalsProivder: FunctionComponent = observer(
     // }, [permissionStore, permissionStore.waitingDatas]);
 
     const renderAccessModal = () => {
-      if (
-        permissionStore.waitingDatas &&
-        navigationRef?.current?.getCurrentRoute().name === "Web.dApp"
-      ) {
+      if (permissionStore.waitingDatas) {
         return permissionStore.waitingDatas.map((wd) => {
           return (
             <AccessModal
@@ -88,6 +85,10 @@ export const InteractionModalsProivder: FunctionComponent = observer(
 
         {modalStore.getOptions?.isOpen ? (
           <HomeBaseModal
+            bottomSheetModalConfig={{
+              snapPoints: ["40%", "70%"],
+              index: 1,
+            }}
             {...modalStore.getOptions}
             isOpen={true}
             close={() => modalStore.close()}

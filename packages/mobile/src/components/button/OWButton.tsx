@@ -27,6 +27,7 @@ export interface IOWButtonProps extends TouchableOpacityProps {
   contentAlign?: "left" | "center" | "right";
   borderStyle?: "dashed" | "none";
   colorLoading?: TextStyle["color"];
+  iconRight?: React.ReactNode;
 }
 
 const OWButton: FunctionComponent<IOWButtonProps> = ({
@@ -43,12 +44,14 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
   loading,
   children,
   borderStyle,
+  iconRight,
   contentAlign,
   colorLoading = "white",
   ...props
 }) => {
   const styleMapped = useMapStyles({ type, disabled, size, contentAlign });
   const styles = styling();
+  const { colors } = useTheme();
   return (
     <TouchableOpacity
       {...props}
@@ -65,7 +68,10 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
       ]}
     >
       {loading ? (
-        <LoadingSpinner color={colorLoading} size={20} />
+        <LoadingSpinner
+          color={colorLoading ?? colors["neutral-text-action-on-dark-bg"]}
+          size={20}
+        />
       ) : (
         <>
           {!!icon && icon}
@@ -79,10 +85,12 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
                 styleMapped.text,
                 textStyle,
               ]}
+              color={colors["neutral-text-action-on-dark-bg"]}
             >
               {label}
             </OWText>
           )}
+          {!!iconRight && iconRight}
         </>
       )}
     </TouchableOpacity>
@@ -93,12 +101,12 @@ export default OWButton;
 const styling = () => {
   const { colors } = useTheme();
   return StyleSheet.create({
-    paddingHaveIconAndNotFullwidth: { paddingHorizontal: 12 },
+    paddingHaveIconAndNotFullwidth: { paddingHorizontal: 8 },
     iconInBtn: { paddingLeft: 6 },
     dashed: {
       borderWidth: 1,
       borderStyle: "dashed",
-      borderColor: colors["background-btn-primary"],
+      borderColor: colors["neutral-border-default"],
     },
     hasIcon: { height: "auto" },
     fullWidth: { width: "100%" },
@@ -111,6 +119,7 @@ const styling = () => {
       textAlign: "center",
       fontWeight: "700",
       fontSize: 16,
+      color: colors["neutral-text-action-on-dark-bg"],
     },
     widthAuto: {
       width: "auto",

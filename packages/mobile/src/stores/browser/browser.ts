@@ -2,50 +2,41 @@ import { observable, action, makeObservable, computed } from "mobx";
 import { create, persist } from "mobx-persist";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const oraiLogo = require("../../assets/image/webpage/orai_logo.png");
-
 export const DAppInfos = [
   {
     id: 1,
     name: "Oraidex",
-    uri: "https://oraidex.io",
-    logo: oraiLogo,
+    uri: "https://oraidex.io/",
   },
   {
     id: 3,
     name: "Orderbook",
-    uri: "https://orderbook.orai.io",
-    logo: oraiLogo,
+    uri: "https://orderbook.oraidex.io/",
   },
   {
     id: 4,
     name: "Futures",
-    uri: "https://futures.oraidex.io",
-    logo: oraiLogo,
+    uri: "https://futures.oraidex.io/",
   },
   {
     id: 2,
     name: "Osmosis",
-    uri: "https://app.osmosis.zone",
-    logo: require("../../assets/image/webpage/osmosis_logo.png"),
+    uri: "https://app.osmosis.zone/",
   },
   {
     id: 6,
-    name: "Oraiscan",
-    uri: "https://scan.orai.io",
-    logo: oraiLogo,
+    name: "Oraichain Scan",
+    uri: "https://scan.orai.io/",
   },
   {
     id: 4,
     name: "Orchai App",
-    uri: "https://app.orchai.io",
-    logo: oraiLogo,
+    uri: "https://app.orchai.io/",
   },
   {
     id: 5,
     name: "aiRight",
-    uri: "https://airight.io",
-    logo: oraiLogo,
+    uri: "https://airight.io/",
   },
 ];
 
@@ -63,16 +54,17 @@ export class BrowserStore {
   protected inject_source: string | null;
 
   constructor() {
-    makeObservable(this);
     this.bookmarks = [...DAppInfos];
     this.tabs = [];
     this.inject_source = null;
+    makeObservable(this);
   }
 
   @action
   updateBookmarks(bookmarks) {
     this.bookmarks = bookmarks;
   }
+
   @action
   update_inject(inject: string) {
     this.inject_source = inject;
@@ -80,17 +72,28 @@ export class BrowserStore {
 
   @action
   removeBoorkmark(boorkmark) {
-    const rIndex = this.bookmarks.findIndex((b) => b.uri === boorkmark.uri);
-    if (rIndex > -1) {
-      this.bookmarks.splice(rIndex, 1);
+    if (this.bookmarks?.length <= 0) return;
+    const tempBookMarks = [...this.bookmarks];
+    const rIndex = tempBookMarks.findIndex((b) =>
+      b?.uri?.includes(boorkmark?.uri)
+    );
+    if (rIndex !== -1) {
+      tempBookMarks.splice(rIndex, 1);
+      this.bookmarks = tempBookMarks;
     }
   }
 
   @action
   addBoorkmark(boorkmark) {
-    const rIndex = this.bookmarks.findIndex((b) => b.uri === boorkmark?.uri);
-    if (rIndex < 0) {
-      this.bookmarks.push(boorkmark);
+    const tempBookMarks = this.bookmarks?.length > 0 ? [...this.bookmarks] : [];
+    const rIndex = tempBookMarks.findIndex((b) =>
+      b?.uri?.includes(boorkmark?.uri)
+    );
+    if (rIndex === -1) {
+      tempBookMarks.push(boorkmark);
+      this.bookmarks = tempBookMarks;
+    } else {
+      this.removeBoorkmark(boorkmark);
     }
   }
 

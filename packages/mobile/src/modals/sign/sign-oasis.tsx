@@ -123,8 +123,8 @@ export const SignOasisModal: FunctionComponent<{
               }}
               style={{
                 backgroundColor: signInteractionStore.isLoading
-                  ? colors["gray-400"]
-                  : colors["purple-900"],
+                  ? colors["primary-surface-disable"]
+                  : colors["primary-surface-default"],
               }}
               loading={signInteractionStore.isLoading || loading}
               onPress={async () => {
@@ -164,7 +164,6 @@ export const SignOasisModal: FunctionComponent<{
                       "Something went wrong! Please try again later.",
                     type: "danger",
                   });
-                  console.log("error tx builder Oasis", error);
                 }
               }}
             />

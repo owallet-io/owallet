@@ -6,7 +6,7 @@ import {
   AccountStore,
   SignInteractionStore,
   TokensStore,
-  QueriesWithCosmosAndSecretAndCosmwasmAndEvmAndBitcoin,
+  QueriesWrappedTron,
   AccountWithAll,
   LedgerInitStore,
   IBCCurrencyRegsitrar,
@@ -25,13 +25,11 @@ import { OWallet, Ethereum, Bitcoin, TronWeb } from "@owallet/provider";
 import { KeychainStore } from "./keychain";
 import { FeeType } from "@owallet/hooks";
 import {
-  AmplitudeApiKey,
   EmbedChainInfos,
   UIConfigStore,
   FiatCurrencies,
 } from "@owallet/common";
 import { AnalyticsStore, NoopAnalyticsClient } from "@owallet/analytics";
-import { Amplitude } from "@amplitude/react-native";
 import { ChainIdHelper } from "@owallet/cosmos";
 import { FiatCurrency } from "@owallet/types";
 import { ModalStore } from "./modal";
@@ -41,6 +39,7 @@ import { ChainInfoInner } from "@owallet/stores";
 import { ChainInfo } from "@owallet/types";
 import { TxsStore } from "./txs";
 import { universalSwapStore, UniversalSwapStore } from "./universal_swap";
+import { HugeQueriesStore } from "@src/stores/huge-queries";
 
 export class RootStore {
   public readonly uiConfigStore: UIConfigStore;
@@ -51,8 +50,8 @@ export class RootStore {
   public readonly permissionStore: PermissionStore;
   public readonly ledgerInitStore: LedgerInitStore;
   public readonly signInteractionStore: SignInteractionStore;
-
-  public readonly queriesStore: QueriesStore<QueriesWithCosmosAndSecretAndCosmwasmAndEvmAndBitcoin>;
+  public readonly hugeQueriesStore: HugeQueriesStore;
+  public readonly queriesStore: QueriesStore<QueriesWrappedTron>;
   public readonly accountStore: AccountStore<AccountWithAll>;
   public readonly priceStore: CoinGeckoPriceStore;
   public readonly tokensStore: TokensStore<ChainInfoWithEmbed>;
@@ -147,7 +146,7 @@ export class RootStore {
           new RNMessageRequesterInternal()
         );
       },
-      QueriesWithCosmosAndSecretAndCosmwasmAndEvmAndBitcoin
+      QueriesWrappedTron
     );
 
     this.accountStore = new AccountStore<AccountWithAll>(
@@ -199,6 +198,22 @@ export class RootStore {
           },
         },
         chainOpts: this.chainStore.chainInfos.map((chainInfo) => {
+          // In evm network, default gas for sending
+          if (chainInfo.networkType.startsWith("evm")) {
+            return {
+              chainId: chainInfo.chainId,
+              msgOpts: {
+                send: {
+                  native: {
+                    gas: 21000,
+                  },
+                  erc20: {
+                    gas: 21000,
+                  },
+                },
+              },
+            };
+          }
           if (chainInfo.chainId.startsWith("osmosis")) {
             return {
               chainId: chainInfo.chainId,
@@ -260,14 +275,7 @@ export class RootStore {
 
     this.analyticsStore = new AnalyticsStore(
       (() => {
-        if (!AmplitudeApiKey) {
-          return new NoopAnalyticsClient();
-        } else {
-          const amplitudeClient = Amplitude.getInstance();
-          amplitudeClient.init(AmplitudeApiKey);
-
-          return amplitudeClient;
-        }
+        return new NoopAnalyticsClient();
       })(),
       {
         logEvent: (eventName, eventProperties) => {
@@ -301,6 +309,13 @@ export class RootStore {
     this.modalStore = new ModalStore();
     this.appInitStore = appInit;
     this.universalSwapStore = universalSwapStore;
+    this.hugeQueriesStore = new HugeQueriesStore(
+      this.chainStore,
+      this.queriesStore,
+      this.accountStore,
+      this.priceStore,
+      this.keyRingStore
+    );
     this.notificationStore = notification;
     this.sendStore = new SendStore();
     this.txsStore = (currentChain: ChainInfoInner<ChainInfo>): TxsStore =>

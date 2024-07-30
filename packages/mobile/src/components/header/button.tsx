@@ -8,8 +8,6 @@ import { spacing } from "../../themes";
 export const HeaderLeftButton: FunctionComponent<
   StackHeaderLeftButtonProps
 > = ({ children, onPress }) => {
-  const style = useStyle();
-
   return (
     <View
       style={{
@@ -19,7 +17,7 @@ export const HeaderLeftButton: FunctionComponent<
       <TouchableOpacity
         onPress={onPress}
         style={{
-          padding: spacing["10"],
+          padding: spacing["30"],
         }}
       >
         {children}

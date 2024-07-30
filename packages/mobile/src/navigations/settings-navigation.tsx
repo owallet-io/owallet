@@ -19,6 +19,7 @@ import { SettingSelectAccountScreen } from "@src/screens/setting/screens/select-
 import { HeaderAddIcon } from "@src/components/header/icon";
 import useHeaderOptions from "@src/hooks/use-header";
 import { BackupMnemonicScreen } from "@src/screens/register/mnemonic/backup-mnemonic";
+import { NewSettingScreen } from "@src/screens/setting/setting";
 const Stack = createStackNavigator();
 export const SettingStackScreen: FC = () => {
   const style = useStyle();
@@ -46,7 +47,8 @@ export const SettingStackScreen: FC = () => {
           headerTitleStyle: style.flatten(["h3", "color-text-black-high"]),
         }}
         name={SCREENS.Setting}
-        component={SettingScreen}
+        // component={SettingScreen}
+        component={NewSettingScreen}
       />
       <Stack.Screen
         name={SCREENS.SettingSelectAccount}
@@ -57,6 +59,9 @@ export const SettingStackScreen: FC = () => {
                 analyticsStore.logEvent("Add additional account started");
                 navigation.navigate("Register", {
                   screen: "Register.Intro",
+                  params: {
+                    canBeBack: true,
+                  },
                 });
               }}
             >

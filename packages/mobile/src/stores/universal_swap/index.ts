@@ -6,10 +6,16 @@ export class UniversalSwapStore {
   @persist("object")
   @observable
   protected amounts: { string: string } | {};
+  @persist("object")
+  @observable
+  protected tokenReload: Array<any>;
+  @observable
+  protected loadStatus: { isLoad: boolean; time: Date };
 
   constructor() {
     makeAutoObservable(this);
     this.amounts = {};
+    this.loadStatus = { isLoad: false, time: new Date() };
   }
 
   @computed
@@ -17,14 +23,43 @@ export class UniversalSwapStore {
     return this.amounts;
   }
 
+  @computed
+  get getTokenReload() {
+    return this.tokenReload;
+  }
+
+  @computed
+  get getLoadStatus() {
+    return this.loadStatus;
+  }
+
   @action
   updateAmounts(amounts) {
-    this.amounts = { ...this.amounts, ...amounts };
+    const copy = Object.assign({}, this.amounts);
+
+    const tmpAmounts = Object.assign(copy, amounts);
+
+    this.amounts = tmpAmounts;
+  }
+
+  @action
+  updateTokenReload(tokens) {
+    this.tokenReload = tokens;
+  }
+
+  @action
+  setLoaded(loaded: boolean) {
+    this.loadStatus = { ...this.loadStatus, isLoad: loaded, time: new Date() };
   }
 
   @action
   clearAmounts() {
     this.amounts = {};
+  }
+
+  @action
+  clearTokenReload() {
+    this.tokenReload = [];
   }
 }
 
