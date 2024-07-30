@@ -21,7 +21,7 @@ export class ObservableEvmContractChainQuery<
   }
 
   protected canFetch(): boolean {
-    return this.contractAddress.length !== 0;
+    return this.contractAddress?.length !== 0;
   }
 
   protected async fetchResponse(

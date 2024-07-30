@@ -29,16 +29,16 @@
     "@owallet/router": "^0.9.6",
     "@owallet/types": "^0.9.12",
     "@owallet/unit": "^0.9.12",
-    "axios": "^0.27.2",
+    "axios": "^1.7.2",
     "buffer": "^6.0.3",
     "cosmjs-types": "^0.6.1",
     "deepmerge": "^4.2.2",
     "eventemitter3": "^4.0.7",
     "long": "^4.0.0",
-    "mobx": "^6.1.7",
-    "mobx-utils": "^6.0.3",
+    "mobx": "^6.13.1",
+    "mobx-utils": "^6.0.8",
     "p-queue": "^6.6.2",
     "utility-types": "^3.10.0",
-    "web3": "1.7.4"
+    "web3": "1.10.0"
   }
 }

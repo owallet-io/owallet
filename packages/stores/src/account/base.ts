@@ -26,7 +26,6 @@ import { QueriesSetBase, QueriesStore } from "../query";
 import {
   DenomHelper,
   toGenerator,
-  fetchAdapter,
   EVMOS_NETWORKS,
   TxRestCosmosClient,
   OwalletEvent,
@@ -37,9 +36,10 @@ import {
   isBase58,
   getBase58Address,
   getEvmAddress,
+  TxRestTronClient,
 } from "@owallet/common";
 import Web3 from "web3";
-import ERC20_ABI from "../query/evm/erc20";
+import ERC20_ABI from "human-standard-token-abi";
 import {
   BroadcastMode,
   makeSignDoc,
@@ -74,12 +74,14 @@ import { ETH } from "@hanchon/ethermint-address-converter";
 import { request } from "@owallet/background";
 import { AddressesLedger } from "@owallet/types";
 import { wallet } from "@owallet/bitcoin";
-
+import TronWebProvider from "tronweb";
 import { getEip712TypedDataBasedOnChainId } from "./utils";
+
 export interface Coin {
   readonly denom: string;
   readonly amount: string;
 }
+
 export enum WalletStatus {
   NotInit = "NotInit",
   Loading = "Loading",
@@ -87,6 +89,7 @@ export enum WalletStatus {
   NotExist = "NotExist",
   Rejected = "Rejected",
 }
+
 export type ExtraOptionSendToken = {
   type: string;
   from?: string;
@@ -347,13 +350,16 @@ export class AccountSetBase<MsgOpts, Queries> {
     this._address = null;
     this.pubKey = new Uint8Array(0);
   }
+
   @action
   public setAddressTypeBtc(type: AddressBtcType): void {
     this._addressType = type;
   }
+
   get walletVersion(): string | undefined {
     return this._walletVersion;
   }
+
   get address(): Uint8Array | null {
     return this._address;
   }
@@ -364,6 +370,7 @@ export class AccountSetBase<MsgOpts, Queries> {
       this.walletStatus === WalletStatus.Loaded && this.bech32Address !== ""
     );
   }
+
   getAddressDisplay(
     keyRingLedgerAddresses: AddressesLedger,
     toDisplay: boolean = true
@@ -402,6 +409,7 @@ export class AccountSetBase<MsgOpts, Queries> {
     }
     return this._bech32Address;
   }
+
   async sendMsgs(
     type: string | "unknown",
     msgs:
@@ -478,57 +486,28 @@ export class AccountSetBase<MsgOpts, Queries> {
       }
     }
 
+    await this.handleBroadcastedTx(txHash, fee, onBroadcasted, onFulfill);
+  }
+
+  async handleBroadcastedTx(
+    txHash: Uint8Array,
+    fee: StdFee,
+    onBroadcasted?: (txHash: Uint8Array) => void,
+    onFulfill?: (tx: any) => void
+  ) {
     if (this.opts.preTxEvents?.onBroadcasted) {
       this.opts.preTxEvents.onBroadcasted(txHash);
     }
     if (onBroadcasted) {
       onBroadcasted(txHash);
     }
-    const isInj = this.chainId.startsWith("injective");
-    if (isInj) {
-      const chainInfo = this.chainGetter.getChain(this.chainId);
-      const restApi = chainInfo?.rest;
-      const restConfig = chainInfo?.restConfig;
-      const txRestCosmos = new TxRestCosmosClient(restApi, restConfig);
-      const txHashRoot = Buffer.from(txHash).toString("hex");
-      try {
-        const res = await txRestCosmos.fetchTxPoll(txHashRoot);
-        // After sending tx, the balances is probably changed due to the fee.
-        for (const feeAmount of fee.amount) {
-          const bal = this.queries.queryBalances
-            .getQueryBech32Address(this.bech32Address)
-            .balances.find(
-              (bal) => bal.currency.coinMinimalDenom === feeAmount.denom
-            );
-
-          if (bal) {
-            bal.fetch();
-          }
-        }
-        OwalletEvent.txHashEmit(txHashRoot, res);
-      } catch (error) {
-        OwalletEvent.txHashEmit(txHashRoot, null);
-      } finally {
-        runInAction(() => {
-          this._isSendingMsg = false;
-        });
-      }
-    }
-
-    const txTracer = new TendermintTxTracer(
-      this.chainGetter.getChain(this.chainId).rpc,
-      "/websocket",
-      {
-        wsObject: this.opts.wsObject,
-      }
-    );
-    txTracer.traceTx(txHash).then((tx) => {
-      txTracer.close();
-
-      runInAction(() => {
-        this._isSendingMsg = false;
-      });
-
+    const chainInfo = this.chainGetter.getChain(this.chainId);
+    const restApi = chainInfo?.rest;
+    const restConfig = chainInfo?.restConfig;
+    const txRestCosmos = new TxRestCosmosClient(restApi, restConfig);
+    const txHashRoot = Buffer.from(txHash).toString("hex");
+    try {
+      const tx = await txRestCosmos.fetchTxPoll(txHashRoot);
       // After sending tx, the balances is probably changed due to the fee.
       for (const feeAmount of fee.amount) {
         const bal = this.queries.queryBalances
@@ -543,10 +522,11 @@ export class AccountSetBase<MsgOpts, Queries> {
       }
 
       // Always add the tx hash data.
+      //@ts-ignore
       if (tx && !tx.hash) {
+        //@ts-ignore
         tx.hash = Buffer.from(txHash).toString("hex");
       }
-
       if (this.opts.preTxEvents?.onFulfill) {
         this.opts.preTxEvents.onFulfill(tx);
       }
@@ -554,7 +534,15 @@ export class AccountSetBase<MsgOpts, Queries> {
       if (onFulfill) {
         onFulfill(tx);
       }
-    });
+      OwalletEvent.txHashEmit(txHashRoot, tx);
+    } catch (error) {
+      console.log(error, "error");
+      OwalletEvent.txHashEmit(txHashRoot, null);
+    } finally {
+      runInAction(() => {
+        this._isSendingMsg = false;
+      });
+    }
   }
 
   async sendTronToken(
@@ -569,78 +557,201 @@ export class AccountSetBase<MsgOpts, Queries> {
     tokenTrc20?: object
   ) {
     try {
+      runInAction(() => {
+        this._isSendingMsg = "send";
+      });
       const ethereum = (await this.getEthereum())!;
-      const signResponse = await ethereum.signAndBroadcastTron(this.chainId, {
+      const tx = await ethereum.signAndBroadcastTron(this.chainId, {
         amount,
         currency,
         recipient,
         address,
         tokenTrc20,
       });
+      if (!tx?.txid) throw Error("Transaction Rejected");
+      if (onTxEvents?.onBroadcasted) {
+        onTxEvents?.onBroadcasted(tx.txid);
+      }
+
+      // After sending tx, the balances is probably changed due to the fee.
+      this.queriesStore
+        .get(this.chainId)
+        .queryBalances.getQueryBech32Address(this.evmosHexAddress)
+        .fetch();
+
+      this.queriesStore
+        .get(this.chainId)
+        //@ts-ignore
+        .tron.queryAccount.getQueryWalletAddress(
+          getBase58Address(this.evmosHexAddress)
+        )
+        .fetch();
+
+      if (this.opts.preTxEvents?.onFulfill) {
+        this.opts.preTxEvents.onFulfill({
+          ...tx,
+          code: 0,
+        });
+      }
 
       if (onTxEvents?.onFulfill) {
-        onTxEvents?.onFulfill(signResponse);
+        onTxEvents?.onFulfill({
+          ...tx,
+          code: 0,
+        });
       }
-      return {
-        txHash: signResponse,
-      };
+      OwalletEvent.txHashEmit(tx.txid, {
+        ...tx,
+        code: 0,
+      });
+      // }
     } catch (error) {
-      console.log("error sendTronToken", error);
+      // OwalletEvent.txHashEmit(txId, null);
+      if (this.opts.preTxEvents?.onBroadcastFailed) {
+        this.opts.preTxEvents.onBroadcastFailed(error);
+      }
+
+      if (
+        onTxEvents &&
+        "onBroadcastFailed" in onTxEvents &&
+        onTxEvents.onBroadcastFailed
+      ) {
+        //@ts-ignore
+        onTxEvents.onBroadcastFailed(error);
+      }
+      console.log(error, "error");
+      runInAction(() => {
+        this._isSendingMsg = false;
+      });
+      throw error;
+    } finally {
+      runInAction(() => {
+        this._isSendingMsg = false;
+      });
     }
   }
 
-  async sendEvmMsgs(
-    type: string | "unknown",
-    msgs: Msg,
-    memo: string = "",
-    fee: StdFeeEthereum,
-    signOptions?: OWalletSignOptions,
-    onTxEvents?:
-      | ((tx: any) => void)
-      | {
-          onBroadcastFailed?: (e?: Error) => void;
-          onBroadcasted?: (txHash: Uint8Array) => void;
-          onFulfill?: (tx: any) => void;
-        }
-  ) {
+  async sleep(milliseconds) {
+    return new Promise((resolve) => setTimeout(resolve, milliseconds));
+  }
+
+  async waitForPendingTransaction(rpc, txHash, onFulfill, count = 0) {
+    if (count > 10) {
+      OwalletEvent.txHashEmit(txHash, { code: 1 });
+      return;
+    }
+
+    try {
+      let expectedBlockTime = 3000;
+      let transactionReceipt = null;
+      let retryCount = 0;
+      while (!transactionReceipt) {
+        // Waiting expectedBlockTime until the transaction is mined
+        transactionReceipt = await request(rpc, "eth_getTransactionReceipt", [
+          txHash,
+        ]);
+        console.log(transactionReceipt, "tran receipt");
+
+        retryCount += 1;
+        if (retryCount === 10) break;
+        await this.sleep(expectedBlockTime);
+      }
+
+      OwalletEvent.txHashEmit(txHash, { code: 0 });
+
+      if (this.opts.preTxEvents?.onFulfill) {
+        this.opts.preTxEvents.onFulfill(transactionReceipt);
+      }
+
+      if (onFulfill) {
+        onFulfill(transactionReceipt);
+      }
+    } catch (error) {
+      await this.sleep(3000);
+      this.waitForPendingTransaction(rpc, txHash, onFulfill, count + 1);
+    }
+  }
+
+  async handleErc20Transaction(msgs, fee) {
+    const { value } = msgs;
+    const provider = this.chainGetter.getChain(this.chainId).rpc;
+    const web3 = new Web3(provider);
+    const contract = new web3.eth.Contract(ERC20_ABI, value.contract_addr, {
+      from: value.from,
+    });
+    const data = contract.methods
+      .transfer(value.recipient, value.amount)
+      .encodeABI();
+
+    const txObj = {
+      gas: web3.utils.toHex(value.gas),
+      to: value.contract_addr,
+      value: "0x0",
+      from: value.from,
+      data,
+    };
+
+    return await this.broadcastErc20EvmMsgs(txObj, fee);
+  }
+
+  async handleEvmTransaction(msgs, fee, signOptions) {
+    if (msgs.type === "erc20") {
+      return await this.handleErc20Transaction(msgs, fee);
+    } else {
+      return await this.broadcastEvmMsgs(msgs, fee, signOptions);
+    }
+  }
+
+  handleTxEvents(txHash, onTxEvents) {
+    let onBroadcasted;
+    let onFulfill;
+
+    if (onTxEvents) {
+      if (typeof onTxEvents === "function") {
+        onFulfill = onTxEvents;
+      } else {
+        onBroadcasted = onTxEvents.onBroadcasted;
+        onFulfill = onTxEvents.onFulfill;
+      }
+    }
+
+    if (this.opts.preTxEvents?.onBroadcasted) {
+      this.opts.preTxEvents.onBroadcasted(txHash);
+    }
+
+    if (onBroadcasted) {
+      onBroadcasted(txHash);
+    }
+
+    if (this.chainId === ChainIdEnum.Oasis) {
+      console.log(txHash, "txHash");
+      if (this.opts.preTxEvents?.onFulfill) {
+        this.opts.preTxEvents.onFulfill(txHash);
+      }
+
+      if (onFulfill) {
+        onFulfill(txHash);
+      }
+      return;
+    }
+
+    const rpc = this.chainGetter.getChain(this.chainId).rest;
+    this.waitForPendingTransaction(rpc, txHash, onFulfill);
+  }
+
+  async sendEvmMsgs(type, msgs, memo = "", fee, signOptions, onTxEvents) {
     runInAction(() => {
       this._isSendingMsg = type;
     });
 
-    let txHash: string;
+    let txHash;
 
     try {
-      if (msgs.type === "erc20") {
-        const { value } = msgs;
-        const provider = this.chainGetter.getChain(this.chainId).rest;
-        const web3 = new Web3(provider);
-        const contract = new web3.eth.Contract(
-          // @ts-ignore
-          ERC20_ABI,
-          value.contract_addr,
-          { from: value.from }
-        );
-        let data = contract.methods
-          .transfer(value.recipient, value.amount)
-          .encodeABI();
+      const result = await this.handleEvmTransaction(msgs, fee, signOptions);
+      txHash = result.txHash;
 
-        let txObj = {
-          gas: web3.utils.toHex(value.gas),
-          to: value.contract_addr,
-          value: "0x0", // Must be 0x0, maybe this field is not in use while send erc20 tokens, but still need
-          from: value.from,
-          data,
-        };
-
-        const result = await this.broadcastErc20EvmMsgs(txObj, fee);
-
-        txHash = result.txHash;
-      } else {
-        const result = await this.broadcastEvmMsgs(msgs, fee, signOptions);
-        txHash = result.txHash;
-      }
       if (!txHash) throw Error("Transaction Rejected");
-    } catch (e: any) {
+    } catch (e) {
       runInAction(() => {
         this._isSendingMsg = false;
       });
@@ -660,77 +771,13 @@ export class AccountSetBase<MsgOpts, Queries> {
       throw e;
     }
 
-    let onBroadcasted: ((txHash: Uint8Array) => void) | undefined;
-    let onFulfill: ((tx: any) => void) | undefined;
-
-    if (onTxEvents) {
-      if (typeof onTxEvents === "function") {
-        onFulfill = onTxEvents;
-      } else {
-        onBroadcasted = onTxEvents.onBroadcasted;
-        onFulfill = onTxEvents.onFulfill;
-      }
-    }
-
-    const rpc = this.chainGetter.getChain(this.chainId).rest;
-
     runInAction(() => {
       this._isSendingMsg = false;
     });
 
-    if (this.chainId === ChainIdEnum.Oasis) {
-      console.log(txHash, "txHash");
-      if (this.opts.preTxEvents?.onFulfill) {
-        this.opts.preTxEvents.onFulfill(txHash);
-      }
-
-      if (onFulfill) {
-        onFulfill(txHash);
-      }
-      return;
-    }
-    const sleep = (milliseconds) => {
-      return new Promise((resolve) => setTimeout(resolve, milliseconds));
-    };
-
-    const waitForPendingTransaction = async (
-      rpc,
-      txHash,
-      onFulfill,
-      count = 0
-    ) => {
-      if (count > 10) return;
-
-      try {
-        let expectedBlockTime = 3000;
-        let transactionReceipt = null;
-        let retryCount = 0;
-        while (!transactionReceipt) {
-          // Waiting expectedBlockTime until the transaction is mined
-          transactionReceipt = await request(rpc, "eth_getTransactionReceipt", [
-            txHash,
-          ]);
-
-          retryCount += 1;
-          if (retryCount === 10) break;
-          await sleep(expectedBlockTime);
-        }
-
-        if (this.opts.preTxEvents?.onFulfill) {
-          this.opts.preTxEvents.onFulfill(transactionReceipt);
-        }
-
-        if (onFulfill) {
-          onFulfill(transactionReceipt);
-        }
-      } catch (error) {
-        await sleep(3000);
-        waitForPendingTransaction(rpc, txHash, onFulfill, count + 1);
-      }
-    };
-
-    waitForPendingTransaction(rpc, txHash, onFulfill);
+    this.handleTxEvents(txHash, onTxEvents);
   }
+
   async sendBtcMsgs(
     type: string | "unknown",
     msgs: any,
@@ -768,21 +815,19 @@ export class AccountSetBase<MsgOpts, Queries> {
         this._isSendingMsg = false;
       });
 
-      if (this.opts.preTxEvents?.onBroadcastFailed) {
-        this.opts.preTxEvents.onBroadcastFailed(e);
-      }
+      this.opts?.preTxEvents?.onBroadcastFailed(e);
 
-      if (
-        onTxEvents &&
+      onTxEvents &&
         "onBroadcastFailed" in onTxEvents &&
-        onTxEvents.onBroadcastFailed
-      ) {
         onTxEvents.onBroadcastFailed(e);
-      }
 
       throw e;
     }
 
+    this.onHandleEvents(onTxEvents, txHash);
+  }
+
+  async onHandleEvents(onTxEvents, txHash) {
     let onBroadcasted: ((txHash: Uint8Array) => void) | undefined;
     let onFulfill: ((tx: any) => void) | undefined;
 
@@ -855,6 +900,7 @@ export class AccountSetBase<MsgOpts, Queries> {
     }
     return parseInt(chainId);
   }
+
   protected async processSignedTxCosmos(
     msgs: AminoMsgsOrWithProtoMsgs,
     fee: StdFee,
@@ -1053,6 +1099,7 @@ export class AccountSetBase<MsgOpts, Queries> {
     }).finish();
     return signedTx;
   }
+
   // TODO; do we have to add a new broadcast msg for Ethereum? -- Update: Added done
   // Return the tx hash.
   protected async broadcastMsgs(
@@ -1082,6 +1129,7 @@ export class AccountSetBase<MsgOpts, Queries> {
       txHash: await sendTx(this.chainId, signedTx, mode as BroadcastMode),
     };
   }
+
   protected async broadcastBtcMsgs(
     msgs: any,
     fee: StdFee,
@@ -1115,6 +1163,7 @@ export class AccountSetBase<MsgOpts, Queries> {
       throw error;
     }
   }
+
   // Return the tx hash.
   protected async broadcastEvmMsgs(
     msgs: Msg,
@@ -1127,7 +1176,7 @@ export class AccountSetBase<MsgOpts, Queries> {
       if (this.walletStatus !== WalletStatus.Loaded) {
         throw new Error(`Wallet is not loaded: ${this.walletStatus}`);
       }
-
+      console.log("🚀 ~ AccountSetBase<MsgOpts, ~ fee:", fee);
       if (Object.values(msgs).length === 0) {
         throw new Error("There is no msg to send");
       }
@@ -1206,7 +1255,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         baseURL: chainInfo.rest,
       },
       ...chainInfo.restConfig,
-      adapter: fetchAdapter,
+      adapter: "fetch",
     });
   }
 
@@ -1221,13 +1270,16 @@ export class AccountSetBase<MsgOpts, Queries> {
   get bech32Address(): string {
     return this._bech32Address;
   }
+
   get legacyAddress(): string {
     return this._legacyAddress;
   }
+
   @computed
   get addressType(): AddressBtcType {
     return this._addressType;
   }
+
   @computed
   get btcAddress(): string {
     if (this._addressType === AddressBtcType.Legacy) {
@@ -1235,6 +1287,12 @@ export class AccountSetBase<MsgOpts, Queries> {
     }
     return this._bech32Address;
   }
+
+  @computed
+  get allBtcAddresses(): { bech32: string; legacy: string } {
+    return { bech32: this._bech32Address, legacy: this.legacyAddress };
+  }
+
   get isNanoLedger(): boolean {
     return this._isNanoLedger;
   }

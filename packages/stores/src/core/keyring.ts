@@ -8,6 +8,7 @@ import {
   CreateMnemonicKeyMsg,
   CreatePrivateKeyMsg,
   DeleteKeyRingMsg,
+  SimulateSignTronMsg,
   UpdateNameKeyRingMsg,
   GetIsKeyStoreCoinTypeSetMsg,
   GetMultiKeyStoreInfoMsg,
@@ -25,7 +26,7 @@ import {
   ExportKeyRingDatasMsg,
   ChangeChainMsg,
 } from "@owallet/background";
-import { BIP44HDPath } from "@owallet/types";
+import { BIP44HDPath, ISimulateSignTron } from "@owallet/types";
 import { computed, flow, makeObservable, observable, runInAction } from "mobx";
 
 import { InteractionStore } from "./interaction";
@@ -33,7 +34,6 @@ import { ChainGetter } from "../common";
 import { BIP44, AddressesLedger } from "@owallet/types";
 import { DeepReadonly } from "utility-types";
 import { toGenerator } from "@owallet/common";
-
 export class KeyRingSelectablesStore {
   @observable
   isInitializing: boolean = false;
@@ -328,8 +328,13 @@ export class KeyRingStore {
     return localStorage.getItem("persistent") !== null;
   }
 
-  async showKeyRing(index: number, password: string) {
-    const msg = new ShowKeyRingMsg(index, password);
+  async showKeyRing(
+    index: number,
+    password: string,
+    chainId: string | number,
+    isShowPrivKey: boolean = false
+  ) {
+    const msg = new ShowKeyRingMsg(index, password, chainId, isShowPrivKey);
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
@@ -350,6 +355,16 @@ export class KeyRingStore {
       this.dispatchKeyStoreChangeEvent();
       this.selectablesMap.forEach((selectables) => selectables.refresh());
     }
+  }
+
+  @flow
+  *simulateSignTron(transaction: any) {
+    const msgSignTron = new SimulateSignTronMsg(transaction);
+    const result = yield* toGenerator(
+      this.requester.sendMessage(BACKGROUND_PORT, msgSignTron)
+    );
+    console.log(result, "result");
+    return result;
   }
 
   @flow

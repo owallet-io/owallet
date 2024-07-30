@@ -1,6 +1,6 @@
 import { ObservableQuery } from "../common";
-import { KVStore, fetchAdapter } from "@owallet/common";
-import Axios, { AxiosInstance } from "axios";
+import { KVStore } from "@owallet/common";
+import Axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 import { override } from "mobx";
 import { ChainGetter } from "../common";
 import { HasMapStore } from "../common";
@@ -20,16 +20,18 @@ export class ObservableChainQuery<
     chainId: string,
     chainGetter: ChainGetter,
     url: string,
-    data?: { [key: string]: any }
+    data?: { [key: string]: any },
+    protected readonly baseURL?: string,
+    protected readonly restConfig?: AxiosRequestConfig<any>
   ) {
     const chainInfo = chainGetter.getChain(chainId);
 
     const instance = Axios.create({
       ...{
-        baseURL: chainInfo.rest,
+        baseURL: baseURL ? baseURL : chainInfo.rest,
       },
-      ...chainInfo.restConfig,
-      adapter: fetchAdapter,
+      ...(restConfig ? restConfig : chainInfo.restConfig),
+      adapter: "fetch",
     });
 
     super(kvStore, instance, url, data ? { data } : null);
@@ -45,9 +47,9 @@ export class ObservableChainQuery<
 
     return Axios.create({
       ...{
-        baseURL: chainInfo.rest,
+        baseURL: this.baseURL ? this.baseURL : chainInfo.rest,
       },
-      ...chainInfo.restConfig,
+      ...(this.restConfig ? this.restConfig : chainInfo.restConfig),
     });
   }
 

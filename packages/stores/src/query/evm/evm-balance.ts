@@ -23,11 +23,6 @@ export class ObservableQueryEvmBalanceInner extends ObservableChainQuery<
     chainGetter: ChainGetter,
     protected readonly address: string
   ) {
-    console.log(
-      "🚀 ~ ObservableQueryEvmBalanceInner ~ constructor ~ chainId:",
-      chainId,
-      address
-    );
     super(kvStore, chainId, chainGetter, "", {
       jsonrpc: "2.0",
       method: "eth_getBalance",
@@ -37,7 +32,7 @@ export class ObservableQueryEvmBalanceInner extends ObservableChainQuery<
   }
 
   protected canFetch(): boolean {
-    return this.address.length !== 0;
+    return this.address?.length !== 0;
   }
   protected async getOasisBalance() {
     try {
