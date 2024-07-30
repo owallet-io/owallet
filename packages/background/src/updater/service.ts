@@ -1,6 +1,6 @@
 import { inject, singleton, delay } from "tsyringe";
 import { TYPES } from "../types";
-
+import get from "lodash/get";
 import { ChainInfo } from "@owallet/types";
 import Axios from "axios";
 import { KVStore } from "@owallet/common";
@@ -172,7 +172,7 @@ export class ChainUpdaterService {
       };
     }>("/status");
 
-    const resultChainId = result?.data?.result?.node_info?.network;
+    const resultChainId = get(result, ['data', 'result', 'node_info', 'network']);
 
     const version = ChainIdHelper.parse(chainId);
     const fetchedVersion = ChainIdHelper.parse(resultChainId);
