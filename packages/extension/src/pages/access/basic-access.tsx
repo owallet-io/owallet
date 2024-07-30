@@ -1,15 +1,14 @@
 import React, { FunctionComponent, useMemo } from "react";
-
 import { useInteractionInfo } from "@owallet/hooks";
-import { Button } from "reactstrap";
-
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
-
 import style from "./style.module.scss";
 import { EmptyLayout } from "../../layouts/empty-layout";
 import { FormattedMessage } from "react-intl";
 import classnames from "classnames";
+import { Button } from "../../components/common/button";
+import { Text } from "../../components/common/text";
+import colors from "../../theme/colors";
 
 export const AccessPage: FunctionComponent = observer(() => {
   const { chainStore, permissionStore } = useStore();
@@ -61,46 +60,69 @@ export const AccessPage: FunctionComponent = observer(() => {
     <EmptyLayout style={{ height: "100%", paddingTop: "80px" }}>
       <div className={style.container}>
         <img
-          src={require("../../public/assets/orai_wallet_logo.png")}
+          src={require("assets/images/img_owallet.png")}
           alt="logo"
           style={{ height: "92px", maxWidth: 92, margin: "0 auto" }}
         />
         <h1 className={style.header}>
-          <FormattedMessage id="access.title" />
+          <Text size={22} weight={"600"} color={colors["neutral-text-title"]}>
+            <FormattedMessage id="access.title" />
+          </Text>
         </h1>
         <p className={style.paragraph}>
-          <FormattedMessage
-            id="access.paragraph"
-            values={{
-              host,
-              chainId: chainIds,
-              // eslint-disable-next-line react/display-name
-              b: (...chunks: any) => <b>{chunks}</b>,
-            }}
-          />
+          <Text
+            size={16}
+            weight={"600"}
+            color={colors["primary-surface-default"]}
+          >
+            <FormattedMessage
+              id="access.paragraph"
+              values={{
+                host,
+                chainId: chainIds,
+                // eslint-disable-next-line react/display-name
+                b: (...chunks: any) => <b>{chunks}</b>,
+              }}
+            />
+          </Text>
         </p>
         <div className={style.permission}>
-          <FormattedMessage id="access.permission.title" />
+          <Text size={12} color={colors["neutral-text-body"]}>
+            <FormattedMessage id="access.permission.title" />
+          </Text>
         </div>
         <ul>
           <li>
-            <FormattedMessage id="access.permission.account" />
+            <Text size={12} color={colors["neutral-text-body"]}>
+              <FormattedMessage id="access.permission.account" />
+            </Text>
           </li>
           <li>
-            <FormattedMessage id="access.permission.tx-request" />
+            <Text size={12} color={colors["neutral-text-body"]}>
+              <FormattedMessage id="access.permission.tx-request" />
+            </Text>
           </li>
           {isSecretWasmIncluded ? (
             <li>
-              <FormattedMessage id="access.permission.secret" />
+              <Text size={12} color={colors["neutral-text-body"]}>
+                <FormattedMessage id="access.permission.secret" />
+              </Text>
             </li>
           ) : null}
         </ul>
         <div style={{ flex: 1 }} />
-        <div className={style.buttons}>
+        <div
+          style={{
+            flexDirection: "row",
+            display: "flex",
+            padding: 16,
+            paddingTop: 0,
+          }}
+        >
           <Button
+            containerStyle={{ marginRight: 8 }}
             className={classnames(style.button, style.rejectBtn)}
-            color=""
-            outline
+            color={"reject"}
             onClick={async (e) => {
               e.preventDefault();
 
@@ -118,13 +140,11 @@ export const AccessPage: FunctionComponent = observer(() => {
                 }
               }
             }}
-            // data-loading={permissionStore.isLoading}
           >
             <FormattedMessage id="access.button.reject" />
           </Button>
           <Button
             className={classnames(style.button, style.approveBtn)}
-            color=""
             onClick={async (e) => {
               e.preventDefault();
 

@@ -1,7 +1,4 @@
-@import '../../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/functions';
-@import '../../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/mixins';
-@import '../../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/variables';
-@import '../../../styles/var';
+@import "../../../styles/var";
 
 .inner-top-container {
   display: flex;
@@ -19,7 +16,7 @@
   margin: 0;
   padding: 0;
   color: $color;
-  background-color: $background-color;
+  background-color: $neutral-surface-card;
   &:global(.modal-content) {
     box-shadow: none;
   }
@@ -117,7 +114,4 @@
   flex-direction: row-reverse;
   background-color: rgba(230, 232, 236, 0.2);
   box-shadow: 0 1px 3px rgb(50 50 93 / 15%), 0 1px 0 rgb(0 0 0 / 2%);
-  &:focus-within {
-    box-shadow: $input-focus-alternative-box-shadow !important;
-  }
 }
