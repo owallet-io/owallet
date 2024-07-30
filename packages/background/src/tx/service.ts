@@ -53,10 +53,6 @@ export async function request(
     }
   );
 
-  console.log("🚀 ~ file: service.ts ~ line 48 ~ params", params);
-  console.log("🚀 ~ file: service.ts ~ line 48 ~ method", method);
-  console.log("🚀 ~ file: service.ts ~ line 55 ~ response", response);
-
   if (response.data.result) return response.data.result;
   if (response.data.error) throw new Error(JSON.stringify(response.data.error));
   return response.data;
@@ -164,6 +160,7 @@ export class BackgroundTxService {
     let chainInfo: ChainInfoWithEmbed;
     switch (method) {
       case "eth_accounts":
+      case "wallet_requestPermissions":
       case "eth_requestAccounts":
         chainInfo = await this.chainsService.getChainInfo(chainId);
         if (chainInfo.coinType !== 60) return undefined;

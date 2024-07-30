@@ -159,7 +159,7 @@ export class LedgerService {
           retryCount,
         };
       } catch (e) {
-        console.log(e);
+        console.log("initLedger e", e);
 
         const timeoutAbortController = new AbortController();
 
@@ -222,6 +222,8 @@ export class LedgerService {
           );
 
           promises.push(aborter.wait());
+
+          console.log("initLedger pro 2", promises);
 
           // Check that the Ledger Popup is opened only if the environment is extension.
           if (typeof browser !== "undefined" && browser.extension.getViews) {
