@@ -487,6 +487,15 @@ export class AccountSetBase<MsgOpts, Queries> {
       }
     }
 
+    await this.handleBroadcastedTx(txHash, fee, onBroadcasted, onFulfill);
+  }
+
+  async handleBroadcastedTx(
+    txHash: Uint8Array,
+    fee: StdFee,
+    onBroadcasted?: (txHash: Uint8Array) => void,
+    onFulfill?: (tx: any) => void
+  ) {
     if (this.opts.preTxEvents?.onBroadcasted) {
       this.opts.preTxEvents.onBroadcasted(txHash);
     }
@@ -535,47 +544,6 @@ export class AccountSetBase<MsgOpts, Queries> {
         this._isSendingMsg = false;
       });
     }
-
-    // const txTracer = new TendermintTxTracer(
-    //   this.chainGetter.getChain(this.chainId).rpc,
-    //   "/websocket",
-    //   {
-    //     wsObject: this.opts.wsObject,
-    //   }
-    // );
-    // txTracer.traceTx(txHash).then((tx) => {
-    //   txTracer.close();
-    //
-    //   runInAction(() => {
-    //     this._isSendingMsg = false;
-    //   });
-    //
-    //   // After sending tx, the balances is probably changed due to the fee.
-    //   for (const feeAmount of fee.amount) {
-    //     const bal = this.queries.queryBalances
-    //       .getQueryBech32Address(this.bech32Address)
-    //       .balances.find(
-    //         (bal) => bal.currency.coinMinimalDenom === feeAmount.denom
-    //       );
-    //
-    //     if (bal) {
-    //       bal.fetch();
-    //     }
-    //   }
-    //
-    //   // Always add the tx hash data.
-    //   if (tx && !tx.hash) {
-    //     tx.hash = Buffer.from(txHash).toString("hex");
-    //   }
-    //
-    //   if (this.opts.preTxEvents?.onFulfill) {
-    //     this.opts.preTxEvents.onFulfill(tx);
-    //   }
-    //
-    //   if (onFulfill) {
-    //     onFulfill(tx);
-    //   }
-    // });
   }
 
   async sendTronToken(
@@ -664,58 +632,127 @@ export class AccountSetBase<MsgOpts, Queries> {
     }
   }
 
-  async sendEvmMsgs(
-    type: string | "unknown",
-    msgs: Msg,
-    memo: string = "",
-    fee: StdFeeEthereum,
-    signOptions?: OWalletSignOptions,
-    onTxEvents?:
-      | ((tx: any) => void)
-      | {
-          onBroadcastFailed?: (e?: Error) => void;
-          onBroadcasted?: (txHash: Uint8Array) => void;
-          onFulfill?: (tx: any) => void;
-        }
-  ) {
+  async sleep(milliseconds) {
+    return new Promise((resolve) => setTimeout(resolve, milliseconds));
+  }
+
+  async waitForPendingTransaction(rpc, txHash, onFulfill, count = 0) {
+    if (count > 10) {
+      OwalletEvent.txHashEmit(txHash, { code: 1 });
+      return;
+    }
+
+    try {
+      let expectedBlockTime = 3000;
+      let transactionReceipt = null;
+      let retryCount = 0;
+      while (!transactionReceipt) {
+        // Waiting expectedBlockTime until the transaction is mined
+        transactionReceipt = await request(rpc, "eth_getTransactionReceipt", [
+          txHash,
+        ]);
+        console.log(transactionReceipt, "tran receipt");
+
+        retryCount += 1;
+        if (retryCount === 10) break;
+        await this.sleep(expectedBlockTime);
+      }
+
+      OwalletEvent.txHashEmit(txHash, { code: 0 });
+
+      if (this.opts.preTxEvents?.onFulfill) {
+        this.opts.preTxEvents.onFulfill(transactionReceipt);
+      }
+
+      if (onFulfill) {
+        onFulfill(transactionReceipt);
+      }
+    } catch (error) {
+      await this.sleep(3000);
+      this.waitForPendingTransaction(rpc, txHash, onFulfill, count + 1);
+    }
+  }
+
+  async handleErc20Transaction(msgs, fee) {
+    const { value } = msgs;
+    const provider = this.chainGetter.getChain(this.chainId).rpc;
+    const web3 = new Web3(provider);
+    const contract = new web3.eth.Contract(ERC20_ABI, value.contract_addr, {
+      from: value.from,
+    });
+    const data = contract.methods
+      .transfer(value.recipient, value.amount)
+      .encodeABI();
+
+    const txObj = {
+      gas: web3.utils.toHex(value.gas),
+      to: value.contract_addr,
+      value: "0x0",
+      from: value.from,
+      data,
+    };
+
+    return await this.broadcastErc20EvmMsgs(txObj, fee);
+  }
+
+  async handleEvmTransaction(msgs, fee, signOptions) {
+    if (msgs.type === "erc20") {
+      return await this.handleErc20Transaction(msgs, fee);
+    } else {
+      return await this.broadcastEvmMsgs(msgs, fee, signOptions);
+    }
+  }
+
+  handleTxEvents(txHash, onTxEvents) {
+    let onBroadcasted;
+    let onFulfill;
+
+    if (onTxEvents) {
+      if (typeof onTxEvents === "function") {
+        onFulfill = onTxEvents;
+      } else {
+        onBroadcasted = onTxEvents.onBroadcasted;
+        onFulfill = onTxEvents.onFulfill;
+      }
+    }
+
+    if (this.opts.preTxEvents?.onBroadcasted) {
+      this.opts.preTxEvents.onBroadcasted(txHash);
+    }
+
+    if (onBroadcasted) {
+      onBroadcasted(txHash);
+    }
+
+    if (this.chainId === ChainIdEnum.Oasis) {
+      console.log(txHash, "txHash");
+      if (this.opts.preTxEvents?.onFulfill) {
+        this.opts.preTxEvents.onFulfill(txHash);
+      }
+
+      if (onFulfill) {
+        onFulfill(txHash);
+      }
+      return;
+    }
+
+    const rpc = this.chainGetter.getChain(this.chainId).rest;
+    this.waitForPendingTransaction(rpc, txHash, onFulfill);
+  }
+
+  async sendEvmMsgs(type, msgs, memo = "", fee, signOptions, onTxEvents) {
     runInAction(() => {
       this._isSendingMsg = type;
     });
 
-    let txHash: string;
+    let txHash;
 
     try {
-      if (msgs.type === "erc20") {
-        const { value } = msgs;
-        const provider = this.chainGetter.getChain(this.chainId).rpc;
-        const web3 = new Web3(provider);
-        const contract = new web3.eth.Contract(
-          // @ts-ignore
-          ERC20_ABI,
-          value.contract_addr,
-          { from: value.from }
-        );
-        const data = contract.methods
-          .transfer(value.recipient, value.amount)
-          .encodeABI();
+      const result = await this.handleEvmTransaction(msgs, fee, signOptions);
+      txHash = result.txHash;
 
-        const txObj = {
-          gas: web3.utils.toHex(value.gas),
-          to: value.contract_addr,
-          value: "0x0", // Must be 0x0, maybe this field is not in use while send erc20 tokens, but still need
-          from: value.from,
-          data,
-        };
-
-        const result = await this.broadcastErc20EvmMsgs(txObj, fee);
-
-        txHash = result.txHash;
-      } else {
-        const result = await this.broadcastEvmMsgs(msgs, fee, signOptions);
-        txHash = result.txHash;
-      }
       if (!txHash) throw Error("Transaction Rejected");
-    } catch (e: any) {
+    } catch (e) {
       runInAction(() => {
         this._isSendingMsg = false;
       });
@@ -735,91 +772,11 @@ export class AccountSetBase<MsgOpts, Queries> {
       throw e;
     }
 
-    let onBroadcasted: ((txHash: Uint8Array) => void) | undefined;
-
-    let onFulfill: ((tx: any) => void) | undefined;
-    console.log(txHash, "result result");
-    if (onTxEvents) {
-      if (typeof onTxEvents === "function") {
-        onFulfill = onTxEvents;
-      } else {
-        onBroadcasted = onTxEvents.onBroadcasted;
-        onFulfill = onTxEvents.onFulfill;
-      }
-    }
-
-    const rpc = this.chainGetter.getChain(this.chainId).rest;
-
     runInAction(() => {
       this._isSendingMsg = false;
     });
-    if (this.opts.preTxEvents?.onBroadcasted) {
-      //@ts-ignore
-      this.opts.preTxEvents.onBroadcasted(txHash);
-    }
-    if (onBroadcasted) {
-      //@ts-ignore
-      onBroadcasted(txHash);
-    }
 
-    if (this.chainId === ChainIdEnum.Oasis) {
-      console.log(txHash, "txHash");
-      if (this.opts.preTxEvents?.onFulfill) {
-        this.opts.preTxEvents.onFulfill(txHash);
-      }
-
-      if (onFulfill) {
-        onFulfill(txHash);
-      }
-      return;
-    }
-    const sleep = (milliseconds) => {
-      return new Promise((resolve) => setTimeout(resolve, milliseconds));
-    };
-
-    const waitForPendingTransaction = async (
-      rpc,
-      txHash,
-      onFulfill,
-      count = 0
-    ) => {
-      if (count > 10) {
-        OwalletEvent.txHashEmit(txHash, { code: 1 });
-        return;
-      }
-
-      try {
-        let expectedBlockTime = 3000;
-        let transactionReceipt = null;
-        let retryCount = 0;
-        while (!transactionReceipt) {
-          // Waiting expectedBlockTime until the transaction is mined
-          transactionReceipt = await request(rpc, "eth_getTransactionReceipt", [
-            txHash,
-          ]);
-          console.log(transactionReceipt, "tran receipt");
-
-          retryCount += 1;
-          if (retryCount === 10) break;
-          await sleep(expectedBlockTime);
-        }
-
-        OwalletEvent.txHashEmit(txHash, { code: 0 });
-
-        if (this.opts.preTxEvents?.onFulfill) {
-          this.opts.preTxEvents.onFulfill(transactionReceipt);
-        }
-
-        if (onFulfill) {
-          onFulfill(transactionReceipt);
-        }
-      } catch (error) {
-        await sleep(3000);
-        waitForPendingTransaction(rpc, txHash, onFulfill, count + 1);
-      }
-    };
-
-    waitForPendingTransaction(rpc, txHash, onFulfill);
+    this.handleTxEvents(txHash, onTxEvents);
   }
 
   async sendBtcMsgs(
@@ -859,21 +816,19 @@ export class AccountSetBase<MsgOpts, Queries> {
         this._isSendingMsg = false;
       });
 
-      if (this.opts.preTxEvents?.onBroadcastFailed) {
-        this.opts.preTxEvents.onBroadcastFailed(e);
-      }
+      this.opts?.preTxEvents?.onBroadcastFailed(e);
 
-      if (
-        onTxEvents &&
+      onTxEvents &&
         "onBroadcastFailed" in onTxEvents &&
-        onTxEvents.onBroadcastFailed
-      ) {
         onTxEvents.onBroadcastFailed(e);
-      }
 
       throw e;
     }
 
+    this.onHandleEvents(onTxEvents, txHash);
+  }
+
+  async onHandleEvents(onTxEvents, txHash) {
     let onBroadcasted: ((txHash: Uint8Array) => void) | undefined;
     let onFulfill: ((tx: any) => void) | undefined;
 

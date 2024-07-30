@@ -186,12 +186,12 @@ export const decodeParams = async (types, output, ignoreMethodHash) => {
 };
 
 export const encodeParams = async (inputs) => {
-  let typesValues = inputs;
+  const typesValues = inputs;
   let parameters = "";
 
   if (typesValues.length == 0) return parameters;
   const abiCoder = new AbiCoder();
-  let types = [];
+  const types = [];
   const values = [];
 
   for (let i = 0; i < typesValues.length; i++) {

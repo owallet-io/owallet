@@ -48,6 +48,7 @@ export class ObservableQueryErc20ContactInfoInner extends ObservableEvmContractC
       };
     } catch (error) {
       console.log("Error on getting token info: ", error);
+      return undefined;
     }
   }
 }

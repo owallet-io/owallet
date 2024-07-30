@@ -64,7 +64,7 @@ export class ObservableSecretContractChainQuery<
 
   protected canFetch(): boolean {
     if (
-      !this.querySecretContractCodeHash?.getQueryContract(this.contractAddress)
+      !this.querySecretContractCodeHash.getQueryContract(this.contractAddress)
         ?.response
     ) {
       return false;

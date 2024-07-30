@@ -209,34 +209,27 @@ export const useGetFeeTron = (
       } else if (
         amountConfig.sendCurrency.coinMinimalDenom?.includes("erc20")
       ) {
-        try {
-          const dataReq = {
-            //@ts-ignore
-            address: amountConfig.sendCurrency?.contractAddress,
-            functionSelector: "transfer(address,uint256)",
-            options: {
-              feeLimit:
-                DEFAULT_FEE_LIMIT_TRON + Math.floor(Math.random() * 100),
+        const dataReq = {
+          //@ts-ignore
+          address: amountConfig.sendCurrency?.contractAddress,
+          functionSelector: "transfer(address,uint256)",
+          options: {
+            feeLimit: DEFAULT_FEE_LIMIT_TRON + Math.floor(Math.random() * 100),
+          },
+          parameters: [
+            {
+              type: "address",
+              value: getEvmAddress(recipientConfig.recipient),
             },
-            parameters: [
-              {
-                type: "address",
-                value: getEvmAddress(recipientConfig.recipient),
-              },
-              {
-                type: "uint256",
-                value: amountConfig.getAmountPrimitive().amount,
-              },
-            ],
-            issuerAddress: addressTronBase58,
-          };
-          console.log(dataReq, "dataReq");
-          estimateForTrigger(dataReq);
-          return;
-        } catch (e) {
-          setData(initData);
-          console.log(e, "err");
-        }
+            {
+              type: "uint256",
+              value: amountConfig.getAmountPrimitive().amount,
+            },
+          ],
+          issuerAddress: addressTronBase58,
+        };
+        estimateForTrigger(dataReq);
+        return;
       } else {
         setData(initData);
       }

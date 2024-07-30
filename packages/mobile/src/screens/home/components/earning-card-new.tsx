@@ -13,7 +13,7 @@ import { checkRouter } from "@src/router/root";
 import { useTheme } from "@src/themes/theme-provider";
 import { convertArrToObject, showToast } from "@src/utils/helper";
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent } from "react";
+import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { OWBox } from "../../../components/card";
 import { useSmartNavigation } from "../../../navigation.provider";
