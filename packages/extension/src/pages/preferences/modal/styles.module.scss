@@ -7,6 +7,12 @@
   .content-wrap {
     margin-left: -16px;
     margin-right: -16px;
+    .sub-title {
+      font-weight: 400;
+      line-height: 18px;
+      font-size: 13px;
+      color: $neutral-text-body;
+    }
     .container-search-input {
       height: 44px;
     }
