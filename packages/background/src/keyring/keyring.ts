@@ -302,14 +302,6 @@ export class KeyRing {
       throw new Error("Key Store is empty");
     }
 
-    // // Need to check network type by chain id instead of coin type
-    // const networkType = getNetworkTypeByChainId(chainId);
-    // console.log("networkType", chainId, networkType);
-
-    // if (networkType === "evm" && chainId !== ChainIdEnum.Oasis) {
-    //   return Number(ChainIdHelper.parse(chainId).identifier) ?? defaultCoinType;
-    // }
-
     return this.keyStore.coinTypeForChain
       ? this.keyStore.coinTypeForChain[
           ChainIdHelper.parse(chainId).identifier
@@ -993,12 +985,20 @@ export class KeyRing {
   }
 
   async simulateSignTron(transaction: any) {
-    const privKey = this.loadPrivKey(195);
-    const signedTxn = TronWeb.utils.crypto.signTransaction(
-      privKey.toBytes(),
-      transaction
-    );
-    return signedTxn;
+    try {
+      const privKey = this.loadPrivKey(195);
+      const signedTxn = TronWeb.utils.crypto.signTransaction(
+        privKey.toBytes(),
+        transaction
+      );
+      return signedTxn;
+    } catch (error) {
+      throw new OWalletError(
+        "keyring",
+        500,
+        `Failed to simulate sign Tron: ${error.message}`
+      );
+    }
   }
 
   public async sign(
@@ -1536,12 +1536,10 @@ export class KeyRing {
     chainId,
     defaultCoinType,
   }: {
-    // typedMessage: V extends "V1" ? TypedDataV1 : TypedMessage<T>;
     typedMessage: string;
     version: V;
     chainId: string;
     defaultCoinType: number;
-    // }): Promise<ECDSASignature> {
   }): Promise<string> {
     try {
       this.validateVersion(version);
@@ -1549,11 +1547,7 @@ export class KeyRing {
         throw new Error("Missing data parameter");
       }
 
-      // const coinType = this.computeKeyStoreCoinType(chainId, defaultCoinType);
-
-      // Need to check network type by chain id instead of coin type
       const networkType = getNetworkTypeByChainId(chainId);
-      // if (coinType !== 60) {
       if (networkType !== "evm") {
         throw new Error(
           "Invalid coin type passed in to Ethereum signing (expected 60)"
@@ -1582,7 +1576,6 @@ export class KeyRing {
       const signatureHex = `0x${rHex}${sHex}${vHex}`;
 
       return signatureHex;
-      // return signature;
     } catch (error) {
       console.log("Error on sign typed data: ", error);
     }
