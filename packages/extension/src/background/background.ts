@@ -15,7 +15,22 @@ import { EmbedChainInfos, PrivilegedOrigins } from "@owallet/common";
 const router = new ExtensionRouter(ExtensionEnv.produceEnv);
 router.addGuard(ExtensionGuards.checkOriginIsValid);
 router.addGuard(ExtensionGuards.checkMessageIsInternal);
-
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === "test-wallet-id") {
+    console.log(message.msg.data, "message.msg.data");
+    // chrome.runtime.sendMessage({ walletId: message.msg.data });
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      const tab = tabs[0];
+      // chrome.scripting.executeScript({
+      //   target: { tabId: tab.id },
+      //   function: (msgData) => {
+      //     window.postMessage({ type: "FROM_EXTENSION", msgData }, "*");
+      //   },
+      //   args: [{ walletId: message.msg.data }]
+      // });
+    });
+  }
+});
 init(
   router,
   (prefix: string) => new ExtensionKVStore(prefix),

@@ -42,6 +42,7 @@ export const HomePage = observer(() => {
   useEffect(() => {
     fetchBalance();
   }, [address]);
+
   const fetchBalance = async () => {
     const queries = queriesStore.get(chainStore.current.chainId);
     // Because the components share the states related to the queries,

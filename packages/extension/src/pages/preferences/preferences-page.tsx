@@ -6,6 +6,8 @@ import { getFavicon, limitString } from "@owallet/common";
 import { useStore } from "../../stores";
 import { ModalCurrency } from "./modal/modal-currency";
 import { useHistory } from "react-router";
+import { OWIcon } from "components/icon/Icon";
+import colors from "theme/colors";
 
 enum MenuEnum {
   LANGUAGE = "LANGUAGE",
@@ -16,12 +18,17 @@ const dataPreferences = [
   {
     id: MenuEnum.LANGUAGE,
     name: "Language",
-    icon: require("assets/svg/ow_translate-1.svg"),
+    icon: "tdesigntranslate-1",
   },
   {
     id: MenuEnum.CURRENCY,
     name: "Currency",
-    icon: require("assets/svg/ow_currency-exchange.svg"),
+    icon: "tdesigncurrency-exchange",
+  },
+  {
+    id: MenuEnum.CURRENCY,
+    name: "Currency",
+    icon: "tdesignwallet",
   },
 ];
 export const PreferencesPage = observer(() => {
@@ -69,7 +76,11 @@ export const PreferencesPage = observer(() => {
               >
                 <div className={styles.leftBlock}>
                   <div className={styles.wrapImg}>
-                    <img src={item.icon} className={styles.img} />
+                    <OWIcon
+                      icon={item.icon}
+                      size={20}
+                      color={colors["neutral-icon-on-light"]}
+                    />
                   </div>
                   <span className={styles.urlText}>
                     {limitString(item.name, 24)}

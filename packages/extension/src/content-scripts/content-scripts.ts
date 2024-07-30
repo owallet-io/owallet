@@ -20,7 +20,7 @@ import { v4 } from "uuid";
 import manifest from "../manifest.json";
 import { ICON_OWALLET } from "@owallet/common";
 import { EIP6963ProviderDetail } from "@owallet/types";
-
+const uuid = v4();
 InjectedOWallet.startProxy(
   new OWallet(manifest.version, "core", new InExtensionMessageRequester())
 );
@@ -50,7 +50,37 @@ const router = new ExtensionRouter(ContentScriptEnv.produceEnv);
 router.addGuard(ContentScriptGuards.checkMessageIsInternal);
 initEvents(router);
 router.listen(WEBPAGE_PORT);
+let walletData = {};
+window.addEventListener("message", function (event) {
+  if (event.source !== window) return;
 
+  if (event.data.type && event.data.type === "FROM_PAGE") {
+    walletData["com.io.owallet"] = {
+      name: "OWallet",
+      icon: ICON_OWALLET,
+      rdns: "com.io.owallet",
+      uuid,
+    };
+    walletData[event.data.walletData.rdns] = event.data.walletData;
+    this.setTimeout(() => {
+      chrome.storage.local.set({
+        walletData,
+      });
+    }, 300);
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+      if (message.walletId) {
+        window.postMessage(
+          {
+            type: "FROM_CLIENT",
+            walletId: message.walletId,
+          },
+          "*"
+        );
+      }
+    });
+    // chrome.runtime.sendMessage({ walletData: event.data.walletData });
+  }
+});
 const container = document.head || document.documentElement;
 const scriptElement = document.createElement("script");
 

@@ -7,6 +7,8 @@ import {
   EIP6963ProviderDetail,
   EIP6963RequestProviderEvent,
   EIP6963AnnounceProviderEvent,
+  RdnsEnum,
+  EIP6963ProviderInfo,
 } from "@owallet/types";
 import { OfflineSigner } from "@cosmjs/launchpad";
 import { SecretUtils } from "@owallet/types";
@@ -34,7 +36,14 @@ export function init(
   if (!window.bitcoin) {
     window.bitcoin = bitcoin;
   }
-
+  // console.log(window.coin98.provider, "window.coin98.provider");
+  // if (window.trustwallet) {
+  //   Object.defineProperty(window, "ethereum", {
+  //     value: window.trustwallet, // Thay thế bằng giá trị bạn muốn gán
+  //     writable: false, // Không cho phép ghi đè giá trị mới
+  //     configurable: false // Không cho phép thay đổi thuộc tính này
+  //   });
+  // }
   if (!window.ethereum.isOwallet) {
     Object.defineProperty(window, "ethereum", {
       value: ethereum, // Thay thế bằng giá trị bạn muốn gán
@@ -44,6 +53,30 @@ export function init(
   }
 
   if (ethereum) {
+    // const wallets = new Map<string, EIP6963ProviderInfo>();
+    const onAnnouncement = (ev: EIP6963AnnounceProviderEvent) => {
+      window.postMessage(
+        {
+          type: "FROM_PAGE",
+          walletData: ev.detail.info,
+        },
+        "*"
+      );
+    };
+    window.addEventListener("message", function (event) {
+      if (event.source !== window) return;
+      console.log(event.data, "FROM_CLIENT");
+      if (event.data.type && event.data.type === "FROM_CLIENT") {
+        // Object.defineProperty(window, "ethereum", {
+        //   value: window.trustwallet,
+        //   writable: true,
+        //   configurable: true
+        // });
+      }
+    });
+    window.addEventListener("eip6963:announceProvider", onAnnouncement);
+    window.dispatchEvent(new Event("eip6963:requestProvider"));
+
     function onRequestProvider(event: EIP6963RequestProviderEvent) {
       window.dispatchEvent(
         new CustomEvent("eip6963:announceProvider", {
@@ -102,7 +135,7 @@ export function init(
   //   window.getOfflineSignerAuto = getOfflineSignerAuto;
   //   window.getEnigmaUtils = getEnigmaUtils;
   // }
-
+  window.test = true;
   if (!window.keplr) {
     window.keplr = owallet;
   }

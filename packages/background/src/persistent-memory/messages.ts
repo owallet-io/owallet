@@ -21,7 +21,26 @@ export class SetPersistentMemoryMsg extends Message<{ success: boolean }> {
     return SetPersistentMemoryMsg.type();
   }
 }
+export class TestWalletId extends Message<{ success: boolean }> {
+  public static type() {
+    return "test-wallet-id";
+  }
 
+  constructor(public readonly data: any) {
+    super();
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  validateBasic(): void {}
+
+  route(): string {
+    return ROUTE;
+  }
+
+  type(): string {
+    return TestWalletId.type();
+  }
+}
 export class GetPersistentMemoryMsg extends Message<any> {
   public static type() {
     return "get-persistent-memory";

@@ -17,9 +17,13 @@
   //flex-direction: column;
   gap: 8px;
   flex-wrap: wrap;
+  .item-explore:hover {
+    background-color: $neutral-surface-bg2;
+  }
   .item-explore {
     height: 122px;
     display: flex;
+    gap: 8px;
     cursor: pointer;
     flex-direction: column;
     justify-content: center;

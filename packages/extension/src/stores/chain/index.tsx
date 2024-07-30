@@ -11,6 +11,7 @@ import {
   GetChainInfosMsg,
   RemoveSuggestedChainInfoMsg,
   TryUpdateChainMsg,
+  TestWalletId,
 } from "@owallet/background";
 import { BACKGROUND_PORT } from "@owallet/router";
 
@@ -131,6 +132,12 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
     const msg = new SetPersistentMemoryMsg({
       lastViewChainId: this._selectedChainId,
     });
+    yield this.requester.sendMessage(BACKGROUND_PORT, msg);
+  }
+  @flow
+  *test(walletId: string) {
+    // Save last view chain id to persistent background
+    const msg = new TestWalletId(walletId);
     yield this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 

@@ -14,8 +14,6 @@ const ethereum = new InjectedEthereum(manifest.version, "extension");
 const tronweb = new InjectedTronWebOWallet(manifest.version, "extension");
 const bitcoin = new InjectedBitcoin(manifest.version, "extension");
 
-// const oasis = new InjectedOasisOWallet(manifest.version, "extension");
-
 init(
   owallet,
   ethereum,

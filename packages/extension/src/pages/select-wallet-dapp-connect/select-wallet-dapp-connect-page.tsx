@@ -15,8 +15,7 @@ import { Card } from "../../components/common/card";
 import { Button } from "../../components/common/button";
 import colors from "../../theme/colors";
 import { Text } from "components/common/text";
-import { ICON_OWALLET } from "@owallet/common";
-// import { useSyncProviders } from "./hooks/useSyncProviders";
+import { useSyncProviders } from "./hooks/useSyncProviders";
 
 interface FormData {
   password: string;
@@ -34,78 +33,41 @@ export const SelectWalletDappConnectPage: FunctionComponent = observer(() => {
     },
   });
 
-  const { keyRingStore } = useStore();
+  const { keyRingStore, chainStore } = useStore();
 
   const [loading, setLoading] = useState(false);
-
+  const [providers, setProviders] = useState<any>([]);
   const interactionInfo = useInteractionInfo(() => {
     keyRingStore.rejectAll();
   });
 
   useEffect(() => {
     if (passwordRef.current) {
-      // Focus the password input on enter.
       passwordRef.current.focus();
     }
   }, []);
-  const dapps = [
-    {
-      name: "OWallet",
-      icon: ICON_OWALLET,
-    },
-    {
-      name: "Metamask",
-      icon: ICON_OWALLET,
-    },
-    {
-      name: "Brave",
-      icon: ICON_OWALLET,
-    },
-  ];
-  //   const providers = useSyncProviders();
-  //   const onAnnouncement = (event) => {
-  //     console.log(event, "event");
-  //   };
+  useEffect(() => {
+    // Kiểm tra nếu API của Chrome có sẵn
+    if (typeof chrome !== "undefined" && chrome.storage) {
+      chrome.storage.local.get("walletData", function (result) {
+        console.log(result, "result");
+        if (result.walletData) {
+          setProviders(Object.values(result.walletData));
+          // setEthereumData(result.ethereumData);
+          console.log("Ethereum Data:", result.walletData);
+        }
+      });
+    } else {
+      console.error("Chrome storage API is not available.");
+    }
+  }, []);
 
-  //   console.log(providers, "providers");
+  //   const providers = useSyncProviders();
+  console.log(providers, "providers select");
   return (
     <EmptyLayout style={{ height: "100%" }}>
       <Card type="ink" containerStyle={{ height: "100%" }}>
-        <Form
-          className={styles.formContainer}
-          onSubmit={handleSubmit(async (data) => {
-            setLoading(true);
-            try {
-              await keyRingStore.unlock(data.password, true);
-              if (interactionInfo.interaction) {
-                if (!interactionInfo.interactionInternal) {
-                  // XXX: If the connection doesn't have the permission,
-                  //      permission service tries to grant the permission right after unlocking.
-                  //      Thus, due to the yet uncertain reason, it requests new interaction for granting permission
-                  //      before the `window.close()`. And, it could make the permission page closed right after page changes.
-                  //      Unfortunately, I still don't know the exact cause.
-                  //      Anyway, for now, to reduce this problem, jsut wait small time, and close the window only if the page is not changed.
-                  await delay(100);
-                  if (window.location.href.includes("#/unlock")) {
-                    window.close();
-                  }
-                } else {
-                  history.replace("/");
-                }
-              }
-            } catch (e) {
-              console.log("Fail to decrypt: " + e.message);
-              setError(
-                "password",
-                "invalid",
-                intl.formatMessage({
-                  id: "lock.input.password.error.invalid",
-                })
-              );
-              setLoading(false);
-            }
-          })}
-        >
+        <Form className={styles.formContainer}>
           <Text
             containerStyle={{
               textAlign: "center",
@@ -128,10 +90,18 @@ export const SelectWalletDappConnectPage: FunctionComponent = observer(() => {
             wallets.
           </Text>
           <div className={styles.listExplore}>
-            {dapps.map((item, index) => {
+            {providers.map((item, index) => {
               return (
                 <div
-                  //   onClick={() => window.open(item.url)}
+                  onClick={() => {
+                    // chrome.runtime.sendMessage({ walletId: item.rdns });
+                    chainStore.test(item.rdns);
+                    console.log(
+                      { walletId: item.rdns },
+                      "{ walletId: item.rdns }"
+                    );
+                    // window.close();
+                  }}
                   key={index}
                   className={styles.itemExplore}
                 >
