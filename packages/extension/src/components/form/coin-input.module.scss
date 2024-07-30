@@ -1,7 +1,16 @@
-@import "../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/functions";
-@import "../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/mixins";
-@import "../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/variables";
 @import "../../styles/var";
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
 
 .input {
   // box-shadow: $input-alternative-box-shadow !important;
@@ -13,7 +22,6 @@
   }
 
   &:focus {
-    box-shadow: $input-focus-alternative-box-shadow !important;
     // border: 1px solid $color-gray-70 !important;
     border-radius: 4px;
   }
@@ -22,8 +30,14 @@
 .input-group {
   box-shadow: 0 1px 3px rgb(50 50 93 / 15%), 0 1px 0 rgb(0 0 0 / 2%);
   &:focus-within {
-    box-shadow: $input-focus-alternative-box-shadow !important;
   }
+}
+
+.row {
+  flex-direction: row;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .token-selector {
@@ -31,7 +45,7 @@
   min-height: 46px;
   border-radius: 0.375rem;
   color: $color-neutral-2 !important;
-  background-color: $background-color;
+  background-color: $neutral-surface-card;
   box-shadow: none !important;
   button {
     width: 100%;
@@ -70,7 +84,7 @@
 
   :global(.dropdown-item.active) {
     background-color: #7664e4;
-    color: $background-color;
+    color: $neutral-surface-card;
   }
 
   &:global(.disabled) {

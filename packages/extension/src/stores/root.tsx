@@ -18,12 +18,12 @@ import {
   ChainSuggestStore,
   IBCChannelStore,
   IBCCurrencyRegsitrar,
-  QueriesWithCosmosAndSecretAndCosmwasmAndEvmAndBitcoin,
   AccountWithAll,
   getOWalletFromWindow,
   getEthereumFromWindow,
   getTronWebFromWindow,
   getBitcoinFromWindow,
+  QueriesWrappedTron,
 } from "@owallet/stores";
 import {
   ExtensionRouter,
@@ -39,6 +39,7 @@ import { FeeType } from "@owallet/hooks";
 import { AnalyticsStore, NoopAnalyticsClient } from "@owallet/analytics";
 import Amplitude from "amplitude-js";
 import { ChainIdHelper } from "@owallet/cosmos";
+import { HugeQueriesStore } from "./huge-queries";
 
 export class RootStore {
   public readonly uiConfigStore: UIConfigStore;
@@ -53,11 +54,12 @@ export class RootStore {
   public readonly ledgerInitStore: LedgerInitStore;
   public readonly chainSuggestStore: ChainSuggestStore;
 
-  public readonly queriesStore: QueriesStore<QueriesWithCosmosAndSecretAndCosmwasmAndEvmAndBitcoin>;
+  public readonly queriesStore: QueriesStore<QueriesWrappedTron>;
   public readonly accountStore: AccountStore<AccountWithAll>;
   // public readonly accountEvmStore: AccountEvmStore<AccountWithAll>;
   public readonly priceStore: CoinGeckoPriceStore;
   public readonly tokensStore: TokensStore<ChainInfoWithEmbed>;
+  public readonly hugeQueriesStore: HugeQueriesStore;
 
   protected readonly ibcCurrencyRegistrar: IBCCurrencyRegsitrar<ChainInfoWithEmbed>;
 
@@ -132,10 +134,41 @@ export class RootStore {
       new ExtensionKVStore("store_queries"),
       this.chainStore,
       getOWalletFromWindow,
-      QueriesWithCosmosAndSecretAndCosmwasmAndEvmAndBitcoin
+      QueriesWrappedTron
     );
 
     const chainOpts = this.chainStore.chainInfos.map((chainInfo) => {
+      if (chainInfo.chainId.startsWith("native-0x5afe")) {
+        return {
+          chainId: chainInfo.chainId,
+          msgOpts: {
+            send: {
+              native: {
+                gas: 0,
+              },
+              erc20: {
+                gas: 21000,
+              },
+            },
+          },
+        };
+      }
+      // In evm network, default gas for sending
+      if (chainInfo.networkType.startsWith("evm")) {
+        return {
+          chainId: chainInfo.chainId,
+          msgOpts: {
+            send: {
+              native: {
+                gas: 21000,
+              },
+              erc20: {
+                gas: 21000,
+              },
+            },
+          },
+        };
+      }
       // In osmosis, increase the default gas for sending
       if (chainInfo.chainId.startsWith("osmosis-")) {
         return {
@@ -248,7 +281,13 @@ export class RootStore {
       this.queriesStore,
       this.queriesStore
     );
-
+    this.hugeQueriesStore = new HugeQueriesStore(
+      this.chainStore,
+      this.queriesStore,
+      this.accountStore,
+      this.priceStore,
+      this.keyRingStore
+    );
     this.analyticsStore = new AnalyticsStore(
       (() => {
         if (!AmplitudeApiKey) {

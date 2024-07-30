@@ -1,0 +1,79 @@
+@import "../../styles/var";
+
+.text {
+  font-size: 12px;
+  font-weight: 400;
+  color: $neutral-text-title;
+}
+
+.card {
+  padding: 16px;
+  background-color: $neutral-surface-card;
+  position: relative;
+  z-index: 999;
+  width: "100%";
+}
+
+.bg {
+  background-image: url("../../public/assets/images/img-bg.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.button {
+  border-radius: 90px;
+  border-width: 0;
+  font-weight: 600;
+  font-size: 14px;
+  flex-direction: row;
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+  justify-content: center;
+}
+
+.buttonDisabled {
+  cursor: not-allowed !important;
+}
+
+.primaryBtn {
+  background-color: $primary-surface-default;
+  color: $neutral-text-action-on-dark-bg;
+}
+
+.secondaryBtn {
+  background-color: $neutral-surface-action3;
+  color: $neutral-icon-on-light;
+}
+
+.dangerBtn {
+  background-color: $error-surface-default;
+  color: $neutral-icon-on-dark;
+}
+
+.rejectBtn {
+  background-color: $neutral-surface-action3;
+  color: $error-text-action;
+}
+
+.buttonOutline {
+  background-color: transparent;
+  color: $primary-text-action;
+}
+
+.buttonSmall {
+  padding: 4px 12px;
+  width: auto;
+  font-weight: 400;
+  font-size: 12px;
+}
+
+.buttonLarge {
+  padding: 14px 20px;
+  width: 100%;
+}
+
+.buttonDefault {
+  padding: 14px 20px;
+  width: 100%;
+}

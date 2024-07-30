@@ -114,7 +114,8 @@ export const CoinInputEvm: FunctionComponent<CoinInputEvmProps> = observer(
         tokenDenom === chainStore?.current?.stakeCurrency?.coinDenom
       ) {
         const evmBalance =
-          queries.evm.queryEvmBalance.getQueryBalance(addressCore).balance;
+          queries.queryBalances.getQueryBech32Address(addressCore).stakable
+            .balance;
         setBalance(evmBalance);
       } else {
         const queryBalance = queryBalances.balances.find(
