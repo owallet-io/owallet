@@ -1,19 +1,41 @@
 export const EVMOS_NETWORKS = ["kawaii_6886-1"];
+export const EXTRA_FEE_LIMIT_TRON = 50_000_000;
+export const DEFAULT_FEE_LIMIT_TRON = 150_000_000;
+export const TRIGGER_TYPE = "TriggerSmartContract";
 export const TRON_ID = "0x2b6653dc";
 export const TRON_BIP39_PATH_PREFIX = "m/44'/195'";
 export const BIP44_PATH_PREFIX = "m/44'";
 export const TRON_BIP39_PATH_INDEX_0 = TRON_BIP39_PATH_PREFIX + "/0'/0/0";
-
+import { Network as NetworkTatum } from "@tatumio/tatum";
 export enum NetworkEnum {
   Cosmos = "cosmos",
   Evm = "evm",
   Bitcoin = "bitcoin",
 }
 
+export enum OasisNetwork {
+  MAINNET = "oasis-mainnet",
+  SAPPHIRE = "oasis-sapphire-mainnet",
+  EMERALD = "oasis-emerald-mainnet",
+}
+export const urlTxHistory = "https://tx-history-backend.oraidex.io/";
+export enum COSMOS_NETWORK {
+  COSMOSHUB = "cosmoshub-4",
+  OSMOSIS = "osmosis-1",
+  INJECTIVE = "injective-1",
+  ORAICHAIN = "Oraichain",
+}
+
+export type Network = NetworkTatum & OasisNetwork & COSMOS_NETWORK;
+export const Network = { ...NetworkTatum, ...OasisNetwork, ...COSMOS_NETWORK };
+export enum CosmosNetwork {
+  ORAICHAIN = "oraichain",
+}
 export enum ChainIdEnum {
   Oraichain = "Oraichain",
   OraichainTestnet = "Oraichain-testnet",
   OraiBridge = "oraibridge-subnet-2",
+  OraiBTCBridge = "oraibtc-mainnet-1",
   KawaiiCosmos = "kawaii_6886-1",
   KawaiiEvm = "0x1ae6",
   Ethereum = "0x01",
@@ -24,9 +46,14 @@ export enum ChainIdEnum {
   BNBChainTestNet = "0x61",
   TRON = "0x2b6653dc",
   Oasis = "native-0x5afe",
+  OasisSapphire = "0x5afe",
+  OasisEmerald = "0xa516",
   BitcoinTestnet = "bitcoinTestnet",
   Bitcoin = "bitcoin",
   Injective = "injective-1",
+  Neutaro = "Neutaro-1",
+  Noble = "noble-1",
+  Stargaze = "stargaze-1",
 }
 
 export enum KADOChainNameEnum {
@@ -42,27 +69,36 @@ export enum KADOChainNameEnum {
   "0x2b6653dc" = "TRON",
   "0x38" = "BNB",
   "noble-1" = "NOBLE",
+  "stargaze-1" = "STARGAZE",
 }
 
 export enum ChainNameEnum {
   Oraichain = "Oraichain",
   OraichainTestnet = "Oraichain-testnet",
-  OraiBridge = "Orai Bride",
-  KawaiiCosmos = "Kawaii Cosmos",
-  KawaiiEvm = "Kawaii EVM",
+  KawaiiCosmos = "Kawaiiverse",
+  KawaiiEvm = "Kawaiiverse EVM",
   Ethereum = "Ethereum",
   CosmosHub = "Cosmos Hub",
   Osmosis = "Osmosis",
   Juno = "Juno",
   BNBChain = "BNB Chain",
   TRON = "Tron Network",
+  BitcoinLegacy = "Bitcoin(Legacy)",
+  BitcoinSegWit = "Bitcoin SegWit(BECH32)",
   Injective = "Injective",
+  Oasis = "Oasis",
+  OasisSapphire = "Oasis Sapphire",
+  OasisEmerald = "Oasis Emerald",
+  Neutaro = "Neutaro",
+  Noble = "Noble",
+  Stargaze = "Stargaze",
 }
 
 export const restBtc = {
   [ChainIdEnum.Bitcoin]: "https://blockstream.info/api",
   [ChainIdEnum.BitcoinTestnet]: "https://blockstream.info/testnet/api",
 };
+
 export const TRC20_LIST = [
   {
     contractAddress: "TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8",
