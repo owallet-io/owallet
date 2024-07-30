@@ -1,8 +1,9 @@
 import React, { FunctionComponent, useMemo, useState } from "react";
-import { RightArrow, SettingItem } from "../components";
+import { SettingItem } from "../components";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../../stores";
 import { SelectorModal } from "../../../components/input";
+import OWIcon from "@src/components/ow-icon/ow-icon";
 
 export const SettingFiatCurrencyItem: FunctionComponent<{
   topBorder?: boolean;
@@ -33,9 +34,7 @@ export const SettingFiatCurrencyItem: FunctionComponent<{
       <SettingItem
         topBorder={topBorder}
         label="Currency"
-        right={
-          <RightArrow paragraph={priceStore.defaultVsCurrency.toUpperCase()} />
-        }
+        right={<OWIcon name="tdesignarrow-right" size={16} />}
         onPress={() => {
           setIsOpenModal(true);
         }}

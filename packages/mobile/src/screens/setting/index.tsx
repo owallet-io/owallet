@@ -22,16 +22,18 @@ import { SettingRemoveAccountItem } from "./items/remove-account";
 import { SettingSwitchModeItem } from "./items/switch-mode";
 import { SettingViewPrivateDataItem } from "./items/view-private-data";
 import { canShowPrivateData } from "./screens/view-private-data";
+import { tracking } from "@src/utils/tracking";
 
 export const SettingScreen: FunctionComponent = observer(() => {
   const { keychainStore, keyRingStore, priceStore, modalStore } = useStore();
   const { colors } = useTheme();
+  tracking(`Setting Screen`);
   const styles = styling(colors);
   const currencyItems = useMemo(() => {
     return Object.keys(priceStore.supportedVsCurrencies).map((key) => {
       return {
         key,
-        label: key.toUpperCase(),
+        label: key?.toUpperCase(),
       };
     });
   }, [priceStore.supportedVsCurrencies]);
@@ -113,46 +115,6 @@ export const SettingScreen: FunctionComponent = observer(() => {
             </View>
             <DownArrowIcon color={colors["primary-text"]} height={12} />
           </TouchableOpacity>
-          <TouchableOpacity
-            onPress={_onPressCountryModal}
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              paddingTop: spacing["20"],
-            }}
-          >
-            <View>
-              <Text
-                style={{
-                  ...typography["text-caption2"],
-                  color: colors["primary-text"],
-                }}
-              >
-                CURRENCY
-              </Text>
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                {renderFlag(priceStore.defaultVsCurrency)}
-                <Text
-                  style={{
-                    ...typography["h6"],
-                    color: colors["primary-text"],
-                    fontWeight: "bold",
-                    marginHorizontal: spacing["8"],
-                  }}
-                >
-                  {priceStore.defaultVsCurrency.toUpperCase()}
-                </Text>
-              </View>
-            </View>
-            <DownArrowIcon color={colors["primary-text"]} height={12} />
-          </TouchableOpacity>
         </OWBox>
       </ImageBackground>
 
@@ -229,6 +191,6 @@ const styling = (colors: object) =>
       borderRadius: 12,
       padding: 20,
       width: "100%",
-      backgroundColor: colors["background-box"],
+      backgroundColor: colors["neutral-surface-bg2"],
     },
   });

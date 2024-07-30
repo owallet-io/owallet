@@ -2,27 +2,30 @@ import React, { FunctionComponent, useEffect } from "react";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
-
-import {
-  View,
-  Animated,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-} from "react-native";
+import _ from "lodash";
+import { View, Image, ScrollView, StyleSheet } from "react-native";
 import { Text } from "@src/components/text";
 import { useSmartNavigation } from "../../navigation.provider";
-import { RightArrowIcon } from "../../components/icon";
-import { Card, OWBox } from "../../components/card";
-import { metrics } from "../../themes";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { CommonActions } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
-import { PageWithView } from "@src/components/page";
-import imagesAssets from "@src/assets/images";
-import { openLink } from "@src/utils/helper";
+import { capitalizedText, formatContractAddress } from "@src/utils/helper";
+
+import { PageHeader } from "@src/components/header/header-new";
+import image from "@src/assets/images";
+import OWCard from "@src/components/card/ow-card";
+import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
+import { PageWithBottom } from "@src/components/page/page-with-bottom";
+import OWText from "@src/components/text/ow-text";
+import OWButtonGroup from "@src/components/button/OWButtonGroup";
+
+import OWIcon from "@src/components/ow-icon/ow-icon";
+import { AppCurrency, StdFee } from "@owallet/types";
+import { CoinPrimitive } from "@owallet/stores";
+import { CoinPretty, Dec } from "@owallet/unit";
+import { HeaderTx } from "@src/screens/tx-result/components/header-tx";
+
 export const TxFailedResultScreen: FunctionComponent = observer(() => {
-  const { chainStore } = useStore();
+  const { chainStore, priceStore } = useStore();
 
   const route = useRoute<
     RouteProp<
@@ -32,180 +35,183 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
           chainId?: string;
           // Hex encoded bytes.
           txHash: string;
+          data?: {
+            memo: string;
+            fee: StdFee;
+            fromAddress: string;
+            toAddress: string;
+            amount: CoinPrimitive;
+            currency: AppCurrency;
+          };
         }
       >,
       string
     >
   >();
 
-  const chainId = route.params?.chainId
-    ? route.params?.chainId
-    : chainStore.current.chainId;
-  const txHash = route.params?.txHash;
+  const { current } = chainStore;
+  const chainId = current.chainId;
+  const { params } = route;
+
   const { colors, images } = useTheme();
   const smartNavigation = useSmartNavigation();
   const chainInfo = chainStore.getChain(chainId);
-  const { bottom } = useSafeAreaInsets();
 
+  const onDone = () => {
+    smartNavigation.dispatch(
+      CommonActions.reset({
+        index: 1,
+        routes: [{ name: "MainTab" }],
+      })
+    );
+  };
+  const amount = new CoinPretty(
+    params?.data?.currency,
+    new Dec(params?.data?.amount?.amount)
+  );
+  const fee = params?.data?.fee?.amount?.[0]?.amount
+    ? new CoinPretty(
+        chainInfo.stakeCurrency,
+        new Dec(params?.data?.fee?.amount?.[0]?.amount)
+      )
+    : new CoinPretty(chainInfo.stakeCurrency, new Dec(0));
+  const dataItem =
+    params?.data &&
+    _.pickBy(params?.data, function (value, key) {
+      return (
+        key !== "memo" &&
+        key !== "fee" &&
+        key !== "amount" &&
+        key !== "currency" &&
+        key !== "type"
+      );
+    });
+  const styles = styling(colors);
   return (
-    <PageWithView>
-      <OWBox>
-        <View
-          style={{
-            height: metrics.screenHeight - bottom - 74,
-            paddingTop: 80,
-          }}
-        >
-          <View
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
+    <PageWithBottom
+      bottomGroup={
+        <View style={styles.containerBottomButton}>
+          <OWButtonGroup
+            labelApprove={"Retry"}
+            labelClose={"Contact Us"}
+            iconClose={<OWIcon name={"send"} />}
+            styleApprove={{
+              borderRadius: 99,
+              backgroundColor: colors["primary-surface-default"],
             }}
-          >
-            <Image
-              style={{
-                width: 24,
-                height: 2,
-              }}
-              fadeDuration={0}
-              resizeMode="stretch"
-              source={images.line_fail_short}
-            />
-            <Image
-              style={{
-                width: 140,
-                height: 32,
-                marginLeft: 8,
-                marginRight: 9,
-              }}
-              fadeDuration={0}
-              resizeMode="stretch"
-              source={images.fail}
-            />
-            <Image
-              style={{
-                width: metrics.screenWidth - 185,
-                height: 2,
-              }}
-              fadeDuration={0}
-              resizeMode="stretch"
-              source={images.line_fail_long}
-            />
-          </View>
-          <View
-            style={{
-              paddingLeft: 32,
-              paddingRight: 72,
+            // onPressClose={_onPressReject}
+            onPressApprove={onDone}
+            styleClose={{
+              borderRadius: 99,
+              backgroundColor: colors["neutral-surface-action3"],
             }}
-          >
-            <Text
-              style={{
-                fontWeight: "700",
-                fontSize: 24,
-                lineHeight: 34,
-                paddingTop: 44,
-                paddingBottom: 16,
-              }}
-              color={colors["text-title-login"]}
-            >
-              Transaction fail
-            </Text>
-            <Text
-              style={{
-                fontWeight: "400",
-                fontSize: 14,
-                lineHeight: 20,
-                color: colors["primary-text"],
-              }}
-            >
-              Please try again!
-            </Text>
-            <Text
-              style={{
-                fontWeight: "400",
-                fontSize: 14,
-                lineHeight: 20,
-                color: colors["primary-text"],
-                paddingTop: 6,
-              }}
-            >
-              The transaction cannot be completed.
-            </Text>
-            {chainInfo.raw.txExplorer ? (
-              <TouchableOpacity
-                style={{
-                  paddingTop: 32,
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                }}
-                onPress={async () => {
-                  if (chainInfo.raw.txExplorer) {
-                    await openLink(
-                      chainInfo.raw.txExplorer.txUrl.replace(
-                        "{txHash}",
-                        txHash.toUpperCase()
-                      )
-                    );
-                  }
-                }}
-              >
-                <Image
-                  style={{
-                    width: 22,
-                    height: 22,
-                    tintColor: colors["background-btn-primary"],
-                  }}
-                  fadeDuration={0}
-                  resizeMode="stretch"
-                  source={imagesAssets.eye}
-                />
-                <Text
-                  style={{
-                    paddingLeft: 6,
-                    color: colors["background-btn-primary"],
-                    fontWeight: "400",
-                    fontSize: 16,
-                    lineHeight: 22,
-                  }}
-                >
-                  View on Explorer
-                </Text>
-              </TouchableOpacity>
-            ) : null}
-          </View>
-          <TouchableOpacity
-            style={{
-              marginTop: 32,
-              marginLeft: 25,
-              marginRight: 25,
-              backgroundColor: colors["background-btn-primary"],
-              borderRadius: 8,
-            }}
-            onPress={() => {
-              smartNavigation.dispatch(
-                CommonActions.reset({
-                  index: 1,
-                  routes: [{ name: "MainTab" }],
-                })
-              );
-            }}
-          >
-            <Text
-              style={{
-                color: "white",
-                textAlign: "center",
-                fontWeight: "700",
-                fontSize: 16,
-                padding: 16,
-              }}
-            >
-              Go Home
-            </Text>
-          </TouchableOpacity>
+          />
         </View>
-      </OWBox>
-    </PageWithView>
+      }
+    >
+      <View style={styles.containerBox}>
+        <PageHeader title={"Transaction details"} />
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <HeaderTx
+            type={capitalizedText(params?.data?.type) || "Send"}
+            imageType={
+              <View style={styles.containerFailed}>
+                <OWText
+                  weight={"500"}
+                  size={14}
+                  color={colors["error-text-body"]}
+                >
+                  Failed
+                </OWText>
+              </View>
+            }
+            amount={`${params?.data?.type === "send" ? "-" : ""}${amount
+              ?.shrink(true)
+              ?.trim(true)
+              ?.toString()}`}
+            price={priceStore.calculatePrice(amount)?.toString()}
+          />
+          <View style={styles.cardBody}>
+            {dataItem &&
+              Object.keys(dataItem).map(function (key) {
+                return (
+                  <ItemReceivedToken
+                    label={capitalizedText(key)}
+                    valueDisplay={
+                      dataItem?.[key] &&
+                      formatContractAddress(dataItem?.[key], 20)
+                    }
+                    value={dataItem?.[key]}
+                  />
+                );
+              })}
+            <ItemReceivedToken
+              label={"Fee"}
+              valueDisplay={`${fee
+                ?.shrink(true)
+                ?.trim(true)
+                ?.toString()} (${priceStore.calculatePrice(fee)})`}
+              btnCopy={false}
+            />
+            <ItemReceivedToken
+              label={"Memo"}
+              valueDisplay={params?.data?.memo || "-"}
+              btnCopy={false}
+            />
+          </View>
+        </ScrollView>
+      </View>
+    </PageWithBottom>
   );
 });
+const styling = (colors) => {
+  return StyleSheet.create({
+    containerFailed: {
+      backgroundColor: colors["error-surface-subtle"],
+      width: "100%",
+      paddingHorizontal: 12,
+      paddingVertical: 2,
+      borderRadius: 99,
+      alignSelf: "center",
+    },
+    containerBottomButton: {
+      width: "100%",
+      paddingHorizontal: 16,
+      paddingTop: 16,
+    },
+    btnApprove: {
+      borderRadius: 99,
+      backgroundColor: colors["primary-surface-default"],
+    },
+    cardBody: {
+      padding: 16,
+      borderRadius: 24,
+      marginHorizontal: 16,
+      backgroundColor: colors["neutral-surface-card"],
+    },
+    viewNetwork: {
+      flexDirection: "row",
+      paddingTop: 6,
+    },
+    imgNetwork: {
+      height: 20,
+      width: 20,
+      backgroundColor: colors["neutral-icon-on-dark"],
+    },
+    containerBox: {
+      flex: 1,
+    },
+    txtPending: {
+      textAlign: "center",
+      paddingVertical: 16,
+    },
+    txtViewOnExplorer: {
+      fontSize: 14,
+      fontWeight: "600",
+      color: colors["neutral-text-action-on-dark-bg"],
+    },
+    btnExplorer: {
+      borderRadius: 99,
+    },
+  });
+};

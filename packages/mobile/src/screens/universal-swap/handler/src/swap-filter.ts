@@ -1,33 +1,49 @@
-import { flattenTokens } from "@oraichain/oraidex-common";
+import {
+  INJECTIVE_ORAICHAIN_DENOM,
+  KWTBSC_ORAICHAIN_DENOM,
+  KWT_BSC_CONTRACT,
+  MILKYBSC_ORAICHAIN_DENOM,
+  MILKY_BSC_CONTRACT,
+  flattenTokens,
+} from "@oraichain/oraidex-common";
 
-const notAllowSwapCoingeckoIds = [
-  "kawaii-islands",
-  "milky-token",
-  "injective-protocol",
-  "bitcoin",
-];
+export const evmDenomsMap = {
+  kwt: [KWTBSC_ORAICHAIN_DENOM],
+  milky: [MILKYBSC_ORAICHAIN_DENOM],
+  injective: [INJECTIVE_ORAICHAIN_DENOM],
+};
+const notAllowSwapCoingeckoIds = [];
 // universal swap. Currently we dont support from tokens that are not using the ibc wasm channel
 const notAllowSwapFromChainIds = [
+  "0x1ae6",
   "kawaii_6886-1",
-  "osmosis-1",
-  "cosmoshub-4",
   "oraibridge-subnet-2",
-  "injective-1",
-  "noble-1",
+  "oraibtc-mainnet-1",
+  "bitcoin",
 ];
-export const swapFromTokens = flattenTokens.filter(
-  (token) =>
+const notAllowDenom = Object.values(evmDenomsMap).flat();
+const notAllowBEP20Token = [KWT_BSC_CONTRACT, MILKY_BSC_CONTRACT];
+export const swapFromTokens = flattenTokens.filter((token) => {
+  return (
+    !notAllowDenom.includes(token?.denom) &&
     !notAllowSwapCoingeckoIds.includes(token.coinGeckoId) &&
-    !notAllowSwapFromChainIds.includes(token.chainId)
-);
+    !notAllowSwapFromChainIds.includes(token.chainId) &&
+    !notAllowBEP20Token.includes(token?.contractAddress)
+  );
+});
 // universal swap. We dont support kwt & milky & injective for simplicity. We also skip OraiBridge tokens because users dont care about them
 const notAllowSwapToChainIds = [
+  "0x1ae6",
+  "kawaii_6886-1",
   "oraibridge-subnet-2",
-  "injective-1",
-  "noble-1",
+  "oraibtc-mainnet-1",
+  "bitcoin",
 ];
-export const swapToTokens = flattenTokens.filter(
-  (token) =>
+export const swapToTokens = flattenTokens.filter((token) => {
+  return (
+    !notAllowDenom.includes(token?.denom) &&
     !notAllowSwapCoingeckoIds.includes(token.coinGeckoId) &&
-    !notAllowSwapToChainIds.includes(token.chainId)
-);
+    !notAllowSwapToChainIds.includes(token.chainId) &&
+    !notAllowBEP20Token.includes(token?.contractAddress)
+  );
+});

@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useEffect, useRef, useState } from "react";
-import { PageWithScrollViewInBottomTabView } from "../../../../components/page";
+import { PageWithScrollView } from "../../../../components/page";
 import { observer } from "mobx-react-lite";
 import DeviceInfo from "react-native-device-info";
 import codePush from "react-native-code-push";
@@ -7,10 +7,11 @@ import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { spacing, typography } from "../../../../themes";
 import { View, Text } from "react-native";
 import { useStyle } from "../../../../styles";
-// import { Divider } from '@rneui/base';
 import { useStore } from "../../../../stores";
 import moment from "moment";
 import { useTheme } from "@src/themes/theme-provider";
+import { PageHeader } from "@src/components/header/header-new";
+import OWCard from "@src/components/card/ow-card";
 export const OWalletVersionScreen: FunctionComponent = observer(() => {
   const [appVersion] = useState(() => DeviceInfo.getVersion());
   const { colors } = useTheme();
@@ -79,76 +80,78 @@ export const OWalletVersionScreen: FunctionComponent = observer(() => {
   }
 
   return (
-    <PageWithScrollViewInBottomTabView backgroundColor={colors["background"]}>
-      <View
+    <PageWithScrollView
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{}}
+      backgroundColor={colors["neutral-surface-bg"]}
+    >
+      <PageHeader title="About" />
+      <OWCard
+        style={{
+          marginTop: spacing["16"],
+          marginBottom: spacing["12"],
+        }}
+      >
+        <TouchableWithoutFeedback
+          onPress={() => {
+            testErrorReportRef.current++;
+
+            if (testErrorReportRef.current === 10) {
+              setTimeout(() => {
+                throw new Error(
+                  "This is an runtime error for error report test"
+                );
+              }, 200);
+            }
+
+            if (testErrorReportRef.current === 20) {
+              setBlockRender(true);
+            }
+          }}
+        >
+          <SettingItem
+            label="App Version"
+            paragraph={appVersion}
+            divider={false}
+          />
+          <SettingItem
+            label="Build Number"
+            paragraph={parseVersion(buildNumber)}
+            divider={false}
+          />
+          <SettingItem
+            label="Code Version"
+            paragraph={parseVersion(currentCodeVersion)}
+          />
+        </TouchableWithoutFeedback>
+      </OWCard>
+      <OWCard
+        type="normal"
         style={{
           marginTop: spacing["32"],
           marginBottom: spacing["12"],
         }}
-      />
-      <TouchableWithoutFeedback
-        style={{
-          backgroundColor: colors["background-box"],
-          borderRadius: spacing["24"],
-          marginHorizontal: spacing["20"],
-        }}
-        onPress={() => {
-          testErrorReportRef.current++;
-
-          if (testErrorReportRef.current === 10) {
-            setTimeout(() => {
-              throw new Error("This is an runtime error for error report test");
-            }, 200);
-          }
-
-          if (testErrorReportRef.current === 20) {
-            setBlockRender(true);
-          }
-        }}
       >
-        <SettingItem
-          label="App Version"
-          paragraph={appVersion}
-          divider={false}
-        />
-        <SettingItem
-          label="Build Number"
-          paragraph={parseVersion(buildNumber)}
-          divider={false}
-        />
-        <SettingItem
-          label="Code Version"
-          paragraph={parseVersion(currentCodeVersion)}
-        />
-      </TouchableWithoutFeedback>
-
-      <View
-        style={{
-          marginTop: spacing["32"],
-          marginBottom: spacing["12"],
-        }}
-      />
-      <TouchableWithoutFeedback
-        style={{
-          backgroundColor: colors["background-box"],
-          borderRadius: spacing["24"],
-          marginHorizontal: spacing["20"],
-        }}
-      >
-        <SettingItem
-          label="Latest Code Version"
-          paragraph={parseVersion(latestCodeVersion)}
-          divider={false}
-        />
-        {appInitStore.getInitApp.date_updated ? (
-          <SettingItem label="Date Updated" paragraph={date} divider={false} />
-        ) : null}
-        <SettingItem
-          label="Pending Code Version"
-          paragraph={parseVersion(pendingCodeVersion)}
-        />
-      </TouchableWithoutFeedback>
-    </PageWithScrollViewInBottomTabView>
+        <TouchableWithoutFeedback>
+          <SettingItem
+            label="Latest Code Version"
+            paragraph={parseVersion(latestCodeVersion)}
+            divider={false}
+          />
+          {appInitStore.getInitApp.date_updated ? (
+            <SettingItem
+              label="Date Updated"
+              paragraph={date}
+              divider={false}
+            />
+          ) : null}
+          <SettingItem
+            label="Pending Code Version"
+            paragraph={parseVersion(pendingCodeVersion)}
+          />
+        </TouchableWithoutFeedback>
+      </OWCard>
+    </PageWithScrollView>
   );
 });
 
@@ -180,7 +183,7 @@ const SettingItem: FunctionComponent<{
             <Text
               style={{
                 ...typography.h6,
-                color: colors["primary-text"],
+                color: colors["neutral-text-title"],
                 fontWeight: "600",
                 textAlign: "left",
               }}
@@ -191,7 +194,7 @@ const SettingItem: FunctionComponent<{
               <Text
                 style={{
                   ...typography.h6,
-                  color: colors["primary-text"],
+                  color: colors["neutral-text-title"],
                   textAlign: "right",
                 }}
               >
@@ -203,7 +206,7 @@ const SettingItem: FunctionComponent<{
             <Divider
               orientation="vertical"
               width={1}
-              color={colors['primary-text']}
+              color={colors['neutral-text-title']}
               style={{
                 marginTop: spacing['24']
               }}

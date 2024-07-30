@@ -1,22 +1,22 @@
 import { BondStatus } from "@owallet/stores";
-import { OWEmpty } from "@src/components/empty";
-import { Text } from "@src/components/text";
+import OWText from "@src/components/text/ow-text";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useState } from "react";
 import { useIntl } from "react-intl";
-import { View, ViewStyle } from "react-native";
-import { CardBody, OWBox } from "../../../components/card";
+import { TouchableOpacity, View, ViewStyle } from "react-native";
 import { ProgressBar } from "../../../components/progress-bar";
-import { ValidatorThumbnail } from "../../../components/thumbnail";
+import { DownArrowIcon } from "@src/components/icon";
 import { useStore } from "../../../stores";
-import { useStyle } from "../../../styles";
+import OWIcon from "@src/components/ow-icon/ow-icon";
+import { metrics } from "@src/themes";
 
 export const UndelegationsCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
   const { chainStore, accountStore, queriesStore } = useStore();
   const { colors } = useTheme();
+  const [collapse, setCollapse] = useState(true);
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
 
@@ -36,177 +36,179 @@ export const UndelegationsCard: FunctionComponent<{
   );
   const stakingParams = queries.cosmos.queryStakingParams;
 
-  const style = useStyle();
-
   const intl = useIntl();
 
-  return (
-    <OWBox
-      style={{
-        paddingTop: 0,
-      }}
-    >
-      <CardBody>
-        <Text
-          style={[
-            { color: colors["primary-text"] },
-            style.flatten(["h6", "self-center"]),
-          ]}
-        >
-          My Unstaking
-        </Text>
-        {unbondings.length > 0 ? null : (
-          <OWEmpty style={{ paddingBottom: 20 }} />
+  return unbondings?.length <= 0 ? null : (
+    <View style={{ marginTop: 16 }}>
+      <TouchableOpacity
+        onPress={() => {
+          setCollapse(!collapse);
+        }}
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          backgroundColor: colors["neutral-surface-action2"],
+          borderRadius: 24,
+          paddingHorizontal: 12,
+          paddingVertical: 8,
+          alignItems: "center",
+        }}
+      >
+        <OWText weight="500" color={colors["neutral-text-action-on-light-bg"]}>
+          Unstaking({unbondings.length})
+        </OWText>
+
+        {collapse ? (
+          <OWIcon
+            name="chevron_right"
+            color={colors["neutral-text-action-on-light-bg"]}
+            size={16}
+          />
+        ) : (
+          <DownArrowIcon
+            height={12}
+            color={colors["neutral-text-action-on-light-bg"]}
+          />
         )}
-        {unbondings.map((unbonding, unbondingIndex) => {
-          const validator = bondedValidators.validators
-            .concat(unbondingValidators.validators)
-            .concat(unbondedValidators.validators)
-            .find((val) => val.operator_address === unbonding.validatorAddress);
-          const thumbnail =
-            bondedValidators.getValidatorThumbnail(
-              unbonding.validatorAddress
-            ) ||
-            unbondingValidators.getValidatorThumbnail(
-              unbonding.validatorAddress
-            ) ||
-            unbondedValidators.getValidatorThumbnail(
-              unbonding.validatorAddress
-            );
-          const entries = unbonding.entries;
-          const isLastUnbondingIndex = unbondingIndex === unbondings.length - 1;
+      </TouchableOpacity>
 
-          return (
-            <React.Fragment key={unbondingIndex}>
+      {collapse ? null : (
+        <View>
+          {unbondings.map((unbonding, unbondingIndex) => {
+            const validator = bondedValidators.validators
+              .concat(unbondingValidators.validators)
+              .concat(unbondedValidators.validators)
+              .find(
+                (val) => val.operator_address === unbonding.validatorAddress
+              );
+
+            const entries = unbonding.entries;
+            const isLastUnbondingIndex =
+              unbondingIndex === unbondings.length - 1;
+
+            return (
               <View
-                key={unbonding.validatorAddress}
-                style={style.flatten(
-                  ["padding-y-16"],
-                  [isLastUnbondingIndex && "padding-bottom-8"]
-                )}
+                style={{
+                  marginTop: 1,
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  backgroundColor: colors["neutral-surface-action2"],
+                  borderRadius: 16,
+                  paddingHorizontal: 12,
+                  paddingVertical: 8,
+                  alignItems: "center",
+                }}
+                key={unbondingIndex}
               >
-                <View style={style.flatten(["flex-row", "items-center"])}>
-                  <ValidatorThumbnail
-                    size={32}
-                    url={thumbnail}
-                    style={{
-                      backgroundColor: colors["purple-100"],
-                      borderRadius: 32,
-                    }}
-                  />
-                  <Text
-                    style={[
-                      { color: colors["primary-text"] },
-                      style.flatten(["margin-left-16", "h7"]),
-                    ]}
+                <View key={unbonding.validatorAddress}>
+                  <OWText
+                    style={{ marginBottom: 8 }}
+                    weight="500"
+                    color={colors["neutral-text-action-on-light-bg"]}
                   >
-                    {validator?.description.moniker ?? "..."}
-                  </Text>
-                </View>
+                    Unstaking: {validator?.description.moniker ?? "..."}
+                  </OWText>
 
-                {entries.map((entry, i) => {
-                  const remainingText = (() => {
-                    const current = new Date().getTime();
+                  {entries.map((entry, i) => {
+                    const remainingText = (() => {
+                      const current = new Date().getTime();
 
-                    const relativeEndTime =
-                      (new Date(entry.completionTime).getTime() - current) /
-                      1000;
-                    const relativeEndTimeDays = Math.floor(
-                      relativeEndTime / (3600 * 24)
-                    );
-                    const relativeEndTimeHours = Math.ceil(
-                      relativeEndTime / 3600
-                    );
-
-                    if (relativeEndTimeDays) {
-                      return (
-                        intl
-                          .formatRelativeTime(relativeEndTimeDays, "days", {
-                            numeric: "always",
-                          })
-                          .replace("in ", "") + " left"
+                      const relativeEndTime =
+                        (new Date(entry.completionTime).getTime() - current) /
+                        1000;
+                      const relativeEndTimeDays = Math.floor(
+                        relativeEndTime / (3600 * 24)
                       );
-                    } else if (relativeEndTimeHours) {
-                      return (
-                        intl
-                          .formatRelativeTime(relativeEndTimeHours, "hours", {
-                            numeric: "always",
-                          })
-                          .replace("in ", "") + " left"
+                      const relativeEndTimeHours = Math.ceil(
+                        relativeEndTime / 3600
                       );
-                    }
 
-                    return "";
-                  })();
-                  const progress = (() => {
-                    const currentTime = new Date().getTime();
-                    const endTime = new Date(entry.completionTime).getTime();
-                    const remainingTime = Math.floor(
-                      (endTime - currentTime) / 1000
-                    );
-                    const unbondingTime = stakingParams
-                      ? stakingParams.unbondingTimeSec
-                      : 3600 * 24 * 21;
+                      if (relativeEndTimeDays) {
+                        return (
+                          intl
+                            .formatRelativeTime(relativeEndTimeDays, "days", {
+                              numeric: "always",
+                            })
+                            .replace("in ", "") + " left"
+                        );
+                      } else if (relativeEndTimeHours) {
+                        return (
+                          intl
+                            .formatRelativeTime(relativeEndTimeHours, "hours", {
+                              numeric: "always",
+                            })
+                            .replace("in ", "") + " left"
+                        );
+                      }
 
-                    return 100 - (remainingTime / unbondingTime) * 100;
-                  })();
+                      return "";
+                    })();
+                    const progress = (() => {
+                      const currentTime = new Date().getTime();
+                      const endTime = new Date(entry.completionTime).getTime();
+                      const remainingTime = Math.floor(
+                        (endTime - currentTime) / 1000
+                      );
+                      const unbondingTime = stakingParams
+                        ? stakingParams.unbondingTimeSec
+                        : 3600 * 24 * 21;
 
-                  return (
-                    <View
-                      key={i.toString()}
-                      style={style.flatten(["padding-top-12"])}
-                    >
+                      return 100 - (remainingTime / unbondingTime) * 100;
+                    })();
+
+                    return (
                       <View
-                        style={style.flatten([
-                          "flex-row",
-                          "items-center",
-                          "margin-bottom-8",
-                        ])}
+                        style={{
+                          marginBottom: 8,
+                          width: metrics.screenWidth / 1.3,
+                        }}
+                        key={i.toString()}
                       >
-                        <Text
-                          style={[
-                            { color: colors["primary-text"] },
-                            ,
-                            style.flatten(["subtitle2"]),
-                          ]}
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            marginBottom: 8,
+                          }}
                         >
-                          {entry.balance
-                            .shrink(true)
-                            .trim(true)
-                            .maxDecimals(6)
-                            .toString()}
-                        </Text>
-                        <View style={style.get("flex-1")} />
-                        <Text
-                          style={style.flatten([
-                            "body2",
-                            "color-text-black-low",
-                          ])}
-                        >
-                          {remainingText}
-                        </Text>
+                          <OWText
+                            weight="500"
+                            color={colors["neutral-text-action-on-light-bg"]}
+                          >
+                            {entry.balance
+                              .shrink(true)
+                              .trim(true)
+                              .maxDecimals(6)
+                              .toString()}
+                          </OWText>
+                          <OWText
+                            weight="500"
+                            color={colors["neutral-text-action-on-light-bg"]}
+                          >
+                            {remainingText}
+                          </OWText>
+                        </View>
+                        <View>
+                          <ProgressBar progress={progress} />
+                        </View>
                       </View>
-                      <View>
-                        <ProgressBar progress={progress} />
-                      </View>
-                    </View>
-                  );
-                })}
+                    );
+                  })}
+                </View>
+                {!isLastUnbondingIndex && (
+                  <View
+                    style={[
+                      {
+                        backgroundColor: colors["border-input-login"],
+                      },
+                    ]}
+                  />
+                )}
               </View>
-              {!isLastUnbondingIndex && (
-                <View
-                  style={[
-                    style.flatten(["height-1"]),
-                    {
-                      backgroundColor: colors["border-input-login"],
-                    },
-                  ]}
-                />
-              )}
-            </React.Fragment>
-          );
-        })}
-      </CardBody>
-    </OWBox>
+            );
+          })}
+        </View>
+      )}
+    </View>
   );
 });

@@ -1,17 +1,27 @@
 import { useRegisterConfig } from "@owallet/hooks";
+import { useRoute } from "@react-navigation/native";
+import OWIcon from "@src/components/ow-icon/ow-icon";
 import OWText from "@src/components/text/ow-text";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
-import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import OWButton from "../../components/button/OWButton";
 import { useSmartNavigation } from "../../navigation.provider";
 import { useStore } from "../../stores";
 import { metrics } from "../../themes";
 
-export const RegisterIntroScreen: FunctionComponent = observer(() => {
+export const RegisterIntroScreen: FunctionComponent = observer((props) => {
   const { keyRingStore, analyticsStore } = useStore();
   const { colors } = useTheme();
+
+  const route = useRoute();
 
   const smartNavigation = useSmartNavigation();
   const registerConfig = useRegisterConfig(keyRingStore, []);
@@ -58,6 +68,29 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
         />
       </View>
       <ScrollView style={styles.content}>
+        {route.params?.canBeBack ? (
+          <TouchableOpacity
+            onPress={() => {
+              smartNavigation.goBack();
+            }}
+            style={{
+              backgroundColor: colors["neutral-surface-card"],
+              borderRadius: 999,
+              width: 44,
+              height: 44,
+              alignItems: "center",
+              justifyContent: "center",
+              marginHorizontal: 16,
+            }}
+          >
+            <OWIcon
+              size={16}
+              color={colors["neutral-icon-on-light"]}
+              name="arrow-left"
+            />
+          </TouchableOpacity>
+        ) : null}
+
         <View style={styles.boardingTitleContainer}>
           <View style={styles.boardingIcon}>
             <Image
@@ -110,26 +143,28 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
             </OWText>
           </View>
         </View>
-        <OWButton
-          style={styles.btnOW}
-          size="default"
-          label="Create a new wallet"
-          onPress={handleCreateANewWallet}
-        />
-        <OWButton
-          style={styles.btnOW}
-          label="Import Ledger Nano X"
-          onPress={handleImportLedgerNanoX}
-          type="secondary"
-          size="default"
-        />
-        <OWButton
-          style={styles.btnOW}
-          label="Import from Mnemonic / Private key"
-          onPress={handleImportFromMnemonic}
-          type="secondary"
-          size="default"
-        />
+        <View style={{ paddingHorizontal: 42 }}>
+          <OWButton
+            style={styles.btnOW}
+            size="default"
+            label="Create a new wallet"
+            onPress={handleCreateANewWallet}
+          />
+          <OWButton
+            style={styles.btnOW}
+            label="Import Ledger Nano X"
+            onPress={handleImportLedgerNanoX}
+            type="secondary"
+            size="default"
+          />
+          <OWButton
+            style={styles.btnOW}
+            label="Import from Mnemonic / Private key"
+            onPress={handleImportFromMnemonic}
+            type="secondary"
+            size="default"
+          />
+        </View>
       </ScrollView>
     </View>
   );
@@ -164,8 +199,6 @@ const useStyles = () => {
       padding: 16,
     },
     container: {
-      paddingLeft: 42,
-      paddingRight: 42,
       backgroundColor: colors["neutral-surface-card"],
       height: metrics.screenHeight,
     },

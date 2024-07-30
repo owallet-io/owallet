@@ -1,367 +1,380 @@
-import React, {
-  FunctionComponent,
-  ReactElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
-import { StyleSheet, View } from "react-native";
-import {
-  BuyIcon,
-  DepositIcon,
-  SendDashboardIcon,
-} from "../../components/icon/button";
-import { TokenSymbol } from "../../components/token-symbol";
-import { useSmartNavigation } from "../../navigation.provider";
-import { useStore } from "../../stores";
-import { metrics, spacing, typography } from "../../themes";
+import { spacing } from "../../themes";
 import { _keyExtract } from "../../utils/helper";
-import { PageWithView } from "../../components/page";
 import { navigate } from "../../router/root";
-import { API } from "../../common/api";
-import { AddressQRCodeModal } from "../home/components";
-import { TokenSymbolEVM } from "../../components/token-symbol/token-symbol-evm";
 import { useTheme } from "@src/themes/theme-provider";
-import { OWBox } from "@src/components/card";
+import {
+  StyleSheet,
+  View,
+  Image,
+  InteractionManager,
+  Clipboard,
+} from "react-native";
+import OWText from "@src/components/text/ow-text";
+import { useStore } from "@src/stores";
 import { OWButton } from "@src/components/button";
-import OWTransactionItem from "../transactions/components/items/transaction-item";
-import OWFlatList from "@src/components/page/ow-flat-list";
-import { Text } from "@src/components/text";
-import { useNavigation } from "@react-navigation/native";
+import { metrics } from "@src/themes";
+import { API } from "@src/common/api";
+import { useSimpleTimer } from "@src/hooks";
+import { PageHeader } from "@src/components/header/header-new";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { SCREENS } from "@src/common/constants";
+import {
+  ChainIdEnum,
+  DenomHelper,
+  getBase58Address,
+  TRC20_LIST,
+} from "@owallet/common";
+import {
+  maskedNumber,
+  removeDataInParentheses,
+  shortenAddress,
+} from "@src/utils/helper";
+import { CheckIcon, CopyFillIcon } from "@src/components/icon";
+import { TokenChart } from "@src/screens/home/components/token-chart";
+import { ViewRawToken } from "@src/stores/huge-queries";
+import { CoinPretty, PricePretty } from "@owallet/unit";
+import { HistoryByToken } from "@src/screens/transactions/history-by-token";
+import { PageWithScrollView } from "@src/components/page";
+import { tracking } from "@src/utils/tracking";
+import { RouteProp, useRoute } from "@react-navigation/native";
 
-export const TokenDetailScreen: FunctionComponent = observer((props) => {
-  const {
-    chainStore,
-    modalStore,
-    txsStore,
-    accountStore,
-    keyRingStore,
-    queriesStore,
-  } = useStore();
-  const smartNavigation = useSmartNavigation();
-  const navigation = useNavigation();
+export const TokenDetailsScreen: FunctionComponent = observer((props) => {
+  const { chainStore, priceStore, accountStore, keyRingStore } = useStore();
+  const { isTimedOut, setTimer } = useSimpleTimer();
   const { colors } = useTheme();
-  const [loadMore, setLoadMore] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
-  const styles = styling(colors);
-  const {
-    amountBalance,
-    balanceCoinDenom,
-    priceBalance,
-    balanceCoinFull,
-    balanceCurrency,
-  } = props?.route?.params ?? {};
+  const styles = useStyles(colors);
 
-  const txs = txsStore(chainStore.current);
-  const account = accountStore.getAccount(chainStore.current.chainId);
-  const addressDisplay = account.getAddressDisplay(
+  const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
+
+  const route = useRoute<
+    RouteProp<
+      Record<
+        string,
+        {
+          item: ViewRawToken;
+        }
+      >,
+      string
+    >
+  >();
+
+  const { item } = route.params;
+
+  const account = accountStore.getAccount(item.chainInfo.chainId);
+
+  const [tronTokens, setTronTokens] = useState([]);
+
+  useEffect(() => {
+    tracking("Token Detail Screen");
+    InteractionManager.runAfterInteractions(() => {
+      (async function get() {
+        try {
+          if (accountTron.evmosHexAddress) {
+            const res = await API.getTronAccountInfo(
+              {
+                address: getBase58Address(accountTron.evmosHexAddress),
+              },
+              {
+                baseURL: chainStore.current.rpc,
+              }
+            );
+
+            if (res.data?.data?.length > 0) {
+              if (res.data?.data[0].trc20) {
+                const tokenArr = [];
+                TRC20_LIST.map((tk) => {
+                  let token = res.data?.data[0].trc20.find(
+                    (t) => tk.contractAddress in t
+                  );
+                  if (token) {
+                    tokenArr.push({ ...tk, amount: token[tk.contractAddress] });
+                  }
+                });
+
+                setTronTokens(tokenArr);
+              }
+            }
+          }
+        } catch (error) {}
+      })();
+    });
+  }, [accountTron.evmosHexAddress]);
+
+  const address = account.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses
   );
-  const queryBalances = queriesStore
-    .get(chainStore.current.chainId)
-    .queryBalances.getQueryBech32Address(addressDisplay);
+  const onPressToken = async () => {
+    chainStore.selectChain(item.chainInfo.chainId);
+    await chainStore.saveLastViewChainId();
 
-  const tokens = queryBalances.balances
-    .concat(
-      queryBalances.nonNativeBalances,
-      queryBalances.positiveNativeUnstakables
-    )
-    .slice(0, 2);
-
-  const page = useRef(1);
-  const [data, setData] = useState([]);
-  const hasMore = useRef(true);
-  const perPage = 10;
-  const fetchData = useCallback(
-    async (params, isLoadMore = false) => {
-      try {
-        if (hasMore.current) {
-          if (!isLoadMore) {
-            setLoading(true);
-          }
-          const rs = await txs.getTxs(perPage, page.current, params);
-          const newData = isLoadMore ? [...data, ...rs?.result] : rs?.result;
-          hasMore.current = rs?.result?.length === perPage;
-          page.current = rs?.current_page + 1;
-          if (rs?.current_page === rs?.total_page) {
-            hasMore.current = false;
-          }
-          if (rs?.result.length < 1) {
-            hasMore.current = false;
-          }
-          setData(newData);
-          setAllLoading();
-        } else {
-          setAllLoading();
-        }
-      } catch (error) {
-        setAllLoading();
-      }
-    },
-    [data]
-  );
-  const setAllLoading = () => {
-    setLoadMore(false);
-    setLoading(false);
-    setRefreshing(false);
-  };
-  useEffect(() => {
-    refreshData();
-    return () => {
-      setData([]);
-    };
-  }, [chainStore?.current?.rest, account?.bech32Address]);
-  const _onPressReceiveModal = () => {
-    modalStore.setOptions();
-    modalStore.setChildren(
-      AddressQRCodeModal({
-        account,
-        chainStore: chainStore.current,
-        keyRingStore: keyRingStore,
-      })
-    );
-  };
-
-  const _onPressBtnMain = (name) => {
-    if (name === "Buy") {
-      navigate("MainTab", { screen: "Browser", path: "https://oraidex.io" });
-    }
-    if (name === "Receive") {
-      _onPressReceiveModal();
-    }
-    if (name === "Send") {
-      if (chainStore.current.networkType === "bitcoin") {
-        navigate(SCREENS.STACK.Others, {
-          screen: SCREENS.SendBtc,
-        });
-        return;
-      }
-      smartNavigation.navigateSmart("Send", {
-        currency:
-          balanceCoinFull ??
-          balanceCoinDenom ??
-          chainStore.current.stakeCurrency.coinMinimalDenom,
+    if (chainStore.current.networkType === "bitcoin") {
+      navigate(SCREENS.STACK.Others, {
+        screen: SCREENS.SendBtc,
       });
       return;
     }
-  };
+    if (chainStore.current.networkType === "evm") {
+      if (item.chainInfo.chainId === ChainIdEnum.TRON) {
+        const itemTron = tronTokens?.find((t) => {
+          return t.coinGeckoId === item.token.currency.coinGeckoId;
+        });
 
-  const RenderBtnMain = ({ name }) => {
-    let icon: ReactElement;
-    switch (name) {
-      case "Buy":
-        icon = <BuyIcon />;
-        break;
-      case "Receive":
-        icon = <DepositIcon />;
-        break;
-      case "Send":
-        icon = <SendDashboardIcon />;
-        break;
-    }
-    return (
-      <OWButton
-        size="small"
-        type="primary"
-        onPress={() => _onPressBtnMain(name)}
-        icon={icon}
-        label={name}
-        fullWidth={false}
-      />
-    );
-  };
-  const onEndReached = useCallback(() => {
-    if (page.current !== 1) {
-      setLoadMore(true);
-      fetchData(
-        {
-          addressAccount:
-            chainStore.current.networkType == "evm"
-              ? account?.evmosHexAddress
-              : account?.bech32Address,
-          token:
-            balanceCurrency?.contractAddress ||
-            balanceCurrency?.coinMinimalDenom,
+        navigate(SCREENS.STACK.Others, {
+          screen: SCREENS.SendTron,
+          params: {
+            item: itemTron,
+            currency: item.token.currency.coinDenom,
+            contractAddress: new DenomHelper(
+              item.token.currency.coinMinimalDenom
+            ).contractAddress,
+          },
+        });
+
+        return;
+      }
+      if (item.chainInfo.chainId === ChainIdEnum.Oasis) {
+        navigate(SCREENS.STACK.Others, {
+          screen: SCREENS.SendOasis,
+          params: {
+            currency: chainStore.current.stakeCurrency.coinMinimalDenom,
+          },
+        });
+        return;
+      }
+      navigate(SCREENS.STACK.Others, {
+        screen: SCREENS.SendEvm,
+        params: {
+          currency: item.token.currency.coinDenom,
+          contractAddress: new DenomHelper(item.token.currency.coinMinimalDenom)
+            .contractAddress,
+          coinGeckoId: item.token.currency.coinGeckoId,
         },
-        true
-      );
+      });
+      return;
     }
-  }, [account?.bech32Address, data]);
-  const onTransactionDetail = (item) => {
-    navigation.navigate(SCREENS.STACK.Others, {
-      screen: SCREENS.TransactionDetail,
-      params: {
-        txHash: item?.txHash,
-        item,
-      },
-    });
-    return;
-  };
-  const renderItem = ({ item, index }) => {
-    return (
-      <OWTransactionItem
-        key={`item-${index}`}
-        onPress={() => onTransactionDetail(item)}
-        item={item}
-      />
-    );
-  };
-  const refreshData = useCallback(() => {
-    page.current = 1;
-    hasMore.current = true;
-    fetchData(
-      {
-        addressAccount: addressDisplay,
-        token:
-          balanceCurrency?.contractAddress || balanceCurrency?.coinMinimalDenom,
-      },
-      false
-    );
-  }, [chainStore?.current?.rest, addressDisplay]);
-  const onRefresh = () => {
-    setRefreshing(true);
-    refreshData();
-  };
-  const onTransactions = () => {
-    navigation.navigate(SCREENS.STACK.Others, {
-      screen: SCREENS.Transactions,
-    });
-    return;
-  };
 
+    try {
+      navigate(SCREENS.STACK.Others, {
+        screen: SCREENS.NewSend,
+        params: {
+          currency: item.token.currency.coinDenom,
+          contractAddress: new DenomHelper(item.token.currency.coinMinimalDenom)
+            .contractAddress,
+          coinGeckoId: item.token.currency.coinGeckoId,
+        },
+      });
+    } catch (err) {}
+  };
+  const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
+  const denomHelper = new DenomHelper(item.token.currency.coinMinimalDenom);
   return (
-    <PageWithView>
-      <View style={styles.containerBox}>
-        <OWBox type="gradient">
-          <View
-            style={{
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            {chainStore.current.networkType === "evm" ? (
-              <TokenSymbolEVM
-                size={44}
-                chainInfo={{
-                  stakeCurrency: chainStore.current.stakeCurrency,
-                }}
-                currency={tokens?.[0]?.balance?.currency}
-                imageScale={0.54}
-              />
-            ) : (
-              <TokenSymbol
-                size={44}
-                chainInfo={{
-                  stakeCurrency: chainStore.current.stakeCurrency,
-                }}
-                currency={tokens?.[0]?.balance?.currency}
-                imageScale={0.54}
-              />
-            )}
-
-            <View
-              style={{
-                alignItems: "center",
-              }}
-            >
-              <Text
-                style={{
-                  ...typography.h3,
-                  color: colors["white"],
-                  marginTop: spacing["8"],
-                  fontWeight: "800",
-                }}
-              >
-                {`${amountBalance} `}
-              </Text>
-              <Text
-                style={{
-                  ...typography.h6,
-                  color: colors["purple-400"],
-                }}
-              >
-                {`${priceBalance?.toString() ?? "$0"}`}
-              </Text>
-            </View>
-          </View>
-
-          <View
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              paddingTop: spacing["6"],
-              justifyContent: "space-around",
-            }}
-          >
-            {["Buy", "Receive", "Send"].map((e, i) => (
-              <RenderBtnMain key={i} name={e} />
-            ))}
-          </View>
-        </OWBox>
+    <>
+      <View
+        style={{
+          zIndex: 1000,
+          paddingTop: useSafeAreaInsets().top,
+          backgroundColor: colors["neutral-surface-bg"],
+        }}
+      >
+        <PageHeader
+          title={removeDataInParentheses(item.token.currency.coinDenom)}
+          subtitle={
+            item.chainInfo.chainName + `${item?.type ? ` (${item?.type})` : ""}`
+          }
+        />
       </View>
-      <OWBox style={styles.containerListTransaction}>
-        <View style={styles.containerTitleList}>
-          <Text>Transaction List</Text>
-          <OWButton
-            type="link"
-            size="medium"
-            fullWidth={false}
-            label="View all"
-            onPress={onTransactions}
+
+      <PageWithScrollView style={{}} showsVerticalScrollIndicator={false}>
+        <View style={styles.containerOWBox}>
+          <View style={styles.containerInfoAccount}>
+            <View style={styles.btnAcc}>
+              <Image
+                style={styles.infoIcon}
+                source={require("../../assets/images/default-avatar.png")}
+                resizeMode="contain"
+                fadeDuration={0}
+              />
+              <OWText style={styles.labelName}>{account?.name || "..."}</OWText>
+            </View>
+            <OWButton
+              type="secondary"
+              textStyle={{
+                fontSize: 14,
+                fontWeight: "600",
+                color: colors["neutral-text-action-on-light-bg"],
+              }}
+              icon={
+                isTimedOut ? (
+                  <CheckIcon />
+                ) : (
+                  <CopyFillIcon color={colors["sub-text"]} />
+                )
+              }
+              style={styles.copy}
+              label={
+                item?.type
+                  ? item?.type?.includes("Legacy")
+                    ? shortenAddress(account.legacyAddress)
+                    : shortenAddress(address)
+                  : shortenAddress(address)
+              }
+              onPress={() => {
+                Clipboard.setString(address);
+                setTimer(2000);
+              }}
+            />
+          </View>
+          <View style={styles.overview}>
+            <OWText variant="bigText" style={styles.labelTotalAmount}>
+              {maskedNumber(
+                new CoinPretty(item.token.currency, item.token.amount)
+                  .hideDenom(true)
+                  .trim(true)
+                  .toString()
+              )}{" "}
+              {removeDataInParentheses(item.token.currency.coinDenom)}
+            </OWText>
+            <OWText style={styles.profit} color={colors["neutral-text-body"]}>
+              {new PricePretty(fiatCurrency, item.price)?.toString()}
+            </OWText>
+          </View>
+          <View style={styles.btnGroup}>
+            <OWButton
+              style={styles.getStarted}
+              textStyle={{
+                fontSize: 14,
+                fontWeight: "600",
+                color: colors["neutral-text-action-on-dark-bg"],
+              }}
+              label="Receive"
+              onPress={() => {
+                navigate(SCREENS.STACK.Others, {
+                  screen: SCREENS.QRScreen,
+                  params: {
+                    chainId: item.chainInfo.chainId,
+                  },
+                });
+                return;
+              }}
+            />
+            <OWButton
+              textStyle={{
+                fontSize: 14,
+                fontWeight: "600",
+                color: colors["neutral-text-action-on-dark-bg"],
+              }}
+              style={styles.getStarted}
+              label={"Send"}
+              onPress={onPressToken}
+            />
+          </View>
+        </View>
+        <TokenChart coinGeckoId={item.token.currency.coinGeckoId} />
+        <View
+          style={{
+            backgroundColor: colors["neutral-surface-card"],
+            width: metrics.screenWidth,
+            paddingHorizontal: 16,
+            borderTopRightRadius: 24,
+            borderTopLeftRadius: 24,
+            marginTop: 16,
+            paddingBottom: 32,
+          }}
+        >
+          <View
+            style={{
+              paddingVertical: 16,
+              borderBottomWidth: 1,
+              borderBottomColor: colors["neutral-border-default"],
+            }}
+          >
+            <OWText
+              color={colors["neutral-text-body"]}
+              size={16}
+              weight={"500"}
+            >
+              History
+            </OWText>
+          </View>
+          <HistoryByToken
+            tokenAddr={denomHelper.contractAddress || denomHelper.denom}
+            chainId={item.chainInfo.chainId}
           />
         </View>
-
-        <OWFlatList
-          data={data}
-          onEndReached={onEndReached}
-          renderItem={renderItem}
-          loadMore={loadMore}
-          onRefresh={onRefresh}
-          loading={loading}
-          refreshing={refreshing}
-        />
-      </OWBox>
-    </PageWithView>
+      </PageWithScrollView>
+    </>
   );
 });
 
-const styling = (colors) =>
-  StyleSheet.create({
-    containerListTransaction: {
-      flex: 1,
-      paddingTop: 10,
+const useStyles = (colors) => {
+  return StyleSheet.create({
+    containerOWBox: {
+      marginHorizontal: 16,
+      width: metrics.screenWidth - 32,
+      padding: spacing["16"],
+      backgroundColor: colors["neutral-surface-card"],
+      borderRadius: 24,
     },
-    containerTitleList: {
+    overview: {
+      marginTop: 12,
+      marginBottom: 16,
+    },
+    labelTotalAmount: {
+      color: colors["neutral-text-heading"],
+      fontWeight: "500",
+    },
+    profit: {
+      fontWeight: "400",
+      lineHeight: 20,
+    },
+    labelName: {
+      paddingLeft: spacing["6"],
+      paddingRight: 10,
+      fontWeight: "600",
+      fontSize: 16,
+      color: colors["neutral-text-title"],
+    },
+    infoIcon: {
+      width: spacing["26"],
+      borderRadius: spacing["26"],
+      height: spacing["26"],
+    },
+    btnAcc: {
+      display: "flex",
+      flexDirection: "row",
+      alignItems: "center",
+      paddingBottom: spacing["2"],
+    },
+    containerInfoAccount: {
       flexDirection: "row",
       justifyContent: "space-between",
-      alignItems: "center",
-      paddingTop: 0,
-      marginTop: 0,
     },
-    containerBox: {
-      marginHorizontal: 24,
+    getStarted: {
+      borderRadius: 999,
+      width: metrics.screenWidth / 2.45,
+      height: 32,
     },
-    containerToken: {
+    copy: {
+      borderRadius: 999,
+      width: metrics.screenWidth / 2.5,
+      height: 32,
+    },
+    btnGroup: {
       flexDirection: "row",
-      alignItems: "center",
-      marginHorizontal: spacing["4"],
-      marginVertical: spacing["8"],
-      paddingTop: spacing["18"],
-      paddingBottom: spacing["18"],
+      justifyContent: "space-between",
     },
-    transactionListEmpty: {
-      justifyContent: "center",
-      alignItems: "center",
-    },
-    fixedScroll: {
+    containerLoading: {
       position: "absolute",
       bottom: 0,
       left: 0,
       right: 0,
+      top: 30,
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 1000,
     },
+    container: {},
   });
+};

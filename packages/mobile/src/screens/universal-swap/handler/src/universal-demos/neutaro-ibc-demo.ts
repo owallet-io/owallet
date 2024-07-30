@@ -41,12 +41,11 @@ const neutaroUsdcToOraiUsdc = async (chainId: "Neutaro-1" | "Oraichain") => {
       fromAmount,
       simulateAmount: toAmount(fromAmount, originalToToken.decimals).toString(),
     },
-    { cosmosWallet: wallet, ibcInfoTestMode: true }
+    { cosmosWallet: wallet, swapOptions: { ibcInfoTestMode: true } }
   );
 
   try {
     const result = await universalHandler.processUniversalSwap();
-    console.log("result: ", result);
   } catch (error) {
     console.log("error: ", error);
   }

@@ -1,58 +1,93 @@
 import React, { FunctionComponent, useState } from "react";
 import { observer } from "mobx-react-lite";
-import { RightArrow, SettingItem } from "../components";
+import { BasicSettingItem } from "../components";
 import { PasswordInputModal } from "../../../modals/password-input/modal";
 import { useStore } from "../../../stores";
-import { getPrivateDataTitle } from "../screens/view-private-data";
+// import { getPrivateDataTitle } from "../screens/view-private-data";
 import { useSmartNavigation } from "../../../navigation.provider";
-import { LRRedact } from "@logrocket/react-native";
+import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
+import { Alert } from "react-native";
+import { showToast } from "@src/utils/helper";
+import { useNavigation } from "@react-navigation/native";
+import { PincodeModal } from "@src/screens/pincode/pincode-modal";
 
 export const SettingViewPrivateDataItem: FunctionComponent<{
   topBorder?: boolean;
 }> = observer(({ topBorder }) => {
-  const { keyRingStore } = useStore();
+  const { keyRingStore, modalStore, chainStore } = useStore();
 
   const smartNavigation = useSmartNavigation();
 
-  const [isOpenModal, setIsOpenModal] = useState(false);
+  const onGoBack = () => {
+    modalStore.close();
+  };
+  const index = keyRingStore.multiKeyStoreInfo.findIndex(
+    (keyStore) => keyStore.selected
+  );
+  const keyStore = keyRingStore.multiKeyStoreInfo[index];
+  const onVerifyPincode = async (passcode, isPrivateKey) => {
+    try {
+      if (index >= 0) {
+        const privateData = await keyRingStore.showKeyRing(
+          index,
+          passcode,
+          chainStore.current.chainId,
+          isPrivateKey
+        );
+        smartNavigation.navigateSmart("Setting.BackupMnemonic", {
+          privateData,
+          privateDataType: isPrivateKey ? "privateKey" : "mnemonic",
+        });
+      }
+      modalStore.close();
+    } catch (err) {
+      showToast({
+        message: "Invalid passcode",
+        type: "danger",
+      });
+    }
+  };
+
+  const _onPressPincodekModal = (isPrivateKey) => {
+    modalStore.setOptions({
+      bottomSheetModalConfig: {
+        enablePanDownToClose: false,
+        enableOverDrag: false,
+      },
+    });
+    modalStore.setChildren(
+      <PincodeModal
+        onVerifyPincode={(pass) => onVerifyPincode(pass, isPrivateKey)}
+        onGoBack={onGoBack}
+        label={"Enter your passcode"}
+        subLabel={"Enter your passcode to reveal secret phrase"}
+      />
+    );
+  };
+
+  // const [isOpenModal, setIsOpenModal] = useState(false);
 
   return (
     <React.Fragment>
-      <LRRedact>
-        <SettingItem
-          label={"Mnemonic"}
+      {keyStore?.type === "mnemonic" && (
+        <BasicSettingItem
+          icon="md_key"
+          paragraph={"Reveal secret phrase"}
           onPress={() => {
-            setIsOpenModal(true);
-          }}
-          right={<RightArrow />}
-          topBorder={topBorder}
-        />
-        <PasswordInputModal
-          isOpen={isOpenModal}
-          paragraph={"Do not reveal your mnemonic to anyone"}
-          close={() => {
-            setIsOpenModal(false);
-          }}
-          title={getPrivateDataTitle(keyRingStore.keyRingType, true)}
-          onEnterPassword={async (password) => {
-            const index = keyRingStore.multiKeyStoreInfo.findIndex(
-              (keyStore) => keyStore.selected
-            );
-
-            if (index >= 0) {
-              const privateData = await keyRingStore.showKeyRing(
-                index,
-                password
-              );
-              smartNavigation.navigateSmart("Setting.BackupMnemonic", {
-                privateData,
-                privateDataType: keyRingStore.keyRingType,
-              });
-            }
+            _onPressPincodekModal(false);
           }}
         />
-      </LRRedact>
+      )}
+      {keyStore?.type !== "ledger" && (
+        <BasicSettingItem
+          icon="md_key"
+          paragraph={"Reveal Private Key"}
+          onPress={() => {
+            _onPressPincodekModal(true);
+          }}
+        />
+      )}
     </React.Fragment>
   );
 });

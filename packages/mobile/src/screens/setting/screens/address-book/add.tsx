@@ -1,29 +1,30 @@
 import { EthereumEndpoint } from "@owallet/common";
 import {
   AddressBookConfig,
-  useAddressBookConfig,
   useMemoConfig,
   useRecipientConfig,
 } from "@owallet/hooks";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { OWBox } from "@src/components/card";
+import { PageHeader } from "@src/components/header/header-new";
+import OWIcon from "@src/components/ow-icon/ow-icon";
+import { PageWithBottom } from "@src/components/page/page-with-bottom";
+import OWText from "@src/components/text/ow-text";
 import { useTheme } from "@src/themes/theme-provider";
+import { showToast } from "@src/utils/helper";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useState } from "react";
-import { StyleSheet } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { AsyncKVStore } from "../../../../common";
 import { OWButton } from "../../../../components/button";
-import { Scanner } from "../../../../components/icon";
 import {
   AddressInput,
   MemoInput,
   TextInput,
 } from "../../../../components/input";
-import { PageWithScrollView } from "../../../../components/page";
 import { useSmartNavigation } from "../../../../navigation.provider";
 import { useStore } from "../../../../stores";
-import { spacing } from "../../../../themes";
+import { metrics, spacing } from "../../../../themes";
 
 const styling = (colors) =>
   StyleSheet.create({
@@ -46,8 +47,14 @@ const styling = (colors) =>
       borderBottomLeftRadius: spacing["8"],
       borderBottomRightRadius: spacing["8"],
       color: colors["sub-text"],
-      backgroundColor: colors["background-box"],
+      backgroundColor: colors["neutral-surface-bg2"],
+      borderWidth: 0,
     },
+    input: {
+      borderColor: colors["neutral-border-strong"],
+      borderRadius: 12,
+    },
+    textInput: { fontWeight: "600", paddingLeft: 4, fontSize: 15 },
   });
 
 export const AddAddressBookScreen: FunctionComponent = observer(() => {
@@ -77,27 +84,7 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
   );
 
   const smartNavigation = useSmartNavigation();
-  // const addressBookConfig = route.params.addressBookConfig;
-
-  const addressBookConfig = route.params.addressBookConfig
-    ? route.params.addressBookConfig
-    : useAddressBookConfig(
-        new AsyncKVStore("address_book"),
-        chainStore,
-        chainStore.current.chainId,
-        {
-          setRecipient: (recipient: string) => {
-            if (recipientConfig) {
-              recipientConfig.setRawRecipient(recipient);
-            }
-          },
-          setMemo: (memo: string) => {
-            if (memoConfig) {
-              memoConfig.setMemo(memo);
-            }
-          },
-        }
-      );
+  const addressBookConfig = route.params.addressBookConfig;
 
   const [name, setName] = useState("");
   useEffect(() => {
@@ -113,56 +100,10 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
   // const keyboardVerticalOffset = Platform.OS === 'ios' ? -50 : 0;
 
   return (
-    // <PageWithScrollView behavior='position' keyboardVerticalOffset={keyboardVerticalOffset}>
-    <PageWithScrollView
-      backgroundColor={colors["background"]}
-      style={{ marginTop: spacing["24"] }}
-    >
-      <OWBox>
-        <TextInput
-          label="User name"
-          value={name}
-          onChangeText={(text) => setName(text)}
-          labelStyle={styles.addNewBookLabel}
-          inputContainerStyle={styles.addNewBookInput}
-          placeholder="Type your user name"
-        />
-        <AddressInput
-          label="Wallet address"
-          recipientConfig={recipientConfig}
-          memoConfig={memoConfig}
-          disableAddressBook={false}
-          labelStyle={styles.addNewBookLabel}
-          inputContainerStyle={styles.addNewBookInput}
-          placeholder="Tap to paste"
-          inputRight={
-            <TouchableOpacity
-              onPress={() => {
-                smartNavigation.navigateSmart("Camera", {
-                  screenCurrent: "addressbook",
-                  name,
-                });
-              }}
-            >
-              <Scanner color={colors["primary-surface-default"]} />
-            </TouchableOpacity>
-          }
-        />
-        <MemoInput
-          label="Memo (optional)"
-          memoConfig={memoConfig}
-          labelStyle={styles.addNewBookLabel}
-          inputContainerStyle={{
-            ...styles.addNewBookInput,
-            height: 190,
-          }}
-          multiline={false}
-          placeholder="Type memo here"
-        />
+    <PageWithBottom
+      bottomGroup={
         <OWButton
           label="Save"
-          size="large"
-          type="primary"
           disabled={
             !name ||
             recipientConfig.getError() != null ||
@@ -174,17 +115,130 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
               recipientConfig.getError() == null &&
               memoConfig.getError() == null
             ) {
-              await addressBookConfig.addAddressBook({
-                name,
-                address: recipientConfig.rawRecipient,
-                memo: memoConfig.memo,
-              });
-              smartNavigation.goBack();
+              if (addressBookConfig) {
+                await addressBookConfig.addAddressBook({
+                  name,
+                  address: recipientConfig.rawRecipient,
+                  memo: memoConfig.memo,
+                });
+                smartNavigation.goBack();
+              } else {
+                showToast({
+                  message: "Something went wrong! Plase try again.",
+                  type: "danger",
+                });
+              }
+
               // smartNavigation.navigateSmart('AddressBook', {});
             }
           }}
+          style={[
+            {
+              width: metrics.screenWidth - 32,
+              marginTop: 20,
+              borderRadius: 999,
+            },
+          ]}
+          textStyle={{
+            fontSize: 14,
+            fontWeight: "600",
+            color: colors["neutral-text-action-on-dark-bg"],
+          }}
         />
-      </OWBox>
-    </PageWithScrollView>
+      }
+    >
+      <PageHeader title="add new contact" />
+      <ScrollView
+        contentContainerStyle={{ height: metrics.screenHeight }}
+        showsVerticalScrollIndicator={false}
+      >
+        <OWBox>
+          <TextInput
+            label=""
+            topInInputContainer={
+              <View style={{ paddingBottom: 4 }}>
+                <OWText>Contact name</OWText>
+              </View>
+            }
+            returnKeyType="next"
+            onSubmitEditing={() => {}}
+            inputStyle={styles.input}
+            style={styles.textInput}
+            inputLeft={
+              <OWIcon
+                size={22}
+                name="tdesign_book"
+                color={colors["neutral-icon-on-light"]}
+              />
+            }
+            onChangeText={(text) => setName(text)}
+            value={name}
+            placeholder="Enter contact name"
+          />
+
+          <AddressInput
+            label=""
+            topInInputContainer={
+              <View style={{ paddingBottom: 4 }}>
+                <OWText>Address</OWText>
+              </View>
+            }
+            recipientConfig={recipientConfig}
+            memoConfig={memoConfig}
+            disableAddressBook={false}
+            inputContainerStyle={styles.input}
+            labelStyle={styles.addNewBookLabel}
+            placeholder="Enter address"
+            inputLeft={
+              <View style={{ paddingRight: 6 }}>
+                <OWIcon
+                  size={22}
+                  name="wallet"
+                  color={colors["neutral-icon-on-light"]}
+                />
+              </View>
+            }
+            inputRight={
+              <TouchableOpacity
+                onPress={() => {
+                  smartNavigation.navigateSmart("Camera", {
+                    screenCurrent: "addressbook",
+                    name,
+                  });
+                }}
+              >
+                <OWIcon
+                  size={22}
+                  name="tdesign_scan"
+                  color={colors["neutral-icon-on-light"]}
+                />
+              </TouchableOpacity>
+            }
+          />
+          <MemoInput
+            label=""
+            topInInputContainer={
+              <View style={{ paddingBottom: 4 }}>
+                <OWText>Memo(Optional)</OWText>
+              </View>
+            }
+            inputLeft={
+              <View style={{ paddingRight: 6 }}>
+                <OWIcon
+                  size={22}
+                  name="tdesign_mail"
+                  color={colors["neutral-icon-on-light"]}
+                />
+              </View>
+            }
+            inputContainerStyle={styles.input}
+            memoConfig={memoConfig}
+            labelStyle={styles.addNewBookLabel}
+            multiline={false}
+            placeholder="Type memo here"
+          />
+        </OWBox>
+      </ScrollView>
+    </PageWithBottom>
   );
 });

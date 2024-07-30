@@ -124,10 +124,10 @@ export const DelegationsCard: FunctionComponent<{
                   ...styles.containerItem,
                   marginTop: 8,
                   marginBottom: 8,
-                  backgroundColor: colors["background-box"],
+                  backgroundColor: colors["neutral-surface-bg2"],
                   borderColor: isWarning
                     ? colors["orange-800"]
-                    : colors["background-box"],
+                    : colors["neutral-surface-bg2"],
                   borderWidth: 0.5,
                 }}
                 onPress={() => {

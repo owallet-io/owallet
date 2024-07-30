@@ -14,6 +14,7 @@ import { ValidatorThumbnail } from "../../../components/thumbnail";
 import { useSmartNavigation } from "../../../navigation.provider";
 import { useStore } from "../../../stores";
 import { spacing, typography } from "../../../themes";
+import { tracking } from "@src/utils/tracking";
 interface DelegateDetailProps {}
 
 export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
@@ -35,7 +36,6 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
     const styles = styling(colors);
     const validatorAddress = route?.params?.validatorAddress;
     const apr = route?.params?.apr;
-
     const account = accountStore.getAccount(chainStore.current.chainId);
     const queries = queriesStore.get(chainStore.current.chainId);
 
@@ -73,7 +73,7 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
       unbondedValidators.validators,
       validatorAddress,
     ]);
-
+    tracking(`Delegate Detail Screen`);
     return (
       <PageWithView>
         <OWSubTitleHeader title="Staking detail" />
@@ -223,7 +223,9 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
             type="secondary"
             label="Switch validator"
             onPress={() => {
-              smartNavigation.navigateSmart("Redelegate", { validatorAddress });
+              smartNavigation.navigateSmart("Redelegate", {
+                validatorAddress,
+              });
             }}
           />
 
@@ -259,7 +261,7 @@ const styling = (colors) =>
       textAlign: "center",
     },
     containerInfo: {
-      backgroundColor: colors["background-box"],
+      backgroundColor: colors["neutral-surface-bg2"],
       borderRadius: spacing["24"],
       padding: spacing["24"],
     },

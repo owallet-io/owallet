@@ -4,12 +4,16 @@ import { Text } from "@src/components/text";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useMemo } from "react";
-import { StyleSheet, View, ViewStyle } from "react-native";
+import {
+  StyleSheet,
+  View,
+  ViewStyle,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
 import { useStore } from "../../../stores";
 import { ValidatorThumbnails } from "@owallet/common";
 import { OWButton } from "@src/components/button";
-import { OWBox } from "@src/components/card";
-import { OWSubTitleHeader } from "@src/components/header";
 import {
   ValidatorAPYIcon,
   ValidatorBlockIcon,
@@ -18,9 +22,20 @@ import {
 } from "../../../components/icon";
 import { ValidatorThumbnail } from "../../../components/thumbnail";
 import { useSmartNavigation } from "../../../navigation.provider";
-import { metrics, spacing, typography } from "../../../themes";
+import { metrics, spacing } from "../../../themes";
+import { PageHeader } from "@src/components/header/header-new";
+import OWText from "@src/components/text/ow-text";
+import { PageWithBottom } from "@src/components/page/page-with-bottom";
+import OWCard from "@src/components/card/ow-card";
+import { convertArrToObject, maskedNumber, showToast } from "@src/utils/helper";
+import { tracking } from "@src/utils/tracking";
 
-const renderIconValidator = (label: string, size?: number, styles?: any) => {
+const renderIconValidator = (
+  label: string,
+  size?: number,
+  colors?: any,
+  styles?: any
+) => {
   switch (label) {
     case "Website":
       return (
@@ -29,7 +44,10 @@ const renderIconValidator = (label: string, size?: number, styles?: any) => {
             ...styles.containerIcon,
           }}
         >
-          <ValidatorBlockIcon color={"#1E1E1E"} size={size} />
+          <ValidatorBlockIcon
+            color={colors["neutral-text-title"]}
+            size={size}
+          />
         </View>
       );
     case "APR":
@@ -39,7 +57,7 @@ const renderIconValidator = (label: string, size?: number, styles?: any) => {
             ...styles.containerIcon,
           }}
         >
-          <ValidatorAPYIcon color={"#1E1E1E"} size={size} />
+          <ValidatorAPYIcon color={colors["neutral-text-title"]} size={size} />
         </View>
       );
     case "Commission":
@@ -49,7 +67,10 @@ const renderIconValidator = (label: string, size?: number, styles?: any) => {
             ...styles.containerIcon,
           }}
         >
-          <ValidatorCommissionIcon color={"#1E1E1E"} size={size} />
+          <ValidatorCommissionIcon
+            color={colors["neutral-text-title"]}
+            size={size}
+          />
         </View>
       );
     case "Voting power":
@@ -59,7 +80,10 @@ const renderIconValidator = (label: string, size?: number, styles?: any) => {
             ...styles.containerIcon,
           }}
         >
-          <ValidatorVotingIcon color={"#1E1E1E"} size={size} />
+          <ValidatorVotingIcon
+            color={colors["neutral-text-title"]}
+            size={size}
+          />
         </View>
       );
   }
@@ -69,10 +93,12 @@ export const ValidatorDetailsCard: FunctionComponent<{
   containerStyle?: ViewStyle;
   validatorAddress: string;
   apr?: number;
-}> = observer(({ containerStyle, validatorAddress, apr }) => {
-  const { chainStore, queriesStore } = useStore();
+  percentageVote?: number;
+}> = observer(({ containerStyle, validatorAddress, apr, percentageVote }) => {
+  const { chainStore, queriesStore, accountStore } = useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
+  const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
   const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
     BondStatus.Bonded
@@ -101,175 +127,408 @@ export const ValidatorDetailsCard: FunctionComponent<{
     unbondedValidators.getValidatorThumbnail(validatorAddress) ||
     ValidatorThumbnails[validatorAddress];
 
+  const rewards = queries.cosmos.queryRewards
+    .getQueryBech32Address(account.bech32Address)
+    .getStakableRewardOf(validatorAddress);
+
+  const staked = queries.cosmos.queryDelegations
+    .getQueryBech32Address(account.bech32Address)
+    .getDelegationTo(validatorAddress);
+
+  const isStakedValidator = useMemo(() => {
+    return (
+      Number(staked.trim(true).shrink(true).hideDenom(true).maxDecimals(6)) > 0
+    );
+  }, [validatorAddress]);
+
   const renderTextDetail = (label: string) => {
     switch (label) {
-      case "Website":
-        return (
-          <Text style={{ ...styles.textDetail }}>
-            {validator?.description.website}
-          </Text>
-        );
-      case "APR":
-        return (
-          <Text style={{ ...styles.textDetail }}>
-            {apr ? apr?.toFixed(2).toString() + "%" : "0" + "%"}
-          </Text>
-        );
       case "Commission":
         return (
-          <Text style={{ ...styles.textDetail }}>
+          <OWText size={16} weight="500" color={colors["neutral-text-heading"]}>
             {new IntPretty(new Dec(validator.commission.commission_rates.rate))
               .moveDecimalPointRight(2)
               .maxDecimals(2)
               .trim(true)
               .toString() + "%"}
-          </Text>
+          </OWText>
         );
       case "Voting power":
         return (
-          <Text style={{ ...styles.textDetail }}>
-            {new CoinPretty(
-              chainStore.current.stakeCurrency,
-              new Dec(validator.tokens)
-            )
-              .maxDecimals(0)
-              .toString()}
-          </Text>
+          <OWText size={16} weight="500" color={colors["neutral-text-heading"]}>
+            {`${maskedNumber(
+              new CoinPretty(
+                chainStore.current.stakeCurrency,
+                new Dec(validator.tokens)
+              )
+                .maxDecimals(0)
+                .hideDenom(true)
+                .toString()
+            )} ${chainStore.current.stakeCurrency.coinDenom}`}
+            {percentageVote ? `  (${percentageVote}%)` : ""}
+          </OWText>
         );
       default:
         return null;
     }
   };
 
+  const _onPressClaim = async () => {
+    try {
+      // await account.cosmos.sendWithdrawAndDelegationRewardMsgs(
+      //   [validatorAddress],
+      //   "oraivaloper1u2344d8jwtsx5as7u5jw7vel28puh34q7d3y64",
+      //   "0.1",
+      //   "",
+      //   {},
+      //   {},
+      //   {
+      //     onBroadcasted: (txHash) => {
+      //       const validatorObject = convertArrToObject([validatorAddress]);
+      //       tracking(`Claim ${rewards.currency.coinDenom}`);
+      //       smartNavigation.pushSmart("TxPendingResult", {
+      //         txHash: Buffer.from(txHash).toString("hex"),
+      //         data: {
+      //           ...validatorObject,
+      //           type: "claim",
+      //           amount: rewards?.toCoin(),
+      //           currency: rewards.currency,
+      //         },
+      //       });
+      //     },
+      //   },
+      //   rewards.currency.coinMinimalDenom
+      // );
+      await account.cosmos.sendWithdrawDelegationRewardMsgs(
+        [validatorAddress],
+        "",
+        {},
+        {},
+        {
+          onBroadcasted: (txHash) => {
+            const validatorObject = convertArrToObject([validatorAddress]);
+            tracking(`Claim ${rewards.currency.coinDenom}`);
+            smartNavigation.pushSmart("TxPendingResult", {
+              txHash: Buffer.from(txHash).toString("hex"),
+              data: {
+                ...validatorObject,
+                type: "claim",
+                amount: rewards?.toCoin(),
+                currency: rewards.currency,
+              },
+            });
+          },
+        },
+        rewards.currency.coinMinimalDenom
+      );
+    } catch (e) {
+      console.error({ errorClaim: e });
+      if (!e?.message?.startsWith("Transaction Rejected")) {
+        showToast({
+          message:
+            e?.message ?? "Something went wrong! Please try again later.",
+          type: "danger",
+        });
+        return;
+      }
+    }
+  };
   return (
-    <View>
-      <OWSubTitleHeader title="Validator detail" />
-      {validator ? (
-        <OWBox>
+    <PageWithBottom
+      bottomGroup={
+        isStakedValidator ? (
           <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              marginBottom: spacing["16"],
-            }}
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
-            <ValidatorThumbnail size={44} url={thumbnail} />
-            <Text
-              style={{
-                ...styles.textInfo,
-                fontWeight: "700",
-                color: colors["primary-text"],
+            <OWButton
+              label="Switch Validator"
+              type="secondary"
+              onPress={() => {
+                smartNavigation.navigateSmart("Redelegate", {
+                  validatorAddress,
+                });
               }}
-            >
-              {validator?.description.moniker}
-            </Text>
+              style={styles.bottomBtn}
+              textStyle={{
+                fontSize: 14,
+                fontWeight: "600",
+              }}
+            />
+            <OWButton
+              label="Stake"
+              onPress={() => {
+                smartNavigation.navigateSmart("Delegate", {
+                  validatorAddress,
+                });
+              }}
+              style={styles.bottomBtn}
+              textStyle={{
+                fontSize: 14,
+                fontWeight: "600",
+              }}
+            />
           </View>
-
-          <View
-            style={{
-              flexWrap: "wrap",
-              flexDirection: "row",
-              justifyContent: "space-between",
+        ) : (
+          <OWButton
+            label="Stake"
+            onPress={() => {
+              smartNavigation.navigateSmart("Delegate", {
+                validatorAddress,
+              });
             }}
-          >
-            {["Website", "APR", "Commission", "Voting power"].map(
-              (label: string, index: number) => (
-                <View
-                  style={{
-                    ...styles.containerItem,
-                  }}
+            style={[
+              styles.bottomBtn,
+              {
+                width: metrics.screenWidth - 32,
+              },
+            ]}
+            textStyle={{
+              fontSize: 14,
+              fontWeight: "600",
+              color: colors["neutral-text-action-on-dark-bg"],
+            }}
+          />
+        )
+      }
+    >
+      <ScrollView
+        style={{ height: metrics.screenHeight / 1.4 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <PageHeader
+          title="Validator details"
+          colors={colors}
+          onPress={async () => {}}
+          right={
+            isStakedValidator ? (
+              <TouchableOpacity
+                onPress={() => {
+                  smartNavigation.navigateSmart("Undelegate", {
+                    validatorAddress,
+                  });
+                }}
+                style={{
+                  borderRadius: 999,
+                  backgroundColor: colors["error-surface-default"],
+                  paddingHorizontal: 12,
+                  paddingVertical: 8,
+                }}
+              >
+                <OWText color={colors["neutral-icon-on-dark"]} weight="600">
+                  Unstake
+                </OWText>
+              </TouchableOpacity>
+            ) : null
+          }
+        />
+        {validator ? (
+          <View>
+            <OWCard>
+              <View
+                style={{
+                  alignItems: "center",
+                  marginBottom: spacing["16"],
+                }}
+              >
+                <ValidatorThumbnail size={44} url={thumbnail} />
+                <OWText
+                  style={{ paddingTop: 8 }}
+                  color={colors["neutral-text-title"]}
+                  weight="600"
+                  size={16}
                 >
-                  {renderIconValidator(label, 24, styles)}
-                  <Text
+                  {validator?.description.moniker}
+                </OWText>
+                <View style={{ flexDirection: "row", marginTop: 8 }}>
+                  <View style={styles.topSubInfo}>
+                    <OWText
+                      style={{
+                        color: colors["neutral-text-title"],
+                      }}
+                    >
+                      APR:{" "}
+                      {apr && apr > 0 ? apr.toFixed(2).toString() + "%" : ""}
+                    </OWText>
+                  </View>
+                  <View style={styles.topSubInfo}>
+                    <ValidatorBlockIcon
+                      color={colors["neutral-text-title"]}
+                      size={16}
+                    />
+                    <OWText
+                      style={{
+                        color: colors["neutral-text-title"],
+                        paddingLeft: 6,
+                      }}
+                    >
+                      {validator?.description.website}
+                    </OWText>
+                  </View>
+                </View>
+              </View>
+            </OWCard>
+            <OWCard style={{ paddingTop: 0 }} type="normal">
+              <View>
+                {isStakedValidator ? (
+                  <View
                     style={{
-                      ...typography.h7,
-                      fontWeight: "700",
-                      textAlign: "center",
-                      marginTop: spacing["6"],
-                      color: colors["primary-text"],
+                      ...styles.containerItem,
+                      flexDirection: "row",
+                      justifyContent: "space-between",
                     }}
                   >
-                    {label}
-                  </Text>
-                  {renderTextDetail(label)}
+                    <View>
+                      <View style={{ flexDirection: "row", paddingBottom: 6 }}>
+                        <View
+                          style={{
+                            ...styles.containerIcon,
+                          }}
+                        >
+                          <ValidatorCommissionIcon
+                            color={colors["neutral-text-title"]}
+                            size={16}
+                          />
+                        </View>
+                        <Text style={[styles.label]}>{"My staked"}</Text>
+                      </View>
+
+                      <OWText
+                        size={16}
+                        weight="500"
+                        color={colors["neutral-text-heading"]}
+                      >
+                        {staked
+                          .trim(true)
+                          .shrink(true)
+                          .maxDecimals(6)
+                          .toString()}
+                      </OWText>
+                    </View>
+                    <View>
+                      <OWButton
+                        style={{
+                          borderRadius: 999,
+                          marginBottom: 10,
+                        }}
+                        size={"small"}
+                        fullWidth={false}
+                        label={"Claimable"}
+                        type={"primary"}
+                        disabled={rewards.toDec().lte(new Dec(0))}
+                        onPress={_onPressClaim}
+                      />
+                      <OWText
+                        size={16}
+                        weight="500"
+                        color={colors["success-text-body"]}
+                      >
+                        +
+                        {rewards
+                          .trim(true)
+                          .shrink(true)
+                          .maxDecimals(6)
+                          .toString()}
+                      </OWText>
+                    </View>
+                  </View>
+                ) : null}
+
+                {["Voting power", "Commission"].map(
+                  (label: string, index: number) => (
+                    <View
+                      style={{
+                        ...styles.containerItem,
+                      }}
+                    >
+                      <View style={{ flexDirection: "row", paddingBottom: 6 }}>
+                        {renderIconValidator(label, 12, colors, styles)}
+                        <Text style={styles.label}>{label}</Text>
+                      </View>
+
+                      {renderTextDetail(label)}
+                    </View>
+                  )
+                )}
+              </View>
+            </OWCard>
+            <OWCard style={{ marginTop: spacing["16"] }} type="normal">
+              <View
+                style={{
+                  marginBottom: spacing["14"],
+                }}
+              >
+                <View style={styles.listLabel}>
+                  <OWText
+                    size={16}
+                    weight={"500"}
+                    style={[styles["title"]]}
+                  >{`Description`}</OWText>
                 </View>
-              )
-            )}
+                <Text
+                  style={{
+                    textAlign: "left",
+                    fontWeight: "400",
+                    paddingTop: spacing["16"],
+                  }}
+                  selectable={true}
+                >
+                  {validator?.description.details}
+                </Text>
+              </View>
+            </OWCard>
           </View>
-          <View
-            style={{
-              marginBottom: spacing["14"],
-            }}
-          >
-            <Text
-              style={{
-                ...typography.h7,
-                fontWeight: "700",
-                marginTop: spacing["24"],
-                marginBottom: spacing["4"],
-                color: colors["sub-primary-text"],
-              }}
-            >
-              Description
-            </Text>
-            <Text
-              style={{
-                ...styles.textDetail,
-                textAlign: "left",
-                fontWeight: "400",
-                // marginBottom: spacing['28']
-              }}
-              selectable={true}
-            >
-              {validator?.description.details}
-            </Text>
-          </View>
-        </OWBox>
-      ) : null}
-      <OWButton
-        label="Stake now"
-        onPress={() => {
-          smartNavigation.navigateSmart("Delegate", {
-            validatorAddress,
-          });
-        }}
-        style={{
-          marginTop: 20,
-          marginHorizontal: 24,
-        }}
-        fullWidth={false}
-      />
-    </View>
+        ) : null}
+      </ScrollView>
+    </PageWithBottom>
   );
 });
 
 const styling = (colors) =>
   StyleSheet.create({
     containerIcon: {
-      borderRadius: spacing["8"],
+      borderRadius: 999,
       padding: spacing["10"],
       alignItems: "center",
-      backgroundColor: colors["gray-10"],
-    },
-    textInfo: {
-      ...typography.h5,
-      fontWeight: "400",
-      marginLeft: spacing["12"],
+      backgroundColor: colors["neutral-surface-action"],
+      marginRight: 4,
     },
     containerItem: {
-      borderWidth: 1,
+      borderBottomWidth: 1,
       borderColor: colors["border-input-login"],
       borderRadius: spacing["8"],
-      width: (metrics.screenWidth - 60) / 2,
-      marginVertical: spacing["6"],
       paddingVertical: spacing["16"],
       paddingHorizontal: spacing["16"],
-      alignItems: "center",
     },
-    textDetail: {
-      ...typography.h7,
-      fontWeight: "700",
-      color: colors["sub-text"],
+
+    listLabel: {
+      paddingVertical: 16,
+      borderBottomColor: colors["neutral-border-default"],
+      borderBottomWidth: 1,
+    },
+    title: {
+      color: colors["neutral-text-body"],
+    },
+    topSubInfo: {
+      backgroundColor: colors["neutral-surface-bg2"],
+      borderRadius: 8,
+      paddingHorizontal: 6,
+      paddingVertical: 4,
+      marginTop: 4,
+      marginRight: 8,
+      flexDirection: "row",
+      maxWidth: metrics.screenWidth / 2.6,
+      overflow: "scroll",
+    },
+    bottomBtn: {
+      marginTop: 20,
+      width: metrics.screenWidth / 2.3,
+      borderRadius: 999,
+      marginLeft: 12,
+    },
+    label: {
+      fontWeight: "600",
       textAlign: "center",
+      marginTop: spacing["6"],
+      color: colors["neutral-text-title"],
     },
   });
