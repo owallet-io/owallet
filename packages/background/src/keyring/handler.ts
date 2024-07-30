@@ -17,6 +17,7 @@ import {
   DeleteKeyRingMsg,
   UpdateNameKeyRingMsg,
   ShowKeyRingMsg,
+  SimulateSignTronMsg,
   AddMnemonicKeyMsg,
   AddPrivateKeyMsg,
   GetMultiKeyStoreInfoMsg,
@@ -44,12 +45,10 @@ import {
   RequestSignBitcoinMsg,
   TriggerSmartContractMsg,
   RequestSignOasisMsg,
-  GetDefaultAddressOasisMsg,
 } from "./messages";
-import * as oasis from "@oasisprotocol/client";
 import { KeyRingService } from "./service";
 import { Bech32Address } from "@owallet/cosmos";
-import { Address } from "@owallet/crypto";
+
 import Long from "long";
 import { SignDoc } from "@owallet/proto-types/cosmos/tx/v1beta1/tx";
 export const getHandler: (service: KeyRingService) => Handler = (
@@ -66,6 +65,8 @@ export const getHandler: (service: KeyRingService) => Handler = (
           env,
           msg as UpdateNameKeyRingMsg
         );
+      case SimulateSignTronMsg:
+        return handleSimulateSignTron(service)(env, msg as SimulateSignTronMsg);
       case ShowKeyRingMsg:
         return handleShowKeyRingMsg(service)(env, msg as ShowKeyRingMsg);
       case CreateMnemonicKeyMsg:
@@ -237,7 +238,19 @@ const handleShowKeyRingMsg: (
   service: KeyRingService
 ) => InternalHandler<ShowKeyRingMsg> = (service) => {
   return async (_, msg) => {
-    return await service.showKeyRing(msg.index, msg.password);
+    return await service.showKeyRing(
+      msg.index,
+      msg.password,
+      msg.chainId,
+      msg.isShowPrivKey
+    );
+  };
+};
+const handleSimulateSignTron: (
+  service: KeyRingService
+) => InternalHandler<SimulateSignTronMsg> = (service) => {
+  return async (_, msg) => {
+    return await service.simulateSignTron(msg.msg);
   };
 };
 
@@ -477,9 +490,9 @@ const handleRequestSignEthereumTypedData: (
     const response = await service.requestSignEthereumTypedData(
       env,
       msg.chainId,
-      msg.data?.[0]
+      msg.data
     );
-    return { result: JSON.stringify(response) };
+    return { result: response };
   };
 };
 
@@ -673,7 +686,7 @@ const handleRequestSignTronMsg: (
 ) => InternalHandler<RequestSignTronMsg> = (service) => {
   return async (env, msg) => {
     const response = await service.requestSignTron(env, msg.chainId, msg.data);
-    return { ...response };
+    return response;
   };
 };
 

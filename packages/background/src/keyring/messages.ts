@@ -12,16 +12,25 @@ import {
   Bech32Address,
   checkAndValidateADR36AminoSignDoc,
 } from "@owallet/cosmos";
-import { BIP44, OWalletSignOptions, Key, BIP44HDPath } from "@owallet/types";
+import {
+  BIP44,
+  OWalletSignOptions,
+  Key,
+  BIP44HDPath,
+  AppCurrency,
+} from "@owallet/types";
 import Joi from "joi";
 import { AminoSignResponse, StdSignature } from "@cosmjs/launchpad";
 import { StdSignDoc } from "@owallet/types";
 import Long from "long";
 import { Int } from "@owallet/unit";
 import bigInteger from "big-integer";
+
 const bip39 = require("bip39");
 import { SignDoc } from "@owallet/proto-types/cosmos/tx/v1beta1/tx";
 import { schemaRequestSignBitcoin } from "./validates";
+import { ISimulateSignTron } from "@owallet/types";
+
 export class RestoreKeyRingMsg extends Message<{
   status: KeyRingStatus;
   multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
@@ -116,7 +125,12 @@ export class ShowKeyRingMsg extends Message<string> {
     return "show-keyring";
   }
 
-  constructor(public readonly index: number, public readonly password: string) {
+  constructor(
+    public readonly index: number,
+    public readonly password: string,
+    public readonly chainId: string | number,
+    public readonly isShowPrivKey: boolean
+  ) {
     super();
   }
 
@@ -128,6 +142,8 @@ export class ShowKeyRingMsg extends Message<string> {
     if (!this.password) {
       throw new OWalletError("keyring", 274, "password not set");
     }
+    if (!this.chainId)
+      throw new OWalletError("keyring", 274, "chainId not set");
   }
 
   route(): string {
@@ -136,6 +152,30 @@ export class ShowKeyRingMsg extends Message<string> {
 
   type(): string {
     return ShowKeyRingMsg.type();
+  }
+}
+
+export class SimulateSignTronMsg extends Message<any> {
+  public static type() {
+    return "simulate-sign-tron";
+  }
+
+  constructor(public readonly msg: any) {
+    super();
+  }
+
+  validateBasic(): void {
+    // if (!this.msg) {
+    //   throw new OWalletError("keyring", 201, "msg sign tron not set");
+    // }
+  }
+
+  route(): string {
+    return ROUTE;
+  }
+
+  type(): string {
+    return SimulateSignTronMsg.type();
   }
 }
 
@@ -553,6 +593,7 @@ export class RequestSignAminoMsg extends Message<AminoSignResponse> {
     return RequestSignAminoMsg.type();
   }
 }
+
 export class RequestSignEIP712CosmosTxMsg_v0 extends Message<AminoSignResponse> {
   public static type() {
     return "request-sign-eip-712-cosmos-tx-v0";
@@ -630,6 +671,7 @@ export class RequestSignEIP712CosmosTxMsg_v0 extends Message<AminoSignResponse> 
     return RequestSignEIP712CosmosTxMsg_v0.type();
   }
 }
+
 // request goes here
 export class RequestSignDirectMsg extends Message<{
   readonly signed: {
@@ -1460,7 +1502,6 @@ export class ExportKeyRingDatasMsg extends Message<ExportKeyRingData[]> {
   }
 }
 
-// Oasis
 // request sign Oasis goes here
 export class RequestSignOasisMsg extends Message<{}> {
   public static type() {
@@ -1491,34 +1532,5 @@ export class RequestSignOasisMsg extends Message<{}> {
 
   type(): string {
     return RequestSignOasisMsg.type();
-  }
-}
-
-export class GetDefaultAddressOasisMsg extends Message<{
-  hex?: string;
-  address?: string;
-  name?: string;
-  type?: number;
-}> {
-  public static type() {
-    return "get-default-address-oasis";
-  }
-
-  constructor(public readonly chainId: string) {
-    super();
-  }
-
-  validateBasic(): void {
-    if (!this.chainId) {
-      throw new OWalletError("keyring", 270, "chain id not set");
-    }
-  }
-
-  route(): string {
-    return ROUTE;
-  }
-
-  type(): string {
-    return GetDefaultAddressOasisMsg.type();
   }
 }
