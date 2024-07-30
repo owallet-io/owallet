@@ -23,6 +23,7 @@ const modeImages = {
     images.carbon_notification,
   ],
   crash_empty: [images.launch_dark, images.launch],
+  money_empty: [images.img_money, images.img_money],
   list_empty: [images.empty_dark, images.empty],
   btn_center_bottom_tab: [images.push_inactive_dark, images.push_inactive],
   scroll_to_top: [images.scroll_top_dark, images.scroll_top],
