@@ -47,6 +47,7 @@ import TronWeb from "tronweb";
 import { LedgerService } from "../ledger";
 import { request } from "../tx";
 import { TYPED_MESSAGE_SCHEMA } from "./constants";
+import { ethers } from "ethers";
 import { Crypto, KeyStore } from "./crypto";
 import PRE from "proxy-recrypt-js";
 import {
@@ -300,6 +301,14 @@ export class KeyRing {
     if (!this.keyStore) {
       throw new Error("Key Store is empty");
     }
+
+    // // Need to check network type by chain id instead of coin type
+    // const networkType = getNetworkTypeByChainId(chainId);
+    // console.log("networkType", chainId, networkType);
+
+    // if (networkType === "evm" && chainId !== ChainIdEnum.Oasis) {
+    //   return Number(ChainIdHelper.parse(chainId).identifier) ?? defaultCoinType;
+    // }
 
     return this.keyStore.coinTypeForChain
       ? this.keyStore.coinTypeForChain[
@@ -1513,7 +1522,7 @@ export class KeyRing {
     return pubKeyHex;
   }
 
-  public signEthereumTypedData<
+  public async signEthereumTypedData<
     V extends SignTypedDataVersion,
     T extends MessageTypes
   >({
@@ -1522,18 +1531,21 @@ export class KeyRing {
     chainId,
     defaultCoinType,
   }: {
-    typedMessage: V extends "V1" ? TypedDataV1 : TypedMessage<T>;
+    // typedMessage: V extends "V1" ? TypedDataV1 : TypedMessage<T>;
+    typedMessage: string;
     version: V;
     chainId: string;
     defaultCoinType: number;
-  }): ECDSASignature {
+    // }): Promise<ECDSASignature> {
+  }): Promise<string> {
     try {
       this.validateVersion(version);
       if (!typedMessage) {
         throw new Error("Missing data parameter");
       }
 
-      const coinType = this.computeKeyStoreCoinType(chainId, defaultCoinType);
+      // const coinType = this.computeKeyStoreCoinType(chainId, defaultCoinType);
+
       // Need to check network type by chain id instead of coin type
       const networkType = getNetworkTypeByChainId(chainId);
       // if (coinType !== 60) {
@@ -1543,17 +1555,29 @@ export class KeyRing {
         );
       }
 
-      const privateKey = this.loadPrivKey(coinType).toBytes();
+      const privateKey = this.loadPrivKey(defaultCoinType).toBytes();
+
+      const typedMessageParsed = JSON.parse(typedMessage);
 
       const messageHash =
         version === SignTypedDataVersion.V1
-          ? this._typedSignatureHash(typedMessage as TypedDataV1)
+          ? this._typedSignatureHash(typedMessageParsed as TypedDataV1)
           : this.eip712Hash(
-              typedMessage as TypedMessage<T>,
+              typedMessageParsed as TypedMessage<T>,
               version as SignTypedDataVersion.V3 | SignTypedDataVersion.V4
             );
+
       const sig = ecsign(messageHash, Buffer.from(privateKey));
-      return sig;
+
+      const rHex = ethers.utils.hexlify(sig.r).substring(2); // Remove '0x' prefix
+      const sHex = ethers.utils.hexlify(sig.s).substring(2); // Remove '0x' prefix
+      const vHex = ethers.utils.hexlify(sig.v).substring(2).padStart(2, "0"); // Ensure v is 2 characters
+
+      // Combine r, s, and v into a single hex string
+      const signatureHex = `0x${rHex}${sHex}${vHex}`;
+
+      return signatureHex;
+      // return signature;
     } catch (error) {
       console.log("Error on sign typed data: ", error);
     }

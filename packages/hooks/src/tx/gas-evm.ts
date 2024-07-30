@@ -94,7 +94,7 @@ export class GasEvmConfig extends TxChainSetter implements IGasConfig {
     }
 
     // Gas must not be floated.
-    if (!gas.includes(".")) {
+    if (!gas?.includes(".")) {
       if (!Number.isNaN(Number.parseInt(gas))) {
         this._gasRaw = gas;
         return;
