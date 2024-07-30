@@ -175,6 +175,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const client = useClient(accountOrai);
 
+  console.log("client", client);
+
   const taxRate = useTaxRate(accountOrai);
 
   const onChangeFromAmount = (amount: string | undefined) => {
