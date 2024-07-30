@@ -49,7 +49,7 @@ import { request } from "../tx";
 import { TYPED_MESSAGE_SCHEMA } from "./constants";
 import { ethers } from "ethers";
 import { Crypto, KeyStore } from "./crypto";
-import PRE from "proxy-recrypt-js";
+// import PRE from "proxy-recrypt-js";
 import {
   CommonCrypto,
   ECDSASignature,
@@ -963,6 +963,7 @@ export class KeyRing {
         );
       }
       const privKey = Mnemonic.generateWalletFromMnemonic(this.mnemonic, path);
+
       this.cached.set(path, privKey);
       return new PrivKeySecp256k1(privKey);
     } else if (this.type === "privateKey") {
@@ -1362,10 +1363,12 @@ export class KeyRing {
 
     const privKey = this.loadPrivKey(getCoinTypeByChainId(chainId));
     const privKeyHex = Buffer.from(privKey.toBytes()).toString("hex");
-    const decryptedData = PRE.decryptData(privKeyHex, message[0]);
-    return {
-      decryptedData,
-    };
+    //TODO: This is comment for security proxy-recrypt-js lib
+    // const decryptedData = PRE.decryptData(privKeyHex, message[0]);
+    // return {
+    //   decryptedData
+    // };
+    return;
   }
 
   public async signProxyReEncryptionData(
@@ -1382,11 +1385,13 @@ export class KeyRing {
 
     const privKey = this.loadPrivKey(getCoinTypeByChainId(chainId));
     const privKeyHex = Buffer.from(privKey.toBytes()).toString("hex");
-    const rk = PRE.generateReEncrytionKey(privKeyHex, message[0]);
+    //TODO: This is comment for security proxy-recrypt-js lib
+    // const rk = PRE.generateReEncrytionKey(privKeyHex, message[0]);
 
-    return {
-      rk,
-    };
+    // return {
+    //   rk
+    // };
+    return;
   }
 
   public async signDecryptData(
@@ -1856,7 +1861,12 @@ export class KeyRing {
   }
 
   // Show private key or mnemonic key if password is valid.
-  public async showKeyRing(index: number, password: string): Promise<string> {
+  public async showKeyRing(
+    index: number,
+    password: string,
+    chainId: string | number,
+    isShowPrivKey: boolean
+  ): Promise<string> {
     if (this.status !== KeyRingStatus.UNLOCKED) {
       throw new Error("Key ring is not unlocked");
     }
@@ -1870,10 +1880,20 @@ export class KeyRing {
     if (!keyStore) {
       throw new Error("Empty key store");
     }
+    const coinType = await this.chainsService.getChainCoinType(
+      chainId as string
+    );
     // If password is invalid, error will be thrown.
-    return Buffer.from(
+    const keyring = Buffer.from(
       await Crypto.decrypt(this.crypto, keyStore, password)
     ).toString();
+
+    if (keyStore.type === "mnemonic" && isShowPrivKey) {
+      const privKeyBytes = this.loadPrivKey(coinType).toBytes();
+      const privKey = Buffer.from(privKeyBytes).toString("hex");
+      return privKey;
+    }
+    return keyring;
   }
 
   public get canSetPath(): boolean {
