@@ -125,7 +125,12 @@ export class ShowKeyRingMsg extends Message<string> {
     return "show-keyring";
   }
 
-  constructor(public readonly index: number, public readonly password: string) {
+  constructor(
+    public readonly index: number,
+    public readonly password: string,
+    public readonly chainId: string | number,
+    public readonly isShowPrivKey: boolean
+  ) {
     super();
   }
 
@@ -137,6 +142,8 @@ export class ShowKeyRingMsg extends Message<string> {
     if (!this.password) {
       throw new OWalletError("keyring", 274, "password not set");
     }
+    if (!this.chainId)
+      throw new OWalletError("keyring", 274, "chainId not set");
   }
 
   route(): string {

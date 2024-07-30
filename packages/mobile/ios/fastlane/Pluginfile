@@ -2,6 +2,5 @@
 #
 # Ensure this file is checked in to source control!
 
-gem 'fastlane-plugin-discord_notifier'
 gem 'fastlane-plugin-versioning'
 gem 'fastlane-plugin-sentry'

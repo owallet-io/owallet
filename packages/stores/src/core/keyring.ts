@@ -328,8 +328,13 @@ export class KeyRingStore {
     return localStorage.getItem("persistent") !== null;
   }
 
-  async showKeyRing(index: number, password: string) {
-    const msg = new ShowKeyRingMsg(index, password);
+  async showKeyRing(
+    index: number,
+    password: string,
+    chainId: string | number,
+    isShowPrivKey: boolean = false
+  ) {
+    const msg = new ShowKeyRingMsg(index, password, chainId, isShowPrivKey);
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 

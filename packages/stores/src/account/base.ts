@@ -26,7 +26,6 @@ import { QueriesSetBase, QueriesStore } from "../query";
 import {
   DenomHelper,
   toGenerator,
-  fetchAdapter,
   EVMOS_NETWORKS,
   TxRestCosmosClient,
   OwalletEvent,
@@ -1256,7 +1255,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         baseURL: chainInfo.rest,
       },
       ...chainInfo.restConfig,
-      adapter: fetchAdapter,
+      adapter: "fetch",
     });
   }
 

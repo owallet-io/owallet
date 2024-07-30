@@ -23,11 +23,11 @@ import { useSmartNavigation } from "../../../navigation.provider";
 import { spacing, typography } from "../../../themes";
 import OWFlatList from "@src/components/page/ow-flat-list";
 import { ValidatorThumbnail } from "@src/components/thumbnail";
-import ByteBrew from "react-native-bytebrew-sdk";
+import { tracking } from "@src/utils/tracking";
 type Sort = "APR" | "Amount Staked" | "Name";
 
 export const ValidatorListScreen: FunctionComponent = observer(() => {
-  ByteBrew.NewCustomEvent(`Stake Screen`);
+  tracking(`Stake Screen`);
   const route = useRoute<
     RouteProp<
       Record<

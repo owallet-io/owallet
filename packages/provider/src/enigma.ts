@@ -1,4 +1,4 @@
-import { SecretUtils } from "secretjs/types/enigmautils";
+import { SecretUtils } from "@owallet/types";
 import { OWallet } from "@owallet/types";
 
 /**

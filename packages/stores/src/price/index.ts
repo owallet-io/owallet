@@ -1,12 +1,7 @@
 import { ObservableQuery, QueryResponse } from "../common";
 import { CoinGeckoSimplePrice } from "./types";
 import Axios, { CancelToken } from "axios";
-import {
-  KVStore,
-  toGenerator,
-  fetchAdapter,
-  MarketAPIEndPoint,
-} from "@owallet/common";
+import { KVStore, toGenerator, MarketAPIEndPoint } from "@owallet/common";
 import { Dec, CoinPretty, Int } from "@owallet/unit";
 import { FiatCurrency } from "@owallet/types";
 import { PricePretty } from "@owallet/unit";
@@ -181,7 +176,7 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
     const instance = Axios.create({
       baseURL: "https://api.coingecko.com/api/v3",
       // baseURL: MarketAPIEndPoint,
-      adapter: fetchAdapter,
+      adapter: "fetch",
     });
 
     super(kvStore, instance, "/simple/price");

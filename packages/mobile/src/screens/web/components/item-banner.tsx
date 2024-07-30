@@ -7,7 +7,7 @@ import { useStore } from "@src/stores";
 import { limitString, showToast } from "@src/utils/helper";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
-import ByteBrew from "react-native-bytebrew-sdk";
+import { tracking } from "@src/utils/tracking";
 
 export const ItemBanner: FC<{ item: any }> = observer(({ item }) => {
   const { browserStore } = useStore();
@@ -22,7 +22,7 @@ export const ItemBanner: FC<{ item: any }> = observer(({ item }) => {
       return;
     }
     if (!url) return;
-    ByteBrew.NewCustomEvent(`Detail Browser`, `url=${url};`);
+    tracking(`Detail Browser`, `url=${url};`);
     navigate(SCREENS.DetailsBrowser, {
       url: url,
     });

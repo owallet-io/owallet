@@ -1,98 +1,111 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>
-	<key>CFBundleDevelopmentRegion</key>
-	<string>en</string>
-	<key>CFBundleDisplayName</key>
-	<string>OWallet</string>
-	<key>CFBundleExecutable</key>
-	<string>$(EXECUTABLE_NAME)</string>
-	<key>CFBundleIconName</key>
-	<string>AppIcon</string>
-	<key>CFBundleIdentifier</key>
-	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-	<key>CFBundleInfoDictionaryVersion</key>
-	<string>6.0</string>
-	<key>CFBundleName</key>
-	<string>OWallet</string>
-	<key>CFBundlePackageType</key>
-	<string>APPL</string>
-	<key>CFBundleShortVersionString</key>
-	<string>$(MARKETING_VERSION)</string>
-	<key>CFBundleSignature</key>
-	<string>????</string>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleURLName</key>
-			<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>app.owallet.oauth</string>
-				<string>owallet</string>
-			</array>
-		</dict>
-	</array>
-	<key>CFBundleVersion</key>
-	<string>$(CURRENT_PROJECT_VERSION)</string>
-	<key>CodePushDeploymentKey</key>
-	<string>5wwKyCxC0jsz58bFqLvrd5ChWJq4SlenBKp0P</string>
-	<key>LSApplicationQueriesSchemes</key>
-	<array>
-		<string>owallet</string>
-	</array>
-	<key>LSRequiresIPhoneOS</key>
-	<true/>
-	<key>NSAppTransportSecurity</key>
 	<dict>
-		<key>NSAllowsArbitraryLoads</key>
-		<true/>
-		<key>NSExceptionDomains</key>
-		<dict>
-			<key>localhost</key>
+		<key>CFBundleDevelopmentRegion</key>
+		<string>en</string>
+		<key>CFBundleDisplayName</key>
+		<string>OWallet</string>
+		<key>CFBundleExecutable</key>
+		<string>$(EXECUTABLE_NAME)</string>
+		<key>CFBundleIconName</key>
+		<string>AppIcon</string>
+		<key>CFBundleIdentifier</key>
+		<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+		<key>CFBundleInfoDictionaryVersion</key>
+		<string>6.0</string>
+		<key>CFBundleName</key>
+		<string>OWallet</string>
+		<key>CFBundlePackageType</key>
+		<string>APPL</string>
+		<key>CFBundleShortVersionString</key>
+		<string>3.1.5</string>
+		<key>branch_universal_link_domains</key>
+		<array>
+			<string>jv8kt.app.link</string>
+			<string>jv8kt-alternate.app.link</string>
+			<string>jv8kt.test.app.link</string>
+		</array>
+		<key>CFBundleSignature</key>
+		<string>????</string>
+		<key>CFBundleURLTypes</key>
+		<array>
 			<dict>
-				<key>NSExceptionAllowsInsecureHTTPLoads</key>
-				<true/>
+				<key>CFBundleURLName</key>
+				<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>app.owallet.oauth</string>
+					<string>owallet</string>
+				</array>
+			</dict>
+		</array>
+		<key>branch_key</key>
+		<dict>
+			<key>live</key>
+			<string>key_live_lDjLNDZQIMJJ4h3oUbLonhmbyviyenR2</string>
+			<key>test</key>
+			<string>key_test_iunIJE4PGHNTXk6jLpLdllncByjxhlYa</string>
+		</dict>
+		<key>CFBundleVersion</key>
+		<string>11</string>
+		<key>CodePushDeploymentKey</key>
+		<string>5wwKyCxC0jsz58bFqLvrd5ChWJq4SlenBKp0P</string>
+		<key>LSApplicationQueriesSchemes</key>
+		<array>
+			<string>owallet</string>
+		</array>
+		<key>LSRequiresIPhoneOS</key>
+		<true />
+		<key>NSAppTransportSecurity</key>
+		<dict>
+			<key>NSAllowsArbitraryLoads</key>
+			<true />
+			<key>NSExceptionDomains</key>
+			<dict>
+				<key>localhost</key>
+				<dict>
+					<key>NSExceptionAllowsInsecureHTTPLoads</key>
+					<true />
+				</dict>
 			</dict>
 		</dict>
+		<key>NSBluetoothAlwaysUsageDescription</key>
+		<string>App uses bluetooth to find, connect and communicate with Ledger Nano devices</string>
+		<key>NSBluetoothPeripheralUsageDescription</key>
+		<string>App uses bluetooth to find, connect and communicate with Ledger Nano devices</string>
+		<key>NSCameraUsageDescription</key>
+		<string>App uses camera to scan address</string>
+		<key>NSFaceIDUsageDescription</key>
+		<string>App uses Face ID to unlock wallet</string>
+		<key>UIAppFonts</key>
+		<array>
+			<string>SpaceGrotesk-Bold.ttf</string>
+			<string>SpaceGrotesk-Light.ttf</string>
+			<string>SpaceGrotesk-Medium.ttf</string>
+			<string>SpaceGrotesk-Regular.ttf</string>
+			<string>SpaceGrotesk-SemiBold.ttf</string>
+		</array>
+		<key>UIBackgroundModes</key>
+		<array>
+			<string>fetch</string>
+			<string>remote-notification</string>
+		</array>
+		<key>UILaunchStoryboardName</key>
+		<string>LaunchScreen.storyboard</string>
+		<key>UIRequiredDeviceCapabilities</key>
+		<array>
+			<string>armv7</string>
+		</array>
+		<key>UIStatusBarStyle</key>
+		<string>UIStatusBarStyleLightContent</string>
+		<key>UISupportedInterfaceOrientations</key>
+		<array>
+			<string>UIInterfaceOrientationPortrait</string>
+		</array>
+		<key>UIViewControllerBasedStatusBarAppearance</key>
+		<false />
+		<key>XSAppIconAssets</key>
+		<string>Images.xcassets/AppIcon.appiconset</string>
 	</dict>
-	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>App uses bluetooth to find, connect and communicate with Ledger Nano devices</string>
-	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>App uses bluetooth to find, connect and communicate with Ledger Nano devices</string>
-	<key>NSCameraUsageDescription</key>
-	<string>App uses camera to scan address</string>
-	<key>NSFaceIDUsageDescription</key>
-	<string>App uses Face ID to unlock wallet</string>
-	<key>UIAppFonts</key>
-	<array>
-		<string>SpaceGrotesk-Bold.ttf</string>
-		<string>SpaceGrotesk-Light.ttf</string>
-		<string>SpaceGrotesk-Medium.ttf</string>
-		<string>SpaceGrotesk-Regular.ttf</string>
-		<string>SpaceGrotesk-SemiBold.ttf</string>
-	</array>
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>fetch</string>
-		<string>remote-notification</string>
-	</array>
-	<key>UILaunchStoryboardName</key>
-	<string>LaunchScreen.storyboard</string>
-	<key>UIRequiredDeviceCapabilities</key>
-	<array>
-		<string>armv7</string>
-	</array>
-	<key>UIStatusBarStyle</key>
-	<string>UIStatusBarStyleLightContent</string>
-	<key>UISupportedInterfaceOrientations</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-	</array>
-	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<false/>
-	<key>XSAppIconAssets</key>
-	<string>Images.xcassets/AppIcon.appiconset</string>
-</dict>
 </plist>

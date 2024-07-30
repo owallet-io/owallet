@@ -19,8 +19,8 @@ import { OWBox } from "../../../components/card";
 import { useSmartNavigation } from "../../../navigation.provider";
 import { useStore } from "../../../stores";
 import { metrics, spacing } from "../../../themes";
-import ByteBrew from "react-native-bytebrew-sdk";
 import { ChainIdEnum } from "@oraichain/oraidex-common";
+import { tracking } from "@src/utils/tracking";
 
 export const EarningCardNew = observer(({}) => {
   const route = useRoute<RouteProp<Record<string, {}>, string>>();
@@ -34,17 +34,16 @@ export const EarningCardNew = observer(({}) => {
     appInitStore,
   } = useStore();
   if (
-    chainStore.current.networkType !== "cosmos" &&
-    !appInitStore.getInitApp.isAllNetworks
+    (chainStore.current.networkType !== "cosmos" &&
+      !appInitStore.getInitApp.isAllNetworks) ||
+    appInitStore.getInitApp.isAllNetworks
   )
     return;
   const navigation = useNavigation();
   //This is default chain when network is all network
   const defaultChain = ChainIdEnum.Oraichain;
   const { colors } = useTheme();
-  const chainId = appInitStore.getInitApp.isAllNetworks
-    ? defaultChain
-    : chainStore.current.chainId;
+  const chainId = chainStore.current.chainId;
   const styles = styling(colors);
   const queries = queriesStore.get(chainId);
   const account = accountStore.getAccount(chainId);
@@ -74,7 +73,7 @@ export const EarningCardNew = observer(({}) => {
         queryReward.getDescendingPendingRewardValidatorAddresses(10)?.[0];
 
       if (firstValidator && firstValidator !== "") {
-        ByteBrew.NewCustomEvent(`${chainStore.current.chainName} Compound`);
+        tracking(`${chainStore.current.chainName} Compound`);
         await account.cosmos.sendWithdrawAndDelegationRewardMsgs(
           queryReward.getDescendingPendingRewardValidatorAddresses(10),
           firstValidator,
@@ -127,7 +126,7 @@ export const EarningCardNew = observer(({}) => {
 
   const _onPressClaim = async () => {
     try {
-      ByteBrew.NewCustomEvent(`${chainStore.current.chainName} Claim`);
+      tracking(`${chainStore.current.chainName} Claim`);
       await account.cosmos.sendWithdrawDelegationRewardMsgs(
         queryReward.getDescendingPendingRewardValidatorAddresses(10),
         "",

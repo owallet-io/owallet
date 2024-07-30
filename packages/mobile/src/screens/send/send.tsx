@@ -42,7 +42,7 @@ import { DownArrowIcon } from "@src/components/icon";
 import { capitalizedText, showToast } from "@src/utils/helper";
 import { Buffer } from "buffer";
 import { ChainIdEnum } from "@oraichain/oraidex-common";
-import ByteBrew from "react-native-bytebrew-sdk";
+import { tracking } from "@src/utils/tracking";
 import { GasPrice } from "@cosmjs/stargate";
 import { Tendermint37Client } from "@cosmjs/tendermint-rpc";
 import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
@@ -119,7 +119,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
   );
 
   useEffect(() => {
-    ByteBrew.NewCustomEvent(`Send ${chainStore.current.chainName} Screen`);
+    tracking(`Send ${chainStore.current.chainName} Screen`);
     if (route?.params?.currency) {
       const currency = sendConfigs.amountConfig.sendableCurrencies.find(
         (cur) => {
@@ -329,7 +329,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
                 chainName: chainStore.current.chainName,
                 feeType: sendConfigs.feeConfig.feeType,
               });
-              ByteBrew.NewCustomEvent(
+              tracking(
                 `Send ${sendConfigs.amountConfig.sendCurrency} - ${chainStore.current.chainName}`
               );
               universalSwapStore.updateTokenReload([

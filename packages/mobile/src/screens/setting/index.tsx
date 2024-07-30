@@ -22,12 +22,12 @@ import { SettingRemoveAccountItem } from "./items/remove-account";
 import { SettingSwitchModeItem } from "./items/switch-mode";
 import { SettingViewPrivateDataItem } from "./items/view-private-data";
 import { canShowPrivateData } from "./screens/view-private-data";
-import ByteBrew from "react-native-bytebrew-sdk";
+import { tracking } from "@src/utils/tracking";
 
 export const SettingScreen: FunctionComponent = observer(() => {
   const { keychainStore, keyRingStore, priceStore, modalStore } = useStore();
   const { colors } = useTheme();
-  ByteBrew.NewCustomEvent(`Setting Screen`);
+  tracking(`Setting Screen`);
   const styles = styling(colors);
   const currencyItems = useMemo(() => {
     return Object.keys(priceStore.supportedVsCurrencies).map((key) => {

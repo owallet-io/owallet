@@ -2,6 +2,7 @@ import { ChainStore } from "../chain";
 import {
   AccountStore,
   AccountWithAll,
+  ChainInfoInner,
   CoinGeckoPriceStore,
   KeyRingStore,
   QueriesStore,
@@ -19,6 +20,7 @@ import {
 import { computedFn } from "mobx-utils";
 import { ChainIdHelper } from "@owallet/cosmos";
 import { AppCurrency, ChainInfo } from "@owallet/types";
+import { ChainInfoWithEmbed } from "@owallet/background";
 
 export interface ViewToken {
   //TODO: need check type for chain info
@@ -53,7 +55,7 @@ export interface ViewTokenData {
 }
 
 interface ViewChainAddress {
-  chainInfo: ChainInfo;
+  chainInfo: ChainInfoInner<ChainInfoWithEmbed>;
   address: string;
 }
 

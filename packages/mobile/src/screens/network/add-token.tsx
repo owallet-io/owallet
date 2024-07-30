@@ -9,15 +9,16 @@ import React, { useEffect, useState } from "react";
 import { ScrollView, TouchableOpacity, View } from "react-native";
 import { AddTokenCosmosScreen } from "./add-token-cosmos";
 import { AddTokenEVMScreen } from "./add-token-evm";
-import ByteBrew from "react-native-bytebrew-sdk";
+
 import { NetworkModal } from "../home/components";
+import { tracking } from "@src/utils/tracking";
 
 export const AddTokenScreen = observer(() => {
   const { modalStore, chainStore } = useStore();
 
   const { colors } = useTheme();
   useEffect(() => {
-    ByteBrew.NewCustomEvent(`Add Token Screen`);
+    tracking(`Add Token Screen`);
   }, []);
 
   const _onPressNetworkModal = () => {

@@ -47,7 +47,7 @@ import {
   RequestPublicKeyMsg,
   RequestSignEIP712CosmosTxMsg_v0,
 } from "@owallet/background";
-import { SecretUtils } from "secretjs/types/enigmautils";
+import { SecretUtils } from "@owallet/types";
 
 import { OWalletEnigmaUtils } from "./enigma";
 import { DirectSignResponse, OfflineDirectSigner } from "@cosmjs/proto-signing";
