@@ -302,7 +302,6 @@ export class KeyRing {
       throw new Error("Key Store is empty");
     }
 
-   
     return this.keyStore.coinTypeForChain
       ? this.keyStore.coinTypeForChain[
           ChainIdHelper.parse(chainId).identifier
@@ -994,7 +993,11 @@ export class KeyRing {
       );
       return signedTxn;
     } catch (error) {
-      throw new OWalletError("keyring", 500, `Failed to simulate sign Tron: ${error.message}`);
+      throw new OWalletError(
+        "keyring",
+        500,
+        `Failed to simulate sign Tron: ${error.message}`
+      );
     }
   }
 
@@ -1148,17 +1151,17 @@ export class KeyRing {
         "Key store type is mnemonic and it is unlocked. But, mnemonic is not loaded unexpectedly"
       );
     }
-  
+
     const { amount, to } = data;
-  
+
     const accountSigner = await oasis.hdkey.HDKey.getAccountSigner(
       this.mnemonic,
       0
     );
     const privateKey = uint2hex(accountSigner.secretKey);
-  
+
     const bytes = hex2uint(privateKey!);
-  
+
     if (this.kvStore.type() !== KVStoreType.mobile) {
       return {
         bytes,
@@ -1172,18 +1175,18 @@ export class KeyRing {
     const bigIntAmount = BigInt(parseRoseStringToBigNumber(amount).toString());
     console.log("bigIntAmount", bigIntAmount);
     const chainContext = await nic.consensusGetChainContext();
-  
+
     const tw = await OasisTransaction.buildTransfer(
       nic,
       signer,
       to.replaceAll(" ", ""),
       bigIntAmount
     );
-  
+
     await OasisTransaction.sign(chainContext, signer, tw);
-  
+
     const payload = await OasisTransaction.submit(nic, tw);
-  
+
     return payload;
   }
   public async signAndBroadcastEthereum(
@@ -1543,7 +1546,6 @@ export class KeyRing {
       if (!typedMessage) {
         throw new Error("Missing data parameter");
       }
-
 
       const networkType = getNetworkTypeByChainId(chainId);
       if (networkType !== "evm") {
