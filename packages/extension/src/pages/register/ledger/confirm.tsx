@@ -20,11 +20,11 @@ import AppBtc from "@ledgerhq/hw-app-btc";
 import AppCosmos from "@ledgerhq/hw-app-cosmos";
 import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
 import TransportWebHID from "@ledgerhq/hw-transport-webhid";
-import { useNotification } from "../../../components/notification";
+
 import { AddressBtcType } from "@owallet/types";
+import { toast } from "react-toastify";
 
 export const ConfirmLedgerPage: FunctionComponent = observer(() => {
-  const notification = useNotification();
   const [disable, setDisable] = useState(false);
   const { ledgerInitStore, chainStore, accountStore } = useStore();
   const account = accountStore.getAccount(chainStore.current.chainId);
@@ -71,27 +71,12 @@ export const ConfirmLedgerPage: FunctionComponent = observer(() => {
       //   const keyDerivation = account.addressType === AddressBtcType.Bech32 ? 84 : 44;
       //   address = await app.getAddress(`${keyDerivation}'/0'/0'/0/0`);
       // }
-
-      notification.push({
-        placement: "top-center",
+      toast(content + " " + address?.address, {
         type: "success",
-        duration: 2,
-        content: content + " " + address?.address,
-        canDelete: true,
-        transition: {
-          duration: 0.25,
-        },
       });
     } catch (error) {
-      notification.push({
-        placement: "top-center",
-        type: "danger",
-        duration: 2,
-        content: error?.message,
-        canDelete: true,
-        transition: {
-          duration: 0.25,
-        },
+      toast(error?.message, {
+        type: "error",
       });
     } finally {
       setDisable(false);

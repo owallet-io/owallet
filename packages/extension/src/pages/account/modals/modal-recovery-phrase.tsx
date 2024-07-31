@@ -3,7 +3,7 @@ import SlidingPane from "react-sliding-pane";
 import styles from "../styles/modal-recovery-phrase.module.scss";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../../stores";
-import { useNotification } from "../../../components/notification";
+
 import { useIntl } from "react-intl";
 import { HeaderModal } from "../../home/components/header-modal";
 import { LayoutWithButtonBottom } from "../../../layouts/button-bottom-layout/layout-with-button-bottom";

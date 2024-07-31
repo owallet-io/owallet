@@ -30,8 +30,8 @@ export const COINTYPE_NETWORK = {
   0: "Bitcoin",
   1: "Bitcoin Testnet",
 };
-const timeoutLimit = 3900;
-export const timeoutBtc = 20000;
+const timeoutLimit = 5000;
+export const timeoutBtc = 60000;
 export const withTimeout = (promise, ms = timeoutLimit) => {
   const timeout = new Promise((_, reject) => {
     const id = setTimeout(() => {

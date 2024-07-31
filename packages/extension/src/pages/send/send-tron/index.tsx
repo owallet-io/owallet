@@ -3,7 +3,7 @@ import { AddressInput, CoinInput } from "components/form";
 import { useStore } from "src/stores";
 import { observer } from "mobx-react-lite";
 import style from "../send-evm/style.module.scss";
-import { useNotification } from "components/notification";
+
 import { useIntl } from "react-intl";
 import { useHistory, useLocation } from "react-router";
 import queryString from "querystring";
@@ -21,6 +21,7 @@ import { ModalChooseTokens } from "src/pages/modals/modal-choose-tokens";
 import colors from "theme/colors";
 import { Card } from "components/common/card";
 import { Button } from "components/common/button";
+import { toast } from "react-toastify";
 
 export const SendTronEvmPage: FunctionComponent<{
   coinMinimalDenom?: string;
@@ -56,8 +57,6 @@ export const SendTronEvmPage: FunctionComponent<{
       inputRef.current.focus();
     }
   }, [coinMinimalDenom]);
-
-  const notification = useNotification();
 
   const { chainStore, accountStore, queriesStore, keyRingStore } = useStore();
   const current = chainStore.current;
@@ -128,19 +127,12 @@ export const SendTronEvmPage: FunctionComponent<{
         addressTronBase58,
         {
           onFulfill: (tx) => {
-            notification.push({
-              placement: "top-center",
-              type: tx?.code === 0 ? "success" : "danger",
-              duration: 5,
-              content:
-                tx?.code === 0
-                  ? `Transaction successful`
-                  : `Transaction failed`,
-              canDelete: true,
-              transition: {
-                duration: 0.25,
-              },
-            });
+            toast(
+              tx?.code === 0 ? `Transaction successful` : `Transaction failed`,
+              {
+                type: tx?.code === 0 ? "success" : "error",
+              }
+            );
           },
         }
       );
@@ -151,15 +143,8 @@ export const SendTronEvmPage: FunctionComponent<{
       if (!isDetachedPage) {
         history.replace("/");
       }
-      notification.push({
-        type: "warning",
-        placement: "top-center",
-        duration: 5,
-        content: `Fail to send token: ${error.message}`,
-        canDelete: true,
-        transition: {
-          duration: 0.25,
-        },
+      toast(`Fail to send token: ${error.message}`, {
+        type: "error",
       });
     } finally {
       if (isDetachedPage) {
