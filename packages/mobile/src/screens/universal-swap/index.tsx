@@ -176,6 +176,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const client = useClient(accountOrai);
   console.log(client, "client");
 
+  console.log("client", client);
+
   const taxRate = useTaxRate(accountOrai);
 
   const onChangeFromAmount = (amount: string | undefined) => {
@@ -414,7 +416,19 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       setSwapLoading(false);
       return;
     }
-
+    if (
+      !simulateData ||
+      !simulateData.amount ||
+      !simulateData.displayAmount ||
+      simulateData.displayAmount == 0
+    ) {
+      showToast({
+        message: "AI Smart route does not support this pair!",
+        type: "danger",
+      });
+      setSwapLoading(false);
+      return;
+    }
     const { cosmosAddress, evmAddress, tronAddress } = getAddresses();
     const amountsBalance = await fetchBalances();
 
