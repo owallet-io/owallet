@@ -5,7 +5,7 @@ import { observer } from "mobx-react-lite";
 import { useStore } from "../../../stores";
 import { useHistory } from "react-router";
 import { ChainIdEnum } from "@owallet/common";
-import { useNotification } from "components/notification";
+import { toast } from "react-toastify";
 
 export const ModalMenuLeft: FC<{
   isOpen: boolean;
@@ -13,7 +13,6 @@ export const ModalMenuLeft: FC<{
 }> = observer(({ isOpen, onRequestClose }) => {
   const { keyRingStore, chainStore } = useStore();
   const history = useHistory();
-  const notification = useNotification();
 
   const lock = async () => {
     await keyRingStore.lock();
@@ -30,17 +29,13 @@ export const ModalMenuLeft: FC<{
         break;
       case MenuEnum.ADD_TOKEN:
         if (chainStore.current.chainId === ChainIdEnum.Bitcoin) {
-          notification.push({
-            placement: "top-center",
-            type: "success",
-            duration: 2,
-            content:
-              "Add token in Bitcoin chain not supported yet! Please try again with another chain.",
-            canDelete: true,
-            transition: {
-              duration: 0.25,
-            },
-          });
+          toast(
+            "Add token in Bitcoin chain not supported yet! Please try again with another chain.",
+            {
+              type: "warning",
+            }
+          );
+
           return;
         }
         history.push("/add-token");
