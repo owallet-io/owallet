@@ -38,6 +38,7 @@ import {
   RequestSendRawTransactionMsg,
   SimulateSignTronMsg,
   RequestEthereumMsg,
+  RequestEthereumPersonalSignMsg,
 } from "./messages";
 import { ROUTE } from "./constants";
 import { getHandler } from "./handler";
@@ -66,6 +67,7 @@ export function init(router: Router, service: KeyRingService): void {
   router.registerMessage(TriggerSmartContractMsg);
   router.registerMessage(RequestSignBitcoinMsg);
   router.registerMessage(RequestSignEthereumTypedDataMsg);
+  router.registerMessage(RequestEthereumPersonalSignMsg);
   router.registerMessage(RequestPublicKeyMsg);
   router.registerMessage(SetKeyStoreLedgerAddressMsg);
   router.registerMessage(RequestSignDecryptDataMsg);

@@ -46,6 +46,7 @@ import {
   TriggerSmartContractMsg,
   RequestSignOasisMsg,
   RequestEthereumMsg,
+  RequestEthereumPersonalSignMsg,
 } from "./messages";
 import { KeyRingService } from "./service";
 import { Bech32Address } from "@owallet/cosmos";
@@ -141,6 +142,11 @@ export const getHandler: (service: KeyRingService) => Handler = (
         return handleRequestSignEthereumTypedData(service)(
           env,
           msg as RequestSignEthereumTypedDataMsg
+        );
+      case RequestEthereumPersonalSignMsg:
+        return handleRequestEthereumPersonalSign(service)(
+          env,
+          msg as RequestEthereumPersonalSignMsg
         );
       case RequestPublicKeyMsg:
         return handleRequestPublicKey(service)(env, msg as RequestPublicKeyMsg);
@@ -494,6 +500,19 @@ const handleRequestSignEthereumTypedData: (
 ) => InternalHandler<RequestSignEthereumTypedDataMsg> = (service) => {
   return async (env, msg) => {
     const response = await service.requestSignEthereumTypedData(
+      env,
+      msg.chainId,
+      msg.data
+    );
+    return { result: response };
+  };
+};
+
+const handleRequestEthereumPersonalSign: (
+  service: KeyRingService
+) => InternalHandler<RequestEthereumPersonalSignMsg> = (service) => {
+  return async (env, msg) => {
+    const response = await service.requestEthereumPersonalSign(
       env,
       msg.chainId,
       msg.data

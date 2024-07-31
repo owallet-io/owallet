@@ -19,6 +19,7 @@ import {
   ECDSASignature,
   ExportKeyRingData,
   MessageTypes,
+  PersonalSignObject,
   SignEthereumTypedDataObject,
   SignTypedDataVersion,
   TypedMessage,
@@ -681,6 +682,26 @@ export class KeyRingService {
       console.log("e", e.message);
     } finally {
       // this.interactionService.dispatchEvent(APP_PORT, "request-sign-end", {});
+    }
+  }
+
+  async requestEthereumPersonalSign(
+    env: Env,
+    chainId: string,
+    data: any
+  ): Promise<string> {
+    // Need to check ledger here and ledger app type by chainId
+    try {
+      const rawTxHex = await this.keyRing.signEthereumPersonalSign({
+        data,
+        chainId,
+      });
+
+      return rawTxHex;
+    } catch (e) {
+      console.log("e", e.message);
+    } finally {
+      this.interactionService.dispatchEvent(APP_PORT, "request-sign-end", {});
     }
   }
 

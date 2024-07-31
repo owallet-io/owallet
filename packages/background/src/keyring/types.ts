@@ -76,3 +76,13 @@ export interface SignEthereumTypedDataObject {
   version: SignTypedDataVersion;
   defaultCoinType: number;
 }
+
+export interface SignEthereumTypedDataObject {
+  typedMessage: TypedMessage<MessageTypes>;
+  version: SignTypedDataVersion;
+  defaultCoinType: number;
+}
+
+export interface PersonalSignObject {
+  hashMessage: string;
+}

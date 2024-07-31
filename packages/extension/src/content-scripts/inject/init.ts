@@ -44,7 +44,7 @@ export function init(
   //     configurable: false // Không cho phép thay đổi thuộc tính này
   //   });
   // }
-  if (!window.ethereum.isOwallet) {
+  if (!window.ethereum?.isOwallet) {
     Object.defineProperty(window, "ethereum", {
       value: ethereum, // Thay thế bằng giá trị bạn muốn gán
       writable: false, // Không cho phép ghi đè giá trị mới

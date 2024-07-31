@@ -6,7 +6,11 @@ import {
   KeyRingStatus,
   MultiKeyStoreInfoWithSelected,
 } from "./keyring";
-import { ExportKeyRingData, SignEthereumTypedDataObject } from "./types";
+import {
+  ExportKeyRingData,
+  PersonalSignObject,
+  SignEthereumTypedDataObject,
+} from "./types";
 
 import {
   Bech32Address,
@@ -1025,6 +1029,47 @@ export class RequestSignEthereumTypedDataMsg extends Message<{
 
   type(): string {
     return RequestSignEthereumTypedDataMsg.type();
+  }
+}
+
+export class RequestEthereumPersonalSignMsg extends Message<{
+  readonly result: string; // raw tx signature to broadcast
+}> {
+  public static type() {
+    return "request-ethereum-personal-sign";
+  }
+
+  constructor(
+    public readonly chainId: string,
+    public readonly data: any // public readonly signOptions: OWalletSignOptions = {}
+  ) {
+    super();
+  }
+
+  validateBasic(): void {
+    if (!this.chainId) {
+      throw new OWalletError("keyring", 270, "chain id not set");
+    }
+
+    if (!this.data) {
+      throw new OWalletError("keyring", 231, "dât not set");
+    }
+
+    // if (!this.signOptions) {
+    //   throw new Error('Sign options are null');
+    // }
+  }
+
+  approveExternal(): boolean {
+    return true;
+  }
+
+  route(): string {
+    return ROUTE;
+  }
+
+  type(): string {
+    return RequestEthereumPersonalSignMsg.type();
   }
 }
 

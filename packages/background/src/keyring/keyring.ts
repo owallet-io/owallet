@@ -47,6 +47,8 @@ import {
   privateToPublic,
   publicToAddress,
   toBuffer,
+  hashPersonalMessage,
+  toRpcSig,
 } from "ethereumjs-util";
 import TronWeb from "tronweb";
 import { LedgerService } from "../ledger";
@@ -1591,6 +1593,27 @@ export class KeyRing {
     }
   }
 
+  public async signEthereumPersonalSign({
+    data,
+    chainId,
+  }: {
+    data: any;
+    chainId: string;
+  }): Promise<string> {
+    try {
+      const priKey = this.loadPrivKey(60).toBytes();
+
+      const wallet = new ethers.Wallet(priKey);
+      const signature = await wallet.signMessage(
+        ethers.utils.arrayify(data[0])
+      );
+
+      return signature;
+    } catch (error) {
+      console.log("Error on sign typed data: ", error);
+    }
+  }
+
   /**
    * Generate the "V1" hash for the provided typed message.
    *
@@ -2305,6 +2328,7 @@ export class KeyRing {
           : await this.chainsService.getChainInfo(inputChainId);
 
         return chainInfo.chainId;
+
       default:
         chainInfo = await this.chainsService.getChainInfo(chainId);
         if (!chainInfo.rest)

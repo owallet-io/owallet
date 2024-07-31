@@ -46,6 +46,7 @@ import {
   RequestSignReEncryptDataMsg,
   RequestPublicKeyMsg,
   RequestSignEIP712CosmosTxMsg_v0,
+  RequestEthereumPersonalSignMsg,
 } from "@owallet/background";
 import { SecretUtils } from "@owallet/types";
 
@@ -385,6 +386,12 @@ export class Ethereum implements IEthereum {
         args.chainId,
         args.params
       );
+      const { result } = await this.requester.sendMessage(BACKGROUND_PORT, msg);
+
+      return result;
+    } else if (args.method === "personal_sign") {
+      console.log("args personal_sign", args);
+      const msg = new RequestEthereumPersonalSignMsg(args.chainId, args.params);
       const { result } = await this.requester.sendMessage(BACKGROUND_PORT, msg);
 
       return result;
