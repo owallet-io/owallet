@@ -38,6 +38,8 @@ import {
   RequestSendRawTransactionMsg,
   SimulateSignTronMsg,
   RequestEthereumMsg,
+  RequestSetDappStatusMsg,
+  RequestGetDappStatusMsg,
 } from "./messages";
 import { ROUTE } from "./constants";
 import { getHandler } from "./handler";
@@ -82,5 +84,7 @@ export function init(router: Router, service: KeyRingService): void {
   router.registerMessage(RequestSignEIP712CosmosTxMsg_v0);
   router.registerMessage(ChangeChainMsg);
   router.registerMessage(RequestEthereumMsg);
+  router.registerMessage(RequestSetDappStatusMsg);
+  router.registerMessage(RequestGetDappStatusMsg);
   router.addHandler(ROUTE, getHandler(service));
 }

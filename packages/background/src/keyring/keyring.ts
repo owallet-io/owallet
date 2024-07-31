@@ -150,7 +150,7 @@ export class KeyRing {
   private multiKeyStore: KeyStore[];
 
   private password: string = "";
-  private DAPP_CONNECT_STATUS: DAPP_CONNECT_STATUS =
+  private _dappConnectStatus: DAPP_CONNECT_STATUS =
     DAPP_CONNECT_STATUS.ASK_CONNECT;
   private _iv: string;
 
@@ -195,7 +195,12 @@ export class KeyRing {
     }
   }
   public get DappConnectStatus(): DAPP_CONNECT_STATUS {
-    return this.DAPP_CONNECT_STATUS;
+    return this._dappConnectStatus;
+  }
+  public setDappConnectStatus(status: DAPP_CONNECT_STATUS) {
+    if (!status) throw Error("Not Found Dapp Connect Status");
+    this._dappConnectStatus = status;
+    return this._dappConnectStatus;
   }
 
   public static getLedgerAddressOfKeyStore(

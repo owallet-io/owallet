@@ -1186,4 +1186,10 @@ export class KeyRingService {
     const rs = await this.keyRing.request_eth(chainId, method, params);
     return rs;
   }
+  setDappConnectStatus(status: DAPP_CONNECT_STATUS) {
+    return this.keyRing.setDappConnectStatus(status);
+  }
+  getDappConnectStatus(): DAPP_CONNECT_STATUS {
+    return this.keyRing.DappConnectStatus;
+  }
 }
