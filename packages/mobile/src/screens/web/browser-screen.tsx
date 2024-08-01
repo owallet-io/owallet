@@ -176,6 +176,9 @@ export const BrowserScreen = observer(() => {
                 fontSize: 13,
               }}
               fullWidth={false}
+              disabled={!sourceCode}
+              loading={!sourceCode}
+              colorLoading={colors["neutral-icon-on-light"]}
               label={"Paste & Go"}
             />
             {url?.length > 0 && (
