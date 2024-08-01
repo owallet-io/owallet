@@ -71,7 +71,7 @@ export const EarningCardNew = observer(({}) => {
     try {
       const validatorRewars = [];
       queryReward
-        .getDescendingPendingRewardValidatorAddresses(20)
+        .getDescendingPendingRewardValidatorAddresses(10)
         .map((validatorAddress) => {
           const rewards = queries.cosmos.queryRewards
             .getQueryBech32Address(account.bech32Address)
