@@ -12,7 +12,7 @@ import {
   StdSignature,
 } from "@cosmjs/launchpad";
 import { DirectSignResponse, OfflineDirectSigner } from "@cosmjs/proto-signing";
-import { SecretUtils } from "secretjs/types/enigmautils";
+import { SecretUtils } from "../secretjs";
 import Long from "long";
 import { SignEthereumTypedDataObject } from "../typedMessage";
 import { Signer } from "@oasisprotocol/client/dist/signature";
