@@ -194,7 +194,7 @@ export const EarningCardNew = observer(({}) => {
                 />
               </View>
               <Text style={[{ ...styles["text-earn"] }]}>
-                Claimable rewards
+                Claimable rewards1
               </Text>
             </View>
 
