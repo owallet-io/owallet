@@ -84,7 +84,6 @@ export const EarningCardNew = observer(({}) => {
         await account.cosmos.sendWithdrawAndDelegationRewardMsgs(
           queryReward.getDescendingPendingRewardValidatorAddresses(10),
           validatorRewars,
-          stakingReward?.shrink(true).maxDecimals(6).hideDenom(true).toString(),
           "",
           {},
           {},
