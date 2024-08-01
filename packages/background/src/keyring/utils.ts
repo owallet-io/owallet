@@ -51,14 +51,13 @@ export class KeyringHelper {
       chainId: chainIdNumber,
     });
 
-    let finalMessage: any = {
+    const finalMessage: any = {
       ...message,
       gas: (message as any)?.gasLimit,
       gasPrice: (message as any)?.gasPrice,
       nonce,
       chainId,
     };
-
     delete finalMessage?.from;
     delete finalMessage?.type;
 

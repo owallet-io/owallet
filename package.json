@@ -132,7 +132,8 @@
     "@sentry/integrations": "=7.80.0",
     "@sentry-internal/tracing": "=7.80.0",
     "@sentry/hub": "=7.80.0",
-    "@sentry/react-native": "=5.13.0"
+    "@sentry/react-native": "=5.13.0",
+    "lodash": "^4.17.15"
   },
   "browser": {
     "assert": false

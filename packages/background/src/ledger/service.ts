@@ -159,7 +159,7 @@ export class LedgerService {
           retryCount,
         };
       } catch (e) {
-        console.log(e);
+        console.log("initLedger e", e);
 
         const timeoutAbortController = new AbortController();
 
