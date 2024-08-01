@@ -302,7 +302,7 @@ export const NetworkModal: FC<{
           />
         </View>
       </View>
-      <View style={styles.wrapHeaderTitle}>
+      {/* <View style={styles.wrapHeaderTitle}>
         <OWButton
           type="link"
           label={"Mainnet"}
@@ -335,7 +335,7 @@ export const NetworkModal: FC<{
             activeTab === "testnet" ? styles.active : null,
           ]}
         />
-      </View>
+      </View> */}
       <View
         style={{
           marginTop: spacing["12"],
