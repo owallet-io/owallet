@@ -14,7 +14,7 @@ export default {
   "main.modal.select-account.label.balance": "Balance",
   "main.modal.select-account.label.sequence": "Previous Txs",
 
-  "main.stake.message.pending-staking-reward": "Pending Staking Reward",
+  "main.stake.message.pending-staking-reward": "Claimable Reward",
   "main.stake.message.stake": "Stake",
   "main.stake.message.earning": "Earn up to {apr}% per year",
   "main.stake.button.claim-rewards": "Claim",
@@ -96,7 +96,7 @@ export default {
   "setting.keyring.change.input.name.error.invalid": "Account name is invalid",
   "setting.keyring.change.name.button.save": "Save",
 
-  "setting.export": "View Mnemonic Seed",
+  "setting.export": "Reveal secret phrase",
   "setting.export.private-key": "View Private Key",
   "setting.export.warning": "Input your password to proceed",
   "setting.export.input.password": "Password",
@@ -135,9 +135,9 @@ export default {
     "Are you sure you’d like to disable this token? You will not be able to see your balance or transfer until you register a viewing key.",
   "setting.token.manage.notification.viewing-key.copy": "Viewing key copied!",
 
-  "register.name": "Account name",
+  "register.name": "Wallet name",
   "register.email": "Email name",
-  "register.name.error.required": "Account name is required",
+  "register.name.error.required": "Wallet name is required",
   "register.button.back": "Back",
   "register.button.trx-ledger": "Tron Ledger",
   "register.button.cosmos-ledger": "Cosmos Ledger",
