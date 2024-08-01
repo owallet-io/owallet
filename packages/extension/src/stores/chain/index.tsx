@@ -3,7 +3,7 @@ import { observable, action, computed, makeObservable, flow } from "mobx";
 
 import { ChainInfoInner, ChainStore as BaseChainStore } from "@owallet/stores";
 
-import { ChainInfo, IMultipleAsset } from "@owallet/types";
+import { ChainInfo, DAPP_CONNECT_STATUS, IMultipleAsset } from "@owallet/types";
 import {
   ChainInfoWithEmbed,
   SetPersistentMemoryMsg,
@@ -11,7 +11,8 @@ import {
   GetChainInfosMsg,
   RemoveSuggestedChainInfoMsg,
   TryUpdateChainMsg,
-  TestWalletId,
+  RequestGetDappStatusMsg,
+  RequestSetDappStatusMsg,
 } from "@owallet/background";
 import { BACKGROUND_PORT } from "@owallet/router";
 
@@ -135,10 +136,20 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
     yield this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
   @flow
-  *test(walletId: string) {
-    // Save last view chain id to persistent background
-    const msg = new TestWalletId(walletId);
-    yield this.requester.sendMessage(BACKGROUND_PORT, msg);
+  *getDappStatusConnect() {
+    const msg = new RequestGetDappStatusMsg();
+    const result = yield* toGenerator(
+      this.requester.sendMessage(BACKGROUND_PORT, msg)
+    );
+    return result;
+  }
+  @flow
+  *setDappStatusConnect(status: DAPP_CONNECT_STATUS) {
+    const msg = new RequestSetDappStatusMsg(status);
+    const result = yield* toGenerator(
+      this.requester.sendMessage(BACKGROUND_PORT, msg)
+    );
+    return result;
   }
 
   @flow

@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import styles from "./styles.module.scss";
 import { HeaderModal } from "../../home/components/header-modal";
 import { SearchInput } from "../../home/components/search-input";
@@ -10,21 +10,36 @@ import { observer } from "mobx-react-lite";
 import { useHistory } from "react-router";
 import { useIntl } from "react-intl";
 import { useStore } from "../../../stores";
+import { DAPP_CONNECT_STATUS } from "@owallet/types";
 const data = [
-  { name: "Default to OWallet", id: 1 },
-  { name: "Don’t default to OWallet", id: 2 },
-  { name: "Always Ask", id: 3 },
+  { name: "Default to OWallet", id: DAPP_CONNECT_STATUS.ALWAY_CONNECT },
+  { name: "Don’t default to OWallet", id: DAPP_CONNECT_STATUS.NOT_CONNECT },
+  { name: "Always Ask", id: DAPP_CONNECT_STATUS.ASK_CONNECT },
 ];
 export const ModalDefaultWallet: FC<{
   isOpen: boolean;
   onRequestClose: () => void;
 }> = observer(({ isOpen, onRequestClose }) => {
+  const { chainStore } = useStore();
+
   const history = useHistory();
   const intl = useIntl();
   const [defaultWallet, setDefaultWallet] = useState(data[0]);
   const language = useLanguage();
+  useEffect(() => {
+    (async () => {
+      const rs = (await chainStore.getDappStatusConnect()) as any;
+      const status = data.find((item, index) => item.id === rs.status);
+      console.log(status, "status");
+      setDefaultWallet(status);
+      //   console.log(rs.status, "status");
+    })();
 
+    return () => {};
+  }, []);
   const switchWallet = async (wallet) => {
+    const rs = await chainStore.setDappStatusConnect(wallet.id);
+    console.log(rs, "rs");
     setDefaultWallet(wallet);
     onRequestClose();
     return;

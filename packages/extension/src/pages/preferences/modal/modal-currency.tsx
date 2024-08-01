@@ -57,7 +57,6 @@ export const ModalCurrency: FC<{
         <div className={styles.containerListChain}>
           {data.map((currency, index) => {
             const fiatCurrency = priceStore.supportedVsCurrencies[currency]!;
-            console.log(currency, fiatCurrency, "currency");
             return (
               <div
                 onClick={() => switchFiat(currency)}
@@ -71,9 +70,9 @@ export const ModalCurrency: FC<{
               >
                 <div className={styles.leftBlockHuge}>
                   <div className={styles.rightBlock}>
-                    <span className={styles.titleName}>
-                      {`${fiatCurrency.currency.toUpperCase()}`}
-                    </span>
+                    <span
+                      className={styles.titleName}
+                    >{`${fiatCurrency.currency.toUpperCase()}`}</span>
                   </div>
                 </div>
                 <div className={styles.rightBlockHuge}>

@@ -95,7 +95,7 @@ export const SelectWalletDappConnectPage: FunctionComponent = observer(() => {
                 <div
                   onClick={() => {
                     // chrome.runtime.sendMessage({ walletId: item.rdns });
-                    chainStore.test(item.rdns);
+                    // chainStore.test(item.rdns);
                     console.log(
                       { walletId: item.rdns },
                       "{ walletId: item.rdns }"

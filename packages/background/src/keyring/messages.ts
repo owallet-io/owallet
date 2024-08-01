@@ -22,6 +22,7 @@ import {
   Key,
   BIP44HDPath,
   AppCurrency,
+  DAPP_CONNECT_STATUS,
 } from "@owallet/types";
 import Joi from "joi";
 import { AminoSignResponse, StdSignature } from "@cosmjs/launchpad";
@@ -1617,5 +1618,63 @@ export class RequestEthereumMsg extends Message<string> {
 
   type(): string {
     return RequestEthereumMsg.type();
+  }
+}
+export class RequestSetDappStatusMsg extends Message<{
+  status: DAPP_CONNECT_STATUS;
+}> {
+  public static type() {
+    return "set-dapp-connect-status";
+  }
+
+  constructor(public readonly status: DAPP_CONNECT_STATUS) {
+    super();
+  }
+
+  validateBasic(): void {
+    if (!this.status) {
+      throw new OWalletError(
+        "keyring",
+        270,
+        "Status Dapp connect status not set"
+      );
+    }
+  }
+
+  approveExternal(): boolean {
+    return true;
+  }
+
+  route(): string {
+    return ROUTE;
+  }
+
+  type(): string {
+    return RequestSetDappStatusMsg.type();
+  }
+}
+export class RequestGetDappStatusMsg extends Message<{
+  status: DAPP_CONNECT_STATUS;
+}> {
+  public static type() {
+    return "get-dapp-connect-status";
+  }
+
+  constructor() {
+    super();
+  }
+
+  validateBasic(): void {}
+
+  approveExternal(): boolean {
+    return true;
+  }
+
+  route(): string {
+    return ROUTE;
+  }
+
+  type(): string {
+    return RequestGetDappStatusMsg.type();
   }
 }

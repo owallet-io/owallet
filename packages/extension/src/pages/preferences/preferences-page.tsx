@@ -42,6 +42,7 @@ export const PreferencesPage = observer(() => {
     [MenuEnum.CURRENCY]: priceStore.defaultVsCurrency?.toUpperCase(),
     [MenuEnum.DEFAULT_WALLET]: "",
   });
+
   const [isOpenCurrency, setIsOpenCurrency] = useState(false);
   const [isOpenDefaultWallet, setIsOpenDefaultWallet] = useState(false);
   useEffect(() => {
