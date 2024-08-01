@@ -10,10 +10,11 @@ import {
 import { IAmountConfig } from "./types";
 import { useState } from "react";
 import { action, makeObservable, observable } from "mobx";
+import { GasEvmConfig } from "./gas-evm";
 
 type MsgOpts = CosmosMsgOpts & SecretMsgOpts & CosmwasmMsgOpts & Erc20MsgOpts;
 
-export class SendGasConfig extends GasConfig {
+export class SendGasEvmConfig extends GasEvmConfig {
   @observable.ref
   protected sendMsgOpts: MsgOpts["send"];
 
@@ -59,14 +60,14 @@ export class SendGasConfig extends GasConfig {
   }
 }
 
-export const useSendGasConfig = (
+export const useSendGasEvmConfig = (
   chainGetter: ChainGetter,
   chainId: string,
   amountConfig: IAmountConfig,
   sendMsgOpts: MsgOpts["send"]
 ) => {
   const [gasConfig] = useState(
-    () => new SendGasConfig(chainGetter, chainId, amountConfig, sendMsgOpts)
+    () => new SendGasEvmConfig(chainGetter, chainId, amountConfig, sendMsgOpts)
   );
   gasConfig.setChain(chainId);
   gasConfig.setSendMsgOpts(sendMsgOpts);
