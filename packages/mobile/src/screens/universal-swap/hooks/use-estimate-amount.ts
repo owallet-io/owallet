@@ -79,7 +79,7 @@ const useEstimateAmount = (
           routerOption: {
             useAlphaSmartRoute: simulateOption?.useAlphaSmartRoute,
           },
-          optionRouter: {
+          urlRouter: {
             url: "https://osor.oraidex.io",
             path: "/smart-router/alpha-router",
           },
