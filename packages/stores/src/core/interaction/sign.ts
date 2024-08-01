@@ -348,7 +348,7 @@ export class SignInteractionStore {
   }
 
   @flow
-  *approveTronAndWaitEnd() {
+  *approveTronAndWaitEnd(newData: object) {
     if (this.waitingTronDatas?.length === 0) {
       return;
     }
@@ -357,9 +357,7 @@ export class SignInteractionStore {
     const idTron = this.waitingTronDatas?.[0]?.id;
     try {
       if (this.waitingTronDatas?.length > 0) {
-        yield this.interactionStore.approveWithoutRemovingData(idTron, {
-          ...this.waitingTronDatas[0].data,
-        });
+        yield this.interactionStore.approveWithoutRemovingData(idTron, newData);
       }
     } finally {
       yield this.waitTronEnd();

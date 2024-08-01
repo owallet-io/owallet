@@ -487,7 +487,6 @@ export class ObservableQuery<
     cancelToken: CancelToken
   ): Promise<QueryResponse<T>> {
     // may be post method in case of ethereum
-
     const result = this.options.data
       ? await this.instance.post<T>(this.url, this.options.data, {
           cancelToken,

@@ -74,6 +74,7 @@ export type Validator = {
     key: string;
   };
   jailed: boolean;
+  uptime?: string | number;
   status:
     | "BOND_STATUS_UNSPECIFIED"
     | "BOND_STATUS_UNBONDED"

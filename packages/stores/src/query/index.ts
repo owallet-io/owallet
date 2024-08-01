@@ -5,4 +5,5 @@ export * from "./evm";
 export * from "./bitcoin";
 export * from "./cosmos";
 export * from "./cosmwasm";
+export * from "./tron";
 export * from "./secret-wasm";

@@ -65,12 +65,12 @@ export class ObservableSecretContractChainQuery<
   protected canFetch(): boolean {
     if (
       !this.querySecretContractCodeHash.getQueryContract(this.contractAddress)
-        .response
+        ?.response
     ) {
       return false;
     }
 
-    return this.contractAddress.length !== 0 && this.nonce != null;
+    return this.contractAddress?.length !== 0 && this.nonce != null;
   }
 
   @flow
