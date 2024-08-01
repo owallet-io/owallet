@@ -69,15 +69,21 @@ export const EarningCardNew = observer(({}) => {
 
   const _onPressCompound = async () => {
     try {
-      const firstValidator =
-        queryReward.getDescendingPendingRewardValidatorAddresses(10)?.[0];
+      const validatorRewars = [];
+      queryReward
+        .getDescendingPendingRewardValidatorAddresses(10)
+        .map((validatorAddress) => {
+          const rewards = queries.cosmos.queryRewards
+            .getQueryBech32Address(account.bech32Address)
+            .getStakableRewardOf(validatorAddress);
+          validatorRewars.push({ validatorAddress, rewards });
+        });
 
-      if (firstValidator && firstValidator !== "") {
+      if (queryReward) {
         tracking(`${chainStore.current.chainName} Compound`);
         await account.cosmos.sendWithdrawAndDelegationRewardMsgs(
           queryReward.getDescendingPendingRewardValidatorAddresses(10),
-          firstValidator,
-          stakingReward?.shrink(true).maxDecimals(6).hideDenom(true).toString(),
+          validatorRewars,
           "",
           {},
           {},
@@ -107,7 +113,7 @@ export const EarningCardNew = observer(({}) => {
         );
       } else {
         showToast({
-          message: "There is no validator to stake!",
+          message: "There is no reward!",
           type: "danger",
         });
       }
