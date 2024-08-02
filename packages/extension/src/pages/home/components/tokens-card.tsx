@@ -15,9 +15,10 @@ import { useHistory } from "react-router";
 import Switch from "react-switch";
 import colors from "../../../theme/colors";
 import { OwEmpty } from "components/empty/ow-empty";
+import { ViewToken } from "stores/huge-queries";
 
 export const TokensCard: FC<{
-  dataTokens: ViewRawToken[];
+  dataTokens: ViewToken[];
   onSelectToken?: (token) => void;
 }> = observer(({ dataTokens, onSelectToken }) => {
   const [keyword, setKeyword] = useState("");
@@ -28,18 +29,17 @@ export const TokensCard: FC<{
   const onHideDust = () => {
     chainStore.setIsHideDust(!chainStore.isHideDust);
   };
-  const dataTokensHandled =
-    dataTokens.filter((item, index) => {
-      const balance = new CoinPretty(item.token.currency, item.token.amount);
-      const price = priceStore.calculatePrice(balance, "usd");
-      const searchKeyword = item?.token?.currency?.coinDenom
-        ?.toLowerCase()
-        ?.includes(keyword?.toLowerCase());
-      if (chainStore.isHideDust) {
-        return price?.toDec().gte(new Dec("0.1")) && searchKeyword;
-      }
-      return searchKeyword;
-    }) || [];
+  // const dataTokensHandled =
+  //   dataTokens.filter((item, index) => {
+  //     const balance = new CoinPretty(item.token.currency, item.token.amount);
+  //     const price = priceStore.calculatePrice(balance, "usd");
+  //     const searchKeyword = item?.token?.currency?.coinDenom?.toLowerCase()?.includes(keyword?.toLowerCase());
+  //     if (chainStore.isHideDust) {
+  //       return price?.toDec().gte(new Dec("0.1")) && searchKeyword;
+  //     }
+  //     return searchKeyword;
+  //   }) || [];
+  console.log(dataTokens, "dataTokens");
   return (
     <div className={styles.containerTokenCard}>
       <div className={styles.wrapTopBlock}>
@@ -62,8 +62,8 @@ export const TokensCard: FC<{
         </div>
       </div>
       <div className={styles.listTokens}>
-        {dataTokensHandled?.length > 0 ? (
-          dataTokensHandled.map((item, index) => (
+        {dataTokens?.length > 0 ? (
+          dataTokens.map((item, index) => (
             <TokenItem onSelectToken={onSelectToken} key={index} item={item} />
           ))
         ) : (
@@ -75,20 +75,16 @@ export const TokensCard: FC<{
 });
 
 const TokenItem: FC<{
-  item: ViewRawToken;
+  item: ViewToken;
   onSelectToken?: (token) => void;
 }> = observer(({ item, onSelectToken }) => {
   const { priceStore, chainStore } = useStore();
   const history = useHistory();
 
-  const balance = useMemo(
-    () =>
-      new CoinPretty(
-        item?.token?.currency || unknownToken,
-        item?.token?.amount || new Dec(0)
-      ),
-    [item?.token?.currency, item?.token?.amount]
-  );
+  // const balance = useMemo(
+  //   () => new CoinPretty(item?.token?.currency || unknownToken, item?.token?.amount || new Dec(0)),
+  //   [item?.token?.currency, item?.token?.amount]
+  // );
   const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
   const price24h = priceStore.getPrice24hChange(
     item?.token?.currency?.coinGeckoId
@@ -164,7 +160,7 @@ const TokenItem: FC<{
               <img
                 className={styles.chain}
                 src={
-                  item?.chainInfo?.chainImage ||
+                  item?.chainInfo?.currencies[0]?.coinImageUrl ||
                   (unknownToken.coinImageUrl as string)
                 }
               />
@@ -190,14 +186,14 @@ const TokenItem: FC<{
             )}%`}</span>
           </span>
 
-          <span className={styles.subTitle}>{`${item.chainInfo.chainName} ${
-            item?.type || ""
-          }`}</span>
+          <span
+            className={styles.subTitle}
+          >{`${item.chainInfo.chainName} `}</span>
         </div>
       </div>
       <div className={styles.rightBlock}>
         <span className={styles.title}>
-          {balance?.trim(true)?.hideDenom(true)?.maxDecimals(4)?.toString()}
+          {item.token?.trim(true)?.hideDenom(true)?.maxDecimals(4)?.toString()}
         </span>
         <span className={styles.subTitle}>
           {new PricePretty(fiatCurrency, item.price || "0").toString()}

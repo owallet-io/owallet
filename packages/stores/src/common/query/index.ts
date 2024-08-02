@@ -15,6 +15,7 @@ import { KVStore, toGenerator } from "@owallet/common";
 import { DeepReadonly } from "utility-types";
 import { HasMapStore } from "../map";
 import EventEmitter from "eventemitter3";
+import { QuerySharedContext } from "./context";
 
 export type QueryOptions = {
   // millisec
@@ -52,12 +53,38 @@ type TokenInfo = {
   decimals: number;
   total_supply: any;
 };
-
+class FlowCancelerError extends Error {
+  constructor(m?: string) {
+    super(m);
+    // Set the prototype explicitly.
+    Object.setPrototypeOf(this, FlowCancelerError.prototype);
+  }
+}
 /**
  * Base of the observable query classes.
  * This recommends to use the Axios to query the response.
  */
-export abstract class ObservableQueryBase<T = unknown, E = unknown> {
+export abstract class ObservableQuery<T = unknown, E = unknown> {
+  protected static eventListener: EventEmitter = new EventEmitter();
+
+  public static refreshAllObserved() {
+    ObservableQuery.eventListener.emit("refresh");
+  }
+
+  public static refreshAllObservedIfError() {
+    ObservableQuery.eventListener.emit("refresh", {
+      ifError: true,
+    });
+  }
+
+  @observable
+  protected _url: string = "";
+
+  @observable
+  protected _data: { [key: string]: any } = null;
+
+  @observable
+  protected readonly sharedContext: QuerySharedContext;
   protected static suspectedResponseDatasWithInvalidValue: string[] = [
     "The network connection was lost.",
     "The request timed out.",
@@ -91,8 +118,10 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
   protected _instance: AxiosInstance;
 
   protected constructor(
+    protected readonly kvStore: KVStore,
     instance: AxiosInstance,
-    options: Partial<QueryOptions>
+    url: string,
+    options: Partial<QueryOptions> = {}
   ) {
     this.options = {
       ...defaultOptions,
@@ -102,7 +131,9 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
     this._instance = instance;
 
     makeObservable(this);
-
+    this.sharedContext = new QuerySharedContext(this.kvStore, {
+      responseDebounceMs: 75,
+    });
     onBecomeObserved(this, "_response", this.becomeObserved);
     onBecomeObserved(this, "_isFetching", this.becomeObserved);
     onBecomeObserved(this, "_error", this.becomeObserved);
@@ -110,6 +141,7 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
     onBecomeUnobserved(this, "_response", this.becomeUnobserved);
     onBecomeUnobserved(this, "_isFetching", this.becomeUnobserved);
     onBecomeUnobserved(this, "_error", this.becomeUnobserved);
+    this.setUrl(url, options?.data);
   }
 
   private becomeObserved = (): void => {
@@ -165,6 +197,7 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
         this.options.fetchingInterval
       );
     }
+    ObservableQuery.eventListener.addListener("refresh", this.refreshHandler);
   }
 
   protected onStop() {
@@ -173,6 +206,7 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
     if (this.intervalId != null) {
       clearInterval(this.intervalId as NodeJS.Timeout);
     }
+    ObservableQuery.eventListener.addListener("refresh", this.refreshHandler);
   }
 
   protected canFetch(): boolean {
@@ -212,13 +246,45 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
 
     // If there is no existing response, try to load saved reponse.
     if (!this._response) {
-      const staledResponse = yield* toGenerator(this.loadStaledResponse());
-      if (staledResponse) {
-        if (staledResponse.timestamp > Date.now() - this.options.cacheMaxAge) {
-          this.setResponse(staledResponse);
+      // const staledResponse = yield* toGenerator(this.loadStaledResponse());
+      // if (staledResponse) {
+      //   if (staledResponse.timestamp > Date.now() - this.options.cacheMaxAge) {
+      //     this.setResponse(staledResponse);
+      //   }
+      // }
+      this._isFetching = true;
+
+      let satisfyCache = false;
+
+      // When first load, try to load the last response from disk.
+      // Use the last saved response if the last saved response exists and the current response hasn't been set yet.
+      const promise = this.loadStabledResponse().then((value) => {
+        satisfyCache = value;
+      });
+      if (this.options.cacheMaxAge <= 0) {
+        // To improve performance, don't wait the loading to proceed if cache age not set.
+      } else {
+        yield promise;
+        if (satisfyCache) {
+          this._isFetching = false;
+          return;
         }
       }
     } else {
+      // // Make the existing response as staled.
+      // this.setResponse({
+      //   ...this._response,
+      //   staled: true
+      // });
+      if (this.options.cacheMaxAge > 0) {
+        if (this._response.timestamp > Date.now() - this.options.cacheMaxAge) {
+          this._isFetching = false;
+          return;
+        }
+      }
+
+      this._isFetching = true;
+
       // Make the existing response as staled.
       this.setResponse({
         ...this._response,
@@ -267,14 +333,30 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
       }
       this.setResponse(response);
       // Clear the error if fetching succeeds.
-      this.setError(undefined);
+      // this.setError(undefined);
       yield this.saveResponse(response);
+      yield this.sharedContext.handleResponse(() => {
+        this.setResponse(response);
+        // Clear the error if fetching succeeds.
+        this.setError(undefined);
+
+        // Do not use finally block.
+        // Because finally block is called after the next yield and it makes re-render.
+        this._isFetching = false;
+      });
     } catch (e: any) {
       // If canceld, do nothing.
       if (Axios.isCancel(e)) {
         return;
       }
-
+      let fetchingProceedNext = false;
+      if (e instanceof FlowCancelerError) {
+        // When cancel for the next fetching, it behaves differently from other explicit cancels because fetching continues.
+        if (e.message === "__fetching__proceed__next__") {
+          fetchingProceedNext = true;
+        }
+        return;
+      }
       // If error is from Axios, and get response.
       if (e.response) {
         const error: QueryError<E> = {
@@ -284,7 +366,17 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
           data: e.response.data,
         };
 
-        this.setError(error);
+        // this.setError(error);
+
+        yield this.sharedContext.handleResponse(() => {
+          this.setError(error);
+
+          // Do not use finally block.
+          // Because finally block is called after the next yield and it makes re-render.
+          if (!fetchingProceedNext) {
+            this._isFetching = false;
+          }
+        });
       } else if (e.request) {
         // if can't get the response.
         const error: QueryError<E> = {
@@ -292,8 +384,16 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
           statusText: "Failed to get response",
           message: "Failed to get response",
         };
+        yield this.sharedContext.handleResponse(() => {
+          this.setError(error);
 
-        this.setError(error);
+          // Do not use finally block.
+          // Because finally block is called after the next yield and it makes re-render.
+          if (!fetchingProceedNext) {
+            this._isFetching = false;
+          }
+        });
+        // this.setError(error);
       } else {
         const error: QueryError<E> = {
           status: 0,
@@ -302,7 +402,15 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
           data: e,
         };
 
-        this.setError(error);
+        yield this.sharedContext.handleResponse(() => {
+          this.setError(error);
+
+          // Do not use finally block.
+          // Because finally block is called after the next yield and it makes re-render.
+          if (!fetchingProceedNext) {
+            this._isFetching = false;
+          }
+        });
       }
     } finally {
       this._isFetching = false;
@@ -388,70 +496,6 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
     });
   }
 
-  protected abstract fetchResponse(
-    cancelToken: CancelToken
-  ): Promise<QueryResponse<T>>;
-
-  protected abstract saveResponse(
-    response: Readonly<QueryResponse<T>>
-  ): Promise<void>;
-
-  protected abstract loadStaledResponse(): Promise<
-    QueryResponse<T> | undefined
-  >;
-}
-
-/**
- * ObservableQuery defines the event class to query the result from endpoint.
- * This supports the stale state if previous query exists.
- */
-export class ObservableQuery<
-  T = unknown,
-  E = unknown
-> extends ObservableQueryBase<T, E> {
-  protected static eventListener: EventEmitter = new EventEmitter();
-
-  public static refreshAllObserved() {
-    ObservableQuery.eventListener.emit("refresh");
-  }
-
-  public static refreshAllObservedIfError() {
-    ObservableQuery.eventListener.emit("refresh", {
-      ifError: true,
-    });
-  }
-
-  @observable
-  protected _url: string = "";
-
-  @observable
-  protected _data: { [key: string]: any } = null;
-
-  constructor(
-    protected readonly kvStore: KVStore,
-    instance: AxiosInstance,
-    url: string,
-    options: Partial<QueryOptions> = {}
-  ) {
-    super(instance, options);
-    makeObservable(this);
-
-    // reload when change url
-    this.setUrl(url, options?.data);
-  }
-
-  protected onStart() {
-    super.onStart();
-
-    ObservableQuery.eventListener.addListener("refresh", this.refreshHandler);
-  }
-
-  protected onStop() {
-    super.onStop();
-
-    ObservableQuery.eventListener.addListener("refresh", this.refreshHandler);
-  }
-
   protected readonly refreshHandler = (data: any) => {
     const ifError = data?.ifError;
     if (ifError) {
@@ -517,21 +561,79 @@ export class ObservableQuery<
   ): Promise<void> {
     const key = this.getCacheKey();
 
-    await this.kvStore.set(key, response);
+    // await this.kvStore.set(key, response);
+    // const key = this.getCacheKey();
+    await this.sharedContext.saveResponse(key, response);
   }
 
-  protected async loadStaledResponse(): Promise<QueryResponse<T> | undefined> {
-    const key = this.getCacheKey();
-    const response = await this.kvStore.get<QueryResponse<T>>(key);
-    if (response) {
-      return {
-        ...response,
-        staled: true,
-      };
-    }
-    return undefined;
+  protected async loadStabledResponse(): Promise<boolean> {
+    // const key = this.getCacheKey();
+    // const response = await this.kvStore.get<QueryResponse<T>>(key);
+    // if (response) {
+    //   return {
+    //     ...response,
+    //     staled: true
+    //   };
+    // }
+    // return undefined;
+    return new Promise<boolean>((resolve) => {
+      this.sharedContext.loadStore<QueryResponse<T>>(
+        this.getCacheKey(),
+        (res) => {
+          if (res.status === "rejected") {
+            console.warn("Failed to get the last response from disk.");
+            resolve(false);
+          } else {
+            const staledResponse = res.value;
+            if (staledResponse && !this._response) {
+              if (
+                this.options.cacheMaxAge <= 0 ||
+                staledResponse.timestamp > Date.now() - this.options.cacheMaxAge
+              ) {
+                const response = {
+                  ...staledResponse,
+                  staled: true,
+                  local: true,
+                };
+                // this.onReceiveResponse(response);
+                this.setResponse(response);
+                resolve(true);
+                return;
+              }
+            }
+            resolve(false);
+          }
+        }
+      );
+    });
   }
 }
+
+/**
+ * ObservableQuery defines the event class to query the result from endpoint.
+ * This supports the stale state if previous query exists.
+ */
+// export class ObservableQuery<T = unknown, E = unknown> extends ObservableQueryBase<T, E> {
+//   constructor(
+//     protected readonly kvStore: KVStore,
+//     instance: AxiosInstance,
+//     url: string,
+//     options: Partial<QueryOptions> = {}
+//   ) {
+//     super(
+//       new QuerySharedContext(kvStore, {
+//         responseDebounceMs: 75
+//       }),
+//       instance,
+//       options
+//     );
+
+//     makeObservable(this);
+
+//     // reload when change url
+
+//   }
+// }
 
 export class ObservableQueryMap<T = unknown, E = unknown> extends HasMapStore<
   ObservableQuery<T, E>
