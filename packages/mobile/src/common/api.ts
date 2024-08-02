@@ -2,7 +2,12 @@ import { handleError, parseObjectToQueryString } from "@src/utils/helper";
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import moment from "moment";
 import { Network } from "@tatumio/tatum";
-import { ChainIdEnum, CosmosNetwork, OasisNetwork } from "@owallet/common";
+import {
+  ChainIdEnum,
+  CosmosNetwork,
+  OasisNetwork,
+  urlTxHistory,
+} from "@owallet/common";
 import {
   CosmosItem,
   ResTxsCosmos,
@@ -13,7 +18,7 @@ import {
   TokenInfo,
   TxsAllNetwork,
 } from "@src/screens/transactions/all-network/all-network.types";
-import { fetchRetry, urlTxHistory } from "@src/common/constants";
+import { fetchRetry } from "@src/common/constants";
 
 export const API = {
   post: (path: string, params: any, config: AxiosRequestConfig) => {

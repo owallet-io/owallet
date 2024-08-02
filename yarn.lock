@@ -19498,7 +19498,7 @@ react-native-vector-icons@^9.2.0:
     prop-types "^15.7.2"
     yargs "^16.1.1"
 
-react-native-webview@^13.3.1:
+react-native-webview@^13.10.5:
   version "13.10.5"
   resolved "https://registry.yarnpkg.com/react-native-webview/-/react-native-webview-13.10.5.tgz#d6d2238b12dd295765eb5d4fdbb34759ffd1df27"
   integrity sha512-ZfQJHyifuZop8cQB8HYpL9dxss9Cw9sOlMU+/yarfG/ugoL0rky/0tq9QmEydFMXjDSplSUb22OrRdFlqfXe0g==

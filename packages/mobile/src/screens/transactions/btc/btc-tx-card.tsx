@@ -3,14 +3,15 @@ import React, { FunctionComponent, useEffect, useState } from "react";
 import { StyleSheet, View, ViewStyle } from "react-native";
 
 import { API } from "@src/common/api";
-import { listSkeleton, SCREENS, urlTxHistory } from "@src/common/constants";
+import { listSkeleton, SCREENS } from "@src/common/constants";
 import { navigate } from "@src/router/root";
 import { OWButton } from "@src/components/button";
 import { TxSkeleton } from "@src/components/page";
-import { MapChainIdToNetwork } from "@src/utils/helper";
+
 import { useStore } from "@src/stores";
 import { EmptyTx } from "@src/screens/transactions/components/empty-tx";
 import { TxBtcItem } from "@src/screens/transactions/components/items/tx-btc-item";
+import { MapChainIdToNetwork, urlTxHistory } from "@owallet/common";
 
 export const BtcTxCard: FunctionComponent<{
   containerStyle?: ViewStyle;
