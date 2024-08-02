@@ -243,6 +243,12 @@ export const CosmosRenderArgs: FunctionComponent<{
               }}
             >
               <img
+                style={{
+                  width: 14,
+                  height: 14,
+                  borderRadius: 28,
+                  marginRight: 4,
+                }}
                 src={
                   chain?.chainSymbolImageUrl ??
                   chain?.stakeCurrency.coinImageUrl
