@@ -42,7 +42,6 @@ export const NetworkModal: FC<{
     keyRingStore,
     accountStore,
     appInitStore,
-    universalSwapStore,
     priceStore,
   } = useStore();
 
@@ -79,6 +78,12 @@ export const NetworkModal: FC<{
       setActiveTab("testnet");
     }
   }, [chainStore.current.chainName]);
+
+  useEffect(() => {
+    if (appInitStore.getInitApp.hideTestnet) {
+      setActiveTab("mainnet");
+    }
+  }, [appInitStore.getInitApp.hideTestnet]);
 
   const handleSwitchNetwork = useCallback(async (item) => {
     try {
