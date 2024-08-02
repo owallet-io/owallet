@@ -114,11 +114,13 @@ export const StakeView: FunctionComponent = observer(() => {
         </div>
         <div style={{ flex: 1 }} />
         <Button
+          type="submit"
           size="small"
           className={styleStake.button}
           disabled={!isRewardExist || !accountInfo.isReadyToSendMsgs}
           onClick={withdrawAllRewards}
           data-loading={accountInfo.isSendingMsg === "withdrawRewards"}
+          loading={accountInfo.isSendingMsg === "withdrawRewards"}
         >
           <div style={{ paddingLeft: 12, paddingRight: 12 }}>
             <Text

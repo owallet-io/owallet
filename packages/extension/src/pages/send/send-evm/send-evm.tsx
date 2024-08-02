@@ -470,6 +470,7 @@ export const SendEvmPage: FunctionComponent<{
                 <Button
                   type="submit"
                   data-loading={accountInfo.isSendingMsg === "send"}
+                  loading={accountInfo.isSendingMsg === "send"}
                   disabled={!accountInfo.isReadyToSendMsgs || !txStateIsValid}
                   className={style.sendBtn}
                   style={{

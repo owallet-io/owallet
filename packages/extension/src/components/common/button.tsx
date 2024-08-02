@@ -1,4 +1,10 @@
-import React, { FunctionComponent, CSSProperties, ReactElement } from "react";
+import React, {
+  FunctionComponent,
+  CSSProperties,
+  ReactElement,
+  useState,
+  useEffect,
+} from "react";
 import colors from "../../theme/colors";
 
 import style from "./style.module.scss";
@@ -36,6 +42,10 @@ export const Button: FunctionComponent<{
   className,
   ...props
 }) => {
+  const [btnLoading, setBtnLoading] = useState(false);
+  useEffect(() => {
+    setBtnLoading(loading);
+  }, [loading]);
   const buttonType = (() => {
     switch (color) {
       case "primary":
@@ -83,10 +93,19 @@ export const Button: FunctionComponent<{
     }
   })();
 
+  const handleButtonClick = (e) => {
+    if (buttonType === "submit") {
+      setBtnLoading(true);
+      onClick(e);
+    } else {
+      onClick(e);
+    }
+  };
+
   return (
     <button
-      onClick={onClick}
-      disabled={disabled || loading}
+      onClick={handleButtonClick}
+      disabled={disabled || loading || btnLoading}
       className={[
         style.button,
         buttonType,
@@ -96,7 +115,7 @@ export const Button: FunctionComponent<{
       ].join(" ")}
       style={{ ...containerStyle, ...disabledBtn }}
     >
-      {loading ? <i className="fa fa-spinner fa-spin"></i> : null}
+      {btnLoading ? <i className="fa fa-spinner fa-spin"></i> : null}
       {leftIcon ? <div>{leftIcon}</div> : null}
       {text ?? props.children}
       {rightIcon ? <div>{rightIcon}</div> : null}
