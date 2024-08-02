@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import SlidingPane from "react-sliding-pane";
 import styles from "./style.module.scss";
 import { SearchInput } from "../components/search-input";
@@ -34,6 +34,11 @@ export const ModalNetwork: FC<{
   const activeTab = (item: (typeof typeNetwork)[0]) => {
     setTab(item);
   };
+  useEffect(() => {
+    if (chainStore.isHideTestnet) {
+      setTab(typeNetwork[0]);
+    }
+  }, [chainStore.isHideTestnet]);
   const sortChainsByPrice = (chains) => {
     return chains.sort(
       (a, b) =>
@@ -223,31 +228,34 @@ export const ModalNetwork: FC<{
           onChange={onChangeInput}
           placeholder={"Search for a chain"}
         />
-        <div className={styles.containerTypeNetwork}>
-          {typeNetwork.map((item, index) => (
-            <div
-              onClick={() => activeTab(item)}
-              key={item.id}
-              className={classnames([
-                styles.itemTypeNetwork,
-                tab.id === item.id
-                  ? styles.activeBorderBottom
-                  : styles.inactiveBorderBottom,
-              ])}
-            >
-              <span
+        {!chainStore.isHideTestnet ? (
+          <div className={styles.containerTypeNetwork}>
+            {typeNetwork.map((item, index) => (
+              <div
+                onClick={() => activeTab(item)}
+                key={item.id}
                 className={classnames([
-                  styles.titleTxtItem,
+                  styles.itemTypeNetwork,
                   tab.id === item.id
-                    ? styles.activeTxtColor
-                    : styles.inactiveTxtColor,
+                    ? styles.activeBorderBottom
+                    : styles.inactiveBorderBottom,
                 ])}
               >
-                {item.title}
-              </span>
-            </div>
-          ))}
-        </div>
+                <span
+                  className={classnames([
+                    styles.titleTxtItem,
+                    tab.id === item.id
+                      ? styles.activeTxtColor
+                      : styles.inactiveTxtColor,
+                  ])}
+                >
+                  {item.title}
+                </span>
+              </div>
+            ))}
+          </div>
+        ) : null}
+
         <div className={styles.containerListChain}>
           {chains?.length > 0 &&
             [...allNetworkData, ...sortChainsByPrice(chains)].map(

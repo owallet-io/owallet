@@ -28,6 +28,8 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
   protected _isAllNetwork: boolean = false;
   @observable
   protected _hideDust: boolean = true;
+  @observable
+  protected _hideTestnet: boolean = false;
 
   @observable
   protected _multipleAssets: IMultipleAsset = {
@@ -66,6 +68,7 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
         "_isAllNetwork",
         "_multipleAssets",
         "_hideDust",
+        "_hideTestnet",
         "_selectedFee",
       ],
       storage: window.localStorage,
@@ -89,6 +92,9 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
   get isHideDust(): boolean {
     return this._hideDust;
   }
+  get isHideTestnet(): boolean {
+    return this._hideTestnet;
+  }
 
   get selectedChainId(): string {
     return this._selectedChainId;
@@ -105,6 +111,10 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
   @action
   setIsHideDust(isHide: boolean) {
     this._hideDust = isHide;
+  }
+  @action
+  setIsHideTestnet(isHide: boolean) {
+    this._hideTestnet = isHide;
   }
   @action
   setMultipleAsset(data: IMultipleAsset) {
