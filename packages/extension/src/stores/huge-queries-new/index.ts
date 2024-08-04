@@ -116,7 +116,9 @@ export class HugeQueriesNewStore {
     const keysUsed = new Map<string, boolean>();
     const prevKeyMap = new Map(this.balanceBinarySort.indexForKeyMap());
 
-    for (const chainInfo of this.chainStore.chainInfosInUI) {
+    for (const chainInfo of this.chainStore.chainInfosInUI.filter(
+      (item) => !item.chainName.toLowerCase().includes("test")
+    )) {
       const account = this.accountStore.getAccount(chainInfo.chainId);
       const mainCurrency = chainInfo.stakeCurrency || chainInfo.currencies[0];
 
@@ -139,7 +141,9 @@ export class HugeQueriesNewStore {
         //     ? queries.queryBalances.getQueryEthereumHexAddress(account.ethereumHexAddress)
         //     : queries.queryBalances.getQueryBech32Address(account.bech32Address);
         const queryBalance = queries.queryBalances.getQueryBech32Address(
-          account.bech32Address
+          chainInfo.networkType === "evm"
+            ? account.evmosHexAddress
+            : account.bech32Address
         );
         const chainIdentifier = ChainIdHelper.parse(chainInfo.chainId);
         const key = `${chainIdentifier}/${currency.coinMinimalDenom}`;
@@ -172,7 +176,7 @@ export class HugeQueriesNewStore {
           } else {
             const balance = queryBalance.getBalance(currency);
             if (balance) {
-              if (balance.balance.toDec().equals(HugeQueriesStore.zeroDec)) {
+              if (balance.balance.toDec().equals(HugeQueriesNewStore.zeroDec)) {
                 const denomHelper = new DenomHelper(currency.coinMinimalDenom);
                 // If the balance is zero and currency is "native" or "erc20", don't show it.
                 if (
@@ -224,7 +228,9 @@ export class HugeQueriesNewStore {
   getAllBalances = computedFn(
     (allowIBCToken: boolean): ReadonlyArray<ViewToken> => {
       const keys: Map<string, boolean> = new Map();
-      for (const chainInfo of this.chainStore.chainInfosInUI) {
+      for (const chainInfo of this.chainStore.chainInfosInUI.filter(
+        (item) => !item.chainName.toLowerCase().includes("test")
+      )) {
         for (const currency of chainInfo.currencies) {
           const denomHelper = new DenomHelper(currency.coinMinimalDenom);
           if (
@@ -479,8 +485,8 @@ export class HugeQueriesNewStore {
   }
 
   protected sortByPrice(a: ViewToken, b: ViewToken): number {
-    const aPrice = a.price?.toDec() ?? HugeQueriesStore.zeroDec;
-    const bPrice = b.price?.toDec() ?? HugeQueriesStore.zeroDec;
+    const aPrice = a.price?.toDec() ?? HugeQueriesNewStore.zeroDec;
+    const bPrice = b.price?.toDec() ?? HugeQueriesNewStore.zeroDec;
 
     if (aPrice.equals(bPrice)) {
       return 0;

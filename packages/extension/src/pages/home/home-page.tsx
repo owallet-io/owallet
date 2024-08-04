@@ -69,7 +69,7 @@ export const HomePage = observer(() => {
   const isFirstTime = allBalancesNonZero.length === 0;
   const availableTotalPrice = useMemo(() => {
     let result: PricePretty | undefined;
-    for (const bal of hugeQueriesStore.allKnownBalances) {
+    for (const bal of hugeQueriesNewStore.allKnownBalances) {
       if (bal.price) {
         if (!result) {
           result = bal.price;
@@ -112,7 +112,7 @@ export const HomePage = observer(() => {
       chainStore.current.networkType !== "cosmos" ? null : (
         <StakeView />
       )}
-      <TokensCard dataTokens={allBalances} />
+      <TokensCard dataTokens={allBalances as any} />
     </FooterLayout>
   );
 });

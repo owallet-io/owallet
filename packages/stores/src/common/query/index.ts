@@ -609,32 +609,6 @@ export abstract class ObservableQuery<T = unknown, E = unknown> {
   }
 }
 
-/**
- * ObservableQuery defines the event class to query the result from endpoint.
- * This supports the stale state if previous query exists.
- */
-// export class ObservableQuery<T = unknown, E = unknown> extends ObservableQueryBase<T, E> {
-//   constructor(
-//     protected readonly kvStore: KVStore,
-//     instance: AxiosInstance,
-//     url: string,
-//     options: Partial<QueryOptions> = {}
-//   ) {
-//     super(
-//       new QuerySharedContext(kvStore, {
-//         responseDebounceMs: 75
-//       }),
-//       instance,
-//       options
-//     );
-
-//     makeObservable(this);
-
-//     // reload when change url
-
-//   }
-// }
-
 export class ObservableQueryMap<T = unknown, E = unknown> extends HasMapStore<
   ObservableQuery<T, E>
 > {
