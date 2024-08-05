@@ -27,7 +27,7 @@ export type QueryOptions = {
 };
 
 export const defaultOptions: QueryOptions = {
-  cacheMaxAge: Number.MAX_VALUE,
+  cacheMaxAge: 0,
   fetchingInterval: 0,
   data: null,
 };

@@ -100,12 +100,14 @@ export const HomePage = observer(() => {
   //   }
   //   return result;
   // }, [hugeQueriesStore.allKnownBalances, priceStore]);
+  // const queryBalances = queriesStore.get(chainId).queryBalances;
   return (
     <FooterLayout>
       <InfoAccountCard
         isLoading={false}
         totalPrice={availableTotalPrice?.toString() || "-"}
       />
+
       {/*TODO:// need check again Claim reward */}
       {/* <ClaimReward /> */}
       {chainStore.isAllNetwork ||
