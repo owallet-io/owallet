@@ -140,7 +140,9 @@ export class ObservableQueryErc20BalanceRegistry implements BalanceRegistry {
     minimalDenom: string
   ): ObservableQueryBalanceInner | undefined {
     const denomHelper = new DenomHelper(minimalDenom);
-
+    if (denomHelper.type !== "erc20") {
+      console.log(denomHelper, "denomHelper native");
+    }
     if (denomHelper.type === "erc20") {
       console.log(
         "🚀 ~ ObservableQueryErc20BalanceRegistry ~ denomHelper:",

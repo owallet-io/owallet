@@ -122,7 +122,10 @@ export class HugeQueriesNewStore {
       const account = this.accountStore.getAccount(chainInfo.chainId);
       const mainCurrency = chainInfo.stakeCurrency || chainInfo.currencies[0];
 
-      if (account.bech32Address === "") {
+      if (chainInfo.networkType === "cosmos" && !account.bech32Address) {
+        continue;
+      }
+      if (chainInfo.networkType === "evm" && !account.evmosHexAddress) {
         continue;
       }
       const queries = this.queriesStore.get(chainInfo.chainId);
