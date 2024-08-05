@@ -11,7 +11,12 @@ import {
 } from "@owallet/stores";
 import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
 import { action, autorun, computed } from "mobx";
-import { DenomHelper } from "@owallet/common";
+import {
+  ChainIdEnum,
+  DenomHelper,
+  getOasisAddress,
+  MapChainIdToNetwork,
+} from "@owallet/common";
 import { computedFn } from "mobx-utils";
 import { BinarySortArray } from "./sort";
 import { ChainInfo } from "@owallet/types";
@@ -486,7 +491,24 @@ export class HugeQueriesStore {
       this.claimableRewardsBinarySort.remove(removedKey);
     }
   }
-
+  @computed
+  get getAllAddrByChain(): Record<string, string> {
+    const data: Record<string, string> = {};
+    for (const chainInfo of this.chainStore.chainInfosInUI) {
+      const account = this.accountStore.getAccount(chainInfo.chainId);
+      const address = account.getAddressDisplay(
+        this.keyringStore.keyRingLedgerAddresses
+      );
+      const mapChainNetwork = MapChainIdToNetwork[chainInfo.chainId];
+      if (!mapChainNetwork) continue;
+      data[mapChainNetwork] =
+        chainInfo.chainId === ChainIdEnum.OasisSapphire ||
+        chainInfo.chainId === ChainIdEnum.OasisEmerald
+          ? getOasisAddress(address)
+          : address;
+    }
+    return data;
+  }
   @computed
   get claimableRewards(): ReadonlyArray<ViewToken> {
     return this.claimableRewardsBinarySort.arr;
