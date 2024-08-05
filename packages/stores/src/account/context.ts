@@ -86,7 +86,7 @@ export class AccountSharedContext {
     const chainIds = Array.from(chainIdSet);
 
     const settled = await owallet.getKeysSettled(chainIds);
-    console.log(settled, "settled");
+
     const settledMap = new Map<string, SettledResponse<Key>>();
     for (let i = 0; i < chainIds.length; i++) {
       const chainId = chainIds[i];

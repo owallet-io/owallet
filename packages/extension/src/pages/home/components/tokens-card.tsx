@@ -39,7 +39,7 @@ export const TokensCard: FC<{
   //     }
   //     return searchKeyword;
   //   }) || [];
-  console.log(dataTokens, "dataTokens");
+
   return (
     <div className={styles.containerTokenCard}>
       <div className={styles.wrapTopBlock}>

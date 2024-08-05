@@ -145,14 +145,15 @@ export class HugeQueriesNewStore {
             ? account.evmosHexAddress
             : account.bech32Address
         );
-        const chainIdentifier = ChainIdHelper.parse(chainInfo.chainId);
-        const key = `${chainIdentifier}/${currency.coinMinimalDenom}`;
+        // const chainIdentifier = ChainIdHelper.parse(chainInfo.chainId);
+        const key = `${chainInfo.chainId}/${currency.coinMinimalDenom}`;
         if (!keysUsed.get(key)) {
           if (
             chainInfo.stakeCurrency?.coinMinimalDenom ===
             currency.coinMinimalDenom
           ) {
             const balance = queryBalance.stakable?.balance;
+
             if (!balance) {
               continue;
             }
@@ -240,8 +241,8 @@ export class HugeQueriesNewStore {
           ) {
             continue;
           }
-          const chainIdentifier = ChainIdHelper.parse(chainInfo.chainId);
-          const key = `${chainIdentifier}/${currency.coinMinimalDenom}`;
+          // const chainIdentifier = ChainIdHelper.parse(chainInfo.chainId);
+          const key = `${chainInfo.chainId}/${currency.coinMinimalDenom}`;
           keys.set(key, true);
         }
       }
@@ -286,8 +287,8 @@ export class HugeQueriesNewStore {
       if (!chainInfo.stakeCurrency) {
         continue;
       }
-      const chainIdentifier = ChainIdHelper.parse(chainInfo.chainId);
-      const key = `${chainIdentifier}/${chainInfo.stakeCurrency.coinMinimalDenom}`;
+      // const chainIdentifier = ChainIdHelper.parse(chainInfo.chainId);
+      const key = `${chainInfo.chainId}/${chainInfo.stakeCurrency.coinMinimalDenom}`;
       keys.set(key, true);
     }
     return this.balanceBinarySort.arr.filter((viewToken) => {
@@ -314,8 +315,8 @@ export class HugeQueriesNewStore {
         ) {
           continue;
         }
-        const chainIdentifier = ChainIdHelper.parse(chainInfo.chainId);
-        const key = `${chainIdentifier}/${currency.coinMinimalDenom}`;
+        // const chainIdentifier = ChainIdHelper.parse(chainInfo.chainId);
+        const key = `${chainInfo.chainId}/${currency.coinMinimalDenom}`;
         keys.set(key, true);
       }
     }
@@ -335,8 +336,8 @@ export class HugeQueriesNewStore {
           denomHelper.type === "native" &&
           denomHelper.denom.startsWith("ibc/")
         ) {
-          const chainIdentifier = ChainIdHelper.parse(chainInfo.chainId);
-          const key = `${chainIdentifier}/${currency.coinMinimalDenom}`;
+          // const chainIdentifier = ChainIdHelper.parse(chainInfo.chainId);
+          const key = `${chainInfo.chainId}/${currency.coinMinimalDenom}`;
           keys.set(key, true);
         }
       }

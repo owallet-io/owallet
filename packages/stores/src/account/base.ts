@@ -341,7 +341,6 @@ export class AccountSetBase<MsgOpts, Queries> {
     }
 
     yield this.sharedContext.getKey(this.chainId, (res) => {
-      console.log(res, "res");
       if (res.status === "fulfilled") {
         const key = res.value;
         this._bech32Address = key.bech32Address;

@@ -132,7 +132,7 @@ export abstract class ObservableQuery<T = unknown, E = unknown> {
 
     makeObservable(this);
     this.sharedContext = new QuerySharedContext(this.kvStore, {
-      responseDebounceMs: 75,
+      responseDebounceMs: 300,
     });
     onBecomeObserved(this, "_response", this.becomeObserved);
     onBecomeObserved(this, "_isFetching", this.becomeObserved);

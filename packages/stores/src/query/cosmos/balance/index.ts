@@ -122,11 +122,11 @@ export class ObservableQueryCosmosBalances extends ObservableChainQuery<Balances
     // Attempt to register the denom in the returned response.
     // If it's already registered anyway, it's okay because the method below doesn't do anything.
     // Better to set it as an array all at once to reduce computed.
-    // const denoms = response.data.balances.map((coin) => coin.denom);
 
     const allTokensAddress = response.data.balances
       .filter(
         (token) =>
+          MapChainIdToNetwork[chainInfo.chainId] &&
           !!chainInfo.findCurrency(token.denom) === false &&
           MapChainIdToNetwork[chainInfo.chainId]
       )
@@ -154,9 +154,9 @@ export class ObservableQueryCosmosBalances extends ObservableChainQuery<Balances
         });
       //@ts-ignore
       chainInfo.addCurrencies(...infoTokens);
+      const denoms = response.data.balances.map((coin) => coin.denom);
+      chainInfo.addUnknownCurrencies(...denoms);
     });
-
-    // chainInfo.addUnknownCurrencies(...denoms);
   }
 }
 

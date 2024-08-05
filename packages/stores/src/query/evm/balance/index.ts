@@ -1,12 +1,15 @@
 import {
   addressToPublicKey,
+  API,
   ChainIdEnum,
   DenomHelper,
   getOasisNic,
   getRpcByChainId,
   KVStore,
+  MapChainIdToNetwork,
   MyBigInt,
   parseRpcBalance,
+  urlTxHistory,
   Web3Provider,
 } from "@owallet/common";
 import { ChainGetter, CoinPrimitive, QueryResponse } from "../../../common";
@@ -22,6 +25,7 @@ import { ObservableChainQuery } from "../../chain-query";
 import { Balances } from "./types";
 import { CancelToken } from "axios";
 import Web3 from "web3";
+import { ResBalanceEvm } from "@owallet/types";
 
 export class ObservableQueryBalanceNative extends ObservableQueryBalanceInner {
   constructor(
@@ -68,18 +72,26 @@ export class ObservableQueryBalanceNative extends ObservableQueryBalanceInner {
   get balance(): CoinPretty {
     const currency = this.currency;
 
-    if (!this.nativeBalances.response) {
+    if (!this.nativeBalances.response?.data?.result) {
       return new CoinPretty(currency, new Int(0)).ready(false);
     }
 
-    return StoreUtils.getBalanceFromCurrency(
-      currency,
-      this.nativeBalances.response.data.balances
+    // return StoreUtils.getBalanceFromCurrency(
+    //   currency,
+    //   this.nativeBalances.response.data.result
+    // );
+    const amount = this.nativeBalances.response.data.result.find(
+      (coin) =>
+        coin.tokenAddress ===
+        new DenomHelper(currency.coinMinimalDenom).contractAddress
     );
+    console.log(amount, "amount");
+    if (!amount) return new CoinPretty(currency, new Int(0)).ready(false);
+    return new CoinPretty(currency, amount.balance);
   }
 }
 
-export class ObservableQueryEvmBalances extends ObservableChainQuery<Balances> {
+export class ObservableQueryEvmBalances extends ObservableChainQuery<ResBalanceEvm> {
   protected walletAddress: string;
 
   protected duplicatedFetchCheck: boolean = false;
@@ -90,7 +102,14 @@ export class ObservableQueryEvmBalances extends ObservableChainQuery<Balances> {
     chainGetter: ChainGetter,
     walletAddress: string
   ) {
-    super(kvStore, chainId, chainGetter, "");
+    super(
+      kvStore,
+      chainId,
+      chainGetter,
+      `raw-tx-history/all/balances?network=${MapChainIdToNetwork[chainId]}&address=${walletAddress}`,
+      null,
+      urlTxHistory
+    );
 
     this.walletAddress = walletAddress;
 
@@ -131,64 +150,132 @@ export class ObservableQueryEvmBalances extends ObservableChainQuery<Balances> {
       );
     }
   }
-  protected async fetchResponse(): Promise<QueryResponse<Balances>> {
-    try {
-      if (this._chainId === ChainIdEnum.Oasis) {
-        const oasisRs = await this.getOasisBalance();
-        console.log(oasisRs, "oasis rs");
-        const denomNative = this.chainGetter.getChain(this.chainId)
-          .stakeCurrency.coinMinimalDenom;
-        console.log(denomNative, oasisRs.available, "available kaka");
-        const balances: CoinPrimitive[] = [
-          {
-            amount: oasisRs.available,
-            denom: denomNative,
-          },
-        ];
+  protected setResponse(response: Readonly<QueryResponse<ResBalanceEvm>>) {
+    super.setResponse(response);
+    const chainInfo = this.chainGetter.getChain(this.chainId);
+    // Attempt to register the denom in the returned response.
+    // If it's already registered anyway, it's okay because the method below doesn't do anything.
+    // Better to set it as an array all at once to reduce computed.
+    if (!response.data.result) return;
+    console.log(response.data.result, "response.data.result");
+    const allTokensAddress = response.data.result
+      .filter(
+        (token) =>
+          !!chainInfo.currencies.find(
+            (coin) =>
+              new DenomHelper(
+                coin.coinMinimalDenom
+              ).contractAddress?.toLowerCase() !==
+              token.tokenAddress?.toLowerCase()
+          ) && MapChainIdToNetwork[chainInfo.chainId]
+      )
+      .map((coin) => {
+        console.log(coin, "coin");
+        const str = `${
+          MapChainIdToNetwork[chainInfo.chainId]
+        }%2B${new URLSearchParams(coin.tokenAddress)
+          .toString()
+          .replace("=", "")}`;
+        return str;
+      });
+    console.log(allTokensAddress, "allTokensAddress");
+    if (allTokensAddress?.length === 0) return;
 
-        const data = {
-          balances,
-        };
-        return {
-          status: 1,
-          staled: false,
-          data,
-          timestamp: Date.now(),
-        };
-      }
-      const web3 = new Web3(
-        getRpcByChainId(this.chainGetter.getChain(this.chainId), this.chainId)
-      );
-      const ethBalance = await web3.eth.getBalance(this.walletAddress);
-      console.log(
-        "🚀 ~ ObservableQueryEvmBalances ~ fetchResponse ~ ethBalance:",
-        ethBalance
-      );
-      const denomNative = this.chainGetter.getChain(this.chainId).stakeCurrency
-        .coinMinimalDenom;
-      const balances: CoinPrimitive[] = [
-        {
-          amount: ethBalance,
-          denom: denomNative,
-        },
-      ];
-
-      const data = {
-        balances,
-      };
-      return {
-        status: 1,
-        staled: false,
-        data,
-        timestamp: Date.now(),
-      };
-    } catch (error) {
-      console.log(
-        "🚀 ~ ObservableQueryEvmBalances ~ fetchResponse ~ error:",
-        error
-      );
-    }
+    API.getMultipleTokenInfo({
+      tokenAddresses: allTokensAddress.join(","),
+    }).then((tokenInfos) => {
+      console.log(tokenInfos, "tokenInfos");
+      const infoTokens = tokenInfos
+        .filter(
+          (item, index, self) =>
+            index ===
+              self.findIndex(
+                (t) => t.contractAddress === item.contractAddress
+              ) &&
+            chainInfo.currencies.findIndex(
+              (item2) =>
+                new DenomHelper(
+                  item2.coinMinimalDenom
+                ).contractAddress.toLowerCase() ===
+                item.contractAddress.toLowerCase()
+            ) < 0
+        )
+        .map((tokeninfo) => {
+          const infoToken = {
+            coinImageUrl: tokeninfo.imgUrl,
+            coinDenom: tokeninfo.abbr,
+            coinGeckoId: tokeninfo.coingeckoId,
+            coinDecimals: tokeninfo.decimal,
+            coinMinimalDenom: `erc20:${tokeninfo.contractAddress}:${tokeninfo.name}`,
+            contractAddress: tokeninfo.contractAddress,
+          };
+          return infoToken;
+        });
+      console.log(infoTokens, "infoTokens");
+      //@ts-ignore
+      chainInfo.addCurrencies(...infoTokens);
+      // const denoms = response.data.balances.map((coin) => coin.denom);
+      // chainInfo.addUnknownCurrencies(...denoms);
+    });
   }
+  // protected async fetchResponse(): Promise<QueryResponse<Balances>> {
+  //   try {
+  //     if (this._chainId === ChainIdEnum.Oasis) {
+  //       const oasisRs = await this.getOasisBalance();
+  //       console.log(oasisRs, "oasis rs");
+  //       const denomNative = this.chainGetter.getChain(this.chainId)
+  //         .stakeCurrency.coinMinimalDenom;
+  //       console.log(denomNative, oasisRs.available, "available kaka");
+  //       const balances: CoinPrimitive[] = [
+  //         {
+  //           amount: oasisRs.available,
+  //           denom: denomNative,
+  //         },
+  //       ];
+
+  //       const data = {
+  //         balances,
+  //       };
+  //       return {
+  //         status: 1,
+  //         staled: false,
+  //         data,
+  //         timestamp: Date.now(),
+  //       };
+  //     }
+  //     // const web3 = new Web3(
+  //     //   getRpcByChainId(this.chainGetter.getChain(this.chainId), this.chainId)
+  //     // );
+  //     // const ethBalance = await web3.eth.getBalance(this.walletAddress);
+  //     // console.log(
+  //     //   "🚀 ~ ObservableQueryEvmBalances ~ fetchResponse ~ ethBalance:",
+  //     //   ethBalance
+  //     // );
+  //     // const denomNative = this.chainGetter.getChain(this.chainId).stakeCurrency
+  //     //   .coinMinimalDenom;
+  //     // const balances: CoinPrimitive[] = [
+  //     //   {
+  //     //     amount: ethBalance,
+  //     //     denom: denomNative,
+  //     //   },
+  //     // ];
+
+  //     // const data = {
+  //     //   balances,
+  //     // };
+  //     // return {
+  //     //   status: 1,
+  //     //   staled: false,
+  //     //   data,
+  //     //   timestamp: Date.now(),
+  //     // };
+  //   } catch (error) {
+  //     console.log(
+  //       "🚀 ~ ObservableQueryEvmBalances ~ fetchResponse ~ error:",
+  //       error
+  //     );
+  //   }
+  // }
   protected getCacheKey(): string {
     return `${this.instance.name}-${this.instance.defaults.baseURL}-balance-evm-native-${this.chainId}-${this.walletAddress}`;
   }
