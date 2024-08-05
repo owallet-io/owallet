@@ -40,7 +40,6 @@ import { AnalyticsStore, NoopAnalyticsClient } from "@owallet/analytics";
 import Amplitude from "amplitude-js";
 import { ChainIdHelper } from "@owallet/cosmos";
 import { HugeQueriesStore } from "./huge-queries";
-import { HugeQueriesNewStore } from "./huge-queries-new";
 
 export class RootStore {
   public readonly uiConfigStore: UIConfigStore;
@@ -290,13 +289,7 @@ export class RootStore {
       this.priceStore,
       this.keyRingStore
     );
-    this.hugeQueriesNewStore = new HugeQueriesNewStore(
-      this.chainStore,
-      this.queriesStore,
-      this.accountStore,
-      this.priceStore
-      // this.keyRingStore
-    );
+
     this.analyticsStore = new AnalyticsStore(
       (() => {
         if (!AmplitudeApiKey) {

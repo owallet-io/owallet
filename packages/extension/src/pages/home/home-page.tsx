@@ -18,7 +18,6 @@ export const HomePage = observer(() => {
   const {
     chainStore,
     hugeQueriesStore,
-    hugeQueriesNewStore,
     accountStore,
     priceStore,
     keyRingStore,
@@ -60,16 +59,11 @@ export const HomePage = observer(() => {
   //     ]);
   //   }
   // };
-  const allBalances = hugeQueriesNewStore.getAllBalances(true);
-  const allBalancesNonZero = useMemo(() => {
-    return allBalances.filter((token) => {
-      return token.token.toDec().gt(zeroDec);
-    });
-  }, [allBalances]);
-  const isFirstTime = allBalancesNonZero.length === 0;
+  const allBalances = hugeQueriesStore.getAllBalances(true);
+
   const availableTotalPrice = useMemo(() => {
     let result: PricePretty | undefined;
-    for (const bal of hugeQueriesNewStore.allKnownBalances) {
+    for (const bal of hugeQueriesStore.allKnownBalances) {
       if (bal.price) {
         if (!result) {
           result = bal.price;
@@ -114,7 +108,7 @@ export const HomePage = observer(() => {
       chainStore.current.networkType !== "cosmos" ? null : (
         <StakeView />
       )}
-      <TokensCard dataTokens={allBalances as any} />
+      <TokensCard dataTokens={allBalances} />
     </FooterLayout>
   );
 });

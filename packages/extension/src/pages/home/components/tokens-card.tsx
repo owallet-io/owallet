@@ -3,7 +3,7 @@ import styles from "./style.module.scss";
 import { observer } from "mobx-react-lite";
 import { CoinPretty, Dec, Int, PricePretty } from "@owallet/unit";
 import { useStore } from "../../../stores";
-import { ViewRawToken } from "@owallet/types";
+import { ViewRawToken, ViewToken } from "@owallet/types";
 import {
   ChainIdEnum,
   removeDataInParentheses,
@@ -15,30 +15,41 @@ import { useHistory } from "react-router";
 import Switch from "react-switch";
 import colors from "../../../theme/colors";
 import { OwEmpty } from "components/empty/ow-empty";
-import { ViewToken } from "stores/huge-queries";
 
 export const TokensCard: FC<{
-  dataTokens: ViewToken[];
+  dataTokens: readonly ViewToken[];
   onSelectToken?: (token) => void;
 }> = observer(({ dataTokens, onSelectToken }) => {
   const [keyword, setKeyword] = useState("");
-  const { priceStore, chainStore } = useStore();
+  const { priceStore, chainStore, hugeQueriesStore } = useStore();
   const onChangeKeyword = (e) => {
     setKeyword(e.target.value);
   };
   const onHideDust = () => {
     chainStore.setIsHideDust(!chainStore.isHideDust);
   };
-  // const dataTokensHandled =
-  //   dataTokens.filter((item, index) => {
-  //     const balance = new CoinPretty(item.token.currency, item.token.amount);
-  //     const price = priceStore.calculatePrice(balance, "usd");
-  //     const searchKeyword = item?.token?.currency?.coinDenom?.toLowerCase()?.includes(keyword?.toLowerCase());
-  //     if (chainStore.isHideDust) {
-  //       return price?.toDec().gte(new Dec("0.1")) && searchKeyword;
-  //     }
-  //     return searchKeyword;
-  //   }) || [];
+  const trimSearch = keyword.trim();
+
+  const _allBalancesSearchFiltered = useMemo(() => {
+    return dataTokens.filter((token) => {
+      return (
+        token.chainInfo.chainName
+          .toLowerCase()
+          .includes(trimSearch.toLowerCase()) ||
+        token.token.currency.coinDenom
+          .toLowerCase()
+          .includes(trimSearch.toLowerCase())
+      );
+    });
+  }, [dataTokens, trimSearch]);
+  const hasLowBalanceTokens =
+    hugeQueriesStore.filterLowBalanceTokens(dataTokens).length > 0;
+  const lowBalanceFilteredAllBalancesSearchFiltered =
+    hugeQueriesStore.filterLowBalanceTokens(_allBalancesSearchFiltered);
+  const allBalancesSearchFiltered =
+    chainStore.isHideDust && hasLowBalanceTokens
+      ? lowBalanceFilteredAllBalancesSearchFiltered
+      : _allBalancesSearchFiltered;
 
   return (
     <div className={styles.containerTokenCard}>
@@ -62,8 +73,8 @@ export const TokensCard: FC<{
         </div>
       </div>
       <div className={styles.listTokens}>
-        {dataTokens?.length > 0 ? (
-          dataTokens.map((item, index) => (
+        {allBalancesSearchFiltered?.length > 0 ? (
+          allBalancesSearchFiltered.map((item, index) => (
             <TokenItem onSelectToken={onSelectToken} key={index} item={item} />
           ))
         ) : (
