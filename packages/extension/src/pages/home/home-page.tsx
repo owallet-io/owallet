@@ -18,7 +18,12 @@ export const HomePage = observer(() => {
   );
   const availableTotalPrice = useMemo(() => {
     let result: PricePretty | undefined;
-    for (const bal of hugeQueriesStore.allKnownBalances) {
+    let balances = chainStore.isAllNetwork
+      ? hugeQueriesStore.allKnownBalances
+      : hugeQueriesStore.allKnownBalances.filter(
+          (token) => token.chainInfo.chainId === chainStore.current.chainId
+        );
+    for (const bal of balances) {
       if (bal.price) {
         if (!result) {
           result = bal.price;
@@ -28,7 +33,11 @@ export const HomePage = observer(() => {
       }
     }
     return result;
-  }, [hugeQueriesStore.allKnownBalances]);
+  }, [
+    hugeQueriesStore.allKnownBalances,
+    chainStore.isAllNetwork,
+    chainStore.current.chainId,
+  ]);
 
   return (
     <FooterLayout>

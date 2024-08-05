@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useMemo, useState } from "react";
 import SlidingPane from "react-sliding-pane";
 import styles from "./style.module.scss";
 import { SearchInput } from "../components/search-input";
@@ -25,7 +25,13 @@ export const ModalNetwork: FC<{
   isHideAllNetwork?: boolean;
 }> = observer(({ isOpen, isHideAllNetwork, onRequestClose }) => {
   const [keyword, setKeyword] = useState("");
-  const { chainStore, accountStore, priceStore, keyRingStore } = useStore();
+  const {
+    chainStore,
+    accountStore,
+    hugeQueriesStore,
+    priceStore,
+    keyRingStore,
+  } = useStore();
   const onChangeInput = (e) => {
     setKeyword(e.target.value);
   };
@@ -41,40 +47,49 @@ export const ModalNetwork: FC<{
         Number(a.balance?.toDec()?.toString())
     );
   };
-  const dataTokens = [...(chainStore.multipleAssets.dataTokens || [])];
-  let totalPrice = initPrice;
-  const dataTokensByChainMap = new Map<ChainIdEnum | string, ViewTokenData>();
-  (dataTokens || []).map((item: ViewRawToken, index) => {
-    const coinData = new CoinPretty(item.token.currency, item.token.amount);
-    const priceData = priceStore.calculatePrice(coinData);
-    totalPrice = totalPrice.add(priceData || initPrice);
+  // const dataTokens = [...(chainStore.multipleAssets.dataTokens || [])];
+  // let totalPrice = initPrice;
+  // const dataTokensByChainMap = new Map<ChainIdEnum | string, ViewTokenData>();
+  // (dataTokens || []).map((item: ViewRawToken, index) => {
+  //   const coinData = new CoinPretty(item.token.currency, item.token.amount);
+  //   const priceData = priceStore.calculatePrice(coinData);
+  //   totalPrice = totalPrice.add(priceData || initPrice);
 
-    //caculator total price by chainID
-    dataTokensByChainMap.set(item.chainInfo.chainId, {
-      ...chainStore.multipleAssets.dataTokensByChain[item.chainInfo.chainId],
-      totalBalance: (
-        new PricePretty(
-          fiatCurrency,
-          dataTokensByChainMap.get(item.chainInfo.chainId)?.totalBalance
-        ) || initPrice
-      )
-        .add(priceData || initPrice)
-        .toDec()
-        .toString(),
-    });
-    return {
-      ...item,
-      price: priceData?.toDec()?.toString() || initPrice?.toDec()?.toString(),
-    };
-  });
+  //   //caculator total price by chainID
+  //   dataTokensByChainMap.set(item.chainInfo.chainId, {
+  //     ...chainStore.multipleAssets.dataTokensByChain[item.chainInfo.chainId],
+  //     totalBalance: (
+  //       new PricePretty(
+  //         fiatCurrency,
+  //         dataTokensByChainMap.get(item.chainInfo.chainId)?.totalBalance
+  //       ) || initPrice
+  //     )
+  //       .add(priceData || initPrice)
+  //       .toDec()
+  //       .toString(),
+  //   });
+  //   return {
+  //     ...item,
+  //     price: priceData?.toDec()?.toString() || initPrice?.toDec()?.toString(),
+  //   };
+  // });
 
   const chainsInfoWithBalance = chainStore.chainInfos.map((item, index) => {
+    let balances = hugeQueriesStore.allKnownBalances.filter(
+      (token) => token.chainInfo.chainId === item.chainId
+    );
+    let result: PricePretty | undefined;
+    for (const bal of balances) {
+      if (bal.price) {
+        if (!result) {
+          result = bal.price;
+        } else {
+          result = result.add(bal.price);
+        }
+      }
+    }
     //@ts-ignore
-    item.balance =
-      new PricePretty(
-        fiatCurrency,
-        dataTokensByChainMap.get(item.chainId)?.totalBalance
-      ) || initPrice;
+    item.balance = result || initPrice;
     return item;
   });
   const mainnet = chainsInfoWithBalance.filter(
@@ -173,6 +188,20 @@ export const ModalNetwork: FC<{
     chainStore.selectChain(chainInfo.chainId);
     chainStore.saveLastViewChainId();
   };
+  const availableTotalPrice = useMemo(() => {
+    let result: PricePretty | undefined;
+    let balances = hugeQueriesStore.allKnownBalances;
+    for (const bal of balances) {
+      if (bal.price) {
+        if (!result) {
+          result = bal.price;
+        } else {
+          result = result.add(bal.price);
+        }
+      }
+    }
+    return result;
+  }, [hugeQueriesStore.allKnownBalances, chainStore.isAllNetwork]);
   // const account = accountStore.getAccount(chainStore.current.chainId);
   const switchChain = async (chainInfo) => {
     try {
@@ -282,7 +311,7 @@ export const ModalNetwork: FC<{
                         </span>
                         <span className={styles.subTitlePrice}>
                           {item.chainId === "isAll"
-                            ? (totalPrice || initPrice)?.toString()
+                            ? (availableTotalPrice || initPrice)?.toString()
                             : (item.balance || initPrice)?.toString()}
                         </span>
                       </div>
