@@ -124,7 +124,8 @@ export class HugeQueriesStore {
       const account = this.accountStore.getAccount(chainInfo.chainId);
       const mainCurrency = chainInfo.stakeCurrency || chainInfo.currencies[0];
       const address = account.getAddressDisplay(
-        this.keyringStore.keyRingLedgerAddresses
+        this.keyringStore.keyRingLedgerAddresses,
+        false
       );
       if (!address) {
         continue;
@@ -354,7 +355,8 @@ export class HugeQueriesStore {
     for (const chainInfo of this.chainStore.chainInfosInUI) {
       const account = this.accountStore.getAccount(chainInfo.chainId);
       const address = account.getAddressDisplay(
-        this.keyringStore.keyRingLedgerAddresses
+        this.keyringStore.keyRingLedgerAddresses,
+        false
       );
       if (!address) {
         continue;
@@ -394,7 +396,8 @@ export class HugeQueriesStore {
     for (const chainInfo of this.chainStore.chainInfosInUI) {
       const account = this.accountStore.getAccount(chainInfo.chainId);
       const address = account.getAddressDisplay(
-        this.keyringStore.keyRingLedgerAddresses
+        this.keyringStore.keyRingLedgerAddresses,
+        false
       );
       if (!address) {
         continue;
@@ -453,7 +456,8 @@ export class HugeQueriesStore {
     for (const chainInfo of this.chainStore.chainInfosInUI) {
       const account = this.accountStore.getAccount(chainInfo.chainId);
       const address = account.getAddressDisplay(
-        this.keyringStore.keyRingLedgerAddresses
+        this.keyringStore.keyRingLedgerAddresses,
+        false
       );
       if (!address) {
         continue;
