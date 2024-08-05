@@ -23,14 +23,14 @@ export const aiData = [
     logo: images.dapps_defi_logo,
     title: "DeFi Lens",
     subTitle: "Simplify your Token Research with AI",
-    url: "https://layer.orai.io/",
+    url: "https://defilens.ai/",
   },
   {
     images: images.img_chatbot,
     logo: images.dapps_llm_logo,
     title: "LLM Chatbot",
     subTitle: "Natural language layer for Web3 Business",
-    url: "https://layer.orai.io/",
+    url: "https://defilens.ai/",
   },
 ];
 export const defiData = [
