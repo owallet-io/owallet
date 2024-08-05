@@ -56,7 +56,7 @@ export const TokensCard: FC<{
       <div className={styles.wrapTopBlock}>
         <SearchInput
           onChange={onChangeKeyword}
-          placeholder={"Search by token name"}
+          placeholder={"Search by chain or token"}
         />
 
         <div className={styles.wrapHideToken}>
