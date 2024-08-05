@@ -1,4 +1,9 @@
-import { DenomHelper, KVStore } from "@owallet/common";
+import {
+  API,
+  DenomHelper,
+  KVStore,
+  MapChainIdToNetwork,
+} from "@owallet/common";
 import { ChainGetter, QueryResponse } from "../../../common";
 import { computed, makeObservable, override } from "mobx";
 import { CoinPretty, Int } from "@owallet/unit";
@@ -117,8 +122,41 @@ export class ObservableQueryCosmosBalances extends ObservableChainQuery<Balances
     // Attempt to register the denom in the returned response.
     // If it's already registered anyway, it's okay because the method below doesn't do anything.
     // Better to set it as an array all at once to reduce computed.
-    const denoms = response.data.balances.map((coin) => coin.denom);
-    chainInfo.addUnknownCurrencies(...denoms);
+    // const denoms = response.data.balances.map((coin) => coin.denom);
+
+    const allTokensAddress = response.data.balances
+      .filter(
+        (token) =>
+          !!chainInfo.findCurrency(token.denom) === false &&
+          MapChainIdToNetwork[chainInfo.chainId]
+      )
+      .map((coin) => {
+        const str = `${
+          MapChainIdToNetwork[chainInfo.chainId]
+        }%2B${new URLSearchParams(coin.denom).toString().replace("=", "")}`;
+        return str;
+      });
+    if (allTokensAddress?.length === 0) return;
+    API.getMultipleTokenInfo({
+      tokenAddresses: allTokensAddress.join(","),
+    }).then((tokenInfos) => {
+      const infoTokens = tokenInfos
+        .filter((token) => !!chainInfo.findCurrency(token.denom) === false)
+        .map((tokeninfo) => {
+          const infoToken = {
+            coinImageUrl: tokeninfo.imgUrl,
+            coinDenom: tokeninfo.abbr,
+            coinGeckoId: tokeninfo.coingeckoId,
+            coinDecimals: tokeninfo.decimal,
+            coinMinimalDenom: tokeninfo.denom,
+          };
+          return infoToken;
+        });
+      //@ts-ignore
+      chainInfo.addCurrencies(...infoTokens);
+    });
+
+    // chainInfo.addUnknownCurrencies(...denoms);
   }
 }
 
