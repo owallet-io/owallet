@@ -12,7 +12,10 @@ export const HomePage = observer(() => {
   const { chainStore, hugeQueriesStore } = useStore();
 
   const allBalances = hugeQueriesStore.getAllBalances(true);
-
+  const balancesByChain = hugeQueriesStore.filterBalanceTokensByChain(
+    allBalances,
+    chainStore.current.chainId
+  );
   const availableTotalPrice = useMemo(() => {
     let result: PricePretty | undefined;
     for (const bal of hugeQueriesStore.allKnownBalances) {
@@ -40,7 +43,9 @@ export const HomePage = observer(() => {
       chainStore.current.networkType !== "cosmos" ? null : (
         <StakeView />
       )}
-      <TokensCard dataTokens={allBalances} />
+      <TokensCard
+        dataTokens={chainStore.isAllNetwork ? allBalances : balancesByChain}
+      />
     </FooterLayout>
   );
 });
