@@ -2,7 +2,7 @@ import { AccountSetBase, AccountSetOpts, MsgOpt } from "./base";
 import { AppCurrency, OWalletSignOptions } from "@owallet/types";
 import { StdFee } from "@cosmjs/launchpad";
 import { DenomHelper, EVMOS_NETWORKS } from "@owallet/common";
-import { Dec, DecUtils, Int } from "@owallet/unit";
+import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
 import { ChainIdHelper, BaseAccount } from "@owallet/cosmos";
 import { BondStatus } from "../query/cosmos/staking/types";
 import { HasCosmosQueries, QueriesSetBase, QueriesStore } from "../query";
@@ -871,8 +871,8 @@ export class CosmosAccount {
 
   async sendWithdrawAndDelegationRewardMsgs(
     validatorAddresses: string[],
-    destValidatorAddr: string,
-    amount: string,
+    validatorRewars: Array<{ validatorAddress: string; rewards: CoinPretty }>,
+    // amount: string,
     memo: string = "",
     stdFee: Partial<StdFee> = {},
     signOptions?: OWalletSignOptions,
@@ -894,25 +894,27 @@ export class CosmosAccount {
       };
     });
 
-    // Delegate msg
+    // Delegate msgs
     const stakeCurrency = this.chainGetter.getChain(this.chainId).stakeCurrency;
-
-    let dec = new Dec(amount);
-    dec = dec.mulTruncate(
-      DecUtils.getTenExponentNInPrecisionRange(stakeCurrency.coinDecimals)
-    );
-
-    const delegateMsg = {
-      type: this.base.msgOpts.delegate.type,
-      value: {
-        delegator_address: this.base.bech32Address,
-        validator_address: destValidatorAddr,
-        amount: {
-          denom: stakeCurrency.coinMinimalDenom,
-          amount: dec.truncate().toString(),
+    const delegateMsgs = validatorRewars.map((vr) => {
+      let dec = new Dec(
+        vr.rewards.shrink(true).maxDecimals(6).hideDenom(true).toString()
+      );
+      dec = dec.mulTruncate(
+        DecUtils.getTenExponentNInPrecisionRange(stakeCurrency.coinDecimals)
+      );
+      return {
+        type: this.base.msgOpts.delegate.type,
+        value: {
+          delegator_address: this.base.bech32Address,
+          validator_address: vr.validatorAddress,
+          amount: {
+            denom: stakeCurrency.coinMinimalDenom,
+            amount: dec.truncate().toString(),
+          },
         },
-      },
-    };
+      };
+    });
 
     const simulateTx = await this.simulateTx(
       [
@@ -925,25 +927,26 @@ export class CosmosAccount {
             }).finish(),
           };
         }),
-        {
-          typeUrl: "/cosmos.staking.v1beta1.MsgDelegate",
-          value: MsgDelegate.encode({
-            delegatorAddress: delegateMsg.value.delegator_address,
-            validatorAddress: delegateMsg.value.validator_address,
-            amount: delegateMsg.value.amount,
-          }).finish(),
-        },
+        ...delegateMsgs.map((delegateMsg) => {
+          return {
+            typeUrl: "/cosmos.staking.v1beta1.MsgDelegate",
+            value: MsgDelegate.encode({
+              delegatorAddress: delegateMsg.value.delegator_address,
+              validatorAddress: delegateMsg.value.validator_address,
+              amount: delegateMsg.value.amount,
+            }).finish(),
+          };
+        }),
       ],
       {
         amount: stdFee.amount ?? [],
       },
       memo
     );
-
     await this.base.sendMsgs(
       "withdrawRewardsAndDelegation",
       {
-        aminoMsgs: [...msgs, delegateMsg],
+        aminoMsgs: [...msgs, ...delegateMsgs],
         protoMsgs: this.hasNoLegacyStdFeature()
           ? // Delegate after withdrawRewards goes here, just add one more delegate msg into this array
             [
@@ -957,14 +960,16 @@ export class CosmosAccount {
                   }).finish(),
                 };
               }),
-              {
-                typeUrl: "/cosmos.staking.v1beta1.MsgDelegate",
-                value: MsgDelegate.encode({
-                  delegatorAddress: delegateMsg.value.delegator_address,
-                  validatorAddress: delegateMsg.value.validator_address,
-                  amount: delegateMsg.value.amount,
-                }).finish(),
-              },
+              ...delegateMsgs.map((delegateMsg) => {
+                return {
+                  typeUrl: "/cosmos.staking.v1beta1.MsgDelegate",
+                  value: MsgDelegate.encode({
+                    delegatorAddress: delegateMsg.value.delegator_address,
+                    validatorAddress: delegateMsg.value.validator_address,
+                    amount: delegateMsg.value.amount,
+                  }).finish(),
+                };
+              }),
             ]
           : undefined,
         // this is needed for ledger and ethermint, cosmos does not care about this, so we could pass anything in this rlpTypes
@@ -979,7 +984,7 @@ export class CosmosAccount {
       {
         amount: stdFee.amount ?? [],
         gas: simulateTx?.gasUsed
-          ? (simulateTx.gasUsed * 1.3 * validatorAddresses.length).toString()
+          ? (simulateTx.gasUsed * 1.2 * validatorAddresses.length).toString()
           : (Number(stdFee.gas) * 1.1).toString(),
       },
       signOptions,
