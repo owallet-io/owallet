@@ -37,6 +37,7 @@ import {
   TokenItemType,
   getTokensFromNetwork,
   calcMaxAmount,
+  TON_ORAICHAIN_DENOM,
 } from "@oraichain/oraidex-common";
 import { openLink } from "../../utils/helper";
 import { ChainIdEnum } from "@owallet/common";
@@ -62,6 +63,7 @@ import {
   handleSaveTokenInfos,
   getSpecialCoingecko,
   isAllowAlphaSmartRouter,
+  isAllowIBCWasm,
 } from "./helpers";
 import { Mixpanel } from "mixpanel-react-native";
 import { metrics } from "@src/themes";
@@ -254,9 +256,23 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     fromTokenDenom,
     toTokenDenom
   );
-  const useAlphaSmartRouter =
-    isAllowAlphaSmartRouter(originalFromToken, originalToToken) && isAIRoute;
+  const useIbcWasm = isAllowIBCWasm(originalFromToken, originalToToken);
 
+  let useAlphaSmartRouter =
+    useIbcWasm ||
+    (isAllowAlphaSmartRouter(originalFromToken, originalToToken) && isAIRoute);
+  if (
+    [
+      originalFromToken.contractAddress,
+      originalFromToken.denom,
+      originalToToken.contractAddress,
+      originalToToken.denom,
+    ]
+      .filter(Boolean)
+      .includes(TON_ORAICHAIN_DENOM)
+  ) {
+    useAlphaSmartRouter = true;
+  }
   const {
     minimumReceive,
     isWarningSlippage,
@@ -565,7 +581,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       relayerDecimals: RELAYER_DECIMAL,
     };
 
-    const isCustomRecipient = sendToAddress && sendToAddress !== "";
     const alphaSmartRoutes =
       useAlphaSmartRouter && simulateData && simulateData?.routes;
 
