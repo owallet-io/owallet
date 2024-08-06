@@ -296,6 +296,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     handleErrorSwap,
     {
       useAlphaSmartRoute: useAlphaSmartRouter,
+      useIbcWasm: useIbcWasm,
     },
     isAIRoute
   );
@@ -611,7 +612,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       cosmosWallet,
       //@ts-ignore
       evmWallet,
-      swapOptions: { isAlphaSmartRouter: useAlphaSmartRouter },
+      swapOptions: {
+        isAlphaSmartRouter: useAlphaSmartRouter,
+        isIbcWasm: useIbcWasm,
+      },
     });
 
     return await universalSwapHandler.processUniversalSwap();
