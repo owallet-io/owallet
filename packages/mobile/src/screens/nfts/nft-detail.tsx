@@ -33,11 +33,12 @@ export const NftDetailScreen: FunctionComponent = observer((props) => {
   const nft = useNft(
     chainStore.getChain(item?.network),
     item?.tokenId,
-    item?.contractAddress
+    item?.contractAddress,
+    item?.ecosystem
   );
   const onBrowser = async () => {
-    if (!nft?.explorer) return;
-    await openLink(nft.explorer);
+    if (!item?.explorer) return;
+    await openLink(item.explorer);
   };
   const { colors } = useTheme();
   const styles = styling();
@@ -78,7 +79,7 @@ export const NftDetailScreen: FunctionComponent = observer((props) => {
                 <OWIcon
                   type="images"
                   source={{
-                    uri: nft?.creatorImage,
+                    uri: nft?.creatorImage || item?.creatorImage,
                   }}
                   resizeMode="cover"
                   size={24}
@@ -86,7 +87,9 @@ export const NftDetailScreen: FunctionComponent = observer((props) => {
                     borderRadius: 999,
                   }}
                 />
-                <OWText style={styles.txtTitleTop}>{nft?.name}</OWText>
+                <OWText style={styles.txtTitleTop}>
+                  {nft?.name || item?.name}
+                </OWText>
               </View>
               <View style={styles.headerRight}>
                 <OWText
@@ -100,7 +103,7 @@ export const NftDetailScreen: FunctionComponent = observer((props) => {
                   size={16}
                   weight="600"
                 >
-                  #{nft?.tokenId}
+                  #{nft?.tokenId || item?.tokenId}
                 </OWText>
               </View>
             </View>
@@ -138,13 +141,15 @@ export const NftDetailScreen: FunctionComponent = observer((props) => {
                 </View>
               }
               label="Contract address"
-              valueDisplay={formatContractAddress(nft?.contractAddress)}
-              value={nft?.contractAddress}
+              valueDisplay={formatContractAddress(
+                nft?.contractAddress || item?.contractAddress
+              )}
+              value={nft?.contractAddress || item?.contractAddress}
             />
             <ItemReceivedToken
               label="Token ID"
-              valueDisplay={`${nft?.tokenId || 0}`}
-              value={`${nft?.tokenId || 0}`}
+              valueDisplay={`${nft?.tokenId || item?.tokenId || 0}`}
+              value={`${nft?.tokenId || item?.tokenId || 0}`}
             />
           </View>
         </View>
@@ -157,7 +162,9 @@ export const NftDetailScreen: FunctionComponent = observer((props) => {
               paddingVertical: 16,
             }}
           >
-            <OWText style={styles.txtDes}>{nft?.description}</OWText>
+            <OWText style={styles.txtDes}>
+              {nft?.description || item?.description}
+            </OWText>
           </View>
         </View>
       </ScrollView>

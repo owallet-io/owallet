@@ -1,6 +1,6 @@
 import { NftItem } from "@src/screens/nfts/components/nft-item";
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { Image, StyleSheet, View } from "react-native";
 
 import { observer } from "mobx-react-lite";
 
@@ -30,11 +30,13 @@ export const NftCard = observer(() => {
   const emptyDataCount =
     nfts && nfts.filter((item) => item.data.length === 0).length;
   const navigation = useNavigation();
+
   return (
     <View style={styles.container}>
       {emptyDataCount === nfts?.length && (
         <OWEmpty type="nft" label="NO NFTs YET" />
       )}
+
       {nfts.map((it, index) => {
         const coinDenom = it?.chainInfo?.stakeCurrency?.coinDenom;
         if (it?.data?.length > 0) {
@@ -49,7 +51,7 @@ export const NftCard = observer(() => {
                   <OWIcon
                     type="images"
                     resizeMode="cover"
-                    size={18}
+                    size={22}
                     style={{
                       borderRadius: 999,
                       tintColor:
@@ -63,9 +65,12 @@ export const NftCard = observer(() => {
                         unknownToken.coinImageUrl,
                     }}
                   />
-                  <OWText style={styles.txtTitle}>
-                    {it?.chainInfo?.chainName}
-                  </OWText>
+                  <View>
+                    <OWText style={styles.txtTitle}>
+                      {`${it?.chainInfo?.chainName}`}
+                    </OWText>
+                    <OWText size={10}>{it?.title}</OWText>
+                  </View>
                 </View>
 
                 <OWText style={styles.price}>
