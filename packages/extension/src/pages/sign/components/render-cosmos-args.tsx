@@ -260,11 +260,11 @@ export const CosmosRenderArgs: FunctionComponent<{
         />
       )}
       <InfoRenderer
-        condition={txInfo.unpacked?.sender}
+        condition={txInfo?.unpacked?.sender}
         label="Sender"
         leftContent={
           <Text color={colors["neutral-text-body"]}>
-            {txInfo.unpacked?.sender}
+            {txInfo?.unpacked?.sender}
           </Text>
         }
       />
@@ -295,7 +295,7 @@ export const CosmosRenderArgs: FunctionComponent<{
             leftContent={
               <Text color={colors["neutral-text-body"]}>
                 {toDisplay(
-                  txInfo.decode?.send?.amount,
+                  txInfo?.decode?.send?.amount,
                   contractInfo?.coinDecimals
                 )}{" "}
                 {contractInfo?.coinDenom}
