@@ -134,68 +134,7 @@ export class ObservableQueryEvmBalances extends ObservableChainQuery<Balances> {
       );
     }
   }
-  // protected async fetchResponse(response: Readonly<QueryResponse<Balances>>) {
-  //   super.setResponse(balances as any);
-  //
-  //     // const denoms = response.data.balances.map((coin) => coin.denom);
-  //     // chainInfo.addUnknownCurrencies(...denoms);
-  //   });
-  //   // try {
-  //   //   if (this._chainId === ChainIdEnum.Oasis) {
-  //   //     const oasisRs = await this.getOasisBalance();
-  //   //     const denomNative = this.chainGetter.getChain(this.chainId)
-  //   //       .stakeCurrency.coinMinimalDenom;
-  //   //     const balances: CoinPrimitive[] = [
-  //   //       {
-  //   //         amount: oasisRs.available,
-  //   //         denom: denomNative,
-  //   //       },
-  //   //     ];
 
-  //   //     const data = {
-  //   //       balances,
-  //   //     };
-  //   //     return {
-  //   //       status: 1,
-  //   //       staled: false,
-  //   //       data,
-  //   //       timestamp: Date.now(),
-  //   //     };
-  //   //   }
-  //   //   const web3 = new Web3(
-  //   //     getRpcByChainId(this.chainGetter.getChain(this.chainId), this.chainId)
-  //   //   );
-  //   //   const ethBalance = await web3.eth.getBalance(this.walletAddress);
-  //   //   console.log(
-  //   //     "🚀 ~ ObservableQueryEvmBalances ~ fetchResponse ~ ethBalance:",
-  //   //     ethBalance
-  //   //   );
-  //   //   const denomNative = this.chainGetter.getChain(this.chainId).stakeCurrency
-  //   //     .coinMinimalDenom;
-  //   //   const balances: CoinPrimitive[] = [
-  //   //     {
-  //   //       amount: ethBalance,
-  //   //       denom: denomNative,
-  //   //     },
-  //   //   ];
-
-  //   //   const data = {
-  //   //     balances,
-  //   //   };
-  //   //   console.log(data,"data");
-  //   //   return {
-  //   //     status: 1,
-  //   //     staled: false,
-  //   //     data,
-  //   //     timestamp: Date.now(),
-  //   //   };
-  //   // } catch (error) {
-  //   //   console.log(
-  //   //     "🚀 ~ ObservableQueryEvmBalances ~ fetchResponse ~ error:",
-  //   //     error
-  //   //   );
-  //   // }
-  // }
   protected async fetchResponse(): Promise<QueryResponse<Balances>> {
     try {
       if (this._chainId === ChainIdEnum.Oasis) {

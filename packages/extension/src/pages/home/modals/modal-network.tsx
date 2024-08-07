@@ -47,32 +47,6 @@ export const ModalNetwork: FC<{
         Number(a.balance?.toDec()?.toString())
     );
   };
-  // const dataTokens = [...(chainStore.multipleAssets.dataTokens || [])];
-  // let totalPrice = initPrice;
-  // const dataTokensByChainMap = new Map<ChainIdEnum | string, ViewTokenData>();
-  // (dataTokens || []).map((item: ViewRawToken, index) => {
-  //   const coinData = new CoinPretty(item.token.currency, item.token.amount);
-  //   const priceData = priceStore.calculatePrice(coinData);
-  //   totalPrice = totalPrice.add(priceData || initPrice);
-
-  //   //caculator total price by chainID
-  //   dataTokensByChainMap.set(item.chainInfo.chainId, {
-  //     ...chainStore.multipleAssets.dataTokensByChain[item.chainInfo.chainId],
-  //     totalBalance: (
-  //       new PricePretty(
-  //         fiatCurrency,
-  //         dataTokensByChainMap.get(item.chainInfo.chainId)?.totalBalance
-  //       ) || initPrice
-  //     )
-  //       .add(priceData || initPrice)
-  //       .toDec()
-  //       .toString(),
-  //   });
-  //   return {
-  //     ...item,
-  //     price: priceData?.toDec()?.toString() || initPrice?.toDec()?.toString(),
-  //   };
-  // });
 
   const chainsInfoWithBalance = chainStore.chainInfos.map((item, index) => {
     let balances = hugeQueriesStore.allKnownBalances.filter(
@@ -252,31 +226,7 @@ export const ModalNetwork: FC<{
           onChange={onChangeInput}
           placeholder={"Search for a chain"}
         />
-        {/* <div className={styles.containerTypeNetwork}>
-          {typeNetwork.map((item, index) => (
-            <div
-              onClick={() => activeTab(item)}
-              key={item.id}
-              className={classnames([
-                styles.itemTypeNetwork,
-                tab.id === item.id
-                  ? styles.activeBorderBottom
-                  : styles.inactiveBorderBottom,
-              ])}
-            >
-              <span
-                className={classnames([
-                  styles.titleTxtItem,
-                  tab.id === item.id
-                    ? styles.activeTxtColor
-                    : styles.inactiveTxtColor,
-                ])}
-              >
-                {item.title}
-              </span>
-            </div>
-          ))}
-        </div> */}
+
         <div className={styles.containerListChain}>
           {chains?.length > 0 &&
             [...allNetworkData, ...sortChainsByPrice(chains)].map(
