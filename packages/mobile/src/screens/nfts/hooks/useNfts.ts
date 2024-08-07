@@ -149,7 +149,7 @@ export const processDataOraiNft = (nft, currencies) => {
     floorPrice: nft?.offer?.amount || "0",
     name: `${nft?.name || ""} #${nft?.id}`,
     tokenId: nft?.id,
-    url: nft?.picture || nft?.url,
+    url: nft?.url,
     tokenInfo,
     contractAddress: nft?.tokenContract,
     network: ChainIdEnum.Oraichain,
