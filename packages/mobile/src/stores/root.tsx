@@ -39,7 +39,7 @@ import { ChainInfoInner } from "@owallet/stores";
 import { ChainInfo } from "@owallet/types";
 import { TxsStore } from "./txs";
 import { universalSwapStore, UniversalSwapStore } from "./universal_swap";
-import { HugeQueriesNewStore } from "@src/stores/huge-queries";
+import { HugeQueriesStore } from "@src/stores/huge-queries";
 
 export class RootStore {
   public readonly uiConfigStore: UIConfigStore;
@@ -50,8 +50,8 @@ export class RootStore {
   public readonly permissionStore: PermissionStore;
   public readonly ledgerInitStore: LedgerInitStore;
   public readonly signInteractionStore: SignInteractionStore;
-  // public readonly hugeQueriesStore: HugeQueriesStore;
-  public readonly hugeQueriesNewStore: HugeQueriesNewStore;
+  public readonly hugeQueriesStore: HugeQueriesStore;
+
   public readonly queriesStore: QueriesStore<QueriesWrappedTron>;
   public readonly accountStore: AccountStore<AccountWithAll>;
   public readonly priceStore: CoinGeckoPriceStore;
@@ -310,19 +310,14 @@ export class RootStore {
     this.modalStore = new ModalStore();
     this.appInitStore = appInit;
     this.universalSwapStore = universalSwapStore;
-    // this.hugeQueriesStore = new HugeQueriesStore(
-    //   this.chainStore,
-    //   this.queriesStore,
-    //   this.accountStore,
-    //   this.priceStore,
-    //   this.keyRingStore
-    // );
-    this.hugeQueriesNewStore = new HugeQueriesNewStore(
+    this.hugeQueriesStore = new HugeQueriesStore(
       this.chainStore,
       this.queriesStore,
       this.accountStore,
-      this.priceStore
+      this.priceStore,
+      this.keyRingStore
     );
+
     this.notificationStore = notification;
     this.sendStore = new SendStore();
     this.txsStore = (currentChain: ChainInfoInner<ChainInfo>): TxsStore =>

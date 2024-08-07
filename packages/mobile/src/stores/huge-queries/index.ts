@@ -7,10 +7,16 @@ import {
   QueryError,
   QueriesWrappedTron,
   AccountWithAll,
+  KeyRingStore,
 } from "@owallet/stores";
 import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
 import { action, autorun, computed } from "mobx";
-import { DenomHelper } from "@owallet/common";
+import {
+  ChainIdEnum,
+  DenomHelper,
+  getOasisAddress,
+  MapChainIdToNetwork,
+} from "@owallet/common";
 import { computedFn } from "mobx-utils";
 import { BinarySortArray } from "./sort";
 import { ChainInfo } from "@owallet/types";
@@ -46,7 +52,8 @@ export class HugeQueriesStore {
     protected readonly chainStore: ChainStore,
     protected readonly queriesStore: QueriesStore<QueriesWrappedTron>,
     protected readonly accountStore: AccountStore<AccountWithAll>,
-    protected readonly priceStore: CoinGeckoPriceStore
+    protected readonly priceStore: CoinGeckoPriceStore,
+    protected readonly keyringStore: KeyRingStore
   ) {
     let balanceDisposal: (() => void) | undefined;
     this.balanceBinarySort = new BinarySortArray<ViewToken>(
@@ -197,7 +204,24 @@ export class HugeQueriesStore {
   get allKnownBalances(): ReadonlyArray<ViewToken> {
     return this.balanceBinarySort.arr;
   }
-
+  @computed
+  get getAllAddrByChain(): Record<string, string> {
+    const data: Record<string, string> = {};
+    for (const chainInfo of this.chainStore.chainInfosInUI) {
+      const account = this.accountStore.getAccount(chainInfo.chainId);
+      const address = account.getAddressDisplay(
+        this.keyringStore.keyRingLedgerAddresses
+      );
+      const mapChainNetwork = MapChainIdToNetwork[chainInfo.chainId];
+      if (!mapChainNetwork) continue;
+      data[mapChainNetwork] =
+        chainInfo.chainId === ChainIdEnum.OasisSapphire ||
+        chainInfo.chainId === ChainIdEnum.OasisEmerald
+          ? getOasisAddress(address)
+          : address;
+    }
+    return data;
+  }
   getAllBalances = computedFn(
     (allowIBCToken: boolean): ReadonlyArray<ViewToken> => {
       const keys: Map<string, boolean> = new Map();
