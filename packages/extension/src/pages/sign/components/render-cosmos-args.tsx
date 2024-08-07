@@ -269,7 +269,7 @@ export const CosmosRenderArgs: FunctionComponent<{
         }
       />
       {tokensIn.length > 0 ? (
-        tokensIn.map((token, index) => (
+        tokensIn?.map((token, index) => (
           <PathRenderer key={index} inToken={token} />
         ))
       ) : (
@@ -277,7 +277,7 @@ export const CosmosRenderArgs: FunctionComponent<{
       )}
       {!isMore && (
         <>
-          {txInfo.unpacked?.funds.map((fund, index) => (
+          {txInfo.unpacked?.funds?.map((fund, index) => (
             <InfoRenderer
               key={index}
               condition={fund}
