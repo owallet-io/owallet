@@ -15,7 +15,7 @@ import { useTheme } from "@src/themes/theme-provider";
 import { OWBox } from "@src/components/card";
 
 import { useStore } from "@src/stores";
-
+import { Cw721BaseQueryClient } from "@oraichain/common-contracts-sdk";
 import OWFlatList from "@src/components/page/ow-flat-list";
 import { PageHeader } from "@src/components/header/header-new";
 import { RouteProp, useRoute } from "@react-navigation/native";
@@ -26,9 +26,14 @@ import { OWEmpty } from "@src/components/empty";
 import { urlAiRight } from "@src/common/constants";
 import { processDataOraiNft, processDataStargazeNft } from "./hooks/useNfts";
 import { SkeletonNft } from "./components/nft-skeleton";
-import { ChainIdEnum } from "@owallet/common";
+import { ChainIdEnum, TALIS_NFT_CONTRACT } from "@owallet/common";
 import { useQuery } from "@apollo/client";
 import { OwnedTokens } from "@src/graphql/queries";
+import { useClient } from "@owallet/hooks";
+enum Ecosystem {
+  airight = "AIRIGHT",
+  talis = "TALIS",
+}
 export const NftsScreen: FunctionComponent = observer((props) => {
   const route = useRoute<
     RouteProp<
@@ -49,7 +54,7 @@ export const NftsScreen: FunctionComponent = observer((props) => {
       <PageHeader title="My NFTs" subtitle={chainInfo?.chainName} />
       <OWBox style={[styles.container]}>
         {chainInfo.chainId === ChainIdEnum.Oraichain ? (
-          <NftsOraiScreen chainInfo={chainInfo} />
+          <NftsTalisScreen chainInfo={chainInfo} />
         ) : (
           <NftsStargazeScreen chainInfo={chainInfo} />
         )}
@@ -193,6 +198,121 @@ const NftsOraiScreen: FC<{
         return nfts;
       });
       setAllLoading();
+    } catch (error) {
+      setAllLoading();
+    }
+  };
+  const setAllLoading = () => {
+    setLoadMore(false);
+    setLoading(false);
+    setRefreshing(false);
+  };
+  useEffect(() => {
+    if (!account.bech32Address) return;
+    page.current = 0;
+    hasMore.current = true;
+    fetchData(account.bech32Address, false);
+    return () => {
+      setData([]);
+    };
+  }, [account.bech32Address]);
+  const onEndReached = () => {
+    if (page.current !== 0 && data.length > 0) {
+      setLoadMore(true);
+      fetchData(account.bech32Address, true);
+      return;
+    }
+  };
+  const onRefresh = () => {
+    setRefreshing(true);
+    page.current = 0;
+    hasMore.current = true;
+    fetchData(account.bech32Address, false);
+  };
+  return (
+    <OWFlatList
+      containerSkeletonStyle={styles.containerSkeleton}
+      SkeletonComponent={<SkeletonNft />}
+      skeletonStyle={{}}
+      data={data}
+      onEndReached={onEndReached}
+      renderItem={renderItem}
+      columnWrapperStyle={styles.row}
+      contentContainerStyle={{
+        gap: 16,
+      }}
+      numColumns={2}
+      loadMore={loadMore}
+      loading={loading}
+      onRefresh={onRefresh}
+      ListEmptyComponent={<OWEmpty type="nft" label="NO NFTs YET" />}
+      refreshing={refreshing}
+    />
+  );
+});
+const NftsTalisScreen: FC<{
+  chainInfo: ChainInfo;
+}> = observer(({ chainInfo }) => {
+  const { accountStore } = useStore();
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [loadMore, setLoadMore] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const page = useRef(0);
+  const hasMore = useRef(true);
+  const perPage = 10;
+  const { colors } = useTheme();
+  const styles = styling(colors);
+
+  const account = accountStore.getAccount(chainInfo.chainId);
+  const client = useClient(account);
+  const renderItem = ({ item, index }) => {
+    return <NftItem key={`item-${index + 1}-${index}`} item={item} />;
+  };
+  const fetchData = async (address, isLoadMore = false) => {
+    try {
+      if (!isLoadMore) setLoading(true);
+      if (!hasMore.current) throw Error("Failed");
+
+      const cw721 = new Cw721BaseQueryClient(
+        client,
+        TALIS_NFT_CONTRACT.Honorais
+      );
+
+      // let res = await API.getNftsOraichain(
+      //   {
+      //     offset: !isLoadMore ? 0 : page.current * perPage,
+      //     size: perPage,
+      //     address: address,
+      //   },
+      //   {
+      //     baseURL: urlAiRight,
+      //   }
+      // );
+      const res = await cw721.tokens({
+        owner: address,
+        limit: 10,
+        startAfter: `${page.current}`,
+      });
+      console.log(res, "res");
+      // if (res && res.status !== 200) throw Error("Failed");
+      page.current += 1;
+
+      // const totalPage = Math.ceil(res?.data?.total / perPage);
+      // if (page.current === totalPage) {
+      //   hasMore.current = false;
+      // }
+      // if (res?.data?.items?.length < 1) {
+      //   hasMore.current = false;
+      // }
+      // const nfts = (res?.data?.items || []).map((nft, index) =>
+      //   processDataOraiNft(nft, chainInfo.currencies)
+      // );
+      // setData((prevData) => {
+      //   if (isLoadMore) return [...prevData, ...nfts];
+      //   return nfts;
+      // });
+      // setAllLoading();
     } catch (error) {
       setAllLoading();
     }
