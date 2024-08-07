@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "OWallet",
   "description": "OWallet: BTC x Cosmos x EVM x TRON x OASIS in one Wallet",
-  "version": "3.0.7",
+  "version": "3.0.8",
   "icons": {
     "16": "assets/icon-16.png",
     "48": "assets/icon-48.png",
@@ -11,7 +11,12 @@
   "background": {
     "service_worker": "service_worker.js"
   },
-  "permissions": ["storage", "tabs", "notifications", "https://tx-history-backend.oraidex.io/*"],
+  "permissions": [
+    "storage",
+    "tabs",
+    "notifications",
+    "https://tx-history-backend.oraidex.io/*"
+  ],
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
@@ -22,7 +27,11 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["injectedScript.bundle.js", "injectedScript.bundle.js.map", "assets/orai_wallet_logo.png"],
+      "resources": [
+        "injectedScript.bundle.js",
+        "injectedScript.bundle.js.map",
+        "assets/orai_wallet_logo.png"
+      ],
       "matches": ["<all_urls>"]
     }
   ],
