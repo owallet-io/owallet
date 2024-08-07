@@ -273,23 +273,23 @@ export const EVMRenderArgs: FunctionComponent<{
         EmbedChainInfos.find((chain) => {
           if (
             chain.stakeCurrency.coinMinimalDenom ===
-            token.match(addressPattern).join("")
+            token.match(addressPattern)?.join("")
           ) {
             tokenInfo = chain.stakeCurrency;
             return;
           }
           if (
             chain.stakeCurrency.coinMinimalDenom ===
-            token.match(addressPattern).join("")
+            token.match(addressPattern)?.join("")
           ) {
             tokenInfo = chain.stakeCurrency;
             return;
           }
           const foundCurrency = chain.currencies.find(
             (cr) =>
-              cr.coinMinimalDenom === token.match(addressPattern).join("") ||
+              cr.coinMinimalDenom === token.match(addressPattern)?.join("") ||
               //@ts-ignore
-              cr.contractAddress === token.match(addressPattern).join("") ||
+              cr.contractAddress === token.match(addressPattern)?.join("") ||
               calculateJaccardIndex(cr.coinMinimalDenom, token) > 0.85
           );
 
@@ -303,17 +303,17 @@ export const EVMRenderArgs: FunctionComponent<{
       if (!tokenInfo && token) {
         const key = findKeyBySimilarValue(
           LIST_ORAICHAIN_CONTRACT,
-          token.match(addressPattern).join("")
+          token.match(addressPattern)?.join("")
         )?.split("_")?.[0];
 
         if (key)
           tokenInfo = {
             coinDenom: key,
-            contractAddress: token.match(addressPattern).join(""),
+            contractAddress: token.match(addressPattern)?.join(""),
           };
       }
 
-      setToAddress(des.match(addressPattern).join(""));
+      setToAddress(des.match(addressPattern)?.join(""));
       setToToken(tokenInfo);
     }
   };
