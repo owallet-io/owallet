@@ -148,10 +148,10 @@ export const CosmosRenderArgs: FunctionComponent<{
   const { chainStore } = useStore();
   const [isMore, setIsMore] = useState(true);
 
-  const txInfo = { ...msg };
-  const decodeMsg = msg.unpacked?.msg
-    ? JSON.parse(Buffer.from(msg.unpacked.msg).toString())
-    : msg.unpacked;
+  const txInfo = msg ? { ...msg } : {};
+  const decodeMsg = msg?.unpacked?.msg
+    ? JSON.parse(Buffer.from(msg?.unpacked.msg).toString())
+    : msg?.unpacked;
   txInfo.decode = decodeMsg;
   const extraInfo = decodeMsg?.send?.msg ? atob(decodeMsg.send?.msg) : null;
   txInfo.extraInfo = extraInfo ? JSON.parse(extraInfo) : null;
@@ -212,7 +212,7 @@ export const CosmosRenderArgs: FunctionComponent<{
     };
   }
 
-  if (txInfo.unpacked?.funds) {
+  if (txInfo?.unpacked?.funds) {
     txInfo.unpacked.funds.forEach((coinPrimitive) => {
       const coin = new Coin(coinPrimitive.denom, coinPrimitive?.amount);
       const parsed = CoinUtils.parseDecAndDenomFromCoin(
@@ -264,11 +264,11 @@ export const CosmosRenderArgs: FunctionComponent<{
         label="Sender"
         leftContent={
           <Text color={colors["neutral-text-body"]}>
-            {txInfo.unpacked.sender}
+            {txInfo.unpacked?.sender}
           </Text>
         }
       />
-      {tokensIn.length > 0 ? (
+      {tokensIn?.length > 0 ? (
         tokensIn?.map((token, index) => (
           <PathRenderer key={index} inToken={token} />
         ))
@@ -277,14 +277,14 @@ export const CosmosRenderArgs: FunctionComponent<{
       )}
       {!isMore && (
         <>
-          {txInfo.unpacked?.funds?.map((fund, index) => (
+          {txInfo?.unpacked?.funds?.map((fund, index) => (
             <InfoRenderer
               key={index}
               condition={fund}
               label="Fund"
               leftContent={
                 <Text color={colors["neutral-text-body"]}>
-                  {fund?.amount} {fund.denom}
+                  {fund?.amount} {fund?.denom}
                 </Text>
               }
             />
@@ -313,11 +313,11 @@ export const CosmosRenderArgs: FunctionComponent<{
             }
           />
           <InfoRenderer
-            condition={txInfo.unpacked?.receiver}
+            condition={txInfo?.unpacked?.receiver}
             label="Receiver"
             leftContent={
               <Text color={colors["neutral-text-body"]}>
-                {txInfo.unpacked.receiver}
+                {txInfo?.unpacked?.receiver}
               </Text>
             }
           />
@@ -326,7 +326,7 @@ export const CosmosRenderArgs: FunctionComponent<{
             label="Transfer"
             leftContent={
               <Text color={colors["neutral-text-body"]}>
-                {receiveToken?.amount} {receiveToken.denom}
+                {receiveToken?.amount} {receiveToken?.denom}
               </Text>
             }
           />

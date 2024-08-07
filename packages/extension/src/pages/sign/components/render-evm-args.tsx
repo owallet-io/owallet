@@ -65,8 +65,6 @@ export const EVMRenderArgs: FunctionComponent<{
     const inToken = fromToken || tokenIn;
     const outToken = desToken || tokenOut || toToken;
 
-    console.log(inToken, "inToken");
-
     return (
       <div
         style={{
@@ -106,7 +104,7 @@ export const EVMRenderArgs: FunctionComponent<{
                     textDecor={"underline"}
                     textColor={colors["neutral-text-body"]}
                   >
-                    {inToken.contractAddress}
+                    {inToken?.contractAddress}
                   </Address>
                 </>
               ) : (
@@ -117,7 +115,7 @@ export const EVMRenderArgs: FunctionComponent<{
                 <Text weight="600" color={colors["neutral-text-title"]}>
                   {numberWithCommas(
                     toDisplay(
-                      amountIn.toString(),
+                      amountIn?.toString(),
                       inToken?.decimal ?? chain.stakeCurrency.coinDecimals
                     )
                   )}{" "}
@@ -165,7 +163,7 @@ export const EVMRenderArgs: FunctionComponent<{
                     textDecor={"underline"}
                     textColor={colors["neutral-text-body"]}
                   >
-                    {outToken.contractAddress}
+                    {outToken?.contractAddress}
                   </Address>
                 </>
               ) : (
@@ -176,7 +174,7 @@ export const EVMRenderArgs: FunctionComponent<{
                 <Text weight="600" color={colors["neutral-text-title"]}>
                   {numberWithCommas(
                     toDisplay(
-                      amountOut.toString(),
+                      amountOut?.toString(),
                       outToken?.decimal ?? chain.stakeCurrency.coinDecimals
                     )
                   )}{" "}
