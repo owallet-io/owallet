@@ -19,7 +19,7 @@ import {
 } from "@owallet/common";
 import { computedFn } from "mobx-utils";
 import { BinarySortArray } from "./sort";
-import { ChainInfo } from "@owallet/types";
+import { ChainInfo, ViewChainAddress } from "@owallet/types";
 import { ChainIdHelper } from "@owallet/cosmos";
 
 interface ViewToken {
@@ -221,6 +221,22 @@ export class HugeQueriesStore {
           : address;
     }
     return data;
+  }
+  @computed
+  get getAllChainMap(): Map<string, ViewChainAddress> {
+    const map = new Map<string, ViewChainAddress>();
+    for (const chainInfo of this.chainStore.chainInfosInUI) {
+      const account = this.accountStore.getAccount(chainInfo.chainId);
+      const address = account.getAddressDisplay(
+        this.keyringStore.keyRingLedgerAddresses,
+        false
+      );
+      map.set(chainInfo.chainId, {
+        address,
+        chainInfo,
+      });
+    }
+    return map;
   }
   getAllBalances = computedFn(
     (allowIBCToken: boolean): ReadonlyArray<ViewToken> => {
