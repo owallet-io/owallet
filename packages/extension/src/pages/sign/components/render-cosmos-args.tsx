@@ -172,6 +172,7 @@ export const CosmosRenderArgs: FunctionComponent<{
       EmbedChainInfos.forEach((c) => {
         if (c.chainId === chain?.chainId) {
           ask_asset_info = c.currencies.find(
+            //@ts-ignore
             (cur) => cur.contractAddress === ask_asset
           );
         }
@@ -188,6 +189,7 @@ export const CosmosRenderArgs: FunctionComponent<{
     EmbedChainInfos.forEach((c) => {
       if (c.chainId === chain?.chainId) {
         contractInfo = c.currencies.find(
+          //@ts-ignore
           (cur) => cur.contractAddress === txInfo.unpacked.contract
         );
       }

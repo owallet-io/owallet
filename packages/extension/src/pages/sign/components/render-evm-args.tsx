@@ -269,6 +269,7 @@ export const EVMRenderArgs: FunctionComponent<{
         const foundCurrency = chain.currencies.find(
           (cr) =>
             cr.coinMinimalDenom === matchedToken ||
+            //@ts-ignore
             cr.contractAddress === matchedToken ||
             calculateJaccardIndex(cr.coinMinimalDenom, token) > 0.85
         );

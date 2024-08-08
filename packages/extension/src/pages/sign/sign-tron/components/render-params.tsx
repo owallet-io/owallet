@@ -36,6 +36,7 @@ export const TronRenderParams: FunctionComponent<{
         );
         if (chainInfo) {
           const token = chainInfo.currencies.find(
+            //@ts-ignore
             (cu) => cu.contractAddress === contractAddress
           );
           setToken(token);
@@ -85,6 +86,7 @@ export const TronRenderParams: FunctionComponent<{
         const foundCurrency = chain.currencies.find(
           (cr) =>
             cr.coinMinimalDenom === matchedToken ||
+            //@ts-ignore
             cr.contractAddress === matchedToken ||
             calculateJaccardIndex(cr.coinMinimalDenom, tokenStr) > 0.85
         );
