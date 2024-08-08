@@ -149,7 +149,6 @@ export const CosmosRenderArgs: FunctionComponent<{
   const [isMore, setIsMore] = useState(true);
 
   const txInfo = msg ? { ...msg } : {};
-
   const decodeMsg = msg?.unpacked?.msg
     ? JSON.parse(Buffer.from(msg.unpacked.msg).toString())
     : msg?.unpacked;
