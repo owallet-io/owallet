@@ -21,12 +21,7 @@ import { useLanguage } from "@owallet/common";
 import { Address } from "../../components/address";
 import withErrorBoundary from "./hoc/withErrorBoundary";
 
-const FallbackComponent = () => <div>Oops! Something went wrong.</div>;
-
-const MyComponentWithErrorBoundary = withErrorBoundary(
-  CosmosRenderArgs,
-  <FallbackComponent />
-);
+const CosmosRenderArgsWithErrorBoundary = withErrorBoundary(CosmosRenderArgs);
 
 export const DetailsTab: FunctionComponent<{
   signDocHelper: SignDocHelper;
@@ -352,7 +347,11 @@ export const DetailsTab: FunctionComponent<{
                   padding: 8,
                 }}
               >
-                <MyComponentWithErrorBoundary msg={msg} chain={chain} i={i} />
+                <CosmosRenderArgsWithErrorBoundary
+                  msg={msg}
+                  chain={chain}
+                  i={i}
+                />
               </Card>
             </div>
           );
