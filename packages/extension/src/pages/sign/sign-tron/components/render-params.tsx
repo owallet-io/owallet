@@ -28,25 +28,24 @@ export const TronRenderParams: FunctionComponent<{
   const findToken = async (contractAddress) => {
     if (chain?.chainId && contractAddress) {
       try {
-        const token = await getTokenInfo(contractAddress, chain.chainId);
-        setToken(token.data);
+        const tokenData = await getTokenInfo(contractAddress, chain.chainId);
+        setToken(tokenData.data);
       } catch (err) {
-        EmbedChainInfos.map((c) => {
-          if (c.chainId === chain.chainId) {
-            const token = c.currencies.find(
-              //@ts-ignore
-              (cu) => cu.contractAddress === contractAddress
-            );
-
-            setToken(token);
-          }
-        });
+        const chainInfo = EmbedChainInfos.find(
+          (c) => c.chainId === chain.chainId
+        );
+        if (chainInfo) {
+          const token = chainInfo.currencies.find(
+            (cu) => cu.contractAddress === contractAddress
+          );
+          setToken(token);
+        }
       }
     }
   };
 
   useEffect(() => {
-    params?.map((p) => {
+    params?.forEach((p) => {
       if (p.type === "address") {
         findToken(getBase58Address(p.value));
       }
@@ -54,89 +53,69 @@ export const TronRenderParams: FunctionComponent<{
   }, [params]);
 
   useEffect(() => {
-    const fetchToken = async () => {
-      if (chain?.chainId && contractAddress) {
-        const token = await getTokenInfo(contractAddress, chain.chainId);
-        setToken(token.data);
-      }
-    };
-    fetchToken();
+    if (chain?.chainId && contractAddress) {
+      findToken(contractAddress);
+    }
   }, [chain?.chainId, contractAddress]);
 
   const getInfoFromDecodedData = (decodedData) => {
-    if (decodedData) {
-      // Regular expression pattern to split the input string
-      const pattern = /[\x00-\x1F]+/;
+    if (!decodedData) return null;
 
-      const addressPattern = /[a-zA-Z0-9]+/g;
+    const pattern = /[\x00-\x1F]+/;
+    const addressPattern = /[a-zA-Z0-9]+/g;
+    const array = decodedData.split(pattern).filter(Boolean);
 
-      // Split the input string using the pattern
-      const array = decodedData.split(pattern).filter(Boolean);
-      if (array.length < 1) {
-        array.push(decodedData);
-      }
-      const des = array.shift();
-      const token = array.pop();
+    if (array.length < 1) {
+      array.push(decodedData);
+    }
 
-      let tokenInfo;
-      if (token) {
-        EmbedChainInfos.find((chain) => {
-          if (
-            chain.stakeCurrency.coinMinimalDenom ===
-            token.match(addressPattern).join("")
-          ) {
-            tokenInfo = chain.stakeCurrency;
-            return;
-          }
-          if (
-            chain.stakeCurrency.coinMinimalDenom ===
-            token.match(addressPattern).join("")
-          ) {
-            tokenInfo = chain.stakeCurrency;
-            return;
-          }
-          const foundCurrency = chain.currencies.find(
-            (cr) =>
-              cr.coinMinimalDenom === token.match(addressPattern).join("") ||
-              //@ts-ignore
-              cr.contractAddress === token.match(addressPattern).join("") ||
-              calculateJaccardIndex(cr.coinMinimalDenom, token) > 0.85
-          );
+    const des = array.shift();
+    const tokenStr = array.pop();
 
-          if (foundCurrency) {
-            tokenInfo = foundCurrency;
-            return;
-          }
-        });
+    let tokenInfo;
+    if (tokenStr) {
+      const matchedToken = tokenStr.match(addressPattern)?.join("");
+
+      for (const chain of EmbedChainInfos) {
+        if (chain.stakeCurrency.coinMinimalDenom === matchedToken) {
+          tokenInfo = chain.stakeCurrency;
+          break;
+        }
+
+        const foundCurrency = chain.currencies.find(
+          (cr) =>
+            cr.coinMinimalDenom === matchedToken ||
+            cr.contractAddress === matchedToken ||
+            calculateJaccardIndex(cr.coinMinimalDenom, tokenStr) > 0.85
+        );
+
+        if (foundCurrency) {
+          tokenInfo = foundCurrency;
+          break;
+        }
       }
 
-      if (!tokenInfo && token) {
+      if (!tokenInfo) {
         const key = findKeyBySimilarValue(
           LIST_ORAICHAIN_CONTRACT,
-          token.match(addressPattern).join("")
+          matchedToken
         )?.split("_")?.[0];
-
-        if (key)
-          tokenInfo = {
-            coinDenom: key,
-            contractAddress: token.match(addressPattern).join(""),
-          };
+        if (key) {
+          tokenInfo = { coinDenom: key, contractAddress: matchedToken };
+        }
       }
-
-      return {
-        des: des.match(addressPattern).join(""),
-        tokenInfo: tokenInfo,
-      };
     }
+
+    return { des: des.match(addressPattern)?.join(""), tokenInfo };
   };
 
   const convertDestinationToken = (value) => {
-    if (value) {
-      const encodedData = value.split(":")?.[1];
-      if (encodedData) {
-        const decodedData = decodeBase64(encodedData);
-        return getInfoFromDecodedData(decodedData);
-      }
+    if (!value) return null;
+
+    const encodedData = value.split(":")?.[1];
+    if (encodedData) {
+      const decodedData = decodeBase64(encodedData);
+      return getInfoFromDecodedData(decodedData);
     }
   };
 
@@ -159,57 +138,42 @@ export const TronRenderParams: FunctionComponent<{
             );
           }
           if (p.type === "address") {
-            let toContractComponent;
-            toContractComponent = renderInfo(
+            return renderInfo(
               p?.value,
               "To Contract",
               <Text>{getBase58Address(p?.value)}</Text>
             );
-
-            return <>{toContractComponent}</>;
           }
-
           if (p.type === "string") {
-            const { des, tokenInfo } = convertDestinationToken(p?.value);
-            let desComponent, tokenComponent;
-
-            if (des) {
-              desComponent = renderInfo(
-                des,
-                "Destination Address",
-                <Text>{des ? des : null}</Text>
-              );
-            }
-            if (tokenInfo) {
-              tokenComponent = renderInfo(
-                tokenInfo.coinDenom,
-                "Token Out",
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    alignItems: "center",
-                  }}
-                >
-                  <img
-                    style={{
-                      width: 14,
-                      height: 14,
-                      borderRadius: 28,
-                      marginRight: 4,
-                      backgroundColor: colors["neutral-surface-pressed"],
-                    }}
-                    src={tokenInfo?.coinImageUrl}
-                  />
-                  <Text weight="600">{tokenInfo?.coinDenom}</Text>
-                </div>
-              );
-            }
-
+            const { des, tokenInfo } = convertDestinationToken(p?.value) || {};
             return (
               <>
-                {desComponent}
-                {tokenComponent}
+                {des &&
+                  renderInfo(des, "Destination Address", <Text>{des}</Text>)}
+                {tokenInfo &&
+                  renderInfo(
+                    tokenInfo.coinDenom,
+                    "Token Out",
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                      }}
+                    >
+                      <img
+                        style={{
+                          width: 14,
+                          height: 14,
+                          borderRadius: 28,
+                          marginRight: 4,
+                          backgroundColor: colors["neutral-surface-pressed"],
+                        }}
+                        src={tokenInfo?.coinImageUrl}
+                      />
+                      <Text weight="600">{tokenInfo?.coinDenom}</Text>
+                    </div>
+                  )}
               </>
             );
           }
@@ -217,34 +181,34 @@ export const TronRenderParams: FunctionComponent<{
       </div>
     );
   };
+
   return (
     <div>
       {renderParams()}
-      {token
-        ? renderInfo(
-            token,
-            "Token In",
-            <div
+      {token &&
+        renderInfo(
+          token,
+          "Token In",
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            <img
               style={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
+                width: 14,
+                height: 14,
+                borderRadius: 28,
+                marginRight: 4,
+                backgroundColor: colors["neutral-surface-pressed"],
               }}
-            >
-              <img
-                style={{
-                  width: 14,
-                  height: 14,
-                  borderRadius: 28,
-                  marginRight: 4,
-                  backgroundColor: colors["neutral-surface-pressed"],
-                }}
-                src={token?.imgUrl ?? token?.coinImageUrl}
-              />
-              <Text weight="600">{token?.abbr ?? token?.coinDenom}</Text>
-            </div>
-          )
-        : null}
+              src={token?.imgUrl ?? token?.coinImageUrl}
+            />
+            <Text weight="600">{token?.abbr ?? token?.coinDenom}</Text>
+          </div>
+        )}
     </div>
   );
 });
